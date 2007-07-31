@@ -1,0 +1,21 @@
+<div class="odj">
+<h2>View Odj</h2>
+
+<dl>
+	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $odj['Odj']['id']?></dd>
+	<dt>Seance Id</dt>
+	<dd>&nbsp;<?php echo $odj['Odj']['seance_id']?></dd>
+	<dt>Created</dt>
+	<dd>&nbsp;<?php echo $odj['Odj']['created']?></dd>
+	<dt>Modified</dt>
+	<dd>&nbsp;<?php echo $odj['Odj']['modified']?></dd>
+</dl>
+<ul class="actions">
+	<li><?php echo $html->link('Edit Odj',   '/odjs/edit/' . $odj['Odj']['id']) ?> </li>
+	<li><?php echo $html->link('Delete Odj', '/odjs/delete/' . $odj['Odj']['id'], null, 'Are you sure you want to delete: id ' . $odj['Odj']['id'] . '?') ?> </li>
+	<li><?php echo $html->link('List Odjs',   '/odjs/index') ?> </li>
+	<li><?php echo $html->link('New Odj',	'/odjs/add') ?> </li>
+</ul>
+
+</div>

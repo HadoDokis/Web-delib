@@ -1,0 +1,21 @@
+<div class="motcle">
+<h2>View Motcle</h2>
+
+<dl>
+	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $motcle['Motcle']['id']?></dd>
+	<dt>Mot</dt>
+	<dd>&nbsp;<?php echo $motcle['Motcle']['mot']?></dd>
+	<dt>Created</dt>
+	<dd>&nbsp;<?php echo $motcle['Motcle']['created']?></dd>
+	<dt>Modified</dt>
+	<dd>&nbsp;<?php echo $motcle['Motcle']['modified']?></dd>
+</dl>
+<ul class="actions">
+	<li><?php echo $html->link('Edit Motcle',   '/motcles/edit/' . $motcle['Motcle']['id']) ?> </li>
+	<li><?php echo $html->link('Delete Motcle', '/motcles/delete/' . $motcle['Motcle']['id'], null, 'Are you sure you want to delete: id ' . $motcle['Motcle']['id'] . '?') ?> </li>
+	<li><?php echo $html->link('List Motcles',   '/motcles/index') ?> </li>
+	<li><?php echo $html->link('New Motcle',	'/motcles/add') ?> </li>
+</ul>
+
+</div>

@@ -1,0 +1,16 @@
+<h2>Edit Motcle</h2>
+<form action="<?php echo $html->url('/motcles/edit/'.$html->tagValue('Motcle/id')); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Motcle/mot', 'Mot');?>
+ 	<?php echo $html->input('Motcle/mot', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Motcle/mot', 'Please enter the Mot.');?>
+</div>
+<?php echo $html->hidden('Motcle/id')?>
+<div class="submit">
+	<?php echo $html->submit('Save');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('Delete','/motcles/delete/' . $html->tagValue('Motcle/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Motcle/id'));?>
+<li><?php echo $html->link('List Motcles', '/motcles/index')?></li>
+</ul>

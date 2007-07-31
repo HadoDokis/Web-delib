@@ -1,0 +1,19 @@
+<h2>New Pvcomplet</h2>
+<form action="<?php echo $html->url('/pvcomplets/add'); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Pvcomplet/seance_id', 'Seance Id');?>
+ 	<?php echo $html->input('Pvcomplet/seance_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Pvcomplet/seance_id', 'Please enter the Seance Id.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag('Pvcomplet/chemin', 'Chemin');?>
+ 	<?php echo $html->input('Pvcomplet/chemin', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Pvcomplet/chemin', 'Please enter the Chemin.');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Add');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('List Pvcomplets', '/pvcomplets/index')?></li>
+</ul>

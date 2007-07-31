@@ -1,0 +1,30 @@
+<div class="circuits">
+<h2>List Circuits</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Id</th>
+	<th>Libelle</th>
+	<th>Created</th>
+	<th>Modified</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($circuits as $circuit): ?>
+<tr>
+	<td><?php echo $circuit['Circuit']['id']; ?></td>
+	<td><?php echo $circuit['Circuit']['libelle']; ?></td>
+	<td><?php echo $circuit['Circuit']['created']; ?></td>
+	<td><?php echo $circuit['Circuit']['modified']; ?></td>
+	<td class="actions">
+		<?php echo $html->link('View','/circuits/view/' . $circuit['Circuit']['id'])?>
+		<?php echo $html->link('Edit','/circuits/edit/' . $circuit['Circuit']['id'])?>
+		<?php echo $html->link('Delete','/circuits/delete/' . $circuit['Circuit']['id'], null, 'Are you sure you want to delete id ' . $circuit['Circuit']['id'])?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Circuit', '/circuits/add'); ?></li>
+</ul>
+</div>

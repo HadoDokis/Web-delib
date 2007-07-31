@@ -1,0 +1,21 @@
+<h2>Edit Pvsommaire</h2>
+<form action="<?php echo $html->url('/pvsommaires/edit/'.$html->tagValue('Pvsommaire/id')); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Pvsommaire/seance_id', 'Seance Id');?>
+ 	<?php echo $html->input('Pvsommaire/seance_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Pvsommaire/seance_id', 'Please enter the Seance Id.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag('Pvsommaire/chemin', 'Chemin');?>
+ 	<?php echo $html->input('Pvsommaire/chemin', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Pvsommaire/chemin', 'Please enter the Chemin.');?>
+</div>
+<?php echo $html->hidden('Pvsommaire/id')?>
+<div class="submit">
+	<?php echo $html->submit('Save');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('Delete','/pvsommaires/delete/' . $html->tagValue('Pvsommaire/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Pvsommaire/id'));?>
+<li><?php echo $html->link('List Pvsommaires', '/pvsommaires/index')?></li>
+</ul>

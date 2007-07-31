@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+<head>
+	<title>WebDelib</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<?php echo $html->css('webdelib'); ?>
+</head>
+<body>
+<div id="conteneur">
+
+	<div id="header">WebDelib</div>
+	<div id="gauche">
+		<ul class="menugauche">
+			<li><a href="<?php echo $html->url('/services');?>">Services</a></li>
+			<li><a href="<?php echo $html->url('/typeseances');?>">Types de s&eacute;ance</a></li>
+			<li><a href="<?php echo $html->url('/profils');?>">Profils</a></li>
+			<li><a href="<?php echo $html->url('/themes');?>">Th&egrave;mes</a></li>
+			<li><a href="<?php echo $html->url('/agents');?>">Agents</a></li>
+			<li><a href="<?php echo $html->url('/agents_circuits');?>">AgentsCircuits</a></li>
+			<li><a href="<?php echo $html->url('/circuits');?>">Circuits</a></li>
+			<li><a href="<?php echo $html->url('/refannexes');?>">RefAnnexes</a></li>
+		</ul>
+	</div>
+
+	<div id="centre">
+		<?php echo $content_for_layout; ?>
+	</div>
+
+	<div id="pied">Tutoriel CakePHP &copy; 2006 ADULLACT</div>
+</div>
+</body>
+</html>

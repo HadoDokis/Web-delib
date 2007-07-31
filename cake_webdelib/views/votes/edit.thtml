@@ -1,0 +1,26 @@
+<h2>Edit Vote</h2>
+<form action="<?php echo $html->url('/votes/edit/'.$html->tagValue('Vote/id')); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Vote/liste_id', 'Liste Id');?>
+ 	<?php echo $html->input('Vote/liste_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Vote/liste_id', 'Please enter the Liste Id.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag('Vote/seance_id', 'Seance Id');?>
+ 	<?php echo $html->input('Vote/seance_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Vote/seance_id', 'Please enter the Seance Id.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag('Vote/delib_id', 'Delib Id');?>
+ 	<?php echo $html->input('Vote/delib_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Vote/delib_id', 'Please enter the Delib Id.');?>
+</div>
+<?php echo $html->hidden('Vote/id')?>
+<div class="submit">
+	<?php echo $html->submit('Save');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('Delete','/votes/delete/' . $html->tagValue('Vote/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Vote/id'));?>
+<li><?php echo $html->link('List Votes', '/votes/index')?></li>
+</ul>
