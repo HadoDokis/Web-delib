@@ -14,7 +14,7 @@
  <!--  <th>agent_id</th>-->
  <!--   <th>service id </th>-->
    <th>service libelle</th>
-   <th>prenom </th>
+   <th>prenom</th>
    <th>nom </th>
   <th>position</th>
   <!--   <th>id agentcircuit</th>-->

@@ -3,7 +3,7 @@ class AgentsController extends AppController {
 
 	var $name = 'Agents';
 	var $helpers = array('Html', 'Form' );
-var $uses = array('Circuit', 'Agent', 'Service', 'AgentsService');
+	var $uses = array('Circuit', 'Agent', 'Service', 'AgentsService');
 	
 	function index() {
 		$this->Agent->recursive = 0;

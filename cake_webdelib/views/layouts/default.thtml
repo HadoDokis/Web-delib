@@ -10,16 +10,8 @@
 
 	<div id="header">WebDelib</div>
 	<div id="gauche">
-		<ul class="menugauche">
-			<li><a href="<?php echo $html->url('/services');?>">Services</a></li>
-			<li><a href="<?php echo $html->url('/typeseances');?>">Types de s&eacute;ance</a></li>
-			<li><a href="<?php echo $html->url('/profils');?>">Profils</a></li>
-			<li><a href="<?php echo $html->url('/themes');?>">Th&egrave;mes</a></li>
-			<li><a href="<?php echo $html->url('/agents');?>">Agents</a></li>
-			<li><a href="<?php echo $html->url('/agents_circuits');?>">AgentsCircuits</a></li>
-			<li><a href="<?php echo $html->url('/circuits');?>">Circuits</a></li>
-			<li><a href="<?php echo $html->url('/refannexes');?>">RefAnnexes</a></li>
-		</ul>
+	<?php echo $this->renderElement('adminMenuGauche'); ?>
+		
 	</div>
 
 	<div id="centre">

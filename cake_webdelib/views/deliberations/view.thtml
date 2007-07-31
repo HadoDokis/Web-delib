@@ -1,0 +1,57 @@
+<div class="deliberation">
+<h2>View Deliberation</h2>
+
+<dl>
+	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['id']?></dd>
+	<dt>Circuit</dt>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
+	<dt>Theme</dt>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?></dd>
+	<dt>Service</dt>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
+	<dt>Vote Id</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>
+	<dt>Historique Id</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['historique_id']?></dd>
+	<dt>Agent</dt>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Agent']['nom'], '/agents/view/' .$deliberation['Agent']['id'])?></dd>
+	<dt>Rapporteur</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['rapporteur']?></dd>
+	<dt>Date Creation</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['date_creation']?></dd>
+	<dt>Date Session</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['date_session']?></dd>
+	<dt>Objet</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
+	<dt>Titre</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>
+	<dt>Num Delib</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_delib']?></dd>
+	<dt>Num Pref</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref']?></dd>
+	<dt>Texte Projet</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_projet']?></dd>
+	<dt>Texte Synthese</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_synthese']?></dd>
+	<dt>Created</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['created']?></dd>
+	<dt>Modified</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['modified']?></dd>
+</dl>
+<ul class="actions">
+	<li><?php echo $html->link('Edit Deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
+	<li><?php echo $html->link('Delete Deliberation', '/deliberations/delete/' . $deliberation['Deliberation']['id'], null, 'Are you sure you want to delete: id ' . $deliberation['Deliberation']['id'] . '?') ?> </li>
+	<li><?php echo $html->link('List Deliberations',   '/deliberations/index') ?> </li>
+	<li><?php echo $html->link('New Deliberation',	'/deliberations/add') ?> </li>
+	<li><?php echo $html->link('List Circuit', '/circuits/index/')?> </li>
+	<li><?php echo $html->link('New Circuits', '/circuits/add/')?> </li>
+	<li><?php echo $html->link('List Theme', '/themes/index/')?> </li>
+	<li><?php echo $html->link('New Themes', '/themes/add/')?> </li>
+	<li><?php echo $html->link('List Service', '/services/index/')?> </li>
+	<li><?php echo $html->link('New Services', '/services/add/')?> </li>
+	<li><?php echo $html->link('List Agent', '/agents/index/')?> </li>
+	<li><?php echo $html->link('New Agents', '/agents/add/')?> </li>
+</ul>
+
+</div>

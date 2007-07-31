@@ -38,14 +38,19 @@
  * Each define has a commented line of code that explains what you would change.
  *
  */
+   define('ROOT', '/home/laurie/cakeworkspace/cake_webdelib/');
+   define ('CORE_PATH', '/home/laurie/cakeworkspace/cake_webdelib/');
+   define ('APP_PATH', '/home/laurie/cakeworkspace/cake_webdelib/app/');
+   define('APP_DIR', 'app');
+ 
 	if (!defined('ROOT')) {
 		//define('ROOT', 'FULL PATH TO DIRECTORY WHERE APP DIRECTORY IS LOCATED DO NOT ADD A TRAILING DIRECTORY SEPARATOR';
 		//You should also use the DS define to seperate your directories
 		define('ROOT', dirname(dirname(dirname(__FILE__))));
 	}
 	if (!defined('APP_DIR')) {
-		//define('APP_DIR', 'DIRECTORY NAME OF APPLICATION';
-		define('APP_DIR', basename(dirname(dirname(__FILE__))));
+		define('APP_DIR', 'app');
+		//define('APP_DIR', basename(dirname(dirname(__FILE__))));
 	}
 /**
  * This only needs to be changed if the cake installed libs are located

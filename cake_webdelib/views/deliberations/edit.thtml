@@ -1,0 +1,94 @@
+<h2>Edit Deliberation</h2>
+<form action="<?php echo $html->url('/deliberations/edit/'.$html->tagValue('Deliberation/id')); ?>" method="post">
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/circuit_id', 'Circuit');?>
+ 	<?php echo $html->selectTag('Deliberation/circuit_id', $circuits, $html->tagValue('Deliberation/circuit_id'), array(), array(), true);?>
+	<?php echo $html->tagErrorMsg('Deliberation/circuit_id', 'Please select the Circuit.') ?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme');?>
+ 	<?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), true);?>
+	<?php echo $html->tagErrorMsg('Deliberation/theme_id', 'Please select the Theme.') ?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/service_id', 'Service');?>
+ 	<?php echo $html->selectTag('Deliberation/service_id', $services, $html->tagValue('Deliberation/service_id'), array(), array(), true);?>
+	<?php echo $html->tagErrorMsg('Deliberation/service_id', 'Please select the Service.') ?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/vote_id', 'Vote Id');?>
+ 	<?php echo $html->input('Deliberation/vote_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/vote_id', 'Please enter the Vote Id.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/historique_id', 'Historique Id');?>
+ 	<?php echo $html->input('Deliberation/historique_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/historique_id', 'Please enter the Historique Id.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/agent_id', 'Agent');?>
+ 	<?php echo $html->selectTag('Deliberation/agent_id', $agents, $html->tagValue('Deliberation/agent_id'), array(), array(), true);?>
+	<?php echo $html->tagErrorMsg('Deliberation/agent_id', 'Please select the Agent.') ?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/rapporteur', 'Rapporteur');?>
+ 	<?php echo $html->input('Deliberation/rapporteur', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/rapporteur', 'Please enter the Rapporteur.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/date_creation', 'Date Creation');?>
+ 	<?php echo $html->dateTimeOptionTag('Deliberation/date_creation', 'MDY' , '12', $html->tagValue('Deliberation/date_creation'), array());?>
+	<?php echo $html->tagErrorMsg('Deliberation/date_creation', 'Please select the Date Creation.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/date_session', 'Date Session');?>
+ 	<?php echo $html->dateTimeOptionTag('Deliberation/date_session', 'MDY' , '12', $html->tagValue('Deliberation/date_session'), array());?>
+	<?php echo $html->tagErrorMsg('Deliberation/date_session', 'Please select the Date Session.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/objet', 'Objet');?>
+ 	<?php echo $html->input('Deliberation/objet', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/objet', 'Please enter the Objet.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/titre', 'Titre');?>
+ 	<?php echo $html->input('Deliberation/titre', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/titre', 'Please enter the Titre.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/num_delib', 'Num Delib');?>
+ 	<?php echo $html->input('Deliberation/num_delib', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/num_delib', 'Please enter the Num Delib.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/num_pref', 'Num Pref');?>
+ 	<?php echo $html->input('Deliberation/num_pref', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/num_pref', 'Please enter the Num Pref.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/texte_projet', 'Texte Projet');?>
+ 	<?php echo $html->input('Deliberation/texte_projet', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Please enter the Texte Projet.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Deliberation/texte_synthese', 'Texte Synthese');?>
+ 	<?php echo $html->input('Deliberation/texte_synthese', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Please enter the Texte Synthese.');?>
+</div>
+<?php echo $html->hidden('Deliberation/id')?>
+<div class="submit">
+	<?php echo $html->submit('Save');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('Delete','/deliberations/delete/' . $html->tagValue('Deliberation/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Deliberation/id'));?>
+<li><?php echo $html->link('List Deliberations', '/deliberations/index')?></li>
+<li><?php echo $html->link('View Services', '/services/index/');?></li>
+<li><?php echo $html->link('Add Services', '/services/add/');?></li>
+<li><?php echo $html->link('View Themes', '/themes/index/');?></li>
+<li><?php echo $html->link('Add Themes', '/themes/add/');?></li>
+<li><?php echo $html->link('View Circuits', '/circuits/index/');?></li>
+<li><?php echo $html->link('Add Circuits', '/circuits/add/');?></li>
+<li><?php echo $html->link('View Agents', '/agents/index/');?></li>
+<li><?php echo $html->link('Add Agents', '/agents/add/');?></li>
+</ul>
