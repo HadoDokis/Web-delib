@@ -28,6 +28,14 @@ class AgentsCircuit extends AppModel {
 						'order' => '',
 						'counterCache' => ''
 				),
+			'Service' =>
+				array('className' => 'Service',
+						'foreignKey' => 'service_id',
+						'conditions' => '',
+						'fields' => '',
+						'order' => '',
+						'counterCache' => ''
+				)
 
 	);
 }
