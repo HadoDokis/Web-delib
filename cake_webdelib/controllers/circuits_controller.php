@@ -108,7 +108,7 @@ class CircuitsController extends AppController {
 		    
 		$this->set('services', $services);
 
-		//traitement d circuit (création ou modification)
+		//traitement du circuit (création ou modification)
 		if (empty($this->data)) {
 			if ($service_id!=null) {
 				$liste_agents=$this->AgentsService->findAll("AgentsService.service_id=$service_id");			
