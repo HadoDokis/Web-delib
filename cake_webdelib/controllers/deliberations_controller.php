@@ -2,8 +2,8 @@
 class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
-	var $helpers = array('Html', 'Form' );
-
+	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf' );
+    
 	function index() {
 		$this->Deliberation->recursive = 0;
 		$this->set('deliberations', $this->Deliberation->findAll());
@@ -64,6 +64,14 @@ class DeliberationsController extends AppController {
 			}
 		}
 	}
+	
+	function getTextSynthese ($id) {
+		$condition = "Deliberation.id = $id";
+	    $fields = "texte_synthese";
+	    $dataValeur = $this->Deliberation->findAll($condition, $fields);
+	   	return $dataValeur['0'] ['Deliberation']['texte_synthese'];
+	}
+	
 
 	function delete($id = null) {
 		if (!$id) {
@@ -75,6 +83,12 @@ class DeliberationsController extends AppController {
 			$this->redirect('/deliberations/index');
 		}
 	}
-
+ 
+   function convert($id=null)
+        {
+            $this->layout = 'pdf'; //this will use the pdf.thtml layout
+            $this->set('data',$this->getTextSynthese($id));
+            $this->render();
+        } 
 }
 ?>
