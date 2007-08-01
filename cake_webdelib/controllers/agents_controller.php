@@ -4,10 +4,20 @@ class AgentsController extends AppController {
 	var $name = 'Agents';
 	var $helpers = array('Html', 'Form' );
 	var $uses = array('Circuit', 'Agent', 'Service', 'AgentsService');
+	var $components = array('Utils');
 	
 	function index() {
-		$this->Agent->recursive = 0;
-		$this->set('agents', $this->Agent->findAll());
+		//$this->Agent->recursive = 0;
+		$this->params['data']= $this->Agent->findAll();
+		$data=$this->params['data'];
+		for ($i=0; $i<count($data); $i++) {
+			$data[$i]['Agent']['created']=$this->Utils->mysql_DateTime($data[$i]['Agent']['created']);
+			$data[$i]['Agent']['modified']=$this->Utils->mysql_DateTime($data[$i]['Agent']['modified']);
+		}
+		//debug($data);
+		$this->set('agents', $data);
+		
+	
 	}
 
 	function view($id = null) {
@@ -28,6 +38,7 @@ class AgentsController extends AppController {
 			$this->set('selectedProfils', null);
 			$this->render();
 		} else {
+			$this->data['Agent']['password']=hash('md5',$this->data['Agent']['password']);
 			$this->cleanUpFields();
 			if ($this->Agent->save($this->data)) {
 				$this->Session->setFlash('The Agent has been saved');
