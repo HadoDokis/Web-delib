@@ -9,8 +9,11 @@
 class FckHelper extends Helper
 {
     function load($id, $toolbar = 'Default') {
+    	$did = '';
+
         foreach (explode('[', str_replace(']','', $id)) as $v) {
 			$did .= ucfirst($v);
+			
 		}
 
         return <<<FCK_CODE
