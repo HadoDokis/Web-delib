@@ -1,0 +1,47 @@
+<div class="agents">
+<h2>Liste des Agents</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Id</th>
+	<th>Login</th>
+	<th>Nom</th>
+	<th>Prenom</th>
+	<th>Adresse</th>
+	<th>Code Postal</th>
+	<th>Ville</th>
+	<th>Telephone 1</th>
+	<th>Telephone 2</th>
+	<th>Cr&eacute;&eacute;</th>
+	<th>Modifi&eacute;</th>
+	<th>Actions</th>
+</tr>
+<?php 
+//debug($agents);
+foreach ($agents as $agent): ?>
+<tr>
+	<td><?php echo $agent['Agent']['id']; ?></td>
+	<td><?php echo $agent['Agent']['login']; ?></td>
+	<td><?php echo $agent['Agent']['nom']; ?></td>
+	<td><?php echo $agent['Agent']['prenom']; ?></td>
+	<td><?php echo $agent['Agent']['adresse']; ?></td>
+	<td><?php echo $agent['Agent']['CP']; ?></td>
+	<td><?php echo $agent['Agent']['ville']; ?></td>
+	<td><?php echo $agent['Agent']['teldom']; ?></td>
+	<td><?php echo $agent['Agent']['telmobile']; ?></td>
+	<td><?php echo $agent['Agent']['created']; ?></td>
+	<td><?php echo $agent['Agent']['modified']; ?></td>
+	<td class="actions">
+		<?php //echo $html->link($html->image('icons/editdelete.png',array('title'=>'Supprimer semaine', 'border'=>'0', 'align'=>'top')), "/semainestypes/delete/$thisweekSelected",null,"Etes-vous vraiment s�r de vouloir supprimer cette semaine ?",false); ?>
+		<?php echo $html->link('Voir','/agents/view/' . $agent['Agent']['id'])?>
+		<?php echo $html->link('Modifier','/agents/edit/' . $agent['Agent']['id'])?>
+		<?php echo $html->link('Supprimer','/agents/delete/' . $agent['Agent']['id'], null, 'Voulez vous vraiment supprimer l\'agent ' . $agent['Agent']['prenom'] . ' ' . $agent['Agent']['nom'])?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('Nouvel agent', '/agents/add'); ?></li>
+</ul>
+</div>

@@ -1,0 +1,143 @@
+<div class="agent">
+<h2>View Agent</h2>
+
+<dl>
+	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $agent['Agent']['id']?></dd>
+	<dt>Login</dt>
+	<dd>&nbsp;<?php echo $agent['Agent']['login']?></dd>
+	<dt>Password</dt>
+	<dd>&nbsp;<?php echo $agent['Agent']['password']?></dd>
+	<dt>Nom</dt>
+	<dd>&nbsp;<?php echo $agent['Agent']['nom']?></dd>
+	<dt>Prenom</dt>
+	<dd>&nbsp;<?php echo $agent['Agent']['prenom']?></dd>
+	<dt>Created</dt>
+	<dd>&nbsp;<?php echo $agent['Agent']['created']?></dd>
+	<dt>Modified</dt>
+	<dd>&nbsp;<?php echo $agent['Agent']['modified']?></dd>
+</dl>
+<ul class="actions">
+	<li><?php echo $html->link('Edit Agent',   '/agents/edit/' . $agent['Agent']['id']) ?> </li>
+	<li><?php echo $html->link('Delete Agent', '/agents/delete/' . $agent['Agent']['id'], null, 'Are you sure you want to delete: id ' . $agent['Agent']['id'] . '?') ?> </li>
+	<li><?php echo $html->link('List Agents',   '/agents/index') ?> </li>
+	<li><?php echo $html->link('New Agent',	'/agents/add') ?> </li>
+</ul>
+
+</div>
+<div class="related">
+<h3>Related Agentcircuits</h3>
+<?php if (!empty($agent['Agentcircuit'])):?>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<?php foreach ($agent['Agentcircuit']['0'] as $column => $value): ?>
+<th><?php echo $column?></th>
+<?php endforeach; ?>
+<th>Actions</th>
+</tr>
+<?php foreach ($agent['Agentcircuit'] as $agentcircuit):?>
+<tr>
+	<?php foreach ($agentcircuit as $column => $value):?>
+		<td><?php echo $value;?></td>
+	<?php endforeach;?>
+	<td class="actions">
+		<?php echo $html->link('View', '/agentcircuits/view/' . $agentcircuit['id']);?>
+		<?php echo $html->link('Edit', '/agentcircuits/edit/' . $agentcircuit['id']);?>
+		<?php echo $html->link('Delete', '/agentcircuits/delete/' . $agentcircuit['id'], null, 'Are you sure you want to delete: id ' . $agentcircuit['id'] . '?');?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+<?php endif; ?>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Agentcircuit', '/agentcircuits/add/');?> </li>
+</ul>
+</div>
+<div class="related">
+<h3>Related Services</h3>
+<?php if (!empty($agent['Service'])):?>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<?php foreach ($agent['Service']['0'] as $column => $value): ?>
+<th><?php echo $column?></th>
+<?php endforeach; ?>
+<th>Actions</th>
+</tr>
+<?php foreach ($agent['Service'] as $service):?>
+<tr>
+	<?php foreach ($service as $column => $value):?>
+		<td><?php echo $value;?></td>
+	<?php endforeach;?>
+	<td class="actions">
+		<?php echo $html->link('View', '/services/view/' . $service['id']);?>
+		<?php echo $html->link('Edit', '/services/edit/' . $service['id']);?>
+		<?php echo $html->link('Delete', '/services/delete/' . $service['id'], null, 'Are you sure you want to delete: id ' . $service['id'] . '?');?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+<?php endif; ?>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Service', '/services/add/');?> </li>
+</ul>
+</div>
+<div class="related">
+<h3>Related Circuits</h3>
+<?php if (!empty($agent['Circuit'])):?>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<?php foreach ($agent['Circuit']['0'] as $column => $value): ?>
+<th><?php echo $column?></th>
+<?php endforeach; ?>
+<th>Actions</th>
+</tr>
+<?php foreach ($agent['Circuit'] as $circuit):?>
+<tr>
+	<?php foreach ($circuit as $column => $value):?>
+		<td><?php echo $value;?></td>
+	<?php endforeach;?>
+	<td class="actions">
+		<?php echo $html->link('View', '/circuits/view/' . $circuit['id']);?>
+		<?php echo $html->link('Edit', '/circuits/edit/' . $circuit['id']);?>
+		<?php echo $html->link('Delete', '/circuits/delete/' . $circuit['id'], null, 'Are you sure you want to delete: id ' . $circuit['id'] . '?');?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+<?php endif; ?>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Circuit', '/circuits/add/');?> </li>
+</ul>
+</div>
+<div class="related">
+<h3>Related Profils</h3>
+<?php if (!empty($agent['Profil'])):?>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<?php foreach ($agent['Profil']['0'] as $column => $value): ?>
+<th><?php echo $column?></th>
+<?php endforeach; ?>
+<th>Actions</th>
+</tr>
+<?php foreach ($agent['Profil'] as $profil):?>
+<tr>
+	<?php foreach ($profil as $column => $value):?>
+		<td><?php echo $value;?></td>
+	<?php endforeach;?>
+	<td class="actions">
+		<?php echo $html->link('View', '/profils/view/' . $profil['id']);?>
+		<?php echo $html->link('Edit', '/profils/edit/' . $profil['id']);?>
+		<?php echo $html->link('Delete', '/profils/delete/' . $profil['id'], null, 'Are you sure you want to delete: id ' . $profil['id'] . '?');?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+<?php endif; ?>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Profil', '/profils/add/');?> </li>
+</ul>
+</div>
