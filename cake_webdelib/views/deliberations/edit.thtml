@@ -1,3 +1,5 @@
+<?php echo $javascript->link('fckeditor'); ?> 
+
 <h2>Edit Deliberation</h2>
 <form action="<?php echo $html->url('/deliberations/edit/'.$html->tagValue('Deliberation/id')); ?>" method="post">
 <div class="optional"> 
@@ -70,11 +72,12 @@
  	<?php echo $html->input('Deliberation/texte_projet', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Please enter the Texte Projet.');?>
 </div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/texte_synthese', 'Texte Synthese');?>
- 	<?php echo $html->input('Deliberation/texte_synthese', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Please enter the Texte Synthese.');?>
+<div class="required">
+    <?php echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Deliberation][texte_synthese]'); ?>
+    <?php echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Please enter the Body.');?>
 </div>
+
 <?php echo $html->hidden('Deliberation/id')?>
 <div class="submit">
 	<?php echo $html->submit('Save');?>

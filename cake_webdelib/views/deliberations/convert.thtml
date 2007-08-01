@@ -1,0 +1,9 @@
+<?php
+
+    vendor('fpdf/html2fpdf');
+    $pdf = new HTML2FPDF();
+    $pdf->AddPage();
+	$pdf->WriteHTML($data);
+	$pdf->Output('doc.pdf','I');
+     
+?> 

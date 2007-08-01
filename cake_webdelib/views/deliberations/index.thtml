@@ -46,6 +46,7 @@
 	<td class="actions">
 		<?php echo $html->link('View','/deliberations/view/' . $deliberation['Deliberation']['id'])?>
 		<?php echo $html->link('Edit','/deliberations/edit/' . $deliberation['Deliberation']['id'])?>
+		<?php echo $html->link('PDF','/deliberations/convert/' . $deliberation['Deliberation']['id'])?>
 		<?php echo $html->link('Delete','/deliberations/delete/' . $deliberation['Deliberation']['id'], null, 'Are you sure you want to delete id ' . $deliberation['Deliberation']['id'])?>
 	</td>
 </tr>
