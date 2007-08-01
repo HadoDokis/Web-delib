@@ -9,9 +9,55 @@ class Agent extends AppModel {
 		'prenom' => VALID_NOT_EMPTY,
 	);
 
-	
 	var $recursive = 2;
 	var $displayField="nom";
+<<<<<<< .mine
+	var $hasAndBelongsToMany = array('Service' => array('classname'=>'Service',
+														'joinTable'=>'agents_services',
+														'foreignKey'=>'agent_id',
+														'associationForeignKey'=>'service_id',
+														'conditions'=>'',
+														'order'=>'',
+														'limit'=>'',
+														'unique'=>true,
+														'finderQuery'=>'',
+														'deleteQuery'=>'')
+														,
+									'Circuit' => array('className' => 'Circuit',
+														'joinTable' => 'agents_circuits',
+														'foreignKey' => 'agent_id',
+														'associationForeignKey' => 'circuit_id',
+														'conditions' => '',
+														'fields' => '',
+														'order' => '',
+														'limit' => '',
+														'offset' => '',
+														'unique' => '',
+														'finderQuery' => '',
+														'deleteQuery' => '',
+														'insertQuery' => ''),		
+								  	'Profil' => array('classname'=>'Profil',
+														'joinTable'=>'agents_profils',
+														'foreignKey'=>'agent_id',
+														'associationForeignKey'=>'profil_id',
+														'conditions'=>'',
+														'order'=>'',
+														'limit'=>'',
+														'unique'=>true,
+														'finderQuery'=>'',
+														'deleteQuery'=>''),
+								'Listepresence'=> array('classname'=>'Listepresence',
+														'joinTable'=>'agents_listepresences',
+														'foreignKey'=>'agent_id',
+														'associationForeignKey'=>'liste_id',
+														'conditions'=>'',
+														'order'=>'',
+														'limit'=>'',
+														'unique'=>true,
+														'finderQuery'=>'',
+														'deleteQuery'=>'')
+										);
+=======
 	var $hasAndBelongsToMany=array('Service'=>array('classname'=>'Service',
 													'joinTable'=>'agents_services',
 													'foreignKey'=>'agent_id',
@@ -57,5 +103,6 @@ class Agent extends AppModel {
 	
 	
 	
+>>>>>>> .r8
 }
 ?>
