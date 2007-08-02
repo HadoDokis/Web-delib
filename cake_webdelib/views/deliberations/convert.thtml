@@ -2,8 +2,21 @@
 
     vendor('fpdf/html2fpdf');
     $pdf = new HTML2FPDF();
+ 	
+ 	$pdf->AddPage();
+	$pdf->WriteHTML($rapporteur);
+	$pdf->Ln();
+	$pdf->WriteHTML($objet);
+	$pdf->Ln();
+	$pdf->WriteHTML($date_session);
+ 	$pdf->Ln();
+ 	
     $pdf->AddPage();
-	$pdf->WriteHTML($data);
+	$pdf->WriteHTML($text_projet);
+	
+	$pdf->AddPage();
+	$pdf->WriteHTML($text_synthese);
+		
 	$pdf->Output('doc.pdf','I');
      
 ?> 
