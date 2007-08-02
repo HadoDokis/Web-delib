@@ -2,6 +2,10 @@
 
 class UtilsComponent extends Object
 {
+	/**
+	 * Fonction utile pour l'affichage
+	 */
+	
 	function mysql_DateTime($d) { 
 		$date = substr($d,8,2)."/";        // jour 
   		$date = $date.substr($d,5,2)."/";  // mois 
@@ -26,6 +30,20 @@ class UtilsComponent extends Object
 		
 		return $this->formattedTime($decimal*3600);
 		
+	}
+	
+	
+	function FrDateToUkDate($dateFr)
+	{
+		if (empty($dateFr))
+		{
+			return null;
+		}
+		else
+		{
+		    $temp = explode('/', $dateFr);
+		    return($temp[2].'-'.$temp[1].'-'.$temp[0]);;
+		}
 	}
 	
 	/*
