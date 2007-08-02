@@ -24,6 +24,7 @@ foreach ($agents as $agent): ?>
 	<td><?php echo $agent['Agent']['login']; ?></td>
 	<td><?php echo $agent['Agent']['nom']; ?></td>
 	<td><?php echo $agent['Agent']['prenom']; ?></td>
+	<td><?php echo $agent['Agent']['date_naissance']; ?></td>
 	<td><?php echo $agent['Agent']['adresse']; ?></td>
 	<td><?php echo $agent['Agent']['CP']; ?></td>
 	<td><?php echo $agent['Agent']['ville']; ?></td>
