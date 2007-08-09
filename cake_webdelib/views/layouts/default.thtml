@@ -11,7 +11,7 @@
 	<div id="header">WebDelib</div>
 	<div id="gauche">
 	<?php echo $this->renderElement('adminMenuGauche'); ?>
-		
+		<li><a href="<?php echo $html->url('/agents/logout'); ?>" >Deconnexion</a></li>
 	</div>
 
 	<div id="centre">
