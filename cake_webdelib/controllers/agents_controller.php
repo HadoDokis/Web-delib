@@ -81,6 +81,7 @@ class AgentsController extends AppController {
 			if (empty($this->data['Profil'])) { $this->data['Profil'] = null; }
 			$this->set('selectedProfils', $this->_selectedArray($this->data['Profil']));
 		} else {
+			$this->data['Agent']['password']=md5($this->data['Agent']['password']);
 			$this->cleanUpFields();
 			if ($this->Agent->save($this->data)) {
 				$this->Session->setFlash('The Agent has been saved');
@@ -124,6 +125,40 @@ class AgentsController extends AppController {
 	    $fields = "prenom";
 	    $dataValeur = $this->Agent->findAll($condition, $fields);
 	   	return $dataValeur['0'] ['Agent']['prenom'];
+	}
+	
+function login()
+	{
+		//pas de message d'erreur
+		$this->set('errorMsg',"");
+		
+		//si le formulaire d'authentification a été soumis
+		if (!empty($this->data))
+		{
+			//cherche si utilisateur enregistré possede ce login
+			$agent = $this->Agent->findByLogin($this->data['Agent']['login']);
+			
+			//si le mdp n'est pas vide et correspond a celui de la bdd
+			if (!empty($agent['Agent']['password']) && ($agent['Agent']['password'] == md5($this->data['Agent']['password']))) 
+			{
+				//on stocke l'utilisateur en session
+				$this->Session->write('agent',$this->data['Agent']);
+				$this->redirect('/agents');
+			}
+			else
+			{
+				//sinon on prépare le message d'erreur a afficher dans la vue
+				$this->set('errorMsg','Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
+			}
+		}
+	}
+	
+	function logout()
+	{
+		//on supprime les infos utilisateur de la session
+		$this->Session->delete('agent');
+		$this->redirect('/agents/login');
+		
 	}
 }
 ?>
