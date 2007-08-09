@@ -44,7 +44,7 @@ class AppController extends Controller {
 	
 	function checkSession()
 	{
-   	    if($_SERVER['REQUEST_URI'] != '/cakeworkspace/cake_webdelib/agents/login')
+   	    if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/agents/login')
 		{
 			//s'il n'y a pas d'utilisateur connecté en session
 			if (!$this->Session->Check('agent'))
