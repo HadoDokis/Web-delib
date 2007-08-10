@@ -20,7 +20,7 @@ class DeliberationsController extends AppController {
 	function add() {
 		if (empty($this->data)) {
 			$this->set('services', $this->Deliberation->Service->generateList());
-			$this->set('themes', $this->Deliberation->Theme->generateList());
+			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
 			$this->set('agents', $this->Deliberation->Agent->generateList());
 			$this->render();
