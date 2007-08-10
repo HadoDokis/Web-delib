@@ -3,6 +3,7 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf' );
+	var $uses = array('Deliberation', 'AgentsCircuit');
 	
 	function index() {
 		$this->Deliberation->recursive = 0;
@@ -44,9 +45,11 @@ class DeliberationsController extends AppController {
 	{
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
-		} else {
+		} else {//debug($this->data);
+			$this->data['Deliberation']['id']=$id;
 			if ($this->Deliberation->save($this->data)) {
-				$this->redirect('/deliberations/index');
+				$this->redirect('/deliberations/attribuercircuit/'.$id);
+				//$this->redirect('/deliberations/index');
 			} else {
 				$this->Session->setFlash('Please correct errors below.');
 			}
@@ -57,7 +60,11 @@ class DeliberationsController extends AppController {
 	{
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
+			//debug($this->data); 
 		} else {
+			
+			$this->data['Deliberation']['id']=$id;
+			//debug($this->data);
 			if ($this->Deliberation->save($this->data)) {
 				$this->redirect('/deliberations/textsynthese/'.$id);
 			} else {
@@ -135,5 +142,61 @@ class DeliberationsController extends AppController {
   
             $this->render();
         } 
+        
+	function attribuercircuit ($id = null, $circuit_id=null)
+	{
+		if (empty($this->data)) {
+			$this->data = $this->Deliberation->read(null, $id);
+			$this->set('lastPosition', '-1');
+			$listeAgents['id']=array();
+			$listeAgents['nom']=array();
+			$listeAgents['prenom']=array();
+			$listeAgentCircuit['id']=array();
+	       	$listeAgentCircuit['circuit_id']=array();
+	       	$listeAgentCircuit['libelle']=array();
+	       	$listeAgentCircuit['agent_id']=array();
+	       	$listeAgentCircuit['nom']=array();
+	       	$listeAgentCircuit['prenom']=array();
+	       	$listeAgentCircuit['service_id']=array();
+	       	$listeAgentCircuit['position']=array();
+	       	$listeAgentCircuit['service_libelle']=array();
+			$circuits=$this->Deliberation->Circuit->generateList(null, "libelle ASC");
+		
+			//affichage du circuit existant
+			if (isset($circuit_id)){	
+			    $this->set('circuit_id', $circuit_id);
+			    $condition = "AgentsCircuit.circuit_id = $circuit_id";
+			    $desc = 'position ASC';
+		     
+    	   		$tmplisteAgentCircuit = $this->AgentsCircuit->findAll($condition, null, $desc);
+    	   		 
+    	   		for ($i=0; $i<count($tmplisteAgentCircuit);$i++) {
+    	   			array_push($listeAgentCircuit['id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['id']);
+    	   			array_push($listeAgentCircuit['circuit_id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['circuit_id']);
+    	   			array_push($listeAgentCircuit['libelle'], $tmplisteAgentCircuit[$i]['Circuit']['libelle']);
+    	   			array_push($listeAgentCircuit['agent_id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['agent_id']);
+    	   			array_push($listeAgentCircuit['nom'], $tmplisteAgentCircuit[$i]['Agent']['nom']);
+    	   			array_push($listeAgentCircuit['prenom'], $tmplisteAgentCircuit[$i]['Agent']['prenom']);
+    	   			array_push($listeAgentCircuit['service_libelle'], $tmplisteAgentCircuit[$i]['Service']['libelle']);
+    	   			array_push($listeAgentCircuit['service_id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['service_id']);
+    	   			array_push($listeAgentCircuit['position'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['position']);
+    	   		}
+				 
+  				$this->set('listeAgentCircuit', $listeAgentCircuit);
+  					
+			}
+			else 
+				$this->set('circuit_id', '0');
+			
+			$this->set('circuits', $circuits);
+				} else {
+				$this->data['Deliberation']['id']=$id;
+				if ($this->Deliberation->save($this->data)) {
+					$this->redirect('/deliberations/index');
+				} else {
+				$this->Session->setFlash('Please correct errors below.');
+			}
+		}	
+	}
 }
 ?>
