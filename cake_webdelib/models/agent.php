@@ -11,7 +11,11 @@ class Agent extends AppModel {
 
 	var $recursive = 2;
 	var $displayField="nom";
-
+	var $belongsTo=array('Profil'=>array('className'=>'Profil', 
+											'conditions'=>'', 
+											'order'=>'',
+											'dependent'=>false, 
+											'foreignKey'=>'profil_id'));
 	var $hasAndBelongsToMany = array('Service' => array('classname'=>'Service',
 														'joinTable'=>'agents_services',
 														'foreignKey'=>'agent_id',
@@ -36,16 +40,7 @@ class Agent extends AppModel {
 														'finderQuery' => '',
 														'deleteQuery' => '',
 														'insertQuery' => ''),		
-								  	'Profil' => array('classname'=>'Profil',
-														'joinTable'=>'agents_profils',
-														'foreignKey'=>'agent_id',
-														'associationForeignKey'=>'profil_id',
-														'conditions'=>'',
-														'order'=>'',
-														'limit'=>'',
-														'unique'=>true,
-														'finderQuery'=>'',
-														'deleteQuery'=>''),
+								  	
 								'Listepresence'=> array('classname'=>'Listepresence',
 														'joinTable'=>'agents_listepresences',
 														'foreignKey'=>'agent_id',
