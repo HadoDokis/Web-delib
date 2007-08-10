@@ -3,11 +3,11 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Serveur: localhost
--- GÃ©nÃ©rÃ© le : Jeudi 02 AoÃ»t 2007 Ã  17:23
+-- Généré le : Vendredi 10 Août 2007 à 10:09
 -- Version du serveur: 4.1.11
 -- Version de PHP: 5.2.0-8+etch3~bpo.1
 -- 
--- Base de donnÃ©es: `webdelib`
+-- Base de données: `webdelib`
 -- 
 
 -- --------------------------------------------------------
@@ -31,7 +31,7 @@ CREATE TABLE `agents` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 -- --------------------------------------------------------
 
@@ -45,8 +45,6 @@ CREATE TABLE `agents_circuits` (
   `circuit_id` int(11) NOT NULL default '0',
   `service_id` int(11) NOT NULL default '0',
   `position` int(11) NOT NULL default '0',
-  `created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
@@ -59,8 +57,6 @@ CREATE TABLE `agents_circuits` (
 CREATE TABLE `agents_listepresences` (
   `agent_id` int(11) NOT NULL default '0',
   `liste_id` int(11) NOT NULL default '0',
-  `created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`agent_id`,`liste_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -73,8 +69,6 @@ CREATE TABLE `agents_listepresences` (
 CREATE TABLE `agents_profils` (
   `agent_id` int(11) NOT NULL default '0',
   `profil_id` int(11) NOT NULL default '0',
-  `created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`agent_id`,`profil_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -87,8 +81,6 @@ CREATE TABLE `agents_profils` (
 CREATE TABLE `agents_services` (
   `agent_id` int(11) NOT NULL default '0',
   `service_id` int(11) NOT NULL default '0',
-  `created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`agent_id`,`service_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -118,10 +110,8 @@ CREATE TABLE `annexes` (
 CREATE TABLE `circuits` (
   `id` int(11) NOT NULL auto_increment,
   `libelle` varchar(50) NOT NULL default '',
-  `created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
@@ -154,7 +144,6 @@ CREATE TABLE `deliberations` (
   `historique_id` int(11) NOT NULL default '0',
   `agent_id` int(11) NOT NULL default '0',
   `rapporteur` int(11) NOT NULL default '0',
-  `date_creation` datetime NOT NULL default '0000-00-00 00:00:00',
   `date_session` datetime NOT NULL default '0000-00-00 00:00:00',
   `objet` varchar(100) NOT NULL default '',
   `titre` varchar(100) NOT NULL default '',
@@ -165,21 +154,7 @@ CREATE TABLE `deliberations` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
--- 
--- Structure de la table `deliberations_motcles`
--- 
-
-CREATE TABLE `deliberations_motcles` (
-  `delib_id` int(11) NOT NULL default '0',
-  `mot_cle_id` int(11) NOT NULL default '0',
-  `created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modified` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`delib_id`,`mot_cle_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 -- --------------------------------------------------------
 
@@ -190,8 +165,6 @@ CREATE TABLE `deliberations_motcles` (
 CREATE TABLE `deliberations_odjs` (
   `delib_id` int(11) NOT NULL default '0',
   `odj_id` int(11) NOT NULL default '0',
-  `created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`delib_id`,`odj_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -223,20 +196,6 @@ CREATE TABLE `historiques` (
 
 CREATE TABLE `listepresences` (
   `id` int(11) NOT NULL auto_increment,
-  `created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modified` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
--- 
--- Structure de la table `motcles`
--- 
-
-CREATE TABLE `motcles` (
-  `id` int(11) NOT NULL auto_increment,
-  `mot` varchar(30) NOT NULL default '',
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
@@ -385,3 +344,4 @@ CREATE TABLE `votes` (
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+        
