@@ -15,12 +15,14 @@ class FckHelper extends Helper
 			$did .= ucfirst($v);
 			
 		}
+		$url = 'http://'.$_SERVER['HTTP_HOST'].$this->base.'/js/';
+
 
         return <<<FCK_CODE
 <script type="text/javascript">
 fckLoader_$did = function () {
     var bFCKeditor_$did = new FCKeditor('$id');
-    bFCKeditor_$did.BasePath = 'http://francois/cake/js/';
+    bFCKeditor_$did.BasePath = '$url';
     bFCKeditor_$did.ToolbarSet = '$toolbar';
     bFCKeditor_$did.ReplaceTextarea();
 }
