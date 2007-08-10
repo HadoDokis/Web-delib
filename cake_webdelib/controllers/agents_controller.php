@@ -38,7 +38,7 @@ class AgentsController extends AppController {
 			$this->set('selectedProfils', null);
 			$this->render();
 		} else {
-			$this->data['Agent']['password']=hash('md5',$this->data['Agent']['password']);
+			$this->data['Agent']['password']=Security::hash($this->data['Agent']['password'],'md5');
 			$this->cleanUpFields();
 			if ($this->Agent->save($this->data)) {
 				$this->Session->setFlash('The Agent has been saved');
