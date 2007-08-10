@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Serveur: localhost
--- Généré le : Vendredi 10 Août 2007 à 10:09
+-- Généré le : Vendredi 10 Août 2007 à 11:06
 -- Version du serveur: 4.1.11
 -- Version de PHP: 5.2.0-8+etch3~bpo.1
 -- 
@@ -18,6 +18,7 @@
 
 CREATE TABLE `agents` (
   `id` int(11) NOT NULL auto_increment,
+  `profil_id` int(11) NOT NULL default '0',
   `login` varchar(50) NOT NULL default '',
   `password` varchar(100) NOT NULL default '',
   `nom` varchar(50) NOT NULL default '',
@@ -31,7 +32,7 @@ CREATE TABLE `agents` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -46,7 +47,7 @@ CREATE TABLE `agents_circuits` (
   `service_id` int(11) NOT NULL default '0',
   `position` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -58,18 +59,6 @@ CREATE TABLE `agents_listepresences` (
   `agent_id` int(11) NOT NULL default '0',
   `liste_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`agent_id`,`liste_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
--- 
--- Structure de la table `agents_profils`
--- 
-
-CREATE TABLE `agents_profils` (
-  `agent_id` int(11) NOT NULL default '0',
-  `profil_id` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`agent_id`,`profil_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -99,7 +88,7 @@ CREATE TABLE `annexes` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -111,7 +100,7 @@ CREATE TABLE `circuits` (
   `id` int(11) NOT NULL auto_increment,
   `libelle` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -127,7 +116,7 @@ CREATE TABLE `commentaires` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -154,7 +143,7 @@ CREATE TABLE `deliberations` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -186,7 +175,7 @@ CREATE TABLE `historiques` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -199,7 +188,7 @@ CREATE TABLE `listepresences` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -213,7 +202,7 @@ CREATE TABLE `odjs` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -227,7 +216,7 @@ CREATE TABLE `profils` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -242,7 +231,7 @@ CREATE TABLE `pvcomplets` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -257,7 +246,7 @@ CREATE TABLE `pvsommaires` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -271,7 +260,7 @@ CREATE TABLE `refannexes` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -285,7 +274,7 @@ CREATE TABLE `seances` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -299,7 +288,7 @@ CREATE TABLE `services` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -313,7 +302,7 @@ CREATE TABLE `themes` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -327,7 +316,7 @@ CREATE TABLE `typeseances` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -343,5 +332,5 @@ CREATE TABLE `votes` (
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
         
