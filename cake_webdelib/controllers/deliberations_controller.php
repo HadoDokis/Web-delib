@@ -3,7 +3,7 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf' );
-	var $uses = array('Deliberation', 'AgentsCircuit');
+	var $uses = array('Deliberation', 'AgentsCircuit', 'Traitement', 'Agent', 'Circuit');
 	
 	function index() {
 		$this->Deliberation->recursive = 0;
@@ -27,7 +27,9 @@ class DeliberationsController extends AppController {
 			$this->render();
 		} else {
 			$this->data['Deliberation']['date_session']= $this->Utils->FrDateToUkDate($this->params['form']['date_session']);
-		
+			$agent=$this->Session->read('agent');
+			debug($agent);
+			$this->data['Deliberation']['redacteur_id']=$agent['Agent']['id'];
 			$this->cleanUpFields();
 			if ($this->Deliberation->save($this->data)) {
 				$this->redirect('/deliberations/textprojet/'.$this->Deliberation->getLastInsertId());
@@ -137,7 +139,7 @@ class DeliberationsController extends AppController {
             $this->set('text_projet',  $this->getField($id, 'texte_projet'));
             $this->set('text_synthese',$this->getField($id, 'texte_synthese'));
             $this->set('date_session', $this->getField($id, 'date_session'));
-            $this->set('rapporteur',   $this->getField($id, 'rapporteur'));
+            $this->set('rapporteur_id',   $this->getField($id, 'rapporteur_id'));
             $this->set('objet',        $this->getField($id, 'objet'));
   
             $this->render();
@@ -183,20 +185,71 @@ class DeliberationsController extends AppController {
     	   		}
 				 
   				$this->set('listeAgentCircuit', $listeAgentCircuit);
-  					
-			}
+  			}
 			else 
 				$this->set('circuit_id', '0');
 			
 			$this->set('circuits', $circuits);
 				} else {
 				$this->data['Deliberation']['id']=$id;
+				//$this->data['']
 				if ($this->Deliberation->save($this->data)) {
+					
+
+					//enregistrement dans la table traitements
+					// TODO Voir comment améliorer ce point (associations cakephp).
+					$this->data['Traitement']['delib_id']=$id;
+					$this->data['Traitement']['circuit_id']=$circuit_id;
+					$this->data['Traitement']['position']='1';
+					$this->Traitement->save($this->data['Traitement']);
+										
+					
 					$this->redirect('/deliberations/index');
 				} else {
 				$this->Session->setFlash('Please correct errors below.');
 			}
 		}	
 	}
+	
+	
+	function traiter($id = null, $valid=null) {
+		if (!$id) {
+			$this->Session->setFlash('Invalid id for Deliberation.');
+			$this->redirect('/deliberations/index');
+		}
+		else
+		{
+			if ($valid==null)
+			{
+				
+				$this->set('deliberation', $this->Deliberation->read(null, $id));
+				debug($this);
+			}
+			else
+			{
+				if ($valid=='1') 
+				{
+					//on a validé le projet, il passe à la personne suivante
+					$tab=$this->Traitement->findAll("delib_id = $id");
+					$lastpos=count($tab)-1;
+					
+					$this->data['Traitement']['position']=$tab[$lastpos]['Traitement']['position']+1;
+					$circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
+					$this->data['Traitement']['delib_id']=$id;
+					$this->data['Traitement']['circuit_id']=$circuit_id;
+					//debug($this->data['Traitement']);
+					$this->Traitement->save($this->data['Traitement']);
+					$this->redirect('/deliberations/index');
+				}
+				else
+				{	
+					//on a refusé le projet, il repars au redacteur
+					
+				}
+			}
+		}
+	}
+
+	
 }
 ?>
