@@ -1,16 +1,16 @@
-<h2>Edit Service</h2>
+<h2>Modification d'un service</h2>
 <form action="<?php echo $html->url('/services/edit/'.$html->tagValue('Service/id')); ?>" method="post">
 <div class="optional"> 
 	<?php echo $form->labelTag('Service/libelle', 'Libelle');?>
  	<?php echo $html->input('Service/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Service/libelle', 'Please enter the Libelle.');?>
+	<?php echo $html->tagErrorMsg('Service/libelle', 'Entrer le libelle.');?>
 </div>
 <?php echo $html->hidden('Service/id')?>
 <div class="submit">
-	<?php echo $html->submit('Save');?>
+	<?php echo $html->submit('Enregistrer');?>
 </div>
 </form>
 <ul class="actions">
-<li><?php echo $html->link('Delete','/services/delete/' . $html->tagValue('Service/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Service/id'));?>
-<li><?php echo $html->link('List Services', '/services/index')?></li>
+<li><?php echo $html->link('Supprimer','/services/delete/' . $html->tagValue('Service/id'), null, 'Etes vous sur de vouloir supprimer le service "' . $html->tagValue('Service/libelle').'" ?');?>
+<li><?php echo $html->link('Annuler', '/services/index')?></li>
 </ul>
