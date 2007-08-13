@@ -1,14 +1,14 @@
-<h2>New Profil</h2>
+<h2>Ajout d'un profil</h2>
 <form action="<?php echo $html->url('/profils/add'); ?>" method="post">
 <div class="optional"> 
 	<?php echo $form->labelTag('Profil/libelle', 'Libelle');?>
  	<?php echo $html->input('Profil/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Profil/libelle', 'Please enter the Libelle.');?>
+	<?php echo $html->tagErrorMsg('Profil/libelle', 'Entrer le libelle.');?>
 </div>
 <div class="submit">
-	<?php echo $html->submit('Add');?>
+	<?php echo $html->submit('Ajouter');?>
 </div>
 </form>
 <ul class="actions">
-<li><?php echo $html->link('List Profils', '/profils/index')?></li>
+<li><?php echo $html->link('Annuler', '/profils/index')?></li>
 </ul>
