@@ -6,16 +6,16 @@
 	<dd>&nbsp;<?php echo $circuit['Circuit']['id']?></dd>
 	<dt>Libelle</dt>
 	<dd>&nbsp;<?php echo $circuit['Circuit']['libelle']?></dd>
-	<dt>Created</dt>
+	<dt>Date creation</dt>
 	<dd>&nbsp;<?php echo $circuit['Circuit']['created']?></dd>
-	<dt>Modified</dt>
+	<dt>Date modification</dt>
 	<dd>&nbsp;<?php echo $circuit['Circuit']['modified']?></dd>
 </dl>
 <ul class="actions">
-	<li><?php echo $html->link('Edit Circuit',   '/circuits/edit/' . $circuit['Circuit']['id']) ?> </li>
-	<li><?php echo $html->link('Delete Circuit', '/circuits/delete/' . $circuit['Circuit']['id'], null, 'Are you sure you want to delete: id ' . $circuit['Circuit']['id'] . '?') ?> </li>
-	<li><?php echo $html->link('List Circuits',   '/circuits/index') ?> </li>
-	<li><?php echo $html->link('New Circuit',	'/circuits/add') ?> </li>
+	<li><?php echo $html->link('Modifier le circuit',   '/circuits/edit/' . $circuit['Circuit']['id']) ?> </li>
+	<li><?php echo $html->link('Supprimer le circuit', '/circuits/delete/' . $circuit['Circuit']['id'], null, 'Are you sure you want to delete: id ' . $circuit['Circuit']['id'] . '?') ?> </li>
+	<li><?php echo $html->link('Annuler',   '/circuits/index') ?> </li>
+	<li><?php echo $html->link('Ajouter un circuit',	'/circuits/add') ?> </li>
 </ul>
 
 </div>

@@ -1,5 +1,5 @@
 <?php echo $javascript->link('fonctions'); ?>
-<h2>New Circuit</h2>
+<h2>Nouveau circuit</h2>
 <?php
 	$loc=$html->url("/circuits/index/");
     echo $html->selectTag('Circuit/libelle', $circuits, $circuit_id, array("onChange"=>"lister_circuits(this, '$loc');"), null, true);
