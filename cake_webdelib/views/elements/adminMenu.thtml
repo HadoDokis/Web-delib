@@ -26,7 +26,7 @@
 			<dd id="smenu1" onmouseover="javascript:montre('smenu1');" onmouseout="javascript:montre('');">
 				<ul>
 					<li><a href="# <?php //echo $html->url('/');?>">Consulter les futures sessions</a></li>
-					<li><a href="#"<?php //echo $html->url('/');?>>Consulter les anciennes sessions</a></li>
+					<li><a href="# <?php //echo $html->url('/');?>">Consulter les anciennes sessions</a></li>
 					<li><a href="# <?php //echo $html->url('/');?>">Nouvelle session</a></li>
 					<li><a href="# <?php //echo $html->url('/');?>">Calendrier</a></li>
 
