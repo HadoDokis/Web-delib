@@ -1,0 +1,14 @@
+<h2>New Theme</h2>
+<form action="<?php echo $html->url('/themes/add'); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Theme/libelle', 'Libelle');?>
+ 	<?php echo $html->input('Theme/libelle', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Theme/libelle', 'Please enter the Libelle.');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Add');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('List Themes', '/themes/index')?></li>
+</ul>

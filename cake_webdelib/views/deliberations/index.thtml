@@ -1,0 +1,45 @@
+<div class="deliberations">
+<h2>List Deliberations</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Theme</th>
+	<th>Rapporteur</th>
+	<th>Date Session</th>
+	<th>Objet</th>
+	<th>Titre</th>
+	<th>Num Delib</th>
+	<th>Texte Projet</th>
+	<th>Texte Synthese</th>
+	<th>Created</th>
+	<th>Modified</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($deliberations as $deliberation): ?>
+<tr>
+	<td>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?></td>
+	<td><?php echo $deliberation['Deliberation']['rapporteur']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['date_session']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['texte_projet']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['texte_synthese']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['created']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['modified']; ?></td>
+	<td class="actions">
+		<?php echo $html->link('View','/deliberations/view/' . $deliberation['Deliberation']['id'])?><br />
+		<?php echo $html->link('Edit','/deliberations/edit/' . $deliberation['Deliberation']['id'])?><br />
+		<?php echo $html->link('PDF','/deliberations/convert/' . $deliberation['Deliberation']['id'])?><br />
+		<?php echo $html->link('Projet','/deliberations/textprojet/' . $deliberation['Deliberation']['id'])?><br />
+		<?php echo $html->link('Synthese','/deliberations/textsynthese/' . $deliberation['Deliberation']['id'])?><br />
+		<?php echo $html->link('Delete','/deliberations/delete/' . $deliberation['Deliberation']['id'], null, 'Are you sure you want to delete id ' . $deliberation['Deliberation']['id'])?><br />
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Deliberation', '/deliberations/add'); ?></li>
+</ul>
+</div>

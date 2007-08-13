@@ -1,0 +1,21 @@
+<div class="theme">
+<h2>View Theme</h2>
+
+<dl>
+	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $theme['Theme']['id']?></dd>
+	<dt>Libelle</dt>
+	<dd>&nbsp;<?php echo $theme['Theme']['libelle']?></dd>
+	<dt>Created</dt>
+	<dd>&nbsp;<?php echo $theme['Theme']['created']?></dd>
+	<dt>Modified</dt>
+	<dd>&nbsp;<?php echo $theme['Theme']['modified']?></dd>
+</dl>
+<ul class="actions">
+	<li><?php echo $html->link('Edit Theme',   '/themes/edit/' . $theme['Theme']['id']) ?> </li>
+	<li><?php echo $html->link('Delete Theme', '/themes/delete/' . $theme['Theme']['id'], null, 'Are you sure you want to delete: id ' . $theme['Theme']['id'] . '?') ?> </li>
+	<li><?php echo $html->link('List Themes',   '/themes/index') ?> </li>
+	<li><?php echo $html->link('New Theme',	'/themes/add') ?> </li>
+</ul>
+
+</div>

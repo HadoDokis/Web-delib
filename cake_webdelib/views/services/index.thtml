@@ -1,0 +1,30 @@
+<div class="services">
+<h2>List Services</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Id</th>
+	<th>Libelle</th>
+	<th>Created</th>
+	<th>Modified</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($data as $service): ?>
+<tr>
+	<td><?php echo $service['Service']['id']; ?></td>
+	<td><?php echo $service['Service']['libelle']; ?></td>
+	<td><?php echo $service['Service']['created']; ?></td>
+	<td><?php echo $service['Service']['modified']; ?></td>
+	<td class="actions">
+		<?php echo $html->link('View','/services/view/' . $service['Service']['id'])?>
+		<?php echo $html->link('Edit','/services/edit/' . $service['Service']['id'])?>
+		<?php echo $html->link('Delete','/services/delete/' . $service['Service']['id'], null, 'Are you sure you want to delete id ' . $service['Service']['libelle'])?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Service', '/services/add'); ?></li>
+</ul>
+</div>

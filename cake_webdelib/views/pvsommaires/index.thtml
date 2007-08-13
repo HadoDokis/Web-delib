@@ -1,0 +1,32 @@
+<div class="pvsommaires">
+<h2>List Pvsommaires</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Id</th>
+	<th>Seance Id</th>
+	<th>Chemin</th>
+	<th>Created</th>
+	<th>Modified</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($pvsommaires as $pvsommaire): ?>
+<tr>
+	<td><?php echo $pvsommaire['Pvsommaire']['id']; ?></td>
+	<td><?php echo $pvsommaire['Pvsommaire']['seance_id']; ?></td>
+	<td><?php echo $pvsommaire['Pvsommaire']['chemin']; ?></td>
+	<td><?php echo $pvsommaire['Pvsommaire']['created']; ?></td>
+	<td><?php echo $pvsommaire['Pvsommaire']['modified']; ?></td>
+	<td class="actions">
+		<?php echo $html->link('View','/pvsommaires/view/' . $pvsommaire['Pvsommaire']['id'])?>
+		<?php echo $html->link('Edit','/pvsommaires/edit/' . $pvsommaire['Pvsommaire']['id'])?>
+		<?php echo $html->link('Delete','/pvsommaires/delete/' . $pvsommaire['Pvsommaire']['id'], null, 'Are you sure you want to delete id ' . $pvsommaire['Pvsommaire']['id'])?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Pvsommaire', '/pvsommaires/add'); ?></li>
+</ul>
+</div>

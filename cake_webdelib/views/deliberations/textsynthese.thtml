@@ -1,0 +1,12 @@
+<?php echo $javascript->link('fckeditor'); ?> 
+<?php echo $html->formTag('/deliberations/textsynthese/'.$html->tagValue('Deliberation/id')); ?>
+Texte Synthèse : 
+<div class="optional">
+    <?php echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Deliberation][texte_synthese]'); ?>
+    <?php echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Please enter the Body.');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Terminer');?>
+</div>
+</form>

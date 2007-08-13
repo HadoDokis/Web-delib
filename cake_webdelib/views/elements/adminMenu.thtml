@@ -1,0 +1,80 @@
+<div id="menu">
+	<dl>
+		<dt onmouseover="javascript:montre();" ><a href="<?php echo $html->url('/conseils/accueil');?>" title="Retour à l'accueil">Accueil</a></dt>
+	</dl>
+	
+	<!--  
+	<dl>
+		<dt onmouseover="javascript:montre();"><a href="#" title="recherche">Recherche</a></dt>
+	</dl>
+	-->
+	
+	<dl>	
+		<dt onmouseover="javascript:montre('smenu2');" >Projets</dt>
+			<dd id="smenu2" onmouseover="javascript:montre('smenu2');" onmouseout="javascript:montre('');">
+				<ul>
+					<li><a href="# <?php //echo $html->url('/');?>">Mes Projets</a></li>
+					<li><a href="<?php echo $html->url('/deliberations/add');?>">Cr&eacute;er un projet</a></li>
+					<li><a href="# <?php //echo $html->url('/conseils/projet_attribue');?>">Projets attribu&eacute;s &agrave; une session</a></li>
+					<li><a href="# <?php //echo $html->url('/conseils/projet_non_attribue');?>">Projets non attribu&eacute;s &agrave; une session</a></li>
+				</ul>
+			</dd>
+	</dl>
+	
+	<dl>	
+		<dt onmouseover="javascript:montre('smenu1');" >S&eacute;ances</dt>
+			<dd id="smenu1" onmouseover="javascript:montre('smenu1');" onmouseout="javascript:montre('');">
+				<ul>
+					<li><a href="# <?php //echo $html->url('/');?>">Consulter les futures sessions</a></li>
+					<li><a href="#"<?php //echo $html->url('/');?>>Consulter les anciennes sessions</a></li>
+					<li><a href="# <?php //echo $html->url('/');?>">Nouvelle session</a></li>
+					<li><a href="# <?php //echo $html->url('/');?>">Calendrier</a></li>
+
+				</ul>
+			</dd>
+	</dl>
+	
+
+	<dl>	
+		<dt onmouseover="javascript:montre('smenu4');" >Gestion post-s&eacute;ance</dt>
+			<dd id="smenu4" onmouseover="javascript:montre('smenu4');" onmouseout="javascript:montre('');">
+				<ul>
+					<li><a href="#">Editions</a></li>
+					<li><a href="#">Publications</a></li>
+					<li><a href="#">Transmission au contr&ocirc;le de l&eacute;galit&eacute;</a></li>
+				</ul>
+			</dd>
+	</dl>
+	
+	
+	<dl>
+		<dt onmouseover="javascript:montre();"><a href="#" title="export GED">Export GED</a></dt>
+	</dl>
+	
+
+	<dl>
+		<dt onmouseover="javascript:montre('smenu5');" >Backoffice</dt>
+			<dd id="smenu5" onmouseover="javascript:montre('smenu5');" onmouseout="javascript:montre('');">
+				<ul>
+					<li><a href="<?php echo $html->url('/agents');?>">Agents</a></li>
+					<li><a href="<?php echo $html->url('/circuits');?>">Circuits</a></li>
+					<li><a href="<?php echo $html->url('/profils');?>">Profils</a></li>
+					<li><a href="<?php echo $html->url('/seances');?>">S&eacute;ances</a></li>
+					<li><a href="<?php echo $html->url('/services');?>">Services</a></li>			
+					<li><a href="<?php echo $html->url('/themes');?>">Th&egrave;mes</a></li>
+					<li><a href="<?php echo $html->url('/typeseances');?>">Types de s&eacute;ance</a></li>
+						
+				</ul>
+			</dd>
+	</dl>
+	
+	
+	<dl>
+		<dt onmouseover="javascript:montre();"><a href="<?php echo $html->url('/agents/logout'); ?>" title="Logout">Se deconnecter</a></dt>
+	</dl>
+	
+</div>	
+
+<br/>
+<br/>
+

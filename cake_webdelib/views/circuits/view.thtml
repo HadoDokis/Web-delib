@@ -1,0 +1,21 @@
+<div class="circuit">
+<h2>View Circuit</h2>
+
+<dl>
+	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $circuit['Circuit']['id']?></dd>
+	<dt>Libelle</dt>
+	<dd>&nbsp;<?php echo $circuit['Circuit']['libelle']?></dd>
+	<dt>Created</dt>
+	<dd>&nbsp;<?php echo $circuit['Circuit']['created']?></dd>
+	<dt>Modified</dt>
+	<dd>&nbsp;<?php echo $circuit['Circuit']['modified']?></dd>
+</dl>
+<ul class="actions">
+	<li><?php echo $html->link('Edit Circuit',   '/circuits/edit/' . $circuit['Circuit']['id']) ?> </li>
+	<li><?php echo $html->link('Delete Circuit', '/circuits/delete/' . $circuit['Circuit']['id'], null, 'Are you sure you want to delete: id ' . $circuit['Circuit']['id'] . '?') ?> </li>
+	<li><?php echo $html->link('List Circuits',   '/circuits/index') ?> </li>
+	<li><?php echo $html->link('New Circuit',	'/circuits/add') ?> </li>
+</ul>
+
+</div>

@@ -1,0 +1,14 @@
+<h2>New Service</h2>
+<form action="<?php echo $html->url('/services/add'); ?>" method="post">
+<div class="optional"> 
+	<?php echo $form->labelTag('Service/libelle', 'Libelle');?>
+ 	<?php echo $html->input('Service/libelle', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Service/libelle', 'Please enter the Libelle.');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Add');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('List Services', '/services/index')?></li>
+</ul>

@@ -1,0 +1,16 @@
+<h2>Edit Typeseance</h2>
+<form action="<?php echo $html->url('/typeseances/edit/'.$html->tagValue('Typeseance/id')); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Typeseance/libelle', 'Libelle');?>
+ 	<?php echo $html->input('Typeseance/libelle', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Typeseance/libelle', 'Please enter the Libelle.');?>
+</div>
+<?php echo $html->hidden('Typeseance/id')?>
+<div class="submit">
+	<?php echo $html->submit('Save');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('Delete','/typeseances/delete/' . $html->tagValue('Typeseance/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Typeseance/id'));?>
+<li><?php echo $html->link('List Typeseances', '/typeseances/index')?></li>
+</ul>

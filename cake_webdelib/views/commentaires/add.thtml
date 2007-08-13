@@ -1,0 +1,24 @@
+<h2>New Commentaire</h2>
+<form action="<?php echo $html->url('/commentaires/add'); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Commentaire/delib_id', 'Delib Id');?>
+ 	<?php echo $html->input('Commentaire/delib_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Commentaire/delib_id', 'Please enter the Delib Id.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag('Commentaire/agent_id', 'Agent Id');?>
+ 	<?php echo $html->input('Commentaire/agent_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Commentaire/agent_id', 'Please enter the Agent Id.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag('Commentaire/texte', 'Texte');?>
+ 	<?php echo $html->input('Commentaire/texte', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Commentaire/texte', 'Please enter the Texte.');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Add');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('List Commentaires', '/commentaires/index')?></li>
+</ul>

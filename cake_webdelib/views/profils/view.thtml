@@ -1,0 +1,21 @@
+<div class="profil">
+<h2>View Profil</h2>
+
+<dl>
+	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $profil['Profil']['id']?></dd>
+	<dt>Libelle</dt>
+	<dd>&nbsp;<?php echo $profil['Profil']['libelle']?></dd>
+	<dt>Created</dt>
+	<dd>&nbsp;<?php echo $profil['Profil']['created']?></dd>
+	<dt>Modified</dt>
+	<dd>&nbsp;<?php echo $profil['Profil']['modified']?></dd>
+</dl>
+<ul class="actions">
+	<li><?php echo $html->link('Edit Profil',   '/profils/edit/' . $profil['Profil']['id']) ?> </li>
+	<li><?php echo $html->link('Delete Profil', '/profils/delete/' . $profil['Profil']['id'], null, 'Are you sure you want to delete: id ' . $profil['Profil']['id'] . '?') ?> </li>
+	<li><?php echo $html->link('List Profils',   '/profils/index') ?> </li>
+	<li><?php echo $html->link('New Profil',	'/profils/add') ?> </li>
+</ul>
+
+</div>

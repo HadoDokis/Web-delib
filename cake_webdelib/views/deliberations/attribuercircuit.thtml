@@ -1,0 +1,62 @@
+<?php echo $javascript->link('fonctions'); ?>
+<h2>Attribuer le projet &agrave; un circuit</h2>
+<form action="<?php echo $html->url('/deliberations/attribuercircuit/'.$html->tagValue('Deliberation/id').'/'.$circuit_id); ?>" method="post">
+
+<?php
+	$loc=$html->url("/deliberations/attribuercircuit/".$html->tagValue('Deliberation/id')."/");
+    echo $html->selectTag('Deliberation/circuit_id', $circuits, $circuit_id, array("onChange"=>"lister_circuits(this, '$loc');"), null, true);
+    //echo " <a href=".$html->url("/circuits/add")."> Ajouter un circuit</a> ";
+   // if ($lastPosition ==0)
+   //     echo " <a href=".$html->url("/circuits/delete/$circuit_id")."> Supprimer ce circuit</a>";
+?>
+
+<!-- données concernant le circuit selectionné -->
+   <table>
+ <!--   <th>circuit_id</th>-->
+ <!--   <th>libelle </th>-->
+ <!--  <th>agent_id</th>-->
+ <!--   <th>service id </th>-->
+   <th>service libelle</th>
+   <th>prenom</th>
+   <th>nom </th>
+  <th>position</th>
+  <!--   <th>id agentcircuit</th>-->
+   <th>&nbsp;</th>
+   <th>&nbsp;</th>
+   <th>&nbsp;</th>
+   
+    <tr>
+	<?php 
+    
+	if (isset($listeAgentCircuit)) {
+		for ($i=0; $i<count($listeAgentCircuit['id']); $i++){
+	    	echo("<tr>");   
+	        //  echo("<td>".$listeAgentCircuit['circuit_id'][$i]."</td>");
+	       // echo("<td>".$listeAgentCircuit['libelle'][$i]."</td>");
+	       //  echo("<td>".$listeAgentCircuit['agent_id'][$i]."</td>");
+	        // echo("<td>".$listeAgentCircuit['service_id'][$i]."</td>");
+	        echo("<td>".$listeAgentCircuit['service_libelle'][$i]."</td>");
+	        echo("<td>".$listeAgentCircuit['prenom'][$i]."</td>");
+	        echo("<td>".$listeAgentCircuit['nom'][$i]."</td>");
+	        echo("<td>".$listeAgentCircuit['position'][$i]."</td>");
+	        //   echo("<td>".$listeAgentCircuit['id'][$i]."</td>");
+	        
+	        echo("</tr>");
+	    }
+	}
+	?>
+	</table>
+
+
+
+<br /><br /><br /><br />
+
+	</table>
+
+<br /><br /><br /><br />
+<div class="submit">
+	<?php echo $html->submit('Add');?>
+</div>
+</form>
+
+

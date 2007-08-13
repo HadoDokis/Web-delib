@@ -1,0 +1,21 @@
+<div class="service">
+<h2>View Service</h2>
+
+<dl>
+	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $service['Service']['id']?></dd>
+	<dt>Libelle</dt>
+	<dd>&nbsp;<?php echo $service['Service']['libelle']?></dd>
+	<dt>Created</dt>
+	<dd>&nbsp;<?php echo $service['Service']['created']?></dd>
+	<dt>Modified</dt>
+	<dd>&nbsp;<?php echo $service['Service']['modified']?></dd>
+</dl>
+<ul class="actions">
+	<li><?php echo $html->link('Edit Service',   '/services/edit/' . $service['Service']['id']) ?> </li>
+	<li><?php echo $html->link('Delete Service', '/services/delete/' . $service['Service']['id'], null, 'Are you sure you want to delete: id ' . $service['Service']['id'] . '?') ?> </li>
+	<li><?php echo $html->link('List Services',   '/services/index') ?> </li>
+	<li><?php echo $html->link('New Service',	'/services/add') ?> </li>
+</ul>
+
+</div>

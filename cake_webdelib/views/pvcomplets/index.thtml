@@ -1,0 +1,32 @@
+<div class="pvcomplets">
+<h2>List Pvcomplets</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Id</th>
+	<th>Seance Id</th>
+	<th>Chemin</th>
+	<th>Created</th>
+	<th>Modified</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($pvcomplets as $pvcomplet): ?>
+<tr>
+	<td><?php echo $pvcomplet['Pvcomplet']['id']; ?></td>
+	<td><?php echo $pvcomplet['Pvcomplet']['seance_id']; ?></td>
+	<td><?php echo $pvcomplet['Pvcomplet']['chemin']; ?></td>
+	<td><?php echo $pvcomplet['Pvcomplet']['created']; ?></td>
+	<td><?php echo $pvcomplet['Pvcomplet']['modified']; ?></td>
+	<td class="actions">
+		<?php echo $html->link('View','/pvcomplets/view/' . $pvcomplet['Pvcomplet']['id'])?>
+		<?php echo $html->link('Edit','/pvcomplets/edit/' . $pvcomplet['Pvcomplet']['id'])?>
+		<?php echo $html->link('Delete','/pvcomplets/delete/' . $pvcomplet['Pvcomplet']['id'], null, 'Are you sure you want to delete id ' . $pvcomplet['Pvcomplet']['id'])?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Pvcomplet', '/pvcomplets/add'); ?></li>
+</ul>
+</div>

@@ -1,0 +1,30 @@
+<div class="odjs">
+<h2>List Odjs</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Id</th>
+	<th>Seance Id</th>
+	<th>Created</th>
+	<th>Modified</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($odjs as $odj): ?>
+<tr>
+	<td><?php echo $odj['Odj']['id']; ?></td>
+	<td><?php echo $odj['Odj']['seance_id']; ?></td>
+	<td><?php echo $odj['Odj']['created']; ?></td>
+	<td><?php echo $odj['Odj']['modified']; ?></td>
+	<td class="actions">
+		<?php echo $html->link('View','/odjs/view/' . $odj['Odj']['id'])?>
+		<?php echo $html->link('Edit','/odjs/edit/' . $odj['Odj']['id'])?>
+		<?php echo $html->link('Delete','/odjs/delete/' . $odj['Odj']['id'], null, 'Are you sure you want to delete id ' . $odj['Odj']['id'])?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Odj', '/odjs/add'); ?></li>
+</ul>
+</div>

@@ -1,0 +1,26 @@
+<h2>Edit Commentaire</h2>
+<form action="<?php echo $html->url('/commentaires/edit/'.$html->tagValue('Commentaire/id')); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Commentaire/delib_id', 'Delib Id');?>
+ 	<?php echo $html->input('Commentaire/delib_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Commentaire/delib_id', 'Please enter the Delib Id.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag('Commentaire/agent_id', 'Agent Id');?>
+ 	<?php echo $html->input('Commentaire/agent_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Commentaire/agent_id', 'Please enter the Agent Id.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag('Commentaire/texte', 'Texte');?>
+ 	<?php echo $html->input('Commentaire/texte', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Commentaire/texte', 'Please enter the Texte.');?>
+</div>
+<?php echo $html->hidden('Commentaire/id')?>
+<div class="submit">
+	<?php echo $html->submit('Save');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('Delete','/commentaires/delete/' . $html->tagValue('Commentaire/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Commentaire/id'));?>
+<li><?php echo $html->link('List Commentaires', '/commentaires/index')?></li>
+</ul>
