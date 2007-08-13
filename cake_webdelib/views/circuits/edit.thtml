@@ -3,14 +3,14 @@
 <div class="required"> 
 	<?php echo $form->labelTag('Circuit/libelle', 'Libelle');?>
  	<?php echo $html->input('Circuit/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Circuit/libelle', 'Please enter the Libelle.');?>
+	<?php echo $html->tagErrorMsg('Circuit/libelle', 'Entrer le libelle.');?>
 </div>
 <?php echo $html->hidden('Circuit/id')?>
 <div class="submit">
-	<?php echo $html->submit('Save');?>
+	<?php echo $html->submit('Sauvegarder');?>
 </div>
 </form>
 <ul class="actions">
-<li><?php echo $html->link('Delete','/circuits/delete/' . $html->tagValue('Circuit/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Circuit/id'));?>
-<li><?php echo $html->link('List Circuits', '/circuits/index')?></li>
+<li><?php echo $html->link('Suppripmer','/circuits/delete/' . $html->tagValue('Circuit/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Circuit/id'));?>
+<li><?php echo $html->link('Annuler', '/circuits/index')?></li>
 </ul>

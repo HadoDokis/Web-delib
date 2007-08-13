@@ -1,14 +1,14 @@
-<h2>New Circuit</h2>
+<h2>Nouveau Circuit</h2>
 <form action="<?php echo $html->url('/circuits/add'); ?>" method="post">
 <div class="required"> 
 	<?php echo $form->labelTag('Circuit/libelle', 'Libelle');?>
  	<?php echo $html->input('Circuit/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Circuit/libelle', 'Please enter the Libelle.');?>
+	<?php echo $html->tagErrorMsg('Circuit/libelle', 'Entrer le libelle.');?>
 </div>
 <div class="submit">
-	<?php echo $html->submit('Add');?>
+	<?php echo $html->submit('Ajouter');?>
 </div>
 </form>
 <ul class="actions">
-<li><?php echo $html->link('List Circuits', '/circuits/index')?></li>
+<li><?php echo $html->link('Annuler', '/circuits/index')?></li>
 </ul>
