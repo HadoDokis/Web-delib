@@ -1,14 +1,14 @@
-<h2>New Typeseance</h2>
+<h2>Ajout Typeseance</h2>
 <form action="<?php echo $html->url('/typeseances/add'); ?>" method="post">
 <div class="required"> 
 	<?php echo $form->labelTag('Typeseance/libelle', 'Libelle');?>
  	<?php echo $html->input('Typeseance/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Typeseance/libelle', 'Please enter the Libelle.');?>
+	<?php echo $html->tagErrorMsg('Typeseance/libelle', 'Entrer le libelle.');?>
 </div>
 <div class="submit">
-	<?php echo $html->submit('Add');?>
+	<?php echo $html->submit('Ajouter');?>
 </div>
 </form>
 <ul class="actions">
-<li><?php echo $html->link('List Typeseances', '/typeseances/index')?></li>
+<li><?php echo $html->link('Annuler', '/typeseances/index')?></li>
 </ul>
