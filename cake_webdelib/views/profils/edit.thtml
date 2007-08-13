@@ -1,16 +1,16 @@
-<h2>Edit Profil</h2>
+<h2>Modification d'un profil</h2>
 <form action="<?php echo $html->url('/profils/edit/'.$html->tagValue('Profil/id')); ?>" method="post">
 <div class="optional"> 
 	<?php echo $form->labelTag('Profil/libelle', 'Libelle');?>
  	<?php echo $html->input('Profil/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Profil/libelle', 'Please enter the Libelle.');?>
+	<?php echo $html->tagErrorMsg('Profil/libelle', 'Entrer le libelle.');?>
 </div>
 <?php echo $html->hidden('Profil/id')?>
 <div class="submit">
-	<?php echo $html->submit('Save');?>
+	<?php echo $html->submit('Enregistrer');?>
 </div>
 </form>
 <ul class="actions">
-<li><?php echo $html->link('Delete','/profils/delete/' . $html->tagValue('Profil/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Profil/id'));?>
-<li><?php echo $html->link('List Profils', '/profils/index')?></li>
+<li><?php echo $html->link('Supprimer','/profils/delete/' . $html->tagValue('Profil/id'), null, 'Etes-vous sur de vouloir supprimer le profil "' . $html->tagValue('Profil/libelle').'" ?');?>
+<li><?php echo $html->link('Annuler', '/profils/index')?></li>
 </ul>

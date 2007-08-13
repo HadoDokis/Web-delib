@@ -1,12 +1,12 @@
 <div class="profils">
-<h2>List Profils</h2>
+<h2>Liste des profils</h2>
 
 <table cellpadding="0" cellspacing="0">
 <tr>
 	<th>Id</th>
 	<th>Libelle</th>
-	<th>Created</th>
-	<th>Modified</th>
+	<th>Date creation</th>
+	<th>Date modification</th>
 	<th>Actions</th>
 </tr>
 <?php foreach ($data as $profil): ?>
@@ -16,15 +16,15 @@
 	<td><?php echo $profil['Profil']['created']; ?></td>
 	<td><?php echo $profil['Profil']['modified']; ?></td>
 	<td class="actions">
-		<?php echo $html->link('View','/profils/view/' . $profil['Profil']['id'])?>
-		<?php echo $html->link('Edit','/profils/edit/' . $profil['Profil']['id'])?>
-		<?php echo $html->link('Delete','/profils/delete/' . $profil['Profil']['id'], null, 'Are you sure you want to delete id ' . $profil['Profil']['id'])?>
+		<?php echo $html->link('Voir','/profils/view/' . $profil['Profil']['id'])?>
+		<?php echo $html->link('Modifier','/profils/edit/' . $profil['Profil']['id'])?>
+		<?php echo $html->link('Supprimer','/profils/delete/' . $profil['Profil']['id'], null, 'Etes-vous sur de vouloir supprimer le profil "' . $profil['Profil']['libelle']. '" ?')?>
 	</td>
 </tr>
 <?php endforeach; ?>
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('New Profil', '/profils/add'); ?></li>
+	<li><?php echo $html->link('Ajouter un profil', '/profils/add'); ?></li>
 </ul>
 </div>
