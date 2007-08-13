@@ -11,9 +11,9 @@
 </div>
 
 <div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/rapporteur', 'Rapporteur');?>
- 	<?php echo $html->input('Deliberation/rapporteur', array('size' => '20'));?>
-	<?php echo $html->tagErrorMsg('Deliberation/rapporteur', 'Please enter the Rapporteur.');?>
+	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
+ 	<?php echo $html->input('Deliberation/rapporteur_id', array('size' => '20'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/rapporteur_id', 'Please enter the Rapporteur.');?>
 </div>
 
 <div class="optional"> 
