@@ -143,7 +143,7 @@ function login()
 			if (!empty($agent['Agent']['password']) && ($agent['Agent']['password'] == md5($this->data['Agent']['password']))) 
 			{
 				//on stocke l'utilisateur en session
-				$this->Session->write('agent',$this->data['Agent']);
+				$this->Session->write('agent',$agent);
 				$this->redirect('/agents');
 			}
 			else
