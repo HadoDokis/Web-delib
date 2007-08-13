@@ -18,11 +18,39 @@ class Deliberation extends AppModel {
 											'order'=>'',
 											'dependent'=>false, 
 											'foreignKey'=>'circuit_id'),
-						'Agent'=>array('className'=>'Agent', 
-											'conditions'=>'', 
-											'order'=>'',
-											'dependent'=>false, 
-											'foreignKey'=>'agent_id'));
+						'Redacteur' =>array('className'    => 'Agent',
+                              'conditions'   => '',
+                              'order'        => '',
+                              'dependent'    =>  true,
+                              'foreignKey'   => 'redacteur_id'
+                        ),
+                        'Rapporteur'=> array('className'    => 'Agent',
+                              'conditions'   => '',
+                              'order'        => '',
+                              'dependent'    =>  true,
+                              'foreignKey'   => 'rapporteur_id')
+						);
+	var $hasMany = array ('Traitement' => array('className'=>'Traitement',
+												'foreignKey' => 'delib_id'));
+												
+												
+//												
+//	var $hasOne = array('Redacteur' =>
+//                        array('className'    => 'Agent',
+//                              'conditions'   => '',
+//                              'order'        => '',
+//                              'dependent'    =>  true,
+//                              'foreignKey'   => 'redacteur_id'
+//                        ),
+//                              'Rapporteur'=>
+//                        array('className'    => 'Agent',
+//                              'conditions'   => '',
+//                              'order'        => '',
+//                              'dependent'    =>  true,
+//                              'foreignKey'   => 'rapporteur_id')
+//                            
+//                  );											
+//										
 											
 //	var $hasAndBelongsToMany=array('Agent'=>array('classname'=>'Agent',
 //													'joinTable'=>'agents_profils',
