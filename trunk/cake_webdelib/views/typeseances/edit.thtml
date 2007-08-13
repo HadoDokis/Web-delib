@@ -1,16 +1,16 @@
-<h2>Edit Typeseance</h2>
+<h2>Modification Typeseance</h2>
 <form action="<?php echo $html->url('/typeseances/edit/'.$html->tagValue('Typeseance/id')); ?>" method="post">
 <div class="required"> 
 	<?php echo $form->labelTag('Typeseance/libelle', 'Libelle');?>
  	<?php echo $html->input('Typeseance/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Typeseance/libelle', 'Please enter the Libelle.');?>
+	<?php echo $html->tagErrorMsg('Typeseance/libelle', 'Entrer le libelle.');?>
 </div>
 <?php echo $html->hidden('Typeseance/id')?>
 <div class="submit">
-	<?php echo $html->submit('Save');?>
+	<?php echo $html->submit('Sauvegarder');?>
 </div>
 </form>
 <ul class="actions">
-<li><?php echo $html->link('Delete','/typeseances/delete/' . $html->tagValue('Typeseance/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Typeseance/id'));?>
-<li><?php echo $html->link('List Typeseances', '/typeseances/index')?></li>
+<li><?php echo $html->link('Supprimer','/typeseances/delete/' . $html->tagValue('Typeseance/id'), null, 'Etes-vous sur de vouloir supprimer "' . $html->tagValue('Typeseance/libelle').'" ?');?>
+<li><?php echo $html->link('Annuler', '/typeseances/index')?></li>
 </ul>
