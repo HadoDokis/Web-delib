@@ -18,7 +18,7 @@
 <?php foreach ($deliberations as $deliberation): ?>
 <tr>
 	<td>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?></td>
-	<td><?php echo $deliberation['Deliberation']['rapporteur']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['rapporteur_id']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['date_session']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
@@ -34,6 +34,7 @@
 		<?php echo $html->link('Projet','/deliberations/textprojet/' . $deliberation['Deliberation']['id'])?><br />
 		<?php echo $html->link('Synthese','/deliberations/textsynthese/' . $deliberation['Deliberation']['id'])?><br />
 		<?php echo $html->link('Delete','/deliberations/delete/' . $deliberation['Deliberation']['id'], null, 'Are you sure you want to delete id ' . $deliberation['Deliberation']['id'])?><br />
+		<?php echo $html->link('Traiter','/deliberations/traiter/' . $deliberation['Deliberation']['id'])?><br />
 	</td>
 </tr>
 <?php endforeach; ?>

@@ -13,11 +13,9 @@
 	<dt>Vote Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>
 	<dt>Agent</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Agent']['nom'], '/agents/view/' .$deliberation['Agent']['id'])?></dd>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['nom'], '/agents/view/' .$deliberation['Redacteur']['id'])?></dd>
 	<dt>Rapporteur</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['rapporteur_id']?></dd>
-	<dt>Date Creation</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['date_creation']?></dd>
 	<dt>Date Session</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['date_session']?></dd>
 	<dt>Objet</dt>
@@ -39,17 +37,10 @@
 </dl>
 <ul class="actions">
 	<li><?php echo $html->link('Edit Deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
-	<li><?php echo $html->link('Delete Deliberation', '/deliberations/delete/' . $deliberation['Deliberation']['id'], null, 'Are you sure you want to delete: id ' . $deliberation['Deliberation']['id'] . '?') ?> </li>
 	<li><?php echo $html->link('List Deliberations',   '/deliberations/index') ?> </li>
-	<li><?php echo $html->link('New Deliberation',	'/deliberations/add') ?> </li>
-	<li><?php echo $html->link('List Circuit', '/circuits/index/')?> </li>
-	<li><?php echo $html->link('New Circuits', '/circuits/add/')?> </li>
-	<li><?php echo $html->link('List Theme', '/themes/index/')?> </li>
-	<li><?php echo $html->link('New Themes', '/themes/add/')?> </li>
-	<li><?php echo $html->link('List Service', '/services/index/')?> </li>
-	<li><?php echo $html->link('New Services', '/services/add/')?> </li>
-	<li><?php echo $html->link('List Agent', '/agents/index/')?> </li>
-	<li><?php echo $html->link('New Agents', '/agents/add/')?> </li>
+	<li><?php echo $html->link('Valider Deliberation',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/1') ?> </li>
+	<li><?php echo $html->link('Refuser Deliberation',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/0') ?> </li>
+
 </ul>
 
 </div>

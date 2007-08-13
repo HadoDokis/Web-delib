@@ -23,19 +23,14 @@
 	<?php echo $html->tagErrorMsg('Deliberation/vote_id', 'Please enter the Vote Id.');?>
 </div>
 <div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/historique_id', 'Historique Id');?>
- 	<?php echo $html->input('Deliberation/historique_id', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Deliberation/historique_id', 'Please enter the Historique Id.');?>
+	<?php echo $form->labelTag('Deliberation/redacteur_id', 'Agent');?>
+ 	<?php echo $html->selectTag('Deliberation/redacteur_id', $agents, $html->tagValue('Deliberation/agent_id'), array(), array(), true);?>
+	<?php echo $html->tagErrorMsg('Deliberation/redacteur_id', 'Please select the Agent.') ?>
 </div>
 <div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/agent_id', 'Agent');?>
- 	<?php echo $html->selectTag('Deliberation/agent_id', $agents, $html->tagValue('Deliberation/agent_id'), array(), array(), true);?>
-	<?php echo $html->tagErrorMsg('Deliberation/agent_id', 'Please select the Agent.') ?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/rapporteur', 'Rapporteur');?>
- 	<?php echo $html->input('Deliberation/rapporteur', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Deliberation/rapporteur', 'Please enter the Rapporteur.');?>
+	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
+ 	<?php echo $html->input('Deliberation/rapporteur_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Deliberation/rapporteur_id', 'Please enter the Rapporteur.');?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/date_creation', 'Date Creation');?>
