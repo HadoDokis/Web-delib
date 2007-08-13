@@ -3,44 +3,44 @@
 <div class="optional"> 
 	<?php echo $form->labelTag('Agent/login', 'Login');?>
  	<?php echo $html->input('Agent/login', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Agent/login', 'Please enter the Login.');?>
+	<?php echo $html->tagErrorMsg('Agent/login', 'Entrer le login.');?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Agent/password', 'Password');?>
  	<?php echo $html->input('Agent/password', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Agent/password', 'Please enter the Password.');?>
+	<?php echo $html->tagErrorMsg('Agent/password', 'Entrer le mot de paasse.');?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Agent/nom', 'Nom');?>
  	<?php echo $html->input('Agent/nom', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Agent/nom', 'Please enter the Nom.');?>
+	<?php echo $html->tagErrorMsg('Agent/nom', 'Entrer le nom.');?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Agent/prenom', 'Prenom');?>
  	<?php echo $html->input('Agent/prenom', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Agent/prenom', 'Please enter the Prenom.');?>
+	<?php echo $html->tagErrorMsg('Agent/prenom', 'Entrer le prenom.');?>
 </div>
 <div class="optional"> 
-	<?php echo $form->labelTag('Service/Service', 'Related Services');?>
+	<?php echo $form->labelTag('Service/Service', 'Service(s) associe(s)');?>
  	<?php echo $html->selectTag('Service/Service', $services, $selectedServices, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
-	<?php echo $html->tagErrorMsg('Service/Service', 'Please select the Related Services.');?>
+	<?php echo $html->tagErrorMsg('Service/Service', 'Entrer le(s) service(s) associé(s).');?>
 </div>
 <div class="optional"> 
-	<?php echo $form->labelTag('Circuit/Circuit', 'Related Circuits');?>
+	<?php echo $form->labelTag('Circuit/Circuit', 'Circuit(s) associe(s)');?>
  	<?php echo $html->selectTag('Circuit/Circuit', $circuits, $selectedCircuits, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
-	<?php echo $html->tagErrorMsg('Circuit/Circuit', 'Please select the Related Circuits.');?>
+	<?php echo $html->tagErrorMsg('Circuit/Circuit',  'Entrer le(s) circuit(s) associé(s).');?>
 </div>
 <div class="optional"> 
-	<?php echo $form->labelTag('Profil/Profil', 'Related Profils');?>
+	<?php echo $form->labelTag('Profil/Profil', 'Profil associe');?>
  	<?php echo $html->selectTag('Agent/profil_id', $profils, $html->tagValue('Agent/profil_id'), array(), array(), true);?>
-	<?php echo $html->tagErrorMsg('Profil/Profil', 'Please select the Related Profils.');?>
+	<?php echo $html->tagErrorMsg('Profil/Profil',  'Entrer le(s) profil(s) associé(s).');?>
 </div>
 <?php echo $html->hidden('Agent/id')?>
 <div class="submit">
-	<?php echo $html->submit('Save');?>
+	<?php echo $html->submit('Enregistrer');?>
 </div>
 </form>
 <ul class="actions">
-<li><?php echo $html->link('Delete','/agents/delete/' . $html->tagValue('Agent/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Agent/id'));?>
-<li><?php echo $html->link('List Agents', '/agents/index')?></li>
+<li><?php echo $html->link('Supprimer','/agents/delete/' . $html->tagValue('Agent/id'), null, 'Etes-vous sur de vouloir supprimer l\'agent "' . $html->tagValue('Agent/prenom').' '. $html->tagValue('Agent/nom').'" ?');?>
+<li><?php echo $html->link('Annuler', '/agents/index')?></li>
 </ul>
