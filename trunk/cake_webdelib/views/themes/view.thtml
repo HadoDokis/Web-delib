@@ -6,16 +6,16 @@
 	<dd>&nbsp;<?php echo $theme['Theme']['id']?></dd>
 	<dt>Libelle</dt>
 	<dd>&nbsp;<?php echo $theme['Theme']['libelle']?></dd>
-	<dt>Created</dt>
+	<dt>Date creation</dt>
 	<dd>&nbsp;<?php echo $theme['Theme']['created']?></dd>
-	<dt>Modified</dt>
+	<dt>Date modification</dt>
 	<dd>&nbsp;<?php echo $theme['Theme']['modified']?></dd>
 </dl>
 <ul class="actions">
-	<li><?php echo $html->link('Edit Theme',   '/themes/edit/' . $theme['Theme']['id']) ?> </li>
-	<li><?php echo $html->link('Delete Theme', '/themes/delete/' . $theme['Theme']['id'], null, 'Are you sure you want to delete: id ' . $theme['Theme']['id'] . '?') ?> </li>
-	<li><?php echo $html->link('List Themes',   '/themes/index') ?> </li>
-	<li><?php echo $html->link('New Theme',	'/themes/add') ?> </li>
+	<li><?php echo $html->link('Modifier',   '/themes/edit/' . $theme['Theme']['id']) ?> </li>
+	<li><?php echo $html->link('Supprimer', '/themes/delete/' . $theme['Theme']['id'], null, 'Etes-vous sur de vouloir supprimer le theme "' . $theme['Theme']['libelle'] . '" ?') ?> </li>
+	<li><?php echo $html->link('Annuler',   '/themes/index') ?> </li>
+	<li><?php echo $html->link('Ajouter un theme',	'/themes/add') ?> </li>
 </ul>
 
 </div>

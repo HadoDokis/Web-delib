@@ -1,12 +1,12 @@
 <div class="themes">
-<h2>List Themes</h2>
+<h2>Liste des themes</h2>
 
 <table cellpadding="0" cellspacing="0">
 <tr>
 	<th>Id</th>
 	<th>Libelle</th>
-	<th>Created</th>
-	<th>Modified</th>
+	<th>Date creation</th>
+	<th>Date modification</th>
 	<th>Actions</th>
 </tr>
 <?php foreach ($themes as $theme): ?>
@@ -16,15 +16,15 @@
 	<td><?php echo $theme['Theme']['created']; ?></td>
 	<td><?php echo $theme['Theme']['modified']; ?></td>
 	<td class="actions">
-		<?php echo $html->link('View','/themes/view/' . $theme['Theme']['id'])?>
-		<?php echo $html->link('Edit','/themes/edit/' . $theme['Theme']['id'])?>
-		<?php echo $html->link('Delete','/themes/delete/' . $theme['Theme']['id'], null, 'Are you sure you want to delete id ' . $theme['Theme']['id'])?>
+		<?php echo $html->link('Voir','/themes/view/' . $theme['Theme']['id'])?>
+		<?php echo $html->link('Modifier','/themes/edit/' . $theme['Theme']['id'])?>
+		<?php echo $html->link('Supprimer','/themes/delete/' . $theme['Theme']['id'], null, 'Etes-vous sur de vouloir supprimer le theme "' . $theme['Theme']['libelle'].'" ?')?>
 	</td>
 </tr>
 <?php endforeach; ?>
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('New Theme', '/themes/add'); ?></li>
+	<li><?php echo $html->link('Ajouter un theme', '/themes/add'); ?></li>
 </ul>
 </div>
