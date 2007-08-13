@@ -1,16 +1,16 @@
-<h2>Edit Theme</h2>
+<h2>Modification d'un theme</h2>
 <form action="<?php echo $html->url('/themes/edit/'.$html->tagValue('Theme/id')); ?>" method="post">
 <div class="required"> 
 	<?php echo $form->labelTag('Theme/libelle', 'Libelle');?>
  	<?php echo $html->input('Theme/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Theme/libelle', 'Please enter the Libelle.');?>
+	<?php echo $html->tagErrorMsg('Theme/libelle', 'Entrer le libelle.');?>
 </div>
 <?php echo $html->hidden('Theme/id')?>
 <div class="submit">
-	<?php echo $html->submit('Save');?>
+	<?php echo $html->submit('Sauvegarder');?>
 </div>
 </form>
 <ul class="actions">
-<li><?php echo $html->link('Delete','/themes/delete/' . $html->tagValue('Theme/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Theme/id'));?>
-<li><?php echo $html->link('List Themes', '/themes/index')?></li>
+<li><?php echo $html->link('Supprimer','/themes/delete/' . $html->tagValue('Theme/id'), null, 'Etes-vous sur de vouloir supprimer le theme "' . $html->tagValue('Theme/libelle').'" ?') ?>
+<li><?php echo $html->link('Annuler', '/themes/index')?></li>
 </ul>
