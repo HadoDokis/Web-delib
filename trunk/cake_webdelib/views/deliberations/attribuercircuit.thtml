@@ -55,7 +55,7 @@
 
 <br /><br /><br /><br />
 <div class="submit">
-	<?php echo $html->submit('Add');?>
+	<?php echo $html->submit('Ajouter');?>
 </div>
 </form>
 
