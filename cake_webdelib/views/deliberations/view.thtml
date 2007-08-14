@@ -1,5 +1,5 @@
 <div class="deliberation">
-<h2>View Deliberation</h2>
+<h2>Fiche d'un deliberation</h2>
 
 <dl>
 	<dt>Id</dt>
@@ -16,8 +16,6 @@
 	<dd>&nbsp;<?php echo $html->link($deliberation['Agent']['nom'], '/agents/view/' .$deliberation['Agent']['id'])?></dd>
 	<dt>Rapporteur</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['rapporteur_id']?></dd>
-	<dt>Date Creation</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['date_creation']?></dd>
 	<dt>Date Session</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['date_session']?></dd>
 	<dt>Objet</dt>
@@ -32,24 +30,28 @@
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_projet']?></dd>
 	<dt>Texte Synthese</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_synthese']?></dd>
-	<dt>Created</dt>
+	<dt>Date creation</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['created']?></dd>
-	<dt>Modified</dt>
+	<dt>Date modification</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['modified']?></dd>
 </dl>
 <ul class="actions">
-	<li><?php echo $html->link('Edit Deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
-	<li><?php echo $html->link('Delete Deliberation', '/deliberations/delete/' . $deliberation['Deliberation']['id'], null, 'Are you sure you want to delete: id ' . $deliberation['Deliberation']['id'] . '?') ?> </li>
-	<li><?php echo $html->link('List Deliberations',   '/deliberations/index') ?> </li>
-	<li><?php echo $html->link('New Deliberation',	'/deliberations/add') ?> </li>
-	<li><?php echo $html->link('List Circuit', '/circuits/index/')?> </li>
-	<li><?php echo $html->link('New Circuits', '/circuits/add/')?> </li>
-	<li><?php echo $html->link('List Theme', '/themes/index/')?> </li>
-	<li><?php echo $html->link('New Themes', '/themes/add/')?> </li>
-	<li><?php echo $html->link('List Service', '/services/index/')?> </li>
-	<li><?php echo $html->link('New Services', '/services/add/')?> </li>
-	<li><?php echo $html->link('List Agent', '/agents/index/')?> </li>
-	<li><?php echo $html->link('New Agents', '/agents/add/')?> </li>
+	<li><?php echo $html->link('Modifier la deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
+	<li><?php echo $html->link('Supprimer la deliberation', '/deliberations/delete/' . $deliberation['Deliberation']['id'], null, 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre'] . '" ?') ?> </li>
+	<li><?php echo $html->link('Annuler',   '/deliberations/index') ?> </li>
+	<li><?php echo $html->link('Ajouter une deliberation',	'/deliberations/add') ?> </li>
+	<li><?php echo $html->link('Voir les circuits', '/circuits/index/');?></li>
+	<li><?php echo $html->link('Ajouter un circuit', '/circuits/add/');?></li>
+	<li><?php echo $html->link('Voir les themes', '/themes/index/');?></li>
+	<li><?php echo $html->link('Ajouter un theme', '/themes/add/');?></li>
+	<li><?php echo $html->link('Voir les services', '/services/index/');?></li>
+	<li><?php echo $html->link('Ajouter un service', '/services/add/');?></li>
+	<li><?php echo $html->link('Voir les agents', '/agents/index/');?></li>
+	<li><?php echo $html->link('Ajouter un agent', '/agents/add/');?></li>
 </ul>
+<li><?php echo $html->link('Annuler', '/deliberations/index')?></li>
+
+
+
 
 </div>
