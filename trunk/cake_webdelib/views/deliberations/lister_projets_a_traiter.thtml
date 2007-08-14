@@ -1,0 +1,39 @@
+<div class="deliberations">
+<h2>Liste des Deliberations &agrave; traiter</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>ID</th>
+	<th>Theme</th>
+	<th>Rapporteur</th>
+	<th>Date Session</th>
+	<th>Objet</th>
+	<th>Titre</th>
+	<th>Num Delib</th>
+	<th>Date creation</th>
+	<th>Date modification</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($deliberations as $deliberation): ?>
+<tr>
+	<td><?php echo $deliberation['Deliberation']['id']; ?></td>
+	<td>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?></td>
+	<td><?php echo $deliberation['Deliberation']['rapporteur_id']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['date_session']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['created']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['modified']; ?></td>
+	<td class="actions">
+		<?php echo $html->link($deliberation['action'],"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'])?><br />
+		<?php echo $html->link('PDF','/deliberations/convert/' . $deliberation['Deliberation']['id'])?><br />
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('Ajouter une deliberation', '/deliberations/add'); ?></li>
+</ul>
+</div>
