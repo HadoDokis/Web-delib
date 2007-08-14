@@ -4,7 +4,7 @@ Texte Synthèse :
 <div class="optional">
     <?php echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][texte_synthese]'); ?>
-    <?php echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Please enter the Body.');?>
+    <?php echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Entrer le texte de synthese.');?>
 </div>
 <div class="submit">
 	<?php echo $html->submit('Terminer');?>
