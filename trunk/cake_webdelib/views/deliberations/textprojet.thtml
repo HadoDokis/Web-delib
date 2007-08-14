@@ -4,7 +4,7 @@ Texte Projet :
 <div class="optional">
     <?php echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][texte_projet]'); ?>
-    <?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Please enter the Body.');?>
+    <?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du projet.');?>
 </div>
 <div class="submit">
 	<?php echo $html->submit('Rédiger un texte de synthèse');?>
