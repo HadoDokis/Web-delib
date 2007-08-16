@@ -16,8 +16,8 @@
 					<li><a href="<?php echo $html->url('/deliberations/listerMesProjets');?>" title="Mes projets">Mes Projets</a></li>
 					<li><a href="<?php echo $html->url('/deliberations/listerProjetsATraiter');?>" title="Projets &agrave; traiter">A traiter</a></li>
 					<li><a href="<?php echo $html->url('/deliberations/add');?>" title="Cr&eacute;er un projet">Cr&eacute;er</a></li>
-					<li><a href="# <?php //echo $html->url('/conseils/projet_attribue');?>" title="Projets attribu&eacute;s &agrave; une session">Attribu&eacute;s</a></li>
-					<li><a href="# <?php //echo $html->url('/conseils/projet_non_attribue');?>" title="Projets non attribu&eacute;s &agrave; une session">Non attribu&eacute;s</a></li>
+					<li><a href="# <?php //echo $html->url('/conseils/projet_attribue');?>" title="Projets attribu&eacute;s &agrave; une seance">Attribu&eacute;s</a></li>
+					<li><a href="# <?php //echo $html->url('/conseils/projet_non_attribue');?>" title="Projets non attribu&eacute;s &agrave; une seance">Non attribu&eacute;s</a></li>
 				</ul>
 			</dd>
 	</dl>
@@ -26,8 +26,8 @@
 		<dt onmouseover="javascript:montre('smenu1');" >S&eacute;ances</dt>
 			<dd id="smenu1" onmouseover="javascript:montre('smenu1');" onmouseout="javascript:montre('');">
 				<ul>
-					<li><a href="# <?php //echo $html->url('/');?>" title="Consulter les futures sessions">Futures</a></li>
-					<li><a href="# <?php //echo $html->url('/');?>" title="Consulter les anciennes sessions">Anciennes</a></li>
+					<li><a href="# <?php //echo $html->url('/');?>" title="Consulter les futures seance">Futures</a></li>
+					<li><a href="# <?php //echo $html->url('/');?>" title="Consulter les anciennes seance">Anciennes</a></li>
 					<li><a href="<?php echo $html->url('/seances/add');?>" title="Cr&eacute;er une s&eacute;ance">Cr&eacute;er</a></li>
 					<li><a href="# <?php //echo $html->url('/');?>">Calendrier</a></li>
 
