@@ -6,7 +6,7 @@
 
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme');?>
- 	<?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), true);?>
+ 	<?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), false);?>
 	<?php echo $html->tagErrorMsg('Deliberation/theme_id', 'Entrer le theme.') ?>
 </div>
 
@@ -33,9 +33,8 @@
 </div>
 
 <div class="optional"> 
-    <label>Date session : </label>
-    <input name="date_session" size="9" />&nbsp;
-	<a href="javascript:show_calendar('FormHs.date_session','f');">	<?php echo $html->image("calendar.png", "border='0'"); ?></a>
+    <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
+    <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,false); ?>    
 </div>	
 <br />
 <div class="submit">
