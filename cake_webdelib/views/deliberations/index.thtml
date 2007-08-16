@@ -5,7 +5,7 @@
 <tr>
 	<th>Theme</th>
 	<th>Rapporteur</th>
-	<th>Date Session</th>
+	<th>Date Seance</th>
 	<th>Objet</th>
 	<th>Titre</th>
 	<th>Num Delib</th>
@@ -17,9 +17,9 @@
 </tr>
 <?php foreach ($deliberations as $deliberation): ?>
 <tr>
-	<td>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?></td>
+	<td>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?>	<br/><br/> <?php echo $deliberation['Theme']['libelle']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['rapporteur_id']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['date_session']; ?></td>
+	<td><?php echo $deliberation['Seance']['date']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
