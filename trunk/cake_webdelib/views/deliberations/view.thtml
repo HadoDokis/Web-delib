@@ -7,7 +7,7 @@
 	<dt>Circuit</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
 	<dt>Theme</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?></dd>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?><br><?php echo $deliberation['Theme']['libelle']?> </dd>
 	<dt>Service</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
 	<dt>Vote Id</dt>
@@ -16,8 +16,8 @@
 	<dd>&nbsp;<?php echo $html->link($deliberation['Agent']['nom'], '/agents/view/' .$deliberation['Agent']['id'])?></dd>
 	<dt>Rapporteur</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['rapporteur_id']?></dd>
-	<dt>Date Session</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['date_session']?></dd>
+	<dt>Date Seance</dt>
+	<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
 	<dt>Objet</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
 	<dt>Titre</dt>
@@ -38,20 +38,17 @@
 <ul class="actions">
 	<li><?php echo $html->link('Modifier la deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
 	<li><?php echo $html->link('Supprimer la deliberation', '/deliberations/delete/' . $deliberation['Deliberation']['id'], null, 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre'] . '" ?') ?> </li>
-	<li><?php echo $html->link('Annuler',   '/deliberations/index') ?> </li>
 	<li><?php echo $html->link('Ajouter une deliberation',	'/deliberations/add') ?> </li>
-	<li><?php echo $html->link('Voir les circuits', '/circuits/index/');?></li>
-	<li><?php echo $html->link('Ajouter un circuit', '/circuits/add/');?></li>
-	<li><?php echo $html->link('Voir les themes', '/themes/index/');?></li>
-	<li><?php echo $html->link('Ajouter un theme', '/themes/add/');?></li>
-	<li><?php echo $html->link('Voir les services', '/services/index/');?></li>
-	<li><?php echo $html->link('Ajouter un service', '/services/add/');?></li>
+	<li><?php echo $html->link('Annuler', '/deliberations/index')?></li>
+	<br/>
 	<li><?php echo $html->link('Voir les agents', '/agents/index/');?></li>
+	<li><?php echo $html->link('Voir les circuits', '/circuits/index/');?></li>
+	<li><?php echo $html->link('Voir les themes', '/themes/index/');?></li>
+	<li><?php echo $html->link('Voir les services', '/services/index/');?></li>
 	<li><?php echo $html->link('Ajouter un agent', '/agents/add/');?></li>
-</ul>
-<li><?php echo $html->link('Annuler', '/deliberations/index')?></li>
-
-
+	<li><?php echo $html->link('Ajouter un circuit', '/circuits/add/');?></li>
+	<li><?php echo $html->link('Ajouter un theme', '/themes/add/');?></li>
+	<li><?php echo $html->link('Ajouter un service', '/services/add/');?></li>
 
 
 </div>
