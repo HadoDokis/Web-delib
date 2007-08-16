@@ -4,17 +4,17 @@
 <form action="<?php echo $html->url('/deliberations/edit/'.$html->tagValue('Deliberation/id')); ?>" method="post">
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/circuit_id', 'Circuit');?>
- 	<?php echo $html->selectTag('Deliberation/circuit_id', $circuits, $html->tagValue('Deliberation/circuit_id'), array(), array(), true);?>
+ 	<?php echo $html->selectTag('Deliberation/circuit_id', $circuits, $html->tagValue('Deliberation/circuit_id'), array(), array(), false);?>
 	<?php echo $html->tagErrorMsg('Deliberation/circuit_id', 'Entrer le circuit.') ?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme');?>
- 	<?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), true);?>
-	<?php echo $html->tagErrorMsg('Deliberation/theme_id', 'Entrer le theme.') ?>
+ 	<?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), false);?>
+	<?php echo $html->tagErrorMsg('Deliberation/theme_id', 'Entrer le th&agrave;eme.') ?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/service_id', 'Service');?>
- 	<?php echo $html->selectTag('Deliberation/service_id', $services, $html->tagValue('Deliberation/service_id'), array(), array(), true);?>
+ 	<?php echo $html->selectTag('Deliberation/service_id', $services, $html->tagValue('Deliberation/service_id'), array(), array(), false);?>
 	<?php echo $html->tagErrorMsg('Deliberation/service_id', 'Entrer le service.') ?>
 </div>
 <div class="optional"> 
@@ -35,13 +35,12 @@
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/date_creation', 'Date Creation');?>
  	<?php echo $html->dateTimeOptionTag('Deliberation/date_creation', 'MDY' , '12', $html->tagValue('Deliberation/date_creation'), array());?>
-	<?php echo $html->tagErrorMsg('Deliberation/date_creation', 'Entrer la date de creation.');?>
+	<?php echo $html->tagErrorMsg('Deliberation/date_creation', 'Entrer la date de cr&eacute;ation.');?>
 </div>
 <div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/date_session', 'Date Session');?>
- 	<?php echo $html->dateTimeOptionTag('Deliberation/date_session', 'MDY' , '12', $html->tagValue('Deliberation/date_session'), array());?>
-	<?php echo $html->tagErrorMsg('Deliberation/date_session', 'Entrer la date de session.');?>
-</div>
+    <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
+    <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,false); ?>    
+</div>	
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/objet', 'Objet');?>
  	<?php echo $html->input('Deliberation/objet', array('size' => '60'));?>
