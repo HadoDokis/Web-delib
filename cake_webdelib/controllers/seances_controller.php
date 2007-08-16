@@ -19,6 +19,8 @@ class SeancesController extends AppController {
 
 	function add() {
 		if (empty($this->data)) {
+			$this->set('typeseances', $this->Seance->Typeseance->generateList());
+			$this->set('selectedTypeseances', null);
 			$this->render();
 		} else {
 			$this->cleanUpFields();
@@ -27,6 +29,11 @@ class SeancesController extends AppController {
 				$this->redirect('/seances/index');
 			} else {
 				$this->Session->setFlash('Please correct errors below.');
+				$this->set('typeseances', $this->Seance->Typeseance->generateList());
+				if (empty($this->data['Typeseance']['Typeseance'])) {
+					$this->data['Typeseance']['Typeseance'] = null;
+				}
+				$this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
 			}
 		}
 	}
@@ -38,6 +45,9 @@ class SeancesController extends AppController {
 				$this->redirect('/seances/index');
 			}
 			$this->data = $this->Seance->read(null, $id);
+			$this->set('typeseances', $this->Seance->Typeseance->generateList());
+			if (empty($this->data['Typeseance'])) { $this->data['Typeseance'] = null; }
+				$this->set('selectedTypeseances', $this->_selectedArray($this->data['Typeseance']));
 		} else {
 			$this->cleanUpFields();
 			if ($this->Seance->save($this->data)) {
@@ -45,6 +55,8 @@ class SeancesController extends AppController {
 				$this->redirect('/seances/index');
 			} else {
 				$this->Session->setFlash('Please correct errors below.');
+				if (empty($this->data['Typeseance']['Typeseance'])) { $this->data['Typeseance']['Typeseance'] = null; }
+					$this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
 			}
 		}
 	}
