@@ -6,5 +6,11 @@ class Seance extends AppModel {
 		'type_id' => VALID_NOT_EMPTY,
 	);
 
+	var $displayField="libelle";
+	var $belongsTo=array('Typeseance'=>array('className'=>'Typeseance', 
+											'conditions'=>'', 
+											'order'=>'',
+											'dependent'=>false, 
+											'foreignKey'=>'type_id'));
 }
 ?>
