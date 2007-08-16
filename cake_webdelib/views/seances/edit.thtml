@@ -1,0 +1,20 @@
+<h2>Modification d'une seance</h2>
+<form action="<?php echo $html->url('/seances/edit/'.$html->tagValue('Seance/id')); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Seance/type_id', 'Typeseance associe');?>
+ 	<?php echo $html->selectTag('Seance/type_id', $typeseances, $html->tagValue('Seance/type_id'), array(), array(), true);?>
+	<?php echo $html->tagErrorMsg('Seance/type_id', 'Entrer le libelle.');?>
+</div>
+<div class="required">
+	<?php echo $form->generateDateTime('Seance/date','Date',true,'Veuillez entrer une date'); ?>
+	<?php echo $html->tagErrorMsg('Seance/date', 'Entrer une date valide.');?>
+</div>
+<?php echo $html->hidden('Seance/id')?>
+<div class="submit">
+	<?php echo $html->submit('Enregistrer');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('Supprimer','/seances/delete/' . $html->tagValue('Seance/id'), null, 'Etes-vous sur de vouloir supprimer la seance du "' . $html->tagValue('Seance/date').'" ?');?>
+<li><?php echo $html->link('Annuler', '/seances/index')?></li>
+</ul>
