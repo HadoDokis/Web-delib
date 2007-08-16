@@ -6,6 +6,10 @@ class DeliberationsController extends AppController {
 	var $uses = array('Deliberation', 'AgentsCircuit', 'Traitement', 'Agent', 'Circuit');
 	
 	function index() {
+
+		$this->Deliberation->recursive = 0;
+		$this->set('deliberations', $this->Deliberation->findAll(null,null, 'Seance.date'));
+
 // TODO utilisation de la vue index?
 
 //		$this->Deliberation->recursive = 0;
@@ -61,6 +65,7 @@ class DeliberationsController extends AppController {
 //			}
 //		}
 //		$this->set('deliberations', $deliberations);
+
 	}
 
 	function listerMesProjets()
@@ -152,10 +157,13 @@ class DeliberationsController extends AppController {
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
 			$this->set('agents', $this->Deliberation->Agent->generateList());
+			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$this->render();
 		} else {
-			$this->data['Deliberation']['date_session']= $this->Utils->FrDateToUkDate($this->params['form']['date_session']);
+			//$this->data['Deliberation']['seance_id']= $this->Utils->FrDateToUkDate($this->params['form']['seance_id']);
 			$agent=$this->Session->read('agent');
+
 			$this->data['Deliberation']['redacteur_id']=$agent['Agent']['id'];
 			$this->cleanUpFields();
 			if ($this->Deliberation->save($this->data)) {
@@ -166,6 +174,8 @@ class DeliberationsController extends AppController {
 				$this->set('themes', $this->Deliberation->Theme->generateList());
 				$this->set('circuits', $this->Deliberation->Circuit->generateList());
 				$this->set('agents', $this->Deliberation->Agent->generateList());
+				$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+				$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			}
 		}
 	}
@@ -213,6 +223,8 @@ class DeliberationsController extends AppController {
 			$this->set('themes', $this->Deliberation->Theme->generateList());
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
 			$this->set('agents', $this->Deliberation->Agent->generateList());
+			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 		} else {
 			$this->cleanUpFields();
 			if ($this->Deliberation->save($this->data)) {
@@ -224,6 +236,8 @@ class DeliberationsController extends AppController {
 				$this->set('themes', $this->Deliberation->Theme->generateList());
 				$this->set('circuits', $this->Deliberation->Circuit->generateList());
 				$this->set('agents', $this->Deliberation->Agent->generateList());
+				$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			}
 		}
 	}
@@ -248,6 +262,7 @@ class DeliberationsController extends AppController {
 	   	return $dataValeur['0'] ['Deliberation'][$field];
 		
 	}
+	
 
 	function delete($id = null) {
 		if (!$id) {
