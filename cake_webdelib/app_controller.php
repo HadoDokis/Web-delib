@@ -42,18 +42,27 @@ class AppController extends Controller {
 	
 	var $beforeFilter = array('checkSession');
 	
+
+	var $infoAgent = "&nbsp;";
+	var $lienDeconnexion = "&nbsp;";
+	
 	function checkSession()
 	{
-   	    if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/agents/login')
+   		$this->infoAgent = $this->Session->read('agent.Agent.prenom')." ".$this->Session->read('agent.Agent.nom');
+ 	    $this->lienDeconnexion = " - <span class=\"deconnexion\"><a href=\"".$this->base."/agents/logout\"> [Deconnexion]</a></span>";  
+ 	    	  
+		if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/agents/login')
 		{
 			//s'il n'y a pas d'utilisateur connecté en session
 			if (!$this->Session->Check('agent'))
 			{
-				//le forer a se connecter
+				//le forcer a se connecter
 				$this->redirect('agents/login');
 				exit();
 			}
 		}
+		
 	}
+	
 }
 ?>
