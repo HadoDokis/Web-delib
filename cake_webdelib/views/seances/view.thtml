@@ -1,0 +1,19 @@
+<div class="seance">
+<h2>Fiche seance</h2>
+
+<dl>
+	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $seance['Seance']['id']?></dd>
+	<dt>Libelle</dt>
+	<dd>&nbsp;<?php echo $seance['Typeseance']['libelle']?></dd>
+	<dt>Date</dt>
+	<dd>&nbsp;<?php echo $seance['Seance']['date']?></dd>
+</dl>
+<ul class="actions">
+	<li><?php echo $html->link('Modifier',   '/seances/edit/' . $seance['Seance']['id']) ?> </li>
+	<li><?php echo $html->link('Supprimer', '/seances/delete/' . $seance['Seance']['id'], null, 'Etes-vous sur de vouloir supprimer la seance du "' . $seance['Seance']['date'] . '" ?') ?> </li>
+	<li><?php echo $html->link('Annuler',   '/seances/index') ?> </li>
+	<li><?php echo $html->link('Ajouter une seance',	'/seances/add') ?> </li>
+</ul>
+
+</div>
