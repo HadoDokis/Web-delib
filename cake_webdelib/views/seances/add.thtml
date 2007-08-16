@@ -1,0 +1,18 @@
+<h2>Nouvelle seance</h2>
+<form action="<?php echo $html->url('/seances/add'); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Seance/type_id', 'Type de seance');?>
+ 	<?php echo $html->selectTag('Seance/type_id', $typeseances, $html->tagValue('Seance/type_id'), array(), array(), true);?>
+	<?php echo $html->tagErrorMsg('Seance/type_id', 'Entrer le type de seance associ&eacute;.');?>
+</div>
+<div class="required">
+	<?php echo $form->generateDateTime('Seance/date','Date',true,'Veuillez entrer une date'); ?>
+	<?php echo $html->tagErrorMsg('Seance/date', 'Entrer une date valide.');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Ajouter');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('Annuler', '/seances/index')?></li>
+</ul>
