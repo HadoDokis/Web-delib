@@ -144,13 +144,21 @@ function login()
 			{
 				//on stocke l'utilisateur en session
 				$this->Session->write('agent',$agent);
+				//debug($this -> Session -> read());
+				//exit;
 				$this->redirect('/agents');
+				
 			}
 			else
 			{
 				//sinon on prépare le message d'erreur a afficher dans la vue
 				$this->set('errorMsg','Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
+				$this->layout='connection';
 			}
+		}
+		else
+		{
+			$this->layout='connection';
 		}
 	}
 	
