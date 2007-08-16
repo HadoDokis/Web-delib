@@ -17,7 +17,7 @@
 	<dt>Rapporteur</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['rapporteur_id']?></dd>
 	<dt>Date Session</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['date_session']?></dd>
+	<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
 	<dt>Objet</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
 	<dt>Titre</dt>
