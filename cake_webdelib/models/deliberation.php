@@ -28,7 +28,12 @@ class Deliberation extends AppModel {
                               'conditions'   => '',
                               'order'        => '',
                               'dependent'    =>  true,
-                              'foreignKey'   => 'rapporteur_id')
+                              'foreignKey'   => 'rapporteur_id'),
+                         'Seance'=> array('className'    => 'Seance',
+                              'conditions'   => '',
+                              'order'        => '',
+                              'dependent'    =>  true,
+                              'foreignKey'   => 'seance_id')     
 						);
 	var $hasMany = array ('Traitement' => array('className'=>'Traitement',
 												'foreignKey' => 'delib_id'));
