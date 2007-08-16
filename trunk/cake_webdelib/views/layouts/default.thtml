@@ -27,10 +27,13 @@
 		WebDelib
 	</div>
 	
+
+	<div id="user">
+	    <?php echo $this->controller->infoAgent;?>
+	    <?php echo $this->controller->lienDeconnexion; ?>
 	
-	 <!-- <div id="gauche">
-	<?php //echo $this->renderElement('adminMenuGauche'); ?>
-	</div>-->
+	</div>
+ 
 
 	<div id="centre">
 		
