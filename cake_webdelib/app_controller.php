@@ -43,13 +43,15 @@ class AppController extends Controller {
 	var $beforeFilter = array('checkSession');
 	
 
-	var $infoAgent = "&nbsp;";
-	var $lienDeconnexion = "&nbsp;";
+	var $infoAgent = "";
+	var $lienAccueil = "";
+	var $lienDeconnexion = "";
 	
 	function checkSession()
 	{
-   		$this->infoAgent = $this->Session->read('agent.Agent.prenom')." ".$this->Session->read('agent.Agent.nom');
- 	    $this->lienDeconnexion = " - <span class=\"deconnexion\"><a href=\"".$this->base."/agents/logout\"> [Deconnexion]</a></span>";  
+		$this->infoAgent = "<span class=\"user\">".$this->Session->read('agent.Agent.prenom')." ".$this->Session->read('agent.Agent.nom')."</span> ";
+		$this->lienAccueil = " | <span class=\"accueil\"><a href=\"".$this->base."/\">Accueil</a></span> ";
+ 	    $this->lienDeconnexion = " | <span class=\"deconnexion\"><a href=\"".$this->base."/agents/logout\"> Deconnexion</a></span>";  
  	    	  
 		if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/agents/login')
 		{
