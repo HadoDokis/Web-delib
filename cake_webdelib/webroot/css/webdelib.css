@@ -52,15 +52,28 @@ label {
 }
 
 #user {
-	color: #999;
-	font-style: italic;
 	text-align: right;
-	height: 27px;
+	height: 23px;
 	border-bottom: 1px solid #999;
 	/*border-top: 1px solid #999;*/
 	margin-top: 0px;
 	padding-right: 10px;
+	background-image: url(../img/connexion.png);
 }
+#user a {
+	text-decoration: none;
+}
+
+.user {
+	font-weight: bold;
+}
+.accueil {
+	
+}
+.connection {
+	
+}
+
 
 #header {
 	height: 50px;
@@ -88,6 +101,10 @@ label {
 	z-index: 1;
 }
 
+#tableau_bord {
+	
+	padding-left: 20px;
+}
 
 /*#gauche {
 	position: absolute;
