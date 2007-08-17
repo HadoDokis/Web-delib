@@ -1,14 +1,4 @@
 <div id="menu">
-	<dl>
-		<dt onmouseover="javascript:montre();" ><a href="<?php echo $html->url('/conseils/accueil');?>" title="Retour à l'accueil">Accueil</a></dt>
-	</dl>
-	
-	<!--  
-	<dl>
-		<dt onmouseover="javascript:montre();"><a href="#" title="recherche">Recherche</a></dt>
-	</dl>
-	-->
-	
 	<dl>	
 		<dt onmouseover="javascript:montre('smenu2');" >Projets</dt>
 			<dd id="smenu2" onmouseover="javascript:montre('smenu2');" onmouseout="javascript:montre('');">
