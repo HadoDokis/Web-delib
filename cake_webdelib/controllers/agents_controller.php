@@ -146,7 +146,7 @@ function login()
 				$this->Session->write('agent',$agent);
 				//debug($this -> Session -> read());
 				//exit;
-				$this->redirect('/agents');
+				$this->redirect('/');
 				
 			}
 			else
