@@ -221,7 +221,7 @@ dl,dt,dd,ul,li {
 }
 
 #menu li {
-	text-align: center;
+	padding-left: 10px;
 	background: white;
 }
 
