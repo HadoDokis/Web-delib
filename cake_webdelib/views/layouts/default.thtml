@@ -30,6 +30,7 @@
 
 	<div id="user">
 	    <?php echo $this->controller->infoAgent;?>
+	    <?php echo $this->controller->lienAccueil;?>
 	    <?php echo $this->controller->lienDeconnexion; ?>
 	
 	</div>
