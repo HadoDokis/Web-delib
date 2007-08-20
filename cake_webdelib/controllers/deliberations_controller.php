@@ -77,6 +77,51 @@ class DeliberationsController extends AppController {
 		$this->set('deliberations', $this->Deliberation->findAll($conditions));
 	}
 	
+	function listerProjetsAttribuer()
+	{
+		if (empty ($this->data))
+		{
+			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));	
+			$conditions="seance_id != 0";
+			$this->set('deliberations', $this->Deliberation->findAll($conditions));
+		}
+	}
+		
+		
+	function listerProjetsNonAttribuer()
+	{
+		if (empty ($this->data))
+		{
+			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));	
+			$conditions="seance_id is null OR seance_id= 0";
+			$this->set('deliberations', $this->Deliberation->findAll($conditions));
+		}
+		else
+		{
+			//$this->cleanUpFields();
+			//debug($this->data);
+			//exit;
+			$deliberation['Deliberation']['seance_id']= $this->data['Deliberation']['seance_id'];
+
+			if ($this->Deliberation->save($this->data)) 
+			{
+				$this->redirect('/deliberations/listerMesProjets');
+			}
+			else
+			{
+				$this->Session->setFlash('Please correct errors below.');
+				$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+				$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));	
+				$conditions="seance_id is null";
+				$this->set('deliberations', $this->Deliberation->findAll($conditions));
+			}
+		}
+	}
+
+
+		
 	function listerProjetsATraiter()
 	{
 		/**
@@ -271,7 +316,8 @@ class DeliberationsController extends AppController {
 		}
 		if ($this->Deliberation->del($id)) {
 			$this->Session->setFlash('The Deliberation deleted: id '.$id.'');
-			$this->redirect('/deliberations/listerMesProjets');
+			//$this->redirect('/deliberations/listerMesProjets');
+			$this->redirect('/deliberations/index');
 		}
 	}
  
