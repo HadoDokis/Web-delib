@@ -1,6 +1,6 @@
 <?php echo $javascript->link('calendrier.js'); ?>
 	
-<h2>Nouvelle deliberation</h2>
+<h2>Nouvelle d&eacute;liberation</h2>
 
 <?php echo $html->formTag('/deliberations/add/', null,array('name'=>'FormHs')); ?>
 
@@ -34,7 +34,7 @@
 
 <div class="optional"> 
     <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
-    <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,false); ?>    
+    <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>    
 </div>	
 <br />
 <div class="submit">
