@@ -71,6 +71,26 @@ class SeancesController extends AppController {
 			$this->redirect('/seances/index');
 		}
 	}
+	
+	function listerFuturesSeances()
+	{
+		if (empty ($this->data))
+		{
+			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$this->set('seances', $this->Seance->findAll($condition));	
+
+		}
+		
+	}
+	
+	function listerAnciennesSeances()
+	{
+		if (empty ($this->data))
+		{
+			$condition= 'date <= "'.date('Y-m-d H:i:s').'"';
+			$this->set('seances', $this->Seance->findAll($condition));
+		}
+	}
 
 }
 ?>
