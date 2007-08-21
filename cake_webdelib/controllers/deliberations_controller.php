@@ -3,7 +3,7 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf' );
-	var $uses = array('Deliberation', 'AgentsCircuit', 'Traitement', 'Agent', 'Circuit');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit');
 	
 	function index() {
 
@@ -16,14 +16,14 @@ class DeliberationsController extends AppController {
 //		$deliberations = array();
 //		$condition="etat = 1";
 //		$tmpdeliberations=$this->Deliberation->findAll($condition);
-//		$agent=$this->Session->read('agent');
+//		$user=$this->Session->read('user');
 //		foreach ($tmpdeliberations as $delib)
 //		{
 //			$circuit_id=$delib['Deliberation']['circuit_id'];
-//			$data_circuit=$this->AgentsCircuit->findAll("circuit_id=$circuit_id", null, "position ASC");
+//			$data_circuit=$this->UsersCircuit->findAll("circuit_id=$circuit_id", null, "position ASC");
 //			for($i=0; $i<count($data_circuit);$i++)
 //			{
-//				if ($data_circuit[$i]['AgentsCircuit']['agent_id']==$agent['Agent']['id'])
+//				if ($data_circuit[$i]['UsersCircuit']['user_id']==$user['User']['id'])
 //				{
 //					//l'utilisateur logué apparait dans un circuit, on affiche la delib
 //					
@@ -34,26 +34,26 @@ class DeliberationsController extends AppController {
 //					 */
 //	
 //					
-//					$conditions = "circuit_id =".$delib['Deliberation']['circuit_id']." AND Agent_id = ".$agent['Agent']['id'];
+//					$conditions = "circuit_id =".$delib['Deliberation']['circuit_id']." AND User_id = ".$user['User']['id'];
 //					$field = "position";
-//					$traitements = $this->AgentsCircuit->findAll($conditions, $field);
+//					$traitements = $this->UsersCircuit->findAll($conditions, $field);
 //					debug($traitements);
 //					foreach ($traitements as $traitement) {
 //						$position = $this->getPosition($delib['Deliberation']['circuit_id'], $delib['Deliberation']['id']);
 //					     
-//						if ($traitement['AgentsCircuit']['position'] == $position){
+//						if ($traitement['UsersCircuit']['position'] == $position){
 //						    echo("D&eacute;lib &agrave; viser : ");
 //						    $delib['a_traiter']=true;
 //						    echo $delib['Deliberation']['id'];
 //						    echo("<br>");
 //					     }
-//					     elseif ($traitement['AgentsCircuit']['position'] > $position) {
+//					     elseif ($traitement['UsersCircuit']['position'] > $position) {
 //					     	echo("D&eacute;lib &agrave; Venir");
 //					     	$delib['a_traiter']=false;
 //						    echo $delib['Deliberation']['id'];
 //						    echo("<br>");
 //					     }
-//						elseif ($traitement['AgentsCircuit']['position'] < $position) {
+//						elseif ($traitement['UsersCircuit']['position'] < $position) {
 //					     	echo("D&eacute;lib d&eacute;j&agrave; vis&eacute;e : ");
 //					     	$delib['a_traiter']=false;
 //						    echo $delib['Deliberation']['id'];
@@ -71,9 +71,9 @@ class DeliberationsController extends AppController {
 	function listerMesProjets()
 	{
 		//liste les projets dont je suis le redacteur
-		$agent=$this->Session->read('agent');
-		$agent_id=$agent['Agent']['id'];
-		$conditions="etat = 0 AND redacteur_id = $agent_id";
+		$user=$this->Session->read('user');
+		$user_id=$user['User']['id'];
+		$conditions="etat = 0 AND redacteur_id = $user_id";
 		$this->set('deliberations', $this->Deliberation->findAll($conditions));
 	}
 	
@@ -128,15 +128,15 @@ class DeliberationsController extends AppController {
 		 * TODO BUG SI UNE PERSONNE QUI APPARAIT À PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN 
 		 * MEME CIRCUIT
 		 * PB : si une personne apparait plusieurs fois dans le circuit mais sous des services différents
-		 * A FAIRE : verifier aussi le service, voir si un meme agent peut appartenir à plusieurs services
+		 * A FAIRE : verifier aussi le service, voir si un meme user peut appartenir à plusieurs services
 		 * et apparaitre plusieurs fois dans le meme circuit
-		 * CSQ : qui se connecte? un agent ou un agent service? remise en cause de la relation "un agent
+		 * CSQ : qui se connecte? un user ou un user service? remise en cause de la relation "un user
 		 * peut appartenir à plusieurs services
 		 */
 		//liste les projets où j'apparais dans le circuit de validation
-		$agent=$this->Session->read('agent');
-		$agent_id=$agent['Agent']['id'];
-		$data_circuit=$this->AgentsCircuit->findAll("agent_id=$agent_id", null, "position ASC");
+		$user=$this->Session->read('user');
+		$user_id=$user['User']['id'];
+		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "position ASC");
 		$conditions="";
 		$delib=array();
 		$cpt=0;
@@ -145,7 +145,7 @@ class DeliberationsController extends AppController {
 			if ($cpt>0)
 				$conditions=$conditions." OR ";
 			
-			$conditions=$conditions." circuit_id = ".$data['AgentsCircuit']['circuit_id'];
+			$conditions=$conditions." circuit_id = ".$data['UsersCircuit']['circuit_id'];
 			$cpt++;
 		}
 		$deliberations = $this->Deliberation->findAll($conditions);
@@ -156,21 +156,21 @@ class DeliberationsController extends AppController {
 			//on recupere la position courante de la deliberation
 			$lastTraitement=array_pop($deliberation['Traitement']);
 			
-			//on recupere la position de l'agent dans le circuit
+			//on recupere la position de l'user dans le circuit
 			foreach ($data_circuit as $data)
 			{
-				if ($data['AgentsCircuit']['circuit_id']==$lastTraitement['circuit_id'])
+				if ($data['UsersCircuit']['circuit_id']==$lastTraitement['circuit_id'])
 				{
-					$position_agent=$data['AgentsCircuit']['position'];
+					$position_user=$data['UsersCircuit']['position'];
 				}
 			}
 			
-			if ($lastTraitement['position']==$position_agent)
+			if ($lastTraitement['position']==$position_user)
 				$deliberation['action']="traiter";
 				else
 				$deliberation['action']="view";
 			//debug($data);
-			//debug($position_agent);
+			//debug($position_user);
 			//exit;
 			array_push($delib, $deliberation);
 			//debug($delib);
@@ -201,15 +201,15 @@ class DeliberationsController extends AppController {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
-			$this->set('agents', $this->Deliberation->Agent->generateList());
+			$this->set('users', $this->Deliberation->User->generateList('elu=1'));
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$this->render();
 		} else {
 			//$this->data['Deliberation']['seance_id']= $this->Utils->FrDateToUkDate($this->params['form']['seance_id']);
-			$agent=$this->Session->read('agent');
+			$user=$this->Session->read('user');
 
-			$this->data['Deliberation']['redacteur_id']=$agent['Agent']['id'];
+			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->cleanUpFields();
 			if ($this->Deliberation->save($this->data)) {
 				$this->redirect('/deliberations/textprojet/'.$this->Deliberation->getLastInsertId());
@@ -218,7 +218,7 @@ class DeliberationsController extends AppController {
 				$this->set('services', $this->Deliberation->Service->generateList());
 				$this->set('themes', $this->Deliberation->Theme->generateList());
 				$this->set('circuits', $this->Deliberation->Circuit->generateList());
-				$this->set('agents', $this->Deliberation->Agent->generateList());
+				$this->set('users', $this->Deliberation->User->generateList());
 				$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 				$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			}
@@ -267,7 +267,9 @@ class DeliberationsController extends AppController {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList());
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
-			$this->set('agents', $this->Deliberation->Agent->generateList());
+			$this->set('users', $this->Deliberation->User->generateList());
+			$this->set('rapporteurs', $this->Deliberation->User->generateList('elu=1'));
+						
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 		} else {
@@ -280,7 +282,7 @@ class DeliberationsController extends AppController {
 				$this->set('services', $this->Deliberation->Service->generateList());
 				$this->set('themes', $this->Deliberation->Theme->generateList());
 				$this->set('circuits', $this->Deliberation->Circuit->generateList());
-				$this->set('agents', $this->Deliberation->Agent->generateList());
+				$this->set('users', $this->Deliberation->User->generateList());
 				$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			}
@@ -316,9 +318,8 @@ class DeliberationsController extends AppController {
 		}
 		if ($this->Deliberation->del($id)) {
 			$this->Session->setFlash('The Deliberation deleted: id '.$id.'');
-			//$this->redirect('/deliberations/listerMesProjets');
-			$this->redirect('/deliberations/index');
-		}
+			$this->redirect('/deliberations/listerMesProjets');
+					}
 	}
  
    function convert($id=null)
@@ -338,41 +339,41 @@ class DeliberationsController extends AppController {
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
 			$this->set('lastPosition', '-1');
-			$listeAgents['id']=array();
-			$listeAgents['nom']=array();
-			$listeAgents['prenom']=array();
-			$listeAgentCircuit['id']=array();
-	       	$listeAgentCircuit['circuit_id']=array();
-	       	$listeAgentCircuit['libelle']=array();
-	       	$listeAgentCircuit['agent_id']=array();
-	       	$listeAgentCircuit['nom']=array();
-	       	$listeAgentCircuit['prenom']=array();
-	       	$listeAgentCircuit['service_id']=array();
-	       	$listeAgentCircuit['position']=array();
-	       	$listeAgentCircuit['service_libelle']=array();
+			$listeUsers['id']=array();
+			$listeUsers['nom']=array();
+			$listeUsers['prenom']=array();
+			$listeUserCircuit['id']=array();
+	       	$listeUserCircuit['circuit_id']=array();
+	       	$listeUserCircuit['libelle']=array();
+	       	$listeUserCircuit['user_id']=array();
+	       	$listeUserCircuit['nom']=array();
+	       	$listeUserCircuit['prenom']=array();
+	       	$listeUserCircuit['service_id']=array();
+	       	$listeUserCircuit['position']=array();
+	       	$listeUserCircuit['service_libelle']=array();
 			$circuits=$this->Deliberation->Circuit->generateList(null, "libelle ASC");
 		
 			//affichage du circuit existant
 			if (isset($circuit_id)){	
 			    $this->set('circuit_id', $circuit_id);
-			    $condition = "AgentsCircuit.circuit_id = $circuit_id";
+			    $condition = "UsersCircuit.circuit_id = $circuit_id";
 			    $desc = 'position ASC';
 		     
-    	   		$tmplisteAgentCircuit = $this->AgentsCircuit->findAll($condition, null, $desc);
+    	   		$tmplisteUserCircuit = $this->UsersCircuit->findAll($condition, null, $desc);
     	   		 
-    	   		for ($i=0; $i<count($tmplisteAgentCircuit);$i++) {
-    	   			array_push($listeAgentCircuit['id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['id']);
-    	   			array_push($listeAgentCircuit['circuit_id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['circuit_id']);
-    	   			array_push($listeAgentCircuit['libelle'], $tmplisteAgentCircuit[$i]['Circuit']['libelle']);
-    	   			array_push($listeAgentCircuit['agent_id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['agent_id']);
-    	   			array_push($listeAgentCircuit['nom'], $tmplisteAgentCircuit[$i]['Agent']['nom']);
-    	   			array_push($listeAgentCircuit['prenom'], $tmplisteAgentCircuit[$i]['Agent']['prenom']);
-    	   			array_push($listeAgentCircuit['service_libelle'], $tmplisteAgentCircuit[$i]['Service']['libelle']);
-    	   			array_push($listeAgentCircuit['service_id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['service_id']);
-    	   			array_push($listeAgentCircuit['position'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['position']);
+    	   		for ($i=0; $i<count($tmplisteUserCircuit);$i++) {
+    	   			array_push($listeUserCircuit['id'], $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
+    	   			array_push($listeUserCircuit['circuit_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['circuit_id']);
+    	   			array_push($listeUserCircuit['libelle'], $tmplisteUserCircuit[$i]['Circuit']['libelle']);
+    	   			array_push($listeUserCircuit['user_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['user_id']);
+    	   			array_push($listeUserCircuit['nom'], $tmplisteUserCircuit[$i]['User']['nom']);
+    	   			array_push($listeUserCircuit['prenom'], $tmplisteUserCircuit[$i]['User']['prenom']);
+    	   			array_push($listeUserCircuit['service_libelle'], $tmplisteUserCircuit[$i]['Service']['libelle']);
+    	   			array_push($listeUserCircuit['service_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['service_id']);
+    	   			array_push($listeUserCircuit['position'], $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
     	   		}
 				 
-  				$this->set('listeAgentCircuit', $listeAgentCircuit);
+  				$this->set('listeUserCircuit', $listeUserCircuit);
   			}
 			else 
 				$this->set('circuit_id', '0');
