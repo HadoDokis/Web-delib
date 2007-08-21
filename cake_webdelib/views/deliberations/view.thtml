@@ -1,5 +1,5 @@
 <div class="deliberation">
-<h2>Fiche d'un deliberation</h2>
+<h2>Fiche d&eacute;liberation</h2>
 
 <dl>
 	<dt>Id</dt>
@@ -12,10 +12,10 @@
 	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
 	<dt>Vote Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>
-	<dt>Agent</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Agent']['nom'], '/agents/view/' .$deliberation['Agent']['id'])?></dd>
+	<dt>Redacteur</dt>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['nom'].' '.$deliberation['Redacteur']['prenom'], '/users/view/' .$deliberation['Redacteur']['id'])?></dd>
 	<dt>Rapporteur</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['rapporteur_id']?></dd>
+	<dd>&nbsp;<?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']?></dd>
 	<dt>Date Seance</dt>
 	<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
 	<dt>Objet</dt>
@@ -41,11 +41,11 @@
 	<li><?php echo $html->link('Ajouter une deliberation',	'/deliberations/add') ?> </li>
 	<li><?php echo $html->link('Annuler', '/deliberations/index')?></li>
 	<br/>
-	<li><?php echo $html->link('Voir les agents', '/agents/index/');?></li>
+	<li><?php echo $html->link('Voir les utilisateurs', '/users/index/');?></li>
 	<li><?php echo $html->link('Voir les circuits', '/circuits/index/');?></li>
 	<li><?php echo $html->link('Voir les themes', '/themes/index/');?></li>
 	<li><?php echo $html->link('Voir les services', '/services/index/');?></li>
-	<li><?php echo $html->link('Ajouter un agent', '/agents/add/');?></li>
+	<li><?php echo $html->link('Ajouter un utilisateur', '/users/add/');?></li>
 	<li><?php echo $html->link('Ajouter un circuit', '/circuits/add/');?></li>
 	<li><?php echo $html->link('Ajouter un theme', '/themes/add/');?></li>
 	<li><?php echo $html->link('Ajouter un service', '/services/add/');?></li>
