@@ -12,7 +12,7 @@
 
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
- 	<?php echo $html->selectTag('Deliberation/rapporteur_id', $agents, $html->tagValue('Deliberation/rapporteur_id'), array(), array(), true);?>
+ 	<?php echo $html->selectTag('Deliberation/rapporteur_id', $users, $html->tagValue('Deliberation/rapporteur_id'), array(), array(), false);?>
 	<?php echo $html->tagErrorMsg('Deliberation/rapporteur_id', 'Entrer le rapporteur.');?>
 </div>
 
