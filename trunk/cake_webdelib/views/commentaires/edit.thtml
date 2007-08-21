@@ -1,4 +1,4 @@
-<h2>Edit Commentaire</h2>
+<h2>Modification du commentaire</h2>
 <form action="<?php echo $html->url('/commentaires/edit/'.$html->tagValue('Commentaire/id')); ?>" method="post">
 <div class="required"> 
 	<?php echo $form->labelTag('Commentaire/delib_id', 'Delib Id');?>
@@ -6,9 +6,9 @@
 	<?php echo $html->tagErrorMsg('Commentaire/delib_id', 'Please enter the Delib Id.');?>
 </div>
 <div class="required"> 
-	<?php echo $form->labelTag('Commentaire/agent_id', 'Agent Id');?>
- 	<?php echo $html->input('Commentaire/agent_id', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Commentaire/agent_id', 'Please enter the Agent Id.');?>
+	<?php echo $form->labelTag('Commentaire/user_id', 'User Id');?>
+ 	<?php echo $html->input('Commentaire/user_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Commentaire/user_id', 'Please enter the User Id.');?>
 </div>
 <div class="required"> 
 	<?php echo $form->labelTag('Commentaire/texte', 'Texte');?>

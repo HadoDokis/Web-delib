@@ -1,11 +1,11 @@
 <div class="commentaires">
-<h2>List Commentaires</h2>
+<h2>Liste des commentaires</h2>
 
 <table cellpadding="0" cellspacing="0">
 <tr>
 	<th>Id</th>
 	<th>Delib Id</th>
-	<th>Agent Id</th>
+	<th>User Id</th>
 	<th>Texte</th>
 	<th>Created</th>
 	<th>Modified</th>
@@ -15,7 +15,7 @@
 <tr>
 	<td><?php echo $commentaire['Commentaire']['id']; ?></td>
 	<td><?php echo $commentaire['Commentaire']['delib_id']; ?></td>
-	<td><?php echo $commentaire['Commentaire']['agent_id']; ?></td>
+	<td><?php echo $commentaire['Commentaire']['user_id']; ?></td>
 	<td><?php echo $commentaire['Commentaire']['texte']; ?></td>
 	<td><?php echo $commentaire['Commentaire']['created']; ?></td>
 	<td><?php echo $commentaire['Commentaire']['modified']; ?></td>

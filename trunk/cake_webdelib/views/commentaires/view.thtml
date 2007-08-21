@@ -1,13 +1,13 @@
 <div class="commentaire">
-<h2>View Commentaire</h2>
+<h2>Fice commentaire</h2>
 
 <dl>
 	<dt>Id</dt>
 	<dd>&nbsp;<?php echo $commentaire['Commentaire']['id']?></dd>
 	<dt>Delib Id</dt>
 	<dd>&nbsp;<?php echo $commentaire['Commentaire']['delib_id']?></dd>
-	<dt>Agent Id</dt>
-	<dd>&nbsp;<?php echo $commentaire['Commentaire']['agent_id']?></dd>
+	<dt>User Id</dt>
+	<dd>&nbsp;<?php echo $commentaire['Commentaire']['user_id']?></dd>
 	<dt>Texte</dt>
 	<dd>&nbsp;<?php echo $commentaire['Commentaire']['texte']?></dd>
 	<dt>Created</dt>
