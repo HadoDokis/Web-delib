@@ -1,6 +1,6 @@
 <div id="tableau_bord">
 <h2>Mes projets à traiter</h2>
-liste des projets à valider pour l'agent connecté
+liste des projets à valider pour l'utilisateur connecté
 
 <h2>Projets dans mon circuit de validation</h2>
 liste des autres projets dans le(s) circuit(s), avec leur position
