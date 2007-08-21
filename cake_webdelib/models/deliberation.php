@@ -18,13 +18,13 @@ class Deliberation extends AppModel {
 											'order'=>'',
 											'dependent'=>false, 
 											'foreignKey'=>'circuit_id'),
-						'Redacteur' =>array('className'    => 'Agent',
+						'Redacteur' =>array('className'    => 'User',
                               'conditions'   => '',
                               'order'        => '',
                               'dependent'    =>  true,
                               'foreignKey'   => 'redacteur_id'
                         ),
-                        'Rapporteur'=> array('className'    => 'Agent',
+                        'Rapporteur'=> array('className'    => 'User',
                               'conditions'   => '',
                               'order'        => '',
                               'dependent'    =>  true,
@@ -41,14 +41,14 @@ class Deliberation extends AppModel {
 												
 //												
 //	var $hasOne = array('Redacteur' =>
-//                        array('className'    => 'Agent',
+//                        array('className'    => 'User',
 //                              'conditions'   => '',
 //                              'order'        => '',
 //                              'dependent'    =>  true,
 //                              'foreignKey'   => 'redacteur_id'
 //                        ),
 //                              'Rapporteur'=>
-//                        array('className'    => 'Agent',
+//                        array('className'    => 'User',
 //                              'conditions'   => '',
 //                              'order'        => '',
 //                              'dependent'    =>  true,
@@ -57,9 +57,9 @@ class Deliberation extends AppModel {
 //                  );											
 //										
 											
-//	var $hasAndBelongsToMany=array('Agent'=>array('classname'=>'Agent',
-//													'joinTable'=>'agents_profils',
-//													'foreignKey'=>'agent_id',
+//	var $hasAndBelongsToMany=array('User'=>array('classname'=>'User',
+//													'joinTable'=>'users_profils',
+//													'foreignKey'=>'user_id',
 //													'associationForeignKey'=>'profil_id',
 //													'conditions'=>'',
 //													'order'=>'',
