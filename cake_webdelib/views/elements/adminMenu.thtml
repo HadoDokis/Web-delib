@@ -47,7 +47,7 @@
 		<dt onmouseover="javascript:montre('smenu5');" >Backoffice</dt>
 			<dd id="smenu5" onmouseover="javascript:montre('smenu5');" onmouseout="javascript:montre('');">
 				<ul>
-					<li><a href="<?php echo $html->url('/agents');?>">Agents</a></li>
+					<li><a href="<?php echo $html->url('/users');?>">Utilisateurs</a></li>
 					<li><a href="<?php echo $html->url('/circuits');?>">Circuits</a></li>
 					<li><a href="<?php echo $html->url('/profils');?>">Profils</a></li>
 					<li><a href="<?php echo $html->url('/seances');?>">S&eacute;ances</a></li>
