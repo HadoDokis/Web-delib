@@ -1,0 +1,45 @@
+<h2>Nouvel utilisateur</h2>
+<form action="<?php echo $html->url('/users/add'); ?>" method="post">
+<div class="optional"> 
+	<?php echo $form->labelTag('User/login', 'Login');?>
+ 	<?php echo $html->input('User/login', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('User/login', 'Entrer le login.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('User/password', 'Password');?>
+ 	<?php echo $html->password('User/password', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('User/password', 'Entrer le mot de passe.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('User/nom', 'Nom');?>
+ 	<?php echo $html->input('User/nom', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('User/nom', 'Entrer le nom.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('User/prenom', 'Prenom');?>
+ 	<?php echo $html->input('User/prenom', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('User/prenom', 'Entrer le prenom.');?>
+</div>
+<div class="optional">
+	<?php echo $form->labelTag('User/elu', 'Elu');?>
+	<?php echo $html->checkbox('User/elu'); ?>
+	<?php echo $html->tagErrorMsg('User/elu','Choisissez sa fonction'); ?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('Service/Service', 'Related Services');?>
+ 	<?php echo $html->selectTag('Service/Service', $services, $selectedServices, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
+	<?php echo $html->tagErrorMsg('Service/Service', 'Entrer le(s) service(s) associé(s).');?>
+</div>
+
+<div class="optional"> 
+	<?php echo $form->labelTag('Profil/Profil', 'Related Profils');?>
+ 	<?php echo $html->selectTag('User/profil_id', $profils, $html->tagValue('User/profil_id'), array(), array(), true);?>
+	<?php echo $html->tagErrorMsg('Profil/Profil', 'Entrer le profil associé.');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Ajouter un utilisateur');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('Annuler', '/users/index')?></li>
+</ul>
