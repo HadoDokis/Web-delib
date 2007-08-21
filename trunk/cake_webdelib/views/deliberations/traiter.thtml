@@ -12,8 +12,8 @@
 	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
 	<dt>Vote Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>
-	<dt>Agent</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['nom'], '/agents/view/' .$deliberation['Redacteur']['id'])?></dd>
+	<dt>User</dt>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['nom'], '/users/view/' .$deliberation['Redacteur']['id'])?></dd>
 	<dt>Rapporteur</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['rapporteur_id']?></dd>
 	<dt>Date Session</dt>
