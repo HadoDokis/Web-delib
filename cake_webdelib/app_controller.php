@@ -43,23 +43,23 @@ class AppController extends Controller {
 	var $beforeFilter = array('checkSession');
 	
 
-	var $infoAgent = "";
+	var $infoUser = "";
 	var $lienAccueil = "";
 	var $lienDeconnexion = "";
 	
 	function checkSession()
 	{
-		$this->infoAgent = "<span class=\"user\">".$this->Session->read('agent.Agent.prenom')." ".$this->Session->read('agent.Agent.nom')."</span> ";
+		$this->infoUser = "<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ";
 		$this->lienAccueil = " | <span class=\"accueil\"><a href=\"".$this->base."/\">Accueil</a></span> ";
- 	    $this->lienDeconnexion = " | <span class=\"deconnexion\"><a href=\"".$this->base."/agents/logout\"> Deconnexion</a></span>";  
+ 	    $this->lienDeconnexion = " | <span class=\"deconnexion\"><a href=\"".$this->base."/users/logout\"> Deconnexion</a></span>";  
  	    	  
-		if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/agents/login')
+		if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login')
 		{
 			//s'il n'y a pas d'utilisateur connecté en session
-			if (!$this->Session->Check('agent'))
+			if (!$this->Session->Check('user'))
 			{
 				//le forcer a se connecter
-				$this->redirect('agents/login');
+				$this->redirect('users/login');
 				exit();
 			}
 		}
