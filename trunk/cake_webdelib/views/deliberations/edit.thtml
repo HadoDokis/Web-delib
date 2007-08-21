@@ -1,6 +1,6 @@
 <?php echo $javascript->link('fckeditor'); ?> 
 
-<h2>Modification d'une deliberation</h2>
+<h2>Modification de la d&eacute;liberation</h2>
 <form action="<?php echo $html->url('/deliberations/edit/'.$html->tagValue('Deliberation/id')); ?>" method="post">
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/circuit_id', 'Circuit');?>
@@ -23,13 +23,13 @@
 	<?php echo $html->tagErrorMsg('Deliberation/vote_id', 'Entrer le vote Id.');?>
 </div>
 <div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/redacteur_id', 'Agent');?>
- 	<?php echo $html->selectTag('Deliberation/redacteur_id', $agents, $html->tagValue('Deliberation/agent_id'), array(), array(), true);?>
-	<?php echo $html->tagErrorMsg('Deliberation/redacteur_id', 'Entrer l\'agent.') ?>
+	<?php echo $form->labelTag('Deliberation/redacteur_id', 'Redacteur');?>
+ 	<?php echo $html->selectTag('Deliberation/redacteur_id', $users, $html->tagValue('Deliberation/user_id'), array(), array(), true);?>
+	<?php echo $html->tagErrorMsg('Deliberation/redacteur_id', 'Entrer l\'user.') ?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
- 	<?php echo $html->input('Deliberation/rapporteur_id', array('size' => '60'));?>
+ 	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs, $html->tagValue('Deliberation/user_id'),array(),array(),true);?>
 	<?php echo $html->tagErrorMsg('Deliberation/rapporteur_id', 'Entrer le rapporteur.');?>
 </div>
 <div class="optional"> 
@@ -39,7 +39,7 @@
 </div>
 <div class="optional"> 
     <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
-    <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,false); ?>    
+    <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>    
 </div>	
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/objet', 'Objet');?>
@@ -86,6 +86,6 @@
 <li><?php echo $html->link('Ajouter un theme', '/themes/add/');?></li>
 <li><?php echo $html->link('Voir les circuits', '/circuits/index/');?></li>
 <li><?php echo $html->link('Ajouter un circuit', '/circuits/add/');?></li>
-<li><?php echo $html->link('Voir les agents', '/agents/index/');?></li>
-<li><?php echo $html->link('Ajouter un agent', '/agents/add/');?></li>
+<li><?php echo $html->link('Voir les utilisateurs', '/users/index/');?></li>
+<li><?php echo $html->link('Ajouter un utilisateur', '/users/add/');?></li>
 </ul>
