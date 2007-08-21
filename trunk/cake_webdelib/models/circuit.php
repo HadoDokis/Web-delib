@@ -10,7 +10,7 @@ class Circuit extends AppModel {
 	
 	var $recursive = 2;
 
-	var $hasMany = array ('AgentsCircuit' => array('className'=>'AgentsCircuit'));
+	var $hasMany = array ('UsersCircuit' => array('className'=>'UsersCircuit'));
 
 }
 ?>
