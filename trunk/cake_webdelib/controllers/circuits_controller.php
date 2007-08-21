@@ -3,7 +3,7 @@ class CircuitsController extends AppController {
 
 	var $name = 'Circuits';
 	var $helpers = array('Html', 'Form' , 'Javascript');
-	var $uses = array('Circuit', 'Agent', 'Service', 'AgentsService', 'AgentsCircuit');
+	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'UsersCircuit');
 
 	function view($id = null) {
 		if (!$id) {
@@ -58,41 +58,41 @@ class CircuitsController extends AppController {
 	function index($circuit_id=null, $service_id=null) {
 		$this->set('lastPosition', '-1');
 		
-		$listeAgents['id']=array();
-		$listeAgents['nom']=array();
-		$listeAgents['prenom']=array();
-		$listeAgentCircuit['id']=array();
-       	$listeAgentCircuit['circuit_id']=array();
-       	$listeAgentCircuit['libelle']=array();
-       	$listeAgentCircuit['agent_id']=array();
-       	$listeAgentCircuit['nom']=array();
-       	$listeAgentCircuit['prenom']=array();
-       	$listeAgentCircuit['service_id']=array();
-       	$listeAgentCircuit['position']=array();
-       	$listeAgentCircuit['service_libelle']=array();
+		$listeUsers['id']=array();
+		$listeUsers['nom']=array();
+		$listeUsers['prenom']=array();
+		$listeUserCircuit['id']=array();
+       	$listeUserCircuit['circuit_id']=array();
+       	$listeUserCircuit['libelle']=array();
+       	$listeUserCircuit['user_id']=array();
+       	$listeUserCircuit['nom']=array();
+       	$listeUserCircuit['prenom']=array();
+       	$listeUserCircuit['service_id']=array();
+       	$listeUserCircuit['position']=array();
+       	$listeUserCircuit['service_libelle']=array();
 		$circuits=$this->Circuit->generateList(null, "libelle ASC");
 		
 		//affichage du circuit existant
 		if (isset($circuit_id)){	
 		    $this->set('circuit_id', $circuit_id);
-		    $condition = "AgentsCircuit.circuit_id = $circuit_id";
+		    $condition = "UsersCircuit.circuit_id = $circuit_id";
 		    $desc = 'position ASC';
 		     
-       		$tmplisteAgentCircuit = $this->AgentsCircuit->findAll($condition, null, $desc);
+       		$tmplisteUserCircuit = $this->UsersCircuit->findAll($condition, null, $desc);
        		 
-       		for ($i=0; $i<count($tmplisteAgentCircuit);$i++) {
-       			array_push($listeAgentCircuit['id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['id']);
-       			array_push($listeAgentCircuit['circuit_id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['circuit_id']);
-       			array_push($listeAgentCircuit['libelle'], $tmplisteAgentCircuit[$i]['Circuit']['libelle']);
-       			array_push($listeAgentCircuit['agent_id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['agent_id']);
-       			array_push($listeAgentCircuit['nom'], $tmplisteAgentCircuit[$i]['Agent']['nom']);
-       			array_push($listeAgentCircuit['prenom'], $tmplisteAgentCircuit[$i]['Agent']['prenom']);
-       			array_push($listeAgentCircuit['service_libelle'], $tmplisteAgentCircuit[$i]['Service']['libelle']);
-       			array_push($listeAgentCircuit['service_id'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['service_id']);
-       			array_push($listeAgentCircuit['position'], $tmplisteAgentCircuit[$i]['AgentsCircuit']['position']);
+       		for ($i=0; $i<count($tmplisteUserCircuit);$i++) {
+       			array_push($listeUserCircuit['id'], $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
+       			array_push($listeUserCircuit['circuit_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['circuit_id']);
+       			array_push($listeUserCircuit['libelle'], $tmplisteUserCircuit[$i]['Circuit']['libelle']);
+       			array_push($listeUserCircuit['user_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['user_id']);
+       			array_push($listeUserCircuit['nom'], $tmplisteUserCircuit[$i]['User']['nom']);
+       			array_push($listeUserCircuit['prenom'], $tmplisteUserCircuit[$i]['User']['prenom']);
+       			array_push($listeUserCircuit['service_libelle'], $tmplisteUserCircuit[$i]['Service']['libelle']);
+       			array_push($listeUserCircuit['service_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['service_id']);
+       			array_push($listeUserCircuit['position'], $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
        		}
 			 
-  			$this->set('listeAgentCircuit', $listeAgentCircuit);
+  			$this->set('listeUserCircuit', $listeUserCircuit);
   			$this->set('lastPosition', $this->getLastPosition($circuit_id));
 		}
 		else 
@@ -111,32 +111,32 @@ class CircuitsController extends AppController {
 		//traitement du circuit (création ou modification)
 		if (empty($this->data)) {
 			if ($service_id!=null) {
-				$liste_agents=$this->AgentsService->findAll("AgentsService.service_id=$service_id");			
+				$liste_users=$this->UsersService->findAll("UsersService.service_id=$service_id");			
 
-				for ($i=0; $i<count($liste_agents);$i++){
-				    array_push($listeAgents['id'], $liste_agents[$i]['AgentsService']['agent_id']); 
-				    array_push($listeAgents['nom'],  $this->requestAction("agents/getNom/".$liste_agents[$i]['AgentsService']['agent_id']));
-				    array_push($listeAgents['prenom'], $this->requestAction("agents/getPrenom/".$liste_agents[$i]['AgentsService']['agent_id']));
+				for ($i=0; $i<count($liste_users);$i++){
+				    array_push($listeUsers['id'], $liste_users[$i]['UsersService']['user_id']); 
+				    array_push($listeUsers['nom'],  $this->requestAction("users/getNom/".$liste_users[$i]['UsersService']['user_id']));
+				    array_push($listeUsers['prenom'], $this->requestAction("users/getPrenom/".$liste_users[$i]['UsersService']['user_id']));
 				}
 				$this->set('service_id', $service_id);
-  			    $this->set('listeAgent', $listeAgents);
+  			    $this->set('listeUser', $listeUsers);
 			}
 			$this->render();
 		}
 	}
 
-	function addAgent($circuit_id=null, $service_id=null, $agent_id=null)
+	function addUser($circuit_id=null, $service_id=null, $user_id=null)
 	{
 		$condition = "circuit_id = $circuit_id";
-        $data = $this->AgentsCircuit->findAll($condition);	
+        $data = $this->UsersCircuit->findAll($condition);	
         $position = $this->getLastPosition($circuit_id) + 1;
 		
-		$this->params['data']['AgentsCircuit']['position'] = $position;
-		$this->params['data']['AgentsCircuit']['circuit_id'] = $circuit_id ;
-		$this->params['data']['AgentsCircuit']['service_id'] = $service_id ;
-		$this->params['data']['AgentsCircuit']['agent_id']   = $agent_id ;
+		$this->params['data']['UsersCircuit']['position'] = $position;
+		$this->params['data']['UsersCircuit']['circuit_id'] = $circuit_id ;
+		$this->params['data']['UsersCircuit']['service_id'] = $service_id ;
+		$this->params['data']['UsersCircuit']['user_id']   = $user_id ;
 			
-		if ($this->AgentsCircuit->save($this->params['data'])){
+		if ($this->UsersCircuit->save($this->params['data'])){
 		    $this->redirect("/circuits/index/$circuit_id/$service_id");
 		}
 		else {
@@ -153,28 +153,28 @@ class CircuitsController extends AppController {
 	   	$lastPosition = $this->getLastPosition($circuitCourant);
 	     	
         if ($sens != 0)
-            $conditions = "AgentsCircuit.circuit_id = $circuitCourant  AND position = $positionCourante-1";
+            $conditions = "UsersCircuit.circuit_id = $circuitCourant  AND position = $positionCourante-1";
        	else            // on récupère l'objet précédent
-   		    $conditions = "AgentsCircuit.circuit_id = $circuitCourant  AND position = $positionCourante+1";
+   		    $conditions = "UsersCircuit.circuit_id = $circuitCourant  AND position = $positionCourante+1";
 
-		$obj = $this->AgentsCircuit->findAll($conditions);	
+		$obj = $this->UsersCircuit->findAll($conditions);	
 		//position du suivant ou du precedent
-        $id_obj = $obj['0']['AgentsCircuit']['id'];
-		$newPosition = $obj['0']['AgentsCircuit']['position'];
+        $id_obj = $obj['0']['UsersCircuit']['id'];
+		$newPosition = $obj['0']['UsersCircuit']['position'];
 		// On récupère les informations de l'objet courant
-		$this->data = $this->AgentsCircuit->read(null, $oldIdPos);
-		$this->data['AgentsCircuit']['position'] = $newPosition;
+		$this->data = $this->UsersCircuit->read(null, $oldIdPos);
+		$this->data['UsersCircuit']['position'] = $newPosition;
 		
 		//enregistrement de l'objet courant avec la nouvelle position
-		if (!$this->AgentsCircuit->save($this->data)) {
+		if (!$this->UsersCircuit->save($this->data)) {
 		   die('Erreur durant l\'enregistrement');
 		}
 		// On récupère les informations de l'objet à déplacer
-		$this->data = $this->AgentsCircuit->read(null, $id_obj);
-		$this->data['AgentsCircuit']['position']= $positionCourante;
+		$this->data = $this->UsersCircuit->read(null, $id_obj);
+		$this->data['UsersCircuit']['position']= $positionCourante;
 		
 		//enregistrement de l'objet à déplacer avec la position courante
-		if ($this->AgentsCircuit->save($this->data)) {
+		if ($this->UsersCircuit->save($this->data)) {
 			if ($sens ==2)
 			    return true;
 			else	
@@ -185,7 +185,7 @@ class CircuitsController extends AppController {
 		}
 	}
 
-	function supprimerAgent($id) {
+	function supprimerUser($id) {
 		$position     = $this->getCurrentPosition($id);
 		$circuit_id   = $this->getCurrentCircuit($id);
 		$lastPosition = $this->getLastPosition($circuit_id);
@@ -193,21 +193,21 @@ class CircuitsController extends AppController {
 		if ($lastPosition != $position) {
 			$conditions = "circuit_id = $circuit_id and position > $position ";
 			$order = "position ASC";
-			$obj = $this->AgentsCircuit->findAll($conditions, null, $order);	
+			$obj = $this->UsersCircuit->findAll($conditions, null, $order);	
 			
-			foreach ($obj as $agent)	
-			    $this->intervertirPosition($agent['AgentsCircuit']['id'], 2);
+			foreach ($obj as $user)	
+			    $this->intervertirPosition($user['UsersCircuit']['id'], 2);
 			
 			$conditions = "circuit_id = $circuit_id and position = $lastPosition-1";
-			$avantDernier = $this->AgentsCircuit->findAll($conditions);	
+			$avantDernier = $this->UsersCircuit->findAll($conditions);	
 
-		    $this->data = $this->AgentsCircuit->read(null, $avantDernier[0]['AgentsCircuit']['id']);
-		    $this->data['AgentsCircuit']['position'] = $lastPosition-1;
-			$this->AgentsCircuit->save($this->data);
+		    $this->data = $this->UsersCircuit->read(null, $avantDernier[0]['UsersCircuit']['id']);
+		    $this->data['UsersCircuit']['position'] = $lastPosition-1;
+			$this->UsersCircuit->save($this->data);
 
 		}
 		
-		if ($this->AgentsCircuit->del($id))
+		if ($this->UsersCircuit->del($id))
 		    $this->redirect("/circuits/index/$circuit_id/");
 	    else
 		    $this->Session->setFlash('Suppression impossible');
@@ -217,23 +217,23 @@ class CircuitsController extends AppController {
 
 	
   	function getCurrentPosition($id){
-    	$conditions = "AgentsCircuit.id = $id";
+    	$conditions = "UsersCircuit.id = $id";
     	$field = 'position';
-    	$obj = $this->AgentsCircuit->findAll($conditions);
+    	$obj = $this->UsersCircuit->findAll($conditions);
     	
-    	return  $obj['0']['AgentsCircuit']['position'];
+    	return  $obj['0']['UsersCircuit']['position'];
     }
 	
     function getCurrentCircuit($id)
     {
-		$condition = "AgentsCircuit.id = $id";
-        $objCourant = $this->AgentsCircuit->findAll($condition);
-		return $objCourant['0']['AgentsCircuit']['circuit_id'];
+		$condition = "UsersCircuit.id = $id";
+        $objCourant = $this->UsersCircuit->findAll($condition);
+		return $objCourant['0']['UsersCircuit']['circuit_id'];
     	
     }
     
    	function getLastPosition($circuit_id) {
-		return count($this->AgentsCircuit->findAll("circuit_id = $circuit_id"));
+		return count($this->UsersCircuit->findAll("circuit_id = $circuit_id"));
     }
 	
   
