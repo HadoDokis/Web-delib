@@ -236,3 +236,24 @@ dl,dt,dd,ul,li {
 #menu li a:hover,#menu dt a:hover {
 	background: #eee;
 }
+
+/*  ----------------- Calendar ------------------------ */
+caption.month {
+    font-size: 90%;
+    color: navy;
+}
+table.month {
+    border: thin groove #800080
+}
+.normal {
+    font-size: 80%;
+}
+.today {
+    border: solid 1px;
+}
+.seance {
+    border: solid 1px;
+	background: red;
+}
+
+/*  ----------------- end of Calendar -------------------------- */
