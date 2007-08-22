@@ -36,7 +36,7 @@ if (!defined('CALENDAR_ROOT')) {
 /**
  * Load Calendar base class
  */
-require_once CALENDAR_ROOT.'Calendar.php';
+//require_once CALENDAR_ROOT.'Calendar.php';
 
 /**
  * Contains a factory method to return a Singleton instance of a class
@@ -75,7 +75,7 @@ class Calendar_Factory
         $firstDay = defined('CALENDAR_FIRST_DAY_OF_WEEK') ? CALENDAR_FIRST_DAY_OF_WEEK : 1;
         switch ($type) {
             case 'Day':
-                require_once CALENDAR_ROOT.'Day.php';
+               // require_once CALENDAR_ROOT.'Day.php';
                 return new Calendar_Day($y,$m,$d);
             case 'Month':
                 // Set default state for which month type to build
@@ -84,16 +84,16 @@ class Calendar_Factory
                 }
                 switch (CALENDAR_MONTH_STATE) {
                     case CALENDAR_USE_MONTH_WEEKDAYS:
-                        require_once CALENDAR_ROOT.'Month/Weekdays.php';
+                       // require_once CALENDAR_ROOT.'Month/Weekdays.php';
                         $class = 'Calendar_Month_Weekdays';
                         break;
                     case CALENDAR_USE_MONTH_WEEKS:
-                        require_once CALENDAR_ROOT.'Month/Weeks.php';
+                        //require_once CALENDAR_ROOT.'Month/Weeks.php';
                         $class = 'Calendar_Month_Weeks';
                         break;
                     case CALENDAR_USE_MONTH:
                     default:
-                        require_once CALENDAR_ROOT.'Month.php';
+                        //require_once CALENDAR_ROOT.'Month.php';
                         $class = 'Calendar_Month';
                         break;
                 }
