@@ -35,12 +35,12 @@ if (!defined('CALENDAR_ROOT')) {
 /**
  * Load Calendar base class
  */
-require_once CALENDAR_ROOT.'Calendar.php';
+//require_once CALENDAR_ROOT.'Calendar.php';
 
 /**
  * Load base month
  */
-require_once CALENDAR_ROOT.'Month.php';
+//require_once CALENDAR_ROOT.'Month.php';
 
 /**
  * Represents a Month and builds Days in tabular form<br>
@@ -106,7 +106,7 @@ class Calendar_Month_Weekdays extends Calendar_Month
      */
     function build($sDates=array())
     {
-        require_once CALENDAR_ROOT.'Table/Helper.php';
+        //require_once CALENDAR_ROOT.'Table/Helper.php';
         $this->tableHelper = & new Calendar_Table_Helper($this, $this->firstDay);
         Calendar_Month::build($sDates);
         $this->buildEmptyDaysBefore();
