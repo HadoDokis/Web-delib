@@ -33,9 +33,10 @@ if (!defined('CALENDAR_ROOT')) {
 }
 
 /**
- * Load Calendar base class
+ * Load Calendar base class 
+ * Deja fait via le vendor(cake/Calendar)...
  */
-require_once CALENDAR_ROOT.'Calendar.php';
+//require_once CALENDAR_ROOT.'Calendar.php';
 
 /**
  * Represents a Year and builds Months<br>
@@ -80,7 +81,7 @@ class Calendar_Year extends Calendar
      */
     function build($sDates = array(), $firstDay = null)
     {
-        require_once CALENDAR_ROOT.'Factory.php';
+      //  require_once CALENDAR_ROOT.'Factory.php';
         $this->firstDay = $this->defineFirstDayOfWeek($firstDay);
         $monthsInYear = $this->cE->getMonthsInYear($this->thisYear());
         for ($i=1; $i <= $monthsInYear; $i++) {
