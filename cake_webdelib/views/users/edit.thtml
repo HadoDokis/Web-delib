@@ -21,6 +21,11 @@
 	<?php echo $html->tagErrorMsg('User/prenom', 'Entrer le prenom.');?>
 </div>
 <div class="optional"> 
+	<?php echo $form->labelTag('User/email', 'Email');?>
+ 	<?php echo $html->input('User/email', array('size' => '30'));?>
+	<?php echo $html->tagErrorMsg('User/email', 'Entrer l\'email.');?>
+</div>
+<div class="optional"> 
 	<?php echo $form->labelTag('User/adresse', 'Adresse');?>
  	<?php echo $html->input('User/adresse', array('size' => '30'));?>
 	<?php echo $html->tagErrorMsg('User/adresse', 'Entrer l\'adresse.');?>
