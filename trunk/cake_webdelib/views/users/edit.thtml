@@ -2,24 +2,53 @@
 <form action="<?php echo $html->url('/users/edit/'.$html->tagValue('User/id')); ?>" method="post">
 <div class="optional"> 
 	<?php echo $form->labelTag('User/login', 'Login');?>
- 	<?php echo $html->input('User/login', array('size' => '60'));?>
+ 	<?php echo $html->input('User/login', array('size' => '30'));?>
 	<?php echo $html->tagErrorMsg('User/login', 'Entrer le login.');?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('User/password', 'Password');?>
- 	<?php echo $html->input('User/password', array('size' => '60'));?>
+ 	<?php echo $html->input('User/password', array('size' => '30'));?>
 	<?php echo $html->tagErrorMsg('User/password', 'Entrer le mot de paasse.');?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('User/nom', 'Nom');?>
- 	<?php echo $html->input('User/nom', array('size' => '60'));?>
+ 	<?php echo $html->input('User/nom', array('size' => '30'));?>
 	<?php echo $html->tagErrorMsg('User/nom', 'Entrer le nom.');?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('User/prenom', 'Prenom');?>
- 	<?php echo $html->input('User/prenom', array('size' => '60'));?>
+ 	<?php echo $html->input('User/prenom', array('size' => '30'));?>
 	<?php echo $html->tagErrorMsg('User/prenom', 'Entrer le prenom.');?>
 </div>
+<div class="optional"> 
+	<?php echo $form->labelTag('User/adresse', 'Adresse');?>
+ 	<?php echo $html->input('User/adresse', array('size' => '30'));?>
+	<?php echo $html->tagErrorMsg('User/adresse', 'Entrer l\'adresse.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('User/CP', 'Code Postal');?>
+ 	<?php echo $html->input('User/CP');?>
+	<?php echo $html->tagErrorMsg('User/CP', 'Entrer le code postal.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('User/ville', 'Ville');?>
+ 	<?php echo $html->input('User/ville');?>
+	<?php echo $html->tagErrorMsg('User/ville', 'Entrer la ville.');?>
+</div>
+<div class="optional"> 
+	<?php echo $form->labelTag('User/teldom', 'Num tel domicile');?>
+ 	<?php echo $html->input('User/teldom');?>
+	<?php echo $html->tagErrorMsg('User/teldom', 'Entrer le Num tel domicile.');?>
+</div>
+<br/>
+<div class="optional"> 
+	<?php echo $form->labelTag('User/telmobile', 'Num tel mobile');?>
+ 	<?php echo $html->input('User/telmobile');?>
+	<?php echo $html->tagErrorMsg('User/telmobile', 'Entrer le Num tel mobile.');?>
+</div>
+<br/>
+<?php echo $form->generateDateTime('User/date_naissance','Date de naissance',true,'Veuillez entrer la date de naissance'); ?>
+<br/>
 <div class="optional">
 	<?php echo $form->labelTag('User/elu', 'Elu');?>
 	<?php echo $html->checkbox('User/elu'); ?>
