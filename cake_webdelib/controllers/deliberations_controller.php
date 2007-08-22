@@ -77,7 +77,7 @@ class DeliberationsController extends AppController {
 		$this->set('deliberations', $this->Deliberation->findAll($conditions));
 	}
 	
-	function listerProjetsAttribuer()
+	function listerProjetsAttribues()
 	{
 		if (empty ($this->data))
 		{
@@ -89,7 +89,7 @@ class DeliberationsController extends AppController {
 	}
 		
 		
-	function listerProjetsNonAttribuer()
+	function listerProjetsNonAttribues()
 	{
 		if (empty ($this->data))
 		{
@@ -168,7 +168,7 @@ class DeliberationsController extends AppController {
 			if ($lastTraitement['position']==$position_user)
 				$deliberation['action']="traiter";
 				else
-				$deliberation['action']="view";
+				$deliberation['action']="voir";
 			//debug($data);
 			//debug($position_user);
 			//exit;
