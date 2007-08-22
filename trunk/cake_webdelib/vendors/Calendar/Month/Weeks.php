@@ -36,12 +36,12 @@ if (!defined('CALENDAR_ROOT')) {
 /**
  * Load Calendar base class
  */
-require_once CALENDAR_ROOT.'Calendar.php';
+//require_once CALENDAR_ROOT.'Calendar.php';
 
 /**
  * Load base month
  */
-require_once CALENDAR_ROOT.'Month.php';
+//require_once CALENDAR_ROOT.'Month.php';
 
 /**
  * Represents a Month and builds Weeks
