@@ -7,6 +7,7 @@ class User extends AppModel {
 		'password' => VALID_NOT_EMPTY,
 		'nom' => VALID_NOT_EMPTY,
 		'prenom' => VALID_NOT_EMPTY,
+		'email' => VALID_EMAIL,
 	);
 
 	var $recursive = 2;
