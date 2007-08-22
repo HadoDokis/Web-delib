@@ -1,18 +1,24 @@
-<h2>Nouvelle seance</h2>
+<h2>Nouvelle s&eacute;ance</h2>
 <form action="<?php echo $html->url('/seances/add'); ?>" method="post">
+
+
+<?php echo $form->labelTag('Seance/date', 'Date');?>
+<?php echo $html->monthOptionTag('Seance/date',null,null,false); ?>-<?php echo $html->dayOptionTag('Seance/date',null,null,false); ?>-<?php echo $html->yearOptionTag('Seance/date',null,'2000','2100'); ?> <?php echo $html->hourOptionTag('Seance/date',null,null,false); ?>:<?php echo $html->minuteOptionTag('Seance/date',null,null,false); ?>  <?php echo $html->meridianOptionTag('Seance/date',null,null,false); ?>
+<?php //echo $form->generateDateTime('Seance/date','Date',true,'Veuillez entrer une date',null,array('minYear'=>'2000','maxYear'=>'2007')); ?>
+<br/>
+<br/>
 <div class="required"> 
-	<?php echo $form->labelTag('Seance/type_id', 'Type de seance');?>
+	<?php echo $form->labelTag('Seance/type_id', 'Type de s&eacute;ance');?>
  	<?php echo $html->selectTag('Seance/type_id', $typeseances, $html->tagValue('Seance/type_id'), array(), array(), true);?>
 	<?php echo $html->tagErrorMsg('Seance/type_id', 'Entrer le type de seance associ&eacute;.');?>
 </div>
-<div class="required">
-	<?php echo $form->generateDateTime('Seance/date','Date',true,'Veuillez entrer une date'); ?>
-	<?php echo $html->tagErrorMsg('Seance/date', 'Entrer une date valide.');?>
-</div>
+<br/>
 <div class="submit">
+	<?php echo $form->labelTag('Seance/id', '&nbsp;');?>
 	<?php echo $html->submit('Ajouter');?>
 </div>
 </form>
+<br/>
 <ul class="actions">
 <li><?php echo $html->link('Annuler', '/seances/index')?></li>
 </ul>
