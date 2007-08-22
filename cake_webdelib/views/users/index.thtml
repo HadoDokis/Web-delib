@@ -3,36 +3,28 @@
 
 <table cellpadding="0" cellspacing="0">
 <tr>
-	<th>Id</th>
-	<th>Login</th>
 	<th>Nom</th>
 	<th>Prenom</th>
-	<th>Adresse</th>
-	<th>Code Postal</th>
-	<th>Ville</th>
 	<th>Telephone 1</th>
 	<th>Telephone 2</th>
-	<th>Date naissance</th>
-	<th>Cr&eacute;&eacute;</th>
-	<th>Modifi&eacute;</th>
+	<th>Service(s)</th>
+	<th>Profil</th>
 	<th>Actions</th>
 </tr>
 <?php 
 //debug($users);
-foreach ($users as $user): ?>
+$i=0;
+foreach ($users as $user): 
+?>
 <tr>
-	<td><?php echo $user['User']['id']; ?></td>
-	<td><?php echo $user['User']['login']; ?></td>
 	<td><?php echo $user['User']['nom']; ?></td>
 	<td><?php echo $user['User']['prenom']; ?></td>
-	<td><?php echo $user['User']['adresse']; ?></td>
-	<td><?php echo $user['User']['CP']; ?></td>
-	<td><?php echo $user['User']['ville']; ?></td>
 	<td><?php echo $user['User']['teldom']; ?></td>
 	<td><?php echo $user['User']['telmobile']; ?></td>
-	<td><?php echo $user['User']['date_naissance']; ?></td>
-	<td><?php echo $user['User']['created']; ?></td>
-	<td><?php echo $user['User']['modified']; ?></td>
+	<td><? foreach ($user['Service'] as $service):
+			echo $service['libelle'].'<br/>';
+			endforeach; ?></td>
+	<td><?php echo $user['Profil']['libelle']; ?></td>
 	<td class="actions">
 		<?php //echo $html->link($html->image('icons/editdelete.png',array('title'=>'Supprimer semaine', 'border'=>'0', 'align'=>'top')), "/semainestypes/delete/$thisweekSelected",null,"Etes-vous vraiment s�r de vouloir supprimer cette semaine ?",false); ?>
 		<?php echo $html->link('Voir','/users/view/' . $user['User']['id'])?>
@@ -40,10 +32,11 @@ foreach ($users as $user): ?>
 		<?php echo $html->link('Supprimer','/users/delete/' . $user['User']['id'], null, 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?')?>
 	</td>
 </tr>
-<?php endforeach; ?>
+<? endforeach; ?>
 </table>
 
 <ul class="actions">
 	<li><?php echo $html->link('Ajouter un utilisateur', '/users/add'); ?></li>
 </ul>
 </div>
+
