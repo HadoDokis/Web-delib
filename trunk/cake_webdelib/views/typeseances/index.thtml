@@ -3,18 +3,12 @@
 
 <table cellpadding="0" cellspacing="0">
 <tr>
-	<th>Id</th>
 	<th>Libelle</th>
-	<th>Date creation</th>
-	<th>Date modification</th>
 	<th>Actions</th>
 </tr>
 <?php foreach ($typeseances as $typeseance): ?>
 <tr>
-	<td><?php echo $typeseance['Typeseance']['id']; ?></td>
 	<td><?php echo $typeseance['Typeseance']['libelle']; ?></td>
-	<td><?php echo $typeseance['Typeseance']['created']; ?></td>
-	<td><?php echo $typeseance['Typeseance']['modified']; ?></td>
 	<td class="actions">
 		<?php echo $html->link('Voir','/typeseances/view/' . $typeseance['Typeseance']['id'])?>
 		<?php echo $html->link('Modifier','/typeseances/edit/' . $typeseance['Typeseance']['id'])?>
