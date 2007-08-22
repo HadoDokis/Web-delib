@@ -3,6 +3,7 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form' );
+	var $components = array('Date');
 
 	function index() {
 		$this->Seance->recursive = 0;
@@ -90,6 +91,76 @@ class SeancesController extends AppController {
 			$condition= 'date <= "'.date('Y-m-d H:i:s').'"';
 			$this->set('seances', $this->Seance->findAll($condition));
 		}
+	}
+
+	function afficherCalendrier ($annee=null){
+		require_once('Calendar/Calendar.php');
+		require_once('Calendar/Year.php');
+		define ('CALENDAR_MONTH_STATE',CALENDAR_USE_MONTH_WEEKDAYS);
+        
+		if (!isset($annee))
+		     $annee = date('Y');
+   
+ 		$tabJoursSeances = array();  
+ 		$fields = 'date';
+        $condition = "annee = $annee";
+        $joursSeance = $this->Seance->findAll(null, $fields);
+        foreach ($joursSeance as $date) {
+        	$date = strtotime(substr($date['Seance']['date'], 0, 10));	
+        	array_push($tabJoursSeances,  $date);
+        }
+
+  		$Year = new Calendar_Year($annee);
+		$Year->build();
+	    $today = mktime('0','0','0');
+	    $i = 0;
+		
+		$calendrier = "<table>\n<tr   style=\"vertical-align:top;\">\n";
+		while ( $Month = $Year->fetch() ) {
+
+	  		$calendrier .= "<td><table class=\"month\">\n" ;
+	     	$calendrier .= "<caption class=\"month\">".$this->Date->months[$Month->thisMonth('int')]."</caption>\n" ;
+	     	$calendrier .= "<tr><th>Lu</th><th>Ma</th><th>Me</th><th>Je</th><th>Ve</th><th>Sa</th><th>Di</th></tr>\n";
+	   		$Month->build();
+	   		
+			while ( $Day = $Month->fetch() ) {
+		        if ( $Day->isFirst() == 1 ) {
+		       		$calendrier .= "<tr>\n" ;
+		        }
+		        
+		        if ( $Day->isEmpty() ) {
+		           $calendrier .=  "<td>&nbsp;</td>\n" ;
+		        } 
+		        else {
+		        	
+		            if ($today == $Day->thisDay('timestamp')){
+		                 $balise="today";
+		            }
+		            elseif (in_array ($Day->thisDay('timestamp'), $tabJoursSeances) )
+		            {
+		            	$balise="seance";
+		            }
+		            else {
+		            	$balise="normal";
+		            }
+		            $calendrier .=  "<td><p class=\"$balise\">".$Day->thisDay()."</p></td>\n" ;
+		        }
+		        if ( $Day->isLast() ) {
+		           $calendrier .=  "</tr>\n" ;
+		        }
+			}
+
+     		$calendrier .= "</table>\n</td>\n" ;
+	
+	    	if ($i==5)
+	        	$calendrier .= "</tr><tr   style=\"vertical-align:top;\">\n" ;
+	
+	    	$i++;
+		}
+		$calendrier .=  "</tr>\n</table>\n" ;
+		
+		$this->set('annee', $annee);
+		$this->set('calendrier',$calendrier);
 	}
 
 }
