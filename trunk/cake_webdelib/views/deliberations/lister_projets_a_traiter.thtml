@@ -22,7 +22,7 @@
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
 	<td class="actions">
-		<?php echo $html->link($deliberation['action'],"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'])?><br />
+		<?php echo $html->link('Voir','/deliberations/view/' . $deliberation['Deliberation']['id'])?><br/>
 		<?php echo $html->link('PDF','/deliberations/convert/' . $deliberation['Deliberation']['id'])?><br />
 	</td>
 </tr>
