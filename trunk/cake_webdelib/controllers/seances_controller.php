@@ -94,8 +94,9 @@ class SeancesController extends AppController {
 	}
 
 	function afficherCalendrier ($annee=null){
-		require_once('Calendar/Calendar.php');
-		require_once('Calendar/Year.php');
+		
+		vendor('Calendar/includeCalendarVendor');
+	
 		define ('CALENDAR_MONTH_STATE',CALENDAR_USE_MONTH_WEEKDAYS);
         
 		if (!isset($annee))
