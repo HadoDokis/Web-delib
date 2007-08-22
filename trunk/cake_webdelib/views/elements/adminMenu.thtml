@@ -3,11 +3,11 @@
 		<dt onmouseover="javascript:montre('smenu2');" >Projets</dt>
 			<dd id="smenu2" onmouseover="javascript:montre('smenu2');" onmouseout="javascript:montre('');">
 				<ul>
+					<li><a href="<?php echo $html->url('/deliberations/add');?>" title="Cr&eacute;er un projet">Cr&eacute;er</a></li>
 					<li><a href="<?php echo $html->url('/deliberations/listerMesProjets');?>" title="Mes projets">Mes Projets</a></li>
 					<li><a href="<?php echo $html->url('/deliberations/listerProjetsATraiter');?>" title="Projets &agrave; traiter">A traiter</a></li>
-					<li><a href="<?php echo $html->url('/deliberations/add');?>" title="Cr&eacute;er un projet">Cr&eacute;er</a></li>
-					<li><a href="<?php echo $html->url('/deliberations/listerProjetsAttribuer');?>" title="Projets attribu&eacute;s &agrave; une s&eacute;ance">Attribu&eacute;s</a></li>
-					<li><a href="<?php echo $html->url('/deliberations/listerProjetsNonAttribuer');?>" title="Projets non attribu&eacute;s &agrave; une s&eacute;ance">Non attribu&eacute;s</a></li>
+					<li><a href="<?php echo $html->url('/deliberations/listerProjetsAttribues');?>" title="Projets attribu&eacute;s &agrave; une s&eacute;ance">Attribu&eacute;s</a></li>
+					<li><a href="<?php echo $html->url('/deliberations/listerProjetsNonAttribues');?>" title="Projets non attribu&eacute;s &agrave; une s&eacute;ance">Non attribu&eacute;s</a></li>
 				</ul>
 			</dd>
 	</dl>
@@ -16,9 +16,10 @@
 		<dt onmouseover="javascript:montre('smenu1');" >S&eacute;ances</dt>
 			<dd id="smenu1" onmouseover="javascript:montre('smenu1');" onmouseout="javascript:montre('');">
 				<ul>
-					<li><a href="<?php echo $html->url('/seances/listerFuturesSeances');?>" title="Consulter les futures s&eacute;ances">Futures</a></li>
-					<li><a href="<?php echo $html->url('/seances/listerAnciennesSeances');?>" title="Consulter les anciennes s&eacute;ances">Anciennes</a></li>
 					<li><a href="<?php echo $html->url('/seances/add');?>" title="Cr&eacute;er une s&eacute;ance">Cr&eacute;er</a></li>
+					<li><a href="<?php echo $html->url('/seances/listerFuturesSeances');?>" title="Consulter les s&eacute;ances a venir">A venir</li>
+					<li><a href="<?php echo $html->url('/seances/listerAnciennesSeances');?>" title="Consulter les s&eacute;ances pass&eacute;es">Pass&eacute;es</a></li>
+					
 					<li><a href="<?php echo $html->url('/');?>">Calendrier</a></li>
 
 				</ul>
@@ -50,7 +51,6 @@
 					<li><a href="<?php echo $html->url('/users');?>">Utilisateurs</a></li>
 					<li><a href="<?php echo $html->url('/circuits');?>">Circuits</a></li>
 					<li><a href="<?php echo $html->url('/profils');?>">Profils</a></li>
-					<li><a href="<?php echo $html->url('/seances');?>">S&eacute;ances</a></li>
 					<li><a href="<?php echo $html->url('/services');?>">Services</a></li>			
 					<li><a href="<?php echo $html->url('/themes');?>">Th&egrave;mes</a></li>
 					<li><a href="<?php echo $html->url('/typeseances');?>">Types de s&eacute;ance</a></li>
