@@ -20,7 +20,7 @@
 					<li><a href="<?php echo $html->url('/seances/listerFuturesSeances');?>" title="Consulter les s&eacute;ances a venir">A venir</li>
 					<li><a href="<?php echo $html->url('/seances/listerAnciennesSeances');?>" title="Consulter les s&eacute;ances pass&eacute;es">Pass&eacute;es</a></li>
 					
-					<li><a href="<?php echo $html->url('/');?>">Calendrier</a></li>
+					<li><a href="<?php echo $html->url('/seances/afficherCalendrier');?>">Calendrier</a></li>
 
 				</ul>
 			</dd>
