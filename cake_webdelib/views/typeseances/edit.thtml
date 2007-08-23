@@ -5,11 +5,16 @@
  	<?php echo $html->input('Typeseance/libelle', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Typeseance/libelle', 'Entrer le libelle.');?>
 </div>
-<?php echo $html->hidden('Typeseance/id')?>
+
+<br/>
 <div class="submit">
+	<?php echo $html->hidden('Typeseance/id')?>
+	<?php echo $form->labelTag('Typeseance/id', '&nbsp;');?>
 	<?php echo $html->submit('Sauvegarder');?>
 </div>
+
 </form>
+<br/>
 <ul class="actions">
 <li><?php echo $html->link('Supprimer','/typeseances/delete/' . $html->tagValue('Typeseance/id'), null, 'Etes-vous sur de vouloir supprimer "' . $html->tagValue('Typeseance/libelle').'" ?');?>
 <li><?php echo $html->link('Annuler', '/typeseances/index')?></li>
