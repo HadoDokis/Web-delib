@@ -39,8 +39,10 @@ class UsersController extends AppController {
 			$this->render();
 		} else {
 			$this->data['User']['password']=md5($this->data['User']['password']);
-
+			$this->data['User']['date_naissance']=$this->data['User']['date_naissance_year'].'-'.$this->data['User']['date_naissance_month'].'-'.$this->data['User']['date_naissance_day'];
+			//debug($this->data);
 			$this->cleanUpFields();
+			//debug($this->data);
 			if ($this->User->save($this->data)) {
 				$this->Session->setFlash('The User has been saved');
 				$this->redirect('/users/index');
@@ -82,8 +84,12 @@ class UsersController extends AppController {
 			if (empty($this->data['Profil'])) { $this->data['Profil'] = null; }
 			$this->set('selectedProfils', $this->_selectedArray($this->data['Profil']));
 		} else {
-			$this->data['User']['password']=md5($this->data['User']['password']);
+			//$this->data['User']['password']=md5($this->data['User']['password']);
+			$this->data['User']['date_naissance']=$this->data['User']['date_naissance_year'].'-'.$this->data['User']['date_naissance_month'].'-'.$this->data['User']['date_naissance_day'];
+			
+			//debug($this->data);
 			$this->cleanUpFields();
+			//debug($this->data);
 			if ($this->User->save($this->data)) {
 				$this->Session->setFlash('The User has been saved');
 				$this->redirect('/users/index');
