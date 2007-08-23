@@ -52,7 +52,10 @@
 	<?php echo $html->tagErrorMsg('User/telmobile', 'Entrer le Num tel mobile.');?>
 </div>
 <br/>
-<?php echo $form->generateDateTime('User/date_naissance','Date de naissance',true,'Veuillez entrer la date de naissance'); ?>
+<?php echo $form->labelTag('User/date_naissance', 'Date');?>
+<?php echo $html->monthOptionTag('User/date_naissance');?>-<?php echo $html->dayOptionTag('User/date_naissance',null,null,false); ?>-<?php echo $html->yearOptionTag('User/date_naissance',null,null,null,null); ?>
+<?php //echo $form->generateDateTime('User/date','Date',false,'Veuillez entrer une date',null,null); ?>
+
 <br/>
 <div class="optional">
 	<?php echo $form->labelTag('User/elu', 'Elu');?>
@@ -74,8 +77,10 @@
  	<?php echo $html->selectTag('User/profil_id', $profils, $html->tagValue('User/profil_id'), array(), array(), true);?>
 	<?php echo $html->tagErrorMsg('Profil/Profil',  'Entrer le(s) profil(s) associé(s).');?>
 </div>
-<?php echo $html->hidden('User/id')?>
+<br/>
 <div class="submit">
+	<?php echo $form->labelTag('User/id', '&nbsp;');?>
+	<?php echo $html->hidden('User/id')?>
 	<?php echo $html->submit('Enregistrer');?>
 </div>
 </form>
