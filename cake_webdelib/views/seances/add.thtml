@@ -3,7 +3,7 @@
 
 
 <?php echo $form->labelTag('Seance/date', 'Date');?>
-<?php echo $html->monthOptionTag('Seance/date',null,null,false); ?>-<?php echo $html->dayOptionTag('Seance/date',null,null,false); ?>-<?php echo $html->yearOptionTag('Seance/date',null,'2000','2100'); ?> <?php echo $html->hourOptionTag('Seance/date',null,null,false); ?>:<?php echo $html->minuteOptionTag('Seance/date',null,null,false); ?>  <?php echo $html->meridianOptionTag('Seance/date',null,null,false); ?>
+<?php echo $html->monthOptionTag('Seance/date',null,null,false); ?>-<?php echo $html->dayOptionTag('Seance/date',null,null,false); ?>-<?php echo $html->yearOptionTag('Seance/date',null,date("Y"),date('Y')+10); ?> <?php echo $html->hourOptionTag('Seance/date',null,null,false); ?>:<?php echo $html->minuteOptionTag('Seance/date',null,null,false); ?>  <?php echo $html->meridianOptionTag('Seance/date',null,null,false); ?>
 <?php //echo $form->generateDateTime('Seance/date','Date',true,'Veuillez entrer une date',null,array('minYear'=>'2000','maxYear'=>'2007')); ?>
 <br/>
 <br/>
