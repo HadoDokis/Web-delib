@@ -52,12 +52,22 @@
 	<?php echo $html->tagErrorMsg('User/telmobile', 'Entrer le Num tel mobile.');?>
 </div>
 <br/>
-<?php echo $form->generateDateTime('User/date_naissance','Date de naissance',true,'Veuillez entrer la date de naissance'); ?>
+<?php echo $form->labelTag('User/date_naissance', 'Date');?>
+<?php echo $html->monthOptionTag('User/date_naissance');?>-<?php echo $html->dayOptionTag('User/date_naissance',null,null,false); ?>-<?php echo $html->yearOptionTag('User/date_naissance',null,null,null,null); ?>
+<?php //echo $form->generateDateTime('User/date','Date',false,'Veuillez entrer une date',null,null); ?>
+
 <br/>
 <div class="optional">
 	<?php echo $form->labelTag('User/elu', 'Elu');?>
 	<?php echo $html->checkbox('User/elu'); ?>
 	<?php echo $html->tagErrorMsg('User/elu','Choisissez sa fonction'); ?>
+	<br/>
+<?php //echo $form->labelTag('User/statut', 'Statut');?>
+<!-- <select name="data[User][statut]"  id="UserStatut">
+		<option value="" >&nbsp;</option>
+		<option value="agent" >agent</option>
+		<option value="elu" >elu</option>
+	</select> -->	
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Service/Service', 'Related Services');?>
@@ -70,6 +80,7 @@
  	<?php echo $html->selectTag('User/profil_id', $profils, $html->tagValue('User/profil_id'), array(), array(), true);?>
 	<?php echo $html->tagErrorMsg('Profil/Profil', 'Entrer le profil associé.');?>
 </div>
+
 <div class="submit">
 	<?php echo $html->submit('Ajouter un utilisateur');?>
 </div>
