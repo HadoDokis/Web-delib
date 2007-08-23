@@ -5,11 +5,14 @@
  	<?php echo $html->input('Profil/libelle', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Profil/libelle', 'Entrer le libelle.');?>
 </div>
-<?php echo $html->hidden('Profil/id')?>
-<div class="submit">
+<br/>
+<div class="submit"> 
+	<?php echo $form->labelTag('Typeseance/id', '&nbsp;');?>
+	<?php echo $html->hidden('Profil/id')?>
 	<?php echo $html->submit('Enregistrer');?>
 </div>
 </form>
+<br/>
 <ul class="actions">
 <li><?php echo $html->link('Supprimer','/profils/delete/' . $html->tagValue('Profil/id'), null, 'Etes-vous sur de vouloir supprimer le profil "' . $html->tagValue('Profil/libelle').'" ?');?>
 <li><?php echo $html->link('Annuler', '/profils/index')?></li>
