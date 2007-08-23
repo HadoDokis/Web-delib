@@ -1,16 +1,24 @@
-<h2>Modification d'une seance</h2>
+<h2>Modification d'une s&eacute;ance</h2>
 <form action="<?php echo $html->url('/seances/edit/'.$html->tagValue('Seance/id')); ?>" method="post">
+
+<div class="required">
+	<?php echo $form->labelTag('Seance/date', 'Date');?>
+	<?php echo $html->monthOptionTag('Seance/date',null,null,false); ?>-<?php echo $html->dayOptionTag('Seance/date',null,null,false); ?>-<?php echo $html->yearOptionTag('Seance/date',null,date("Y"),date('Y')+10) ?> <?php echo $html->hourOptionTag('Seance/date',null,null,false); ?>:<?php echo $html->minuteOptionTag('Seance/date',null,null,false); ?>  <?php echo $html->meridianOptionTag('Seance/date',null,null,false); ?>
+	<?php //echo $form->generateDateTime('Seance/date','Date',true,'Veuillez entrer une date',null,null); ?>
+	<?php echo $html->tagErrorMsg('Seance/date', 'Entrer une date valide.');?>
+</div>
+<br/>
 <div class="required"> 
 	<?php echo $form->labelTag('Seance/type_id', 'Typeseance associe');?>
  	<?php echo $html->selectTag('Seance/type_id', $typeseances, $html->tagValue('Seance/type_id'), array(), array(), true);?>
 	<?php echo $html->tagErrorMsg('Seance/type_id', 'Entrer le libelle.');?>
 </div>
-<div class="required">
-	<?php echo $form->generateDateTime('Seance/date','Date',true,'Veuillez entrer une date'); ?>
-	<?php echo $html->tagErrorMsg('Seance/date', 'Entrer une date valide.');?>
-</div>
-<?php echo $html->hidden('Seance/id')?>
+
+
+<br/>
 <div class="submit">
+	<?php echo $form->labelTag('Seance/id', '&nbsp;');?>
+	<?php echo $html->hidden('Seance/id')?>
 	<?php echo $html->submit('Enregistrer');?>
 </div>
 </form>
