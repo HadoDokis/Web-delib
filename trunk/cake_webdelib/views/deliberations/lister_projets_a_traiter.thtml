@@ -13,7 +13,7 @@
 </tr>
 
 <?php foreach ($deliberations as $deliberation): ?>
-<?//debug($deliberation);?>
+<? //debug($deliberation);?>
 <tr> 
 	<td>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?><br><?php echo $deliberation['Theme']['libelle'] ?></td>
 	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
@@ -22,7 +22,8 @@
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
 	<td class="actions">
-		<?php echo $html->link('Voir','/deliberations/view/' . $deliberation['Deliberation']['id'])?><br/>
+		<?php echo $html->link($deliberation['action'],"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'])?><br />
+		<?php //echo $html->link('Voir','/deliberations/view/' . $deliberation['Deliberation']['id'])?>
 		<?php echo $html->link('PDF','/deliberations/convert/' . $deliberation['Deliberation']['id'])?><br />
 	</td>
 </tr>
