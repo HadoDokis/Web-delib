@@ -5,11 +5,11 @@
 	<dt>Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['id']?></dd>
 	<dt>Circuit</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
 	<dt>Theme</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?><br><?php echo $deliberation['Theme']['libelle']?> </dd>
 	<dt>Service</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
 	<dt>Vote Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>
 	<dt>Redacteur</dt>
