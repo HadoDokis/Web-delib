@@ -165,14 +165,16 @@ class DeliberationsController extends AppController {
 				}
 			}
 			
-			if ($lastTraitement['position']==$position_user)
+			if ($lastTraitement['position']==$position_user){
 				$deliberation['action']="traiter";
-				else
-				$deliberation['action']="voir";
+				$deliberation['act']="traiter";
+			}else{
+				$deliberation['action']="view";
+				$deliberation['act']="voir";
 			//debug($data);
 			//debug($position_user);
 			//exit;
-			array_push($delib, $deliberation);
+		}array_push($delib, $deliberation);
 			//debug($delib);
 		}
 		
