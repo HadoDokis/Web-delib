@@ -61,10 +61,10 @@
  	<?php echo $html->input('Deliberation/num_pref', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Deliberation/num_pref', 'Entrer le Num Pref.');?>
 </div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/texte_projet', 'Texte Projet');?>
- 	<?php echo $html->input('Deliberation/texte_projet', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du Projet.');?>
+<div class="required">
+    <?php echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Deliberation][texte_projet]'); ?>
+    <?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du projet.');?>
 </div>
 <div class="required">
     <?php echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
