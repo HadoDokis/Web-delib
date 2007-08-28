@@ -6,6 +6,8 @@
 	<dd>&nbsp;<?php echo $typeseance['Typeseance']['id']?></dd>
 	<dt>Libelle</dt>
 	<dd>&nbsp;<?php echo $typeseance['Typeseance']['libelle']?></dd>
+	<dt>Nombre de jour 	avant retard</dt>
+	<dd><?php echo $typeseance['Typeseance']['retard']; ?></dd>
 	<dt>Date cration</dt>
 	<dd>&nbsp;<?php echo $typeseance['Typeseance']['created']?></dd>
 	<dt>Date modification</dt>
