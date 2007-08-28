@@ -5,7 +5,12 @@
  	<?php echo $html->input('Typeseance/libelle', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Typeseance/libelle', 'Entrer le libelle.');?>
 </div>
-
+<br/>
+<div class="required"> 
+	<?php echo $form->labelTag('Typeseance/retard', 'Nb de jour avant retard');?>
+ 	<?php echo $html->input('Typeseance/retard');?>
+	<?php echo $html->tagErrorMsg('Typeseance/retard', 'Insérer un chiffre pour le nombre de jour avant retard.');?>
+</div>
 <br/>
 <div class="submit">
 	<?php echo $html->hidden('Typeseance/id')?>
