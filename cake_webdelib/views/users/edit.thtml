@@ -58,9 +58,9 @@
 
 <br/>
 <div class="optional">
-	<?php echo $form->labelTag('User/elu', 'Elu');?>
-	<?php echo $html->checkbox('User/elu'); ?>
-	<?php echo $html->tagErrorMsg('User/elu','Choisissez sa fonction'); ?>
+	<?php echo $form->labelTag('User/statut', 'Elu');?>
+	<?php echo $html->selectTag('User/statut',$statut); ?>
+	<?php echo $html->tagErrorMsg('User/statut','Choisissez sa fonction'); ?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Service/Service', 'Service(s) associe(s)');?>
