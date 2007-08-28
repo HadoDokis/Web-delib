@@ -58,16 +58,9 @@
 
 <br/>
 <div class="optional">
-	<?php echo $form->labelTag('User/elu', 'Elu');?>
-	<?php echo $html->checkbox('User/elu'); ?>
-	<?php echo $html->tagErrorMsg('User/elu','Choisissez sa fonction'); ?>
-	<br/>
-<?php //echo $form->labelTag('User/statut', 'Statut');?>
-<!-- <select name="data[User][statut]"  id="UserStatut">
-		<option value="" >&nbsp;</option>
-		<option value="agent" >agent</option>
-		<option value="elu" >elu</option>
-	</select> -->	
+	<?php echo $form->labelTag('User/statut', 'Statut');?>
+	<?php echo $html->selectTag('User/statut',$statut);?>
+	<?php echo $html->tagErrorMsg('User/statut','Choisissez sa fonction'); ?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Service/Service', 'Related Services');?>
