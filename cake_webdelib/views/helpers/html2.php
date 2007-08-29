@@ -90,17 +90,29 @@ class Html2Helper extends HtmlHelper
 		return  mktime($hms[0],$hms[1],$hms[2],$amj[1],$amj[2],$amj[0]);
       }
 
-    function monthOptionTagFr($tagName, $value=null, $selected=null,  $selectAttr=null, $optionAttr=null, $showEmpty = true)
-    {
-        $value = isset($value)? $value : $this->tagValue($tagName."_month");
-        $monthValue = empty($selected) ? null : $selected ;
-        $months=array('01'=>'Janvier','02'=>'Fevrier','03'=>'Mars',
-        '04'=>'Avril','05'=>'Mai','06'=>'Juin','07'=>'Juillet','08'=>'Aout',
-        '09'=>'Septembre','10'=>'Octobre','11'=>'Novembre','12'=>'Decembre');
-        $option = $this->selectTag($tagName.'_month', $months, $monthValue, $selectAttr, $optionAttr, $showEmpty);
-        return $option;
-    }
+//    function monthOptionTagFra($tagName, $value=null, $selected=null,  $selectAttr=null, $optionAttr=null, $showEmpty = true)
+//    {
+//        $value = isset($value)? $value : $this->tagValue($tagName."_month");
+//        $monthValue = empty($selected) ? null : $selected ;
+//        $months=array('01'=>'Janvier','02'=>'Fevrier','03'=>'Mars',
+//        '04'=>'Avril','05'=>'Mai','06'=>'Juin','07'=>'Juillet','08'=>'Aout',
+//        '09'=>'Septembre','10'=>'Octobre','11'=>'Novembre','12'=>'Decembre');
+//        $option = $this->selectTag($tagName.'_month', $months, $monthValue, $selectAttr, $optionAttr, $showEmpty);
+//        return $option;
+//    }
 
+    
+	function monthOptionTagFr($tagName, $value = null, $selected = null, $selectAttr = null, $optionAttr = null, $showEmpty = true) {
+		if (empty($selected) && ($this->tagValue($tagName))) {
+			$selected = date('m', strtotime($this->tagValue($tagName)));
+		}
+		$monthValue = empty($selected) ? ($showEmpty ? NULL : date('m')) : $selected;
+		$months = array('01' => 'Janvier', '02' => 'Fevrier', '03' => 'Mars', '04' => 'Avril', '05' => 'Mai', '06' => 'Juin', '07' => 'Juillet', '08' => 'Aout', '09' => 'September', '10' => 'Octobre', '11' => 'Novembre', '12' => 'Decembre');
+
+		return $this->selectTag($tagName . "_month", $months, $monthValue, $selectAttr, $optionAttr, $showEmpty);
+	}
+    
+    
 	
      function yearOptionTagFr($tagName, $value=null, $minYear=null, $maxYear=null, $selected=null, $selectAttr=null, $optionAttr=null, $showEmpty = true)
      {
@@ -209,5 +221,10 @@ class Html2Helper extends HtmlHelper
 	}
 	
 
+
+
+	
+	
+	
 }
 ?>
