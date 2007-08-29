@@ -1,0 +1,1 @@
+ALTER TABLE `typeseances` ADD `retard` INT( 11 ) NOT NULL DEFAULT '0' AFTER `libelle` ;
