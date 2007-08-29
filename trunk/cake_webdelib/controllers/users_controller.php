@@ -2,7 +2,7 @@
 class UsersController extends AppController {
 
 	var $name = 'Users';
-	var $helpers = array('Html', 'Form' );
+	var $helpers = array('Html', 'Form', 'Html2' );
 	var $uses = array('Circuit', 'User', 'Service', 'UsersService');
 	var $components = array('Utils');
 	
@@ -30,6 +30,7 @@ class UsersController extends AppController {
 
 	function add() {
 		if (empty($this->data)) {
+			$this->set('statut',array('0'=>'agent', '1'=>'elu'));
 			$this->set('services', $this->User->Service->generateList());
 			$this->set('selectedServices', null);
 			$this->set('circuits', $this->User->Circuit->generateList());
@@ -43,11 +44,13 @@ class UsersController extends AppController {
 			//debug($this->data);
 			$this->cleanUpFields();
 			//debug($this->data);
-			if ($this->User->save($this->data)) {
+
+			if ($this->User->isUnique('login', $this->data['User']['login'],$user_id='null') && $this->User->save($this->data)) {
 				$this->Session->setFlash('The User has been saved');
 				$this->redirect('/users/index');
 			} else {
 				$this->Session->setFlash('Please correct errors below.');
+				$this->set('statut',array('0'=>'agent', '1'=>'elu'));
 				$this->set('services', $this->User->Service->generateList());
 				if (empty($this->data['Service']['Service'])) { 
 				    $this->data['Service']['Service'] = null;
@@ -74,6 +77,7 @@ class UsersController extends AppController {
 				$this->redirect('/users/index');
 			}
 			$this->data = $this->User->read(null, $id);
+			$this->set('statut',array('0'=>'agent', '1'=>'elu'));
 			$this->set('services', $this->User->Service->generateList());
 			if (empty($this->data['Service'])) { $this->data['Service'] = null; }
 			$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
@@ -86,15 +90,16 @@ class UsersController extends AppController {
 		} else {
 			//$this->data['User']['password']=md5($this->data['User']['password']);
 			$this->data['User']['date_naissance']=$this->data['User']['date_naissance_year'].'-'.$this->data['User']['date_naissance_month'].'-'.$this->data['User']['date_naissance_day'];
-			
-			//debug($this->data);
 			$this->cleanUpFields();
 			//debug($this->data);
-			if ($this->User->save($this->data)) {
+			
+			if ($this->User->isUnique('login', $this->data['User']['login'],$id) && $this->User->save($this->data)) {
 				$this->Session->setFlash('The User has been saved');
 				$this->redirect('/users/index');
 			} else {
+				//debug($data);
 				$this->Session->setFlash('Please correct errors below.');
+				$this->set('statut',array('0'=>'agent', '1'=>'elu'));
 				$this->set('services', $this->User->Service->generateList());
 				if (empty($this->data['Service']['Service'])) { $this->data['Service']['Service'] = null; }
 				$this->set('selectedServices', $this->data['Service']['Service']);
@@ -105,7 +110,7 @@ class UsersController extends AppController {
 				if (empty($this->data['Profil']['Profil'])) { $this->data['Profil']['Profil'] = null; }
 				$this->set('selectedProfils', $this->data['Profil']['Profil']);
 			}
-		}
+		}	
 	}
 
 	function delete($id = null) {
