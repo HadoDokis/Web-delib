@@ -1,9 +1,11 @@
 <h2>Modification de l'utilisateur</h2>
+
 <form action="<?php echo $html->url('/users/edit/'.$html->tagValue('User/id')); ?>" method="post">
 <div class="optional"> 
 	<?php echo $form->labelTag('User/login', 'Login');?>
  	<?php echo $html->input('User/login', array('size' => '30'));?>
 	<?php echo $html->tagErrorMsg('User/login', 'Entrer le login.');?>
+	<?php echo $html->tagErrorMsg('User/unique_login', 'Enter another username, this is already used.'); ?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('User/password', 'Password');?>
@@ -53,12 +55,13 @@
 </div>
 <br/>
 <?php echo $form->labelTag('User/date_naissance', 'Date');?>
+<?php /*echo $html2->monthOptionTagFr('User/date_naissance');?>-<?php echo $html->dayOptionTag('User/date_naissance',null,null,false); ?>-<?php echo $html->yearOptionTag('User/date_naissance',null,null,null,null); */?>
+<?php //echo $html2->dateTimeOptionTagFr('User/date_naissance');?>
 <?php echo $html->monthOptionTag('User/date_naissance');?>-<?php echo $html->dayOptionTag('User/date_naissance',null,null,false); ?>-<?php echo $html->yearOptionTag('User/date_naissance',null,null,null,null); ?>
-<?php //echo $form->generateDateTime('User/date','Date',false,'Veuillez entrer une date',null,null); ?>
 
 <br/>
 <div class="optional">
-	<?php echo $form->labelTag('User/statut', 'Elu');?>
+	<?php echo $form->labelTag('User/statut', 'Statut');?>
 	<?php echo $html->selectTag('User/statut',$statut); ?>
 	<?php echo $html->tagErrorMsg('User/statut','Choisissez sa fonction'); ?>
 </div>
