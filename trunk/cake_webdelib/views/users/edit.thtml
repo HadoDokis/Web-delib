@@ -54,11 +54,10 @@
 	<?php echo $html->tagErrorMsg('User/telmobile', 'Entrer le Num tel mobile.');?>
 </div>
 <br/>
-<?php echo $form->labelTag('User/date_naissance', 'Date');?>
-<?php /*echo $html2->monthOptionTagFr('User/date_naissance');?>-<?php echo $html->dayOptionTag('User/date_naissance',null,null,false); ?>-<?php echo $html->yearOptionTag('User/date_naissance',null,null,null,null); */?>
-<?php //echo $html2->dateTimeOptionTagFr('User/date_naissance');?>
-<?php echo $html->monthOptionTag('User/date_naissance');?>-<?php echo $html->dayOptionTag('User/date_naissance',null,null,false); ?>-<?php echo $html->yearOptionTag('User/date_naissance',null,null,null,null); ?>
-
+<div class="optional"> 
+<?php echo $form->labelTag('User/date_naissance', 'Date de naissance');?>
+<?php echo $html->dayOptionTag('User/date_naissance',null,null,false); ?>-<?php echo $html2->monthOptionTagFr('User/date_naissance',null,null,null);?>-<?php echo $html2->yearOptionTag('User/date_naissance',null,null,null,null); ?>
+</div>
 <br/>
 <div class="optional">
 	<?php echo $form->labelTag('User/statut', 'Statut');?>
