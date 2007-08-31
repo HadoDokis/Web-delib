@@ -1,6 +1,11 @@
 <?php echo $javascript->link('fckeditor'); ?> 
 
 <h2>Modification de la d&eacute;liberation</h2>
+<dd>Date cr&eacute;ation : <?php echo $deliberations['Deliberation']['created'];?></dd>
+<dd>Date modification : <?php echo $deliberations['Deliberation']['modified'];?></dd>
+<dd>Redacteur : <?php echo $deliberations['Redacteur']['nom'];?></dd>
+<dd>Rapporteur : <?php echo $deliberations['Rapporteur']['nom'];?></dd>
+<br/>
 <form action="<?php echo $html->url('/deliberations/edit/'.$html->tagValue('Deliberation/id')); ?>" method="post">
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/circuit_id', 'Circuit');?>
@@ -21,21 +26,6 @@
 	<?php echo $form->labelTag('Deliberation/vote_id', 'Vote Id');?>
  	<?php echo $html->input('Deliberation/vote_id', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Deliberation/vote_id', 'Entrer le vote Id.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/redacteur_id', 'Redacteur');?>
- 	<?php echo $html->selectTag('Deliberation/redacteur_id', $users, $html->tagValue('Deliberation/user_id'), array(), array(), true);?>
-	<?php echo $html->tagErrorMsg('Deliberation/redacteur_id', 'Entrer l\'user.') ?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
- 	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs, $html->tagValue('Deliberation/user_id'),array(),array(),true);?>
-	<?php echo $html->tagErrorMsg('Deliberation/rapporteur_id', 'Entrer le rapporteur.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/date_creation', 'Date Creation');?>
- 	<?php echo $html->dateTimeOptionTag('Deliberation/date_creation', 'MDY' , '12', $html->tagValue('Deliberation/date_creation'), array());?>
-	<?php echo $html->tagErrorMsg('Deliberation/date_creation', 'Entrer la date de cr&eacute;ation.');?>
 </div>
 <div class="optional"> 
     <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
@@ -80,12 +70,5 @@
 <ul class="actions">
 <li><?php echo $html->link('Supprimer','/deliberations/delete/' . $html->tagValue('Deliberation/id'), null, 'Etes-vous sur de vouloir supprimer la deliberation "' . $html->tagValue('Deliberation/titre').'" ?');?>
 <li><?php echo $html->link('Annuler', '/deliberations/index')?></li>
-<li><?php echo $html->link('Voir les services', '/services/index/');?></li>
-<li><?php echo $html->link('Ajouter un service', '/services/add/');?></li>
-<li><?php echo $html->link('Voir les themes', '/themes/index/');?></li>
-<li><?php echo $html->link('Ajouter un theme', '/themes/add/');?></li>
-<li><?php echo $html->link('Voir les circuits', '/circuits/index/');?></li>
-<li><?php echo $html->link('Ajouter un circuit', '/circuits/add/');?></li>
-<li><?php echo $html->link('Voir les utilisateurs', '/users/index/');?></li>
-<li><?php echo $html->link('Ajouter un utilisateur', '/users/add/');?></li>
+
 </ul>
