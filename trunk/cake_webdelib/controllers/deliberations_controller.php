@@ -203,7 +203,7 @@ class DeliberationsController extends AppController {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
-			$this->set('users', $this->Deliberation->User->generateList('elu=1'));
+			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$this->render();
@@ -266,11 +266,12 @@ class DeliberationsController extends AppController {
 				$this->redirect('/deliberations/listerMesProjets');
 			}
 			$this->data = $this->Deliberation->read(null, $id);
+			$this->set('deliberations',$this->Deliberation->read(null, $id));
 			$this->set('services', $this->Deliberation->Service->generateList());
-			$this->set('themes', $this->Deliberation->Theme->generateList());
+			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
 			$this->set('users', $this->Deliberation->User->generateList());
-			$this->set('rapporteurs', $this->Deliberation->User->generateList('elu=1'));
+			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
 						
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
