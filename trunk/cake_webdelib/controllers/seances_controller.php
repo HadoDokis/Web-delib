@@ -2,7 +2,7 @@
 class SeancesController extends AppController {
 
 	var $name = 'Seances';
-	var $helpers = array('Html', 'Form' );
+	var $helpers = array('Html', 'Form', 'Html2' );
 	var $components = array('Date');
 
 	function index() {
