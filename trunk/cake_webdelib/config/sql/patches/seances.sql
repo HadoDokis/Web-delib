@@ -1,1 +1,0 @@
-ALTER TABLE `seances` ADD `date` DATETIME NOT NULL ;
