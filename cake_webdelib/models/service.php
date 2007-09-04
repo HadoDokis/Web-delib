@@ -17,5 +17,9 @@ class Service extends AppModel {
 //													'finderQuery'=>'',
 //													'deleteQuery'=>''));
 
+
+                  
+	var $hasMany = 'User';
+
 }
 ?>
