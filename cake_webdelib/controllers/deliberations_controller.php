@@ -139,6 +139,7 @@ class DeliberationsController extends AppController {
 		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "position ASC");
 		$conditions="";
 		$delib=array();
+		$position_user=0;
 		$cpt=0;
 		foreach ($data_circuit as $data)
 		{
@@ -330,7 +331,7 @@ class DeliberationsController extends AppController {
             $this->layout = 'pdf'; //this will use the pdf.thtml layout
             $this->set('text_projet',  $this->getField($id, 'texte_projet'));
             $this->set('text_synthese',$this->getField($id, 'texte_synthese'));
-            $this->set('date_session', $this->getField($id, 'date_session'));
+            $this->set('seance_id', $this->getField($id, 'seance_id'));
             $this->set('rapporteur_id',   $this->getField($id, 'rapporteur_id'));
             $this->set('objet',        $this->getField($id, 'objet'));
   
