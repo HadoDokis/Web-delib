@@ -13,7 +13,6 @@
 </tr>
 <?php 
 //debug($users);
-$i=0;
 foreach ($users as $user): 
 ?>
 <tr>
@@ -21,9 +20,12 @@ foreach ($users as $user):
 	<td><?php echo $user['User']['prenom']; ?></td>
 	<td><?php echo $user['User']['teldom']; ?></td>
 	<td><?php echo $user['User']['telmobile']; ?></td>
-	<td><? foreach ($user['Service'] as $service):
+	<td><? if (empty($user['ServiceElu']['libelle'])) { 
+			foreach ($user['Service'] as $service):		
 			echo $service['libelle'].'<br/>';
-			endforeach; ?></td>
+			endforeach; 
+			}else{
+			echo $user['ServiceElu']['libelle']; } ?></td>
 	<td><?php echo $user['Profil']['libelle']; ?></td>
 	<td class="actions">
 		<?php //echo $html->link($html->image('icons/editdelete.png',array('title'=>'Supprimer semaine', 'border'=>'0', 'align'=>'top')), "/semainestypes/delete/$thisweekSelected",null,"Etes-vous vraiment s�r de vouloir supprimer cette semaine ?",false); ?>
@@ -36,7 +38,7 @@ foreach ($users as $user):
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter un utilisateur', '/users/add'); ?></li>
+	<li><?php echo $html->link('Ajouter', '/users/add/'); ?></li>
 </ul>
 </div>
 
