@@ -29,28 +29,30 @@ class UsersController extends AppController {
 	}
 
 	function add() {
+	
 		if (empty($this->data)) {
-			$this->set('statut',array('0'=>'agent', '1'=>'elu'));
 			$this->set('services', $this->User->Service->generateList());
 			$this->set('selectedServices', null);
 			$this->set('circuits', $this->User->Circuit->generateList());
 			$this->set('selectedCircuits', null);
 			$this->set('profils', $this->User->Profil->generateList());
 			$this->set('selectedProfils', null);
-			$this->render();
+
+
 		} else {
 			$this->data['User']['password']=md5($this->data['User']['password']);
 			$this->data['User']['date_naissance']=$this->data['User']['date_naissance_year'].'-'.$this->data['User']['date_naissance_month'].'-'.$this->data['User']['date_naissance_day'];
 			//debug($this->data);
 			$this->cleanUpFields();
-			//debug($this->data);
+			//	debug($this->data);
 
 			if ($this->User->isUnique('login', $this->data['User']['login'],$user_id='null') && $this->User->save($this->data)) {
 				$this->Session->setFlash('The User has been saved');
 				$this->redirect('/users/index');
 			} else {
+			
 				$this->Session->setFlash('Please correct errors below.');
-				$this->set('statut',array('0'=>'agent', '1'=>'elu'));
+				//$this->set('statut',array('0'=>'agent', '1'=>'elu'));
 				$this->set('services', $this->User->Service->generateList());
 				if (empty($this->data['Service']['Service'])) { 
 				    $this->data['Service']['Service'] = null;
@@ -88,10 +90,16 @@ class UsersController extends AppController {
 			if (empty($this->data['Profil'])) { $this->data['Profil'] = null; }
 			$this->set('selectedProfils', $this->_selectedArray($this->data['Profil']));
 		} else {
-			//$this->data['User']['password']=md5($this->data['User']['password']);
+			if ($this->data['User']['statut']=='0'){					
+			$this->data['User']['service_id']=null;
+			}else{
+			$this->data['Service']['Service']=array();			
+			}
+			$this->data['User']['password']=md5($this->data['User']['password']);
 			$this->data['User']['date_naissance']=$this->data['User']['date_naissance_year'].'-'.$this->data['User']['date_naissance_month'].'-'.$this->data['User']['date_naissance_day'];
 			$this->cleanUpFields();
 			//debug($this->data);
+			
 			
 			if ($this->User->isUnique('login', $this->data['User']['login'],$id) && $this->User->save($this->data)) {
 				$this->Session->setFlash('The User has been saved');
@@ -99,7 +107,7 @@ class UsersController extends AppController {
 			} else {
 				//debug($data);
 				$this->Session->setFlash('Please correct errors below.');
-				$this->set('statut',array('0'=>'agent', '1'=>'elu'));
+				//$this->set('statut',array('0'=>'agent', '1'=>'elu'));
 				$this->set('services', $this->User->Service->generateList());
 				if (empty($this->data['Service']['Service'])) { $this->data['Service']['Service'] = null; }
 				$this->set('selectedServices', $this->data['Service']['Service']);
@@ -153,13 +161,21 @@ function login()
 			//si le mdp n'est pas vide et correspond a celui de la bdd
 			if (!empty($user['User']['password']) && ($user['User']['password'] == md5($this->data['User']['password']))) 
 			{
+
+
+
 				//on stocke l'utilisateur en session
 				$this->Session->write('user',$user);
-				//debug($this -> Session -> read());
+				//debug($this->Session->read());
+
+				//services auquels appartient l'agent
+    			$services = $this->Utils->simplifyArray($user['Service']);
+    			$this->Session->write('user.Service',$services);
+    			$this->Session->write('user.User.service', key($services));
+    			//debug($this->Session->read());
 				//exit;
 				$this->redirect('/');
-				
-			}
+ 			}
 			else
 			{
 				//sinon on prépare le message d'erreur a afficher dans la vue
