@@ -59,24 +59,42 @@
 </div> 
 <br/>
 <div class="optional">
-	<?php echo $form->labelTag('User/statut', 'Statut');?>
-	<?php echo $html->selectTag('User/statut',$statut);?>
-	<?php echo $html->tagErrorMsg('User/statut','Choisissez sa fonction'); ?>
+	<?php //echo $form->labelTag('User/statut', 'Statut');?>
+	<?php //echo $html->selectTag('User/statut',$statut);?>
+	<?php //echo $html->tagErrorMsg('User/statut','Choisissez sa fonction'); ?>
 </div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Service/Service', 'Related Services');?>
+</br/>
+<div>
+<?php echo $form->labelTag('User/statut', ' Statut');?>
+<?php echo $html->radio('User/statut',array('0'=>'agent'),null,array('onclick'=>"javascript:montre('smenu14');")); ?> 
+<?php echo $html->radio('User/statut',array('1'=>'elu'),null,array('onclick'=>"javascript:montre('smenu15');")); ?> 
+</div>
+<div class="optional" id="smenu14"> 
+	<?php echo $form->labelTag('Service/Service', 'Service(s)');?>
  	<?php echo $html->selectTag('Service/Service', $services, $selectedServices, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
 	<?php echo $html->tagErrorMsg('Service/Service', 'Entrer le(s) service(s) associé(s).');?>
 </div>
-
+<div class="optional" id="smenu15"> 
+	<?php echo $form->labelTag('User/service_id', 'Service');?>
+	<?php echo $html->selectTag('User/service_id', $services, $selectedServices);?>
+	<?php echo $html->tagErrorMsg('User/service_id', 'Entrer le(s) service(s) associé(s).');?>
+</div>
+<br/>
 <div class="optional"> 
-	<?php echo $form->labelTag('Profil/Profil', 'Related Profils');?>
+	<?php echo $form->labelTag('Circuit/Circuit', 'Circuit(s) associe(s)');?>
+ 	<?php echo $html->selectTag('Circuit/Circuit', $circuits, $selectedCircuits, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
+	<?php echo $html->tagErrorMsg('Circuit/Circuit',  'Entrer le(s) circuit(s) associé(s).');?>
+</div>
+<br/>
+<div class="optional"> 
+	<?php echo $form->labelTag('Profil/profil', 'Profils');?>
  	<?php echo $html->selectTag('User/profil_id', $profils, $html->tagValue('User/profil_id'), array(), array(), true);?>
 	<?php echo $html->tagErrorMsg('Profil/Profil', 'Entrer le profil associé.');?>
 </div>
-
+<br/>
 <div class="submit">
-	<?php echo $html->submit('Ajouter un utilisateur');?>
+	<?php echo $form->labelTag('User/id', '&nbsp;');?>
+	<?php echo $html->submit('Ajouter');?>
 </div>
 </form>
 <ul class="actions">
