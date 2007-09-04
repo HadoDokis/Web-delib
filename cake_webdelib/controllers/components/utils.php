@@ -96,5 +96,16 @@ class UtilsComponent extends Object
 		return $debut.$fin;
 	}
 	
+	function simplifyArray($complexArray)
+    {
+    	foreach($complexArray as $array)
+    	{
+    		$simplifiedArray[$array['id']] = $array['libelle'];
+
+    	}
+    	return $simplifiedArray;
+    }	
+	
+	
 }
 ?>
