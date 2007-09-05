@@ -68,6 +68,7 @@ class UsersController extends AppController {
 					$this->data['Profil']['Profil'] = null;
 				}
 				$this->set('selectedProfils', $this->data['Profil']['Profil']);
+				$this->data['User']['password']=null;
 			}
 		}
 	}
