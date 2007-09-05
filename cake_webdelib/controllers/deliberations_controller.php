@@ -70,7 +70,9 @@ class DeliberationsController extends AppController {
 
 	function listerMesProjets()
 	{
-		//liste les projets dont je suis le redacteur
+		//liste les projets dont je suis le redacteur et qui sont en cours de rédaction
+		//il faut verifier la position du projet de delib dans la table traitement s'il existe car
+		//si la position est à 0 cela notifie un refus
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
 		$conditions="etat = 0 AND redacteur_id = $user_id";
@@ -136,49 +138,55 @@ class DeliberationsController extends AppController {
 		//liste les projets où j'apparais dans le circuit de validation
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
+		//recherche de tous les circuits où apparait l'utilisateur logué
 		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "position ASC");
 		$conditions="";
 		$delib=array();
-		$position_user=0;
+		//$position_user=0;
 		$cpt=0;
-		foreach ($data_circuit as $data)
-		{
-			if ($cpt>0)
-				$conditions=$conditions." OR ";
-			
-			$conditions=$conditions." circuit_id = ".$data['UsersCircuit']['circuit_id'];
-			$cpt++;
-		}
-		$deliberations = $this->Deliberation->findAll($conditions);
-		//debug($deliberations);
 		//debug($data_circuit);
-		foreach ($deliberations as $deliberation)
+		if ($data_circuit!=null)
 		{
-			//on recupere la position courante de la deliberation
-			$lastTraitement=array_pop($deliberation['Traitement']);
-			
-			//on recupere la position de l'user dans le circuit
 			foreach ($data_circuit as $data)
 			{
-				if ($data['UsersCircuit']['circuit_id']==$lastTraitement['circuit_id'])
-				{
-					$position_user=$data['UsersCircuit']['position'];
-				}
-			}
+				
+				
+				if ($cpt>0)
+					$conditions=$conditions." OR ";
 			
-			if ($lastTraitement['position']==$position_user){
-				$deliberation['action']="traiter";
-				$deliberation['act']="traiter";
-			}else{
-				$deliberation['action']="view";
-				$deliberation['act']="voir";
-			//debug($data);
-			//debug($position_user);
-			//exit;
-		}array_push($delib, $deliberation);
-			//debug($delib);
+				$conditions=$conditions." circuit_id = ".$data['UsersCircuit']['circuit_id'];
+				$cpt++;
+			}
+			$deliberations = $this->Deliberation->findAll($conditions);
+			//debug($deliberations);
+			//debug($data_circuit);
+			foreach ($deliberations as $deliberation)
+			{
+				//on recupere la position courante de la deliberation
+				$lastTraitement=array_pop($deliberation['Traitement']);
+				
+				//on recupere la position de l'user dans le circuit
+				foreach ($data_circuit as $data)
+				{
+					if ($data['UsersCircuit']['circuit_id']==$lastTraitement['circuit_id'])
+					{
+						$position_user=$data['UsersCircuit']['position'];
+					}
+				}
+			
+				if ($lastTraitement['position']==$position_user){
+					$deliberation['action']="traiter";
+					$deliberation['act']="traiter";
+				}else{
+					$deliberation['action']="view";
+					$deliberation['act']="voir";
+				}
+				debug($deliberation);
+				if ($deliberation['Deliberation']['etat']!=-1) //etat=-1 : deliberation refusée
+					array_push($delib, $deliberation);
+				
+			}
 		}
-		
 		$this->set('deliberations', $delib);
 	}
 	
@@ -423,6 +431,8 @@ class DeliberationsController extends AppController {
 			{
 				if ($valid=='1') 
 				{
+					//TODO traiter la fin du workflow!
+
 					//on a validé le projet, il passe à la personne suivante
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 					$lastpos=count($tab)-1;
@@ -445,8 +455,42 @@ class DeliberationsController extends AppController {
 				}
 				else
 				{	
-					//on a refusé le projet, il repars au redacteur
 					
+					//on a refusé le projet, il repars au redacteur
+					//TODO notifier par mail toutes les personnes qui ont déjà visé le projet
+					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
+					$lastpos=count($tab)-1;
+					
+					//MAJ de la date de traitement de la dernière position courante $lastpos
+					$tab[$lastpos]['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
+					$this->Traitement->save($tab[$lastpos]['Traitement']);
+					
+					$this->data['Traitement']['id']='';
+					
+					//maj de la table traitements
+					$this->data['Traitement']['position']=0;
+					$circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
+					$this->data['Traitement']['delib_id']=$id;
+					$this->data['Traitement']['circuit_id']=$circuit_id;
+					$this->Traitement->save($this->data['Traitement']);
+					
+					//maj de l'etat de la delib dans la table deliberations
+					$tab=$this->Deliberation->findAll("Deliberation.id = $id");
+					$this->data['Deliberation']['etat']=-1; //etat -1 : refusé
+					$this->data['Deliberation']['id']=$id;
+					$this->Deliberation->save($this->data['Deliberation']);
+					
+					//enregistrement d'une nouvelle delib
+					$delib['Deliberation']=$tab[0]['Deliberation'];
+					$delib['Deliberation']['id']='';
+					$delib['Deliberation']['etat']=0;
+					$delib['Deliberation']['date_envoi']=0;
+					$delib['Deliberation']['circuit_id']=0;
+					$delib['Deliberation']['created']='';
+					$delib['Deliberation']['modified']='';
+					$this->Deliberation->save($delib['Deliberation']);
+				
+					$this->redirect('/deliberations/listerProjetsATraiter');
 				}
 			}
 		}
