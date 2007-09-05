@@ -4,7 +4,7 @@
 	<?php echo $form->labelTag('User/login', 'Login');?>
  	<?php echo $html->input('User/login');?>
 	<?php echo $html->tagErrorMsg('User/login', 'Entrer le login.');?>
-	<?php echo $html->tagErrorMsg('User/unique_login', 'Entrer un autre login, celui-cu est d&eacute;j&agrave; utilis&eacute;.'); ?>
+	<?php echo $html->tagErrorMsg('User/unique_login', 'Entrer un autre login, celui-ci est d&eacute;j&agrave; utilis&eacute;.'); ?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('User/password', 'Password');?>
@@ -72,7 +72,7 @@
 <div class="optional" id="smenu14"> 
 	<?php echo $form->labelTag('Service/Service', 'Service(s)');?>
  	<?php echo $html->selectTag('Service/Service', $services, $selectedServices, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
-	<?php echo $html->tagErrorMsg('Service/Service', 'Entrer le(s) service(s) associé(s).');?>
+	<?php echo $html->tagErrorMsg('Service/Service', 'Entrer le(s) service(s) associï¿½(s).');?>
 </div>
 <div class="optional" id="smenu15"> 
 	<?php echo $form->labelTag('User/service_id', 'Service');?>
@@ -89,7 +89,7 @@
 <div class="optional"> 
 	<?php echo $form->labelTag('Profil/profil', 'Profils');?>
  	<?php echo $html->selectTag('User/profil_id', $profils, $html->tagValue('User/profil_id'), array(), array(), true);?>
-	<?php echo $html->tagErrorMsg('Profil/Profil', 'Entrer le profil associé.');?>
+	<?php echo $html->tagErrorMsg('Profil/Profil', 'Entrer le profil associï¿½.');?>
 </div>
 <br/>
 <div class="submit">
