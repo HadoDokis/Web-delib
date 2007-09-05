@@ -12,7 +12,7 @@
 
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
- 	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs, $html->tagValue('Deliberation/rapporteur_id'), array(), array(), false);?>
+ 	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$selectedRapporteur,null,null,false);?>
 	<?php echo $html->tagErrorMsg('Deliberation/rapporteur_id', 'Entrer le rapporteur.');?>
 </div>
 
@@ -35,10 +35,9 @@
 <div class="optional"> 
     <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
     <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>    
-</div>	
+</div>
 <br />
 <div class="submit">
 	<?php echo $html->submit('Saisir un texte de projet');?>
 </div>
 </form>
-
