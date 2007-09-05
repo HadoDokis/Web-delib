@@ -208,20 +208,25 @@ class DeliberationsController extends AppController {
 	}
 
 	function add() {
+	$user=$this->Session->read('user');
 		if (empty($this->data)) {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
 			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
+			$this->set('selectedRapporteur',key($this->Deliberation->User->generateList('service_id='.$user['User']['service'])));
+			//debug($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$this->render();
 		} else {
 			//$this->data['Deliberation']['seance_id']= $this->Utils->FrDateToUkDate($this->params['form']['seance_id']);
-			$user=$this->Session->read('user');
-
+			
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
+			$this->data['Deliberation']['service_id']=$user['User']['service'];
 			$this->cleanUpFields();
+			//debug($this->data);
+			
 			if ($this->Deliberation->save($this->data)) {
 				$this->redirect('/deliberations/textprojet/'.$this->Deliberation->getLastInsertId());
 			} else {
