@@ -40,6 +40,7 @@
 class AppController extends Controller {
 	var $components=array('Utils');
 	var $beforeFilter = array('checkSession');
+	var $helpers = array('Html', 'Form' , 'Javascript');
 	
 
 	var $infoUser = "";
