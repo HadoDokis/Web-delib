@@ -6,8 +6,6 @@
 	<dd>&nbsp;<?php echo $user['User']['id']?></dd>
 	<dt>Login</dt>
 	<dd>&nbsp;<?php echo $user['User']['login']?></dd>
-	<dt>Mot de passe</dt>
-	<dd>&nbsp;<?php echo $user['User']['password']?></dd>
 	<dt>Nom</dt>
 	<dd>&nbsp;<?php echo $user['User']['nom']?></dd>
 	<dt>Pr&eacute;nom</dt>
