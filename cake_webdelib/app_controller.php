@@ -39,17 +39,18 @@
  */
 class AppController extends Controller {
 	var $components=array('Utils');
-	
 	var $beforeFilter = array('checkSession');
 	
 
 	var $infoUser = "";
 	var $lienAccueil = "";
 	var $lienDeconnexion = "";
+	var $agentServices = null;
 	
 	function checkSession()
 	{
 		$this->infoUser = "<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ";
+   		$this->agentServices = $this->Session->read('user.Service');
 		$this->lienAccueil = " | <span class=\"accueil\"><a href=\"".$this->base."/\">Accueil</a></span> ";
  	    $this->lienDeconnexion = " | <span class=\"deconnexion\"><a href=\"".$this->base."/users/logout\"> Deconnexion</a></span>";  
  	    	  
