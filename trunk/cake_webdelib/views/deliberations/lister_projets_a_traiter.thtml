@@ -5,10 +5,11 @@
 <tr>
 	<th>Theme</th>
 	<th>Rapporteur</th>
-	<th>Date Session</th>
+	<th>Date S&eacute;ance</th>
 	<th>Objet</th>
 	<th>Titre</th>
 	<th>Num Delib</th>
+	<th>Service emetteur</th>
 	<th>Actions</th>
 </tr>
 
@@ -21,6 +22,7 @@
 	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
+	<td><?php echo $deliberation['Service']['libelle']; ?></td>
 	<td class="actions">
 		<?php echo $html->link($deliberation['act'],"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'])?><br />
 		<?php echo $html->link('PDF','/deliberations/convert/' . $deliberation['Deliberation']['id'])?><br />
