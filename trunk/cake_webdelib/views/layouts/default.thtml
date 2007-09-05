@@ -10,15 +10,16 @@
 	window.onload=montre;
 	function montre(id) {
 	var d = document.getElementById(id);
-		for (var i = 1; i<=10; i++) {
+		for (var i = 1; i<=15; i++) {
 			if (document.getElementById('smenu'+i)) {document.getElementById('smenu'+i).style.display='none';}
 		}
 	if (d) {d.style.display='block';}
 	}
 	//-->
+	
+	
 	</script>
-	
-	
+		
 </head>
 <body>
 <div id="conteneur">
@@ -29,9 +30,20 @@
 	
 
 	<div id="user">
-	    <?php echo $this->controller->infoUser;?>
-	    <?php echo $this->controller->lienAccueil;?>
-	    <?php echo $this->controller->lienDeconnexion; ?>
+	<?php echo $this->controller->infoUser; 
+
+	$users= $this->controller->Session->read('user');
+	if (empty($users['Service'])){
+		echo $html->selectTag('Service/Service',array($users['ServiceElu']['id']=>$users['ServiceElu']['libelle']), null, null,null,false);
+	}else{
+		$urlPage =  FULL_BASE_URL . $this->webroot;
+		$service_id = $this->controller->Session->read('user.User.service');
+		echo $html->selectTag('Service/Service',$this->controller->agentServices, $service_id, array('id' => "$urlPage", 'onChange'=>'changeService(this)'),null,false);
+	}
+    
+	?>	
+	<?php echo $this->controller->lienAccueil;?>
+	<?php echo $this->controller->lienDeconnexion; ?>
 	
 	</div>
  
