@@ -59,6 +59,14 @@ class ServicesController extends AppController {
 			$this->redirect('/services/index');
 		}
 	}
+	
+    function changeService($newServiceActif)
+    {
+    	$this->Session->del('user.User.service');
+       	$this->Session->write('user.User.service',$newServiceActif);
+       	$this->Redirect("/");
+    }
+	
 
 }
 ?>
