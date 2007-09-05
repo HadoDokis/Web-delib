@@ -169,9 +169,13 @@ function login()
 				//debug($this->Session->read());
 
 				//services auquels appartient l'agent
+				if(empty ($user['Service'])){
+				$this->Session->write('user.User.service', $user['ServiceElu']['id']);
+				}else{
     			$services = $this->Utils->simplifyArray($user['Service']);
     			$this->Session->write('user.Service',$services);
     			$this->Session->write('user.User.service', key($services));
+				}
     			//debug($this->Session->read());
 				//exit;
 				$this->redirect('/');
