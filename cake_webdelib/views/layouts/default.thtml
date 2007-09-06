@@ -44,6 +44,7 @@
 	<div id="centre">
 		
 		<?php echo $this->renderElement('adminMenu'); ?>
+		<?php echo $session->flash();?>
 		<?php echo $content_for_layout; ?>
 	</div>
 
