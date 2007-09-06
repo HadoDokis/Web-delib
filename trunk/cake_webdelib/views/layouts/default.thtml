@@ -18,8 +18,13 @@
 
 	<div id="user">
 	<?php echo $this->controller->infoUser; 
-
+	$urlcourante=FULL_BASE_URL.$html->url();
+	
 	$users= $this->controller->Session->read('user');
+	
+	//changement de service à la volée : on enregistre la page courante pour la redirection sutie au changement de service
+	$this->controller->Session->write('user.User.lasturl',$urlcourante);
+	
 	if (empty($users['Service'])){
 		echo $html->selectTag('Service/Service',array($users['ServiceElu']['id']=>$users['ServiceElu']['libelle']), null, null,null,false);
 	}else{
@@ -31,6 +36,7 @@
 	?>	
 	<?php echo $this->controller->lienAccueil;?>
 	<?php echo $this->controller->lienDeconnexion; ?>
+	
 	
 	</div>
  
