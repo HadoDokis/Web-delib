@@ -257,3 +257,10 @@ table.month {
 }
 
 /*  ----------------- end of Calendar -------------------------- */
+.message {
+	height: 50px;
+	padding-left: 20px;
+	font-size: 20px;
+	font-weight: bold;
+	color: red;
+}
