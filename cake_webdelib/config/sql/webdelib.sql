@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Serveur: localhost
--- Généré le : Mardi 04 Septembre 2007 à 09:27
+-- Généré le : Jeudi 06 Septembre 2007 à 11:15
 -- Version du serveur: 4.1.11
--- Version de PHP: 4.3.10-22
+-- Version de PHP: 5.2.0-8+etch3~bpo.1
 -- 
 -- Base de données: `webdelib`
 -- 
@@ -16,7 +16,8 @@
 -- Structure de la table `annexes`
 -- 
 
-CREATE TABLE `annexes` (
+DROP TABLE IF EXISTS `annexes`;
+CREATE TABLE IF NOT EXISTS `annexes` (
   `id` int(11) NOT NULL auto_increment,
   `delib_id` int(11) NOT NULL default '0',
   `chemin` text NOT NULL,
@@ -38,7 +39,8 @@ CREATE TABLE `annexes` (
 -- Structure de la table `circuits`
 -- 
 
-CREATE TABLE `circuits` (
+DROP TABLE IF EXISTS `circuits`;
+CREATE TABLE IF NOT EXISTS `circuits` (
   `id` int(11) NOT NULL auto_increment,
   `libelle` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`id`)
@@ -48,7 +50,7 @@ CREATE TABLE `circuits` (
 -- Contenu de la table `circuits`
 -- 
 
-INSERT INTO `circuits` VALUES (1, 'soutenance');
+INSERT INTO `circuits` (`id`, `libelle`) VALUES (1, 'soutenance');
 
 -- --------------------------------------------------------
 
@@ -56,7 +58,8 @@ INSERT INTO `circuits` VALUES (1, 'soutenance');
 -- Structure de la table `commentaires`
 -- 
 
-CREATE TABLE `commentaires` (
+DROP TABLE IF EXISTS `commentaires`;
+CREATE TABLE IF NOT EXISTS `commentaires` (
   `id` int(11) NOT NULL auto_increment,
   `delib_id` int(11) NOT NULL default '0',
   `agent_id` int(11) NOT NULL default '0',
@@ -77,7 +80,8 @@ CREATE TABLE `commentaires` (
 -- Structure de la table `deliberations`
 -- 
 
-CREATE TABLE `deliberations` (
+DROP TABLE IF EXISTS `deliberations`;
+CREATE TABLE IF NOT EXISTS `deliberations` (
   `id` int(11) NOT NULL auto_increment,
   `circuit_id` int(11) default '0',
   `theme_id` int(11) NOT NULL default '0',
@@ -103,10 +107,10 @@ CREATE TABLE `deliberations` (
 -- Contenu de la table `deliberations`
 -- 
 
-INSERT INTO `deliberations` VALUES (4, 1, 1, 0, 0, 8, 10, 1, 'test', 'test', '45', '', 0x3c703e74657874652064752070726f6a65743c2f703e, 0x3c703e7465787465206465206c61206e6f74652073796e7468266567726176653b73653c2f703e, '2007-09-03 02:29:16', 1, '2007-09-03 02:26:23', '2007-09-03 02:29:16');
-INSERT INTO `deliberations` VALUES (3, 1, 1, 0, 0, 7, 10, 1, 'test', 'test', '567', '', 0x3c703e65737361693c2f703e0d0a3c703e3c666f6e742073697a653d2234223e3c656d3e3c7374726f6e673e65737361693c2f7374726f6e673e3c2f656d3e3c2f666f6e743e3c2f703e0d0a3c703e3c666f6e7420636f6c6f723d2223666630303030223e65737361693c2f666f6e743e3c2f703e, 0x3c703e7465737474657374266e6273703b266e6273703b3c2f703e, '2007-09-02 22:48:42', 1, '2007-09-02 22:47:59', '2007-09-02 22:48:42');
-INSERT INTO `deliberations` VALUES (5, 0, 1, 0, 0, 8, 10, 2, 't', 't', 't', '', NULL, NULL, NULL, 0, '2007-09-03 09:55:43', '2007-09-03 09:55:43');
-INSERT INTO `deliberations` VALUES (6, 1, 1, 0, 0, 8, 10, 4, 'test', 'test titre', '56', '', 0x3c703e746573742070726f6a65743c2f703e, 0x3c703e6e6f74652064652073796e74686573653c2f703e, '2007-09-03 10:18:47', 1, '2007-09-03 10:17:17', '2007-09-03 10:18:47');
+INSERT INTO `deliberations` (`id`, `circuit_id`, `theme_id`, `service_id`, `vote_id`, `redacteur_id`, `rapporteur_id`, `seance_id`, `objet`, `titre`, `num_delib`, `num_pref`, `texte_projet`, `texte_synthese`, `date_envoi`, `etat`, `created`, `modified`) VALUES (4, 1, 1, 0, 0, 8, 10, 1, 'test', 'test', '45', '', 0x3c703e74657874652064752070726f6a65743c2f703e, 0x3c703e7465787465206465206c61206e6f74652073796e7468266567726176653b73653c2f703e, '2007-09-03 02:29:16', 1, '2007-09-03 02:26:23', '2007-09-03 02:29:16'),
+(3, 1, 1, 0, 0, 7, 10, 1, 'test', 'test', '567', '', 0x3c703e65737361693c2f703e0d0a3c703e3c666f6e742073697a653d2234223e3c656d3e3c7374726f6e673e65737361693c2f7374726f6e673e3c2f656d3e3c2f666f6e743e3c2f703e0d0a3c703e3c666f6e7420636f6c6f723d2223666630303030223e65737361693c2f666f6e743e3c2f703e, 0x3c703e7465737474657374266e6273703b266e6273703b3c2f703e, '2007-09-02 22:48:42', 1, '2007-09-02 22:47:59', '2007-09-02 22:48:42'),
+(5, 0, 1, 0, 0, 8, 10, 2, 't', 't', 't', '', NULL, NULL, NULL, 0, '2007-09-03 09:55:43', '2007-09-03 09:55:43'),
+(6, 1, 1, 0, 0, 8, 10, 4, 'test', 'test titre', '56', '', 0x3c703e746573742070726f6a65743c2f703e, 0x3c703e6e6f74652064652073796e74686573653c2f703e, '2007-09-03 10:18:47', 1, '2007-09-03 10:17:17', '2007-09-03 10:18:47');
 
 -- --------------------------------------------------------
 
@@ -114,7 +118,8 @@ INSERT INTO `deliberations` VALUES (6, 1, 1, 0, 0, 8, 10, 4, 'test', 'test titre
 -- Structure de la table `deliberations_odjs`
 -- 
 
-CREATE TABLE `deliberations_odjs` (
+DROP TABLE IF EXISTS `deliberations_odjs`;
+CREATE TABLE IF NOT EXISTS `deliberations_odjs` (
   `delib_id` int(11) NOT NULL default '0',
   `odj_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`delib_id`,`odj_id`)
@@ -131,7 +136,8 @@ CREATE TABLE `deliberations_odjs` (
 -- Structure de la table `listepresences`
 -- 
 
-CREATE TABLE `listepresences` (
+DROP TABLE IF EXISTS `listepresences`;
+CREATE TABLE IF NOT EXISTS `listepresences` (
   `id` int(11) NOT NULL auto_increment,
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -149,7 +155,8 @@ CREATE TABLE `listepresences` (
 -- Structure de la table `odjs`
 -- 
 
-CREATE TABLE `odjs` (
+DROP TABLE IF EXISTS `odjs`;
+CREATE TABLE IF NOT EXISTS `odjs` (
   `id` int(11) NOT NULL auto_increment,
   `seance_id` int(11) NOT NULL default '0',
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -168,7 +175,8 @@ CREATE TABLE `odjs` (
 -- Structure de la table `profils`
 -- 
 
-CREATE TABLE `profils` (
+DROP TABLE IF EXISTS `profils`;
+CREATE TABLE IF NOT EXISTS `profils` (
   `id` int(11) NOT NULL auto_increment,
   `libelle` varchar(30) NOT NULL default '',
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -180,10 +188,10 @@ CREATE TABLE `profils` (
 -- Contenu de la table `profils`
 -- 
 
-INSERT INTO `profils` VALUES (1, 'Redacteur', '2007-08-02 10:27:30', '2007-08-02 10:27:30');
-INSERT INTO `profils` VALUES (2, 'Administrateur', '2007-08-02 10:27:34', '2007-08-02 10:27:34');
-INSERT INTO `profils` VALUES (3, 'Service des assemblées', '2007-08-02 10:27:42', '2007-08-02 10:27:42');
-INSERT INTO `profils` VALUES (4, 'Rapporteur', '2007-08-02 10:27:47', '2007-08-02 10:27:47');
+INSERT INTO `profils` (`id`, `libelle`, `created`, `modified`) VALUES (1, 'Redacteur', '2007-08-02 10:27:30', '2007-08-02 10:27:30'),
+(2, 'Administrateur', '2007-08-02 10:27:34', '2007-08-02 10:27:34'),
+(3, 'Service des assembl?es', '2007-08-02 10:27:42', '2007-08-02 10:27:42'),
+(4, 'Rapporteur', '2007-08-02 10:27:47', '2007-08-02 10:27:47');
 
 -- --------------------------------------------------------
 
@@ -191,7 +199,8 @@ INSERT INTO `profils` VALUES (4, 'Rapporteur', '2007-08-02 10:27:47', '2007-08-0
 -- Structure de la table `pvcomplets`
 -- 
 
-CREATE TABLE `pvcomplets` (
+DROP TABLE IF EXISTS `pvcomplets`;
+CREATE TABLE IF NOT EXISTS `pvcomplets` (
   `id` int(11) NOT NULL auto_increment,
   `seance_id` int(11) NOT NULL default '0',
   `chemin` varchar(100) NOT NULL default '',
@@ -211,7 +220,8 @@ CREATE TABLE `pvcomplets` (
 -- Structure de la table `pvsommaires`
 -- 
 
-CREATE TABLE `pvsommaires` (
+DROP TABLE IF EXISTS `pvsommaires`;
+CREATE TABLE IF NOT EXISTS `pvsommaires` (
   `id` int(11) NOT NULL auto_increment,
   `seance_id` int(11) NOT NULL default '0',
   `chemin` varchar(100) NOT NULL default '',
@@ -231,7 +241,8 @@ CREATE TABLE `pvsommaires` (
 -- Structure de la table `refannexes`
 -- 
 
-CREATE TABLE `refannexes` (
+DROP TABLE IF EXISTS `refannexes`;
+CREATE TABLE IF NOT EXISTS `refannexes` (
   `id` int(11) NOT NULL auto_increment,
   `libelle` varchar(100) NOT NULL default '',
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -250,7 +261,8 @@ CREATE TABLE `refannexes` (
 -- Structure de la table `seances`
 -- 
 
-CREATE TABLE `seances` (
+DROP TABLE IF EXISTS `seances`;
+CREATE TABLE IF NOT EXISTS `seances` (
   `id` int(11) NOT NULL auto_increment,
   `type_id` int(11) NOT NULL default '0',
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -263,10 +275,10 @@ CREATE TABLE `seances` (
 -- Contenu de la table `seances`
 -- 
 
-INSERT INTO `seances` VALUES (1, 1, '2007-09-02 22:46:53', '2007-09-02 22:46:53', '2008-05-07 17:03:00');
-INSERT INTO `seances` VALUES (2, 2, '2007-09-02 22:47:09', '2007-09-02 22:47:09', '2007-10-06 16:02:00');
-INSERT INTO `seances` VALUES (3, 3, '2007-09-02 22:47:25', '2007-09-02 22:47:25', '2015-09-06 17:13:00');
-INSERT INTO `seances` VALUES (4, 2, '2007-09-03 02:34:39', '2007-09-03 02:34:39', '2007-10-08 13:07:00');
+INSERT INTO `seances` (`id`, `type_id`, `created`, `modified`, `date`) VALUES (1, 1, '2007-09-02 22:46:53', '2007-09-02 22:46:53', '2008-05-07 17:03:00'),
+(2, 2, '2007-09-02 22:47:09', '2007-09-02 22:47:09', '2007-10-06 16:02:00'),
+(3, 3, '2007-09-02 22:47:25', '2007-09-02 22:47:25', '2015-09-06 17:13:00'),
+(4, 2, '2007-09-03 02:34:39', '2007-09-03 02:34:39', '2007-10-08 13:07:00');
 
 -- --------------------------------------------------------
 
@@ -274,7 +286,8 @@ INSERT INTO `seances` VALUES (4, 2, '2007-09-03 02:34:39', '2007-09-03 02:34:39'
 -- Structure de la table `services`
 -- 
 
-CREATE TABLE `services` (
+DROP TABLE IF EXISTS `services`;
+CREATE TABLE IF NOT EXISTS `services` (
   `id` int(11) NOT NULL auto_increment,
   `libelle` varchar(100) NOT NULL default '',
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -286,10 +299,10 @@ CREATE TABLE `services` (
 -- Contenu de la table `services`
 -- 
 
-INSERT INTO `services` VALUES (1, 'Informatique', '2007-08-02 10:25:40', '2007-08-02 10:25:40');
-INSERT INTO `services` VALUES (2, 'Urbanisme', '2007-08-02 10:25:48', '2007-08-02 10:25:48');
-INSERT INTO `services` VALUES (3, 'Voirie', '2007-08-02 10:25:59', '2007-08-02 10:25:59');
-INSERT INTO `services` VALUES (4, 'Education', '2007-08-02 10:26:03', '2007-08-02 10:26:03');
+INSERT INTO `services` (`id`, `libelle`, `created`, `modified`) VALUES (1, 'Informatique', '2007-08-02 10:25:40', '2007-08-02 10:25:40'),
+(2, 'Urbanisme', '2007-08-02 10:25:48', '2007-08-02 10:25:48'),
+(3, 'Voirie', '2007-08-02 10:25:59', '2007-08-02 10:25:59'),
+(4, 'Education', '2007-08-02 10:26:03', '2007-08-02 10:26:03');
 
 -- --------------------------------------------------------
 
@@ -297,7 +310,8 @@ INSERT INTO `services` VALUES (4, 'Education', '2007-08-02 10:26:03', '2007-08-0
 -- Structure de la table `themes`
 -- 
 
-CREATE TABLE `themes` (
+DROP TABLE IF EXISTS `themes`;
+CREATE TABLE IF NOT EXISTS `themes` (
   `id` int(11) NOT NULL auto_increment,
   `libelle` varchar(100) NOT NULL default '',
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -309,8 +323,8 @@ CREATE TABLE `themes` (
 -- Contenu de la table `themes`
 -- 
 
-INSERT INTO `themes` VALUES (1, 'Amenagement du territoire', '2007-08-02 10:26:24', '2007-08-02 10:26:24');
-INSERT INTO `themes` VALUES (2, 'Entretien des routes', '2007-08-02 10:26:37', '2007-08-02 10:26:37');
+INSERT INTO `themes` (`id`, `libelle`, `created`, `modified`) VALUES (1, 'Amenagement du territoire', '2007-08-02 10:26:24', '2007-08-02 10:26:24'),
+(2, 'Entretien des routes', '2007-08-02 10:26:37', '2007-08-02 10:26:37');
 
 -- --------------------------------------------------------
 
@@ -318,7 +332,8 @@ INSERT INTO `themes` VALUES (2, 'Entretien des routes', '2007-08-02 10:26:37', '
 -- Structure de la table `traitements`
 -- 
 
-CREATE TABLE `traitements` (
+DROP TABLE IF EXISTS `traitements`;
+CREATE TABLE IF NOT EXISTS `traitements` (
   `id` int(11) NOT NULL auto_increment,
   `delib_id` int(11) NOT NULL default '0',
   `circuit_id` int(11) NOT NULL default '0',
@@ -331,16 +346,16 @@ CREATE TABLE `traitements` (
 -- Contenu de la table `traitements`
 -- 
 
-INSERT INTO `traitements` VALUES (1, 3, 1, 1, '2007-09-02 22:52:01');
-INSERT INTO `traitements` VALUES (2, 3, 1, 2, '2007-09-02 22:52:38');
-INSERT INTO `traitements` VALUES (3, 3, 1, 3, '0000-00-00 00:00:00');
-INSERT INTO `traitements` VALUES (4, 2, 1, 1, '0000-00-00 00:00:00');
-INSERT INTO `traitements` VALUES (5, 4, 1, 1, '2007-09-03 02:29:42');
-INSERT INTO `traitements` VALUES (6, 4, 1, 2, '2007-09-03 02:30:03');
-INSERT INTO `traitements` VALUES (7, 4, 1, 3, '0000-00-00 00:00:00');
-INSERT INTO `traitements` VALUES (8, 6, 1, 1, '2007-09-03 10:19:22');
-INSERT INTO `traitements` VALUES (9, 6, 1, 2, '2007-09-03 10:19:50');
-INSERT INTO `traitements` VALUES (10, 6, 1, 3, '0000-00-00 00:00:00');
+INSERT INTO `traitements` (`id`, `delib_id`, `circuit_id`, `position`, `date_traitement`) VALUES (1, 3, 1, 1, '2007-09-02 22:52:01'),
+(2, 3, 1, 2, '2007-09-02 22:52:38'),
+(3, 3, 1, 3, '0000-00-00 00:00:00'),
+(4, 2, 1, 1, '0000-00-00 00:00:00'),
+(5, 4, 1, 1, '2007-09-03 02:29:42'),
+(6, 4, 1, 2, '2007-09-03 02:30:03'),
+(7, 4, 1, 3, '0000-00-00 00:00:00'),
+(8, 6, 1, 1, '2007-09-03 10:19:22'),
+(9, 6, 1, 2, '2007-09-03 10:19:50'),
+(10, 6, 1, 3, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -348,7 +363,8 @@ INSERT INTO `traitements` VALUES (10, 6, 1, 3, '0000-00-00 00:00:00');
 -- Structure de la table `typeseances`
 -- 
 
-CREATE TABLE `typeseances` (
+DROP TABLE IF EXISTS `typeseances`;
+CREATE TABLE IF NOT EXISTS `typeseances` (
   `id` int(11) NOT NULL auto_increment,
   `libelle` varchar(50) NOT NULL default '',
   `retard` int(11) NOT NULL default '0',
@@ -361,9 +377,9 @@ CREATE TABLE `typeseances` (
 -- Contenu de la table `typeseances`
 -- 
 
-INSERT INTO `typeseances` VALUES (1, 'Conseil municipal', 0, '2007-08-02 10:26:47', '2007-08-02 10:26:47');
-INSERT INTO `typeseances` VALUES (2, 'Conseil général', 0, '2007-08-02 10:26:53', '2007-08-02 10:26:53');
-INSERT INTO `typeseances` VALUES (3, 'Commission permanente', 0, '2007-08-02 10:27:01', '2007-08-02 10:27:01');
+INSERT INTO `typeseances` (`id`, `libelle`, `retard`, `created`, `modified`) VALUES (1, 'Conseil municipal', 0, '2007-08-02 10:26:47', '2007-08-02 10:26:47'),
+(2, 'Conseil g?n?ral', 0, '2007-08-02 10:26:53', '2007-08-02 10:26:53'),
+(3, 'Commission permanente', 0, '2007-08-02 10:27:01', '2007-08-02 10:27:01');
 
 -- --------------------------------------------------------
 
@@ -371,7 +387,8 @@ INSERT INTO `typeseances` VALUES (3, 'Commission permanente', 0, '2007-08-02 10:
 -- Structure de la table `users`
 -- 
 
-CREATE TABLE `users` (
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL auto_increment,
   `profil_id` int(11) NOT NULL default '0',
   `statut` int(11) NOT NULL default '0',
@@ -395,11 +412,11 @@ CREATE TABLE `users` (
 -- Contenu de la table `users`
 -- 
 
-INSERT INTO `users` VALUES (11, 4, 0, 'christophe', 'b2bb80563783f43df1d8ac913003ca7a', 'christophe', 'christophe', 'christophe@christophe.fr', 'christophe', 123456, 'christophe', 1234567890, 0000123890, '1970-01-01', '2007-09-02 22:44:07', '2007-09-02 22:44:07');
-INSERT INTO `users` VALUES (10, 3, 1, 'melanie', '73aaec6dc33b96597d8019f7553e96a2', 'melanie', 'melanie', 'melanie@melanie.fr', 'melanie', 67867, 'melanie', 1234567890, 1234567890, '1948-02-02', '2007-09-02 22:41:05', '2007-09-02 22:41:05');
-INSERT INTO `users` VALUES (12, 2, 0, 'adullact', '9825b1be57b3d7912cf79db3d16aa501', 'adullact', 'adullact@adullact.org', 'adullact@adullact.org', 'adullact', 12345, 'adullact', 4294967295, 1234567899, '1948-02-02', '2007-09-04 09:24:14', '2007-09-04 09:24:14');
-INSERT INTO `users` VALUES (8, 1, 0, 'laurie', '17828ff61bd0ad2487e39a0d83d5e2bb', 'laurie', 'laurie', 'laurie@laurie.fr', 'laurie', 0, 'laurie', 0000000000, 0000000000, '1984-03-13', '2007-09-02 17:00:19', '2007-09-02 17:00:19');
-INSERT INTO `users` VALUES (9, 2, 0, 'julien', '30d69d863dde81562ce277fbc0a3cf18', 'julien', 'julien', 'julien@julien.org', 'julien', 99999, 'julien', 4294967295, 4294967295, '1947-01-01', '2007-09-02 22:40:21', '2007-09-02 22:40:21');
+INSERT INTO `users` (`id`, `profil_id`, `statut`, `login`, `password`, `nom`, `prenom`, `email`, `adresse`, `CP`, `ville`, `teldom`, `telmobile`, `date_naissance`, `created`, `modified`) VALUES (11, 4, 0, 'christophe', 'b2bb80563783f43df1d8ac913003ca7a', 'christophe', 'christophe', 'christophe@christophe.fr', 'christophe', 123456, 'christophe', 1234567890, 0000123890, '1970-01-01', '2007-09-02 22:44:07', '2007-09-02 22:44:07'),
+(10, 3, 1, 'melanie', '73aaec6dc33b96597d8019f7553e96a2', 'melanie', 'melanie', 'melanie@melanie.fr', 'melanie', 67867, 'melanie', 1234567890, 1234567890, '1948-02-02', '2007-09-02 22:41:05', '2007-09-02 22:41:05'),
+(12, 2, 0, 'adullact', '9825b1be57b3d7912cf79db3d16aa501', 'adullact', 'adullact@adullact.org', 'adullact@adullact.org', 'adullact', 12345, 'adullact', 4294967295, 1234567899, '1948-02-02', '2007-09-04 09:24:14', '2007-09-04 09:24:14'),
+(8, 1, 0, 'laurie', '17828ff61bd0ad2487e39a0d83d5e2bb', 'laurie', 'laurie', 'laurie@laurie.fr', 'laurie', 0, 'laurie', 0000000000, 0000000000, '1984-03-13', '2007-09-02 17:00:19', '2007-09-02 17:00:19'),
+(9, 2, 0, 'julien', '30d69d863dde81562ce277fbc0a3cf18', 'julien', 'julien', 'julien@julien.org', 'julien', 99999, 'julien', 4294967295, 4294967295, '1947-01-01', '2007-09-02 22:40:21', '2007-09-02 22:40:21');
 
 -- --------------------------------------------------------
 
@@ -407,7 +424,8 @@ INSERT INTO `users` VALUES (9, 2, 0, 'julien', '30d69d863dde81562ce277fbc0a3cf18
 -- Structure de la table `users_circuits`
 -- 
 
-CREATE TABLE `users_circuits` (
+DROP TABLE IF EXISTS `users_circuits`;
+CREATE TABLE IF NOT EXISTS `users_circuits` (
   `id` int(11) NOT NULL auto_increment,
   `user_id` int(11) NOT NULL default '0',
   `circuit_id` int(11) NOT NULL default '0',
@@ -420,10 +438,10 @@ CREATE TABLE `users_circuits` (
 -- Contenu de la table `users_circuits`
 -- 
 
-INSERT INTO `users_circuits` VALUES (1, 8, 1, 4, 1);
-INSERT INTO `users_circuits` VALUES (2, 9, 1, 1, 3);
-INSERT INTO `users_circuits` VALUES (3, 10, 1, 2, 2);
-INSERT INTO `users_circuits` VALUES (4, 11, 1, 2, 4);
+INSERT INTO `users_circuits` (`id`, `user_id`, `circuit_id`, `service_id`, `position`) VALUES (1, 8, 1, 4, 1),
+(2, 9, 1, 1, 3),
+(3, 10, 1, 2, 2),
+(4, 11, 1, 2, 4);
 
 -- --------------------------------------------------------
 
@@ -431,7 +449,8 @@ INSERT INTO `users_circuits` VALUES (4, 11, 1, 2, 4);
 -- Structure de la table `users_listepresences`
 -- 
 
-CREATE TABLE `users_listepresences` (
+DROP TABLE IF EXISTS `users_listepresences`;
+CREATE TABLE IF NOT EXISTS `users_listepresences` (
   `user_id` int(11) NOT NULL default '0',
   `liste_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`user_id`,`liste_id`)
@@ -448,7 +467,8 @@ CREATE TABLE `users_listepresences` (
 -- Structure de la table `users_services`
 -- 
 
-CREATE TABLE `users_services` (
+DROP TABLE IF EXISTS `users_services`;
+CREATE TABLE IF NOT EXISTS `users_services` (
   `user_id` int(11) NOT NULL default '0',
   `service_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`user_id`,`service_id`)
@@ -458,15 +478,15 @@ CREATE TABLE `users_services` (
 -- Contenu de la table `users_services`
 -- 
 
-INSERT INTO `users_services` VALUES (8, 2);
-INSERT INTO `users_services` VALUES (8, 3);
-INSERT INTO `users_services` VALUES (8, 4);
-INSERT INTO `users_services` VALUES (9, 1);
-INSERT INTO `users_services` VALUES (10, 2);
-INSERT INTO `users_services` VALUES (11, 2);
-INSERT INTO `users_services` VALUES (11, 3);
-INSERT INTO `users_services` VALUES (12, 1);
-INSERT INTO `users_services` VALUES (12, 2);
+INSERT INTO `users_services` (`user_id`, `service_id`) VALUES (8, 2),
+(8, 3),
+(8, 4),
+(9, 1),
+(10, 2),
+(11, 2),
+(11, 3),
+(12, 1),
+(12, 2);
 
 -- --------------------------------------------------------
 
@@ -474,7 +494,8 @@ INSERT INTO `users_services` VALUES (12, 2);
 -- Structure de la table `votes`
 -- 
 
-CREATE TABLE `votes` (
+DROP TABLE IF EXISTS `votes`;
+CREATE TABLE IF NOT EXISTS `votes` (
   `id` int(11) NOT NULL auto_increment,
   `liste_id` int(11) NOT NULL default '0',
   `seance_id` int(11) NOT NULL default '0',
