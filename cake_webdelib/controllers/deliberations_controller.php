@@ -76,7 +76,7 @@ class DeliberationsController extends AppController {
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
 		$conditions="etat = 0 AND redacteur_id = $user_id";
-		debug($user);
+		//debug($user);
 		$this->set('deliberations', $this->Deliberation->findAll($conditions));
 	}
 	
