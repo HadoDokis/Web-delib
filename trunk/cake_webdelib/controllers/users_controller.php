@@ -80,21 +80,30 @@ class UsersController extends AppController {
 				$this->redirect('/users/index');
 			}
 			$this->data = $this->User->read(null, $id);
-			$this->set('statut',array('0'=>'agent', '1'=>'elu'));
 			$this->set('services', $this->User->Service->generateList());
-			if (empty($this->data['Service'])) { $this->data['Service'] = null; }
-			$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
+			if (empty($this->data['Service'])) { 
+				$this->data['Service'] = null;
+				$this->set('selectedServices', $this->_selectedArray($this->data['ServiceElu'])); 
+			}else{
+				$this->data['ServiceElu'] = null;
+				$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
+			}
 			$this->set('circuits', $this->User->Circuit->generateList());
-			if (empty($this->data['Circuit'])) { $this->data['Circuit'] = null; }
+			if (empty($this->data['Circuit'])) { 
+				$this->data['Circuit'] = null; 
+			}
 			$this->set('selectedCircuits', $this->_selectedArray($this->data['Circuit']));
 			$this->set('profils', $this->User->Profil->generateList());
-			if (empty($this->data['Profil'])) { $this->data['Profil'] = null; }
+			if (empty($this->data['Profil'])) { 
+				$this->data['Profil'] = null; 
+			}
 			$this->set('selectedProfils', $this->_selectedArray($this->data['Profil']));
+			
 		} else {
 			if ($this->data['User']['statut']=='0'){					
-			$this->data['User']['service_id']=null;
+				$this->data['User']['service_id']=null;
 			}else{
-			$this->data['Service']['Service']=array();			
+				$this->data['Service']['Service']=array();			
 			}
 			$this->data['User']['password']=md5($this->data['User']['password']);
 			$this->data['User']['date_naissance']=$this->data['User']['date_naissance_year'].'-'.$this->data['User']['date_naissance_month'].'-'.$this->data['User']['date_naissance_day'];
