@@ -130,17 +130,37 @@ class CircuitsController extends AppController {
 		$condition = "circuit_id = $circuit_id";
         $data = $this->UsersCircuit->findAll($condition);	
         $position = $this->getLastPosition($circuit_id) + 1;
-		
-		$this->params['data']['UsersCircuit']['position'] = $position;
-		$this->params['data']['UsersCircuit']['circuit_id'] = $circuit_id ;
-		$this->params['data']['UsersCircuit']['service_id'] = $service_id ;
-		$this->params['data']['UsersCircuit']['user_id']   = $user_id ;
-			
-		if ($this->UsersCircuit->save($this->params['data'])){
-		    $this->redirect("/circuits/index/$circuit_id/$service_id");
+
+        //on recherche si l'utilisateur existe déjà dans le circuit de validation
+		$uniq=true;
+		$i=0;
+		while(($uniq==true)&&($i<sizeof($data)))
+		{
+			if ($data[$i]['UsersCircuit']['user_id']==$user_id)
+			{
+				$uniq=false; //il existe
+			}
+			$i++;
 		}
-		else {
-			$this->Session->setFlash('Please correct errors below.');
+		
+		if ($uniq==true)
+		{		
+       		$this->params['data']['UsersCircuit']['position'] = $position;
+			$this->params['data']['UsersCircuit']['circuit_id'] = $circuit_id ;
+			$this->params['data']['UsersCircuit']['service_id'] = $service_id ;
+			$this->params['data']['UsersCircuit']['user_id']   = $user_id ;
+				
+			if ($this->UsersCircuit->save($this->params['data'])){
+			    $this->redirect("/circuits/index/$circuit_id/$service_id");
+			}
+			else {
+				$this->Session->setFlash('Please correct errors below.');
+			}
+		}
+		else
+		{
+			$this->Session->setFlash("L'utilisateur est déjà dans le circuit !");
+			$this->redirect("/circuits/index/$circuit_id/$service_id");
 		}
 	}
 	    
