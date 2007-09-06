@@ -76,6 +76,7 @@ class DeliberationsController extends AppController {
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
 		$conditions="etat = 0 AND redacteur_id = $user_id";
+		debug($user);
 		$this->set('deliberations', $this->Deliberation->findAll($conditions));
 	}
 	
@@ -140,7 +141,7 @@ class DeliberationsController extends AppController {
 		$user_id=$user['User']['id'];
 		//recherche de tous les circuits où apparait l'utilisateur logué
 		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "position ASC");
-		$conditions="";
+		$conditions="etat=1 ";
 		$delib=array();
 		//$position_user=0;
 		$cpt=0;
@@ -153,10 +154,16 @@ class DeliberationsController extends AppController {
 				
 				if ($cpt>0)
 					$conditions=$conditions." OR ";
+				else
+					$conditions=$conditions." AND (";
 			
 				$conditions=$conditions." circuit_id = ".$data['UsersCircuit']['circuit_id'];
 				$cpt++;
 			}
+			if ($cpt>=0)
+				$conditions=$conditions." )";
+			//$conditions=$conditions." )";
+			//debug($conditions);
 			$deliberations = $this->Deliberation->findAll($conditions);
 			//debug($deliberations);
 			//debug($data_circuit);
@@ -181,9 +188,9 @@ class DeliberationsController extends AppController {
 					$deliberation['action']="view";
 					$deliberation['act']="voir";
 				}
-				debug($deliberation);
-				if ($deliberation['Deliberation']['etat']!=-1) //etat=-1 : deliberation refusée
-					array_push($delib, $deliberation);
+				//debug($deliberation);
+				
+				array_push($delib, $deliberation);
 				
 			}
 		}
@@ -402,9 +409,25 @@ class DeliberationsController extends AppController {
 				$this->data['Deliberation']['etat']='1';
 				if ($this->Deliberation->save($this->data)) {
 					
+					//on doit tester si la delib a une version anterieure, si c le cas il faut mettre à jour l'action dans la table traitement
+					$delib=$this->Deliberation->find("Deliberation.id = $id");					
+					//debug($delib);
+					if ($delib['Deliberation']['anterieure_id']!=0)
+					{
+						//il existe une version anterieure de la delib
+						//on met à jour le traitement anterieure
+						$anterieure=$delib['Deliberation']['anterieure_id'];
+						$condition="delib_id = $anterieure AND position = '0'";
+						$traite=$this->Traitement->find($condition);
+						//debug($traite);
+						$traite['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
+						$this->Traitement->save($traite);
+					}
+					
 
 					//enregistrement dans la table traitements
 					// TODO Voir comment améliorer ce point (associations cakephp).
+					$this->data['Traitement']['id']='';
 					$this->data['Traitement']['delib_id']=$id;
 					$this->data['Traitement']['circuit_id']=$circuit_id;
 					$this->data['Traitement']['position']='1';
@@ -436,28 +459,50 @@ class DeliberationsController extends AppController {
 			{
 				if ($valid=='1') 
 				{
-					//TODO traiter la fin du workflow!
-
 					//on a validé le projet, il passe à la personne suivante
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
+					
 					$lastpos=count($tab)-1;
+					$circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
 					
 					//MAJ de la date de traitement de la dernière position courante $lastpos
 					$tab[$lastpos]['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
 					$this->Traitement->save($tab[$lastpos]['Traitement']);
 					
-					$this->data['Traitement']['id']='';
 					
-					$this->data['Traitement']['position']=$tab[$lastpos]['Traitement']['position']+1;
-					$circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
-					$this->data['Traitement']['delib_id']=$id;
-					$this->data['Traitement']['circuit_id']=$circuit_id;
+					//il faut verifier que le projet n'est pas arrivé en fin de circuit
+					//position courante du projet : lastposprojet : $tab[$lastpos]['Traitement']['position'];
+					//derniere position théorique : lastposcircuit
+					$lastposprojet=$tab[$lastpos]['Traitement']['position'];
+					//$lastposcircuit=$this->Circuit->getLastPosition($circuit_id);
+					$lastposcircuit=count($this->UsersCircuit->findAll("circuit_id = $circuit_id"));
 					
-					
-					$this->Traitement->save($this->data['Traitement']);
-					
-					$this->redirect('/deliberations/listerProjetsATraiter');
-				}
+					if ($lastposcircuit==$lastposprojet) //on est sur la dernière personne, on va faire sortir le projet du workflow et le passer au service des assemblées
+					{
+						//passage au service des assemblée : etat dans la table deliberations passe à 2
+						$tab=$this->Deliberation->findAll("Deliberation.id = $id");
+						$this->data['Deliberation']['etat']=2; 
+						$this->data['Deliberation']['id']=$id;
+						$this->Deliberation->save($this->data['Deliberation']);
+						
+						$this->redirect('/deliberations/listerProjetsATraiter');
+					}
+					else
+					{
+						//sinon on fait passer à la personne suivante
+						$this->data['Traitement']['id']='';
+						
+						$this->data['Traitement']['position']=$tab[$lastpos]['Traitement']['position']+1;
+						
+						$this->data['Traitement']['delib_id']=$id;
+						$this->data['Traitement']['circuit_id']=$circuit_id;
+						
+						
+						$this->Traitement->save($this->data['Traitement']);
+						
+						$this->redirect('/deliberations/listerProjetsATraiter');
+					}
+				}	
 				else
 				{	
 					
@@ -489,6 +534,7 @@ class DeliberationsController extends AppController {
 					$delib['Deliberation']=$tab[0]['Deliberation'];
 					$delib['Deliberation']['id']='';
 					$delib['Deliberation']['etat']=0;
+					$delib['Deliberation']['anterieure_id']=$id;
 					$delib['Deliberation']['date_envoi']=0;
 					$delib['Deliberation']['circuit_id']=0;
 					$delib['Deliberation']['created']='';
