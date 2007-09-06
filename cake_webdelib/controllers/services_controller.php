@@ -64,7 +64,8 @@ class ServicesController extends AppController {
     {
     	$this->Session->del('user.User.service');
        	$this->Session->write('user.User.service',$newServiceActif);
-       	$this->Redirect("/");
+		//redirection sur la page où on était avant de changer de service
+       	$this->Redirect($this->Session->read('user.User.lasturl'));
     }
 	
 
