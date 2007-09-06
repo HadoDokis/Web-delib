@@ -81,9 +81,10 @@ class UsersController extends AppController {
 			}
 			$this->data = $this->User->read(null, $id);
 			$this->set('services', $this->User->Service->generateList());
+			//debug($this->data);
 			if (empty($this->data['Service'])) { 
 				$this->data['Service'] = null;
-				$this->set('selectedServices', $this->_selectedArray($this->data['ServiceElu'])); 
+				$this->set('selectedServices', $this->data['ServiceElu']['id']);
 			}else{
 				$this->data['ServiceElu'] = null;
 				$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
