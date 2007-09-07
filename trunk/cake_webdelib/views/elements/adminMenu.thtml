@@ -1,3 +1,4 @@
+
 <div id="menu">
 	<dl>	
 		<dt onmouseover="javascript:montre('smenu2');" >Projets</dt>
@@ -65,3 +66,23 @@
 <br/>
 <br/>
 
+
+<!-- jouli minu 
+ <div id="navcontainer">
+<ul id="navlist">
+	<li id="lactive"><a href="#">Projets</a>
+		<ul id="subnavlist">
+			<li><a href="<?php echo $html->url('/deliberations/add');?>" title="Cr&eacute;er un projet">Cr&eacute;er</a></li>
+			<li><a href="<?php echo $html->url('/deliberations/listerMesProjets');?>" title="Mes projets">Mes Projets</a></li>
+			<li><a href="<?php echo $html->url('/deliberations/listerProjetsATraiter');?>" title="Projets &agrave; traiter">A traiter</a></li>
+			<li><a href="<?php echo $html->url('/deliberations/listerProjetsAttribues');?>" title="Projets attribu&eacute;s &agrave; une s&eacute;ance">Attribu&eacute;s</a></li>
+			<li><a href="<?php echo $html->url('/deliberations/listerProjetsNonAttribues');?>" title="Projets non attribu&eacute;s &agrave; une s&eacute;ance">Non attribu&eacute;s</a></li>
+		</ul>
+	</li>
+	<li><a href="#">S&eacute;ances</a></li>
+	<li><a href="#">Gestion post-s&eacute;ance</a></li>
+	<li><a href="#">Export GED</a></li>
+	<li><a href="#">Backoffice</a></li>
+</ul>
+</div>
+  fin jouli minu -->
