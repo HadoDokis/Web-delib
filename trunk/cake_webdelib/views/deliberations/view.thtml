@@ -1,39 +1,79 @@
-<div class="deliberation">
+<!--
 <h2>Fiche d&eacute;liberation</h2>
+-->
+<div id="deliberation">
 
 <dl>
-	<dt>Id</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['id']?></dd>
-	<dt>Circuit</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
-	<dt>Theme</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?><br><?php echo $deliberation['Theme']['libelle']?> </dd>
-	<dt>Service</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
-	<dt>Vote Id</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>
-	<dt>Redacteur</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['nom'].' '.$deliberation['Redacteur']['prenom'], '/users/view/' .$deliberation['Redacteur']['id'])?></dd>
-	<dt>Rapporteur</dt>
-	<dd>&nbsp;<?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']?></dd>
-	<dt>Date Seance</dt>
-	<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
+<!--	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['id']?></dd> -->
+	
+	<h3>D&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['num_delib']?></h3>
+
 	<dt>Objet</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
+
 	<dt>Titre</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>
-	<dt>Num Delib</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_delib']?></dd>
-	<dt>Num Pref</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref']?></dd>
-	<dt>Texte Projet</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_projet']?></dd>
-	<dt>Texte Synthese</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_synthese']?></dd>
-	<dt>Date creation</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['created']?></dd>
-	<dt>Date modification</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['modified']?></dd>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>	 
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Theme</dt>
+		<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['libelle'], '/themes/view/' .$deliberation['Theme']['id'])?><br> </dd>
+	</div>
+	<div class="droite">
+		<dt>Service</dt>
+		<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>  
+	</div>
+</div>
+
+	<dt>Date Seance</dt>
+	<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Num Pref</dt>
+		<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Circuit</dt>
+		<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
+	</div>
+</div>
+
+
+<!--	<dt>Vote Id</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>  -->
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Redacteur</dt>
+		<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['prenom'].' '.$deliberation['Redacteur']['nom'], '/users/view/' .$deliberation['Redacteur']['id'])?></dd>
+	</div>
+	<div class="droite">
+		<dt>Rapporteur</dt>
+		<dd>&nbsp;<?php echo $deliberation['Rapporteur']['prenom'].' '.$deliberation['Rapporteur']['nom']?></dd>
+	</div>
+</div>
+
+<!--	<dt>Texte Projet</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_projet']?></dd> -->
+
+<!--	<dt>Texte Synthese</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_synthese']?></dd> -->
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Date creation</dt>
+		<dd>&nbsp;<?php echo $deliberation['Deliberation']['created']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Date modification</dt>
+		<dd>&nbsp;<?php echo $deliberation['Deliberation']['modified']?></dd>
+	</div>
+</div>
+
+
+
 
 	<?php 
 	if ($tab_anterieure!=null)
@@ -46,12 +86,13 @@
 	}
 	?>
 </dl>
-<ul class="actions">
-	<li><?php echo $html->link('Modifier la deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
-	<li><?php echo $html->link('Supprimer la deliberation', '/deliberations/delete/' . $deliberation['Deliberation']['id'], null, 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre'] . '" ?') ?> </li>
-	<li><?php echo $html->link('Ajouter une deliberation',	'/deliberations/add') ?> </li>
-	<li><?php echo $html->link('Annuler', '/deliberations/index')?></li>
-	<br/>
+<ul id="actions_fiche">
+	<li><?php echo $html->link('', '/deliberations/index', array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'))?></li>
+	<li><?php echo $html->link('','/deliberations/textprojet/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'))?></li>
+	<li><?php echo $html->link('','/deliberations/textsynthese/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'))?></li>
+
+</ul>
+<!--
 	<li><?php echo $html->link('Voir les utilisateurs', '/users/index/');?></li>
 	<li><?php echo $html->link('Voir les circuits', '/circuits/index/');?></li>
 	<li><?php echo $html->link('Voir les themes', '/themes/index/');?></li>
@@ -60,6 +101,6 @@
 	<li><?php echo $html->link('Ajouter un circuit', '/circuits/add/');?></li>
 	<li><?php echo $html->link('Ajouter un theme', '/themes/add/');?></li>
 	<li><?php echo $html->link('Ajouter un service', '/services/add/');?></li>
-
+-->
 
 </div>

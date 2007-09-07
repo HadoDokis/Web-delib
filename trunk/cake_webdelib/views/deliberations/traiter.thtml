@@ -1,9 +1,15 @@
-<div class="deliberation">
+<!--
 <h2>View Deliberation</h2>
+-->
+<div id="deliberation">
+
 
 <dl>
-	<dt>Id</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['id']?></dd>
+
+	<h3>D&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['num_delib']?></h3>
+
+<!--	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['id']?></dd> -->
 	<dt>Circuit</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
 	<dt>Theme</dt>
