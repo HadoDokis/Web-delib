@@ -103,9 +103,7 @@ class DeliberationsController extends AppController {
 		}
 		else
 		{
-			//$this->cleanUpFields();
-			//debug($this->data);
-			//exit;
+
 			$deliberation['Deliberation']['seance_id']= $this->data['Deliberation']['seance_id'];
 
 			if ($this->Deliberation->save($this->data)) 
@@ -211,6 +209,14 @@ class DeliberationsController extends AppController {
 			$this->Session->setFlash('Invalid id for Deliberation.');
 			$this->redirect('/deliberations/listerProjetsATraiter');
 		}
+			//affichage anterieure
+		$nb_recursion=0;
+		$action='view';
+		$listeAnterieure=array();
+		$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
+		$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
+	//	debug($tab_anterieure);
+		$this->set('tab_anterieure',$tab_anterieure); 
 		$this->set('deliberation', $this->Deliberation->read(null, $id));
 	}
 
@@ -451,9 +457,14 @@ class DeliberationsController extends AppController {
 		{
 			if ($valid==null)
 			{
-				
+				$nb_recursion=0;
+				$action='view';
+				$listeAnterieure=array();
+				$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
+				$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
+				$this->set('tab_anterieure',$tab_anterieure); 
 				$this->set('deliberation', $this->Deliberation->read(null, $id));
-				//debug($this);
+			
 			}
 			else
 			{
@@ -545,6 +556,30 @@ class DeliberationsController extends AppController {
 				}
 			}
 		}
+	}
+	
+	function chercherVersionAnterieure($delib_id, $tab_delib, $nb_recursion, $listeAnterieure, $action)
+	{
+		
+
+		$anterieure_id=$tab_delib['Deliberation']['anterieure_id'];
+		
+		if ($anterieure_id!=0)
+		{
+	
+			$ant=$this->Deliberation->find("Deliberation.id=$anterieure_id");
+			$lien=$this->base.'/deliberations/'.$action.'/'.$anterieure_id;
+			$date_version=$ant['Deliberation']['created'];			
+
+			$listeAnterieure[$nb_recursion]['id']=$anterieure_id;
+			$listeAnterieure[$nb_recursion]['lien']=$lien;
+			$listeAnterieure[$nb_recursion]['date_version']=$date_version;
+	
+			//on stocke les id des delibs anterieures
+			$listeAnterieure=$this->chercherVersionAnterieure($anterieure_id, $ant, $nb_recursion+1, $listeAnterieure, $action);
+		}
+	
+		return $listeAnterieure;
 	}
 
 	
