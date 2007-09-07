@@ -12,15 +12,15 @@
 	<td><?php echo $typeseance['Typeseance']['libelle']; ?></td>
 	<td><?php echo $typeseance['Typeseance']['retard']; ?></td>
 	<td class="actions">
-		<?php echo $html->link('Voir','/typeseances/view/' . $typeseance['Typeseance']['id'])?>
-		<?php echo $html->link('Modifier','/typeseances/edit/' . $typeseance['Typeseance']['id'])?>
-		<?php echo $html->link('Supprimer','/typeseances/delete/' . $typeseance['Typeseance']['id'], null, 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?')?>
+		<?php echo $html->link('','/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
+		<?php echo $html->link('','/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
+		<?php echo $html->link('','/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?')?>
 	</td>
 </tr>
 <?php endforeach; ?>
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter Typeseance', '/typeseances/add'); ?></li>
+	<li><?php echo $html->link('Ajouter Typeseance', '/typeseances/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
 </ul>
 </div>

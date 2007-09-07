@@ -14,14 +14,19 @@
 </div>
 
 
-<br />
-<div class="submit"><?php echo $form->labelTag('Seance/id', '&nbsp;');?>
-<?php echo $html->hidden('Seance/id')?> <?php echo $html->submit('Enregistrer');?>
+<br /> <?php echo $html->hidden('Seance/id')?> 
+
+<div class="submit">
+	<?php echo $form->labelTag('Seance/id', '&nbsp;');?>
+		<?php echo $html->submit('Enregistrer', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/seances/index', array('class'=>'link_annuler', 'title'=>'Annuler'))?>
 </div>
 </form>
+<!--
 <ul class="actions">
-	<li><?php echo $html->link('Supprimer','/seances/delete/' . $html->tagValue('Seance/id'), null, 'Etes-vous sur de vouloir supprimer la seance du "' . $html->tagValue('Seance/date').'" ?');?>
+	<li><?php echo $html->link('Supprimer','/seances/delete/' . $html->tagValue('Seance/id'), null, 'Etes-vous sur de vouloir supprimer la seance du "' . $html->tagValue('Seance/date').'" ?');?> 
 	
 	
 	<li><?php echo $html->link('Annuler', '/seances/index')?></li>
 </ul>
+-->

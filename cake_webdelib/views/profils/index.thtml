@@ -16,15 +16,15 @@
 	<td><?php echo $profil['Profil']['created']; ?></td>
 	<td><?php echo $profil['Profil']['modified']; ?></td>
 	<td class="actions">
-		<?php echo $html->link('Voir','/profils/view/' . $profil['Profil']['id'])?>
-		<?php echo $html->link('Modifier','/profils/edit/' . $profil['Profil']['id'])?>
-		<?php echo $html->link('Supprimer','/profils/delete/' . $profil['Profil']['id'], null, 'Etes-vous sur de vouloir supprimer le profil "' . $profil['Profil']['libelle']. '" ?')?>
+		<?php echo $html->link('','/profils/view/' . $profil['Profil']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
+		<?php echo $html->link('','/profils/edit/' . $profil['Profil']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
+		<?php echo $html->link('','/profils/delete/' . $profil['Profil']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer le profil "' . $profil['Profil']['libelle']. '" ?')?>
 	</td>
 </tr>
 <?php endforeach; ?>
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter un profil', '/profils/add'); ?></li>
+	<li><?php echo $html->link('Ajouter un profil', '/profils/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
 </ul>
 </div>
