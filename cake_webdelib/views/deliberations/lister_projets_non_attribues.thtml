@@ -29,7 +29,7 @@
 			<?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>	
 			<?php echo $html->tagErrorMsg('Deliberation/seance_id', 'Choisissez une date.');?>
 			<?php echo $html->hidden('Deliberation/id',array('value'=> $deliberation['Deliberation']['id'])); ?>
-			<?php echo $html->submit('Enregistrer');?>	
+			<?php echo $html->submit('', array('class'=>'bt_save', 'name'=>'sauvegarder'));?>	
 		</form>
 		</td>
 	</tr>

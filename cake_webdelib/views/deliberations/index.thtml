@@ -9,32 +9,28 @@
 	<th>Objet</th>
 	<th>Titre</th>
 	<th>Num Delib</th>
-	<th>Texte Projet</th>
-	<th>Texte Synthese</th>
 	<th>Date creation</th>
 	<th>Date modification</th>
 	<th>Actions</th>
 </tr>
 <?php foreach ($deliberations as $deliberation): ?>
 <tr>
-	<td>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?>	<br/><br/> <?php echo $deliberation['Theme']['libelle']; ?></td>
+	<td><?php echo $deliberation['Theme']['libelle']; ?></td>
 	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
 	<td><?php echo $deliberation['Seance']['date']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['texte_projet']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['texte_synthese']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['created']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['modified']; ?></td>
 	<td class="actions">
-		<?php echo $html->link('Voir','/deliberations/view/' . $deliberation['Deliberation']['id'])?><br />
-		<?php echo $html->link('Modifier','/deliberations/edit/' . $deliberation['Deliberation']['id'])?><br />
-		<?php echo $html->link('PDF','/deliberations/convert/' . $deliberation['Deliberation']['id'])?><br />
-		<?php echo $html->link('Projet','/deliberations/textprojet/' . $deliberation['Deliberation']['id'])?><br />
-		<?php echo $html->link('Synthese','/deliberations/textsynthese/' . $deliberation['Deliberation']['id'])?><br />
-		<?php echo $html->link('Supprimer','/deliberations/delete/' . $deliberation['Deliberation']['id'], null, 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?')?><br />
-		<?php echo $html->link('Traiter','/deliberations/traiter/' . $deliberation['Deliberation']['id'])?><br />
+		<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
+		<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
+		<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'))?>
+		<?php echo $html->link('','/deliberations/textprojet/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'))?>
+		<?php echo $html->link('','/deliberations/textsynthese/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'))?>
+		<?php echo $html->link('','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), null, 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?')?>
+		<?php echo $html->link('','/deliberations/traiter/' . $deliberation['Deliberation']['id'], array('class'=>'link_traiter', 'title'=>'Traiter'))?>
 	</td>
 </tr>
 <?php endforeach; ?>

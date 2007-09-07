@@ -7,6 +7,6 @@ Texte Projet :
     <?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du projet.');?>
 </div>
 <div class="submit">
-	<?php echo $html->submit('Rédiger un texte de synthèse');?>
+	<?php echo $html->submit('Rédiger un texte de synthèse', array('class'=>'bt_add', 'name'=>'saisir'));?>
 </div>
 </form>

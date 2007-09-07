@@ -38,6 +38,6 @@
 </div>
 <br />
 <div class="submit">
-	<?php echo $html->submit('Saisir un texte de projet');?>
+	<?php echo $html->submit('Saisir un texte de projet', array('class'=>'bt_add', 'name'=>'saisir'));?>
 </div>
 </form>

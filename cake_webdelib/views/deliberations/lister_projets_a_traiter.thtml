@@ -16,7 +16,7 @@
 <?php foreach ($deliberations as $deliberation): ?>
 <?//debug($deliberation);?>
 <tr> 
-	<td>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?><br><?php echo $deliberation['Theme']['libelle'] ?></td>
+	<td><?php echo $deliberation['Theme']['libelle'] ?></td>
 	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
 	<td><?php echo $deliberation['Seance']['date']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
@@ -24,14 +24,14 @@
 	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
 	<td><?php echo $deliberation['Service']['libelle']; ?></td>
 	<td class="actions">
-		<?php echo $html->link($deliberation['act'],"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'])?><br />
-		<?php echo $html->link('PDF','/deliberations/convert/' . $deliberation['Deliberation']['id'])?><br />
+		<?php echo $html->link('',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>'Voir'))?>
+		<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'))?><br />
 	</td>
 </tr>
 <?php endforeach; ?>
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter une deliberation', '/deliberations/add'); ?></li>
+	<li><?php echo $html->link('Ajouter une deliberation', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un deliberation')); ?></li>
 </ul>
 </div>
