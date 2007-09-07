@@ -34,6 +34,16 @@
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['created']?></dd>
 	<dt>Modified</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['modified']?></dd>
+	<?php 
+	if ($tab_anterieure!=null)
+	{
+		echo"<dt>Versions Anterieures</dt>";
+		foreach ($tab_anterieure as $anterieure)
+		{
+			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";		
+		}
+	}
+	?>
 </dl>
 <ul class="actions">
 	<li><?php echo $html->link('Edit Deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
