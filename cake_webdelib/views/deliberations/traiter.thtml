@@ -5,17 +5,17 @@
 	<dt>Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['id']?></dd>
 	<dt>Circuit</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
 	<dt>Theme</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?></dd>
 	<dt>Service</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
 	<dt>Vote Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>
 	<dt>User</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['nom'], '/users/view/' .$deliberation['Redacteur']['id'])?></dd>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['nom'].' '.$deliberation['Redacteur']['prenom'], '/users/view/' .$deliberation['Redacteur']['id'])?></dd>
 	<dt>Rapporteur</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['rapporteur_id']?></dd>
+	<dd>&nbsp;<?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']?></dd>
 	<dt>Date Session</dt>
 	<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
 	<dt>Objet</dt>
