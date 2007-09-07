@@ -10,15 +10,15 @@
 <tr>
 	<td><?php echo $theme['Theme']['libelle']; ?></td>
 	<td class="actions">
-		<?php echo $html->link('Voir','/themes/view/' . $theme['Theme']['id'])?>
-		<?php echo $html->link('Modifier','/themes/edit/' . $theme['Theme']['id'])?>
-		<?php echo $html->link('Supprimer','/themes/delete/' . $theme['Theme']['id'], null, 'Etes-vous sur de vouloir supprimer le theme "' . $theme['Theme']['libelle'].'" ?')?>
+		<?php echo $html->link('','/themes/view/' . $theme['Theme']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
+		<?php echo $html->link('','/themes/edit/' . $theme['Theme']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
+		<?php echo $html->link('','/themes/delete/' . $theme['Theme']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer le theme "' . $theme['Theme']['libelle'].'" ?')?>
 	</td>
 </tr>
 <?php endforeach; ?>
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter un theme', '/themes/add'); ?></li>
+	<li><?php echo $html->link('Ajouter un theme', '/themes/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
 </ul>
 </div>

@@ -29,16 +29,16 @@ foreach ($users as $user):
 	<td><?php echo $user['Profil']['libelle']; ?></td>
 	<td class="actions">
 		<?php //echo $html->link($html->image('icons/editdelete.png',array('title'=>'Supprimer semaine', 'border'=>'0', 'align'=>'top')), "/semainestypes/delete/$thisweekSelected",null,"Etes-vous vraiment s�r de vouloir supprimer cette semaine ?",false); ?>
-		<?php echo $html->link('Voir','/users/view/' . $user['User']['id'])?>
-		<?php echo $html->link('Modifier','/users/edit/' . $user['User']['id'])?>
-		<?php echo $html->link('Supprimer','/users/delete/' . $user['User']['id'], null, 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?')?>
+		<?php echo $html->link('','/users/view/' . $user['User']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
+		<?php echo $html->link('','/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
+		<?php echo $html->link('','/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?')?>
 	</td>
 </tr>
 <? endforeach; ?>
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter', '/users/add/'); ?></li>
+	<li><?php echo $html->link('Ajouter', '/users/add/', array('class'=>'link_add', 'title'=>'Ajouter un utilisateur')); ?></li>
 </ul>
 </div>
 

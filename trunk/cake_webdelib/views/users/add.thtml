@@ -1,102 +1,100 @@
 <h2>Nouvel utilisateur</h2>
 <form action="<?php echo $html->url('/users/add'); ?>" method="post">
-<div class="optional"> 
-	<?php echo $form->labelTag('User/login', 'Login');?>
- 	<?php echo $html->input('User/login');?>
-	<?php echo $html->tagErrorMsg('User/login', 'Entrer le login.');?>
-	<?php echo $html->tagErrorMsg('User/unique_login', 'Entrer un autre login, celui-ci est d&eacute;j&agrave; utilis&eacute;.'); ?>
+
+<div class="imbrique"> 
+	<div class="gauche">
+		<?php echo $form->labelTag('User/login', 'Login');?>
+ 		<?php echo $html->input('User/login');?>
+		<?php echo $html->tagErrorMsg('User/login', 'Entrer le login.');?>
+		<?php echo $html->tagErrorMsg('User/unique_login', 'Entrer un autre login, celui-ci est d&eacute;j&agrave; utilis&eacute;.'); ?> <br />
+		<?php echo $form->labelTag('User/password', 'Password');?>
+	 	<?php echo $html->password('User/password');?>
+		<?php echo $html->tagErrorMsg('User/password', 'Entrer le mot de passe.');?>
+	</div>
+	<div class="droite">
+		<?php echo $form->labelTag('User/nom', 'Nom');?>
+ 		<?php echo $html->input('User/nom', array('size' => '30'));?>
+		<?php echo $html->tagErrorMsg('User/nom', 'Entrer le nom.');?> <br />
+		<?php echo $form->labelTag('User/prenom', 'Prenom');?>
+	 	<?php echo $html->input('User/prenom', array('size' => '30'));?>
+		<?php echo $html->tagErrorMsg('User/prenom', 'Entrer le prenom.');?>
+	</div>
 </div>
-<div class="optional"> 
-	<?php echo $form->labelTag('User/password', 'Password');?>
- 	<?php echo $html->password('User/password');?>
-	<?php echo $html->tagErrorMsg('User/password', 'Entrer le mot de passe.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('User/nom', 'Nom');?>
- 	<?php echo $html->input('User/nom', array('size' => '30'));?>
-	<?php echo $html->tagErrorMsg('User/nom', 'Entrer le nom.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('User/prenom', 'Prenom');?>
- 	<?php echo $html->input('User/prenom', array('size' => '30'));?>
-	<?php echo $html->tagErrorMsg('User/prenom', 'Entrer le prenom.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('User/email', 'Email');?>
- 	<?php echo $html->input('User/email', array('size' => '30'));?>
-	<?php echo $html->tagErrorMsg('User/email', 'Entrer l\'email.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('User/adresse', 'Adresse');?>
- 	<?php echo $html->input('User/adresse', array('size' => '30'));?>
-	<?php echo $html->tagErrorMsg('User/adresse', 'Entrer l\'adresse.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('User/CP', 'Code Postal');?>
- 	<?php echo $html->input('User/CP');?>
-	<?php echo $html->tagErrorMsg('User/CP', 'Entrer le code postal.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('User/ville', 'Ville');?>
- 	<?php echo $html->input('User/ville');?>
-	<?php echo $html->tagErrorMsg('User/ville', 'Entrer la ville.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('User/teldom', 'Num tel domicile');?>
- 	<?php echo $html->input('User/teldom');?>
-	<?php echo $html->tagErrorMsg('User/teldom', 'Entrer le Num tel domicile.');?>
-</div>
-<br/>
-<div class="optional"> 
-	<?php echo $form->labelTag('User/telmobile', 'Num tel mobile');?>
- 	<?php echo $html->input('User/telmobile');?>
-	<?php echo $html->tagErrorMsg('User/telmobile', 'Entrer le Num tel mobile.');?>
-</div>
-<br/>
-<div class="optional"> 
-<?php echo $form->labelTag('User/date_naissance', 'Date de naissance');?>
+
+<div class="imbrique">
+	<div class="gauche"> 
+		<?php echo $form->labelTag('User/email', 'Email');?>
+ 		<?php echo $html->input('User/email', array('size' => '30'));?>
+		<?php echo $html->tagErrorMsg('User/email', 'Entrer l\'email.');?>
+	<br />
+		<?php echo $form->labelTag('User/adresse', 'Adresse');?>
+ 		<?php echo $html->input('User/adresse', array('size' => '30'));?>
+		<?php echo $html->tagErrorMsg('User/adresse', 'Entrer l\'adresse.');?>
+	<br />
+		<?php echo $form->labelTag('User/CP', 'Code Postal');?>
+ 		<?php echo $html->input('User/CP');?>
+		<?php echo $html->tagErrorMsg('User/CP', 'Entrer le code postal.');?>
+	<br />
+		<?php echo $form->labelTag('User/ville', 'Ville');?>
+	 	<?php echo $html->input('User/ville');?>
+		<?php echo $html->tagErrorMsg('User/ville', 'Entrer la ville.');?>
+	</div>
+	<div class="droite"> 
+		<?php echo $form->labelTag('User/teldom', 'Num tel domicile');?>
+ 		<?php echo $html->input('User/teldom');?>
+		<?php echo $html->tagErrorMsg('User/teldom', 'Entrer le Num tel domicile.');?>
+	<br/><br />
+		<?php echo $form->labelTag('User/telmobile', 'Num tel mobile');?>
+	 	<?php echo $html->input('User/telmobile');?>
+		<?php echo $html->tagErrorMsg('User/telmobile', 'Entrer le Num tel mobile.');?>
+	<br /><br />
+		<?php echo $form->labelTag('User/date_naissance', 'Date de naissance');?>
 <?php echo $html->dayOptionTag('User/date_naissance',null,null,false); ?>-<?php echo $html2->monthOptionTagFr('User/date_naissance');?>-<?php echo $html->yearOptionTag('User/date_naissance',null,null,null,null); ?>
-</div> 
-<br/>
-<div class="optional">
-	<?php //echo $form->labelTag('User/statut', 'Statut');?>
-	<?php //echo $html->selectTag('User/statut',$statut);?>
-	<?php //echo $html->tagErrorMsg('User/statut','Choisissez sa fonction'); ?>
+
+	</div>
 </div>
-</br/>
-<div>
-<?php echo $form->labelTag('User/statut', ' Statut');?>
-<?php echo $html->radio('User/statut',array('0'=>'agent'),null,array('onclick'=>"javascript:montre('smenu14');")); ?> 
-<?php echo $html->radio('User/statut',array('1'=>'elu'),null,array('onclick'=>"javascript:montre('smenu15');")); ?> 
+<br/><br/><br/>
+
+<div class="imbrique">
+	<div class="gauche">
+		<?php echo $form->labelTag('User/statut', ' Statut');?>
+		<?php echo $html->radio('User/statut',array('0'=>'agent'),null,array('onclick'=>"javascript:montre('smenu14');")); ?> 
+		<?php echo $html->radio('User/statut',array('1'=>'elu'),null,array('onclick'=>"javascript:montre('smenu15');")); ?> 
+<br /><br />
+		<div class="optional" id="smenu14"> 
+		<?php echo $form->labelTag('Service/Service', 'Service(s)');?>
+	 	<?php echo $html->selectTag('Service/Service', $services, $selectedServices, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
+		<?php echo $html->tagErrorMsg('Service/Service', 'Entrer le(s) service(s) associï¿½(s).');?>
+		</div>
+<br/><br/>
+		<div class="optional" id="smenu15"> 
+		<?php echo $form->labelTag('User/service_id', 'Service');?>
+		<?php echo $html->selectTag('User/service_id', $services, $selectedServices);?>
+		<?php echo $html->tagErrorMsg('User/service_id', 'Entrer le(s) service(s) associé(s).');?>
+		</div>
+	</div>
+	<div class="droit"> 
+		<?php echo $form->labelTag('Circuit/Circuit', 'Circuit(s) associe(s)');?>
+	 	<?php echo $html->selectTag('Circuit/Circuit', $circuits, $selectedCircuits, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
+		<?php echo $html->tagErrorMsg('Circuit/Circuit',  'Entrer le(s) circuit(s) associé(s).');?>
+<br /><br />
+		<?php echo $form->labelTag('Profil/profil', 'Profils');?>
+	 	<?php echo $html->selectTag('User/profil_id', $profils, $html->tagValue('User/profil_id'), array(), array(), true);?>
+		<?php echo $html->tagErrorMsg('Profil/Profil', 'Entrer le profil associï¿½.');?>
+	</div>
 </div>
-<div class="optional" id="smenu14"> 
-	<?php echo $form->labelTag('Service/Service', 'Service(s)');?>
- 	<?php echo $html->selectTag('Service/Service', $services, $selectedServices, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
-	<?php echo $html->tagErrorMsg('Service/Service', 'Entrer le(s) service(s) associï¿½(s).');?>
-</div>
-<div class="optional" id="smenu15"> 
-	<?php echo $form->labelTag('User/service_id', 'Service');?>
-	<?php echo $html->selectTag('User/service_id', $services, $selectedServices);?>
-	<?php echo $html->tagErrorMsg('User/service_id', 'Entrer le(s) service(s) associé(s).');?>
-</div>
-<br/>
-<div class="optional"> 
-	<?php echo $form->labelTag('Circuit/Circuit', 'Circuit(s) associe(s)');?>
- 	<?php echo $html->selectTag('Circuit/Circuit', $circuits, $selectedCircuits, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
-	<?php echo $html->tagErrorMsg('Circuit/Circuit',  'Entrer le(s) circuit(s) associé(s).');?>
-</div>
-<br/>
-<div class="optional"> 
-	<?php echo $form->labelTag('Profil/profil', 'Profils');?>
- 	<?php echo $html->selectTag('User/profil_id', $profils, $html->tagValue('User/profil_id'), array(), array(), true);?>
-	<?php echo $html->tagErrorMsg('Profil/Profil', 'Entrer le profil associï¿½.');?>
-</div>
-<br/>
+
+
+<br/><br/><br/><br/><br/>
+
 <div class="submit">
 	<?php echo $form->labelTag('User/id', '&nbsp;');?>
-	<?php echo $html->submit('Ajouter');?>
+	<?php echo $html->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/users/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 </form>
+<!--
 <ul class="actions">
 <li><?php echo $html->link('Annuler', '/users/index')?></li>
 </ul>
+-->

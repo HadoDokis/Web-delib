@@ -254,7 +254,7 @@ dl,dt,dd,ul,li {
 /*  ----------------- Calendar ------------------------ */
 caption.month {
     font-size: 90%;
-    color: navy;
+    color: #444444;
 }
 table.month {
     border: thin groove #800080
@@ -267,7 +267,7 @@ table.month {
 }
 .seance {
     border: solid 1px;
-	background: red;
+	background: #e0ef90;
 }
 
 /*  ----------------- end of Calendar -------------------------- */
@@ -510,6 +510,20 @@ a.link_annuler_sans_border {
 	height: 22px;
 }
 
+.bt_save_border {
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	background-image: url(../img/icons/filesave.png);
+	background-color: white;
+	background-repeat: no-repeat;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	padding-left: 25px;
+	height: 22px;	
+	cursor: pointer;
+}
+
 .bt_add {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	background-image: url(../img/icons/edit_add.png);
@@ -577,10 +591,28 @@ a.link_annuler_sans_border {
 	
 }
 
-.icone_action_delib_droit {
- 	float: right;
-	position: top right;
-	font: italic normal 5px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;	
+#vue_seance{
+	background-color: #EAEFCE;
+}
+
+#vue_seance h3 {
+	text-align: center;
+	font: normal small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+}
+
+#vue_seance dt{
+	font: italic normal 15px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	margin: 5px 20px 0 20px;
+	padding: 2px 0 0 20px;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #FFFFFF;
+	text-decoration: underline;
+}
+
+#vue_seance dd{
+	padding: 5px 0 15px 30px;
+	text-indent: 3%;
+
 }
 
 #actions_fiche {
@@ -596,8 +628,7 @@ a.link_annuler_sans_border {
 .message {
 	height: 50px;
 	padding-left: 20px;
-	font-size: 20px;
-	font-weight: bold;
-	color: red;
+	font: normal small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	color: #CCCC33;
 }
 

@@ -16,15 +16,15 @@
 		endforeach; ?>
 	</td>
 	<td class="actions">
-		<?php echo $html->link('Voir','/services/view/' . $service['Service']['id'])?>
-		<?php echo $html->link('Modifier','/services/edit/' . $service['Service']['id'])?>
-		<?php echo $html->link('Supprimer','/services/delete/' . $service['Service']['id'], null, 'Etes-vous sur de vouloir supprimer le service "' . $service['Service']['libelle'].'" ?')?>
+		<?php echo $html->link('','/services/view/' . $service['Service']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
+		<?php echo $html->link('','/services/edit/' . $service['Service']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
+		<?php echo $html->link('','/services/delete/' . $service['Service']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer le service "' . $service['Service']['libelle'].'" ?')?>
 	</td>
 </tr>
 <?php endforeach; ?>
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter un service', '/services/add'); ?></li>
+	<li><?php echo $html->link('Ajouter un service', '/services/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
 </ul>
 </div>
