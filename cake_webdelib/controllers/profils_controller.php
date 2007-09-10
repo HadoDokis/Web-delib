@@ -2,12 +2,11 @@
 class ProfilsController extends AppController {
 
 	var $name = 'Profils';
-	var $helpers = array('Html', 'Form' );
+	var $helpers = array('Html', 'Form','Tree' );
 
-	function index() {
-		$data=$this->Profil->findAll();
-		$this->set('data',$data);
-		
+	function index()
+	{
+		$this->set('data', $this->Profil->findAllThreaded(null, null, 'Profil.id ASC'));
 	}
 
 	function view($id = null) {
@@ -20,6 +19,8 @@ class ProfilsController extends AppController {
 
 	function add() {
 		if (empty($this->data)) {
+			$profils = $this->Profil->generateList(null,'id ASC');
+			$this->set('profils', $profils);
 			$this->render();
 		} else {
 			$this->cleanUpFields();
@@ -39,6 +40,9 @@ class ProfilsController extends AppController {
 				$this->redirect('/profils/index');
 			}
 			$this->data = $this->Profil->read(null, $id);
+			$profils = $this->Profil->generateList();
+			$this->set('profils', $profils);
+			$this->set('selectedProfil',$this->data['Profil']['parent_id']);			
 		} else {
 			$this->cleanUpFields();
 			if ($this->Profil->save($this->data)) {
@@ -55,10 +59,21 @@ class ProfilsController extends AppController {
 			$this->Session->setFlash('Invalid id for Profil');
 			$this->redirect('/profils/index');
 		}
+		
 		if ($this->Profil->del($id)) {
+			
 			$this->Session->setFlash('The Profil deleted: id '.$id.'');
 			$this->redirect('/profils/index');
 		}
+	}
+	
+	function changeParentId($curruentParentId, $newParentId)
+	{
+//		$sql = "update profils set parent_id = $newParentId where parent_id = $currentParentId";
+//		$this->Profil->query($sql);
+
+		$this->data = $this->Profil->findByParentId(null, $id);
+		debug($this->data);exit;
 	}
 
 }
