@@ -1,30 +1,13 @@
-<div class="profils">
 <h2>Liste des profils</h2>
 
-<table cellpadding="0" cellspacing="0">
-<tr>
-	<th>Id</th>
-	<th>Libelle</th>
-	<th>Date creation</th>
-	<th>Date modification</th>
-	<th>Actions</th>
-</tr>
-<?php foreach ($data as $profil): ?>
-<tr>
-	<td><?php echo $profil['Profil']['id']; ?></td>
-	<td><?php echo $profil['Profil']['libelle']; ?></td>
-	<td><?php echo $profil['Profil']['created']; ?></td>
-	<td><?php echo $profil['Profil']['modified']; ?></td>
-	<td class="actions">
-		<?php echo $html->link('','/profils/view/' . $profil['Profil']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
-		<?php echo $html->link('','/profils/edit/' . $profil['Profil']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
-		<?php echo $html->link('','/profils/delete/' . $profil['Profil']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer le profil "' . $profil['Profil']['libelle']. '" ?')?>
-	</td>
-</tr>
-<?php endforeach; ?>
-</table>
+<div class="arbre">
+<?php //echo $tree->showTree('Profil','libelle', $data,0,$this->base, array('Editer'=>'edit','Supprimer'=>'delete')); ?>
+<?php echo $tree->showTree('Profil','libelle', $data,0,$this->base, array('Editer'=>'edit','Supprimer'=>'delete')); ?>
+</div>
 
+<?php echo $html->link('Ajouter un profil', '/profils/add');?>=======
 <ul class="actions">
 	<li><?php echo $html->link('Ajouter un profil', '/profils/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
 </ul>
 </div>
+

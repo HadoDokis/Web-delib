@@ -5,6 +5,10 @@
  	<?php echo $html->input('Profil/libelle', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Profil/libelle', 'Entrer le libelle.');?>
 </div>
+<div>	
+	<?php echo $form->labelTag('Profil/parent_id', 'Appartient à');?>
+	<?php echo $html->selectTag('Profil/parent_id', $profils, $selectedProfil)?>
+</div>
 <br/>
 <div class="submit"> 
 	<?php echo $form->labelTag('Typeseance/id', '&nbsp;');?>
