@@ -78,7 +78,7 @@ class SeancesController extends AppController {
 		if (empty ($this->data))
 		{
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-			$this->set('seances', $this->Seance->findAll($condition));	
+			$this->set('seances', $this->Seance->findAll(($condition),null,'date asc'));	
 
 		}
 		
@@ -89,7 +89,7 @@ class SeancesController extends AppController {
 		if (empty ($this->data))
 		{
 			$condition= 'date <= "'.date('Y-m-d H:i:s').'"';
-			$this->set('seances', $this->Seance->findAll($condition));
+			$this->set('seances', $this->Seance->findAll(($condition),null,'date ASC'));
 		}
 	}
 
