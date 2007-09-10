@@ -1,6 +1,5 @@
 <h2>Modifier utilisateur</h2>
-<form action="<?php echo $html->url('/users/add'); ?>" method="post">
-
+<form action="<?php echo $html->url('/users/edit/'.$html->tagValue('User/id')); ?>" method="post">
 <div class="imbrique"> 
 	<div class="gauche">
 		<?php echo $form->labelTag('User/login', 'Login');?>
