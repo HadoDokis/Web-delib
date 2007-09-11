@@ -6,7 +6,7 @@
 <dd>Redacteur : <?php echo $deliberations['Redacteur']['nom'];?></dd>
 <dd>Rapporteur : <?php echo $deliberations['Rapporteur']['nom'];?></dd>
 <br/>
-<form action="<?php echo $html->url('/deliberations/edit/'.$html->tagValue('Deliberation/id')); ?>" method="post">
+<form action="<?php echo $html->url('/deliberations/edit/'.$html->tagValue('Deliberation/id')); ?>" enctype="multipart/form-data" method="post">
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/circuit_id', 'Circuit');?>
  	<?php echo $html->selectTag('Deliberation/circuit_id', $circuits, $html->tagValue('Deliberation/circuit_id'), array(), array(), false);?>
@@ -52,19 +52,38 @@
 	<?php echo $html->tagErrorMsg('Deliberation/num_pref', 'Entrer le Num Pref.');?>
 </div>
 <div class="required">
-    <?php echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
-    <?php echo $fck->load('data[Deliberation][texte_projet]'); ?>
-    <?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du projet.');?>
+    <?php //echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
+    <?php //echo $fck->load('data[Deliberation][texte_projet]'); ?>
+    <?php //echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du projet.');?>
 </div>
 <div class="required">
-    <?php echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
-    <?php echo $fck->load('data[Deliberation][texte_synthese]'); ?>
-    <?php echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Entrer le texte de synthese.');?>
+    <?php //echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
+    <?php //echo $fck->load('data[Deliberation][texte_synthese]'); ?>
+    <?php //echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Entrer le texte de synthese.');?>
 </div>
+<br/>
+
+<div class="optional">
+	<?php if(!empty($annexes)){  ?>
+	<?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?>
+	<?php foreach ($annexes as $annexe) :
+			echo '<br>Titre : '.$annexe['Annex']['titre'];
+			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
+			echo '<br>Taille : '.$annexe['Annex']['size'];?>
+			<br/><a href="" name="download">Telecharger</a><br/><br/>
+	<?php endforeach; } ?>
+</div>
+<div id="cible"> 
+
+</div>
+<div>
+<a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
+</div>
+
 
 <?php echo $html->hidden('Deliberation/id')?>
 <div class="submit">
-	<?php echo $html->submit('Enregistrer');?>
+	<?php echo $html->submit('Modifier texte de projet');?>
 </div>
 </form>
 <ul class="actions">
