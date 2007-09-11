@@ -2,7 +2,7 @@
 <h2>View Deliberation</h2>
 -->
 <div id="deliberation">
-
+<?php //debug($deliberation);?>
 
 <dl>
 
@@ -33,9 +33,17 @@
 	<dt>Num Pref</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref']?></dd>
 	<dt>Texte Projet</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_projet']?></dd>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_projet']?><br/>
 	<dt>Texte Synthese</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_synthese']?></dd>
+	<?php if(!empty($deliberation['Annexe'])){  ?><dt>Annexes</dt>
+	<dd><?php foreach ($deliberation['Annexe'] as $annexe) :
+			echo '<br>Titre : '.$annexe['titre'];
+			echo '<br>Nom fichier : '.$annexe['filename'];
+			echo '<br>Taille : '.$annexe['size'];
+			echo '<br>Type : '.$annexe['type'];?>
+			<br/><a href="" name="download">Telecharger</a><br/><br/>
+	<?php endforeach;  ?></dd><? } ?>
 	<dt>Created</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['created']?></dd>
 	<dt>Modified</dt>
