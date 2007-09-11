@@ -2,7 +2,7 @@
 	
 <h2>Nouvelle d&eacute;liberation</h2>
 
-<?php echo $html->formTag('/deliberations/add/', null,array('name'=>'FormHs')); ?>
+<?php echo $html->formTag('/deliberations/add/', null,array('name'=>'FormHs','enctype'=>'multipart/form-data')); ?>
 
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme');?>
@@ -37,6 +37,12 @@
     <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>    
 </div>
 <br />
+<div id="cible"> 
+
+</div>
+<div>
+<a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
+</div>
 <div class="submit">
 	<?php echo $html->submit('Saisir un texte de projet', array('class'=>'bt_add', 'name'=>'saisir'));?>
 </div>
