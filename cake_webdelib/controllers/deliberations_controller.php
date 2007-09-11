@@ -3,7 +3,7 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex');
 	
 	function index() {
 
@@ -193,9 +193,10 @@ class DeliberationsController extends AppController {
 			}
 		}
 		$this->set('deliberations', $delib);
+		//debug($delib);
 	}
 	
-	
+
 	function getPosition($circuit_id, $delib_id){
 		$odjCourant=array();
 		$conditions = "Traitement.circuit_id = $circuit_id AND Traitement.delib_id=$delib_id ";
@@ -220,7 +221,16 @@ class DeliberationsController extends AppController {
 		$this->set('deliberation', $this->Deliberation->read(null, $id));
 	}
 
-	function add() {
+	
+	
+	function getFileData($fileName, $fileSize)
+	{
+		return fread(fopen($fileName, "r"), $fileSize);
+	}	
+	
+	
+	function add() 
+	{
 	$user=$this->Session->read('user');
 		if (empty($this->data)) {
 			$this->set('services', $this->Deliberation->Service->generateList());
@@ -228,7 +238,6 @@ class DeliberationsController extends AppController {
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
 			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
 			$this->set('selectedRapporteur',key($this->Deliberation->User->generateList('service_id='.$user['User']['service'])));
-			//debug($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$this->render();
@@ -238,55 +247,207 @@ class DeliberationsController extends AppController {
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
 			$this->cleanUpFields();
-			//debug($this->data);
 			
-			if ($this->Deliberation->save($this->data)) {
-				$this->redirect('/deliberations/textprojet/'.$this->Deliberation->getLastInsertId());
-			} else {
-				$this->Session->setFlash('Please correct errors below.');
-				$this->set('services', $this->Deliberation->Service->generateList());
-				$this->set('themes', $this->Deliberation->Theme->generateList());
-				$this->set('circuits', $this->Deliberation->Circuit->generateList());
-				$this->set('users', $this->Deliberation->User->generateList());
-				$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-				$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
+			
+			if(!empty($this->params['form']))
+			{
+				$deliberation = array_shift($this->params['form']);
+				$annexes = $this->params['form'];
+			
+				$uploaded = true;	
+				$size = count($this->params['form']);
+				$counter = 1;
+			
+				while($counter <= ($size/2))
+				{
+					//echo $annexes['file_'.$counter]['tmp_name']."<br>";
+					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name']))
+					{
+						$uploaded = false;
+					}
+					$counter++;
+				}
+				
+				if($uploaded)
+				{
+
+					if ($this->Deliberation->save($this->data)) 
+					{
+						$delib_id = $this->Deliberation->getLastInsertId();
+						$counter = 1;
+					
+						while($counter <= ($size/2))
+						{	
+							$this->data['Annex']['id'] = null;
+							$this->data['Annex']['deliberation_id'] = $delib_id;
+							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
+							$this->data['Annex']['type'] = 'G';
+							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
+							$this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
+							$this->data['Annex']['size'] = $annexes['file_'.$counter]['size'];
+							$this->data['Annex']['data'] = $this->getFileData($annexes['file_'.$counter]['tmp_name'], $annexes['file_'.$counter]['size']);
+							if(!$this->Annex->save($this->data))
+							{
+								echo "pb de sauvegarde de l\'annexe ".$counter;
+							}
+						//$this->log("annexe ".$counter." enregistrée.");
+						//echo "<br>annexe ".$counter." enregistrée.";
+						$counter++;
+
+						}
+			
+						$this->redirect('/deliberations/textprojet/'.$this->Deliberation->getLastInsertId());
+					} else {
+					$this->Session->setFlash('Please correct errors below.');
+					$this->set('services', $this->Deliberation->Service->generateList());
+					$this->set('themes', $this->Deliberation->Theme->generateList());
+					$this->set('circuits', $this->Deliberation->Circuit->generateList());
+					$this->set('users', $this->Deliberation->User->generateList());
+					$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+					$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
+					}
+				}	
 			}
 		}
 	}
 	
+	
+	
+	
+	
 	function textsynthese ($id = null)
 	{
-		if (empty($this->data)) {
+	$this->set('annexes',$this->Deliberation->Annex->findAll('deliberation_id='.$id.' AND type="S"' ,array('titre','size','filename')));
+	
+	if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
-		} else {//debug($this->data);
+		} else 
+		{//debug($this->data);
 			$this->data['Deliberation']['id']=$id;
-			if ($this->Deliberation->save($this->data)) {
-				$this->redirect('/deliberations/attribuercircuit/'.$id);
-				//$this->redirect('/deliberations/index');
-			} else {
-				$this->Session->setFlash('Please correct errors below.');
+			if(!empty($this->params['form']))
+			{
+				$deliberation = array_shift($this->params['form']);
+				$annexes = $this->params['form'];
+			
+				$uploaded = true;	
+				$size = count($this->params['form']);
+				$counter = 1;
+			
+				while($counter <= ($size/2))
+				{
+					//echo $annexes['file_'.$counter]['tmp_name']."<br>";
+					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name']))
+					{
+						$uploaded = false;
+					}
+					$counter++;
+				}
+				
+				if($uploaded)
+				{
+			
+					if ($this->Deliberation->save($this->data)) {
+					
+					$counter = 1;
+					
+						while($counter <= ($size/2))
+						{	
+							$this->data['Annex']['id'] = null;
+							$this->data['Annex']['deliberation_id'] = $id;
+							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
+							$this->data['Annex']['type'] = 'S';
+							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
+							$this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
+							$this->data['Annex']['size'] = $annexes['file_'.$counter]['size'];
+							$this->data['Annex']['data'] = $this->getFileData($annexes['file_'.$counter]['tmp_name'], $annexes['file_'.$counter]['size']);
+							if(!$this->Annex->save($this->data))
+							{
+								echo "pb de sauvegarde de l\'annexe ".$counter;
+							}
+						//$this->log("annexe ".$counter." enregistrée.");
+						//echo "<br>annexe ".$counter." enregistrée.";
+						$counter++;
+
+						}
+						$this->redirect('/deliberations/attribuercircuit/'.$id);
+						
+					} else {
+					$this->Session->setFlash('Please correct errors below.');
+					}
+				}
 			}
 		}	
 	}
 	
-	function textprojet ($id=null)
+	
+	function textprojet ($id = null)
 	{
-		if (empty($this->data)) {
+	$this->set('annexes',$this->Deliberation->Annex->findAll('deliberation_id='.$id.' AND type="P"' ,array('titre','size','filename')));
+	
+	if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
-			//debug($this->data); 
-		} else {
-			
+		} else 
+		{//debug($this->data);
 			$this->data['Deliberation']['id']=$id;
-			//debug($this->data);
-			if ($this->Deliberation->save($this->data)) {
-				$this->redirect('/deliberations/textsynthese/'.$id);
-			} else {
-				$this->Session->setFlash('Please correct errors below.');
+			if(!empty($this->params['form']))
+			{
+				$deliberation = array_shift($this->params['form']);
+				$annexes = $this->params['form'];
+			
+				$uploaded = true;	
+				$size = count($this->params['form']);
+				$counter = 1;
+			
+				while($counter <= ($size/2))
+				{
+					//echo $annexes['file_'.$counter]['tmp_name']."<br>";
+					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name']))
+					{
+						$uploaded = false;
+					}
+					$counter++;
+				}
+				
+				if($uploaded)
+				{
+			
+					if ($this->Deliberation->save($this->data)) {
+					
+					$counter = 1;
+					
+						while($counter <= ($size/2))
+						{	
+							$this->data['Annex']['id'] = null;
+							$this->data['Annex']['deliberation_id'] = $id;
+							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
+							$this->data['Annex']['type'] = 'P';
+							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
+							$this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
+							$this->data['Annex']['size'] = $annexes['file_'.$counter]['size'];
+							$this->data['Annex']['data'] = $this->getFileData($annexes['file_'.$counter]['tmp_name'], $annexes['file_'.$counter]['size']);
+							if(!$this->Annex->save($this->data))
+							{
+								echo "pb de sauvegarde de l\'annexe ".$counter;
+							}
+						//$this->log("annexe ".$counter." enregistrée.");
+						//echo "<br>annexe ".$counter." enregistrée.";
+						$counter++;
+
+						}
+						$this->redirect('/deliberations/textsynthese/'.$id);
+					} else {
+					$this->Session->setFlash('Please correct errors below.');
+					}
+				}
 			}
-		}			
-	}
+		}	
+	}	
+	
+	
+	
 
 	function edit($id = null) {
+	
 		if (empty($this->data)) {
 			if (!$id) {
 				$this->Session->setFlash('Invalid id for Deliberation');
@@ -297,24 +458,68 @@ class DeliberationsController extends AppController {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
-			$this->set('users', $this->Deliberation->User->generateList());
-			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
-						
+			$this->set('annexes',$this->Deliberation->Annex->findAll('deliberation_id='.$id.' AND type="G"' ,array('titre','size','filename')));
+			//debug($this->Deliberation->Annex->findAll('deliberation_id='.$id.' AND type="G"',array('titre','size','filename')));								
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 		} else {
 			$this->cleanUpFields();
-			if ($this->Deliberation->save($this->data)) {
-				$this->Session->setFlash('The Deliberation has been saved');
-				$this->redirect('/deliberations/listerMesProjets');
-			} else {
-				$this->Session->setFlash('Please correct errors below.');
-				$this->set('services', $this->Deliberation->Service->generateList());
-				$this->set('themes', $this->Deliberation->Theme->generateList());
-				$this->set('circuits', $this->Deliberation->Circuit->generateList());
-				$this->set('users', $this->Deliberation->User->generateList());
-				$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
+			if(!empty($this->params['form']))
+			{
+				$deliberation = array_shift($this->params['form']);
+				$annexes = $this->params['form'];
+			
+				$uploaded = true;	
+				$size = count($this->params['form']);
+				$counter = 1;
+			
+				while($counter <= ($size/2))
+				{
+					//echo $annexes['file_'.$counter]['tmp_name']."<br>";
+					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name']))
+					{
+						$uploaded = false;
+					}
+					$counter++;
+				}
+				
+				if($uploaded)
+				{			
+					if ($this->Deliberation->save($this->data)) 
+					{
+						$counter = 1;
+					
+						while($counter <= ($size/2))
+						{	
+							$this->data['Annex']['id'] = null;
+							$this->data['Annex']['deliberation_id'] = $id;
+							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
+							$this->data['Annex']['type'] = 'G';
+							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
+							$this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
+							$this->data['Annex']['size'] = $annexes['file_'.$counter]['size'];
+							$this->data['Annex']['data'] = $this->getFileData($annexes['file_'.$counter]['tmp_name'], $annexes['file_'.$counter]['size']);
+							if(!$this->Annex->save($this->data))
+							{
+								echo "pb de sauvegarde de l\'annexe ".$counter;
+							}
+						//$this->log("annexe ".$counter." enregistrée.");
+						//echo "<br>annexe ".$counter." enregistrée.";
+						$counter++;
+
+						}
+						$this->Session->setFlash('The Deliberation has been saved');
+						$this->redirect('/deliberations/textprojet/'.$id);
+						//$this->redirect('/deliberations/listerMesProjets');
+					} else {
+					$this->Session->setFlash('Please correct errors below.');
+					$this->set('services', $this->Deliberation->Service->generateList());
+					$this->set('themes', $this->Deliberation->Theme->generateList());
+					$this->set('circuits', $this->Deliberation->Circuit->generateList());
+					$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+					$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
+					}
+				}
 			}
 		}
 	}
