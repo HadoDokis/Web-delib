@@ -88,6 +88,7 @@
 
 <div class="submit">
 	<?php echo $form->labelTag('User/id', '&nbsp;');?>
+	<?php echo $html->hidden('User/id')?>
 	<?php echo $html->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
 	<?php echo $html->link('Annuler', '/users/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
@@ -97,3 +98,5 @@
 <li><?php echo $html->link('Annuler', '/users/index')?></li>
 </ul>
 -->
+
+
