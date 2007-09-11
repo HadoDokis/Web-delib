@@ -1,10 +1,26 @@
 <?php echo $javascript->link('fckeditor'); ?> 
-<?php echo $html->formTag('/deliberations/textsynthese/'.$html->tagValue('Deliberation/id')); ?>
+<?php echo $html->formTag('/deliberations/textsynthese/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
 Texte Synthèse : 
 <div class="optional">
     <?php echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][texte_synthese]'); ?>
     <?php echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Entrer le texte de synthese.');?>
+</div>
+<div class="optional">
+	<?php if(!empty($annexes)){  ?>
+	<?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?>
+	<?php foreach ($annexes as $annexe) :
+			echo '<br>Titre : '.$annexe['Annex']['titre'];
+			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
+			echo '<br>Taille : '.$annexe['Annex']['size'];?>
+			<br/><a href="" name="download">Telecharger</a><br/><br/>
+	<?php endforeach; } ?>
+</div>
+<div id="cible"> 
+
+</div>
+<div>
+<a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
 </div>
 <div class="submit">
 	<?php echo $html->submit('Terminer', array('class'=>'bt_fin', 'name'=>'terminer'));?>
