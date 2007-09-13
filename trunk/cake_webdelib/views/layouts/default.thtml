@@ -42,13 +42,12 @@
  
 
 	<div id="centre">
-		
-		<?php echo $this->renderElement('adminMenu'); ?>
+		<?php echo $this->renderElement('navigation'); ?>
 		<?php echo $session->flash();?>
 		<?php echo $content_for_layout; ?>
 	</div>
 
-	<div id="pied">Tutoriel CakePHP &copy; 2006 ADULLACT</div>
+	<div id="pied">WebDelib &copy; 2007 ADULLACT</div>
 </div>
 </body>
 </html>
