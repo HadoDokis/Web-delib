@@ -45,7 +45,6 @@ class AppController extends Controller {
 	var $beforeFilter = array('checkSession');
 
 	var $infoUser = "";
-	var $lienAccueil = "";
 	var $lienDeconnexion = "";
 	var $agentServices = null;
 	
