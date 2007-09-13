@@ -1,13 +1,11 @@
 <h2>Liste des profils</h2>
 
-<div class="arbre">
+<div id="arbre">
 <?php //echo $tree->showTree('Profil','libelle', $data,0,$this->base, array('Editer'=>'edit','Supprimer'=>'delete')); ?>
 <?php echo $tree->showTree('Profil','libelle', $data,0,$this->base, array('Editer'=>'edit','Supprimer'=>'delete')); ?>
 </div>
 
-<?php echo $html->link('Ajouter un profil', '/profils/add');?>=======
-<ul class="actions">
-	<li><?php echo $html->link('Ajouter un profil', '/profils/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
-</ul>
+<div>
+<?php echo $html->link('Ajouter un profil', '/profils/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?>
 </div>
 
