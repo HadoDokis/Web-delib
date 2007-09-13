@@ -314,6 +314,7 @@ body {
 }
 
 /** debut menu **/
+/*
 #navcontainer {
 	text-align:center;
 	font: normal normal 14px/18px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
@@ -354,7 +355,7 @@ body {
 	padding: 0px 5px 0 5px;
 	border-right: 1px solid #888888;
 	border-left: 1px solid #888888;
-}
+}*/
 
 /** fin menu **/
 
@@ -400,6 +401,7 @@ table tr td {
 #pied {
 	height: 10px;
 	text-align: center;
+	border-top: 1px solid #999;
 }
 
 td.actions {
@@ -720,6 +722,19 @@ a.link_annuler_sans_border {
 #globalnav UL A.here:link,
 #globalnav UL A.here:visited {
 	color:#444;
+}
+
+/*profils*/
+
+#arbre {
+	border: 1px solid #bbb;
+	width: 450px;
+	padding: 10px;
+	margin-bottom: 20px;
+}
+
+.profil {
+	font-weight: bold;
 }
 
 /*---------------- fin modifs christophe ------------------------*/
