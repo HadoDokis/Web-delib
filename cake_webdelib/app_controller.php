@@ -38,10 +38,10 @@
  * @subpackage	cake.cake
  */
 class AppController extends Controller {
-	var $components=array('Utils');
+
+	var $components=array('Utils','PhpGacl');
 	var $beforeFilter = array('checkSession');
 	var $helpers = array('Html', 'Form' , 'Javascript');
-	
 
 	var $infoUser = "";
 	var $lienAccueil = "";
@@ -61,7 +61,7 @@ class AppController extends Controller {
 			if (!$this->Session->Check('user'))
 			{
 				//le forcer a se connecter
-				$this->redirect('users/login');
+				$this->redirect('/users/login');
 				exit();
 			}
 		}
