@@ -39,9 +39,10 @@
  */
 class AppController extends Controller {
 
-	var $components=array('Utils','PhpGacl');
-	var $beforeFilter = array('checkSession');
+	var $components=array('Utils');
 	var $helpers = array('Html', 'Form' , 'Javascript','Navigation');
+	
+	var $beforeFilter = array('checkSession');
 
 	var $infoUser = "";
 	var $lienAccueil = "";
