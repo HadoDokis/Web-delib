@@ -33,8 +33,7 @@
 		echo $html->selectTag('Service/Service',$this->controller->agentServices, $service_id, array('id' => "$urlPage", 'onChange'=>'changeService(this)'),null,false);
 	}
     
-	?>	
-	<?php echo $this->controller->lienAccueil;?>
+	?>
 	<?php echo $this->controller->lienDeconnexion; ?>
 	
 	
@@ -47,7 +46,7 @@
 		<?php echo $content_for_layout; ?>
 	</div>
 
-	<div id="pied">WebDelib &copy; 2007 ADULLACT</div>
+	<div id="pied">Web-Delib &copy; 2007 ADULLACT</div>
 </div>
 </body>
 </html>
