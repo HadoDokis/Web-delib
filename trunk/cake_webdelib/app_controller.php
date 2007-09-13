@@ -52,8 +52,7 @@ class AppController extends Controller {
 	{
 		$this->infoUser = "<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ";
    		$this->agentServices = $this->Session->read('user.Service');
-		$this->lienAccueil = " | <span class=\"accueil\"><a href=\"".$this->base."/\">Accueil</a></span> ";
- 	    $this->lienDeconnexion = " | <span class=\"deconnexion\"><a href=\"".$this->base."/users/logout\"> Deconnexion</a></span>";  
+ 	    $this->lienDeconnexion = "[<span class=\"deconnexion\"><a href=\"".$this->base."/users/logout\"> Deconnexion</a></span>]";  
  	    	  
 		if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login')
 		{
