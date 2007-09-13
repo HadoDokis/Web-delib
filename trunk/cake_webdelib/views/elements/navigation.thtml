@@ -1,0 +1,58 @@
+
+<?php
+// construction navigation principale
+$menu = array
+(
+	'Accueil' => array('link' => '/'),
+	'Projets' => array('link' => '/deliberations/index', 'submenu' => array()),
+	'Séances' => array('link' => '/seances/listerFuturesSeances', 'submenu' => array()),
+	'Post-séance' => array('link' => '/pages/postseance', 'submenu' => array()),
+	'Administration' => array('link' => '/pages/administration', 'submenu' => array())
+);
+
+// construction navigation secondaire projets
+$sub_menu1 = array
+(
+	'Nouveau...' => array('link' => '/deliberations/add'),
+	'Mes projets' => array('link' => '/deliberations/index'),
+	'A traiter' => array('link' => '/deliberations/listerProjetsATraiter')
+);
+
+// construction navigation secondaire seances
+
+$sub_menu2 = array
+(
+	'Nouvelle...' => array('link' => '/seances/add'),
+	'A venir' => array ('link' => '/seances/listerFuturesSeances'),
+	'Passées' => array('link' => '/seances/listerAnciennesSeances')
+);
+
+// construction navigation secondaire post-seance
+$sub_menu3 = array
+(
+	'Editions' => array('link' => '/seances/add'),
+	'Publications' => array('link' => '/seances/listerFuturesSeances'),
+	'Contrôle de légalité' => array('link' => '/seances/listerAnciennesSeances'),
+	'Export GED' => array('link' => '/seances/listerAnciennesSeances')
+);
+
+// construction navigation secondaire administration
+$sub_menu4 = array
+(
+	'Utilisateurs' => array('link' => '/users/index'),
+	'Circuits' => array('link' => '/circuits/index'),
+	'Profils' => array('link' => '/profils/index'),
+	'Thèmes' => array('link' => '/themes/index'),
+	'Types de séance' => array('link' => '/typeseances'),
+	
+);
+
+// ajout des navigations secondaires à la principale
+$menu['Projets']['submenu'] = $sub_menu1;
+$menu['Séances']['submenu'] = $sub_menu2;
+$menu['Post-séance']['submenu'] = $sub_menu3;
+$menu['Administration']['submenu'] = $sub_menu4;
+
+// affichage du menu complet
+echo $navigation->buildMenu($menu, "globalnav");
+?>
