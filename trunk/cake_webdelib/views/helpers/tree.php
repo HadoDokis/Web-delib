@@ -4,13 +4,6 @@ class TreeHelper extends Helper
 	var $tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	var $hasChildren = false;
  	
-//	function showTree($modelName, $fieldName, $data, $baseUrl, $actions=null)
-//	{
-//  		$output = $this->list_element($data, $modelName, $fieldName, 0, $baseUrl, $actions);
-//		return $this->output($output);
-//	}
-  
-	//function showTree($data, $modelName, $fieldName, $level, $baseUrl, $actions)
 	function showTree($modelName,$fieldName,$data,$level,$baseUrl,$actions)
 	{
 		$tabs = str_repeat($this->tab, $level);
@@ -19,7 +12,7 @@ class TreeHelper extends Helper
 	  	foreach ($data as $key=>$val)
 	  	{
 	  		$hasChildren = isset($val['children'][0]);
-	  		$output .= $tabs.$val[$modelName][$fieldName]." ".$this->buildActions($baseUrl, $actions, $modelName, $val[$modelName]['id'], $hasChildren)."<br/>\n";
+	  		$output .= $tabs."<span class=\"profil\">".$val[$modelName][$fieldName]."</span> ".$this->buildActions($baseUrl, $actions, $modelName, $val[$modelName]['id'], $hasChildren)."<br/>\n";
 	  		
 	  		if($hasChildren)
 	  		{
@@ -31,7 +24,7 @@ class TreeHelper extends Helper
   
 	function buildActions($baseUrl, $actions, $modelName, $id, $hasChildren)
 	{
-  		$urls = "&nbsp;&nbsp;";
+  		$urls = "&nbsp;&nbsp;[";
   		
   		foreach($actions as $key=>$value)
   		{
@@ -39,15 +32,15 @@ class TreeHelper extends Helper
 			
   			if($value != "delete" || ($value == "delete" && !$hasChildren))
 			{
-				$urlToAdd = "<a href=\"".$baseUrl."/".$controllerName."/".$value."/".$id."\" >".$key."</a> ";
+				$urlToAdd = "<a href=\"".$baseUrl."/".$controllerName."/".$value."/".$id."\" >".$key."</a> | ";
 			}
-			else
+			elseif( $value == "delete" && $hasChildren)
 			{
-				$urlToAdd = "<span class=\"inactive\">".$key."</span>";
+				$urlToAdd = "";
 			}
-			$urls .= $urlToAdd." ";
+			$urls .= $urlToAdd;
   		}
-  		return $urls;
+		return substr($urls,0,-3)."]";
 	}
 }
 ?> 
