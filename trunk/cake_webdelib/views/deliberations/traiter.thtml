@@ -13,7 +13,7 @@
 	<dt>Circuit</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
 	<dt>Theme</dt>
-	<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['id'], '/themes/view/' .$deliberation['Theme']['id'])?></dd>
+	<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['libelle'], '/themes/view/' .$deliberation['Theme']['id'])?></dd>
 	<dt>Service</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
 	<dt>Vote Id</dt>
@@ -58,7 +58,20 @@
 		}
 	}
 	?>
+	<dt>Commentaire</dt>
+	<dd>&nbsp;<?php foreach ($deliberation['Commentaire'] as $commentaire) :
+		echo $commentaire['texte']; ?>
+		<ul class="actions">
+			<li><?php echo $html->link('Modifier commentaire ', '/commentaires/edit/'.$commentaire['id'].'/'.$deliberation['Deliberation']['id']);?></li>
+			<li><?php echo $html->link(' Supprimer', '/commentaires/delete/'.$commentaire['id'].'/'.$deliberation['Deliberation']['id']); ?></li>
+			<li><?php echo $html->link('Voir', '/commentaires/view/'.$commentaire['id'].'/'.$deliberation['Deliberation']['id']); ?>
+		</ul>
+		<?php endforeach;?>	
+		<?php echo $html->link('Ajouter ', '/commentaires/add/'.$deliberation['Deliberation']['id']);?>
+		
+		</dd>
 </dl>
+<br>
 <ul class="actions">
 	<li><?php echo $html->link('Edit Deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
 	<li><?php echo $html->link('List Deliberations',   '/deliberations/index') ?> </li>
