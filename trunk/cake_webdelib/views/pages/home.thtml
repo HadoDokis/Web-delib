@@ -2,13 +2,15 @@
 
 <div id="content">
 	<div id="tableau_bord">
-	<h2>Mes projets à traiter</h2>
+	<h1>Mes projets a traiter</h1>
 	liste des projets à valider pour l'utilisateur connecté
+	<?php echo $this->requestAction('/deliberations/listerATraiter', array('return')); ?>
 	
-	<h2>Projets dans mon circuit de validation</h2>
+	<h1>Projets dans mon circuit de validation</h1>
 	liste des autres projets dans le(s) circuit(s), avec leur position
+	<?php echo $this->requestAction('/deliberations/listerProjetsATraiter', array('return')); ?>
 	
-	<h2>Séances à venir</h2>
-	liste de toutes les séances à venir
+	<h1>Seances à venir</h1>
+	<?php echo $this->requestAction('/seances/listerFuturesSeances', array('return')); ?>
 	</div>
 </div>
