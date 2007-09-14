@@ -3,7 +3,7 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire');
 	
 	function index() {
 
@@ -317,7 +317,7 @@ class DeliberationsController extends AppController {
 	
 	function textsynthese ($id = null)
 	{
-	$this->set('annexes',$this->Deliberation->Annex->findAll('deliberation_id='.$id.' AND type="S"' ,array('titre','size','filename')));
+	$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="S"'));
 	
 	if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
@@ -382,7 +382,7 @@ class DeliberationsController extends AppController {
 	
 	function textprojet ($id = null)
 	{
-	$this->set('annexes',$this->Deliberation->Annex->findAll('deliberation_id='.$id.' AND type="P"' ,array('titre','size','filename')));
+	$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
 	
 	if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
@@ -458,7 +458,7 @@ class DeliberationsController extends AppController {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
-			$this->set('annexes',$this->Deliberation->Annex->findAll('deliberation_id='.$id.' AND type="G"' ,array('titre','size','filename')));
+			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
 			//debug($this->Deliberation->Annex->findAll('deliberation_id='.$id.' AND type="G"',array('titre','size','filename')));								
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
@@ -651,8 +651,8 @@ class DeliberationsController extends AppController {
 			}
 		}	
 	}
-	
-	
+
+
 	function traiter($id = null, $valid=null) {
 		if (!$id) {
 			$this->Session->setFlash('Invalid id for Deliberation.');
@@ -669,7 +669,7 @@ class DeliberationsController extends AppController {
 				$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
 				$this->set('tab_anterieure',$tab_anterieure); 
 				$this->set('deliberation', $this->Deliberation->read(null, $id));
-			
+	
 			}
 			else
 			{
@@ -722,7 +722,7 @@ class DeliberationsController extends AppController {
 				else
 				{	
 					
-					//on a refusé le projet, il repars au redacteur
+					//on a refusé le projet, il repart au redacteur
 					//TODO notifier par mail toutes les personnes qui ont déjà visé le projet
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 					$lastpos=count($tab)-1;
