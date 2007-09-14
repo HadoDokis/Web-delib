@@ -6,9 +6,10 @@ class DeliberationsController extends AppController {
 	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire');
 	
 	function index() {
-
+		$user=$this->Session->read('user');
+		$user_id=$user['User']['id'];
 		$this->Deliberation->recursive = 0;
-		$this->set('deliberations', $this->Deliberation->findAll(null,null, 'Seance.date'));
+		$this->set('deliberations', $this->Deliberation->findAll('redacteur_id='.$user_id,null, 'Seance.date'));
 
 // TODO utilisation de la vue index?
 
@@ -195,6 +196,75 @@ class DeliberationsController extends AppController {
 		$this->set('deliberations', $delib);
 		//debug($delib);
 	}
+
+	function listerATraiter()
+	{
+		/**
+		 * TODO BUG SI UNE PERSONNE QUI APPARAIT À PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN 
+		 * MEME CIRCUIT
+		 * PB : si une personne apparait plusieurs fois dans le circuit mais sous des services différents
+		 * A FAIRE : verifier aussi le service, voir si un meme user peut appartenir à plusieurs services
+		 * et apparaitre plusieurs fois dans le meme circuit
+		 * CSQ : qui se connecte? un user ou un user service? remise en cause de la relation "un user
+		 * peut appartenir à plusieurs services
+		 */
+		//liste les projets où j'apparais dans le circuit de validation
+		$user=$this->Session->read('user');
+		$user_id=$user['User']['id'];
+		//recherche de tous les circuits où apparait l'utilisateur logué
+		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "position ASC");
+		$conditions="etat=1 ";
+		$delib=array();
+		//$position_user=0;
+		$cpt=0;
+		//debug($data_circuit);
+		if ($data_circuit!=null)
+		{
+			foreach ($data_circuit as $data)
+			{
+				if ($cpt>0)
+					$conditions=$conditions." OR ";
+				else
+					$conditions=$conditions." AND (";
+			
+				$conditions=$conditions." circuit_id = ".$data['UsersCircuit']['circuit_id'];
+				$cpt++;
+			}
+			if ($cpt>=0)
+				$conditions=$conditions." )";
+
+			$deliberations = $this->Deliberation->findAll($conditions);
+
+			foreach ($deliberations as $deliberation)
+			{
+				//on recupere la position courante de la deliberation
+				$lastTraitement=array_pop($deliberation['Traitement']);
+				
+				//on recupere la position de l'user dans le circuit
+				foreach ($data_circuit as $data)
+				{
+					if ($data['UsersCircuit']['circuit_id']==$lastTraitement['circuit_id'])
+					{
+						$position_user=$data['UsersCircuit']['position'];
+					}
+				}
+			
+				if ($lastTraitement['position']==$position_user){
+					$deliberation['action']="traiter";
+					$deliberation['act']="traiter";
+					array_push($delib, $deliberation);
+
+				}
+			}
+		}
+		$this->set('deliberations', $delib);
+		$this->render('listerProjetsATraiter');
+		//debug($delib);
+	}	
+	
+	
+	
+	
 	
 
 	function getPosition($circuit_id, $delib_id){
