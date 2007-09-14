@@ -1,26 +1,13 @@
-<h2>Modification du commentaire</h2>
+<h2>Modifier commentaire</h2>
 <form action="<?php echo $html->url('/commentaires/edit/'.$html->tagValue('Commentaire/id')); ?>" method="post">
-<div class="required"> 
-	<?php echo $form->labelTag('Commentaire/delib_id', 'Delib Id');?>
- 	<?php echo $html->input('Commentaire/delib_id', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Commentaire/delib_id', 'Please enter the Delib Id.');?>
-</div>
-<div class="required"> 
-	<?php echo $form->labelTag('Commentaire/user_id', 'User Id');?>
- 	<?php echo $html->input('Commentaire/user_id', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Commentaire/user_id', 'Please enter the User Id.');?>
-</div>
-<div class="required"> 
-	<?php echo $form->labelTag('Commentaire/texte', 'Texte');?>
- 	<?php echo $html->input('Commentaire/texte', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Commentaire/texte', 'Please enter the Texte.');?>
-</div>
+<?php echo $html->hidden('Commentaire/delib_id',array('value'=> "$delib_id")); ?>
 <?php echo $html->hidden('Commentaire/id')?>
-<div class="submit">
-	<?php echo $html->submit('Save');?>
+<div class="required"> 
+		<?php echo $html->textarea('Commentaire/texte',array('cols'=>'50','rows'=>'10')); ?>
 </div>
+	
+<div class="submit">
+
+	<?php echo $html->submit('Modifier');?>
+</div>		
 </form>
-<ul class="actions">
-<li><?php echo $html->link('Delete','/commentaires/delete/' . $html->tagValue('Commentaire/id'), null, 'Are you sure you want to delete: id ' . $html->tagValue('Commentaire/id'));?>
-<li><?php echo $html->link('List Commentaires', '/commentaires/index')?></li>
-</ul>
