@@ -1,25 +1,21 @@
 <div class="commentaire">
-<h2>Fice commentaire</h2>
+<h2>Fiche commentaire</h2>
 
 <dl>
-	<dt>Id</dt>
-	<dd>&nbsp;<?php echo $commentaire['Commentaire']['id']?></dd>
+
 	<dt>Delib Id</dt>
 	<dd>&nbsp;<?php echo $commentaire['Commentaire']['delib_id']?></dd>
-	<dt>User Id</dt>
-	<dd>&nbsp;<?php echo $commentaire['Commentaire']['user_id']?></dd>
+	<dt>Agent</dt>
+	<dd>&nbsp;<?php echo $commentaire['Commentaire']['agent_id']?></dd>
 	<dt>Texte</dt>
 	<dd>&nbsp;<?php echo $commentaire['Commentaire']['texte']?></dd>
 	<dt>Created</dt>
 	<dd>&nbsp;<?php echo $commentaire['Commentaire']['created']?></dd>
-	<dt>Modified</dt>
-	<dd>&nbsp;<?php echo $commentaire['Commentaire']['modified']?></dd>
+
 </dl>
 <ul class="actions">
-	<li><?php echo $html->link('Edit Commentaire',   '/commentaires/edit/' . $commentaire['Commentaire']['id']) ?> </li>
-	<li><?php echo $html->link('Delete Commentaire', '/commentaires/delete/' . $commentaire['Commentaire']['id'], null, 'Are you sure you want to delete: id ' . $commentaire['Commentaire']['id'] . '?') ?> </li>
-	<li><?php echo $html->link('List Commentaires',   '/commentaires/index') ?> </li>
-	<li><?php echo $html->link('New Commentaire',	'/commentaires/add') ?> </li>
+	<li><?php echo $html->link('Retour delib',   '/deliberations/traiter/' . $commentaire['Commentaire']['delib_id']) ?> </li>
+
 </ul>
 
 </div>
