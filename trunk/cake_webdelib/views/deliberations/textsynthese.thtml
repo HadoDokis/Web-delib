@@ -13,7 +13,7 @@ Texte Synthèse :
 			echo '<br>Titre : '.$annexe['Annex']['titre'];
 			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
 			echo '<br>Taille : '.$annexe['Annex']['size'];?>
-			<br/><a href="" name="download">Telecharger</a><br/><br/>
+			<br/><a href="" name="download">Telecharger</a>| <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
 	<?php endforeach; } ?>
 </div>
 <div id="cible"> 
