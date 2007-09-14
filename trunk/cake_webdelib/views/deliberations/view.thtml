@@ -2,7 +2,7 @@
 <h2>Fiche d&eacute;liberation</h2>
 -->
 <div id="deliberation">
-
+<? //debug($deliberation); ?> 
 <dl>
 <!--	<dt>Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['id']?></dd> -->
@@ -72,10 +72,7 @@
 	</div>
 </div>
 
-
-
-
-	<?php 
+<?php 
 	if ($tab_anterieure!=null)
 	{
 		echo"<dt>Versions Anterieures</dt>";
@@ -84,7 +81,19 @@
 			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";		
 		}
 	}
-	?>
+?>
+
+<?php 
+	if(!empty($deliberation['Commentaire']))
+	{
+		echo"<dt>Commentaire</dt><dd>&nbsp;";
+		foreach ($deliberation['Commentaire'] as $commentaire){
+		echo $commentaire['texte'].'<br/>';}
+	}
+?>
+</dd>	
+	
+	
 </dl>
 <ul id="actions_fiche">
 	<li><?php echo $html->link('', '/deliberations/index', array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'))?></li>
