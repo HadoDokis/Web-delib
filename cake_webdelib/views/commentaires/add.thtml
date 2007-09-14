@@ -1,24 +1,11 @@
 <h2>Nouveau commentaire</h2>
-<form action="<?php echo $html->url('/commentaires/add'); ?>" method="post">
+
+<form action="<?php echo $html->url('/commentaires/add/'); ?>" method="post">
+<?php echo $html->hidden('Commentaire/delib_id',array('value'=> "$delib_id")); ?>
 <div class="required"> 
-	<?php echo $form->labelTag('Commentaire/delib_id', 'Delib Id');?>
- 	<?php echo $html->input('Commentaire/delib_id', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Commentaire/delib_id', 'Please enter the Delib Id.');?>
-</div>
-<div class="required"> 
-	<?php echo $form->labelTag('Commentaire/user_id', 'User Id');?>
- 	<?php echo $html->input('Commentaire/user_id', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Commentaire/user_id', 'Please enter the User Id.');?>
-</div>
-<div class="required"> 
-	<?php echo $form->labelTag('Commentaire/texte', 'Texte');?>
- 	<?php echo $html->input('Commentaire/texte', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Commentaire/texte', 'Please enter the Texte.');?>
-</div>
+		<?php echo $html->textarea('Commentaire/texte',array('cols'=>'50','rows'=>'10')); ?>
+</div>		
 <div class="submit">
-	<?php echo $html->submit('Add');?>
-</div>
-</form>
-<ul class="actions">
-<li><?php echo $html->link('List Commentaires', '/commentaires/index')?></li>
-</ul>
+	<?php echo $html->submit('Ajouter');?>
+</div>		
+	</form>
