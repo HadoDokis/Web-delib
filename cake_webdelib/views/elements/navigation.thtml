@@ -14,8 +14,9 @@ $menu = array
 $sub_menu1 = array
 (
 	'Nouveau...' => array('link' => '/deliberations/add'),
-	'Mes projets' => array('link' => '/deliberations/index'),
-	'A traiter' => array('link' => '/deliberations/listerProjetsATraiter')
+	'Mes projets' => array('link' => '/deliberations/listerMesProjets'),
+	'A traiter' => array('link' => '/deliberations/listerProjetsATraiter'),
+	'Non attribués' => array('link' => '/deliberations/listerProjetsNonAttribues')
 );
 
 // construction navigation secondaire seances
