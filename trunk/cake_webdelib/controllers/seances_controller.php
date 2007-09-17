@@ -4,7 +4,8 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Html2' );
 	var $components = array('Date');
-
+	var $uses = array('Deliberation','Seance');
+	
 	function index() {
 		$this->Seance->recursive = 0;
 		$this->set('seances', $this->Seance->findAll());
@@ -162,6 +163,13 @@ class SeancesController extends AppController {
 		
 		$this->set('annee', $annee);
 		$this->set('calendrier',$calendrier);
+	}
+	
+	function afficherProjets ($id=null)
+	{
+		$condition= "seance_id =$id ";
+		$this->set('projets', $this->Deliberation->findAll($condition,null,'date ASC'));
+		
 	}
 
 }
