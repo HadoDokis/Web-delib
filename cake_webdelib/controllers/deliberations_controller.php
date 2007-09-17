@@ -837,8 +837,6 @@ class DeliberationsController extends AppController {
 	
 	function chercherVersionAnterieure($delib_id, $tab_delib, $nb_recursion, $listeAnterieure, $action)
 	{
-		
-
 		$anterieure_id=$tab_delib['Deliberation']['anterieure_id'];
 		
 		if ($anterieure_id!=0)
@@ -858,6 +856,89 @@ class DeliberationsController extends AppController {
 	
 		return $listeAnterieure;
 	}
+	
+	
+      	function transmit($id=null){
+            $this->set('dateClassification',$this->getDateClassification());
+            $this->set('tabNature', '');
+            $this->set('tabMatiere', '');
+         
+            $this->getNatureListe();
+        }
+
+        function getNatureListe(){
+        	 $i = 0;
+        	 $doc = new DOMDocument();
+              if(!$dom = $doc->load(FILE_CLASS)) {
+                        die("Error opening xml file");
+              }
+             
+             
+             $NaturesActes = $doc->getElementsByTagName('NatureActe')->item(2);
+             debug($NaturesActes);
+             echo utf8_decode( $NaturesActes->getAttribute('Libelle'));
+          
+             
+             
+
+        }
+
+        function getMatiereListe($filename){
+
+        }
+
+        function getDateClassification(){
+			  $doc = new DOMDocument();
+              if(!$dom = $doc->load(FILE_CLASS)) {
+                        die("Error opening xml file");
+              }
+              return($doc->getElementsByTagName('DateClassification')->item(0)->nodeValue);
+        }
+	
+ 		function getClassification($id=null){
+                $url = 'https://'.HOST.'/modules/actes/actes_classification_fetch.php';
+        		$data = array(
+        		'api'           => '1',
+        		);
+        $url .= '?'.http_build_query($data);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
+        curl_setopt($ch, CURLOPT_SSLCERT, PEM);
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
+        curl_setopt($ch, CURLOPT_SSLKEY, KEY);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+        $reponse = curl_exec($ch);
+
+        if (curl_errno($ch))
+          print curl_error($ch);
+        curl_close($ch);
+
+                // Assurons nous que le fichier est accessible en écriture
+                if (is_writable(FILE_CLASS)) {
+                        if (!$handle = fopen(FILE_CLASS, 'w')) {
+                        echo "Impossible d'ouvrir le fichier (".FILE_CLASS.")";
+                        exit;
+                }
+                        // Ecrivons quelque chose dans notre fichier.
+                if (fwrite($handle, utf8_encode($reponse)) === FALSE) {
+                        echo "Impossible d'écrire dans le fichier ($filename)";
+                        exit;
+                }
+                else {
+                    $this->redirect('/deliberations/transmit');
+                }
+                fclose($handle);
+
+                } 
+                else {
+              	  echo "Le fichier FILENAME n'est pas accessible en écriture.";
+                }
+        }
+
+                
 
 	
 }
