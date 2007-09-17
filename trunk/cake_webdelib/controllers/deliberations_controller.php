@@ -124,7 +124,7 @@ class DeliberationsController extends AppController {
 
 
 		
-	function listerProjetsATraiter()
+	function listerProjetsDansMesCircuits()
 	{
 		/**
 		 * TODO BUG SI UNE PERSONNE QUI APPARAIT À PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN 
@@ -170,6 +170,7 @@ class DeliberationsController extends AppController {
 			{
 				//on recupere la position courante de la deliberation
 				$lastTraitement=array_pop($deliberation['Traitement']);
+				$deliberation['positionDelib']=$lastTraitement['position'];
 				
 				//on recupere la position de l'user dans le circuit
 				foreach ($data_circuit as $data)
@@ -177,6 +178,7 @@ class DeliberationsController extends AppController {
 					if ($data['UsersCircuit']['circuit_id']==$lastTraitement['circuit_id'])
 					{
 						$position_user=$data['UsersCircuit']['position'];
+						$deliberation['positionUser']=$position_user;
 					}
 				}
 			
@@ -197,7 +199,7 @@ class DeliberationsController extends AppController {
 		//debug($delib);
 	}
 
-	function listerATraiter()
+	function listerProjetsATraiter()
 	{
 		/**
 		 * TODO BUG SI UNE PERSONNE QUI APPARAIT À PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN 
