@@ -34,7 +34,7 @@
 				<ul>
 					<li><a href="<?php echo $html->url('/'); ?>" title="Editions">Editions</a></li>
 					<li><a href="<?php echo $html->url('/'); ?>" title="Publications">Publications</a></li>
-					<li><a href="<?php echo $html->url('/'); ?>" title="Transmission au contr&ocirc;le de l&eacute;galit&eacute;">Transmission</a></li>
+					<li><a href="<?php echo $html->url('/deliberations/transmit'); ?>" title="Transmission au contr&ocirc;le de l&eacute;galit&eacute;">Transmission</a></li>
 				</ul>
 			</dd>
 	</dl>
