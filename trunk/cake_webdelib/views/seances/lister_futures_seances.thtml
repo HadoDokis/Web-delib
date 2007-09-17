@@ -7,13 +7,16 @@
 		<th>ID</th>
 		<th>Type</th>
 		<th>Date S&eacute;ance</th>
+		<th>Action</th>
 	</tr>
 	<?php foreach ($seances as $seance): ?>
 	<tr>
 		<td><?php echo $seance['Seance']['id']; ?></td>
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
+		<td><?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?></td>
 	</tr>
+	
 	<?php endforeach; ?>
 
 </table>
