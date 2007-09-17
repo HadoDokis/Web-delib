@@ -1,0 +1,27 @@
+<h2>Liste des projets</h2>
+<table>
+	<tr>
+		<th>Theme</th>
+		<th>Rapporteur</th>
+		<th>Date Seance</th>
+		<th>Objet</th>
+		<th>Titre</th>
+		<th>Num Delib</th>
+		<th>Date creation</th>
+		<th>Date modification</th>
+
+	</tr>
+	<? foreach($projets as $projet): ?>
+    	<tr>
+		    <td><?php echo $projet['Theme']['libelle']; ?></td>
+		    <td><?php echo $projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom']; ?></td>
+		    <td><?php echo $projet['Seance']['date']; ?></td>
+		    <td><?php echo $projet['Deliberation']['objet']; ?></td>
+		    <td><?php echo $projet['Deliberation']['titre']; ?></td>
+		    <td><?php echo $projet['Deliberation']['num_delib']; ?></td>
+		    <td><?php echo $projet['Deliberation']['created']; ?></td>
+		    <td><?php echo $projet['Deliberation']['modified']; ?></td>
+		   
+		</tr>
+		<?php endforeach; ?>
+</table>
