@@ -10,63 +10,6 @@ class DeliberationsController extends AppController {
 		$user_id=$user['User']['id'];
 		$this->Deliberation->recursive = 0;
 		$this->set('deliberations', $this->Deliberation->findAll('redacteur_id='.$user_id,null, 'Seance.date'));
-
-// TODO utilisation de la vue index?
-
-//		$this->Deliberation->recursive = 0;
-//		$deliberations = array();
-//		$condition="etat = 1";
-//		$tmpdeliberations=$this->Deliberation->findAll($condition);
-//		$user=$this->Session->read('user');
-//		foreach ($tmpdeliberations as $delib)
-//		{
-//			$circuit_id=$delib['Deliberation']['circuit_id'];
-//			$data_circuit=$this->UsersCircuit->findAll("circuit_id=$circuit_id", null, "position ASC");
-//			for($i=0; $i<count($data_circuit);$i++)
-//			{
-//				if ($data_circuit[$i]['UsersCircuit']['user_id']==$user['User']['id'])
-//				{
-//					//l'utilisateur loguÃ© apparait dans un circuit, on affiche la delib
-//					
-//					
-//					/*recherche des actions que l'utilisateur loguÃ© peut faire
-//					 *  1 - recherche si c'est Ã  l'utilisateur loguÃ© de traiter la deliberation (selon table traitements)
-//					 *  2 - recherche s'il peut modifier/supprimer/convertir la delib (selon profil)
-//					 */
-//	
-//					
-//					$conditions = "circuit_id =".$delib['Deliberation']['circuit_id']." AND User_id = ".$user['User']['id'];
-//					$field = "position";
-//					$traitements = $this->UsersCircuit->findAll($conditions, $field);
-//					debug($traitements);
-//					foreach ($traitements as $traitement) {
-//						$position = $this->getPosition($delib['Deliberation']['circuit_id'], $delib['Deliberation']['id']);
-//					     
-//						if ($traitement['UsersCircuit']['position'] == $position){
-//						    echo("D&eacute;lib &agrave; viser : ");
-//						    $delib['a_traiter']=true;
-//						    echo $delib['Deliberation']['id'];
-//						    echo("<br>");
-//					     }
-//					     elseif ($traitement['UsersCircuit']['position'] > $position) {
-//					     	echo("D&eacute;lib &agrave; Venir");
-//					     	$delib['a_traiter']=false;
-//						    echo $delib['Deliberation']['id'];
-//						    echo("<br>");
-//					     }
-//						elseif ($traitement['UsersCircuit']['position'] < $position) {
-//					     	echo("D&eacute;lib d&eacute;j&agrave; vis&eacute;e : ");
-//					     	$delib['a_traiter']=false;
-//						    echo $delib['Deliberation']['id'];
-//						    echo("<br>");	// DÃ©lib dÃ©ja visÃ©es
-//					     }
-//					}
-//					array_push($deliberations, $delib);
-//				}
-//			}
-//		}
-//		$this->set('deliberations', $deliberations);
-
 	}
 
 	function listerMesProjets()
@@ -121,9 +64,7 @@ class DeliberationsController extends AppController {
 			}
 		}
 	}
-
-
-		
+	
 	function listerProjetsDansMesCircuits()
 	{
 		/**
@@ -263,11 +204,6 @@ class DeliberationsController extends AppController {
 		$this->render('listerProjetsATraiter');
 		//debug($delib);
 	}	
-	
-	
-	
-	
-	
 
 	function getPosition($circuit_id, $delib_id){
 		$odjCourant=array();
@@ -292,15 +228,12 @@ class DeliberationsController extends AppController {
 		$this->set('tab_anterieure',$tab_anterieure); 
 		$this->set('deliberation', $this->Deliberation->read(null, $id));
 	}
-
-	
 	
 	function getFileData($fileName, $fileSize)
 	{
 		return fread(fopen($fileName, "r"), $fileSize);
 	}	
-	
-	
+		
 	function add() 
 	{
 	$user=$this->Session->read('user');
@@ -318,6 +251,7 @@ class DeliberationsController extends AppController {
 			
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
+		
 			$this->cleanUpFields();
 			
 			
@@ -347,7 +281,12 @@ class DeliberationsController extends AppController {
 					{
 						$delib_id = $this->Deliberation->getLastInsertId();
 						$counter = 1;
-					
+						
+						$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+						$this->data['Deliberation']['position']=$position;
+						$this->Deliberation->save($this->data);
+						
+						
 						while($counter <= ($size/2))
 						{	
 							$this->data['Annex']['id'] = null;
@@ -947,7 +886,63 @@ class DeliberationsController extends AppController {
                 }
         }
 
-                
+        function positionner($id=null, $sens) 
+        {
+        	$positionCourante = $this->getCurrentPosition($id); 
+			$seance_id  = $this->getCurrentSeance($id);
+	   		$lastPosition = $this->getLastPosition($seance_id);
+        	if ($sens != 0)
+            	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante-1";
+       		else            // on récupère l'objet précédent"
+   		    	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante+1";
+   		   
+   		    $obj = $this->Deliberation->findAll($conditions);	
+			//position du suivant ou du precedent
+       		$id_obj = $obj['0']['Deliberation']['id'];
+			$newPosition = $obj['0']['Deliberation']['position'];	
+   		    
+   		    $this->data = $this->Deliberation->read(null, $id);
+			$this->data['Deliberation']['position'] = $newPosition;	
+   		    	
+   		    //enregistrement de l'objet courant avec la nouvelle position
+			if (!$this->Deliberation->save($this->data)) {
+			   die('Erreur durant l\'enregistrement');
+			}
+			// On récupère les informations de l'objet à  déplacer
+			$this->data = $this->Deliberation->read(null, $id_obj);
+			$this->data['Deliberation']['position']= $positionCourante;
+		
+			//enregistrement de l'objet à  déplacer avec la position courante
+			if ($this->Deliberation->save($this->data)) {
+			
+			$this->redirect("/seances/afficherProjets/$seance_id/");
+			}
+			else {
+		 	   $this->Session->setFlash('Erreur durant l\'enregistrement');
+			}	
+   		    	
+        	echo("$positionCourante $seance_id $lastPosition" );
+        }   
+        
+        function getCurrentPosition($id){
+    		$conditions = "Deliberation.id = $id";
+    		$field = 'position';
+    		$obj = $this->Deliberation->findAll($conditions);
+    	
+    		return  $obj['0']['Deliberation']['position'];
+  		}
+	
+   		function getCurrentSeance($id)
+    	{
+			$condition = "Deliberation.id = $id";
+        	$objCourant = $this->Deliberation->findAll($condition);
+			return $objCourant['0']['Deliberation']['seance_id'];
+    	}
+    
+   		function getLastPosition( $seance_id) {
+			return count($this->Deliberation->findAll("seance_id =$seance_id" ));
+    	}
+	
 
 	
 }
