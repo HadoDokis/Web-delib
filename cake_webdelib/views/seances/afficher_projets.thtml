@@ -9,7 +9,9 @@
 		<th>Num Delib</th>
 		<th>Date creation</th>
 		<th>Date modification</th>
-
+		<th>Position</th>
+		<th>&nbsp;</th>
+		<th>&nbsp;</th>
 	</tr>
 	<? foreach($projets as $projet): ?>
     	<tr>
@@ -21,7 +23,25 @@
 		    <td><?php echo $projet['Deliberation']['num_delib']; ?></td>
 		    <td><?php echo $projet['Deliberation']['created']; ?></td>
 		    <td><?php echo $projet['Deliberation']['modified']; ?></td>
-		   
+		      <td><?php echo $projet['Deliberation']['position']; ?></td>
+		    <td>
+		    <?php 
+		        if($projet['Deliberation']['position']!= 1){
+		            echo ('<td>');
+		            echo $html->link('Monter ', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1');
+		            echo('</td>');
+		        }
+		        else
+		           echo("<td>&nbsp;</td>");
+				if($projet['Deliberation']['position']!= $lastPosition){
+		            echo ('<td>');
+		            echo $html->link(' Descendre', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/0');
+		            echo ('</td>');
+		        }
+		        else
+		           echo("<td>&nbsp;</td>");
+		    ?>
+		    </td>
 		</tr>
 		<?php endforeach; ?>
 </table>
