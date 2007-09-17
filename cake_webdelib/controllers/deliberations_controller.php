@@ -860,31 +860,39 @@ class DeliberationsController extends AppController {
 	
       	function transmit($id=null){
             $this->set('dateClassification',$this->getDateClassification());
-            $this->set('tabNature', '');
-            $this->set('tabMatiere', '');
+            $this->set('tabNature', $this->getNatureListe());
+            $this->set('tabMatiere', $this->getMatiereListe());
          
-            $this->getNatureListe();
+           
         }
 
         function getNatureListe(){
-        	 $i = 0;
+        	 $tabNatures = array();
         	 $doc = new DOMDocument();
               if(!$dom = $doc->load(FILE_CLASS)) {
                         die("Error opening xml file");
               }
-             
-             
-             $NaturesActes = $doc->getElementsByTagName('NatureActe')->item(2);
-             debug($NaturesActes);
-             echo utf8_decode( $NaturesActes->getAttribute('Libelle'));
-          
-             
-             
 
+             $NaturesActes = $doc->getElementsByTagName('NatureActe');
+		
+			 foreach ($NaturesActes as $NatureActe) {
+   			     $tabNatures[$NatureActe->getAttribute('CodeNatureActe')]= utf8_decode($NatureActe->getAttribute('Libelle'));
+			 }
+			 return $tabNatures; 
         }
 
-        function getMatiereListe($filename){
+        function getMatiereListe(){
+ 			 $tabMatieres = array();
+        	 $doc = new DOMDocument();
+              if(!$dom = $doc->load(FILE_CLASS)) {
+                        die("Error opening xml file");
+              }
 
+             $Matieres1 = $doc->getElementsByTagName('Matiere1');
+			 foreach ($Matieres1 as $Matiere1) {
+   			     $tabMatieres[$Matiere1->getAttribute('CodeMatiere')]= utf8_decode($Matiere1->getAttribute('Libelle'));
+			 }
+			 return $tabMatieres; 
         }
 
         function getDateClassification(){
@@ -892,6 +900,7 @@ class DeliberationsController extends AppController {
               if(!$dom = $doc->load(FILE_CLASS)) {
                         die("Error opening xml file");
               }
+              
               return($doc->getElementsByTagName('DateClassification')->item(0)->nodeValue);
         }
 	
