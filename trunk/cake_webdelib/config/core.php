@@ -50,6 +50,20 @@
  *
  */
 	define('DEBUG', 2);
+	
+	
+/***
+ *   Configuration pour la télétransmission S2LOW
+ * 
+ * 
+ */	
+	define('PEM', '/home/francois/.workspace/svn_webdelib/config/pubKey.pem');
+	define('PASSWORD', 'demo_u');
+	define('HOST', 'demo-s2low.extranet.adullact.org');
+	define('KEY', '/home/francois/.workspace/svn_webdelib/config/key.pem');
+	define('CA_PATH', '/home/francois/.workspace/svn_webdelib/config');
+	define('FILE_CLASS', '/home/francois/.workspace/svn_webdelib/webroot/files/classification.xml');
+	
 /**
  * Turn of caching checking wide.
  * You must still use the controller var cacheAction inside you controller class.
