@@ -93,12 +93,11 @@ label {
 	position: absolute;
 	width: 100%;
 	height:100%;
-	background-color: #FFFFFF;
 }
 /*
 #centre {
 	background-color: #FFFFFF;
-	/*margin-left: 150px;*/
+	//margin-left: 150px;
 	min-height: 400px;
 	border-bottom: 1px solid #FFFFFF;
 	padding: 15px 75px 15px 75px;
@@ -280,6 +279,8 @@ body {
 	font-size: 0.8em;
 	margin: 0;
 	padding: 0;
+	background-image: url(../img/wavedelib.png);
+	background-repeat: no-repeat;
 }
 
 #header {
@@ -287,7 +288,7 @@ body {
 	padding-left: 20px;
 	font: italic normal 28px/30px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	color: #444444;
-	background-color: #e0ef90; // couleur NON-web
+	background-color: transparent; // couleur NON-web
 }
 
 #user {
@@ -296,7 +297,7 @@ body {
 	border-bottom: 1px solid #888888;
 	margin-top: 0px;
 	padding-right: 10px;
-	background-color: #e0ef90; // couleur NON-web
+	background-color: transparent; // couleur NON-web
 }
 
 #user a {
@@ -308,7 +309,7 @@ body {
 }
 
 #centre {
-	background-color: #FFFFFF;
+	
 	min-height: 400px;
 	padding: 0px 75px 15px 75px;
 }
@@ -481,6 +482,22 @@ a.link_traiter {
 	padding-bottom: 10px;
 }
 
+a.link_monter {
+	background-image: url(../img/icons/monter.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding-left: 25px;
+	padding-bottom: 10px;
+}
+
+a.link_descendre {
+	background-image: url(../img/icons/descendre.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding-left: 25px;
+	padding-bottom: 10px;
+}
+
 a.link_annuler {
 	color: black;
 	text-decoration: none;
@@ -538,6 +555,20 @@ a.link_annuler_sans_border {
 	padding-left: 25px;
 	height: 22px;	
 	cursor: pointer;
+}
+
+a.link_annexe {
+	color: black;
+	text-decoration: none;
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	background-image: url(../img/icons/bookmark.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 4px 4px 4px 25px;	
 }
 
 .bt_fin {
@@ -617,6 +648,10 @@ a.link_annuler_sans_border {
 
 }
 
+ul.actions {
+	list-style-type: none;
+}
+
 #actions_fiche {
 	text-align: center;
 }
@@ -638,46 +673,49 @@ a.link_annuler_sans_border {
 /*globalnav*/
 
 #globalnav {
+	font: normal normal 14px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	position:relative;
-	float:left;
+	//float:left;
 	width:100%;
-	padding:0 0 1.75em 1em;
-	margin:0;
+	padding:0 0 1.75em 0em;
+	margin:0 0 50px 0;
 	list-style:none;
 	line-height:1em;
-	margin-bottom: 20px; /*rajouté par christophe*/
 }
 
 #globalnav LI {
 	float:left;
 	margin:0;
 	padding:0;
+
 }
 
 #globalnav A {
 	display:block;
 	color:#444;
 	text-decoration:none;
-	font-weight:bold;
-	background:#ddd;
+	background:transparent;
 	margin:0;
 	padding:0.25em 1em;
-	border-left:1px solid #fff;
-	border-top:1px solid #fff;
-	border-right:1px solid #aaa;
 }
 
 #globalnav A:hover,
 #globalnav A:active,
 #globalnav A.here:link,
 #globalnav A.here:visited {
-	background:#bbb;
+	//background:#bbb;
 }
 
 #globalnav A.here:link,
 #globalnav A.here:visited {
 	position:relative;
 	z-index:102;
+}
+
+.here {
+	border-left: 1px solid #888888;
+	border-right: 1px solid #888888;
+	border-bottom: 1px solid #FFFFFF;
 }
 
 /*subnav*/
@@ -687,30 +725,29 @@ a.link_annuler_sans_border {
 	left:0;
 	top:1.5em;
 	float:left;
-	background:#bbb;
+	background:transparent;
 	width:100%;
 	margin:0;
-	padding:0.25em 0.25em 0.25em 1em;
+	padding:0 0.25em 0.25em 1em;
 	list-style:none;
-	border-top:1px solid #fff;
+	border-top: 1px solid #888888;
+
 
 }
 
 #globalnav UL LI {
 	float:left;
 	display:block;
-	margin-top:1px;
-
 }
-
 
 #globalnav UL.hidden {
 	display: none;
 }
 
+
 #globalnav UL A {
-	background:#bbb;
-	color:#fff;
+	//background:#bbb;
+	color:#444;
 	display:inline;
 	margin:0;
 	padding:0 1em;
@@ -738,4 +775,11 @@ a.link_annuler_sans_border {
 }
 
 /*---------------- fin modifs christophe ------------------------*/
+
+#cakeSqlLog td {
+text-align: left;
+padding: 4px 8px;
+background: #fff;
+border-bottom: 2px solid #ccc;
+}
 

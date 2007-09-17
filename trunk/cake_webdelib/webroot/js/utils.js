@@ -60,5 +60,16 @@ function del_field(node)
 	var node = document.getElementById(node);
 	var parent = node.parentNode;
 	parent.removeChild(node);
+
+
+//changement du texte du lien lorsqu'il ne reste plus d'annexe
+
+	var d = document.getElementById('cible');
+	var n = d.childNodes.length;
+
+	if (n<2) {
+		var a = document.getElementById('lien_annexe');
+		a.firstChild.nodeValue = 'Joindre une annexe';
+	}
 }
 	
