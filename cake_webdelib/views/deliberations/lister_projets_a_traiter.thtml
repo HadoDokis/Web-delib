@@ -1,5 +1,5 @@
 <div class="deliberations">
-<h2>Liste des Deliberations &agrave; traiter</h2>
+<h2>Mes projets &agrave; traiter</h2>
 
 <table cellpadding="0" cellspacing="0">
 <tr>
@@ -14,7 +14,7 @@
 </tr>
 
 <?php foreach ($deliberations as $deliberation): ?>
-<?//debug($deliberation);?>
+<? //debug($deliberation);?>
 <tr> 
 	<td><?php echo $deliberation['Theme']['libelle'] ?></td>
 	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
