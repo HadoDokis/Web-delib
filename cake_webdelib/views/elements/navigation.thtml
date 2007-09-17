@@ -4,7 +4,7 @@
 $menu = array
 (
 	'Accueil' => array('link' => '/'),
-	'Projets' => array('link' => '/deliberations/index', 'submenu' => array()),
+	'Projets' => array('link' => '/deliberations/listerMesProjets', 'submenu' => array()),
 	'Séances' => array('link' => '/seances/listerFuturesSeances', 'submenu' => array()),
 	'Post-séance' => array('link' => '/pages/postseance', 'submenu' => array()),
 	'Administration' => array('link' => '/pages/administration', 'submenu' => array())

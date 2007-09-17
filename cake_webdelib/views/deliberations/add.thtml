@@ -40,10 +40,8 @@
 <div id="cible"> 
 
 </div>
-<div>
-<a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
-</div>
 <div class="submit">
+	<a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
 	<?php echo $html->submit('Saisir un texte de projet', array('class'=>'bt_add', 'name'=>'saisir'));?>
 </div>
 </form>

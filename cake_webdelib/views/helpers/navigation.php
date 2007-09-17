@@ -40,6 +40,13 @@ class NavigationHelper extends HtmlHelper
         
         $out .= $tmp;
         $out .= $ulTab."</ul>\n";
+	
+	if ($ulClass== "displayed")
+	{
+		$out="<div class=\"bloc_menu\">\n".$out."</div>\n";
+	}
+	//debug($out);
+	//exit;
         return $out;
     }
     

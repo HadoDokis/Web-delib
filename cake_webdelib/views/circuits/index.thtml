@@ -3,7 +3,8 @@
 <?php
 	$loc=$html->url("/circuits/index/");
     echo $html->selectTag('Circuit/libelle', $circuits, $circuit_id, array("onChange"=>"lister_circuits(this, '$loc');"), null, true);
-    echo " <a href=".$html->url("/circuits/add")."> Ajouter un circuit</a> ";
+    echo " <a href=".$html->url("/circuits/add")." class=\"link_add\"> Ajouter un circuit</a> ";
+	echo "<br /><br />";
     if ($lastPosition ==0)
         echo " <a href=".$html->url("/circuits/delete/$circuit_id")."> Supprimer ce circuit</a>";
 ?>
@@ -40,15 +41,15 @@
 	        
 	        $loc=$html->url("/circuits/intervertirPosition/");
 	        if ($listeUserCircuit['position'][$i]!= $lastPosition)
-	            echo("<td><a href='".$loc.$listeUserCircuit['id'][$i]."/0/'>descendre</a></td>");
+	            echo("<td class=\"actions\"><a href='".$loc.$listeUserCircuit['id'][$i]."/0/' class=\"link_descendre\"></a></td>");
 	        else
-	            echo("<td>&nbsp;</td>");
+	            echo("<td class=\"actions\">&nbsp;</td>");
 	        if ($listeUserCircuit['position'][$i]!='1')
-	            echo("<td><a href='".$loc.$listeUserCircuit['id'][$i]."/1/'>monter</a></td>");
+	            echo("<td class=\"actions\"><a href='".$loc.$listeUserCircuit['id'][$i]."/1/' class=\"link_monter\"></a></td>");
 	        else
-	            echo("<td>&nbsp;</td>");
+	            echo("<td class=\"actions\">&nbsp;</td>");
 			$loc=$html->url("/circuits/supprimerUser/");
-	       echo("<td><a href='".$loc.$listeUserCircuit['id'][$i]."/'>Supprimer</a></td>");
+	       echo("<td class=\"actions\"><a href='".$loc.$listeUserCircuit['id'][$i]."/' class=\"link_supprimer\"></a></td>");
 	        echo("</tr>");
 	    }
 	}
@@ -57,7 +58,7 @@
 
 
 
-<br /><br /><br /><br />
+<br /><br />
 <?php
 	$loc=$html->url("/circuits/index/$circuit_id/");
 	echo $html->selectTag('Service/libelle', $services, $service_id, array("onChange"=>"lister_services(this, '$loc');", 'onclick'=>"javascript:checkSelectedCircuit('".$circuit_id."')"), null, true);
