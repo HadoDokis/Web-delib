@@ -1,0 +1,27 @@
+<div class="deliberations">
+<h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
+<form action="<?php echo $html->url('/deliberations/sendActe'); ?>" method="post">
+    La Classification enregistrée date du <?php echo $html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
+	Nature de la transmission :	<?php echo $html->selectTag('Deliberation/numPref', $tabNature); ?><br /><br />
+	Matiere de la transmission :<?php echo $html->selectTag('Deliberation/numMat', $tabMatiere); ?><br />	<br />
+
+	<table>
+	<th></th>
+ 	<th>Numéro Interne</th>
+ 	<th>Objet</th>
+ 	<th>Titre</th>
+<?php /*
+	foreach ($deliberations as $delib) {
+		echo("<tr><td>".$html->checkbox('Deliberation/id_'.$delib['Deliberation']['id'])."</td>");
+		echo ('<td>'.$delib['Deliberation']['num_delib'].'</td><td>'.$delib['Deliberation']['objet'].'</td><td>'.$delib['Deliberation']['titre'].'</td></tr>');	
+	} */
+?>
+	</table>	
+	<br />
+	
+	<div class="submit">
+		<?php echo $html->submit('Envoyer');?>
+	</div>
+	
+</form>
+</div>
