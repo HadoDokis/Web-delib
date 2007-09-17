@@ -32,7 +32,7 @@ $sub_menu2 = array
 $sub_menu3 = array
 (
 	'Editions' => array('link' => '/seances/add'),
-	'Publications' => array('link' => '/seances/listerFuturesSeances'),
+	'Publications' => array('link' => '/seances/listerAnciennesSeances'),
 	'Contrôle de légalité' => array('link' => '/seances/listerAnciennesSeances'),
 	'Export GED' => array('link' => '/seances/listerAnciennesSeances')
 );
