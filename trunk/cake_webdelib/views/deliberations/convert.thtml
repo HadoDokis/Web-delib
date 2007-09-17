@@ -17,6 +17,6 @@
 	$pdf->AddPage();
 	$pdf->WriteHTML($text_synthese);
 		
-	$pdf->Output('doc.pdf','I');
+	$pdf->Output('doc.pdf','F');
      
 ?> 
