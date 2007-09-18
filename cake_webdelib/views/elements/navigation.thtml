@@ -43,6 +43,7 @@ $sub_menu4 = array
 	'Utilisateurs' => array('link' => '/users/index'),
 	'Circuits' => array('link' => '/circuits/index'),
 	'Profils' => array('link' => '/profils/index'),
+	'Service' => array('link' => '/services/index'),
 	'Thèmes' => array('link' => '/themes/index'),
 	'Types de séance' => array('link' => '/typeseances'),
 	
