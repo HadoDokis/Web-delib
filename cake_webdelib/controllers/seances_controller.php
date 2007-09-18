@@ -13,7 +13,7 @@ class SeancesController extends AppController {
 
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Mauvais id de seance.');
+			$this->Session->setFlash('Invalide id pour la seance.');
 			$this->redirect('/seances/index');
 		}
 		$this->set('seance', $this->Seance->read(null, $id));
@@ -43,7 +43,7 @@ class SeancesController extends AppController {
 	function edit($id = null) {
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Mauvais id de seance');
+				$this->Session->setFlash('Invalide id pour la seance');
 				$this->redirect('/seances/index');
 			}
 			$this->data = $this->Seance->read(null, $id);
@@ -65,7 +65,7 @@ class SeancesController extends AppController {
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Mauvais id de seance');
+			$this->Session->setFlash('Invalide id pour la seance');
 			$this->redirect('/seances/index');
 		}
 		if ($this->Seance->del($id)) {
