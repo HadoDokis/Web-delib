@@ -22,7 +22,7 @@ class UsersController extends AppController {
 
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for User.');
+			$this->Session->setFlash('Invalide id pour l\'utilisateur.');
 			$this->redirect('/users/index');
 		}
 		$this->set('user', $this->User->read(null, $id));
@@ -44,11 +44,11 @@ class UsersController extends AppController {
 			$this->cleanUpFields('User');
 	
 			if ($this->User->isUnique('login', $this->data['User']['login'],$user_id='null') && $this->User->save($this->data)) {
-				$this->Session->setFlash('The User has been saved');
+				$this->Session->setFlash('L\'utilisateur a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/users/index');
 			} else {
 			
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 				//$this->set('statut',array('0'=>'agent', '1'=>'elu'));
 				$this->set('services', $this->User->Service->generateList());
 				if (empty($this->data['Service']['Service'])) { 
@@ -73,7 +73,7 @@ class UsersController extends AppController {
 	function edit($id = null) {
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalid id for User');
+				$this->Session->setFlash('Invalide id pour l\'utilisateur');
 				$this->redirect('/users/index');
 			}
 			$this->data = $this->User->read(null, $id);
@@ -107,11 +107,11 @@ class UsersController extends AppController {
 			//debug($this->data);
 			
 			if ($this->User->isUnique('login', $this->data['User']['login'],$id) && $this->User->save($this->data)) {
-				$this->Session->setFlash('The User has been saved');
+				$this->Session->setFlash('L\'utilisateur a &eacute;t&eacute; modifi&eacute;');
 				$this->redirect('/users/index');
 			} else {
 				//debug($data);
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 				//$this->set('statut',array('0'=>'agent', '1'=>'elu'));
 				$this->set('services', $this->User->Service->generateList());
 				if (empty($this->data['Service']['Service'])) { $this->data['Service']['Service'] = null; }
@@ -128,11 +128,11 @@ class UsersController extends AppController {
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for User');
+			$this->Session->setFlash('Invalide id pour l\'utilisateur');
 			$this->redirect('/users/index');
 		}
 		if ($this->User->del($id)) {
-			$this->Session->setFlash('The User deleted: id '.$id.'');
+			$this->Session->setFlash('L\'utilisateur a &eacute;t&eacute; supprim&eacute;');
 			$this->redirect('/users/index');
 		}
 	}
