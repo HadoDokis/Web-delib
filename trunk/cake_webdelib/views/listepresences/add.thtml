@@ -1,9 +1,0 @@
-<h2>New Listepresence</h2>
-<form action="<?php echo $html->url('/listepresences/add'); ?>" method="post">
-<div class="submit">
-	<?php echo $html->submit('Add');?>
-</div>
-</form>
-<ul class="actions">
-<li><?php echo $html->link('List Listepresences', '/listepresences/index')?></li>
-</ul>
