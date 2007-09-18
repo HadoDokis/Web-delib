@@ -1,6 +1,6 @@
 <?php echo $javascript->link('fckeditor'); ?> 
 
-<h2>Modification de la d&eacute;liberation</h2>
+<h2>Modification de l'entete de la d&eacute;liberation</h2>
 <dd>Date cr&eacute;ation : <?php echo $deliberations['Deliberation']['created'];?></dd>
 <dd>Date modification : <?php echo $deliberations['Deliberation']['modified'];?></dd>
 <dd>Redacteur : <?php echo $deliberations['Redacteur']['nom'];?></dd>
@@ -83,7 +83,7 @@
 
 <?php echo $html->hidden('Deliberation/id')?>
 <div class="submit">
-	<?php echo $html->submit('Modifier texte de projet');?>
+	<?php echo $html->submit('Sauvegarder et Modifier texte de projet');?>
 </div>
 </form>
 <ul class="actions">
