@@ -11,7 +11,7 @@ class ProfilsController extends AppController {
 
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Profil.');
+			$this->Session->setFlash('Invalide id pour le profil.');
 			$this->redirect('/profils/index');
 		}
 		$this->set('profil', $this->Profil->read(null, $id));
@@ -25,10 +25,10 @@ class ProfilsController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Profil->save($this->data)) {
-				$this->Session->setFlash('The Profil has been saved');
+				$this->Session->setFlash('Le profil a &eacute;t&eacute;sauvegard&eacute;');
 				$this->redirect('/profils/index');
 			} else {
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 			}
 		}
 	}
@@ -36,7 +36,7 @@ class ProfilsController extends AppController {
 	function edit($id = null) {
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalid id for Profil');
+				$this->Session->setFlash('Invalide id pour le profil');
 				$this->redirect('/profils/index');
 			}
 			$this->data = $this->Profil->read(null, $id);
@@ -46,23 +46,23 @@ class ProfilsController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Profil->save($this->data)) {
-				$this->Session->setFlash('The Profil has been saved');
+				$this->Session->setFlash('Le profil a &eacute;t&eacute; modifi&eacute;');
 				$this->redirect('/profils/index');
 			} else {
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 			}
 		}
 	}
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Profil');
+			$this->Session->setFlash('Invalide id pour le profil');
 			$this->redirect('/profils/index');
 		}
 		
 		if ($this->Profil->del($id)) {
 			
-			$this->Session->setFlash('The Profil deleted: id '.$id.'');
+			$this->Session->setFlash('Le profil a &eacute;t&eacute; supprim&eacute;');
 			$this->redirect('/profils/index');
 		}
 	}
