@@ -23,7 +23,7 @@ class ServicesController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Service->save($this->data)) {
-				$this->Session->setFlash('Le service a &eacute;t&eacute;sauvegard&eacute;');
+				$this->Session->setFlash('Le service a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/services/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
