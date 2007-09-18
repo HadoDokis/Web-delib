@@ -56,7 +56,7 @@ class DeliberationsController extends AppController {
 			}
 			else
 			{
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 				$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 				$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));	
 				$conditions="seance_id is null";
@@ -215,7 +215,7 @@ class DeliberationsController extends AppController {
 	
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Deliberation.');
+			$this->Session->setFlash('Mauvais id de deliberation.');
 			$this->redirect('/deliberations/listerProjetsATraiter');
 		}
 			//affichage anterieure
@@ -309,7 +309,7 @@ class DeliberationsController extends AppController {
 			
 						$this->redirect('/deliberations/textprojet/'.$this->Deliberation->getLastInsertId());
 					} else {
-					$this->Session->setFlash('Please correct errors below.');
+					$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 					$this->set('services', $this->Deliberation->Service->generateList());
 					$this->set('themes', $this->Deliberation->Theme->generateList());
 					$this->set('circuits', $this->Deliberation->Circuit->generateList());
@@ -383,7 +383,7 @@ class DeliberationsController extends AppController {
 						$this->redirect('/deliberations/attribuercircuit/'.$id);
 						
 					} else {
-					$this->Session->setFlash('Please correct errors below.');
+					$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 					}
 				}
 			}
@@ -447,7 +447,7 @@ class DeliberationsController extends AppController {
 						}
 						$this->redirect('/deliberations/textsynthese/'.$id);
 					} else {
-					$this->Session->setFlash('Please correct errors below.');
+					$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 					}
 				}
 			}
@@ -461,7 +461,7 @@ class DeliberationsController extends AppController {
 	
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalid id for Deliberation');
+				$this->Session->setFlash('Mauvais id de deliberation');
 				$this->redirect('/deliberations/listerMesProjets');
 			}
 			$this->data = $this->Deliberation->read(null, $id);
@@ -519,11 +519,11 @@ class DeliberationsController extends AppController {
 						$counter++;
 
 						}
-						$this->Session->setFlash('The Deliberation has been saved');
+						$this->Session->setFlash('La deliberation a &eacute;t&eacute; sauvegard&eacute;e');
 						$this->redirect('/deliberations/textprojet/'.$id);
 						//$this->redirect('/deliberations/listerMesProjets');
 					} else {
-					$this->Session->setFlash('Please correct errors below.');
+					$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 					$this->set('services', $this->Deliberation->Service->generateList());
 					$this->set('themes', $this->Deliberation->Theme->generateList());
 					$this->set('circuits', $this->Deliberation->Circuit->generateList());
@@ -559,11 +559,11 @@ class DeliberationsController extends AppController {
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Deliberation');
+			$this->Session->setFlash('Mauvais id de deliberation');
 			$this->redirect('/deliberations/listerMesProjets');
 		}
 		if ($this->Deliberation->del($id)) {
-			$this->Session->setFlash('The Deliberation deleted: id '.$id.'');
+			$this->Session->setFlash('La deliberation a &eacutet&eacute suprim&eacutee.');
 			$this->redirect('/deliberations/listerMesProjets');
 					}
 	}
@@ -658,7 +658,7 @@ class DeliberationsController extends AppController {
 					
 					$this->redirect('/deliberations/listerMesProjets');
 				} else {
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 			}
 		}	
 	}
@@ -666,7 +666,7 @@ class DeliberationsController extends AppController {
 
 	function traiter($id = null, $valid=null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Deliberation.');
+			$this->Session->setFlash('Mauvais id de deliberation.');
 			$this->redirect('/deliberations/listerProjetsATraiter');
 		}
 		else
