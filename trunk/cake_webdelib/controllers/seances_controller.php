@@ -4,7 +4,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Html2' );
 	var $components = array('Date');
-	var $uses = array('Deliberation','Seance');
+	var $uses = array('Deliberation','Seance','User','SeancesUser');
 	
 	function index() {
 		$this->Seance->recursive = 0;
@@ -13,7 +13,7 @@ class SeancesController extends AppController {
 
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Seance.');
+			$this->Session->setFlash('Mauvais id de seance.');
 			$this->redirect('/seances/index');
 		}
 		$this->set('seance', $this->Seance->read(null, $id));
@@ -25,12 +25,12 @@ class SeancesController extends AppController {
 			$this->set('selectedTypeseances', null);
 			$this->render();
 		} else {
-			$this->cleanUpFields();
+			$this->cleanUpFields('Seance');
 			if ($this->Seance->save($this->data)) {
-				$this->Session->setFlash('The Seance has been saved');
+				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/seances/index');
 			} else {
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
 				$this->set('typeseances', $this->Seance->Typeseance->generateList());
 				if (empty($this->data['Typeseance']['Typeseance'])) {
 					$this->data['Typeseance']['Typeseance'] = null;
@@ -43,7 +43,7 @@ class SeancesController extends AppController {
 	function edit($id = null) {
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalid id for Seance');
+				$this->Session->setFlash('Mauvais id de seance');
 				$this->redirect('/seances/index');
 			}
 			$this->data = $this->Seance->read(null, $id);
@@ -51,12 +51,12 @@ class SeancesController extends AppController {
 			if (empty($this->data['Typeseance'])) { $this->data['Typeseance'] = null; }
 				$this->set('selectedTypeseances', $this->_selectedArray($this->data['Typeseance']));
 		} else {
-			$this->cleanUpFields();
+			$this->cleanUpFields('Seance');
 			if ($this->Seance->save($this->data)) {
-				$this->Session->setFlash('The Seance has been saved');
+				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/seances/index');
 			} else {
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
 				if (empty($this->data['Typeseance']['Typeseance'])) { $this->data['Typeseance']['Typeseance'] = null; }
 					$this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
 			}
@@ -65,11 +65,11 @@ class SeancesController extends AppController {
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Seance');
+			$this->Session->setFlash('Mauvais id de seance');
 			$this->redirect('/seances/index');
 		}
 		if ($this->Seance->del($id)) {
-			$this->Session->setFlash('The Seance deleted: id '.$id.'');
+			$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; suprim&eacute;e');
 			$this->redirect('/seances/index');
 		}
 	}
@@ -171,6 +171,6 @@ class SeancesController extends AppController {
 		$this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
 		$this->set('projets', $this->Deliberation->findAll($condition,null,'position ASC'));
 	}
-
+	
 }
 ?>
