@@ -11,6 +11,10 @@
 	<?php echo $this->requestAction('/deliberations/listerProjetsDansMesCircuits', array('return')); ?>
 	
 	<br/>
+	<!--<h1>Projets en cours de redaction</h1> -->
+	<?php echo $this->requestAction('/deliberations/listerMesProjets', array('return')); ?>
+	
+	<br/>
 	<!--<h1>Seances à venir</h1>-->
 	<?php echo $this->requestAction('/seances/listerFuturesSeances', array('return')); ?>
 	</div>
