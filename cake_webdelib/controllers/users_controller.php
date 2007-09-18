@@ -41,11 +41,8 @@ class UsersController extends AppController {
 
 		} else {
 			$this->data['User']['password']=md5($this->data['User']['password']);
-			$this->data['User']['date_naissance']=$this->data['User']['date_naissance_year'].'-'.$this->data['User']['date_naissance_month'].'-'.$this->data['User']['date_naissance_day'];
-			//debug($this->data);
-			$this->cleanUpFields();
-			//	debug($this->data);
-
+			$this->cleanUpFields('User');
+	
 			if ($this->User->isUnique('login', $this->data['User']['login'],$user_id='null') && $this->User->save($this->data)) {
 				$this->Session->setFlash('The User has been saved');
 				$this->redirect('/users/index');
@@ -81,7 +78,6 @@ class UsersController extends AppController {
 			}
 			$this->data = $this->User->read(null, $id);
 			$this->set('services', $this->User->Service->generateList());
-			//debug($this->data);
 			if (empty($this->data['Service'])) { 
 				$this->data['Service'] = null;
 				$this->set('selectedServices', $this->data['ServiceElu']['id']);
@@ -107,10 +103,8 @@ class UsersController extends AppController {
 				$this->data['Service']['Service']=array();			
 			}
 			$this->data['User']['password']=md5($this->data['User']['password']);
-			$this->data['User']['date_naissance']=$this->data['User']['date_naissance_year'].'-'.$this->data['User']['date_naissance_month'].'-'.$this->data['User']['date_naissance_day'];
-			$this->cleanUpFields();
+			$this->cleanUpFields('User');
 			//debug($this->data);
-			
 			
 			if ($this->User->isUnique('login', $this->data['User']['login'],$id) && $this->User->save($this->data)) {
 				$this->Session->setFlash('The User has been saved');
