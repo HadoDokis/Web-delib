@@ -1,15 +1,21 @@
 <?php
 
+
+    $tableau  = "<table border='1' width='90%'>";
+    $tableau .= "<tr bgcolor='#efefef' height='30'><td>Numéro de la délibération</td><td colspan=2>$num_delib</td></tr>";
+	$tableau .= "<tr><td>objet </td><td>$objet</td></tr>";
+	$tableau .= "<tr bgcolor='#efefef'  height='30'><td>titre</td><td>$titre</td></tr>";
+	$tableau .= "<tr><td>theme</td><td>$theme</td></tr>";
+	$tableau .= "<tr bgcolor='#efefef  height='30'><td>service</td><td>$service</td></tr>";
+	$tableau .= "<tr><td>rapporteur</td><td>$prenom_rapporteur $nom_rapporteur</td></tr>";
+	$tableau .= "<tr bgcolor='#efefef'  height='30'><td>Date séance</td><td>$date_seance</td></tr>";
+	$tableau .= "</table>";
+
     vendor('fpdf/html2fpdf');
     $pdf = new HTML2FPDF();
  	
  	$pdf->AddPage();
-	$pdf->WriteHTML($rapporteur_id);
-	$pdf->Ln();
-	$pdf->WriteHTML($objet);
-	$pdf->Ln();
-	$pdf->WriteHTML($date_session);
- 	$pdf->Ln();
+	$pdf->WriteHTML($tableau);
  	
     $pdf->AddPage();
 	$pdf->WriteHTML($text_projet);
