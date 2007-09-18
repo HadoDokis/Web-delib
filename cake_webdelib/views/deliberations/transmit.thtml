@@ -10,11 +10,11 @@
  	<th>Numéro Interne</th>
  	<th>Objet</th>
  	<th>Titre</th>
-<?php /*
+<?php
 	foreach ($deliberations as $delib) {
 		echo("<tr><td>".$html->checkbox('Deliberation/id_'.$delib['Deliberation']['id'])."</td>");
 		echo ('<td>'.$delib['Deliberation']['num_delib'].'</td><td>'.$delib['Deliberation']['objet'].'</td><td>'.$delib['Deliberation']['titre'].'</td></tr>');	
-	} */
+	} 
 ?>
 	</table>	
 	<br />
