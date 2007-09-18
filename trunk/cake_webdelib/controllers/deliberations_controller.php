@@ -943,7 +943,12 @@ class DeliberationsController extends AppController {
 			return count($this->Deliberation->findAll("seance_id =$seance_id" ));
     	}
 	
-
+	function listerProjetsServicesAssemblees()
+	{
+		//liste les projets appartenants au service des assemblées
+		$conditions="etat = 2 ";
+		$this->set('deliberations', $this->Deliberation->findAll($conditions));
+	}
 	
 }
 ?>
