@@ -6,10 +6,6 @@
 	<dd>&nbsp;<?php echo $circuit['Circuit']['id']?></dd>
 	<dt>Libelle</dt>
 	<dd>&nbsp;<?php echo $circuit['Circuit']['libelle']?></dd>
-	<dt>Date creation</dt>
-	<dd>&nbsp;<?php echo $circuit['Circuit']['created']?></dd>
-	<dt>Date modification</dt>
-	<dd>&nbsp;<?php echo $circuit['Circuit']['modified']?></dd>
 </dl>
 <ul class="actions">
 	<li><?php echo $html->link('Modifier le circuit',   '/circuits/edit/' . $circuit['Circuit']['id']) ?> </li>
