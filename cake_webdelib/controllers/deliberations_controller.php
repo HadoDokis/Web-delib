@@ -215,7 +215,7 @@ class DeliberationsController extends AppController {
 	
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Mauvais id de deliberation.');
+			$this->Session->setFlash('Invalide id de deliberation.');
 			$this->redirect('/deliberations/listerProjetsATraiter');
 		}
 			//affichage anterieure
@@ -461,7 +461,7 @@ class DeliberationsController extends AppController {
 	
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Mauvais id de deliberation');
+				$this->Session->setFlash('Invalide id pour la deliberation');
 				$this->redirect('/deliberations/listerMesProjets');
 			}
 			$this->data = $this->Deliberation->read(null, $id);
@@ -559,7 +559,7 @@ class DeliberationsController extends AppController {
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Mauvais id de deliberation');
+			$this->Session->setFlash('Invalide id pour la deliberation');
 			$this->redirect('/deliberations/listerMesProjets');
 		}
 		if ($this->Deliberation->del($id)) {
@@ -666,7 +666,7 @@ class DeliberationsController extends AppController {
 
 	function traiter($id = null, $valid=null) {
 		if (!$id) {
-			$this->Session->setFlash('Mauvais id de deliberation.');
+			$this->Session->setFlash('Invalide id pour la deliberation.');
 			$this->redirect('/deliberations/listerProjetsATraiter');
 		}
 		else
