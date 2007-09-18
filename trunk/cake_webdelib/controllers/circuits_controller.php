@@ -7,7 +7,7 @@ class CircuitsController extends AppController {
 
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Circuit.');
+			$this->Session->setFlash('Invalide id pour le circuit.');
 			$this->redirect('/circuits/index');
 		}
 		$this->set('circuit', $this->Circuit->read(null, $id));
@@ -16,28 +16,28 @@ class CircuitsController extends AppController {
 	function edit($id = null) {
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalid id for Circuit');
+				$this->Session->setFlash('Invalide id pour le circuit');
 				$this->redirect('/circuits/index');
 			}
 			$this->data = $this->Circuit->read(null, $id);
 		} else {
 			$this->cleanUpFields();
 			if ($this->Circuit->save($this->data)) {
-				$this->Session->setFlash('The Circuit has been saved');
+				$this->Session->setFlash('Le circuit a &eacute;t&eacute; modifi&eacute;');
 				$this->redirect('/circuits/index');
 			} else {
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 			}
 		}
 	}
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Circuit');
+			$this->Session->setFlash('Invalide id pour le circuit');
 			$this->redirect('/circuits/index');
 		}
 		if ($this->Circuit->del($id)) {
-			$this->Session->setFlash('The Circuit deleted: id '.$id.'');
+			$this->Session->setFlash('Le circuit a &eacute;t&eacute; supprim&eacute;');
 			$this->redirect('/circuits/index');
 		}
 	}
@@ -48,7 +48,7 @@ class CircuitsController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Circuit->save($this->data)) {
-				$this->Session->setFlash('The Circuit has been saved');
+				$this->Session->setFlash('Le circuit a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/circuits/index');
 			} else {
 			}
@@ -154,7 +154,7 @@ class CircuitsController extends AppController {
 			    $this->redirect("/circuits/index/$circuit_id/$service_id");
 			}
 			else {
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 			}
 		}
 		else
@@ -201,7 +201,7 @@ class CircuitsController extends AppController {
 			    $this->redirect("/circuits/index/$circuitCourant/");
 		}
 		else {
-		    $this->Session->setFlash('Please correct errors below.');
+		    $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 		}
 	}
 
