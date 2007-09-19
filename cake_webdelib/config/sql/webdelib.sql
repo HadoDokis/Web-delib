@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Serveur: localhost
--- Généré le : Jeudi 06 Septembre 2007 à 11:15
+-- Généré le : Mardi 19 Septembre 2007 à 10:55
 -- Version du serveur: 4.1.11
 -- Version de PHP: 5.2.0-8+etch3~bpo.1
 -- 
@@ -19,19 +19,17 @@
 DROP TABLE IF EXISTS `annexes`;
 CREATE TABLE IF NOT EXISTS `annexes` (
   `id` int(11) NOT NULL auto_increment,
-  `delib_id` int(11) NOT NULL default '0',
-  `chemin` text NOT NULL,
-  `titre` varchar(100) NOT NULL default '',
-  `reference_id` int(11) NOT NULL default '0',
-  `created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modified` datetime NOT NULL default '0000-00-00 00:00:00',
+  `deliberation_id` int(11) NOT NULL,
+  `titre` varchar(50) NOT NULL,
+  `type` char(1) NOT NULL,
+  `filename` varchar(75) NOT NULL,
+  `filetype` varchar(255) NOT NULL,
+  `size` int(11) NOT NULL,
+  `data` mediumblob NOT NULL,
+  `created` datetime default NULL,
+  `modified` datetime default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- 
--- Contenu de la table `annexes`
--- 
-
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 
 
 -- --------------------------------------------------------
 
@@ -90,6 +88,7 @@ CREATE TABLE IF NOT EXISTS `deliberations` (
   `redacteur_id` int(11) NOT NULL default '0',
   `rapporteur_id` int(11) NOT NULL default '0',
   `seance_id` int(11) default NULL,
+  `anterieure_id` int NOT NULL default '0',
   `objet` varchar(100) NOT NULL default '',
   `titre` varchar(100) NOT NULL default '',
   `num_delib` varchar(10) NOT NULL default '',
@@ -133,21 +132,14 @@ CREATE TABLE IF NOT EXISTS `deliberations_odjs` (
 -- --------------------------------------------------------
 
 -- 
--- Structure de la table `listepresences`
+-- Structure de la table `seances_users`
 -- 
-
-DROP TABLE IF EXISTS `listepresences`;
-CREATE TABLE IF NOT EXISTS `listepresences` (
-  `id` int(11) NOT NULL auto_increment,
-  `created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modified` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- 
--- Contenu de la table `listepresences`
--- 
-
+DROP TABLE IF EXISTS `seances_users`;
+CREATE TABLE IF NOT EXISTS `seances_users` (
+  `seance_id` int(9) NOT NULL,
+  `user_id` int(11) NOT NULL ,
+  PRIMARY KEY  (`seance_id`,`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -178,20 +170,24 @@ CREATE TABLE IF NOT EXISTS `odjs` (
 DROP TABLE IF EXISTS `profils`;
 CREATE TABLE IF NOT EXISTS `profils` (
   `id` int(11) NOT NULL auto_increment,
+  `parent_id` int(11) default '0',
   `libelle` varchar(30) NOT NULL default '',
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- 
 -- Contenu de la table `profils`
 -- 
 
-INSERT INTO `profils` (`id`, `libelle`, `created`, `modified`) VALUES (1, 'Redacteur', '2007-08-02 10:27:30', '2007-08-02 10:27:30'),
-(2, 'Administrateur', '2007-08-02 10:27:34', '2007-08-02 10:27:34'),
-(3, 'Service des assembl?es', '2007-08-02 10:27:42', '2007-08-02 10:27:42'),
-(4, 'Rapporteur', '2007-08-02 10:27:47', '2007-08-02 10:27:47');
+INSERT INTO `profils` VALUES (62, 0, 'Validateur', '2007-09-03 14:39:20', '2007-09-03 14:39:20');
+INSERT INTO `profils` VALUES (63, 62, 'Rédacteur', '2007-09-03 14:39:36', '2007-09-03 14:39:36');
+INSERT INTO `profils` VALUES (64, 63, 'Service Assemblées', '2007-09-03 14:40:03', '2007-09-03 14:40:03');
+INSERT INTO `profils` VALUES (65, 64, 'Secrétaire de séance', '2007-09-03 14:40:20', '2007-09-03 14:40:20');
+INSERT INTO `profils` VALUES (66, 0, 'Elu', '2007-09-03 14:40:35', '2007-09-03 14:40:35');
+INSERT INTO `profils` VALUES (67, 0, 'Administrateur', '2007-09-03 14:40:53', '2007-09-03 14:40:53');
+
 
 -- --------------------------------------------------------
 
@@ -391,6 +387,7 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL auto_increment,
   `profil_id` int(11) NOT NULL default '0',
+  `service_id` int NOT NULL default '0'
   `statut` int(11) NOT NULL default '0',
   `login` varchar(50) NOT NULL default '',
   `password` varchar(100) NOT NULL default '',
@@ -445,23 +442,6 @@ INSERT INTO `users_circuits` (`id`, `user_id`, `circuit_id`, `service_id`, `posi
 
 -- --------------------------------------------------------
 
--- 
--- Structure de la table `users_listepresences`
--- 
-
-DROP TABLE IF EXISTS `users_listepresences`;
-CREATE TABLE IF NOT EXISTS `users_listepresences` (
-  `user_id` int(11) NOT NULL default '0',
-  `liste_id` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`user_id`,`liste_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- 
--- Contenu de la table `users_listepresences`
--- 
-
-
--- --------------------------------------------------------
 
 -- 
 -- Structure de la table `users_services`
