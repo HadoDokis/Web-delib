@@ -45,8 +45,8 @@
 		define('ROOT', dirname(dirname(dirname(__FILE__))));
 	}
 	if (!defined('APP_DIR')) {
-		define('APP_DIR', 'app');
-		//define('APP_DIR', basename(dirname(dirname(__FILE__))));
+		//define('APP_DIR', 'app');
+		define('APP_DIR', basename(dirname(dirname(__FILE__))));
 	}
 /**
  * This only needs to be changed if the cake installed libs are located
