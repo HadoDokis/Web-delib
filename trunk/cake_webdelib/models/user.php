@@ -21,8 +21,8 @@ class User extends AppModel {
 							'ServiceElu' =>array('className' => 'Service',
                                  'conditions' => '',
                                  'order'      => '',
-                                 'foreignKey' => '')
-                           	
+                                 'foreignKey' => ''),
+                            				                           	
 						 );
 	var $hasAndBelongsToMany = array('Service' => array('classname'=>'Service',
 														'joinTable'=>'users_services',
@@ -47,7 +47,21 @@ class User extends AppModel {
 														'unique' => '',
 														'finderQuery' => '',
 														'deleteQuery' => '',
-														'insertQuery' => ''),		
+														'insertQuery' => '')
+														,
+									'Seance' => array ('className' => 'Seance',
+															'joinTable' => 'seances_users',
+															'foreignKey' => 'seance_id',
+															'associationForeignKey' => 'user_id',
+															'conditions' => '',
+															'fields' => '',
+															'order' => '',
+															'limit' => '',
+															'offset' => '',
+															'unique' => '',
+															'finderQuery' => '',
+															'deleteQuery' => '',
+															'insertQuery' => '')/*,		
 								  	
 								'Listepresence'=> array('classname'=>'Listepresence',
 														'joinTable'=>'users_listepresences',
@@ -58,7 +72,7 @@ class User extends AppModel {
 														'limit'=>'',
 														'unique'=>true,
 														'finderQuery'=>'',
-														'deleteQuery'=>'')
+														'deleteQuery'=>'')*/
 										);
 								
 }
