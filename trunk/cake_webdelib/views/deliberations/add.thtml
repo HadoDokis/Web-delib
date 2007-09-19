@@ -23,7 +23,7 @@
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/titre', 'Titre');?>
- 	<?php echo $html->input('Deliberation/titre', array('size' => '30'));?>
+ 	<?php echo $html->textarea('Deliberation/titre', array('cols' => '60'));?>
 	<?php echo $html->tagErrorMsg('Deliberation/titre', 'Entrer le titre.');?>
 </div>
 <div class="optional"> 
