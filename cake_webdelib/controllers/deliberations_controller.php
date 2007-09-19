@@ -97,7 +97,7 @@ class DeliberationsController extends AppController {
 				else
 					$conditions=$conditions." AND (";
 			
-				$conditions=$conditions." circuit_id = ".$data['UsersCircuit']['circuit_id'];
+				$conditions=$conditions." seance_id!=0 AND circuit_id = ".$data['UsersCircuit']['circuit_id'];
 				$cpt++;
 			}
 			if ($cpt>=0)
@@ -170,13 +170,14 @@ class DeliberationsController extends AppController {
 				else
 					$conditions=$conditions." AND (";
 			
-				$conditions=$conditions." circuit_id = ".$data['UsersCircuit']['circuit_id'];
+				$conditions=$conditions." seance_id!=0 AND circuit_id = ".$data['UsersCircuit']['circuit_id'];
 				$cpt++;
 			}
 			if ($cpt>=0)
 				$conditions=$conditions." )";
 
 			$deliberations = $this->Deliberation->findAll($conditions);
+			//debug($deliberations);
 
 			foreach ($deliberations as $deliberation)
 			{
@@ -563,7 +564,7 @@ class DeliberationsController extends AppController {
 			$this->redirect('/deliberations/listerMesProjets');
 		}
 		if ($this->Deliberation->del($id)) {
-			$this->Session->setFlash('La deliberation a &eacutet&eacute suprim&eacutee.');
+			$this->Session->setFlash('La deliberation a &eacute;t&eacute; suprim&eacute;e.');
 			$this->redirect('/deliberations/listerMesProjets');
 					}
 	}
