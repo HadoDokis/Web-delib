@@ -12,5 +12,7 @@ class Seance extends AppModel {
 											'order'=>'',
 											'dependent'=>false, 
 											'foreignKey'=>'type_id'));
+											
+	var $hasMany = array ('SeancesUser' => array('className'=>'SeancesUser'));
 }
 ?>
