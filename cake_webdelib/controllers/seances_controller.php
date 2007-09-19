@@ -172,5 +172,22 @@ class SeancesController extends AppController {
 		$this->set('projets', $this->Deliberation->findAll($condition,null,'position ASC'));
 	}
 	
+	function addListUsers($seance_id=null) {
+		if (empty($this->data)) {
+			$this->set('seance_id',$seance_id);
+			$this->set('users', $this->User->generateList());
+			$this->set('selectedUsers', null);
+			$this->render();
+		} else {
+			debug($this->data);
+			if ($this->Seance->save($this->data)) {
+				$this->Session->setFlash('La liste a &eacute;t&eacute; sauvegard&eacute;');
+				$this->redirect('/seances/index');
+			} else {
+				$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
+			}
+		}
+	}
+	
 }
 ?>
