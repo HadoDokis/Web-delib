@@ -17,7 +17,6 @@
 		<td class="actions">
 			<?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
 			<?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_modifier', 'title'=>'Ajouter'))?>
-			
 		</td>
 	</tr>
 	
