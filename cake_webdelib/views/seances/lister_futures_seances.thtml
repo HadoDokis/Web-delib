@@ -16,7 +16,7 @@
 		<td><?php echo $seance['Seance']['date']; ?></td>
 		<td class="actions">
 			<?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
-			<?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_modifier', 'title'=>'Ajouter'))?>
+			<?php echo $html->link('','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_modifier', 'title'=>'Ajouter'))?>
 		</td>
 	</tr>
 	
