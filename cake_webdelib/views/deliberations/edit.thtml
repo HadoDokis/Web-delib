@@ -1,6 +1,6 @@
 <?php echo $javascript->link('fckeditor'); ?> 
 
-<h2>Modification de l'entete de la d&eacute;liberation</h2>
+<h2>Modification de l'ent&ecirc;te de la d&eacute;liberation</h2>
 <dd>Date cr&eacute;ation : <?php echo $deliberations['Deliberation']['created'];?></dd>
 <dd>Date modification : <?php echo $deliberations['Deliberation']['modified'];?></dd>
 <dd>Redacteur : <?php echo $deliberations['Redacteur']['nom'];?></dd>
@@ -24,31 +24,32 @@
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/vote_id', 'Vote Id');?>
- 	<?php echo $html->input('Deliberation/vote_id', array('size' => '60'));?>
+ 	<?php echo $html->input('Deliberation/vote_id');?>
 	<?php echo $html->tagErrorMsg('Deliberation/vote_id', 'Entrer le vote Id.');?>
 </div>
 <div class="optional"> 
     <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
     <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>    
 </div>	
+<br/>
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/objet', 'Objet');?>
- 	<?php echo $html->input('Deliberation/objet', array('size' => '60'));?>
+ 	<?php echo $html->input('Deliberation/objet', array('size' => '52'));?>
 	<?php echo $html->tagErrorMsg('Deliberation/objet', 'Entrer l\'objet de la delib.');?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/titre', 'Titre');?>
- 	<?php echo $html->input('Deliberation/titre', array('size' => '60'));?>
+ 	<?php echo $html->textarea('Deliberation/titre', array('cols' => '60'));?>
 	<?php echo $html->tagErrorMsg('Deliberation/titre', 'Entrer le titre.');?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/num_delib', 'Num Delib');?>
- 	<?php echo $html->input('Deliberation/num_delib', array('size' => '60'));?>
+ 	<?php echo $html->input('Deliberation/num_delib');?>
 	<?php echo $html->tagErrorMsg('Deliberation/num_delib', 'Entrer le Num Delib.');?>
 </div>
 <div class="optional"> 
 	<?php echo $form->labelTag('Deliberation/num_pref', 'Num Pref');?>
- 	<?php echo $html->input('Deliberation/num_pref', array('size' => '60'));?>
+ 	<?php echo $html->input('Deliberation/num_pref');?>
 	<?php echo $html->tagErrorMsg('Deliberation/num_pref', 'Entrer le Num Pref.');?>
 </div>
 <div class="required">
@@ -83,7 +84,8 @@
 
 <?php echo $html->hidden('Deliberation/id')?>
 <div class="submit">
-	<?php echo $html->submit('Sauvegarder et Modifier texte de projet');?>
+	<?php echo $html->submit('Sauvegarder et Modifier texte de projet', array('class'=>'bt_add', 'name'=>'modifier'));?>
+	
 </div>
 </form>
 <ul class="actions">
