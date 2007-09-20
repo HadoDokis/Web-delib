@@ -951,5 +951,20 @@ class DeliberationsController extends AppController {
 		$this->set('deliberations', $this->Deliberation->findAll($conditions));
 	}
 	
+	
+	
+	function textprojetvue ($id = null)
+	{
+		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
+		$this->set('deliberation', $this->Deliberation->read(null, $id));
+		$this->set('delib_id', $id);
+	}
+	
+	function textsynthesevue ($id = null)
+	{
+		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="S"'));
+		$this->set('deliberation', $this->Deliberation->read(null, $id));
+		$this->set('delib_id', $id);
+	}
 }
 ?>
