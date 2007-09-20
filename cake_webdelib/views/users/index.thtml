@@ -9,6 +9,7 @@
 	<th>Telephone 2</th>
 	<th>Service(s)</th>
 	<th>Profil</th>
+	<th>Statut</th>
 	<th>Actions</th>
 </tr>
 <?php 
@@ -27,8 +28,9 @@ foreach ($users as $user):
 			}else{
 			echo $user['ServiceElu']['libelle']; } ?></td>
 	<td><?php echo $user['Profil']['libelle']; ?></td>
+	<td><?php $statut = ($user['User']['statut'] ==1) ? "Elu" : "Agent"; echo $statut;?></td>
+	
 	<td class="actions">
-		<?php //echo $html->link($html->image('icons/editdelete.png',array('title'=>'Supprimer semaine', 'border'=>'0', 'align'=>'top')), "/semainestypes/delete/$thisweekSelected",null,"Etes-vous vraiment s�r de vouloir supprimer cette semaine ?",false); ?>
 		<?php echo $html->link('','/users/view/' . $user['User']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
 		<?php echo $html->link('','/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
 		<?php echo $html->link('','/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?')?>
