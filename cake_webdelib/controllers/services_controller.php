@@ -68,6 +68,11 @@ class ServicesController extends AppController {
        	$this->Redirect($this->Session->read('user.User.lasturl'));
     }
 	
+	function getLibelle ($id = null) {
+		$condition = "Service.id = $id";
+        $objCourant = $this->Service->findAll($condition);
+		return $objCourant['0']['Service']['libelle'];
+	}
 
 }
 ?>
