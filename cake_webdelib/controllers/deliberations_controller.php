@@ -571,18 +571,24 @@ class DeliberationsController extends AppController {
 		if ($this->Deliberation->del($id)) {
 			$this->Session->setFlash('La deliberation a &eacute;t&eacute; suprim&eacute;e.');
 			$this->redirect('/deliberations/listerMesProjets');
-					}
+		}
 	}
  
    function convert($id=null)
         {
-            $this->layout = 'pdf'; //this will use the pdf.thtml layout
+            $this->layout = 'pdf'; 
             $this->set('text_projet',  $this->getField($id, 'texte_projet'));
             $this->set('text_synthese',$this->getField($id, 'texte_synthese'));
-            $this->set('seance_id', $this->getField($id, 'seance_id'));
-            $this->set('rapporteur_id',   $this->getField($id, 'rapporteur_id'));
+            $this->set('seance_id',    $this->getField($id, 'seance_id'));
+            $this->set('rapporteur_id',$this->getField($id, 'rapporteur_id'));
             $this->set('objet',        $this->getField($id, 'objet'));
-  
+  			$this->set('num_delib',    $this->getField($id, 'num_delib'));
+  			$this->set('titre',        $this->getField($id, 'titre'));  			
+  			$this->set('theme',        $this->requestAction("themes/getLibelle/".$this->getField($id, 'theme_id')));   
+        	$this->set('service',      $this->requestAction("services/getLibelle/".$this->getField($id, 'service_id')));
+        	$this->set('nom_rapporteur',    $this->requestAction("users/getNom/".$this->getField($id, 'rapporteur_id')));  
+          	$this->set('prenom_rapporteur', $this->requestAction("users/getPrenom/".$this->getField($id, 'rapporteur_id')));  
+            $this->set('date_seance',       $this->requestAction("seances/getDate/".$this->getField($id, 'seance_id'))); 
             $this->render();
         } 
         
@@ -724,15 +730,10 @@ class DeliberationsController extends AppController {
 					{
 						//sinon on fait passer Ã  la personne suivante
 						$this->data['Traitement']['id']='';
-						
 						$this->data['Traitement']['position']=$tab[$lastpos]['Traitement']['position']+1;
-						
 						$this->data['Traitement']['delib_id']=$id;
 						$this->data['Traitement']['circuit_id']=$circuit_id;
-						
-						
 						$this->Traitement->save($this->data['Traitement']);
-						
 						$this->redirect('/deliberations/listerProjetsATraiter');
 					}
 				}	
@@ -784,8 +785,7 @@ class DeliberationsController extends AppController {
 	{
 		$anterieure_id=$tab_delib['Deliberation']['anterieure_id'];
 		
-		if ($anterieure_id!=0)
-		{
+		if ($anterieure_id!=0) {
 	
 			$ant=$this->Deliberation->find("Deliberation.id=$anterieure_id");
 			$lien=$this->base.'/deliberations/'.$action.'/'.$anterieure_id;
@@ -798,7 +798,6 @@ class DeliberationsController extends AppController {
 			//on stocke les id des delibs anterieures
 			$listeAnterieure=$this->chercherVersionAnterieure($anterieure_id, $ant, $nb_recursion+1, $listeAnterieure, $action);
 		}
-	
 		return $listeAnterieure;
 	}
 	
@@ -806,9 +805,8 @@ class DeliberationsController extends AppController {
       	function transmit($id=null){
             $this->set('dateClassification',$this->getDateClassification());
             $this->set('tabNature', $this->getNatureListe());
-            $this->set('tabMatiere', $this->getMatiereListe());
-         
-           
+            $this->set('tabMatiere', $this->getMatiereListe());  
+             $this->set('deliberations',$this->Deliberation->findAll());
         }
 
         function getNatureListe(){
@@ -832,10 +830,13 @@ class DeliberationsController extends AppController {
               if(!$dom = $doc->load(FILE_CLASS)) {
                         die("Error opening xml file");
               }
-
              $Matieres1 = $doc->getElementsByTagName('Matiere1');
 			 foreach ($Matieres1 as $Matiere1) {
    			     $tabMatieres[$Matiere1->getAttribute('CodeMatiere')]= utf8_decode($Matiere1->getAttribute('Libelle'));
+				// $Matieres2 = $doc->getElementsByTagName('Matiere2');
+				// foreach ($Matieres2 as $Matiere2) {
+   			    //	 $tabMatieres[$Matiere1->getAttribute('CodeMatiere')][$Matiere2->getAttribute('CodeMatiere')]= utf8_decode($Matiere2->getAttribute('Libelle'));
+				// }
 			 }
 			 return $tabMatieres; 
         }
@@ -845,7 +846,6 @@ class DeliberationsController extends AppController {
               if(!$dom = $doc->load(FILE_CLASS)) {
                         die("Error opening xml file");
               }
-              
               return($doc->getElementsByTagName('DateClassification')->item(0)->nodeValue);
         }
 	
@@ -949,6 +949,7 @@ class DeliberationsController extends AppController {
 			return count($this->Deliberation->findAll("seance_id =$seance_id" ));
     	}
 	
+
 	function listerProjetsServicesAssemblees()
 	{
 		//liste les projets appartenants au service des assemblées
@@ -965,6 +966,7 @@ class DeliberationsController extends AppController {
 		$this->set('delib_id', $id);
 	}
 	
+
 	function textsynthesevue ($id = null)
 	{
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="S"'));
