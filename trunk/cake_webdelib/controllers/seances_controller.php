@@ -171,7 +171,15 @@ class SeancesController extends AppController {
 		$this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
 		$this->set('projets', $this->Deliberation->findAll($condition,null,'position ASC'));
 	}
+
 	
+	function getDate($id)
+    {
+		$condition = "Seance.id = $id";
+        $objCourant = $this->Seance->findAll($condition);
+		return $objCourant['0']['Seance']['date'];
+    }
+
 	function addListUsers($seance_id=null) {
 		if (empty($this->data)) {
 			$this->set('seance_id',$seance_id);
@@ -188,6 +196,6 @@ class SeancesController extends AppController {
 			}
 		}
 	}
-	
+
 }
 ?>
