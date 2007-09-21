@@ -30,8 +30,8 @@
 </tr>
 <?php endforeach; ?>
 </table>
-
+<!--  
 <ul class="actions">
 	<li><?php echo $html->link('Ajouter une deliberation', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un deliberation')); ?></li>
-</ul>
+</ul>-->
 </div>
