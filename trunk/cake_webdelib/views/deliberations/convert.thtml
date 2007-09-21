@@ -1,6 +1,5 @@
 <?php
 
-
     $tableau  = "<table border='1' width='90%'>";
     $tableau .= "<tr bgcolor='#efefef' height='30'><td>Numéro de la délibération</td><td colspan=2>$num_delib</td></tr>";
 	$tableau .= "<tr><td>objet </td><td>$objet</td></tr>";
@@ -13,16 +12,12 @@
 
     vendor('fpdf/html2fpdf');
     $pdf = new HTML2FPDF();
- 	
  	$pdf->AddPage();
 	$pdf->WriteHTML($tableau);
- 	
     $pdf->AddPage();
 	$pdf->WriteHTML($text_projet);
-	
 	$pdf->AddPage();
 	$pdf->WriteHTML($text_synthese);
-
 	ob_end_clean();
 	$pdf->Output('doc.pdf','D');
      
