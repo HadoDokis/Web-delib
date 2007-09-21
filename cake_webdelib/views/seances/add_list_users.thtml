@@ -1,21 +1,14 @@
 <h2>Liste de presence</h2>
 <form action="<?php echo $html->url('/seances/addListUsers'); ?>" method="post">
-<?php echo $html->hidden('Seance/Seance', array('value'=>$seance_id)); ?>
+<?php echo $html->hidden('Seance/id', array('value'=>$seance_id)); ?>
 <div class="required"> 
-	<?php echo $form->labelTag('Seance/Seance', 'Utilisateurs');?>
- 	<?php echo $html->selectTag('Seance/Seance', $users, $selectedUsers, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
-	<?php echo $html->tagErrorMsg('Seance/Seance', 'Entrer le type de seance associ&eacute;.');?>
+	<?php echo $form->labelTag('User/id', 'Utilisateurs');?>
+ 	<?php echo $html->selectTag('User/id', $users, $selectedUsers, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
 </div>
-<br/>
+
 <div class="submit">
 	<?php echo $form->labelTag('Seance/id', '&nbsp;');?>
 	<?php echo $html->submit('Ajouter', array('class'=>'bt_add', 'name'=>'Ajouter'));?>
 	<?php echo $html->link('Annuler', '/seances/index', array('class'=>'link_annuler', 'title'=>'Annuler'))?>
 </div>
 </form>
-<!--
-<br/>
-<ul class="actions">
-<li><?php echo $html->link('Annuler', '/seances/index')?></li>
-</ul>
--->
