@@ -8,46 +8,88 @@
 
 	<h3>D&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['num_delib']?></h3>
 
-<!--	<dt>Id</dt>
+<!--<dt>Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['id']?></dd> -->
+	
 	<dt>Circuit</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
+	
 	<dt>Theme</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['libelle'], '/themes/view/' .$deliberation['Theme']['id'])?></dd>
+	
 	<dt>Service</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>
+	
 	<dt>Vote Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>
-	<dt>User</dt>
+	
+	<dt>Redacteur</dt>
 	<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['nom'].' '.$deliberation['Redacteur']['prenom'], '/users/view/' .$deliberation['Redacteur']['id'])?></dd>
+	
 	<dt>Rapporteur</dt>
 	<dd>&nbsp;<?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']?></dd>
+	
 	<dt>Date Session</dt>
 	<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
+	
 	<dt>Objet</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
+	
 	<dt>Titre</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>
+	
 	<dt>Num Delib</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_delib']?></dd>
+	
 	<dt>Num Pref</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref']?></dd>
-	<dt>Texte Projet</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_projet']?><br/>
-	<dt>Texte Synthese</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_synthese']?></dd>
-	<?php if(!empty($deliberation['Annexe'])){  ?><dt>Annexes</dt>
-	<dd><?php foreach ($deliberation['Annexe'] as $annexe) :
+	
+	
+	<?php foreach ($deliberation['Annexe'] as $annexe) :
+	if(!empty($annexe) && ($annexe['type'] == "G")){ ?>
+	<dt>Annexes Globales </dt>
+	<dd><?php
 			echo '<br>Titre : '.$annexe['titre'];
 			echo '<br>Nom fichier : '.$annexe['filename'];
-			echo '<br>Taille : '.$annexe['size'];
-			echo '<br>Type : '.$annexe['type'];?>
+			echo '<br>Taille : '.$annexe['size'];?>
 			<br/><a href="" name="download">Telecharger</a><br/><br/>
-	<?php endforeach;  ?></dd><? } ?>
+	<?php } endforeach;  ?></dd>
+	
+	
+	
+	<dt>Texte Projet</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_projet']?>
+	<?php foreach ($deliberation['Annexe'] as $annexe) :
+	if(!empty($annexe) && ($annexe['type'] == "P")){ ?>
+	<br/>Annexes 
+	<?php
+			echo '<br>Titre : '.$annexe['titre'];
+			echo '<br>Nom fichier : '.$annexe['filename'];
+			echo '<br>Taille : '.$annexe['size'];?>
+			<br/><a href="" name="download">Telecharger</a><br/><br/>
+	<?php } endforeach;  ?></dd>
+
+	
+	<dt>Texte Synthese</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_synthese']?>
+		<?php foreach ($deliberation['Annexe'] as $annexe) :
+	if(!empty($annexe) && ($annexe['type'] == "S")){ ?>
+	<br/>Annexes 
+	<?php
+			echo '<br>Titre : '.$annexe['titre'];
+			echo '<br>Nom fichier : '.$annexe['filename'];
+			echo '<br>Taille : '.$annexe['size'];?>
+			<br/><a href="" name="download">Telecharger</a><br/><br/>
+	<?php } endforeach;  ?></dd>	
+
+	
 	<dt>Created</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['created']?></dd>
+	
 	<dt>Modified</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['modified']?></dd>
+	
+	
 	<?php 
 	if ($tab_anterieure!=null)
 	{
@@ -58,6 +100,7 @@
 		}
 	}
 	?>
+	
 	<dt>Commentaire</dt>
 	<dd>&nbsp;<?php foreach ($deliberation['Commentaire'] as $commentaire) :
 		echo $commentaire['texte']; ?>
@@ -73,8 +116,8 @@
 </dl>
 <br>
 <ul class="actions">
-	<li><?php echo $html->link('Edit Deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
-	<li><?php echo $html->link('List Deliberations',   '/deliberations/index') ?> </li>
+	<li><?php //echo $html->link('Edit Deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
+	<li><?php echo $html->link('Annuler',   '/deliberations/listerProjetsATraiter') ?> </li>
 	<li><?php echo $html->link('Valider Deliberation',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/1') ?> </li>
 	<li><?php echo $html->link('Refuser Deliberation',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/0') ?> </li>
 
