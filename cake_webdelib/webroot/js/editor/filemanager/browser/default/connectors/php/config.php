@@ -25,17 +25,19 @@
 global $Config ;
 
 // SECURITY: You must explicitelly enable this "connector". (Set it to "true").
-$Config['Enabled'] = false ;
-
-
-// Path to user files relative to the document root.
-$Config['UserFilesPath'] = '/userfiles/' ;
+$Config['Enabled'] = true ;
 
 // Fill the following value it you prefer to specify the absolute path for the
 // user files directory. Usefull if you are using a virtual directory, symbolic
 // link or alias. Examples: 'C:\\MySite\\userfiles\\' or '/root/mysite/userfiles/'.
 // Attention: The above 'UserFilesPath' must point to the same directory.
-$Config['UserFilesAbsolutePath'] = '' ;
+//$Config['UserFilesAbsolutePath'] = '' ;
+$pos =  strrpos ( getcwd(), 'webroot');
+$path = substr(getcwd(), 0, $pos);
+$Config['UserFilesAbsolutePath'] = $path.'webroot/files/image/';
+
+// Path to user files relative to the document root.
+$Config['UserFilesPath'] = $path.'webroot/files/image/';
 
 // Due to security issues with Apache modules, it is reccomended to leave the
 // following setting enabled.
