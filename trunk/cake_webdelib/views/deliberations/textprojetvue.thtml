@@ -1,4 +1,4 @@
-<?php echo $html->image('/icons/projet.png')?> Texte Projet : 
+<?php echo $html->image('icons/projet.png')?> Texte Projet : 
 
 <div>
 <?php echo $deliberation['Deliberation']['texte_projet']; ?>
