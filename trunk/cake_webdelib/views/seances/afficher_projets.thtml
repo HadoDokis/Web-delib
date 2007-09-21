@@ -25,12 +25,12 @@
 
 		    <?php 
 		        if($projet['Deliberation']['position']!= 1)
-		            echo ('<td>'.$html->link('Monter ', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1').'</td>');
+		            echo ('<td>'.$html->link('', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1'.'</td>', array('class'=>'link_monter', 'title'=>'Monter')));
 		        else
 		           echo("<td>&nbsp;</td>");
 				
 				if($projet['Deliberation']['position']!= $lastPosition)
-		            echo '<td>'.$html->link(' Descendre', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/0'.'</td>');
+		            echo '<td>'.$html->link('', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/0'.'</td>', array('class'=>'link_descendre', 'title'=>'Descendre'));
 		        else
 		           echo("<td>&nbsp;</td>");
 		    ?>
