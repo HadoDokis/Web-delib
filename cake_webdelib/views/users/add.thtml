@@ -73,11 +73,13 @@
 		<?php echo $html->tagErrorMsg('User/service_id', 'Entrer le(s) service(s) associé(s).');?>
 		</div>
 	</div>
-	<div class="droit"> 
-		<?php echo $form->labelTag('Circuit/Circuit', 'Circuit(s) associe(s)');?>
-	 	<?php echo $html->selectTag('Circuit/Circuit', $circuits, $selectedCircuits, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
-		<?php echo $html->tagErrorMsg('Circuit/Circuit',  'Entrer le(s) circuit(s) associé(s).');?>
+<!--<div class="droit"> 
+		<?php //echo $form->labelTag('Circuit/Circuit', 'Circuit(s) associe(s)');?>
+	 	<?php //echo $html->selectTag('Circuit/Circuit', $circuits, $selectedCircuits, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
+		<?php //echo $html->tagErrorMsg('Circuit/Circuit',  'Entrer le(s) circuit(s) associé(s).');?>
+<
 <br /><br />
+-->
 		<?php echo $form->labelTag('Profil/profil', 'Profils');?>
 	 	<?php echo $html->selectTag('User/profil_id', $profils, $html->tagValue('User/profil_id'), array(), array(), true);?>
 		<?php echo $html->tagErrorMsg('Profil/Profil', 'Entrer le profil associï¿½.');?>
