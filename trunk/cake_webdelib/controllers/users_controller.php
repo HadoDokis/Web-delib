@@ -16,8 +16,6 @@ class UsersController extends AppController {
 		}
 		//debug($data);
 		$this->set('users', $data);
-		
-	
 	}
 
 	function view($id = null) {
