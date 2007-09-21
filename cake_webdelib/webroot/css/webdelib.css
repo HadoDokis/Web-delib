@@ -264,6 +264,14 @@ a.link_add {
 	padding-bottom: 10px;
 }
 
+a.link_addUsers {
+	background-image: url(../img/icons/add_users.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding-left: 25px;
+	padding-bottom: 10px;
+}
+
 a.link_traiter {
 	background-image: url(../img/icons/traiter.png);
 	background-repeat: no-repeat;
