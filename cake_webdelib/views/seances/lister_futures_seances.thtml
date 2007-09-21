@@ -17,7 +17,7 @@
 		<td class="actions">
 
 		 	<?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'))?>
-			<?php echo $html->link('','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_add', 'title'=>'Ajouter liste utilisateur'))?>
+			<?php echo $html->link('','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_addUsers', 'title'=>'Ajouter liste utilisateur'))?>
 
 		</td>
 	</tr>
