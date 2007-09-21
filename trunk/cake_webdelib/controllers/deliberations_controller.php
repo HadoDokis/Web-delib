@@ -52,6 +52,11 @@ class DeliberationsController extends AppController {
 
 			if ($this->Deliberation->save($this->data)) 
 			{
+				
+				$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+				$this->data['Deliberation']['position']=$position;
+				$this->Deliberation->save($this->data);
+	
 				$this->redirect('/deliberations/listerMesProjets');
 			}
 			else
