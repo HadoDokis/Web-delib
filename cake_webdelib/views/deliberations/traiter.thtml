@@ -69,7 +69,7 @@
 			echo '<br>Titre : '.$annexe['titre'];
 			echo '<br>Nom fichier : '.$annexe['filename'];
 			echo '<br>Taille : '.$annexe['size'];
-			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']); 	?>
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']); 	?><br/>
 	<?php } endforeach;  ?></dd>
 
 	
