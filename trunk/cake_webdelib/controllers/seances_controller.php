@@ -82,7 +82,6 @@ class SeancesController extends AppController {
 			$this->set('seances', $this->Seance->findAll(($condition),null,'date asc'));	
 
 		}
-		
 	}
 	
 	function listerAnciennesSeances()
@@ -186,14 +185,14 @@ class SeancesController extends AppController {
 			$this->set('users', $this->User->generateList());
 			$this->set('selectedUsers', null);
 			$this->render();
-		} else {
-			debug($this->data);
-			if ($this->Seance->save($this->data)) {
-				$this->Session->setFlash('La liste a &eacute;t&eacute; sauvegard&eacute;');
-				$this->redirect('/seances/index');
-			} else {
-				$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
-			}
+		} else {			
+		    foreach($this->data['User']['id']as $user_id) {
+			    $this->params['data']['SeancesUser']['seance_id'] = $this->data['Seance']['id'];
+			    $this->params['data']['SeancesUser']['user_id'] = $user_id ;
+			    
+			    if (!$this->SeancesUser->save($this->params['data']))
+				    $this->Session->setFlash('Corrigez les erreurs ci-dessous.');
+			}   	
 		}
 	}
 
