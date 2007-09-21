@@ -51,8 +51,11 @@
 	<dd><?php
 			echo '<br>Titre : '.$annexe['titre'];
 			echo '<br>Nom fichier : '.$annexe['filename'];
-			echo '<br>Taille : '.$annexe['size'];?>
-			<br/><a href="" name="download">Telecharger</a><br/><br/>
+			echo '<br>Taille : '.$annexe['size'];
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']); 
+	?>
+			
+			<br/>
 	<?php } endforeach;  ?></dd>
 	
 	
@@ -65,8 +68,8 @@
 	<?php
 			echo '<br>Titre : '.$annexe['titre'];
 			echo '<br>Nom fichier : '.$annexe['filename'];
-			echo '<br>Taille : '.$annexe['size'];?>
-			<br/><a href="" name="download">Telecharger</a><br/><br/>
+			echo '<br>Taille : '.$annexe['size'];
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']); 	?>
 	<?php } endforeach;  ?></dd>
 
 	
@@ -78,8 +81,8 @@
 	<?php
 			echo '<br>Titre : '.$annexe['titre'];
 			echo '<br>Nom fichier : '.$annexe['filename'];
-			echo '<br>Taille : '.$annexe['size'];?>
-			<br/><a href="" name="download">Telecharger</a><br/><br/>
+			echo '<br>Taille : '.$annexe['size'];
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']); 	?>
 	<?php } endforeach;  ?></dd>	
 
 	
