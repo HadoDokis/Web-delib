@@ -179,19 +179,35 @@ class SeancesController extends AppController {
 		return $objCourant['0']['Seance']['date'];
     }
 
+	
 	function addListUsers($seance_id=null) {
 		if (empty($this->data)) {
+			$this->data=$this->Seance->read(null,$seance_id);
+			//debug($this->data);
 			$this->set('seance_id',$seance_id);
 			$this->set('users', $this->User->generateList());
-			$this->set('selectedUsers', null);
+			if (empty($this->data['SeancesUser'])) { 
+				$this->data['SeancesUser'] = null; 
+			}
+			$this->set('selectedUsers', $this->_selectedArray($this->data['SeancesUser'],'user_id'));
 			$this->render();
-		} else {			
+		} else {	
+				
 		    foreach($this->data['User']['id']as $user_id) {
 			    $this->params['data']['SeancesUser']['seance_id'] = $this->data['Seance']['id'];
 			    $this->params['data']['SeancesUser']['user_id'] = $user_id ;
 			    
-			    if (!$this->SeancesUser->save($this->params['data']))
-				    $this->Session->setFlash('Corrigez les erreurs ci-dessous.');
+			    if ($this->SeancesUser->save($this->params['data']))
+			    {
+			    	$this->redirect('/seances/listerFuturesSeances');
+			    }else
+			    {
+			    	$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
+			    	$this->set('seance_id',$seance_id);
+					$this->set('users', $this->User->generateList());
+					$this->set('selectedUsers',null);
+			    }
+				    
 			}   	
 		}
 	}
