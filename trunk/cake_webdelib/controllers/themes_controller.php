@@ -59,6 +59,12 @@ class ThemesController extends AppController {
 			$this->redirect('/themes/index');
 		}
 	}
+	
+	function getLibelle ($id = null) {
+		$condition = "Theme.id = $id";
+        $objCourant = $this->Theme->findAll($condition);
+		return $objCourant['0']['Theme']['libelle'];
+	}
 
 }
 ?>
