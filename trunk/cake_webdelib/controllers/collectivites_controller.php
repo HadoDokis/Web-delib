@@ -20,6 +20,7 @@
 		else {
 			if(!empty($this->params['form']))
 				$this->Collectivite->save($this->data);
+				$this->redirect('/collectivites');
 		}	
  	}
  	
