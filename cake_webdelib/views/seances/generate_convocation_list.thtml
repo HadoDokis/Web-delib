@@ -10,7 +10,7 @@
         $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left"><b>'.$seanceUser['User']['prenom'].' '.$seanceUser['User']['prenom'].'</b></td></tr>');
         $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['adresse'].'</td></tr>');
         $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['CP'].' '.$seanceUser['User']['ville'].'</td>');
-        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">A Marseille, le '.$jour.' '.date('d').' '.$mois.' '.date('Y').'</td></tr></table><br>');
+        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">A '.$collectivite[0]['Collectivite']['nom'].', le '.$jour.' '.date('d').' '.$mois.' '.date('Y').'</td></tr></table><br>');
  		$pdf->WriteHTML('<p align="center"><b> Convocation au '.$type_infos[0]['Typeseance']['libelle'].'</b></p><br>');
 
         $pdf->WriteHTML('<p align="left">Madame, Monsieur,</p>');
