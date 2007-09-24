@@ -13,12 +13,17 @@
 		$this->set('collectivite', $this->Collectivite->findAll());
 	}
  	
- 	function getLogo(){
- 		
- 		$this->set('collectivite', $this->Collectivite->findAll(null, 'logo'));
- 	}
+ 	function edit($id = null) {
+		if (empty($this->data)) {
+			$this->data = $this->Collectivite->read(null, $id);
+		}
+		else {
+			if(!empty($this->params['form']))
+				$this->Collectivite->save($this->data);
+		}
  
- }
+ 	}
+}
  
  
  
