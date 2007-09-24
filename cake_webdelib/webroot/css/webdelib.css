@@ -314,6 +314,14 @@ a.link_annuler_sans_border {
 	padding-bottom: 10px;
 }
 
+a.link_inserer_logo {
+	background-image: url(../img/icons/insert_logo.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding-left: 25px;
+	padding-bottom: 10px;
+}
+
 
 .bt_save {
 	background-image: url(../img/icons/save.png);
