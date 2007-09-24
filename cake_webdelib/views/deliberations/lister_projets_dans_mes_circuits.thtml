@@ -29,9 +29,10 @@
 	<td><?php echo $deliberation['Circuit']['libelle']; ?></td>
 	<td><?php echo $deliberation['positionDelib']; ?></td>
 	<td><?php echo $deliberation['positionUser']; ?></td>
-	<td class="actions">
+	<td class="actions" width="50px"> <!-- largeur en fonction des icones -->
 		<?php echo $html->link('',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>$deliberation['act']))?>
-		<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'))?><br />
+		<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'))?>
+		</div></div>
 	</td>
 </tr>
 <?php endforeach; ?>

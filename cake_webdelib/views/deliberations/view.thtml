@@ -1,7 +1,7 @@
 <!--
 <h2>Fiche d&eacute;liberation</h2>
 -->
-<div id="deliberation">
+<div id="vue_cadre">
 <? //debug($deliberation); ?> 
 <dl>
 <!--	<dt>Id</dt>
