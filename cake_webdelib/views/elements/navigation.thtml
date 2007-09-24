@@ -26,7 +26,8 @@ $sub_menu2 = array
 (
 	'Nouvelle...' => array('link' => '/seances/add'),
 	'A venir' => array ('link' => '/seances/listerFuturesSeances'),
-	'Passées' => array('link' => '/seances/listerAnciennesSeances')
+	'Passées' => array('link' => '/seances/listerAnciennesSeances'),
+	'Calendrier' => array('link' => '/seances/afficherCalendrier')
 );
 
 // construction navigation secondaire post-seance
