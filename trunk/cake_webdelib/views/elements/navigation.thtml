@@ -47,7 +47,8 @@ $sub_menu4 = array
 	'Profils' => array('link' => '/profils/index'),
 	'Service' => array('link' => '/services/index'),
 	'Thèmes' => array('link' => '/themes/index'),
-	'Types de séance' => array('link' => '/typeseances')
+	'Types de séance' => array('link' => '/typeseances'),
+	'Collectivité' => array('link' => '/collectivites'),
 	
 );
 
