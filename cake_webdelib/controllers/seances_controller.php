@@ -4,7 +4,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Html2', 'Javascript','fpdf');
 	var $components = array('Date');
-	var $uses = array('Deliberation','Seance','User','SeancesUser');
+	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite');
 	
 	function index() {
 		$this->Seance->recursive = 0;
@@ -242,6 +242,7 @@ class SeancesController extends AppController {
 		$this->set('projets', $this->afficherProjets($id, 1));
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
 		$this->set('mois', $this->Date->months[intval(date('m'))]);
+		$this->set('collectivite',  $this->Collectivite->findAll());
 	}
 
 
