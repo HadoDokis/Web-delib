@@ -324,7 +324,7 @@ function Footer()
     //Arial italic 9
     $this->SetFont('Arial','I',9);
     //Page number
-    $this->Cell(0,10,$this->PageNo().'/{nb}',0,0,'C');
+// $this->Cell(0,10,$this->PageNo().'/{nb}',0,0,'C');
     //Return Font to normal
     $this->SetFont('Arial','',11);
 }
