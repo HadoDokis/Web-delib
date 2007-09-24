@@ -1,25 +1,31 @@
-<div class="users">
-<h2>Fiche utilisateur</h2>
+<div id="vue_cadre">
+<h3>Fiche utilisateur</h3>
 
 <dl>
-	<dt>Id</dt>
-	<dd>&nbsp;<?php echo $user['User']['id']?></dd>
-	<dt>Login</dt>
-	<dd>&nbsp;<?php echo $user['User']['login']?></dd>
-	<dt>Nom</dt>
-	<dd>&nbsp;<?php echo $user['User']['nom']?></dd>
-	<dt>Pr&eacute;nom</dt>
-	<dd>&nbsp;<?php echo $user['User']['prenom']?></dd>
-	<dt>Date cr&eacute;ation</dt>
-	<dd>&nbsp;<?php echo $user['User']['created']?></dd>
-	<dt>Date modification</dt>
-	<dd>&nbsp;<?php echo $user['User']['modified']?></dd>
+<!--	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $user['User']['id']?></dd> -->
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Nom</dt>
+		<dd>&nbsp;<?php echo $user['User']['nom']?></dd>
+		<dt>Pr&eacute;nom</dt>
+		<dd>&nbsp;<?php echo $user['User']['prenom']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Login</dt>
+		<dd>&nbsp;<?php echo $user['User']['login']?></dd>
+		<dt>Date cr&eacute;ation</dt>
+		<dd>&nbsp;<?php echo $user['User']['created']?></dd>
+		<dt>Date modification</dt>
+		<dd>&nbsp;<?php echo $user['User']['modified']?></dd>
+	</div>
+</div>
+
 </dl>
-<ul class="actions">
-	<li><?php echo $html->link('Modifier',   '/users/edit/' . $user['User']['id']) ?> </li>
-	<li><?php echo $html->link('Supprimer', '/users/delete/' . $user['User']['id'], null, 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'].' '. $user['User']['nom'].'" ?');?><li>
-	<li><?php echo $html->link('Annuler',   '/users/index') ?> </li>
-	<li><?php echo $html->link('Ajouter un utilisateur',	'/users/add') ?> </li>
+<br /><br /><br /><br /><br /><br />
+<ul id="actions_fiche">
+	<li><?php echo $html->link('',   '/users/index', array('class'=>'link_annuler_sans_border', 'title'=>'Annuler')) ?> </li>
+	<li><?php echo $html->link('',   '/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier')) ?> </li>
 </ul>
 
 </div>
@@ -42,9 +48,9 @@
 		<td><?php echo $value;?></td>
 	<?php endforeach;?>
 	<td class="actions">
-		<?php echo $html->link('Voir', '/services/view/' . $service['id']);?>
-		<?php echo $html->link('Modifier', '/services/edit/' . $service['id']);?>
-		<?php echo $html->link('Supprimer', '/services/delete/' . $service['id'], null, 'Are you sure you want to delete: id ' . $service['id'] . '?');?>
+		<?php echo $html->link('', '/services/view/' . $service['id'], array('class'=>'link_voir', 'title'=>'Voir'));?>
+		<?php echo $html->link('', '/services/edit/' . $service['id'], array('class'=>'link_modifier', 'title'=>'Modifier'));?>
+		<?php echo $html->link('', '/services/delete/' . $service['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Are you sure you want to delete: id ' . $service['id'] . '?');?>
 	</td>
 </tr>
 <?php endforeach; ?>
@@ -52,7 +58,7 @@
 <?php endif; ?>
 
 <ul class="actions">
-	<li><?php echo $html->link('Nouveau Service', '/services/add/');?> </li>
+	<li><?php echo $html->link('Nouveau Service', '/services/add/', array('class'=>'link_add', 'title'=>'ajouter un service'));?> </li>
 </ul>
 </div>
 
@@ -73,9 +79,9 @@
 		<td><?php echo $value;?></td>
 	<?php endforeach;?>
 	<td class="actions">
-		<?php echo $html->link('Voir', '/circuits/view/' . $circuit['id']);?>
-		<?php echo $html->link('Modifier', '/circuits/edit/' . $circuit['id']);?>
-		<?php echo $html->link('Supprimer', '/circuits/delete/' . $circuit['id'], null, 'Are you sure you want to delete: id ' . $circuit['id'] . '?');?>
+		<?php echo $html->link('', '/circuits/view/' . $circuit['id'], array('class'=>'link_voir', 'title'=>'Voir'));?>
+		<?php echo $html->link('', '/circuits/edit/' . $circuit['id'], array('class'=>'link_modifier', 'title'=>'Modifier'));?>
+		<?php echo $html->link('', '/circuits/delete/' . $circuit['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Are you sure you want to delete: id ' . $circuit['id'] . '?');?>
 	</td>
 </tr>
 <?php endforeach; ?>
@@ -83,7 +89,7 @@
 <?php endif; ?>
 
 <ul class="actions">
-	<li><?php echo $html->link('Nouveau circuit', '/circuits/add/');?> </li>
+	<li><?php echo $html->link('Nouveau circuit', '/circuits/add/', array('class'=>'link_add', 'title'=>'ajouter un circuit'));?> </li>
 </ul>
 </div>
 
@@ -110,9 +116,9 @@
 		<?php echo $profilEnfant['libelle'] . '<br/>';?>
 		<?php endforeach; ?></td>
 	<td class="actions">
-		<?php echo $html->link('Voir', '/profils/view/' . $user['Profil']['id']);?>
-		<?php echo $html->link('Modifier', '/profils/edit/' . $user['Profil']['id']);?>
-		<?php echo $html->link('Supprimer', '/profils/delete/' . $user['Profil']['id'], null, 'Are you sure you want to delete: id ' . $user['Profil']['id'] . '?');?>
+		<?php echo $html->link('', '/profils/view/' . $user['Profil']['id'], array('class'=>'link_voir', 'title'=>'Voir'));?>
+		<?php echo $html->link('', '/profils/edit/' . $user['Profil']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'));?>
+		<?php echo $html->link('', '/profils/delete/' . $user['Profil']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Are you sure you want to delete: id ' . $user['Profil']['id'] . '?');?>
 	</td>
 </tr>
 
@@ -120,7 +126,7 @@
 <?php endif; ?>
 
 <ul class="actions">
-	<li><?php echo $html->link('Nouveau Profil', '/profils/add/');?> </li>
+	<li><?php echo $html->link('Nouveau Profil', '/profils/add/', array('class'=>'link_add', 'title'=>'ajouter un profil'));?> </li>
 </ul>
 </div>
 

@@ -418,16 +418,16 @@ a.link_annexe {
 	
 }
 
-#vue_seance{
+#vue_cadre{
 	background-color: #EAEFCE;
 }
 
-#vue_seance h3 {
+#vue_cadre h3 {
 	text-align: center;
 	font: normal small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 }
 
-#vue_seance dt{
+#vue_cadre dt{
 	font: italic normal 15px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	margin: 5px 20px 0 20px;
 	padding: 2px 0 0 20px;
@@ -436,7 +436,7 @@ a.link_annexe {
 	text-decoration: underline;
 }
 
-#vue_seance dd{
+#vue_cadre dd{
 	padding: 5px 0 15px 30px;
 	text-indent: 3%;
 
@@ -471,16 +471,18 @@ ul.actions {
 	position:relative;
 	//float:left;
 	//width:100%;
-	padding:0 0 1.75em 0em;
+	padding:0 0 1.50em 0em;
 	margin:0 40px 50px 0;
 	list-style:none;
 	line-height:1em;
+	border-bottom: 1px solid #888888;
 }
 
 #globalnav LI {
 	float:left;
 	margin:0;
 	padding:0;
+
 
 }
 
@@ -511,6 +513,11 @@ ul.actions {
 	border-bottom: 1px solid #FFFFFF;
 }
 
+.here ul li{
+	border-left: 1px solid #888888;
+	border-right: 1px solid #888888;
+}
+
 /*subnav*/
 
 #globalnav UL {
@@ -521,11 +528,9 @@ ul.actions {
 	background:transparent;
 	width:100%;
 	margin:0;
-	padding:0 0.25em 0.25em 1em;
+	padding:10px 0.25em 0.25em 1em;
 	list-style:none;
-	border-top: 1px solid #888888;
-
-
+	
 }
 
 #globalnav UL LI {
