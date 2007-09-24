@@ -1,0 +1,19 @@
+<?
+
+    vendor('fpdf/html2fpdf');
+	$pdf = new HTML2FPDF();
+	
+    foreach($data as $seanceUser) {
+        $pdf->AddPage();
+        $pdf->WriteHTML($seanceUser['User']['prenom'].' '.$seanceUser['User']['prenom'].'<br>');
+        $pdf->WriteHTML($seanceUser['User']['adresse'].'<br>');
+        $pdf->WriteHTML($seanceUser['User']['CP'].$seanceUser['User']['ville'].'<br><br>');
+
+ 		$pdf->WriteHTML($type_infos[0]['Typeseance']['libelle'].'<br>');
+        $pdf->WriteHTML($type_infos[0]['Seance']['date'].'<br>');
+    }
+     
+	ob_end_clean();
+	$pdf->Output('doc.pdf','D');
+     
+?> 
