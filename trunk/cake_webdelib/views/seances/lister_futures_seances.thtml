@@ -14,7 +14,7 @@
 		<!-- <td><?php echo $seance['Seance']['id']; ?></td> -->
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
-		<td class="actions">
+		<td class="actions" width="80px"> <!-- largeur en fonction des icones -->
 
 		 	<?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'))?>
 			<?php echo $html->link('','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_addUsers', 'title'=>'Ajouter liste utilisateur'))?>
