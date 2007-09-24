@@ -164,11 +164,15 @@ class SeancesController extends AppController {
 		$this->set('calendrier',$calendrier);
 	}
 	
-	function afficherProjets ($id=null)
+	function afficherProjets ($id=null, $return=null)
 	{
 		$condition= "seance_id=$id ";
-		$this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
-		$this->set('projets', $this->Deliberation->findAll($condition,null,'position ASC'));
+		if (!isset($return)) {
+		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
+		    $this->set('projets', $this->Deliberation->findAll($condition,null,'position ASC'));
+		}
+		else 
+		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
 	}
 
 	
@@ -219,7 +223,8 @@ class SeancesController extends AppController {
 	
 	function generateConvocationList ($id=null) {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
-		$this->set('type_infos', $this->getType("$id"));
+		$this->set('type_infos', $this->getType($id));
+		$this->set('projets', $this->afficherProjets($id, 1));
 	}
 
 }
