@@ -76,11 +76,9 @@ class SeancesController extends AppController {
 	
 	function listerFuturesSeances()
 	{
-		if (empty ($this->data))
-		{
+		if (empty ($this->data)) {
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('seances', $this->Seance->findAll(($condition),null,'date asc'));	
-
 		}
 	}
 	
@@ -242,6 +240,8 @@ class SeancesController extends AppController {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
 		$this->set('type_infos', $this->getType($id));
 		$this->set('projets', $this->afficherProjets($id, 1));
+		$this->set('jour', $this->Date->days[intval(date('w'))]);
+		$this->set('mois', $this->Date->months[intval(date('m'))]);
 	}
 
 
