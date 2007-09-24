@@ -22,7 +22,7 @@
 	</div>
 	<div class="droite">
 		<dt>Service</dt>
-		<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Circuit']['id'])?></dd>  
+		<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Service']['id'])?></dd>  
 	</div>
 </div>
 
@@ -36,7 +36,7 @@
 	</div>
 	<div class="droite">
 		<dt>Circuit</dt>
-		<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Service']['id'])?></dd>
+		<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Circuit']['id'])?></dd>
 	</div>
 </div>
 
