@@ -1,0 +1,13 @@
+<h2>Modification de la collectivit&eacute;</h2>
+<form action="<?php echo $html->url('/collectivites/edit/'.$html->tagValue('Collectivite/id'));?>" enctype="multipart/form-data" method="post">
+<?php echo $html->hidden('Collectivite/id'); ?>
+<div class="optional"> 
+	<?php echo $form->labelTag('Collectivite/nom', 'Nom de la collectivité');?>
+ 	<?php echo $html->input('Collectivite/nom');?>
+	<?php echo $html->tagErrorMsg('Collectivite/nom', 'Entrer le nom de la collectivité');?>
+</div>
+
+<div class="submit">
+	<?php echo $html->submit('Enregistrer la collectivité', array('class'=>'bt_add', 'name'=>'modifier'));?>
+</div>
+</form>
