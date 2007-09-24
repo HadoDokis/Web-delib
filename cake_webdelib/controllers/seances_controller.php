@@ -192,7 +192,6 @@ class SeancesController extends AppController {
 	function addListUsers($seance_id=null) {
 		if (empty($this->data)) {
 			$this->data=$this->Seance->read(null,$seance_id);
-			//debug($this->data);
 			$this->set('seance_id',$seance_id);
 			$this->set('users', $this->User->generateList());
 			if (empty($this->data['SeancesUser'])) { 
@@ -201,8 +200,18 @@ class SeancesController extends AppController {
 			$this->set('selectedUsers', $this->_selectedArray($this->data['SeancesUser'],'user_id'));
 			$this->render();
 		} else {	
-				
-		    foreach($this->data['User']['id']as $user_id) {
+			
+/*			$seance_id = $this->data['Seance']['id'];
+			$seancesUser = $this->SeancesUser->find("seance_id=$seance_id");
+			foreach ($seancesUser as $seanceUser){
+				$this->EffacerListe($seanceUser['id']);
+			}*/
+		
+		
+			$this->EffacerListe($this->data['Seance']['id']);
+			
+			foreach($this->data['User']['id']as $user_id) {
+				$this->params['data']['SeancesUser']['id']='';
 			    $this->params['data']['SeancesUser']['seance_id'] = $this->data['Seance']['id'];
 			    $this->params['data']['SeancesUser']['user_id'] = $user_id ;
 			    
@@ -221,11 +230,20 @@ class SeancesController extends AppController {
 		}
 	}
 	
+	function effacerListe($seance_id=null) {
+		$condition = "seance_id = $seance_id";
+		$presents = $this->SeancesUser->findAll($condition);
+		foreach($presents as $present)
+  		    $this->SeancesUser->del($present['SeancesUser']['id']);
+	}
+
+	
 	function generateConvocationList ($id=null) {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
 		$this->set('type_infos', $this->getType($id));
 		$this->set('projets', $this->afficherProjets($id, 1));
 	}
+
 
 }
 ?>
