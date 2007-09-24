@@ -2,7 +2,7 @@
 class SeancesController extends AppController {
 
 	var $name = 'Seances';
-	var $helpers = array('Html', 'Form', 'Html2' );
+	var $helpers = array('Html', 'Form', 'Html2', 'Javascript','fpdf');
 	var $components = array('Date');
 	var $uses = array('Deliberation','Seance','User','SeancesUser');
 	
@@ -179,6 +179,11 @@ class SeancesController extends AppController {
 		return $objCourant['0']['Seance']['date'];
     }
 
+	function getType($id)
+    {
+		$condition = "Seance.id = $id";
+        return $this->Seance->findAll($condition);
+    }
 	
 	function addListUsers($seance_id=null) {
 		if (empty($this->data)) {
@@ -210,6 +215,11 @@ class SeancesController extends AppController {
 				    
 			}   	
 		}
+	}
+	
+	function generateConvocationList ($id=null) {
+		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
+		$this->set('type_infos', $this->getType("$id"));
 	}
 
 }
