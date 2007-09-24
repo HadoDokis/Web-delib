@@ -18,7 +18,7 @@
 
 		 	<?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'))?>
 			<?php echo $html->link('','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_addUsers', 'title'=>'Ajouter liste utilisateur'))?>
-			<?php echo $html->link('','/seances/generateConvocationList/' . $seance['Seance']['id'], array('class'=>'link_addUsers', 'title'=>'Générer la liste des convocations'))?>
+			<?php echo $html->link('','/seances/generateConvocationList/' . $seance['Seance']['id'], array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'))?>
 
 		</td>
 	</tr>
