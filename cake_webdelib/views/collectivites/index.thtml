@@ -1,0 +1,21 @@
+<div class="seances">
+<h2>Information de votre collectivité</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Nom</th>
+	<th>Logo</th>
+</tr>
+<tr>
+	<td><?php echo $collectivite['0']['Collectivite']['nom']; ?></td>
+	<td><?php 
+		 header("Content-Type: image/jpeg");
+	     echo $collectivite['0']['Collectivite']['logo']; ?>
+	 </td>
+</tr>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('Ajouter une seance', '/seances/add', array('class'=>'link_add', 'title'=>'Ajouter une SÃ©ance')); ?></li>
+</ul>
+</div>
