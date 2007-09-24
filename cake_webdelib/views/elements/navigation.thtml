@@ -32,7 +32,7 @@ $sub_menu2 = array
 // construction navigation secondaire post-seance
 $sub_menu3 = array
 (
-	'Editions' => array('link' => '/seances/add'),
+	'Editions' => array('link' => '/pages/postseance'),
 	//'Publications' => array('link' => '/seances/listerAnciennesSeances'),
 	'Contrôle de légalité' => array('link' => '/deliberations/transmit'),
 	'Export GED' => array('link' => '/pages/exportged')
