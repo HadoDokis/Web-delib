@@ -8,8 +8,14 @@ class SeancesController extends AppController {
 	
 	function index() {
 		$this->Seance->recursive = 0;
-		$this->set('seances', $this->Seance->findAll());
+		$seances = $this->Seance->findAll(null,null,'date asc'); 
+		
+		for ($i=0; $i<count($seances); $i++)
+		    $seances[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($seances[$i]['Seance']['date']));
+			     
+		$this->set('seances', $seances);	
 	}
+	
 
 	function view($id = null) {
 		if (!$id) {
@@ -26,6 +32,10 @@ class SeancesController extends AppController {
 			$this->render();
 		} else {
 			$this->cleanUpFields('Seance');
+		
+			$this->data['Seance']['date']=  $this->Utils->FrDateToUkDate($this->params['form']['date']);
+			$this->data['Seance']['date'] = $this->data['Seance']['date'].' '.$this->data['Seance']['date_hour'].':'.$this->data['Seance']['date_min'];
+
 			if ($this->Seance->save($this->data)) {
 				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/seances/index');
@@ -239,7 +249,6 @@ class SeancesController extends AppController {
 		foreach($presents as $present)
   		    $this->SeancesUser->del($present['SeancesUser']['id']);
 	}
-
 	
 	function generateConvocationList ($id=null) {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
@@ -252,7 +261,5 @@ class SeancesController extends AppController {
 		$this->set('collectivite',  $this->Collectivite->findAll());
 		$this->set('date_seance',  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date'])));
 	}
-
-
 }
 ?>
