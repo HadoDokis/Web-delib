@@ -1,6 +1,7 @@
 <h2>Liste des projets</h2>
 <table>
 	<tr>
+		<th>Position</th>
 		<th>Theme</th>
 		<th>Rapporteur</th>
 		<th>Date Seance</th>
@@ -14,6 +15,7 @@
 	</tr>
 	<? foreach($projets as $projet): ?>
     	<tr>
+    	    <td><?php echo $projet['Deliberation']['position']; ?></td>
 		    <td><?php echo $projet['Theme']['libelle']; ?></td>
 		    <td><?php echo $projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom']; ?></td>
 		    <td><?php echo $projet['Seance']['date']; ?></td>
