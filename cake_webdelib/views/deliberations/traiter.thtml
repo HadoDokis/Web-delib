@@ -121,8 +121,8 @@
 <ul class="actions">
 	<li><?php //echo $html->link('Edit Deliberation',   '/deliberations/edit/' . $deliberation['Deliberation']['id']) ?> </li>
 	<li><?php echo $html->link('Annuler',   '/deliberations/listerProjetsATraiter') ?> </li>
-	<li><?php echo $html->link('Valider Deliberation',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/1') ?> </li>
-	<li><?php echo $html->link('Refuser Deliberation',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/0') ?> </li>
+	<li><?php echo $html->link('Valider',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/1') ?> </li>
+	<li><?php echo $html->link('Refuser',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/0') ?> </li>
 
 </ul>
 
