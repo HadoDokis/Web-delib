@@ -3,7 +3,7 @@
 -->
 <div id="deliberation">
 <?php //debug($deliberation);?>
-
+<?php $deliberation= $deliberation['0'];?>
 <dl>
 
 	<h3>D&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['num_delib']?></h3>
@@ -115,7 +115,23 @@
 		<?php endforeach;?>	
 		<?php echo $html->link('Ajouter ', '/commentaires/add/'.$deliberation['Deliberation']['id']);?>
 		
-		</dd>
+	</dd>
+	
+	
+	<dt>Position</dt>
+	<dd><?php //debug($user_circuit);?>
+	<?php foreach ($user_circuit as $user) {
+		if ($deliberation['positionDelib'] == $user['UsersCircuit']['position']){
+			echo $html->image('/icons/edit.png');
+		}else{
+			echo $html->image('/icons/editcreate.png');	
+		}
+
+			echo $user['User']['prenom']. ' ' .$user['User']['nom']. ' (' .$user['Service']['libelle'].') ';
+	}
+	?>
+		
+
 </dl>
 <br>
 <ul class="actions">
