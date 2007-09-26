@@ -2,7 +2,7 @@
 class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
-	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf' );
+	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire');
 	
 	function index() {
@@ -131,9 +131,21 @@ class DeliberationsController extends AppController {
 				if ($lastTraitement['position']==$position_user){
 					$deliberation['action']="traiter";
 					$deliberation['act']="traiter";
+					$deliberation['etat']="A traiter";
+					$deliberation['image']='/icons/a_traiter.gif';
 				}else{
 					$deliberation['action']="view";
 					$deliberation['act']="voir";
+					
+					if ($deliberation['positionUser'] < $deliberation['positionDelib'])
+					{
+						$deliberation['image']='/icons/traiter.gif';
+						$deliberation['etat']="Trait&eacute";
+					}elseif ($deliberation['positionUser'] > $deliberation['positionDelib'])
+					{
+						$deliberation['image']='/icons/en_attente.gif';
+						$deliberation['etat']="En attente";
+					}
 				}
 				//debug($deliberation);
 				
@@ -232,7 +244,21 @@ class DeliberationsController extends AppController {
 		$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
 	//	debug($tab_anterieure);
 		$this->set('tab_anterieure',$tab_anterieure); 
-		$this->set('deliberation', $this->Deliberation->read(null, $id));
+		//$this->set('deliberation', $this->Deliberation->read(null, $id));
+		
+		$deliberation= $this->Deliberation->read(null, $id);
+		$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
+		$delib=array();
+		//on recupere la position courante de la deliberation
+		$lastTraitement=array_pop($deliberation['Traitement']);
+		$deliberation['positionDelib']=$lastTraitement['position'];
+		//on recupere la position de l'user dans le circuit
+		array_push($delib, $deliberation);
+		$this->set('deliberation', $delib);
+		$this->set('user_circuit', $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC'));
+				
+		
+		
 	}
 	
 	function getFileData($fileName, $fileSize)
@@ -691,8 +717,21 @@ class DeliberationsController extends AppController {
 				$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
 				$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
 				$this->set('tab_anterieure',$tab_anterieure); 
-				$this->set('deliberation', $this->Deliberation->read(null, $id));
-	
+				//$this->set('deliberation', $this->Deliberation->read(null, $id));
+				
+
+				$deliberation= $this->Deliberation->read(null, $id);
+				$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
+				$delib=array();
+					//on recupere la position courante de la deliberation
+					$lastTraitement=array_pop($deliberation['Traitement']);
+					$deliberation['positionDelib']=$lastTraitement['position'];
+					//on recupere la position de l'user dans le circuit
+		
+				array_push($delib, $deliberation);
+				$this->set('deliberation', $delib);
+				$this->set('user_circuit', $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit",null,'UsersCircuit.position ASC'));
+				
 			}
 			else
 			{
