@@ -78,7 +78,12 @@ class SeancesController extends AppController {
 	{
 		if (empty ($this->data)) {
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-			$this->set('seances', $this->Seance->findAll(($condition),null,'date asc'));	
+			$seances = $this->Seance->findAll(($condition),null,'date asc'); 
+		
+			for ($i=0; $i<count($seances); $i++)
+			    $seances[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($seances[$i]['Seance']['date']));
+			     
+			$this->set('seances', $seances);	
 		}
 	}
 	
