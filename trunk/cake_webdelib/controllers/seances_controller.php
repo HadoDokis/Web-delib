@@ -191,7 +191,7 @@ class SeancesController extends AppController {
 		if (empty($this->data)) {
 			$this->data=$this->Seance->read(null,$seance_id);
 			$this->set('seance_id',$seance_id);
-			$this->set('users', $this->User->generateList());
+			$this->set('users', $this->User->generateList('statut=1'));
 			if (empty($this->data['SeancesUser'])) { 
 				$this->data['SeancesUser'] = null; 
 			}
@@ -238,11 +238,14 @@ class SeancesController extends AppController {
 	
 	function generateConvocationList ($id=null) {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
-		$this->set('type_infos', $this->getType($id));
+		$type_infos = $this->getType($id);
+
+		$this->set('type_infos', $type_infos );
 		$this->set('projets', $this->afficherProjets($id, 1));
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
 		$this->set('mois', $this->Date->months[intval(date('m'))]);
 		$this->set('collectivite',  $this->Collectivite->findAll());
+		$this->set('date_seance',  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date'])));
 	}
 
 
