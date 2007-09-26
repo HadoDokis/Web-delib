@@ -1,12 +1,13 @@
+<?php echo $javascript->link('calendrier.js'); ?>
 <h2>Nouvelle s&eacute;ance</h2>
-<form action="<?php echo $html->url('/seances/add'); ?>" method="post">
-
-
-<?php echo $form->labelTag('Seance/date', 'Date');?>
-<?php echo $html->dayOptionTag('Seance/date',null,null,false); ?>-<?php echo $html2->monthOptionTagFr('Seance/date',null,null,false); ?>-<?php echo $html->yearOptionTag('Seance/date',null,date("Y"),date('Y')+10); ?> &agrave; <?php echo $html->hourOptionTag('Seance/date',null,true,null); ?>h<?php echo $html->minuteOptionTag('Seance/date',null,null,false); ?>min 
-
-<br/>
-<br/>
+<?php echo $html->formTag('/seances/add/', null,array('name'=>'Session')); ?>
+<div class="required"> 
+    <label>Date : </label>
+    <input name="date" size="9" />&nbsp;
+	<a href="javascript:show_calendar('Session.date','f');">	<?php echo $html->image("calendar.png", "border='0'"); ?></a> &agrave; 
+	<?php echo $html->hourOptionTag('Seance/date',null,true,null); ?>h<?php echo $html->minuteOptionTag('Seance/date',null,null,false); ?>min
+</div>	
+<br />
 <div class="required"> 
 	<?php echo $form->labelTag('Seance/type_id', 'Type de s&eacute;ance');?>
  	<?php echo $html->selectTag('Seance/type_id', $typeseances, $html->tagValue('Seance/type_id'), array(), array(), true);?>
