@@ -1,7 +1,7 @@
 <div class="deliberations">
 <h2>Mes Deliberations en cours de r&eacute;daction</h2>
 
-<table cellpadding="0" cellspacing="0">
+<!-- <table cellpadding="0" cellspacing="0">
 <tr>
 	<th>Theme</th>
 	<th>Rapporteur</th>
@@ -24,7 +24,7 @@
 	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
 	<td><?php echo $deliberation['Service']['libelle']; ?></td>
 	<td><?php echo $deliberation['Circuit']['libelle']; ?></td>
-	<td class="actions" width="180px"> <!-- largeur en fonction des icones -->
+	<td class="actions" width="180px"> --><!-- largeur en fonction des icones --><!--  
 		<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
 		<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
 		<?php echo $html->link('','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?')?>
@@ -37,6 +37,62 @@
 </tr>
 <?php endforeach; ?>
 </table>
+-->
+
+<table cellspacing="0" cellpadding="0">
+	<tr>	
+		<th Width='5%' >Urgence</th>
+		<th Width='20%' >Etat de l'envoi</th>
+		<th Width='20%' >D&eacute;tenteur du dossier</th>
+		<th  >Objet</th>
+		<th Width='15%'>Action</th>
+			
+	</tr>
+	<tr>
+		<td colspan='5' class='Border' height='1' >
+		</td>
+	</tr>
+<!-- ------------------------------------------------- -->
+<?php foreach ($deliberations as $deliberation){ ?>
+<?php //debug($deliberations);?>
+
+	<tr>
+		<td rowspan=3 align='center'><?php echo $html->image('/icons/a_traiter.gif');?></td>
+		<td align='center'>En cours de redaction</td>
+		<td align='left'>CCL01</td>
+		<td align='left'><?php echo $html2->ukToFrenchDateWithHour($deliberation['Seance']['date']); ?></td>
+		<td rowspan=3 class="actions" width="50px"> <!-- largeur en fonction des icones -->
+			<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
+			<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
+			<?php echo $html->link('','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?')?><br/><br/>
+			<?php echo $html->link('','/deliberations/textprojet/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'))?>
+			<?php echo $html->link('','/deliberations/textsynthese/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'))?>
+			<?php echo $html->link('','/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'], array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'))?>
+			<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'))?>
+		
+		</td>		
+	</tr>
+	<tr>
+		<td>N&deg; pr&eacute;fecture :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
+		<td class='corps' rowspan=1 align='left'><?php echo $deliberation['Theme']['libelle']; ?></td>
+		<td class='corps' rowspan=2 align='left'><?php echo $deliberation['Deliberation']['titre']; ?></td>
+
+	</tr>
+	<tr>
+		<td>N&deg; d&eacute;lib&eacute;ration : <?php echo $deliberation['Deliberation']['num_delib']; ?></td>
+		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td> 
+	</tr>
+	<tr>
+		<td colspan='5' class='Border' height='1' >
+		</td>
+	</tr>
+<!-- ------------------------------------------------- -->
+<?php } ?>
+</table>
+
+
+
+
 
 <ul class="actions">
 	<li><?php echo $html->link('Ajouter une deliberation', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un deliberation')); ?></li>
