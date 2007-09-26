@@ -220,7 +220,10 @@ class Html2Helper extends HtmlHelper
 		return date("d-m-Y",strtotime($date));	
 	}
 	
-
+	function ukToFrenchDateWithHour($date)
+	{
+		return date("d-m-Y \a H:i",strtotime($date));	
+	}
 
 
 	
