@@ -4,7 +4,7 @@
 	
     foreach($data as $seanceUser) {
         $pdf->AddPage();   
-        $pdf->WriteHTML('<img src="http://localhost/cake/files/image/logo.jpg">');
+        $pdf->WriteHTML('<img src="files/image/logo.jpg">');
         $pdf->WriteHTML('<table width="95%" border="0">');
         $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left"><b>'.$seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'].'</b></td></tr>');
         $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['adresse'].'</td></tr>');
