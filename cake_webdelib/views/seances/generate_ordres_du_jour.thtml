@@ -1,0 +1,24 @@
+<?
+    vendor('fpdf/html2fpdf');
+	$pdf = new HTML2FPDF();
+	
+    foreach($data as $seanceUser) {
+        $pdf->AddPage();   
+        $pdf->WriteHTML('<img src="http://localhost/cake/files/image/logo.jpg">');
+        $pdf->WriteHTML('<table width="95%" border="0">');
+        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left"><b>'.$seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'].'</b></td></tr>');
+        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['adresse'].'</td></tr>');
+        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['CP'].' '.$seanceUser['User']['ville'].'</td>');
+        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">A '.$collectivite[0]['Collectivite']['nom'].', le '.$jour.' '.date('d').' '.$mois.' '.date('Y').'</td></tr></table><br>');
+      	$pdf->WriteHTML('<p align="center"><b> Ordres du jour du '.$type_infos[0]['Typeseance']['libelle'].'</b> du <b>'.$date_seance.'</b></p>');
+
+        foreach($projets as $projet) {
+         	$pdf->WriteHTML('<b><u>Thème </u>: </b><br>'.$projet['Theme']['libelle'].'<br>');
+            $pdf->WriteHTML('<b><u>Titre </u>: </b><br>'.$projet['Deliberation']['titre'].'<br>');
+            $pdf->WriteHTML('<b><u>Synthèse</u> :</b>'.$projet['Deliberation']['texte_synthese'].'<br><br>');
+        } 	
+    }
+    ob_end_clean();
+	$pdf->Output('odj.pdf','D');
+     
+?> 
