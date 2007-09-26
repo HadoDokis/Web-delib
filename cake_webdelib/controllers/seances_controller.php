@@ -261,5 +261,17 @@ class SeancesController extends AppController {
 		$this->set('collectivite',  $this->Collectivite->findAll());
 		$this->set('date_seance',  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date'])));
 	}
+	
+	function generateOrdresDuJour ($id=null) {
+		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
+		$type_infos = $this->getType($id);
+
+		$this->set('type_infos', $type_infos );
+		$this->set('projets', $this->afficherProjets($id, 1));
+		$this->set('jour', $this->Date->days[intval(date('w'))]);
+		$this->set('mois', $this->Date->months[intval(date('m'))]);
+		$this->set('collectivite',  $this->Collectivite->findAll());
+		$this->set('date_seance',  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date'])));
+	}
 }
 ?>
