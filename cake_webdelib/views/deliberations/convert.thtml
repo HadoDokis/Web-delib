@@ -14,7 +14,7 @@
     $pdf = new HTML2FPDF();
     
  	$pdf->AddPage();
- 	$pdf->WriteHTML('<img src="http://localhost/cake/files/image/logo.jpg">');
+ 	$pdf->WriteHTML('<img src="files/image/logo.jpg">');
 	$pdf->WriteHTML($tableau);
     $pdf->AddPage();
 	$pdf->WriteHTML($text_projet);
