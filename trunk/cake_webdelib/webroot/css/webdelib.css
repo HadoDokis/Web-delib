@@ -3,7 +3,9 @@ legend {
 	font-style: italic;
 	font-weight: bold;
 }
-
+.Border {
+	background-color:#e0ef90;
+	}
 label {
 	float: left;
 	padding: 0 .5em 0 0;
@@ -324,7 +326,7 @@ a.link_inserer_logo {
 
 
 .bt_save {
-	background-image: url(../img/icons/save.png);
+	background-image: url(../img/icons/filesave.png);
 	background-repeat: no-repeat;
 	border: none;
 	width: 22px;
