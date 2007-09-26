@@ -209,6 +209,27 @@ a.link_pdf {
 	padding: 0 0 10px 22px;
 }
 
+a.link_ordre_jour {
+	background-image: url(../img/icons/ordre_jour.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_lister_presents {
+	background-image: url(../img/icons/present.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_voter {
+	background-image: url(../img/icons/vote.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
 a.link_voir {
 	background-image: url(../img/icons/find.png);
 	background-repeat: no-repeat;
@@ -317,7 +338,7 @@ a.link_annuler_sans_border {
 }
 
 a.link_inserer_logo {
-	background-image: url(../img/icons/insert_logo.png);
+	background-image: url(../img/icons/insertl_logo.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding-left: 25px;
