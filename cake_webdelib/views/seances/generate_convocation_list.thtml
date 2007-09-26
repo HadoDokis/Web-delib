@@ -7,7 +7,7 @@
         $pdf->WriteHTML('<img src="http://localhost/cake/files/image/logo.jpg">');
         
         $pdf->WriteHTML('<table width="95%" border="0">');
-        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left"><b>'.$seanceUser['User']['prenom'].' '.$seanceUser['User']['prenom'].'</b></td></tr>');
+        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left"><b>'.$seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'].'</b></td></tr>');
         $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['adresse'].'</td></tr>');
         $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['CP'].' '.$seanceUser['User']['ville'].'</td>');
         $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">A '.$collectivite[0]['Collectivite']['nom'].', le '.$jour.' '.date('d').' '.$mois.' '.date('Y').'</td></tr></table><br>');
@@ -15,7 +15,7 @@
 
         $pdf->WriteHTML('<p align="left">Madame, Monsieur,</p>');
         $pdf->WriteHTML('<p><b>J\'ai l\'honneur de vous inviter au '.$type_infos[0]['Typeseance']['libelle'].' qui aura lieu le ');
- 		$pdf->WriteHTML($type_infos[0]['Seance']['date'].' dans la salle de la mairie.</b></p>');
+ 		$pdf->WriteHTML($date_seance.' dans la salle de la mairie.</b></p>');
  		$pdf->WriteHTML('<p>Je vous prie de coire, Madame, Monsieur, en l\'assurance de ma considération distinguée</p><br><br><br>');
        
         $pdf->WriteHTML('<b>ORDRE DU JOUR : </b><br><br>');
