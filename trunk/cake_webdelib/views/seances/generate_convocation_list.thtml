@@ -26,6 +26,6 @@
     }
      
 	ob_end_clean();
-	$pdf->Output('doc.pdf','D');
+	$pdf->Output('convocations.pdf','D');
      
 ?> 
