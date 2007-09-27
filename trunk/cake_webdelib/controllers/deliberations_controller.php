@@ -124,9 +124,10 @@ class DeliberationsController extends AppController {
 			foreach ($deliberations as $deliberation)
 			{
 			
-				if (isset($deliberation['Deliberation']['date_limite']))
-				    $deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
-				
+				if (isset($deliberation['Deliberation']['date_limite'])){
+				    $dateLimite=$deliberation['Deliberation']['date_limite'];
+					$deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
+				}
 				//on recupere la position courante de la deliberation
 				$lastTraitement=array_pop($deliberation['Traitement']);
 				$deliberation['positionDelib']=$lastTraitement['position'];
@@ -145,7 +146,12 @@ class DeliberationsController extends AppController {
 					$deliberation['action']="traiter";
 					$deliberation['act']="traiter";
 					$deliberation['etat']="A traiter";
-					$deliberation['image']='/icons/a_traiter.gif';
+					if (isset($deliberation['Deliberation']['date_limite']) && (date('Y-m-d') >= $dateLimite)){
+						$deliberation['image']="icons/forward.png";	
+					}else{
+						$deliberation['image']='icons/a_traiter.gif';
+					}
+
 				}else{
 					$deliberation['action']="view";
 					$deliberation['act']="voir";
@@ -211,6 +217,11 @@ class DeliberationsController extends AppController {
 
 			foreach ($deliberations as $deliberation)
 			{
+				
+				if (isset($deliberation['Deliberation']['date_limite'])){
+				    $dateLimite=$deliberation['Deliberation']['date_limite'];
+					$deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
+				}
 				//on recupere la position courante de la deliberation
 				$lastTraitement=array_pop($deliberation['Traitement']);
 				
@@ -226,15 +237,12 @@ class DeliberationsController extends AppController {
 				if ($lastTraitement['position'] == $position_user){
 					$deliberation['action'] = "traiter";
 					$deliberation['act'] = "traiter";
+				if (isset($deliberation['Deliberation']['date_limite']) && (date('Y-m-d') >= $dateLimite)){
+					$deliberation['image']="icons/forward.png";	
+				}else{
+					$deliberation['image']='icons/a_traiter.gif';
+				}
 					
-				$type_id = $deliberation['Seance']['type_id'];
-				$nb_retard = $this->Typeseance->read('retard',$type_id);
-				$deliberation['retard'] = $nb_retard['Typeseance']['retard'];
-				//$new_date = ($deliberation['Seance']['date'] - $retard);
-				//debug($deliberation['Seance']['date']);
-				//debug($new_date);
-	
-				//exit;
 
 				array_push($delib, $deliberation);
 
