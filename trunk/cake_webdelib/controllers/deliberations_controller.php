@@ -3,7 +3,7 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire','Typeseance');
 	var $components = array('Date');
 	
 	function index() {
@@ -22,7 +22,12 @@ class DeliberationsController extends AppController {
 		$user_id=$user['User']['id'];
 		$conditions="etat = 0 AND redacteur_id = $user_id";
 		//debug($user);
-		$this->set('deliberations', $this->Deliberation->findAll($conditions));
+		$deliberations=$this->Deliberation->findAll($conditions);
+		
+		for ($i=0; $i<count($deliberations); $i++)
+		    $deliberations[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($deliberations[$i]['Seance']['date']));
+		
+		$this->set('deliberations', $deliberations);	 
 	}
 	
 	function listerProjetsAttribues()
@@ -105,8 +110,17 @@ class DeliberationsController extends AppController {
 			}
 			if ($cpt>=0)
 				$conditions=$conditions." )";
-		 	$deliberations = $this->Deliberation->findAll($conditions);
-		
+
+			//$conditions=$conditions." )";
+			//debug($conditions);
+			$deliberations = $this->Deliberation->findAll($conditions);
+			
+			for ($i=0; $i<count($deliberations); $i++)
+		    	$deliberations[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($deliberations[$i]['Seance']['date']));
+			 
+			//debug($deliberations);
+			//debug($data_circuit);
+
 			foreach ($deliberations as $deliberation)
 			{
 			
@@ -189,6 +203,10 @@ class DeliberationsController extends AppController {
 				$conditions=$conditions." )";
 
 			$deliberations = $this->Deliberation->findAll($conditions);
+			
+			for ($i=0; $i<count($deliberations); $i++)
+		    	$deliberations[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($deliberations[$i]['Seance']['date']));
+			 
 			//debug($deliberations);
 
 			foreach ($deliberations as $deliberation)
@@ -205,14 +223,27 @@ class DeliberationsController extends AppController {
 					}
 				}
 			
-				if ($lastTraitement['position']==$position_user){
-					$deliberation['action']="traiter";
-					$deliberation['act']="traiter";
-					array_push($delib, $deliberation);
+				if ($lastTraitement['position'] == $position_user){
+					$deliberation['action'] = "traiter";
+					$deliberation['act'] = "traiter";
+					
+				$type_id = $deliberation['Seance']['type_id'];
+				$nb_retard = $this->Typeseance->read('retard',$type_id);
+				$deliberation['retard'] = $nb_retard['Typeseance']['retard'];
+				//$new_date = ($deliberation['Seance']['date'] - $retard);
+				//debug($deliberation['Seance']['date']);
+				//debug($new_date);
+	
+				//exit;
+
+				array_push($delib, $deliberation);
 
 				}
 			}
 		}
+		
+
+
 		$this->set('deliberations', $delib);
 		$this->render('listerProjetsATraiter');
 		//debug($delib);
