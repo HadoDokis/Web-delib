@@ -80,7 +80,7 @@
 		<td>N&deg; d&eacute;lib&eacute;ration : <?php echo $deliberation['Deliberation']['num_delib']; ?></td>
 	</tr>
 	<tr>
-		<td colspan="2" align="center">A traiter avant le :</td>
+		<td colspan="2" align="center">A traiter avant le : <?php echo $deliberation['Deliberation']['date_limite']; ?></td>
 		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td> 
 	</tr>
 	<tr>
