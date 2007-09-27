@@ -14,12 +14,17 @@ class DateComponent extends Object {
 	var $months = array ('','Janvier','Février','Mars','Avril','Mai','Juin',
 						'Juillet','Août','Septembre','Octobre','Novembre','Décembre');
 						
-	function frenchDate($timestamp)
+	function frenchDateConvocation($timestamp)
 	{
 		return $this->days[date('w',$timestamp)].' '.date('d',$timestamp)
 				.' '.$this->months[date('n',$timestamp)].' '.date('Y',$timestamp).' à '.date('H',$timestamp).':'.date('i',$timestamp);
 	}					
 
+	function frenchDate($timestamp)
+	{
+		return $this->days[date('w',$timestamp)].' '.date('d',$timestamp)
+				.' '.$this->months[date('n',$timestamp)].' '.date('Y',$timestamp);
+	}	
 		
 }
 
