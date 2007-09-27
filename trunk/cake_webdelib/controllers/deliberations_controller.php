@@ -4,6 +4,7 @@ class DeliberationsController extends AppController {
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire');
+	var $components = array('Date');
 	
 	function index() {
 		$user=$this->Session->read('user');
@@ -88,15 +89,12 @@ class DeliberationsController extends AppController {
 		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "position ASC");
 		$conditions="etat=1 ";
 		$delib=array();
-		//$position_user=0;
 		$cpt=0;
-		//debug($data_circuit);
+
 		if ($data_circuit!=null)
 		{
 			foreach ($data_circuit as $data)
 			{
-				
-				
 				if ($cpt>0)
 					$conditions=$conditions." OR ";
 				else
@@ -107,13 +105,14 @@ class DeliberationsController extends AppController {
 			}
 			if ($cpt>=0)
 				$conditions=$conditions." )";
-			//$conditions=$conditions." )";
-			//debug($conditions);
-			$deliberations = $this->Deliberation->findAll($conditions);
-			//debug($deliberations);
-			//debug($data_circuit);
+		 	$deliberations = $this->Deliberation->findAll($conditions);
+		
 			foreach ($deliberations as $deliberation)
 			{
+			
+				if (isset($deliberation['Deliberation']['date_limite']))
+				    $deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
+				
 				//on recupere la position courante de la deliberation
 				$lastTraitement=array_pop($deliberation['Traitement']);
 				$deliberation['positionDelib']=$lastTraitement['position'];
@@ -147,14 +146,10 @@ class DeliberationsController extends AppController {
 						$deliberation['etat']="En attente";
 					}
 				}
-				//debug($deliberation);
-				
 				array_push($delib, $deliberation);
-				
 			}
 		}
 		$this->set('deliberations', $delib);
-		//debug($delib);
 	}
 
 	function listerProjetsATraiter()
@@ -268,7 +263,7 @@ class DeliberationsController extends AppController {
 		
 	function add() 
 	{
-	$user=$this->Session->read('user');
+		$user=$this->Session->read('user');
 		if (empty($this->data)) {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
@@ -279,11 +274,12 @@ class DeliberationsController extends AppController {
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$this->render();
 		} else {
-			//$this->data['Deliberation']['seance_id']= $this->Utils->FrDateToUkDate($this->params['form']['seance_id']);
-			
+		
+			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
+			unset($this->params['form']['date_limite']);
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
-		
+			
 			$this->cleanUpFields();
 			
 			
