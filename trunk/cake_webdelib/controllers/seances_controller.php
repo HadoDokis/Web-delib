@@ -179,7 +179,7 @@ class SeancesController extends AppController {
 	
 	function afficherProjets ($id=null, $return=null)
 	{
-		$condition= "seance_id=$id ";
+		$condition= "seance_id=$id AND etat!=-1";
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
 		    $this->set('projets', $this->Deliberation->findAll($condition,null,'position ASC'));
