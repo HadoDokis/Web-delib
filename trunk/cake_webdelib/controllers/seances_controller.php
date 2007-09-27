@@ -4,7 +4,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Html2', 'Javascript','fpdf');
 	var $components = array('Date');
-	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite');
+	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence');
 	
 	function index() {
 		$this->Seance->recursive = 0;
@@ -259,13 +259,13 @@ class SeancesController extends AppController {
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
 		$this->set('mois', $this->Date->months[intval(date('m'))]);
 		$this->set('collectivite',  $this->Collectivite->findAll());
-		$this->set('date_seance',  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date'])));
+		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($type_infos[0]['Seance']['date'])));
 	}
 	
 	function generateOrdresDuJour ($id=null) {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
 		$type_infos = $this->getType($id);
-
+		
 		$this->set('type_infos', $type_infos );
 		$this->set('projets', $this->afficherProjets($id, 1));
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
@@ -273,5 +273,59 @@ class SeancesController extends AppController {
 		$this->set('collectivite',  $this->Collectivite->findAll());
 		$this->set('date_seance',  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date'])));
 	}
+	
+	function listerPresents($seance_id=null) {
+		if (empty($this->data)) {
+			$condition = "seance_id = $seance_id";
+			$presents = $this->Listepresence->findAll($condition);
+			
+			// Si l'on a encore rien saisi, on prend la table théorique des présents
+			if(empty($presents))		
+			    $presents = $this->SeancesUser->findAll($condition);	
+			else {
+				foreach($presents as $present){
+					$this->data[$present['Listepresence']['user_id']]['present'] = $present['Listepresence']['present'];
+					$this->data[$present['Listepresence']['user_id']]['mandataire'] = $present['Listepresence']['mandataire'];
+				}
+			}
+			$this->set('presents',  $presents);
+			$this->set('seance_id',$seance_id);
+		}
+		else {	
+			$this->data['Listepresence']['seance_id'] =$seance_id;	
+			$this->effacerListePresence($seance_id);
+			foreach($this->data as $user_id=>$tab){
+				$this->Listepresence->create();
+				if (!is_int($user_id))
+					continue;
+			    $this->data['Listepresence']['user_id'] = $user_id;
+			    if (isset($tab['present']))
+			        $this->data['Listepresence']['present'] = $tab['present'];
+			    if (isset($tab['mandataire']))
+			         $this->data['Listepresence']['mandataire'] = $tab['mandataire'];
+			   
+			 	$this->Listepresence->save($this->data);
+			}
+			$this->redirect('/seances/listerFuturesSeances');
+		}
+	}
+	
+	function effacerListePresence($seance_id=null) {
+		$condition = "seance_id = $seance_id";
+		$presents = $this->Listepresence->findAll($condition);
+		foreach($presents as $present)
+  		    $this->Listepresence->del($present['Listepresence']['id']);
+	}
+	
+	function afficherListePresents($seance_id=null)	{
+		$conditions = "Listepresence.seance_id= $seance_id and (Listepresence.present = 1 OR Listepresence.mandataire <> '')";
+		return ($this->Listepresence->findAll($conditions));
+	}
+	
+	function voter ($seance_id=null) {
+		$this->set('projets' , $this->afficherProjets($seance_id, 0));
+		$this->set('presents', $this->afficherListePresents($seance_id));
+	}
+
 }
 ?>
