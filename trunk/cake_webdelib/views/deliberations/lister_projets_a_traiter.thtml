@@ -54,13 +54,13 @@
 	</tr>
 <!-- ------------------------------------------------- -->
 <?php foreach ($deliberations as $deliberation){ ?>
-<?php //debug($deliberations);?>
+<?php //debug($deliberation);?>
 
 	<tr>
 		<td rowspan=3 align='center'><?php echo $html->image('/icons/a_traiter.gif');?></td>
 		<td align='center'>A traiter</td>
 		<td align='left'>CCL01</td>
-		<td align='left'><?php echo $html2->ukToFrenchDateWithHour($deliberation['Seance']['date']); ?></td>
+		<td align='left'><?php echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=4 class="actions" width="50px"> <!-- largeur en fonction des icones -->
 			<?php echo $html->link('',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>$deliberation['act']))?>
 			<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'))?>
@@ -77,7 +77,7 @@
 		
 	</tr>
 	<tr>
-		<td colspan="2" align="center">A traiter avant le :</td>
+		<td colspan="2" align="center">A traiter avant le : <?php echo $deliberation['retard'];?> </td>
 		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td> 
 	</tr>
 	<tr>
