@@ -1,0 +1,21 @@
+<h2> Vote </h2>
+ 	 <?php foreach ($projets as $projet): ?>
+     	<?php echo $projet['Deliberation']['titre']; ?>
+   		 <table cellpadding="0" cellspacing="0">
+   			 <tr>
+			    <th>Elu</th>
+			    <th>Vote</th>
+   			 </tr>
+   			 <?php foreach ($presents as $present): ?>
+    		 <tr>
+	 		 	<td><?php echo $present['User']['prenom'].' '.$present['User']['nom']; ?></td>
+	 		   	<td><?php echo $html->radio($present['User']['id'].'-'.$projet['Deliberation']['id'].'/vote',  array(1=>'oui', 0=>'non', 2=>'Absention')); ?></td>
+    		 </tr>
+ 		   <?php endforeach; ?>
+  		 </table>
+  	<br />
+    <div class="submit">
+        <?php echo $html->submit('Enregistrer le vote', array('class'=>'bt_add', 'name'=>'modifier'));?>
+	</div>
+	<br />
+    <?php endforeach; ?>	
