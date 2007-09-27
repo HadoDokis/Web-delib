@@ -60,7 +60,7 @@
 		<td rowspan=3 align='center'><?php echo $html->image('/icons/a_traiter.gif');?></td>
 		<td align='center'>En cours de redaction</td>
 		<td align='left'>CCL01</td>
-		<td align='left'><?php echo $html2->ukToFrenchDateWithHour($deliberation['Seance']['date']); ?></td>
+		<td align='left'><?php echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=3 class="actions" width="50px"> <!-- largeur en fonction des icones -->
 			<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
 			<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
