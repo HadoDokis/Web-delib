@@ -12,7 +12,10 @@
 <tr>
 	<td><?php echo $present['User']['prenom'].' '.$present['User']['nom']; ?></td>
 	<td><?php echo $html->radio($present['User']['id'].'/present',  array(1=>'oui', 0=>'non')); ?></td>
-	<td><?php echo $html->input($present['User']['id'].'/mandataire');?></td>
+	<td>
+        <?php echo $form->labelTag($present['User']['id'].'/mandataire', 'Mandataire');?>
+ 	    <?php echo $html->selectTag($present['User']['id'].'/mandataire', $mandataires, null,null,null,true);?>  
+    </td>	
 </tr>
 <?php endforeach; ?>
 </table>

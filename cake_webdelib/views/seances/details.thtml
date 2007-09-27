@@ -1,0 +1,29 @@
+<div class="deliberations">
+<h2>Détails des projets de la séance</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Theme</th>
+	<th>Rapporteur</th>
+	<th>Date Seance</th>
+	<th>Objet</th>
+	<th>Titre</th>
+	<th>Num Delib</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($deliberations as $deliberation): ?>
+<tr>
+	<td><?php echo $deliberation['Theme']['libelle']; ?></td>
+	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
+	<td><?php echo $deliberation['Seance']['date']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
+	<td class="actions">
+			<?php echo $html->link('','/seances/voter/' .$deliberation['Deliberation']['id'], array('class'=>'link_voter', 'title'=>'Voter les projets'))?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+</div>
