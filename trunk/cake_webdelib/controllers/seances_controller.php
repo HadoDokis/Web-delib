@@ -4,7 +4,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Html2', 'Javascript','fpdf');
 	var $components = array('Date');
-	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence');
+	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote');
 	
 	function index() {
 		$this->Seance->recursive = 0;
@@ -275,6 +275,10 @@ class SeancesController extends AppController {
 	}
 	
 	function listerPresents($seance_id=null) {
+		/*
+		 * BUG, Si la liste des présents théoriques a été modifiée.
+		 */
+		
 		if (empty($this->data)) {
 			$condition = "seance_id = $seance_id";
 			$presents = $this->Listepresence->findAll($condition);
@@ -285,11 +289,12 @@ class SeancesController extends AppController {
 			else {
 				foreach($presents as $present){
 					$this->data[$present['Listepresence']['user_id']]['present'] = $present['Listepresence']['present'];
-					$this->data[$present['Listepresence']['user_id']]['mandataire'] = $present['Listepresence']['mandataire'];
+					$this->data[$present['Listepresence']['user_id']]['mandataire'] = $present['Listepresence']['mandataire'];	
 				}
 			}
 			$this->set('presents',  $presents);
 			$this->set('seance_id',$seance_id);
+			$this->set('mandataires', $this->User->generateList('statut = 1'));
 		}
 		else {	
 			$this->data['Listepresence']['seance_id'] =$seance_id;	
@@ -318,13 +323,49 @@ class SeancesController extends AppController {
 	}
 	
 	function afficherListePresents($seance_id=null)	{
-		$conditions = "Listepresence.seance_id= $seance_id and (Listepresence.present = 1 OR Listepresence.mandataire <> '')";
-		return ($this->Listepresence->findAll($conditions));
+		$conditions = "Listepresence.seance_id= $seance_id ";
+		$presents = $this->Listepresence->findAll($conditions);
+		
+		for($i=0; $i<count($presents); $i++){
+			if ($presents[$i]['Listepresence']['mandataire'] !='0')
+			    $presents[$i]['Listepresence']['mandataire'] = $this->User->requestAction('/users/getPrenom/'.$presents[$i]['Listepresence']['mandataire']).' '.$this->User->requestAction('/users/getNom/'.$presents[$i]['Listepresence']['mandataire']);
+		}
+		return ($presents);
 	}
 	
-	function voter ($seance_id=null) {
-		$this->set('projets' , $this->afficherProjets($seance_id, 0));
-		$this->set('presents', $this->afficherListePresents($seance_id));
+	function details ($seance_id=null) {
+		$this->set('deliberations' , $this->afficherProjets($seance_id, 0));
+	}
+	
+	function effacerVote($deliberation_id=null) {
+		$condition = "delib_id = $deliberation_id";
+		$votes = $this->Vote->findAll($condition);
+		foreach($votes as $vote)
+  		    $this->Vote->del($vote['Vote']['id']);
+	}
+	
+	function voter ($deliberation_id=null) {
+		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
+
+		if (empty($this->data)) {
+			$donnees = $this->Vote->findAll("delib_id = $deliberation_id");
+			foreach($donnees as $donnee)
+				$this->data['vote'][$donnee['Vote']['user_id']]=$donnee['Vote']['resultat'];
+
+			$this->set('deliberation' , $this->Deliberation->findAll("Deliberation.id=$deliberation_id"));
+			$this->set('presents' , $this->afficherListePresents($seance_id));
+		}
+		else {
+			$this->effacerVote($deliberation_id);
+			foreach($this->data['vote']as $user_id => $vote){
+				$this->Vote->create();
+				$this->data['Vote']['user_id']=$user_id;
+				$this->data['Vote']['delib_id']=$deliberation_id;
+				$this->data['Vote']['resultat']=$vote;
+				if ($this->Vote->save($this->data['Vote']))
+					$this->redirect('seances/details/'.$seance_id);
+			}
+		}
 	}
 
 }
