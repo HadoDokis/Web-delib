@@ -1,4 +1,4 @@
-<?php echo $javascript->link('fckeditor'); ?> 
+<?php echo $javascript->link('calendrier.js'); ?>
 
 <h2>Modification de l'ent&ecirc;te de la d&eacute;liberation</h2>
 <dd>Date cr&eacute;ation : <?php echo $deliberations['Deliberation']['created'];?></dd>
@@ -6,8 +6,10 @@
 <dd>Redacteur : <?php echo $deliberations['Redacteur']['nom'];?></dd>
 <dd>Rapporteur : <?php echo $deliberations['Rapporteur']['nom'];?></dd>
 <br/>
-<form action="<?php echo $html->url('/deliberations/edit/'.$html->tagValue('Deliberation/id')); ?>" enctype="multipart/form-data" method="post">
-<div class="optional"> 
+
+
+<?php echo $html->formTag('/deliberations/edit/'.$html->tagValue('Deliberation/id'), null,array('name'=>'Deliberation','enctype'=>'multipart/form-data'));?> 
+<div>
 	<?php echo $form->labelTag('Deliberation/circuit_id', 'Circuit');?>
  	<?php echo $html->selectTag('Deliberation/circuit_id', $circuits, $html->tagValue('Deliberation/circuit_id'), array(), array(), false);?>
 	<?php echo $html->tagErrorMsg('Deliberation/circuit_id', 'Entrer le circuit.') ?>
@@ -52,16 +54,12 @@
  	<?php echo $html->input('Deliberation/num_pref');?>
 	<?php echo $html->tagErrorMsg('Deliberation/num_pref', 'Entrer le Num Pref.');?>
 </div>
-<div class="required">
-    <?php //echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
-    <?php //echo $fck->load('data[Deliberation][texte_projet]'); ?>
-    <?php //echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du projet.');?>
+<div class="optional"> 
+    <label>Date limite : </label>
+    <input name="date_limite" size="9" />&nbsp;
+	<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a>	
 </div>
-<div class="required">
-    <?php //echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
-    <?php //echo $fck->load('data[Deliberation][texte_synthese]'); ?>
-    <?php //echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Entrer le texte de synthese.');?>
-</div>
+
 <br/>
 
 <div class="optional">
