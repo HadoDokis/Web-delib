@@ -1,45 +1,12 @@
 <div class="deliberations">
 <h2>Projets appartenant aux services des assemblees</h2>
 
-<!-- <table cellpadding="0" cellspacing="0">
-<tr>
-	<th>Theme</th>
-	<th>Rapporteur</th>
-	<th>Date Seance</th>
-	<th>Objet</th>
-	<th>Titre</th>
-	<th>Num Delib</th>
-	<th>Date creation</th>
-	<th>Date modification</th>
-	<th>Actions</th>
-</tr>
-<?php foreach ($deliberations as $deliberation): ?>
-<tr>
-	<td><?php echo $deliberation['Theme']['libelle']; ?></td>
-	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
-	<td><?php echo $deliberation['Seance']['date']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['created']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['modified']; ?></td>
-	<td class="actions">
-		<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
-		<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
-		<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'))?>
-		<?php echo $html->link('','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation ?')?>
-		
-	</td>
-</tr>
-<?php endforeach; ?>
-</table>
--->
 <table cellspacing="0" cellpadding="0">
 	<tr>	
 		<th Width='5%' >Urgence</th>
 		<th Width='20%' >Etat de l'envoi</th>
 		<th Width='20%' >D&eacute;tenteur du dossier</th>
-		<th  >Objet</th>
+		<th>Objet</th>
 		<th Width='15%'>Action</th>
 			
 	</tr>
@@ -52,11 +19,11 @@
 <?php //debug($deliberations);?>
 
 	<tr>
-		<td rowspan=3 align='center'><?php echo $html->image('icons/traiter.gif');?></td>
-		<td align='center'>En cours de redaction</td>
-		<td align='left'>CCL01</td>
-		<td align='left'><?php echo $deliberation['Seance']['date']; ?></td>
-		<td rowspan=3 class="actions" width="50px"> <!-- largeur en fonction des icones -->
+		<td rowspan=3 style="text-align:center"><?php echo $html->image('icons/fini.png');?></td>
+		<td>En cours de redaction</td>
+		<td>CCL01</td>
+		<td><?php echo $deliberation['Seance']['date']; ?></td>
+		<td rowspan=3 class="actions"> 
 			<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
 			<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
 			<?php echo $html->link('','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?')?>
@@ -66,8 +33,8 @@
 	</tr>
 	<tr>
 		<td>N&deg; pr&eacute;fecture :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
-		<td class='corps' rowspan=1 align='left'><?php echo $deliberation['Theme']['libelle']; ?></td>
-		<td class='corps' rowspan=2 align='left'><?php echo $deliberation['Deliberation']['titre']; ?></td>
+		<td class='corps' rowspan=1 ><?php echo $deliberation['Theme']['libelle']; ?></td>
+		<td class='corps' rowspan=2 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
 
 	</tr>
 	<tr>
