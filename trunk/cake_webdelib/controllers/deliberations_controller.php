@@ -4,7 +4,7 @@ class DeliberationsController extends AppController {
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire','Typeseance');
-	var $components = array('Date');
+	var $components = array('Date','Utils');
 	
 	function index() {
 		$user=$this->Session->read('user');
@@ -125,7 +125,6 @@ class DeliberationsController extends AppController {
 			{
 			
 				if (isset($deliberation['Deliberation']['date_limite'])){
-				    $dateLimite=$deliberation['Deliberation']['date_limite'];
 					$deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
 				}
 				//on recupere la position courante de la deliberation
@@ -146,11 +145,8 @@ class DeliberationsController extends AppController {
 					$deliberation['action']="traiter";
 					$deliberation['act']="traiter";
 					$deliberation['etat']="A traiter";
-					if (isset($deliberation['Deliberation']['date_limite']) && (date('Y-m-d') >= $dateLimite)){
-						$deliberation['image']="icons/forward.png";	
-					}else{
-						$deliberation['image']='icons/a_traiter.gif';
-					}
+					$deliberation['image']='icons/atraiter.png';
+					
 
 				}else{
 					$deliberation['action']="view";
@@ -158,11 +154,11 @@ class DeliberationsController extends AppController {
 					
 					if ($deliberation['positionUser'] < $deliberation['positionDelib'])
 					{
-						$deliberation['image']='/icons/traiter.gif';
+						$deliberation['image']='/icons/fini.png';
 						$deliberation['etat']="Trait&eacute";
 					}elseif ($deliberation['positionUser'] > $deliberation['positionDelib'])
 					{
-						$deliberation['image']='/icons/en_attente.gif';
+						$deliberation['image']='/icons/attente.png';
 						$deliberation['etat']="En attente";
 					}
 				}
@@ -219,8 +215,7 @@ class DeliberationsController extends AppController {
 			{
 				
 				if (isset($deliberation['Deliberation']['date_limite'])){
-				    $dateLimite=$deliberation['Deliberation']['date_limite'];
-					$deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
+				    $deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
 				}
 				//on recupere la position courante de la deliberation
 				$lastTraitement=array_pop($deliberation['Traitement']);
@@ -237,13 +232,8 @@ class DeliberationsController extends AppController {
 				if ($lastTraitement['position'] == $position_user){
 					$deliberation['action'] = "traiter";
 					$deliberation['act'] = "traiter";
-				if (isset($deliberation['Deliberation']['date_limite']) && (date('Y-m-d') >= $dateLimite)){
-					$deliberation['image']="icons/forward.png";	
-				}else{
-					$deliberation['image']='icons/a_traiter.gif';
-				}
-					
-
+					$deliberation['image']='icons/atraiter.png';
+	
 				array_push($delib, $deliberation);
 
 				}
@@ -541,7 +531,11 @@ class DeliberationsController extends AppController {
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 		} else {
+			
+			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
+			unset($this->params['form']['date_limite']);
 			$this->cleanUpFields();
+			
 			if(!empty($this->params['form']))
 			{
 				$deliberation = array_shift($this->params['form']);
@@ -816,6 +810,8 @@ class DeliberationsController extends AppController {
 					
 					//on a refusé le projet, il repart au redacteur
 					//TODO notifier par mail toutes les personnes qui ont déjà visé le projet
+
+
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 					$lastpos=count($tab)-1;
 					
@@ -849,6 +845,9 @@ class DeliberationsController extends AppController {
 					$delib['Deliberation']['modified']='';
 					$this->Deliberation->save($delib['Deliberation']);
 				
+					$this->Utils->envoyerMail('marine.pontis@adullact.org','tititre','message corpulant');
+     
+					
 					$this->redirect('/deliberations/listerProjetsATraiter');
 				}
 			}
