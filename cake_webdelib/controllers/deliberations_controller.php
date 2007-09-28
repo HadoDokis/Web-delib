@@ -41,7 +41,6 @@ class DeliberationsController extends AppController {
 		}
 	}
 		
-		
 	function listerProjetsNonAttribues()
 	{
 		if (empty ($this->data))
@@ -53,11 +52,9 @@ class DeliberationsController extends AppController {
 		}
 		else
 		{
-
 			$deliberation['Deliberation']['seance_id']= $this->data['Deliberation']['seance_id'];
 
-			if ($this->Deliberation->save($this->data)) 
-			{
+			if ($this->Deliberation->save($this->data)) {
 				
 				$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 				$this->data['Deliberation']['position']=$position;
@@ -379,10 +376,6 @@ class DeliberationsController extends AppController {
 		}
 	}
 	
-	
-	
-	
-	
 	function textsynthese ($id = null)
 	{
 	$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="S"'));
@@ -411,15 +404,10 @@ class DeliberationsController extends AppController {
 					$counter++;
 				}
 				
-				if($uploaded)
-				{
-			
+				if($uploaded) {
 					if ($this->Deliberation->save($this->data)) {
-					
-					$counter = 1;
-					
-						while($counter <= ($size/2))
-						{	
+						$counter = 1;
+						while($counter <= ($size/2)) {	
 							$this->data['Annex']['id'] = null;
 							$this->data['Annex']['deliberation_id'] = $id;
 							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
@@ -445,8 +433,7 @@ class DeliberationsController extends AppController {
 				}
 			}
 		}	
-	}
-	
+	}	
 	
 	function textprojet ($id = null)
 	{
@@ -511,9 +498,6 @@ class DeliberationsController extends AppController {
 		}	
 	}	
 	
-	
-	
-
 	function edit($id = null) {
 	
 		if (empty($this->data)) {
@@ -879,7 +863,7 @@ class DeliberationsController extends AppController {
             $this->set('dateClassification',$this->getDateClassification());
             $this->set('tabNature', $this->getNatureListe());
             $this->set('tabMatiere', $this->getMatiereListe());  
-             $this->set('deliberations',$this->Deliberation->findAll());
+            $this->set('deliberations',$this->Deliberation->findAll());
         }
 
         function getNatureListe(){
@@ -888,9 +872,7 @@ class DeliberationsController extends AppController {
               if(!$dom = $doc->load(FILE_CLASS)) {
                         die("Error opening xml file");
               }
-
              $NaturesActes = $doc->getElementsByTagName('NatureActe');
-		
 			 foreach ($NaturesActes as $NatureActe) {
    			     $tabNatures[$NatureActe->getAttribute('CodeNatureActe')]= utf8_decode($NatureActe->getAttribute('Libelle'));
 			 }
@@ -899,19 +881,42 @@ class DeliberationsController extends AppController {
 
         function getMatiereListe(){
  			 $tabMatieres = array();
+ 			 $tabMatieres2 = array();
+ 			 $tabMatieres3 = array();
+ 			 $tabMatieres4 = array();
+ 			 $tabMatieres5 = array();
+ 			 
         	 $doc = new DOMDocument();
-              if(!$dom = $doc->load(FILE_CLASS)) {
+             if(!$dom = $doc->load(FILE_CLASS)) {
                         die("Error opening xml file");
-              }
+             }
              $Matieres1 = $doc->getElementsByTagName('Matiere1');
 			 foreach ($Matieres1 as $Matiere1) {
-   			     $tabMatieres[$Matiere1->getAttribute('CodeMatiere')]= utf8_decode($Matiere1->getAttribute('Libelle'));
-				// $Matieres2 = $doc->getElementsByTagName('Matiere2');
-				// foreach ($Matieres2 as $Matiere2) {
-   			    //	 $tabMatieres[$Matiere1->getAttribute('CodeMatiere')][$Matiere2->getAttribute('CodeMatiere')]= utf8_decode($Matiere2->getAttribute('Libelle'));
-				// }
+			     if ($Matiere1->getAttribute('Libelle')!= '') 
+   			         $tabMatieres[$Matiere1->getAttribute('CodeMatiere')]= utf8_decode($Matiere1->getAttribute('Libelle'));
+				 $Matieres2 = $doc->getElementsByTagName('Matiere2');
+				 foreach ($Matieres2 as $Matiere2) {
+   			    	 if ($Matiere2->getAttribute('Libelle')!= '') 
+   			    	     $tabMatieres[$Matiere1->getAttribute('CodeMatiere').'-'.$Matiere2->getAttribute('CodeMatiere')]= utf8_decode($Matiere2->getAttribute('Libelle'));
+					 $Matieres3 = $doc->getElementsByTagName('Matiere3');
+					 foreach ($Matieres3 as $Matiere3) {
+					 	 if ($Matiere3->getAttribute('Libelle')!= '') 
+					 	     $tabMatieres[$Matiere1->getAttribute('CodeMatiere').'-'.$Matiere2->getAttribute('CodeMatiere').'-'.$Matiere3->getAttribute('CodeMatiere')]= utf8_decode($Matiere3->getAttribute('Libelle'));
+						 $Matieres4 = $doc->getElementsByTagName('Matiere4');
+						 foreach ($Matieres4 as $Matiere4) {
+						 	 if ($Matiere4->getAttribute('Libelle')!= '') 
+						 	     $tabMatieres[$Matiere1->getAttribute('CodeMatiere').'-'.$Matiere2->getAttribute('CodeMatiere').'-'.$Matiere3->getAttribute('CodeMatiere').'-'.$Matiere4->getAttribute('CodeMatiere')]= utf8_decode($Matiere4->getAttribute('Libelle'));
+						     $Matieres5 = $doc->getElementsByTagName('Matiere5');
+						     foreach ($Matieres5 as $Matiere5) {
+						  	     if ($Matiere5->getAttribute('Libelle')!= '') 
+						  	         $tabMatieres[$Matiere1->getAttribute('CodeMatiere').'-'.$Matiere2->getAttribute('CodeMatiere').'-'.$Matiere3->getAttribute('CodeMatiere').'-'.$Matiere4->getAttribute('CodeMatiere').'-'.$Matiere5->getAttribute('CodeMatiere')]= utf8_decode($Matiere5->getAttribute('Libelle'));
+						     }
+						 }
+					 }		 
+				 }
 			 }
-			 return $tabMatieres; 
+			 debug($tabMatieres); 
+			 exit;
         }
 
         function getDateClassification(){
