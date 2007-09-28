@@ -1,55 +1,13 @@
 <div class="deliberations">
 <h2>Projets dans mes circuits de validation</h2>
 
-<!--  
-	<th>Theme</th>
-	<th>Rapporteur</th>
-	<th>Date S&eacute;ance</th>
-	<th>Objet</th>
-	<th>Titre</th>
-	<th>Num Delib</th>
-	<th>Service emetteur</th>
-	<th>Circuit</th>
-	<th>Position delib</th>
-	<th>Votre position</th>
-	<th>Actions</th>
-</tr>
-
-<?php foreach ($deliberations as $deliberation): ?>
-<? //debug($deliberation);?>
-<tr> 
-	<td><?php echo $deliberation['Theme']['libelle'] ?></td>
-	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
-	<td><?php echo $deliberation['Seance']['date']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
-	<td><?php echo $deliberation['Service']['libelle']; ?></td>
-	<td><?php echo $deliberation['Circuit']['libelle']; ?></td>
-	<td><?php echo $deliberation['positionDelib']; ?></td>
-	<td><?php echo $deliberation['positionUser']; ?></td>
-	<td class="actions" width="50px">  largeur en fonction des icones
-		<?php echo $html->link('',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>$deliberation['act']))?>
-		<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'))?>
-		</div></div>
-	</td>
-</tr>
-<?php endforeach; ?>
-</table>
--->
-<!-- <ul class="actions">
-	<li><?php echo $html->link('Ajouter une deliberation', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un deliberation')); ?></li>
-</ul>-->
-
-
-
 <table cellspacing="0" cellpadding="0">
 	<tr>	
-		<th Width='10%' >Urgence</th>
+		<th Width='5%' >Urgence</th>
 		<th Width='20%' >Etat de l'envoi</th>
 		<th Width='20%' >D&eacute;tenteur du dossier</th>
-		<th  >Objet</th>
-		<th  >Action</th>
+		<th>Objet</th>
+		<th>Action</th>
 			
 	</tr>
 	<tr>
@@ -61,26 +19,26 @@
 <?php //debug($deliberations);?>
 
 	<tr>
-		<td rowspan=3 align='center'><?php echo $html->image($deliberation['image']);?></td>
-		<td align='center'><?php echo $deliberation['etat'];?></td>
-		<td align='left'>CCL01</td>
-		<td align='left'><?php echo $deliberation['Seance']['date']; ?></td>
-		<td rowspan=4 class="actions" width="50px"> <!-- largeur en fonction des icones -->
+		<td rowspan=3 style=text-align:center'><?php echo $html->image($deliberation['image']);?></td>
+		<td><?php echo $deliberation['etat'];?></td>
+		<td>CCL01</td>
+		<td><?php echo $deliberation['Seance']['date']; ?></td>
+		<td rowspan=4 class="actions" >
 			<?php echo $html->link('',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>$deliberation['act']))?>
 			<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'))?>
 		</td>		
 	</tr>
 	<tr>
 		<td>N&deg; pr&eacute;fecture :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
-		<td class='corps' rowspan=2 align='left'><?php echo $deliberation['Theme']['libelle']; ?></td>
-		<td class='corps' rowspan=3 align='left'><?php echo $deliberation['Deliberation']['titre']; ?></td>
+		<td class='corps' rowspan=2 ><?php echo $deliberation['Theme']['libelle']; ?></td>
+		<td class='corps' rowspan=3 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
 
 	</tr>
 	<tr>
 		<td>N&deg; d&eacute;lib&eacute;ration : <?php echo $deliberation['Deliberation']['num_delib']; ?></td>
 	</tr>
 	<tr>
-		<td colspan="2" align="center">A traiter avant le : <?php echo $deliberation['Deliberation']['date_limite']; ?></td>
+		<td colspan="2" >A traiter avant le : <?php echo $deliberation['Deliberation']['date_limite']; ?></td>
 		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td> 
 	</tr>
 	<tr>
