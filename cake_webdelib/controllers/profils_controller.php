@@ -42,7 +42,7 @@ class ProfilsController extends AppController {
 			$this->data = $this->Profil->read(null, $id);
 			$profils = $this->Profil->generateList();
 			$this->set('profils', $profils);
-			$this->set('selectedProfil',$this->data['Profil']['parent_id']);			
+			$this->set('selectedProfil',$this->data['Profil']['parent_id']);
 		} else {
 			$this->cleanUpFields();
 			if ($this->Profil->save($this->data)) {
@@ -59,19 +59,16 @@ class ProfilsController extends AppController {
 			$this->Session->setFlash('Invalide id pour le profil');
 			$this->redirect('/profils/index');
 		}
-		
+
 		if ($this->Profil->del($id)) {
-			
+
 			$this->Session->setFlash('Le profil a &eacute;t&eacute; supprim&eacute;');
 			$this->redirect('/profils/index');
 		}
 	}
-	
+
 	function changeParentId($curruentParentId, $newParentId)
 	{
-//		$sql = "update profils set parent_id = $newParentId where parent_id = $currentParentId";
-//		$this->Profil->query($sql);
-
 		$this->data = $this->Profil->findByParentId(null, $id);
 		debug($this->data);exit;
 	}
