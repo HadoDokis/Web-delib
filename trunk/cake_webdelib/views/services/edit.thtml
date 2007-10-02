@@ -1,19 +1,23 @@
 <h2>Modification d'un service</h2>
 <form action="<?php echo $html->url('/services/edit/'.$html->tagValue('Service/id')); ?>" method="post">
-<div class="optional"> 
+<div class="optional">
 	<?php echo $form->labelTag('Service/libelle', 'Libelle');?>
  	<?php echo $html->input('Service/libelle', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Service/libelle', 'Entrer le libelle.');?>
 </div>
+<div>
+	<?php echo $form->labelTag('Service/parent_id', 'Appartient �');?>
+	<?php echo $html->selectTag('Service/parent_id', $services, $selectedService)?>
+</div>
 <br/>
 <div class="submit">
+	<?php echo $form->labelTag('Typeseance/id', '&nbsp;');?>
 	<?php echo $html->hidden('Service/id')?>
-	<?php echo $form->labelTag('Service/id','&nbsp;');?>
 	<?php echo $html->submit('Enregistrer');?>
 </div>
 </form>
 <br/>
 <ul class="actions">
-<li><?php echo $html->link('Supprimer','/services/delete/' . $html->tagValue('Service/id'), null, 'Etes vous sur de vouloir supprimer le service "' . $html->tagValue('Service/libelle').'" ?');?>
+<li><?php echo $html->link('Supprimer','/services/delete/' . $html->tagValue('Service/id'), null, 'Etes-vous sur de vouloir supprimer le service "' . $html->tagValue('Service/libelle').'" ?');?>
 <li><?php echo $html->link('Annuler', '/services/index')?></li>
 </ul>
