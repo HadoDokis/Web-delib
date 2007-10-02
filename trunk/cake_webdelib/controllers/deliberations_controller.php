@@ -1027,8 +1027,9 @@ class DeliberationsController extends AppController {
 			$to_prenom = $data['0']['User']['prenom'];
 
 			$this->Email->template = 'email/traiter';
-			$text = "Vous avez un dossier à traiter, Cliquer <a href='http://francois/cake/deliberations/traiter/$delib_id'> ici</a>";
-            $this->set('data', 'Vous avez un dossier à traiter. \n'.$text);
+			$addr = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/traiter/$delib_id";
+			$text = "Vous avez un dossier à traiter, Cliquer <a href='$addr'> ici</a>";
+            $this->set('data', 'Vous avez un dossier à traiter. '.$text);
             $this->Email->to = $to_mail;
             $this->Email->subject = "DELIB $delib_id à traiter";
        	   //  $this->Email->attach($fully_qualified_filename, optionally $new_name_when_attached);
