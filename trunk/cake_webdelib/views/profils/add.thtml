@@ -1,17 +1,16 @@
 <h2>Ajout d'un profil</h2>
 <form action="<?php echo $html->url('/profils/add'); ?>" method="post">
-<div class="optional"> 
+<div class="optional">
 	<?php echo $form->labelTag('Profil/libelle', 'Libelle');?>
  	<?php echo $html->input('Profil/libelle', array('size' => '50'));?>
 	<?php echo $html->tagErrorMsg('Profil/libelle', 'Entrer le libelle.');?>
 </div>
-<div>	
-	<?php echo $form->labelTag('Profil/parent_id', 'Appartient à');?>
+<div>
+	<?php echo $form->labelTag('Profil/parent_id', 'Appartient Ã ');?>
 	<?php echo $html->selectTag('Profil/parent_id', 	$profils)?>
 </div>
 <br/>
 <div class="submit">
-	<?php //echo $form->labelTag('Profil/id', '&nbsp;');?>
 	<?php echo $html->submit('Ajouter');?>
 </div>
 </form>
