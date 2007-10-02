@@ -2,28 +2,35 @@
 class ThemesController extends AppController {
 
 	var $name = 'Themes';
-	var $helpers = array('Html', 'Form' );
+	var $helpers = array('Html', 'Form', 'Tree');
+
+	function getLibelle ($id = null) {
+		$condition = "Theme.id = $id";
+        $objCourant = $this->Theme->findAll($condition);
+		return $objCourant['0']['Theme']['libelle'];
+	}
 
 	function index() {
-		$this->Theme->recursive = 0;
-		$this->set('themes', $this->Theme->findAll());
+		$this->set('data', $this->Theme->findAllThreaded(null, null, 'Theme.id ASC'));
 	}
 
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalide id pour le theme.');
+			$this->Session->setFlash('Invalide id pour le Theme.');
 			$this->redirect('/themes/index');
 		}
 		$this->set('theme', $this->Theme->read(null, $id));
 	}
 
-	function add() {
+    function add() {
 		if (empty($this->data)) {
+			$themes = $this->Theme->generateList(null);
+			$this->set('themes', $themes);
 			$this->render();
 		} else {
 			$this->cleanUpFields();
 			if ($this->Theme->save($this->data)) {
-				$this->Session->setFlash('Le theme a &eacute;t&eacute; sauvegard&eacute;');
+				$this->Session->setFlash('Le thème a &eacute;t&eacute;sauvegard&eacute;');
 				$this->redirect('/themes/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
@@ -34,10 +41,13 @@ class ThemesController extends AppController {
 	function edit($id = null) {
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalide id pour le theme');
-				$this->redirect('/themes/index');
+				$this->Session->setFlash('Invalide id pour le Theme');
+				$this->redirect('/Themes/index');
 			}
 			$this->data = $this->Theme->read(null, $id);
+			$themes = $this->Theme->generateList();
+			$this->set('themes', $themes);
+			$this->set('selectedTheme',$this->data['Theme']['parent_id']);
 		} else {
 			$this->cleanUpFields();
 			if ($this->Theme->save($this->data)) {
@@ -51,20 +61,21 @@ class ThemesController extends AppController {
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalide id pour le theme');
-			$this->redirect('/themes/index');
+			$this->Session->setFlash('Invalide id pour le Theme');
+			$this->redirect('/Themes/index');
 		}
+
 		if ($this->Theme->del($id)) {
-			$this->Session->setFlash('Le theme a &eacute;t&eacute; supprim&eacute;');
-			$this->redirect('/themes/index');
+			$this->Session->setFlash('Le Theme a &eacute;t&eacute; supprim&eacute;');
+			$this->redirect('/Themes/index');
 		}
 	}
-	
-	function getLibelle ($id = null) {
-		$condition = "Theme.id = $id";
-        $objCourant = $this->Theme->findAll($condition);
-		return $objCourant['0']['Theme']['libelle'];
+
+	function changeParentId($curruentParentId, $newParentId) {
+		$this->data = $this->Theme->findByParentId($curruentParentId);
+	//	debug($this->data);exit;
 	}
+
 
 }
 ?>
