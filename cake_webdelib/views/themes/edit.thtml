@@ -1,19 +1,23 @@
-<h2>Modification d'un theme</h2>
-<form action="<?php echo $html->url('/themes/edit/'.$html->tagValue('Theme/id')); ?>" method="post">
-<div class="required"> 
+<h2>Modification d'un thème</h2>
+<form action="<?php echo $html->url('/themes/edit/'.$html->tagValue('Service/id')); ?>" method="post">
+<div class="optional">
 	<?php echo $form->labelTag('Theme/libelle', 'Libelle');?>
  	<?php echo $html->input('Theme/libelle', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Theme/libelle', 'Entrer le libelle.');?>
 </div>
+<div>
+	<?php echo $form->labelTag('Theme/parent_id', 'Appartient �');?>
+	<?php echo $html->selectTag('Theme/parent_id', $themes, $selectedTheme)?>
+</div>
 <br/>
 <div class="submit">
+	<?php echo $form->labelTag('Typeseance/id', '&nbsp;');?>
 	<?php echo $html->hidden('Theme/id')?>
-	<?php echo $form->labelTag('Theme/id', '&nbsp;');?>
-	<?php echo $html->submit('Sauvegarder');?>
+	<?php echo $html->submit('Enregistrer');?>
 </div>
 </form>
 <br/>
 <ul class="actions">
-<li><?php echo $html->link('Supprimer','/themes/delete/' . $html->tagValue('Theme/id'), null, 'Etes-vous sur de vouloir supprimer le theme "' . $html->tagValue('Theme/libelle').'" ?') ?>
+<li><?php echo $html->link('Supprimer','/themes/delete/' . $html->tagValue('Theme/id'), null, 'Etes-vous sur de vouloir supprimer le service "' . $html->tagValue('Theme/libelle').'" ?');?>
 <li><?php echo $html->link('Annuler', '/themes/index')?></li>
 </ul>

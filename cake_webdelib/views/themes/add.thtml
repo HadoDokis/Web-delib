@@ -1,17 +1,20 @@
-<h2>Nouveau theme</h2>
+<h2>Ajout d'un thème</h2>
 <form action="<?php echo $html->url('/themes/add'); ?>" method="post">
-<div class="required"> 
+<div class="optional">
 	<?php echo $form->labelTag('Theme/libelle', 'Libelle');?>
- 	<?php echo $html->input('Theme/libelle', array('size' => '60'));?>
+ 	<?php echo $html->input('Theme/libelle', array('size' => '50'));?>
 	<?php echo $html->tagErrorMsg('Theme/libelle', 'Entrer le libelle.');?>
+</div>
+<div>
+	<?php echo $form->labelTag('Theme/parent_id', 'Appartient à');?>
+	<?php echo $html->selectTag('Theme/parent_id', 	$themes)?>
 </div>
 <br/>
 <div class="submit">
-	<?php echo $form->labelTag('Theme/id', '&nbsp;');?>
 	<?php echo $html->submit('Ajouter');?>
 </div>
 </form>
 <br/>
 <ul class="actions">
-<li><?php echo $html->link('Annuler', '/themes/index')?></li>
+<li><?php echo $html->link('Annuler', '/Theme/index')?></li>
 </ul>
