@@ -1,30 +1,9 @@
-<div class="services">
-<h2>Liste des Services</h2>
+<h2>Liste des profils</h2>
 
-<table cellpadding="0" cellspacing="0">
-<tr>
-	<th>Libelle</th>
-	<th>Rapporteur</th>
-	<th>Actions</th>
-</tr>
-<?php foreach ($data as $service): 
-//debug($service);?>
-<tr>
-	<td><?php echo $service['Service']['libelle']; ?></td>
-	<td><?foreach ($service['User'] as $user):	
-				echo $user['nom'];
-		endforeach; ?>
-	</td>
-	<td class="actions">
-		<?php echo $html->link('','/services/view/' . $service['Service']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
-		<?php echo $html->link('','/services/edit/' . $service['Service']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
-		<?php echo $html->link('','/services/delete/' . $service['Service']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer le service "' . $service['Service']['libelle'].'" ?')?>
-	</td>
-</tr>
-<?php endforeach; ?>
-</table>
+<div id="arbre">
+<?php echo $tree->showTree('Service','libelle', $data,0,$this->base, array('Editer'=>'edit','Supprimer'=>'delete')); ?>
+</div>
 
-<ul class="actions">
-	<li><?php echo $html->link('Ajouter un service', '/services/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
-</ul>
+<div>
+<?php echo $html->link('Ajouter un Service', '/services/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?>
 </div>
