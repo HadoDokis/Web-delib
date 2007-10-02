@@ -1,18 +1,18 @@
 <?php
 
     $tableau  = "<table border='1' width='90%'>";
-    $tableau .= "<tr bgcolor='#efefef' height='30'><td>Numéro de la délibération</td><td colspan=2>$num_delib</td></tr>";
+    $tableau .= "<tr bgcolor='#efefef' height='30'><td>Numï¿½ro de la dï¿½libï¿½ration</td><td colspan=2>$num_delib</td></tr>";
 	$tableau .= "<tr><td>objet </td><td>$objet</td></tr>";
 	$tableau .= "<tr bgcolor='#efefef'  height='30'><td>titre</td><td>$titre</td></tr>";
 	$tableau .= "<tr><td>theme</td><td>$theme</td></tr>";
 	$tableau .= "<tr bgcolor='#efefef  height='30'><td>service</td><td>$service</td></tr>";
 	$tableau .= "<tr><td>rapporteur</td><td>$prenom_rapporteur $nom_rapporteur</td></tr>";
-	$tableau .= "<tr bgcolor='#efefef'  height='30'><td>Date séance</td><td>$date_seance</td></tr>";
+	$tableau .= "<tr bgcolor='#efefef'  height='30'><td>Date sï¿½ance</td><td>$date_seance</td></tr>";
 	$tableau .= "</table>";
 
     vendor('fpdf/html2fpdf');
     $pdf = new HTML2FPDF();
-    
+
  	$pdf->AddPage();
  	$pdf->WriteHTML('<img src="files/image/logo.jpg">');
 	$pdf->WriteHTML($tableau);
@@ -21,6 +21,7 @@
 	$pdf->AddPage();
 	$pdf->WriteHTML($text_synthese);
 	ob_end_clean();
-	$pdf->Output('doc.pdf','D');
-     
-?> 
+	$pdf->Output("/home/francois/workspace/svn_webdelib/webroot/files/delibs/DELIB_$id.pdf",'F');
+	$pdf->Output("DELIB_$id.pdf",'D');
+
+?>
