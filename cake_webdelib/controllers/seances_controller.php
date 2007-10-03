@@ -5,17 +5,17 @@ class SeancesController extends AppController {
 	var $helpers = array('Html', 'Form', 'Html2', 'Javascript','fpdf');
 	var $components = array('Date');
 	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote');
-	
+
 	function index() {
 		$this->Seance->recursive = 0;
-		$seances = $this->Seance->findAll(null,null,'date asc'); 
-		
+		$seances = $this->Seance->findAll(null,null,'date asc');
+
 		for ($i=0; $i<count($seances); $i++)
 		    $seances[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($seances[$i]['Seance']['date']));
-			     
-		$this->set('seances', $seances);	
+
+		$this->set('seances', $seances);
 	}
-	
+
 
 	function view($id = null) {
 		if (!$id) {
@@ -32,7 +32,7 @@ class SeancesController extends AppController {
 			$this->render();
 		} else {
 			$this->cleanUpFields('Seance');
-		
+
 			$this->data['Seance']['date']=  $this->Utils->FrDateToUkDate($this->params['form']['date']);
 			$this->data['Seance']['date'] = $this->data['Seance']['date'].' '.$this->data['Seance']['date_hour'].':'.$this->data['Seance']['date_min'];
 
@@ -83,20 +83,20 @@ class SeancesController extends AppController {
 			$this->redirect('/seances/index');
 		}
 	}
-	
+
 	function listerFuturesSeances()
 	{
 		if (empty ($this->data)) {
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-			$seances = $this->Seance->findAll(($condition),null,'date asc'); 
-		
+			$seances = $this->Seance->findAll(($condition),null,'date asc');
+
 			for ($i=0; $i<count($seances); $i++)
 			    $seances[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($seances[$i]['Seance']['date']));
-			     
-			$this->set('seances', $seances);	
+
+			$this->set('seances', $seances);
 		}
 	}
-	
+
 	function listerAnciennesSeances()
 	{
 		if (empty ($this->data))
@@ -107,20 +107,20 @@ class SeancesController extends AppController {
 	}
 
 	function afficherCalendrier ($annee=null){
-		
+
 		vendor('Calendar/includeCalendarVendor');
-	
+
 		define ('CALENDAR_MONTH_STATE',CALENDAR_USE_MONTH_WEEKDAYS);
-        
+
 		if (!isset($annee))
 		     $annee = date('Y');
-   
- 		$tabJoursSeances = array();  
+
+ 		$tabJoursSeances = array();
  		$fields = 'date';
         $condition = "annee = $annee";
         $joursSeance = $this->Seance->findAll(null, $fields);
         foreach ($joursSeance as $date) {
-        	$date = strtotime(substr($date['Seance']['date'], 0, 10));	
+        	$date = strtotime(substr($date['Seance']['date'], 0, 10));
         	array_push($tabJoursSeances,  $date);
         }
 
@@ -128,7 +128,7 @@ class SeancesController extends AppController {
 		$Year->build();
 	    $today = mktime('0','0','0');
 	    $i = 0;
-		
+
 		$calendrier = "<table>\n<tr   style=\"vertical-align:top;\">\n";
 		while ( $Month = $Year->fetch() ) {
 
@@ -136,17 +136,17 @@ class SeancesController extends AppController {
 	     	$calendrier .= "<caption class=\"month\">".$this->Date->months[$Month->thisMonth('int')]."</caption>\n" ;
 	     	$calendrier .= "<tr><th>Lu</th><th>Ma</th><th>Me</th><th>Je</th><th>Ve</th><th>Sa</th><th>Di</th></tr>\n";
 	   		$Month->build();
-	   		
+
 			while ( $Day = $Month->fetch() ) {
 		        if ( $Day->isFirst() == 1 ) {
 		       		$calendrier .= "<tr>\n" ;
 		        }
-		        
+
 		        if ( $Day->isEmpty() ) {
 		           $calendrier .=  "<td>&nbsp;</td>\n" ;
-		        } 
+		        }
 		        else {
-		        	
+
 		            if ($today == $Day->thisDay('timestamp')){
 		                 $balise="today";
 		            }
@@ -165,30 +165,33 @@ class SeancesController extends AppController {
 			}
 
      		$calendrier .= "</table>\n</td>\n" ;
-	
+
 	    	if ($i==5)
 	        	$calendrier .= "</tr><tr   style=\"vertical-align:top;\">\n" ;
-	
+
 	    	$i++;
 		}
 		$calendrier .=  "</tr>\n</table>\n" ;
-		
+
 		$this->set('annee', $annee);
 		$this->set('calendrier',$calendrier);
 	}
-	
+
 	function afficherProjets ($id=null, $return=null)
 	{
 		$condition= "seance_id=$id AND etat!=-1";
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
-		    $this->set('projets', $this->Deliberation->findAll($condition,null,'position ASC'));
+			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
+		    $this->set('seance_id', $id);
+		    $this->set('projets', $deliberations);
+			$this->set('date_seance', $this->Date->frenchDate(strtotime($deliberations[0]['Seance']['date'])));
 		}
-		else 
+		else
 		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
 	}
 
-	
+
 	function getDate($id)
     {
 		$condition = "Seance.id = $id";
@@ -201,33 +204,33 @@ class SeancesController extends AppController {
 		$condition = "Seance.id = $id";
         return $this->Seance->findAll($condition);
     }
-	
+
 	function addListUsers($seance_id=null) {
 		if (empty($this->data)) {
 			$this->data=$this->Seance->read(null,$seance_id);
 			$this->set('seance_id',$seance_id);
 			$this->set('users', $this->User->generateList('statut=1'));
-			if (empty($this->data['SeancesUser'])) { 
-				$this->data['SeancesUser'] = null; 
+			if (empty($this->data['SeancesUser'])) {
+				$this->data['SeancesUser'] = null;
 			}
 			$this->set('selectedUsers', $this->_selectedArray($this->data['SeancesUser'],'user_id'));
 			$this->render();
-		} else {	
-			
+		} else {
+
 /*			$seance_id = $this->data['Seance']['id'];
 			$seancesUser = $this->SeancesUser->find("seance_id=$seance_id");
 			foreach ($seancesUser as $seanceUser){
 				$this->EffacerListe($seanceUser['id']);
 			}*/
-		
-		
+
+
 			$this->EffacerListe($this->data['Seance']['id']);
-			
+
 			foreach($this->data['User']['id']as $user_id) {
 				$this->params['data']['SeancesUser']['id']='';
 			    $this->params['data']['SeancesUser']['seance_id'] = $this->data['Seance']['id'];
 			    $this->params['data']['SeancesUser']['user_id'] = $user_id ;
-			    
+
 			    if ($this->SeancesUser->save($this->params['data']))
 			    {
 			    	$this->redirect('/seances/listerFuturesSeances');
@@ -238,18 +241,18 @@ class SeancesController extends AppController {
 					$this->set('users', $this->User->generateList());
 					$this->set('selectedUsers',null);
 			    }
-				    
-			}   	
+
+			}
 		}
 	}
-	
+
 	function effacerListe($seance_id=null) {
 		$condition = "seance_id = $seance_id";
 		$presents = $this->SeancesUser->findAll($condition);
 		foreach($presents as $present)
   		    $this->SeancesUser->del($present['SeancesUser']['id']);
 	}
-	
+
 	function generateConvocationList ($id=null) {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
 		$type_infos = $this->getType($id);
@@ -261,11 +264,11 @@ class SeancesController extends AppController {
 		$this->set('collectivite',  $this->Collectivite->findAll());
 		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($type_infos[0]['Seance']['date'])));
 	}
-	
+
 	function generateOrdresDuJour ($id=null) {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
 		$type_infos = $this->getType($id);
-		
+
 		$this->set('type_infos', $type_infos );
 		$this->set('projets', $this->afficherProjets($id, 1));
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
@@ -273,31 +276,31 @@ class SeancesController extends AppController {
 		$this->set('collectivite',  $this->Collectivite->findAll());
 		$this->set('date_seance',  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date'])));
 	}
-	
+
 	function listerPresents($seance_id=null) {
 		/*
 		 * BUG, Si la liste des présents théoriques a été modifiée.
 		 */
-		
+
 		if (empty($this->data)) {
 			$condition = "seance_id = $seance_id";
 			$presents = $this->Listepresence->findAll($condition);
-			
+
 			// Si l'on a encore rien saisi, on prend la table théorique des présents
-			if(empty($presents))		
-			    $presents = $this->SeancesUser->findAll($condition);	
+			if(empty($presents))
+			    $presents = $this->SeancesUser->findAll($condition);
 			else {
 				foreach($presents as $present){
 					$this->data[$present['Listepresence']['user_id']]['present'] = $present['Listepresence']['present'];
-					$this->data[$present['Listepresence']['user_id']]['mandataire'] = $present['Listepresence']['mandataire'];	
+					$this->data[$present['Listepresence']['user_id']]['mandataire'] = $present['Listepresence']['mandataire'];
 				}
 			}
 			$this->set('presents',  $presents);
 			$this->set('seance_id',$seance_id);
 			$this->set('mandataires', $this->User->generateList('statut = 1'));
 		}
-		else {	
-			$this->data['Listepresence']['seance_id'] =$seance_id;	
+		else {
+			$this->data['Listepresence']['seance_id'] =$seance_id;
 			$this->effacerListePresence($seance_id);
 			foreach($this->data as $user_id=>$tab){
 				$this->Listepresence->create();
@@ -308,42 +311,42 @@ class SeancesController extends AppController {
 			        $this->data['Listepresence']['present'] = $tab['present'];
 			    if (isset($tab['mandataire']))
 			         $this->data['Listepresence']['mandataire'] = $tab['mandataire'];
-			   
+
 			 	$this->Listepresence->save($this->data);
 			}
 			$this->redirect('/seances/listerFuturesSeances');
 		}
 	}
-	
+
 	function effacerListePresence($seance_id=null) {
 		$condition = "seance_id = $seance_id";
 		$presents = $this->Listepresence->findAll($condition);
 		foreach($presents as $present)
   		    $this->Listepresence->del($present['Listepresence']['id']);
 	}
-	
+
 	function afficherListePresents($seance_id=null)	{
 		$conditions = "Listepresence.seance_id= $seance_id ";
 		$presents = $this->Listepresence->findAll($conditions);
-		
+
 		for($i=0; $i<count($presents); $i++){
 			if ($presents[$i]['Listepresence']['mandataire'] !='0')
 			    $presents[$i]['Listepresence']['mandataire'] = $this->User->requestAction('/users/getPrenom/'.$presents[$i]['Listepresence']['mandataire']).' '.$this->User->requestAction('/users/getNom/'.$presents[$i]['Listepresence']['mandataire']);
 		}
 		return ($presents);
 	}
-	
+
 	function details ($seance_id=null) {
 		$this->set('deliberations' , $this->afficherProjets($seance_id, 0));
 	}
-	
+
 	function effacerVote($deliberation_id=null) {
 		$condition = "delib_id = $deliberation_id";
 		$votes = $this->Vote->findAll($condition);
 		foreach($votes as $vote)
   		    $this->Vote->del($vote['Vote']['id']);
 	}
-	
+
 	function voter ($deliberation_id=null) {
 		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
 
@@ -367,6 +370,5 @@ class SeancesController extends AppController {
 			}
 		}
 	}
-
 }
 ?>
