@@ -32,8 +32,7 @@ class DeliberationsController extends AppController {
 	}
 
 	function listerProjetsAttribues() {
-		if (empty ($this->data))
-		{
+		if (empty ($this->data)) {
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$conditions="seance_id != 0";
@@ -41,8 +40,7 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-	function listerProjetsNonAttribues()
-	{
+	function listerProjetsNonAttribues(){
 		if (empty ($this->data))
 		{
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
@@ -963,6 +961,16 @@ class DeliberationsController extends AppController {
         	echo("$positionCourante $seance_id $lastPosition" );
         }
 
+        function sortby($seance_id, $sortby) {
+		    $condition= "seance_id=$seance_id";
+  		    $deliberations = $this->Deliberation->findAll($condition,null, "$sortby ASC");
+		    for($i=0; $i<count($deliberations); $i++){
+			    $deliberations[$i]['Deliberation']['position']=$i+1;
+		    	$this->Deliberation->save($deliberations[$i]['Deliberation']);
+		    }
+		    $this->redirect("seances/afficherProjets/$seance_id");
+	    }
+
         function getCurrentPosition($id){
     		$conditions = "Deliberation.id = $id";
     		$field = 'position';
@@ -971,8 +979,7 @@ class DeliberationsController extends AppController {
     		return  $obj['0']['Deliberation']['position'];
   		}
 
-   		function getCurrentSeance($id)
-    	{
+   		function getCurrentSeance($id) {
 			$condition = "Deliberation.id = $id";
         	$objCourant = $this->Deliberation->findAll($condition);
 			return $objCourant['0']['Deliberation']['seance_id'];
@@ -1047,7 +1054,6 @@ class DeliberationsController extends AppController {
 
             $result = $this->Email->send();
 		}
-
 	}
 
 	function notifierInsertionCircuit ($delib_id, $user_id) {
@@ -1067,5 +1073,6 @@ class DeliberationsController extends AppController {
             $result = $this->Email->send();
 		}
 	}
+
 }
 ?>
