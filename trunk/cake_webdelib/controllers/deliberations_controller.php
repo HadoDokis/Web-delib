@@ -17,7 +17,7 @@ class DeliberationsController extends AppController {
 	{
 		//liste les projets dont je suis le redacteur et qui sont en cours de rédaction
 		//il faut verifier la position du projet de delib dans la table traitement s'il existe car
-		//si la position est à 0 cela notifie un refus
+		//si la position est � 0 cela notifie un refus
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
 		$conditions="etat = 0 AND redacteur_id = $user_id";
@@ -25,13 +25,13 @@ class DeliberationsController extends AppController {
 		$deliberations=$this->Deliberation->findAll($conditions);
 
 		for ($i=0; $i<count($deliberations); $i++)
-		    $deliberations[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($deliberations[$i]['Seance']['date']));
+			if (isset($deliberations[$i]['Seance']['date']))
+		        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($deliberations[$i]['Seance']['date']));
 
 		$this->set('deliberations', $deliberations);
 	}
 
-	function listerProjetsAttribues()
-	{
+	function listerProjetsAttribues() {
 		if (empty ($this->data))
 		{
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
@@ -183,9 +183,8 @@ class DeliberationsController extends AppController {
 		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "position ASC");
 		$conditions="etat=1 ";
 		$delib=array();
-		//$position_user=0;
 		$cpt=0;
-		//debug($data_circuit);
+
 		if ($data_circuit!=null)
 		{
 			foreach ($data_circuit as $data)
@@ -205,8 +204,6 @@ class DeliberationsController extends AppController {
 
 			for ($i=0; $i<count($deliberations); $i++)
 		    	$deliberations[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($deliberations[$i]['Seance']['date']));
-
-			//debug($deliberations);
 
 			foreach ($deliberations as $deliberation)
 			{
@@ -236,12 +233,8 @@ class DeliberationsController extends AppController {
 				}
 			}
 		}
-
-
-
 		$this->set('deliberations', $delib);
 		$this->render('listerProjetsATraiter');
-		//debug($delib);
 	}
 
 	function getPosition($circuit_id, $delib_id){
@@ -334,10 +327,12 @@ class DeliberationsController extends AppController {
 						$delib_id = $this->Deliberation->getLastInsertId();
 						$counter = 1;
 
+						if($this->data['Deliberation']['seance_id'] != ""){
 						$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 						$this->data['Deliberation']['position']=$position;
-						$this->Deliberation->save($this->data);
 
+						$this->Deliberation->save($this->data);
+						}
 
 						while($counter <= ($size/2))
 						{
@@ -433,12 +428,12 @@ class DeliberationsController extends AppController {
 	}
 
 	function textprojet ($id = null) {
-	$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
 
-	if (empty($this->data)) {
+		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
+
+		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
-		} else
-		{//debug($this->data);
+		} else{
 			$this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
@@ -452,8 +447,7 @@ class DeliberationsController extends AppController {
 				while($counter <= ($size/2))
 				{
 					//echo $annexes['file_'.$counter]['tmp_name']."<br>";
-					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name']))
-					{
+					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name'])){
 						$uploaded = false;
 					}
 					$counter++;
@@ -476,14 +470,11 @@ class DeliberationsController extends AppController {
 							{
 								echo "pb de sauvegarde de l\'annexe ".$counter;
 							}
-						//$this->log("annexe ".$counter." enregistr�e.");
-						//echo "<br>annexe ".$counter." enregistr�e.";
 						$counter++;
-
 						}
 						$this->redirect('/deliberations/textsynthese/'.$id);
 					} else {
-					$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 					}
 				}
 			}
@@ -793,7 +784,6 @@ class DeliberationsController extends AppController {
 					$this->Traitement->save($tab[$lastpos]['Traitement']);
 
 					$this->data['Traitement']['id']='';
-
 					//maj de la table traitements
 					$this->data['Traitement']['position']=0;
 					$circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
@@ -856,6 +846,8 @@ class DeliberationsController extends AppController {
         function getNatureListe(){
             $tabNatures = array();
         	$doc = new DOMDocument();
+        	$doc->preserveWhiteSpace = FALSE;
+
             if(!$doc->load(FILE_CLASS))
                die("Error opening xml file");
 
@@ -914,27 +906,24 @@ class DeliberationsController extends AppController {
           print curl_error($ch);
         curl_close($ch);
 
-                // Assurons nous que le fichier est accessible en �criture
-                if (is_writable(FILE_CLASS)) {
-                        if (!$handle = fopen(FILE_CLASS, 'w')) {
-                        echo "Impossible d'ouvrir le fichier (".FILE_CLASS.")";
-                        exit;
-                }
-                        // Ecrivons quelque chose dans notre fichier.
-                if (fwrite($handle, utf8_encode($reponse)) === FALSE) {
-                        echo "Impossible d'�crire dans le fichier ($filename)";
-                        exit;
-                }
-                else {
-                    $this->redirect('/deliberations/transmit');
-                }
-                fclose($handle);
-
-                }
-                else {
-              	  echo "Le fichier FILENAME n'est pas accessible en �criture.";
-                }
+        // Assurons nous que le fichier est accessible en �criture
+       if (is_writable(FILE_CLASS)) {
+           if (!$handle = fopen(FILE_CLASS, 'w')) {
+               echo "Impossible d'ouvrir le fichier (".FILE_CLASS.")";
+               exit;
+        	}
+        	// Ecrivons quelque chose dans notre fichier.
+        	if (fwrite($handle, utf8_encode($reponse)) === FALSE) {
+            	echo "Impossible d'�crire dans le fichier ($filename)";
+            	exit;
+       	 	}
+        	else
+            	$this->redirect('/deliberations/transmit');
+        	fclose($handle);
         }
+        else
+            echo "Le fichier FILENAME n'est pas accessible en �criture.";
+ 		}
 
         function positionner($id=null, $sens)
         {
@@ -993,15 +982,12 @@ class DeliberationsController extends AppController {
 			return count($this->Deliberation->findAll("seance_id =$seance_id" ));
     	}
 
-
 	function listerProjetsServicesAssemblees()
 	{
 		//liste les projets appartenants au service des assembl�es
 		$conditions="etat = 2 ";
 		$this->set('deliberations', $this->Deliberation->findAll($conditions));
 	}
-
-
 
 	function textprojetvue ($id = null) {
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
