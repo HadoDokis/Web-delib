@@ -6,7 +6,7 @@
 	<?php echo $html->tagErrorMsg('Service/libelle', 'Entrer le libelle.');?>
 </div>
 <div>
-	<?php echo $form->labelTag('Service/parent_id', 'Appartient ï¿½');?>
+	<?php echo $form->labelTag('Service/parent_id', 'Appartient à');?>
 	<?php echo $html->selectTag('Service/parent_id', $services, $selectedService)?>
 </div>
 <br/>
