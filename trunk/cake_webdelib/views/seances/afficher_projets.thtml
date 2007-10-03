@@ -1,36 +1,30 @@
-<h2>Liste des projets</h2>
+<h2>Liste des projets pour la séance du <?php echo $date_seance; ?></h2>
 <table>
 	<tr>
 		<th>Position</th>
-		<th>Theme</th>
+		<?php echo ('<th>'.$html->link('Theme', "/deliberations/sortby/$seance_id/theme_id"). "</th>"); ?>
 		<th>Rapporteur</th>
-		<th>Date Seance</th>
-		<th>Objet</th>
-		<th>Titre</th>
-		<th>Num Delib</th>
-		<th>Date creation</th>
-		<th>Date modification</th>
+		<?php echo ('<th>'.$html->link('Objet', "/deliberations/sortby/$seance_id/objet"). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre"). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Num Delib', "/deliberations/sortby/$seance_id/num_delib"). "</th>"); ?>
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 	</tr>
-	<? foreach($projets as $projet): ?>
+	<?php foreach($projets as $projet): ?>
     	<tr>
     	    <td><?php echo $projet['Deliberation']['position']; ?></td>
 		    <td><?php echo $projet['Theme']['libelle']; ?></td>
 		    <td><?php echo $projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom']; ?></td>
-		    <td><?php echo $projet['Seance']['date']; ?></td>
+
 		    <td><?php echo $projet['Deliberation']['objet']; ?></td>
 		    <td><?php echo $projet['Deliberation']['titre']; ?></td>
 		    <td><?php echo $projet['Deliberation']['num_delib']; ?></td>
-		    <td><?php echo $projet['Deliberation']['created']; ?></td>
-		    <td><?php echo $projet['Deliberation']['modified']; ?></td>
-
-		    <?php 
+		    <?php
 		        if($projet['Deliberation']['position']!= 1)
 		            echo ('<td>'.$html->link('', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1'.'</td>', array('class'=>'link_monter', 'title'=>'Monter')));
 		        else
 		           echo("<td>&nbsp;</td>");
-				
+
 				if($projet['Deliberation']['position']!= $lastPosition)
 		            echo '<td>'.$html->link('', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/0'.'</td>', array('class'=>'link_descendre', 'title'=>'Descendre'));
 		        else
