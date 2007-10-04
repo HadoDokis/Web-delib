@@ -84,17 +84,17 @@ class UsersController extends AppController {
 				$this->data['ServiceElu'] = null;
 				$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
 			}
-			$this->set('circuits', $this->User->Circuit->generateList());
-			if (empty($this->data['Circuit'])) { 
-				$this->data['Circuit'] = null; 
-			}
-			$this->set('selectedCircuits', $this->_selectedArray($this->data['Circuit']));
+//			$this->set('circuits', $this->User->Circuit->generateList());
+//			if (empty($this->data['Circuit'])) { 
+//				$this->data['Circuit'] = null; 
+//			}
+//			$this->set('selectedCircuits', $this->_selectedArray($this->data['Circuit']));
 			$this->set('profils', $this->User->Profil->generateList());
 			if (empty($this->data['Profil'])) { 
 				$this->data['Profil'] = null; 
 			}
-			$this->set('selectedProfils', $this->_selectedArray($this->data['Profil']));
-			
+			//$this->set('selectedProfils', $this->_selectedArray($this->data['Profil']));
+
 		} else {
 			if ($this->data['User']['statut']=='0'){					
 				$this->data['User']['service_id']=null;
