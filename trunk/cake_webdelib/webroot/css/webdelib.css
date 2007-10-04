@@ -232,6 +232,13 @@ a.link_voter {
 	padding: 0 0 10px 22px;
 }
 
+a.link_debat {
+	background-image: url(../img/icons/saisir.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
 a.link_voir {
 	background-image: url(../img/icons/find.png);
 	background-repeat: no-repeat;
@@ -502,8 +509,8 @@ ul.actions {
 #globalnav {
 	font: normal normal 14px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	position:relative;
-	//float:left;
-	//width:100%;
+	/*float:left;
+	/width:100%;*/
 	padding:0 0 1.50em 0em;
 	margin:0 40px 50px 0;
 	list-style:none;
@@ -606,6 +613,11 @@ ul.actions {
 }
 
 /*---------------- fin modifs christophe ------------------------*/
-
-
+/*graphique circuit validation*/
+.graphique {
+	float:left;
+	margin-left:15px;
+	text-align:center;
+	
+}
 
