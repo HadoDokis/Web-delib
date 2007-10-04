@@ -1,6 +1,6 @@
 <?php echo $javascript->link('fckeditor'); ?> 
 <?php echo $html->formTag('/deliberations/textsynthese/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
-Texte Synthèse : 
+<h2>Texte Synthèse :</h2> 
 <div class="optional">
     <?php echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][texte_synthese]'); ?>
