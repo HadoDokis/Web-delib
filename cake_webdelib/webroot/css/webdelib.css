@@ -77,9 +77,11 @@ label {
 
 .error_message {
 	color: #f00;
-	background-color: #fff;
+	/*background-color: #fff;*/
+	background-color: transparent;
 	margin: 8px 0px;
 	font-weight: bold;
+	text-align: center;
 }
 
 .centre {
