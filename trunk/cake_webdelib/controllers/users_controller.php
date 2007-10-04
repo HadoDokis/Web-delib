@@ -77,6 +77,7 @@ class UsersController extends AppController {
 			$this->data = $this->User->read(null, $id);
 			$this->set('notif',array('1'=>'oui','0'=>'non'));
 			$this->set('services', $this->User->Service->generateList());
+			
 			if (empty($this->data['Service'])) { 
 				$this->data['Service'] = null;
 				$this->set('selectedServices', $this->data['ServiceElu']['id']);
