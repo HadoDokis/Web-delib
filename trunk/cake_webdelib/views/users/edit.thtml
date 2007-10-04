@@ -66,13 +66,13 @@
 <br /><br />
 		<div class="optional" id="smenu14"> 
 		<?php echo $form->labelTag('Service/Service', 'Service(s)');?>
-	 	<?php echo $html->selectTag('Service/Service', $services,null, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
+	 	<?php echo $html->selectTag('Service/Service', $services,$selectedServices, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
 		<?php echo $html->tagErrorMsg('Service/Service', 'Entrer le(s) service(s) associï¿½(s).');?>
 		</div>
 <br/><br/>
 		<div class="optional" id="smenu15"> 
 		<?php echo $form->labelTag('User/service_id', 'Service');?>
-		<?php echo $html->selectTag('User/service_id', $services);?>
+		<?php echo $html->selectTag('User/service_id', $services,$selectedServices);?>
 		<?php echo $html->tagErrorMsg('User/service_id', 'Entrer le(s) service(s) associé(s).');?>
 		</div>
 	</div>
