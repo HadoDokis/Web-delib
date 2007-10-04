@@ -41,15 +41,23 @@
 	</div>
 </div>
 
-<dt>Position</dt>
-	<dd><?php foreach ($user_circuit as $user) {
-			if ($deliberation['positionDelib'] == $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)){
-				echo $html->image('/icons/edit.png');
-			}else{
-				echo $html->image('/icons/editcreate.png');	
-			}
-			echo $user['User']['prenom']. ' ' .$user['User']['nom']. ' (' .$user['Service']['libelle'].') ';
-		}?></dd>
+<dd>
+	<?php foreach ($user_circuit as $user) { ?>
+	<div class="graphique">
+		<?php 
+		if ($deliberation['positionDelib'] == $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)){
+			echo $html->image('/icons/edit.png');
+		} elseif ($deliberation['positionDelib'] < $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)) {
+			echo $html->image('/icons/editcreate.png');
+		} else {
+			echo $html->image('/icons/edit.png');
+		} ?>			
+		<br/><?php echo $user['User']['prenom']. ' ' .$user['User']['nom']; ?>
+		<br/><?php echo $user['Service']['libelle'];?>	
+	</div>
+	
+	<? } ?>
+</dd>
 
 <!--	<dt>Vote Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>  -->
@@ -103,7 +111,17 @@
 ?>
 </dd>	
 	
-
+<?php foreach ($deliberation['Annexe'] as $annexe) :
+	if(!empty($annexe) && ($annexe['type'] == "G")){ ?>
+	<dt>Annexes Globales </dt>
+	<dd><?php
+			echo '<br>Titre : '.$annexe['titre'];
+			echo '<br>Nom fichier : '.$annexe['filename'];
+			echo '<br>Taille : '.$annexe['size'];
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']); 
+	?>
+	<br/>
+	<?php } endforeach;  ?></dd>
 
 
 
