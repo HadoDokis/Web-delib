@@ -35,7 +35,7 @@ class UsersController extends AppController {
 			$this->set('selectedCircuits', null);
 			$this->set('profils', $this->User->Profil->generateList());
 			$this->set('selectedProfils', null);
-
+			$this->set('notif',array('1'=>'oui','0'=>'non'));
 
 		} else {
 			$this->data['User']['password']=md5($this->data['User']['password']);
@@ -75,6 +75,7 @@ class UsersController extends AppController {
 				$this->redirect('/users/index');
 			}
 			$this->data = $this->User->read(null, $id);
+			$this->set('notif',array('0'=>'non', '1'=>'oui'));
 			$this->set('services', $this->User->Service->generateList());
 			if (empty($this->data['Service'])) { 
 				$this->data['Service'] = null;
