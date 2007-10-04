@@ -1,6 +1,6 @@
 <?php echo $javascript->link('fckeditor'); ?> 
 <?php echo $html->formTag('/deliberations/textprojet/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
-Texte Projet : 
+<h2>Texte Projet : </h2>
 <div class="optional">
     <?php echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][texte_projet]'); ?>
