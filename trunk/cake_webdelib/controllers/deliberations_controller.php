@@ -284,7 +284,10 @@ class DeliberationsController extends AppController {
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
 			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
-			$this->set('selectedRapporteur',key($this->Deliberation->User->generateList('service_id='.$user['User']['service'])));
+			$selectedRapporteur = null;
+			if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
+				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
+			$this->set('selectedRapporteur',$selectedRapporteur);
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$this->render();
