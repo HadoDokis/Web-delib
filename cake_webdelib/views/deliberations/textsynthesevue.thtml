@@ -1,4 +1,4 @@
-<?php echo $html->image('/icons/synthese.png')?> Texte Synthese : 
+<h2><?php echo $html->image('/icons/synthese.png')?> Texte Synthese : </h2>
 
 <div>
 <?php echo $deliberation['Deliberation']['texte_synthese']; ?>
