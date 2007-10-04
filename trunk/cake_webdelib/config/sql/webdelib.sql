@@ -541,9 +541,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `profil_id`, `service_id`, `statut`, `login`, `password`, `nom`, `prenom`, `email`, `adresse`, `CP`, `ville`, `teldom`, `telmobile`, `date_naissance`, `accept_notif`, `created`, `modified`) VALUES
 (1, 0, 1, 0, 'francois', 'eb7abf5f00d2dd1678fd3763b90d5ea7', 'Desmaretz', 'françois', 'francois.desmaretz@adullact.org', '', 0, '', NULL, NULL, NULL, 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 (14, 66, 2, 1, 'pascal', '57c2877c1d84c4b49f3289657deca65c', 'Feydel', 'pascal', 'pascal@adullact.org', '', 0, '', NULL, NULL, '0000-00-00', 1, '2007-10-01 21:29:52', '2007-10-01 21:29:52'),
-(15, 0, 0, 0, 'stephanie', 'e8fab42752f318b2b2beb039a57dedcd', 'Monchecourt', 'stephanie', 'stephanie@adullact.org', '', 0, '', NULL, NULL, '0000-00-00', 1, '2007-10-01 21:34:37', '2007-10-01 21:34:37'),
 (16, 0, 1, 0, 'julien', '30d69d863dde81562ce277fbc0a3cf18', 'Calvet', 'Julien', 'julien@adullact.org', '', 0, '', NULL, NULL, '1970-01-01', 1, '2007-10-02 10:42:43', '2007-10-02 10:42:43'),
-(17, 0, 0, 0, 'remi', 'f1067e7173c7b9e6714ec7c88cf04bb1', 'Moine', 'RÃ©mi', 'remi@adullact.org', '', 0, '', 0000000000, 0000000000, '1999-11-30', 1, '2007-10-02 10:43:10', '2007-10-02 10:43:32');
+(17, 0, 0, 0, 'remi', 'f1067e7173c7b9e6714ec7c88cf04bb1', 'Moine', 'Remi', 'remi@adullact.org', '', 0, '', 0000000000, 0000000000, '1999-11-30', 1, '2007-10-02 10:43:10', '2007-10-02 10:43:32');
 
 -- --------------------------------------------------------
 
