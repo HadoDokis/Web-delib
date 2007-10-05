@@ -54,12 +54,13 @@
  	<?php echo $html->input('Deliberation/num_pref');?>
 	<?php echo $html->tagErrorMsg('Deliberation/num_pref', 'Entrer le Num Pref.');?>
 </div>
+<br/>
 <div class="optional"> 
-    <label>Date limite : </label>
-    <input name="date_limite" size="9" />&nbsp;
-	<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a>	
+	<?php echo $form->labelTag('Deliberation/date_limite', 'Date limite');?>
+ 	<input name="date_limite" size="9" value="<? echo $deliberations['Deliberation']['date_limite']?>"/>&nbsp;
+ 	<?php echo $html->link( '',"javascript:show_calendar('Deliberation.date_limite','f');", array('class'=>'link_calendar', 'name'=>'calendrier'));?>
+ 	<?php echo $html->tagErrorMsg('Deliberation/date_limite', 'Entrer une date limite.');?>
 </div>
-
 <br/>
 
 <div class="optional">
@@ -69,7 +70,7 @@
 			echo '<br>Titre : '.$annexe['Annex']['titre'];
 			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
 			echo '<br>Taille : '.$annexe['Annex']['size'];?>
-			<br/><a href="" name="download">Telecharger</a><br/><br/>
+			<br/><?php echo $html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
 	<?php endforeach; } ?>
 </div>
 <div id="cible"> 
