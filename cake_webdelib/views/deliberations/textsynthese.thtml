@@ -1,6 +1,6 @@
-<?php echo $javascript->link('fckeditor'); ?> 
+<?php echo $javascript->link('fckeditor'); ?>
 <?php echo $html->formTag('/deliberations/textsynthese/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
-<h2>Texte Synthèse :</h2> 
+<h2>Texte Synthèse :</h2>
 <div class="optional">
     <?php echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][texte_synthese]'); ?>
@@ -16,13 +16,13 @@
 			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
 	<?php endforeach; } ?>
 </div>
-<div id="cible"> 
+<div id="cible">
 
 </div>
 <div>
 <a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
 </div>
 <div class="submit">
-	<?php echo $html->submit('Terminer', array('class'=>'bt_fin', 'name'=>'terminer'));?>
+	<?php echo $html->submit('Saisir la délibération', array('class'=>'bt_add', 'name'=>'Enregistrer Synthese'));?>
 </div>
 </form>
