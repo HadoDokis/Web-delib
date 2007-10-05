@@ -41,8 +41,9 @@
 	</div>
 </div>
 
-<dd>
-	<?php foreach ($user_circuit as $user) { ?>
+<div class="imbrique">
+	<dt>Circuit validation</dt>
+	<dd><?php foreach ($user_circuit as $user) { ?>
 	<div class="graphique">
 		<?php 
 		if ($deliberation['positionDelib'] == $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)){
@@ -57,7 +58,8 @@
 	</div>
 	
 	<? } ?>
-</dd>
+	</dd>
+</div>
 
 <!--	<dt>Vote Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>  -->
@@ -73,11 +75,7 @@
 	</div>
 </div>
 
-<!--	<dt>Texte Projet</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_projet']?></dd> -->
 
-<!--	<dt>Texte Synthese</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_synthese']?></dd> -->
 
 <div class="imbrique">
 	<div class="gauche">
@@ -89,6 +87,20 @@
 		<dd>&nbsp;<?php echo $deliberation['Deliberation']['modified']?></dd>
 	</div>
 </div>
+
+
+<?php if(!empty($deliberation['Annexe'])) { ?>
+	<dt>Annexe(s) Globale(s) </dt>	
+	<dd>
+ <?php foreach ($deliberation['Annexe'] as $annexe) {
+			if ($annexe['type'] == "G"){
+				echo '<br>Titre : '.$annexe['titre'];
+				echo '<br>Nom fichier : '.$annexe['filename'];
+				echo '<br>Taille : '.$annexe['size'];
+				echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>'; 
+			}
+ 		}	  ?></dd> 
+ <? } ?>
 
 <?php 
 	if ($tab_anterieure!=null)
@@ -107,21 +119,9 @@
 		echo"<dt>Commentaire</dt><dd>&nbsp;";
 		foreach ($deliberation['Commentaire'] as $commentaire){
 		echo $commentaire['texte'].'<br/>';}
+		echo '</dd>';
 	}
 ?>
-</dd>	
-	
-<?php foreach ($deliberation['Annexe'] as $annexe) :
-	if(!empty($annexe) && ($annexe['type'] == "G")){ ?>
-	<dt>Annexes Globales </dt>
-	<dd><?php
-			echo '<br>Titre : '.$annexe['titre'];
-			echo '<br>Nom fichier : '.$annexe['filename'];
-			echo '<br>Taille : '.$annexe['size'];
-			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']); 
-	?>
-	<br/>
-	<?php } endforeach;  ?></dd>
 
 
 
@@ -133,15 +133,5 @@
 	<li><?php echo $html->link('','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'))?></li>
 
 </ul>
-<!--
-	<li><?php echo $html->link('Voir les utilisateurs', '/users/index/');?></li>
-	<li><?php echo $html->link('Voir les circuits', '/circuits/index/');?></li>
-	<li><?php echo $html->link('Voir les themes', '/themes/index/');?></li>
-	<li><?php echo $html->link('Voir les services', '/services/index/');?></li>
-	<li><?php echo $html->link('Ajouter un utilisateur', '/users/add/');?></li>
-	<li><?php echo $html->link('Ajouter un circuit', '/circuits/add/');?></li>
-	<li><?php echo $html->link('Ajouter un theme', '/themes/add/');?></li>
-	<li><?php echo $html->link('Ajouter un service', '/services/add/');?></li>
--->
 
 </div>
