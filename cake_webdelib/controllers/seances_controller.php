@@ -352,9 +352,11 @@ class SeancesController extends AppController {
 
 		if (empty($this->data)) {
 			$donnees = $this->Vote->findAll("delib_id = $deliberation_id");
-			foreach($donnees as $donnee)
+			foreach($donnees as $donnee){
 				$this->data['vote'][$donnee['Vote']['user_id']]=$donnee['Vote']['resultat'];
 
+			    $this->data['Vote']['commentaire'] = $donnee['Vote']['commentaire'];
+			}
 			$this->set('deliberation' , $this->Deliberation->findAll("Deliberation.id=$deliberation_id"));
 			$this->set('presents' , $this->afficherListePresents($seance_id));
 		}
@@ -365,6 +367,7 @@ class SeancesController extends AppController {
 				$this->data['Vote']['user_id']=$user_id;
 				$this->data['Vote']['delib_id']=$deliberation_id;
 				$this->data['Vote']['resultat']=$vote;
+
 				if ($this->Vote->save($this->data['Vote']))
 					$this->redirect('seances/details/'.$seance_id);
 			}
