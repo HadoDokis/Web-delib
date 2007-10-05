@@ -282,6 +282,13 @@ a.link_synthese {
 	padding: 0 0 10px 22px;
 }
 
+a.link_deliberation {
+	background-image: url(../img/icons/delibe.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
 a.link_add {
 	background-image: url(../img/icons/edit_add.png);
 	background-repeat: no-repeat;
