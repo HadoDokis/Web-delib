@@ -418,12 +418,23 @@ class DeliberationsController extends AppController {
 						$counter++;
 
 						}
-						$this->redirect('/deliberations/attribuercircuit/'.$id);
+						$this->redirect('/deliberations/deliberation/'.$id);
 
 					} else {
 					$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 					}
 				}
+			}
+		}
+	}
+
+	function deliberation ($id=null) {
+		if (empty($this->data)) {
+			$this->data = $this->Deliberation->read(null, $id);
+		} else{
+			$this->data['Deliberation']['id']=$id;
+			if ($this->Deliberation->save($this->data)) {
+				$this->redirect('/deliberations/attribuercircuit/'.$id);
 			}
 		}
 	}
@@ -845,38 +856,35 @@ class DeliberationsController extends AppController {
         }
 
         function getNatureListe(){
-            $tabNatures = array();
-        	$doc = new DOMDocument();
-        	$doc->preserveWhiteSpace = FALSE;
-
+            $tab = array();
+        	$doc = new DOMDocument('1.0', 'UTF-8');
             if(!$doc->load(FILE_CLASS))
-               die("Error opening xml file");
-
+                die("Error opening xml file");
             $NaturesActes = $doc->getElementsByTagName('NatureActe');
 			foreach ($NaturesActes as $NatureActe)
-   			    $tabNatures[$NatureActe->getAttribute('CodeNatureActe')]= utf8_decode($NatureActe->getAttribute('Libelle'));
-			return $tabNatures;
+   			    $tab[$NatureActe->getAttribute('actes:CodeNatureActe')]= utf8_decode($NatureActe->getAttribute('actes:Libelle'));
+
+			return $tab;
         }
 
         function getMatiereListe(){
- 		    $tabMatieres = array();
-
+ 		    $tab = array();
         	$doc = new DOMDocument();
+            $i=0;
             if(!$doc->load(FILE_CLASS))
                 die("Error opening xml file");
+
             $Matieres1 = $doc->getElementsByTagName('Matiere1');
-
 			foreach ($Matieres1 as $Matiere1) {
-			    if ($Matiere1->getAttribute('Libelle')!= '')
-   			        $tabMatieres[$Matiere1->getAttribute('CodeMatiere')]= utf8_decode($Matiere1->getAttribute('Libelle'));
-
-				$Matieres2 = $doc->getElementsByTagName('Matiere2');
+			   	$Matieres2 = $doc->getElementsByTagName('Matiere2');
 				foreach ($Matieres2 as $Matiere2) {
-   			        if ($Matiere2->getAttribute('Libelle')!= '')
-   			    	    $tabMatieres[$Matiere1->getAttribute('CodeMatiere').'-'.$Matiere2->getAttribute('CodeMatiere')]= utf8_decode($Matiere2->getAttribute('Libelle'));
-				 }
+				    $tab[$Matiere1->getAttribute('actes:CodeMatiere')]= utf8_decode($Matiere1->getAttribute('actes:Libelle'));
+					$tab[$Matiere1->getAttribute('actes:CodeMatiere').'-'.$Matiere2->getAttribute('actes:CodeMatiere')] = utf8_decode($Matiere2->getAttribute('actes:Libelle'));
+				}
+
 			 }
-			 return $tabMatieres;
+			 debug($tab);
+			 exit;
         }
 
        function getDateClassification(){
