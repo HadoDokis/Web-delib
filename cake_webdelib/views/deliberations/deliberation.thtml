@@ -1,0 +1,12 @@
+<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $html->formTag('/deliberations/deliberation/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
+<h2>Délibération : </h2>
+<div class="optional">
+    <?php echo $html->textarea('Deliberation/deliberation', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Deliberation][deliberation]'); ?>
+    <?php echo $html->tagErrorMsg('Deliberation/deliberation', 'Entrer la délibération.');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Attribuer un circuit', array('class'=>'bt_fin', 'name'=>'terminer'));?>
+</div>
+</form>
