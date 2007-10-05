@@ -6,6 +6,23 @@
     <?php echo $fck->load('data[Deliberation][deliberation]'); ?>
     <?php echo $html->tagErrorMsg('Deliberation/deliberation', 'Entrer la délibération.');?>
 </div>
+
+<div class="optional">
+	<?php if(!empty($annexes)){  ?>
+	<?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?>
+	<?php foreach ($annexes as $annexe) :
+			echo '<br>Titre : '.$annexe['Annex']['titre'];
+			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
+			echo '<br>Taille : '.$annexe['Annex']['size'];
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
+	<?php endforeach; } ?>
+</div>
+<div id="cible">
+
+</div>
+<div>
+<a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
+</div>
 <div class="submit">
 	<?php echo $html->submit('Attribuer un circuit', array('class'=>'bt_fin', 'name'=>'terminer'));?>
 </div>
