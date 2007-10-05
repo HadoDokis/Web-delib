@@ -38,6 +38,7 @@
 	</div>
 </div>
 
+<div class="imbrique">
 <dd>
 	<?php foreach ($user_circuit as $user) { ?>
 	<div class="graphique">
@@ -55,6 +56,7 @@
 	
 	<? } ?>
 </dd>
+</div>
 
 <!--	<dt>Vote Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>  -->
@@ -108,17 +110,18 @@
 ?>
 		</dd>
 		
-<?php foreach ($deliberation['Annexe'] as $annexe) :
-	if(!empty($annexe) && ($annexe['type'] == "G")){ ?>
-	<dt>Annexes Globales </dt>
-	<dd><?php
-			echo '<br>Titre : '.$annexe['titre'];
-			echo '<br>Nom fichier : '.$annexe['filename'];
-			echo '<br>Taille : '.$annexe['size'];
-			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']); 
-	?>
-	<br/>
-	<?php } endforeach;  ?></dd>
+<?php if(!empty($deliberation['Annexe'])) { ?>
+	<dt>Annexe(s) Globale(s) </dt>	
+	<dd>
+ <?php foreach ($deliberation['Annexe'] as $annexe) {
+			if ($annexe['type'] == "G"){
+				echo '<br>Titre : '.$annexe['titre'];
+				echo '<br>Nom fichier : '.$annexe['filename'];
+				echo '<br>Taille : '.$annexe['size'];
+				echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>'; 
+			}
+ 		}	  ?></dd> 
+ <? } ?>
 
 
 </dl>
