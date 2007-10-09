@@ -48,7 +48,7 @@
 		} elseif ($deliberation['positionDelib'] < $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)) {
 			echo $html->image('/icons/editcreate.png');
 		} else {
-			echo $html->image('/icons/edit.png');
+			echo $html->image('/icons/editcreate.png');
 		} ?>			
 		<br/><?php echo $user['User']['prenom']. ' ' .$user['User']['nom']; ?>
 		<br/><?php echo $user['Service']['libelle'];?>	
