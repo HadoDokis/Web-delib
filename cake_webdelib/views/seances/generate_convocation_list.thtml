@@ -24,11 +24,11 @@
 
 	$search = array("#LOGO_COLLECTIVITE#","#ADRESSE_COLLECTIVITE#","#NOM_ELU#","#ADRESSE_ELU#","#VILLE_ELU#","#VILLE_COLLECTIVITE#","#DATE_DU_JOUR#","#TYPE_SEANCE#","#DATE_SEANCE#","#LIEU_SEANCE#");
 	$replace = array('<img src="files/image/logo.jpg">',
-					"Une adresse qui represente<br><br>l'empacement de la collectivite",
+					$collectivite[0]['Collectivite']['nom'].'<br>'.$collectivite[0]['Collectivite']['adresse'].'<br>'.$collectivite[0]['Collectivite']['CP'].' '.$collectivite[0]['Collectivite']['ville'],
 					$seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'],
 					$seanceUser['User']['adresse'], 
 					$seanceUser['User']['CP'].' '.$seanceUser['User']['ville'],
-					$collectivite[0]['Collectivite']['nom'],
+					$collectivite[0]['Collectivite']['ville'],
 					$jour.' '.date('d').' '.$mois.' '.date('Y'),
 					$type_infos[0]['Typeseance']['libelle'],
 					$date_seance,
