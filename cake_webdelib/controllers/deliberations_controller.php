@@ -26,7 +26,7 @@ class DeliberationsController extends AppController {
 
 		for ($i=0; $i<count($deliberations); $i++)
 			if (isset($deliberations[$i]['Seance']['date']))
-		        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($deliberations[$i]['Seance']['date']));
+		        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 
 		$this->set('deliberations', $deliberations);
 	}
@@ -111,7 +111,7 @@ class DeliberationsController extends AppController {
 			$deliberations = $this->Deliberation->findAll($conditions);
 
 			for ($i=0; $i<count($deliberations); $i++)
-		    	$deliberations[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($deliberations[$i]['Seance']['date']));
+		    	$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 
 			//debug($deliberations);
 			//debug($data_circuit);
@@ -201,7 +201,7 @@ class DeliberationsController extends AppController {
 			$deliberations = $this->Deliberation->findAll($conditions);
 
 			for ($i=0; $i<count($deliberations); $i++)
-		    	$deliberations[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($deliberations[$i]['Seance']['date']));
+		    	$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 
 			foreach ($deliberations as $deliberation)
 			{
@@ -259,6 +259,8 @@ class DeliberationsController extends AppController {
 		//$this->set('deliberation', $this->Deliberation->read(null, $id));
 
 		$deliberation= $this->Deliberation->read(null, $id);
+		$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
+		
 		$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
 		$delib=array();
 		//on recupere la position courante de la deliberation
@@ -289,7 +291,10 @@ class DeliberationsController extends AppController {
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
+			$date_seances = $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date');
+			foreach ($date_seances as $key=>$date)
+				$date_seances[$key]= $this->Date->frenchDateConvocation(strtotime($date));
+			$this->set('date_seances',$date_seances);	
 			$this->render();
 		} else {
 
@@ -551,7 +556,11 @@ function deliberation ($id = null) {
 			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
 			//debug($this->Deliberation->Annex->findAll('deliberation_id='.$id.' AND type="G"',array('titre','size','filename')));
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
+			$date_seances = $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date');
+			foreach ($date_seances as $key=>$date)
+				$date_seances[$key]= $this->Date->frenchDateConvocation(strtotime($date));
+			$this->set('date_seances',$date_seances);	
+			
 		} else {
 
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
@@ -644,7 +653,7 @@ function deliberation ($id = null) {
 			$this->redirect('/deliberations/listerMesProjets');
 		}
 		if ($this->Deliberation->del($id)) {
-			$this->Session->setFlash('La deliberation a &eacute;t&eacute; suprim&eacute;e.');
+			$this->Session->setFlash('La deliberation a &eacute;t&eacute; supprim&eacute;e.');
 			$this->redirect('/deliberations/listerMesProjets');
 		}
 	}
@@ -772,6 +781,8 @@ function deliberation ($id = null) {
 
 
 				$deliberation= $this->Deliberation->read(null, $id);
+				$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
+		
 				$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
 				$delib=array();
 					//on recupere la position courante de la deliberation
@@ -910,7 +921,8 @@ function deliberation ($id = null) {
 			return $tab;
         }
 
-        function getMatiereListe(){
+/** code de francois 
+          function getMatiereListe(){
  		    $tab = array();
         	$doc = new DOMDocument();
             $i=0;
@@ -918,7 +930,7 @@ function deliberation ($id = null) {
                 die("Error opening xml file");
 
             $Matieres1 = $doc->getElementsByTagName('Matiere1');
-			foreach ($Matieres1 as $Matiere1) {
+			  foreach ($Matieres1 as $Matiere1) {
 			   	$Matieres2 = $doc->getElementsByTagName('Matiere2');
 				foreach ($Matieres2 as $Matiere2) {
 				    $tab[$Matiere1->getAttribute('actes:CodeMatiere')]= utf8_decode($Matiere1->getAttribute('actes:Libelle'));
@@ -928,8 +940,40 @@ function deliberation ($id = null) {
 			 }
 			 debug($tab);
 			 exit;
-        }
+        }*/
 
+
+// a moi
+function getMatiereListe(){
+ 		$tab = array();
+	
+  		$dom = new DomDocument();
+		$dom->load("/home/marine/Desktop/classification.xml");
+         // if(!$dom->load(FILE_CLASS))
+        // die("Error opening xml file");
+		$i=0;
+		
+		$Matieres1 = $dom->getElementsByTagName('Matiere1');
+		foreach ($Matieres1 as $matieres){
+   			$Matieres = $dom->getElementsByTagName('Matiere1')->item($i);
+   			$tab[$Matieres->getAttribute('CodeMatiere')] = $Matieres->getAttribute('Libelle');
+   			
+  			
+   			$Matieres2 = $Matieres->getElementsByTagName('Matiere2');
+  			foreach($Matieres2 as $Matiere2){
+      			$tab[$Matieres->getAttribute('CodeMatiere').'-'.$Matiere2->getAttribute('CodeMatiere')]= $Matiere2->getAttribute('Libelle');
+  				
+  			}
+		$i++;
+		}
+			
+		debug($tab);
+		exit;
+    }
+
+
+
+		
        function getDateClassification(){
 	       $doc = new DOMDocument();
            if(!$doc->load(FILE_CLASS))
