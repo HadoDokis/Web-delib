@@ -6,7 +6,21 @@
  	<?php echo $html->input('Collectivite/nom');?>
 	<?php echo $html->tagErrorMsg('Collectivite/nom', 'Entrer le nom de la collectivité');?>
 </div>
-
+<br />
+<div class="optional">
+		<?php echo $form->labelTag('Collectivite/adresse', 'Adresse');?>
+ 		<?php echo $html->input('Collectivite/adresse', array('size' => '30'));?>
+		<?php echo $html->tagErrorMsg('Collectivite/adresse', 'Entrer l\'adresse.');?>
+	<br />
+		<?php echo $form->labelTag('Collectivite/CP', 'Code Postal');?>
+ 		<?php echo $html->input('Collectivite/CP');?>
+		<?php echo $html->tagErrorMsg('Collectivite/CP', 'Entrer le code postal.');?>
+	<br />
+		<?php echo $form->labelTag('Collectivite/ville', 'Ville');?>
+	 	<?php echo $html->input('Collectivite/ville');?>
+		<?php echo $html->tagErrorMsg('Collectiviter/ville', 'Entrer la ville.');?>
+</div>
+<br /><br/><br/>
 <div class="submit">
 	<?php echo $html->submit('Enregistrer la collectivité', array('class'=>'bt_add', 'name'=>'modifier'));?>
 </div>
