@@ -1,0 +1,15 @@
+<h2>Nouveau modèle : </h2>
+<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $html->formTag('/models/add'); ?>
+
+<div class="optional">
+    <?php echo $html->textarea('Model/texte', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Model][texte]'); ?>
+    <?php echo $html->tagErrorMsg('Model/texte', 'Entrer la délibération.');?>
+</div>
+
+<div class="submit">
+	<?php echo $html->submit('Sauvegarder', array('class'=>'bt_fin', 'name'=>'terminer'));?>
+</div>
+
+</form>
