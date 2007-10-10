@@ -2,16 +2,16 @@
 class SeancesController extends AppController {
 
 	var $name = 'Seances';
-	var $helpers = array('Html', 'Form', 'Html2', 'Javascript','fpdf');
+	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $components = array('Date');
-	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote');
+	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote','Model');
 
 	function index() {
 		$this->Seance->recursive = 0;
 		$seances = $this->Seance->findAll(null,null,'date asc');
 
 		for ($i=0; $i<count($seances); $i++)
-		    $seances[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($seances[$i]['Seance']['date']));
+		    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
 
 		$this->set('seances', $seances);
 	}
@@ -91,7 +91,7 @@ class SeancesController extends AppController {
 			$seances = $this->Seance->findAll(($condition),null,'date asc');
 
 			for ($i=0; $i<count($seances); $i++)
-			    $seances[$i]['Seance']['date'] = $this->Date->frenchDate(strtotime($seances[$i]['Seance']['date']));
+			    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
 
 			$this->set('seances', $seances);
 		}
@@ -99,10 +99,14 @@ class SeancesController extends AppController {
 
 	function listerAnciennesSeances()
 	{
-		if (empty ($this->data))
-		{
+			if (empty ($this->data)) {
 			$condition= 'date <= "'.date('Y-m-d H:i:s').'"';
-			$this->set('seances', $this->Seance->findAll(($condition),null,'date ASC'));
+			$seances = $this->Seance->findAll(($condition),null,'date asc');
+
+			for ($i=0; $i<count($seances); $i++)
+			    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
+
+			$this->set('seances', $seances);
 		}
 	}
 
@@ -179,13 +183,13 @@ class SeancesController extends AppController {
 
 	function afficherProjets ($id=null, $return=null)
 	{
-		$condition= "seance_id=$id AND etat!=-1";
+		$condition= "seance_id=$id AND etat=1";
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
 			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
 		    $this->set('seance_id', $id);
 		    $this->set('projets', $deliberations);
-			$this->set('date_seance', $this->Date->frenchDate(strtotime($deliberations[0]['Seance']['date'])));
+			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($deliberations[0]['Seance']['date'])));
 		}
 		else
 		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
@@ -256,8 +260,8 @@ class SeancesController extends AppController {
 	function generateConvocationList ($id=null) {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
 		$type_infos = $this->getType($id);
-
 		$this->set('type_infos', $type_infos );
+		$this->set('model',$this->Model->findAll());
 		$this->set('projets', $this->afficherProjets($id, 1));
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
 		$this->set('mois', $this->Date->months[intval(date('m'))]);
@@ -268,7 +272,7 @@ class SeancesController extends AppController {
 	function generateOrdresDuJour ($id=null) {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
 		$type_infos = $this->getType($id);
-
+		$this->set('model',$this->Model->findAll());
 		$this->set('type_infos', $type_infos );
 		$this->set('projets', $this->afficherProjets($id, 1));
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
@@ -372,6 +376,21 @@ class SeancesController extends AppController {
 					$this->redirect('seances/details/'.$seance_id);
 			}
 		}
+	}
+	
+	function saisirDebat ($id = null)	{
+		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$id);
+	
+		if (empty($this->data)) {
+			$this->data = $this->Deliberation->read(null, $id);
+		} else {
+			$this->data['Deliberation']['id']=$id;
+			if ($this->Deliberation->save($this->data)) {
+				$this->redirect('/seances/details/'.$seance_id);
+			} else {
+				$this->Session->setFlash('Please correct errors below.');
+			}
+		}	
 	}
 }
 ?>
