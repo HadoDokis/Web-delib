@@ -1,6 +1,6 @@
-<h2><?php echo $html->image('/icons/synthese.png')?> Texte Synthese : </h2>
+<h2><?php echo $html->image('icons/synthese.png')?> Texte Synthese : </h2>
 
-<div>
+<div class="pave">
 <?php echo $deliberation['Deliberation']['texte_synthese']; ?>
 </div>
 
