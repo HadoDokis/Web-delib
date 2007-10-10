@@ -1,0 +1,13 @@
+<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $html->formTag('/models/edit/'.$html->tagValue('Model/id')); ?>
+<h2>Modification du modèle : </h2>
+<div class="optional">
+    <?php echo $html->textarea('Model/texte', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Model][texte]'); ?>
+    <?php echo $html->tagErrorMsg('Model/texte', 'Entrer la délibération.');?>
+</div>
+
+<div class="submit">
+	<?php echo $html->submit('Modifier', array('class'=>'bt_fin', 'name'=>'terminer'));?>
+</div>
+</form>
