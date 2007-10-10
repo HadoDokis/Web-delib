@@ -20,7 +20,13 @@
 	 	<?php echo $html->input('Collectivite/ville');?>
 		<?php echo $html->tagErrorMsg('Collectiviter/ville', 'Entrer la ville.');?>
 </div>
-<br /><br/><br/>
+<br />
+<div > 
+		<?php echo $form->labelTag('Collectivite/telephone', 'Num telephone');?>
+ 		<?php echo $html->input('Collectivite/telephone');?>
+		<?php echo $html->tagErrorMsg('Collectivite/telephone', 'Entrer le Num telephone.');?>
+</div>
+	<br/><br /><br/><br/>
 <div class="submit">
 	<?php echo $html->submit('Enregistrer la collectivité', array('class'=>'bt_add', 'name'=>'modifier'));?>
 </div>
