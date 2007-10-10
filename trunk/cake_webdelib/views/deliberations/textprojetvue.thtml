@@ -1,5 +1,5 @@
 <h2><?php echo $html->image('icons/projet.png')?> Texte Projet : </h2>
-<div>
+<div class="pave">
 <?php echo $deliberation['Deliberation']['texte_projet']; ?>
 </div>
 <br/><br/>
