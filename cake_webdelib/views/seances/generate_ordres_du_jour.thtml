@@ -4,13 +4,30 @@
 	
     foreach($data as $seanceUser) {
         $pdf->AddPage();   
-        $pdf->WriteHTML('<img src="files/image/logo.jpg">');
-        $pdf->WriteHTML('<table width="95%" border="0">');
-        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left"><b>'.$seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'].'</b></td></tr>');
-        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['adresse'].'</td></tr>');
-        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['CP'].' '.$seanceUser['User']['ville'].'</td>');
-        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">A '.$collectivite[0]['Collectivite']['nom'].', le '.$jour.' '.date('d').' '.$mois.' '.date('Y').'</td></tr></table><br>');
-      	$pdf->WriteHTML('<p align="center"><b> Ordres du jour du '.$type_infos[0]['Typeseance']['libelle'].'</b> du <b>'.$date_seance.'</b></p>');
+//        $pdf->WriteHTML('<img src="files/image/logo.jpg">');
+//        $pdf->WriteHTML('<table width="95%" border="0">');
+//        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left"><b>'.$seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'].'</b></td></tr>');
+//        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['adresse'].'</td></tr>');
+//        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">'.$seanceUser['User']['CP'].' '.$seanceUser['User']['ville'].'</td>');
+//        $pdf->WriteHTML('<tr><td width="50%">&nbsp;</td><td align="left">A '.$collectivite[0]['Collectivite']['nom'].', le '.$jour.' '.date('d').' '.$mois.' '.date('Y').'</td></tr></table><br>');
+//      	$pdf->WriteHTML('<p align="center"><b> Ordres du jour du '.$type_infos[0]['Typeseance']['libelle'].'</b> du <b>'.$date_seance.'</b></p>');
+
+      	
+      	
+      	$search = array("#LOGO_COLLECTIVITE#","#ADRESSE_COLLECTIVITE#","#NOM_ELU#","#ADRESSE_ELU#","#VILLE_ELU#","#VILLE_COLLECTIVITE#","#DATE_DU_JOUR#","#TYPE_SEANCE#","#DATE_SEANCE#","","","");
+		$replace = array('<img src="files/image/logo.jpg">',
+					"Une adresse qui represente<br><br>l'empacement de la collectivite",
+					$seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'],
+					$seanceUser['User']['adresse'], 
+					$seanceUser['User']['CP'].' '.$seanceUser['User']['ville'],
+					$collectivite[0]['Collectivite']['nom'],
+					$jour.' '.date('d').' '.$mois.' '.date('Y'),
+					$type_infos[0]['Typeseance']['libelle'],
+					$date_seance,
+					
+					);
+		$generation = str_replace($search,$replace,$model[1]['Model']['texte']);
+		$pdf->WriteHTML($generation);
 
         foreach($projets as $projet) {
          	$pdf->WriteHTML('<b><u>Thème </u>: </b><br>'.$projet['Theme']['libelle'].'<br>');
