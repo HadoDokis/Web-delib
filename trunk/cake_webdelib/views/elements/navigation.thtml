@@ -49,6 +49,7 @@ $sub_menu4 = array
 	'Thèmes' => array('link' => '/themes/index'),
 	'Types de séance' => array('link' => '/typeseances'),
 	'Collectivité' => array('link' => '/collectivites'),
+	'Génération' => array('link' => '/models/index')
 	
 );
 
