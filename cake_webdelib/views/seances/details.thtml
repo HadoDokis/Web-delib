@@ -21,6 +21,7 @@
 	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
 	<td class="actions">
 			<?php echo $html->link('','/seances/voter/' .$deliberation['Deliberation']['id'], array('class'=>'link_voter', 'title'=>'Voter les projets'))?>
+			<?php echo $html->link('','/seances/saisirDebat/' .$deliberation['Deliberation']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats')); ?>
 	</td>
 </tr>
 <?php endforeach; ?>
