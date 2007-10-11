@@ -1,0 +1,23 @@
+<h2>Modification d'une localisation</h2>
+<form action="<?php echo $html->url('/localisations/edit/'.$html->tagValue('Service/id')); ?>" method="post">
+<div class="optional">
+	<?php echo $form->labelTag('Localisation/libelle', 'Libelle');?>
+ 	<?php echo $html->input('Localisation/libelle', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Localisation/libelle', 'Entrer le libelle.');?>
+</div>
+<div>
+	<?php echo $form->labelTag('Localisation/parent_id', 'Appartient &agrave;');?>
+	<?php echo $html->selectTag('Localisation/parent_id', $localisations, $selectedLocalisation)?>
+</div>
+<br/>
+<div class="submit">
+	<?php echo $form->labelTag('Typeseance/id', '&nbsp;');?>
+	<?php echo $html->hidden('Localisation/id')?>
+	<?php echo $html->submit('Enregistrer');?>
+</div>
+</form>
+<br/>
+<ul class="actions">
+<li><?php echo $html->link('Supprimer','/localisations/delete/' . $html->tagValue('Localisation/id'), null, 'Etes-vous sur de vouloir supprimer le service "' . $html->tagValue('Localisation/libelle').'" ?');?>
+<li><?php echo $html->link('Annuler', '/localisations/index')?></li>
+</ul>
