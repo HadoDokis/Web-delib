@@ -23,6 +23,10 @@
 <div>
 <a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
 </div>
+	<div class="optional">
+    	<h2>Délibération au format world</h2>
+    	<?php echo  $html->fileTag("Deliberation/texte_doc"); ?>
+	</div>
 <div class="submit">
 	<?php echo $html->submit('Attribuer un circuit', array('class'=>'bt_fin', 'name'=>'terminer'));?>
 </div>

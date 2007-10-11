@@ -1,4 +1,4 @@
-<?php echo $javascript->link('fckeditor'); ?> 
+<?php echo $javascript->link('fckeditor'); ?>
 <?php echo $html->formTag('/deliberations/textprojet/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
 <h2>Texte Projet : </h2>
 <div class="optional">
@@ -16,14 +16,17 @@
 			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
 	<?php endforeach; } ?>
 </div>
-
-<div id="cible"> 
+<div id="cible">
 
 </div>
 <div>
 <a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
 </div>
+	<div class="optional">
+    	<h2>Texte Projet au format world</h2>
+    	<?php echo  $html->fileTag("Deliberation/texte_doc"); ?>
+	</div>
 <div class="submit">
-	<?php echo $html->submit('Rédiger un texte de synthèse', array('class'=>'bt_add', 'name'=>'saisir'));?>
+	<?php echo $html->submit('Continuer', array('class'=>'bt_add', 'name'=>'saisir'));?>
 </div>
 </form>
