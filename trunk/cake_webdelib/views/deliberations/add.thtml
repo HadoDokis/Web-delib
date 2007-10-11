@@ -1,51 +1,48 @@
 <?php echo $javascript->link('calendrier.js'); ?>
-	
+
 <h2>Nouvelle d&eacute;liberation</h2>
 
 <?php echo $html->formTag('/deliberations/add/', null,array('name'=>'Deliberation','enctype'=>'multipart/form-data')); ?>
 
-<div class="optional"> 
+<div class="optional">
 	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme');?>
  	<?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), false);?>
 	<?php echo $html->tagErrorMsg('Deliberation/theme_id', 'Entrer le theme.') ?>
 </div>
 
-<div class="optional"> 
+<div class="optional">
 	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
  	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$selectedRapporteur,null,null,false);?>
 	<?php echo $html->tagErrorMsg('Deliberation/rapporteur_id', 'Entrer le rapporteur.');?>
 </div>
 
-<div class="optional"> 
+<div class="optional">
 	<?php echo $form->labelTag('Deliberation/objet', 'Objet');?>
  	<?php echo $html->input('Deliberation/objet', array('size' => '30'));?>
 	<?php echo $html->tagErrorMsg('Deliberation/objet', 'Entrerl\'objet de la delib.');?>
 </div>
-<div class="optional"> 
+<div class="optional">
 	<?php echo $form->labelTag('Deliberation/titre', 'Titre');?>
  	<?php echo $html->textarea('Deliberation/titre', array('cols' => '60'));?>
 	<?php echo $html->tagErrorMsg('Deliberation/titre', 'Entrer le titre.');?>
 </div>
-<div class="optional"> 
+<div class="optional">
 	<?php echo $form->labelTag('Deliberation/num_delib', 'Num Delib');?>
  	<?php echo $html->input('Deliberation/num_delib');?>
 	<?php echo $html->tagErrorMsg('Deliberation/num_delib', 'Entrer le num Delib.');?>
 </div>
 
-<div class="optional"> 
+<div class="optional">
     <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
-    <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>    
+    <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>
 </div>
 <br />
-<div class="optional"> 
+<div class="optional">
     <label>Date limite : </label>
     <input name="date_limite" size="9" />&nbsp;
 	<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a>
-</div>	
-<br />
-<div id="cible"> 
-
 </div>
+
 <div class="submit">
 	<a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
 	<?php echo $html->submit('Saisir un texte de projet', array('class'=>'bt_add', 'name'=>'saisir'));?>
