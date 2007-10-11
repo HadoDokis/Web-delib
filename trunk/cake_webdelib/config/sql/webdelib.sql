@@ -117,6 +117,7 @@ CREATE TABLE `deliberations` (
   `num_pref` varchar(10) NOT NULL default '',
   `texte_projet` longblob,
   `texte_synthese` longblob,
+  `delib` longblob,
   `date_limite` date default NULL,
   `date_envoi` datetime default NULL,
   `etat` int(11) NOT NULL default '0',
