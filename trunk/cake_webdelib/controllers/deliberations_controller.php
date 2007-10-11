@@ -260,7 +260,7 @@ class DeliberationsController extends AppController {
 
 		$deliberation= $this->Deliberation->read(null, $id);
 		$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
-		
+
 		$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
 		$delib=array();
 		//on recupere la position courante de la deliberation
@@ -291,7 +291,7 @@ class DeliberationsController extends AppController {
 			$date_seances = $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date');
 			foreach ($date_seances as $key=>$date)
 				$date_seances[$key]= $this->Date->frenchDateConvocation(strtotime($date));
-			$this->set('date_seances',$date_seances);	
+			$this->set('date_seances',$date_seances);
 			$this->render();
 		} else {
             $this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
@@ -566,8 +566,8 @@ function deliberation ($id = null) {
 			$date_seances = $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date');
 			foreach ($date_seances as $key=>$date)
 				$date_seances[$key]= $this->Date->frenchDateConvocation(strtotime($date));
-			$this->set('date_seances',$date_seances);	
-			
+			$this->set('date_seances',$date_seances);
+
 		} else {
 
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
@@ -789,7 +789,7 @@ function deliberation ($id = null) {
 
 				$deliberation= $this->Deliberation->read(null, $id);
 				$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
-		
+
 				$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
 				$delib=array();
 					//on recupere la position courante de la deliberation
@@ -928,7 +928,7 @@ function deliberation ($id = null) {
 			return $tab;
         }
 
-/** code de francois 
+/** code de francois
           function getMatiereListe(){
  		    $tab = array();
         	$doc = new DOMDocument();
@@ -953,34 +953,34 @@ function deliberation ($id = null) {
 // a moi
 function getMatiereListe(){
  		$tab = array();
-	
+
   		$dom = new DomDocument();
 		$dom->load("/home/marine/Desktop/classification.xml");
          // if(!$dom->load(FILE_CLASS))
         // die("Error opening xml file");
 		$i=0;
-		
+
 		$Matieres1 = $dom->getElementsByTagName('Matiere1');
 		foreach ($Matieres1 as $matieres){
    			$Matieres = $dom->getElementsByTagName('Matiere1')->item($i);
    			$tab[$Matieres->getAttribute('CodeMatiere')] = $Matieres->getAttribute('Libelle');
-   			
-  			
+
+
    			$Matieres2 = $Matieres->getElementsByTagName('Matiere2');
   			foreach($Matieres2 as $Matiere2){
       			$tab[$Matieres->getAttribute('CodeMatiere').'-'.$Matiere2->getAttribute('CodeMatiere')]= $Matiere2->getAttribute('Libelle');
-  				
+
   			}
 		$i++;
 		}
-			
+
 		debug($tab);
 		exit;
     }
 
 
 
-		
+
        function getDateClassification(){
 	       $doc = new DOMDocument();
            if(!$doc->load(FILE_CLASS))
@@ -1163,7 +1163,7 @@ function getMatiereListe(){
         fclose ($handle);
 		$data= $this->Deliberation->read(null, $delib_id);
 
-		$data['Deliberation']["$texte"]=htmlspecialchars($contents);
+		$data['Deliberation']["$texte"]=utf8_decode($contents);
 
  	    $this->Deliberation->save($data['Deliberation']);
  	    if ($texte== 'texte_projet')
