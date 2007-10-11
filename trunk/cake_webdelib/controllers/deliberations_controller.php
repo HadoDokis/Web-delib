@@ -270,9 +270,6 @@ class DeliberationsController extends AppController {
 		array_push($delib, $deliberation);
 		$this->set('deliberation', $delib);
 		$this->set('user_circuit', $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC'));
-
-
-
 	}
 
 	function getFileData($fileName, $fileSize) {
@@ -297,8 +294,7 @@ class DeliberationsController extends AppController {
 			$this->set('date_seances',$date_seances);	
 			$this->render();
 		} else {
-
-			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
+            $this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
 			unset($this->params['form']['date_limite']);
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
@@ -332,7 +328,6 @@ class DeliberationsController extends AppController {
 					{
 						$delib_id = $this->Deliberation->getLastInsertId();
 						$counter = 1;
-
 						if($this->data['Deliberation']['seance_id'] != ""){
 						$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 						$this->data['Deliberation']['position']=$position;
@@ -379,12 +374,15 @@ class DeliberationsController extends AppController {
 	$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="S"'));
 
 	if (empty($this->data)) {
-			$this->data = $this->Deliberation->read(null, $id);
-		} else
-		{//debug($this->data);
-			$this->data['Deliberation']['id']=$id;
-			if(!empty($this->params['form']))
-			{
+        $this->data = $this->Deliberation->read(null, $id);
+	}
+    else {
+	    if ($this->data['Deliberation']['texte_doc']['size']!=0){
+		    $this->convertDoc2Html($this->data['Deliberation']['texte_doc'], $id, 'texte_synthese');
+		    unset($this->data['Deliberation']['texte_doc']);
+		}
+		$this->data['Deliberation']['id']=$id;
+		if(!empty($this->params['form'])) {
 				$deliberation = array_shift($this->params['form']);
 				$annexes = $this->params['form'];
 
@@ -440,6 +438,10 @@ function deliberation ($id = null) {
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
 		} else{
+			if ($this->data['Deliberation']['texte_doc']['size']!=0){
+			    $this->convertDoc2Html($this->data['Deliberation']['texte_doc'], $id, 'deliberation');
+				unset($this->data['Deliberation']['texte_doc']);
+			}
 			$this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
@@ -486,7 +488,7 @@ function deliberation ($id = null) {
 			}
 		}
 	}
-	
+
 	function textprojet ($id = null) {
 
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
@@ -494,6 +496,11 @@ function deliberation ($id = null) {
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
 		} else{
+			if ($this->data['Deliberation']['texte_doc']['size']!=0){
+			    $this->convertDoc2Html($this->data['Deliberation']['texte_doc'], $id, 'texte_projet');
+				unset($this->data['Deliberation']['texte_doc']);
+			}
+
 			$this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
@@ -1087,6 +1094,11 @@ function getMatiereListe(){
 			return count($this->Deliberation->findAll("seance_id =$seance_id" ));
     	}
 
+	function getNextId() {
+		$tmp = $this->Deliberation->findAll('Deliberation.id in (select max(id) from deliberations)');
+		return $tmp['0']['Deliberation']['id'] +1 ;
+	}
+
 	function listerProjetsServicesAssemblees()
 	{
 		//liste les projets appartenants au service des assembl�es
@@ -1100,13 +1112,87 @@ function getMatiereListe(){
 		$this->set('delib_id', $id);
 	}
 
+	function convertDoc2Html($file, $delib_id, $texte) {
+		if ($file['type']!='application/msword')
+	        die("Ce n'est pas un fichier doc");
+
+		$wvware = "/usr/bin/wvWare";
+        $wvware_options = "-d";
+    	$pos =  strrpos ( getcwd(), 'webroot');
+		$path = substr(getcwd(), 0, $pos);
+    	$basedir = $path.'webroot/files/delibs'."/$delib_id/";
+    	if (! is_dir($basedir))
+    		mkdir($basedir);
+		$name=substr($file['name'],0,strlen($file['type']['name'])-5);
+		$wordfilename = $basedir . "/" . escapeshellcmd($name).".doc";
+		$htmldir = $basedir;
+   		$htmlfilename = $htmldir . escapeshellcmd($name) . ".html";
+
+    	if( !move_uploaded_file($file['tmp_name'], 	$wordfilename) )
+       	    exit("Impossible de copier le fichier dans $content_dir");
+
+	   if (! is_dir($htmldir))
+            die("Directory $htmldir does not exist.  It must be " .
+            "created and readable and writable by your web server.");
+        if ((! is_writeable($htmldir)) || (! is_readable($htmldir)))
+            die("Directory $htmldir must be readable and writable by your " .
+            "web server.");
+        if (file_exists($htmlfilename) && (! is_writeable($htmlfilename)))
+            die("The html file ($htmlfilename) exists already but is not " .
+            "writable by the web server.");
+        if (! file_exists($wvware))
+            die("The wvWare executable file $wvware cannot be found.  Please " .
+            "ensure that the \$wvware variable in the script is pointed " .
+            "to your wvware executable.");
+        if (! is_executable($wvware))
+            die("The wvWare executable file $wvware is not " .
+            "executable by the web server process.  Please change the file " .
+            "permissions to make it executable.");
+
+		if (file_exists($htmlfilename)) {
+            /* Do we need to update the html file? */
+      	    if (filectime($wordfilename) > filectime($htmlfilename))
+                $this->updateword($wordfilename, $htmlfilename);
+       	    else readfile ($htmlfilename);
+   		}
+        else
+            $this->updateword($wordfilename, $htmlfilename);
+
+        $handle = fopen ($htmlfilename, "r");
+        $contents = fread($handle, filesize ($htmlfilename));
+        fclose ($handle);
+		$data= $this->Deliberation->read(null, $delib_id);
+
+		$data['Deliberation']["$texte"]=htmlspecialchars($contents);
+
+ 	    $this->Deliberation->save($data['Deliberation']);
+ 	    if ($texte== 'texte_projet')
+		    $this->redirect('/deliberations/textprojet/'.$delib_id);
+		elseif  ($texte== 'texte_synthese')
+			$this->redirect('/deliberations/textsynthese/'.$delib_id);
+		elseif  ($texte== 'deliberation')
+			$this->redirect('/deliberations/deliberation/'.$delib_id);
+		exit;
+	}
+
+
+    function updateword($wordfilename, $htmlfilename) {
+    	$wvware = "/usr/bin/wvWare";
+        $wvware_options = "-d";
+
+        $htmldir = dirname ($htmlfilename);
+        /* ensure that we get any images into the html directory */
+        exec("$wvware $wvware_options $htmldir $wordfilename > $htmlfilename");
+    }
+
+
 
 	function textsynthesevue ($id = null) {
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="S"'));
 		$this->set('deliberation', $this->Deliberation->read(null, $id));
 		$this->set('delib_id', $id);
 	}
-	
+
 	function deliberationvue ($id = null) {
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="D"'));
 		$this->set('deliberation', $this->Deliberation->read(null, $id));
