@@ -183,7 +183,7 @@ class SeancesController extends AppController {
 
 	function afficherProjets ($id=null, $return=null)
 	{
-		$condition= "seance_id=$id AND etat=1";
+		$condition= "seance_id=$id AND etat=2";
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
 			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
@@ -377,10 +377,10 @@ class SeancesController extends AppController {
 			}
 		}
 	}
-	
+
 	function saisirDebat ($id = null)	{
 		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$id);
-	
+
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
 		} else {
@@ -390,7 +390,7 @@ class SeancesController extends AppController {
 			} else {
 				$this->Session->setFlash('Please correct errors below.');
 			}
-		}	
+		}
 	}
 }
 ?>
