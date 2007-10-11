@@ -116,7 +116,7 @@ CREATE TABLE `deliberations` (
   `position` int(4) NOT NULL,
   `anterieure_id` int(11) NOT NULL,
   `objet` varchar(100) NOT NULL default '',
-  `titre` varchar(100) NOT NULL default '',
+  `titre` varchar(255) NOT NULL default '',
   `num_delib` varchar(10) NOT NULL default '',
   `num_pref` varchar(10) NOT NULL default '',
   `texte_projet` longblob,
@@ -125,6 +125,7 @@ CREATE TABLE `deliberations` (
   `date_limite` date default NULL,
   `date_envoi` datetime default NULL,
   `etat` int(11) NOT NULL default '0',
+  `debat` longblob NOT NULL,
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
