@@ -62,18 +62,17 @@ class ThemesController extends AppController {
 	function delete($id = null) {
 		if (!$id) {
 			$this->Session->setFlash('Invalide id pour le Theme');
-			$this->redirect('/Themes/index');
+			$this->redirect('/themes/index');
 		}
 
 		if ($this->Theme->del($id)) {
 			$this->Session->setFlash('Le Theme a &eacute;t&eacute; supprim&eacute;');
-			$this->redirect('/Themes/index');
+			$this->redirect('/themes/index');
 		}
 	}
 
 	function changeParentId($curruentParentId, $newParentId) {
 		$this->data = $this->Theme->findByParentId($curruentParentId);
-	//	debug($this->data);exit;
 	}
 
 
