@@ -1,25 +1,60 @@
+<?php echo $javascript->link('vote'); ?>
 <h2> Vote </h2>
- 		<?php echo $html->formTag('/seances/voter/'.$deliberation[0]['Deliberation']['id'], null,array('name'=>'Session')); ?>
+ 		<?php echo $html->formTag('/seances/voter/'.$deliberation[0]['Deliberation']['id'], null, array('name'=>'Session')); ?>
+
+
  		 <table cellpadding="0" cellspacing="0">
    			 <tr>
 			    <th>Elu</th>
 			    <th>Vote</th>
-   			 </tr>
+  			 </tr>
    			 <?php foreach ($presents as $present): ?>
     		 <tr>
 	 		 	<td>
 	 		 		<?php
 	 		 			echo $present['User']['prenom'].' '.$present['User']['nom'];
 	 		 			if ($present['Listepresence']['mandataire'] != '0')
-	 		 				echo ' (Mandaté par '.$present['Listepresence']['mandataire'].')';
+	 		 				echo ' (Mandatï¿½ par '.$present['Listepresence']['mandataire'].')';
 	 		 			elseif ($present['Listepresence']['present']=='0'){
 	 		 				echo ' (Absent)';
 	 		 			}
 	 		 		?>
 	 		 	</td>
-	 		   	<td><?php echo $html->radio('vote/'.$present['User']['id'],  array(1=>'oui', 0=>'non', 2=>'Absention', 3=>'Pas de participation')); ?></td>
+	 		   	<td>
+					<?php $name_bouton='data[vote]['.$present['User']['id'].']'; ?>
+	 		  	    <?php echo $html->radio('vote/'.$present['User']['id'], array('1'=>'oui', '0'=>'non', '2'=>'abstention', '3'=>'Pas de participation'), null, array('onclick'=>"javascript:vote('$name_bouton');")); ?>
+	 		   	</td>
     		 </tr>
  		   <?php endforeach; ?>
+
+ 		    <tr>
+ 		   		<td><?php echo $html->input('Deliberation/reset', array('type' => 'reset', 'value' => 'reset', 'onclick'=>"javascript:clean();"));?></td>
+ 		   		<td>
+ 		   		    <input type="radio" name="global" id="oui" onclick="javascript:vote_global('1');" value="1"  />oui
+ 		   		    <input type="radio" name="global" id="non" onclick="javascript:vote_global('0');" value="0"  />non
+ 		   		    <input type="radio" name="global" id="abst" onclick="javascript:vote_global('2');" value="2"  />abstention
+ 		   		    <input type="radio" name="global" id="sans_part" onclick="javascript:vote_global('3');" value="3"  />Pas de participation
+ 		   		</td>
+ 		   	</tr>
+
+ 		    		   <tr>
+ 		   		<td>Total</td>
+
+ 		   		<td>
+
+ 		   		<?php echo $html->input('Deliberation/res1', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>oui
+				<?php echo $html->input('Deliberation/res0', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>non
+				<?php echo $html->input('Deliberation/res2', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>abstention
+				<?php echo $html->input('Deliberation/res3', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>pas de participation
+
+ 		   		</td>
+ 		   	</tr>
+
+ 		   <!--	 		   <tr>
+ 		   		<td>R&eacute;sultat</td>
+ 		   		<td>On obtient une majorit&eacute; de : <?php echo $html->input('res', array('size' => '15', 'value' => ''));?>
+ 		   		<?php echo $html->input('res_hidden', array('size' => '3', 'value' => '', 'type' => 'hidden'));?></td>
+ 		   	</tr>-->
   		 </table>
   		 <br />
   	<div class="optional">
