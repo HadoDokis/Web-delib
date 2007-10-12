@@ -33,7 +33,7 @@ $sub_menu2 = array
 // construction navigation secondaire post-seance
 $sub_menu3 = array
 (
-	'Editions' => array('link' => '/pages/postseance'),
+	'Editions' => array('link' => '/postseances/index'),
 	//'Publications' => array('link' => '/seances/listerAnciennesSeances'),
 	'Contrôle de légalité' => array('link' => '/deliberations/transmit'),
 	'Export GED' => array('link' => '/pages/exportged')
@@ -51,6 +51,7 @@ $sub_menu4 = array
 	'Collectivité' => array('link' => '/collectivites'),
 	'Génération' => array('link' => '/models/index'),
 	'Localisation' => array('link' => '/localisations/index')
+
 );
 
 // ajout des navigations secondaires à la principale
