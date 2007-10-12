@@ -1,5 +1,5 @@
 <?php echo $javascript->link('calendrier.js'); ?>
-
+<?php echo $javascript->link('utils.js'); ?>
 <h2>Nouvelle d&eacute;liberation</h2>
 
 <?php echo $html->formTag('/deliberations/add/', null,array('name'=>'Deliberation','enctype'=>'multipart/form-data')); ?>
@@ -31,10 +31,23 @@
  	<?php echo $html->input('Deliberation/num_delib');?>
 	<?php echo $html->tagErrorMsg('Deliberation/num_delib', 'Entrer le num Delib.');?>
 </div>
-
+<br />
 <div class="optional">
     <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
     <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>
+</div>
+<br />
+<div class="optional">
+    <?php echo $form->labelTag('Deliberation/localisation1_id','Localisation : '); ?>
+    <?php echo $html->selectTag('Deliberation/localisation1_id', $localisations , null, null, null, true); ?>
+</div>
+<div class="optional">
+    <?php echo $form->labelTag('Deliberation/localisation2_id','Localisation  : '); ?>
+    <?php echo $html->selectTag('Deliberation/localisation2_id', $localisations , null, null, null, true); ?>
+</div>
+<div class="optional">
+    <?php echo $form->labelTag('Deliberation/localisation3_id','Localisation  : '); ?>
+    <?php echo $html->selectTag('Deliberation/localisation3_id', $localisations , null, null, null, true); ?>
 </div>
 <br />
 <div class="optional">
