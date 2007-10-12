@@ -3,7 +3,7 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire','Typeseance');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire','Typeseance', 'Localisation');
 	var $components = array('Date','Utils','Email');
 
 	function index() {
@@ -292,6 +292,19 @@ class DeliberationsController extends AppController {
 			foreach ($date_seances as $key=>$date)
 				$date_seances[$key]= $this->Date->frenchDateConvocation(strtotime($date));
 			$this->set('date_seances',$date_seances);
+			$condition = "Localisation.parent_id=0";
+			$localisations = $this->Localisation->findAll($condition);
+			$i = 0;
+			foreach ($localisations as $localisation) {
+				$conditions = "Localisation.parent_id=". $localisation['Localisation']['id'];
+				$zones = $this->Localisation->findAll($conditions);
+				foreach($zones as $zone)
+					$tab[$zone['Localisation']['id']]=$zone['Localisation']['libelle'];
+
+			}
+		debug($tab);
+			$this->set('localisations', $this->Deliberation->Localisation->generateList($condition));
+
 			$this->render();
 		} else {
             $this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
