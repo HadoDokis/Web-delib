@@ -3,20 +3,20 @@ class Deliberation extends AppModel {
 
 	var $name = 'Deliberation';
 	//dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
-	var $belongsTo=array('Service'=>array('className'=>'Service', 
-											'conditions'=>'', 
+	var $belongsTo=array('Service'=>array('className'=>'Service',
+											'conditions'=>'',
 											'order'=>'',
-											'dependent'=>false, 
+											'dependent'=>false,
 											'foreignKey'=>'service_id'),
-						'Theme'=>array('className'=>'Theme', 
-											'conditions'=>'', 
+						'Theme'=>array('className'=>'Theme',
+											'conditions'=>'',
 											'order'=>'',
-											'dependent'=>false, 
+											'dependent'=>false,
 											'foreignKey'=>'theme_id'),
-						'Circuit'=>array('className'=>'Circuit', 
-											'conditions'=>'', 
+						'Circuit'=>array('className'=>'Circuit',
+											'conditions'=>'',
 											'order'=>'',
-											'dependent'=>false, 
+											'dependent'=>false,
 											'foreignKey'=>'circuit_id'),
 						'Redacteur' =>array('className'    => 'User',
                               'conditions'   => '',
@@ -33,7 +33,12 @@ class Deliberation extends AppModel {
                               'conditions'   => '',
                               'order'        => '',
                               'dependent'    =>  true,
-                              'foreignKey'   => 'seance_id')     
+                              'foreignKey'   => 'seance_id'),
+                         'Localisation'=> array('className'    => 'Localisation',
+                              'conditions'   => '',
+                              'order'        => '',
+                              'dependent'    =>  true,
+                              'foreignKey'   => 'localisation1_id')
 						);
 	var $hasMany = array ('Traitement' => array('className'=>'Traitement',
 												'foreignKey' => 'delib_id'),
@@ -42,9 +47,9 @@ class Deliberation extends AppModel {
 							'Commentaire' => array('className' => 'Commentaire',
 											'foreignKey' => 'delib_id'));
 //var $hasMany = 'Annex';
-												
-												
-//												
+
+
+//
 //	var $hasOne = array('Redacteur' =>
 //                        array('className'    => 'User',
 //                              'conditions'   => '',
@@ -58,10 +63,10 @@ class Deliberation extends AppModel {
 //                              'order'        => '',
 //                              'dependent'    =>  true,
 //                              'foreignKey'   => 'rapporteur_id')
-//                            
-//                  );											
-//										
-											
+//
+//                  );
+//
+
 //	var $hasAndBelongsToMany=array('User'=>array('classname'=>'User',
 //													'joinTable'=>'users_profils',
 //													'foreignKey'=>'user_id',
@@ -72,8 +77,8 @@ class Deliberation extends AppModel {
 //													'unique'=>true,
 //													'finderQuery'=>'',
 //													'deleteQuery'=>''));
-	
-	
+
+
 
 }
 ?>
