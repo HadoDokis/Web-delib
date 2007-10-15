@@ -37,27 +37,15 @@
     <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>
 </div>
 <br />
-<div class="optional">
-    <?php echo $form->labelTag('Deliberation/localisation1_id','Localisation : '); ?>
-    <?php echo $html->selectTag('Deliberation/localisation1_id', $localisations , null, null, null, true); ?>
-</div>
-<div class="optional">
-    <?php echo $form->labelTag('Deliberation/localisation2_id','Localisation  : '); ?>
-    <?php echo $html->selectTag('Deliberation/localisation2_id', $localisations , null, null, null, true); ?>
-</div>
-<div class="optional">
-    <?php echo $form->labelTag('Deliberation/localisation3_id','Localisation  : '); ?>
-    <?php echo $html->selectTag('Deliberation/localisation3_id', $localisations , null, null, null, true); ?>
-</div>
-<br />
+
 <div class="optional">
     <label>Date limite : </label>
     <input name="date_limite" size="9" />&nbsp;
 	<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a>
 </div>
-
+<br />
 <div class="submit">
 	<a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
-	<?php echo $html->submit('Saisir un texte de projet', array('class'=>'bt_add', 'name'=>'saisir'));?>
+	<?php echo $html->submit('choisir localisation', array('class'=>'bt_add', 'name'=>'saisir'));?>
 </div>
 </form>
