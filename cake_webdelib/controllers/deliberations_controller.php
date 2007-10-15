@@ -275,35 +275,105 @@ class DeliberationsController extends AppController {
 	function getFileData($fileName, $fileSize) {
 		return fread(fopen($fileName, "r"), $fileSize);
 	}
+	
+	
+	function saveLocation($id=null,$idLoc=0,$zone)
+	{
+		if($zone==1)
+			$this->params['data']['Deliberation']['localisation1_id'] = $idLoc;
+		elseif($zone==2)
+			$this->params['data']['Deliberation']['localisation2_id'] = $idLoc;
+		elseif($zone==3)
+			$this->params['data']['Deliberation']['localisation3_id'] = $idLoc;
+	
+		$this->params['data']['Deliberation']['id'] = $id;
+		
+		if ($this->Deliberation->save($this->params['data'])){
+			$this->redirect($this->Session->read('user.User.lasturl'));
+		}
+	}
+	function changeLocation($id=null,$pzone1=0,$pzone2=0,$pzone3=0)
+	{	
+		if(empty($this->data))
+		{
+			$data= $this->Deliberation->read(null,$id);
+		
+			$this->data['Deliberation']['localisation1_id']= $data['Deliberation']['localisation1_id'];
+			$this->data['Deliberation']['localisation2_id']= $data['Deliberation']['localisation2_id'];
+			$this->data['Deliberation']['localisation3_id']= $data['Deliberation']['localisation3_id'];
 
-	function add() {
+	
+			$this->set('id',$id);
+			$conditions = "Localisation.parent_id= 0";
+			$this->set('localisations', $this->Deliberation->Localisation->generateList($conditions));
+			
+		
+			if($pzone1!=0){
+				$conditions = "Localisation.parent_id= $pzone1";
+				$zone1 = $this->Localisation->generateList($conditions);
+				$this->set('zone1',$zone1);
+				$this->set('selectedLocalisation1',$pzone1);
+			}else{
+				$this->set('zone1',0);
+				$this->set('selectedLocalisation1',0);
+				$this->set('selectedzone1',0);
+			}
+			
+			if($pzone2!=0){
+				$conditions = "Localisation.parent_id= $pzone2";
+				$zone2 = $this->Localisation->generateList($conditions);
+				//debug($zones);
+				$this->set('zone2',$zone2);
+				$this->set('selectedLocalisation2',$pzone2);
+			}else{
+				$this->set('zone2',0);
+				$this->set('selectedLocalisation2',0);
+				$this->set('selectedzone2',0);
+				$this->data['Deliberation']['localisation2_id']=0;
+			}
+
+			if($pzone3!=0){
+				$conditions = "Localisation.parent_id= $pzone3";
+				$zone3 = $this->Localisation->generateList($conditions);
+				//debug($zones);
+				$this->set('zone3',$zone3);
+				$this->set('selectedLocalisation3',$pzone3);
+			}else{
+				$this->set('zone3',0);
+				$this->set('selectedLocalisation3',0);
+				$this->set('selectedzone3',0);
+				$this->data['Deliberation']['localisation3_id']=0;
+			}
+			
+
+		}
+			//debug($this->data);
+			
+//			if($this->Deliberation->save($this->data)){
+//				$this->redirect('/deliberations/textprojet/'.$id);
+//			}
+		
+	}
+
+	function add($location=null) {
 		$user=$this->Session->read('user');
 		if (empty($this->data)) {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
 			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
+			
 			$selectedRapporteur = null;
 			if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
+			
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$date_seances = $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date');
 			foreach ($date_seances as $key=>$date)
 				$date_seances[$key]= $this->Date->frenchDateConvocation(strtotime($date));
 			$this->set('date_seances',$date_seances);
-			$condition = "Localisation.parent_id=0";
-			$localisations = $this->Localisation->findAll($condition);
-			$i = 0;
-			foreach ($localisations as $localisation) {
-				$conditions = "Localisation.parent_id=". $localisation['Localisation']['id'];
-				$zones = $this->Localisation->findAll($conditions);
-				foreach($zones as $zone)
-					$tab[$zone['Localisation']['id']]=$zone['Localisation']['libelle'];
 
-			}
-		debug($tab);
-			$this->set('localisations', $this->Deliberation->Localisation->generateList($condition));
 
 			$this->render();
 		} else {
@@ -368,7 +438,7 @@ class DeliberationsController extends AppController {
 
 						}
 
-						$this->redirect('/deliberations/textprojet/'.$this->Deliberation->getLastInsertId());
+						$this->redirect('/deliberations/changeLocation/'.$this->Deliberation->getLastInsertId());
 					} else {
 					$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 					$this->set('services', $this->Deliberation->Service->generateList());
@@ -632,7 +702,7 @@ function deliberation ($id = null) {
 
 						}
 						$this->Session->setFlash('La deliberation a &eacute;t&eacute; sauvegard&eacute;e');
-						$this->redirect('/deliberations/textprojet/'.$id);
+						$this->redirect('/deliberations/changeLocation/'.$id);
 						//$this->redirect('/deliberations/listerMesProjets');
 					} else {
 					$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
