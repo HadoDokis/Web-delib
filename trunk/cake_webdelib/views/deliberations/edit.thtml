@@ -83,7 +83,7 @@
 
 <?php echo $html->hidden('Deliberation/id')?>
 <div class="submit">
-	<?php echo $html->submit('Sauvegarder et Modifier texte de projet', array('class'=>'bt_add', 'name'=>'modifier'));?>
+	<?php echo $html->submit('Sauvegarder et Modifier localisation', array('class'=>'bt_add', 'name'=>'modifier'));?>
 	
 </div>
 </form>
