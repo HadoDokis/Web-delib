@@ -1,0 +1,30 @@
+<?php echo $html->formTag('/deliberations/changeLocation/'.$id,null,null); ?>
+<div class="optional">
+    <?php echo $form->labelTag('Deliberation/localisation1_id','Localisation : '); ?>
+   	<?php $urlPage =  FULL_BASE_URL . $this->webroot; ?>
+	<?php echo $html->selectTag('Deliberation/localisation',$localisations, $selectedLocalisation1, array('id' => "$urlPage",'onChange'=>"changeLocation1($id,this,$selectedLocalisation2,$selectedLocalisation3)"),null,true);?>
+	<?php echo $html->selectTag('Deliberation/localisation1_id',$zone1, null, array('id'=>"$urlPage",'onChange'=>"saveLocation($id,this,1)"), null,true); ?>	
+</div>
+<br>
+
+<div class="optional">
+    <?php echo $form->labelTag('Deliberation/localisation2_id','Localisation  : '); ?>
+    <?php echo $html->selectTag('Deliberation/localisation', $localisations , $selectedLocalisation2, array('id' => "$urlPage",'onChange'=>"changeLocation2($id,$selectedLocalisation1,this,$selectedLocalisation3)"),null,true); ?>
+    <?php echo $html->selectTag('Deliberation/localisation2_id',$zone2, null, array('id'=>"$urlPage",'onChange'=>"saveLocation($id,this,2)"), null,true); ?>
+</div>
+<br>	
+
+
+<div class="optional">
+    <?php echo $form->labelTag('Deliberation/localisation3_id','Localisation  : '); ?>
+    <?php echo $html->selectTag('Deliberation/localisation', $localisations , $selectedLocalisation3, array('id' => "$urlPage",'onChange'=>"changeLocation3($id,$selectedLocalisation1,$selectedLocalisation2,this)"),null,true); ?>
+	<?php echo $html->selectTag('Deliberation/localisation3_id',$zone3, null, array('id'=>"$urlPage",'onChange'=>"saveLocation($id,this,3)"), null,true); ?>
+</div>
+<br />
+
+<div class="actions">
+	<?php echo $html->link('texte synthese','/deliberations/textprojet/'.$id, array('class'=>'link_add', 'name'=>'saisir'));?>
+</div>
+
+
+</form>
