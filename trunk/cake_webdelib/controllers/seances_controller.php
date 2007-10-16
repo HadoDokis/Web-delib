@@ -283,14 +283,14 @@ class SeancesController extends AppController {
 
 	function listerPresents($seance_id=null) {
 		/*
-		 * BUG, Si la liste des présents théoriques a été modifiée.
+		 * BUG, Si la liste des prï¿½sents thï¿½oriques a ï¿½tï¿½ modifiï¿½e.
 		 */
 
 		if (empty($this->data)) {
 			$condition = "seance_id = $seance_id";
 			$presents = $this->Listepresence->findAll($condition);
 
-			// Si l'on a encore rien saisi, on prend la table théorique des présents
+			// Si l'on a encore rien saisi, on prend la table thï¿½orique des prï¿½sents
 			if(empty($presents))
 			    $presents = $this->SeancesUser->findAll($condition);
 			else {
@@ -355,25 +355,36 @@ class SeancesController extends AppController {
 		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
 
 		if (empty($this->data)) {
+			//debug($this->data);
 			$donnees = $this->Vote->findAll("delib_id = $deliberation_id");
-			foreach($donnees as $donnee){
-				$this->data['vote'][$donnee['Vote']['user_id']]=$donnee['Vote']['resultat'];
 
+			foreach($donnees as $donnee){
+				$this->data['Vote'][$donnee['Vote']['user_id']]=$donnee['Vote']['resultat'];
+//debug($this->data['Vote'][$donnee['Vote']['user_id']]);
+//debug($donnee['Vote']['resultat']);
 			    $this->data['Vote']['commentaire'] = $donnee['Vote']['commentaire'];
 			}
 			$this->set('deliberation' , $this->Deliberation->findAll("Deliberation.id=$deliberation_id"));
 			$this->set('presents' , $this->afficherListePresents($seance_id));
+
 		}
 		else {
-			$this->effacerVote($deliberation_id);
-			foreach($this->data['vote']as $user_id => $vote){
-				$this->Vote->create();
-				$this->data['Vote']['user_id']=$user_id;
-				$this->data['Vote']['delib_id']=$deliberation_id;
-				$this->data['Vote']['resultat']=$vote;
 
+			$this->effacerVote($deliberation_id);
+//debug ($this->data);
+			foreach($this->data['Vote']as $user_id => $vote){
+				if(is_numeric($user_id)==true){
+					$this->Vote->create();
+
+					$this->data['Vote']['user_id']=$user_id;
+					$this->data['Vote']['delib_id']=$deliberation_id;
+					$this->data['Vote']['resultat']=$vote;
+//debug($vote);
+//debug ($this->data);
 				if ($this->Vote->save($this->data['Vote']))
 					$this->redirect('seances/details/'.$seance_id);
+				}
+
 			}
 		}
 	}

@@ -14,21 +14,22 @@
 	 		 		<?php
 	 		 			echo $present['User']['prenom'].' '.$present['User']['nom'];
 	 		 			if ($present['Listepresence']['mandataire'] != '0')
-	 		 				echo ' (Mandat� par '.$present['Listepresence']['mandataire'].')';
+	 		 				echo ' (Mandat&eacute par '.$present['Listepresence']['mandataire'].')';
 	 		 			elseif ($present['Listepresence']['present']=='0'){
 	 		 				echo ' (Absent)';
 	 		 			}
 	 		 		?>
 	 		 	</td>
 	 		   	<td>
-					<?php $name_bouton='data[vote]['.$present['User']['id'].']'; ?>
-	 		  	    <?php echo $html->radio('vote/'.$present['User']['id'], array('1'=>'oui', '0'=>'non', '2'=>'abstention', '3'=>'Pas de participation'), null, array('onclick'=>"javascript:vote('$name_bouton');")); ?>
+	 		  	    <?php echo $html->radio('Vote/'.$present['User']['id'], array('1'=>'oui', '0'=>'non', '2'=>'abstention', '3'=>'Pas de participation'), null, array('onclick'=>"javascript:vote();")); ?>
 	 		   	</td>
     		 </tr>
- 		   <?php endforeach; ?>
+ 		     <?php endforeach; ?>
 
  		    <tr>
- 		   		<td><?php echo $html->input('Deliberation/reset', array('type' => 'reset', 'value' => 'reset', 'onclick'=>"javascript:clean();"));?></td>
+ 		   		<td>
+ 		   			<?php echo $html->input('Vote/reset', array('type' => 'reset', 'value' => 'reset'));?>
+ 		   		</td>
  		   		<td>
  		   		    <input type="radio" name="global" id="oui" onclick="javascript:vote_global('1');" value="1"  />oui
  		   		    <input type="radio" name="global" id="non" onclick="javascript:vote_global('0');" value="0"  />non
@@ -37,24 +38,17 @@
  		   		</td>
  		   	</tr>
 
- 		    		   <tr>
+ 		    <tr>
  		   		<td>Total</td>
 
  		   		<td>
-
- 		   		<?php echo $html->input('Deliberation/res1', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>oui
-				<?php echo $html->input('Deliberation/res0', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>non
-				<?php echo $html->input('Deliberation/res2', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>abstention
-				<?php echo $html->input('Deliberation/res3', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>pas de participation
-
+ 		   			<?php echo $html->input('Vote/res1', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>oui
+					<?php echo $html->input('Vote/res0', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>non
+					<?php echo $html->input('Vote/res2', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>abstention
+					<?php echo $html->input('Vote/res3', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>pas de participation
  		   		</td>
  		   	</tr>
 
- 		   <!--	 		   <tr>
- 		   		<td>R&eacute;sultat</td>
- 		   		<td>On obtient une majorit&eacute; de : <?php echo $html->input('res', array('size' => '15', 'value' => ''));?>
- 		   		<?php echo $html->input('res_hidden', array('size' => '3', 'value' => '', 'type' => 'hidden'));?></td>
- 		   	</tr>-->
   		 </table>
   		 <br />
   	<div class="optional">
