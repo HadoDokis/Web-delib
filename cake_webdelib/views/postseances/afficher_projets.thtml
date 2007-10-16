@@ -1,0 +1,26 @@
+<h2>Liste des projets pour la séance du <?php echo $date_seance; ?></h2>
+<table>
+	<tr>
+		<?php echo ('<th>'.$html->link('Theme', "/deliberations/sortby/$seance_id/theme_id"). "</th>"); ?>
+		<th>Rapporteur</th>
+		<?php echo ('<th>'.$html->link('Objet', "/deliberations/sortby/$seance_id/objet"). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre"). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Num Delib', "/deliberations/sortby/$seance_id/num_delib"). "</th>"); ?>
+		<th>Action</th>
+	</tr>
+	<?php foreach($projets as $projet): ?>
+    	<tr>
+    	    <td><?php echo $projet['Theme']['libelle']; ?></td>
+		    <td><?php echo $projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom']; ?></td>
+		    <td><?php echo $projet['Deliberation']['objet']; ?></td>
+		    <td><?php echo $projet['Deliberation']['titre']; ?></td>
+		    <td><?php echo $projet['Deliberation']['num_delib']; ?></td>
+		    <td><?php echo $html->link('','/postseances/generateDeliberation/' . $projet['Deliberation']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'))?>
+		    
+		</tr>
+		<?php endforeach; ?>
+</table>
+<br/>
+<div class="submit">
+<?php echo $html->link('Annuler', '/postseances/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
