@@ -226,7 +226,7 @@ a.link_pvcomplet {
 }
 
 a.link_pvsommaire {
-	background-image: url(../img/icons/pvsommaire.png);
+	background-image: url(../img/icons/message.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 10px 22px;
@@ -335,6 +335,13 @@ a.link_convocation {
 	background-image: url(../img/icons/mail.png);
 	background-repeat: no-repeat;
 	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
+a.link_convocation_anonyme {
+	background-image: url(../img/icons/queue.png);
+	background-repeat: no-repeat;
+	background-position: top;
 	padding: 0 0 10px 22px;
 }
 
