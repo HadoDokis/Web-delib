@@ -211,6 +211,27 @@ td.actions {
 	height: 25px;
 }
 
+a.link_delib {
+	background-image: url(../img/icons/delib.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_pvcomplet {
+	background-image: url(../img/icons/pvcomplet.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_pvsommaire {
+	background-image: url(../img/icons/pvsommaire.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
 a.link_pdf {
 	background-image: url(../img/icons/acroread.png);
 	background-repeat: no-repeat;
