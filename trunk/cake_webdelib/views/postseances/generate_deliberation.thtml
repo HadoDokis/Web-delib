@@ -1,0 +1,34 @@
+<?
+    vendor('fpdf/html2fpdf');
+	$pdf = new HTML2FPDF();
+	
+
+
+        $pdf->AddPage();   
+        $pdf->WriteHTML('<img src="files/image/logo.jpg">');
+        $pdf->WriteHTML('<p>'.$collectivite[0]['Collectivite']['nom'].'<br>'.$collectivite[0]['Collectivite']['adresse'].'<br>'.$collectivite[0]['Collectivite']['CP'].' '.$collectivite[0]['Collectivite']['ville'].'</p>');
+        $pdf->WriteHTML('<p align="center"> Déliberation</p>');
+        $pdf->WriteHTML('<p align="center"><b> Séance du '.$seance[0]['Typeseance']['libelle'].' du '.$date_seance.'</b></p><br>');
+		$pdf->WriteHTML('<p align="center"><b>Délibération n° '.$projet[0]['Deliberation']['num_delib'].'</b></p><br>');
+
+	    
+ 	   
+        $pdf->WriteHTML('<b>OBJET :&nbsp; '.$projet[0]['Deliberation']['objet'].'</b><br><br>');
+        $pdf->WriteHTML('<b>RAPPORTEUR :&nbsp; '.$projet[0]['Rapporteur']['nom'].' '.$projet[0]['Rapporteur']['prenom'].'</b><br><br>');   
+        $pdf->WriteHTML('<b>DELIBERATION : &nbsp;</b>'.$projet[0]['Deliberation']['deliberation'].'<br><br>'); 
+		$pdf->WriteHTML('<b>DECIDE :&nbsp; </b>'.$projet[0]['Deliberation']['debat'].'<br><br>'); 
+		$pdf->WriteHTML('<b>ONT VOTE POUR :</b><br>'); 
+		
+		foreach ($votespour as $pour)
+			$pdf->WriteHTML($this->controller->getNom($pour['Vote']['user_id']).' '); 
+		$pdf->WriteHTML('<br><br>'); 	
+        $pdf->WriteHTML('<b>SE SONT ABSTENUS :</b><br>'); 
+        foreach ($abstenus as $abstenu)
+			$pdf->WriteHTML($this->controller->getNom($abstenu['Vote']['user_id']).' '); 
+        $pdf->WriteHTML('<br><br>'); 
+		$pdf->WriteHTML('<p align="right">La séance était présidée par '.$projet[0]['Redacteur']['nom'].' '.$projet[0]['Redacteur']['prenom'].' et '.$projet[0]['Rapporteur']['nom'].' '.$projet[0]['Rapporteur']['prenom'].' faisait fonction de Secrétaire</p>');
+            
+	ob_end_clean();
+	$pdf->Output('deliberation'.$projet[0]['Deliberation']['num_delib'].'.pdf','D');
+
+ 
