@@ -11,7 +11,7 @@
 	<?php foreach ($seances as $seance): ?>
 	<tr>
 		<td><?php echo $seance['Seance']['id']; ?></td>
-		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
+		<td><?php  echo $html->link($seance['Typeseance']['libelle'],'/seances/details/' . $seance['Seance']['id']); ?></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
 	</tr>
 	<?php endforeach; ?>
