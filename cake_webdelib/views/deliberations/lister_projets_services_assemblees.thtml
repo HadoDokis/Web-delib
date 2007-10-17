@@ -22,7 +22,9 @@
 		<td rowspan=3 style="text-align:center"><?php echo $html->image('icons/fini.png');?></td>
 		<td>En cours de redaction</td>
 		<td>CCL01</td>
-		<td><?php echo $deliberation['Seance']['date']; ?></td>
+		<td><?php if ($deliberation['Deliberation']['reporte']==1) 
+						echo "Reporté au ";
+					echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=3 class="actions"> 
 			<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
 			<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
@@ -48,7 +50,5 @@
 <!-- ------------------------------------------------- -->
 <?php } ?>
 </table>
-
-
 
 </div>
