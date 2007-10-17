@@ -3,7 +3,7 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire','Typeseance', 'Localisation');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire','Typeseance', 'Localisation','Seance');
 	var $components = array('Date','Utils','Email');
 
 	function index() {
@@ -347,11 +347,6 @@ class DeliberationsController extends AppController {
 			
 
 		}
-			//debug($this->data);
-			
-//			if($this->Deliberation->save($this->data)){
-//				$this->redirect('/deliberations/textprojet/'.$id);
-//			}
 		
 	}
 
@@ -381,7 +376,7 @@ class DeliberationsController extends AppController {
 			unset($this->params['form']['date_limite']);
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
-
+			$this->data['Deliberation']['reporte']=0;
 			$this->cleanUpFields();
 
 
@@ -889,6 +884,22 @@ function deliberation ($id = null) {
 			{
 				if ($valid=='1')
 				{
+					//verification du projet, s'il n'est pas pret ->report� a la seance suivante
+					$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+					$seances = $this->Seance->findAll(($condition),null,'date asc');
+					$type = $this->Typeseance->findAll("Typeseance.id = $type_id");
+					$delib = $this->Deliberation->findAll("Deliberation.id = $id");
+					$type_id =  $delib[0]['Seance']['type_id'];
+					$date_seance = $delib[0]['Seance']['date'];
+					$retard = $type[0]['Typeseance']['retard'];
+
+					if (mktime(date("H") , date("i") ,date("s") , date("m") , date("d")+$retard , date("Y"))>= strtotime($date_seance)){
+						$this->data['Deliberation']['seance_id']=$seances[0]['Seance']['id'];
+						$this->data['Deliberation']['reporte']=1;
+						$this->Deliberation->save($this->data);
+					}
+				
+				
 					//on a validé le projet, il passe à la personne suivante
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 
@@ -913,7 +924,9 @@ function deliberation ($id = null) {
 						$this->data['Deliberation']['etat']=2;
 						$this->data['Deliberation']['id']=$id;
 						$this->Deliberation->save($this->data['Deliberation']);
+					
 
+						
 						$this->redirect('/deliberations/listerProjetsATraiter');
 					}
 					else
@@ -1186,7 +1199,12 @@ function getMatiereListe(){
 	{
 		//liste les projets appartenants au service des assembl�es
 		$conditions="etat = 2 ";
-		$this->set('deliberations', $this->Deliberation->findAll($conditions));
+		$deliberations = $this->Deliberation->findAll($conditions);
+		
+		for ($i=0; $i<count($deliberations); $i++)
+			$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+		
+		$this->set('deliberations',$deliberations );
 	}
 
 	function textprojetvue ($id = null) {
