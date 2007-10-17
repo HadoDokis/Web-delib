@@ -1,6 +1,6 @@
 <div class="deliberations">
 <h2>Mes projets &agrave; traiter</h2>
-
+<?php //debug($deliberations);?>
 <table cellspacing="0" cellpadding="0">
 	<tr>	
 		<th Width='5%' >Urgence</th>
@@ -22,7 +22,9 @@
 		<td rowspan=3 style="text-align:center"><?php echo $html->image($deliberation['image']);?></td>
 		<td align='center'>A traiter</td>
 		<td align='left'>CCL01</td>
-		<td align='left'><?php echo $deliberation['Seance']['date']; ?></td>
+		<td align='left'><?php if ($deliberation['Deliberation']['reporte']==1) 
+						echo "Reporté au ";
+					echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=4 class="actions" > 
 			<?php echo $html->link('',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>$deliberation['act']))?>
 			<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'))?>
