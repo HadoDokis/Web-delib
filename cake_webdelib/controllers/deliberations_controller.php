@@ -898,10 +898,9 @@ function deliberation ($id = null) {
 						$this->data['Deliberation']['reporte']=1;
 						$this->data['Deliberation']['id']=$id;
 						$this->Deliberation->save($this->data);
-						//echo "ca repoooorte";
-						//debug($this->data);
+
 					}
-					//else{"ca marce ok";}
+					
 				
 				
 					//on a validé le projet, il passe à la personne suivante
