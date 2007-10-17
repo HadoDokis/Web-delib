@@ -1029,7 +1029,7 @@ function deliberation ($id = null) {
 			return $tab;
         }
 
-/** code de francois
+/** code de francois */
           function getMatiereListe(){
  		    $tab = array();
         	$doc = new DOMDocument();
@@ -1048,10 +1048,10 @@ function deliberation ($id = null) {
 			 }
 			 debug($tab);
 			 exit;
-        }*/
+        }
 
 
-// a moi
+/*// a moi
 function getMatiereListe(){
  		$tab = array();
 
@@ -1077,7 +1077,7 @@ function getMatiereListe(){
 
 		debug($tab);
 		exit;
-    }
+    }*/
 
 
 
