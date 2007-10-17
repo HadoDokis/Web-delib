@@ -16,13 +16,15 @@
 	</tr>
 <!-- ------------------------------------------------- -->
 <?php foreach ($deliberations as $deliberation){ ?>
-<?php //debug($deliberations);?>
+<?php //debug($deliberations);exit;?>
 
 	<tr>
 		<td rowspan=3 style=text-align:center'><?php echo $html->image($deliberation['image']);?></td>
 		<td><?php echo $deliberation['etat'];?></td>
 		<td>CCL01</td>
-		<td><?php echo $deliberation['Seance']['date']; ?></td>
+		<td><?php if ($deliberation['Deliberation']['reporte']==1) 
+						echo "Reporté au ";
+					echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=4 class="actions" >
 			<?php echo $html->link('',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>$deliberation['act']))?>
 			<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'))?>
@@ -48,11 +50,6 @@
 <!-- ------------------------------------------------- -->
 <?php } ?>
 </table>
-
-
-
-
-
 
 
 </div>
