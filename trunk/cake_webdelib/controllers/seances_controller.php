@@ -3,7 +3,7 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $components = array('Date');
+	var $components = array('Date','Email');
 	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote','Model');
 
 	function index() {
@@ -258,17 +258,77 @@ class SeancesController extends AppController {
 	}
 
 	function generateConvocationList ($id=null) {
-		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
+		$data =  $this->SeancesUser->findAll("seance_id =$id");
 		$type_infos = $this->getType($id);
-		$this->set('type_infos', $type_infos );
-		$this->set('model',$this->Model->findAll());
-		$this->set('projets', $this->afficherProjets($id, 1));
-		$this->set('jour', $this->Date->days[intval(date('w'))]);
-		$this->set('mois', $this->Date->months[intval(date('m'))]);
-		$this->set('collectivite',  $this->Collectivite->findAll());
-		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($type_infos[0]['Seance']['date'])));
+		$model=$this->Model->findAll();
+		$projets= $this->afficherProjets($id, 1);
+		$jour= $this->Date->days[intval(date('w'))];
+		$mois= $this->Date->months[intval(date('m'))];
+		$collectivite= $this->Collectivite->findAll();
+		$date_seance= $this->Date->frenchDateConvocation(strtotime($type_infos[0]['Seance']['date']));
+
+	    vendor('fpdf/html2fpdf');
+	    $pdf = new HTML2FPDF();
+        foreach($data as $seanceUser) {
+            $pdf->AddPage();
+		    $emailPdf = new HTML2FPDF();
+		    $emailPdf->AddPage();
+	        $search = array("#LOGO_COLLECTIVITE#","#ADRESSE_COLLECTIVITE#","#NOM_ELU#","#ADRESSE_ELU#","#VILLE_ELU#","#VILLE_COLLECTIVITE#","#DATE_DU_JOUR#","#TYPE_SEANCE#","#DATE_SEANCE#","#LIEU_SEANCE#");
+	        $replace = array('<img src="files/image/logo.jpg">',
+		        $collectivite[0]['Collectivite']['nom'].'<br>'.$collectivite[0]['Collectivite']['adresse'].'<br>'.$collectivite[0]['Collectivite']['CP'].' '.$collectivite[0]['Collectivite']['ville'],
+			    $seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'],
+			    $seanceUser['User']['adresse'],
+			    $seanceUser['User']['CP'].' '.$seanceUser['User']['ville'],
+			    $collectivite[0]['Collectivite']['ville'],
+			    $jour.' '.date('d').' '.$mois.' '.date('Y'),
+			    $type_infos[0]['Typeseance']['libelle'],
+			    $date_seance, "un lieu a definir"
+	        );
+	        $generation = str_replace($search,$replace,$model[0]['Model']['texte']);
+	        $pdf->WriteHTML($generation);
+		    $emailPdf->WriteHTML($generation);
+            foreach($projets as $projet) {
+                $pdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
+                $pdf->WriteHTML($projet['Deliberation']['titre'].'<br>');
+                $pdf->WriteHTML('<b><u>Thème</u> : </b><br>'.$projet['Theme']['libelle'].'<br>');
+         	    $pdf->WriteHTML('<b><u>Rapporteur</u> : </b><br>'.$projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom'].'<br>');
+         	    $pdf->WriteHTML('<b><u>Service emetteur</u> : </b><br>'.$projet['Service']['libelle'].'<br><br>');
+			    // Pour la création des convocs à envoyer par mails
+			    $emailPdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
+                $emailPdf->WriteHTML($projet['Deliberation']['titre'].'<br>');
+                $emailPdf->WriteHTML('<b><u>Thème</u> : </b><br>'.$projet['Theme']['libelle'].'<br>');
+         	    $emailPdf->WriteHTML('<b><u>Rapporteur</u> : </b><br>'.$projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom'].'<br>');
+         	    $emailPdf->WriteHTML('<b><u>Service emetteur</u> : </b><br>'.$projet['Service']['libelle'].'<br><br>');
+            }
+            $pos =  strrpos ( getcwd(), 'webroot');
+		    $path = substr(getcwd(), 0, $pos);
+		    $convoc_path = $path."webroot/files/convocations/convoc_".$seanceUser['User']['id'].".pdf";
+		    $emailPdf->Output($convoc_path ,'F');
+		    $this->sendConvoc($seanceUser['User']['id'], $convoc_path, $type_infos[0]['Typeseance']['libelle'], $date_seance);
+            unlink($convoc_path);
+    	}
+        $pdf->Output('convocations.pdf','D');
 	}
-	
+
+	function sendConvoc($user_id,  $convoc_path, $type_seance, $date_seance) {
+		$condition = "User.id = $user_id";
+		$data = $this->User->findAll($condition);
+		// Si l'utilisateur accepte les mails
+		if ($data['0']['User']['accept_notif']){
+			$to_mail = $data['0']['User']['email'];
+			$to_nom = $data['0']['User']['nom'];
+			$to_prenom = $data['0']['User']['prenom'];
+
+			$this->Email->template = 'email/convoquer';
+			$text = "Convocation";
+            $this->set('data', utf8_encode( "Vous venez de recevoir une convocation au  $type_seance du $date_seance"));
+            $this->Email->to = $to_mail;
+            $this->Email->subject = utf8_encode("Convocation au $type_seance du $date_seance");
+       	    $this->Email->attach($convoc_path, 'convocation.pdf');
+            $result = $this->Email->send();
+		}
+	}
+
 	function generateConvocationAnonyme ($id=null) {
 		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
 		$type_infos = $this->getType($id);
