@@ -648,7 +648,7 @@ function deliberation ($id = null) {
 
 		} else {
 
-			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
+			//$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
 			unset($this->params['form']['date_limite']);
 			$this->cleanUpFields();
 
@@ -885,19 +885,23 @@ function deliberation ($id = null) {
 				if ($valid=='1')
 				{
 					//verification du projet, s'il n'est pas pret ->report� a la seance suivante
+					$delib = $this->Deliberation->findAll("Deliberation.id = $id");
 					$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 					$seances = $this->Seance->findAll(($condition),null,'date asc');
-					$type = $this->Typeseance->findAll("Typeseance.id = $type_id");
-					$delib = $this->Deliberation->findAll("Deliberation.id = $id");
 					$type_id =  $delib[0]['Seance']['type_id'];
+					$type = $this->Typeseance->findAll("Typeseance.id = $type_id");
 					$date_seance = $delib[0]['Seance']['date'];
 					$retard = $type[0]['Typeseance']['retard'];
 
 					if (mktime(date("H") , date("i") ,date("s") , date("m") , date("d")+$retard , date("Y"))>= strtotime($date_seance)){
 						$this->data['Deliberation']['seance_id']=$seances[0]['Seance']['id'];
 						$this->data['Deliberation']['reporte']=1;
+						$this->data['Deliberation']['id']=$id;
 						$this->Deliberation->save($this->data);
+						//echo "ca repoooorte";
+						//debug($this->data);
 					}
+					//else{"ca marce ok";}
 				
 				
 					//on a validé le projet, il passe à la personne suivante
