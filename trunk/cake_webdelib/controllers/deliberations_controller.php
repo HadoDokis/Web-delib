@@ -886,12 +886,14 @@ function deliberation ($id = null) {
 				{
 					//verification du projet, s'il n'est pas pret ->reporté a la seance suivante
 					$delib = $this->Deliberation->findAll("Deliberation.id = $id");
-					$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-					$seances = $this->Seance->findAll(($condition),null,'date asc');
-					$type_id =  $delib[0]['Seance']['type_id'];
+				
+					$type_id =$delib[0]['Seance']['type_id'];
 					$type = $this->Typeseance->findAll("Typeseance.id = $type_id");
 					$date_seance = $delib[0]['Seance']['date'];
 					$retard = $type[0]['Typeseance']['retard'];
+				
+					$condition= 'date > "'.date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))).'"';
+					$seances = $this->Seance->findAll(($condition),null,'date asc');
 
 					if (mktime(date("H") , date("i") ,date("s") , date("m") , date("d")+$retard , date("Y"))>= strtotime($date_seance)){
 						$this->data['Deliberation']['seance_id']=$seances[0]['Seance']['id'];
