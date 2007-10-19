@@ -1179,7 +1179,7 @@ function deliberation ($id = null) {
         }
 
         function sortby($seance_id, $sortby) {
-		    $condition= "seance_id=$seance_id";
+		    $condition= "seance_id=$seance_id AND etat = 2";
   		    $deliberations = $this->Deliberation->findAll($condition,null, "$sortby ASC");
 		    for($i=0; $i<count($deliberations); $i++){
 			    $deliberations[$i]['Deliberation']['position']=$i+1;
@@ -1203,7 +1203,7 @@ function deliberation ($id = null) {
     	}
 
    		function getLastPosition( $seance_id) {
-			return count($this->Deliberation->findAll("seance_id =$seance_id" ));
+			return count($this->Deliberation->findAll("seance_id =$seance_id AND etat=2"));
     	}
 
 	function getNextId() {
