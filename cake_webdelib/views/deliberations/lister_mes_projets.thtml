@@ -1,15 +1,16 @@
 <div class="deliberations">
+<?php if ($UserCanAdd) { ?>
 <h2>Mes Deliberations en cours de r&eacute;daction</h2>
 
 
 <table cellspacing="0" cellpadding="0">
-	<tr>	
+	<tr>
 		<th Width='5%' >Urgence</th>
 		<th Width='20%' >Etat de l'envoi</th>
 		<th Width='20%' >D&eacute;tenteur du dossier</th>
 		<th  >Objet</th>
 		<th Width='15%'>Action</th>
-			
+
 	</tr>
 	<tr>
 		<td colspan='5' class='Border' height='1' >
@@ -35,8 +36,8 @@
 			<br/><br/>
 			<?php echo $html->link('','/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'], array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'))?>
 			<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'))?>
-		
-		</td>		
+
+		</td>
 	</tr>
 	<tr>
 		<td>N&deg; pr&eacute;fecture :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
@@ -46,7 +47,7 @@
 	</tr>
 	<tr>
 		<td>N&deg; d&eacute;lib&eacute;ration : <?php echo $deliberation['Deliberation']['num_delib']; ?></td>
-		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td> 
+		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td>
 	</tr>
 	<tr>
 		<td colspan='5' class='Border' height='1' >
@@ -56,11 +57,8 @@
 <?php } ?>
 </table>
 
-
-
-
-
 <ul class="actions">
 	<li><?php echo $html->link('Ajouter une deliberation', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un deliberation')); ?></li>
 </ul>
+<?php } ?>
 </div>

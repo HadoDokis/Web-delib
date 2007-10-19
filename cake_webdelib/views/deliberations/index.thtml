@@ -38,6 +38,9 @@
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter une deliberation', '/deliberations/add'); ?></li>
+	<li><?php
+
+	    echo $html->link('Ajouter une deliberation', '/deliberations/add');
+	    ?></li>
 </ul>
 </div>
