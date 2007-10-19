@@ -3,8 +3,8 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex','Commentaire','Typeseance', 'Localisation','Seance');
-	var $components = array('Date','Utils','Email');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance');
+	var $components = array('Date','Utils','Email', 'Acl');
 
 	function index() {
 		$user=$this->Session->read('user');
@@ -21,12 +21,16 @@ class DeliberationsController extends AppController {
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
 		$conditions="etat = 0 AND redacteur_id = $user_id";
-		//debug($user);
 		$deliberations=$this->Deliberation->findAll($conditions);
 
 		for ($i=0; $i<count($deliberations); $i++)
 			if (isset($deliberations[$i]['Seance']['date']))
 		        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+
+		if ($this->Acl->check($user_id, "Deliberations:add"))
+			$this->set('UserCanAdd', true);
+		else
+			$this->set('UserCanAdd', false);
 
 		$this->set('deliberations', $deliberations);
 	}
@@ -275,8 +279,8 @@ class DeliberationsController extends AppController {
 	function getFileData($fileName, $fileSize) {
 		return fread(fopen($fileName, "r"), $fileSize);
 	}
-	
-	
+
+
 	function saveLocation($id=null,$idLoc=0,$zone)
 	{
 		if($zone==1)
@@ -285,29 +289,29 @@ class DeliberationsController extends AppController {
 			$this->params['data']['Deliberation']['localisation2_id'] = $idLoc;
 		elseif($zone==3)
 			$this->params['data']['Deliberation']['localisation3_id'] = $idLoc;
-	
+
 		$this->params['data']['Deliberation']['id'] = $id;
-		
+
 		if ($this->Deliberation->save($this->params['data'])){
 			$this->redirect($this->Session->read('user.User.lasturl'));
 		}
 	}
 	function changeLocation($id=null,$pzone1=0,$pzone2=0,$pzone3=0)
-	{	
+	{
 		if(empty($this->data))
 		{
 			$data= $this->Deliberation->read(null,$id);
-		
+
 			$this->data['Deliberation']['localisation1_id']= $data['Deliberation']['localisation1_id'];
 			$this->data['Deliberation']['localisation2_id']= $data['Deliberation']['localisation2_id'];
 			$this->data['Deliberation']['localisation3_id']= $data['Deliberation']['localisation3_id'];
 
-	
+
 			$this->set('id',$id);
 			$conditions = "Localisation.parent_id= 0";
 			$this->set('localisations', $this->Deliberation->Localisation->generateList($conditions));
-			
-		
+
+
 			if($pzone1!=0){
 				$conditions = "Localisation.parent_id= $pzone1";
 				$zone1 = $this->Localisation->generateList($conditions);
@@ -318,7 +322,7 @@ class DeliberationsController extends AppController {
 				$this->set('selectedLocalisation1',0);
 				$this->set('selectedzone1',0);
 			}
-			
+
 			if($pzone2!=0){
 				$conditions = "Localisation.parent_id= $pzone2";
 				$zone2 = $this->Localisation->generateList($conditions);
@@ -344,10 +348,10 @@ class DeliberationsController extends AppController {
 				$this->set('selectedzone3',0);
 				$this->data['Deliberation']['localisation3_id']=0;
 			}
-			
+
 
 		}
-		
+
 	}
 
 	function add($location=null) {
@@ -357,12 +361,12 @@ class DeliberationsController extends AppController {
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('circuits', $this->Deliberation->Circuit->generateList());
 			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
-			
+
 			$selectedRapporteur = null;
 			if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
-			
+
 //			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 //			$date_seances = $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date');
 //			foreach ($date_seances as $key=>$date)
@@ -374,7 +378,7 @@ class DeliberationsController extends AppController {
 				$retard=$seance['Typeseance']['retard'];
 				if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
 					$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-			}	
+			}
 			$this->set('date_seances',$tab);
 
 			$this->render();
@@ -893,12 +897,12 @@ function deliberation ($id = null) {
 				{
 					//verification du projet, s'il n'est pas pret ->report� a la seance suivante
 					$delib = $this->Deliberation->findAll("Deliberation.id = $id");
-				
+
 					$type_id =$delib[0]['Seance']['type_id'];
 					$type = $this->Typeseance->findAll("Typeseance.id = $type_id");
 					$date_seance = $delib[0]['Seance']['date'];
 					$retard = $type[0]['Typeseance']['retard'];
-				
+
 					$condition= 'date > "'.date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))).'"';
 					$seances = $this->Seance->findAll(($condition),null,'date asc');
 
@@ -909,9 +913,7 @@ function deliberation ($id = null) {
 						$this->Deliberation->save($this->data);
 
 					}
-					
-				
-				
+
 					//on a validé le projet, il passe à la personne suivante
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 
@@ -936,9 +938,9 @@ function deliberation ($id = null) {
 						$this->data['Deliberation']['etat']=2;
 						$this->data['Deliberation']['id']=$id;
 						$this->Deliberation->save($this->data['Deliberation']);
-					
 
-						
+
+
 						$this->redirect('/deliberations/listerProjetsATraiter');
 					}
 					else
@@ -1212,10 +1214,10 @@ function getMatiereListe(){
 		//liste les projets appartenants au service des assembl�es
 		$conditions="etat = 2 ";
 		$deliberations = $this->Deliberation->findAll($conditions);
-		
+
 		for ($i=0; $i<count($deliberations); $i++)
 			$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
-		
+
 		$this->set('deliberations',$deliberations );
 	}
 
