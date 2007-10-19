@@ -1,0 +1,128 @@
+<script type="text/javascript">
+<?php $javascript->codeBlock(readfile(APP.'plugins'.DS.$this->plugin.'views'.DS.'layouts'.DS.'tree.js'));?>		
+</script>
+<style type='text/css'>
+<?php readfile(APP.'plugins'.DS.$this->plugin.'views'.DS.'layouts'.DS.'tree.css'); ?>
+</style>
+<?php
+function printhtml($array)
+	{
+	static $i = 0;
+	static $level = 0;
+	$i++;	
+	$level++;
+	$tab = str_repeat("\t", $level);
+		
+	$checkbox = ""; //"<input type='checkbox'/>";
+
+	if($i>1)
+		{
+		print("$tab<ul class='closed'>\r");		
+		}
+	else
+		{
+			if($i == 1)
+			{
+				print("$tab<ul class='tree'>\r");	
+			}
+			else
+			{
+				print("$tab<ul>\r");	
+			}
+			
+		}
+		
+	foreach ($array as $key => $item)
+		{
+		print("$tab<li><a href='#'>");
+		if(is_array($item))
+            {
+            print("$key</a>\r[+]");			
+            printhtml($item);
+			$indent = true;
+            }
+		else
+			{
+			print("$checkbox $item</a>");
+			$indent = false;
+            }
+			
+		if($indent==true)
+			{
+			print("$tab</li>\r");
+			}
+		else
+			{
+			print("</li>\r");
+			}
+		}
+	$level--;
+	print("$tab</ul>\r");
+	}
+	
+?>
+<h2>Create Users or Groups</h2>
+<div style='float:right;text-align:left;'>
+<h3>Add User/Group</h3>
+<?php
+if(isset($message))
+{
+   echo "<center>".$message."</center>";
+}
+?>
+	<?php //echo $ajax->form('/acm/create/', 'post',array('update'=> 'create', 'loading'=> "Element.show('loading')", 'complete' => "Element.hide('loading');"));?>
+    <form action="<?php echo $html->url('/acm/create')?>" method="post">  
+	<?php echo $html->hidden('AcmUser/id'); ?>
+	  <p>
+            <b>Parent:</b><br />
+			<?php
+			if(!empty($arolist))
+			{
+				echo $html->selectTag('AcmUser/parent', $arolist);
+			}
+			else
+			{
+				echo "None Available";
+				echo $html->hidden('AcmUser/parent', array(''));
+			}
+			?>
+        </p>
+        <p>
+            <b>Name:</b><br />
+            <?php echo $html->input('AcmUser/alias', array("size"=>20, "id"=>'alias')); ?>
+        </p>
+        <p>
+           <?php
+            echo $html->submit('Create');
+            ?>
+        </p>
+    </form>
+</div>
+
+<div>
+<form name="mainForm" action="javscript:;">
+	<div class="newsItem">
+	  <h3>Task List</h3>
+	  <div id="expandcontractdiv">
+		<!-- a href="javascript:tree.expandAll()">Expand all</a-->
+		<!--a href="javascript:tree.collapseAll()">Collapse all</a-->
+	  </div> 
+	</div>
+</form>
+
+   <div id="tree">
+   
+		<?php
+			if(!empty($data))
+			{				
+				printhtml($acm->buildListTree($data));		
+			}				
+			else
+			{
+				echo "No Groups/Users Available";
+			}
+
+		?> 
+	</div>
+	<span class="button"><?php //echo $html->link('Create New User/Group','/acm/create'); ?></span>
+</div>

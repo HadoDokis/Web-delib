@@ -1,0 +1,16 @@
+<?php
+/**
+ * Yes. :  It's That Easy, Period <http://www.yesperiod.org/>
+ * Copyright (c) 2006, Yes Period, Inc.
+ *                     1610 Forster Street
+ *                     Harrisburg, PA 17103
+ *
+ * @filesource	 autoload.php
+ * @copyright    Copyright (c) 2006, Yes Period, Inc.
+ * @link         http://www.yesperiod.com/
+ * @package      ACM
+ * @modifiedby   $LastChangedBy: Ryan J. Peterson $
+ * @lastmodified $Date: 2006/06/21 10:26:37 $
+ */
+ ?>
+ <h1>Auto Load Complete</h1>

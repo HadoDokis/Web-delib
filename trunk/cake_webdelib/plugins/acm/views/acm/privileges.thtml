@@ -1,0 +1,17 @@
+<h2>Select Controllers You Want To Manage:</h2>
+<div id="list-controllers">
+	<?php
+	    foreach($controllers AS $controller)
+	    {
+	    	echo '<div class="controller">';
+	    	echo '<span class="controller_name">';
+			echo $controller['name'];
+			echo '</span>';
+			echo '<span class="controller_switch" id="'.$controller['name'].'_status">';	
+			echo ' <strong class="'.$controller['status'].'">'.$controller['status'].'</strong><em>/</em>';	
+		   	echo $ajax->link($controller['altstatus'], '/acm/set_controller/'.$controller['name'].'/'.$controller['altstatus'].'/', array('class'=>$controller['altstatus'],'update' =>$controller['name'].'_status'));
+			echo '</span>';
+			echo '</div>';
+	    }
+	?>
+</div>
