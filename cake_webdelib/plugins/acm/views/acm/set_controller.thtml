@@ -1,0 +1,4 @@
+<?php
+echo ' <strong class="'.$controller['status'].'">'.$controller['status'].'</strong><em>/</em>';	
+echo $ajax->link($controller['altstatus'], '/acm/set_controller/'.$controller['name'].'/'.$controller['altstatus'].'/', array('class'=>$controller['altstatus'],'update' =>$controller['name'].'_status'));
+?>

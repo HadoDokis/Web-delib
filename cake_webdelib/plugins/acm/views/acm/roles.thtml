@@ -1,0 +1,16 @@
+<h2>Manage Access Permissions</h2>
+<div>
+   <div>
+   		<form>
+		<?php
+			if(!empty($data))
+			{
+				echo $acm->guiDataGrid($data['aros'], $data['acos'], 'alias','children');
+			}else{
+				echo "No Groups/Users Available";
+			}
+
+		?>
+		</form>
+	</div>
+</div>
