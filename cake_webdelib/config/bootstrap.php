@@ -42,5 +42,7 @@
  * $controllerPaths = array('this path to controllers', 'second full path to controllers', 'etc...');
  *
  */
-//EOF
+
+    include(APP.'plugins'.DS.'acm'.DS.'config.php');
+
 ?>
