@@ -1,14 +1,11 @@
 <h2>Modifier utilisateur</h2>
 <form action="<?php echo $html->url('/users/edit/'.$html->tagValue('User/id')); ?>" method="post">
-<div class="imbrique"> 
+<div class="imbrique">
 	<div class="gauche">
 		<?php echo $form->labelTag('User/login', 'Login');?>
  		<?php echo $html->input('User/login');?>
 		<?php echo $html->tagErrorMsg('User/login', 'Entrer le login.');?>
 		<?php echo $html->tagErrorMsg('User/unique_login', 'Entrer un autre login, celui-ci est d&eacute;j&agrave; utilis&eacute;.'); ?> <br />
-		<?php echo $form->labelTag('User/password', 'Password');?>
-	 	<?php echo $html->password('User/password');?>
-		<?php echo $html->tagErrorMsg('User/password', 'Entrer le mot de passe.');?>
 	</div>
 	<div class="droite">
 		<?php echo $form->labelTag('User/nom', 'Nom');?>
@@ -21,7 +18,7 @@
 </div>
 
 <div class="imbrique">
-	<div class="gauche"> 
+	<div class="gauche">
 		<?php echo $form->labelTag('User/email', 'Email');?>
  		<?php echo $html->input('User/email', array('size' => '30'));?>
 		<?php echo $html->tagErrorMsg('User/email', 'Entrer l\'email.');?>
@@ -38,7 +35,7 @@
 	 	<?php echo $html->input('User/ville');?>
 		<?php echo $html->tagErrorMsg('User/ville', 'Entrer la ville.');?>
 	</div>
-	<div class="droite"> 
+	<div class="droite">
 		<?php echo $form->labelTag('User/teldom', 'Num tel domicile');?>
  		<?php echo $html->input('User/teldom');?>
 		<?php echo $html->tagErrorMsg('User/teldom', 'Entrer le Num tel domicile.');?>
@@ -59,24 +56,24 @@
 		<?php echo $form->labelTag('User/accept_notif', 'Notification email'); ?>
 		<?php echo $html->radio('User/accept_notif',$notif);?>
 		<?php echo $html->tagErrorMsg('User/accept_notif', 'Choisir la notification');?>
-<br /><br />	
-		<?php echo $form->labelTag('User/statut', ' Statut');?>
-		<?php echo $html->radio('User/statut',array('0'=>'agent'),null,array('onclick'=>"javascript:montre('smenu14');")); ?> 
-		<?php echo $html->radio('User/statut',array('1'=>'elu'),null,array('onclick'=>"javascript:montre('smenu15');")); ?> 
 <br /><br />
-		<div class="optional" id="smenu14"> 
+		<?php echo $form->labelTag('User/statut', ' Statut');?>
+		<?php echo $html->radio('User/statut',array('0'=>'agent'),null,array('onclick'=>"javascript:montre('smenu14');")); ?>
+		<?php echo $html->radio('User/statut',array('1'=>'elu'),null,array('onclick'=>"javascript:montre('smenu15');")); ?>
+<br /><br />
+		<div class="optional" id="smenu14">
 		<?php echo $form->labelTag('Service/Service', 'Service(s)');?>
 	 	<?php echo $html->selectTag('Service/Service', $services,$selectedServices, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
 		<?php echo $html->tagErrorMsg('Service/Service', 'Entrer le(s) service(s) associï¿½(s).');?>
 		</div>
 <br/><br/>
-		<div class="optional" id="smenu15"> 
+		<div class="optional" id="smenu15">
 		<?php echo $form->labelTag('User/service_id', 'Service');?>
 		<?php echo $html->selectTag('User/service_id', $services,$selectedServices);?>
 		<?php echo $html->tagErrorMsg('User/service_id', 'Entrer le(s) service(s) associé(s).');?>
 		</div>
 	</div>
-	<div class="droit"> 
+	<div class="droit">
 		<?php //echo $form->labelTag('Circuit/Circuit', 'Circuit(s) associe(s)');?>
 	 	<?php //echo $html->selectTag('Circuit/Circuit', $circuits, $selectedCircuits, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
 		<?php //echo $html->tagErrorMsg('Circuit/Circuit',  'Entrer le(s) circuit(s) associé(s).');?>
