@@ -12,28 +12,30 @@
 	<th>Statut</th>
 	<th>Actions</th>
 </tr>
-<?php 
+<?php
 //debug($users);
-foreach ($users as $user): 
+foreach ($users as $user):
 ?>
 <tr>
 	<td><?php echo $user['User']['nom']; ?></td>
 	<td><?php echo $user['User']['prenom']; ?></td>
 	<td><?php echo $user['User']['teldom']; ?></td>
 	<td><?php echo $user['User']['telmobile']; ?></td>
-	<td><? if (empty($user['ServiceElu']['libelle'])) { 
-			foreach ($user['Service'] as $service):		
+	<td><? if (empty($user['ServiceElu']['libelle'])) {
+			foreach ($user['Service'] as $service):
 			echo $service['libelle'].'<br/>';
-			endforeach; 
+			endforeach;
 			}else{
 			echo $user['ServiceElu']['libelle']; } ?></td>
 	<td><?php echo $user['Profil']['libelle']; ?></td>
 	<td><?php $statut = ($user['User']['statut'] ==1) ? "Elu" : "Agent"; echo $statut;?></td>
-	
+
 	<td class="actions">
 		<?php echo $html->link('','/users/view/' . $user['User']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
 		<?php echo $html->link('','/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
-		<?php echo $html->link('','/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?')?>
+		<?php
+		    if ( $user['User']['id'] != 1)
+		        echo $html->link('','/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?')?>
 	</td>
 </tr>
 <? endforeach; ?>
