@@ -43,9 +43,7 @@ class Deliberation extends AppModel {
 	var $hasMany = array ('Traitement' => array('className'=>'Traitement',
 												'foreignKey' => 'delib_id'),
 							'Annexe'=>array('className'=>'Annex',
-											'foreignKey'=>'deliberation_id'),
-							'Commentaire' => array('className' => 'Commentaire',
-											'foreignKey' => 'delib_id'));
+											'foreignKey'=>'deliberation_id'));
 //var $hasMany = 'Annex';
 
 
