@@ -1,21 +1,17 @@
-
-
 <div id="content">
 	<div id="tableau_bord">
-
-	<!-- liste des projets à valider pour l'utilisateur connecté-->
-	<?php echo $this->requestAction('/deliberations/listerProjetsATraiter', array('return')); ?>
-	<br/>
-	<!--<h1>Projets dans mon circuit de validation</h1>
-	  liste des autres projets dans le(s) circuit(s), avec leur position-->
-	<?php echo $this->requestAction('/deliberations/listerProjetsDansMesCircuits', array('return')); ?>
-	
-	<br/>
-	<!--<h1>Projets en cours de redaction</h1> -->
-	<?php echo $this->requestAction('/deliberations/listerMesProjets', array('return')); ?>
-	
-	<br/>
-	<!--<h1>Seances à venir</h1>-->
-	<?php echo $this->requestAction('/seances/listerFuturesSeances', array('return')); ?>
+<?php
+    $menu = $this->controller->menu;
+    if (isset($menu['Projets'])) {
+	    echo $this->requestAction('/deliberations/listerProjetsATraiter', array('return'));
+        echo('<br/>');
+        echo $this->requestAction('/deliberations/listerProjetsDansMesCircuits', array('return'));
+        echo('<br/>');
+        echo $this->requestAction('/deliberations/listerMesProjets', array('return'));
+        echo('<br/>');
+     }
+     if (isset($menu['Seance']))
+	     echo $this->requestAction('/seances/listerFuturesSeances', array('return'));
+?>
 	</div>
 </div>
