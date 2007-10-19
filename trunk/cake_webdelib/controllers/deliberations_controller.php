@@ -1038,57 +1038,59 @@ function deliberation ($id = null) {
 			return $tab;
         }
 
-/** code de francois */
-          function getMatiereListe(){
- 		    $tab = array();
-        	$doc = new DOMDocument();
-            $i=0;
-            if(!$doc->load(FILE_CLASS))
-                die("Error opening xml file");
 
-            $Matieres1 = $doc->getElementsByTagName('Matiere1');
-			  foreach ($Matieres1 as $Matiere1) {
-			   	$Matieres2 = $doc->getElementsByTagName('Matiere2');
-				foreach ($Matieres2 as $Matiere2) {
-				    $tab[$Matiere1->getAttribute('actes:CodeMatiere')]= utf8_decode($Matiere1->getAttribute('actes:Libelle'));
-					$tab[$Matiere1->getAttribute('actes:CodeMatiere').'-'.$Matiere2->getAttribute('actes:CodeMatiere')] = utf8_decode($Matiere2->getAttribute('actes:Libelle'));
-				}
-
-			 }
-			 debug($tab);
-			 exit;
-        }
-
-
-/*// a moi
-function getMatiereListe(){
+        
+        function getMatiereListe(){
  		$tab = array();
-
-  		$dom = new DomDocument();
-		$dom->load("/home/marine/Desktop/classification.xml");
-         // if(!$dom->load(FILE_CLASS))
-        // die("Error opening xml file");
-		$i=0;
-
-		$Matieres1 = $dom->getElementsByTagName('Matiere1');
-		foreach ($Matieres1 as $matieres){
-   			$Matieres = $dom->getElementsByTagName('Matiere1')->item($i);
-   			$tab[$Matieres->getAttribute('CodeMatiere')] = $Matieres->getAttribute('Libelle');
+		$xml = simplexml_load_file(FILE_CLASS);
+		$namespaces = $xml->getDocNamespaces();
+		$xml=$xml->children($namespaces["actes"]);
 
 
-   			$Matieres2 = $Matieres->getElementsByTagName('Matiere2');
-  			foreach($Matieres2 as $Matiere2){
-      			$tab[$Matieres->getAttribute('CodeMatiere').'-'.$Matiere2->getAttribute('CodeMatiere')]= $Matiere2->getAttribute('Libelle');
-
-  			}
-		$i++;
+		foreach ($xml->Matieres->children($namespaces["actes"]) as $matiere1) {
+			$mat1=$this->object2array($matiere1); 
+			$tab[$mat1['@attributes']['CodeMatiere']] = utf8_decode($mat1['@attributes']['Libelle']);
+    		foreach ($matiere1->children($namespaces["actes"]) as $matiere2) {
+    			$mat2=$this->object2array($matiere2); 
+    			$tab[$mat1['@attributes']['CodeMatiere'].'-'.$mat2['@attributes']['CodeMatiere']] = utf8_decode($mat2['@attributes']['Libelle']);
+        		foreach ($matiere2->children($namespaces["actes"]) as $matiere3) {
+        			$mat3=$this->object2array($matiere3); 
+    				$tab[$mat1['@attributes']['CodeMatiere'].'-'.$mat2['@attributes']['CodeMatiere'].'-'.$mat3['@attributes']['CodeMatiere']] = utf8_decode($mat3['@attributes']['Libelle']);
+        			foreach ($matiere3->children($namespaces["actes"]) as $matiere4) {
+        				$mat4=$this->object2array($matiere4); 
+    					$tab[$mat1['@attributes']['CodeMatiere'].'-'.$mat2['@attributes']['CodeMatiere'].'-'.$mat3['@attributes']['CodeMatiere'].'-'.$mat4['@attributes']['CodeMatiere']] = utf8_decode($mat4['@attributes']['Libelle']);
+        				foreach ($matiere4->children($namespaces["actes"]) as $matiere5) {
+                			$mat5=$this->object2array($matiere5); 
+    						$tab[$mat1['@attributes']['CodeMatiere'].'-'.$mat2['@attributes']['CodeMatiere'].'-'.$mat3['@attributes']['CodeMatiere'].'-'.$mat4['@attributes']['CodeMatiere'].'-'.$mat5['@attributes']['CodeMatiere']] = utf8_decode($mat5['@attributes']['Libelle']);
+        				}
+        			}
+				}
+			}
 		}
 
-		debug($tab);
-		exit;
-    }*/
+		//debug($tab);
+		//exit;
+		return $tab;
+	}
 
-
+	function object2array($object){
+   		$return = NULL;
+    	if(is_array($object)) {
+        	foreach($object as $key => $value)
+           		$return[$key] = $this->object2array($value);
+    	}
+    	else{
+        	$var = get_object_vars($object);
+        	if($var)
+        	{
+            	foreach($var as $key => $value)
+               		$return[$key] = $this->object2array($value);
+        	}
+        	else
+            	return $object;
+    	}
+		return $return; 
+	}
 
 
        function getDateClassification(){
