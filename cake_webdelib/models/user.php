@@ -10,19 +10,18 @@ class User extends AppModel {
 		//'email' => VALID_EMAIL,
 	);
 
-	var $recursive = 2;
 	var $displayField="nom";
-	var $belongsTo = array(	'Profil'=>array('className'=>'Profil', 
-											'conditions'=>'', 
+	var $belongsTo = array(	'Profil'=>array('className'=>'Profil',
+											'conditions'=>'',
 											'order'=>'',
-											'dependent'=>false, 
+											'dependent'=>false,
 											'foreignKey'=>'profil_id'),
-											
+
 							'ServiceElu' =>array('className' => 'Service',
                                  'conditions' => '',
                                  'order'      => '',
                                  'foreignKey' => ''),
-                            				                           	
+
 						 );
 	var $hasAndBelongsToMany = array('Service' => array('classname'=>'Service',
 														'joinTable'=>'users_services',
@@ -61,8 +60,8 @@ class User extends AppModel {
 															'unique' => '',
 															'finderQuery' => '',
 															'deleteQuery' => '',
-															'insertQuery' => '')/*,		
-								  	
+															'insertQuery' => '')/*,
+
 								'Listepresence'=> array('classname'=>'Listepresence',
 														'joinTable'=>'users_listepresences',
 														'foreignKey'=>'user_id',
@@ -74,6 +73,6 @@ class User extends AppModel {
 														'finderQuery'=>'',
 														'deleteQuery'=>'')*/
 										);
-								
+
 }
 ?>
