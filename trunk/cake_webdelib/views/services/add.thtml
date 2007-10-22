@@ -9,12 +9,11 @@
 	<?php echo $form->labelTag('Service/parent_id', 'Appartient &agrave; : ');?>
 	<?php echo $html->selectTag('Service/parent_id', 	$services)?>
 </div>
-<br/>
+
+<br/><br/><br/><br/>
+
 <div class="submit">
-	<?php echo $html->submit('Ajouter');?>
+	<?php echo $html->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/services/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 </form>
-<br/>
-<ul class="actions">
-<li><?php echo $html->link('Annuler', '/Service/index')?></li>
-</ul>

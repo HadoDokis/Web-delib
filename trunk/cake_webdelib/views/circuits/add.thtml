@@ -5,10 +5,12 @@
  	<?php echo $html->input('Circuit/libelle', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Circuit/libelle', 'Entrer le libelle.');?>
 </div>
+
+
+<br/><br/><br/><br/>
+
 <div class="submit">
-	<?php echo $html->submit('Ajouter');?>
+	<?php echo $html->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/circuits/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 </form>
-<ul class="actions">
-<li><?php echo $html->link('Annuler', '/circuits/index')?></li>
-</ul>

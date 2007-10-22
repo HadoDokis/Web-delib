@@ -5,16 +5,16 @@
  	<?php echo $html->input('Profil/libelle', array('size' => '50'));?>
 	<?php echo $html->tagErrorMsg('Profil/libelle', 'Entrer le libelle.');?>
 </div>
+<br/>
 <div>
-	<?php echo $form->labelTag('Profil/parent_id', 'Appartient ├а');?>
+	<?php echo $form->labelTag('Profil/parent_id', 'Appartient ра');?>
 	<?php echo $html->selectTag('Profil/parent_id', 	$profils)?>
 </div>
-<br/>
+
+<br/><br/><br/><br/>
+
 <div class="submit">
-	<?php echo $html->submit('Ajouter');?>
+	<?php echo $html->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/profils/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 </form>
-<br/>
-<ul class="actions">
-<li><?php echo $html->link('Annuler', '/profils/index')?></li>
-</ul>
