@@ -1,6 +1,6 @@
 <div class="deliberations">
 <?php if ($UserCanAdd) { ?>
-<h2>Mes Deliberations en cours de r&eacute;daction</h2>
+<h2>Mes rapports en cours de r&eacute;daction</h2>
 
 
 <table cellspacing="0" cellpadding="0">
