@@ -26,8 +26,10 @@
  		<?php echo $html->input('Collectivite/telephone');?>
 		<?php echo $html->tagErrorMsg('Collectivite/telephone', 'Entrer le Num telephone.');?>
 </div>
-	<br/><br /><br/><br/>
+<br/><br/><br/><br/><br/>
 <div class="submit">
-	<?php echo $html->submit('Enregistrer la collectivité', array('class'=>'bt_add', 'name'=>'modifier'));?>
+	<?php echo $html->hidden('Collectivite/id')?>
+	<?php echo $html->submit('Modifier', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/collectivites/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 </form>

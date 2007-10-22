@@ -5,19 +5,16 @@
  	<?php echo $html->input('Localisation/libelle', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Localisation/libelle', 'Entrer le libelle.');?>
 </div>
+<br/>
 <div>
 	<?php echo $form->labelTag('Localisation/parent_id', 'Appartient &agrave;');?>
 	<?php echo $html->selectTag('Localisation/parent_id', $localisations, $selectedLocalisation)?>
 </div>
-<br/>
+<br/><br/><br/><br/><br/>
 <div class="submit">
-	<?php echo $form->labelTag('Typeseance/id', '&nbsp;');?>
+	<?php echo $form->labelTag('Localisation/id', '&nbsp;');?>
 	<?php echo $html->hidden('Localisation/id')?>
-	<?php echo $html->submit('Enregistrer');?>
+	<?php echo $html->submit('Modifier', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/localisations/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 </form>
-<br/>
-<ul class="actions">
-<li><?php echo $html->link('Supprimer','/localisations/delete/' . $html->tagValue('Localisation/id'), null, 'Etes-vous sur de vouloir supprimer le service "' . $html->tagValue('Localisation/libelle').'" ?');?>
-<li><?php echo $html->link('Annuler', '/localisations/index')?></li>
-</ul>
