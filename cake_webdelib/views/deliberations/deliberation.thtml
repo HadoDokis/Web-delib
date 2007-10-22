@@ -24,7 +24,7 @@
 <a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
 </div>
 	<div class="optional">
-    	<h2>Délibération au format world</h2>
+    	<h2>Délibération au format MS-Word (.doc)</h2>
     	<?php echo  $html->fileTag("Deliberation/texte_doc"); ?>
 	</div>
 <div class="submit">
