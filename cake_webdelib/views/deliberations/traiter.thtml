@@ -9,7 +9,7 @@
 
 	<dt>Titre</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>	 
-
+<br/>
 <div class="imbrique">
 	<div class="gauche">
 		<dt>Theme</dt>
@@ -25,22 +25,15 @@
 		<dt>Num Pref</dt>
 		<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref']?></dd>
 	</div>
-
-</div>
-<div class="imbrique">
-	<div class="gauche">
+	<div class="droite">
 		<dt>Date Seance</dt>
 		<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
 	</div>
-	<div class="droite">
-		<dt>Circuit</dt>
-		<dd>&nbsp;<?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Circuit']['id'])?></dd>
-	</div>
 </div>
 
 <div class="imbrique">
-<dd>
-	<?php foreach ($user_circuit as $user) { ?>
+	<dt>Circuit : <?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Circuit']['id'])?></dt>
+	<dd><?php foreach ($user_circuit as $user) { ?>
 	<div class="graphique">
 		<?php 
 		if ($deliberation['positionDelib'] == $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)){
@@ -57,6 +50,7 @@
 	<? } ?>
 </dd>
 </div>
+<br/><br/>
 
 <!--	<dt>Vote Id</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>  -->
@@ -131,6 +125,8 @@
 	<li><?php echo $html->link('','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'))?></li>
 	<li><?php echo $html->link('','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'))?></li>
 <br/><br/><li><?php //echo $html->link('Annuler',   '/deliberations/listerProjetsATraiter') ?> </li>
+	<li><?php echo $html->link('Ajouter commentaire', '/commentaire/add/'. $deliberation['Deliberation']['id']) ?></li>
+	<br/>
 	<li><?php echo $html->link('Valider',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/1') ?> </li>
 	<li><?php echo $html->link('Refuser',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/0') ?> </li>
 
