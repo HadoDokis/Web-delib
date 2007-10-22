@@ -1,29 +1,7 @@
--- phpMyAdmin SQL Dump
--- version 2.9.1.1-Debian-2ubuntu1
--- http://www.phpmyadmin.net
--- 
--- Serveur: localhost
--- Généré le : Mardi 16 Octobre 2007 à 17:11
--- Version du serveur: 5.0.38
--- Version de PHP: 5.2.1
--- 
--- Base de données: `webdelib`
--- 
+--/!\ Ajout de contenu dans la table /!\
 
 -- --------------------------------------------------------
-
--- 
--- Structure de la table `models`
--- 
-
-CREATE TABLE `models` (
-  `id` int(11) NOT NULL auto_increment,
-  `type` varchar(255) NOT NULL,
-  `texte` longblob NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
-
--- 
+--
 -- Contenu de la table `models`
 -- 
 
