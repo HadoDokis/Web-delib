@@ -1,4 +1,4 @@
-<h2>Modification d'un thÃ¨me</h2>
+<h2>Modification d'un thème</h2>
 <form action="<?php echo $html->url('/themes/edit/'.$html->tagValue('Service/id')); ?>" method="post">
 <div class="optional">
 	<?php echo $form->labelTag('Theme/libelle', 'Libelle');?>
