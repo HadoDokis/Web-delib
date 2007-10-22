@@ -5,19 +5,16 @@
  	<?php echo $html->input('Profil/libelle', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Profil/libelle', 'Entrer le libelle.');?>
 </div>
+<br/>
 <div>	
 	<?php echo $form->labelTag('Profil/parent_id', 'Appartient à');?>
 	<?php echo $html->selectTag('Profil/parent_id', $profils, $selectedProfil)?>
 </div>
-<br/>
+<br/><br/><br/><br/><br/>
 <div class="submit"> 
-	<?php echo $form->labelTag('Typeseance/id', '&nbsp;');?>
+	<?php echo $form->labelTag('Profil/id', '&nbsp;');?>
 	<?php echo $html->hidden('Profil/id')?>
-	<?php echo $html->submit('Enregistrer');?>
+	<?php echo $html->submit('Modifier', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/profils/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 </form>
-<br/>
-<ul class="actions">
-<li><?php echo $html->link('Supprimer','/profils/delete/' . $html->tagValue('Profil/id'), null, 'Etes-vous sur de vouloir supprimer le profil "' . $html->tagValue('Profil/libelle').'" ?');?>
-<li><?php echo $html->link('Annuler', '/profils/index')?></li>
-</ul>

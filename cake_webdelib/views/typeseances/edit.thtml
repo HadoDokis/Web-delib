@@ -1,4 +1,4 @@
-<h2>Modification Typeseance</h2>
+<h2>Modification d'un type de s&eacute;ance</h2>
 <form action="<?php echo $html->url('/typeseances/edit/'.$html->tagValue('Typeseance/id')); ?>" method="post">
 <div class="required"> 
 	<?php echo $form->labelTag('Typeseance/libelle', 'Libelle');?>
@@ -11,16 +11,11 @@
  	<?php echo $html->input('Typeseance/retard');?>
 	<?php echo $html->tagErrorMsg('Typeseance/retard', 'Insérer un chiffre pour le nombre de jour avant retard.');?>
 </div>
-<br/>
+<br/><br/><br/><br/><br/>
 <div class="submit">
 	<?php echo $html->hidden('Typeseance/id')?>
 	<?php echo $form->labelTag('Typeseance/id', '&nbsp;');?>
-	<?php echo $html->submit('Sauvegarder');?>
+	<?php echo $html->submit('Modifier', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/typeseances/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
-
 </form>
-<br/>
-<ul class="actions">
-<li><?php echo $html->link('Supprimer','/typeseances/delete/' . $html->tagValue('Typeseance/id'), null, 'Etes-vous sur de vouloir supprimer "' . $html->tagValue('Typeseance/libelle').'" ?');?>
-<li><?php echo $html->link('Annuler', '/typeseances/index')?></li>
-</ul>
