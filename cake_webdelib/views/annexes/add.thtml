@@ -20,10 +20,11 @@
  	<?php echo $html->input('Annex/reference_id', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Annex/reference_id', 'Please enter the Reference Id.');?>
 </div>
+
+<br/><br/><br/><br/>
+
 <div class="submit">
-	<?php echo $html->submit('Add');?>
+	<?php echo $html->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/annexes/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 </form>
-<ul class="actions">
-<li><?php echo $html->link('List Annexes', '/annexes/index')?></li>
-</ul>
