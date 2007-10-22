@@ -49,7 +49,7 @@
 
 <br />
 <div class="submit">
-	<?php echo $html->submit('Ajouter', array('class'=>'bt_add', 'name'=>'ajouter'));?>
+	<?php echo $html->submit('Attribuer', array('class'=>'bt_add', 'name'=>'ajouter'));?>
 </div>
 </form>
 
