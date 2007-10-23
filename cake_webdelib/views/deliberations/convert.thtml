@@ -1,7 +1,7 @@
 <?php
 
     $tableau  = "<table border='1' width='90%'>";
-    $tableau .= "<tr bgcolor='#efefef' height='30'><td>Num�ro de la d�lib�ration</td><td colspan=2>$num_delib</td></tr>";
+    $tableau .= "<tr bgcolor='#efefef' height='30'><td>Numero de la deliberation</td><td colspan=2>$num_delib</td></tr>";
 	$tableau .= "<tr><td>objet </td><td>$objet</td></tr>";
 	$tableau .= "<tr bgcolor='#efefef'  height='30'><td>titre</td><td>$titre</td></tr>";
 	$tableau .= "<tr><td>theme</td><td>$theme</td></tr>";
@@ -17,9 +17,14 @@
  	$pdf->WriteHTML('<img src="files/image/logo.jpg">');
 	$pdf->WriteHTML($tableau);
     $pdf->AddPage();
+    $pdf->WriteHTML('<h2>Texte Projet</h2>');
 	$pdf->WriteHTML($text_projet);
 	$pdf->AddPage();
+	$pdf->WriteHTML('<h2>Texte Synthese</h2>');
 	$pdf->WriteHTML($text_synthese);
+	$pdf->AddPage();
+	$pdf->WriteHTML('<h2>Texte Deliberation</h2>');
+	$pdf->WriteHTML($deliberation);
 	ob_end_clean();
 	$pos =  strrpos ( getcwd(), 'webroot');
 	$path = substr(getcwd(), 0, $pos);
