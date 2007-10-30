@@ -1,94 +1,84 @@
 <?php echo $javascript->link('calendrier.js'); ?>
+<?php echo $javascript->link('utils.js'); ?>
 
-<h2>Modification de l'ent&ecirc;te de la d&eacute;liberation</h2>
-<dd>Date cr&eacute;ation : <?php echo $deliberations['Deliberation']['created'];?></dd>
-<dd>Date modification : <?php echo $deliberations['Deliberation']['modified'];?></dd>
-<dd>Redacteur : <?php echo $deliberations['Redacteur']['nom'];?></dd>
-<dd>Rapporteur : <?php echo $deliberations['Rapporteur']['nom'];?></dd>
+<h2>Modification de la d&eacute;liberation</h2>
 <br/>
-
-
+<dd>Date cr&eacute;ation : <?php echo $deliberation['Deliberation']['created'];?></dd>
+<dd>Date modification : <?php echo $deliberation['Deliberation']['modified'];?></dd>
+<dd>Redacteur : <?php echo $deliberation['Redacteur']['nom'];?></dd>
+<br/>
 <?php echo $html->formTag('/deliberations/edit/'.$html->tagValue('Deliberation/id'), null,array('name'=>'Deliberation','enctype'=>'multipart/form-data'));?> 
-<div>
-	<?php echo $form->labelTag('Deliberation/circuit_id', 'Circuit');?>
- 	<?php echo $html->selectTag('Deliberation/circuit_id', $circuits, $html->tagValue('Deliberation/circuit_id'), array(), array(), false);?>
-	<?php echo $html->tagErrorMsg('Deliberation/circuit_id', 'Entrer le circuit.') ?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme');?>
- 	<?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), false);?>
-	<?php echo $html->tagErrorMsg('Deliberation/theme_id', 'Entrer le th&agrave;eme.') ?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/service_id', 'Service');?>
- 	<?php echo $html->selectTag('Deliberation/service_id', $services, $html->tagValue('Deliberation/service_id'), array(), array(), false);?>
-	<?php echo $html->tagErrorMsg('Deliberation/service_id', 'Entrer le service.') ?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/vote_id', 'Vote Id');?>
- 	<?php echo $html->input('Deliberation/vote_id');?>
-	<?php echo $html->tagErrorMsg('Deliberation/vote_id', 'Entrer le vote Id.');?>
-</div>
-<div class="optional"> 
-    <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
-    <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>    
-</div>	
-<br/>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/objet', 'Objet');?>
- 	<?php echo $html->input('Deliberation/objet', array('size' => '52'));?>
-	<?php echo $html->tagErrorMsg('Deliberation/objet', 'Entrer l\'objet de la delib.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/titre', 'Titre');?>
- 	<?php echo $html->textarea('Deliberation/titre', array('cols' => '60'));?>
-	<?php echo $html->tagErrorMsg('Deliberation/titre', 'Entrer le titre.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/num_delib', 'Num Delib');?>
- 	<?php echo $html->input('Deliberation/num_delib');?>
-	<?php echo $html->tagErrorMsg('Deliberation/num_delib', 'Entrer le Num Delib.');?>
-</div>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/num_pref', 'Num Pref');?>
- 	<?php echo $html->input('Deliberation/num_pref');?>
-	<?php echo $html->tagErrorMsg('Deliberation/num_pref', 'Entrer le Num Pref.');?>
-</div>
-<br/>
-<div class="optional"> 
-	<?php echo $form->labelTag('Deliberation/date_limite', 'Date limite');?>
- 	<input name="date_limite" size="9" value="<? echo $deliberations['Deliberation']['date_limite']?>"/>&nbsp;
- 	<?php echo $html->link( '',"javascript:show_calendar('Deliberation.date_limite','f');", array('class'=>'link_calendar', 'name'=>'calendrier'));?>
- 	<?php echo $html->tagErrorMsg('Deliberation/date_limite', 'Entrer une date limite.');?>
-</div>
-<br/>
 
-<div class="optional">
+
+<div id="add_form">
+<table id="sample">
+	<tr>
+		<td width="20%"><?php echo $form->labelTag('Deliberation/objet', 'Objet');?></td>
+		<td width="60%"><?php echo $html->input('Deliberation/objet', array('size' => '30'));?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/titre', 'Titre');?></td>
+ 		<td><?php echo $html->textarea('Deliberation/titre', array('cols' => '60'));?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?></td>
+		<td><?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?></td>
+		<td><?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$selectedRapporteur,null,null,false);?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/theme_id', 'Theme');?></td>
+		<td><?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), false);?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/num_delib', 'Num Delib');?></td>
+		<td><?php echo $html->input('Deliberation/num_delib');?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/num_pref', 'Num Pref');?></td>
+		<td><?php echo $html->input('Deliberation/num_pref');?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/localisation', 'Localisation');?></td>
+		<td><a href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/changeLocation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=600,height=400');">Choisir localisation</a></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/texte_projet', 'Texte projet');?></td>
+		<td><a href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textprojet/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600');">Texte projet</a></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/texte_synthese', 'Texte synthese');?></td>
+		<td><a href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textsynthese/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600');">Texte synthese</a></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/deliberation', 'Deliberation');?></td>
+		<td><a href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/deliberation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600');">Texte deliberation</a></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/date_limite', 'Date limite');?></td>
+		<td><input name="date_limite" size="9" />&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a></td>
+	</tr>
+
 	<?php if(!empty($annexes)){  ?>
-	<?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?>
-	<?php foreach ($annexes as $annexe) :
-			echo '<br>Titre : '.$annexe['Annex']['titre'];
-			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
-			echo '<br>Taille : '.$annexe['Annex']['size'];?>
-			<br/><?php echo $html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
-	<?php endforeach; } ?>
+	<tr>
+		<td><?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?></td>
+		<td><?php foreach ($annexes as $annexe) :
+				echo 'Titre : '.$annexe['Annex']['titre'];
+				echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
+				echo '<br>Taille : '.$annexe['Annex']['size'].' '.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
+				<?php endforeach; } ?></td>
+	</tr> 
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/annexe', 'Annexe');?></td>
+		<td><div id="cible"> </div><a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a></td>
+	</tr>
+</table>
+<div class="centre">
+		<?php echo $html->hidden('Deliberation/id')?>
+		<?php echo $html->submit('Sauvegarder', array('class'=>'bt_add', 'name'=>'saisir'));?>
 </div>
-<div id="cible"> 
-
-</div>
-<div>
-<a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
 </div>
 
-
-<?php echo $html->hidden('Deliberation/id')?>
-<div class="submit">
-	<?php echo $html->submit('Sauvegarder et Modifier localisation', array('class'=>'bt_add', 'name'=>'modifier'));?>
-	
-</div>
-</form>
-<ul class="actions">
-<li><?php echo $html->link('Supprimer','/deliberations/delete/' . $html->tagValue('Deliberation/id'), null, 'Etes-vous sur de vouloir supprimer la deliberation "' . $html->tagValue('Deliberation/titre').'" ?');?>
-<li><?php echo $html->link('Annuler', '/deliberations/index')?></li>
-
-</ul>
+</form>		
