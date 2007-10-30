@@ -66,12 +66,6 @@
 	</div>
 </div>
 
-<!--	<dt>Texte Projet</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_projet']?></dd> -->
-
-<!--	<dt>Texte Synthese</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['texte_synthese']?></dd> -->
-
 <div class="imbrique">
 	<div class="gauche">
 		<dt>Date creation</dt>
