@@ -181,6 +181,10 @@ class UsersController extends AppController {
 				$this->Session->write('user.User.service', $user['ServiceElu']['id']);
 				}else{
     			$services = $this->Utils->simplifyArray($user['Service']);
+    			foreach ($services as $key=>$service){
+    				$service = $this->requestAction("services/doList/$key");
+    				$services[$key]=$service;
+    			}
     			$this->Session->write('user.Service',$services);
     			$this->Session->write('user.User.service', key($services));
 				}
@@ -207,5 +211,9 @@ class UsersController extends AppController {
 		$this->redirect('/users/login');
 
 	}
+	
+	
+	
 }
+
 ?>
