@@ -2,50 +2,75 @@
 <?php echo $javascript->link('utils.js'); ?>
 <h2>Nouvelle d&eacute;liberation</h2>
 
-<?php echo $html->formTag('/deliberations/add/', null,array('name'=>'Deliberation','enctype'=>'multipart/form-data')); ?>
+<?php echo $html->formTag('/deliberations/add/'.$deliberation['Deliberation']['id'], null,array('name'=>'Deliberation','enctype'=>'multipart/form-data')); ?>
 
-<div class="optional">
-	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme');?>
- 	<?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), false);?>
-	<?php echo $html->tagErrorMsg('Deliberation/theme_id', 'Entrer le theme.') ?>
+<div id="add_form">
+<table id="sample">
+	<tr>
+		<td width="20%"><?php echo $form->labelTag('Deliberation/objet', 'Objet');?></td>
+		<td width="60%"><?php echo $html->input('Deliberation/objet', array('size' => '30'));?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/titre', 'Titre');?></td>
+ 		<td><?php echo $html->textarea('Deliberation/titre', array('cols' => '60'));?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?></td>
+		<td><?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?></td>
+		<td><?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$selectedRapporteur,null,null,false);?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/theme_id', 'Theme');?></td>
+		<td><?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), false);?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/num_delib', 'Num Delib');?></td>
+		<td><?php echo $html->input('Deliberation/num_delib');?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/num_pref', 'Num Pref');?></td>
+		<td><?php echo $html->input('Deliberation/num_pref');?></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/localisation', 'Localisation');?></td>
+		<td><a href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/changeLocation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=600,height=400');">Choisir localisation</a></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/texte_projet', 'Texte projet');?></td>
+		<td><a href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textprojet/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600,scrollbars=yes');">Texte projet</a></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/texte_synthese', 'Texte synthese');?></td>
+		<td><a href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textsynthese/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600,scrollbars=yes');">Texte synthese</a></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/deliberation', 'Deliberation');?></td>
+		<td><a href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/deliberation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600,scrollbars=yes');">Texte deliberation</a></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/date_limite', 'Date limite');?></td>
+		<td><input name="date_limite" size="9" />&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a></td>
+	</tr>
+	<tr>
+		<td><?php echo $form->labelTag('Deliberation/annexe', 'Annexe');?></td>
+		<td><div id="cible"> </div><a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a></td>
+	</tr>
+		<?php if(!empty($annexes)){  ?>
+	<tr>
+		<td><?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?></td>
+		<td><?php foreach ($annexes as $annexe) :
+				echo 'Titre : '.$annexe['Annex']['titre'];
+				echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
+				echo '<br>Taille : '.$annexe['Annex']['size'].' octets '.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
+				<?php endforeach; } ?></td>
+	</tr>
+</table>
+<div class="centre">
+		<?php echo $html->submit('Sauvegarder', array('class'=>'bt_add', 'name'=>'saisir'));?>
+</div>
 </div>
 
-<div class="optional">
-	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
- 	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$selectedRapporteur,null,null,false);?>
-	<?php echo $html->tagErrorMsg('Deliberation/rapporteur_id', 'Entrer le rapporteur.');?>
-</div>
-
-<div class="optional">
-	<?php echo $form->labelTag('Deliberation/objet', 'Objet');?>
- 	<?php echo $html->input('Deliberation/objet', array('size' => '30'));?>
-	<?php echo $html->tagErrorMsg('Deliberation/objet', 'Entrerl\'objet de la delib.');?>
-</div>
-<div class="optional">
-	<?php echo $form->labelTag('Deliberation/titre', 'Titre');?>
- 	<?php echo $html->textarea('Deliberation/titre', array('cols' => '60'));?>
-	<?php echo $html->tagErrorMsg('Deliberation/titre', 'Entrer le titre.');?>
-</div>
-<div class="optional">
-	<?php echo $form->labelTag('Deliberation/num_delib', 'Num Delib');?>
- 	<?php echo $html->input('Deliberation/num_delib');?>
-	<?php echo $html->tagErrorMsg('Deliberation/num_delib', 'Entrer le num Delib.');?>
-</div>
-<br />
-<div class="optional">
-    <?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
-    <?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>
-</div>
-<br />
-
-<div class="optional">
-    <label>Date limite : </label>
-    <input name="date_limite" size="9" />&nbsp;
-	<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a>
-</div>
-<br />
-<div class="submit">
-	<a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
-	<?php echo $html->submit('choisir localisation', array('class'=>'bt_add', 'name'=>'saisir'));?>
-</div>
-</form>
+</form>		
