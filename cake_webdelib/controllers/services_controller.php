@@ -83,6 +83,27 @@ class ServicesController extends AppController {
 		//debug($this->data);exit;
 	}
 
-
+	function doList($id){
+	
+		$liste = $this->GetParentList($id).$this->getLibelle($id);
+		return $liste;
+	}
+	
+	function getParentList($id){
+		$tab = "";
+		$condition = "id = $id";
+		$liste = $this->Service->findAll($condition);
+		$list = $liste[0];
+		$parent_id = $list['Service']['parent_id'];
+		if ($parent_id != 0){
+			$parentliste = $this->Service->findAll("id = $parent_id");
+			$libelle_parent = $parentliste[0]['Service']['libelle'];
+			$id_parent = $parentliste[0]['Service']['id'];
+			
+			$tab = $this->getParentList($id_parent).$libelle_parent.'/';
+		}
+		
+		return $tab;
+	}
 }
 ?>
