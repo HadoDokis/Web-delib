@@ -6,44 +6,32 @@
 	$loc=$html->url("/deliberations/attribuercircuit/".$html->tagValue('Deliberation/id')."/");
 
 	echo $html->selectTag('Deliberation/circuit_id', $circuits, $circuit_id, array("onChange"=>"lister_circuits(this, '$loc');"), null, true);
-    //echo " <a href=".$html->url("/circuits/add")."> Ajouter un circuit</a> ";
-   // if ($lastPosition ==0)
-   //     echo " <a href=".$html->url("/circuits/delete/$circuit_id")."> Supprimer ce circuit</a>";
+
 ?>
 <br /><br />
 <!-- données concernant le circuit selectionné -->
-   <table>
- <!--   <th>circuit_id</th>-->
- <!--   <th>libelle </th>-->
- <!--  <th>user_id</th>-->
- <!--   <th>service id </th>-->
-   <th>service libelle</th>
-   <th>prenom</th>
-   <th>nom </th>
-  <th>position</th>
-  <!--   <th>id usercircuit</th>-->
-   
-    <tr>
+<table>
+	<tr>
+		<th>service libelle</th>
+		<th>prenom</th>
+		<th>nom </th>
+		<th>position</th>
+	</tr>
+	<tr>
 	<?php 
     
-	if (isset($listeUserCircuit)) {
+	//if (isset($listeUserCircuit)) {
 		for ($i=0; $i<count($listeUserCircuit['id']); $i++){
 	    	echo("<tr>");   
-	        //  echo("<td>".$listeUserCircuit['circuit_id'][$i]."</td>");
-	       // echo("<td>".$listeUserCircuit['libelle'][$i]."</td>");
-	       //  echo("<td>".$listeUserCircuit['user_id'][$i]."</td>");
-	        // echo("<td>".$listeUserCircuit['service_id'][$i]."</td>");
 	        echo("<td>".$listeUserCircuit['service_libelle'][$i]."</td>");
 	        echo("<td>".$listeUserCircuit['prenom'][$i]."</td>");
 	        echo("<td>".$listeUserCircuit['nom'][$i]."</td>");
 	        echo("<td>".$listeUserCircuit['position'][$i]."</td>");
-	        //   echo("<td>".$listeUserCircuit['id'][$i]."</td>");
-	        
 	        echo("</tr>");
 	    }
-	}
+	//}
 	?>
-	</table>
+</table>
 
 	
 
