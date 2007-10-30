@@ -23,7 +23,7 @@
 	<tr>
 		<td rowspan=3 style="text-align:center"><?php echo $html->image('/icons/encours.png');?></td>
 		<td>En cours de redaction</td>
-		<td>CCL01</td>
+		<td><?php echo $deliberation['Service']['libelle']; ?></td>
 		<td><?php echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=3 class="actions">
 			<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
