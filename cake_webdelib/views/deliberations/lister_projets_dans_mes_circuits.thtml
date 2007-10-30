@@ -21,7 +21,7 @@
 	<tr>
 		<td rowspan=3 style=text-align:center'><?php echo $html->image($deliberation['image']);?></td>
 		<td><?php echo $deliberation['etat'];?></td>
-		<td>CCL01</td>
+		<td><?php echo $deliberation['Service']['libelle']; ?></td>
 		<td><?php if ($deliberation['Deliberation']['reporte']==1) 
 						echo "Reporté au ";
 					echo $deliberation['Seance']['date']; ?></td>
