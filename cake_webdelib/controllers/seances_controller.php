@@ -197,11 +197,15 @@ class SeancesController extends AppController {
 	}
 
 
-	function getDate($id)
+	function getDate($id=null)
     {
+		if (empty($id))
+			return '';
+		else{
 		$condition = "Seance.id = $id";
         $objCourant = $this->Seance->findAll($condition);
-		return $objCourant['0']['Seance']['date'];
+       // debug($objCourant);
+		return $objCourant['0']['Seance']['date'];}
     }
 
 	function getType($id)
