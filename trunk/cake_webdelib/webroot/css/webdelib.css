@@ -1,10 +1,30 @@
 @CHARSET "UTF-8";
 
+/* ----------- modif marine ----------- */
 .pave {
 	width: 80%;
 	height:100%;
 }
 
+#add_form label {
+color:#696969;	
+float: left;
+	width: 100%;
+	text-align: right;
+}
+table#sample {
+	border: 1px solid #cccccc;
+	font-size: 1em;
+	width:80%;
+}
+
+table#sample tr td {
+	border: 0px;
+	padding: 9px 9px 4px 9px ;
+	vertical-align: top;
+	text-align: left;
+}
+/* --------- fin modif marine --------- */
 
 legend {
 	font-style: italic;
@@ -17,7 +37,7 @@ label {
 	float: left;
 	padding: 0 .5em 0 0;
 	text-align: right;
-	width: 80px;
+	width: 120px;
 }
 
 #login_form {
@@ -299,21 +319,21 @@ a.link_circuit {
 a.link_projet {
 	background-image: url(../img/icons/projet.png);
 	background-repeat: no-repeat;
-	background-position: top;
+	background-position: top left ;
 	padding: 0 0 10px 22px;
 }
 
 a.link_synthese {
 	background-image: url(../img/icons/synthese.png);
 	background-repeat: no-repeat;
-	background-position: top;
+	background-position: top left;
 	padding: 0 0 10px 22px;
 }
 
 a.link_deliberation {
 	background-image: url(../img/icons/delibe.png);
 	background-repeat: no-repeat;
-	background-position: top;
+	background-position: top left;
 	padding: 0 0 10px 22px;
 }
 
@@ -403,6 +423,13 @@ a.link_inserer_logo {
 	padding-bottom: 10px;
 }
 
+a.link_annexe {
+	background-image: url(../img/icons/bookmark.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 4px 4px 4px 25px;	
+
+}
 
 .bt_save {
 	background-image: url(../img/icons/filesave.png);
@@ -440,19 +467,6 @@ a.link_inserer_logo {
 	cursor: pointer;
 }
 
-a.link_annexe {
-	color: black;
-	text-decoration: none;
-	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	border-top: 1px solid #e0ef90;
-	border-right: 1px solid #e0ef90;
-	border-left: none;
-	border-bottom: none;
-	background-image: url(../img/icons/bookmark.png);
-	background-repeat: no-repeat;
-	background-position: top left;
-	padding: 4px 4px 4px 25px;	
-}
 
 .bt_fin {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
