@@ -120,7 +120,8 @@ class DeliberationsController extends AppController {
 			$deliberations = $this->Deliberation->findAll($conditions);
 
 			for ($i=0; $i<count($deliberations); $i++){
-		    	$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+				if(!empty($deliberations[$i]['Seance']['date']))
+		    		$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
 			}
@@ -206,7 +207,8 @@ class DeliberationsController extends AppController {
 			$deliberations = $this->Deliberation->findAll($conditions);
 
 			for ($i=0; $i<count($deliberations); $i++){
-		    	$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+				if(!empty($deliberations[$i]['Seance']['date']))
+		    		$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
 			}
@@ -266,7 +268,8 @@ class DeliberationsController extends AppController {
 		//$this->set('deliberation', $this->Deliberation->read(null, $id));
 
 		$deliberation= $this->Deliberation->read(null, $id);
-		$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
+		if(!empty($deliberation['Seance']['date']))
+			$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
 		$id_service = $deliberation['Service']['id'];
 		$deliberation['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
 			
@@ -822,8 +825,10 @@ class DeliberationsController extends AppController {
 	function getField($id = null, $field =null) {
 		$condition = "Deliberation.id = $id";
 	    $dataValeur = $this->Deliberation->findAll($condition, $field);
-	    //debug($dataValeur);
-	   	return $dataValeur['0'] ['Deliberation'][$field];
+	    if(!empty ($dataValeur['0']['Deliberation'][$field]))
+	   		return $dataValeur['0'] ['Deliberation'][$field];
+	   	else
+	   		return '';
 	}
 
 	function delete($id = null) {
@@ -852,7 +857,12 @@ class DeliberationsController extends AppController {
         	$this->set('service',      $this->requestAction("services/getLibelle/".$this->getField($id, 'service_id')));
         	$this->set('nom_rapporteur',    $this->requestAction("users/getNom/".$this->getField($id, 'rapporteur_id')));
           	$this->set('prenom_rapporteur', $this->requestAction("users/getPrenom/".$this->getField($id, 'rapporteur_id')));
-            $this->set('date_seance',       $this->Date->frenchDateConvocation(strtotime($this->requestAction("seances/getDate/".$this->getField($id, 'seance_id')))));
+            $seance_id = $this->requestAction("seances/getDate/".$this->getField($id, 'seance_id'));
+          	if (!empty($seance_id))
+            	$date_seance = $this->Date->frenchDateConvocation(strtotime($seance_id));
+            else
+            	$date_seance ='';
+            $this->set('date_seance',  $date_seance   );
             $this->render();
     }
 
