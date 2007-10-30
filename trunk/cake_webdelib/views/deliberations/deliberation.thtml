@@ -21,13 +21,13 @@
 
 </div>
 <div>
-<a href="javascript:add_field()" id="lien_annexe">Joindre une annexe</a>
+<a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
 </div>
 	<div class="optional">
     	<h2>Délibération au format MS-Word (.doc)</h2>
-    	<?php echo  $html->fileTag("Deliberation/texte_doc"); ?>
+    	<?php echo  $html->fileTag("Deliberation/texte_doc"); ?><?php echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));?><br/><br/>
 	</div>
 <div class="submit">
-	<?php echo $html->submit('Attribuer un circuit', array('class'=>'bt_fin', 'name'=>'terminer'));?>
+	<?php echo $html->submit('Continuer', array('class'=>'bt_fin', 'name'=>'terminer', 'onclick'=>"window.close()"));?>
 </div>
 </form>
