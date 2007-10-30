@@ -1,10 +1,15 @@
 window.onload=montre;
+
 function montre(id) {
 	var d = document.getElementById(id);
 		for (var i = 1; i<=15; i++) {
 			if (document.getElementById('smenu'+i)) {document.getElementById('smenu'+i).style.display='none';}
 		}
 	if (d) {d.style.display='block';}
+}
+
+function OuvrirFenetre(url,nom,detail) {
+	var w = window.open(url,nom,detail);
 }
 
 function saveLocation(idDelib,idLoc,zone)
@@ -67,6 +72,7 @@ function add_field() {
 	input1.name = 'titre_'+n;
 	var titre = document.createTextNode('Titre annexe');	
 	div1.appendChild(titre);
+	div1.appendChild(document.createElement('br'));
 	div1.appendChild(input1);
 	p.appendChild(div1);
 
@@ -78,6 +84,7 @@ function add_field() {
 	input2.name = 'file_'+n;
 	var chemin = document.createTextNode('Chemin annexe');	
 	div2.appendChild(chemin);
+	div2.appendChild(document.createElement('br'));
 	div2.appendChild(br);
 	div2.appendChild(input2);
 	p.appendChild(div2);
