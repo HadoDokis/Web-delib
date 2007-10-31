@@ -3,6 +3,7 @@
 	<tr>
 		<th>Position</th>
 		<?php echo ('<th>'.$html->link('Theme', "/deliberations/sortby/$seance_id/theme_id"). "</th>"); ?>
+		<th>Service emetteur</th>
 		<th>Rapporteur</th>
 		<?php echo ('<th>'.$html->link('Objet', "/deliberations/sortby/$seance_id/objet"). "</th>"); ?>
 		<?php echo ('<th>'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre"). "</th>"); ?>
@@ -14,6 +15,7 @@
     	<tr>
     	    <td><?php echo $projet['Deliberation']['position']; ?></td>
 		    <td><?php echo $projet['Theme']['libelle']; ?></td>
+		    <td><?php echo $projet['Service']['libelle']; ?></td>
 		    <td><?php echo $projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom']; ?></td>
 
 		    <td><?php echo $projet['Deliberation']['objet']; ?></td>
