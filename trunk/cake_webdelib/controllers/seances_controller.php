@@ -187,7 +187,11 @@ class SeancesController extends AppController {
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
 			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
-		    $this->set('seance_id', $id);
+			for ($i=0; $i<count($deliberations); $i++){
+				$id_service = $deliberations[$i]['Service']['id'];
+				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+			}
+			$this->set('seance_id', $id);
 		    $this->set('projets', $deliberations);
 			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($id))));
 			
@@ -418,7 +422,14 @@ class SeancesController extends AppController {
 	}
 
 	function details ($seance_id=null) {
-		$this->set('deliberations' , $this->afficherProjets($seance_id, 0));
+		$deliberations=$this->afficherProjets($seance_id, 0);
+		for ($i=0; $i<count($deliberations); $i++){
+				$id_service = $deliberations[$i]['Service']['id'];
+				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+		}
+		$this->set('deliberations',$deliberations);	
+		$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($seance_id))));
+		
 	}
 
 	function effacerVote($deliberation_id=null) {
@@ -432,14 +443,12 @@ class SeancesController extends AppController {
 		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
 
 		if (empty($this->data)) {
-			//debug($this->data);
 			$donnees = $this->Vote->findAll("delib_id = $deliberation_id");
 
 			foreach($donnees as $donnee){
 				$this->data['Vote'][$donnee['Vote']['user_id']]=$donnee['Vote']['resultat'];
-//debug($this->data['Vote'][$donnee['Vote']['user_id']]);
-//debug($donnee['Vote']['resultat']);
 			    $this->data['Vote']['commentaire'] = $donnee['Vote']['commentaire'];
+			    
 			}
 			$this->set('deliberation' , $this->Deliberation->findAll("Deliberation.id=$deliberation_id"));
 			$this->set('presents' , $this->afficherListePresents($seance_id));
