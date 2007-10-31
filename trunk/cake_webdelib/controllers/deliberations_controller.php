@@ -396,6 +396,7 @@ class DeliberationsController extends AppController {
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
 			$this->set('deliberation',$this->data);
+			$this->set('datelim',$this->data['Deliberation']['date_limite']);
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
@@ -776,9 +777,7 @@ class DeliberationsController extends AppController {
 			}
 		}
 	}
-	
-	
-	
+
 	
 	function recapitulatif($id = null) {
 		$user=$this->Session->read('user');
@@ -790,6 +789,8 @@ class DeliberationsController extends AppController {
 			$deliberation = $this->Deliberation->read(null, $id);
 			if(!empty($deliberation['Seance']['date']))
 				$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
+			if(!empty($deliberation['Deliberation']['date_limite']))
+				$deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
 			$deliberation['Deliberation']['created'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Deliberation']['created']));
 			$deliberation['Deliberation']['modified'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Deliberation']['modified']));
 			$id_service = $deliberation['Service']['id'];
@@ -866,7 +867,15 @@ class DeliberationsController extends AppController {
             $this->render();
     }
 
-    
+  	
+	 /**
+     * Ajoute la d�liberation au circuit de validation
+     * Si la delib a une version anterieure, on met a jour la table traitement
+     * On envoie un mail a toutes les personnes appartenant au circuit de validation
+     * 
+	 * @param int $id L'id de la deliberation.
+	 * 
+     */  
     function addIntoCircuit($id = null){
     	$this->data = $this->Deliberation->read(null,$id);
     	if ($this->data['Deliberation']['circuit_id']!= 0){
@@ -909,6 +918,7 @@ class DeliberationsController extends AppController {
     		$this->redirect('/deliberations/recapitulatif/'.$id);	
     	}
     }
+    
     
 	function attribuercircuit ($id = null, $circuit_id=null) {
 		if (empty($this->data)) {
@@ -1012,21 +1022,27 @@ class DeliberationsController extends AppController {
 					$delib = $this->Deliberation->findAll("Deliberation.id = $id");
 
 					$type_id =$delib[0]['Seance']['type_id'];
+					
 					$type = $this->Typeseance->findAll("Typeseance.id = $type_id");
-					$date_seance = $delib[0]['Seance']['date'];
+					$date_seance = $delib[0]['Seance']['date'];;
 					$retard = $type[0]['Typeseance']['retard'];
 
 					$condition= 'date > "'.date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))).'"';
 					$seances = $this->Seance->findAll(($condition),null,'date asc');
-
+					if (!empty($date_seance)){
 					if (mktime(date("H") , date("i") ,date("s") , date("m") , date("d")+$retard , date("Y"))>= strtotime($date_seance)){
 						$this->data['Deliberation']['seance_id']=$seances[0]['Seance']['id'];
 						$this->data['Deliberation']['reporte']=1;
 						$this->data['Deliberation']['id']=$id;
+						$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+						$this->data['Deliberation']['position']=$position;
 						$this->Deliberation->save($this->data);
-
+					}
 					}
 
+					
+					
+					
 					//on a validé le projet, il passe à la personne suivante
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 
@@ -1101,7 +1117,7 @@ class DeliberationsController extends AppController {
 					$delib['Deliberation']['etat']=0;
 					$delib['Deliberation']['anterieure_id']=$id;
 					$delib['Deliberation']['date_envoi']=0;
-					$delib['Deliberation']['circuit_id']=0;
+					//$delib['Deliberation']['circuit_id']=0;
 					$delib['Deliberation']['created']='';
 					$delib['Deliberation']['modified']='';
 					$this->Deliberation->save($delib['Deliberation']);
@@ -1151,9 +1167,14 @@ class DeliberationsController extends AppController {
 			return $tab;
         }
 
-
-        
-        function getMatiereListe(){
+	function classification(){
+		$this->layout = 'fckeditor';
+		$this->set('classification',$this->getMatiereListe());
+	        
+	}
+	
+	
+    function getMatiereListe(){
  		$tab = array();
 		$xml = simplexml_load_file(FILE_CLASS);
 		$namespaces = $xml->getDocNamespaces();
@@ -1165,16 +1186,16 @@ class DeliberationsController extends AppController {
 			$tab[$mat1['@attributes']['CodeMatiere']] = utf8_decode($mat1['@attributes']['Libelle']);
     		foreach ($matiere1->children($namespaces["actes"]) as $matiere2) {
     			$mat2=$this->object2array($matiere2); 
-    			$tab[$mat1['@attributes']['CodeMatiere'].'-'.$mat2['@attributes']['CodeMatiere']] = utf8_decode($mat2['@attributes']['Libelle']);
+    			$tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere']] = utf8_decode($mat2['@attributes']['Libelle']);
         		foreach ($matiere2->children($namespaces["actes"]) as $matiere3) {
         			$mat3=$this->object2array($matiere3); 
-    				$tab[$mat1['@attributes']['CodeMatiere'].'-'.$mat2['@attributes']['CodeMatiere'].'-'.$mat3['@attributes']['CodeMatiere']] = utf8_decode($mat3['@attributes']['Libelle']);
+    				$tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere'].'.'.$mat3['@attributes']['CodeMatiere']] = utf8_decode($mat3['@attributes']['Libelle']);
         			foreach ($matiere3->children($namespaces["actes"]) as $matiere4) {
         				$mat4=$this->object2array($matiere4); 
-    					$tab[$mat1['@attributes']['CodeMatiere'].'-'.$mat2['@attributes']['CodeMatiere'].'-'.$mat3['@attributes']['CodeMatiere'].'-'.$mat4['@attributes']['CodeMatiere']] = utf8_decode($mat4['@attributes']['Libelle']);
+    					$tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere'].'.'.$mat3['@attributes']['CodeMatiere'].'.'.$mat4['@attributes']['CodeMatiere']] = utf8_decode($mat4['@attributes']['Libelle']);
         				foreach ($matiere4->children($namespaces["actes"]) as $matiere5) {
                 			$mat5=$this->object2array($matiere5); 
-    						$tab[$mat1['@attributes']['CodeMatiere'].'-'.$mat2['@attributes']['CodeMatiere'].'-'.$mat3['@attributes']['CodeMatiere'].'-'.$mat4['@attributes']['CodeMatiere'].'-'.$mat5['@attributes']['CodeMatiere']] = utf8_decode($mat5['@attributes']['Libelle']);
+    						$tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere'].'.'.$mat3['@attributes']['CodeMatiere'].'.'.$mat4['@attributes']['CodeMatiere'].'.'.$mat5['@attributes']['CodeMatiere']] = utf8_decode($mat5['@attributes']['Libelle']);
         				}
         			}
 				}
