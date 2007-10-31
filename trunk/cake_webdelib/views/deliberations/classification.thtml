@@ -1,0 +1,16 @@
+<?php echo $javascript->link('utils.js'); ?>
+<h2>Choisir la classification</h2>
+
+<div id="attribute_list">
+
+<? foreach ($classification as $key=>$value) {
+	$val=addslashes($value);
+	echo $html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:return_choice('$key - $val','$key');"));
+	echo '<br/>';
+}
+?>
+
+
+<br/>
+<?php echo $html->link('Fermer la fenêtre','#add',array('onclick'=>"javascript:window.close();")); ?>
+</div>
