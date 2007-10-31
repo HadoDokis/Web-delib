@@ -26,7 +26,7 @@ class PostseancesController extends AppController {
 			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
 		    $this->set('seance_id', $id);
 		    $this->set('projets', $deliberations);
-		    $this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($deliberations[0]['Seance']['date'])));
+		    $this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->requestAction("seances/getDate/$id"))));
 		}
 		else
 		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
