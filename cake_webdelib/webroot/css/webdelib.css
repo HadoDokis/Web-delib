@@ -12,6 +12,16 @@ float: left;
 	width: 100%;
 	text-align: right;
 }
+a.list_form  {
+  font-weight: normal;
+  text-decoration: none;
+  border-bottom: 1px black dashed;
+}
+
+a:hover.list_form  {
+  text-decoration: none;
+  border-bottom: 1px black solid;
+}
 table#sample {
 	border: 1px solid #cccccc;
 	font-size: 1em;
@@ -23,6 +33,18 @@ table#sample tr td {
 	padding: 9px 9px 4px 9px ;
 	vertical-align: top;
 	text-align: left;
+}
+
+#attribute_list a { 
+  text-align: left;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+#attribute_list a:hover { 
+  text-align: left;
+  font-size: 12px;
+  text-decoration: solid;
 }
 /* --------- fin modif marine --------- */
 
