@@ -25,7 +25,9 @@
 	$this->controller->Session->write('user.User.lasturl',$urlcourante);
 	
 	if (empty($users['Service'])){
-		echo $html->selectTag('Service/Service',array($users['ServiceElu']['id']=>$users['ServiceElu']['libelle']), null, null,null,false);
+	$user_id = $users['ServiceElu']['id'];
+	$list = $this->requestAction("services/doList/$user_id");
+		echo $html->selectTag('Service/Service',array($users['ServiceElu']['id']=>$list), null, null,null,false);
 	}else{
 		$urlPage =  FULL_BASE_URL . $this->webroot;
 		$service_id = $this->controller->Session->read('user.User.service');
