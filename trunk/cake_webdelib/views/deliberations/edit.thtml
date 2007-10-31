@@ -5,7 +5,7 @@
 <br/>
 <dd>Date cr&eacute;ation : <?php echo $deliberation['Deliberation']['created'];?></dd>
 <dd>Date modification : <?php echo $deliberation['Deliberation']['modified'];?></dd>
-<dd>Redacteur : <?php echo $deliberation['Redacteur']['nom'];?></dd>
+<dd>Redacteur : <?php echo $deliberation['Redacteur']['nom'].' '.$deliberation['Redacteur']['prenom'];?></dd>
 <br/>
 <?php echo $html->formTag('/deliberations/edit/'.$html->tagValue('Deliberation/id'), null,array('name'=>'Deliberation','enctype'=>'multipart/form-data'));?> 
 
@@ -38,7 +38,10 @@
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/num_pref', 'Num Pref');?></td>
-		<td><?php echo $html->input('Deliberation/num_pref');?></td>
+		<td><?php echo $html->input('Deliberation/num_pref',array('id'=>'classif1', 'size' => '60'));?><br/>
+		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base?>/deliberations/classification', 'Select_attribut', 'scrollbars=0,width=570,height=450');" id="classification_text">[Choisir la classification]</a>
+		 <?php echo $html->hidden('Deliberation/num_pref',array('id'=>'classif2','name'=>'classif2'))?>
+		</td>
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/localisation', 'Localisation');?></td>
