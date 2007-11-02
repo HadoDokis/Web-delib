@@ -51,6 +51,7 @@ class AppController extends Controller {
 	var $menu = null;
 
 	function checkSession() {
+		//include ('droits.php');
 		$this->infoUser = "<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ";
    		$this->agentServices = $this->Session->read('user.Service');
  	    $this->lienDeconnexion = "[<span class=\"deconnexion\"><a href=\"".$this->base."/users/logout\"> Deconnexion</a></span>]";
@@ -79,6 +80,8 @@ class AppController extends Controller {
 	}
 
 	function buildNavigation ($user_id){
+		// On importe les droits ?
+
 		$menu = array( );
 		// construction navigation secondaire projets
         $sub_menu1 = array ();
@@ -129,8 +132,7 @@ class AppController extends Controller {
         );
 
 		// construction navigation principale
-		if ($this->Acl->check($user_id, "Pages"))
-			$menu['Accueil']= array('link' => '/');
+		$menu['Accueil']= array('link' => '/');
 
 		if ($this->Acl->check($user_id, "Deliberations:index")){
 			$menu['Projets']= array('link' => '/deliberations/listerMesProjets', 'submenu' => array());
@@ -147,6 +149,7 @@ class AppController extends Controller {
 			$menu['Administration']= array('link' => '/pages/administration', 'submenu' => array());
 			$menu['Administration']['submenu'] = $sub_menu4;
 		}
+
         return $menu;
 	}
 }
