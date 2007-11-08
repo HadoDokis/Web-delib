@@ -62,6 +62,7 @@ class ProfilsController extends AppController {
 	}
 
 	function delete($id = null) {
+		$aro = new Aro();
 		if (!$id) {
 			$tab = $this->Profil->findAll("Profil.id=$id");
 			$aro->delete($aro->id($tab[0]['Profil']['libelle']));
