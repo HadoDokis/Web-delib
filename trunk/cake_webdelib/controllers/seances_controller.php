@@ -194,7 +194,7 @@ class SeancesController extends AppController {
 			$this->set('seance_id', $id);
 		    $this->set('projets', $deliberations);
 			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($id))));
-			
+
 		}
 		else
 		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
@@ -362,22 +362,38 @@ class SeancesController extends AppController {
 		$this->set('date_seance',  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date'])));
 	}
 
+	function checkLists($seance_id){
+	    $condition = "seance_id = $seance_id";
+		$inscrits = $this->SeancesUser->findAll($condition);
+		$presents = $this->Listepresence->findAll($condition);
+
+		foreach($presents as $present)
+		    if (! $this->isInList($present['User']['id'], $inscrits)){
+				//echo ("On efface ".$present['User']['nom']);
+			    $this->delUserFromList($present['User']['id'], $seance_id );
+		}
+
+		foreach($inscrits as $inscrit)
+		    if (!$this->isInList($inscrit['User']['id'], $presents)){
+				//echo ("On enregistre  ".$inscrit['User']['nom'].'<br>');
+			    $this->addUserFromList($inscrit['User']['id'], $seance_id );
+		    }
+	}
+
 	function listerPresents($seance_id=null) {
-		/*
-		 * BUG, Si la liste des prï¿½sents thï¿½oriques a ï¿½tï¿½ modifiï¿½e.
-		 */
+		// Controle la cohérence entre la liste des inscrits et les présents
+	    $this->checkLists($seance_id);
+	    unset ($this->cacheQueries);
 
 		if (empty($this->data)) {
-			$condition = "seance_id = $seance_id";
-			$presents = $this->Listepresence->findAll($condition);
-
-			// Si l'on a encore rien saisi, on prend la table thï¿½orique des prï¿½sents
+	    	$presents = $this->Listepresence->findAll("seance_id = $seance_id");
+	    	// Si l'on a encore rien saisi, on prend la table thï¿½orique des prï¿½sents
 			if(empty($presents))
-			    $presents = $this->SeancesUser->findAll($condition);
+			   $presents = $this->SeancesUser->findAll("seance_id = $seance_id");
 			else {
 				foreach($presents as $present){
-					$this->data[$present['Listepresence']['user_id']]['present'] = $present['Listepresence']['present'];
-					$this->data[$present['Listepresence']['user_id']]['mandataire'] = $present['Listepresence']['mandataire'];
+				    	$this->data[$present['Listepresence']['user_id']]['present'] = $present['Listepresence']['present'];
+					    $this->data[$present['Listepresence']['user_id']]['mandataire'] = $present['Listepresence']['mandataire'];
 				}
 			}
 			$this->set('presents',  $presents);
@@ -385,7 +401,7 @@ class SeancesController extends AppController {
 			$this->set('mandataires', $this->User->generateList('statut = 1'));
 		}
 		else {
-			$this->data['Listepresence']['seance_id'] =$seance_id;
+			$this->data['Listepresence']['seance_id']=$seance_id;
 			$this->effacerListePresence($seance_id);
 			foreach($this->data as $user_id=>$tab){
 				$this->Listepresence->create();
@@ -401,6 +417,28 @@ class SeancesController extends AppController {
 			}
 			$this->redirect('/seances/listerFuturesSeances');
 		}
+	}
+
+	function delUserFromList($user_id, $seance_id) {
+		$data = $this->Listepresence->findAll("seance_id = $seance_id AND user_id = $user_id");
+		$this->Listepresence->del($data[0]['Listepresence']['id']);
+	}
+
+	function addUserFromList($user_id, $seance_id) {
+		$this->params['data']['Listepresence']['id']='';
+		$this->params['data']['Listepresence']['seance_id'] = $seance_id;
+		$this->params['data']['Listepresence']['user_id'] = $user_id ;
+		$this->Listepresence->save($this->params['data']);
+	}
+
+	function isInList($user_id, $listInscrits){
+		$isIn = false;
+		foreach ($listInscrits as $inscrit)
+			if ($inscrit['User']['id'] == $user_id){
+			   	//echo($inscrit['User']['nom']." est dans la liste <br>");
+			    return true;
+			}
+	     return $isIn;
 	}
 
 	function effacerListePresence($seance_id=null) {
@@ -427,9 +465,9 @@ class SeancesController extends AppController {
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
 		}
-		$this->set('deliberations',$deliberations);	
+		$this->set('deliberations',$deliberations);
 		$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($seance_id))));
-		
+
 	}
 
 	function effacerVote($deliberation_id=null) {
@@ -448,16 +486,18 @@ class SeancesController extends AppController {
 			foreach($donnees as $donnee){
 				$this->data['Vote'][$donnee['Vote']['user_id']]=$donnee['Vote']['resultat'];
 			    $this->data['Vote']['commentaire'] = $donnee['Vote']['commentaire'];
-			    
+
 			}
 			$this->set('deliberation' , $this->Deliberation->findAll("Deliberation.id=$deliberation_id"));
 			$this->set('presents' , $this->afficherListePresents($seance_id));
 
 		}
 		else {
-
+ 			$pour = 0;
+ 			$abstenu = 0;
 			$this->effacerVote($deliberation_id);
-//debug ($this->data);
+			$nb_votant = count($this->data['Vote']);
+
 			foreach($this->data['Vote']as $user_id => $vote){
 				if(is_numeric($user_id)==true){
 					$this->Vote->create();
@@ -465,13 +505,25 @@ class SeancesController extends AppController {
 					$this->data['Vote']['user_id']=$user_id;
 					$this->data['Vote']['delib_id']=$deliberation_id;
 					$this->data['Vote']['resultat']=$vote;
-//debug($vote);
-//debug ($this->data);
-				if ($this->Vote->save($this->data['Vote']))
-					$this->redirect('seances/details/'.$seance_id);
-				}
+					if ($vote == 1 )
+					     $pour ++;
+					if (($vote == 2)||($vote == 3))
+						$abstenu ++;
+				    $this->Vote->save($this->data['Vote']);
 
+				}
 			}
+
+			$this->data = $this->Deliberation->read(null, $deliberation_id);
+			if ($pour >= (($nb_votant -$abstenu) /2))
+			     $this->data['Deliberation']['etat']=3;
+			else
+				 $this->data['Deliberation']['etat']=4;
+			$this->Deliberation->save($this->data);
+
+			$this->redirect('seances/details/'.$seance_id);
+
+
 		}
 	}
 
