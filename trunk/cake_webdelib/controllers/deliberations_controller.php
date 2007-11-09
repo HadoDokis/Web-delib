@@ -378,10 +378,7 @@ class DeliberationsController extends AppController {
 				$this->set('selectedzone3',0);
 				$this->data['Deliberation']['localisation3_id']=0;
 			}
-
-
 		}
-
 	}
 
 	function add($id=null) {
@@ -405,12 +402,6 @@ class DeliberationsController extends AppController {
 			if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
-
-//			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-//			$date_seances = $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date');
-//			foreach ($date_seances as $key=>$date)
-//				$date_seances[$key]= $this->Date->frenchDateConvocation(strtotime($date));
-//			$this->set('date_seances',$date_seances);
 
 			$seances = $this->Seance->findAll();
 			foreach ($seances as $seance){
@@ -1152,7 +1143,7 @@ class DeliberationsController extends AppController {
             $this->set('dateClassification', $this->getDateClassification());
             $this->set('tabNature',          $this->getNatureListe());
             $this->set('tabMatiere',         $this->getMatiereListe());
-            $this->set('deliberations',      $this->Deliberation->findAll());
+            $this->set('deliberations',      $this->Deliberation->findAll("Deliberation.etat=4"));
         }
 
         function getNatureListe(){
@@ -1477,7 +1468,6 @@ class DeliberationsController extends AppController {
 		exit;
 	}
 
-
     function updateword($wordfilename, $htmlfilename) {
     	$wvware = "/usr/bin/wvWare";
         $wvware_options = "-d";
@@ -1486,7 +1476,6 @@ class DeliberationsController extends AppController {
         /* ensure that we get any images into the html directory */
         exec("$wvware $wvware_options $htmldir $wordfilename > $htmlfilename");
     }
-
 
 	function textprojetvue ($id = null) {
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
