@@ -257,7 +257,7 @@ a.link_delib {
 	background-image: url(../img/icons/delib.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 3px 0 10px 22px;
 }
 
 a.link_pvcomplet {
