@@ -1,5 +1,13 @@
 <?php
 class DeliberationsController extends AppController {
+/*
+ * Deliberation.etat = -1 : refusé
+ *	Deliberation.etat = 0 : en cours de rédaction
+ *  Deliberation.etat = 1 : dans un circuit
+ * 	Deliberation.etat = 2 : validé
+ *  Deliberation.etat = 3 : Voté pour
+ * 	Deliberation.etat = 4 : Voté contre
+ */
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
@@ -1143,7 +1151,8 @@ class DeliberationsController extends AppController {
             $this->set('dateClassification', $this->getDateClassification());
             $this->set('tabNature',          $this->getNatureListe());
             $this->set('tabMatiere',         $this->getMatiereListe());
-            $this->set('deliberations',      $this->Deliberation->findAll("Deliberation.etat=4"));
+            // On affiche que les délibs voté pour.
+            $this->set('deliberations',      $this->Deliberation->findAll("Deliberation.etat=3"));
         }
 
         function getNatureListe(){
