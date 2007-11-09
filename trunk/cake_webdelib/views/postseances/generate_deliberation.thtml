@@ -16,7 +16,8 @@
         $pdf->WriteHTML('<b>OBJET :&nbsp; '.$projet[0]['Deliberation']['objet'].'</b><br><br>');
         $pdf->WriteHTML('<b>RAPPORTEUR :&nbsp; '.$projet[0]['Rapporteur']['nom'].' '.$projet[0]['Rapporteur']['prenom'].'</b><br><br>');   
         $pdf->WriteHTML('<b>DELIBERATION : &nbsp;</b>'.$projet[0]['Deliberation']['deliberation'].'<br><br>'); 
-		$pdf->WriteHTML('<b>DECIDE :&nbsp; </b>'.$projet[0]['Deliberation']['debat'].'<br><br>'); 
+		$pdf->WriteHTML('<b>DEBAT :&nbsp; </b>'.$projet[0]['Deliberation']['debat'].'<br><br>'); 
+		$pdf->WriteHTML('<b>DECIDE :&nbsp; </b>'.$vote[0]['Vote']['commentaire'].'<br><br>');
 		$pdf->WriteHTML('<b>ONT VOTE POUR :</b><br>'); 
 		
 		foreach ($votespour as $pour)
