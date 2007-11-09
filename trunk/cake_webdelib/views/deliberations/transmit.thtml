@@ -1,9 +1,9 @@
 <div class="deliberations">
 <h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
-<form action="<?php echo $html->url('/deliberations/sendActe'); ?>" method="post">
+<form action="<?php echo $html->url('/deliberations/sendActe'); ?>" method="post" enctype='multipart/form-data' >
     La Classification enregistrée date du <?php echo $html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
-	Nature de la transmission :	<?php echo $html->selectTag('Deliberation/numPref', $tabNature); ?><br /><br />
-	Matiere de la transmission :<?php echo $html->selectTag('Deliberation/numMat', $tabMatiere); ?><br />	<br />
+<!--	Nature de la transmission : -->	<?php //echo $html->selectTag('Deliberation/numPref', $tabNature); ?><br /><br />
+<!--	Matiere de la transmission : --><?php //echo $html->selectTag('Deliberation/numMat', $tabMatiere); ?><br />	<br />
 
 	<table>
 	<th></th>
