@@ -80,7 +80,9 @@ class PostseancesController extends AppController {
 		//debug($projet);
 		$this->set('votespour', $this->Vote->findAll("delib_id=$id AND resultat=1"));
 		$this->set('abstenus', $this->Vote->findAll("delib_id=$id AND resultat in (2,3)"));
-		//debug($this->Vote->findAll("delib_id=$id"));
+		$this->set('vote',$this->Vote->findAll("delib_id=$id"));
+
+		
 	}
 
 
