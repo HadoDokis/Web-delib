@@ -7,11 +7,12 @@ class DeliberationsController extends AppController {
  * 	Deliberation.etat = 2 : validé
  *  Deliberation.etat = 3 : Voté pour
  * 	Deliberation.etat = 4 : Voté contre
+ * 	Deliberation.etat = 5 : envoyé
  */
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'Model', 'Theme', 'Collectivite', 'Vote','SeancesUser');
 	var $components = array('Date','Utils','Email', 'Acl');
 
 	function index() {
@@ -1038,10 +1039,6 @@ class DeliberationsController extends AppController {
 						$this->Deliberation->save($this->data);
 					}
 					}
-
-
-
-
 					//on a validÃ© le projet, il passe Ã  la personne suivante
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 
@@ -1066,9 +1063,6 @@ class DeliberationsController extends AppController {
 						$this->data['Deliberation']['etat']=2;
 						$this->data['Deliberation']['id']=$id;
 						$this->Deliberation->save($this->data['Deliberation']);
-
-
-
 						$this->redirect('/deliberations/listerProjetsATraiter');
 					}
 					else
@@ -1152,7 +1146,7 @@ class DeliberationsController extends AppController {
             $this->set('tabNature',          $this->getNatureListe());
             $this->set('tabMatiere',         $this->getMatiereListe());
             // On affiche que les délibs voté pour.
-            $this->set('deliberations',      $this->Deliberation->findAll("Deliberation.etat=3"));
+            $this->set('deliberations',      $this->Deliberation->findAll("Deliberation.etat=3 OR Deliberation.etat=5 "));
         }
 
         function getNatureListe(){
@@ -1203,10 +1197,7 @@ class DeliberationsController extends AppController {
 				}
 			}
 		}
-
-		//debug($tab);
-		//exit;
-		return $tab;
+        return $tab;
 	}
 
 	function object2array($object){
@@ -1229,59 +1220,81 @@ class DeliberationsController extends AppController {
 	}
 
 		function sendActe ($delib_id = null) {
-		    $url = 'https://'.HOST.'/modules/actes/actes_transac_create.php';
+            $url = 'https://'.HOST.'/modules/actes/actes_transac_create.php';
             $pos =  strrpos ( getcwd(), 'webroot');
 	        $path = substr(getcwd(), 0, $pos);
 			foreach ($this->data['Deliberation'] as $id => $bool ){
 				if ($bool == 1){
-			    	$id = substr($id, 3, strlen($id));
-			    	// Tester l'existence du fichier...
-			    	$file = $path."webroot/files/delibs/DELIB_$id.pdf";
+					$delib_id = substr($id, 3, strlen($id));
+					$classification = $this->data['Deliberation'][$delib_id."_num_pref"];
+			    	$this->changeClassification ($delib_id, "$classification");
+			    	$class1 = substr($classification , 0, strpos ($classification , '.' ));
+					$rest = substr($classification , strpos ($classification , '.' )+1, strlen($classification));
+					$class2=substr($rest , 0, strpos ($classification , '.' ));
+					$rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
+					$class3=substr($rest , 0, strpos ($classification , '.' ));
+					$rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
+					$class4=substr($rest , 0, strpos ($classification , '.' ));
+					$rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
+					$class5=substr($rest , 0, strpos ($classification , '.' ));
 
-        	        if (!file_exists(	$file))
-        	        	die("Fichier à générer");
+					$err = $this->requestAction("/postseances/generateDeliberation/$delib_id");
+					$file = $path."webroot/files/delibs/DELIB_$delib_id.pdf";
+					$delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
+
+        	        if (!file_exists($file)){
+  					   	debug($file);
+  					   	die("Fichier à générer");
+        	        }
+
         	        // Checker le code classification
         	        $data = array(
-      	                'api'           => '1',
+      	                 'api'           => '1',
      	                 'nature_code'   => '1',
-     	                 'classif1'      => '8',
-     	                 'classif2'      => '1',
-     	                 'classif3'      => '',
-     	                 'classif4'      => '',
-     	                 'classif5'      => '',
-      	                 'number'        => 'WEBDELIB_'.$id,
-     	                 'decision_date' => '2007-03-13',
-      	                 'subject'       => 'testFD',
+     	                 'classif1'      => $class1 ,
+     	                 'classif2'      => $class2,
+     	                 'classif3'      => $class3,
+     	                 'classif4'      => $class4,
+     	                 'classif5'      => $class5,
+      	                 'number'        => 'TEST_'.$delib_id,
+     	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
+      	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
      	                 'acte_pdf_file_sign' => "",
      	                 'acte_attachments[]' => "",
       	                'acte_attachments_sign[]' => ""
    	                 );
-
-  	            $ch = curl_init();
- 	            curl_setopt($ch, CURLOPT_URL, $url);
-  	            curl_setopt($ch, CURLOPT_POST, TRUE);
-  	            curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
-   	            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-  	            curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
-  	            curl_setopt($ch, CURLOPT_SSLCERT, PEM);
-   	            curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
-   	            curl_setopt($ch, CURLOPT_SSLKEY, KEY);
-  	            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-
-    $curl_return = curl_exec($ch);
-
-    if ($curl_return === false) {
-        echo 'curl_exec() failed.' . '<br />';
-        echo 'curl_errno() = ' . curl_errno($ch) . '<br />';
-        echo 'curl_error() = ' . curl_error($ch) . '<br />';
-    }
-        	                         curl_close($ch);
+   	          	     $ch = curl_init();
+ 	            	 curl_setopt($ch, CURLOPT_URL, $url);
+  	            	 curl_setopt($ch, CURLOPT_POST, TRUE);
+  	          	     curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
+   	          	     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+  	           	     curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
+  	            	 curl_setopt($ch, CURLOPT_SSLCERT, PEM);
+   	           	     curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
+   	           	     curl_setopt($ch, CURLOPT_SSLKEY, KEY);
+  	            	 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+  	            	 curl_setopt($ch,CURLOPT_NOBODY, TRUE);
+                   	 curl_exec($ch);
+        	         curl_close($ch);
 				}
 			}
-			echo($file );
-			exit;
+			$this->changeEtat($delib_id, '5');
 			$this->redirect('/deliberations/transmit');
+		}
+
+		function changeEtat($delib_id, $etat){
+			$this->data = $this->Deliberation->read(null, $delib_id);
+			$this->data['Deliberation']['id']=$delib_id;
+			$this->data['Deliberation']['etat'] = $etat;
+			$this->Deliberation->save($this->data);
+		}
+
+		function changeClassification($delib_id, $etat){
+			$this->data = $this->Deliberation->read(null, $delib_id);
+			$this->data['Deliberation']['id']=$delib_id;
+			$this->data['Deliberation']['num_pref'] = $etat;
+			$this->Deliberation->save($this->data);
 		}
 
        function getDateClassification(){
