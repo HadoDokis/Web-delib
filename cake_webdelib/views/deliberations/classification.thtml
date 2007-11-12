@@ -3,9 +3,11 @@
 
 <div id="attribute_list">
 
-<? foreach ($classification as $key=>$value) {
+<?php
+	$id = $_GET['id'];
+    foreach ($classification as $key=>$value) {
 	$val=addslashes($value);
-	echo $html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:return_choice('$key - $val','$key');"));
+	echo $html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:return_choice('$key - $val','$key',$id);"));
 	echo '<br/>';
 }
 ?>

@@ -1,21 +1,34 @@
+<?php echo $javascript->link('utils.js'); ?>
 <div class="deliberations">
 <h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
 <form action="<?php echo $html->url('/deliberations/sendActe'); ?>" method="post" enctype='multipart/form-data' >
     La Classification enregistrée date du <?php echo $html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
-<!--	Nature de la transmission : -->	<?php //echo $html->selectTag('Deliberation/numPref', $tabNature); ?><br /><br />
-<!--	Matiere de la transmission : --><?php //echo $html->selectTag('Deliberation/numMat', $tabMatiere); ?><br />	<br />
-
 	<table>
 	<th></th>
- 	<th>Numéro Interne</th>
+ 	<th>Numéro Généré</th>
  	<th>Objet</th>
  	<th>Titre</th>
+ 	<th>Classification</th>
+ 	<th>statut</th>
+ <tr>
 <?php
 	foreach ($deliberations as $delib) {
-		echo("<tr><td>".$html->checkbox('Deliberation/id_'.$delib['Deliberation']['id'])."</td>");
-		echo ('<td>'.'DELIB_'.$delib['Deliberation']['id'].'</td><td>'.$delib['Deliberation']['objet'].'</td><td>'.$delib['Deliberation']['titre'].'</td></tr>');
-	}
-?>
+		if ($delib['Deliberation']['etat']!= 5)
+			echo("<td>".$html->checkbox('Deliberation/id_'.$delib['Deliberation']['id'])."</td>");
+		else
+		    echo("<td>Envoy&eacute;</td>");
+
+		echo ('<td>'.'DELIB_'.$delib['Deliberation']['id'].'</td><td>'.$delib['Deliberation']['objet'].'</td><td>'.$delib['Deliberation']['titre'].'</td>'); ?>
+		<td><?php echo $html->input('Deliberation/'.$delib['Deliberation']['id'].'_num_pref',array('id'=>$delib['Deliberation']['id'].'classif1', 'size' => '60','disabled'));?><br/>
+		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base;?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id'];?>', 'Select_attribut', 'scrollbars=0,,width=570,height=450');" id=<?php echo $delib['Deliberation']['id'];?>"_classification_text">[Choisir la classification]</a>
+		 <?php echo $html->hidden('Deliberation/'.$delib['Deliberation']['id'].'_num_pref',array('id'=>$delib['Deliberation']['id'].'classif2','name'=>$delib['Deliberation']['id'].'classif2'))?>
+		</td>
+		<td>
+		    <?php echo  $html->link($delib['Deliberation']['etat'], '/postseances/generateDeliberation/'.$delib['Deliberation']['id'] ); ?>
+		</td>
+		</tr>
+<?php	 } ?>
+
 	</table>
 	<br />
 
