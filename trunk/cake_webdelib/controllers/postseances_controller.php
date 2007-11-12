@@ -10,12 +10,12 @@ class PostseancesController extends AppController {
 		$this->Postseances->recursive = 0;
 		$condition= 'date <= "'.date('Y-m-d H:i:s').'"';
 		$seances = $this->Seance->findAll(($condition),null,'date asc');
-		
+
 		for ($i=0; $i<count($seances); $i++)
 		    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
 
 		$this->set('seances', $seances);
-		
+
 	}
 
 	function afficherProjets ($id=null, $return=null)
@@ -31,8 +31,8 @@ class PostseancesController extends AppController {
 		else
 		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
 	}
-	
-	
+
+
 	function generatePvSommaire ($id=null) {
 		$this->set('presents', $this->Listepresence->findAll("seance_id =$id AND present=1"));
 		$this->set('absents', $this->Listepresence->findAll("seance_id =$id AND present=0"));
@@ -45,10 +45,10 @@ class PostseancesController extends AppController {
 		$this->set('mois', $this->Date->months[intval(date('m'))]);
 		$this->set('collectivite',  $this->Collectivite->findAll());
 		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($seance[0]['Seance']['date'])));
-		
+
 		//$this->set('votes', $this->Vote->findAll("seance_id=$id"));
 	}
-	
+
 	function generatePvComplet ($id=null) {
 
 		$this->set('presents', $this->Listepresence->findAll("seance_id =$id AND present=1"));
@@ -62,13 +62,12 @@ class PostseancesController extends AppController {
 		$this->set('mois', $this->Date->months[intval(date('m'))]);
 		$this->set('collectivite',  $this->Collectivite->findAll());
 		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($seance[0]['Seance']['date'])));
-		
+
 		//$this->set('votes', $this->Vote->findAll("seance_id=$id"));
 	}
-	
-	function generateDeliberation ($id=null) {
 
-
+	function generateDeliberation ($id=null, $dl=1) {
+		$this->set('id',$id);
 		$this->set('model',$this->Model->findAll());
 		$this->set('themes',$this->Theme->findAll());
 		$projet = $this->Deliberation->findAll("Deliberation.id=$id");
@@ -81,8 +80,7 @@ class PostseancesController extends AppController {
 		$this->set('votespour', $this->Vote->findAll("delib_id=$id AND resultat=1"));
 		$this->set('abstenus', $this->Vote->findAll("delib_id=$id AND resultat in (2,3)"));
 		$this->set('vote',$this->Vote->findAll("delib_id=$id"));
-
-		
+		$this->set('dl', $dl);
 	}
 
 
@@ -91,6 +89,6 @@ class PostseancesController extends AppController {
 		$data = $this->User->findAll("User.id = $id");
 		return $data['0']['User']['nom'].' '.$data['0']['User']['prenom'];
 	}
-	
+
 }
 ?>
