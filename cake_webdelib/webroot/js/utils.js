@@ -13,13 +13,12 @@ function OuvrirFenetre(url,nom,detail) {
 }
 
 
-function return_choice(text,arg) {
+function return_choice(text,arg,delibId) {
 
-    var1 = 'classif1';
-    var2 = 'classif2';
+    var1 = delibId+'classif1';
+    var2 = delibId+'classif2';
     elt1 = window.opener.document.getElementById(var1);
     elt2 = window.opener.document.getElementById(var2);
-
     if (text){
     	elt1.value = text;
     	elt2.value = arg;
@@ -27,11 +26,9 @@ function return_choice(text,arg) {
       elt1.value = '';
       elt2.value = '';
     }
-	var a = window.opener.document.getElementById('classification_text');
-  //window.opener.document.getElementById('classification_text').innerHTML = text;
+	var a = window.opener.document.getElementById(delibId+'_classification_text');
   	a.firstChild.nodeValue = '[Changer la localisation]';
-
-  window.close();
+    window.close();
 }
 
 function saveLocation(idDelib,idLoc,zone)
@@ -46,7 +43,7 @@ function saveLocation(idDelib,idLoc,zone)
 	document.location=url;
 	}
 }
- 
+
 function changeLocation1(idDelib,zone1,zone2,zone3)
 {
 	var url = zone1.id+"deliberations/changeLocation/"+idDelib+"/"+zone1.value+"/"+zone2+"/"+zone3;
@@ -92,7 +89,7 @@ function add_field() {
  	input1.type = 'text';
 	input1.size = '30';
 	input1.name = 'titre_'+n;
-	var titre = document.createTextNode('Titre annexe');	
+	var titre = document.createTextNode('Titre annexe');
 	div1.appendChild(titre);
 	div1.appendChild(document.createElement('br'));
 	div1.appendChild(input1);
@@ -104,17 +101,17 @@ function add_field() {
 	input2.type = 'file';
 	input2.size = '40';
 	input2.name = 'file_'+n;
-	var chemin = document.createTextNode('Chemin annexe');	
+	var chemin = document.createTextNode('Chemin annexe');
 	div2.appendChild(chemin);
 	div2.appendChild(document.createElement('br'));
 	div2.appendChild(br);
 	div2.appendChild(input2);
 	p.appendChild(div2);
-  
+
 	var link = document.createElement('a');
 	link.id = 'Lien_'+n;
 	link.href = 'javascript:del_field('+n+')';
-	text = document.createTextNode('Supprimer');	
+	text = document.createTextNode('Supprimer');
 	link.appendChild(text);
 	p.appendChild(br);
 	p.appendChild(link);
@@ -122,7 +119,7 @@ function add_field() {
 	document.getElementById('cible').style.visibility = 'visible';
 
 }
-	
+
 function del_field(node)
 {
 	var node = document.getElementById(node);
@@ -140,4 +137,4 @@ function del_field(node)
 		a.firstChild.nodeValue = 'Joindre une annexe';
 	}
 }
-	
+
