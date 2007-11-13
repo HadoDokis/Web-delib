@@ -50,20 +50,34 @@
  *
  */
 	define('DEBUG', 0);
-	
-	
+
+
 /***
- *   Configuration pour la télétransmission S2LOW
- * 
- * 
- */	
-	define('PEM', '/home/francois/.workspace/svn_webdelib/config/pubKey.pem');
+ *   Configuration pour la tï¿½lï¿½transmission S2LOW
+ *
+ *
+ */
+	define('PEM', '/home/francois/workspace/svn_webdelib/config/pubKey.pem');
 	define('PASSWORD', 'demo_u');
 	define('HOST', 'demo-s2low.extranet.adullact.org');
-	define('KEY', '/home/francois/.workspace/svn_webdelib/config/key.pem');
-	define('CA_PATH', '/home/francois/.workspace/svn_webdelib/config');
-	define('FILE_CLASS', '/home/francois/.workspace/svn_webdelib/webroot/files/classification.xml');
-	
+	define('KEY', '/home/francois/workspace/svn_webdelib/config/key.pem');
+	define('CA_PATH', '/home/francois/workspace/svn_webdelib/config');
+	define('FILE_CLASS', '/home/francois/workspace/svn_webdelib/webroot/files/actes/classification.xml');
+	define('IMPORT', true);
+
+	// LDAP
+    define ('LDAP_HOST', 'hostname');
+    define ('PORT',      '389');
+    define ('BASE_DN',   'dc=domaine,dc=com');
+    define ('MANAGER',   'cn=manager,dc=domaine,dc=com');
+    define ('LDAP_PASS', '');
+ 	
+	// Mapping Champ LDAP
+    define ('MAIL', 'mail');
+	define ('COMMON_NAME', 'cn');
+	define ('UNIQUE_ID', 'uid');
+	define ('PASSWORD_USER', 'userpassword');
+
 /**
  * Turn of caching checking wide.
  * You must still use the controller var cacheAction inside you controller class.
