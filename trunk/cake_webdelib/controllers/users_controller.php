@@ -107,8 +107,13 @@ class UsersController extends AppController {
 
 			if ($this->User->isUnique('login', $this->data['User']['login'],$id) && $this->User->save($this->data)) {
 				$aro = new Aro();
+
+				if (! $this->Acl->check($this->data['User']['login'], 'Users:logout'))
+  				    $aro->create( $id, null, $this->data['User']['login']);
+
 				$condition = "User.id = $id";
 				$infos = $this->User->findAll($condition);
+
 				$field = "Profil.libelle";
 				$condition = "Profil.id = ".$infos[0]['User']['profil_id'];
 				$infos = $this->Profil->findAll($condition, $field);
@@ -139,6 +144,8 @@ class UsersController extends AppController {
 			$this->redirect('/users/index');
 		}
 		if ($id != 1) {
+			$aro = new Aro();
+			$aro -> delete($id);
 		    if ($this->User->del($id)) {
 			    $this->Session->setFlash('L\'utilisateur a &eacute;t&eacute; supprim&eacute;');
 			    $this->redirect('/users/index');
@@ -211,9 +218,9 @@ class UsersController extends AppController {
 		$this->redirect('/users/login');
 
 	}
-	
-	
-	
+
+
+
 }
 
 ?>
