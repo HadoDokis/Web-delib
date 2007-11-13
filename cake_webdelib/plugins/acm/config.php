@@ -24,7 +24,7 @@
  /* This defines the tables that hold
   * your existing Users/Groups.
   */
-	define('ACMROLES','profils');
+	define('ACMROLES','roles');
 	define('ACMUSERS','users');
 
  /* This defines the fields that hold
