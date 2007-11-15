@@ -12,7 +12,7 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'Model', 'Theme', 'Collectivite', 'Vote','SeancesUser');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote','SeancesUser');
 	var $components = array('Date','Utils','Email', 'Acl');
 
 	function index() {
@@ -994,8 +994,8 @@ class DeliberationsController extends AppController {
 				$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
 				$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
 				$this->set('tab_anterieure',$tab_anterieure);
-				//$this->set('deliberation', $this->Deliberation->read(null, $id));
-
+				$this->set('commentaire', $this->Commentaire->findAll("delib_id =  $id"));
+			
 
 				$deliberation= $this->Deliberation->read(null, $id);
 				$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
@@ -1081,6 +1081,9 @@ class DeliberationsController extends AppController {
 				{
 					//on a refusé le projet, il repart au redacteur
 					//TODO notifier par mail toutes les personnes qui ont déjà visé le projet
+					$this->notifierDossierRefuse($id);
+				
+					
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 					$lastpos=count($tab)-1;
 
@@ -1095,8 +1098,6 @@ class DeliberationsController extends AppController {
 					$this->data['Traitement']['delib_id']=$id;
 					$this->data['Traitement']['circuit_id']=$circuit_id;
 					$this->Traitement->save($this->data['Traitement']);
-
-					$this->notifierDossierRefuse($id);
 
 					//maj de l'etat de la delib dans la table deliberations
 					$tab=$this->Deliberation->findAll("Deliberation.id = $id");
@@ -1530,7 +1531,7 @@ class DeliberationsController extends AppController {
 			$this->Email->template = 'email/traiter';
 			$addr = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/traiter/$delib_id";
 			$text = "Vous avez un dossier à traiter, Cliquer <a href='$addr'> ici</a>";
-            $this->set('data', 'Vous avez un dossier à traiter. '.$text);
+            $this->set('data', $text);
             $this->Email->to = $to_mail;
             $this->Email->subject = "DELIB $delib_id à traiter";
        	   //  $this->Email->attach($fully_qualified_filename, optionally $new_name_when_attached);
@@ -1538,12 +1539,12 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-	function notifierDossierRefuse($delib_id){
+function notifierDossierRefuse($delib_id){
 		$condition = "Deliberation.id = $delib_id";
-		$field = 'redacteur_id';
-		$data = $this->Deliberation->findAll($condition, $field);
+		$data = $this->Deliberation->findAll($condition);
 		$redacteur_id = $data['0']['Deliberation']['redacteur_id'];
-
+		$data_comm = $this->Commentaire->findAll("delib_id = $delib_id");
+				
 		$condition = "User.id = $redacteur_id";
 		$data = $this->User->findAll($condition);
 
@@ -1552,17 +1553,24 @@ class DeliberationsController extends AppController {
 			$to_mail = $data['0']['User']['email'];
 			$to_nom = $data['0']['User']['nom'];
 			$to_prenom = $data['0']['User']['prenom'];
-
 			$this->Email->template = 'email/refuse';
-            $this->set('data', 'Votre dossier a été refusé...');
-            $this->Email->to = $to_mail;
-            $this->Email->subject = "DELIB $delib_id REFUSe";
 
-       	   //  $this->Email->attach($fully_qualified_filename, optionally $new_name_when_attached);
-
+			if(!empty($data_comm)){
+				$commentaire = $data_comm['0']['Commentaire']['texte'];
+				$comm = "Votre dossier a été refusé pour les motifs suivants :<br/><br/>$commentaire";
+				$this->set('data',$comm);
+			}else {	
+            	$this->set('data', 'Votre dossier a été refusé...');
+			} 
+			$this->Email->to = $to_mail;
+            $this->Email->subject = "DELIB $delib_id Refusée !";
+       	   // $this->Email->attach($fully_qualified_filename, optionally $new_name_when_attached);
             $result = $this->Email->send();
 		}
 	}
+
+	
+
 
 	function notifierInsertionCircuit ($delib_id, $user_id) {
 		$condition = "User.id = $user_id";
