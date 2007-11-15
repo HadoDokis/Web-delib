@@ -1080,9 +1080,7 @@ class DeliberationsController extends AppController {
 				else
 				{
 					//on a refusé le projet, il repart au redacteur
-					//TODO notifier par mail toutes les personnes qui ont déjà visé le projet
-					$this->notifierDossierRefuse($id);
-				
+
 					
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 					$lastpos=count($tab)-1;
@@ -1099,6 +1097,12 @@ class DeliberationsController extends AppController {
 					$this->data['Traitement']['circuit_id']=$circuit_id;
 					$this->Traitement->save($this->data['Traitement']);
 
+					//TODO notifier par mail toutes les personnes qui ont déjà visé le projet
+					$condition = "circuit_id = $circuit_id";
+					$listeUsers = $this->UsersCircuit->findAll($condition);
+					foreach($listeUsers as $user)
+						$this->notifierDossierRefuse($id, $user['User']['id']);
+						
 					//maj de l'etat de la delib dans la table deliberations
 					$tab=$this->Deliberation->findAll("Deliberation.id = $id");
 					$this->data['Deliberation']['etat']=-1; //etat -1 : refusé
@@ -1539,13 +1543,13 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-function notifierDossierRefuse($delib_id){
+	function notifierDossierRefuse($delib_id,$user_id){
 		$condition = "Deliberation.id = $delib_id";
 		$data = $this->Deliberation->findAll($condition);
 		$redacteur_id = $data['0']['Deliberation']['redacteur_id'];
 		$data_comm = $this->Commentaire->findAll("delib_id = $delib_id");
 				
-		$condition = "User.id = $redacteur_id";
+		$condition = "User.id = $user_id";
 		$data = $this->User->findAll($condition);
 
 		// Si l'utilisateur accepte les mails
@@ -1555,12 +1559,14 @@ function notifierDossierRefuse($delib_id){
 			$to_prenom = $data['0']['User']['prenom'];
 			$this->Email->template = 'email/refuse';
 
-			if(!empty($data_comm)){
+			if(!empty($data_comm) && $data['0']['User']['id']==$redacteur_id){
 				$commentaire = $data_comm['0']['Commentaire']['texte'];
 				$comm = "Votre dossier a été refusé pour les motifs suivants :<br/><br/>$commentaire";
 				$this->set('data',$comm);
-			}else {	
-            	$this->set('data', 'Votre dossier a été refusé...');
+			}elseif ($data['0']['User']['id']==$redacteur_id) {	
+				$this->set('data',"Votre dossier a été refusé");
+			}else{	
+            	$this->set('data', "Le dossier $delib_id a été refusé... Il est reparti au redacteur pour etre modifié");
 			} 
 			$this->Email->to = $to_mail;
             $this->Email->subject = "DELIB $delib_id Refusée !";
@@ -1568,9 +1574,6 @@ function notifierDossierRefuse($delib_id){
             $result = $this->Email->send();
 		}
 	}
-
-	
-
 
 	function notifierInsertionCircuit ($delib_id, $user_id) {
 		$condition = "User.id = $user_id";
