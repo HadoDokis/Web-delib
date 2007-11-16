@@ -27,7 +27,7 @@ class ProfilsController extends AppController {
 			$this->cleanUpFields();
 			if ($this->Profil->save($this->data)) {
                 $aro->create(0, null, $this->data['Profil']['libelle']); // Création du groupe
-				$this->Session->setFlash('Le profil a &eacute;t&eacute;sauvegard&eacute;');
+				$this->Session->setFlash('Le profil a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/profils/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
