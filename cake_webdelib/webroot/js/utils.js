@@ -13,6 +13,26 @@ function OuvrirFenetre(url,nom,detail) {
 }
 
 
+function returnChoice(text,arg) {
+
+    var1 = 'classif1';
+    var2 = 'classif2';
+    elt1 = window.opener.document.getElementById(var1);
+    elt2 = window.opener.document.getElementById(var2);
+
+    if (text){
+    	elt1.value = text;
+    	elt2.value = arg;
+    } else {
+      elt1.value = '';
+      elt2.value = '';
+    }
+	var a = window.opener.document.getElementById('classification_text');
+  	a.firstChild.nodeValue = '[Changer la localisation]';
+
+  window.close();
+}
+
 function return_choice(text,arg,delibId) {
 
     var1 = delibId+'classif1';
