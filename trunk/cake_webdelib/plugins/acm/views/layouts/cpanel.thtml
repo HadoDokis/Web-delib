@@ -4,7 +4,7 @@
  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>CakePHP Access Control Manager</title>
 <script type="text/javascript">
-	<?php $javascript->codeBlock(readfile(APP.'plugins'.DS.$this->plugin.DS.'views'.DS.'layouts'.DS.'prototype.js'));?>		
+	<?php $javascript->codeBlock(readfile(APP.'plugins'.DS.$this->plugin.DS.'views'.DS.'layouts'.DS.'prototype.js'));?>
 </script>
 <style>
 	<?php
@@ -24,26 +24,26 @@
 <div id="menu">
 
 	<div id="menutop"><h2>Cake Access Control Manager</h2></div>
-	
+
 	<div class="navcontainer">
 		<ul class="navlist">
 			<?php $css_class = ($this->action == 'index') ? 'on' : '';?>
 			<li><?php echo $html->link('Home','/acm', array('class'=>$css_class));?></li>
 			<?php $css_class = ($this->action == 'users') ? 'on' : '';?>
-			<?php if(ACMAUTOLOAD){ ?>		
+			<?php if(ACMAUTOLOAD){ ?>
 				<li><?php echo $html->link('AutoLoad Users ','/acm/auto');?></li>
 			<?php } ?>
-			<?php if(ALLOWADDACO || !(ACMAUTOLOAD)){ ?>	
+			<?php if(ALLOWADDACO || !(ACMAUTOLOAD)){ ?>
 			<li><?php echo $html->link('Users & Groups','/acm/users', array('class'=>$css_class));?></li>
 			<?php } ?>
 			<?php $css_class = ($this->action == 'privileges') ? 'on' : '';?>
 			<li><?php echo $html->link('Managed Controllers','/acm/privileges', array('class'=>$css_class));?></li>
 			<?php $css_class = ($this->action == 'aclgui') ? 'on' : '';?>
 			<li><?php echo $html->link('Permissions','/acm/aclgui', array('class'=>$css_class));?></li>
-			
+
 		</ul>
 	</div>
-	
+
 	<div id="footer">
 			<!--PLEASE USE ONE OF THE POWERED BY CAKEPHP LOGO-->
 	    	<a href="http://www.cakephp.org/" target="_new">
@@ -53,20 +53,20 @@
 	                                                        'align'=>"center"))?>
 	       </a>
 	</div>
-	
+
 </div>
 
 <div id="main">
 <p>
 	<div class="test_div" id="test_div">
 	      <?php echo $cakeDebug;?>
-	</div>	
+	</div>
 	<div id="content">
 	      <?php if (isset($this->controller->Session)) $this->controller->Session->flash(); ?>
 	      <?php echo $content_for_layout?>
-	     
-	      <p>&nbsp;</p>     
-	</div>	
+
+	      <p>&nbsp;</p>
+	</div>
 </p>
 </div>
 
