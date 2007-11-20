@@ -4,12 +4,22 @@
 <div id="attribute_list">
 
 <?php
-	//$id = $_GET['id'];
-    foreach ($classification as $key=>$value) {
-	$val=addslashes($value);
-	echo $html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:returnChoice('$key - $val','$key');"));
-	echo '<br/>';
-}
+	if (!isset($_GET['id'])) {
+        foreach ($classification as $key=>$value) {
+	        $val=addslashes($value);
+	        echo $html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:returnChoice('$key - $val','$key');"));
+	        echo '<br/>';
+        }
+    }
+    else {
+    	$id = $_GET['id'];
+    	foreach ($classification as $key=>$value) {
+	        $val=addslashes($value);
+	       echo $html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:return_choice_lot('$key - $val','$key',$id);"));
+	        echo '<br/>';
+    	}
+    }
+
 ?>
 
 
