@@ -33,7 +33,7 @@ function returnChoice(text,arg) {
   window.close();
 }
 
-function return_choice(text,arg,delibId) {
+function return_choice_lot(text,arg,delibId) {
 
     var1 = delibId+'classif1';
     var2 = delibId+'classif2';
@@ -47,7 +47,7 @@ function return_choice(text,arg,delibId) {
       elt2.value = '';
     }
 	var a = window.opener.document.getElementById(delibId+'_classification_text');
-  	a.firstChild.nodeValue = '[Changer la localisation]';
+  	//a.firstChild.nodeValue = '[Changer la localisation]';
     window.close();
 }
 
