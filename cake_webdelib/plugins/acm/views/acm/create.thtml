@@ -6,6 +6,7 @@ if(isset($message))
    echo "<center>".$message."</center>";
 }
 ?>
+
 	<?php echo $ajax->form('/acm/create/', 'post',array('update'=> 'create', 'loading'=> "Element.show('loading')", 'complete' => "Element.hide('loading');"));?>
         <?php echo $html->hidden('AcmUser/id'); ?>
 	  <p>

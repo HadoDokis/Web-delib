@@ -2,7 +2,8 @@
 <?php
 $aro = $data['aro']['alias'];
 $aco = $data['aco']['alias'];
-	
+
+
 if(count($data['aco']['children']) != count($data['acl'][$aro][$aco]))
 {
 	echo "Error in ACL List Build!";
@@ -26,7 +27,7 @@ foreach($data['aco']['children'] AS $child)
 		    $accessRow .=  "<td id='{$aro}:{$methode}' class='{$access}'>" . $access . "</td>";
 		}
 		echo "<tr><th>". $html->checkbox('aro/'.$aro, $aco) ."</th><th>" . $aro . "</th>" . $accessRow . "</tr> ";
-		
+
 		//ARO Users
 		if(!empty($data['acl'][$aro]['children']))
 		{
@@ -34,13 +35,13 @@ foreach($data['aco']['children'] AS $child)
 			$users = array_keys($children);
 			$i=0;
 			foreach($children AS $child)
-			{			
+			{
 				$user = $users[$i];
 				$accessRow = "";
 				foreach($child[$aco] AS $methode => $access)
 				{
 				    $accessRow .=  "<td id='{$user}:{$methode}' class='{$access}'>" . $access . " </td> ";
-				}			
+				}
 				echo "<tr><th>". $html->checkbox('aro/'.$aro, $aco) ."</th><th>" . $user . "</th>" . $accessRow . "</tr> ";
 				$i++;
 			}
@@ -49,5 +50,5 @@ foreach($data['aco']['children'] AS $child)
 </table>
 
 <script>
-Behaviour.apply(); 
+Behaviour.apply();
 </script>

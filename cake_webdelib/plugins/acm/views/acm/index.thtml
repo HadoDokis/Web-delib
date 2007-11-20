@@ -1,5 +1,6 @@
 <h2>Welcome To The Cake Access Control Manager.</h2>
 <p>&nbsp;</p>
+
 <h1>Notice:</h1>
 <p>
 First off, I would like to state that ACM is sill considered to be in development.  While its basic function is present,
@@ -36,7 +37,7 @@ function checkAcl()
 {
 	$aco = $this->name . ":" . $this->action
 	if($this->_checkAccess($this->Session->read('User.username'), $aco))
-	{	
+	{
 		return;
 	}
 	else

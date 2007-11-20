@@ -3,6 +3,7 @@ class AcmController extends AcmAppController
 {
 	var $name = 'Acm';
 
+
 	//Model
 	var $uses = array("AcmUser", "AcmRole", "AcmPrivilege");
 

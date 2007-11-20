@@ -6,5 +6,6 @@ class AcmRole extends AcmAppModel
 
 	var $hasAndBelongsToMany = array('AcmUser','AcmPrivilege');
 
+
 }
 ?>

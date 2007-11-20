@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <style>
 #box{
-	width:700px;	
+	width:700px;
 }
 #titlebar{
 	width:700px;
@@ -76,7 +76,7 @@ ul#nav li#nav_home a { /* Home link */
 			<li><?php echo $html->link('','/acm/privileges', array('id'=>'nav_priv','class'=>$css_class));?></li>
 			<?php $css_class = ($this->action == 'roles') ? 'on' : '';?>
 			<li><?php echo $html->link('','/acm/roles', array('id'=>'nav_roles','class'=>$css_class));?></li>
-			<?php if(ACMAUTOLOAD){ ?>		
+			<?php if(ACMAUTOLOAD){ ?>
 				<li><?php echo $html->link(' ','/acm/auto',array('id'=>'nav_auto'));?></li>
 			<?php } ?>
 		</ul>

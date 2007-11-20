@@ -2,9 +2,9 @@
 class AcMHelper extends Helper {
 
     var $helpers = array('Html','Javascript','Ajax');
-	
+
 	function buildListTree($data)
-	{			
+	{
 		foreach ($data as $node){
 			if (isset($node['children']) && is_array($node['children']) && count($node['children']))
 			{
@@ -13,11 +13,11 @@ class AcMHelper extends Helper {
 			else
 			{
 				$out[$node['alias']] = $node['alias'];
-			}			
-		  }		  
+			}
+		  }
 	    return $out;
 	}
-	
+
 	//Old Functions Below
 	function guiListTree($data, $htmlAttributes = null, $nodeKey = 'id', $childKey='children', $attributeKey = 'attributes', $return = false)
 	{
@@ -100,9 +100,9 @@ class AcMHelper extends Helper {
 	}
 
 	function guiDataGrid($aros, $acos, $nodeKey = 'id', $childKey='children')
-	{		
+	{
 		$out = '<div id="grid">';
-		
+
 		$i = 0;
 		foreach ($aros as $perms)
 		{
@@ -111,7 +111,7 @@ class AcMHelper extends Helper {
 			$out .= '<dl id="parent_'.$perms['alias'].'">';
 			$out .= $this->_acoRow($acos, $nodeKey, $childKey, $perms['alias']);
 			$out .= '</dl>';
-			
+
 			if(!empty($perms[$childKey]))
 			{
 				$out .= '<dl>';
@@ -124,19 +124,19 @@ class AcMHelper extends Helper {
 		$out .= '</div>';
 	    return $out;
 	}
-	
+
 	function _acoRow($acos, $nodeKey = 'id', $childKey='children',$parent=null)
 	{
 		$group = $parent;
 		$out = null;
 		if (!empty($acos))
-		{	
+		{
 			$i = 0;
 			foreach ($acos as $node)
 			{
 				$out .= '<dt><a href="#" onclick="Element.toggle(\''.$node['id'].'\')">' . $node[$nodeKey] . '</a></dt>';
 				if (!empty($node[$childKey]))
-				{	
+				{
 					$parent = $node['alias'];
 					$node[$childKey] = array_reverse($node[$childKey]);
 					$out .='<dd id="'.$node['id'].'">';
@@ -159,9 +159,9 @@ class AcMHelper extends Helper {
 		{
 			$out .= '<div class="row">
 						<span class="title">' . $node[$nodeKey] . '</span>';
-				
+
 			if (!empty($node[$childKey]))
-			{	
+			{
 				$cData = array();
 				$cData['aros'] = $node[$childKey];
 				$cData['acos'] = $node;
@@ -207,7 +207,7 @@ class AcMHelper extends Helper {
             $options['confirm'] = $confirm;
             unset($confirm);
         }
-		
+
         $htmlOptions = $this->Ajax->__getHtmlOptions($options);
         if (!isset($htmlOptions['type']))
         {
