@@ -19,7 +19,7 @@ class DeliberationsController extends AppController {
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
 		$this->Deliberation->recursive = 0;
-		$this->set('deliberations', $this->Deliberation->findAll('redacteur_id='.$user_id,null, 'Seance.date'));
+		$this->set('deliberations', $this->Deliberation->findAll(null,null, 'Seance.date'));
 	}
 
 	function listerMesProjets()
