@@ -16,7 +16,7 @@
 		<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['libelle'], '/themes/view/' .$deliberation['Theme']['id'])?><br> </dd>
 	</div>
 	<div class="droite">
-		<dt>Service</dt>
+		<dt>Service emetteur</dt>
 		<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Service']['id'])?></dd>  
 	</div>
 </div>
