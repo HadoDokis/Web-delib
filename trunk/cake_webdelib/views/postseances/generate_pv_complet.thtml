@@ -20,7 +20,7 @@
         	$pdf->WriteHTML($absent['User']['nom'].' '.$absent['User']['prenom'].' a '.$this->controller->getNom($absent['Listepresence']['mandataire']).'<br>');
         $pdf->WriteHTML('</p>');
         $pdf->WriteHTML('<p><b>Secrétaire : <br></b>');
-        $pdf->WriteHTML('nom du secrétaire</p>');
+        $pdf->WriteHTML('<i>nom du secrétaire</i></p>');
      	$pdf->WriteHTML('<br><br>');
         	
         foreach($projets as $projet) {
@@ -29,10 +29,10 @@
  		    $pdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
             $pdf->WriteHTML('<b>'.$projet['Deliberation']['titre'].'</b><br><br>');  
        		$pdf->WriteHTML($projet['Deliberation']['debat'].'<br>');  
-       		$pdf->WriteHTML('<div align="right"><b>Adopté à l\'unanimié</b></div>');
+       		$pdf->WriteHTML('<p align="right"><b><i>Adopté à l\'unanimité</i></b></p>');
         	$pdf->WriteHTML('<br><br>'); 
          }
-       $pdf->WriteHTML('<p>La séance est levée à 22h</p>');
+       $pdf->WriteHTML('<p><i>La séance est levée à 22h</i></p>');
 			
  			
      
