@@ -21,6 +21,6 @@
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter Typeseance', '/typeseances/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
+	<li><?php echo $html->link('Ajouter un type de séance', '/typeseances/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
 </ul>
 </div>
