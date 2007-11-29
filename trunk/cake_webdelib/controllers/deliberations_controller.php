@@ -995,7 +995,7 @@ class DeliberationsController extends AppController {
 				$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
 				$this->set('tab_anterieure',$tab_anterieure);
 				$this->set('commentaire', $this->Commentaire->findAll("delib_id =  $id"));
-			
+
 
 				$deliberation= $this->Deliberation->read(null, $id);
 				$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
@@ -1081,7 +1081,7 @@ class DeliberationsController extends AppController {
 				{
 					//on a refusé le projet, il repart au redacteur
 
-					
+
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 					$lastpos=count($tab)-1;
 
@@ -1102,7 +1102,7 @@ class DeliberationsController extends AppController {
 					$listeUsers = $this->UsersCircuit->findAll($condition);
 					foreach($listeUsers as $user)
 						$this->notifierDossierRefuse($id, $user['User']['id']);
-						
+
 					//maj de l'etat de la delib dans la table deliberations
 					$tab=$this->Deliberation->findAll("Deliberation.id = $id");
 					$this->data['Deliberation']['etat']=-1; //etat -1 : refusé
@@ -1146,33 +1146,36 @@ class DeliberationsController extends AppController {
 		return $listeAnterieure;
 	}
 
-      	function transmit($id=null){
-            $this->set('dateClassification', $this->getDateClassification());
-            $this->set('tabNature',          $this->getNatureListe());
-            $this->set('tabMatiere',         $this->getMatiereListe());
-            // On affiche que les d�libs vot� pour.
-            $this->set('deliberations',      $this->Deliberation->findAll("Deliberation.etat=3 OR Deliberation.etat=5 "));
+    function transmit($id=null){
+        $this->set('dateClassification', $this->getDateClassification());
+        $this->set('tabNature',          $this->getNatureListe());
+        $this->set('tabMatiere',         $this->getMatiereListe());
+        // On affiche que les d�libs vot� pour.
+        $deliberations =   $this->Deliberation->findAll("Deliberation.etat=3 OR Deliberation.etat=5 ");
+
+        for($i = 0; $i < count($deliberations); $i++) {
+        	$deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
         }
 
-        function getNatureListe(){
-            $tab = array();
-        	$doc = new DOMDocument('1.0', 'UTF-8');
-            if(!$doc->load(FILE_CLASS))
-                die("Error opening xml file");
-            $NaturesActes = $doc->getElementsByTagName('NatureActe');
-			foreach ($NaturesActes as $NatureActe)
-   			    $tab[$NatureActe->getAttribute('actes:CodeNatureActe')]= utf8_decode($NatureActe->getAttribute('actes:Libelle'));
+        $this->set('deliberations', $deliberations);
+    }
 
-			return $tab;
-        }
+    function getNatureListe(){
+        $tab = array();
+    	$doc = new DOMDocument('1.0', 'UTF-8');
+        if(!$doc->load(FILE_CLASS))
+            die("Error opening xml file");
+        $NaturesActes = $doc->getElementsByTagName('NatureActe');
+		foreach ($NaturesActes as $NatureActe)
+   		    $tab[$NatureActe->getAttribute('actes:CodeNatureActe')]= utf8_decode($NatureActe->getAttribute('actes:Libelle'));
 
+		return $tab;
+    }
 
 	function classification(){
 		$this->layout = 'fckeditor';
 		$this->set('classification',$this->getMatiereListe());
-
 	}
-
 
     function getMatiereListe(){
 
@@ -1232,7 +1235,7 @@ class DeliberationsController extends AppController {
 				if ($bool == 1){
 					$delib_id = substr($id, 3, strlen($id));
 					$classification = $this->data['Deliberation'][$delib_id."_num_pref"];
-			    	$this->changeClassification ($delib_id, "$classification");
+			    	$this->changeClassification($delib_id, $classification);
 			    	$class1 = substr($classification , 0, strpos ($classification , '.' ));
 					$rest = substr($classification , strpos ($classification , '.' )+1, strlen($classification));
 					$class2=substr($rest , 0, strpos ($classification , '.' ));
@@ -1244,7 +1247,7 @@ class DeliberationsController extends AppController {
 					$class5=substr($rest , 0, strpos ($classification , '.' ));
 
 					$err = $this->requestAction("/postseances/generateDeliberation/$delib_id");
-					$file = $path."webroot/files/delibs/DELIB_$delib_id.pdf";
+					$file = $path."webroot/files/delibs/PROJET_$delib_id.pdf";
 					$delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
 
         	        if (!file_exists($file)){
@@ -1295,10 +1298,10 @@ class DeliberationsController extends AppController {
 			$this->Deliberation->save($this->data);
 		}
 
-		function changeClassification($delib_id, $etat){
+		function changeClassification($delib_id, $classification){
 			$this->data = $this->Deliberation->read(null, $delib_id);
 			$this->data['Deliberation']['id']=$delib_id;
-			$this->data['Deliberation']['num_pref'] = $etat;
+			$this->data['Deliberation']['num_pref'] = $classification;
 			$this->Deliberation->save($this->data);
 		}
 
@@ -1548,7 +1551,7 @@ class DeliberationsController extends AppController {
 		$data = $this->Deliberation->findAll($condition);
 		$redacteur_id = $data['0']['Deliberation']['redacteur_id'];
 		$data_comm = $this->Commentaire->findAll("delib_id = $delib_id");
-				
+
 		$condition = "User.id = $user_id";
 		$data = $this->User->findAll($condition);
 
@@ -1563,11 +1566,11 @@ class DeliberationsController extends AppController {
 				$commentaire = $data_comm['0']['Commentaire']['texte'];
 				$comm = "Votre dossier a été refusé pour les motifs suivants :<br/><br/>$commentaire";
 				$this->set('data',$comm);
-			}elseif ($data['0']['User']['id']==$redacteur_id) {	
+			}elseif ($data['0']['User']['id']==$redacteur_id) {
 				$this->set('data',"Votre dossier a été refusé");
-			}else{	
+			}else{
             	$this->set('data', "Le dossier $delib_id a été refusé... Il est reparti au redacteur pour etre modifié");
-			} 
+			}
 			$this->Email->to = $to_mail;
             $this->Email->subject = "DELIB $delib_id Refusée !";
        	   // $this->Email->attach($fully_qualified_filename, optionally $new_name_when_attached);
