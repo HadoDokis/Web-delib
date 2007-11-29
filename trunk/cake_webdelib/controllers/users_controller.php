@@ -54,6 +54,7 @@ class UsersController extends AppController {
 
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 				//$this->set('statut',array('0'=>'agent', '1'=>'elu'));
+				$this->set('notif',array('1'=>'oui','0'=>'non'));
 				$this->set('services', $this->User->Service->generateList());
 				if (empty($this->data['Service']['Service'])) {
 				    $this->data['Service']['Service'] = null;
@@ -157,6 +158,8 @@ class UsersController extends AppController {
 		$condition = "User.id = $id";
 	    $fields = "nom";
 	    $dataValeur = $this->User->findAll($condition, $fields);
+	    //debug($dataValeur);
+	    //debug($id);
 	   	return $dataValeur['0'] ['User']['nom'];
 	}
 
