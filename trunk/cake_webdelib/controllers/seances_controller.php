@@ -412,6 +412,8 @@ class SeancesController extends AppController {
 			        $this->data['Listepresence']['present'] = $tab['present'];
 			    if (isset($tab['mandataire']))
 			         $this->data['Listepresence']['mandataire'] = $tab['mandataire'];
+			    else
+			    	$this->data['Listepresence']['mandataire'] =0;
 
 			 	$this->Listepresence->save($this->data);
 			}
