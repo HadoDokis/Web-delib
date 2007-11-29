@@ -18,21 +18,16 @@
 	</tr>
 <!-- ------------------------------------------------- -->
 <?php foreach ($deliberations as $deliberation){ ?>
-<?php //debug($deliberations);?>
 
 	<tr>
-		<td rowspan=3 style="text-align:center"><?php echo $html->image('/icons/encours.png');?></td>
-		<td>En cours de redaction</td>
+		<td rowspan=3 style="text-align:center"><?php echo $html->image('/icons/encours.png', array('title'=>'En cours de rédaction'));?></td>
+		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 		<td>Service emetteur :<br/><?php echo $deliberation['Service']['libelle']; ?></td>
 		<td>Date de séance : <?php echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=3 class="actions">
 			<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
 			<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
 			<?php echo $html->link('','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?')?>
-			<br/><br/>
-			<?php echo $html->link('','/deliberations/textprojet/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'))?>
-			<?php echo $html->link('','/deliberations/textsynthese/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'))?>
-			<?php echo $html->link('','/deliberations/deliberation/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'))?>
 			<br/><br/>
 			<?php echo $html->link('','/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'], array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'))?>
 			<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'))?>
@@ -58,7 +53,7 @@
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter une deliberation', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un deliberation')); ?></li>
+	<li><?php echo $html->link('Ajouter un projet', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un projet')); ?></li>
 </ul>
 <?php } ?>
 </div>
