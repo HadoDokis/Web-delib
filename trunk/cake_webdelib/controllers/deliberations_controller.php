@@ -472,7 +472,7 @@ class DeliberationsController extends AppController {
 
 							$counter++;
 						}
-						$this->redirect('/deliberations/attribuercircuit/'.$id);
+						$this->redirect('/deliberations/listerMesProjets');
 
 					} else {
 						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
@@ -497,7 +497,7 @@ class DeliberationsController extends AppController {
 
 	function textsynthese ($id = null) {
 	 $this->layout = 'fckeditor';
-	$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="S"'));
+	 $this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="S"'));
 
 	if (empty($this->data)) {
         $this->data = $this->Deliberation->read(null, $id);
@@ -674,9 +674,8 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-		function edit($id=null) {
-
-		$user=$this->Session->read('user');
+	function edit($id=null) {
+	    $user=$this->Session->read('user');
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
 			$this->set('deliberation',$this->data);
@@ -688,12 +687,6 @@ class DeliberationsController extends AppController {
 			if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
-
-//			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-//			$date_seances = $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date');
-//			foreach ($date_seances as $key=>$date)
-//				$date_seances[$key]= $this->Date->frenchDateConvocation(strtotime($date));
-//			$this->set('date_seances',$date_seances);
 
 			$seances = $this->Seance->findAll();
 			foreach ($seances as $seance){
@@ -711,8 +704,8 @@ class DeliberationsController extends AppController {
 			unset($this->params['form']['date_limite']);
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
-			//$this->data['Deliberation']['reporte']=0;
-			if($this->data['Deliberation']['seance_id'] != ""){
+
+		 	if($this->data['Deliberation']['seance_id'] != ""){
 				$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 				$this->data['Deliberation']['position']=$position;
 			}
@@ -755,8 +748,7 @@ class DeliberationsController extends AppController {
 
 							$counter++;
 						}
-						$this->redirect('/deliberations/attribuercircuit/'.$id);
-
+						$this->redirect('/deliberations/listerMesProjets');
 					} else {
 						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 						$this->set('services', $this->Deliberation->Service->generateList());
@@ -845,18 +837,18 @@ class DeliberationsController extends AppController {
    function convert($id=null) {
             $this->layout = 'pdf';
             $this->set('id',  $id);
-            $this->set('text_projet',  $this->getField($id, 'texte_projet'));
+            $this->set('text_projet', $this->getField($id, 'texte_projet'));
             $this->set('text_synthese',$this->getField($id, 'texte_synthese'));
-            $this->set('deliberation', $this->getField($id, 'deliberation'));
-            $this->set('seance_id',    $this->getField($id, 'seance_id'));
-            $this->set('rapporteur_id',$this->getField($id, 'rapporteur_id'));
-            $this->set('objet',        $this->getField($id, 'objet'));
-  			$this->set('num_delib',    $this->getField($id, 'num_delib'));
-  			$this->set('titre',        $this->getField($id, 'titre'));
-  			$this->set('theme',        $this->requestAction("themes/getLibelle/".$this->getField($id, 'theme_id')));
-        	$this->set('service',      $this->requestAction("services/getLibelle/".$this->getField($id, 'service_id')));
-        	$this->set('nom_rapporteur',    $this->requestAction("users/getNom/".$this->getField($id, 'rapporteur_id')));
-          	$this->set('prenom_rapporteur', $this->requestAction("users/getPrenom/".$this->getField($id, 'rapporteur_id')));
+            $this->set('deliberation',$this->getField($id, 'deliberation'));
+            $this->set('seance_id',    htmlspecialchars($this->getField($id, 'seance_id')));
+            $this->set('rapporteur_id',htmlspecialchars($this->getField($id, 'rapporteur_id')));
+            $this->set('objet',        htmlspecialchars($this->getField($id, 'objet')));
+  			$this->set('num_delib',    htmlspecialchars($this->getField($id, 'num_delib')));
+  			$this->set('titre',       htmlspecialchars( $this->getField($id, 'titre')));
+  			$this->set('theme',        htmlspecialchars($this->requestAction("themes/getLibelle/".$this->getField($id, 'theme_id'))));
+        	$this->set('service',     htmlspecialchars( $this->requestAction("services/getLibelle/".$this->getField($id, 'service_id'))));
+        	$this->set('nom_rapporteur',   htmlspecialchars( $this->requestAction("users/getNom/".$this->getField($id, 'rapporteur_id'))));
+          	$this->set('prenom_rapporteur', htmlspecialchars($this->requestAction("users/getPrenom/".$this->getField($id, 'rapporteur_id'))));
             $seance_id = $this->requestAction("seances/getDate/".$this->getField($id, 'seance_id'));
           	if (!empty($seance_id))
             	$date_seance = $this->Date->frenchDateConvocation(strtotime($seance_id));
@@ -1079,9 +1071,6 @@ class DeliberationsController extends AppController {
 				}
 				else
 				{
-					//on a refusé le projet, il repart au redacteur
-
-
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 					$lastpos=count($tab)-1;
 
@@ -1247,7 +1236,7 @@ class DeliberationsController extends AppController {
 					$class5=substr($rest , 0, strpos ($classification , '.' ));
 
 					$err = $this->requestAction("/postseances/generateDeliberation/$delib_id");
-					$file = $path."webroot/files/delibs/PROJET_$delib_id.pdf";
+					$file = $path."webroot/files/delibs/DELIB_$delib_id.pdf";
 					$delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
 
         	        if (!file_exists($file)){
@@ -1264,7 +1253,7 @@ class DeliberationsController extends AppController {
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-      	                 'number'        => 'TEST_'.$delib_id,
+      	                 'number'        => 'WEBDELIB_'.$delib_id,
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
