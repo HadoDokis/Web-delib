@@ -28,7 +28,7 @@
 	ob_end_clean();
 	$pos =  strrpos ( getcwd(), 'webroot');
 	$path = substr(getcwd(), 0, $pos);
-	$pdf->Output($path."webroot/files/delibs/DELIB_$id.pdf",'F');
-	$pdf->Output("DELIB_$id.pdf",'D');
+	$pdf->Output($path."webroot/files/delibs/PROJET_$id.pdf",'F');
+	$pdf->Output("PROJET_$id.pdf",'D');
 
 ?>
