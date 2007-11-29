@@ -16,16 +16,19 @@
 		if ($delib['Deliberation']['etat']!= 5)
 			echo("<td>".$html->checkbox('Deliberation/id_'.$delib['Deliberation']['id'])."</td>");
 		else
-		    echo("<td>Envoy&eacute;</td>");
+		    echo("<td></td>");
 
-		echo ('<td>'.'DELIB_'.$delib['Deliberation']['id'].'</td><td>'.$delib['Deliberation']['objet'].'</td><td>'.$delib['Deliberation']['titre'].'</td>'); ?>
+		echo ('<td>'.$html->link('DELIB_'.$delib['Deliberation']['id'], '/postseances/generateDeliberation/'.$delib['Deliberation']['id'] ).'</td><td>'.$delib['Deliberation']['objet'].'</td><td>'.$delib['Deliberation']['titre'].'</td>'); ?>
 		<td><?php echo $html->input('Deliberation/'.$delib['Deliberation']['id'].'_num_pref',array('id'=>$delib['Deliberation']['id'].'classif1', 'size' => '60','disabled'=>'disabled', 'value' => $delib['Deliberation'][$delib['Deliberation']['id'].'_num_pref'] ));?><br/>
 		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base;?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id'];?>', 'Select_attribut', 'scrollbars=0,,width=570,height=450');" id=<?php echo $delib['Deliberation']['id'];?>"_classification_text">[Choisir la classification]</a>
 		 <?php echo $html->hidden('Deliberation/'.$delib['Deliberation']['id'].'_num_pref',array('id'=>$delib['Deliberation']['id'].'classif2','name'=>$delib['Deliberation']['id'].'classif2'))?>
 		</td>
-		<td>
-		    <?php echo  $html->link($delib['Deliberation']['etat'], '/postseances/generateDeliberation/'.$delib['Deliberation']['id'] ); ?>
-		</td>
+		   <?php
+		        if ($delib['Deliberation']['etat']== 5)
+		           echo("<td>envoyé</td>");
+		        else
+ 					echo("<td>non envoyé</td>");
+		   ?>
 		</tr>
 <?php	 } ?>
 
