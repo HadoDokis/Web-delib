@@ -158,16 +158,20 @@ class UsersController extends AppController {
 		$condition = "User.id = $id";
 	    $fields = "nom";
 	    $dataValeur = $this->User->findAll($condition, $fields);
-	    //debug($dataValeur);
-	    //debug($id);
-	   	return $dataValeur['0'] ['User']['nom'];
+	   	if (isset($dataValeur['0'] ['User']['nom']))
+	   	    return $dataValeur['0'] ['User']['nom'];
+	   	else
+	   	    return '';
 	}
 
     function getPrenom ($id) {
 		$condition = "User.id = $id";
 	    $fields = "prenom";
 	    $dataValeur = $this->User->findAll($condition, $fields);
-	   	return $dataValeur['0'] ['User']['prenom'];
+	    if (isset($dataValeur['0'] ['User']['prenom']))
+	   	    return $dataValeur['0'] ['User']['prenom'];
+	   	else
+	   	    return '';
 	}
 
     function login() {
