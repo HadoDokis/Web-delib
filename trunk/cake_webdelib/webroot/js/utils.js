@@ -28,7 +28,7 @@ function returnChoice(text,arg) {
       elt2.value = '';
     }
 	var a = window.opener.document.getElementById('classification_text');
-  	a.firstChild.nodeValue = '[Changer la localisation]';
+  	a.firstChild.nodeValue = '[Modifier la classification]';
 
   window.close();
 }
