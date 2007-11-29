@@ -38,9 +38,8 @@
 </table>
 
 <ul class="actions">
-	<li><?php
-
-	    echo $html->link('Ajouter une deliberation', '/deliberations/add');
-	    ?></li>
+	<li>
+	    <?php echo $html->link('Créer un projet', '/deliberations/add'); ?>
+	</li>
 </ul>
 </div>
