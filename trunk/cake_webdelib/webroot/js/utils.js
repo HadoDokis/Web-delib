@@ -51,6 +51,15 @@ function return_choice_lot(text,arg,delibId) {
     window.close();
 }
 
+function disable(id,val)
+{
+  if (val=='1')
+  	document.getElementById(id).disabled=true;
+  else
+  document.getElementById(id).disabled=false;
+}
+
+
 function saveLocation(idDelib,idLoc,zone)
 {
 
