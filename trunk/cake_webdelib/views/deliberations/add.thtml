@@ -1,6 +1,6 @@
 <?php echo $javascript->link('calendrier.js'); ?>
 <?php echo $javascript->link('utils.js'); ?>
-<h2>Nouvelle d&eacute;liberation</h2>
+<h2>Nouveau projet</h2>
 
 <?php echo $html->formTag('/deliberations/add/'.$deliberation['Deliberation']['id'], null,array('name'=>'Deliberation','enctype'=>'multipart/form-data')); ?>
 
