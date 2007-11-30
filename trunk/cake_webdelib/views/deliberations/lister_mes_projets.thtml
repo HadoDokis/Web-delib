@@ -1,6 +1,6 @@
 <div class="deliberations">
 <?php if ($UserCanAdd) { ?>
-<h2>Mes rapports en cours de r&eacute;daction</h2>
+<h2>Mes projets en cours de r&eacute;daction</h2>
 
 
 <table cellspacing="0" cellpadding="0">
@@ -23,7 +23,9 @@
 		<td rowspan=3 style="text-align:center"><?php echo $html->image('/icons/encours.png', array('title'=>'En cours de rédaction'));?></td>
 		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 		<td>Service emetteur :<br/><?php echo $deliberation['Service']['libelle']; ?></td>
-		<td>Date de séance : <?php echo $deliberation['Seance']['date']; ?></td>
+		<td>Date de séance : <?php if ($deliberation['Deliberation']['reporte']==1) 
+						echo "Reporté au ";
+					echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=3 class="actions">
 			<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
 			<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
