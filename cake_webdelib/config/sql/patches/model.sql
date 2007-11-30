@@ -1,7 +1,4 @@
---/!\ Ajout de contenu dans la table /!\
-
--- --------------------------------------------------------
---
+-- 
 -- Contenu de la table `models`
 -- 
 
