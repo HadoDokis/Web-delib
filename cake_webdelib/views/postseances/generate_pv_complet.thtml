@@ -29,7 +29,7 @@
  		    $pdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
             $pdf->WriteHTML('<b>'.$projet['Deliberation']['titre'].'</b><br><br>');  
        		$pdf->WriteHTML($projet['Deliberation']['debat'].'<br>');  
-       		$pdf->WriteHTML('<p align="right"><b><i>Adopté à l\'unanimité</i></b></p>');
+       		$pdf->WriteHTML('<p align="right"><b>'.$projet['vote'].'</b></p>');
         	$pdf->WriteHTML('<br><br>'); 
          }
        $pdf->WriteHTML('<p><i>La séance est levée à 22h</i></p>');
