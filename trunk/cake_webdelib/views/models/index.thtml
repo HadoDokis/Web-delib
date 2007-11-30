@@ -19,7 +19,4 @@
 <?php endforeach; ?>
 </table>
 
-<ul class="actions">
-	<li><?php echo $html->link('Ajouter ', '/models/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
-</ul>
 </div>
