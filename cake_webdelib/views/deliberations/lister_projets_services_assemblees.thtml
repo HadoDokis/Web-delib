@@ -16,13 +16,12 @@
 	</tr>
 <!-- ------------------------------------------------- -->
 <?php foreach ($deliberations as $deliberation){ ?>
-<?php //debug($deliberations);?>
 
 	<tr>
-		<td rowspan=3 style="text-align:center"><?php echo $html->image('icons/fini.png');?></td>
-		<td>En cours de redaction</td>
-		<td>CCL01</td>
-		<td><?php if ($deliberation['Deliberation']['reporte']==1) 
+		<td rowspan=3 style="text-align:center"><?php echo $html->image('icons/fini.png', array('title'=>'Appartient au service des assemblees'));?></td>
+		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
+		<td>Service emetteur :<br/><?php echo $deliberation['Service']['libelle']; ?></td>
+		<td>Date de séance : <?php if ($deliberation['Deliberation']['reporte']==1) 
 						echo "Reporté au ";
 					echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=3 class="actions"> 
@@ -35,7 +34,7 @@
 	</tr>
 	<tr>
 		<td>N&deg; pr&eacute;fecture :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
-		<td class='corps' rowspan=1 ><?php echo $deliberation['Theme']['libelle']; ?></td>
+		<td class='corps' rowspan=1 >Thème : <?php echo $deliberation['Theme']['libelle']; ?></td>
 		<td class='corps' rowspan=2 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
 
 	</tr>
