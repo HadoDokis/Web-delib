@@ -29,11 +29,11 @@
   		    $pdf->WriteHTML('<hr width="100%" size="2" /><div align="center">'.$projet['Theme']['libelle'].'</div><hr width="100%" size="2" />');
  		    $pdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
             $pdf->WriteHTML('<b>'.$projet['Deliberation']['titre'].'</b><br><br>');   
-       		$pdf->WriteHTML('<div align="right"><b><i>Resultat vote</i></b></div>');
+       		$pdf->WriteHTML('<div align="right">'.$projet['vote'].'</div>');
         	$pdf->WriteHTML('<br><br>'); 
          }
        
-       $pdf->WriteHTML('<p><i>La séance est levée à 22h</i></p>'); 
+       $pdf->WriteHTML('<p><i>La séance est levée à 22h</i></p>');
             
 	ob_end_clean();
 	$pdf->Output('convocations.pdf','D');
