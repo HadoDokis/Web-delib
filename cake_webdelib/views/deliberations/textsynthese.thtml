@@ -27,6 +27,6 @@
     	<?php echo  $html->fileTag("Deliberation/texte_doc"); ?><?php echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));?><br/><br/>
 	</div>
 <div class="submit">
-	<?php echo $html->submit('Continuer', array('class'=>'bt_add', 'name'=>'Enregistrer Synthese', 'onclick'=>"window.close()"));?>
+	<?php echo $html->submit('Fermer', array('class'=>'bt_add', 'name'=>'Enregistrer Synthese', 'onclick'=>"window.close()"));?>
 </div>
 </form>
