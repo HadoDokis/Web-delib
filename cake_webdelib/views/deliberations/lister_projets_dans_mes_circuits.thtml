@@ -16,11 +16,10 @@
 	</tr>
 <!-- ------------------------------------------------- -->
 <?php foreach ($deliberations as $deliberation){ ?>
-<?php //debug($deliberations);exit;?>
 
 	<tr>
-		<td rowspan=3 style=text-align:center'><?php echo $html->image($deliberation['image']);?></td>
-		<td><?php echo $deliberation['etat'];?></td>
+		<td rowspan=3 style=text-align:center'><?php echo $html->image($deliberation['image'], array('title'=>$deliberation['etat']));?></td>
+		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 		<td>Service emetteur :<br/><?php echo $deliberation['Service']['libelle']; ?></td>
 		<td>Date de séance : <?php if ($deliberation['Deliberation']['reporte']==1) 
 						echo "Reporté au ";
