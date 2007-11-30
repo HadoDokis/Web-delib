@@ -20,7 +20,7 @@ class PostseancesController extends AppController {
 
 	function afficherProjets ($id=null, $return=null)
 	{
-		$condition= "seance_id=$id AND etat=2";
+		$condition= "seance_id=$id AND etat>=2";
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
 			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
@@ -32,38 +32,56 @@ class PostseancesController extends AppController {
 		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
 	}
 
-
+	function getVote($id_delib){
+		$condition = "delib_id = $id_delib";
+		$votes = $this->Vote->findAll($condition);
+		$resultat =$votes[0]['Vote']['commentaire'];
+		return $resultat;
+	}
+	
 	function generatePvSommaire ($id=null) {
+		$delib=array();
 		$this->set('presents', $this->Listepresence->findAll("seance_id =$id AND present=1"));
 		$this->set('absents', $this->Listepresence->findAll("seance_id =$id AND present=0"));
 		$seance = $this->Seance->findAll("Seance.id = $id");
 		$this->set('seance',$seance);
 		$this->set('model',$this->Model->findAll());
-		$condition= "seance_id=$id AND etat=2";
-		$this->set('projets', $this->Deliberation->findAll($condition,null,'theme_id ASC'));
+		$condition= "seance_id=$id AND etat>=2";
+		$projets =  $this->Deliberation->findAll($condition,null,'theme_id ASC');
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
 		$this->set('mois', $this->Date->months[intval(date('m'))]);
 		$this->set('collectivite',  $this->Collectivite->findAll());
 		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($seance[0]['Seance']['date'])));
-
-		//$this->set('votes', $this->Vote->findAll("seance_id=$id"));
+		foreach ($projets as $proj)
+		{
+			$projId = $proj['Deliberation']['id'];
+			$proj['vote']= $this->getVote($projId);
+			array_push($delib, $proj);	
+		}
+		$this->set('projets',$delib);	
 	}
 
 	function generatePvComplet ($id=null) {
-
+		$delib=array();
 		$this->set('presents', $this->Listepresence->findAll("seance_id =$id AND present=1"));
 		$this->set('absents', $this->Listepresence->findAll("seance_id =$id AND present=0"));
 		$seance = $this->Seance->findAll("Seance.id = $id");
 		$this->set('seance',$seance);
 		$this->set('model',$this->Model->findAll());
 		$this->set('themes',$this->Theme->findAll());
-		$this->set('projets', $this->afficherProjets($id, 1));
+		$condition= "seance_id=$id AND etat>=2";
+		$projets =  $this->Deliberation->findAll($condition,null,'theme_id ASC');
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
 		$this->set('mois', $this->Date->months[intval(date('m'))]);
 		$this->set('collectivite',  $this->Collectivite->findAll());
 		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($seance[0]['Seance']['date'])));
-
-		//$this->set('votes', $this->Vote->findAll("seance_id=$id"));
+		foreach ($projets as $proj)
+		{
+			$projId = $proj['Deliberation']['id'];
+			$proj['vote']= $this->getVote($projId);
+			array_push($delib, $proj);	
+		}
+		$this->set('projets',$delib);	
 	}
 
 	function generateDeliberation ($id=null, $dl=1) {
