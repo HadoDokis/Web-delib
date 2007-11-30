@@ -28,6 +28,6 @@
 	</div>
 <div class="submit">
 	
-	<?php echo $html->submit('Continuer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"window.close()"));?>
+	<?php echo $html->submit('Fermer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"window.close()"));?>
 </div>
 </form>
