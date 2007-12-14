@@ -1,5 +1,5 @@
 <?php echo $javascript->link('vote'); ?>
-<h2> Vote </h2>
+<h2> Vote pour le projet : "<?php echo $deliberation[0]['Deliberation']['titre']?>"</h2>
  		<?php echo $html->formTag('/seances/voter/'.$deliberation[0]['Deliberation']['id'], null, array('name'=>'Session')); ?>
 
 
