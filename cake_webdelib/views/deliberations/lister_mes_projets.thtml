@@ -8,7 +8,7 @@
 		<th Width='5%' >Urgence</th>
 		<th Width='20%' >Etat de l'envoi</th>
 		<th Width='20%' >D&eacute;tenteur du dossier</th>
-		<th  >Objet</th>
+		<th>Titre</th>
 		<th Width='15%'>Action</th>
 
 	</tr>
@@ -23,11 +23,11 @@
 		<td rowspan=3 style="text-align:center"><?php echo $html->image('/icons/encours.png', array('title'=>'En cours de rédaction'));?></td>
 		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 		<td>Service emetteur :<br/><?php echo $deliberation['Service']['libelle']; ?></td>
-		<td>Date de séance : <?php if ($deliberation['Deliberation']['reporte']==1) 
+		<td>Date de séance : <?php if ($deliberation['Deliberation']['reporte']==1)
 						echo "Reporté au ";
 					echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=3 class="actions">
-			<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
+			<?php echo $html->link("",'/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
 			<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
 			<?php echo $html->link('','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?')?>
 			<br/><br/>
