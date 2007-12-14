@@ -10,7 +10,7 @@
 	
 	<h3>D&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['num_delib']?></h3>
 
-	<dt>Objet</dt>
+	<dt>Libelle</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
 
 	<dt>Titre</dt>
@@ -130,6 +130,8 @@
 	<li><?php echo $html->link('','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'))?></li>
 	<li><?php echo $html->link('','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'))?></li>
 	<li><?php echo $html->link('','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'))?></li>
+	<li><?php echo $html->link('', '/deliberations/edit/' . $deliberation['Deliberation']['id'],array('class'=>'link_modifier','title'=>'Modifier'));?></li>
+	
 </ul>
 
 </div>
