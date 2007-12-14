@@ -1,6 +1,6 @@
 <?php echo $javascript->link('fckeditor'); ?>
 <?php echo $html->formTag('/deliberations/textsynthese/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
-<h2>Texte Synthèse :</h2>
+<h2>Note de Synthèse :</h2>
 <div class="optional">
     <?php echo $html->textarea('Deliberation/texte_synthese', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][texte_synthese]'); ?>
@@ -23,10 +23,10 @@
 <a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
 </div>
 	<div class="optional">
-    	<h2>Texte de synthèse au format MS-Word (.doc)</h2>
+    	<h2>Note de synthèse au format MS-Word (.doc)</h2>
     	<?php echo  $html->fileTag("Deliberation/texte_doc"); ?><?php echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));?><br/><br/>
 	</div>
 <div class="submit">
-	<?php echo $html->submit('Fermer', array('class'=>'bt_add', 'name'=>'Enregistrer Synthese', 'onclick'=>"window.close()"));?>
+	<?php echo $html->submit('Fermer', array('class'=>'bt_add', 'name'=>'Enregistrer Synthese', 'onclick'=>"javascript:FermerFenetre()"));?>
 </div>
 </form>
