@@ -18,8 +18,8 @@
 		 	<?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'))?>
 			<?php echo $html->link('','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_addUsers', 'title'=>'Ajouter liste utilisateur'))?>
 			<?php echo $html->link('','/seances/generateConvocationList/' . $seance['Seance']['id'], array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'))?>
-			<?php echo $html->link('','/seances/generateConvocationAnonyme/' . $seance['Seance']['id'], array('class'=>'link_convocation_anonyme', 'title'=>'Générer la liste des convocations anonyme'))?>
-			<?php echo $html->link('','/seances/generateOrdresDuJour/' . $seance['Seance']['id'], array('class'=>'link_ordre_jour', 'title'=>'Générer les ordres du jours'))?>
+			<?php //echo $html->link('','/seances/generateConvocationAnonyme/' . $seance['Seance']['id'], array('class'=>'link_convocation_anonyme', 'title'=>'Générer la liste des convocations anonyme'))?>
+			<?php echo $html->link('','/seances/generateOrdresDuJour/' . $seance['Seance']['id'], array('class'=>'link_ordre_jour', 'title'=>'Générer les ordres du jours détaillés'))?>
 			<?php echo $html->link('','/seances/listerPresents/' . $seance['Seance']['id'], array('class'=>'link_lister_presents', 'title'=>'Lister les présents'))?>
 		</td>
 	</tr>
