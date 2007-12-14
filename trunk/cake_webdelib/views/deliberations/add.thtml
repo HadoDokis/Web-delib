@@ -9,7 +9,7 @@
 	<tr>
 		<td width="20%"><?php echo $form->labelTag('Deliberation/id', 'Id projet');?></td>
 		<td width="60%"><?php echo $html->input('Deliberation/id',array('size' => '10','disabled'=>'disabled'));?><br/>
-	</td>
+	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Service/libelle','Service emetteur');?></td>
 		<td><?php echo $html->input('Service/libelle',array('size' => '30','value'=>$servEm, 'disabled'=>'disabled'));?><br/>
