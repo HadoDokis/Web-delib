@@ -105,7 +105,7 @@ class AppController extends Controller {
         // construction navigation secondaire seances
         $sub_menu2 = array (
         	'Nouvelle...' => array('link' => '/seances/add'),
-        	'A venir' => array ('link' => '/seances/listerFuturesSeances'),
+        	//'A venir' => array ('link' => '/seances/listerFuturesSeances'),
         	'Passées' => array('link' => '/seances/listerAnciennesSeances'),
         	'Calendrier' => array('link' => '/seances/afficherCalendrier')
         );
@@ -139,7 +139,7 @@ class AppController extends Controller {
 			$menu['Projets']['submenu'] = $sub_menu1;
 		}
 		if ($this->Acl->check($user_id, "Seances:index")){
-			$menu['Seances']= array('link' => '/seances/', 'submenu' => array());
+			$menu['Seances']= array('link' => '/seances/listerFuturesSeances', 'submenu' => array());
 			$menu['Seances']['submenu'] = $sub_menu2;
 			$menu['Post-seance']= array('link' => '/pages/postseance', 'submenu' => array());
 			$menu['Post-seance']['submenu'] = $sub_menu3;
