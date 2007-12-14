@@ -64,7 +64,25 @@ class DeliberationsController extends AppController {
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$conditions="seance_id is null OR seance_id= 0 AND redacteur_id=$user_id";
-			$this->set('deliberations', $this->Deliberation->findAll($conditions));
+			$deliberations= $this->Deliberation->findAll($conditions);
+			$delib=array();
+			foreach ($deliberations as $deliberation){
+			
+				$etat = $deliberation['Deliberation']['etat'];
+				switch ($etat){
+					case 0 :
+					$deliberation['etatProjet'] = 'en cours de redaction'; break;
+					case 1:
+					$deliberation['etatProjet'] = 'en cours de validation';	break;
+					case 2:
+					$deliberation['etatProjet'] = 'validé';	break;
+					default:
+					$deliberation['etatProjet'] = 'inconnu'; break;
+				}
+				array_push($delib, $deliberation);
+			}
+			$this->set('deliberations',$delib);
+	
 		}
 		else
 		{
@@ -402,6 +420,10 @@ class DeliberationsController extends AppController {
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
 			$this->set('deliberation',$this->data);
+			if (empty($this->data['Service']['id']))
+				$this->set('servEm', $this->requestAction('/services/doList/'.$user['User']['service']));
+			else
+				$this->set('servEm',$this->requestAction('/services/doList/'.$this->data['Service']['id']));
 			$this->set('datelim',$this->data['Deliberation']['date_limite']);
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
@@ -678,6 +700,7 @@ class DeliberationsController extends AppController {
 	    $user=$this->Session->read('user');
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
+			$this->set('servEm',$this->requestAction('/services/doList/'.$this->data['Service']['id']));
 			$this->set('deliberation',$this->data);
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
