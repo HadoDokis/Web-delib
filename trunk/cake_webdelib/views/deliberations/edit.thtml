@@ -15,6 +15,10 @@
 		<td><?php echo $html->input('Deliberation/modified', array('size'=>'20', 'disabled'=>'disabled'));?></td>
 	</tr>	
 	<tr>
+		<td><?php echo $form->labelTag('Deliberation/id', 'Id projet');?></td>
+		<td><?php echo $html->input('Deliberation/id',array('size' => '10','disabled'=>'disabled'));?><br/>
+	</tr>
+	<tr>
 		<td><?php echo $form->labelTag('Redacteur/nom','Redacteur :')?></td>
 		<td><?php echo $html->input('Redacteur/nom', array('size'=>'20','value'=>$deliberation['Redacteur']['nom'].' '.$deliberation['Redacteur']['prenom'], 'disabled'=>'disabled'));?></td>
 	</tr>	
