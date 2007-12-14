@@ -36,6 +36,6 @@
        $pdf->WriteHTML('<p><i>La séance est levée à 22h</i></p>');
             
 	ob_end_clean();
-	$pdf->Output('convocations.pdf','D');
+	$pdf->Output('pv_sommaire.pdf','D');
 
  
