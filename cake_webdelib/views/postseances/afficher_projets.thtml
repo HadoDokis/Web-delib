@@ -3,7 +3,7 @@
 	<tr>
 		<?php echo ('<th>'.$html->link('Theme', "/deliberations/sortby/$seance_id/theme_id"). "</th>"); ?>
 		<th>Rapporteur</th>
-		<?php echo ('<th>'.$html->link('Objet', "/deliberations/sortby/$seance_id/objet"). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Libelle', "/deliberations/sortby/$seance_id/objet"). "</th>"); ?>
 		<?php echo ('<th>'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre"). "</th>"); ?>
 		<?php echo ('<th>'.$html->link('Num Delib', "/deliberations/sortby/$seance_id/num_delib"). "</th>"); ?>
 		<th>Action</th>
