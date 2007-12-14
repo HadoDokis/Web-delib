@@ -9,7 +9,7 @@
         $pdf->WriteHTML('<p align="center"><b> Séance du '.$seance[0]['Typeseance']['libelle'].' du '.$date_seance.'</b></p><br>');
 		$pdf->WriteHTML('<p align="center"><b>Délibération n° '.$projet[0]['Deliberation']['num_delib'].'</b></p><br>');
 
-        $pdf->WriteHTML('<b>OBJET :&nbsp; '.$projet[0]['Deliberation']['objet'].'</b><br><br>');
+        $pdf->WriteHTML('<b>LIBELLE :&nbsp; '.$projet[0]['Deliberation']['objet'].'</b><br><br>');
         $pdf->WriteHTML('<b>RAPPORTEUR :&nbsp; '.$projet[0]['Rapporteur']['nom'].' '.$projet[0]['Rapporteur']['prenom'].'</b><br><br>');
         $pdf->WriteHTML('<b>DELIBERATION : &nbsp;</b>'.$projet[0]['Deliberation']['deliberation'].'<br><br>');
 		$pdf->WriteHTML('<b>DEBAT :&nbsp; </b>'.$projet[0]['Deliberation']['debat'].'<br><br>');
