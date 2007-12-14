@@ -2,12 +2,12 @@
 <table>
 	<tr>
 		<th>Position</th>
-		<?php echo ('<th>'.$html->link('Theme', "/deliberations/sortby/$seance_id/theme_id"). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Theme', "/deliberations/sortby/$seance_id/theme_id",null,'Etes-vous sur de vouloir trier par theme ?'). "</th>"); ?>
 		<th>Service emetteur</th>
 		<th>Rapporteur</th>
-		<?php echo ('<th>'.$html->link('Objet', "/deliberations/sortby/$seance_id/objet"). "</th>"); ?>
-		<?php echo ('<th>'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre"). "</th>"); ?>
-		<?php echo ('<th>'.$html->link('Num Delib', "/deliberations/sortby/$seance_id/num_delib"). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Libelle', "/deliberations/sortby/$seance_id/objet",null,'Etes-vous sur de vouloir trier par libelle ?'). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre",null,'Etes-vous sur de vouloir trier par titre ?'). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Num Delib', "/deliberations/sortby/$seance_id/num_delib",null,'Etes-vous sur de vouloir trier par num_delib ?'). "</th>"); ?>
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 	</tr>
