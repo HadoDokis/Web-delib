@@ -4,15 +4,15 @@
 	<title>WebDelib</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 	<?php echo $html->css('webdelib'); ?>
-	
-	
-	
+
+
+
 </head>
 <body>
 <div id="conteneur">
 
 	<div id="header">
-		
+
 	</div>
 
 	<div id="centre">
@@ -20,9 +20,9 @@
 	</div>
 
 	<div id="pied">
-		Tutoriel CakePHP &copy; 2006 ADULLACT
+		Web-delib &copy; 2007 ADULLACT
 	</div>
-	
+
 </div>
 </body>
 </html>
