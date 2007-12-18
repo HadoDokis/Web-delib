@@ -37,7 +37,7 @@ class ServicesController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Service->save($this->data)) {
-				$this->Session->setFlash('Le service a &eacute;t&eacute;sauvegard&eacute;');
+				$this->Session->setFlash('Le service a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/services/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
@@ -84,11 +84,11 @@ class ServicesController extends AppController {
 	}
 
 	function doList($id){
-	
+
 		$liste = $this->GetParentList($id).$this->getLibelle($id);
 		return $liste;
 	}
-	
+
 	function getParentList($id){
 		$tab = "";
 		$condition = "id = $id";
@@ -99,10 +99,10 @@ class ServicesController extends AppController {
 			$parentliste = $this->Service->findAll("id = $parent_id");
 			$libelle_parent = $parentliste[0]['Service']['libelle'];
 			$id_parent = $parentliste[0]['Service']['id'];
-			
+
 			$tab = $this->getParentList($id_parent).$libelle_parent.'/';
 		}
-		
+
 		return $tab;
 	}
 }
