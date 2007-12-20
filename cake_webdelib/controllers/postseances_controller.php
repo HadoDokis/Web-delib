@@ -35,8 +35,8 @@ class PostseancesController extends AppController {
 	function getVote($id_delib){
 		$condition = "delib_id = $id_delib";
 		$votes = $this->Vote->findAll($condition);
-		$resultat =$votes[0]['Vote']['commentaire'];
-		return $resultat;
+		if (!empty($votes)){$resultat =$votes[0]['Vote']['commentaire'];
+		return $resultat;}
 	}
 	
 	function generatePvSommaire ($id=null) {
@@ -47,7 +47,7 @@ class PostseancesController extends AppController {
 		$this->set('seance',$seance);
 		$this->set('model',$this->Model->findAll());
 		$condition= "seance_id=$id AND etat>=2";
-		$projets =  $this->Deliberation->findAll($condition,null,'theme_id ASC');
+		$projets =  $this->Deliberation->findAll($condition,null,'position ASC');
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
 		$this->set('mois', $this->Date->months[intval(date('m'))]);
 		$this->set('collectivite',  $this->Collectivite->findAll());
@@ -68,9 +68,9 @@ class PostseancesController extends AppController {
 		$seance = $this->Seance->findAll("Seance.id = $id");
 		$this->set('seance',$seance);
 		$this->set('model',$this->Model->findAll());
-		$this->set('themes',$this->Theme->findAll());
+		//$this->set('themes',$this->Theme->findAll());
 		$condition= "seance_id=$id AND etat>=2";
-		$projets =  $this->Deliberation->findAll($condition,null,'theme_id ASC');
+		$projets =  $this->Deliberation->findAll($condition,null,'position ASC');
 		$this->set('jour', $this->Date->days[intval(date('w'))]);
 		$this->set('mois', $this->Date->months[intval(date('m'))]);
 		$this->set('collectivite',  $this->Collectivite->findAll());
