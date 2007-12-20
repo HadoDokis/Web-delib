@@ -4,7 +4,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $components = array('Date','Email');
-	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote','Model');
+	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote','Model','Annex');
 	var $cacheAction = 0;
 
 	function index() {
@@ -191,9 +191,11 @@ class SeancesController extends AppController {
 			for ($i=0; $i<count($deliberations); $i++){
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+				$deliberations[$i]['rapp_id'] = $this->requestAction("deliberations/getRapporteur/".$deliberations[$i]['Deliberation']['id']);
 			}
 			$this->set('seance_id', $id);
-		    $this->set('projets', $deliberations);
+			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
+			$this->set('projets', $deliberations);
 			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($id))));
 
 		}
@@ -201,7 +203,16 @@ class SeancesController extends AppController {
 		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
 	}
 
-
+    function changeRapporteur($newRapporteur,$delib_id) {
+    	$this->Deliberation->create();
+    	$this->data['Deliberation']['id']=$delib_id;
+    	$this->data['Deliberation']['rapporteur_id']= $newRapporteur;
+		if ($this->Deliberation->save($this->data['Deliberation'])){
+    		//redirection sur la page où on était avant de changer de service
+       		$this->Redirect($this->Session->read('user.User.lasturl'));
+       	}
+    }  
+    
 	function getDate($id=null)
     {
 		if (empty($id))
@@ -476,6 +487,64 @@ class SeancesController extends AppController {
 				$this->redirect('/seances/details/'.$seance_id);
 			} else {
 				$this->Session->setFlash('Please correct errors below.');
+			}
+		}
+	}
+	
+
+	function getFileData($fileName, $fileSize) {
+		return fread(fopen($fileName, "r"), $fileSize);
+	}
+	
+	function saisirDebatGlobal ($id = null) {
+		
+		if (empty($this->data)) {
+			$this->data = $this->Seance->read(null, $id);
+			$this->set('annexes',$this->Annex->findAll('Annex.seance_id='.$id.' AND type="A"'));
+		} else{
+			$this->data['Seance']['id']=$id;
+			if(!empty($this->params['form']))
+			{
+				$seance = array_shift($this->params['form']);
+				$annexes = $this->params['form'];
+
+				$uploaded = true;
+				$size = count($this->params['form']);
+				$counter = 1;
+
+				while($counter <= ($size/2))
+				{
+					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name'])){
+						$uploaded = false;
+					}
+					$counter++;
+				}
+
+				if($uploaded) {
+					if ($this->Seance->save($this->data)) {
+					$counter = 1;
+
+						while($counter <= ($size/2)) {
+							$this->data['Annex']['id'] = null;
+							$this->data['Annex']['deliberation_id'] = 0;
+							$this->data['Annex']['seance_id'] = $id;
+							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
+							$this->data['Annex']['type'] = 'A';
+							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
+							$this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
+							$this->data['Annex']['size'] = $annexes['file_'.$counter]['size'];
+							$this->data['Annex']['data'] = $this->getFileData($annexes['file_'.$counter]['tmp_name'], $annexes['file_'.$counter]['size']);
+							if(!$this->Annex->save($this->data))
+							{
+								echo "pb de sauvegarde de l\'annexe ".$counter;
+							}
+						$counter++;
+						}
+						$this->redirect('/seances/');
+					} else {
+						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+					}
+				}
 			}
 		}
 	}
