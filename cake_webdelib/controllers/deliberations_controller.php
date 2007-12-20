@@ -12,7 +12,7 @@ class DeliberationsController extends AppController {
 
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote','SeancesUser');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote','SeancesUser', 'Listepresence');
 	var $components = array('Date','Utils','Email', 'Acl');
 
 	function index() {
@@ -67,7 +67,7 @@ class DeliberationsController extends AppController {
 			$deliberations= $this->Deliberation->findAll($conditions);
 			$delib=array();
 			foreach ($deliberations as $deliberation){
-			
+
 				$etat = $deliberation['Deliberation']['etat'];
 				switch ($etat){
 					case 0 :
@@ -82,7 +82,7 @@ class DeliberationsController extends AppController {
 				array_push($delib, $deliberation);
 			}
 			$this->set('deliberations',$delib);
-	
+
 		}
 		else
 		{
@@ -191,9 +191,7 @@ class DeliberationsController extends AppController {
 					}
 			}
 		}
-
 		$this->set('deliberations', $delib);
-
 	}
 
 	function listerProjetsATraiter()
@@ -1536,7 +1534,6 @@ class DeliberationsController extends AppController {
 		$this->set('delib_id', $id);
 	}
 
-
 	function notifierDossierAtraiter($circuit_id, $pos, $delib_id){
 		$conditions = "UsersCircuit.circuit_id=$circuit_id and UsersCircuit.position=$pos";
 		$data = $this->UsersCircuit->findAll($conditions);
@@ -1607,5 +1604,111 @@ class DeliberationsController extends AppController {
 		}
 	}
 
+	function getListPresent($delib_id){
+			return $this->Listepresence->findAll("Listepresence.delib_id= $delib_id");
+	}
+
+	function listerPresents($delib_id) {
+		if (empty($this->data)) {
+			$presents = $this->getListPresent($delib_id);
+			foreach($presents as $present){
+				    	$this->data[$present['Listepresence']['user_id']]['present'] = $present['Listepresence']['present'];
+					    $this->data[$present['Listepresence']['user_id']]['mandataire'] = $present['Listepresence']['mandataire'];
+			}
+			$this->set('presents',$presents);
+			$this->set('mandataires', $this->User->generateList('statut = 1'));
+			$this->set('delib_id', $delib_id);
+		}
+		else {
+			$this->effacerListePresence($delib_id);
+			foreach($this->data as $user_id=>$tab){
+				$this->Listepresence->create();
+				if (!is_int($user_id))
+					continue;
+			    $this->data['Listepresence']['user_id'] = $user_id;
+
+			    if (isset($tab['present']))
+			        $this->data['Listepresence']['present'] = $tab['present'];
+
+			    if (isset($tab['mandataire']))
+			         $this->data['Listepresence']['mandataire'] = $tab['mandataire'];
+			    else
+			    	$this->data['Listepresence']['mandataire'] =0;
+
+ 			    $this->data['Listepresence']['delib_id']=$delib_id;
+			 	$this->Listepresence->save($this->data['Listepresence']);
+			}
+			$this->redirect('/seances/voter/'.$delib_id);
+		}
+
+	}
+
+	function effacerListePresence($delib_id) {
+		$condition = "delib_id = $delib_id";
+		$presents = $this->Listepresence->findAll($condition);
+		foreach($presents as $present)
+  		    $this->Listepresence->del($present['Listepresence']['id']);
+	}
+
+	function isFirstDelib($delib_id) {
+		$seance_id = $this->getCurrentSeance($delib_id);
+		$position  = $this->getCurrentPosition($delib_id);
+		return  ($position == 1);
+	}
+
+	function buildFirstList($delib_id) {
+		$elus = $this->User->findAll( "User.statut= 1");
+		foreach ($elus as $elu){
+			$this->Listepresence->create();
+			$this->params['data']['Listepresence']['user_id']=$elu['User']['id'];
+			$this->params['data']['Listepresence']['mandataire'] = '0';
+			$this->params['data']['Listepresence']['present']= 1;
+			$this->params['data']['Listepresence']['delib_id']= $delib_id;
+			$this->Listepresence->save($this->params['data']);
+		}
+		return $this->Listepresence->findAll("delib_id =$delib_id");
+	}
+
+	function copyFromPreviousList($delib_id){
+		$position = $this->getCurrentPosition($delib_id);
+		$seance_id = $this->getCurrentSeance($delib_id);
+		$previousDelibId= $this->getDelibIdByPosition($seance_id, $position -1);
+		$condition = "delib_id = $previousDelibId";
+		$previousPresents = $this->Listepresence->findAll($condition);
+
+		foreach ($previousPresents as $present){
+			$this->Listepresence->create();
+			$this->params['data']['Listepresence']['user_id']=$present['Listepresence']['user_id'];
+			$this->params['data']['Listepresence']['mandataire'] = $present['Listepresence']['mandataire'];
+			$this->params['data']['Listepresence']['present']= $present['Listepresence']['present'];
+			$this->params['data']['Listepresence']['delib_id']= $delib_id;
+			$this->Listepresence->save($this->params['data']);
+		}
+		return $this->Listepresence->findAll("delib_id =$delib_id");
+	}
+
+	function getDelibIdByPosition ($seance_id, $position){
+		$condition = "seance_id = $seance_id AND position = $position";
+		$delib = $this->Deliberation->findAll($condition);
+		return $delib['0']['Deliberation']['id'];
+	}
+
+	function afficherListePresents($delib_id=null)	{
+		$condition = "Listepresence.delib_id= $delib_id";
+		$presents = $this->Listepresence->findAll($condition);
+		if ($this->isFirstDelib($delib_id) and (empty($presents)))
+			$presents = $this->buildFirstList($delib_id);
+
+		// Si la liste est vide, on récupère la liste des présent lors de la derbière délibération.
+		// Vérifier que la liste précédente n'est pas vide...
+		if (empty($presents))
+			$presents = $this->copyFromPreviousList($delib_id);
+
+		for($i=0; $i<count($presents); $i++){
+			if ($presents[$i]['Listepresence']['mandataire'] !='0')
+			    $presents[$i]['Listepresence']['mandataire'] = $this->User->requestAction('/users/getPrenom/'.$presents[$i]['Listepresence']['mandataire']).' '.$this->User->requestAction('/users/getNom/'.$presents[$i]['Listepresence']['mandataire']);
+		}
+		return ($presents);
+	}
 }
 ?>
