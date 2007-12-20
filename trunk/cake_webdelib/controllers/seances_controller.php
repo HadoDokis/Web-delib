@@ -5,6 +5,7 @@ class SeancesController extends AppController {
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $components = array('Date','Email');
 	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote','Model');
+	var $cacheAction = 0;
 
 	function index() {
 		$this->Seance->recursive = 0;
@@ -380,47 +381,6 @@ class SeancesController extends AppController {
 		    }
 	}
 
-	function listerPresents($seance_id=null) {
-		// Controle la cohérence entre la liste des inscrits et les présents
-	    $this->checkLists($seance_id);
-	    unset ($this->cacheQueries);
-
-		if (empty($this->data)) {
-	    	$presents = $this->Listepresence->findAll("seance_id = $seance_id");
-	    	// Si l'on a encore rien saisi, on prend la table thï¿½orique des prï¿½sents
-			if(empty($presents))
-			   $presents = $this->SeancesUser->findAll("seance_id = $seance_id");
-			else {
-				foreach($presents as $present){
-				    	$this->data[$present['Listepresence']['user_id']]['present'] = $present['Listepresence']['present'];
-					    $this->data[$present['Listepresence']['user_id']]['mandataire'] = $present['Listepresence']['mandataire'];
-				}
-			}
-			$this->set('presents',  $presents);
-			$this->set('seance_id',$seance_id);
-			$this->set('mandataires', $this->User->generateList('statut = 1'));
-		}
-		else {
-			$this->data['Listepresence']['seance_id']=$seance_id;
-			$this->effacerListePresence($seance_id);
-			foreach($this->data as $user_id=>$tab){
-				$this->Listepresence->create();
-				if (!is_int($user_id))
-					continue;
-			    $this->data['Listepresence']['user_id'] = $user_id;
-			    if (isset($tab['present']))
-			        $this->data['Listepresence']['present'] = $tab['present'];
-			    if (isset($tab['mandataire']))
-			         $this->data['Listepresence']['mandataire'] = $tab['mandataire'];
-			    else
-			    	$this->data['Listepresence']['mandataire'] =0;
-
-			 	$this->Listepresence->save($this->data);
-			}
-			$this->redirect('/seances/listerFuturesSeances');
-		}
-	}
-
 	function delUserFromList($user_id, $seance_id) {
 		$data = $this->Listepresence->findAll("seance_id = $seance_id AND user_id = $user_id");
 		$this->Listepresence->del($data[0]['Listepresence']['id']);
@@ -443,24 +403,6 @@ class SeancesController extends AppController {
 	     return $isIn;
 	}
 
-	function effacerListePresence($seance_id=null) {
-		$condition = "seance_id = $seance_id";
-		$presents = $this->Listepresence->findAll($condition);
-		foreach($presents as $present)
-  		    $this->Listepresence->del($present['Listepresence']['id']);
-	}
-
-	function afficherListePresents($seance_id=null)	{
-		$conditions = "Listepresence.seance_id= $seance_id ";
-		$presents = $this->Listepresence->findAll($conditions);
-
-		for($i=0; $i<count($presents); $i++){
-			if ($presents[$i]['Listepresence']['mandataire'] !='0')
-			    $presents[$i]['Listepresence']['mandataire'] = $this->User->requestAction('/users/getPrenom/'.$presents[$i]['Listepresence']['mandataire']).' '.$this->User->requestAction('/users/getNom/'.$presents[$i]['Listepresence']['mandataire']);
-		}
-		return ($presents);
-	}
-
 	function details ($seance_id=null) {
 		$deliberations=$this->afficherProjets($seance_id, 0);
 		for ($i=0; $i<count($deliberations); $i++){
@@ -480,25 +422,23 @@ class SeancesController extends AppController {
 	}
 
 	function voter ($deliberation_id=null) {
-		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
-
 		if (empty($this->data)) {
 			$donnees = $this->Vote->findAll("delib_id = $deliberation_id");
 
 			foreach($donnees as $donnee){
 				$this->data['Vote'][$donnee['Vote']['user_id']]=$donnee['Vote']['resultat'];
 			    $this->data['Vote']['commentaire'] = $donnee['Vote']['commentaire'];
-
 			}
 			$this->set('deliberation' , $this->Deliberation->findAll("Deliberation.id=$deliberation_id"));
-			$this->set('presents' , $this->afficherListePresents($seance_id));
-
+			$this->set('presents' , $this->requestAction('/deliberations/afficherListePresents/'.$deliberation_id));
+			$this->render();
 		}
 		else {
  			$pour = 0;
  			$abstenu = 0;
 			$this->effacerVote($deliberation_id);
 			$nb_votant = count($this->data['Vote']);
+			$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
 
 			foreach($this->data['Vote']as $user_id => $vote){
 				if(is_numeric($user_id)==true){
@@ -512,7 +452,6 @@ class SeancesController extends AppController {
 					if (($vote == 2)||($vote == 3))
 						$abstenu ++;
 				    $this->Vote->save($this->data['Vote']);
-
 				}
 			}
 
@@ -522,10 +461,7 @@ class SeancesController extends AppController {
 			else
 				 $this->data['Deliberation']['etat']=4;
 			$this->Deliberation->save($this->data);
-
 			$this->redirect('seances/details/'.$seance_id);
-
-
 		}
 	}
 
