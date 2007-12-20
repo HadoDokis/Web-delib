@@ -28,7 +28,7 @@
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?></td>
-		<td><?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$selectedRapporteur,null,null,false);?></td>
+		<td><?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$selectedRapporteur,null,null,true);?></td>
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/theme_id', 'Theme <acronym title="obligatoire">(*)</acronym>');?></td>
