@@ -1,0 +1,1 @@
+ALTER TABLE `seances` ADD `debat_global` LONGBLOB NOT NULL AFTER `type_id` ;
