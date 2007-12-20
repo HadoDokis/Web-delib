@@ -14,28 +14,27 @@ for (i = 0; i < mesBoutons.length; i++) {
 
 if(mesBoutons[i].checked ==true && mesBoutons[i].type =='radio' && mesBoutons[i].name !='global'){
 
-	if(mesBoutons[i].value==0){
+	if(mesBoutons[i].value==2){
 		if(document.getElementById('VoteRes0').value=='')
 		{document.getElementById('VoteRes0').value=1;}
 		else{document.getElementById('VoteRes0').value=eval(document.getElementById('VoteRes0').value)+1;}
 	}
-	if(mesBoutons[i].value==1){
+	if(mesBoutons[i].value==3){
 		if(document.getElementById('VoteRes1').value=='')
 		{document.getElementById('VoteRes1').value=1;}
 		else{document.getElementById('VoteRes1').value=eval(document.getElementById('VoteRes1').value)+1;}
 
 	}
-	if(mesBoutons[i].value==2){
+	if(mesBoutons[i].value==4){
 		if(document.getElementById('VoteRes2').value=='')
 		{document.getElementById('VoteRes2').value=1;}
 		else{document.getElementById('VoteRes2').value=eval(document.getElementById('VoteRes2').value)+1;}
 
 	}
-	if(mesBoutons[i].value==3){
+	if(mesBoutons[i].value==5){
 		if(document.getElementById('VoteRes3').value=='')
 		{document.getElementById('VoteRes3').value=1;}
 		else{document.getElementById('VoteRes3').value=eval(document.getElementById('VoteRes3').value)+1;}
-
 	}
 
 }
@@ -60,24 +59,24 @@ document.getElementById('VoteRes3').value=0;
 for (i = 0; i < mesBoutons.length; i++) {
 if(mesBoutons[i].value ==rep && mesBoutons[i].type =='radio'){
 	mesBoutons[i].checked=true;
-	if(rep==0){
+	if(rep==2){
 		if(document.getElementById('VoteRes0').value=='')
 		{document.getElementById('VoteRes0').value=1;}
 		else{document.getElementById('VoteRes0').value=eval(document.getElementById('VoteRes0').value)+1;}
 	}
-	if(rep==1){
+	if(rep==3){
 		if(document.getElementById('VoteRes1').value=='')
 		{document.getElementById('VoteRes1').value=1;}
 		else{document.getElementById('VoteRes1').value=eval(document.getElementById('VoteRes1').value)+1;}
 
 	}
-	if(rep==2){
+	if(rep==4){
 		if(document.getElementById('VoteRes2').value=='')
 		{document.getElementById('VoteRes2').value=1;}
 		else{document.getElementById('VoteRes2').value=eval(document.getElementById('VoteRes2').value)+1;}
 
 	}
-	if(rep==3){
+	if(rep==5){
 		if(document.getElementById('VoteRes3').value=='')
 		{document.getElementById('VoteRes3').value=1;}
 		else{document.getElementById('VoteRes3').value=eval(document.getElementById('VoteRes3').value)+1;}
@@ -88,16 +87,16 @@ if(mesBoutons[i].value ==rep && mesBoutons[i].type =='radio'){
 
 }
 
-	if(rep==0){
+	if(rep==2){
 		document.getElementById('VoteRes0').value=eval(document.getElementById('VoteRes0').value)-1;}
 
-	if(rep==1){
+	if(rep==3){
 		document.getElementById('VoteRes1').value=eval(document.getElementById('VoteRes1').value)-1;}
 
-	if(rep==2){
+	if(rep==4){
 		document.getElementById('VoteRes2').value=eval(document.getElementById('VoteRes2').value)-1;}
 
-	if(rep==3){
+	if(rep==5){
 		document.getElementById('VoteRes3').value=eval(document.getElementById('VoteRes3').value)-1;}
 
 
