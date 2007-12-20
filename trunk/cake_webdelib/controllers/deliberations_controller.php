@@ -481,6 +481,7 @@ class DeliberationsController extends AppController {
 						while($counter <= ($size/2)){
 							$this->data['Annex']['id'] = null;
 							$this->data['Annex']['deliberation_id'] = $delib_id;
+							$this->data['Annex']['seance_id'] = 0;
 							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
 							$this->data['Annex']['type'] = 'G';
 							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
@@ -552,6 +553,7 @@ class DeliberationsController extends AppController {
 						while($counter <= ($size/2)) {
 							$this->data['Annex']['id'] = null;
 							$this->data['Annex']['deliberation_id'] = $id;
+							$this->data['Annex']['seance_id'] = 0;
 							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
 							$this->data['Annex']['type'] = 'S';
 							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
@@ -614,6 +616,7 @@ class DeliberationsController extends AppController {
 						while($counter <= ($size/2)) {
 							$this->data['Annex']['id'] = null;
 							$this->data['Annex']['deliberation_id'] = $id;
+							$this->data['Annex']['seance_id'] = 0;
 							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
 							$this->data['Annex']['type'] = 'D';
 							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
@@ -673,6 +676,7 @@ class DeliberationsController extends AppController {
 						while($counter <= ($size/2)) {
 							$this->data['Annex']['id'] = null;
 							$this->data['Annex']['deliberation_id'] = $id;
+							$this->data['Annex']['seance_id'] = 0;
 							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
 							$this->data['Annex']['type'] = 'P';
 							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
@@ -758,6 +762,7 @@ class DeliberationsController extends AppController {
 						while($counter <= ($size/2)){
 							$this->data['Annex']['id'] = null;
 							$this->data['Annex']['deliberation_id'] = $delib_id;
+							$this->data['Annex']['seance_id'] = 0;
 							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
 							$this->data['Annex']['type'] = 'G';
 							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
@@ -879,15 +884,6 @@ class DeliberationsController extends AppController {
             $this->render();
     }
 
-
-	 /**
-     * Ajoute la déliberation au circuit de validation
-     * Si la delib a une version anterieure, on met a jour la table traitement
-     * On envoie un mail a toutes les personnes appartenant au circuit de validation
-     *
-	 * @param int $id L'id de la deliberation.
-	 *
-     */
 
     function addIntoCircuit($id = null){
     	$this->data = $this->Deliberation->read(null,$id);
@@ -1516,6 +1512,15 @@ class DeliberationsController extends AppController {
         exec("$wvware $wvware_options $htmldir $wordfilename > $htmlfilename");
     }
 
+    function getRapporteur($id_delib){
+    	$condition= "Deliberation.id=$id_delib";
+    	$deliberation = $this->Deliberation->findAll($condition);
+    	if (!empty ($deliberation[0]['Rapporteur']['id']))
+    		return $deliberation[0]['Rapporteur']['id'];
+    	else
+    		return null;
+     }
+    
 	function textprojetvue ($id = null) {
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
 		$this->set('deliberation', $this->Deliberation->read(null, $id));
