@@ -4,23 +4,25 @@
 
 <table cellpadding="0" cellspacing="0" border="0">
 	<tr>
-		<!-- <th>ID</th> -->
 		<th>Type</th>
 		<th>Date S&eacute;ance</th>
-		<th>Action</th>
+		<th>Préparation</th>
+		<th>En cours</th>
 	</tr>
 	<?php foreach ($seances as $seance): ?>
 	<tr>
-		<!-- <td><?php echo $seance['Seance']['id']; ?></td> -->
-		<td><?php  echo $html->link($seance['Typeseance']['libelle'],'/seances/details/' . $seance['Seance']['id']); ?></td>
+		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
-		<td class="actions" width="150px"> <!-- largeur en fonction des icones -->
+		<td class="actions" width="140px"> <!-- largeur en fonction des icones -->
 		 	<?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'))?>
-			<?php echo $html->link('','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_addUsers', 'title'=>'Ajouter liste utilisateur'))?>
+			<?php echo $html->link('','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_addUsers', 'title'=>'Ajouter liste des presents'))?>
 			<?php echo $html->link('','/seances/generateConvocationList/' . $seance['Seance']['id'], array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'))?>
 			<?php //echo $html->link('','/seances/generateConvocationAnonyme/' . $seance['Seance']['id'], array('class'=>'link_convocation_anonyme', 'title'=>'Générer la liste des convocations anonyme'))?>
 			<?php echo $html->link('','/seances/generateOrdresDuJour/' . $seance['Seance']['id'], array('class'=>'link_ordre_jour', 'title'=>'Générer les ordres du jours détaillés'))?>
 			<?php echo $html->link('','/seances/listerPresents/' . $seance['Seance']['id'], array('class'=>'link_lister_presents', 'title'=>'Lister les présents'))?>
+		</td>
+		<td class="actions"><?php echo $html->link('','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voir', 'title'=>'Liste des projets')); ?>
+			<?php echo $html->link('','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats généraux de la seance')); ?>
 		</td>
 	</tr>
 	<?php endforeach; ?>
