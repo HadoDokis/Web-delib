@@ -11,7 +11,11 @@ function montre(id) {
 function OuvrirFenetre(url,nom,detail) {
 	var w = window.open(url,nom,detail);
 }
-
+function FermerFenetre(){
+var choix = confirm("Voulez-vous fermer la fenetre ?");
+if (choix)  window.close();
+//else alert("Vous avez cliqué sur ANNULER ou vous avez fermé");
+}
 
 function returnChoice(text,arg) {
 
@@ -99,6 +103,11 @@ function changeService(params)
 	document.location=url;
 }
 
+function changeRapporteur(params,delib)
+{
+	var url = params.id+"seances/changeRapporteur/"+params.value+"/"+delib;
+	document.location=url;
+}
 
 function add_field() {
 
