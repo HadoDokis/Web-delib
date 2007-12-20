@@ -23,7 +23,6 @@
 			<?php echo $html->link('','/seances/listerPresents/' . $seance['Seance']['id'], array('class'=>'link_lister_presents', 'title'=>'Lister les présents'))?>
 		</td>
 	</tr>
-	
 	<?php endforeach; ?>
 
 </table>
