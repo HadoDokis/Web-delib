@@ -1,4 +1,9 @@
 <?php echo $javascript->link('vote'); ?>
+<h2>Saisie présents </h2>
+<cake:nocache>
+	<div class="optional">
+		<?php echo $this->requestAction('/deliberations/listerPresents/'.$deliberation[0]['Deliberation']['id'], array('return'));?>
+	</div>
 <h2> Vote pour le projet : "<?php echo $deliberation[0]['Deliberation']['titre']?>"</h2>
  		<?php echo $html->formTag('/seances/voter/'.$deliberation[0]['Deliberation']['id'], null, array('name'=>'Session')); ?>
 
@@ -21,26 +26,25 @@
 	 		 		?>
 	 		 	</td>
 	 		   	<td>
-	 		  	    <?php echo $html->radio('Vote/'.$present['User']['id'], array('1'=>'oui', '0'=>'non', '2'=>'abstention', '3'=>'Pas de participation'), null, array('onclick'=>"javascript:vote();")); ?>
+	 		  	    <?php echo $html->radio('Vote/'.$present['User']['id'], array('3'=>'oui', '2'=>'non', '4'=>'abstention', '5'=>'Pas de participation'), null, array('onclick'=>"javascript:vote();")); ?>
 	 		   	</td>
     		 </tr>
  		     <?php endforeach; ?>
 
- 		    <tr>
+ 		    <tr  bgcolor='#efefef'>
  		   		<td>
- 		   			<?php echo $html->input('Vote/reset', array('type' => 'reset', 'value' => 'reset'));?>
+ 		   			<?php echo $html->input('Vote/reset', array('type' => 'reset', 'value' => 'Remise à zéro'));?>
  		   		</td>
  		   		<td>
- 		   		    <input type="radio" name="global" id="oui" onclick="javascript:vote_global('1');" value="1"  />oui
- 		   		    <input type="radio" name="global" id="non" onclick="javascript:vote_global('0');" value="0"  />non
- 		   		    <input type="radio" name="global" id="abst" onclick="javascript:vote_global('2');" value="2"  />abstention
- 		   		    <input type="radio" name="global" id="sans_part" onclick="javascript:vote_global('3');" value="3"  />Pas de participation
+ 		   		    <input type="radio" name="global" id="oui" onclick="javascript:vote_global('3');" value="3"  />oui
+ 		   		    <input type="radio" name="global" id="non" onclick="javascript:vote_global('2');" value="2"  />non
+ 		   		    <input type="radio" name="global" id="abst" onclick="javascript:vote_global('4');" value="4"  />abstention
+ 		   		    <input type="radio" name="global" id="sans_part" onclick="javascript:vote_global('5');" value="5"  />Pas de participation
  		   		</td>
  		   	</tr>
 
  		    <tr>
  		   		<td>Total</td>
-
  		   		<td>
  		   			<?php echo $html->input('Vote/res1', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>oui
 					<?php echo $html->input('Vote/res0', array('size' => '3', 'value' => '', 'disabled' => 'true'));?>non
@@ -50,6 +54,7 @@
  		   	</tr>
 
   		 </table>
+
   		 <br />
   	<div class="optional">
 		<?php echo $form->labelTag('Vote/commentaire', 'Commentaire');?>
@@ -61,4 +66,4 @@
         <?php echo $html->submit('Enregistrer le vote', array('class'=>'bt_add', 'name'=>'modifier'));?>
 	</div>
 	</form>
-
+</cake:nocache>
