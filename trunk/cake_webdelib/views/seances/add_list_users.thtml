@@ -1,8 +1,8 @@
-<h2>Liste de presence</h2>
+<h2>Sélectionner les personnes non-votantes</h2>
 <form action="<?php echo $html->url('/seances/addListUsers'); ?>" method="post">
 <?php echo $html->hidden('Seance/id', array('value'=>$seance_id)); ?>
 
-<div class="required"> 
+<div class="required">
 	<?php echo $form->labelTag('User/id', 'Utilisateurs');?>
  	<?php echo $html->selectTag('User/id', $users, $selectedUsers, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
 </div>
