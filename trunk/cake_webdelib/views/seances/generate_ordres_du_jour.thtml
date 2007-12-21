@@ -1,10 +1,9 @@
-<?
+<?php
     vendor('fpdf/html2fpdf');
 	$pdf = new HTML2FPDF();
 
     foreach($data as $seanceUser) {
-        $pdf->AddPage();
-
+		$pdf->AddPage();
       	$search = array("#LOGO_COLLECTIVITE#","#ADRESSE_COLLECTIVITE#","#NOM_ELU#","#ADRESSE_ELU#","#VILLE_ELU#","#VILLE_COLLECTIVITE#","#DATE_DU_JOUR#","#TYPE_SEANCE#","#DATE_SEANCE#","","","");
 		$replace = array('<img src="files/image/logo.jpg">',
 					$collectivite[0]['Collectivite']['nom'].'<br>'.$collectivite[0]['Collectivite']['adresse'].'<br>'.$collectivite[0]['Collectivite']['CP'].' '.$collectivite[0]['Collectivite']['ville'],
@@ -21,13 +20,14 @@
 		$pdf->WriteHTML($generation);
 
         foreach($projets as $projet) {
-      	    $pdf->AddPage();
          	$pdf->WriteHTML('<b><u>Thème</u> : </b><br>'.$projet['Theme']['libelle'].'<br>');
          	$pdf->WriteHTML('<b><u>Rapporteur</u> : </b><br>'.$projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom'].'<br>');
          	$pdf->WriteHTML('<b><u>Service emetteur</u> : </b><br>'.$projet['Service']['libelle'].'<br>');
             $pdf->WriteHTML('<b><u>Titre</u> : </b><br>'.$projet['Deliberation']['titre'].'<br>');
             $pdf->WriteHTML('<b><u>Synthèse</u> :</b>'.$projet['Deliberation']['texte_synthese'].'<br><br>');
+        	$pdf->AddPage();
         }
+
     }
     ob_end_clean();
 	$pdf->Output('odj.pdf','D');
