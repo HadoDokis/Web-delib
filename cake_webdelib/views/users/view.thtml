@@ -5,15 +5,15 @@
 
 <div class="imbrique">
 	<div class="gauche">
-		<dt>Pr&eacute;nom</dt>
-		<dd>&nbsp;<?php echo $user['User']['prenom']?></dd>
+		<dt>Nom</dt>
+		<dd>&nbsp;<?php echo $user['User']['nom']?></dd>
 	</div>
 	<div class="droite">
 		<dt>Pr&eacute;nom</dt>
 		<dd>&nbsp;<?php echo $user['User']['prenom']?></dd>
 	</div>
 </div>
-	
+
 <div class="imbrique">
 	<div class="gauche">
 		<dt>Login</dt>
@@ -25,10 +25,10 @@
 	</div>
 </div>
 
-<div class="imbrique">	
+<div class="imbrique">
 	<div class="gauche">
 		<dt>Date Naissance</dt>
-		<dd>&nbsp;<?php echo $user['User']['date_naissance']?></dd>	
+		<dd>&nbsp;<?php echo $user['User']['date_naissance']?></dd>
 	</div>
 	<div class="droite">
 		<dt>Notification mail</dt>
@@ -39,12 +39,12 @@
 	</div>
 </div>
 
-<br/>	
-<div class="imbrique">	
+<br/>
+<div class="imbrique">
 	<div class="gauche">
 		<dt>Adresse</dt>
 		<dd>&nbsp;<?php echo $user['User']['adresse']?><br/>
-			&nbsp;<?php echo $user['User']['CP'].' '.$user['User']['ville'];?></dd>	
+			&nbsp;<?php echo $user['User']['CP'].' '.$user['User']['ville'];?></dd>
 	</div>
 	<div class="droite">
 		<dt>Telephones</dt>
