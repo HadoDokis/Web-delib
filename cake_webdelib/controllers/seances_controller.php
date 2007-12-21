@@ -535,7 +535,7 @@ class SeancesController extends AppController {
 							}
 						$counter++;
 						}
-						$this->redirect('/seances/');
+						$this->redirect('/seances/listerFuturesSeances');
 					} else {
 						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 					}
