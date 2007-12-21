@@ -1,0 +1,1 @@
+ALTER TABLE `annexes` ADD `seance_id` ` int(11) NOT NULL AFTER `deliberation_id` ;
