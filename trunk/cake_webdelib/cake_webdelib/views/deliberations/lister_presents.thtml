@@ -1,0 +1,28 @@
+<form action="<?php echo $html->url('/deliberations/listerPresents/'.$delib_id);?>" method="post">
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Elu</th>
+	<th>Présent</th>
+	<th>Mandataire</th>
+</tr>
+<?php foreach ($presents as $present):
+     $pres = $present['User']['id']; ?>
+<tr>
+	<td><?php echo $present['User']['prenom'].' '.$present['User']['nom']; ?></td>
+	<td>
+ 		<?php echo $html->radio($present['User']['id'].'/present', array(1=>'oui'),null,array('selected'=>'selected', 'onclick'=>"javascript:disable('liste_$pres','1');")); ?>
+		<?php echo $html->radio($present['User']['id'].'/present', array(0=>'non'),null,array('onclick'=>"javascript:disable('liste_$pres','2');")); ?>
+	</td>
+	<td>
+        <?php echo $form->labelTag($present['User']['id'].'/mandataire', 'Mandataire');?>
+ 	    <?php echo $html->selectTag($present['User']['id'].'/mandataire', $mandataires, null,array('disabled'=>'disabled',"id"=>"liste_".$present['User']['id']),null,true);?>
+    </td>
+</tr>
+<?php endforeach; ?>
+</table>
+<br />
+<div class="submit">
+	<?php echo $html->submit('Enregistrer la liste des présents', array('class'=>'bt_add', 'name'=>'modifier'));?>
+</div>
+<br />
+</form>

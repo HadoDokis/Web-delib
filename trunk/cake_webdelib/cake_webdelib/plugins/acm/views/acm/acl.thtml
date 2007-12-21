@@ -1,0 +1,54 @@
+<div id="methods">
+<?php
+$aro = $data['aro']['alias'];
+$aco = $data['aco']['alias'];
+
+
+if(count($data['aco']['children']) != count($data['acl'][$aro][$aco]))
+{
+	echo "Error in ACL List Build!";
+}
+?>
+<table>
+<tr><th>&nbsp;</th><th>User/Group</th>
+<?php
+foreach($data['aco']['children'] AS $child)
+{
+	list($controller,$method) = split(':', $child['alias']);
+	echo "<th>" . $method ." </th> ";
+}
+?>
+</tr>
+<?php
+		//ARO Group
+		$accessRow = "";
+		foreach($data['acl'][$aro][$aco] AS $methode => $access)
+		{
+		    $accessRow .=  "<td id='{$aro}:{$methode}' class='{$access}'>" . $access . "</td>";
+		}
+		echo "<tr><th>". $html->checkbox('aro/'.$aro, $aco) ."</th><th>" . $aro . "</th>" . $accessRow . "</tr> ";
+
+		//ARO Users
+		if(!empty($data['acl'][$aro]['children']))
+		{
+			$children = $data['acl'][$aro]['children'];
+			$users = array_keys($children);
+			$i=0;
+			foreach($children AS $child)
+			{
+				$user = $users[$i];
+				$accessRow = "";
+				foreach($child[$aco] AS $methode => $access)
+				{
+				    $accessRow .=  "<td id='{$user}:{$methode}' class='{$access}'>" . $access . " </td> ";
+				}
+				echo "<tr><th>". $html->checkbox('aro/'.$aro, $aco) ."</th><th>" . $user . "</th>" . $accessRow . "</tr> ";
+				$i++;
+			}
+		}
+?>
+</table>
+
+<script>
+Behaviour.apply();
+</script>

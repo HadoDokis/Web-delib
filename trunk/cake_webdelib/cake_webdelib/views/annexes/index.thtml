@@ -1,0 +1,36 @@
+<div class="annexes">
+<h2>List Annexes</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Id</th>
+	<th>Delib Id</th>
+	<th>Chemin</th>
+	<th>Titre</th>
+	<th>Reference Id</th>
+	<th>Created</th>
+	<th>Modified</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($annexes as $annex): ?>
+<tr>
+	<td><?php echo $annex['Annex']['id']; ?></td>
+	<td><?php echo $annex['Annex']['delib_id']; ?></td>
+	<td><?php echo $annex['Annex']['chemin']; ?></td>
+	<td><?php echo $annex['Annex']['titre']; ?></td>
+	<td><?php echo $annex['Annex']['reference_id']; ?></td>
+	<td><?php echo $annex['Annex']['created']; ?></td>
+	<td><?php echo $annex['Annex']['modified']; ?></td>
+	<td class="actions">
+		<?php echo $html->link('View','/annexes/view/' . $annex['Annex']['id'])?>
+		<?php echo $html->link('Edit','/annexes/edit/' . $annex['Annex']['id'])?>
+		<?php echo $html->link('Delete','/annexes/delete/' . $annex['Annex']['id'], null, 'Are you sure you want to delete id ' . $annex['Annex']['id'])?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Annex', '/annexes/add'); ?></li>
+</ul>
+</div>

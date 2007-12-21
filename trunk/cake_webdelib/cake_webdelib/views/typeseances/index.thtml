@@ -1,0 +1,26 @@
+<div class="typeseances">
+<h2>Liste des types de séance</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Libelle</th>
+	<th>Nb jours avant retard</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($typeseances as $typeseance): ?>
+<tr>
+	<td><?php echo $typeseance['Typeseance']['libelle']; ?></td>
+	<td><?php echo $typeseance['Typeseance']['retard']; ?></td>
+	<td class="actions">
+		<?php echo $html->link('','/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
+		<?php echo $html->link('','/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
+		<?php echo $html->link('','/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?')?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('Ajouter un type de séance', '/typeseances/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
+</ul>
+</div>

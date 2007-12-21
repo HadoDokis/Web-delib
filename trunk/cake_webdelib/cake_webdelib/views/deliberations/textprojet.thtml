@@ -1,0 +1,33 @@
+<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $html->formTag('/deliberations/textprojet/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
+<h2>Texte Projet : </h2>
+<div class="optional">
+    <?php echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Deliberation][texte_projet]'); ?>
+    <?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du projet.');?>
+</div>
+<div class="optional">
+	<?php if(!empty($annexes)){  ?>
+	<?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?>
+	<?php foreach ($annexes as $annexe) :
+			echo '<br>Titre : '.$annexe['Annex']['titre'];
+			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
+			echo '<br>Taille : '.$annexe['Annex']['size'];
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
+	<?php endforeach; } ?>
+</div>
+<div id="cible">
+
+</div>
+<div>
+<a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
+</div>
+	<div class="optional">
+    	<h2>Texte Projet au format MS-Word (.doc)</h2>
+    	<?php echo  $html->fileTag("Deliberation/texte_doc"); ?><?php echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));?><br/><br/>
+	</div>
+<div class="submit">
+	
+	<?php echo $html->submit('Fermer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"window.close()"));?>
+</div>
+</form>

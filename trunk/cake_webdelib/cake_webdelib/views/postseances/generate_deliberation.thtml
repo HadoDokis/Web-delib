@@ -1,0 +1,77 @@
+<?
+    vendor('fpdf/html2fpdf');
+	$pdf = new HTML2FPDF();
+
+        $pdf->AddPage();
+        $pdf->WriteHTML('<img src="files/image/logo.jpg">');
+        $pdf->WriteHTML('<p>'.$collectivite[0]['Collectivite']['nom'].'<br>'.$collectivite[0]['Collectivite']['adresse'].'<br>'.$collectivite[0]['Collectivite']['CP'].' '.$collectivite[0]['Collectivite']['ville'].'</p>');
+        $pdf->WriteHTML('<p align="center"> Déliberation</p>');
+        $pdf->WriteHTML('<p align="center"><b> Séance du '.$seance[0]['Typeseance']['libelle'].' du '.$date_seance.'</b></p><br>');
+		$pdf->WriteHTML('<p align="center"><b>Délibération n° '.$projet[0]['Deliberation']['num_delib'].'</b></p><br>');
+
+        $pdf->WriteHTML('<b>LIBELLE :&nbsp; '.$projet[0]['Deliberation']['objet'].'</b><br><br>');
+        $pdf->WriteHTML('<b>RAPPORTEUR :&nbsp; '.$projet[0]['Rapporteur']['nom'].' '.$projet[0]['Rapporteur']['prenom'].'</b><br><br>');
+        $pdf->WriteHTML('<b>DELIBERATION : &nbsp;</b>'.$projet[0]['Deliberation']['deliberation'].'<br><br>');
+		$pdf->WriteHTML('<b>DEBAT :&nbsp; </b>'.$projet[0]['Deliberation']['debat'].'<br><br>');
+		$pdf->WriteHTML('<b>DECIDE :&nbsp; </b>'.$vote[0]['Vote']['commentaire'].'<br><br>');
+		
+		
+		if (!empty($votespour)){
+			$pdf->WriteHTML('<b>ONT VOTE POUR :</b><br>');
+			foreach ($votespour as $pour){
+				$pdf->WriteHTML($this->controller->getNom($pour['Vote']['user_id']).' ');
+				foreach ($absents as $absent) {
+					if ($pour['Vote']['user_id'] == $absent['User']['id'])
+						$pdf->WriteHTML('(mandaté par '.$this->controller->getNom($absent['Listepresence']['mandataire']).')');
+				}
+				$pdf->WriteHTML('. ');
+			}
+			$pdf->WriteHTML('<br><br>');
+		}
+		
+		if (!empty($votescontre)){
+			$pdf->WriteHTML('<b>ONT VOTE CONTRE :</b><br>');
+			foreach ($votescontre as $contre){
+        		$pdf->WriteHTML($this->controller->getNom($contre['Vote']['user_id']).' ');
+        		foreach ($absents as $absent) {
+        			if ($contre['Vote']['user_id'] == $absent['User']['id'])
+						$pdf->WriteHTML(' (mandaté par '.$this->controller->getNom($absent['Listepresence']['mandataire']).')');
+        		}
+        		$pdf->WriteHTML('. ');
+			}
+			$pdf->WriteHTML('<br><br>');
+		}
+		
+		if (!empty($abstenus)){
+        	$pdf->WriteHTML('<b>SE SONT ABSTENUS :</b><br>');
+        	foreach ($abstenus as $abstenu){
+				$pdf->WriteHTML($this->controller->getNom($abstenu['Vote']['user_id']).' ');
+				foreach ($absents as $absent) {
+					if ($abstenu['Vote']['user_id'] == $absent['User']['id'])
+						$pdf->WriteHTML(' (mandaté par '.$this->controller->getNom($absent['Listepresence']['mandataire']).')');
+				}
+				$pdf->WriteHTML('. ');
+        	}
+        	$pdf->WriteHTML('<br><br>');
+		}
+		
+        if (!empty($sans_part)){
+        	$pdf->WriteHTML('<b>N\'ONT PAS PARTICIPE :</b><br>');
+        	foreach ($sans_part as $sanspart){
+				$pdf->WriteHTML($this->controller->getNom($sanspart['Vote']['user_id']).' ');
+				foreach ($absents as $absent) {
+					if ($sanspart['Vote']['user_id'] == $absent['User']['id'])
+						$pdf->WriteHTML(' (mandaté par '.$this->controller->getNom($absent['Listepresence']['mandataire']).')');
+				}
+				$pdf->WriteHTML('. ');
+        	}
+        	$pdf->WriteHTML('<br><br>');
+        }
+        
+		$pdf->WriteHTML('<p align="right">La séance était présidée par '.$projet[0]['Redacteur']['nom'].' '.$projet[0]['Redacteur']['prenom'].' et '.$projet[0]['Rapporteur']['nom'].' '.$projet[0]['Rapporteur']['prenom'].' faisait fonction de Secrétaire</p>');
+		ob_end_clean();
+
+	   	$pos =  strrpos ( getcwd(), 'webroot');
+		$path = substr(getcwd(), 0, $pos);
+		$pdf->Output($path."webroot/files/delibs/DELIB_$id.pdf",'F');
+        $pdf->Output('deliberation'.$projet[0]['Deliberation']['num_delib'].'.pdf','D');

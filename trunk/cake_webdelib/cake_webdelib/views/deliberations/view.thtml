@@ -1,0 +1,137 @@
+<!--
+<h2>Fiche d&eacute;liberation</h2>
+-->
+<div id="vue_cadre">
+<? //debug($deliberation); ?> 
+<? $deliberation=$deliberation['0']; ?>
+<dl>
+<!--	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['id']?></dd> -->
+	
+	<h3>D&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['num_delib']?></h3>
+
+	<dt>Libelle</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
+
+	<dt>Titre</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>	 
+<br/>
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Theme</dt>
+		<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['libelle'], '/themes/view/' .$deliberation['Theme']['id'])?><br> </dd>
+	</div>
+	<div class="droite">
+		<dt>Service emetteur</dt>
+		<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Service']['id'])?></dd>  
+	</div>
+</div>
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Num Pref</dt>
+		<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Date Seance</dt>
+		<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
+	</div>
+</div>
+
+
+<div class="imbrique">
+	<dt>Circuit : <?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Circuit']['id'])?></dt>
+	<dd><?php foreach ($user_circuit as $user) { ?>
+		<div class="graphique">
+			<?php 
+			if ($deliberation['positionDelib'] == $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)){
+				echo $html->image('/icons/edit.png');
+			} elseif ($deliberation['positionDelib'] < $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)) {
+				echo $html->image('/icons/editcreate.png');
+			} else {
+				echo $html->image('/icons/editcreate.png');
+			} ?>			
+			<br/><?php echo $user['User']['prenom']. ' ' .$user['User']['nom']; ?>
+			<br/><?php echo $user['Service']['libelle'];?>	
+		</div>
+	<? } ?>
+	</dd>
+</div>
+<br/>
+<br/>
+<!--	<dt>Vote Id</dt>
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['vote_id']?></dd>  -->
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Redacteur</dt>
+		<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['prenom'].' '.$deliberation['Redacteur']['nom'], '/users/view/' .$deliberation['Redacteur']['id'])?></dd>
+	</div>
+	<div class="droite">
+		<dt>Rapporteur</dt>
+		<dd>&nbsp;<?php echo $deliberation['Rapporteur']['prenom'].' '.$deliberation['Rapporteur']['nom']?></dd>
+	</div>
+</div>
+
+
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Date creation</dt>
+		<dd>&nbsp;<?php echo $deliberation['Deliberation']['created']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Date modification</dt>
+		<dd>&nbsp;<?php echo $deliberation['Deliberation']['modified']?></dd>
+	</div>
+</div>
+
+
+<?php if(!empty($deliberation['Annexe'])) { ?>
+	<dt>Annexe(s) Globale(s) </dt>	
+	<dd>
+ <?php foreach ($deliberation['Annexe'] as $annexe) {
+			if ($annexe['type'] == "G"){
+				echo '<br>Titre : '.$annexe['titre'];
+				echo '<br>Nom fichier : '.$annexe['filename'];
+				echo '<br>Taille : '.$annexe['size'];
+				echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>'; 
+			}
+ 		}	  ?></dd> 
+ <? } ?>
+
+<?php 
+	if ($tab_anterieure!=null)
+	{
+		echo"<dt>Versions Anterieures</dt>";
+		foreach ($tab_anterieure as $anterieure)
+		{
+			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";		
+		}
+	}
+?>
+
+<?php 
+	if(!empty($deliberation['Commentaire']))
+	{
+		echo"<dt>Commentaire</dt><dd>&nbsp;";
+		foreach ($deliberation['Commentaire'] as $commentaire){
+		echo $commentaire['texte'].'<br/>';}
+		echo '</dd>';
+	}
+?>
+
+
+
+	
+</dl>
+<ul id="actions_fiche">
+	<li><?php echo $html->link('', '/', array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'))?></li>
+	<li><?php echo $html->link('','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'))?></li>
+	<li><?php echo $html->link('','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'))?></li>
+	<li><?php echo $html->link('','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'))?></li>
+	<li><?php echo $html->link('', '/deliberations/edit/' . $deliberation['Deliberation']['id'],array('class'=>'link_modifier','title'=>'Modifier'));?></li>
+	
+</ul>
+
+</div>
