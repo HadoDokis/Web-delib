@@ -17,6 +17,8 @@
     		 <tr>
 	 		 	<td>
 	 		 		<?php
+						if (in_array ( $present['User']['id'], $listnonvotant))
+						    continue;
 	 		 			echo $present['User']['prenom'].' '.$present['User']['nom'];
 	 		 			if ($present['Listepresence']['mandataire'] != '0')
 	 		 				echo ' (Mandat&eacute par '.$present['Listepresence']['mandataire'].')';
