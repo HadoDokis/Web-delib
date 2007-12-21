@@ -1,0 +1,24 @@
+<div class="seances">
+<h2>Liste des anciennes s&eacute;ances</h2>
+
+
+<table cellpadding="0" cellspacing="0" border="0">
+	<tr>
+		<th>ID</th>
+		<th>Type</th>
+		<th>Date S&eacute;ance</th>
+		<th>Action</th>
+	</tr>
+	<?php foreach ($seances as $seance): ?>
+	<tr>
+		<td><?php echo $seance['Seance']['id']; ?></td>
+		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
+		<td><?php echo $seance['Seance']['date']; ?></td>
+		<td class="actions"><?php echo $html->link('','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voir', 'title'=>'Liste des projets')); ?>
+			<?php echo $html->link('','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats généraux de la seance')); ?></td>
+	</tr>
+	<?php endforeach; ?>
+
+</table>
+
+</div>

@@ -1,0 +1,32 @@
+<h2>Modification d'une s&eacute;ance</h2>
+<form
+	action="<?php echo $html->url('/seances/edit/'.$html->tagValue('Seance/id')); ?>"
+	method="post">
+
+<div class="required"><?php echo $form->labelTag('Seance/date', 'Date');?>
+<?php echo $html->dayOptionTag('Seance/date',null,null,false); ?>-<?php echo $html2->monthOptionTagFr('Seance/date',null,null,false); ?>-<?php echo $html->yearOptionTag('Seance/date',null,date("Y"),date('Y')+10); ?>&agrave; <?php echo $html->hourOptionTag('Seance/date',null,true,null); ?>h<?php echo $html->minuteOptionTag('Seance/date',null,null,false); ?>min
+<?php echo $html->tagErrorMsg('Seance/date', 'Entrer une date valide.');?>
+</div>
+<br />
+<div class="required"><?php echo $form->labelTag('Seance/type_id', 'Type de s&eacute;ance');?>
+<?php echo $html->selectTag('Seance/type_id', $typeseances, $html->tagValue('Seance/type_id'), array(), array(), true);?>
+<?php echo $html->tagErrorMsg('Seance/type_id', 'Entrer le libelle.');?>
+</div>
+
+
+<br /> <?php echo $html->hidden('Seance/id')?> 
+
+<div class="submit">
+	<?php echo $form->labelTag('Seance/id', '&nbsp;');?>
+		<?php echo $html->submit('Enregistrer', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/seances/index', array('class'=>'link_annuler', 'title'=>'Annuler'))?>
+</div>
+</form>
+<!--
+<ul class="actions">
+	<li><?php echo $html->link('Supprimer','/seances/delete/' . $html->tagValue('Seance/id'), null, 'Etes-vous sur de vouloir supprimer la seance du "' . $html->tagValue('Seance/date').'" ?');?> 
+	
+	
+	<li><?php echo $html->link('Annuler', '/seances/index')?></li>
+</ul>
+-->
