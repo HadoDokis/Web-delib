@@ -15,7 +15,7 @@
 	</td>
 	<td>
         <?php echo $form->labelTag($present['User']['id'].'/mandataire', 'Mandataire');?>
- 	    <?php echo $html->selectTag($present['User']['id'].'/mandataire', $mandataires, null,array("id"=>"liste_".$present['User']['id']),null,true);?>
+ 	    <?php echo $html->selectTag($present['User']['id'].'/mandataire', $mandataires, null,array('disabled'=>'disabled',"id"=>"liste_".$present['User']['id']),null,true);?>
     </td>
 </tr>
 <?php endforeach; ?>
