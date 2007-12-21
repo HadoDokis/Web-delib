@@ -37,7 +37,8 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-//	define ('BASE_URL', env('SCRIPT_NAME'));
+    define ('VERSION', '0.9 beta');
+
 /**
  * Set debug level here:
  * - 0: production
@@ -71,7 +72,7 @@
     define ('BASE_DN',   'dc=domaine,dc=com');
     define ('MANAGER',   'cn=manager,dc=domaine,dc=com');
     define ('LDAP_PASS', '');
- 	
+
 	// Mapping Champ LDAP
     define ('MAIL', 'mail');
 	define ('COMMON_NAME', 'cn');
@@ -84,7 +85,7 @@
  * You can either set it controller wide, or in each controller method.
  * use var $cacheAction = true; or in the controller method $this->cacheAction = true;
  */
-	define('CACHE_CHECK', false);
+	define('CACHE_CHECK', true);
 /**
  * Error constant. Used for differentiating error logging and debugging.
  * Currently PHP supports LOG_DEBUG
@@ -124,7 +125,7 @@
  * Set level of Cake security.
  *
  */
-	define('CAKE_SECURITY', 'high');
+	define('CAKE_SECURITY', 'medium');
 /**
  * Set Cake Session time out.
  * If CAKE_SECURITY define is set
