@@ -4,18 +4,17 @@
 		<th>Position</th>
 		<?php echo ('<th>'.$html->link('Theme', "/deliberations/sortby/$seance_id/theme_id",null,'Etes-vous sur de vouloir trier par theme ?'). "</th>"); ?>
 		<th>Service emetteur</th>
-		<th>Rapporteur</th>
+		<?php echo ('<th>'.$html->link('Rapporteur', "/deliberations/sortby/$seance_id/rapporteur_id", null,'Etes-vous sur de vouloir trier par rapporteur ?'). "</th>"); ?>
 		<?php echo ('<th>'.$html->link('Libelle', "/deliberations/sortby/$seance_id/objet",null,'Etes-vous sur de vouloir trier par libelle ?'). "</th>"); ?>
 		<?php echo ('<th>'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre",null,'Etes-vous sur de vouloir trier par titre ?'). "</th>"); ?>
-		<?php echo ('<th>'.$html->link('Num Delib', "/deliberations/sortby/$seance_id/num_delib",null,'Etes-vous sur de vouloir trier par num_delib ?'). "</th>"); ?>
 		<th>&nbsp;&nbsp;</th>
 		<th>&nbsp;&nbsp;</th>
 	</tr>
-	
-	<?php foreach($projets as $projet): 
+
+	<?php foreach($projets as $projet):
 	$id_delib=$projet['Deliberation']['id'];
 	$urlPage =  FULL_BASE_URL . $this->webroot;?>
-	
+
     	<tr>
     	    <td><?php echo $projet['Deliberation']['position']; ?></td>
 		    <td><?php echo $projet['Theme']['libelle']; ?></td>
@@ -23,15 +22,14 @@
 		    <td><?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$projet['rapp_id'],array('id'=>"$urlPage",'onChange'=>"changeRapporteur(this,$id_delib)"),null,false);?></td>
 		    <td><?php echo $projet['Deliberation']['objet']; ?></td>
 		    <td><?php echo $projet['Deliberation']['titre']; ?></td>
-		    <td><?php echo $projet['Deliberation']['num_delib']; ?></td>
 		    <?php
 		        if($projet['Deliberation']['position']!= 1)
-		            echo ('<td>'.$html->link('', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1', array('class'=>'link_monter', 'title'=>'Monter')).'</td>');
+		            echo ('<td>'.$html->link('', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1/'.$seance_id, array('class'=>'link_monter', 'title'=>'Monter')).'</td>');
 		        else
 		           echo("<td>&nbsp;</td>");
 
 				if($projet['Deliberation']['position']!= $lastPosition)
-		            echo ('<td>'.$html->link('', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/0', array('class'=>'link_descendre', 'title'=>'Descendre')).'</td>');
+		            echo ('<td>'.$html->link('', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/0/'.$seance_id, array('class'=>'link_descendre', 'title'=>'Descendre')).'</td>');
 		        else
 		           echo("<td>&nbsp;</td>");
 		    ?>
