@@ -1357,15 +1357,14 @@ class DeliberationsController extends AppController {
             echo "Le fichier FILENAME n'est pas accessible en �criture.";
  		}
 
-        function positionner($id=null, $sens)
+        function positionner($id=null, $sens, $seance_id)
         {
         	$positionCourante = $this->getCurrentPosition($id);
-			$seance_id  = $this->getCurrentSeance($id);
 	   		$lastPosition = $this->getLastPosition($seance_id);
         	if ($sens != 0)
-            	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante-1";
-       		else            // on r�cup�re l'objet pr�c�dent"
-   		    	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante+1";
+            	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante-1 AND etat=2";
+       		else
+   		    	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante+1 AND etat=2";
 
    		    $obj = $this->Deliberation->findAll($conditions);
 			//position du suivant ou du precedent
@@ -1520,7 +1519,7 @@ class DeliberationsController extends AppController {
     	else
     		return null;
      }
-    
+
 	function textprojetvue ($id = null) {
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
 		$this->set('deliberation', $this->Deliberation->read(null, $id));
