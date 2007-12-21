@@ -1,0 +1,23 @@
+<div class="pvcomplet">
+<h2>View Pvcomplet</h2>
+
+<dl>
+	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $pvcomplet['Pvcomplet']['id']?></dd>
+	<dt>Seance Id</dt>
+	<dd>&nbsp;<?php echo $pvcomplet['Pvcomplet']['seance_id']?></dd>
+	<dt>Chemin</dt>
+	<dd>&nbsp;<?php echo $pvcomplet['Pvcomplet']['chemin']?></dd>
+	<dt>Created</dt>
+	<dd>&nbsp;<?php echo $pvcomplet['Pvcomplet']['created']?></dd>
+	<dt>Modified</dt>
+	<dd>&nbsp;<?php echo $pvcomplet['Pvcomplet']['modified']?></dd>
+</dl>
+<ul class="actions">
+	<li><?php echo $html->link('Edit Pvcomplet',   '/pvcomplets/edit/' . $pvcomplet['Pvcomplet']['id']) ?> </li>
+	<li><?php echo $html->link('Delete Pvcomplet', '/pvcomplets/delete/' . $pvcomplet['Pvcomplet']['id'], null, 'Are you sure you want to delete: id ' . $pvcomplet['Pvcomplet']['id'] . '?') ?> </li>
+	<li><?php echo $html->link('List Pvcomplets',   '/pvcomplets/index') ?> </li>
+	<li><?php echo $html->link('New Pvcomplet',	'/pvcomplets/add') ?> </li>
+</ul>
+
+</div>

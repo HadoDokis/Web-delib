@@ -1,0 +1,23 @@
+<?php echo $javascript->link('calendrier.js'); ?>
+<h2>Nouvelle s&eacute;ance</h2>
+<?php echo $html->formTag('/seances/add/', null,array('name'=>'Session')); ?>
+<div class="required"> 
+    <label>Date : </label>
+    <input name="date" size="9" />&nbsp;
+	<a href="javascript:show_calendar('Session.date','f');">	<?php echo $html->image("calendar.png", "border='0'"); ?></a> &agrave; 
+	<?php echo $html->hourOptionTag('Seance/date',null,true,null); ?>h<?php echo $html->minuteOptionTag('Seance/date',null,null,false); ?>min
+</div>	
+<br />
+<div class="required"> 
+	<?php echo $form->labelTag('Seance/type_id', 'Type de s&eacute;ance');?>
+ 	<?php echo $html->selectTag('Seance/type_id', $typeseances, $html->tagValue('Seance/type_id'), array(), array(), true);?>
+	<?php echo $html->tagErrorMsg('Seance/type_id', 'Entrer le type de seance associ&eacute;.');?>
+</div>
+<br/>
+<div class="submit">
+	<?php echo $form->labelTag('Seance/id', '&nbsp;');?>
+	<?php echo $html->submit('Ajouter', array('class'=>'bt_add', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/seances/index', array('class'=>'link_annuler', 'title'=>'Annuler'))?>
+</div>
+</form>
+

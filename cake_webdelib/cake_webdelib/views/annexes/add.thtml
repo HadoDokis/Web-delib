@@ -1,0 +1,30 @@
+<h2>New Annex</h2>
+<form action="<?php echo $html->url('/annexes/add'); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Annex/delib_id', 'Delib Id');?>
+ 	<?php echo $html->input('Annex/delib_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Annex/delib_id', 'Please enter the Delib Id.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag( 'Annex/chemin', 'Chemin' );?>
+ 	<?php echo $html->textarea('Annex/chemin', array('cols' => '60', 'rows' => '10'));?>
+	<?php echo $html->tagErrorMsg('Annex/chemin', 'Please enter the Chemin.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag('Annex/titre', 'Titre');?>
+ 	<?php echo $html->input('Annex/titre', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Annex/titre', 'Please enter the Titre.');?>
+</div>
+<div class="required"> 
+	<?php echo $form->labelTag('Annex/reference_id', 'Reference Id');?>
+ 	<?php echo $html->input('Annex/reference_id', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Annex/reference_id', 'Please enter the Reference Id.');?>
+</div>
+
+<br/><br/><br/><br/>
+
+<div class="submit">
+	<?php echo $html->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/annexes/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+</form>
