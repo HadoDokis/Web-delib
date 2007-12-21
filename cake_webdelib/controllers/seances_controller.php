@@ -184,7 +184,7 @@ class SeancesController extends AppController {
 
 	function afficherProjets ($id=null, $return=null)
 	{
-		$condition= "seance_id=$id AND etat>=2";
+		$condition= "seance_id=$id AND etat=2";
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
 			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
@@ -197,7 +197,6 @@ class SeancesController extends AppController {
 			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
 			$this->set('projets', $deliberations);
 			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($id))));
-
 		}
 		else
 		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
@@ -211,8 +210,8 @@ class SeancesController extends AppController {
     		//redirection sur la page où on était avant de changer de service
        		$this->Redirect($this->Session->read('user.User.lasturl'));
        	}
-    }  
-    
+    }
+
 	function getDate($id=null)
     {
 		if (empty($id))
@@ -241,13 +240,6 @@ class SeancesController extends AppController {
 			$this->set('selectedUsers', $this->_selectedArray($this->data['SeancesUser'],'user_id'));
 			$this->render();
 		} else {
-
-/*			$seance_id = $this->data['Seance']['id'];
-			$seancesUser = $this->SeancesUser->find("seance_id=$seance_id");
-			foreach ($seancesUser as $seanceUser){
-				$this->EffacerListe($seanceUser['id']);
-			}*/
-
 
 			$this->EffacerListe($this->data['Seance']['id']);
 
@@ -279,7 +271,7 @@ class SeancesController extends AppController {
 	}
 
 	function generateConvocationList ($id=null) {
-		$data =  $this->SeancesUser->findAll("seance_id =$id");
+		$data =  $this->User->findAll("statut =1");
 		$type_infos = $this->getType($id);
 		$model=$this->Model->findAll();
 		$projets= $this->afficherProjets($id, 1);
@@ -363,7 +355,7 @@ class SeancesController extends AppController {
 	}
 
 	function generateOrdresDuJour ($id=null) {
-		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
+		$this->set('data', $this->User->findAll("statut =1"));
 		$type_infos = $this->getType($id);
 		$this->set('model',$this->Model->findAll());
 		$this->set('type_infos', $type_infos );
@@ -433,24 +425,27 @@ class SeancesController extends AppController {
 	}
 
 	function voter ($deliberation_id=null) {
+		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
+
 		if (empty($this->data)) {
 			$donnees = $this->Vote->findAll("delib_id = $deliberation_id");
-
+			$listnonvotant = array();
 			foreach($donnees as $donnee){
 				$this->data['Vote'][$donnee['Vote']['user_id']]=$donnee['Vote']['resultat'];
 			    $this->data['Vote']['commentaire'] = $donnee['Vote']['commentaire'];
 			}
 			$this->set('deliberation' , $this->Deliberation->findAll("Deliberation.id=$deliberation_id"));
 			$this->set('presents' , $this->requestAction('/deliberations/afficherListePresents/'.$deliberation_id));
-			$this->render();
+			$nonvotants = $this->SeancesUser->findAll("seance_id=$seance_id");
+			foreach ($nonvotants as $nonvotant)
+				array_push($listnonvotant, $nonvotant['User']['id']);
+			$this->set('listnonvotant', $listnonvotant);
 		}
 		else {
  			$pour = 0;
  			$abstenu = 0;
 			$this->effacerVote($deliberation_id);
 			$nb_votant = count($this->data['Vote']);
-			$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
-
 			foreach($this->data['Vote']as $user_id => $vote){
 				if(is_numeric($user_id)==true){
 					$this->Vote->create();
@@ -490,14 +485,14 @@ class SeancesController extends AppController {
 			}
 		}
 	}
-	
+
 
 	function getFileData($fileName, $fileSize) {
 		return fread(fopen($fileName, "r"), $fileSize);
 	}
-	
+
 	function saisirDebatGlobal ($id = null) {
-		
+
 		if (empty($this->data)) {
 			$this->data = $this->Seance->read(null, $id);
 			$this->set('annexes',$this->Annex->findAll('Annex.seance_id='.$id.' AND type="A"'));
