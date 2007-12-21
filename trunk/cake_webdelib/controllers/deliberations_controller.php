@@ -1043,7 +1043,10 @@ class DeliberationsController extends AppController {
 						$this->data['Deliberation']['seance_id']=$seances[0]['Seance']['id'];
 						$this->data['Deliberation']['reporte']=1;
 						$this->data['Deliberation']['id']=$id;
-						$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+						if (isset($this->data['Deliberation']['seance_id']))
+						    $position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+						else
+						    $position = 0;
 						$this->data['Deliberation']['position']=$position;
 						$this->Deliberation->save($this->data);
 					}
@@ -1270,7 +1273,7 @@ class DeliberationsController extends AppController {
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-      	                 'number'        => 'WEBDELIB_'.$delib_id,
+      	                 'number'        => 'WEB_DELIB_'.$delib_id,
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
@@ -1288,8 +1291,10 @@ class DeliberationsController extends AppController {
    	           	     curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
    	           	     curl_setopt($ch, CURLOPT_SSLKEY, KEY);
   	            	 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-  	               	 curl_exec($ch);
-        	         curl_close($ch);
+  	                 curl_setopt($ch, CURLOPT_VERBOSE, true);
+  	            	 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  	               	 $response = curl_exec($ch);
+  	               	 curl_close($ch);
 				}
 			}
 			$this->changeEtat($delib_id, '5');
@@ -1419,7 +1424,7 @@ class DeliberationsController extends AppController {
     	}
 
    		function getLastPosition( $seance_id) {
-			return count($this->Deliberation->findAll("seance_id =$seance_id AND etat=2"));
+			return count($this->Deliberation->findAll("seance_id =$seance_id AND etat=2"))+1;
     	}
 
 	function getNextId() {
