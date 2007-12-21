@@ -22,5 +22,5 @@
 </table>
 <br/>
 <div class="submit">
-<?php echo $html->link('Annuler', '/postseances/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+<?php echo $html->link('Retour', '/postseances/index', array('class'=>'link_annuler', 'name'=>'Retour'))?>
 </div>
