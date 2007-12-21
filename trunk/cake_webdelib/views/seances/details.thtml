@@ -8,7 +8,6 @@
 	<th>Rapporteur</th>
 	<th>Libelle</th>
 	<th>Titre</th>
-	<th>Num Delib</th>
 	<th>Actions</th>
 </tr>
 <?php foreach ($deliberations as $deliberation): ?>
@@ -18,7 +17,6 @@
 	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
 	<td class="actions" width="80">
 			<?php echo $html->link('','/seances/voter/' .$deliberation['Deliberation']['id'], array('class'=>'link_voter', 'title'=>'Voter les projets'))?>
 			<?php echo $html->link('','/seances/saisirDebat/' .$deliberation['Deliberation']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats')); ?>
