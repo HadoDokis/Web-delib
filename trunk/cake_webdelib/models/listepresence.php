@@ -4,7 +4,7 @@ class Listepresence extends AppModel {
 	var $name = 'Listepresence';
 	var	$cacheQueries = false;
 	var $belongsTo = array(
-			'Seance' =>
+			'Deliberation' =>
 				array('className' => 'Deliberation',
 						'foreignKey' => 'delib_id',
 						'conditions' => '',
