@@ -5,7 +5,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 	<?php echo $html->css('webdelib'); ?>
 	<?php echo $javascript->link('utils'); ?>
-	
+
 
 </head>
 <body>
@@ -13,17 +13,17 @@
 
 	<div id="header">
 	</div>
-	
+
 
 	<div id="user">
-	<?php echo $this->controller->infoUser; 
+	<?php echo $this->controller->infoUser;
 	$urlcourante=FULL_BASE_URL.$html->url();
-	
+
 	$users= $this->controller->Session->read('user');
-	
+
 	//changement de service à la volée : on enregistre la page courante pour la redirection sutie au changement de service
 	$this->controller->Session->write('user.User.lasturl',$urlcourante);
-	
+
 	if (empty($users['Service'])){
 	$user_id = $users['ServiceElu']['id'];
 	$list = $this->requestAction("services/doList/$user_id");
@@ -33,13 +33,13 @@
 		$service_id = $this->controller->Session->read('user.User.service');
 		echo $html->selectTag('Service/Service',$this->controller->agentServices, $service_id, array('id' => "$urlPage", 'onChange'=>'changeService(this)'),null,false);
 	}
-    
+
 	?>
 	<?php echo $this->controller->lienDeconnexion; ?>
-	
-	
+
+
 	</div>
- 
+
 
 	<div id="centre">
 		<?php echo $this->renderElement('navigation'); ?>
@@ -47,7 +47,7 @@
 		<?php echo $content_for_layout; ?>
 	</div>
 
-	<div id="pied">Web-delib &copy; 2007 ADULLACT</div>
+	<div id="pied">Web-delib v<?php echo VERSION; ?>&copy; 2007 ADULLACT</div>
 </div>
 </body>
 </html>
