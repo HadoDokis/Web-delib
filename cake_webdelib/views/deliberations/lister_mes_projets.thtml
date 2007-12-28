@@ -22,9 +22,9 @@
 	<tr>
 		<td rowspan=3 style="text-align:center"><?php echo $html->image('/icons/encours.png', array('title'=>'En cours de rédaction'));?></td>
 		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
-		<td>Service emetteur :<br/><?php echo $deliberation['Service']['libelle']; ?></td>
-		<td>Date de séance : <?php if ($deliberation['Deliberation']['reporte']==1)
-						echo "Reporté au ";
+		<td>Service &eacute;metteur :<br/><?php echo $deliberation['Service']['libelle']; ?></td>
+		<td>Date de s&eacute;ance : <?php if ($deliberation['Deliberation']['reporte']==1)
+						echo "Report&eacute; au ";
 					echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=3 class="actions">
 			<?php echo $html->link("",'/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
@@ -37,13 +37,14 @@
 		</td>
 	</tr>
 	<tr>
-		<td>N&deg; pr&eacute;fecture :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
-		<td class='corps' rowspan=1 >Thème : <?php echo $deliberation['Theme']['libelle']; ?></td>
+		<td>&nbsp;</td>
+		<td class='corps' rowspan=1 >Th&egrave;me : <?php echo $deliberation['Theme']['libelle']; ?></td>
 		<td class='corps' rowspan=2 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
 
 	</tr>
 	<tr>
-		<td>N&deg; d&eacute;lib&eacute;ration : <?php echo $deliberation['Deliberation']['num_delib']; ?></td>
+
+		<td>N&deg; pr&eacute;fecture :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
 		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td>
 	</tr>
 	<tr>
@@ -55,7 +56,9 @@
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter un projet', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un projet')); ?></li>
+	<li><?php
+		     if ($UserCanAdd)
+	             echo $html->link('Ajouter un projet', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un projet')); ?></li>
 </ul>
 <?php } ?>
 </div>
