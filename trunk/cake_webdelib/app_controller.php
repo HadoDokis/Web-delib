@@ -128,7 +128,8 @@ class AppController extends Controller {
 	        'Types de séance' => array('link' => '/typeseances'),
 	        'Collectivité' => array('link' => '/collectivites'),
 	        'Génération' => array('link' => '/models/index'),
-	        'Localisation' => array('link' => '/localisations/index')
+	        'Localisation' => array('link' => '/localisations/index'),
+	        'Compteurs' => array('link' => '/compteurs/index')
         );
 
 		// construction navigation principale
