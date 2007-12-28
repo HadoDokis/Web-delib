@@ -449,19 +449,21 @@ class SeancesController extends AppController {
 			foreach($this->data['Vote']as $user_id => $vote){
 				if(is_numeric($user_id)==true){
 					$this->Vote->create();
-
 					$this->data['Vote']['user_id']=$user_id;
 					$this->data['Vote']['delib_id']=$deliberation_id;
 					$this->data['Vote']['resultat']=$vote;
-					if ($vote == 1 )
+					if ($vote == 3)
 					     $pour ++;
-					if (($vote == 2)||($vote == 3))
+					if (($vote == 2)||($vote == 4))
 						$abstenu ++;
+
 				    $this->Vote->save($this->data['Vote']);
 				}
 			}
 
 			$this->data = $this->Deliberation->read(null, $deliberation_id);
+
+
 			if ($pour >= (($nb_votant -$abstenu) /2))
 			     $this->data['Deliberation']['etat']=3;
 			else
