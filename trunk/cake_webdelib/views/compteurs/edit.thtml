@@ -1,0 +1,71 @@
+<?php echo $javascript->link('compteurs.js'); ?>
+
+<h2>Modification d'un compteur param&eacute;trable</h2>
+
+<form
+	action="<?php echo $html->url('/compteurs/edit/'.$html->tagValue('Compteur/id')); ?>"
+	method="post"
+	id = "form_compteur"
+>
+
+<div class="required">
+	<?php echo $form->labelTag('Compteur/nom', 'Nom <acronym title="obligatoire">(*)</acronym>');?>
+ 	<?php echo $html->input('Compteur/nom', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Compteur/nom', 'Entrer un nom pour le compteur');?>
+</div>
+<br/>
+<div class="required">
+	<?php echo $form->labelTag('Compteur/commentaire', 'Commentaire');?>
+ 	<?php echo $html->input('Compteur/commentaire', array('size' => '100'));?>
+	<?php echo $html->tagErrorMsg('Compteur/commentaire', 'Entrer un commentaire pour le compteur');?>
+</div>
+<br/>
+<div class="required">
+	<?php echo $form->labelTag('Compteur/defcompteur', 'D&eacute;finition du compteur <acronym title="obligatoire">(*)</acronym>');?>
+ 	<?php echo $html->input('Compteur/defcompteur', array('size' => '40'));?>
+	<?php echo $html->tagErrorMsg('Compteur/defcompteur', 'Entrer la d&eacute;finition du compteur');?>
+
+<select onchange="InsertSelectedValueInToInput(this, 'form_compteur', 'CompteurDefcompteur');">
+    <option value="AIDEFORMAT">sélectionner les formats dans la liste</option>
+    <option value="#s#">num&eacute;ro de la s&eacute;quence</option>
+    <option value="#S#">num&eacute;ro de la s&eacute;quence sur 1 chiffre</option>
+    <option value="#SS#">num&eacute;ro de la s&eacute;quence sur 2 chiffres (compt&eacute;t&eacute; par un espace)</option>
+    <option value="#SSS#">num&eacute;ro de la s&eacute;quence sur 3 chiffres (compt&eacute;t&eacute; par des espaces)</option>
+    <option value="#SSSS#">num&eacute;ro de la s&eacute;quence sur 4 chiffres (compt&eacute;t&eacute; par des espaces)</option>
+    <option value="#00#">num&eacute;ro de la s&eacute;quence sur 2 chiffres (compt&eacute;t&eacute; par un z&eacute;ro)</option>
+    <option value="#000#">num&eacute;ro de la s&eacute;quence sur 3 chiffres (compt&eacute;t&eacute; par des z&eacute;ros)</option>
+    <option value="#0000#">num&eacute;ro de la s&eacute;quence sur 4 chiffres (compt&eacute;t&eacute; par des z&eacute;ros)</option>
+    <option value="#AAAA#">ann&eacute;e sur 4 chiffres</option>
+    <option value="#AA#">ann&eacute;e sur 2 chiffres</option>
+    <option value="#M#">num&eacute;ro du mois sans z&eacute;ro significatif</option>
+    <option value="#MM#">num&eacute;ro du mois avec z&eacute;ro significatif</option>
+    <option value="#J#">num&eacute;ro du jour sans z&eacute;ro significatif</option>
+    <option value="#JJ#">num&eacute;ro du jour avec z&eacute;ro significatif</option>
+</select>
+</div>
+
+
+<br/>
+<div class="required">
+	<?php echo $form->labelTag('Compteur/defrupture', 'D&eacute;finition de la rupture');?>
+ 	<?php echo $html->input('Compteur/defrupture', array('size' => '40'));?>
+
+<select onchange="InsertSelectedValueInToInput(this, 'form_compteur', 'CompteurDefrupture');">
+    <option value="AIDEFORMAT">sélectionner les formats dans la liste</option>
+    <option value="#AAAA#">ann&eacute;e sur 4 chiffres</option>
+    <option value="#AA#">ann&eacute;e sur 2 chiffres</option>
+    <option value="#M#">num&eacute;ro du mois</option>
+    <option value="#MM#">num&eacute;ro du mois avec z&eacute;ro significatif</option>
+    <option value="#J#">num&eacute;ro du jour</option>
+    <option value="#JJ#">num&eacute;ro du jour avec z&eacute;ro significatif</option>
+</select>
+</div>
+
+
+<br/><br/><br/><br/><br/>
+<div class="submit">
+	<?php echo $html->submit('Sauvegarder', array('class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
+	<?php echo $html->link('Annuler', '/compteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+
+</form>
