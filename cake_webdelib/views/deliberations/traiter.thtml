@@ -1,5 +1,5 @@
 <div id="vue_cadre">
-<? //debug($deliberation); ?> 
+<? //debug($deliberation); ?>
 <? $deliberation=$deliberation['0']; ?>
 <dl>
 	<h3>D&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['num_delib']?></h3>
@@ -8,7 +8,7 @@
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
 
 	<dt>Titre</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>	 
+	<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>
 <br/>
 <div class="imbrique">
 	<div class="gauche">
@@ -17,7 +17,7 @@
 	</div>
 	<div class="droite">
 		<dt>Service emetteur</dt>
-		<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Service']['id'])?></dd>  
+		<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Service']['id'])?></dd>
 	</div>
 </div>
 <div class="imbrique">
@@ -35,18 +35,18 @@
 	<dt>Circuit : <?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Circuit']['id'])?></dt>
 	<dd><?php foreach ($user_circuit as $user) { ?>
 	<div class="graphique">
-		<?php 
+		<?php
 		if ($deliberation['positionDelib'] == $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)){
 			echo $html->image('/icons/edit.png');
 		} elseif ($deliberation['positionDelib'] < $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)) {
 			echo $html->image('/icons/editcreate.png');
 		} else {
 			echo $html->image('/icons/editcreate.png');
-		} ?>			
+		} ?>
 		<br/><?php echo $user['User']['prenom']. ' ' .$user['User']['nom']; ?>
-		<br/><?php echo $user['Service']['libelle'];?>	
+		<br/><?php echo $user['Service']['libelle'];?>
 	</div>
-	
+
 	<? } ?>
 </dd>
 </div>
@@ -77,38 +77,41 @@
 	</div>
 </div>
 
-<?php 
+<?php
 	if ($tab_anterieure!=null)
 	{
 		echo"<dt>Versions Anterieures</dt>";
 		foreach ($tab_anterieure as $anterieure)
 		{
-			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";		
+			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";
 		}
 	}
 ?>
 
-<?php 
-	if(!empty($commentaire))
+<?php
+	if(!empty($commentaires))
 	{
-		echo"<dt>Commentaire</dt><dd>&nbsp;";
-		foreach ($commentaire as $commentaire){
-		echo $commentaire['Commentaire']['texte'].' '.$html->link('Supprimer','/commentaires/delete/'.$commentaire['Commentaire']['id'].'/'.$deliberation['Deliberation']['id']).'<br/>';}
+		echo"<dt>Commentaires</dt><br />";
+		foreach ($commentaires as $commentaire){
+			echo '<u>'. $commentaire['Commentaire']['prenomAgent'].' '.$commentaire['Commentaire']['nomAgent'] .'</u>';
+		    echo '<dd>'.$commentaire['Commentaire']['texte'].' '.$html->link('Supprimer','/commentaires/delete/'.$commentaire['Commentaire']['id'].'/'.$deliberation['Deliberation']['id']);
+			echo '</dd>';
+		}
 	}
 ?>
-		</dd>
-		
+
+
 <?php if(!empty($deliberation['Annexe'])) { ?>
-	<dt>Annexe(s) Globale(s) </dt>	
+	<dt>Annexe(s) Globale(s) </dt>
 	<dd>
  <?php foreach ($deliberation['Annexe'] as $annexe) {
 			if ($annexe['type'] == "G"){
 				echo '<br>Titre : '.$annexe['titre'];
 				echo '<br>Nom fichier : '.$annexe['filename'];
 				echo '<br>Taille : '.$annexe['size'];
-				echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>'; 
+				echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
 			}
- 		}	  ?></dd> 
+ 		}	  ?></dd>
  <? } ?>
 
 
@@ -120,7 +123,7 @@
 	<li><?php echo $html->link('','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'))?></li>
 	<li><?php echo $html->link('', '/deliberations/edit/' . $deliberation['Deliberation']['id'],array('class'=>'link_modifier','title'=>'Modifier'));?></li>
 <br/><br/><li><?php //echo $html->link('Annuler',   '/deliberations/listerProjetsATraiter') ?> </li>
-	
+
 	<li><?php echo $html->link('Ajouter commentaire', '/commentaires/add/'. $deliberation['Deliberation']['id']) ?></li>
 	<br/>
 	<li><?php echo $html->link('Valider',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/1') ?> </li>
