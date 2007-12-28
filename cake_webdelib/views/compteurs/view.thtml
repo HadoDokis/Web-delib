@@ -1,0 +1,59 @@
+<div id="vue_cadre">
+<h3>Fiche Compteur param&eacute;trable</h3>
+
+<dl>
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Nom</dt>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['nom']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Commentaire</dt>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['commentaire']?></dd>
+	</div>
+</div>
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>D&eacute;finition du compteur</dt>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['defcompteur']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Num&eacute;ro de la s&eacute;quence</dt>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['numsequence']?></dd>
+	</div>
+</div>
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>D&eacute;finition de la rupture</dt>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['defrupture']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Dernière valeur de la rupture</dt>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['valrupture']?></dd>
+	</div>
+</div>
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Date de cr&eacute;ation</dt>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['created']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Date de modification</dt>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['modified']?></dd>
+	</div>
+</div>
+
+</dl>
+
+
+<br />
+<ul id="actions_fiche">
+	<li><?php echo $html->link('&shy;', '/compteurs/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retourner à la liste'), false, false) ?> </li>
+	<li><?php echo $html->link('&shy;', '/compteurs/edit/' . $compteur['Compteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false) ?> </li>
+</ul>
+
+</div>
