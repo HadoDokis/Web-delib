@@ -465,7 +465,11 @@ class SeancesController extends AppController {
 
 
 			if ($pour >= (($nb_votant -$abstenu) /2))
+			{
 			     $this->data['Deliberation']['etat']=3;
+			     $this->data['Deliberation']['num_delib'] = $this->requestAction("/compteurs/suivant/1");
+			}
+
 			else
 				 $this->data['Deliberation']['etat']=4;
 			$this->Deliberation->save($this->data);
