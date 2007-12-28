@@ -142,8 +142,6 @@ class DeliberationsController extends AppController {
 			if ($cpt>=0)
 				$conditions=$conditions." )";
 
-			//$conditions=$conditions." )";
-			//debug($conditions);
 			$deliberations = $this->Deliberation->findAll($conditions);
 
 			for ($i=0; $i<count($deliberations); $i++){
@@ -152,8 +150,6 @@ class DeliberationsController extends AppController {
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
 			}
-			//debug($deliberations);
-			//debug($data_circuit);
 
 			foreach ($deliberations as $deliberation)
 			{
@@ -288,9 +284,7 @@ class DeliberationsController extends AppController {
 		$listeAnterieure=array();
 		$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
 		$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
-	//	debug($tab_anterieure);
 		$this->set('tab_anterieure',$tab_anterieure);
-		//$this->set('deliberation', $this->Deliberation->read(null, $id));
 
 		$deliberation= $this->Deliberation->read(null, $id);
 		if(!empty($deliberation['Seance']['date']))
@@ -329,8 +323,6 @@ class DeliberationsController extends AppController {
 		$this->params['data']['Deliberation']['id'] = $id;
 
 		if ($this->Deliberation->save($this->params['data'])){
-			//$this->redirect($this->Session->read('user.User.lasturl'));
-
 			$this->Session->setFlash('La localisation a &eacute;t&eacute; sauvegard&eacute;e');
 			$this->redirect('/deliberations/changeLocation/'.$id);
 		}
@@ -349,7 +341,6 @@ class DeliberationsController extends AppController {
 	}
 	function changeLocation($id=null,$pzone1=0,$pzone2=0,$pzone3=0)
 	{
-		//$this->Session->write('user.User.lasturl','/deliberations/changeLocation/'.$id);
 		$this->layout = 'fckeditor';
 		if(empty($this->data))
 		{
@@ -374,19 +365,16 @@ class DeliberationsController extends AppController {
 				$this->set('selectedLocalisation1',$pzone1);
 			}else{
 				$this->set('zone1',0);
-				//$this->set('selectedLocalisation1',0);
 				$this->set('selectedzone1',0);
 			}
 
 			if($pzone2!=0){
 				$conditions = "Localisation.parent_id= $pzone2";
 				$zone2 = $this->Localisation->generateList($conditions);
-				//debug($zones);
 				$this->set('zone2',$zone2);
 				$this->set('selectedLocalisation2',$pzone2);
 			}else{
 				$this->set('zone2',0);
-				//$this->set('selectedLocalisation2',0);
 				$this->set('selectedzone2',0);
 				$this->data['Deliberation']['localisation2_id']=0;
 			}
@@ -394,12 +382,10 @@ class DeliberationsController extends AppController {
 			if($pzone3!=0){
 				$conditions = "Localisation.parent_id= $pzone3";
 				$zone3 = $this->Localisation->generateList($conditions);
-				//debug($zones);
 				$this->set('zone3',$zone3);
 				$this->set('selectedLocalisation3',$pzone3);
 			}else{
 				$this->set('zone3',0);
-				//$this->set('selectedLocalisation3',0);
 				$this->set('selectedzone3',0);
 				$this->data['Deliberation']['localisation3_id']=0;
 			}
@@ -409,7 +395,6 @@ class DeliberationsController extends AppController {
 	function add($id=null) {
 
 		if ($id==null){
-
 			$this->Deliberation->save($this->data);
 			$this->redirect('/deliberations/add/'.$this->Deliberation->getLastInsertId());
 		}
@@ -439,7 +424,6 @@ class DeliberationsController extends AppController {
 					$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
 			}
 			$this->set('date_seances',$tab);
-
 			$this->render();
 
 		} else {
@@ -448,7 +432,6 @@ class DeliberationsController extends AppController {
 			unset($this->params['form']['date_limite']);
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
-			//$this->data['Deliberation']['reporte']=0;
 			if($this->data['Deliberation']['seance_id'] != ""){
 				$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 				$this->data['Deliberation']['position']=$position;
@@ -459,7 +442,6 @@ class DeliberationsController extends AppController {
 			{
 				$deliberation = array_shift($this->params['form']);
 				$annexes = $this->params['form'];
-
 				$uploaded = true;
 				$size = count($this->params['form']);
 				$counter = 1;
@@ -1003,9 +985,14 @@ class DeliberationsController extends AppController {
 				$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
 				$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
 				$this->set('tab_anterieure',$tab_anterieure);
-				$this->set('commentaire', $this->Commentaire->findAll("delib_id =  $id"));
-
-
+				$commentaires = $this->Commentaire->findAll("delib_id =  $id");
+				for($i=0; $i< count($commentaires) ; $i++) {
+					$nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
+					$prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
+					$commentaires[$i]['Commentaire']['nomAgent'] = $nomAgent;
+					$commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
+				}
+				$this->set('commentaires', $commentaires);
 				$deliberation= $this->Deliberation->read(null, $id);
 				$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
 				$id_service = $deliberation['Service']['id'];
@@ -1359,7 +1346,7 @@ class DeliberationsController extends AppController {
         	fclose($handle);
         }
         else
-            echo "Le fichier FILENAME n'est pas accessible en �criture.";
+            echo "Le fichier ".FILE_CLASS." n'est pas accessible en �criture.";
  		}
 
         function positionner($id=null, $sens, $seance_id)
