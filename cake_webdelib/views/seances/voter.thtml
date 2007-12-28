@@ -28,7 +28,10 @@
 	 		 		?>
 	 		 	</td>
 	 		   	<td>
-	 		  	    <?php echo $html->radio('Vote/'.$present['User']['id'], array('3'=>'oui', '2'=>'non', '4'=>'abstention', '5'=>'Pas de participation'), null, array('onclick'=>"javascript:vote();")); ?>
+	 		  	    <?php
+
+	 		  	    		if  ($present['Listepresence']['present'] == '1' OR $present['Listepresence']['mandataire']!='0')
+	 		  	    	  	  echo $html->radio('Vote/'.$present['User']['id'], array('3'=>'oui', '2'=>'non', '4'=>'abstention', '5'=>'Pas de participation'), null, array('onclick'=>"javascript:vote();")); ?>
 	 		   	</td>
     		 </tr>
  		     <?php endforeach; ?>
