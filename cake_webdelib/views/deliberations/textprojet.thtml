@@ -1,4 +1,8 @@
-<?php echo $javascript->link('fckeditor'); ?>
+<?php
+    echo $javascript->link('fckeditor');
+	echo $javascript->link('utils');
+?>
+
 <?php echo $html->formTag('/deliberations/textprojet/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
 <h2>Texte Projet : </h2>
 <div class="optional">
@@ -27,7 +31,6 @@
     	<?php echo  $html->fileTag("Deliberation/texte_doc"); ?><?php echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));?><br/><br/>
 	</div>
 <div class="submit">
-	
-	<?php echo $html->submit('Fermer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"window.close()"));?>
+	<?php echo $html->submit('Fermer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"javascript:FermerFenetre()"));?>
 </div>
 </form>
