@@ -1,4 +1,6 @@
-<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $javascript->link('fckeditor');
+	  echo $javascript->link('utils');
+?>
 <?php echo $html->formTag('/deliberations/textsynthese/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
 <h2>Note de Synthèse :</h2>
 <div class="optional">
