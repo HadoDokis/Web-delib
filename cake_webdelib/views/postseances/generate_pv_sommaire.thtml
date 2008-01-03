@@ -1,6 +1,6 @@
-<?
+<?php
     vendor('fpdf/html2fpdf');
-	$pdf = new HTML2FPDF();
+        $pdf = new HTML2FPDF();
 
         $pdf->AddPage();
         $pdf->WriteHTML('<img src="files/image/logo.jpg">');
@@ -10,31 +10,36 @@
 
         $pdf->WriteHTML('<p><b>Secrétaire : <br></b>');
         $pdf->WriteHTML('<i>nom du secrétaire</i></p>');
-     	$pdf->WriteHTML('<br><br>');
+        $pdf->WriteHTML('<br><br>');
 
 
         foreach($projets as $projet) {
 
-  		    $pdf->WriteHTML('<hr width="100%" size="2" /><div align="center">'.$projet['Theme']['libelle'].'</div><hr width="100%" size="2" />');
- 		    $pdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
-			$sep = $projet['Deliberation']['num_delib']=='' ? '' : ' - ';
-            $pdf->WriteHTML('<b>'.$projet['Deliberation']['num_delib'].$sep.$projet['Deliberation']['titre'].'</b><br><br>');
+                    $pdf->WriteHTML('<hr width="100%" size="2" /><div align="center">'.$projet['Theme']['libelle'].'</div><hr width="100%" size="2" />');
+                    $pdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
+            $pdf->WriteHTML('<b>'.$projet['Deliberation']['titre'].'</b><br><br>');
 
             $pdf->WriteHTML('<p align="left"><b>Etaient présents : <br></b>');
-       		foreach ($projet['present'] as $present)
-          		$pdf->WriteHTML($this->controller->getNom($present['Listepresence']['user_id']).' . ');
-          	$pdf->WriteHTML('</p>');
-       		$pdf->WriteHTML('<p align="left"><b>Ont donné pouvoir : <br></b>');
-        	foreach ($projet['absent'] as $absent)
-        		$pdf->WriteHTML($this->controller->getNom($absent['Listepresence']['user_id']).' à '.$this->controller->getNom($absent['Listepresence']['mandataire']).' . ');
-        	$pdf->WriteHTML('</p>');
-
-       		$pdf->WriteHTML('<div align="right">'.$projet['vote'].'</div>');
-        	$pdf->WriteHTML('<br><br>');
+                foreach ($projet['present'] as $present)
+                        $pdf->WriteHTML($this->controller->getNom($present['Listepresence']['user_id']).' . ');
+                $pdf->WriteHTML('</p>');
+                $pdf->WriteHTML('<p align="left"><b>Ont donné pouvoir : <br></b>');
+                foreach ($projet['absent'] as $absent){
+                    if ($absent['Listepresence']['mandataire']!=0)
+                        $pdf->WriteHTML($this->controller->getNom($absent['Listepresence']['user_id']).' à '.$this->controller->getNom($absent['Listepresence']['mandataire']).' . ');
+                }
+                $pdf->WriteHTML('</p>');
+                $pdf->WriteHTML('<p align="left"><b>Etaient absents : <br></b>');
+                foreach ($projet['absent'] as $absent){
+                    if ($absent['Listepresence']['mandataire']==0)
+                        $pdf->WriteHTML($this->controller->getNom($absent['Listepresence']['user_id']).'.');
+                }
+                $pdf->WriteHTML('</p>');
+                $pdf->WriteHTML('<div align="right">'.$projet['vote'].'</div>');
+                $pdf->WriteHTML('<br><br>');
          }
 
-       $pdf->WriteHTML('<p><i>La séance est levée à 22h</i></p>');
-
-	ob_end_clean();
-	$pdf->Output('pv_sommaire.pdf','D');
-
+        $pdf->WriteHTML('<p><i>La séance est levée à 22h</i></p>');
+        ob_end_clean();
+        $pdf->Output('pv_sommaire.pdf','D');
+?>

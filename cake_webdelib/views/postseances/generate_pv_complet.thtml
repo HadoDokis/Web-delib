@@ -1,4 +1,4 @@
-<?
+<?php
     vendor('fpdf/html2fpdf');
 	$pdf = new HTML2FPDF();
 
@@ -29,6 +29,12 @@
         	foreach ($projet['absent'] as $absent)
         		$pdf->WriteHTML($this->controller->getNom($absent['Listepresence']['user_id']).' à '.$this->controller->getNom($absent['Listepresence']['mandataire']).' . ');
         	$pdf->WriteHTML('</p>');
+        	$pdf->WriteHTML('<p align="left"><b>Etaient absents : <br></b>');
+            foreach ($projet['absent'] as $absent){
+                    if ($absent['Listepresence']['mandataire']==0)
+                        $pdf->WriteHTML($this->controller->getNom($absent['Listepresence']['user_id']).'.');
+            }
+            $pdf->WriteHTML('</p>');
 
        		$pdf->WriteHTML($projet['Deliberation']['debat'].'<br>');
        		$pdf->WriteHTML('<p align="right"><b>'.$projet['vote'].'</b></p>');
@@ -40,3 +46,5 @@
 
 	ob_end_clean();
 	$pdf->Output('pv_complet.pdf','D');
+
+?>
