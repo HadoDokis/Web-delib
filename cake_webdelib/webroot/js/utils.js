@@ -14,7 +14,6 @@ function OuvrirFenetre(url,nom,detail) {
 function FermerFenetre(){
 var choix = confirm("Voulez-vous fermer la fenetre ?");
 if (choix)  window.close();
-//else alert("Vous avez cliqué sur ANNULER ou vous avez fermé");
 }
 
 function returnChoice(text,arg) {
