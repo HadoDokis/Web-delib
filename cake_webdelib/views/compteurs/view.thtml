@@ -17,22 +17,22 @@
 <div class="imbrique">
 	<div class="gauche">
 		<dt>D&eacute;finition du compteur</dt>
-		<dd>&nbsp;<?php echo $compteur['Compteur']['defcompteur']?></dd>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['def_compteur']?></dd>
 	</div>
 	<div class="droite">
 		<dt>Num&eacute;ro de la s&eacute;quence</dt>
-		<dd>&nbsp;<?php echo $compteur['Compteur']['numsequence']?></dd>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['num_sequence']?></dd>
 	</div>
 </div>
 
 <div class="imbrique">
 	<div class="gauche">
-		<dt>D&eacute;finition de la rupture</dt>
-		<dd>&nbsp;<?php echo $compteur['Compteur']['defrupture']?></dd>
+		<dt>Crit&egrave;re de r&eacute;initialisation de la s&eacute;quence</dt>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['def_reinit']?></dd>
 	</div>
 	<div class="droite">
-		<dt>Dernière valeur de la rupture</dt>
-		<dd>&nbsp;<?php echo $compteur['Compteur']['valrupture']?></dd>
+		<dt>Dernière valeur calcul&eacute;e du crit&egrave;re de r&eacute;initialisation</dt>
+		<dd>&nbsp;<?php echo $compteur['Compteur']['val_reinit']?></dd>
 	</div>
 </div>
 
