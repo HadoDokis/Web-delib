@@ -26,14 +26,16 @@ class SeancesController extends AppController {
 		$this->set('seance', $this->Seance->read(null, $id));
 	}
 
-	function add() {
+	function add($timestamp=null) {
 		if (empty($this->data)) {
+			if (isset($timestamp))
+			    $this->set('date', date('d/m/Y',$timestamp));
+
 			$this->set('typeseances', $this->Seance->Typeseance->generateList());
 			$this->set('selectedTypeseances', null);
 			$this->render();
 		} else {
 			$this->cleanUpFields('Seance');
-
 			$this->data['Seance']['date']=  $this->Utils->FrDateToUkDate($this->params['form']['date']);
 			$this->data['Seance']['date'] = $this->data['Seance']['date'].' '.$this->data['Seance']['date_hour'].':'.$this->data['Seance']['date_min'];
 
@@ -151,7 +153,7 @@ class SeancesController extends AppController {
 		           $calendrier .=  "<td>&nbsp;</td>\n" ;
 		        }
 		        else {
-
+					$timestamp = $Day->thisDay('timestamp');
 		            if ($today == $Day->thisDay('timestamp')){
 		                 $balise="today";
 		            }
@@ -162,7 +164,7 @@ class SeancesController extends AppController {
 		            else {
 		            	$balise="normal";
 		            }
-		            $calendrier .=  "<td><p class=\"$balise\">".$Day->thisDay()."</p></td>\n" ;
+		            $calendrier .=  "<td><a href =\"add/$timestamp\"><p class=\"$balise\">".$Day->thisDay()."</p></a></td>\n" ;
 		        }
 		        if ( $Day->isLast() ) {
 		           $calendrier .=  "</tr>\n" ;
