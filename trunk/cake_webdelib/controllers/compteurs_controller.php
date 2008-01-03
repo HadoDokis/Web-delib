@@ -5,7 +5,7 @@ class CompteursController extends AppController
 
 /**
 * Retourne la valeur suivante du compteur,
-* enregistre la nouvelle valeur de la séquence et de la rupture en base
+* enregistre la nouvelle valeur de la séquence et du critère de réinitialisation en base
 *
 * @param int $id Numéro de l'id du compteur
 * @retourne string Valeur suivante du compteur
@@ -29,26 +29,26 @@ class CompteursController extends AppController
 						);
 
 		/* lecture du compteur en base */
-		$cptEnBase = $this->Compteur->read('defrupture, valrupture, numsequence, defcompteur', $id);
+		$cptEnBase = $this->Compteur->read('def_reinit, val_reinit, num_sequence, def_compteur', $id);
 
-		/* génération de la rupture courante */
-		$valruptureCourante = str_replace(array_keys($remplaceD), array_values($remplaceD), $cptEnBase['Compteur']['defrupture']);
+		/* génération du critère de réinitialisation courant */
+		$val_reinitCourant = str_replace(array_keys($remplaceD), array_values($remplaceD), $cptEnBase['Compteur']['def_reinit']);
 
 		/* traitement de la séquence */
-		if ($valruptureCourante != $cptEnBase['Compteur']['valrupture'])
+		if ($val_reinitCourant != $cptEnBase['Compteur']['val_reinit'])
 		{
-			$cptEnBase['Compteur']['numsequence'] = 1;
-			$cptEnBase['Compteur']['valrupture'] = $valruptureCourante;
+			$cptEnBase['Compteur']['num_sequence'] = 1;
+			$cptEnBase['Compteur']['val_reinit'] = $val_reinitCourant;
 		} else
 		{
-			$cptEnBase['Compteur']['numsequence']++;
+			$cptEnBase['Compteur']['num_sequence']++;
 		}
 
 		/* initialisation du tableau de recherche et de remplacement pour la séquence */
-		$strnseqS = sprintf("%10d", $cptEnBase['Compteur']['numsequence']);
-		$strnseqZ = sprintf("%010d", $cptEnBase['Compteur']['numsequence']);
+		$strnseqS = sprintf("%10d", $cptEnBase['Compteur']['num_sequence']);
+		$strnseqZ = sprintf("%010d", $cptEnBase['Compteur']['num_sequence']);
 
-		$remplaceS = array("#s#" => $cptEnBase['Compteur']['numsequence']
+		$remplaceS = array("#s#" => $cptEnBase['Compteur']['num_sequence']
 						, "#S#" => substr($strnseqS, -1, 1)
 						, "#SS#" => substr($strnseqS, -2, 2)
 						, "#SSS#" => substr($strnseqS, -3, 3)
@@ -72,11 +72,11 @@ class CompteursController extends AppController
 						);
 
 		/* génération de la valeur du compteur */
-		$valCompteurD = str_replace(array_keys($remplaceD), array_values($remplaceD), $cptEnBase['Compteur']['defcompteur']);
+		$valCompteurD = str_replace(array_keys($remplaceD), array_values($remplaceD), $cptEnBase['Compteur']['def_compteur']);
 		$valCompteur = str_replace(array_keys($remplaceS), array_values($remplaceS), $valCompteurD);
 
 		/* Sauvegarde du compteur en base */
-		$this->Compteur->save($cptEnBase, true, array('numsequence', 'valrupture'));
+		$this->Compteur->save($cptEnBase, true, array('num_sequence', 'val_reinit'));
 
 		/* retourne la valeur du compteur générée */
 		return $valCompteur;
