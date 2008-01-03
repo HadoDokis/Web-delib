@@ -20,13 +20,12 @@
   * connect ACM to your existing Users/Groups
   */
 
-
-	define('ACMAUTOLOAD', false);
+	define('ACMAUTOLOAD', FALSE);
 
  /* This defines the tables that hold
   * your existing Users/Groups.
   */
-	define('ACMROLES','roles');
+	define('ACMROLES','profils');
 	define('ACMUSERS','users');
 
  /* This defines the fields that hold
