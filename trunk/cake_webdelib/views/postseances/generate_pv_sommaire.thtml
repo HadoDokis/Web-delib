@@ -15,24 +15,25 @@
 
         foreach($projets as $projet) {
 
-                    $pdf->WriteHTML('<hr width="100%" size="2" /><div align="center">'.$projet['Theme']['libelle'].'</div><hr width="100%" size="2" />');
-                    $pdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
-            $pdf->WriteHTML('<b>'.$projet['Deliberation']['titre'].'</b><br><br>');
+            $pdf->WriteHTML('<hr width="100%" size="2" /><div align="center">'.$projet['Theme']['libelle'].'</div><hr width="100%" size="2" />');
+            $pdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
+			$sep = $projet['Deliberation']['num_delib']=='' ? '' : ' - ';
+            $pdf->WriteHTML('<b>'.$projet['Deliberation']['num_delib'].$sep.$projet['Deliberation']['titre'].'</b><br><br>');
 
             $pdf->WriteHTML('<p align="left"><b>Etaient présents : <br></b>');
-                foreach ($projet['present'] as $present)
-                        $pdf->WriteHTML($this->controller->getNom($present['Listepresence']['user_id']).' . ');
+            foreach ($projet['present'] as $present)
+                $pdf->WriteHTML($this->controller->getNom($present['Listepresence']['user_id']).' . ');
                 $pdf->WriteHTML('</p>');
                 $pdf->WriteHTML('<p align="left"><b>Ont donné pouvoir : <br></b>');
                 foreach ($projet['absent'] as $absent){
-                    if ($absent['Listepresence']['mandataire']!=0)
-                        $pdf->WriteHTML($this->controller->getNom($absent['Listepresence']['user_id']).' à '.$this->controller->getNom($absent['Listepresence']['mandataire']).' . ');
+                if ($absent['Listepresence']['mandataire']!=0)
+                    $pdf->WriteHTML($this->controller->getNom($absent['Listepresence']['user_id']).' à '.$this->controller->getNom($absent['Listepresence']['mandataire']).' . ');
                 }
                 $pdf->WriteHTML('</p>');
                 $pdf->WriteHTML('<p align="left"><b>Etaient absents : <br></b>');
                 foreach ($projet['absent'] as $absent){
-                    if ($absent['Listepresence']['mandataire']==0)
-                        $pdf->WriteHTML($this->controller->getNom($absent['Listepresence']['user_id']).'.');
+                if ($absent['Listepresence']['mandataire']==0)
+                    $pdf->WriteHTML($this->controller->getNom($absent['Listepresence']['user_id']).'.');
                 }
                 $pdf->WriteHTML('</p>');
                 $pdf->WriteHTML('<div align="right">'.$projet['vote'].'</div>');
