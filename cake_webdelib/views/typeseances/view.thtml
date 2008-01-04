@@ -27,8 +27,8 @@
 
 <br />
 <ul id="actions_fiche">
-	<li><?php echo $html->link('', '/typeseances/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retourner à la liste')) ?> </li>
-	<li><?php echo $html->link('', '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier')) ?> </li>
+	<li><?php echo $html->link('&shy;', '/typeseances/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retourner à la liste'), false, false) ?> </li>
+	<li><?php echo $html->link('&shy;', '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false) ?> </li>
 </ul>
 
 </div>

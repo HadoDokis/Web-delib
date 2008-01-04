@@ -85,8 +85,8 @@
 
 <br />
 <ul id="actions_fiche">
-	<li><?php echo $html->link('',   '/users/index', array('class'=>'link_annuler_sans_border', 'title'=>'Annuler')) ?> </li>
-	<li><?php echo $html->link('',   '/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier')) ?> </li>
+	<li><?php echo $html->link('&shy;',   '/users/index', array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) ?> </li>
+	<li><?php echo $html->link('&shy;',   '/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false) ?> </li>
 </ul>
 
 </div>

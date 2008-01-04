@@ -14,13 +14,13 @@
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
-		 	<?php echo $html->link('','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'))?>
-			<?php echo $html->link('','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_addUsers', 'title'=>'Sélectionner la liste des non-votants'))?>
-			<?php echo $html->link('','/seances/generateConvocationList/' . $seance['Seance']['id'], array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'))?>
-			<?php echo $html->link('','/seances/generateOrdresDuJour/' . $seance['Seance']['id'], array('class'=>'link_ordre_jour', 'title'=>'Générer les ordres du jours détaillés'))?>
+		 	<?php echo $html->link('&shy;','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'), false, false)?>
+			<?php echo $html->link('&shy;','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_addUsers', 'title'=>'Sélectionner la liste des non-votants'), false, false)?>
+			<?php echo $html->link('&shy;','/seances/generateConvocationList/' . $seance['Seance']['id'], array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'), false, false)?>
+			<?php echo $html->link('&shy;','/seances/generateOrdresDuJour/' . $seance['Seance']['id'], array('class'=>'link_ordre_jour', 'title'=>'Générer les ordres du jours détaillés'), false, false)?>
 		</td>
-		<td class="actions"><?php echo $html->link('','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voir', 'title'=>'Liste des projets')); ?>
-			<?php echo $html->link('','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats généraux de la seance')); ?>
+		<td class="actions"><?php echo $html->link('&shy;','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voir', 'title'=>'Liste des projets'), false, false); ?>
+			<?php echo $html->link('&shy;','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats généraux de la seance'), false, false); ?>
 		</td>
 	</tr>
 	<?php endforeach; ?>

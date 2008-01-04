@@ -11,9 +11,9 @@
 <tr>
 	<td><?php echo $model['Model']['texte']; ?></td>
 	<td class="actions">
-		<?php echo $html->link('','/models/view/' . $model['Model']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
-		<?php echo $html->link('','/models/edit/' . $model['Model']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
-		<?php //echo $html->link('','/models/delete/' . $model['Model']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $model['Model']['id'] .'" ?')?>
+		<?php echo $html->link('&shy;','/models/view/' . $model['Model']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
+		<?php echo $html->link('&shy;','/models/edit/' . $model['Model']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
+		<?php //echo $html->link('&shy;','/models/delete/' . $model['Model']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $model['Model']['id'] .'" ?', false)?>
 	</td>
 </tr>
 <?php endforeach; ?>

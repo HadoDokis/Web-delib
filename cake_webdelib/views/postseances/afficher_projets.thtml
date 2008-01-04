@@ -15,7 +15,7 @@
 		    <td><?php echo $projet['Deliberation']['objet']; ?></td>
 		    <td><?php echo $projet['Deliberation']['titre']; ?></td>
 		    <td><?php echo $projet['Deliberation']['num_delib']; ?></td>
-		    <td><?php echo $html->link('','/postseances/generateDeliberation/' . $projet['Deliberation']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'))?>
+		    <td><?php echo $html->link('&shy;','/postseances/generateDeliberation/' . $projet['Deliberation']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false)?>
 
 		</tr>
 		<?php endforeach; ?>

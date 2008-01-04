@@ -14,8 +14,8 @@
 		<td><?php echo $seance['Seance']['id']; ?></td>
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
-		<td class="actions"><?php echo $html->link('','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voir', 'title'=>'Liste des projets')); ?>
-			<?php echo $html->link('','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats généraux de la seance')); ?></td>
+		<td class="actions"><?php echo $html->link('&shy;','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voir', 'title'=>'Liste des projets'), false, false); ?>
+			<?php echo $html->link('&shy;','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats généraux de la seance'), false, false); ?></td>
 	</tr>
 	<?php endforeach; ?>
 
