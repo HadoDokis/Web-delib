@@ -31,11 +31,11 @@ foreach ($users as $user):
 	<td><?php $statut = ($user['User']['statut'] ==1) ? "Elu" : "Agent"; echo $statut;?></td>
 
 	<td class="actions">
-		<?php echo $html->link('','/users/view/' . $user['User']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
-		<?php echo $html->link('','/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
+		<?php echo $html->link('&shy;','/users/view/' . $user['User']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
+		<?php echo $html->link('&shy;','/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
 		<?php
 		    if ( $user['User']['id'] != 1)
-		        echo $html->link('','/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?')?>
+		        echo $html->link('&shy;','/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?', false)?>
 	</td>
 </tr>
 <? endforeach; ?>

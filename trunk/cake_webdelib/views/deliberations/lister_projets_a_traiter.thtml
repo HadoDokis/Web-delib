@@ -25,8 +25,8 @@
 						echo "Reporté au ";
 					echo $deliberation['Seance']['date']; ?></td>
 		<td rowspan=4 class="actions" >
-			<?php echo $html->link('',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>$deliberation['act']))?>
-			<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'))?>
+			<?php echo $html->link('&shy;',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>$deliberation['act']), false, false)?>
+			<?php echo $html->link('&shy;','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false)?>
 		</td>
 	</tr>
 	<tr>

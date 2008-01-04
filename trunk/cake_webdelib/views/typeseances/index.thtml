@@ -12,9 +12,9 @@
 	<td><?php echo $typeseance['Typeseance']['libelle']; ?></td>
 	<td><?php echo $typeseance['Typeseance']['retard']; ?></td>
 	<td class="actions">
-		<?php echo $html->link('','/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
-		<?php echo $html->link('','/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
-		<?php echo $html->link('','/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?')?>
+		<?php echo $html->link('&shy;','/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
+		<?php echo $html->link('&shy;','/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
+		<?php echo $html->link('&shy;','/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?', false)?>
 	</td>
 </tr>
 <?php endforeach; ?>

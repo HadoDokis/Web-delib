@@ -24,14 +24,14 @@
 	<td><?php echo $deliberation['Deliberation']['created']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['modified']; ?></td>
 	<td class="actions">
-		<?php echo $html->link('','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'))?>
-		<?php echo $html->link('','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'))?>
-		<?php echo $html->link('','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'))?>
-		<?php echo $html->link('','/deliberations/textprojet/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'))?>
-		<?php echo $html->link('','/deliberations/textsynthese/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'))?>
-		<?php echo $html->link('','/deliberations/deliberation/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'))?>
-		<?php echo $html->link('','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?')?>
-		<?php echo $html->link('','/deliberations/traiter/' . $deliberation['Deliberation']['id'], array('class'=>'link_traiter', 'title'=>'Traiter'))?>
+		<?php echo $html->link('&shy;','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
+		<?php echo $html->link('&shy;','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
+		<?php echo $html->link('&shy;','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false)?>
+		<?php echo $html->link('&shy;','/deliberations/textprojet/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?>
+		<?php echo $html->link('&shy;','/deliberations/textsynthese/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?>
+		<?php echo $html->link('&shy;','/deliberations/deliberation/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?>
+		<?php echo $html->link('&shy;','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?', false)?>
+		<?php echo $html->link('&shy;','/deliberations/traiter/' . $deliberation['Deliberation']['id'], array('class'=>'link_traiter', 'title'=>'Traiter'), false, false)?>
 	</td>
 </tr>
 <?php endforeach; ?>

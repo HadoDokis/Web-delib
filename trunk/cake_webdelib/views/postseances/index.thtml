@@ -15,13 +15,13 @@
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
 		<td class="actions" width="80px"> <!-- largeur en fonction des icones -->
-		 	<?php echo $html->link('','/postseances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir les délibérations'))?>
-			<?php echo $html->link('','/postseances/generatePvSommaire/' . $seance['Seance']['id'], array('class'=>'link_pvsommaire', 'title'=>'Générer PV sommaire'))?>
-			<?php echo $html->link('','/postseances/generatePvComplet/' . $seance['Seance']['id'], array('class'=>'link_pvcomplet', 'title'=>'Générer PV complet'))?>
-			
+		 	<?php echo $html->link('&shy;','/postseances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir les délibérations'), false, false)?>
+			<?php echo $html->link('&shy;','/postseances/generatePvSommaire/' . $seance['Seance']['id'], array('class'=>'link_pvsommaire', 'title'=>'Générer PV sommaire'), false, false)?>
+			<?php echo $html->link('&shy;','/postseances/generatePvComplet/' . $seance['Seance']['id'], array('class'=>'link_pvcomplet', 'title'=>'Générer PV complet'), false, false)?>
+
 		</td>
 	</tr>
-	
+
 	<?php endforeach; ?>
 
 </table>

@@ -24,12 +24,11 @@
 		    <td><?php echo $projet['Deliberation']['titre']; ?></td>
 		    <?php
 		        if($projet['Deliberation']['position']!= 1)
-		            echo ('<td>'.$html->link('', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1/'.$seance_id, array('class'=>'link_monter', 'title'=>'Monter')).'</td>');
+		            echo ('<td>'.$html->link('&shy;', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1/'.$seance_id, array('class'=>'link_monter', 'title'=>'Monter'), false, false).'</td>');
 		        else
 		           echo("<td>&nbsp;</td>");
-
 				if($projet['Deliberation']['position']!= $lastPosition)
-		            echo ('<td>'.$html->link('', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/0/'.$seance_id, array('class'=>'link_descendre', 'title'=>'Descendre')).'</td>');
+		            echo ('<td>'.$html->link('&shy;', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/0/'.$seance_id, array('class'=>'link_descendre', 'title'=>'Descendre'), false, false).'</td>');
 		        else
 		           echo("<td>&nbsp;</td>");
 		    ?>
