@@ -16,7 +16,7 @@ class ThemesController extends AppController {
 
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalide id pour le Theme.');
+			$this->Session->setFlash('Invalide id pour le Th&egrave;me.');
 			$this->redirect('/themes/index');
 		}
 		$this->set('theme', $this->Theme->read(null, $id));
@@ -30,7 +30,7 @@ class ThemesController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Theme->save($this->data)) {
-				$this->Session->setFlash('Le thème a &eacute;t&eacute;sauvegard&eacute;');
+				$this->Session->setFlash('Le th&egrave;me a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/themes/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
@@ -41,7 +41,7 @@ class ThemesController extends AppController {
 	function edit($id = null) {
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalide id pour le Theme');
+				$this->Session->setFlash('Invalide id pour le Th&egrave;me');
 				$this->redirect('/Themes/index');
 			}
 			$this->data = $this->Theme->read(null, $id);
@@ -51,7 +51,7 @@ class ThemesController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Theme->save($this->data)) {
-				$this->Session->setFlash('Le theme a &eacute;t&eacute; modifi&eacute;');
+				$this->Session->setFlash('Le th&egrave;me a &eacute;t&eacute; modifi&eacute;');
 				$this->redirect('/themes/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
@@ -61,12 +61,12 @@ class ThemesController extends AppController {
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalide id pour le Theme');
+			$this->Session->setFlash('Invalide id pour le Th&egrave;me');
 			$this->redirect('/themes/index');
 		}
 
 		if ($this->Theme->del($id)) {
-			$this->Session->setFlash('Le Theme a &eacute;t&eacute; supprim&eacute;');
+			$this->Session->setFlash('Le Th&egrave;me a &eacute;t&eacute; supprim&eacute;');
 			$this->redirect('/themes/index');
 		}
 	}
