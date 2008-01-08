@@ -10,7 +10,7 @@
 		<th>Rapporteur</th>
 		<th>Libelle</th>
 		<th>Titre</th>
-		<th>Num Delib</th>
+		<th>Identifiant Projet</th>
 		<th>Service emetteur</th>
 		<th>Attribuer une date</th>
 	</tr>
@@ -22,7 +22,7 @@
 		<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
 		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 		<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
-		<td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
+		<td><?php echo $deliberation['Deliberation']['id']; ?></td>
 		<td><?php echo $deliberation['Service']['libelle']; ?></td>
 		<td>
 		<form action="<?php echo $html->url('/deliberations/listerProjetsNonAttribues/'); ?>" method="post">

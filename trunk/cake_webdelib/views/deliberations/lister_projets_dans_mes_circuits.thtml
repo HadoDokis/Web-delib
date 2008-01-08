@@ -30,13 +30,13 @@
 		</td>
 	</tr>
 	<tr>
-		<td>N&deg; pr&eacute;fecture :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
+		<td>Identifiant projet : <?php echo $deliberation['Deliberation']['id']; ?></td>
 		<td class='corps' rowspan=2 >Thème : <?php echo $deliberation['Theme']['libelle']; ?></td>
 		<td class='corps' rowspan=3 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
 
 	</tr>
 	<tr>
-		<td>N&deg; d&eacute;lib&eacute;ration : <?php echo $deliberation['Deliberation']['num_delib']; ?></td>
+		<td>N&deg; classification :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
 	</tr>
 	<tr>
 		<td colspan="2" >A traiter avant le : <?php echo $deliberation['Deliberation']['date_limite']; ?></td>

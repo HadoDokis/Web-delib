@@ -22,8 +22,11 @@
 		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 		<td>Service emetteur :<br/><?php echo $deliberation['Service']['libelle']; ?></td>
 		<td>Date de séance : <?php if ($deliberation['Deliberation']['reporte']==1)
-						echo "Reporté au ";
-					echo $deliberation['Seance']['date']; ?></td>
+					                   echo "Reporté au ";
+
+							if (($deliberation['Deliberation']['seance_id']!=0))
+								echo $deliberation['Seance']['date']; ?>
+		</td>
 		<td rowspan=3 class="actions">
 			<?php echo $html->link('&shy;','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
 			<?php echo $html->link('&shy;','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
@@ -33,13 +36,13 @@
 		</td>
 	</tr>
 	<tr>
-		<td>N&deg; pr&eacute;fecture :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
+		<td>Identifiant projet : <?php echo $deliberation['Deliberation']['id']; ?></td>
 		<td class='corps' rowspan=1 >Thème : <?php echo $deliberation['Theme']['libelle']; ?></td>
 		<td class='corps' rowspan=2 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
 
 	</tr>
 	<tr>
-		<td>N&deg; d&eacute;lib&eacute;ration : <?php echo $deliberation['Deliberation']['num_delib']; ?></td>
+		<td>N&deg; classification :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
 		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td>
 	</tr>
 	<tr>
