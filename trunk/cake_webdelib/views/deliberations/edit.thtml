@@ -90,7 +90,10 @@
 </table>
 <div class="centre">
 		<?php echo $html->hidden('Deliberation/id')?>
-		<?php echo $html->submit('Sauvegarder', array('class'=>'bt_add', 'name'=>'saisir'));?>
+		<?php
+			$onclick = "javascript:return checkForm(form, ".$html->tagValue('Deliberation/id').")";
+			echo $html->submit('Sauvegarder', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>$onclick));
+		?>
 </div>
 </div>
 
