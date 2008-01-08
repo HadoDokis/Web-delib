@@ -123,9 +123,8 @@ class UsersController extends AppController {
 				$this->Session->setFlash('L\'utilisateur a &eacute;t&eacute; modifi&eacute;');
 				$this->redirect('/users/index');
 			} else {
-				//debug($data);
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				//$this->set('statut',array('0'=>'agent', '1'=>'elu'));
+
 				$this->set('services', $this->User->Service->generateList());
 				if (empty($this->data['Service']['Service'])) { $this->data['Service']['Service'] = null; }
 				$this->set('selectedServices', $this->data['Service']['Service']);
