@@ -172,7 +172,7 @@ CREATE TABLE `deliberations` (
   `service_id` int(11) NOT NULL default '0',
   `redacteur_id` int(11) NOT NULL default '0',
   `rapporteur_id` int(11) NOT NULL default '0',
-  `seance_id` int(11) default NULL,
+  `seance_id` int(11) NOT NULL default '0',
   `position` int(4) NOT NULL,
   `anterieure_id` int(11) NOT NULL,
   `objet` varchar(1000) NOT NULL,
