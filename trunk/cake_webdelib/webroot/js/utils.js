@@ -175,3 +175,38 @@ function del_field(node)
 	}
 }
 
+function checkForm (Form, id){
+	var valide = true;
+	var erreur = 0;
+
+	if(Form.DeliberationObjet.value == "") {
+		erreur = erreur + 1;
+		valide = false;
+	}
+	if (Form.DeliberationTitre.value == "") {
+	  	 erreur = erreur + 2;
+	    valide = false;
+	}
+
+	if (erreur == 0) {
+		return true;
+    }
+	if (erreur == 1) {
+		message = "Le libelle est obligatoire";
+    }
+
+	if (erreur == 2) {
+		message = "Le titre est obligatoire";
+    }
+
+	if (erreur == 3) {
+		message = "Le libelle et le titre sont obligatoires";
+	}
+
+	if (valide == false) {
+	    alert (message);
+	    return valide;
+	}
+
+}
+
