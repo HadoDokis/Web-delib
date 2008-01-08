@@ -22,8 +22,7 @@ class DeliberationsController extends AppController {
 		$this->set('deliberations', $this->Deliberation->findAll(null,null, 'Seance.date'));
 	}
 
-	function listerMesProjets()
-	{
+	function listerMesProjets() {
 		//liste les projets dont je suis le redacteur et qui sont en cours de rédaction
 		//il faut verifier la position du projet de delib dans la table traitement s'il existe car
 		//si la position est � 0 cela notifie un refus
@@ -56,9 +55,10 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-	function listerProjetsNonAttribues(){
+	function listerProjetsNonAttribues() {
 		if (empty ($this->data))
 		{
+			$this->checkEmptyDelib();
 			$user=$this->Session->read('user');
 			$user_id=$user['User']['id'];
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
@@ -107,8 +107,7 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-	function listerProjetsDansMesCircuits()
-	{
+	function listerProjetsDansMesCircuits() {
 		/**
 		 * TODO BUG SI UNE PERSONNE QUI APPARAIT À PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN
 		 * MEME CIRCUIT
@@ -190,8 +189,7 @@ class DeliberationsController extends AppController {
 		$this->set('deliberations', $delib);
 	}
 
-	function listerProjetsATraiter()
-	{
+	function listerProjetsATraiter() {
 		/**
 		 * TODO BUG SI UNE PERSONNE QUI APPARAIT À PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN
 		 * MEME CIRCUIT
@@ -265,7 +263,7 @@ class DeliberationsController extends AppController {
 		$this->render('listerProjetsATraiter');
 	}
 
-	function getPosition($circuit_id, $delib_id){
+	function getPosition($circuit_id, $delib_id) {
 		$odjCourant=array();
 		$conditions = "Traitement.circuit_id = $circuit_id AND Traitement.delib_id=$delib_id ";
         $objCourant = $this->Traitement->findAll($conditions, null, "position DESC");
@@ -303,15 +301,11 @@ class DeliberationsController extends AppController {
 		$this->set('user_circuit', $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC'));
 	}
 
-
-
 	function getFileData($fileName, $fileSize) {
 		return fread(fopen($fileName, "r"), $fileSize);
 	}
 
-
-	function saveLocation($id=null,$idLoc=0,$zone)
-	{
+	function saveLocation($id=null,$idLoc=0,$zone) 	{
 		$this->layout = 'fckeditor';
 		if($zone==1)
 			$this->params['data']['Deliberation']['localisation1_id'] = $idLoc;
@@ -328,8 +322,7 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-	function getParent($id_loc)
-	{
+	function getParent($id_loc) {
 		if ($id_loc!=0)
 		{$condition = "id = $id_loc";
 		$parent = $this->Localisation->findAll($condition);
@@ -339,8 +332,7 @@ class DeliberationsController extends AppController {
 			return $parent;
 		}
 	}
-	function changeLocation($id=null,$pzone1=0,$pzone2=0,$pzone3=0)
-	{
+	function changeLocation($id=null,$pzone1=0,$pzone2=0,$pzone3=0) {
 		$this->layout = 'fckeditor';
 		if(empty($this->data))
 		{
@@ -398,7 +390,6 @@ class DeliberationsController extends AppController {
 			$this->Deliberation->save($this->data);
 			$this->redirect('/deliberations/add/'.$this->Deliberation->getLastInsertId());
 		}
-
 		$user=$this->Session->read('user');
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
@@ -496,6 +487,13 @@ class DeliberationsController extends AppController {
 				}
 			}
 		}
+	}
+
+	function checkEmptyDelib () {
+		$conditions = "Deliberation.objet= '' AND Deliberation.titre ='' ";
+		$delibs_vides = $this->Deliberation->findAll($conditions);
+		foreach ($delibs_vides as $delib)
+			$this->Deliberation->del($delib['Deliberation']['id']);
 	}
 
 	function textsynthese ($id = null) {
