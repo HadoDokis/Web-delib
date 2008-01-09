@@ -40,7 +40,7 @@
 class AppController extends Controller {
 
 	var $components=array( 'Utils', 'Acl');
-	var $helpers = array('Html', 'Form' , 'Javascript','Navigation');
+	var $helpers = array('Html', 'Ajax', 'Form' , 'Javascript','Navigation');
 
 	var $beforeFilter = array('checkSession');
 
@@ -51,32 +51,58 @@ class AppController extends Controller {
 	var $menu = null;
 
 	function checkSession() {
-		//include ('droits.php');
 		$this->infoUser = "<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ";
    		$this->agentServices = $this->Session->read('user.Service');
  	    $this->lienDeconnexion = "[<span class=\"deconnexion\"><a href=\"".$this->base."/users/logout\"> Deconnexion</a></span>]";
-
+	
 		if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login')
 		{
-			//s'il n'y a pas d'utilisateur connectÃ© en session
+			//s'il n'y a pas d'utilisateur connecte en session
 			if (!$this->Session->Check('user')) {
 				//le forcer a se connecter
-				$this->redirect('/users/login');
+				$this->redirect("/users/login");
 				exit();
 			}
 			else {
 				$user_id = $this->Session->read('user.User.id');
        			$aco = $this->name.':'.$this->action;
-        		if ($this->Acl->check($user_id, $aco)){
+        		if ($this->Acl->check($user_id, $aco)) {
+        			if ($aco != 'Services:doList') {
+        		   	    $this->log($_SERVER["REMOTE_ADDR"]." : ($user_id)->".substr($this->here, 0, strlen($this->here)));
+        			}
           		 	$this->menu = $this->buildNavigation($user_id);
           		    return;
         		}
                 else {
-                   // $this->redirect('/users/logout');
+                    //$this->redirect('/users/logout');
                     die("accès refusé pour $user_id (".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom').") à $aco");
                 }
             }
 		}
+	}
+
+	function externLogin($login = null, $password = null) {
+		$user = $this->User->findByLogin($login);
+
+		//si le mdp n'est pas vide et correspond a celui de la bdd
+		if (!empty($password) && ($user['User']['password'] == md5($password)))
+		{
+			//on stocke l'utilisateur en session
+			$this->Session->write('user',$user);
+			//services auquels appartient l'agent
+			if(empty ($user['Service'])){
+				$this->Session->write('user.User.service', $user['ServiceElu']['id']);
+			}else{
+    			$services = $this->Utils->simplifyArray($user['Service']);
+    			foreach ($services as $key=>$service){
+    				$service = $this->requestAction("services/doList/$key");
+    				$services[$key]=$service;
+    			}
+    			$this->Session->write('user.Service',$services);
+    			$this->Session->write('user.User.service', key($services));
+				}
+				$this->redirect('/');
+ 		}
 	}
 
 	function buildNavigation ($user_id){
@@ -92,14 +118,14 @@ class AppController extends Controller {
 		if ($this->Acl->check($user_id, "Deliberations:add")){
 			$sub_menu1['Nouveau...'] = array('link' => '/deliberations/add');
 			$sub_menu1['Mes projets'] = array('link' => '/deliberations/listerMesProjets');
-			$sub_menu1['Non attribués'] = array('link' => '/deliberations/listerProjetsNonAttribues');
+			$sub_menu1['A attribuer'] = array('link' => '/deliberations/listerProjetsNonAttribues');
 		}
 
         if ($this->Acl->check($user_id, "Deliberations:listerProjetsATraiter"))
 			$sub_menu1['A traiter'] = array('link' => '/deliberations/listerProjetsATraiter');
 
         if ($this->Acl->check($user_id, "Deliberations:listerProjetsServicesAssemblees"))
-			$sub_menu1['Projets fin circuit'] = array('link' => '/deliberations/listerProjetsServicesAssemblees');
+			$sub_menu1['A faire voter'] = array('link' => '/deliberations/listerProjetsServicesAssemblees');
 
 
         // construction navigation secondaire seances
@@ -122,7 +148,7 @@ class AppController extends Controller {
         $sub_menu4 = array (
         	'Utilisateurs' => array('link' => '/users/index'),
         	'Circuits' => array('link' => '/circuits/index'),
-        	'Profils' => array('link' => '/profils/index'),
+        	//'Profils' => array('link' => '/profils/index'),
 	        'Service' => array('link' => '/services/index'),
 	        'Thèmes' => array('link' => '/themes/index'),
 	        'Types de séance' => array('link' => '/typeseances'),
@@ -145,7 +171,6 @@ class AppController extends Controller {
 			$menu['Post-seance']= array('link' => '/pages/postseance', 'submenu' => array());
 			$menu['Post-seance']['submenu'] = $sub_menu3;
 		}
-
 		if ($this->Acl->check($user_id, "Pages:administration")){
 			$menu['Administration']= array('link' => '/pages/administration', 'submenu' => array());
 			$menu['Administration']['submenu'] = $sub_menu4;
