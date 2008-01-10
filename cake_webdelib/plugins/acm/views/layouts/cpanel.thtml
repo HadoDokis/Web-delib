@@ -62,7 +62,7 @@
 	      <?php echo $cakeDebug;?>
 	</div>
 	<div id="content">
-	      <?php if (isset($this->controller->Session)) $this->controller->Session->flash(); ?>
+	      <?php if (isset($this->controller->Session)) $session->flash(); ?>
 	      <?php echo $content_for_layout?>
 
 	      <p>&nbsp;</p>
