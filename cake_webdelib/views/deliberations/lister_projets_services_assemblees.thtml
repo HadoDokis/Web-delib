@@ -27,12 +27,9 @@
 							if (($deliberation['Deliberation']['seance_id']!=0))
 								echo $deliberation['Seance']['date']; ?>
 		</td>
-		<td rowspan=3 class="actions">
+		<td rowspan=1 class="actions">
 			<?php echo $html->link('&shy;','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
-			<?php echo $html->link('&shy;','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
-			<?php echo $html->link('&shy;','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?', false)?>
 			<?php echo $html->link('&shy;','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false)?>
-
 		</td>
 	</tr>
 	<tr>
