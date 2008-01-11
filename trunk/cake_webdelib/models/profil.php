@@ -7,7 +7,7 @@ class Profil extends AppModel {
 	(
 		'libelle' => VALID_NOT_EMPTY,
 	);
-	
+
 	var $belongsTo = array
 	(
     	'ProfilParent' => array
@@ -24,6 +24,12 @@ class Profil extends AppModel {
  			'className' => 'Profil',
  			'foreignKey' => 'parent_id'
         ),
+ 		'User' => array
+ 		(
+ 			'className' => 'User',
+ 			'foreignKey' => 'profil_id'
+        )
     );
+
 }
 ?>
