@@ -22,7 +22,15 @@
 	<?php echo $html->selectTag('Deliberation/localisation3_id',$zone3, null, array('id'=>"$urlPage",'onChange'=>"saveLocation($id,this,3)"), null,true); ?>
 </div>
 <br />
+<br />
+<br />
 
+<div class="optional">
+    <?php echo $form->labelTag('Deliberation/montant','Montant : '); ?>
+	<?php echo $html->input('Deliberation/montant', array('size' => '15')); ?>
+</div>
+<br />
+<br />
 <div class="actions">
 	<?php echo $html->submit('Fermer', array('class'=>'link_add', 'name'=>'saisir','onclick'=>"window.close()"));?>
 </div>
