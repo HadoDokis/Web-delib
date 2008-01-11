@@ -1,0 +1,1 @@
+ALTER TABLE `deliberations` ADD `montant` INT( 10 ) NOT NULL AFTER `localisation3_id` ;
