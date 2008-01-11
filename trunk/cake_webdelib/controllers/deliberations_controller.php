@@ -9,7 +9,6 @@ class DeliberationsController extends AppController {
  * 	Deliberation.etat = 4 : Voté contre
  * 	Deliberation.etat = 5 : envoyé
  */
-
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote','SeancesUser', 'Listepresence');
@@ -863,29 +862,16 @@ class DeliberationsController extends AppController {
 	}
 
    function convert($id=null) {
-            $this->layout = 'pdf';
-            $this->set('id',  $id);
-            $this->set('text_projet', $this->getField($id, 'texte_projet'));
-            $this->set('text_synthese',$this->getField($id, 'texte_synthese'));
-            $this->set('deliberation',$this->getField($id, 'deliberation'));
-            $this->set('seance_id',    htmlspecialchars($this->getField($id, 'seance_id')));
-            $this->set('rapporteur_id',htmlspecialchars($this->getField($id, 'rapporteur_id')));
-            $this->set('objet',        htmlspecialchars($this->getField($id, 'objet')));
-  			$this->set('num_delib',    htmlspecialchars($this->getField($id, 'num_delib')));
-  			$this->set('titre',       htmlspecialchars( $this->getField($id, 'titre')));
-  			$this->set('theme',        htmlspecialchars($this->requestAction("themes/getLibelle/".$this->getField($id, 'theme_id'))));
-        	$this->set('service',     htmlspecialchars( $this->requestAction("services/getLibelle/".$this->getField($id, 'service_id'))));
-        	$this->set('nom_rapporteur',   htmlspecialchars( $this->requestAction("users/getNom/".$this->getField($id, 'rapporteur_id'))));
-          	$this->set('prenom_rapporteur', htmlspecialchars($this->requestAction("users/getPrenom/".$this->getField($id, 'rapporteur_id'))));
-            $seance_id = $this->requestAction("seances/getDate/".$this->getField($id, 'seance_id'));
-          	if (!empty($seance_id))
-            	$date_seance = $this->Date->frenchDateConvocation(strtotime($seance_id));
-            else
-            	$date_seance ='';
-            $this->set('date_seance',  $date_seance   );
-            $this->render();
+        vendor('fpdf/html2fpdf');
+	    $pdf = new HTML2FPDF();
+	    $pdf->AddPage();
+	    $pdf->WriteHTML($this->requestAction("/models/generateProjet/$id"));
+	    $pos =  strrpos ( getcwd(), 'webroot');
+	    $path = substr(getcwd(), 0, $pos);
+	    $projet_path = $path."webroot/files/delibs/PROJET_$id.pdf";
+	    $pdf->Output($projet_path ,'F');
+	    $pdf->Output("projet_$id.pdf",'D');
     }
-
 
     function addIntoCircuit($id = null){
     	$this->data = $this->Deliberation->read(null,$id);
@@ -977,7 +963,6 @@ class DeliberationsController extends AppController {
 
 			$this->set('circuits', $circuits);
 		} else {
-		//debug($this->data);
 			$this->data['Deliberation']['id']=$id;
 
 			if ($this->Deliberation->save($this->data)) {
@@ -985,7 +970,6 @@ class DeliberationsController extends AppController {
 				$this->redirect('/deliberations/recapitulatif/'.$id);
 			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-
 		}
 	}
 
@@ -1262,13 +1246,12 @@ class DeliberationsController extends AppController {
 					$rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
 					$class5=substr($rest , 0, strpos ($classification , '.' ));
 
-					$err = $this->requestAction("/postseances/generateDeliberation/$delib_id");
-					$file = $path."webroot/files/delibs/DELIB_$delib_id.pdf";
+
+					$file = $path."webroot/files/delibs/DELIBERATION_$delib_id.pdf";
 					$delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
 
         	        if (!file_exists($file)){
-  					   	debug($file);
-  					   	die("Fichier à générer");
+  					   $err = $this->requestAction("/postseances/generateDeliberation/$delib_id");
         	        }
 
         	        // Checker le code classification
@@ -1706,7 +1689,10 @@ class DeliberationsController extends AppController {
 	function getDelibIdByPosition ($seance_id, $position){
 		$condition = "seance_id = $seance_id AND position = $position";
 		$delib = $this->Deliberation->findAll($condition);
-		return $delib['0']['Deliberation']['id'];
+		if (isset($delib['0']['Deliberation']['id']))
+			return $delib['0']['Deliberation']['id'];
+		else
+			return 0;
 	}
 
 	function afficherListePresents($delib_id=null)	{
