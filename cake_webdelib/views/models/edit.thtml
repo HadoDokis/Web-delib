@@ -1,6 +1,6 @@
 <?php echo $javascript->link('fckeditor'); ?>
 <?php echo $html->formTag('/models/edit/'.$html->tagValue('Model/id')); ?>
-<h2>Modification du mod&egrave;le : </h2>
+<h2>Modification du mod&egrave;le : <?php echo $libelle; ?></h2>
 <div class="optional">
     <?php echo $html->textarea('Model/texte', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Model][texte]'); ?>
