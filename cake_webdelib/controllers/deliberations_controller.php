@@ -317,7 +317,6 @@ class DeliberationsController extends AppController {
 		$this->params['data']['Deliberation']['id'] = $id;
 
 		if ($this->Deliberation->save($this->params['data'])){
-			$this->Session->setFlash('La localisation a &eacute;t&eacute; sauvegard&eacute;e');
 			$this->redirect('/deliberations/changeLocation/'.$id);
 		}
 	}
@@ -332,32 +331,39 @@ class DeliberationsController extends AppController {
 			return $parent;
 		}
 	}
+	
 	function changeLocation($id=null,$pzone1=0,$pzone2=0,$pzone3=0) {
 		$this->layout = 'fckeditor';
 		if(empty($this->data))
 		{
 			$data= $this->Deliberation->read(null,$id);
-
-			$this->data['Deliberation']['localisation1_id']= $data['Deliberation']['localisation1_id'];
-			$this->data['Deliberation']['localisation2_id']= $data['Deliberation']['localisation2_id'];
-			$this->data['Deliberation']['localisation3_id']= $data['Deliberation']['localisation3_id'];
+			$this->data = $this->Deliberation->read(null, $id);
 
 			$this->set('id',$id);
 
 			$conditions = "Localisation.parent_id= 0";
 			$this->set('localisations', $this->Deliberation->Localisation->generateList($conditions));
-			$this->set('selectedLocalisation1', $this->getParent($data['Deliberation']['localisation1_id']));
-			$this->set('selectedLocalisation2', $this->getParent($data['Deliberation']['localisation2_id']));
-			$this->set('selectedLocalisation3', $this->getParent($data['Deliberation']['localisation3_id']));
-
+			$selectedLocalisation1 =$this->getParent($this->data['Deliberation']['localisation1_id']);
+			$this->set('selectedLocalisation1', $selectedLocalisation1);
+			$selectedLocalisation2 =$this->getParent($this->data['Deliberation']['localisation2_id']);
+			$this->set('selectedLocalisation2', $selectedLocalisation2);
+			$selectedLocalisation3 =$this->getParent($this->data['Deliberation']['localisation3_id']);
+			$this->set('selectedLocalisation3', $selectedLocalisation3);
+			
 			if($pzone1!=0){
 				$conditions = "Localisation.parent_id= $pzone1";
 				$zone1 = $this->Localisation->generateList($conditions);
 				$this->set('zone1',$zone1);
 				$this->set('selectedLocalisation1',$pzone1);
 			}else{
-				$this->set('zone1',0);
-				$this->set('selectedzone1',0);
+				if($selectedLocalisation1!=0){
+					$conditions = "Localisation.parent_id= $selectedLocalisation1";
+					$zone1 = $this->Localisation->generateList($conditions);
+					$this->set('zone1',$zone1);
+				}else{
+					$this->set('zone1',0);
+					$this->set('selectedzone1',0);
+				}
 			}
 
 			if($pzone2!=0){
@@ -366,9 +372,15 @@ class DeliberationsController extends AppController {
 				$this->set('zone2',$zone2);
 				$this->set('selectedLocalisation2',$pzone2);
 			}else{
-				$this->set('zone2',0);
-				$this->set('selectedzone2',0);
-				$this->data['Deliberation']['localisation2_id']=0;
+				if($selectedLocalisation2!=0){
+					$conditions = "Localisation.parent_id= $selectedLocalisation2";
+					$zone2 = $this->Localisation->generateList($conditions);
+					$this->set('zone2',$zone2);
+				}else{
+					$this->set('zone2',0);
+					$this->set('selectedzone2',0);
+					$this->data['Deliberation']['localisation2_id']=0;
+				}
 			}
 
 			if($pzone3!=0){
@@ -377,10 +389,20 @@ class DeliberationsController extends AppController {
 				$this->set('zone3',$zone3);
 				$this->set('selectedLocalisation3',$pzone3);
 			}else{
-				$this->set('zone3',0);
-				$this->set('selectedzone3',0);
-				$this->data['Deliberation']['localisation3_id']=0;
+				if($selectedLocalisation3!=0){
+					$conditions = "Localisation.parent_id= $selectedLocalisation3";
+					$zone3 = $this->Localisation->generateList($conditions);
+					$this->set('zone3',$zone3);
+				}else{
+					$this->set('zone3',0);
+					$this->set('selectedzone3',0);
+					$this->data['Deliberation']['localisation3_id']=0;
+				}
 			}
+		}
+		else{
+			$this->data['Deliberation']['id']=$id;
+			$this->Deliberation->save($this->data);
 		}
 	}
 
