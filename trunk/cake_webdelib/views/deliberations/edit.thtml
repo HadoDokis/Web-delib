@@ -49,7 +49,7 @@
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/num_pref', 'Num Pref');?></td>
 		<td><?php echo $html->input('Deliberation/num_pref',array('id'=>'classif1', 'size' => '60','disabled'=>'disabled'));?><br/>
-		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base?>/deliberations/classification', 'Select_attribut', 'scrollbars=0,width=570,height=450');" id="classification_text">[Choisir la classification]</a>
+		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base?>/deliberations/classification', 'Select_attribut', 'scrollbars=yes,width=570,height=450');" id="classification_text">[Choisir la classification]</a>
 		 <?php echo $html->hidden('Deliberation/num_pref',array('id'=>'classif2','name'=>'classif2'))?>
 		</td>
 	</tr>
@@ -59,15 +59,15 @@
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/texte_projet', 'Texte projet');?></td>
-		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textprojet/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600');">[Texte projet]</a></td>
+		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textprojet/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600,scrollbars=yes');">[Texte projet]</a></td>
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/texte_synthese', 'Note synthese');?></td>
-		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textsynthese/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600');">[Note de synthese]</a></td>
+		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textsynthese/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600,scrollbars=yes');">[Note de synthese]</a></td>
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/deliberation', 'Deliberation');?></td>
-		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/deliberation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600');">[Texte deliberation]</a></td>
+		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/deliberation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600,scrollbars=yes');">[Texte deliberation]</a></td>
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/date_limite', 'Date limite');?></td>
