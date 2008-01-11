@@ -173,10 +173,39 @@ class UsersController extends AppController {
 	   	    return '';
 	}
 
+	function getAdresse ($id) {
+		$condition = "User.id = $id";
+	    $fields = "adresse";
+	    $dataValeur = $this->User->findAll($condition, $fields);
+	   	if (isset($dataValeur['0'] ['User']['adresse']))
+	   	    return $dataValeur['0'] ['User']['adresse'];
+	   	else
+	   	    return '';
+	}
+
+	function getCP ($id) {
+		$condition = "User.id = $id";
+	    $fields = "CP";
+	    $dataValeur = $this->User->findAll($condition, $fields);
+	   	if (isset($dataValeur['0'] ['User']['CP']))
+	   	    return $dataValeur['0'] ['User']['CP'];
+	   	else
+	   	    return '';
+	}
+
+	function getVille ($id) {
+		$condition = "User.id = $id";
+	    $fields = "ville";
+	    $dataValeur = $this->User->findAll($condition, $fields);
+	   	if (isset($dataValeur['0'] ['User']['ville']))
+	   	    return $dataValeur['0'] ['User']['ville'];
+	   	else
+	   	    return '';
+	}
+
     function login() {
 		//pas de message d'erreur
 		$this->set('errorMsg',"");
-
 		//si le formulaire d'authentification a été soumis
 		if (!empty($this->data))
 		{
@@ -222,10 +251,7 @@ class UsersController extends AppController {
 		//on supprime les infos utilisateur de la session
 		$this->Session->delete('user');
 		$this->redirect('/users/login');
-
 	}
-
-
 
 }
 
