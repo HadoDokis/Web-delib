@@ -37,7 +37,7 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '0.9 beta');
+    define ('VERSION', '0.9.3 beta');
 
 /**
  * Set debug level here:
@@ -51,13 +51,12 @@
  *
  */
 	define('DEBUG', 0);
-
+	ini_set('max_execution_time', '300');
 
 /***
- *   Configuration pour la tï¿½lï¿½transmission S2LOW
+ *   Configuration pour la télétransmission S2LOW
  *
- *
- */
+ **/
 	define('PEM', '/home/francois/workspace/svn_webdelib/config/pubKey.pem');
 	define('PASSWORD', 'demo_u');
 	define('HOST', 'demo-s2low.extranet.adullact.org');
@@ -90,7 +89,7 @@
  * Error constant. Used for differentiating error logging and debugging.
  * Currently PHP supports LOG_DEBUG
  */
-	define('LOG_ERROR', 2);
+	define('LOG_ERROR', 0);
 /**
  * CakePHP includes 3 types of session saves
  * database or file. Set this to your preferred method.
