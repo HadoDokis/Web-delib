@@ -78,20 +78,32 @@ function saveLocation(idDelib,idLoc,zone)
 
 function changeLocation1(idDelib,zone1,zone2,zone3)
 {
-	var url = zone1.id+"deliberations/changeLocation/"+idDelib+"/"+zone1.value+"/"+zone2+"/"+zone3;
-	document.location=url;
+	if(zone1.value==""){
+		saveLocation(idDelib,zone1,1);
+	}else{
+		var url = zone1.id+"deliberations/changeLocation/"+idDelib+"/"+zone1.value+"/"+zone2+"/"+zone3;
+		document.location=url;
+	}
 }
 
 function changeLocation2(idDelib,zone1,zone2,zone3)
 {
-	var url = zone2.id+"deliberations/changeLocation/"+idDelib+"/"+zone1+"/"+zone2.value+"/"+zone3;
-	document.location=url;
+	if(zone2.value==""){
+		saveLocation(idDelib,zone2,2);
+	}else{
+		var url = zone2.id+"deliberations/changeLocation/"+idDelib+"/"+zone1+"/"+zone2.value+"/"+zone3;
+		document.location=url;
+	}
 }
 
 function changeLocation3(idDelib,zone1,zone2,zone3)
 {
-	var url = zone3.id+"deliberations/changeLocation/"+idDelib+"/"+zone1+"/"+zone2+"/"+zone3.value;
-	document.location=url;
+	if(zone3.value==""){
+		saveLocation(idDelib,zone3,3);
+	}else{
+		var url = zone3.id+"deliberations/changeLocation/"+idDelib+"/"+zone1+"/"+zone2+"/"+zone3.value;
+		document.location=url;
+	}
 }
 
 
