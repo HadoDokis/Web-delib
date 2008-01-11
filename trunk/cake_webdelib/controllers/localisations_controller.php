@@ -30,10 +30,12 @@ class LocalisationsController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Localisation->save($this->data)) {
-				$this->Session->setFlash('La localisation a &eacute;t&eacute;sauvegard&eacute;');
+				$this->Session->setFlash('La localisation a &eacute;t&eacute; sauvegard&eacute;e');
 				$this->redirect('/localisations/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$localisations = $this->Localisation->generateList(null);
+				$this->set('localisations', $localisations);
 			}
 		}
 	}
@@ -45,13 +47,13 @@ class LocalisationsController extends AppController {
 				$this->redirect('/localisations/index');
 			}
 			$this->data = $this->Localisation->read(null, $id);
-			$localisations = $this->Localisation->generateList();
+			$localisations = $this->Localisation->generateList("Localisation.id != $id");
 			$this->set('localisations', $localisations);
 			$this->set('selectedLocalisation',$this->data['Localisation']['parent_id']);
 		} else {
 			$this->cleanUpFields();
 			if ($this->Localisation->save($this->data)) {
-				$this->Session->setFlash('La localisation a &eacute;t&eacute; modifi&eacute;');
+				$this->Session->setFlash('La localisation a &eacute;t&eacute; modifi&eacute;e');
 				$this->redirect('/localisations/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
@@ -66,7 +68,7 @@ class LocalisationsController extends AppController {
 		}
 
 		if ($this->Localisation->del($id)) {
-			$this->Session->setFlash('La localisation a &eacute;t&eacute; supprim&eacute;');
+			$this->Session->setFlash('La localisation a &eacute;t&eacute; supprim&eacute;e');
 			$this->redirect('/localisations/index');
 		}
 	}
