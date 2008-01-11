@@ -288,7 +288,7 @@ class SeancesController extends AppController {
             $pdf->AddPage();
 		    $emailPdf = new HTML2FPDF();
 		    $emailPdf->AddPage();
-	        $search = array("#LOGO_COLLECTIVITE#","#ADRESSE_COLLECTIVITE#","#NOM_ELU#","#ADRESSE_ELU#","#VILLE_ELU#","#VILLE_COLLECTIVITE#","#DATE_DU_JOUR#","#TYPE_SEANCE#","#DATE_SEANCE#","#LIEU_SEANCE#");
+	        $search = array("#LOGO_COLLECTIVITE#","#ADRESSE_COLLECTIVITE#","#NOM_ELU#","#ADRESSE_ELU#","#VILLE_ELU#","#VILLE_COLLECTIVITE#","#DATE_DU_JOUR#","#TYPE_SEANCE#","#DATE_SEANCE#","#LIEU_SEANCE#","#LISTE_PROJETS_SOMMAIRES#", "#LISTE_PROJETS_DETAILLES#");
 	        $replace = array('<img src="files/image/logo.jpg">',
 		        $collectivite[0]['Collectivite']['nom'].'<br>'.$collectivite[0]['Collectivite']['adresse'].'<br>'.$collectivite[0]['Collectivite']['CP'].' '.$collectivite[0]['Collectivite']['ville'],
 			    $seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'],
@@ -297,24 +297,15 @@ class SeancesController extends AppController {
 			    $collectivite[0]['Collectivite']['ville'],
 			    $jour.' '.date('d').' '.$mois.' '.date('Y'),
 			    $type_infos[0]['Typeseance']['libelle'],
-			    $date_seance, "un lieu a definir"
+			    $date_seance,
+				"un lieu a definir",
+				$this->requestAction("/models/listeProjets/$id/0"),
+				$this->requestAction("/models/listeProjets/$id/1")
 	        );
 	        $generation = str_replace($search,$replace,$model[0]['Model']['texte']);
 	        $pdf->WriteHTML($generation);
 		    $emailPdf->WriteHTML($generation);
-            foreach($projets as $projet) {
-                $pdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
-                $pdf->WriteHTML($projet['Deliberation']['titre'].'<br>');
-                $pdf->WriteHTML('<b><u>Thème</u> : </b><br>'.$projet['Theme']['libelle'].'<br>');
-         	    $pdf->WriteHTML('<b><u>Rapporteur</u> : </b><br>'.$projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom'].'<br>');
-         	    $pdf->WriteHTML('<b><u>Service emetteur</u> : </b><br>'.$projet['Service']['libelle'].'<br><br>');
-			    // Pour la création des convocs à envoyer par mails
-			    $emailPdf->WriteHTML($projet['Deliberation']['position'].')&nbsp; ');
-                $emailPdf->WriteHTML($projet['Deliberation']['titre'].'<br>');
-                $emailPdf->WriteHTML('<b><u>Thème</u> : </b><br>'.$projet['Theme']['libelle'].'<br>');
-         	    $emailPdf->WriteHTML('<b><u>Rapporteur</u> : </b><br>'.$projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom'].'<br>');
-         	    $emailPdf->WriteHTML('<b><u>Service emetteur</u> : </b><br>'.$projet['Service']['libelle'].'<br><br>');
-            }
+
             $pos =  strrpos ( getcwd(), 'webroot');
 		    $path = substr(getcwd(), 0, $pos);
 		    $convoc_path = $path."webroot/files/convocations/convoc_".$seanceUser['User']['id'].".pdf";

@@ -40,75 +40,47 @@ class PostseancesController extends AppController {
 			return $resultat;
 		}
 	}
-	
+
 	function getPresence($id_delib,$present){
 		$condition ="delib_id =$id_delib AND present=$present";
 		$presences = $this->Listepresence->findAll($condition);
 		return $presences;
 	}
-	
+
 	function generatePvSommaire ($id=null) {
-		$delib=array();
-		$seance = $this->Seance->findAll("Seance.id = $id");
-		$this->set('seance',$seance);
-		$this->set('model',$this->Model->findAll());
-		$condition= "seance_id=$id AND etat>=2";
-		$projets =  $this->Deliberation->findAll($condition,null,'position ASC');
-		$this->set('jour', $this->Date->days[intval(date('w'))]);
-		$this->set('mois', $this->Date->months[intval(date('m'))]);
-		$this->set('collectivite',  $this->Collectivite->findAll());
-		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($seance[0]['Seance']['date'])));
-		foreach ($projets as $proj)
-		{
-			$projId = $proj['Deliberation']['id'];
-			$proj['vote']= $this->getVote($projId);
-			$proj['present']=$this->getPresence($projId,1);
-			$proj['absent']=$this->getPresence($projId,0);
-			array_push($delib, $proj);	
-		}
-		$this->set('projets',$delib);	
+		vendor('fpdf/html2fpdf');
+	    $pdf = new HTML2FPDF();
+	    $pdf->AddPage();
+	    $pdf->WriteHTML($this->requestAction("/models/generatePVSommaire/$id"));
+	    $pos =  strrpos ( getcwd(), 'webroot');
+	    $path = substr(getcwd(), 0, $pos);
+	    $seance_path = $path."webroot/files/seances/PV_Sommaire_$id.pdf";
+	    $pdf->Output($seance_path ,'F');
+	    $pdf->Output("PV_sommaire_$id.pdf",'D');
 	}
 
 	function generatePvComplet ($id=null) {
-		$delib=array();
-		$seance = $this->Seance->findAll("Seance.id = $id");
-		$this->set('seance',$seance);
-		$this->set('model',$this->Model->findAll());
-		$condition= "seance_id=$id AND etat>=2";
-		$projets =  $this->Deliberation->findAll($condition,null,'position ASC');
-		$this->set('jour', $this->Date->days[intval(date('w'))]);
-		$this->set('mois', $this->Date->months[intval(date('m'))]);
-		$this->set('collectivite',  $this->Collectivite->findAll());
-		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($seance[0]['Seance']['date'])));
-		foreach ($projets as $proj)
-		{
-			$projId = $proj['Deliberation']['id'];
-			$proj['vote']= $this->getVote($projId);
-			$proj['present']=$this->getPresence($projId,1);
-			$proj['absent']=$this->getPresence($projId,0);
-			array_push($delib, $proj);	
-		}
-		$this->set('projets',$delib);	
+		vendor('fpdf/html2fpdf');
+	    $pdf = new HTML2FPDF();
+	    $pdf->AddPage();
+	    $pdf->WriteHTML($this->requestAction("/models/generatePVDetaille/$id"));
+	    $pos =  strrpos ( getcwd(), 'webroot');
+	    $path = substr(getcwd(), 0, $pos);
+	    $seance_path = $path."webroot/files/seances/PV_Complet_$id.pdf";
+	    $pdf->Output($seance_path ,'F');
+	    $pdf->Output("PV_Complet_$id.pdf",'D');
 	}
 
 	function generateDeliberation ($id=null, $dl=1) {
-		$this->set('id',$id);
-		$this->set('model',$this->Model->findAll());
-		$this->set('themes',$this->Theme->findAll());
-		$projet = $this->Deliberation->findAll("Deliberation.id=$id");
-		$this->set('projet',$projet);
-		$this->set('jour', $this->Date->days[intval(date('w'))]);
-		$this->set('mois', $this->Date->months[intval(date('m'))]);
-		$this->set('collectivite',  $this->Collectivite->findAll());
-		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($projet[0]['Seance']['date'])));
-		
-		$this->set('votespour', $this->Vote->findAll("delib_id=$id AND resultat=3"));
-		$this->set('votescontre', $this->Vote->findAll("delib_id=$id AND resultat=2"));
-		$this->set('abstenus', $this->Vote->findAll("delib_id=$id AND resultat=4"));
-		$this->set('sans_part', $this->Vote->findAll("delib_id=$id AND resultat=5"));
-		$this->set('vote',$this->Vote->findAll("delib_id=$id"));
-		$this->set('absents', $this->Listepresence->findAll("delib_id =$id AND present=0"));
-		$this->set('dl', $dl);
+		vendor('fpdf/html2fpdf');
+	    $pdf = new HTML2FPDF();
+	    $pdf->AddPage();
+	    $pdf->WriteHTML($this->requestAction("/models/generateDeliberation/$id"));
+	    $pos =  strrpos ( getcwd(), 'webroot');
+	    $path = substr(getcwd(), 0, $pos);
+	    $delib_path = $path."webroot/files/delibs/DELIBERATION_$id.pdf";
+	    $pdf->Output($delib_path ,'F');
+	    $pdf->Output('deliberation.pdf','D');
 	}
 
 
