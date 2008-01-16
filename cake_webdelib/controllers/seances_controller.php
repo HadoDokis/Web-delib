@@ -188,7 +188,7 @@ class SeancesController extends AppController {
 	{
 		$condition= "seance_id=$id AND etat=2";
 		if (!isset($return)) {
-		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
+		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id") - 1 );
 			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
 			for ($i=0; $i<count($deliberations); $i++){
 				$id_service = $deliberations[$i]['Service']['id'];
