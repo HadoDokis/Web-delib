@@ -46,6 +46,7 @@ class ThemesController extends AppController {
 			}
 			$this->data = $this->Theme->read(null, $id);
 			$themes = $this->Theme->generateList("Theme.id != $id");
+			$this->set('isEditable', $this->isEditable($id));
 			$this->set('themes', $themes);
 			$this->set('selectedTheme',$this->data['Theme']['parent_id']);
 		} else {
@@ -75,6 +76,11 @@ class ThemesController extends AppController {
 		$this->data = $this->Theme->findByParentId($curruentParentId);
 	}
 
+	function isEditable ($id) {
+		$condition = "parent_id = $id";
+		$liste = $this->Theme->findAll($condition);
+		return empty($liste);
+	}
 
 }
 ?>
