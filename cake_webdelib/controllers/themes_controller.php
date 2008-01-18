@@ -45,7 +45,7 @@ class ThemesController extends AppController {
 				$this->redirect('/Themes/index');
 			}
 			$this->data = $this->Theme->read(null, $id);
-			$themes = $this->Theme->generateList();
+			$themes = $this->Theme->generateList("Theme.id != $id");
 			$this->set('themes', $themes);
 			$this->set('selectedTheme',$this->data['Theme']['parent_id']);
 		} else {
