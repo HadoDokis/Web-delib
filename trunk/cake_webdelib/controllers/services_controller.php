@@ -52,7 +52,7 @@ class ServicesController extends AppController {
 				$this->redirect('/services/index');
 			}
 			$this->data = $this->Service->read(null, $id);
-			$services = $this->Service->generateList();
+			$services = $this->Service->generateList("Service.id != $id");
 			$this->set('services', $services);
 			$this->set('selectedService',$this->data['Service']['parent_id']);
 		} else {
