@@ -29,20 +29,18 @@ class TreeHelper extends Helper
   		foreach($actions as $key=>$value)
   		{
 			$controllerName = Inflector::pluralize(strtolower($modelName));
-
-  			if(!$hasChildren){
+			
+  			if($value != "delete" || ($value == "delete" && !$hasChildren))
+			{
 				$urlToAdd = "<a href=\"".$baseUrl."/".$controllerName."/".$value."/".$id."\" >".$key."</a> | ";
-  			}else{
+			}
+			elseif( $value == "delete" && $hasChildren)
+			{
 				$urlToAdd = "";
-  			}
+			}
 			$urls .= $urlToAdd;
   		}
-
-		if(!$hasChildren)	
-			return substr($urls,0,-3)."]";
-		else
-			return substr($urls,0,-1);
-
+		return substr($urls,0,-3)."]";
 	}
 }
 ?> 
