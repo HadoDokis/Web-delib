@@ -53,6 +53,7 @@ class ServicesController extends AppController {
 			}
 			$this->data = $this->Service->read(null, $id);
 			$services = $this->Service->generateList("Service.id != $id");
+			$this->set('isEditable', $this->isEditable($id));
 			$this->set('services', $services);
 			$this->set('selectedService',$this->data['Service']['parent_id']);
 		} else {
@@ -104,6 +105,12 @@ class ServicesController extends AppController {
 		}
 
 		return $tab;
+	}
+
+	function isEditable ($id) {
+		$condition = "parent_id = $id";
+		$liste = $this->Service->findAll($condition);
+		return empty($liste);
 	}
 }
 ?>
