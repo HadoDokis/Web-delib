@@ -36,3 +36,7 @@
 		</tr>
 		<?php endforeach; ?>
 </table>
+<br/>
+<div class="submit">
+<?php echo $html->link('Retour', '/seances/listerFuturesSeances', array('class'=>'link_annuler', 'name'=>'Retour'))?>
+</div>
