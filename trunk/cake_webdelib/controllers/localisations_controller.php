@@ -48,6 +48,7 @@ class LocalisationsController extends AppController {
 			}
 			$this->data = $this->Localisation->read(null, $id);
 			$localisations = $this->Localisation->generateList("Localisation.id != $id");
+			$this->set('isEditable', $this->isEditable($id));
 			$this->set('localisations', $localisations);
 			$this->set('selectedLocalisation',$this->data['Localisation']['parent_id']);
 		} else {
@@ -77,6 +78,10 @@ class LocalisationsController extends AppController {
 		$this->data = $this->Localisation->findByParentId($curruentParentId);
 	}
 
-
+	function isEditable ($id) {
+		$condition = "parent_id = $id";
+		$liste = $this->Localisation->findAll($condition);
+		return empty($liste);
+	}
 }
 ?>
