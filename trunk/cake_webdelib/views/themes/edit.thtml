@@ -7,8 +7,12 @@
 </div>
 <br/>
 <div>
-	<?php echo $form->labelTag('Theme/parent_id', 'Appartient &agrave;');?>
-	<?php echo $html->selectTag('Theme/parent_id', $themes, $selectedTheme)?>
+	<?php
+		if ($isEditable){
+	 		echo $form->labelTag('Theme/parent_id', 'Appartient &agrave;');
+	 		echo $html->selectTag('Theme/parent_id', $themes, $selectedTheme);
+		}
+	?>
 </div>
 <br/><br/><br/><br/><br/>
 <div class="submit">

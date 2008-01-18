@@ -7,8 +7,12 @@
 </div>
 <br/>
 <div>
-	<?php echo $form->labelTag('Localisation/parent_id', 'Appartient &agrave;');?>
-	<?php echo $html->selectTag('Localisation/parent_id', $localisations, $selectedLocalisation)?>
+	<?php
+		if ($isEditable){
+		    echo $form->labelTag('Localisation/parent_id', 'Appartient &agrave; : ');
+		    echo $html->selectTag('Localisation/parent_id', $localisations, $selectedLocalisation);
+		}
+	?>
 </div>
 <br/><br/><br/><br/><br/>
 <div class="submit">
