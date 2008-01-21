@@ -12,7 +12,7 @@
 	<?php foreach ($seances as $seance): ?>
 	<tr>
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
-		<td><?php echo $seance['Seance']['date']; ?></td>
+		<td><?php echo ($html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id'])); ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
 		 	<?php echo $html->link('&shy;','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'), false, false)?>
 			<?php echo $html->link('&shy;','/seances/addListUsers/' . $seance['Seance']['id'], array('class'=>'link_addUsers', 'title'=>'Sélectionner la liste des non-votants'), false, false)?>
