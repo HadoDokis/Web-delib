@@ -236,7 +236,7 @@ class ModelsController extends AppController {
 			$data = $this->Model->findAll($condition);
 			$texte = $data['0']['Model']['texte'];
 			$present_id = $user['Listepresence']['user_id'];
-			$search = array("#NEWPAGE#",
+			$search = array("#NOUVELLE_PAGE#",
 						"#NOM_PRESENT#",
 			 			"#PRENOM_PRESENT#",
 			 			"#ADRESSE_PRESENT#",
@@ -260,7 +260,7 @@ class ModelsController extends AppController {
 			$data = $this->Model->findAll($condition);
 			$texte = $data['0']['Model']['texte'];
 			$absent_id = $user['Listepresence']['user_id'];
-			$search = array("#NEWPAGE#",
+			$search = array("#NOUVELLE_PAGE#",
 							"#NOM_ABSENT#",
 			 			"#PRENOM_ABSENT#",
 			 			"#ADRESSE_ABSENT#",
@@ -286,7 +286,7 @@ class ModelsController extends AppController {
 			$data = $this->Model->findAll($condition);
 			$texte = $data['0']['Model']['texte'];
 			$mandataire_id = $user['Listepresence']['mandataire'];
-			$search = array("#NEWPAGE#",
+			$search = array("#NOUVELLE_PAGE#",
 						"#NOM_MANDATAIRE#",
 			 			"#PRENOM_MANDATAIRE#",
 			 			"#ADRESSE_MANDATAIRE#",
@@ -319,7 +319,7 @@ class ModelsController extends AppController {
 			elseif ($resultat==5)
 				$resultat = "Pas de participation";
 
-			$search = array("#NEWPAGE#",
+			$search = array("#NOUVELLE_PAGE#",
 						"#NOM_VOTANT#",
 			 			"#PRENOM_VOTANT#",
 			 			"#ADRESSE_VOTANT#",
@@ -340,7 +340,7 @@ class ModelsController extends AppController {
 	}
 
 	function replaceBalisesSeance ($texte, $seance_id) {
-	$search = array("#NEWPAGE#",
+	$search = array("#NOUVELLE_PAGE#",
 					"#DATE_DU_JOUR#",
 				 	"#SEANCE_ID#",
 				 	"#DATE_SEANCE#",
@@ -380,7 +380,7 @@ class ModelsController extends AppController {
 		$theme_id =  $this->getThemeId($delib_id);
 		$service_id = $this->getServiceId($delib_id);
 
-		$search = array("#NEWPAGE#",
+		$search = array("#NOUVELLE_PAGE#",
 						"#IDENTIFIANT_PROJET#",
 						"#DATE_DU_JOUR#",
 				 		"#SEANCE_ID#",
