@@ -1,0 +1,24 @@
+<h2><?php echo $html->image('icons/synthese.png')?> Note de Synthese : </h2>
+
+<div class="pave">
+<?php echo $deliberation['Deliberation']['texte_synthese']; ?>
+</div>
+
+<br/><br/>
+
+<div class="optional">
+	<?php if(!empty($annexes)){  ?>
+	<?php echo $html->image('/icons/bookmark.png').'Annexe(s) :';?>
+	<?php foreach ($annexes as $annexe) :
+			echo '<br>Titre : '.$annexe['Annex']['titre'];
+			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
+			echo '<br>Taille : '.$annexe['Annex']['size'];
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
+	<?php endforeach; } ?>
+</div>
+
+<div class="submit">
+	<?php echo $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?>
+	<?php //echo $html->link('&shy;','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?>
+
+</div>
