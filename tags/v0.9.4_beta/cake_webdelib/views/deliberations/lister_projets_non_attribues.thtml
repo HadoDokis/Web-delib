@@ -1,0 +1,41 @@
+<div class="deliberations">
+<h2>Liste des projets non attribu&eacute;s</h2>
+
+
+<table cellpadding="0" cellspacing="0" border="0">
+	<tr>
+		<th>ID</th>
+		<th>Etat du Projet</th>
+		<th>Theme</th>
+		<th>Rapporteur</th>
+		<th>Libelle</th>
+		<th>Titre</th>
+		<th>Identifiant Projet</th>
+		<th>Service emetteur</th>
+		<th>Attribuer une date</th>
+	</tr>
+	<?php foreach ($deliberations as $deliberation): ?>
+	<tr>
+		<td><?php echo $deliberation['Deliberation']['id']; ?></td>
+		<td><?php echo $deliberation['etatProjet']; ?></td>
+		<td><?php echo $deliberation['Theme']['libelle'] ?></td>
+		<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
+		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
+		<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
+		<td><?php echo $deliberation['Deliberation']['id']; ?></td>
+		<td><?php echo $deliberation['Service']['libelle']; ?></td>
+		<td>
+		<form action="<?php echo $html->url('/deliberations/listerProjetsNonAttribues/'); ?>" method="post">
+			<?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>
+			<?php echo $html->tagErrorMsg('Deliberation/seance_id', 'Choisissez une date.');?>
+			<?php echo $html->hidden('Deliberation/id',array('value'=> $deliberation['Deliberation']['id'])); ?>
+			<?php echo $html->submit('', array('class'=>'bt_save', 'name'=>'sauvegarder'));?>
+			<?php echo $html->link('&shy;','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
+		</form>
+		</td>
+	</tr>
+	<?php endforeach; ?>
+
+</table>
+
+</div>
