@@ -37,7 +37,7 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '0.9.3 beta');
+    define ('VERSION', '0.9.4 beta');
 
 /**
  * Set debug level here:
@@ -57,12 +57,21 @@
  *   Configuration pour la télétransmission S2LOW
  *
  **/
-	define('PEM', '/home/francois/workspace/svn_webdelib/config/pubKey.pem');
+ 	$pos =  strrpos ( getcwd(), 'config');
+	$path = substr(getcwd(), 0, $pos);
+	$config_path = $path."config/";
+
+	$pos2 =  strrpos ( getcwd(), 'webroot');
+	$path2 = substr(getcwd(), 0, $pos2);
+	$webroot_path = $path2."webroot/";
+
+
+	define('PEM', $config_path.'pubKey.pem');
 	define('PASSWORD', 'demo_u');
 	define('HOST', 'demo-s2low.extranet.adullact.org');
-	define('KEY', '/home/francois/workspace/svn_webdelib/config/key.pem');
-	define('CA_PATH', '/home/francois/workspace/svn_webdelib/config');
-	define('FILE_CLASS', '/home/francois/workspace/svn_webdelib/webroot/files/actes/classification.xml');
+	define('KEY', $config_path.'key.pem');
+	define('CA_PATH', $config_path);
+	define('FILE_CLASS', $webroot_path.'files/actes/classification.xml');
 	define('IMPORT', true);
 
 	// LDAP
