@@ -1,0 +1,24 @@
+<h2>Modification d'une localisation</h2>
+<form action="<?php echo $html->url('/localisations/edit/'.$html->tagValue('Service/id')); ?>" method="post">
+<div class="optional">
+	<?php echo $form->labelTag('Localisation/libelle', 'Libelle');?>
+ 	<?php echo $html->input('Localisation/libelle', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Localisation/libelle', 'Entrer le libelle.');?>
+</div>
+<br/>
+<div>
+	<?php
+		if ($isEditable){
+		    echo $form->labelTag('Localisation/parent_id', 'Appartient &agrave; : ');
+		    echo $html->selectTag('Localisation/parent_id', $localisations, $selectedLocalisation);
+		}
+	?>
+</div>
+<br/><br/><br/><br/><br/>
+<div class="submit">
+	<?php echo $form->labelTag('Localisation/id', '&nbsp;');?>
+	<?php echo $html->hidden('Localisation/id')?>
+	<?php echo $html->submit('Modifier', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/localisations/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+</form>
