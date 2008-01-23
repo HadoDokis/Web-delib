@@ -219,7 +219,7 @@ class ModelsController extends AppController {
 			$condition = 'Model.id=13';
 
 		$listeProjets = "";
-		$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat=2",null,'position ASC');
+		$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>2",null,'position ASC');
 		foreach($projets as $projet) {
 			$data = $this->Model->findAll($condition);
 			$texte = $data['0']['Model']['texte'];
