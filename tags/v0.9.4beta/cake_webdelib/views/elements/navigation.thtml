@@ -1,4 +1,0 @@
-<?php
-    // affichage du menu complet
-    echo $navigation->buildMenu($this->controller->menu, "globalnav");
-?>
