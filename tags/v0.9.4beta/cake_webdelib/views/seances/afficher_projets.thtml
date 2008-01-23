@@ -1,0 +1,42 @@
+<h2>Liste des projets pour la séance du <?php echo $date_seance; ?></h2>
+<table>
+	<tr>
+		<th>Position</th>
+		<?php echo ('<th>'.$html->link('Theme', "/deliberations/sortby/$seance_id/theme_id",null,'Etes-vous sur de vouloir trier par theme ?'). "</th>"); ?>
+		<th>Service emetteur</th>
+		<?php echo ('<th>'.$html->link('Rapporteur', "/deliberations/sortby/$seance_id/rapporteur_id", null,'Etes-vous sur de vouloir trier par rapporteur ?'). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Libelle', "/deliberations/sortby/$seance_id/objet",null,'Etes-vous sur de vouloir trier par libelle ?'). "</th>"); ?>
+		<?php echo ('<th>'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre",null,'Etes-vous sur de vouloir trier par titre ?'). "</th>"); ?>
+		<th>&nbsp;&nbsp;</th>
+		<th>&nbsp;&nbsp;</th>
+	</tr>
+
+	<?php foreach($projets as $projet):
+	$id_delib=$projet['Deliberation']['id'];
+	$urlPage =  FULL_BASE_URL . $this->webroot;?>
+
+    	<tr>
+    	    <td><?php echo $projet['Deliberation']['position']; ?></td>
+		    <td><?php echo $projet['Theme']['libelle']; ?></td>
+		    <td><?php echo $projet['Service']['libelle']; ?></td>
+		    <td><?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$projet['rapp_id'],array('id'=>"$urlPage",'onChange'=>"changeRapporteur(this,$id_delib)"),null,false);?></td>
+		    <td><?php echo $projet['Deliberation']['objet']; ?></td>
+		    <td><?php echo $projet['Deliberation']['titre']; ?></td>
+		    <?php
+		        if($projet['Deliberation']['position']!= 1)
+		            echo ('<td>'.$html->link('&shy;', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1/'.$seance_id, array('class'=>'link_monter', 'title'=>'Monter'), false, false).'</td>');
+		        else
+		           echo("<td>&nbsp;</td>");
+				if($projet['Deliberation']['position']!= $lastPosition)
+		            echo ('<td>'.$html->link('&shy;', '/deliberations/positionner/'.$projet['Deliberation']['id'].'/0/'.$seance_id, array('class'=>'link_descendre', 'title'=>'Descendre'), false, false).'</td>');
+		        else
+		           echo("<td>&nbsp;</td>");
+		    ?>
+
+		</tr>
+		<?php endforeach; ?>
+</table>
+<br/>
+<div class="submit">
+<?php echo $html->link('Retour', '/seances/listerFuturesSeances', array('class'=>'link_annuler', 'name'=>'Retour'))?>
+</div>

@@ -1,0 +1,115 @@
+<html>
+<head>
+<title>ACM - CakePHP ACL Utility</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style>
+#box{
+	width:700px;
+}
+#titlebar{
+	width:700px;
+	height:31px;
+	background-image: url(titlebar.png);
+    background-repeat: no-repeat;
+}
+
+#main{
+	width:700px;
+	background-image: url(/img/mainbg.png);
+    background-repeat: repeat-y;
+}
+#menu{
+	width:700px;
+	height:31px;
+	background-image: url(/img/menu.png);
+    background-repeat: no-repeat;
+}
+ul#nav {
+    list-style: none;
+  /*  float: left;
+    margin: 0;
+    margin-top: 16px;
+    width: 437px;
+    position: relative;
+    left: 135px;
+   background: url(../i/nav_group.gif) 0 -28px no-repeat;
+   */
+}
+#content{
+}
+#footer{
+}
+/*Menu Items */
+ul#nav li a { /* Used for all links */
+	display: block;
+    background-image: url(/img/menu.png);
+    background-repeat: no-repeat;
+    position: absolute;
+    height: 31px;
+}
+
+ul#nav li#nav_home a { /* Home link */
+    width: 68px;
+    background-position: 0 0;
+    top: 0;
+    left: 6px;
+}
+	ul#nav li#nav_blog a:hover { /* Rollover */
+		background-position: 0 -39px;
+	}
+	#tp_index ul#nav li#nav_blog a { /* Current */
+		background-position: 0 -39px;
+	}
+</style>
+</head>
+<body bgcolor="#395FA0" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<div id="box">
+   <div id="titlebar">&nbsp;</div>
+   <div id="main">
+   	  <div id="menu">
+   	  	<ul id="nav">
+			<?php $css_class = ($this->action == 'index') ? 'on' : '';?>
+			<li><?php echo $html->link('','/acm', array('id'=>'nav_home','class'=>$css_class));?></li>
+			<?php $css_class = ($this->action == 'users') ? 'on' : '';?>
+			<li><?php echo $html->link('','/acm/users', array('id'=>'nav_users','class'=>$css_class));?></li>
+			<?php $css_class = ($this->action == 'privileges') ? 'on' : '';?>
+			<li><?php echo $html->link('','/acm/privileges', array('id'=>'nav_priv','class'=>$css_class));?></li>
+			<?php $css_class = ($this->action == 'roles') ? 'on' : '';?>
+			<li><?php echo $html->link('','/acm/roles', array('id'=>'nav_roles','class'=>$css_class));?></li>
+			<?php if(ACMAUTOLOAD){ ?>
+				<li><?php echo $html->link(' ','/acm/auto',array('id'=>'nav_auto'));?></li>
+			<?php } ?>
+		</ul>
+	  </div>
+   	  <div id="content"><?php echo $content_for_layout ?></div>
+   </div>
+   <div id="footer">&nbsp;</div>
+</div>
+<!--
+<table id="Table_01" width="700" height="400" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td>
+			<img src="images/titlebar.png" width="700" height="31" alt=""></td>
+	</tr>
+
+	<tr>
+		<td>
+			<img src="images/menu.png" width="700" height="65" alt=""></td>
+	</tr>
+	<tr>
+		<td>
+			<img src="images/mainbg.png" width="700" height="15" alt=""></td>
+	</tr>
+	<tr>
+
+		<td>
+			<img src="images/ACMSkin_04.png" width="700" height="263" alt=""></td>
+	</tr>
+	<tr>
+		<td>
+			<img src="images/footer.png" width="700" height="26" alt=""></td>
+	</tr>
+</table>
+-->
+</body>
+</html>

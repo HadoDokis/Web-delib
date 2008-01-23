@@ -1,0 +1,30 @@
+<div class="refannexes">
+<h2>List Refannexes</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Id</th>
+	<th>Libelle</th>
+	<th>Created</th>
+	<th>Modified</th>
+	<th>Actions</th>
+</tr>
+<?php foreach ($refannexes as $refannex): ?>
+<tr>
+	<td><?php echo $refannex['Refannex']['id']; ?></td>
+	<td><?php echo $refannex['Refannex']['libelle']; ?></td>
+	<td><?php echo $refannex['Refannex']['created']; ?></td>
+	<td><?php echo $refannex['Refannex']['modified']; ?></td>
+	<td class="actions">
+		<?php echo $html->link('View','/refannexes/view/' . $refannex['Refannex']['id'])?>
+		<?php echo $html->link('Edit','/refannexes/edit/' . $refannex['Refannex']['id'])?>
+		<?php echo $html->link('Delete','/refannexes/delete/' . $refannex['Refannex']['id'], null, 'Are you sure you want to delete id ' . $refannex['Refannex']['id'])?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('New Refannex', '/refannexes/add'); ?></li>
+</ul>
+</div>
