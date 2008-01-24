@@ -1,3 +1,10 @@
+TRUNCATE TABLE `profils`;
+INSERT INTO `profils` (`id`, `parent_id`, `libelle`, `created`, `modified`) VALUES
+(3, 0, 'Valideur', '2007-09-03 14:39:20', '2007-09-03 14:39:20'),
+(4, 0, 'Redacteur', '2007-09-03 14:39:36', '2007-10-18 11:06:21'),
+(1, 0, 'Administrateur', '2007-09-03 14:40:53', '2007-09-03 14:40:53'),
+(2, 0, 'Assemblee', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+
 -- Structure de la table `compteurs`
 CREATE TABLE IF NOT EXISTS `compteurs` (
   `id` int(11) NOT NULL auto_increment COMMENT 'Identifiant interne',
@@ -321,19 +328,11 @@ INSERT INTO `acos` (`id`, `object_id`, `alias`, `lft`, `rght`) VALUES
 --
 
 INSERT INTO `aros` (`id`, `foreign_key`, `alias`, `lft`, `rght`) VALUES
-(1, 0, 'Valideur', 1, 10),
-(2, 0, 'Redacteur', 11, 18),
-(4, 0, 'Administrateur', 19, 24),
-(3, 0, 'Assemblee', 25, 28),
-(5, 1, 'admin', 22, 23),
-(11, 16, 'julien', 16, 17),
-(8, 19, 'pk', 8, 9),
-(12, 14, 'pascal', 26, 27),
-(14, 17, 'remi', 14, 15),
-(15, 18, 'marine', 20, 21),
-(16, 20, 'matthieu', 12, 13),
-(17, 22, 'severine', 2, 3);
-
+(1, 0, 'Valideur', 1, 2),
+(2, 0, 'Redacteur', 3, 4),
+(4, 0, 'Administrateur', 5, 8),
+(3, 0, 'Assemblee', 9, 10),
+(20, 1, 'admin', 6, 7);
 --
 -- Contenu de la table `aros_acos`
 --
@@ -404,3 +403,21 @@ INSERT INTO `aros_acos` (`id`, `aro_id`, `aco_id`, `_create`, `_read`, `_update`
 
 INSERT INTO `aros_acos` ( `id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
 VALUES (NULL , '3', '7', '1', '1', '1', '1');
+
+-- Ajout des commentaires pour tous ces roles
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '1', '12', '1', '1', '1', '1');
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '2', '12', '1', '1', '1', '1');
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '3', '12', '1', '1', '1', '1');
+
+-- Ajout du changement de services
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '1', '157', '1', '1', '1', '1');
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '2', '157', '1', '1', '1', '1');
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '3', '157', '1', '1', '1', '1');
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '4', '157', '1', '1', '1', '1');
