@@ -27,7 +27,7 @@ class DeliberationsController extends AppController {
 		//si la position est ра 0 cela notifie un refus
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
-		$conditions="etat = 0 AND redacteur_id = $user_id";
+		$conditions="(etat = 0 OR etat = -1) AND redacteur_id = $user_id";
 		$deliberations=$this->Deliberation->findAll($conditions);
 
 		for ($i=0; $i<count($deliberations); $i++){
@@ -330,7 +330,7 @@ class DeliberationsController extends AppController {
 			return $parent;
 		}
 	}
-	
+
 	function changeLocation($id=null,$pzone1=0,$pzone2=0,$pzone3=0) {
 		$this->layout = 'fckeditor';
 		if(empty($this->data))
@@ -348,7 +348,7 @@ class DeliberationsController extends AppController {
 			$this->set('selectedLocalisation2', $selectedLocalisation2);
 			$selectedLocalisation3 =$this->getParent($this->data['Deliberation']['localisation3_id']);
 			$this->set('selectedLocalisation3', $selectedLocalisation3);
-			
+
 			if($pzone1!=0){
 				$conditions = "Localisation.parent_id= $pzone1";
 				$zone1 = $this->Localisation->generateList($conditions);
