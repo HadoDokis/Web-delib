@@ -178,7 +178,7 @@ class ModelsController extends AppController {
    				 break;
    			case 5:
     			$etat = 'envoyé';
-   				 break;  				 
+   				 break;
 		 }
 		 return $etat;
 	}
@@ -297,8 +297,8 @@ class ModelsController extends AppController {
 			$mandate_id = $user['Listepresence']['user_id'];
 			$mandataire_id = $user['Listepresence']['mandataire'];
 			$search = array("#NOUVELLE_PAGE#",
-						"#NOM_DU_MANDATE#",
-						"#PRENOM_DU_MANDATE#",
+						"#NOM_MANDATE#",
+						"#PRENOM_MANDATE#",
 						"#NOM_MANDATAIRE#",
 			 			"#PRENOM_MANDATAIRE#",
 			 			"#ADRESSE_MANDATAIRE#",
