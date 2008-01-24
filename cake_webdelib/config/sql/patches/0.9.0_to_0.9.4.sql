@@ -401,3 +401,6 @@ INSERT INTO `aros_acos` (`id`, `aro_id`, `aco_id`, `_create`, `_read`, `_update`
 (84, 4, 209, '1', '1', '1', '1'),
 (91, 1, 255, '1', '1', '1', '1'),
 (90, 2, 255, '1', '1', '1', '1');
+
+INSERT INTO `aros_acos` ( `id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '3', '7', '1', '1', '1', '1');
