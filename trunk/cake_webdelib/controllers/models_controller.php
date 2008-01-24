@@ -170,6 +170,15 @@ class ModelsController extends AppController {
    			case 2:
     			$etat = 'validé';
    				 break;
+    		case 3:
+    			$etat = 'Voté pour';
+   				 break;
+   			case 4:
+    			$etat = 'Voté contre';
+   				 break;
+   			case 5:
+    			$etat = 'envoyé';
+   				 break;  				 
 		 }
 		 return $etat;
 	}
@@ -285,14 +294,19 @@ class ModelsController extends AppController {
 		foreach($users as $user) {
 			$data = $this->Model->findAll($condition);
 			$texte = $data['0']['Model']['texte'];
+			$mandate_id = $user['Listepresence']['user_id'];
 			$mandataire_id = $user['Listepresence']['mandataire'];
 			$search = array("#NOUVELLE_PAGE#",
+						"#NOM_DU_MANDATE#",
+						"#PRENOM_DU_MANDATE#",
 						"#NOM_MANDATAIRE#",
 			 			"#PRENOM_MANDATAIRE#",
 			 			"#ADRESSE_MANDATAIRE#",
 			 			"#CP_MANDATAIRE#",
 			 			"#VILLE_MANDATAIRE#");
-			$replace = array ("<newpage>", $this->getUserNom($mandataire_id),
+			$replace = array ("<newpage>", $this->getUserNom($mandate_id),
+			 			$this->getUserPrenom($mandate_id),
+						$this->getUserNom($mandataire_id),
 			 			$this->getUserPrenom($mandataire_id),
 		  				$this->getUserAdresse($mandataire_id),
 						$this->getUserCP($mandataire_id),
@@ -312,10 +326,12 @@ class ModelsController extends AppController {
 			$votant_id = $user['Vote']['user_id'];
 			$resultat = $user['Vote']['resultat'];
 			$commentaire = $user['Vote']['commentaire'];
-			if ($resultat==3)
+			if ($resultat==2)
+				$resultat = "contre";
+			elseif ($resultat==3)
 				$resultat = "pour";
 			elseif ($resultat==4)
-				$resultat = "contre";
+				$resultat = "abstention";
 			elseif ($resultat==5)
 				$resultat = "Pas de participation";
 
@@ -358,7 +374,7 @@ class ModelsController extends AppController {
 		$replace=array( "<newpage>",$this->getDateDuJour(),
 						$seance_id,
 		 				$this->Date->frenchDate(strtotime($this->getDateSeance($seance_id))),
-						$this->getLibelleTypeSeance($seance_id),
+						$this->getLibelleTypeSeance($this->getTypeIdFromSeanceId($seance_id)),
 			 			'<img src="files/image/logo.jpg">',
 						$this->getCollectiviteNom(1),
 			 			$this->getCollectiviteAdresse(1),
@@ -421,7 +437,7 @@ class ModelsController extends AppController {
 						$this->getDateDuJour(),
 						$seance_id,
 		 				$this->Date->frenchDate(strtotime($this->getDateSeance($seance_id))),
-						$this->getLibelleTypeSeance($seance_id),
+						$this->getLibelleTypeSeance($this->getTypeIdFromSeanceId($seance_id)),
 			 			$this->getDelibEtat($delib_id),
 			 			$this->getLibelleTheme($theme_id),
 			 			$this->getLibelleService($service_id),
