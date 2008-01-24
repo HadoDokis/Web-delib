@@ -8,7 +8,7 @@
 		<dd>&nbsp;<?php echo $typeseance['Typeseance']['libelle']?></dd>
 	</div>
 	<div class="droite">
-	<dt>Nombre de jour avant retard</dt>
+	<dt>Nombre de jours avant retard</dt>
 	<dd><?php echo $typeseance['Typeseance']['retard']; ?></dd>
 	</div>
 </div>
