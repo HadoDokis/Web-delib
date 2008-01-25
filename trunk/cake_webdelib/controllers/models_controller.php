@@ -108,18 +108,27 @@ class ModelsController extends AppController {
 
 	// Accesseurs Séance
 	function getLibelleTypeSeance($type_id){
-		$data= $this->Typeseance->findAll("Typeseance.id=$type_id");
-		return $data['0']['Typeseance']['libelle'];
+		if(!empty($type_id)){
+			$data= $this->Typeseance->findAll("Typeseance.id=$type_id");
+			return $data['0']['Typeseance']['libelle'];
+		}else
+			return "";
 	}
 
 	function getDateSeance($seance_id) {
-		$data= $this->Seance->findAll("Seance.id=$seance_id");
-		return $data['0']['Seance']['date'];
+		if (!empty($seance_id)){
+			$data= $this->Seance->findAll("Seance.id=$seance_id");
+			return $data['0']['Seance']['date'];
+		}else
+			return "";
 	}
 
 	function getTypeIdFromSeanceId ($seance_id) {
-		$data= $this->Seance->findAll("Seance.id=$seance_id");
-		return $data['0']['Seance']['type_id'];
+		if(!empty($seance_id)){
+			$data= $this->Seance->findAll("Seance.id=$seance_id");
+			return $data['0']['Seance']['type_id'];
+		}else
+			return "";
 	}
 
 	// Accesseurs Déliberation
@@ -395,16 +404,25 @@ class ModelsController extends AppController {
 		$redacteur_id = $this->getRedacteurId($delib_id);
 		$theme_id =  $this->getThemeId($delib_id);
 		$service_id = $this->getServiceId($delib_id);
-
+		
+		if(!empty($seance_id)){
+			$dateSeance = $this->Date->frenchDate(strtotime($this->getDateSeance($seance_id)));
+			$libelleSeance = $this->getLibelleTypeSeance($this->getTypeIdFromSeanceId($seance_id));
+		}else{
+			$dateSeance = "";
+			$libelleSeance = "";
+		}
+			
+			
 		$search = array("#NOUVELLE_PAGE#",
 						"#IDENTIFIANT_PROJET#",
 						"#DATE_DU_JOUR#",
 				 		"#SEANCE_ID#",
 				 		"#DATE_SEANCE#",
+						"#LIBELLE_TYPE_SEANCE#",
 			 			"#ETAT_DELIB#",
 						"#LIBELLE_THEME#",
 						"#LIBELLE_SERVICE#",
-						"#LIBELLE_TYPE_SEANCE#",
 			 			"#TITRE_DELIB#",
 			 			"#LIBELLE_DELIB#",
 			 			"#TEXTE_DELIB#",
@@ -436,8 +454,8 @@ class ModelsController extends AppController {
 		$replace=array( "<newpage>", $delib_id,
 						$this->getDateDuJour(),
 						$seance_id,
-		 				$this->Date->frenchDate(strtotime($this->getDateSeance($seance_id))),
-						$this->getLibelleTypeSeance($this->getTypeIdFromSeanceId($seance_id)),
+		 				$dateSeance,
+						$libelleSeance,
 			 			$this->getDelibEtat($delib_id),
 			 			$this->getLibelleTheme($theme_id),
 			 			$this->getLibelleService($service_id),
