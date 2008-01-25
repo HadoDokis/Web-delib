@@ -38,7 +38,7 @@
 	        echo("<td>".$listeUserCircuit['nom'][$i]."</td>");
 	        echo("<td>".$listeUserCircuit['position'][$i]."</td>");
 	        //   echo("<td>".$listeUserCircuit['id'][$i]."</td>");
-	        
+		if ($isEditable){
 	        $loc=$html->url("/circuits/intervertirPosition/");
 	        if ($listeUserCircuit['position'][$i]!= $lastPosition)
 	            echo("<td class=\"actions\"><a href='".$loc.$listeUserCircuit['id'][$i]."/0/' class=\"link_descendre\"></a></td>");
@@ -51,7 +51,8 @@
 			$loc=$html->url("/circuits/supprimerUser/");
 	       echo("<td class=\"actions\"><a href='".$loc.$listeUserCircuit['id'][$i]."/' class=\"link_supprimer\"></a></td>");
 	        echo("</tr>");
-	    }
+		}
+		}
 	}
 	?>
 	</table>
