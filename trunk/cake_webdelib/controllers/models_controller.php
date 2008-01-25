@@ -138,6 +138,11 @@ class ModelsController extends AppController {
 			return $data['0']['Vote']['commentaire'];
 	}
 
+	function getPositionDelib($delib_id) {
+		$data= $this->Deliberation->findAll("Deliberation.id=$delib_id");
+		return $data['0']['Deliberation']['position'];
+	}
+	
 	function getDebatDelib($delib_id) {
 		$data= $this->Deliberation->findAll("Deliberation.id=$delib_id");
 		if (isset($data['0']['Deliberation']['debat']))
@@ -237,7 +242,7 @@ class ModelsController extends AppController {
 			$condition = 'Model.id=13';
 
 		$listeProjets = "";
-		$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>2",null,'position ASC');
+		$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=2",null,'position ASC');
 		foreach($projets as $projet) {
 			$data = $this->Model->findAll($condition);
 			$texte = $data['0']['Model']['texte'];
@@ -428,6 +433,7 @@ class ModelsController extends AppController {
 			 			"#TEXTE_DELIB#",
 			 			"#TEXTE_SYNTHESE#",
 			 			"#TEXTE_PROJET#",
+			 			"#POSITION_DELIB#",
 			 			"#DEBAT_DELIB#",
 			 			"#COMMENTAIRE_DELIB#",
 			 			"#NOM_RAPPORTEUR#",
@@ -464,6 +470,7 @@ class ModelsController extends AppController {
 			  			$this->getTexteDeliberation($delib_id),
 			 			$this->getTexteSynthese($delib_id),
 						$this->getTexteProjet($delib_id),
+						$this->getPositionDelib($delib_id),
 						$this->getDebatDelib($delib_id),
 						$this->getCommentaireDelib($delib_id),
 						$this->getUserNom($rapporteur_id),
