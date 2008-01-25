@@ -20,6 +20,7 @@
 		$pdf->WriteHTML($generation);
 
         foreach($projets as $projet) {
+        	$pdf->WriteHTML($projet['Deliberation']['position'].') ');
          	$pdf->WriteHTML('<b><u>Thème</u> : </b><br>'.$projet['Theme']['libelle'].'<br>');
          	$pdf->WriteHTML('<b><u>Rapporteur</u> : </b><br>'.$projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom'].'<br>');
          	$pdf->WriteHTML('<b><u>Service emetteur</u> : </b><br>'.$projet['Service']['libelle'].'<br>');
