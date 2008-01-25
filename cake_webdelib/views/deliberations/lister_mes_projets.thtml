@@ -22,10 +22,11 @@
 	<tr>
 		<td rowspan=3 style="text-align:center">
 		    <?php
-		        if ($deliberation['Deliberation']['etat']==0)
-		            echo $html->image('/icons/encours.png', array('title'=>'En cours de rédaction'));
-		     	if ($deliberation['Deliberation']['etat']==-1)
-		     	    echo $html->image('/icons/refuse.png', array('title'=>'Projet retourné'));
+	        	if ($deliberation['Deliberation']['anterieure_id']!=0)
+	     	    	echo $html->image('/icons/refuse.png', array('title'=>'Projet retourné'));
+	     	    else
+	     	    	echo $html->image('/icons/encours.png', array('title'=>'En cours de rédaction'));
+		     	
 		    ?>
 		</td>
 		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
