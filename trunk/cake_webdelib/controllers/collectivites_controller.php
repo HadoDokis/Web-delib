@@ -30,9 +30,10 @@
 		}
 		else {
 		    $type_file = $this->data['Image']['logo']['type'];
-            if( !strstr($type_file, 'jpg') && !strstr($type_file, 'jpeg') && !strstr($type_file, 'bmp') && !strstr($type_file, 'gif') && !strstr($type_file, 'png')){
-                exit("Le fichier n'est pas une image");
-    		}
+            if( !strstr($type_file, 'jpg') && !strstr($type_file, 'jpeg') ){
+                //exit("Le fichier n'est pas une image au format jpg/jpeg");
+                $this->Session->setFlash("Le fichier n'est pas une image au format jpg/jpeg");
+    		}else {
 			$name_file = 'logo.jpg';
 			$pos =  strrpos ( getcwd(), 'webroot');
 			$path = substr(getcwd(), 0, $pos);
@@ -43,7 +44,7 @@
        		    exit("Impossible de copier le fichier dans $content_dir");
    			 }
 			$this->redirect('/collectivites');
-		}
+		}}
  	}
 
  	function synchronize() {
