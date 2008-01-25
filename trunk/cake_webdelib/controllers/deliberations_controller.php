@@ -27,7 +27,7 @@ class DeliberationsController extends AppController {
 		//si la position est à  0 cela notifie un refus
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
-		$conditions="(etat = 0 OR etat = -1) AND redacteur_id = $user_id";
+		$conditions="etat =0 AND redacteur_id = $user_id";
 		$deliberations=$this->Deliberation->findAll($conditions);
 
 		for ($i=0; $i<count($deliberations); $i++){
@@ -428,8 +428,9 @@ class DeliberationsController extends AppController {
 			if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
-
-			$seances = $this->Seance->findAll();
+			
+			$conditions= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$seances = $this->Seance->findAll($conditions);
 			foreach ($seances as $seance){
 				$retard=$seance['Typeseance']['retard'];
 				if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
@@ -495,9 +496,9 @@ class DeliberationsController extends AppController {
 						$this->set('themes', $this->Deliberation->Theme->generateList());
 						$this->set('circuits', $this->Deliberation->Circuit->generateList());
 						$this->set('users', $this->Deliberation->User->generateList());
-						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 
-						$seances = $this->Seance->findAll();
+						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+						$seances = $this->Seance->findAll($condition);
 						foreach ($seances as $seance){
 							$retard=$seance['Typeseance']['retard'];
 							if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
@@ -714,7 +715,8 @@ class DeliberationsController extends AppController {
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
 
-			$seances = $this->Seance->findAll();
+			$conditions= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$seances = $this->Seance->findAll($conditions);
 			foreach ($seances as $seance){
 				$retard=$seance['Typeseance']['retard'];
 				if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
@@ -782,9 +784,9 @@ class DeliberationsController extends AppController {
 						$this->set('themes', $this->Deliberation->Theme->generateList());
 						$this->set('circuits', $this->Deliberation->Circuit->generateList());
 						$this->set('users', $this->Deliberation->User->generateList());
-						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 
-						$seances = $this->Seance->findAll();
+						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+						$seances = $this->Seance->findAll($condition);
 						foreach ($seances as $seance){
 							$retard=$seance['Typeseance']['retard'];
 							if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
@@ -1020,27 +1022,27 @@ class DeliberationsController extends AppController {
 				{
 					//verification du projet, s'il n'est pas pret ->reporté a la seance suivante
 					$delib = $this->Deliberation->findAll("Deliberation.id = $id");
-
 					$type_id =$delib[0]['Seance']['type_id'];
+					if(isset($type_id)){
+						$type = $this->Typeseance->findAll("Typeseance.id = $type_id");
+						$date_seance = $delib[0]['Seance']['date'];;
+						$retard = $type[0]['Typeseance']['retard'];
 
-					$type = $this->Typeseance->findAll("Typeseance.id = $type_id");
-					$date_seance = $delib[0]['Seance']['date'];;
-					$retard = $type[0]['Typeseance']['retard'];
-
-					$condition= 'date > "'.date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))).'"';
-					$seances = $this->Seance->findAll(($condition),null,'date asc');
-					if (!empty($date_seance)){
-					if (mktime(date("H") , date("i") ,date("s") , date("m") , date("d")+$retard , date("Y"))>= strtotime($date_seance)){
-						$this->data['Deliberation']['seance_id']=$seances[0]['Seance']['id'];
-						$this->data['Deliberation']['reporte']=1;
-						$this->data['Deliberation']['id']=$id;
-						if (isset($this->data['Deliberation']['seance_id']))
-						    $position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
-						else
-						    $position = 0;
-						$this->data['Deliberation']['position']=$position;
-						$this->Deliberation->save($this->data);
-					}
+						$condition= 'date > "'.date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))).'"';
+						$seances = $this->Seance->findAll(($condition),null,'date asc');
+						if (!empty($date_seance)){
+							if (mktime(date("H") , date("i") ,date("s") , date("m") , date("d")+$retard , date("Y"))>= strtotime($date_seance)){
+								$this->data['Deliberation']['seance_id']=$seances[0]['Seance']['id'];
+								$this->data['Deliberation']['reporte']=1;
+								$this->data['Deliberation']['id']=$id;
+								if (isset($this->data['Deliberation']['seance_id']))
+						    		$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+								else
+						    		$position = 0;
+								$this->data['Deliberation']['position']=$position;
+								$this->Deliberation->save($this->data);
+							}
+						}
 					}
 					//on a validÃ© le projet, il passe Ã  la personne suivante
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
