@@ -3,7 +3,7 @@ class CircuitsController extends AppController {
 
 	var $name = 'Circuits';
 	var $helpers = array('Html', 'Form' , 'Javascript');
-	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'UsersCircuit');
+	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'UsersCircuit', 'Deliberation');
 
 	function view($id = null) {
 		if (!$id) {
@@ -77,7 +77,8 @@ class CircuitsController extends AppController {
 		    $this->set('circuit_id', $circuit_id);
 		    $condition = "UsersCircuit.circuit_id = $circuit_id";
 		    $desc = 'position ASC';
-		     
+
+		    $this->set('isEditable', $this->isEditable($circuit_id));
        		$tmplisteUserCircuit = $this->UsersCircuit->findAll($condition, null, $desc);
        		 
        		for ($i=0; $i<count($tmplisteUserCircuit);$i++) {
@@ -234,7 +235,11 @@ class CircuitsController extends AppController {
 
 	}
 	
-
+	function isEditable ($circuit_id) {
+		$condition = "circuit_id=$circuit_id and etat=1";
+		$delibInCircuit = $this->Deliberation->findAll($condition);
+		return empty($delibInCircuit);
+	}
 	
   	function getCurrentPosition($id){
     	$conditions = "UsersCircuit.id = $id";
