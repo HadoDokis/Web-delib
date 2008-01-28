@@ -1,0 +1,34 @@
+<div id="vue_cadre">
+<h3>Fiche Types de s&eacute;ance</h3>
+
+<dl>
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Libelle</dt>
+		<dd>&nbsp;<?php echo $typeseance['Typeseance']['libelle']?></dd>
+	</div>
+	<div class="droite">
+	<dt>Nombre de jours avant retard</dt>
+	<dd><?php echo $typeseance['Typeseance']['retard']; ?></dd>
+	</div>
+</div>
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Date de c&eacute;ration</dt>
+		<dd>&nbsp;<?php echo $typeseance['Typeseance']['created']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Date de modification</dt>
+		<dd>&nbsp;<?php echo $typeseance['Typeseance']['modified']?></dd>
+	</div>
+</div>
+</dl>
+
+<br />
+<ul id="actions_fiche">
+	<li><?php echo $html->link('&shy;', '/typeseances/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retourner à la liste'), false, false) ?> </li>
+	<li><?php echo $html->link('&shy;', '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false) ?> </li>
+</ul>
+
+</div>

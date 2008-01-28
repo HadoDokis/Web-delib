@@ -1,0 +1,14 @@
+<h2>New Refannex</h2>
+<form action="<?php echo $html->url('/refannexes/add'); ?>" method="post">
+<div class="required"> 
+	<?php echo $form->labelTag('Refannex/libelle', 'Libelle');?>
+ 	<?php echo $html->input('Refannex/libelle', array('size' => '60'));?>
+	<?php echo $html->tagErrorMsg('Refannex/libelle', 'Please enter the Libelle.');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Add');?>
+</div>
+</form>
+<ul class="actions">
+<li><?php echo $html->link('List Refannexes', '/refannexes/index')?></li>
+</ul>
