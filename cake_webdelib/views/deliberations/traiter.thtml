@@ -4,12 +4,14 @@
 <dl>
 	<h3>D&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['num_delib']?></h3>
 
+<div class="imbrique">
 	<dt>Libelle</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
 
 	<dt>Titre</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>
-<br/>
+</div>
+
 <div class="imbrique">
 	<div class="gauche">
 		<dt>Theme</dt>
@@ -20,6 +22,7 @@
 		<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Service']['id'])?></dd>
 	</div>
 </div>
+
 <div class="imbrique">
 	<div class="gauche">
 		<dt>Num Pref</dt>
@@ -50,7 +53,9 @@
 	<? } ?>
 </dd>
 </div>
-<br/><br/>
+<br/>
+<br/>
+<br/>
 
 <div class="imbrique">
 	<div class="gauche">
