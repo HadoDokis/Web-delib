@@ -8,17 +8,14 @@
     if ($lastPosition ==0)
         echo " <a href=".$html->url("/circuits/delete/$circuit_id")."> Supprimer ce circuit</a>";
 ?>
+
 <!-- données concernant le circuit selectionné -->
    <table>
- <!--   <th>circuit_id</th>-->
- <!--   <th>libelle </th>-->
- <!--  <th>user_id</th>-->
- <!--   <th>service id </th>-->
+
    <th>service libelle</th>
    <th>prenom</th>
    <th>nom </th>
   <th>position</th>
-  <!--   <th>id usercircuit</th>-->
    <th>&nbsp;</th>
    <th>&nbsp;</th>
    <th>&nbsp;</th>
@@ -29,27 +26,23 @@
 	if (isset($listeUserCircuit)) {
 		for ($i=0; $i<count($listeUserCircuit['id']); $i++){
 	    	echo("<tr>");   
-	        //  echo("<td>".$listeUserCircuit['circuit_id'][$i]."</td>");
-	       // echo("<td>".$listeUserCircuit['libelle'][$i]."</td>");
-	       //  echo("<td>".$listeUserCircuit['user_id'][$i]."</td>");
-	        // echo("<td>".$listeUserCircuit['service_id'][$i]."</td>");
 	        echo("<td>".$listeUserCircuit['service_libelle'][$i]."</td>");
 	        echo("<td>".$listeUserCircuit['prenom'][$i]."</td>");
 	        echo("<td>".$listeUserCircuit['nom'][$i]."</td>");
 	        echo("<td>".$listeUserCircuit['position'][$i]."</td>");
-	        //   echo("<td>".$listeUserCircuit['id'][$i]."</td>");
+
 		if ($isEditable){
-	        $loc=$html->url("/circuits/intervertirPosition/");
+	        $loc="/circuits/intervertirPosition/";
 	        if ($listeUserCircuit['position'][$i]!= $lastPosition)
-	            echo("<td class=\"actions\"><a href='".$loc.$listeUserCircuit['id'][$i]."/0/' class=\"link_descendre\"></a></td>");
-	        else
+	         	echo ("<td class=\"actions\">".$html->link('&shy;', $loc.$listeUserCircuit['id'][$i].'/0/',array('class'=>'link_descendre','title'=>'Descendre'), false, false));
+	       else
 	            echo("<td class=\"actions\">&nbsp;</td>");
 	        if ($listeUserCircuit['position'][$i]!='1')
-	            echo("<td class=\"actions\"><a href='".$loc.$listeUserCircuit['id'][$i]."/1/' class=\"link_monter\"></a></td>");
+	        	echo ("<td class=\"actions\">".$html->link('&shy;', $loc.$listeUserCircuit['id'][$i].'/1/',array('class'=>'link_monter','title'=>'Monter'), false, false));
 	        else
 	            echo("<td class=\"actions\">&nbsp;</td>");
-			$loc=$html->url("/circuits/supprimerUser/");
-	       echo("<td class=\"actions\"><a href='".$loc.$listeUserCircuit['id'][$i]."/' class=\"link_supprimer\"></a></td>");
+			$loc="/circuits/supprimerUser/";
+	       echo ("<td class=\"actions\">".$html->link('&shy;', $loc.$listeUserCircuit['id'][$i].'/',array('class'=>'link_supprimer','title'=>'Supprimer'), false, false));
 	        echo("</tr>");
 		}
 		}
