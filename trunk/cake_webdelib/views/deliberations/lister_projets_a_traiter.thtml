@@ -7,7 +7,7 @@
 		<th Width='20%' >Etat de l'envoi</th>
 		<th Width='20%' >D&eacute;tenteur du dossier</th>
 		<th>Titre</th>
-		<th>Action</th>
+		<th Width='10%'>Action</th>
 
 	</tr>
 	<tr>
