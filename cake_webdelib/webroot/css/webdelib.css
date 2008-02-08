@@ -70,8 +70,8 @@ label {
 #login_form {
 	padding-top: 20px;
 	margin-top: 30px;
-	margin-left: 30%;
-	margin-right: 30%;
+	margin-left: 28%;
+	margin-right: 28%;
 	border: 1px solid;
 }
 
@@ -599,21 +599,18 @@ ul.actions {
 #globalnav {
 	font: normal normal 14px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	position:relative;
-	/*float:left;
-	/width:100%;*/
 	padding:0 0 1.50em 0em;
 	margin:0 40px 50px 0;
 	list-style:none;
 	line-height:1em;
 	border-bottom: 1px solid #888888;
+	
 }
 
 #globalnav LI {
 	float:left;
 	margin:0;
 	padding:0;
-
-
 }
 
 #globalnav A {
@@ -625,11 +622,7 @@ ul.actions {
 	padding:0.25em 1em;
 }
 
-#globalnav A:hover,
-#globalnav A:active,
-#globalnav A.here:link,
-#globalnav A.here:visited {
-}
+
 
 #globalnav A.here:link,
 #globalnav A.here:visited {
@@ -640,7 +633,6 @@ ul.actions {
 .here {
 	border-left: 1px solid #888888;
 	border-right: 1px solid #888888;
-	border-bottom: 1px solid #FFFFFF;
 }
 
 .here ul li{
@@ -674,7 +666,7 @@ ul.actions {
 
 
 #globalnav UL A {
-	//background:#bbb;
+	background:transparent;
 	color:#444;
 	display:inline;
 	margin:0;
@@ -708,6 +700,5 @@ ul.actions {
 	float:left;
 	margin-left:15px;
 	text-align:center;
-	
 }
 
