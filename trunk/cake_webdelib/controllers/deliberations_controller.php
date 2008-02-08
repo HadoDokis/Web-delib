@@ -62,7 +62,7 @@ class DeliberationsController extends AppController {
 			$user_id=$user['User']['id'];
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
-			$conditions="seance_id is null OR seance_id= 0 AND redacteur_id=$user_id";
+			$conditions="seance_id is null OR seance_id= 0 AND redacteur_id=$user_id AND etat !=-1";
 			$deliberations= $this->Deliberation->findAll($conditions);
 			$delib=array();
 			foreach ($deliberations as $deliberation){
@@ -492,11 +492,17 @@ class DeliberationsController extends AppController {
 
 					} else {
 						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+						$this->set('servEm',$this->requestAction('/services/doList/'.$this->data['Service']['id']));
 						$this->set('services', $this->Deliberation->Service->generateList());
 						$this->set('themes', $this->Deliberation->Theme->generateList());
 						$this->set('circuits', $this->Deliberation->Circuit->generateList());
-						$this->set('users', $this->Deliberation->User->generateList());
-
+						$this->set('datelim',$this->data['Deliberation']['date_limite']);
+						$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
+						$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
+						$selectedRapporteur = null;
+						if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
+							$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
+						$this->set('selectedRapporteur',$selectedRapporteur);
 						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 						$seances = $this->Seance->findAll($condition);
 						foreach ($seances as $seance){
@@ -783,8 +789,13 @@ class DeliberationsController extends AppController {
 						$this->set('services', $this->Deliberation->Service->generateList());
 						$this->set('themes', $this->Deliberation->Theme->generateList());
 						$this->set('circuits', $this->Deliberation->Circuit->generateList());
-						$this->set('users', $this->Deliberation->User->generateList());
-
+						$this->set('datelim',$this->data['Deliberation']['date_limite']);
+						$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
+						$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
+						$selectedRapporteur = null;
+						if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
+							$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
+						$this->set('selectedRapporteur',$selectedRapporteur);
 						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 						$seances = $this->Seance->findAll($condition);
 						foreach ($seances as $seance){
@@ -1435,11 +1446,11 @@ class DeliberationsController extends AppController {
 
 		$this->set('deliberations',$deliberations );
 	}
-
+	
 	function convertDoc2Html($file, $delib_id, $texte) {
-		if ($file['type']!='application/msword')
-	        die("Ce n'est pas un fichier doc");
-
+	//debug($file);
+		if ($file['type']=='application/msword' || $file['type']=='application/octet-stream' ){
+	        
 		$wvware = "/usr/bin/wvWare";
         $wvware_options = "-d";
     	$pos =  strrpos ( getcwd(), 'webroot');
@@ -1497,7 +1508,12 @@ class DeliberationsController extends AppController {
 		elseif  ($texte== 'deliberation')
 			$this->redirect('/deliberations/deliberation/'.$delib_id);
 		exit;
+		
+		}else{
+			die("Ce n'est pas un fichier au format .doc");
+		}
 	}
+	
 
     function updateword($wordfilename, $htmlfilename) {
     	$wvware = "/usr/bin/wvWare";
