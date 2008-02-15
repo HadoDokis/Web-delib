@@ -282,7 +282,16 @@ class DeliberationsController extends AppController {
 		$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
 		$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
 		$this->set('tab_anterieure',$tab_anterieure);
-
+		
+		$commentaires = $this->Commentaire->findAll("delib_id =  $id");
+		for($i=0; $i< count($commentaires) ; $i++) {
+			$nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
+			$prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
+			$commentaires[$i]['Commentaire']['nomAgent'] = $nomAgent;
+			$commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
+		}
+		$this->set('commentaires',$commentaires);
+		
 		$deliberation= $this->Deliberation->read(null, $id);
 		if(!empty($deliberation['Seance']['date']))
 			$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
