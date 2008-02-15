@@ -108,16 +108,16 @@
 ?>
 
 <?php
-	if(!empty($deliberation['Commentaire']))
+	if(!empty($commentaires))
 	{
-		echo"<dt>Commentaire</dt><dd>&nbsp;";
-		foreach ($deliberation['Commentaire'] as $commentaire){
-		echo $commentaire['texte'].'<br/>';}
-		echo '</dd>';
+		echo"<dt>Commentaires</dt><br />";
+		foreach ($commentaires as $commentaire){
+			echo '<dd><u>'. $commentaire['Commentaire']['prenomAgent'].' '.$commentaire['Commentaire']['nomAgent'] .' <br/></u>';
+		    echo $commentaire['Commentaire']['texte'];
+			echo '</dd>';
+		}
 	}
 ?>
-
-
 
 
 </dl>
