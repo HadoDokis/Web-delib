@@ -35,7 +35,7 @@
 </div>
 
 <div class="imbrique">
-	<dt>Circuit : <?php echo $html->link($deliberation['Circuit']['libelle'], '/circuits/view/' .$deliberation['Circuit']['id'])?></dt>
+	<dt>Circuit : <?php echo $deliberation['Circuit']['libelle']?></dt>
 	<dd><?php foreach ($user_circuit as $user) { ?>
 	<div class="graphique">
 		<?php
@@ -95,8 +95,8 @@
 	{
 		echo"<dt>Commentaires</dt><br />";
 		foreach ($commentaires as $commentaire){
-			echo '<u>'. $commentaire['Commentaire']['prenomAgent'].' '.$commentaire['Commentaire']['nomAgent'] .'</u>';
-		    echo '<dd>'.$commentaire['Commentaire']['texte'].' '.$html->link('Supprimer','/commentaires/delete/'.$commentaire['Commentaire']['id'].'/'.$deliberation['Deliberation']['id']);
+			echo '<dd><u>'. $commentaire['Commentaire']['prenomAgent'].' '.$commentaire['Commentaire']['nomAgent'] .' <br/></u>';
+		    echo $commentaire['Commentaire']['texte'].' '.$html->link('Supprimer','/commentaires/delete/'.$commentaire['Commentaire']['id'].'/'.$deliberation['Deliberation']['id']);
 			echo '</dd>';
 		}
 	}
