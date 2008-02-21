@@ -31,7 +31,7 @@
 		<td><?php echo $html->input('Deliberation/objet', array('size' => '30'));?></td>
 	</tr>
 	<tr>
-		<td><?php echo $form->labelTag('Deliberation/titre', 'Titre <acronym title="obligatoire">(*)</acronym>');?></td>
+		<td><?php echo $form->labelTag('Deliberation/titre', 'Titre');?></td>
  		<td><?php echo $html->textarea('Deliberation/titre', array('cols' => '60'));?></td>
 	</tr>
 	<tr>
@@ -80,7 +80,7 @@
 		<td><?php foreach ($annexes as $annexe) :
 				echo 'Titre : '.$annexe['Annex']['titre'];
 				echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
-				echo '<br>Taille : '.$annexe['Annex']['size'].' '.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
+				echo '<br>Taille : '.$annexe['Annex']['size'].' '.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']).' '.$html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
 				<?php endforeach; } ?></td>
 	</tr>
 	<tr>
