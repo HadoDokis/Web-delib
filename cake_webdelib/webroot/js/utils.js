@@ -11,9 +11,10 @@ function montre(id) {
 function OuvrirFenetre(url,nom,detail) {
 	var w = window.open(url,nom,detail);
 }
+
 function FermerFenetre(){
-var choix = confirm("Voulez-vous fermer la fenetre ?");
-if (choix)  window.close();
+	var choix = confirm("Voulez-vous fermer la fenetre ?");
+	if (choix)  window.close();
 }
 
 function returnChoice(text,arg) {
@@ -195,10 +196,7 @@ function checkForm (Form, id){
 		erreur = erreur + 1;
 		valide = false;
 	}
-	if (Form.DeliberationTitre.value == "") {
-	  	 erreur = erreur + 2;
-	    valide = false;
-	}
+
 
 	if (erreur == 0) {
 		return true;
@@ -207,13 +205,6 @@ function checkForm (Form, id){
 		message = "Le libelle est obligatoire";
     }
 
-	if (erreur == 2) {
-		message = "Le titre est obligatoire";
-    }
-
-	if (erreur == 3) {
-		message = "Le libelle et le titre sont obligatoires";
-	}
 
 	if (valide == false) {
 	    alert (message);
