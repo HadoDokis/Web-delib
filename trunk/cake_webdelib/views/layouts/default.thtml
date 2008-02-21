@@ -43,7 +43,7 @@
 
 	<div id="centre">
 		<?php echo $this->renderElement('navigation'); ?>
-		<?php echo $session->flash();?>
+		<?php $session->flash();?>
 		<?php echo $content_for_layout; ?>
 	</div>
 
