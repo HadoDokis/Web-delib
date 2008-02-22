@@ -126,13 +126,24 @@ function add_field() {
 	var a = document.getElementById('lien_annexe');
 	a.firstChild.nodeValue = 'Joindre une autre annexe';
 
+  if(navigator.appName=='Microsoft Internet Explorer'){
+  	var br = document.createElement('br');
  	var d = document.getElementById('cible');
-	var n = d.childNodes.length;
 	var p = document.createElement("p");
+	d.appendChild(p);
+	var n = d.childNodes.length;
+ 	p.id = n;
+  }
+
+ else {
+	var d = document.getElementById('cible');
+	var p = document.createElement("p");
+	var n = d.childNodes.length;
 	var br = document.createElement('br');
 	p.id = n;
  	d.appendChild(p);
-
+ }	
+ 	
 	var div1 = document.createElement('div');
 	var input1 = document.createElement('input');
 	input1.id = 'AnnexeTitre_'+n;
