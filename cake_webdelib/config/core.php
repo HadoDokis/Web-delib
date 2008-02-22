@@ -37,7 +37,7 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '0.9.5 beta');
+    define ('VERSION', '0.9.6 beta');
 
 /**
  * Set debug level here:
