@@ -282,7 +282,7 @@ class DeliberationsController extends AppController {
 		$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
 		$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
 		$this->set('tab_anterieure',$tab_anterieure);
-		
+
 		$commentaires = $this->Commentaire->findAll("delib_id =  $id");
 		for($i=0; $i< count($commentaires) ; $i++) {
 			$nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
@@ -291,7 +291,7 @@ class DeliberationsController extends AppController {
 			$commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
 		}
 		$this->set('commentaires',$commentaires);
-		
+
 		$deliberation= $this->Deliberation->read(null, $id);
 		if(!empty($deliberation['Seance']['date']))
 			$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
@@ -437,7 +437,7 @@ class DeliberationsController extends AppController {
 			if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
-			
+
 			$conditions= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$seances = $this->Seance->findAll($conditions);
 			foreach ($seances as $seance){
@@ -1455,11 +1455,11 @@ class DeliberationsController extends AppController {
 
 		$this->set('deliberations',$deliberations );
 	}
-	
+
 	function convertDoc2Html($file, $delib_id, $texte) {
 	//debug($file);
 		if ($file['type']=='application/msword' || $file['type']=='application/octet-stream' ){
-	        
+
 		$wvware = "/usr/bin/wvWare";
         $wvware_options = "-d";
     	$pos =  strrpos ( getcwd(), 'webroot');
@@ -1517,17 +1517,16 @@ class DeliberationsController extends AppController {
 		elseif  ($texte== 'deliberation')
 			$this->redirect('/deliberations/deliberation/'.$delib_id);
 		exit;
-		
+
 		}else{
 			die("Ce n'est pas un fichier au format .doc");
 		}
 	}
-	
+
 
     function updateword($wordfilename, $htmlfilename) {
     	$wvware = "/usr/bin/wvWare";
-        $wvware_options = "-d";
-
+        $wvware_options = "-c utf-8 -d";
         $htmldir = dirname ($htmlfilename);
         /* ensure that we get any images into the html directory */
         exec("$wvware $wvware_options $htmldir $wordfilename > $htmlfilename");
