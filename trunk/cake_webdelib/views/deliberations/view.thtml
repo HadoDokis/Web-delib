@@ -34,7 +34,7 @@
 			<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
 		</div>
 	</div>
-	
+
 
 	<div class="imbrique">
 		<dt>Circuit : <?php echo $deliberation['Circuit']['libelle']?></dt>
@@ -126,7 +126,11 @@
 	<li><?php echo $html->link('&shy;','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
 	<li><?php echo $html->link('&shy;','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
 	<li><?php echo $html->link('&shy;','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?></li>
-	<li><?php echo $html->link('&shy;', '/deliberations/edit/' . $deliberation['Deliberation']['id'],array('class'=>'link_modifier','title'=>'Modifier'), false, false);?></li>
+	<li>
+	<?php
+	    if ($userCanEdit)
+		    echo $html->link('&shy;', '/deliberations/edit/' . $deliberation['Deliberation']['id'],array('class'=>'link_modifier','title'=>'Modifier'), false, false);?>
+	</li>
 
 </ul>
 
