@@ -28,7 +28,13 @@
 </div>
 	<div class="optional">
     	<h2>Texte Projet au format MS-Word (.doc)</h2>
-    	<?php echo  $html->fileTag("Deliberation/texte_doc"); ?><?php echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));?><br/><br/>
+    	<?php
+    	if (IMPORT_DOC)
+    	     echo  $html->fileTag("Deliberation/texte_doc");
+    	else
+    	 	 echo  $html->fileTag("Deliberation/texte_doc", array('disabled '=>'disabled '));
+    	 ?>
+    	 <?php echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));?><br/><br/>
 	</div>
 <div class="submit">
 	<?php echo $html->submit('Fermer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"javascript:FermerFenetre()"));?>
