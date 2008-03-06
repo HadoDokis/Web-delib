@@ -275,6 +275,9 @@ class DeliberationsController extends AppController {
 			$this->Session->setFlash('Invalide id de deliberation.');
 			$this->redirect('/deliberations/listerProjetsATraiter');
 		}
+		$user=$this->Session->read('user');
+		$user_id=$user['User']['id'];
+
 			//affichage anterieure
 		$nb_recursion=0;
 		$action='view';
@@ -282,7 +285,10 @@ class DeliberationsController extends AppController {
 		$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
 		$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
 		$this->set('tab_anterieure',$tab_anterieure);
-
+		if ($this->Acl->check($user_id, "Deliberations:add"))
+			$this->set('userCanEdit', true);
+		else
+			$this->set('userCanEdit', false);
 		$commentaires = $this->Commentaire->findAll("delib_id =  $id");
 		for($i=0; $i< count($commentaires) ; $i++) {
 			$nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
