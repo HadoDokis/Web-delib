@@ -37,8 +37,8 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '0.9.6 beta');
-
+    define ('VERSION', '0.9.6.1 beta');
+	define ('IMPORT_DOC', false);
 /**
  * Set debug level here:
  * - 0: production
