@@ -224,36 +224,36 @@ class DeliberationsController extends AppController {
 
 			$deliberations = $this->Deliberation->findAll($conditions);
 
+
 			for ($i=0; $i<count($deliberations); $i++){
 				if(!empty($deliberations[$i]['Seance']['date']))
 		    		$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
 			}
+
 			foreach ($deliberations as $deliberation)
 			{
 
-				if (isset($deliberation['Deliberation']['date_limite'])){
+				if (isset($deliberation['Deliberation']['date_limite']))
 				    $deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
-				}
+
 				//on recupere la position courante de la deliberation
 				$lastTraitement=array_pop($deliberation['Traitement']);
+				// Le +1 pour compter le 0
+				$posCourante = count($deliberation['Traitement'])+1;
 
 				//on recupere la position de l'user dans le circuit
 				foreach ($data_circuit as $data)
-				{
-					if ($data['UsersCircuit']['circuit_id']==$lastTraitement['circuit_id'])
-					{
+					if ($data['UsersCircuit']['circuit_id']==$lastTraitement['circuit_id']){
 						$position_user=$data['UsersCircuit']['position'];
 					}
-				}
 
-				if ($lastTraitement['position'] == $position_user){
+				if (	$posCourante == $position_user  ){
 					$deliberation['action'] = "traiter";
 					$deliberation['act'] = "traiter";
 					$deliberation['image']='icons/atraiter.png';
-
-				array_push($delib, $deliberation);
+					array_push($delib, $deliberation);
 
 				}
 			}
@@ -945,9 +945,19 @@ class DeliberationsController extends AppController {
     }
 
 
+	function changeCircuit ($delib_id, $circuit_id) {
+	    $traitements = $this->Traitement->findAll("delib_id =$delib_id ");
+	    foreach($traitements as $traitement ){
+	        $this->Traitement->delete($traitement['Traitement']['id']);
+	    }
+   }
+
+
+
 	function attribuercircuit ($id = null, $circuit_id=null) {
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
+
 			$this->set('lastPosition', '-1');
 			$listeUsers['id']=array();
 			$listeUsers['nom']=array();
@@ -962,6 +972,7 @@ class DeliberationsController extends AppController {
 	       	$listeUserCircuit['position']=array();
 	       	$listeUserCircuit['service_libelle']=array();
 			$circuits=$this->Deliberation->Circuit->generateList(null, "libelle ASC");
+            $old_circuit  = $this->data['Deliberation']['circuit_id'];
 
 			//affichage du circuit existant
 			if($circuit_id == null)
@@ -992,6 +1003,10 @@ class DeliberationsController extends AppController {
 			$this->set('circuits', $circuits);
 		} else {
 			$this->data['Deliberation']['id']=$id;
+			$old = $this->Deliberation->findAll("Deliberation.id=$id");
+
+			if($old['0']['Deliberation']['circuit_id'] != $circuit_id )
+				$this->changeCircuit($id, $circuit_id);
 
 			if ($this->Deliberation->save($this->data)) {
 
