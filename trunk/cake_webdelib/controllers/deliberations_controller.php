@@ -86,13 +86,13 @@ class DeliberationsController extends AppController {
 		else
 		{
 			$deliberation['Deliberation']['seance_id']= $this->data['Deliberation']['seance_id'];
+			// si la délibération est déjà validée alors attribution de la posisiton pour la séance
+			$etatDelib = $this->Deliberation->read('etat', $this->data['Deliberation']['id']);
+			if ($etatDelib['Deliberation']['etat'] == 2)
+				$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 
-			if ($this->Deliberation->save($this->data)) {
-
-				$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
-				$this->data['Deliberation']['position']=$position;
-				$this->Deliberation->save($this->data);
-
+			if ($this->Deliberation->save($this->data))
+			{
 				$this->redirect('/deliberations/listerMesProjets');
 			}
 			else
@@ -460,10 +460,6 @@ class DeliberationsController extends AppController {
 			unset($this->params['form']['date_limite']);
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
-			if($this->data['Deliberation']['seance_id'] != ""){
-				$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
-				$this->data['Deliberation']['position']=$position;
-			}
 			$this->cleanUpFields();
 
 			if(!empty($this->params['form']))
@@ -754,10 +750,6 @@ class DeliberationsController extends AppController {
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
 
-		 	if($this->data['Deliberation']['seance_id'] != ""){
-				$position = $this->getLastPosition($this->data['Deliberation']['seance_id']);
-				$this->data['Deliberation']['position']=$position;
-			}
 			$this->cleanUpFields();
 
 			if(!empty($this->params['form']))
@@ -1104,10 +1096,13 @@ class DeliberationsController extends AppController {
 
 					if ($lastposcircuit==$lastposprojet) //on est sur la derniÃ¨re personne, on va faire sortir le projet du workflow et le passer au service des assemblÃ©es
 					{
-						//passage au service des assemblÃ©e : etat dans la table deliberations passe Ã  2
+						// passage au service des assemblÃ©e : etat dans la table deliberations passe Ã  2
 						$tab=$this->Deliberation->findAll("Deliberation.id = $id");
 						$this->data['Deliberation']['etat']=2;
 						$this->data['Deliberation']['id']=$id;
+						// si la séance est définie, on attribue la position de la délib dans la séance
+					 	if($delib[0]['Deliberation']['seance_id'] != 0)
+							$this->data['Deliberation']['position']=$this->getLastPosition($delib[0]['Deliberation']['seance_id']);
 						$this->Deliberation->save($this->data['Deliberation']);
 						$this->redirect('/deliberations/listerProjetsATraiter');
 					}
