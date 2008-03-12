@@ -19,9 +19,10 @@
 			<?php echo $html->link('&shy;','/seances/generateConvocationList/' . $seance['Seance']['id'], array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'), false, false)?>
 			<?php echo $html->link('&shy;','/seances/generateOrdresDuJour/' . $seance['Seance']['id'], array('class'=>'link_ordre_jour', 'title'=>'Générer l\'ordre du jour détaillé'), false, false)?>
 		</td>
-		<td class="actions"><?php echo $html->link('&shy;','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voir', 'title'=>'Afficher les projets et voter'), false, false); ?>
+		<td class="actions">
 			<?php echo $html->link('&shy;','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les débats généraux de la séance'), false, false); ?>
-			<?php echo $html->link('&shy;','/seances/changeStatus/' . $seance['Seance']['id'], array('class'=>'link_fin_seance', 'title'=>'Terminer la s&eacute;ance'), false, false); ?>
+			<?php echo $html->link('&shy;','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voir', 'title'=>'Afficher les projets et voter'), false, false); ?>
+			<?php echo $html->link('&shy;','/seances/changeStatus/' . $seance['Seance']['id'], array('class'=>'link_fin_seance', 'title'=>'Terminer la séance'), false, false); ?>
 		</td>
 	</tr>
 	<?php endforeach; ?>
