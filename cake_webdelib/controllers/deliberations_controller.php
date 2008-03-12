@@ -456,6 +456,9 @@ class DeliberationsController extends AppController {
 			$this->render();
 
 		} else {
+			if (isset($this->data['Deliberation']['seance_id']) )
+				$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+
 			$this->data['Deliberation']['id']=$id;
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
 			unset($this->params['form']['date_limite']);
@@ -746,6 +749,9 @@ class DeliberationsController extends AppController {
 			$this->render();
 
 		} else {
+			if (isset($this->data['Deliberation']['seance_id']) )
+				$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+
 			$this->data['Deliberation']['id']=$id;
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
 			unset($this->params['form']['date_limite']);
@@ -1457,7 +1463,7 @@ class DeliberationsController extends AppController {
     	}
 
    		function getLastPosition($seance_id) {
-			return count($this->Deliberation->findAll("seance_id =$seance_id AND (etat=1 OR etat=2)"))+1;
+			return count($this->Deliberation->findAll("seance_id =$seance_id"))+1;
     	}
 
 	function getNextId() {
