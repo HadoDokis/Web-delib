@@ -1463,7 +1463,7 @@ class DeliberationsController extends AppController {
     	}
 
    		function getLastPosition($seance_id) {
-			return count($this->Deliberation->findAll("seance_id =$seance_id"))+1;
+			return count($this->Deliberation->findAll("seance_id =$seance_id AND (etat != -1 )"))+1;
     	}
 
 	function getNextId() {
