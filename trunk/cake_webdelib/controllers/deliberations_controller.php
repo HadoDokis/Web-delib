@@ -60,7 +60,8 @@ class DeliberationsController extends AppController {
 			$this->checkEmptyDelib();
 			$user=$this->Session->read('user');
 			$user_id=$user['User']['id'];
-			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+//			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$condition= 'Seance.traitee = 0';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$conditions="seance_id is null OR seance_id= 0 AND (etat =1 OR etat =2)";
 			$deliberations= $this->Deliberation->findAll($conditions);
@@ -1108,9 +1109,6 @@ class DeliberationsController extends AppController {
 						$tab=$this->Deliberation->findAll("Deliberation.id = $id");
 						$this->data['Deliberation']['etat']=2;
 						$this->data['Deliberation']['id']=$id;
-						// si la séance est définie, on attribue la position de la délib dans la séance
-					 	if($delib[0]['Deliberation']['seance_id'] != 0)
-							$this->data['Deliberation']['position']=$this->getLastPosition($delib[0]['Deliberation']['seance_id']);
 						$this->Deliberation->save($this->data['Deliberation']);
 						$this->redirect('/deliberations/listerProjetsATraiter');
 					}
