@@ -87,10 +87,10 @@ class SeancesController extends AppController {
 		}
 	}
 
-	function listerFuturesSeances()
-	{
+	function listerFuturesSeances() {
 		if (empty ($this->data)) {
-			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$condition= 'Seance.traitee = 0';
+			//$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$seances = $this->Seance->findAll(($condition),null,'date asc');
 
 			for ($i=0; $i<count($seances); $i++)
@@ -100,10 +100,10 @@ class SeancesController extends AppController {
 		}
 	}
 
-	function listerAnciennesSeances()
-	{
+	function listerAnciennesSeances() {
 			if (empty ($this->data)) {
-			$condition= 'date <= "'.date('Y-m-d H:i:s').'"';
+			//$condition= 'date <= "'.date('Y-m-d H:i:s').'"';
+			$condition= 'Seance.traitee = 1';
 			$seances = $this->Seance->findAll(($condition),null,'date asc');
 
 			for ($i=0; $i<count($seances); $i++)
@@ -111,6 +111,13 @@ class SeancesController extends AppController {
 
 			$this->set('seances', $seances);
 		}
+	}
+
+	function changeStatus ($seance_id) {
+		$this->data=$this->Seance->read(null,$seance_id);
+		$this->data['Seance']['traitee']=1;
+		if ($this->Seance->save($this->data))
+			$this->redirect('/seances/listerFuturesSeances');
 	}
 
 	function afficherCalendrier ($annee=null){
@@ -186,11 +193,11 @@ class SeancesController extends AppController {
 
 	function afficherProjets ($id=null, $return=null)
 	{
-		$condition= "seance_id=$id AND etat=2";
+		$condition= "seance_id=$id AND (etat=2 OR etat=3 OR etat=4)";
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id") - 1 );
 			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
-			for ($i=0; $i<count($deliberations); $i++){
+			for ($i=0; $i<count($deliberations); $i++) {
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
 				$deliberations[$i]['rapp_id'] = $this->requestAction("deliberations/getRapporteur/".$deliberations[$i]['Deliberation']['id']);
@@ -348,15 +355,50 @@ class SeancesController extends AppController {
 	}
 
 	function generateOrdresDuJour ($id=null) {
-		$this->set('data', $this->User->findAll("statut =1"));
+		$data =  $this->User->findAll("statut =1");
 		$type_infos = $this->getType($id);
-		$this->set('model',$this->Model->findAll());
-		$this->set('type_infos', $type_infos );
-		$this->set('projets', $this->afficherProjets($id, 1));
-		$this->set('jour', $this->Date->days[intval(date('w'))]);
-		$this->set('mois', $this->Date->months[intval(date('m'))]);
-		$this->set('collectivite',  $this->Collectivite->findAll());
-		$this->set('date_seance',  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date'])));
+		$model = $this->Model->findAll();
+		$projets=$this->afficherProjets($id, 1);
+		$jour=$this->Date->days[intval(date('w'))];
+		$mois=$this->Date->months[intval(date('m'))];
+		$collectivite=  $this->Collectivite->findAll();
+		$date_seance=  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date']));
+
+		vendor('fpdf/html2fpdf');
+		$pdf = new HTML2FPDF();
+
+   		foreach($data as $seanceUser) {
+			$pdf->AddPage();
+      		$search = array("#LOGO_COLLECTIVITE#","#ADRESSE_COLLECTIVITE#","#NOM_ELU#","#ADRESSE_ELU#","#VILLE_ELU#","#VILLE_COLLECTIVITE#","#DATE_DU_JOUR#","#TYPE_SEANCE#","#DATE_SEANCE#","#LISTE_PROJETS_SOMMAIRES#", "#LISTE_PROJETS_DETAILLES#");
+			$replace = array('<img src="files/image/logo.jpg">',
+			$collectivite[0]['Collectivite']['nom'].'<br>'.$collectivite[0]['Collectivite']['adresse'].'<br>'.$collectivite[0]['Collectivite']['CP'].' '.$collectivite[0]['Collectivite']['ville'],
+			$seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'],
+			$seanceUser['User']['adresse'],
+			$seanceUser['User']['CP'].' '.$seanceUser['User']['ville'],
+			$collectivite[0]['Collectivite']['nom'],
+			$jour.' '.date('d').' '.$mois.' '.date('Y'),
+			$type_infos[0]['Typeseance']['libelle'],
+			$date_seance,
+			$this->requestAction("/models/listeProjets/$id/0"),
+			$this->requestAction("/models/listeProjets/$id/1")
+		);
+		$generation = str_replace($search,$replace,$model[1]['Model']['texte']);
+		$pdf->WriteHTML($generation);
+
+        foreach($projets as $projet) {
+        	@$pdf->WriteHTML($projet['Deliberation']['position'].') ');
+         	@$pdf->WriteHTML('<b><u>Thème</u> : </b><br>'.$projet['Theme']['libelle'].'<br>');
+         	@$pdf->WriteHTML('<b><u>Rapporteur</u> : </b><br>'.$projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom'].'<br>');
+         	@$pdf->WriteHTML('<b><u>Service emetteur</u> : </b><br>'.$projet['Service']['libelle'].'<br>');
+            @$pdf->WriteHTML('<b><u>Titre</u> : </b><br>'.$projet['Deliberation']['titre'].'<br>');
+            @$pdf->WriteHTML('<b><u>Synthèse</u> :</b>'.$projet['Deliberation']['texte_synthese'].'<br><br>');
+        	@$pdf->AddPage();
+        }
+
+    }
+	$pdf->Output('odj.pdf','D');
+
+
 	}
 
 	function checkLists($seance_id){
