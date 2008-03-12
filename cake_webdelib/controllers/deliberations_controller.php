@@ -60,7 +60,6 @@ class DeliberationsController extends AppController {
 			$this->checkEmptyDelib();
 			$user=$this->Session->read('user');
 			$user_id=$user['User']['id'];
-//			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$condition= 'Seance.traitee = 0';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 			$conditions="seance_id is null OR seance_id= 0 AND (etat =1 OR etat =2)";
@@ -445,7 +444,6 @@ class DeliberationsController extends AppController {
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
 
-//			$conditions= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$conditions= 'Seance.traitee = 0';
 			$seances = $this->Seance->findAll($conditions);
 			foreach ($seances as $seance){
@@ -457,7 +455,7 @@ class DeliberationsController extends AppController {
 			$this->render();
 
 		} else {
-			if (isset($this->data['Deliberation']['seance_id']) )
+			if (isset($this->data['Deliberation']['seance_id']) and !empty($this->data['Deliberation']['seance_id']))
 				$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 
 			$this->data['Deliberation']['id']=$id;
@@ -737,7 +735,6 @@ class DeliberationsController extends AppController {
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
 
-//			$conditions= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$conditions= 'Seance.traitee = 0';
 			$seances = $this->Seance->findAll($conditions);
 			foreach ($seances as $seance){
