@@ -193,7 +193,7 @@ class SeancesController extends AppController {
 
 	function afficherProjets ($id=null, $return=null)
 	{
-		$condition= "seance_id=$id AND (etat=2 OR etat=3 OR etat=4)";
+		$condition= "seance_id=$id AND (etat != -1 )";
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id") - 1 );
 			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
