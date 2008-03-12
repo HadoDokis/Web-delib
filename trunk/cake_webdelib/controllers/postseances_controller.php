@@ -9,7 +9,7 @@ class PostseancesController extends AppController {
 	function index() {
 		$this->Postseances->recursive = 0;
 	//	$condition= 'date <= "'.date('Y-m-d H:i:s').'"';
-		$condition= 'Seance.traitee';
+		$condition= 'Seance.traitee = 1';
 		$seances = $this->Seance->findAll(($condition),null,'date asc');
 
 		for ($i=0; $i<count($seances); $i++)

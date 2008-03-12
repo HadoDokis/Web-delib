@@ -444,7 +444,8 @@ class DeliberationsController extends AppController {
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
 
-			$conditions= 'date >= "'.date('Y-m-d H:i:s').'"';
+//			$conditions= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$conditions= 'Seance.traitee = 0';
 			$seances = $this->Seance->findAll($conditions);
 			foreach ($seances as $seance){
 				$retard=$seance['Typeseance']['retard'];
@@ -732,7 +733,8 @@ class DeliberationsController extends AppController {
 				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
 			$this->set('selectedRapporteur',$selectedRapporteur);
 
-			$conditions= 'date >= "'.date('Y-m-d H:i:s').'"';
+//			$conditions= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$conditions= 'Seance.traitee = 0';
 			$seances = $this->Seance->findAll($conditions);
 			foreach ($seances as $seance){
 				$retard=$seance['Typeseance']['retard'];
