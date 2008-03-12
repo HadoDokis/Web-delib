@@ -1,0 +1,1 @@
+ALTER TABLE `seances` ADD `traitee` INT( 1 ) NOT NULL DEFAULT '0';
