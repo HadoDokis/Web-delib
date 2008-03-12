@@ -1431,7 +1431,7 @@ class DeliberationsController extends AppController {
         }
 
         function sortby($seance_id, $sortby) {
-		    $condition= "seance_id=$seance_id AND etat = 2";
+		    $condition= "seance_id=$seance_id AND etat != -1";
 		    // Critère de tri
 			if ($sortby == 'theme_id') $sortby = 'Theme.libelle';
 			elseif ($sortby == 'rapporteur_id') $sortby = 'Rapporteur.nom';
