@@ -12,7 +12,7 @@ acronym {
 }
 
 #add_form label {
-color:#696969;	
+color:#696969;
 float: left;
 	width: 100%;
 	text-align: right;
@@ -40,13 +40,13 @@ table#sample tr td {
 	text-align: left;
 }
 
-#attribute_list a { 
+#attribute_list a {
   text-align: left;
   font-size: 11px;
   text-decoration: none;
 }
 
-#attribute_list a:hover { 
+#attribute_list a:hover {
   text-align: left;
   font-size: 12px;
   text-decoration: solid;
@@ -82,7 +82,7 @@ label {
 }
 
 #tableau_bord {
-	
+
 	padding-left: 20px;
 }
 
@@ -182,7 +182,7 @@ body {
 	padding-left: 20px;
 	font: italic normal 28px/30px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	color: #444444;
-	background-color: transparent; 
+	background-color: transparent;
 }
 
 #user {
@@ -191,7 +191,7 @@ body {
 	border-bottom: 1px solid #888888;
 	margin-top: 0px;
 	padding-right: 10px;
-	background-color: transparent; 
+	background-color: transparent;
 }
 
 #user a {
@@ -203,7 +203,7 @@ body {
 }
 
 #centre {
-	
+
 	min-height: 400px;
 	padding: 0px 75px 15px 75px;
 }
@@ -309,6 +309,13 @@ a.link_voter {
 
 a.link_debat {
 	background-image: url(../img/icons/saisir.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_fin_seance {
+	background-image: url(../img/icons/seance_finie);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 10px 22px;
@@ -431,7 +438,7 @@ a.link_annuler {
 	background-image: url(../img/icons/back.png);
 	background-repeat: no-repeat;
 	background-position: top left;
-	padding: 4px 4px 4px 25px;	
+	padding: 4px 4px 4px 25px;
 }
 
 a.link_annuler_sans_border {
@@ -454,7 +461,7 @@ a.link_annexe {
 	background-image: url(../img/icons/bookmark.png);
 	background-repeat: no-repeat;
 	background-position: top left;
-	padding: 4px 4px 4px 25px;	
+	padding: 4px 4px 4px 25px;
 
 }
 
@@ -476,7 +483,7 @@ a.link_annexe {
 	border-left: none;
 	border-bottom: none;
 	padding-left: 25px;
-	height: 22px;	
+	height: 22px;
 	cursor: pointer;
 }
 
@@ -490,7 +497,7 @@ a.link_annexe {
 	border-left: none;
 	border-bottom: none;
 	padding-left: 25px;
-	height: 22px;	
+	height: 22px;
 	cursor: pointer;
 }
 
@@ -505,7 +512,7 @@ a.link_annexe {
 	border-left: none;
 	border-bottom: none;
 	padding-left: 25px;
-	height: 22px;	
+	height: 22px;
 	cursor: pointer;
 }
 
@@ -545,7 +552,7 @@ a.link_annexe {
 .droite {
 	float:right;
 	width: 50%
-	
+
 }
 
 #vue_cadre{
@@ -604,7 +611,7 @@ ul.actions {
 	list-style:none;
 	line-height:1em;
 	width:100%;
-	
+
 }
 
 #globalnav LI {
