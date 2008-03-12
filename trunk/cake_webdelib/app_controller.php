@@ -54,7 +54,7 @@ class AppController extends Controller {
 		$this->infoUser = "<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ";
    		$this->agentServices = $this->Session->read('user.Service');
  	    $this->lienDeconnexion = "[<span class=\"deconnexion\"><a href=\"".$this->base."/users/logout\"> Deconnexion</a></span>]";
-	
+
 		if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login')
 		{
 			//s'il n'y a pas d'utilisateur connecte en session
@@ -74,9 +74,12 @@ class AppController extends Controller {
           		    return;
         		}
                 else {
-                    //$this->redirect('/users/logout');
-                    die("accès refusé pour $user_id (".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom').") à $aco");
-                }
+                   if (DEBUG==1)
+                       die("accès refusé pour $user_id (".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom').") à $aco");
+                    else
+                        $this->redirect('/users/logout');
+
+                  }
             }
 		}
 	}
@@ -132,7 +135,7 @@ class AppController extends Controller {
         $sub_menu2 = array (
         	'Nouvelle...' => array('link' => '/seances/add'),
         	//'A venir' => array ('link' => '/seances/listerFuturesSeances'),
-        	'Passées' => array('link' => '/seances/listerAnciennesSeances'),
+        	'Traitées' => array('link' => '/seances/listerAnciennesSeances'),
         	'Calendrier' => array('link' => '/seances/afficherCalendrier')
         );
 
