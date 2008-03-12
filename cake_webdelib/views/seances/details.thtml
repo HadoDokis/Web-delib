@@ -26,9 +26,9 @@
 	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
 	<td class="actions" width="80">
-			<?php echo $html->link('&shy;','/seances/voter/' .$deliberation['Deliberation']['id'], array('class'=>'link_voter', 'title'=>'Voter les projets'), false, false)?>
-			<?php echo $html->link('&shy;','/seances/saisirDebat/' .$deliberation['Deliberation']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats'), false, false); ?>
-			<?php echo $html->link('&shy;','/deliberations/convert/' .$deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false);?>
+		<?php echo $html->link('&shy;','/seances/saisirDebat/' .$deliberation['Deliberation']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats'), false, false); ?>
+		<?php echo $html->link('&shy;','/seances/voter/' .$deliberation['Deliberation']['id'], array('class'=>'link_voter', 'title'=>'Voter les projets'), false, false)?>
+		<?php echo $html->link('&shy;','/deliberations/convert/' .$deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false);?>
 	</td>
 </tr>
 <?php endforeach; ?>
