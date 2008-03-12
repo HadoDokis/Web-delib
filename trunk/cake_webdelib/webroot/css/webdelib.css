@@ -315,7 +315,7 @@ a.link_debat {
 }
 
 a.link_fin_seance {
-	background-image: url(../img/icons/seance_finie);
+	background-image: url(../img/icons/seance_finie.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 10px 22px;
