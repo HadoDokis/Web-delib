@@ -1,4 +1,4 @@
-﻿/*
+/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  *
@@ -28,7 +28,7 @@ var FCKToolbarFontFormatCombo = function( tooltip, style )
 	this.Tooltip	= tooltip ? tooltip : this.Label ;
 	this.Style		= style ? style : FCK_TOOLBARITEM_ICONTEXT ;
 
-	this.NormalLabel = 'Normal' ;
+	this.NormalLabel = '11' ;
 
 	this.PanelWidth = 190 ;
 }
@@ -58,16 +58,12 @@ FCKToolbarFontFormatCombo.prototype.CreateItems = function( targetSpecialCombo )
 	// Get the format names from the language file.
 	var aNames = FCKLang['FontFormats'].split(';') ;
 	var oNames = {
-		p		: aNames[0],
-		pre		: aNames[1],
-		address	: aNames[2],
-		h1		: aNames[3],
-		h2		: aNames[4],
-		h3		: aNames[5],
-		h4		: aNames[6],
-		h5		: aNames[7],
-		h6		: aNames[8],
-		div		: aNames[9]
+		h1		: aNames[0],
+		h2		: aNames[1],
+		h3		: aNames[2],
+		h4		: aNames[3],
+		h5		: aNames[4],
+		h6		: aNames[5]
 	} ;
 
 	// Get the available formats from the configuration file.

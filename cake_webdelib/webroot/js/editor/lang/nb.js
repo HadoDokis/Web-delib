@@ -134,7 +134,7 @@ SelectionFieldProp	: "Dropdown menyegenskaper",
 TextareaProp		: "Tekstfeltegenskaper",
 FormProp			: "Skjemaegenskaper",
 
-FontFormats			: "Normal;Formatert;Adresse;Tittel 1;Tittel 2;Tittel 3;Tittel 4;Tittel 5;Tittel 6",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Tittel 1;Tittel 2;Tittel 3;Tittel 4;Tittel 5;Tittel 6",		//REVIEW : Check _getfontformat.html
 
 // Alerts and Messages
 ProcessingXHTML		: "Lager XHTML. Vennligst vent...",
