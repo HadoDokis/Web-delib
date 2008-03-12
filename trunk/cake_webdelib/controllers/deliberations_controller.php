@@ -62,7 +62,7 @@ class DeliberationsController extends AppController {
 			$user_id=$user['User']['id'];
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
-			$conditions="seance_id is null OR seance_id= 0 AND redacteur_id=$user_id AND etat !=-1";
+			$conditions="seance_id is null OR seance_id= 0 AND (etat =1 OR etat =2)";
 			$deliberations= $this->Deliberation->findAll($conditions);
 			$delib=array();
 			foreach ($deliberations as $deliberation){
@@ -88,12 +88,12 @@ class DeliberationsController extends AppController {
 			$deliberation['Deliberation']['seance_id']= $this->data['Deliberation']['seance_id'];
 			// si la délibération est déjà validée alors attribution de la posisiton pour la séance
 			$etatDelib = $this->Deliberation->read('etat', $this->data['Deliberation']['id']);
-			if ($etatDelib['Deliberation']['etat'] == 2)
+			if (($etatDelib['Deliberation']['etat'] == 2)OR($etatDelib['Deliberation']['etat'] == 1))
 				$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 
 			if ($this->Deliberation->save($this->data))
 			{
-				$this->redirect('/deliberations/listerMesProjets');
+				$this->redirect('deliberations/listerProjetsNonAttribues');
 			}
 			else
 			{
@@ -1454,8 +1454,8 @@ class DeliberationsController extends AppController {
 			return $objCourant['0']['Deliberation']['seance_id'];
     	}
 
-   		function getLastPosition( $seance_id) {
-			return count($this->Deliberation->findAll("seance_id =$seance_id AND etat=2"))+1;
+   		function getLastPosition($seance_id) {
+			return count($this->Deliberation->findAll("seance_id =$seance_id AND (etat=1 OR etat=2)"))+1;
     	}
 
 	function getNextId() {
