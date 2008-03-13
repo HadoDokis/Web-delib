@@ -61,8 +61,16 @@ class DeliberationsController extends AppController {
 			$user=$this->Session->read('user');
 			$user_id=$user['User']['id'];
 			$condition= 'Seance.traitee = 0';
-			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
-			$conditions="seance_id is null OR seance_id= 0 AND (etat =1 OR etat =2)";
+			$seances = $this->Seance->findAll($condition);
+
+			foreach ($seances as $seance){
+				$retard=$seance['Typeseance']['retard'];
+				if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
+					$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+			}
+			$this->set('date_seances',$tab);
+
+			$conditions="seance_id is null OR seance_id= 0 AND (etat=0 OR etat =1 OR etat =2)";
 			$deliberations= $this->Deliberation->findAll($conditions);
 			$delib=array();
 			foreach ($deliberations as $deliberation){
