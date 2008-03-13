@@ -1414,9 +1414,9 @@ class DeliberationsController extends AppController {
         	$positionCourante = $this->getCurrentPosition($id);
 	   		$lastPosition = $this->getLastPosition($seance_id);
         	if ($sens != 0)
-            	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante-1 AND etat=2";
+            	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante-1 AND etat!=-1";
        		else
-   		    	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante+1 AND etat=2";
+   		    	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante+1 AND etat!=-1";
 
    		    $obj = $this->Deliberation->findAll($conditions);
 			//position du suivant ou du precedent
@@ -1442,8 +1442,6 @@ class DeliberationsController extends AppController {
 			else {
 		 	   $this->Session->setFlash('Erreur durant l\'enregistrement');
 			}
-
-        	echo("$positionCourante $seance_id $lastPosition" );
         }
 
         function sortby($seance_id, $sortby) {
