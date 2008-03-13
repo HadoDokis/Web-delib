@@ -15,9 +15,12 @@
 <tr>
 	<td><?php
 	    if ($deliberation['Deliberation']['etat']==2)
-	       echo $html->image('../img/icons/non_votee.png',  array('title'=> 'Deliberation &agrave; voter'));
+	       echo $html->image('../img/icons/non_votee.png',  array('title'=> 'Projet &agrave; voter'));
+		elseif (($deliberation['Deliberation']['etat']==0) || ($deliberation['Deliberation']['etat']==1))
+		 	echo $html->image('../img/icons/bloque.png', array('title'=>'Projet en cours d\'&eacute;laboration'));
 	    elseif (($deliberation['Deliberation']['etat']==3) || ($deliberation['Deliberation']['etat']==4))
 	       echo $html->image('../img/icons/votee.png', array('title'=>'Deliberation vot&eacute;e'));
+
 
 	?></td>
 	<td><?php echo $deliberation['Theme']['libelle']; ?></td>
