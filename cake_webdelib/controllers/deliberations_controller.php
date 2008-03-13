@@ -720,6 +720,16 @@ class DeliberationsController extends AppController {
 		}
 	}
 
+	function PositionneDelibsSeance($seance_id, $position) {
+		$conditions= "Deliberation.seance_id = $seance_id AND position > $position ";
+		$delibs = $this->Deliberation->findAll($conditions);
+		foreach ($delibs as $delib) {
+			// on enleve pour 1 la délib qui a changé de séance..
+			$delib['Deliberation']['position']= $delib['Deliberation']['position'] -1;
+			$this->Deliberation->save($delib['Deliberation']);
+		}
+	}
+
 	function edit($id=null) {
 	    $user=$this->Session->read('user');
 		if (empty($this->data)) {
@@ -747,8 +757,14 @@ class DeliberationsController extends AppController {
 			$this->render();
 
 		} else {
-			if (isset($this->data['Deliberation']['seance_id']) )
-				$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+			$oldDelib =  $this->Deliberation->read(null, $id);
+			// Si on change une delib de séance, il faut reclasser toutes les délibs de l'ancienne seance...
+			if ((($oldDelib['Deliberation']['seance_id'] != 0) AND ($oldDelib['Deliberation']['seance_id'] != null)) AND (($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']) AND ($this->data['Deliberation']['seance_id'] != null))){
+                $this->PositionneDelibsSeance($oldDelib['Deliberation']['seance_id'], $oldDelib['Deliberation']['position'] );
+			}
+			// Si on définie une seance a une délib, on la position en derniere position de la séance...
+			 if (($this->data['Deliberation']['seance_id'])!=null )
+				    $this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 
 			$this->data['Deliberation']['id']=$id;
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
