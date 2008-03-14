@@ -90,12 +90,13 @@ class SeancesController extends AppController {
 	function listerFuturesSeances() {
 		if (empty ($this->data)) {
 			$condition= 'Seance.traitee = 0';
-			//$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$seances = $this->Seance->findAll(($condition),null,'date asc');
 
-			for ($i=0; $i<count($seances); $i++)
+			for ($i=0; $i<count($seances); $i++){
+				 $seances[$i]['Seance']['dateEn'] =  $seances[$i]['Seance']['date'];
 			    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
 
+			}
 			$this->set('seances', $seances);
 		}
 	}
@@ -443,13 +444,19 @@ class SeancesController extends AppController {
 
 	function details ($seance_id=null) {
 		$deliberations=$this->afficherProjets($seance_id, 0);
+		$ToutesVotees = true;
 		for ($i=0; $i<count($deliberations); $i++){
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+				if (($deliberations[$i]['Deliberation']['etat']!=3)AND($deliberations[$i]['Deliberation']['etat']!=4))
+				     $ToutesVotees = false;
 		}
 		$this->set('deliberations',$deliberations);
-		$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($seance_id))));
-
+		$date_tmpstp = strtotime($this->GetDate($seance_id));
+		$this->set('date_tmpstp', $date_tmpstp);
+		$this->set('date_seance', $this->Date->frenchDateConvocation($date_tmpstp));
+		$this->set('seance_id', $seance_id);
+		$this->set('canClose', $ToutesVotees);
 	}
 
 	function effacerVote($deliberation_id=null) {
