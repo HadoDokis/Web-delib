@@ -215,6 +215,7 @@ class ModelsController extends AppController {
 			"#NOUVELLE_PAGE#" => "<newpage>",
 			"#DATE_DU_JOUR#" => $this->_getDateDuJour(),
 			"#SEANCE_ID#" => $seance_id,
+			"#DEBAT_SEANCE#" => $seance['Seance']['debat_global'],
 			"#DATE_SEANCE#" => $this->Date->frenchDate(strtotime($seance['Seance']['date'])),
 	 		"#LIBELLE_TYPE_SEANCE#" => $seance['Typeseance']['libelle'],
 			"#LOGO_COLLECTIVITE#" => '<img src="files/image/logo.jpg">',
@@ -251,6 +252,7 @@ class ModelsController extends AppController {
 			"#IDENTIFIANT_PROJET#" => $delib_id,
 			"#DATE_DU_JOUR#" => $this->_getDateDuJour(),
 			"#SEANCE_ID#" => $delib['Deliberation']['seance_id'],
+			"#DEBAT_SEANCE#" => $delib['Seance']['debat_global'],
 			"#DATE_SEANCE#" => $dateSeance,
 			"#LIBELLE_TYPE_SEANCE#" => $libelleSeance,
 			"#ETAT_DELIB#" => $this->_getDelibEtat($delib['Deliberation']['etat']),
@@ -283,7 +285,7 @@ class ModelsController extends AppController {
 			"#LISTE_PRESENTS#" => $this->_listeUsersPresents($delib_id),
 			"#LISTE_ABSENTS#" => $this->_listeUsersAbsents($delib_id),
 			"#LISTE_MANDATAIRES#" => $this->_listeUsersMandates($delib_id),
-			"#LISTE_VOTANT#" =>$this->_listeUsersVotant($delib_id)
+			"#LISTE_VOTANTS#" =>$this->_listeUsersVotant($delib_id)
 		);
 
 		return  str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
