@@ -435,7 +435,7 @@ INSERT INTO `aros_acos` (`id`, `aro_id`, `aco_id`, `_create`, `_read`, `_update`
 
 CREATE TABLE IF NOT EXISTS `circuits` (
   `id` int(11) NOT NULL auto_increment,
-  `libelle` varchar(50) NOT NULL default '',
+  `libelle` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
@@ -547,7 +547,7 @@ CREATE TABLE IF NOT EXISTS `deliberations` (
   `localisation2_id` int(11) NOT NULL default '0',
   `localisation3_id` int(11) NOT NULL default '0',
   `montant` int(10) NOT NULL,
-  `debat` blob NOT NULL,
+  `debat` longblob NOT NULL,
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
@@ -587,7 +587,7 @@ CREATE TABLE IF NOT EXISTS `listepresences` (
 CREATE TABLE IF NOT EXISTS `localisations` (
   `id` int(11) NOT NULL auto_increment,
   `parent_id` int(11) default '0',
-  `libelle` varchar(30) NOT NULL default '',
+  `libelle` varchar(100) NOT NULL default '',
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
@@ -639,7 +639,7 @@ INSERT INTO `models` (`id`, `type`, `libelle`, `texte`) VALUES
 CREATE TABLE IF NOT EXISTS `profils` (
   `id` int(11) NOT NULL auto_increment,
   `parent_id` int(11) default '0',
-  `libelle` varchar(30) NOT NULL default '',
+  `libelle` varchar(100) NOT NULL default '',
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
@@ -668,7 +668,7 @@ CREATE TABLE IF NOT EXISTS `seances` (
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   `date` datetime NOT NULL default '0000-00-00 00:00:00',
   `traitee` int(1) NOT NULL default '0',
-  `debat_global` blob NOT NULL,
+  `debat_global` longblob NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
