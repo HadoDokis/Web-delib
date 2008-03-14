@@ -1,0 +1,21 @@
+<div id="vue_seance">
+<h3>S&eacute;ance du <?php echo $seance['Seance']['date']?></h3>
+
+<dl>
+<!--	<dt>Id</dt>
+	<dd>&nbsp;<?php echo $seance['Seance']['id']?></dd> -->
+
+	<dt>Libelle</dt>
+	<dd>&nbsp;<?php echo $seance['Typeseance']['libelle']?></dd>
+	<dt>Date</dt>
+	<dd>&nbsp;<?php echo $seance['Seance']['date']?></dd>
+</dl>
+
+<ul id="actions_fiche">
+	<li><?php echo $html->link('&shy;', '/seances/edit/'.$seance['Seance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false) ?> </li>
+<!--	<li><?php echo $html->link('Supprimer', '/seances/delete/' . $seance['Seance']['id'], null, 'Etes-vous sur de vouloir supprimer la seance du "' . $seance['Seance']['date'] . '" ?') ?> </li> -->
+	<li><?php echo $html->link('&shy;',   '/seances/index', array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) ?> </li>
+<!--	<li><?php echo $html->link('Ajouter une seance',	'/seances/add') ?> </li> -->
+</ul>
+
+</div>

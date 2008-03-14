@@ -1,0 +1,727 @@
+@CHARSET "UTF-8";
+
+/* ----------- modif marine ----------- */
+
+acronym {
+	color : red;
+}
+
+.pave {
+	width: 80%;
+	height:100%;
+}
+
+#add_form label {
+color:#696969;
+float: left;
+	width: 100%;
+	text-align: right;
+}
+a.list_form  {
+  font-weight: normal;
+  text-decoration: none;
+  border-bottom: 1px black dashed;
+}
+
+a:hover.list_form  {
+  text-decoration: none;
+  border-bottom: 1px black solid;
+}
+table#sample {
+	border: 1px solid #cccccc;
+	font-size: 1em;
+	width:80%;
+}
+
+table#sample tr td {
+	border: 0px;
+	padding: 9px 9px 4px 9px ;
+	vertical-align: top;
+	text-align: left;
+}
+
+#attribute_list a {
+  text-align: left;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+#attribute_list a:hover {
+  text-align: left;
+  font-size: 12px;
+  text-decoration: solid;
+}
+/* --------- fin modif marine --------- */
+
+legend {
+	font-style: italic;
+	font-weight: bold;
+}
+.Border {
+	background-color:#e0ef90;
+	}
+label {
+	float: left;
+	padding: 0 .5em 0 0;
+	text-align: right;
+	width: 120px;
+}
+
+#login_form {
+	padding-top: 20px;
+	margin-top: 30px;
+	margin-left: 28%;
+	margin-right: 28%;
+	border: 1px solid;
+}
+
+#conteneur {
+	position: absolute;
+	width: 100%;
+	height:100%;
+}
+
+#tableau_bord {
+
+	padding-left: 20px;
+}
+
+#titre_page {
+	font-size: 16px;
+	font-weight: bold;
+	color: #286971;
+	margin-bottom: 15px;
+}
+
+#fiche {
+	border: 1px dotted #ccc;
+	width: 50%;
+	padding: 10px;
+}
+
+#label_fiche {
+	font-weight: bold;
+}
+
+#bouton_action ul {
+	margin: 0;
+	padding: 0;
+}
+
+#bouton_action li {
+	display: inline;
+	padding: 5px;
+	border: 2px solid #69c;
+}
+
+#bouton_action a {
+	color: #69c;
+	text-decoration: none;
+}
+
+.button {
+	height: 31px;
+	border: 2px solid #69c;
+	font-size: 14px;
+	color: #69c;
+	font-weight: normal;
+	cursor: pointer;
+	background-color: #fff;
+}
+
+.error_message {
+	color: #f00;
+	/*background-color: #fff;*/
+	background-color: transparent;
+	margin: 8px 0px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.centre {
+	text-align: center;
+}
+
+
+/*  ----------------- Calendar ------------------------ */
+caption.month {
+    font-size: 90%;
+    color: #444444;
+}
+table.month {
+    border: thin groove #800080
+}
+.normal {
+    font-size: 80%;
+}
+.today {
+    border: solid 1px;
+}
+.seance {
+    border: solid 1px;
+	background: #e0ef90;
+}
+
+/*  ----------------- end of Calendar -------------------------- */
+
+
+
+/*  ----------------- modifs mel -------------------------- */
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	margin: 0;
+	padding: 0;
+	background-image: url(../img/wavedelib.png);
+	background-repeat: no-repeat;
+	padding-bottom: 100px;
+}
+
+#header {
+	height: 50px;
+	padding-left: 20px;
+	font: italic normal 28px/30px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	color: #444444;
+	background-color: transparent;
+}
+
+#user {
+	text-align: right;
+	height: 23px;
+	border-bottom: 1px solid #888888;
+	margin-top: 0px;
+	padding-right: 10px;
+	background-color: transparent;
+}
+
+#user a {
+	text-decoration: none;
+}
+
+.user {
+	font-weight: normal;
+}
+
+#centre {
+
+	min-height: 400px;
+	padding: 0px 75px 15px 75px;
+}
+
+h2 {
+	font: normal normal 20px/24px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	color:#444444;
+	/* couleur NON-web */
+	border-left: 1px solid #e0ef90;
+	border-bottom: 1px solid #e0ef90;
+	padding-left: 1%;
+}
+
+a {
+	color: #444444;
+}
+
+a:hover {
+	color: #999933;
+}
+
+table {
+	margin: 0;
+	white-space: normal;
+	border: 1px solid #cccccc;
+	border-collapse: collapse;
+	font-size: 0.8em;
+}
+
+th {
+	padding: 0 5px 5px 5px;
+	border: 1px solid #cccccc;
+	background-color: #ccc;
+	font: normal normal 14px/17px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+}
+
+table tr td {
+	border: 1px solid #cccccc;
+	padding: 4px 4px 4px 4px ;
+	vertical-align: top;
+	text-align: left;
+}
+
+#pied {
+	height: 10px;
+	text-align: center;
+	border-top: 1px solid #999;
+}
+
+td.actions {
+	padding: 0 4px 0 4px ;
+	height: 25px;
+}
+
+a.link_delib {
+	background-image: url(../img/icons/delib.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 3px 0 10px 22px;
+}
+
+a.link_pvcomplet {
+	background-image: url(../img/icons/pvcomplet.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_pvsommaire {
+	background-image: url(../img/icons/message.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_pdf {
+	background-image: url(../img/icons/acroread.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_ordre_jour {
+	background-image: url(../img/icons/ordre_jour.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_lister_presents {
+	background-image: url(../img/icons/present.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_voter {
+	background-image: url(../img/icons/vote.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_debat {
+	background-image: url(../img/icons/saisir.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+
+
+a.link_voir {
+	background-image: url(../img/icons/find.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+
+}
+
+a.link_modifier {
+	background-image: url(../img/icons/klpq.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_supprimer {
+	background-image: url(../img/icons/edittrash.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_circuit {
+	background-image: url(../img/icons/reload.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_projet {
+	background-image: url(../img/icons/projet.png);
+	background-repeat: no-repeat;
+	background-position: top left ;
+	padding: 0 0 10px 22px;
+}
+
+a.link_synthese {
+	background-image: url(../img/icons/synthese.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
+a.link_deliberation {
+	background-image: url(../img/icons/delibe.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
+a.link_add {
+	background-image: url(../img/icons/edit_add.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
+a.link_addUsers {
+	background-image: url(../img/icons/identity.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
+a.link_convocation {
+	background-image: url(../img/icons/mail.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
+a.link_convocation_anonyme {
+	background-image: url(../img/icons/queue.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
+a.link_traiter {
+	background-image: url(../img/icons/traiter.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
+a.link_monter {
+	background-image: url(../img/icons/monter.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
+a.link_descendre {
+	background-image: url(../img/icons/descendre.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
+a.link_calendar {
+	background-image: url(../img/calendar.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
+a.link_annuler {
+	color: black;
+	text-decoration: none;
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	background-image: url(../img/icons/back.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 4px 4px 4px 25px;
+}
+
+a.link_clore {
+	color: black;
+	text-decoration: none;
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	background-image: url(../img/icons/seance_finie.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 4px 4px 4px 25px;
+}
+
+a.link_annuler_sans_border {
+	background-image: url(../img/icons/back.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding-left: 25px;
+	padding-bottom: 10px;
+}
+
+a.link_inserer_logo {
+	background-image: url(../img/icons/insert_logo.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding-left: 25px;
+	padding-bottom: 10px;
+}
+
+a.link_annexe {
+	background-image: url(../img/icons/bookmark.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 4px 4px 4px 25px;
+
+}
+
+.bt_save {
+	background-image: url(../img/icons/filesave.png);
+	background-repeat: no-repeat;
+	border: none;
+	width: 22px;
+	height: 22px;
+}
+
+.bt_save_border {
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	background-image: url(../img/icons/filesave.png);
+	background-color: white;
+	background-repeat: no-repeat;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	padding-left: 25px;
+	height: 22px;
+	cursor: pointer;
+}
+
+.bt_add {
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	background-image: url(../img/icons/edit_add.png);
+	background-color: white;
+	background-repeat: no-repeat;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	padding-left: 25px;
+	height: 22px;
+	cursor: pointer;
+}
+
+
+.bt_fin {
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	background-image: url(../img/icons/apply.png);
+	background-color: white;
+	background-repeat: no-repeat;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	padding-left: 25px;
+	height: 22px;
+	cursor: pointer;
+}
+
+#deliberation {
+	background-color: #EAEFCE;
+}
+
+.close {
+    text-align: right;
+}
+
+#deliberation h3 {
+	text-align: center;
+	font: normal small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+}
+
+#deliberation dt{
+	font: italic normal 15px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	margin: 5px 20px 0 20px;
+	padding: 2px 0 0 20px;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #FFFFFF;
+	text-decoration: underline;
+}
+
+#deliberation dd{
+	padding: 5px 0 15px 30px;
+	text-indent: 3%;
+
+}
+.actions {
+		text-align: center;
+}
+
+.imbrique {
+	min-height: 70px;
+}
+
+.gauche {
+	float: left;
+	width: 50%;
+}
+
+.droite {
+	float:right;
+	width: 50%
+
+}
+
+#vue_cadre{
+	background-color: #EAEFCE;
+}
+
+#vue_cadre h3 {
+	text-align: center;
+	font: normal small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+}
+
+#vue_cadre dt{
+	font: italic normal 15px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	margin: 5px 20px 0 20px;
+	padding: 2px 0 0 20px;
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #FFFFFF;
+	text-decoration: underline;
+}
+
+#vue_cadre dd{
+	padding: 5px 0 15px 30px;
+	text-indent: 3%;
+
+}
+
+ul.actions {
+	list-style-type: none;
+}
+
+#actions_fiche {
+	text-align: center;
+}
+
+#actions_fiche li {
+	display: inline;
+}
+
+/*  ----------------- end modifs mel -------------------------- */
+
+.message {
+	height: 50px;
+	padding-left: 20px;
+	font: normal small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	color: #CCCC33;
+}
+
+/*---------------- modifs christophe ------------------------*/
+/*globalnav*/
+
+#globalnav {
+	font: normal normal 14px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	position:relative;
+	padding:0 0 1.50em 0em;
+	margin:0 40px 50px 0;
+	list-style:none;
+	line-height:1em;
+	width:100%;
+
+}
+
+#globalnav LI {
+	float:left;
+	margin:0;
+	padding:0;
+}
+
+#globalnav A {
+	display:block;
+	color:#444;
+	text-decoration:none;
+	background:transparent;
+	margin:0;
+	padding:0.25em 1em;
+}
+
+
+
+#globalnav A.here:link,
+#globalnav A.here:visited {
+	position:relative;
+	z-index:102;
+}
+
+.here {
+	border-left: 1px solid #888888;
+	border-right: 1px solid #888888;
+}
+
+.here ul li{
+	border-left: 1px solid #888888;
+	border-right: 1px solid #888888;
+}
+
+/*subnav*/
+
+#globalnav UL {
+	position:absolute;
+	left:0;
+	top:1.5em;
+	float:left;
+	background:transparent;
+	width:100%;
+	margin: 0;
+	padding:10px 0.25em 0.25em 1em;
+	list-style:none;
+	border-top:1px solid #888888;
+}
+
+#globalnav UL LI {
+	float:left;
+	display:block;
+}
+
+#globalnav UL.hidden {
+	display: none;
+}
+
+
+#globalnav UL A {
+	background:transparent;
+	color:#444;
+	display:inline;
+	margin:0;
+	padding:0 1em;
+	border:0
+}
+
+#globalnav UL A:hover,
+#globalnav UL A:active,
+#globalnav UL A.here:link,
+#globalnav UL A.here:visited {
+	color:#444;
+}
+
+/*profils*/
+
+#arbre {
+	border: 1px solid #bbb;
+	width: 450px;
+	padding: 10px;
+	margin-bottom: 20px;
+}
+
+.profil {
+	font-weight: bold;
+}
+
+/*---------------- fin modifs christophe ------------------------*/
+/*graphique circuit validation*/
+.graphique {
+	float:left;
+	margin-left:15px;
+	text-align:center;
+}
+
