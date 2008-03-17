@@ -107,7 +107,7 @@ class ModelsController extends AppController {
 		$texte = $this->Model->field('texte', 'id=8');
 
 		$listeUsers = "";
-		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1");
+		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "position ASC");
 		foreach($users as $user) {
 			$searchReplace = array(
 				"#NOUVELLE_PAGE#" => "<newpage>",
@@ -115,6 +115,7 @@ class ModelsController extends AppController {
 			 	"#PRENOM_PRESENT#" => $user['User']['prenom'],
 			 	"#ADRESSE_PRESENT#" => $user['User']['adresse'],
 			 	"#CP_PRESENT#" => $user['User']['CP'],
+			 	"#TITRE_PRESENT#" => $user['User']['titre'],
 			 	"#VILLE_PRESENT#" => $user['User']['ville']
 			 );
         	$listeUsers .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
@@ -127,7 +128,7 @@ class ModelsController extends AppController {
 		$texte = $this->Model->field('texte', 'id=9');
 
 		$listeUsers = "";
-		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0");
+		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'position ASC');
 		foreach($users as $user) {
 			$searchReplace = array(
 				"#NOUVELLE_PAGE#" => "<newpage>",
@@ -135,6 +136,7 @@ class ModelsController extends AppController {
 			 	"#PRENOM_ABSENT#" => $user['User']['prenom'],
 			 	"#ADRESSE_ABSENT#" => $user['User']['adresse'],
 			 	"#CP_ABSENT#" => $user['User']['CP'],
+			 	"#TITRE_ABSENT#" => $user['User']['titre'],
 			 	"#VILLE_ABSENT#" => $user['User']['ville']
 			 );
         	$listeUsers .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
@@ -147,7 +149,7 @@ class ModelsController extends AppController {
 		$texte = $this->Model->field('texte', 'id=10');
 
 		$listeUsers = "";
-		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0");
+		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'position ASC');
 		foreach($users as $user) {
 			$mandataire = $this->User->findById($user['Listepresence']['mandataire']);
 			$searchReplace = array(
@@ -158,6 +160,7 @@ class ModelsController extends AppController {
 			 	"#PRENOM_MANDATAIRE#" => $mandataire['User']['prenom'],
 			 	"#ADRESSE_MANDATAIRE#" => $mandataire['User']['adresse'],
 			 	"#CP_MANDATAIRE#" => $mandataire['User']['CP'],
+			 	"#TITRE_MANDATAIRE#" => $mandataire['User']['titre'],
 			 	"#VILLE_MANDATAIRE#" => $mandataire['User']['ville']
 			 );
         	$listeUsers .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
@@ -189,6 +192,7 @@ class ModelsController extends AppController {
 			 	"#ADRESSE_VOTANT#" => $votant['User']['adresse'],
 			 	"#CP_VOTANT#" => $votant['User']['CP'],
 			 	"#VILLE_VOTANT#" => $votant['User']['ville'],
+			 	"#TITRE_VOTANT#" => $votant['User']['titre'],
 			 	"#RESULTAT_VOTANT#" => $resultat,
 				"#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
 			);
@@ -271,11 +275,13 @@ class ModelsController extends AppController {
 			"#ADRESSE_RAPPORTEUR#" => $delib['Rapporteur']['adresse'],
 			"#CP_RAPPORTEUR#" => $delib['Rapporteur']['CP'],
 			"#VILLE_RAPPORTEUR#" => $delib['Rapporteur']['ville'],
+			"#TITRE_RAPPORTEUR#" => $delib['Rapporteur']['titre'],
 			"#NOM_REDACTEUR#" => $delib['Redacteur']['nom'],
 			"#PRENOM_REDACTEUR#" => $delib['Redacteur']['prenom'],
 			"#ADRESSE_REDACTEUR#" => $delib['Redacteur']['adresse'],
 			"#CP_REDACTEUR#" => $delib['Redacteur']['CP'],
 			"#VILLE_REDACTEUR#" => $delib['Redacteur']['ville'],
+			"#TITRE_REDACTEUR#" => $delib['Redacteur']['titre'],
 			"#LOGO_COLLECTIVITE#" => '<img src="files/image/logo.jpg">',
 			"#NOM_COLLECTIVITE#" => $collectivite['Collectivite']['nom'],
 			"#ADRESSE_COLLECTIVITE#" => $collectivite['Collectivite']['adresse'],
