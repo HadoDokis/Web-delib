@@ -4,7 +4,7 @@ class UsersController extends AppController {
 	var $name = 'Users';
 	var $helpers = array('Html', 'Form', 'Html2' );
 	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'Profil');
-	var $components = array('Utils', 'Acl');
+	var $components = array('Utils', 'Acl', 'Menu');
 
 	function index() {
 		$this->params['data']= $this->User->findAll();
@@ -232,6 +232,10 @@ class UsersController extends AppController {
 				}
     			//debug($this->Session->read());
 				//exit;
+
+				// Chargement du menu dans la session
+                $this->Session->write('menuPrincipal', $this->Menu->load('webDelib'));
+
 				$this->redirect('/');
  			}
 			else
@@ -250,6 +254,7 @@ class UsersController extends AppController {
 	function logout() {
 		//on supprime les infos utilisateur de la session
 		$this->Session->delete('user');
+        $this->Session->delete('menuPrincipal');
 		$this->redirect('/users/login');
 	}
 
