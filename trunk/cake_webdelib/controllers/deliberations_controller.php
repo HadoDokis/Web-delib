@@ -128,7 +128,7 @@ class DeliberationsController extends AppController {
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
 		//recherche de tous les circuits oÃ¹ apparait l'utilisateur loguÃ©
-		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "position ASC");
+		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "UsersCircuit.position ASC");
 		$conditions="etat=1 ";
 		$delib=array();
 		$cpt=0;
@@ -210,7 +210,7 @@ class DeliberationsController extends AppController {
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
 		//recherche de tous les circuits oÃ¹ apparait l'utilisateur loguÃ©
-		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "position ASC");
+		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "UsersCircuit.position ASC");
 		$conditions="etat=1 ";
 		$delib=array();
 		$cpt=0;
@@ -273,7 +273,7 @@ class DeliberationsController extends AppController {
 	function getPosition($circuit_id, $delib_id) {
 		$odjCourant=array();
 		$conditions = "Traitement.circuit_id = $circuit_id AND Traitement.delib_id=$delib_id ";
-        $objCourant = $this->Traitement->findAll($conditions, null, "position DESC");
+        $objCourant = $this->Traitement->findAll($conditions, null, "Traitement.position DESC");
 		return $objCourant['0']['Traitement']['position'];
 
 	}
@@ -729,7 +729,7 @@ class DeliberationsController extends AppController {
 	}
 
 	function PositionneDelibsSeance($seance_id, $position) {
-		$conditions= "Deliberation.seance_id = $seance_id AND position > $position ";
+		$conditions= "Deliberation.seance_id = $seance_id AND Deliberation.position > $position ";
 		$delibs = $this->Deliberation->findAll($conditions);
 		foreach ($delibs as $delib) {
 			// on enleve pour 1 la délib qui a changé de séance..
@@ -936,7 +936,7 @@ class DeliberationsController extends AppController {
 					//il existe une version anterieure de la delib
 					//on met Ã  jour le traitement anterieure
 					$anterieure=$delib['Deliberation']['anterieure_id'];
-					$condition="delib_id = $anterieure AND position = '0'";
+					$condition="delib_id = $anterieure AND Traitement.position = '0'";
 					$traite=$this->Traitement->find($condition);
 					//debug($traite);
 					$traite['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
@@ -1002,7 +1002,7 @@ class DeliberationsController extends AppController {
 			if (isset($circuit_id)){
 			    $this->set('circuit_id', $circuit_id);
 			    $condition = "UsersCircuit.circuit_id = $circuit_id";
-			    $desc = 'position ASC';
+			    $desc = 'UsersCircuit.position ASC';
 
     	   		$tmplisteUserCircuit = $this->UsersCircuit->findAll($condition, null, $desc);
 
@@ -1420,11 +1420,11 @@ class DeliberationsController extends AppController {
         function positionner($id=null, $sens, $seance_id)
         {
         	$positionCourante = $this->getCurrentPosition($id);
-	   		$lastPosition = $this->getLastPosition($seance_id);
+	   	$lastPosition = $this->getLastPosition($seance_id);
         	if ($sens != 0)
-            	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante-1 AND etat!=-1";
+            	$conditions = "Deliberation.seance_id = $seance_id  AND Deliberation.position = $positionCourante-1 AND etat!=-1";
        		else
-   		    	$conditions = "Deliberation.seance_id = $seance_id  AND position = $positionCourante+1 AND etat!=-1";
+   		    	$conditions = "Deliberation.seance_id = $seance_id  AND Deliberation.position = $positionCourante+1 AND etat!=-1";
 
    		    $obj = $this->Deliberation->findAll($conditions);
 			//position du suivant ou du precedent
@@ -1467,7 +1467,7 @@ class DeliberationsController extends AppController {
 
         function getCurrentPosition($id){
     		$conditions = "Deliberation.id = $id";
-    		$field = 'position';
+    		$field = 'Deliberation.position';
     		$obj = $this->Deliberation->findAll($conditions);
 
     		return  $obj['0']['Deliberation']['position'];
@@ -1757,7 +1757,7 @@ class DeliberationsController extends AppController {
 	}
 
 	function getDelibIdByPosition ($seance_id, $position){
-		$condition = "seance_id = $seance_id AND position = $position";
+		$condition = "seance_id = $seance_id AND Deliberation.position = $position";
 		$delib = $this->Deliberation->findAll($condition);
 		if (isset($delib['0']['Deliberation']['id']))
 			return $delib['0']['Deliberation']['id'];
