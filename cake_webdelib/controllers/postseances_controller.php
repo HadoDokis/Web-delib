@@ -24,13 +24,13 @@ class PostseancesController extends AppController {
 		$condition= "seance_id=$id AND etat>=2";
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
-			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
+			$deliberations = $this->Deliberation->findAll($condition,null,'Deliberation.position ASC');
 		    $this->set('seance_id', $id);
 		    $this->set('projets', $deliberations);
 		    $this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->requestAction("seances/getDate/$id"))));
 		}
 		else
-		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
+		    return ($this->Deliberation->findAll($condition,null,'Deliberation.position ASC'));
 	}
 
 	function getVote($id_delib){

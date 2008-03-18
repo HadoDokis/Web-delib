@@ -197,7 +197,7 @@ class SeancesController extends AppController {
 		$condition= "seance_id=$id AND (etat != -1 )";
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id") - 1 );
-			$deliberations = $this->Deliberation->findAll($condition,null,'position ASC');
+			$deliberations = $this->Deliberation->findAll($condition,null,'Deliberation.position ASC');
 			for ($i=0; $i<count($deliberations); $i++) {
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
@@ -209,7 +209,7 @@ class SeancesController extends AppController {
 			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($id))));
 		}
 		else
-		    return ($this->Deliberation->findAll($condition,null,'position ASC'));
+		    return ($this->Deliberation->findAll($condition,null,'Deliberation.position ASC'));
 	}
 
     function changeRapporteur($newRapporteur,$delib_id) {
@@ -482,7 +482,7 @@ class SeancesController extends AppController {
 			foreach ($nonvotants as $nonvotant)
 				array_push($listnonvotant, $nonvotant['User']['id']);
 			$this->set('listnonvotant', $listnonvotant);
-		}
+	 }
 		else {
  			$pour = 0;
  			$abstenu = 0;

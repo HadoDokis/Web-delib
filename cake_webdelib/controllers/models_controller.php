@@ -95,7 +95,7 @@ class ModelsController extends AppController {
 		else $texte = $this->Model->field('texte', 'id=13');
 
 		$listeProjets = "";
-		$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=2",null,'position ASC');
+		$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=2",null,'Deliberation.position ASC');
 		foreach($projets as $projet) {
         	$listeProjets .= $this->_replaceBalises($texte,$projet['Deliberation']['id'] );
         }
@@ -107,7 +107,7 @@ class ModelsController extends AppController {
 		$texte = $this->Model->field('texte', 'id=8');
 
 		$listeUsers = "";
-		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "position ASC");
+		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "User.position ASC");
 		foreach($users as $user) {
 			$searchReplace = array(
 				"#NOUVELLE_PAGE#" => "<newpage>",
@@ -128,7 +128,7 @@ class ModelsController extends AppController {
 		$texte = $this->Model->field('texte', 'id=9');
 
 		$listeUsers = "";
-		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'position ASC');
+		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'User.position ASC');
 		foreach($users as $user) {
 			$searchReplace = array(
 				"#NOUVELLE_PAGE#" => "<newpage>",
@@ -149,7 +149,7 @@ class ModelsController extends AppController {
 		$texte = $this->Model->field('texte', 'id=10');
 
 		$listeUsers = "";
-		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'position ASC');
+		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'User.position ASC');
 		foreach($users as $user) {
 			$mandataire = $this->User->findById($user['Listepresence']['mandataire']);
 			$searchReplace = array(
