@@ -40,7 +40,7 @@
 class AppController extends Controller {
 
 	var $components=array( 'Utils', 'Acl');
-	var $helpers = array('Html', 'Ajax', 'Form' , 'Javascript','Navigation');
+	var $helpers = array('Menu', 'Html', 'Ajax', 'Form', 'Javascript');
 
 	var $beforeFilter = array('checkSession');
 
@@ -48,7 +48,6 @@ class AppController extends Controller {
 	var $lienDeconnexion = "";
 	var $agentServices = null;
 	var $userProfil = null;
-	var $menu = null;
 
 	function checkSession() {
 		$this->infoUser = "<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ";
@@ -70,7 +69,6 @@ class AppController extends Controller {
         			if ($aco != 'Services:doList') {
         		   	    $this->log($_SERVER["REMOTE_ADDR"]." : ($user_id)->".substr($this->here, 0, strlen($this->here)));
         			}
-          		 	$this->menu = $this->buildNavigation($user_id);
           		    return;
         		}
                 else {
@@ -108,78 +106,5 @@ class AppController extends Controller {
  		}
 	}
 
-	function buildNavigation ($user_id){
-		// On importe les droits ?
-
-		$menu = array( );
-		// construction navigation secondaire projets
-        $sub_menu1 = array ();
-        $sub_menu2 = array ();
-        $sub_menu3 = array ();
-        $sub_menu4 = array ();
-
-		if ($this->Acl->check($user_id, "Deliberations:add")){
-			$sub_menu1['Nouveau...'] = array('link' => '/deliberations/add');
-			$sub_menu1['Mes projets'] = array('link' => '/deliberations/listerMesProjets');
-			$sub_menu1['A attribuer'] = array('link' => '/deliberations/listerProjetsNonAttribues');
-		}
-
-        if ($this->Acl->check($user_id, "Deliberations:listerProjetsATraiter"))
-			$sub_menu1['A traiter'] = array('link' => '/deliberations/listerProjetsATraiter');
-
-        if ($this->Acl->check($user_id, "Deliberations:listerProjetsServicesAssemblees"))
-			$sub_menu1['A faire voter'] = array('link' => '/deliberations/listerProjetsServicesAssemblees');
-
-
-        // construction navigation secondaire seances
-        $sub_menu2 = array (
-        	'Nouvelle...' => array('link' => '/seances/add'),
-        	//'A venir' => array ('link' => '/seances/listerFuturesSeances'),
-        	'Traitées' => array('link' => '/seances/listerAnciennesSeances'),
-        	'Calendrier' => array('link' => '/seances/afficherCalendrier')
-        );
-
-        // construction navigation secondaire post-seance
-        $sub_menu3 = array (
-        	'Editions' => array('link' => '/postseances/index'),
-        	//'Publications' => array('link' => '/seances/listerAnciennesSeances'),
-        	'Contrôle de légalité' => array('link' => '/deliberations/transmit'),
-        	'Export GED' => array('link' => '/pages/exportged')
-        );
-
-        // construction navigation secondaire administration
-        $sub_menu4 = array (
-        	'Utilisateurs' => array('link' => '/users/index'),
-        	'Circuits' => array('link' => '/circuits/index'),
-        	//'Profils' => array('link' => '/profils/index'),
-	        'Service' => array('link' => '/services/index'),
-	        'Thèmes' => array('link' => '/themes/index'),
-	        'Types de séance' => array('link' => '/typeseances'),
-	        'Collectivité' => array('link' => '/collectivites'),
-	        'Génération' => array('link' => '/models/index'),
-	        'Localisation' => array('link' => '/localisations/index'),
-	        'Compteurs' => array('link' => '/compteurs/index')
-        );
-
-		// construction navigation principale
-		$menu['Accueil']= array('link' => '/');
-
-		if ($this->Acl->check($user_id, "Deliberations:index")){
-			$menu['Projets']= array('link' => '/deliberations/listerMesProjets', 'submenu' => array());
-			$menu['Projets']['submenu'] = $sub_menu1;
-		}
-		if ($this->Acl->check($user_id, "Seances:index")){
-			$menu['Seances']= array('link' => '/seances/listerFuturesSeances', 'submenu' => array());
-			$menu['Seances']['submenu'] = $sub_menu2;
-			$menu['Post-seance']= array('link' => '/pages/postseance', 'submenu' => array());
-			$menu['Post-seance']['submenu'] = $sub_menu3;
-		}
-		if ($this->Acl->check($user_id, "Pages:administration")){
-			$menu['Administration']= array('link' => '/pages/administration', 'submenu' => array());
-			$menu['Administration']['submenu'] = $sub_menu4;
-		}
-
-        return $menu;
-	}
 }
 ?>
