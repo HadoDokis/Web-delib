@@ -2,6 +2,17 @@
 class CompteursController extends AppController
 {
 	var $name = 'Compteurs';
+	var $components = array('Security');
+
+	// Gestion des droits
+	var $demandePost = array('suivant');
+	var $commeDroit = array('edit'=>'Compteurs:index', 'view'=>'Compteurs:index');
+
+	function beforeFilter()
+    {
+    	if (property_exists($this, 'demandePost'))
+			call_user_func_array(array($this->Security, 'requirePost'), $this->demandePost);
+    }
 
 /**
 * Retourne la valeur suivante du compteur,

@@ -8,6 +8,10 @@
  class CollectivitesController extends AppController {
 	var $uses = array( 'Collectivite', 'User');
 
+	// Gestion des droits
+	var $aucunDroit = array('synchronize');
+	var $commeDroit = array('edit'=>'Collectivites:index', 'setLogo'=>'Collectivites:index');
+
 	function index() {
 		$this->Seance->recursive = 0;
 		$this->set('collectivite', $this->Collectivite->findAll());

@@ -14,6 +14,17 @@ class DeliberationsController extends AppController {
 	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote','SeancesUser', 'Listepresence');
 	var $components = array('Date','Utils','Email', 'Acl');
 
+	// Gestion des droits
+	var $demandeDroit = array('add', 'listerMesProjets', 'listerProjetsNonAttribues', 'listerProjetsATraiter', 'listerProjetsServicesAssemblees');
+	var $commeDroit = array(
+		'view'=>'Deliberations:listerMesProjets',
+		'edit'=>'Deliberations:listerMesProjets',
+		'delete'=>'Deliberations:listerMesProjets',
+		'attribuercircuit'=>'Deliberations:listerMesProjets',
+		'traiter'=>'Deliberations:listerProjetsATraiter',
+		'addIntoCircuit'=>'Deliberations:listerProjetsATraiter'
+	);
+
 	function index() {
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
@@ -94,10 +105,7 @@ class DeliberationsController extends AppController {
 		else
 		{
 			$deliberation['Deliberation']['seance_id']= $this->data['Deliberation']['seance_id'];
-			// si la délibération est déjà validée alors attribution de la posisiton pour la séance
-			$etatDelib = $this->Deliberation->read('etat', $this->data['Deliberation']['id']);
-			if (($etatDelib['Deliberation']['etat'] == 2)OR($etatDelib['Deliberation']['etat'] == 1))
-				$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+			$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 
 			if ($this->Deliberation->save($this->data))
 			{

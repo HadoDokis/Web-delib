@@ -4,6 +4,9 @@ class TypeseancesController extends AppController {
 	var $name = 'Typeseances';
 	var $helpers = array('Html', 'Form' );
 
+	// Gestion des droits
+	var $commeDroit = array('edit'=>'Typeseances:index', 'add'=>'Typeseances:index', 'delete'=>'Typeseances:index', 'view'=>'Typeseances:index');
+
 	function index() {
 		$this->Typeseance->recursive = 0;
 		$this->set('typeseances', $this->Typeseance->findAll());

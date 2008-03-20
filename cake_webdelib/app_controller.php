@@ -39,7 +39,7 @@
  */
 class AppController extends Controller {
 
-	var $components=array( 'Utils', 'Acl');
+	var $components=array( 'Utils', 'Acl', 'Droits');
 	var $helpers = array('Menu', 'Html', 'Ajax', 'Form', 'Javascript');
 
 	var $beforeFilter = array('checkSession');
@@ -63,17 +63,18 @@ class AppController extends Controller {
 				exit();
 			}
 			else {
+		 		// Contrôle des droits
+		 		$controllerAction = $this->name . ':' . ($this->name == 'Pages' ? $this->params['pass'][0] : $this->action);
 				$user_id = $this->Session->read('user.User.id');
-       			$aco = $this->name.':'.$this->action;
-        		if ($this->Acl->check($user_id, $aco)) {
-        			if ($aco != 'Services:doList') {
+				if ($this->Droits->check($user_id, $controllerAction)) {
+        			if ($controllerAction != 'Services:doList') {
         		   	    $this->log($_SERVER["REMOTE_ADDR"]." : ($user_id)->".substr($this->here, 0, strlen($this->here)));
         			}
           		    return;
         		}
                 else {
                    if (DEBUG==1)
-                       die("accès refusé pour $user_id (".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom').") à $aco");
+                       die("accès refusé pour $user_id (".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom').") à $controllerAction");
                     else
                         $this->redirect('/users/logout');
 

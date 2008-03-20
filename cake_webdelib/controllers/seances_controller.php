@@ -7,6 +7,25 @@ class SeancesController extends AppController {
 	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote','Model','Annex');
 	var $cacheAction = 0;
 
+	// Gestion des droits
+	var $demandeDroit = array('listerFuturesSeances', 'add', 'afficherCalendrier');
+	var $commeDroit = array(
+		'index'=>'Seances:listerFuturesSeances',
+		'view'=>'Seances:listerFuturesSeances',
+		'delete'=>'Seances:listerFuturesSeances',
+		'edit'=>'Seances:listerFuturesSeances',
+		'afficherProjets'=>'Seances:listerFuturesSeances',
+		'addListUsers'=>'Seances:listerFuturesSeances',
+		'generateConvocationList'=>'Seances:listerFuturesSeances',
+		'generateOrdresDuJour'=>'Seances:listerFuturesSeances',
+		'saisirDebatGlobal'=>'Seances:listerFuturesSeances',
+		'details'=>'Seances:listerFuturesSeances',
+		'saisirDebat'=>'Seances:listerFuturesSeances',
+		'voter'=>'Seances:listerFuturesSeances',
+		'changeRapporteur'=>'Seances:listerFuturesSeances',
+		'changeStatus'=>'Seances:listerFuturesSeances'
+	);
+
 	function index() {
 		$this->Seance->recursive = 0;
 		$seances = $this->Seance->findAll(null,null,'date asc');
@@ -41,7 +60,7 @@ class SeancesController extends AppController {
 
 			if ($this->Seance->save($this->data)) {
 				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;');
-				$this->redirect('/seances/index');
+				$this->redirect('/seances/listerFuturesSeances');
 			} else {
 				$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
 				$this->set('typeseances', $this->Seance->Typeseance->generateList());

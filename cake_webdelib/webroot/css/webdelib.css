@@ -665,6 +665,42 @@ ul.actions {
 }
 /* Fin mise en forme du menu principal */
 
+/* Mise en forme du tableau des droits */
+/* Tableau */
+#tableDroits th {
+	border: 1px solid Black;
+	padding-left: 10px;
+	padding-right: 10px;
+	text-align: left;
+	background-color: #f4f4f4;
+}
+#tableDroits td {
+	border: 1px solid Black;
+	border-top: 0;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+#tableDroits tr {
+	background: transparent;
+}
+#tableDroits tr.ligneProfil {
+	background-color: #DFEE8F;
+}
+#tableDroits tr.altLigneProfil {
+	background-color: #CFF358;
+}
+#tableDroits tr.ligneUtilisateur {
+	background-color: #E8E8E8;
+}
+#tableDroits tr.altLigneUtilisateur {
+	background-color: #D9D9D9;
+}
+#tableDroits img {
+	border: 0;
+}
+/* Fin mise en forme du tableau des droits */
+
+
 /*---------------- modifs christophe ------------------------*/
 /*profils*/
 
