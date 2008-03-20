@@ -6,6 +6,10 @@ class PostseancesController extends AppController {
 	var $components = array('Date');
 	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote','Model','Theme');
 
+	// Gestion des droits
+	var $aucunDroit = array('getNom', 'getPresence', 'getVote');
+	var $commeDroit = array('afficherProjets'=>'Postseances:index', 'generateDeliberation'=>'Postseances:index', 'generatePvComplet'=>'Postseances:index', 'generatePvSommaire'=>'Postseances:index');
+
 	function index() {
 		$this->Postseances->recursive = 0;
 	//	$condition= 'date <= "'.date('Y-m-d H:i:s').'"';

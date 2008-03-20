@@ -6,6 +6,10 @@ class ModelsController extends AppController {
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $components = array('Date','Utils','Email', 'Acl');
 
+	// Gestion des droits
+	var $aucunDroit = array('generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets');
+	var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index');
+
 	function index() {
 		$this->set('models', $this->Model->findAll());
 	}

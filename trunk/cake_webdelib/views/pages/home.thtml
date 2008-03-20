@@ -1,16 +1,18 @@
 <div id="content">
 	<div id="tableau_bord">
 <?php
-//    $menu = $this->controller->menu;
-//    if (isset($menu['Projets'])) {
+	$userId = $this->controller->Session->read('user.User.id');
+	if ($this->controller->Acl->check($userId, 'Deliberations:listerProjetsATraiter')) {
 	    echo $this->requestAction('/deliberations/listerProjetsATraiter', array('return'));
         echo('<br/>');
         echo $this->requestAction('/deliberations/listerProjetsDansMesCircuits', array('return'));
         echo('<br/>');
+	}
+	if ($this->controller->Acl->check($userId, 'Deliberations:listerMesProjets')) {
         echo $this->requestAction('/deliberations/listerMesProjets', array('return'));
         echo('<br/>');
-//     }
-//     if (isset($menu['Seance']))
+     }
+	if ($this->controller->Acl->check($userId, 'Seances:listerFuturesSeances'))
 	     echo $this->requestAction('/seances/listerFuturesSeances', array('return'));
 ?>
 	</div>

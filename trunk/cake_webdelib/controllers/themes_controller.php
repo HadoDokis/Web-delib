@@ -4,6 +4,10 @@ class ThemesController extends AppController {
 	var $name = 'Themes';
 	var $helpers = array('Html', 'Form', 'Tree');
 
+	// Gestion des droits
+	var $aucunDroit = array('changeParentId', 'getLibelle', 'isEditable');
+	var $commeDroit = array('edit'=>'Themes:index', 'add'=>'Themes:index', 'delete'=>'Themes:index', 'view'=>'Themes:index');
+
 	function getLibelle ($id = null) {
 		$condition = "Theme.id = $id";
         $objCourant = $this->Theme->findAll($condition);

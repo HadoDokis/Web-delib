@@ -4,6 +4,10 @@ class LocalisationsController extends AppController {
 	var $name = 'Localisations';
 	var $helpers = array('Html', 'Form', 'Tree');
 
+	// Gestion des droits
+	var $aucunDroit = array('changeParentId', 'getLibelle', 'isEditable');
+	var $commeDroit = array('edit'=>'Localisations:index', 'add'=>'Localisations:index', 'delete'=>'Localisations:index', 'view'=>'Localisations:index');
+
 	function getLibelle ($id = null) {
 		$condition = "Localisation.id = $id";
         $objCourant = $this->Localisation->findAll($condition);

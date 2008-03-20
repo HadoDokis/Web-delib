@@ -6,6 +6,10 @@ class UsersController extends AppController {
 	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'Profil');
 	var $components = array('Utils', 'Acl', 'Menu');
 
+	// Gestion des droits
+	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille');
+	var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'Users:index', 'view'=>'Users:index');
+
 	function index() {
 		$this->params['data']= $this->User->findAll();
 		$data=$this->params['data'];
@@ -42,13 +46,12 @@ class UsersController extends AppController {
 				$this->Session->setFlash('L\'utilisateur a &eacute;t&eacute; sauvegard&eacute;');
 				$user_id = $this->User->getLastInsertId();
 				$aro = new Aro();
-				$aro->create( $user_id, null, $this->data['User']['login']);
-				$condition = "User.id = $user_id ";
-				$infos = $this->User->findAll($condition);
-				$field = "Profil.libelle";
-				$condition = "Profil.id = ".$infos[0]['User']['profil_id'];
-				$infos = $this->Profil->findAll($condition, $field);
-				$aro->setParent($infos[0]['Profil']['libelle'], $user_id);
+				$aro->create( $user_id, null, 'Utilisateur:'.$this->data['User']['login']);
+				// Traitement du profil
+				if(!empty($this->data['User']['profil_id'])) {
+					$profilLibelle = $this->Profil->field('libelle', 'Profil.id = '.$this->data['User']['profil_id']);
+					$aro->setParent('Profil:'.$profilLibelle, $user_id);
+				}
 				$this->redirect('/users/index');
 			} else {
 
@@ -107,18 +110,15 @@ class UsersController extends AppController {
 			$this->cleanUpFields('User');
 
 			if ($this->User->isUnique('login', $this->data['User']['login'],$id) && $this->User->save($this->data)) {
+
+				// Traitement du profil
 				$aro = new Aro();
-
-				if (! $this->Acl->check($this->data['User']['login'], 'Users:logout'))
-  				    $aro->create( $id, null, $this->data['User']['login']);
-
-				$condition = "User.id = $id";
-				$infos = $this->User->findAll($condition);
-
-				$field = "Profil.libelle";
-				$condition = "Profil.id = ".$infos[0]['User']['profil_id'];
-				$infos = $this->Profil->findAll($condition, $field);
-				$aro->setParent($infos[0]['Profil']['libelle'], $id);
+				if(!empty($this->data['User']['profil_id'])) {
+					$profilLibelle = $this->Profil->field('libelle', 'Profil.id = '.$this->data['User']['profil_id']);
+					$aro->setParent('Profil:'.$profilLibelle, $id);
+				} else {
+					$aro->setParent('', $id);
+				}
 
 				$this->Session->setFlash('L\'utilisateur a &eacute;t&eacute; modifi&eacute;');
 				$this->redirect('/users/index');
@@ -234,7 +234,7 @@ class UsersController extends AppController {
 				//exit;
 
 				// Chargement du menu dans la session
-                $this->Session->write('menuPrincipal', $this->Menu->load('webDelib'));
+                $this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
 
 				$this->redirect('/');
  			}

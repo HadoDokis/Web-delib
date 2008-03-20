@@ -1,0 +1,30 @@
+<?php echo $javascript->link('droits.js'); ?>
+
+<h1>Gestion des droits des Profils et des Utilisateurs</h1>
+
+<div class='inav'>
+<table cellspacing='0' cellpadding='0'>
+<td>
+	<?php echo $html->formTag('/droits/edit', null, array('id'=>'frmAppliquer'));?>
+	<?php echo $html->hidden('Droits/strDroits');?>
+	<?php $onclick = "javascript:appliquerModifications($nbMenuControllers, $nbProfilsUsers)"; ?>
+	<?php echo $html->submit('Sauvegarder', array('class'=>'bt_save_border', 'name'=>'sauvegarder', 'onclick'=>$onclick)); ?>
+	<?php echo $html->link('Annuler', '/pages/administration', array('class'=>'link_annuler', 'name'=>'Annuler'), 'Voulez-vous quitter? Attention, en quittant vous perdrez vos éventuelles modifications.'); ?>
+	</form>
+</td>
+<td>
+	<b>Filtrer les profils</b> :
+	<?php echo $html->selectTag('Droits/filtreProfil', $filtreProfils, null, array('onchange' => "filtreProfil(this, $nbProfilsUsers);"));?>
+	- <b>Filtrer les menus/modules</b> :
+	<?php echo $html->selectTag('Droits/filtreMenu', $filtreMenu, null, array('onchange' => "filtreMenu(this, $nbMenuControllers, $nbProfilsUsers);"));?>
+</td>
+</table>
+</div>
+<br>
+
+<table cellspacing='0' cellpadding='0' class='inav' id='tableDroits'>
+	<thead>
+		<?php $droits->afficheEnTeteTableau($menuControllersTree, $nbProfilsUsers); ?>
+	</thead>
+	<?php $droits->afficheCorpsTableau($profilsUsersTree, $nbMenuControllers, $tabDroits); ?>
+</table>

@@ -4,6 +4,9 @@ class VotesController extends AppController {
 	var $name = 'Votes';
 	var $helpers = array('Html', 'Form' );
 
+	// Gestion des droits
+	var $aucunDroit;
+
 	function index() {
 		$this->Vote->recursive = 0;
 		$this->set('votes', $this->Vote->findAll());

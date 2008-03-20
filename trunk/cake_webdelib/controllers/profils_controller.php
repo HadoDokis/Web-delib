@@ -4,6 +4,10 @@ class ProfilsController extends AppController {
 	var $name = 'Profils';
 	var $helpers = array('Html', 'Form','Tree' );
 
+	// Gestion des droits
+	var $aucunDroit = array('changeParentId');
+	var $commeDroit = array('add'=>'Profils:index', 'delete'=>'Profils:index', 'edit'=>'Profils:index', 'view'=>'Profils:index');
+
 	function index()
 	{
 		$this->set('data', $this->Profil->findAllThreaded(null, null, 'Profil.id ASC'));

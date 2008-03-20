@@ -18,8 +18,12 @@
 		<?php echo $form->labelTag('User/prenom', 'Prenom');?>
 	 	<?php echo $html->input('User/prenom', array('size' => '30'));?>
 		<?php echo $html->tagErrorMsg('User/prenom', 'Entrer le prenom.');?>
+	<br />
 		<?php echo $form->labelTag('User/titre', 'Titre');?>
 		<?php echo $html->input('User/titre', array('size' => '30'));?>
+	<br />
+	    <?php echo $form->labelTag('User/position', 'Position');?>
+	 	<?php echo $html->input('User/position', array('size' => '3'));?>
 	</div>
 </div>
 
@@ -40,9 +44,6 @@
 		<?php echo $form->labelTag('User/ville', 'Ville');?>
 	 	<?php echo $html->input('User/ville');?>
 		<?php echo $html->tagErrorMsg('User/ville', 'Entrer la ville.');?>
-	<br />
-	    <?php echo $form->labelTag('User/position', 'Position');?>
-	 	<?php echo $html->input('User/position', array('size' => '3'));?>
 	</div>
 	<div class="droite">
 		<?php echo $form->labelTag('User/teldom', 'Num tel domicile');?>
