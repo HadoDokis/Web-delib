@@ -1749,7 +1749,7 @@ class DeliberationsController extends AppController {
 	function copyFromPreviousList($delib_id){
 		$position = $this->getCurrentPosition($delib_id);
 		$seance_id = $this->getCurrentSeance($delib_id);
-		$previousDelibId= $this->getDelibIdByPosition($seance_id, $position -1);
+		$previousDelibId= $this->getDelibIdByPosition($seance_id, $position);
 		$condition = "delib_id = $previousDelibId";
 		$previousPresents = $this->Listepresence->findAll($condition);
 
@@ -1765,7 +1765,7 @@ class DeliberationsController extends AppController {
 	}
 
 	function getDelibIdByPosition ($seance_id, $position){
-		$condition = "seance_id = $seance_id AND Deliberation.position = $position";
+        $condition = "seance_id = $seance_id AND position = $position -1 AND Deliberation.etat != -1";
 		$delib = $this->Deliberation->findAll($condition);
 		if (isset($delib['0']['Deliberation']['id']))
 			return $delib['0']['Deliberation']['id'];
