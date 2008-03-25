@@ -888,3 +888,21 @@ CREATE TABLE IF NOT EXISTS `votes` (
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- Ajout des commentaires pour tous ces roles
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '1', '12', '1', '1', '1', '1');
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '2', '12', '1', '1', '1', '1');
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '3', '12', '1', '1', '1', '1');
+
+-- Ajout du changement de services
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '1', '157', '1', '1', '1', '1');
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '2', '157', '1', '1', '1', '1');
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '3', '157', '1', '1', '1', '1');
+INSERT INTO `aros_acos` (`id` , `aro_id` , `aco_id` , `_create` , `_read` , `_update` , `_delete` )
+VALUES (NULL , '4', '157', '1', '1', '1', '1');
