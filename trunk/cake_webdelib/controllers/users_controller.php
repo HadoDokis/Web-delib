@@ -7,8 +7,8 @@ class UsersController extends AppController {
 	var $components = array('Utils', 'Acl', 'Menu');
 
 	// Gestion des droits
-	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille');
-	var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'Users:index', 'view'=>'Users:index');
+	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view');
+	var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'Users:index');
 
 	function index() {
 		$this->params['data']= $this->User->findAll();
