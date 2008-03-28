@@ -5,8 +5,8 @@ class ServicesController extends AppController {
 	var $helpers = array('Html', 'Form','Tree' );
 
 	// Gestion des droits
-	var $aucunDroit = array('changeParentId', 'changeService', 'doList', 'getLibelle', 'getParentList', 'isEditable');
-	var $commeDroit = array('edit'=>'Services:index', 'add'=>'Services:index', 'delete'=>'Services:index', 'view'=>'Services:index');
+	var $aucunDroit = array('changeParentId', 'changeService', 'doList', 'getLibelle', 'getParentList', 'isEditable', 'view');
+	var $commeDroit = array('edit'=>'Services:index', 'add'=>'Services:index', 'delete'=>'Services:index');
 
     function changeService($newServiceActif) {
     	$this->Session->del('user.User.service');
