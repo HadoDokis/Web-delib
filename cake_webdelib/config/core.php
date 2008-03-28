@@ -37,7 +37,7 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '0.9.6.3 beta');
+    define ('VERSION', '0.9.7-1beta');
 	define ('IMPORT_DOC', false);
 /**
  * Set debug level here:
