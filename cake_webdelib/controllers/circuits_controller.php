@@ -96,7 +96,6 @@ class CircuitsController extends AppController {
        			array_push($listeUserCircuit['service_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['service_id']);
        			array_push($listeUserCircuit['position'], $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
        		}
-
   			$this->set('listeUserCircuit', $listeUserCircuit);
   			$this->set('lastPosition', $this->getLastPosition($circuit_id));
 		}
@@ -178,9 +177,9 @@ class CircuitsController extends AppController {
 	   	$lastPosition = $this->getLastPosition($circuitCourant);
 
         if ($sens != 0)
-            $conditions = "UsersCircuit.circuit_id = $circuitCourant  AND position = $positionCourante-1";
-       	else            // on récupère l'objet précédent
-   		    $conditions = "UsersCircuit.circuit_id = $circuitCourant  AND position = $positionCourante+1";
+            $conditions = "UsersCircuit.circuit_id = $circuitCourant  AND UsersCircuit.position = $positionCourante-1";
+       	else            // on recupere l'objet precedent
+   		    $conditions = "UsersCircuit.circuit_id = $circuitCourant  AND UsersCircuit.position = $positionCourante+1";
 
 		$obj = $this->UsersCircuit->findAll($conditions);
 		//position du suivant ou du precedent
