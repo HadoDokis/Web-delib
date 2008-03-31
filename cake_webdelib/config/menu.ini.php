@@ -26,7 +26,7 @@ $webDelib = array(
 			'subMenu' => array(
 				'items' => array(
 					'Nouveau...' => array('link' => '/deliberations/add'),
-					'Mes projets' => array('link' => '/deliberations/listerMesProjets'),
+					//'Mes projets' => array('link' => '/deliberations/listerMesProjets'),
 					'A attribuer' => array('link' => '/deliberations/listerProjetsNonAttribues'),
 					'A traiter' => array('link' => '/deliberations/listerProjetsATraiter'),
 					'A faire voter' => array('link' => '/deliberations/listerProjetsServicesAssemblees')
