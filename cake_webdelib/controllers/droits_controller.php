@@ -274,7 +274,8 @@ class DroitsController extends AppController
 		// Parcours des éléments du menu et des actions de controleurs
 		foreach($menuControllersTree as $menuController) {
 			if (!$aco->findbyAlias($menuController['acosAlias']))
-				$aco->create(null, $parent, $menuController['acosAlias']);
+				$aco->create(null, null, $menuController['acosAlias']);
+//				$aco->create(null, $parent, $menuController['acosAlias']);
 
 			// Traitement des sous-menus
 			if (array_key_exists('subMenu', $menuController) and !empty($menuController['subMenu']))
