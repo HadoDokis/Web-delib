@@ -22,7 +22,6 @@ class ProfilsController extends AppController {
 	}
 
 	function add() {
-		$aro = new Aro();
 		if (empty($this->data)) {
 			$profils = $this->Profil->generateList(null,'id ASC');
 			$this->set('profils', $profils);
@@ -30,7 +29,6 @@ class ProfilsController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Profil->save($this->data)) {
-                $aro->create(0, null, $this->data['Profil']['libelle']); // Création du groupe
 				$this->Session->setFlash('Le profil a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/profils/index');
 			} else {
@@ -40,7 +38,6 @@ class ProfilsController extends AppController {
 	}
 
 	function edit($id = null) {
-		$aro = new Aro();
 		if (empty($this->data)) {
 			if (!$id) {
 				$this->Session->setFlash('Invalide id pour le profil');
@@ -53,10 +50,8 @@ class ProfilsController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			$tab = $this->Profil->findAll("Profil.id=$id");
-			$aro->delete($aro->id($tab[0]['Profil']['libelle']));
 
 			if ($this->Profil->save($this->data)) {
-			    $aro->create(0, null, $this->data['Profil']['libelle']);
 				$this->Session->setFlash('Le profil a &eacute;t&eacute; modifi&eacute;');
 				$this->redirect('/profils/index');
 			} else {
@@ -66,10 +61,8 @@ class ProfilsController extends AppController {
 	}
 
 	function delete($id = null) {
-		$aro = new Aro();
 		if (!$id) {
 			$tab = $this->Profil->findAll("Profil.id=$id");
-			$aro->delete($aro->id($tab[0]['Profil']['libelle']));
 			$this->Session->setFlash('Invalide id pour le profil');
 			$this->redirect('/profils/index');
 		}
