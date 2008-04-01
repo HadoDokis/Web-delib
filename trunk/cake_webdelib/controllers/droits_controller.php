@@ -40,7 +40,7 @@ class DroitsController extends AppController
 			$filtreProfils = $this->_chargeFiltreProfils($profilsUsersTree);
 
 			// Chargement de la liste pour le filtre sur le menu
-			$filtreMenu = $this->_chargefiltreMenu($menuControllersTree);
+			$filtreMenu = $this->_chargeFiltreMenu($menuControllersTree);
 
 			// Définition des variables pour la vue
 			$this->set('filtreProfils', $filtreProfils);
@@ -243,7 +243,7 @@ class DroitsController extends AppController
 /* retourne la liste des éléments principaux du menu sous forme d'un tableau */
 /* utilisé dans la vue pour filtrer l'affichage des menus */
 /* retourne un tableau associatif : colDeb-colFin => titre_du_menu */
-	function _chargefiltreMenu($menuControllersTree) {
+	function _chargeFiltreMenu($menuControllersTree) {
 		// Initialisations
 		$fMenu = array();
 		$cDeb=0;
@@ -274,8 +274,7 @@ class DroitsController extends AppController
 		// Parcours des éléments du menu et des actions de controleurs
 		foreach($menuControllersTree as $menuController) {
 			if (!$aco->findbyAlias($menuController['acosAlias']))
-				$aco->create(null, null, $menuController['acosAlias']);
-//				$aco->create(null, $parent, $menuController['acosAlias']);
+				$aco->create(null, $parent, $menuController['acosAlias']);
 
 			// Traitement des sous-menus
 			if (array_key_exists('subMenu', $menuController) and !empty($menuController['subMenu']))
@@ -354,20 +353,50 @@ class DroitsController extends AppController
 	}
 
 /* Fonction récursive sur les menus et actions des controleurs pour la mise à jour des droits */
-	function _majDroitsMenuControllers($aro, $menuControllersTree, $iProfilPere) {
+	function _majDroitsMenuControllers($aro, $menuControllersTree, $iProfilPere, $iMenuPere=-1) {
 		// Parcours des menus et controleurs
 		foreach($menuControllersTree as $menuController) {
 			$this->iMenu++;
-			// On créer les droits si différent des droits du père
-			if (($iProfilPere == -1) or
-				($this->tabDroits[$this->iProfil][$this->iMenu] != $this->tabDroits[$iProfilPere][$this->iMenu]) ) {
-				if ($this->tabDroits[$this->iProfil][$this->iMenu] == '1') $this->Acl->allow($aro, $menuController['acosAlias']);
-				else $this->Acl->deny($aro, $menuController['acosAlias']);
+			// On ajoute des entrées dans la table aros_acos que si nécessaire selon les 4 cas possibles
+			if(($iProfilPere == -1) && ($iMenuPere == -1)) {
+				// cas 1 : profil et option principale du menu : on creer une entrée dans aros_acos
+				$creerDroits = true;
+			} elseif (($iProfilPere == -1) && ($iMenuPere != -1)) {
+				// cas 2 : profil et sous-menu : on creer une entrée dans aros_acos si droits menu père != sous-menu pour ce profil
+				$creerDroits = $this->tabDroits[$this->iProfil][$this->iMenu] != $this->tabDroits[$this->iProfil][$iMenuPere];
+			} elseif (($iProfilPere != -1) && ($iMenuPere == -1)) {
+				// cas 3 : sous-profil ou utilisateur, et menu principal : on creer une entrée dans aros_acos si droits profil != sous-profil ou utilisateur pour ce menu principal
+				$creerDroits = $this->tabDroits[$this->iProfil][$this->iMenu] != $this->tabDroits[$iProfilPere][$this->iMenu];
+			} elseif (($iProfilPere != -1) && ($iMenuPere != -1)) {
+				// cas 4 : sous-profil ou utilisateur, et sous-menu : ça se complique
+				$accesProfilPereMenuPere = $this->tabDroits[$iProfilPere][$iMenuPere] == '1';
+				$accesProfilPereMenu = $this->tabDroits[$iProfilPere][$this->iMenu] == '1';
+				$accesProfilMenuPere = $this->tabDroits[$this->iProfil][$iMenuPere] == '1';
+				if ($this->tabDroits[$this->iProfil][$this->iMenu] == '1') {
+					$creerDroits =
+						($accesProfilPereMenuPere && $accesProfilPereMenu && !$accesProfilMenuPere) ||
+						($accesProfilPereMenuPere && !$accesProfilPereMenu && $accesProfilMenuPere) ||
+						($accesProfilPereMenuPere && !$accesProfilPereMenu && !$accesProfilMenuPere) ||
+						(!$accesProfilPereMenuPere && !$accesProfilPereMenu && !$accesProfilMenuPere);
+				}
+				if ($this->tabDroits[$this->iProfil][$this->iMenu] == '0') {
+					$creerDroits =
+						($accesProfilPereMenuPere && $accesProfilPereMenu && $accesProfilMenuPere) ||
+						(!$accesProfilPereMenuPere && $accesProfilPereMenu && $accesProfilMenuPere) ||
+						(!$accesProfilPereMenuPere && $accesProfilPereMenu && !$accesProfilMenuPere) ||
+						(!$accesProfilPereMenuPere && !$accesProfilPereMenu && $accesProfilMenuPere);
+				}
+			}
+			if ($creerDroits) {
+				if ($this->tabDroits[$this->iProfil][$this->iMenu] == '1')
+					$this->Acl->allow($aro, $menuController['acosAlias']);
+				else
+					$this->Acl->deny($aro, $menuController['acosAlias']);
 			}
 
 			// Traitement des sous-menus
 			if (array_key_exists('subMenu', $menuController) and !empty($menuController['subMenu']))
-				$this->_majDroitsMenuControllers($aro, $menuController['subMenu'], $iProfilPere);
+				$this->_majDroitsMenuControllers($aro, $menuController['subMenu'], $iProfilPere, $this->iMenu);
 
 		}
 	}
