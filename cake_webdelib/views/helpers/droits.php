@@ -12,6 +12,7 @@ class DroitsHelper extends Helper {
 		$this->_construitLigneEnTete($enTeteTab, $menuTree, $nbLigneEntete, $nbLigneTable);
 		foreach($enTeteTab as $enTeteTr) {
 			echo '<tr>';
+			// On ajoute une cellule d'entete vide qui correspond à la colonne d'affichage des profils et des utilisateurs
 			echo '<th></th>';
 			foreach($enTeteTr as $enTeteTh) {
 				echo $enTeteTh;
@@ -69,12 +70,12 @@ class DroitsHelper extends Helper {
 	}
 
 /* Affiche les lignes du tableau */
-	function afficheCorpsTableau($profilsUsersTree, $nbCol, $tabDroits) {
-		$this->_afficheLigneTableau($profilsUsersTree, $nbCol, $tabDroits);
+	function afficheCorpsTableau($profilsUsersTree, $structColonnes, $nbCol, $tabDroits) {
+		$this->_afficheLigneTableau($profilsUsersTree, $structColonnes, $nbCol, $tabDroits);
 	}
 
 /* Affiche les lignes du tableau (récursive) */
-	function _afficheLigneTableau($profilsTree, $nbCol, $tabDroits, &$iLigne=0, $prof=0) {
+	function _afficheLigneTableau($profilsTree, $structColonnes, $nbCol, $tabDroits, &$iLigne=0, $prof=0) {
 
 		// Initialisations
 		static $altProfil = false;
@@ -106,7 +107,7 @@ class DroitsHelper extends Helper {
 				// Affichage des cellules du profil
 				for($i=1; $i<=$nbCol; $i++) {
 					echo '<td id=\'l'.$iLigne.'c'.$i.'\'>';
-					echo "<input type='checkbox' " . ($tabDroits[$iLigne-1][$i-1]=='1' ? "checked " : "") . "onclick='toggleCheckBox($i, $iLigne, " . ($iLigne+$profil['nbElement']) . ")'></input>";
+					echo "<input type='checkbox' " . ($tabDroits[$iLigne-1][$i-1]=='1' ? "checked " : "") . "onclick='toggleCheckBox($i, ".($i+$structColonnes[$i-1]).", $iLigne, " . ($iLigne+$profil['nbElement']) . ")'></input>";
 					echo '</td>';
 				}
 			echo '</tr>';
@@ -126,7 +127,7 @@ class DroitsHelper extends Helper {
 						// Affichage des celulles de l'utilisateur
 						for($i=1; $i<=$nbCol; $i++) {
 							echo '<td id=\'l'.$iLigne.'c'.$i.'\'>';
-								echo '<input type=\'checkbox\' ' . ($tabDroits[$iLigne-1][$i-1]=='1' ? 'checked ' : '') . '></input>';
+								echo "<input type='checkbox' " . ($tabDroits[$iLigne-1][$i-1]=='1' ? "checked " : "") . "onclick='toggleCheckBox($i, ".($i+$structColonnes[$i-1]).", $iLigne, $iLigne)'></input>";
 							echo '</td>';
 						}
 					echo '</tr>';
@@ -135,7 +136,7 @@ class DroitsHelper extends Helper {
 
 			// Traitement des sous-profils
 			if (array_key_exists('sousProfils', $profil))
-				$this->_afficheLigneTableau($profil['sousProfils'], $nbCol, $tabDroits, $iLigne, $prof+1);
+				$this->_afficheLigneTableau($profil['sousProfils'], $structColonnes, $nbCol, $tabDroits, $iLigne, $prof+1);
 		}
 	}
 

@@ -204,26 +204,30 @@ function filtreMenu(choix, nbCol, nbLigne) {
 	}
 };
 
-/* coche ou décoche les checkBox des cellules de la colonne col de la ligne l1 à l2*/
-function toggleCheckBox(col, l1, l2) {
-	var l;
+/* coche ou décoche les checkBox des cellules comprises entres les colonnes c1 à c2 et entre les lignes l1 à l2*/
+function toggleCheckBox(c1, c2, l1, l2) {
+	var c, l;
 	var cId, lId;
 	var toggle;
 	var Element, chkBoxEle;
 
 	// Initialisations
-	cId = 'c' + col;
+	cId = 'c' + c1;
 	lId = 'l' + l1;
 	Element = document.getElementById(lId+cId) ;
 	chkBoxEle = Element.getElementsByTagName('input')[0];
 	toggle = chkBoxEle.checked;
 
-	// Parcours des lignes
-	for(l=l1+1; l<=l2; l++) {
-		lId = 'l' + l;
-		Element = document.getElementById(lId+cId) ;
-		chkBoxEle = Element.getElementsByTagName('input')[0];
-		chkBoxEle.checked = toggle;
+	// Parcours des colonnes
+	for(c=c1; c<=c2; c++) {
+		cId = 'c' + c;
+		// Parcours des lignes
+		for(l=l1; l<=l2; l++) {
+			lId = 'l' + l;
+			Element = document.getElementById(lId+cId) ;
+			chkBoxEle = Element.getElementsByTagName('input')[0];
+			chkBoxEle.checked = toggle;
+		}
 	}
 
 };

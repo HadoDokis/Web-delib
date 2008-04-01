@@ -20,6 +20,7 @@ class DroitsController extends AppController
 		$nbProfilsUsers = 0;
 		$nbMenuControllers = 0;
 		$tabDroits = array();
+		$structColonnes = array();
 
 		// Chargement de l'arborescence des profils et des users associés
 		$nbProfilsUsers = $this->_chargeProfilsUsers($profilsUsersTree);
@@ -42,6 +43,9 @@ class DroitsController extends AppController
 			// Chargement de la liste pour le filtre sur le menu
 			$filtreMenu = $this->_chargeFiltreMenu($menuControllersTree);
 
+			// Cargement de la structure des colonnes pour l'affichage des celulles
+			$this->_chargeStructureColonnes($menuControllersTree, $structColonnes);
+
 			// Définition des variables pour la vue
 			$this->set('filtreProfils', $filtreProfils);
 			$this->set('profilsUsersTree', $profilsUsersTree);
@@ -50,6 +54,7 @@ class DroitsController extends AppController
 			$this->set('menuControllersTree', $menuControllersTree);
 			$this->set('nbMenuControllers', $nbMenuControllers);
 			$this->set('tabDroits', $this->tabDroits);
+			$this->set('structColonnes', $structColonnes);
 		} else
 		{
 			// Mise à jour des tables acos et aros
@@ -452,6 +457,16 @@ class DroitsController extends AppController
 			}
 		}
 		return false;
+	}
+
+/* construit le tableau $structColonnes avec le nombre d'éléments du menu par colonnes */
+	function _chargeStructureColonnes($menuControllersTree, &$structColonnes) {
+
+		foreach($menuControllersTree as $menu) {
+			$structColonnes[] = $menu['nbElement'];
+			if ($menu['nbElement']>0) $this->_chargeStructureColonnes($menu['subMenu'], $structColonnes);
+		}
+
 	}
 
 }

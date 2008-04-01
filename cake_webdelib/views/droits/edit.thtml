@@ -26,5 +26,5 @@
 	<thead>
 		<?php $droits->afficheEnTeteTableau($menuControllersTree, $nbProfilsUsers); ?>
 	</thead>
-	<?php $droits->afficheCorpsTableau($profilsUsersTree, $nbMenuControllers, $tabDroits); ?>
+	<?php $droits->afficheCorpsTableau($profilsUsersTree, $structColonnes, $nbMenuControllers, $tabDroits); ?>
 </table>
