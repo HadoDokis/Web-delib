@@ -40,9 +40,7 @@ class MenuHelper extends Helper {
 			// Initialisation du lien
 			if (!array_key_exists('link', $menuItem)) $menuItem['link']='/';
 			elseif ($menuItem['link'] == '') $menuItem['link']='/';
-			elseif($menuItem['link']{0} != '/' and
-					substr($menuItem['link'],0,4) != 'http' and
-					substr($menuItem['link'],0,3) != 'www') $menuItem['link'] = '/pages/' . $menuItem['link'];
+			else $menuItem['link'] = $this->_initLien($menuItem['link']);
 
 			// Determine si on est sur l'élément courant
 			if (!$currentItemFound) {
@@ -87,6 +85,9 @@ class MenuHelper extends Helper {
  * @access private
  */
 	function _isCurrent($data) {
+		// Initialisation du lien à tester
+		$data['link'] = $this->_initLien($data['link']);
+
 		// test sur l'élément courant
 		if ($data['link'] === substr($this->here, strlen($this->base))) return true;
 		else {
@@ -100,6 +101,24 @@ class MenuHelper extends Helper {
 			return false;
 		}
 	}
+
+/**
+ *
+ * Ajoute /pages/ au lien si il ne commence pas par / ou par http ou par www
+ *
+ * @return string
+ *
+ * @param string $lien
+ * @access private
+ */
+	function _initLien($lien) {
+		// Initialisation du lien à tester
+		if($lien{0} != '/' && substr($lien,0,4) != 'http' && substr($lien,0,3) != 'www')
+			return '/pages/' . $lien;
+		else
+			return $lien;
+	}
+
 
 /**
  * Initialise la valeur $key du sous-menu $subMenu avec la valeur $key du menu $menu.
