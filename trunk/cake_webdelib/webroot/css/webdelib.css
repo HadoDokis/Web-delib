@@ -667,6 +667,9 @@ ul.actions {
 
 /* Mise en forme du tableau des droits */
 /* Tableau */
+table#tableDroits {
+	border-collapse: separate;
+}
 #tableDroits th {
 	border: 1px solid Black;
 	padding-left: 10px;
