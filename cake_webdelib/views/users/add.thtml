@@ -9,7 +9,11 @@
 		<?php echo $html->tagErrorMsg('User/unique_login', 'Entrer un autre login, celui-ci est d&eacute;j&agrave; utilis&eacute;.'); ?> <br />
 		<?php echo $form->labelTag('User/password', 'Password');?>
 	 	<?php echo $html->password('User/password');?>
-		<?php echo $html->tagErrorMsg('User/password', 'Entrer le mot de passe.');?>
+	 	<?php echo $html->tagErrorMsg('User/password', 'Entrer le mot de passe.');?>
+	 	<?php echo $form->labelTag('User/password2', 'Confirmer le password');?><br />
+	 	<?php echo $html->password('User/password2');?>
+		<?php echo $html->tagErrorMsg('User/password2', 'Les deux mots de passe ne sont pas identiques.');?>
+
 	</div>
 	<div class="droite">
 		<?php echo $form->labelTag('User/nom', 'Nom');?>
