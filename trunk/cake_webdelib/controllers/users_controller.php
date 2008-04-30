@@ -7,7 +7,7 @@ class UsersController extends AppController {
 	var $components = array('Utils', 'Acl', 'Menu');
 
 	// Gestion des droits
-	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view');
+	var $aucunDroit = array('login', 'logout', 'changeMdp', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view');
 	var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'Users:index');
 
 	function index() {
@@ -258,6 +258,24 @@ class UsersController extends AppController {
 		$this->redirect('/users/login');
 	}
 
+	function changeMdp($id) {
+	    if ($id == null) {
+	    	$user = $this->Session->read('user');
+	        $id = $user['User']['id'];
+	    }
+		$this->set ('id', $id);
+		$this->set('nom', $this->getNom($id));
+	    $this->set('prenom', $this->getPrenom($id));
+
+		if (!empty($this->data)) {
+			$newMdp = $this->data['User']['mdp'];
+            $this->data = $this->User->read(null, $id);
+            $this->data['User']['id']=$id;
+            $this->data['User']['password'] = md5($newMdp);
+            if ($this->User->save($this->data))
+                $this->redirect('/users/index');
+		}
+	}
 }
 
 ?>

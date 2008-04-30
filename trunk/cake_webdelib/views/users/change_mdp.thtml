@@ -1,0 +1,12 @@
+<h2>Changement du mot de passe pour  <?php echo ("$prenom $nom"); ?></h2>
+<form action="<?php echo $html->url('/users/changeMdp/'.$id); ?>" method="post">
+<div class="required">
+	<?php echo $form->labelTag('User/mdp', 'Mot de passe');?>
+ 	<?php echo $html->input('User/mdp');?>
+	<?php echo $html->tagErrorMsg('User/mdp', 'Entrer le nouveau mot de passe.');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Changer', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/users/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+</form>

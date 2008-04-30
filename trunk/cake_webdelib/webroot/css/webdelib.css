@@ -450,6 +450,13 @@ a.link_clore {
 	padding: 4px 4px 4px 25px;
 }
 
+a.link_mdp {
+	background-image: url(../img/icons/mdp.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
 a.link_annuler_sans_border {
 	background-image: url(../img/icons/back.png);
 	background-repeat: no-repeat;
