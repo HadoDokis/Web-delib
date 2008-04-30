@@ -74,5 +74,16 @@ class User extends AppModel {
 														'deleteQuery'=>'')*/
 										);
 
+	 function validates()
+    {
+        $user = $this->data["User"];
+        if($user["password"] != md5($user["password2"]) ){
+            $this->invalidate('password2');
+         }
+
+          $errors = $this->invalidFields();
+          return count($errors) == 0;
+    }
+
 }
 ?>
