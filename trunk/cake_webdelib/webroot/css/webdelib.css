@@ -502,7 +502,6 @@ a.link_annexe {
 	height: 22px;
 	cursor: pointer;
 }
-
 .bt_add {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	background-image: url(../img/icons/edit_add.png);
@@ -516,8 +515,20 @@ a.link_annexe {
 	height: 22px;
 	cursor: pointer;
 }
-
-
+.bt_annuler {
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	background-image: url(../img/icons/edit_cancel.png);
+	background-color: white;
+	background-repeat: no-repeat;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	padding-left: 25px;
+	height: 22px;
+	cursor: pointer;
+	text-align: right;
+}
 .bt_fin {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	background-image: url(../img/icons/apply.png);
