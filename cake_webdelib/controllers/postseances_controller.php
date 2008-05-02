@@ -8,7 +8,7 @@ class PostseancesController extends AppController {
 
 	// Gestion des droits
 	var $aucunDroit = array('getNom', 'getPresence', 'getVote');
-	var $commeDroit = array('afficherProjets'=>'Postseances:index', 'generateDeliberation'=>'Postseances:index', 'generatePvComplet'=>'Postseances:index', 'generatePvSommaire'=>'Postseances:index');
+	var $commeDroit = array('changeObjet'=>'Postseances:index', 'afficherProjets'=>'Postseances:index', 'generateDeliberation'=>'Postseances:index', 'generatePvComplet'=>'Postseances:index', 'generatePvSommaire'=>'Postseances:index');
 
 	function index() {
 		$this->Postseances->recursive = 0;
@@ -93,6 +93,18 @@ class PostseancesController extends AppController {
 	{
 		$data = $this->User->findAll("User.id = $id");
 		return $data['0']['User']['prenom'].' '.$data['0']['User']['nom'];
+	}
+
+	function changeObjet($delib_id) {
+		$this->set('delib_id', $delib_id);
+
+	    if (!empty($this->data)) {
+	        $data = $this->Deliberation->read(null, $delib_id);
+
+			$data['Deliberation']['objet'] = $this->data['Deliberation']['objet'];
+			if ($this->Deliberation->save($data))
+			     $this->redirect('/deliberations/transmit');
+	    }
 	}
 
 }
