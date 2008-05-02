@@ -16,7 +16,10 @@ function FermerFenetre(){
 	var choix = confirm("Voulez-vous fermer la fenetre ?");
 	if (choix)  window.close();
 }
-
+function FermerFenetre2(){
+	var choix = confirm("Voulez-vous fermer la fenetre ?");
+	if (choix)  history.back();
+}
 function returnChoice(text,arg) {
 
     var1 = 'classif1';
@@ -142,8 +145,8 @@ function add_field() {
 	var br = document.createElement('br');
 	p.id = n;
  	d.appendChild(p);
- }	
- 	
+ }
+
 	var div1 = document.createElement('div');
 	var input1 = document.createElement('input');
 	input1.id = 'AnnexeTitre_'+n;
