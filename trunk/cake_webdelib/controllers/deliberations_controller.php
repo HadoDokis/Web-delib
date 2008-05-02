@@ -15,7 +15,7 @@ class DeliberationsController extends AppController {
 	var $components = array('Date','Utils','Email', 'Acl');
 
 	// Gestion des droits
-	var $demandeDroit = array('add', 'listerMesProjets', 'listerProjetsNonAttribues', 'listerProjetsATraiter', 'listerProjetsServicesAssemblees');
+	var $demandeDroit = array('add', 'listerHistorique', 'listerMesProjets', 'listerProjetsNonAttribues', 'listerProjetsATraiter', 'listerProjetsServicesAssemblees');
 	var $commeDroit = array(
 		'view'=>'Deliberations:listerMesProjets',
 		'edit'=>'Deliberations:listerMesProjets',
@@ -63,6 +63,22 @@ class DeliberationsController extends AppController {
 			$conditions="seance_id != 0";
 			$this->set('deliberations', $this->Deliberation->findAll($conditions));
 		}
+	}
+
+	function listerHistorique () {
+		$user=$this->Session->read('user');
+		$user_id=$user['User']['id'];
+		$conditions="etat >= 2 AND redacteur_id = $user_id";
+		$deliberations=$this->Deliberation->findAll($conditions);
+
+		for ($i=0; $i<count($deliberations); $i++){
+			if (isset($deliberations[$i]['Seance']['date']))
+		        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+			$id_service = $deliberations[$i]['Service']['id'];
+			$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+
+		}
+		$this->set('deliberations', $deliberations);
 	}
 
 	function listerProjetsNonAttribues() {
