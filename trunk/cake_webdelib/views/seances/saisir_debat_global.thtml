@@ -1,7 +1,7 @@
 <h2>Saisie des débats généraux :</h2>
-<?php echo $javascript->link('fckeditor'); ?> 
+<?php echo $javascript->link('fckeditor'); ?>
 <?php echo $html->formTag('/seances/saisirDebatGlobal/'.$html->tagValue('Seance/id'),null,array('enctype'=>'multipart/form-data','name'=>'debat')); ?>
- 
+
 <div class="optional">
     <?php echo $html->textarea('Seance/debat_global', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Seance][debat_global]'); ?>
@@ -26,9 +26,8 @@
 </div>
 <br>
 <div class="submit">
-	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir'));?>
+    <?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"javascript:FermerFenetre()"));?>
 </div>
-
-
-
 </form>
+    <?php echo $html->submit('Annuler',     array('class'=>'bt_annuler', 'name'=>'annuler', 'onclick'=>"javascript:FermerFenetre2()"));?>
+
