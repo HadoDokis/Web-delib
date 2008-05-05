@@ -1195,6 +1195,9 @@ class DeliberationsController extends AppController {
 					//maj de l'etat de la delib dans la table deliberations
 					$tab=$this->Deliberation->findAll("Deliberation.id = $id");
 					$this->data['Deliberation']['etat']=-1; //etat -1 : refusé
+
+				    // Retour de la position a 0 pour ne pas qu'il y ait de confusion
+					$this->data['Deliberation']['position']=0;
 					$this->data['Deliberation']['id']=$id;
 					$this->Deliberation->save($this->data['Deliberation']);
 
