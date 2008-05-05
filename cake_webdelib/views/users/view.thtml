@@ -85,8 +85,12 @@
 
 <br />
 <ul id="actions_fiche">
-	<li><?php echo $html->link('&shy;',   '/users/index', array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) ?> </li>
-	<li><?php echo $html->link('&shy;',   '/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false) ?> </li>
+	<?php
+		echo '<li>' . $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+
+		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Users:edit'))
+			echo '<li>'.$html->link('&shy;',   '/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+	?>
 </ul>
 
 </div>
