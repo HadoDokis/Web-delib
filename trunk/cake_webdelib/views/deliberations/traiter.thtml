@@ -1,8 +1,7 @@
 <div id="vue_cadre">
-<? //debug($deliberation); ?>
 <? $deliberation=$deliberation['0']; ?>
 <dl>
-	<h3>D&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['num_delib']?></h3>
+	<h3>Valider ou refuser les projets de d&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['id']?></h3>
 
 <div class="imbrique">
 	<dt>Libelle</dt>
@@ -15,11 +14,11 @@
 <div class="imbrique">
 	<div class="gauche">
 		<dt>Theme</dt>
-		<dd>&nbsp;<?php echo $html->link($deliberation['Theme']['libelle'], '/themes/view/' .$deliberation['Theme']['id'])?><br> </dd>
+		<dd>&nbsp;<?php echo $deliberation['Theme']['libelle']?><br> </dd>
 	</div>
 	<div class="droite">
 		<dt>Service emetteur</dt>
-		<dd>&nbsp;<?php echo $html->link($deliberation['Service']['libelle'], '/services/view/' .$deliberation['Service']['id'])?></dd>
+		<dd>&nbsp;<?php echo $deliberation['Service']['libelle']?></dd>
 	</div>
 </div>
 
@@ -64,7 +63,7 @@
 	</div>
 	<div class="droite">
 		<dt>Rapporteur</dt>
-		<dd>&nbsp;<?php echo $deliberation['Rapporteur']['prenom'].' '.$deliberation['Rapporteur']['nom']?></dd>
+		<dd>&nbsp;<?php echo $html->link($deliberation['Rapporteur']['prenom'].' '.$deliberation['Rapporteur']['nom'], '/users/view/' .$deliberation['Rapporteur']['id'])?></dd>
 	</div>
 </div>
 
