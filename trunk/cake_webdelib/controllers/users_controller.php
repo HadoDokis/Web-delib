@@ -7,7 +7,7 @@ class UsersController extends AppController {
 	var $components = array('Utils', 'Acl', 'Menu');
 
 	// Gestion des droits
-	var $aucunDroit = array('login', 'logout', 'changeMdp', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view');
+	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view', 'getQuorum',  'getNbElu');
 	var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'Users:index');
 
 	function index() {
@@ -275,6 +275,15 @@ class UsersController extends AppController {
             if ($this->User->save($this->data))
                 $this->redirect('/users/index');
 		}
+	}
+
+	function getNbElu() {
+	    $data = $this->User->findAll("User.statut = 1");
+		return count($data);
+	}
+
+	function getQuorum(){
+		return ($this->getNbElu() / 2);
 	}
 }
 
