@@ -1390,6 +1390,13 @@ class DeliberationsController extends AppController {
 			$this->Deliberation->save($this->data);
 		}
 
+		function changeSeance($delib_id, $seance_id){
+			$this->data = $this->Deliberation->read(null, $delib_id);
+			$this->data['Deliberation']['id']=$delib_id;
+			$this->data['Deliberation']['seance_id'] = $seance_id;
+			$this->Deliberation->save($this->data);
+		}
+
 		function changeClassification($delib_id, $classification){
 			$this->data = $this->Deliberation->read(null, $delib_id);
 			$this->data['Deliberation']['id']=$delib_id;
@@ -1705,6 +1712,7 @@ class DeliberationsController extends AppController {
 	}
 
 	function listerPresents($delib_id) {
+
 		if (empty($this->data)) {
 			$presents = $this->getListPresent($delib_id);
 			foreach($presents as $present){
@@ -1716,6 +1724,7 @@ class DeliberationsController extends AppController {
 			$this->set('delib_id', $delib_id);
 		}
 		else {
+			$nbPresents = 0;
 			$this->effacerListePresence($delib_id);
 			foreach($this->data as $user_id=>$tab){
 				$this->Listepresence->create();
@@ -1723,9 +1732,11 @@ class DeliberationsController extends AppController {
 					continue;
 			    $this->data['Listepresence']['user_id'] = $user_id;
 
-			    if (isset($tab['present']))
+			    if (isset($tab['present'])){
 			        $this->data['Listepresence']['present'] = $tab['present'];
-
+			    	if ($tab['present']==1)
+			    	    $nbPresents++;
+			    }
 			    if (isset($tab['mandataire']))
 			         $this->data['Listepresence']['mandataire'] = $tab['mandataire'];
 			    else
@@ -1734,9 +1745,25 @@ class DeliberationsController extends AppController {
  			    $this->data['Listepresence']['delib_id']=$delib_id;
 			 	$this->Listepresence->save($this->data['Listepresence']);
 			}
+
+			if ($nbPresents < $this->requestAction("users/getQuorum/")) {
+				   $this->reporteDelibs($delib_id);
+			}
 			$this->redirect('/seances/voter/'.$delib_id);
 		}
 
+	}
+
+	function reporteDelibs($delib_id) {
+		$seance_id = $this->getCurrentSeance($delib_id);
+		$position  = $this->getCurrentPosition($delib_id);
+		$conditions = "Deliberation.seance_id=$seance_id AND Deliberation.position>=$position";
+		$delibs = $this->Deliberation->findAll($conditions);
+		foreach ($delibs as $delib)
+			$this->changeSeance($delib['Deliberation']['id'], 0);
+		$this->Session->setFlash('Le quorum n\'est plus atteint, toutes les projets suivants sont &agrave; attribuer...');
+		$this->redirect('seances/listerFuturesSeances');
+		exit;
 	}
 
 	function effacerListePresence($delib_id) {
