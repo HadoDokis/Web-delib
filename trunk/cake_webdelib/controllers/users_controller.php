@@ -4,7 +4,7 @@ class UsersController extends AppController {
 	var $name = 'Users';
 	var $helpers = array('Html', 'Form', 'Html2' );
 	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'Profil');
-	var $components = array('Utils', 'Acl', 'Menu', 'Droits');
+	var $components = array('Utils', 'Acl', 'Menu');
 
 	// Gestion des droits
 	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view', 'getQuorum',  'getNbElu');
