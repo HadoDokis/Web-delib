@@ -247,6 +247,19 @@ table tr td {
 	text-align: left;
 }
 
+table.table_action {
+	margin: 0px 0px 10px 20px;
+	white-space: normal;
+	border: 0px;
+}
+table.table_action tr td {
+	border: 0px;
+	padding: 10px 10px 4px 10px;
+	vertical-align: top;
+	text-align: left;
+}
+
+
 #pied {
 	height: 10px;
 	text-align: center;
@@ -479,6 +492,59 @@ a.link_annexe {
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
 
+}
+
+a.link_valider_avec_border {
+	color: black;
+	text-decoration: none;
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	background-image: url(../img/icons/go-next.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 4px 4px 4px 25px;
+}
+a.link_refuser_avec_border {
+	color: black;
+	text-decoration: none;
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	background-image: url(../img/icons/go-back.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 4px 4px 4px 25px;
+}
+a.link_commentaire_avec_border {
+	color: black;
+	text-decoration: none;
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	background-image: url(../img/icons/commentaire.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 4px 4px 4px 25px;
+}
+a.link_modifier_avec_border {
+	color: black;
+	text-decoration: none;
+	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	border-top: 1px solid #e0ef90;
+	border-right: 1px solid #e0ef90;
+	border-left: none;
+	border-bottom: none;
+	background-image: url(../img/icons/klpq.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 4px 4px 4px 25px;
 }
 
 .bt_save {
