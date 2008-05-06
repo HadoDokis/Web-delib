@@ -1,8 +1,33 @@
-<div id="vue_cadre">
 <? $deliberation=$deliberation['0']; ?>
-<dl>
-	<h3>Valider ou refuser les projets de d&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['id']?></h3>
 
+<div id="vue_cadre">
+	<h3>Valider ou refuser les projets de d&eacute;lib&eacute;ration (id : <?php echo $deliberation['Deliberation']['id']?>)</h3>
+
+<table class='table_action' cellspacing='0' cellpadding='0'>
+<tr>
+	<td>
+		<?php echo $html->link('Valider', '/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/1', array('class'=>'link_valider_avec_border', 'title'=>'Valider le projet')); ?>
+		&nbsp;
+		<?php echo $html->link('Refuser', '/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/0', array('class'=>'link_refuser_avec_border', 'title'=>'Refuser le projet')); ?>
+	</td>
+	<td>&nbsp;&nbsp;</td>
+	<td>
+		<?php echo $html->link('Ajouter commentaire', '/commentaires/add/'.$deliberation['Deliberation']['id'], array('class'=>'link_commentaire_avec_border', 'title'=>'Ajouter un commentaire (affichés plus bas)')); ?>
+	</td>
+	<td>&nbsp;&nbsp;</td>
+	<td>
+		<?php
+		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Deliberations:add')) {
+			echo $html->link('Modifier', '/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier_avec_border','title'=>'Modifier'), false, false); ?>
+			&nbsp;
+		<?php } ?>
+		<?php echo $html->link('Annuler', '/deliberations/listerProjetsATraiter', array('class'=>'link_annuler', 'title'=>'Annuler'), false, false); ?>
+	</td>
+</tr>
+</table>
+</br>
+
+<dl>
 <div class="imbrique">
 	<dt>Libelle</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
@@ -78,6 +103,17 @@
 	</div>
 </div>
 
+<div class="imbrique">
+	<dt>Textes</dt>
+	<dd>&nbsp;
+		<?php echo $html->link('Projet','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?>
+		&nbsp;
+		<?php echo $html->link('Synthese','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?>
+		&nbsp;
+		<?php echo $html->link('Deliberation','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?>
+	</dd>
+</div>
+
 <?php
 	if ($tab_anterieure!=null)
 	{
@@ -105,31 +141,40 @@
 <?php if(!empty($deliberation['Annexe'])) { ?>
 	<dt>Annexe(s) Globale(s) </dt>
 	<dd>
- <?php foreach ($deliberation['Annexe'] as $annexe) {
+ 		<?php foreach ($deliberation['Annexe'] as $annexe) {
 			if ($annexe['type'] == "G"){
 				echo '<br>Titre : '.$annexe['titre'];
 				echo '<br>Nom fichier : '.$annexe['filename'];
 				echo '<br>Taille : '.$annexe['size'];
 				echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
 			}
- 		}	  ?></dd>
+ 		}	  ?>
+ 	</dd>
  <? } ?>
 
-
 </dl>
-<ul id="actions_fiche">
-	<li><?php echo $html->link('&shy;', '/deliberations/listerProjetsATraiter', array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false)?></li>
-	<li><?php echo $html->link('&shy;','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
-	<li><?php echo $html->link('&shy;','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
-	<li><?php echo $html->link('&shy;','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?></li>
-	<li><?php echo $html->link('&shy;', '/deliberations/edit/' . $deliberation['Deliberation']['id'],array('class'=>'link_modifier','title'=>'Modifier'), false, false);?></li>
-<br/><br/><li><?php //echo $html->link('Annuler',   '/deliberations/listerProjetsATraiter') ?> </li>
 
-	<li><?php echo $html->link('Ajouter commentaire', '/commentaires/add/'. $deliberation['Deliberation']['id']) ?></li>
-	<br/>
-	<li><?php echo $html->link('Valider',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/1') ?> </li>
-	<li><?php echo $html->link('Refuser',   '/deliberations/traiter/' . $deliberation['Deliberation']['id'].'/0') ?> </li>
-
-</ul>
+<table class='table_action' cellspacing='0' cellpadding='0'>
+<tr>
+	<td>
+		<?php echo $html->link('Valider', '/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/1', array('class'=>'link_valider_avec_border', 'title'=>'Valider le projet')); ?>
+		&nbsp;
+		<?php echo $html->link('Refuser', '/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/0', array('class'=>'link_refuser_avec_border', 'title'=>'Refuser le projet')); ?>
+	</td>
+	<td>&nbsp;&nbsp;</td>
+	<td>
+		<?php echo $html->link('Ajouter commentaire', '/commentaires/add/'.$deliberation['Deliberation']['id'], array('class'=>'link_commentaire_avec_border', 'title'=>'Ajouter un commentaire (affichés plus bas)')); ?>
+	</td>
+	<td>&nbsp;&nbsp;</td>
+	<td>
+		<?php
+		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Deliberations:add')) {
+			echo $html->link('Modifier', '/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier_avec_border','title'=>'Modifier'), false, false); ?>
+			&nbsp;
+		<?php } ?>
+		<?php echo $html->link('Annuler', '/deliberations/listerProjetsATraiter', array('class'=>'link_annuler', 'title'=>'Annuler'), false, false); ?>
+	</td>
+</tr>
+</table>
 
 </div>
