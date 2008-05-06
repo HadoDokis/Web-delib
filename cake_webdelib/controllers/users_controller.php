@@ -268,7 +268,7 @@ class UsersController extends AppController {
 	    $this->set('prenom', $this->getPrenom($id));
 
 		if (!empty($this->data)) {
-			$newMdp = $this->data['User']['mdp'];
+			$newMdp = $this->data['User']['password'];
             $this->data = $this->User->read(null, $id);
             $this->data['User']['id']=$id;
             $this->data['User']['password'] = md5($newMdp);
