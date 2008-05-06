@@ -5,11 +5,11 @@ class User extends AppModel {
 	var $validate = array(
 		'login' => VALID_NOT_EMPTY,
 		'password' => VALID_NOT_EMPTY,
+		'password2' => VALID_NOT_EMPTY,
 		'nom' => VALID_NOT_EMPTY,
 		'prenom' => VALID_NOT_EMPTY,
 		//'email' => VALID_EMAIL,
 	);
-
 	var $displayField="nom";
 	var $belongsTo = array(	'Profil'=>array('className'=>'Profil',
 											'conditions'=>'',
@@ -77,6 +77,11 @@ class User extends AppModel {
 	 function validates()
     {
         $user = $this->data["User"];
+        if (!isset($user["password2"])) {
+            $errors = $this->invalidFields();
+            return count($errors) == 0;
+        }
+
         if($user["password"] != md5($user["password2"]) ){
             $this->invalidate('password2');
          }
