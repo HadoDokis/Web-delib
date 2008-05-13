@@ -5,10 +5,13 @@ class CommentairesController extends AppController {
 	var $aucunDroit;
 
 	function add($delib_id=null) {
-		if (empty($this->data)) {
-			$this->set('delib_id',$delib_id);
-		} else {
-				$this->data['Commentaire']['agent_id'] = $this->Session->read('user.User.id');
+		if (!$delib_id) {
+			$this->Session->setFlash('Invalide id pour la deliberation du commentaire.');
+			$this->redirect('/');
+		}
+		$this->set('delib_id',$delib_id);
+		if (!empty($this->data)) {
+			$this->data['Commentaire']['agent_id'] = $this->Session->read('user.User.id');
 			if ($this->Commentaire->save($this->data)) {
 				$this->redirect('/deliberations/traiter/'.$this->data['Commentaire']['delib_id']);
 			} else {
@@ -35,8 +38,6 @@ class CommentairesController extends AppController {
 		}
 	}
 
-
-
 	function delete($id = null,$delib_id) {
 		if (!$id) {
 			$this->Session->setFlash('Invalide id pour le commentaire');
@@ -46,7 +47,6 @@ class CommentairesController extends AppController {
 			$this->redirect('/deliberations/traiter/'.$delib_id);
 		}
 	}
-
 
 	function view($id = null,$delib_id=null) {
 		if (!$id) {
