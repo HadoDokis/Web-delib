@@ -1,21 +1,28 @@
-<div class="theme">
-<h2>Fiche Thème</h2>
+<div id="vue_cadre">
+<h3>Fiche Thème</h3>
 
-<dl>
-	<dt>Id</dt>
-	<dd>&nbsp;<?php echo $theme['Theme']['id']?></dd>
+<div class="imbrique">
 	<dt>Libelle</dt>
 	<dd>&nbsp;<?php echo $theme['Theme']['libelle']?></dd>
-	<dt>Date creation</dt>
-	<dd>&nbsp;<?php echo $theme['Theme']['created']?></dd>
-	<dt>Date modification</dt>
-	<dd>&nbsp;<?php echo $theme['Theme']['modified']?></dd>
-</dl>
-<ul class="actions">
-	<li><?php echo $html->link('Modifier',   '/themes/edit/' . $theme['Theme']['id']) ?> </li>
-	<li><?php echo $html->link('Supprimer', '/themes/delete/' . $theme['Theme']['id'], null, 'Etes-vous sur de vouloir supprimer le theme "' . $theme['Theme']['libelle'] . '" ?') ?> </li>
-	<li><?php echo $html->link('Annuler',   '/themes/index') ?> </li>
-	<li><?php echo $html->link('Ajouter un theme',	'/themes/add') ?> </li>
+</div>
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Date creation</dt>
+		<dd>&nbsp;<?php echo $theme['Theme']['created']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Date modification</dt>
+		<dd>&nbsp;<?php echo $theme['Theme']['modified']?></dd>
+	</div>
+</div>
+
+<ul id="actions_fiche">
+	<?php
+		echo '<li>' . $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+
+		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Themes:index'))
+			echo '<li>'.$html->link('&shy;',   '/themes/edit/' . $theme['Theme']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+	?>
 </ul>
 
 </div>
