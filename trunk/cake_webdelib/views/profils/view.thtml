@@ -1,21 +1,28 @@
-<div class="profil">
-<h2>Fiche profil</h2>
+<div id="vue_cadre">
+<h3>Fiche profil</h3>
 
-<dl>
-	<dt>Id</dt>
-	<dd>&nbsp;<?php echo $profil['Profil']['id']?></dd>
+<div class="imbrique">
 	<dt>Libelle</dt>
 	<dd>&nbsp;<?php echo $profil['Profil']['libelle']?></dd>
-	<dt>Date creation</dt>
-	<dd>&nbsp;<?php echo $profil['Profil']['created']?></dd>
-	<dt>Date modification</dt>
-	<dd>&nbsp;<?php echo $profil['Profil']['modified']?></dd>
-</dl>
-<ul class="actions">
-	<li><?php echo $html->link('Modifier',   '/profils/edit/' . $profil['Profil']['id']) ?> </li>
-	<li><?php echo $html->link('Supprimer', '/profils/delete/' . $profil['Profil']['id'], null, 'Etes-vous sur de vouloir supprimer le profil "' . $profil['Profil']['libelle'] . '" ?') ?> </li>
-	<li><?php echo $html->link('Annuler',   '/profils/index') ?> </li>
-	<li><?php echo $html->link('Ajouter un profil',	'/profils/add') ?> </li>
+</div>
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Date creation</dt>
+		<dd>&nbsp;<?php echo $profil['Profil']['created']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Date modification</dt>
+		<dd>&nbsp;<?php echo $profil['Profil']['modified']?></dd>
+	</div>
+</div>
+
+<ul id="actions_fiche">
+	<?php
+		echo '<li>' . $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+
+		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Profils:index'))
+			echo '<li>'.$html->link('&shy;',   '/profils/edit/' . $profil['Profil']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+	?>
 </ul>
 
 </div>
