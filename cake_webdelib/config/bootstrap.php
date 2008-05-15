@@ -43,6 +43,5 @@
  *
  */
 
-    include(APP.'plugins'.DS.'acm'.DS.'config.php');
 
 ?>
