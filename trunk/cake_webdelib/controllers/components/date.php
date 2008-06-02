@@ -25,7 +25,17 @@ class DateComponent extends Object {
 		return $this->days[date('w',$timestamp)].' '.date('d',$timestamp)
 				.' '.$this->months[date('n',$timestamp)].' '.date('Y',$timestamp);
 	}	
-		
+ 
+       function frDate ($mysqlDate) {
+                if (empty($mysqlDate))
+	            return null;
+		else {
+		    $tmp =  explode(' ', $mysqlDate);
+		    $temp = explode('-', $tmp[0]);
+		    return($temp[2].'/'.$temp[1].'/'.$temp[0]);;
+		}
+ 
+	}
 }
 
 ?>
