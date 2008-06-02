@@ -109,9 +109,6 @@ function changeLocation3(idDelib,zone1,zone2,zone3)
 		document.location=url;
 	}
 }
-
-
-
 function changeService(params)
 {
 	var url = params.id+"services/changeService/"+params.value;
@@ -181,7 +178,6 @@ function add_field() {
 	p.appendChild(link);
 
 	document.getElementById('cible').style.visibility = 'visible';
-
 }
 
 function del_field(node)
