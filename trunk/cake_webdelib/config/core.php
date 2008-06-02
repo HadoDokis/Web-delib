@@ -39,7 +39,7 @@
  */
     define ('VERSION', '0.9.8beta');
     define ('GENERER_DOC_SIMPLE', true);
-    define ('USE_GEDOOO', true);
+    define ('USE_GEDOOO', false);
     define ('URL_GEDOOO', 'http://gedooo.demonstrations.adullact.org/GEDOOo/generator2.php');
 /**
  * Set debug level here:
