@@ -7,8 +7,8 @@ class ModelsController extends AppController {
 	var $components = array('Date','Utils','Email', 'Acl');
 
 	// Gestion des droits
-	var $aucunDroit = array('generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets');
-	var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index');
+	var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel');
+	var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
 
 	function index() {
 		$this->set('models', $this->Model->findAll());
@@ -51,8 +51,19 @@ class ModelsController extends AppController {
 	}
 
 	function view($id = null) {
-		$this->set('model', $this->Model->read(null, $id));
-	}
+	      $this->set('USE_GEDOOO', USE_GEDOOO);
+	      if (USE_GEDOOO) {
+	          header('Content-type: '.$this->_getFileType($id));
+                  header('Content-Length: '.$this->_getSize($id));
+                  header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
+                  echo $this->_getData($id);
+                  exit();
+               }
+	       else {
+                   $this->set('model', $this->Model->read(null, $id));
+	       }
+        }
+
 
 	// Accesseurs Déliberation
 	function _getCommentaireDelib($delib_id) {
@@ -95,8 +106,8 @@ class ModelsController extends AppController {
 	function listeProjets($seance_id, $type=0) {
 		 // $type = 0 => Liste projets Sommaires
 		 // $type = 1 => Liste projets Détaillés
-		if ($type == 1) $texte = $this->Model->field('texte', 'id=12');
-		else $texte = $this->Model->field('texte', 'id=13');
+		if ($type == 1) $texte = $this->Model->field('content', 'id=12');
+		else $texte = $this->Model->field('content', 'id=13');
 
 		$listeProjets = "";
 		$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=2",null,'Deliberation.position ASC');
@@ -108,7 +119,7 @@ class ModelsController extends AppController {
 
 	function _listeUsersPresents($delib_id) {
 		// Lecture du modele
-		$texte = $this->Model->field('texte', 'id=8');
+		$texte = $this->Model->field('content', 'id=8');
 
 		$listeUsers = "";
 		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "User.position ASC");
@@ -129,7 +140,7 @@ class ModelsController extends AppController {
 
 	function _listeUsersAbsents($delib_id) {
 		// Lecture du modele
-		$texte = $this->Model->field('texte', 'id=9');
+		$texte = $this->Model->field('content', 'id=9');
 
 		$listeUsers = "";
 		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'User.position ASC');
@@ -150,7 +161,7 @@ class ModelsController extends AppController {
 
 		function _listeUsersMandates($delib_id) {
 		// Lecture du modele
-		$texte = $this->Model->field('texte', 'id=10');
+		$texte = $this->Model->field('content', 'id=10');
 
 		$listeUsers = "";
 		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'User.position ASC');
@@ -174,7 +185,7 @@ class ModelsController extends AppController {
 
 	function _listeUsersVotant($delib_id) {
 		// Lecture du modele
-		$texte = $this->Model->field('texte', 'id=11');
+		$texte = $this->Model->field('content', 'id=11');
 
 		$listeUsers = "";
 		$votes = $this->Vote->findAll("delib_id = $delib_id");
@@ -303,26 +314,82 @@ class ModelsController extends AppController {
 
 	function generateDeliberation($delib_id) {
 		$data = $this->Model->findAll('Model.id=4');
-		$texte = $data['0']['Model']['texte'];
+		$texte = $data['0']['Model']['content'];
 		return $this->_replaceBalises($texte, $delib_id );
 	}
 
 	function generateProjet($delib_id) {
 		$data = $this->Model->findAll('Model.id=1');
-		$texte = $data['0']['Model']['texte'];
+		$texte = $data['0']['Model']['content'];
 		return $this->_replaceBalises($texte, $delib_id);
 	}
 
 	function generatePVSommaire($seance_id) {
 		$data = $this->Model->findAll('Model.id=5');
-		$texte = $data['0']['Model']['texte'];
+		$texte = $data['0']['Model']['content'];
 		return $this->_replaceBalisesSeance($texte, $seance_id);
 	}
 
 	function generatePVDetaille($seance_id) {
 		$data = $this->Model->findAll('Model.id=6');
-		$texte = $data['0']['Model']['texte'];
+		$texte = $data['0']['Model']['content'];
 		return $this->_replaceBalisesSeance($texte, $seance_id);
 	}
+
+
+        function import($model_id) {
+	    $this->set('USE_GEDOOO', USE_GEDOOO);
+            $this->set('model_id', $model_id); 
+            if (! empty($this->data)){
+                  if (isset($this->data['Model']['template'])){
+                    if ($this->data['Model']['template']['size']!=0){
+                        $this->data['Model']['id']        = $model_id;
+                        $this->data['Model']['name']      = $this->data['Model']['template']['name'];
+                        $this->data['Model']['size']      = $this->data['Model']['template']['size'];
+                        $this->data['Model']['extension'] = $this->data['Model']['template']['type'];
+                        $this->data['Model']['content']   = $this->getFileData($this->data['Model']['template']['tmp_name'], $this->data['Model']['template']['size']); 
+                        if ($this->Model->save($this->data))
+                          $this->redirect('/models/index');
+                     }
+                }
+            }
+	    else {
+                $this->data = $this->Model->read(null, $model_id);
+	    }
+        }
+
+        function getFileData($fileName, $fileSize) {
+                return fread(fopen($fileName, "r"), $fileSize);
+        }
+
+        function _getFileType($id=null) {
+                $condition = "Model.id = $id";
+                $objCourant = $this->Model->findAll($condition);
+                return $objCourant['0']['Model']['extension'];
+        }
+
+        function _getFileName($id=null) {
+                $condition = "Model.id = $id";
+        $objCourant = $this->Model->findAll($condition);
+                return $objCourant['0']['Model']["name"];
+        }
+
+        function _getSize($id=null) {
+            $condition = "Model.id = $id";
+            $objCourant = $this->Model->findAll($condition);
+            return $objCourant['0']['Model']["size"];
+        }
+
+        function _getData($id=null) {
+            $condition = "Model.id = $id";
+            $objCourant = $this->Model->findAll($condition);
+            return $objCourant['0']['Model']['content'];
+        }
+
+       function getModel($id=null) {
+            $condition = "Model.id = $id";
+            $objCourant = $this->Model->findAll($condition);
+            return $objCourant['0']['Model']['content'];
+        }
 }
 ?>
