@@ -1,7 +1,7 @@
 <h2><?php echo $html->image('/icons/synthese.png')?> Modèle de génération : </h2>
 
 <div>
-<?php echo $model['Model']['texte']; ?>
+    <?php echo $model['Model']['content']; ?>
 </div>
 
 <br/><br/>
@@ -9,6 +9,4 @@
 
 <div class="submit">
 	<?php echo $html->link('&shy;', '/models/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?>
-	<?php //echo $html->link('&shy;','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?>
-
 </div>
