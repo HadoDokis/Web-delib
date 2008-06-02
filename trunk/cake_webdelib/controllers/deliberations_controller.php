@@ -11,8 +11,8 @@ class DeliberationsController extends AppController {
  */
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote','SeancesUser', 'Listepresence');
-	var $components = array('Date','Utils','Email', 'Acl');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote','SeancesUser', 'Listepresence');
+	var $components = array('Gedooo','Date','Utils','Email','Acl');
 
 	// Gestion des droits
 	var $demandeDroit = array('add', 'listerHistorique', 'listerMesProjets', 'listerProjetsNonAttribues', 'listerProjetsATraiter', 'listerProjetsServicesAssemblees');
@@ -22,7 +22,10 @@ class DeliberationsController extends AppController {
 		'delete'=>'Deliberations:listerMesProjets',
 		'attribuercircuit'=>'Deliberations:listerMesProjets',
 		'traiter'=>'Deliberations:listerProjetsATraiter',
-		'addIntoCircuit'=>'Deliberations:listerProjetsATraiter'
+		'addIntoCircuit'=>'Deliberations:listerProjetsATraiter',
+		'getTextProjet'=>'Deliberations:listerProjetsATraiter',
+		'getUrlFile'=>'Deliberations:listerProjetsATraiter',
+		'generer'=>'Deliberations:listerProjetsATraiter'
 	);
 
 	function index() {
@@ -31,10 +34,64 @@ class DeliberationsController extends AppController {
 		$this->Deliberation->recursive = 0;
 		$this->set('deliberations', $this->Deliberation->findAll(null,null, 'Seance.date'));
 	}
+ 
+        function generer ($delib_id, $model_id, $editable=null){
+            if (GENERER_DOC_SIMPLE==false){
+                $nameTP = $this->getField($delib_id, 'texte_projet_name');
+                $nameTD = $this->getField($delib_id, 'deliberation_name');
+                $nameNS = $this->getField($delib_id, 'texte_synthese_name');
+            }
+            else {
+                $nameTP = 'texte_projet.html';
+                $nameTD = 'texte_delib.html';
+                $nameNS = 'note_service.html';
+            }
+          
+            $dyn_path = "/files/generee/$delib_id/"; 
+            $path = WEBROOT_PATH.$dyn_path;
+	    if (!$this->Gedooo->checkPath($path))
+                die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+            
+            //Création du fichier texte_projet
+            $content = $this->getField($delib_id, 'texte_projet');
+            $this->Gedooo->createFile($path, $nameTP, $content);
+
+            //Création du fichier note de synthèse
+            $content = $this->getField($delib_id, 'texte_synthese');
+            $this->Gedooo->createFile($path, $nameNS, $content);
+            
+            //Création du fichier texte de déliberation
+            $content = $this->getField($delib_id, 'deliberation');
+            $this->Gedooo->createFile($path, $nameTD, $content);
+            
+            //Création du model ott
+            $content = $this->requestAction("/models/getModel/$model_id");
+            $model = $this->Gedooo->createFile($path,'model_'.$model_id, $content);
+            
+            // Création du fichier XML de données
+	    $data = $this->Deliberation->read(null, $delib_id); 
+	    $balises  = $this->Gedooo->CreerBalise('prenom_rapporteur', $data['Rapporteur']['nom'], 'string'); 
+	    $balises .= $this->Gedooo->CreerBalise('nom_rapporteur', $data['Rapporteur']['prenom'], 'string'); 
+	    $balises .= $this->Gedooo->CreerBalise('titre_rapporteur', $data['Rapporteur']['titre'], 'string'); 
+	    $balises .= $this->Gedooo->CreerBalise('service_rapporteur', $data['Service']['libelle'], 'string'); 
+	    $balises .= $this->Gedooo->CreerBalise('titre_projet', $data['Deliberation']['titre'], 'string'); 
+	    if (isset($data['Seance']['date']))
+	        $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date'); 
+	    $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string'); 
+	    $balises .= $this->Gedooo->CreerBalise('texte_projet', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameTP, 'content');
+            $balises .= $this->Gedooo->CreerBalise('NoteSynthese', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameNS, 'content');
+            $balises .= $this->Gedooo->CreerBalise('TexteDeliberation', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameTD, 'content');
+            
+	    // création du fichier XML
+	    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
+            
+            // Envoi du fichier à GEDOOo
+            $this->Gedooo->sendFiles($model, $datas, $editable);
+        }
 
 	function listerMesProjets() {
-		//liste les projets dont je suis le redacteur et qui sont en cours de rÃ©daction
-		//il faut verifier la position du projet de delib dans la table traitement s'il existe car
+                //liste les projets dont je suis le redacteur et qui sont en cours de redaction
+ 		//il faut verifier la position du projet de delib dans la table traitement s'il existe car
 		//si la position est à  0 cela notifie un refus
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
@@ -232,6 +289,7 @@ class DeliberationsController extends AppController {
 		 * peut appartenir Ã  plusieurs services
 		 */
 		//liste les projets oÃ¹ j'apparais dans le circuit de validation
+		$this->set('USE_GEDOOO', USE_GEDOOO);
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
 		//recherche de tous les circuits oÃ¹ apparait l'utilisateur loguÃ©
@@ -694,18 +752,57 @@ class DeliberationsController extends AppController {
 		}
 	}
 
+
+	function getFileType($id=null, $file) {
+		$condition = "Deliberation.id = $id";
+       	$objCourant = $this->Deliberation->findAll($condition);
+		return $objCourant['0']['Deliberation'][$file."_type"];
+	}
+
+	function getFileName($id=null, $file) {
+		$condition = "Deliberation.id = $id";
+       	$objCourant = $this->Deliberation->findAll($condition);
+		return $objCourant['0']['Deliberation'][$file."_name"];
+	}
+
+	function getSize($id=null, $file) {
+		$condition = "Deliberation.id = $id";
+       	$objCourant = $this->Deliberation->findAll($condition);
+		return $objCourant['0']['Deliberation'][$file."_size"];
+	}
+
+	function getData($id=null, $file) {
+		$condition = "Deliberation.id = $id";
+       	$objCourant = $this->Deliberation->findAll($condition);
+		return $objCourant['0']['Deliberation'][$file];
+	}
+
+	function download($id=null, $file){
+		header('Content-type: '.$this->getFileType($id, $file));
+		header('Content-Length: '.$this->getSize($id, $file));
+		header('Content-Disposition: attachment; filename='.$this->getFileName($id, $file));
+		echo $this->getData($id, $file);
+		exit();
+	}
+
 	function textprojet ($id = null) {
 		$this->layout = 'fckeditor';
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
 
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
+			$this->set('delib', $this->Deliberation->read(null, $id));
 		} else{
-			if ($this->data['Deliberation']['texte_doc']['size']!=0){
-			    $this->convertDoc2Html($this->data['Deliberation']['texte_doc'], $id, 'texte_projet');
-				unset($this->data['Deliberation']['texte_doc']);
-			}
-
+            if (isset($this->data['Deliberation']['texte_doc'])){
+				if ($this->data['Deliberation']['texte_doc']['size']!=0){
+					$this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_doc']['name'];
+					$this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_doc']['size'];
+					$this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_doc']['type'];
+					$this->data['Deliberation']['texte_projet']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+					$this->Deliberation->save($this->data);
+					unset($this->data['Deliberation']['texte_doc']);
+				}
+            }
 			$this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
@@ -900,32 +997,35 @@ class DeliberationsController extends AppController {
 			array_push($delib, $deliberation);
 			$this->set('deliberation', $delib);
 			$this->set('user_circuit', $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC'));
-
 		}
 	}
 
 	function getTextSynthese ($id) {
-		$condition = "Deliberation.id = $id";
+            $condition = "Deliberation.id = $id";
 	    $fields = "texte_synthese";
 	    $dataValeur = $this->Deliberation->findAll($condition, $fields);
-	   	return $dataValeur['0'] ['Deliberation']['texte_synthese'];
+	    return $dataValeur['0'] ['Deliberation']['texte_synthese'];
 	}
 
 	function getTextProjet ($id) {
-		$condition = "Deliberation.id = $id";
+	    $condition = "Deliberation.id = $id";
 	    $fields = "texte_projet";
 	    $dataValeur = $this->Deliberation->findAll($condition, $fields);
-	   	return $dataValeur['0'] ['Deliberation']['texte_projet'];
+	    return $dataValeur['0'] ['Deliberation']['texte_projet'];
 	}
 
 	function getField($id = null, $field =null) {
-		$condition = "Deliberation.id = $id";
+	    $condition = "Deliberation.id = $id";
 	    $dataValeur = $this->Deliberation->findAll($condition, $field);
 	    if(!empty ($dataValeur['0']['Deliberation'][$field]))
 	   		return $dataValeur['0'] ['Deliberation'][$field];
 	   	else
 	   		return '';
 	}
+
+        function getUrlFile ($name) {
+            return URL_FILES.$name;
+        }
 
 	function delete($id = null) {
 		if (!$id) {
@@ -939,7 +1039,7 @@ class DeliberationsController extends AppController {
 	}
 
    function convert($id=null) {
-        vendor('fpdf/html2fpdf');
+            vendor('fpdf/html2fpdf');
 	    $pdf = new HTML2FPDF();
 	    $pdf->AddPage();
 	    $pdf->WriteHTML($this->requestAction("/models/generateProjet/$id"));
@@ -993,15 +1093,12 @@ class DeliberationsController extends AppController {
     	}
     }
 
-
 	function changeCircuit ($delib_id, $circuit_id) {
 	    $traitements = $this->Traitement->findAll("delib_id =$delib_id ");
 	    foreach($traitements as $traitement ){
 	        $this->Traitement->delete($traitement['Traitement']['id']);
 	    }
-   }
-
-
+    }
 
 	function attribuercircuit ($id = null, $circuit_id=null) {
 		if (empty($this->data)) {
@@ -1537,82 +1634,6 @@ class DeliberationsController extends AppController {
 		$this->set('deliberations',$deliberations );
 	}
 
-	function convertDoc2Html($file, $delib_id, $texte) {
-	//debug($file);
-		if ($file['type']=='application/msword' || $file['type']=='application/octet-stream' ){
-
-		$wvware = "/usr/bin/wvWare";
-        $wvware_options = "-d";
-    	$pos =  strrpos ( getcwd(), 'webroot');
-		$path = substr(getcwd(), 0, $pos);
-    	$basedir = $path.'webroot/files/delibs'."/$delib_id/";
-    	if (! is_dir($basedir))
-    		mkdir($basedir);
-		$name=substr($file['name'],0,strlen($file['type']['name'])-5);
-		$wordfilename = $basedir . "/" . escapeshellcmd($name).".doc";
-		$htmldir = $basedir;
-   		$htmlfilename = $htmldir . escapeshellcmd($name) . ".html";
-
-    	if( !move_uploaded_file($file['tmp_name'], 	$wordfilename) )
-       	    exit("Impossible de copier le fichier dans $content_dir");
-
-	   if (! is_dir($htmldir))
-            die("Directory $htmldir does not exist.  It must be " .
-            "created and readable and writable by your web server.");
-        if ((! is_writeable($htmldir)) || (! is_readable($htmldir)))
-            die("Directory $htmldir must be readable and writable by your " .
-            "web server.");
-        if (file_exists($htmlfilename) && (! is_writeable($htmlfilename)))
-            die("The html file ($htmlfilename) exists already but is not " .
-            "writable by the web server.");
-        if (! file_exists($wvware))
-            die("The wvWare executable file $wvware cannot be found.  Please " .
-            "ensure that the \$wvware variable in the script is pointed " .
-            "to your wvware executable.");
-        if (! is_executable($wvware))
-            die("The wvWare executable file $wvware is not " .
-            "executable by the web server process.  Please change the file " .
-            "permissions to make it executable.");
-
-		if (file_exists($htmlfilename)) {
-            /* Do we need to update the html file? */
-      	    if (filectime($wordfilename) > filectime($htmlfilename))
-                $this->updateword($wordfilename, $htmlfilename);
-       	    else readfile ($htmlfilename);
-   		}
-        else
-            $this->updateword($wordfilename, $htmlfilename);
-
-        $handle = fopen ($htmlfilename, "r");
-        $contents = fread($handle, filesize ($htmlfilename));
-        fclose ($handle);
-		$data= $this->Deliberation->read(null, $delib_id);
-
-		$data['Deliberation']["$texte"]=utf8_decode($contents);
-
- 	    $this->Deliberation->save($data['Deliberation']);
- 	    if ($texte== 'texte_projet')
-		    $this->redirect('/deliberations/textprojet/'.$delib_id);
-		elseif  ($texte== 'texte_synthese')
-			$this->redirect('/deliberations/textsynthese/'.$delib_id);
-		elseif  ($texte== 'deliberation')
-			$this->redirect('/deliberations/deliberation/'.$delib_id);
-		exit;
-
-		}else{
-			die("Ce n'est pas un fichier au format .doc");
-		}
-	}
-
-
-    function updateword($wordfilename, $htmlfilename) {
-    	$wvware = "/usr/bin/wvWare";
-        $wvware_options = "-c utf-8 -d";
-        $htmldir = dirname ($htmlfilename);
-        /* ensure that we get any images into the html directory */
-        exec("$wvware $wvware_options $htmldir $wordfilename > $htmlfilename");
-    }
-
     function getRapporteur($id_delib){
     	$condition= "Deliberation.id=$id_delib";
     	$deliberation = $this->Deliberation->findAll($condition);
@@ -1838,6 +1859,6 @@ class DeliberationsController extends AppController {
 			    $presents[$i]['Listepresence']['mandataire'] = $this->User->requestAction('/users/getPrenom/'.$presents[$i]['Listepresence']['mandataire']).' '.$this->User->requestAction('/users/getNom/'.$presents[$i]['Listepresence']['mandataire']);
 		}
 		return ($presents);
-	}
+        }
 }
 ?>
