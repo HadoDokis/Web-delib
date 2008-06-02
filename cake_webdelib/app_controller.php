@@ -41,9 +41,7 @@ class AppController extends Controller {
 
 	var $components=array( 'Utils', 'Acl', 'Droits');
 	var $helpers = array('Menu', 'Html', 'Ajax', 'Form', 'Javascript');
-
 	var $beforeFilter = array('checkSession');
-
 	var $infoUser = "";
 	var $lienDeconnexion = "";
 	var $agentServices = null;
@@ -106,6 +104,5 @@ class AppController extends Controller {
 				$this->redirect('/');
  		}
 	}
-
 }
 ?>
