@@ -37,8 +37,10 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '0.9.7-1beta');
-	define ('IMPORT_DOC', false);
+    define ('VERSION', '0.9.8beta');
+    define ('GENERER_DOC_SIMPLE', true);
+    define ('USE_GEDOOO', true);
+    define ('URL_GEDOOO', 'http://gedooo.demonstrations.adullact.org/GEDOOo/generator2.php');
 /**
  * Set debug level here:
  * - 0: production
@@ -50,8 +52,8 @@
  * With the other debug levels you get to click the "flash message" to continue.
  *
  */
-	define('DEBUG', 0);
-	ini_set('max_execution_time', '300');
+    define('DEBUG', 1);
+    ini_set('max_execution_time', '300');
 
 /***
  *   Configuration pour la télétransmission S2LOW
@@ -64,7 +66,7 @@
 	$pos2 =  strrpos ( getcwd(), 'webroot');
 	$path2 = substr(getcwd(), 0, $pos2);
 	$webroot_path = $path2."webroot/";
-
+	define ('WEBROOT_PATH',  $path2."webroot");
 
 	define('PEM', $config_path.'pubKey.pem');
 	define('PASSWORD', 'demo_u');
