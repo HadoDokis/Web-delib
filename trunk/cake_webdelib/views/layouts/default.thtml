@@ -5,8 +5,6 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 	<?php echo $html->css('webdelib'); ?>
 	<?php echo $javascript->link('utils'); ?>
-
-
 </head>
 <body>
 <div id="conteneur">
