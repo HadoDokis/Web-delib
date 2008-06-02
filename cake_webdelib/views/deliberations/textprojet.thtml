@@ -1,15 +1,32 @@
 <?php
     echo $javascript->link('fckeditor');
 	echo $javascript->link('utils');
+    echo $html->formTag('/deliberations/textprojet/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data'));
 ?>
-
-<?php echo $html->formTag('/deliberations/textprojet/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
-<h2>Texte Projet : </h2>
+	<div class="optional">
+    	<?php
+    	if (!GENERER_DOC_SIMPLE){
+    		echo ('<h2>Texte Projet : </h2>');
+			echo '<br>Nom fichier : '.$delib['Deliberation']['texte_projet_name'];
+			echo '<br>Taille : '.$delib['Deliberation']['texte_projet_size'];
+			echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$html->tagValue('Deliberation/id').'/texte_projet').'<br><br><br>';
+    	    echo  $html->fileTag("Deliberation/texte_doc");
+            echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
+            echo '<br><br>';
+    	}
+    	?>
+	</div>
+<?php
+	if (GENERER_DOC_SIMPLE) {
+?>
+ <h2>Texte Projet : </h2>
 <div class="optional">
     <?php echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][texte_projet]'); ?>
-    <?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du projet.');?>
+    <?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du projet.'); ?>
 </div>
+<?php  } // fin du if ?>
+
 <div class="optional">
 	<?php if(!empty($annexes)){  ?>
 	<?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?>
@@ -21,21 +38,12 @@
 	<?php endforeach; } ?>
 </div>
 <div id="cible">
-
 </div>
 <div>
 <a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
+<?php echo '<br>'. $html->submit('Sauvegarder les annexes', array('class'=>'bt_add'));?>
 </div>
-	<div class="optional">
-    	<h2>Texte Projet au format MS-Word (.doc)</h2>
-    	<?php
-    	if (IMPORT_DOC)
-    	     echo  $html->fileTag("Deliberation/texte_doc");
-    	else
-    	 	 echo  $html->fileTag("Deliberation/texte_doc", array('disabled '=>'disabled '));
-    	 ?>
-    	 <?php echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));?><br/><br/>
-	</div>
+<br/><br/>
 <div class="submit">
 	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"javascript:FermerFenetre()"));?>
 </div>
