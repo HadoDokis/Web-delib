@@ -1,30 +1,24 @@
-<? $deliberation=$deliberation['0']; ?>
+<?php $deliberation=$deliberation['0']; ?>
+<?php // Initialisation des boutons action de la vue
+	$defBarre = array();
+	$defBarre[] = array('title'=>'Valider', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/1', 'htmlAttributes'=>array('class'=>'link_valider_avec_border', 'title'=>'Valider le projet'));
+	$defBarre[] = array('title'=>'Refuser', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/0', 'htmlAttributes'=>array('class'=>'link_refuser_avec_border', 'title'=>'Refuser le projet'));
+	$defBarre[] = array();
+	$defBarre[] = array('title'=>'Ajouter un commentaire', 'url'=>'/commentaires/add/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_commentaire_avec_border', 'title'=>'Ajouter un commentaire (affichés plus bas)'));
+	$defBarre[] = array();
+	if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Deliberations:add'))
+		$defBarre[] = array('title'=>'Modifier', 'url'=>'/deliberations/edit/' . $deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_modifier_avec_border','title'=>'Modifier'));
+	$defBarre[] = array('title'=>'Annuler', 'url'=>'/deliberations/listerProjetsATraiter', 'htmlAttributes'=>array('class'=>'link_annuler', 'title'=>'Annuler'));
+
+	$linkBarre  = "<table class='table_action' cellspacing='0' cellpadding='0'><tr>";
+	$linkBarre .= $menu->linkBarre($defBarre);
+	$linkBarre .= "</tr></table>";
+?>
 
 <div id="vue_cadre">
 	<h3>Valider ou refuser les projets de d&eacute;lib&eacute;ration (id : <?php echo $deliberation['Deliberation']['id']?>)</h3>
 
-<table class='table_action' cellspacing='0' cellpadding='0'>
-<tr>
-	<td>
-		<?php echo $html->link('Valider', '/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/1', array('class'=>'link_valider_avec_border', 'title'=>'Valider le projet')); ?>
-		&nbsp;
-		<?php echo $html->link('Refuser', '/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/0', array('class'=>'link_refuser_avec_border', 'title'=>'Refuser le projet')); ?>
-	</td>
-	<td>&nbsp;&nbsp;</td>
-	<td>
-		<?php echo $html->link('Ajouter commentaire', '/commentaires/add/'.$deliberation['Deliberation']['id'], array('class'=>'link_commentaire_avec_border', 'title'=>'Ajouter un commentaire (affichés plus bas)')); ?>
-	</td>
-	<td>&nbsp;&nbsp;</td>
-	<td>
-		<?php
-		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Deliberations:add')) {
-			echo $html->link('Modifier', '/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier_avec_border','title'=>'Modifier'), false, false); ?>
-			&nbsp;
-		<?php } ?>
-		<?php echo $html->link('Annuler', '/deliberations/listerProjetsATraiter', array('class'=>'link_annuler', 'title'=>'Annuler'), false, false); ?>
-	</td>
-</tr>
-</table>
+<?php echo $linkBarre; ?>
 </br>
 
 <dl>
@@ -154,27 +148,6 @@
 
 </dl>
 
-<table class='table_action' cellspacing='0' cellpadding='0'>
-<tr>
-	<td>
-		<?php echo $html->link('Valider', '/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/1', array('class'=>'link_valider_avec_border', 'title'=>'Valider le projet')); ?>
-		&nbsp;
-		<?php echo $html->link('Refuser', '/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/0', array('class'=>'link_refuser_avec_border', 'title'=>'Refuser le projet')); ?>
-	</td>
-	<td>&nbsp;&nbsp;</td>
-	<td>
-		<?php echo $html->link('Ajouter commentaire', '/commentaires/add/'.$deliberation['Deliberation']['id'], array('class'=>'link_commentaire_avec_border', 'title'=>'Ajouter un commentaire (affichés plus bas)')); ?>
-	</td>
-	<td>&nbsp;&nbsp;</td>
-	<td>
-		<?php
-		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Deliberations:add')) {
-			echo $html->link('Modifier', '/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier_avec_border','title'=>'Modifier'), false, false); ?>
-			&nbsp;
-		<?php } ?>
-		<?php echo $html->link('Annuler', '/deliberations/listerProjetsATraiter', array('class'=>'link_annuler', 'title'=>'Annuler'), false, false); ?>
-	</td>
-</tr>
-</table>
+<?php echo $linkBarre; ?>
 
 </div>

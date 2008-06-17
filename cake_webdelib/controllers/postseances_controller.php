@@ -4,7 +4,7 @@ class PostseancesController extends AppController {
 	var $name = 'Postseances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $components = array('Date');
-	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote','Model','Theme');
+	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Theme');
 
 	// Gestion des droits
 	var $aucunDroit = array('getNom', 'getPresence', 'getVote');

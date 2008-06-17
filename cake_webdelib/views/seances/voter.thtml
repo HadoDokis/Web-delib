@@ -17,9 +17,7 @@
     		 <tr>
 	 		 	<td>
 	 		 		<?php
-						if (in_array ( $present['User']['id'], $listnonvotant))
-						    continue;
-	 		 			echo $present['User']['prenom'].' '.$present['User']['nom'];
+	 		 			echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
 	 		 			if ($present['Listepresence']['mandataire'] != '0')
 	 		 				echo ' (Mandat&eacute par '.$present['Listepresence']['mandataire'].')';
 	 		 			elseif ($present['Listepresence']['present']=='0'){
@@ -31,7 +29,7 @@
 	 		  	    <?php
 
 	 		  	    		if  ($present['Listepresence']['present'] == '1' OR $present['Listepresence']['mandataire']!='0')
-	 		  	    	  	  echo $html->radio('Vote/'.$present['User']['id'], array('3'=>'oui', '2'=>'non', '4'=>'abstention', '5'=>'Pas de participation'), null, array('onclick'=>"javascript:vote();")); ?>
+	 		  	    	  	  echo $html->radio('Vote/'.$present['Acteur']['id'], array('3'=>'oui', '2'=>'non', '4'=>'abstention', '5'=>'Pas de participation'), null, array('onclick'=>"javascript:vote();")); ?>
 	 		   	</td>
     		 </tr>
  		     <?php endforeach; ?>
