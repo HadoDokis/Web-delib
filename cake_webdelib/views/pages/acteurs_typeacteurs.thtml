@@ -1,0 +1,8 @@
+<div id="content">
+	<div id="tableau_bord">
+	    <?php echo $this->requestAction('/acteurs/index', array('return')); ?>
+        <?php echo('<br/>'); ?>
+        <?php echo $this->requestAction('/typeacteurs/index', array('return')); ?>
+        <?php echo('<br/>'); ?>
+	</div>
+</div>
