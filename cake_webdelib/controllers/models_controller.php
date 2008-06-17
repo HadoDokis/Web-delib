@@ -2,9 +2,9 @@
 class ModelsController extends AppController {
 
 	var $name = 'Models';
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'Service', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote','SeancesUser', 'Listepresence');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur');
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
+	var $components = array('Date','Utils','Email', 'Acl', '');
 
 	// Gestion des droits
 	var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel');
@@ -54,13 +54,13 @@ class ModelsController extends AppController {
 	      $this->set('USE_GEDOOO', USE_GEDOOO);
 	      if (USE_GEDOOO) {
 	          header('Content-type: '.$this->_getFileType($id));
-              header('Content-Length: '.$this->_getSize($id));
-              header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
-              echo $this->_getData($id);
-              exit();
-           }
+                  header('Content-Length: '.$this->_getSize($id));
+                  header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
+                  echo $this->_getData($id);
+                  exit();
+               }
 	       else {
-               $this->set('model', $this->Model->read(null, $id));
+                   $this->set('model', $this->Model->read(null, $id));
 	       }
         }
 
@@ -117,87 +117,88 @@ class ModelsController extends AppController {
 		return $listeProjets;
 	}
 
-	function _listeUsersPresents($delib_id) {
+	function _listeActeursPresents($delib_id) {
 		// Lecture du modele
 		$texte = $this->Model->field('content', 'id=8');
 
-		$listeUsers = "";
-		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "User.position ASC");
-		foreach($users as $user) {
+		$listeActeurs = "";
+		$acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "Acteur.position ASC");
+		foreach($acteurs as $acteur) {
 			$searchReplace = array(
 				"#NOUVELLE_PAGE#" => "<newpage>",
-				"#NOM_PRESENT#" => $user['User']['nom'],
-			 	"#PRENOM_PRESENT#" => $user['User']['prenom'],
-			 	"#ADRESSE_PRESENT#" => $user['User']['adresse'],
-			 	"#CP_PRESENT#" => $user['User']['CP'],
-			 	"#TITRE_PRESENT#" => $user['User']['titre'],
-			 	"#VILLE_PRESENT#" => $user['User']['ville']
+				"#NOM_PRESENT#" => $acteur['Acteur']['nom'],
+			 	"#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
+			 	"#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
+			 	"#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
+			 	"#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
+			 	"#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
+			 	"#CP_PRESENT#" => $acteur['Acteur']['cp'],
+			 	"#VILLE_PRESENT#" => $acteur['Acteur']['ville']
 			 );
-        	$listeUsers .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+        	$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
         }
-       return $listeUsers;
-        /* if (!USE_GEDOOO)
-		    return $listeUsers;
-		else {
-			$dyn_path = "/files/generee/$delib_id/";
-            $path = WEBROOT_PATH.$dyn_path;
- 			$this->Gedooo->createFile ($path,'presents.html', $listeUsers);
-		} */
+		return $listeActeurs;
 	}
 
-	function _listeUsersAbsents($delib_id) {
+	function _listeActeursAbsents($delib_id) {
 		// Lecture du modele
 		$texte = $this->Model->field('content', 'id=9');
 
-		$listeUsers = "";
-		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'User.position ASC');
-		foreach($users as $user) {
+		$listeActeurs = "";
+		$acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'Acteur.position ASC');
+		foreach($acteurs as $acteur) {
 			$searchReplace = array(
 				"#NOUVELLE_PAGE#" => "<newpage>",
-				"#NOM_ABSENT#" => $user['User']['nom'],
-			 	"#PRENOM_ABSENT#" => $user['User']['prenom'],
-			 	"#ADRESSE_ABSENT#" => $user['User']['adresse'],
-			 	"#CP_ABSENT#" => $user['User']['CP'],
-			 	"#TITRE_ABSENT#" => $user['User']['titre'],
-			 	"#VILLE_ABSENT#" => $user['User']['ville']
+				"#NOM_ABSENT#" => $acteur['Acteur']['nom'],
+			 	"#PRENOM_ABSENT#" => $acteur['Acteur']['prenom'],
+			 	"#SALUTATION_ABSENT#" => $acteur['Acteur']['salutation'],
+			 	"#TITRE_ABSENT#" => $acteur['Acteur']['titre'],
+			 	"#ADRESSE1_ABSENT#" => $acteur['Acteur']['adresse1'],
+			 	"#ADRESSE2_ABSENT#" => $acteur['Acteur']['adresse2'],
+			 	"#CP_ABSENT#" => $acteur['Acteur']['cp'],
+			 	"#VILLE_ABSENT#" => $acteur['Acteur']['ville']
 			 );
-        	$listeUsers .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+        	$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
         }
-		return $listeUsers;
+		return $listeActeurs;
 	}
 
-		function _listeUsersMandates($delib_id) {
+		function _listeActeursMandates($delib_id) {
 		// Lecture du modele
 		$texte = $this->Model->field('content', 'id=10');
 
-		$listeUsers = "";
-		$users = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'User.position ASC');
-		foreach($users as $user) {
-			$mandataire = $this->User->findById($user['Listepresence']['mandataire']);
+		$listeActeurs = "";
+		$acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'Acteur.position ASC');
+		foreach($acteurs as $acteur) {
+			$mandataire = $this->Acteur->findById($acteur['Listepresence']['mandataire']);
 			$searchReplace = array(
 				"#NOUVELLE_PAGE#" => "<newpage>",
-				"#NOM_MANDATE#" => $user['User']['nom'],
-				"#PRENOM_MANDATE#" => $user['User']['prenom'],
-				"#NOM_MANDATAIRE#" => $mandataire['User']['nom'],
-			 	"#PRENOM_MANDATAIRE#" => $mandataire['User']['prenom'],
-			 	"#ADRESSE_MANDATAIRE#" => $mandataire['User']['adresse'],
-			 	"#CP_MANDATAIRE#" => $mandataire['User']['CP'],
-			 	"#TITRE_MANDATAIRE#" => $mandataire['User']['titre'],
-			 	"#VILLE_MANDATAIRE#" => $mandataire['User']['ville']
+				"#NOM_MANDATE#" => $acteur['Acteur']['nom'],
+				"#PRENOM_MANDATE#" => $acteur['Acteur']['prenom'],
+				"#SALUTATION_MANDATE#" => $acteur['Acteur']['salutation'],
+				"#TITRE_MANDATE#" => $acteur['Acteur']['titre'],
+				"#NOM_MANDATAIRE#" => $mandataire['Acteur']['nom'],
+			 	"#PRENOM_MANDATAIRE#" => $mandataire['Acteur']['prenom'],
+			 	"#SALUTATION_MANDATAIRE#" => $mandataire['Acteur']['salutation'],
+			 	"#TITRE_MANDATAIRE#" => $mandataire['Acteur']['titre'],
+			 	"#ADRESSE1_MANDATAIRE#" => $mandataire['Acteur']['adresse1'],
+			 	"#ADRESSE2_MANDATAIRE#" => $mandataire['Acteur']['adresse2'],
+			 	"#CP_MANDATAIRE#" => $mandataire['Acteur']['cp'],
+			 	"#VILLE_MANDATAIRE#" => $mandataire['Acteur']['ville']
 			 );
-        	$listeUsers .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+        	$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
         }
-		return $listeUsers;
+		return $listeActeurs;
 	}
 
-	function _listeUsersVotant($delib_id) {
+	function _listeActeursVotant($delib_id) {
 		// Lecture du modele
 		$texte = $this->Model->field('content', 'id=11');
 
-		$listeUsers = "";
+		$listeActeurs = "";
 		$votes = $this->Vote->findAll("delib_id = $delib_id");
 		foreach($votes as $vote) {
-			$votant = $this->User->findById($vote['Vote']['user_id']);
+			$votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
 			if ($vote['Vote']['resultat']==2)
 				$resultat = "contre";
 			elseif ($vote['Vote']['resultat']==3)
@@ -209,18 +210,20 @@ class ModelsController extends AppController {
 
 			$searchReplace = array(
 				"#NOUVELLE_PAGE#" => "<newpage>",
-				"#NOM_VOTANT#" => $votant['User']['nom'],
-			 	"#PRENOM_VOTANT#" => $votant['User']['prenom'],
-			 	"#ADRESSE_VOTANT#" => $votant['User']['adresse'],
-			 	"#CP_VOTANT#" => $votant['User']['CP'],
-			 	"#VILLE_VOTANT#" => $votant['User']['ville'],
-			 	"#TITRE_VOTANT#" => $votant['User']['titre'],
+				"#NOM_VOTANT#" => $votant['Acteur']['nom'],
+			 	"#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
+			 	"#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
+			 	"#TITRE_VOTANT#" => $votant['Acteur']['titre'],
+			 	"#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
+			 	"#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
+			 	"#CP_VOTANT#" => $votant['Acteur']['cp'],
+			 	"#VILLE_VOTANT#" => $votant['Acteur']['ville'],
 			 	"#RESULTAT_VOTANT#" => $resultat,
 				"#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
 			);
-        	$listeUsers .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+        	$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
         }
-		return $listeUsers;
+		return $listeActeurs;
 	}
 
 	function _replaceBalisesSeance($texte, $seance_id) {
@@ -250,7 +253,6 @@ class ModelsController extends AppController {
 			"#CP_COLLECTIVITE#" => $collectivite['Collectivite']['CP'],
 			"#VILLE_COLLECTIVITE#" => $collectivite['Collectivite']['ville'],
 			"#TELEPHONE_COLLECTIVITE#" => $collectivite['Collectivite']['telephone'],
-			"#LIEU_SEANCE#" => "un lieu a definir",
 			"#LISTE_PROJETS_SOMMAIRES#" => $listeProjetsSommaires,
 			"#LISTE_PROJETS_DETAILLES#" => $listeProjetsDetailles
 		);
@@ -266,7 +268,7 @@ class ModelsController extends AppController {
 		// Traitement de la séance
 		if (!empty($delib['Deliberation']['seance_id'])){
 			$dateSeance = $this->Date->frenchDate(strtotime($delib['Seance']['date']));
-			$libelleSeance = $this->Typeseance->field('libelle', 'id = '.$delib['Seance']['type_id']);
+			$libelleSeance = $this->Typeseance->field('libelle', 'Typeseance.id = '.$delib['Seance']['type_id']);
 		} else {
 			$dateSeance = "";
 			$libelleSeance = "";
@@ -292,28 +294,26 @@ class ModelsController extends AppController {
 			"#POSITION_DELIB#" => $delib['Deliberation']['position'],
 			"#DEBAT_DELIB#" => $delib['Deliberation']['debat'],
 			"#COMMENTAIRE_DELIB#" => $this->_getCommentaireDelib($delib_id),
+			"#SALUTATION_RAPPORTEUR#" => $delib['Rapporteur']['salutation'],
 			"#NOM_RAPPORTEUR#" => $delib['Rapporteur']['nom'],
 			"#PRENOM_RAPPORTEUR#" => $delib['Rapporteur']['prenom'],
-			"#ADRESSE_RAPPORTEUR#" => $delib['Rapporteur']['adresse'],
-			"#CP_RAPPORTEUR#" => $delib['Rapporteur']['CP'],
-			"#VILLE_RAPPORTEUR#" => $delib['Rapporteur']['ville'],
 			"#TITRE_RAPPORTEUR#" => $delib['Rapporteur']['titre'],
+			"#ADRESSE1_RAPPORTEUR#" => $delib['Rapporteur']['adresse1'],
+			"#ADRESSE2_RAPPORTEUR#" => $delib['Rapporteur']['adresse2'],
+			"#CP_RAPPORTEUR#" => $delib['Rapporteur']['cp'],
+			"#VILLE_RAPPORTEUR#" => $delib['Rapporteur']['ville'],
 			"#NOM_REDACTEUR#" => $delib['Redacteur']['nom'],
 			"#PRENOM_REDACTEUR#" => $delib['Redacteur']['prenom'],
-			"#ADRESSE_REDACTEUR#" => $delib['Redacteur']['adresse'],
-			"#CP_REDACTEUR#" => $delib['Redacteur']['CP'],
-			"#VILLE_REDACTEUR#" => $delib['Redacteur']['ville'],
-			"#TITRE_REDACTEUR#" => $delib['Redacteur']['titre'],
 			"#LOGO_COLLECTIVITE#" => '<img src="files/image/logo.jpg">',
 			"#NOM_COLLECTIVITE#" => $collectivite['Collectivite']['nom'],
 			"#ADRESSE_COLLECTIVITE#" => $collectivite['Collectivite']['adresse'],
 			"#CP_COLLECTIVITE#" => $collectivite['Collectivite']['CP'],
 			"#VILLE_COLLECTIVITE#" => $collectivite['Collectivite']['ville'],
 			"#TELEPHONE_COLLECTIVITE#" => $collectivite['Collectivite']['telephone'],
-			"#LISTE_PRESENTS#" => $this->_listeUsersPresents($delib_id),
-			"#LISTE_ABSENTS#" => $this->_listeUsersAbsents($delib_id),
-			"#LISTE_MANDATAIRES#" => $this->_listeUsersMandates($delib_id),
-			"#LISTE_VOTANTS#" =>$this->_listeUsersVotant($delib_id)
+			"#LISTE_PRESENTS#" => $this->_listeActeursPresents($delib_id),
+			"#LISTE_ABSENTS#" => $this->_listeActeursAbsents($delib_id),
+			"#LISTE_MANDATAIRES#" => $this->_listeActeursMandates($delib_id),
+			"#LISTE_VOTANTS#" =>$this->_listeActeursVotant($delib_id)
 		);
 
 		return  str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
@@ -332,71 +332,72 @@ class ModelsController extends AppController {
 	}
 
 	function generatePVSommaire($seance_id) {
-		$data = $this->Model->findAll('Model.id=5');
-		$texte = $data['0']['Model']['content'];
+		$seance = $this->Seance->read(null, $seance_id);
+		$model = $this->Model->read(null, $seance['Typeseance']['modelpvsommaire_id']);
+		$texte = $model['Model']['content'];
 		return $this->_replaceBalisesSeance($texte, $seance_id);
 	}
 
 	function generatePVDetaille($seance_id) {
-		$data = $this->Model->findAll('Model.id=6');
-		$texte = $data['0']['Model']['content'];
+		$seance = $this->Seance->read(null, $seance_id);
+		$model = $this->Model->read(null, $seance['Typeseance']['modelpvdetaille_id']);
+		$texte = $model['Model']['content'];
 		return $this->_replaceBalisesSeance($texte, $seance_id);
 	}
 
 
-        function import($model_id) {
-	    $this->set('USE_GEDOOO', USE_GEDOOO);
-            $this->set('model_id', $model_id);
-            if (! empty($this->data)){
-                  if (isset($this->data['Model']['template'])){
-                    if ($this->data['Model']['template']['size']!=0){
-                        $this->data['Model']['id']        = $model_id;
-                        $this->data['Model']['name']      = $this->data['Model']['template']['name'];
-                        $this->data['Model']['size']      = $this->data['Model']['template']['size'];
-                        $this->data['Model']['extension'] = $this->data['Model']['template']['type'];
-                        $this->data['Model']['content']   = $this->getFileData($this->data['Model']['template']['tmp_name'], $this->data['Model']['template']['size']);
-                        if ($this->Model->save($this->data))
-                          $this->redirect('/models/index');
-                     }
-                }
-            }
-	    else {
+	function import($model_id) {
+		$this->set('USE_GEDOOO', USE_GEDOOO);
+		$this->set('model_id', $model_id);
+		if (! empty($this->data)){
+			if (isset($this->data['Model']['template'])){
+				if ($this->data['Model']['template']['size']!=0){
+					$this->data['Model']['id']        = $model_id;
+					$this->data['Model']['name']      = $this->data['Model']['template']['name'];
+					$this->data['Model']['size']      = $this->data['Model']['template']['size'];
+					$this->data['Model']['extension'] = $this->data['Model']['template']['type'];
+					$this->data['Model']['content']   = $this->getFileData($this->data['Model']['template']['tmp_name'], $this->data['Model']['template']['size']);
+					if ($this->Model->save($this->data))
+						$this->redirect('/models/index');
+				}
+			}
+		} else {
                 $this->data = $this->Model->read(null, $model_id);
 	    }
-        }
+	}
 
-        function getFileData($fileName, $fileSize) {
-                return fread(fopen($fileName, "r"), $fileSize);
-        }
+	function getFileData($fileName, $fileSize) {
+		return fread(fopen($fileName, "r"), $fileSize);
+	}
 
-        function _getFileType($id=null) {
-                $condition = "Model.id = $id";
-                $objCourant = $this->Model->findAll($condition);
-                return $objCourant['0']['Model']['extension'];
-        }
+	function _getFileType($id=null) {
+		$condition = "Model.id = $id";
+		$objCourant = $this->Model->findAll($condition);
+		return $objCourant['0']['Model']['extension'];
+	}
 
-        function _getFileName($id=null) {
-                $condition = "Model.id = $id";
-        $objCourant = $this->Model->findAll($condition);
-                return $objCourant['0']['Model']["name"];
-        }
+	function _getFileName($id=null) {
+		$condition = "Model.id = $id";
+		$objCourant = $this->Model->findAll($condition);
+		return $objCourant['0']['Model']["name"];
+	}
 
-        function _getSize($id=null) {
-            $condition = "Model.id = $id";
-            $objCourant = $this->Model->findAll($condition);
-            return $objCourant['0']['Model']["size"];
-        }
+	function _getSize($id=null) {
+		$condition = "Model.id = $id";
+		$objCourant = $this->Model->findAll($condition);
+		return $objCourant['0']['Model']["size"];
+	}
 
-        function _getData($id=null) {
-            $condition = "Model.id = $id";
-            $objCourant = $this->Model->findAll($condition);
-            return $objCourant['0']['Model']['content'];
-        }
+	function _getData($id=null) {
+		$condition = "Model.id = $id";
+		$objCourant = $this->Model->findAll($condition);
+		return $objCourant['0']['Model']['content'];
+	}
 
-       function getModel($id=null) {
-            $condition = "Model.id = $id";
-            $objCourant = $this->Model->findAll($condition);
-            return $objCourant['0']['Model']['content'];
-        }
+	function getModel($id=null) {
+		$condition = "Model.id = $id";
+		$objCourant = $this->Model->findAll($condition);
+		return $objCourant['0']['Model']['content'];
+	}
 }
 ?>
