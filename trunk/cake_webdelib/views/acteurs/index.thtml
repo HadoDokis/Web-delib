@@ -8,9 +8,9 @@
 	<th>Nom<?php $html2->boutonsTri('/acteurs/index/acteur.nom');?></th>
 	<th>Prenom</th>
 	<th>Titre</th>
-	<th>Type d'acteur<?php $html2->boutonsTri('/acteurs/index/typeacteur.nom');?></th>
-	<th>Elus<?php $html2->boutonsTri('/acteurs/index/typeacteur.elu', true);?></th>
-	<th>N° d'ordre<?php $html2->boutonsTri('/acteurs/index/acteur.position');?></th>
+	<th>Type d'acteur<?php $html2->boutonsTri('/acteurs/index/Typeacteur.nom');?></th>
+	<th>Elus<?php $html2->boutonsTri('/acteurs/index/Typeacteur.elu', true);?></th>
+	<th>N° d'ordre<?php $html2->boutonsTri('/acteurs/index/Acteur.position');?></th>
 	<th>Téléphone</th>
 	<th>Mobile</th>
 	<th>Délégation(s)</th>
