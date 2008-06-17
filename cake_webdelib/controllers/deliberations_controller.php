@@ -219,7 +219,7 @@ class DeliberationsController extends AppController {
 
 	function listerProjetsDansMesCircuits() {
 		/**
-		 * TODO BUG SI UNE PERSONNE QUI APPARAIT À PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN
+		 * TODO BUG SI UNE PERSONNE QUI APPARAIT a PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN
 		 * MEME CIRCUIT
 		 * PB : si une personne apparait plusieurs fois dans le circuit mais sous des services différents
 		 * A FAIRE : verifier aussi le service, voir si un meme user peut appartenir à plusieurs services
@@ -227,10 +227,10 @@ class DeliberationsController extends AppController {
 		 * CSQ : qui se connecte? un user ou un user service? remise en cause de la relation "un user
 		 * peut appartenir à plusieurs services
 		 */
-		//liste les projets où j'apparais dans le circuit de validation
+		//liste les projets apparais dans le circuit de validation
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
-		//recherche de tous les circuits où apparait l'utilisateur logué
+		//recherche de tous les circuits ou apparait l'utilisateur logue
 		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "UsersCircuit.position ASC");
 		$conditions="etat=1 ";
 		$delib=array();
@@ -279,7 +279,7 @@ class DeliberationsController extends AppController {
 						$deliberation['positionUser']=$position_user;
 					}
 				}
-				// on n'affiche que les delib trait�es ou qui sont en attente
+				// on n'affiche que les delib traitees ou qui sont en attente
 				$deliberation['action']="view";
 				$deliberation['act']="voir";
 
@@ -301,7 +301,7 @@ class DeliberationsController extends AppController {
 
 	function listerProjetsATraiter() {
 		/**
-		 * TODO BUG SI UNE PERSONNE QUI APPARAIT À PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN
+		 * TODO BUG SI UNE PERSONNE QUI APPARAIT a PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN
 		 * MEME CIRCUIT
 		 * PB : si une personne apparait plusieurs fois dans le circuit mais sous des services différents
 		 * A FAIRE : verifier aussi le service, voir si un meme user peut appartenir à plusieurs services
@@ -309,11 +309,11 @@ class DeliberationsController extends AppController {
 		 * CSQ : qui se connecte? un user ou un user service? remise en cause de la relation "un user
 		 * peut appartenir à plusieurs services
 		 */
-		//liste les projets où j'apparais dans le circuit de validation
+		//liste les projets ou j'apparais dans le circuit de validation
 		$this->set('USE_GEDOOO', USE_GEDOOO);
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
-		//recherche de tous les circuits où apparait l'utilisateur logué
+		//recherche de tous les circuits ou apparait l'utilisateur logue
 		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "UsersCircuit.position ASC");
 		$conditions="etat=1 ";
 		$delib=array();
@@ -550,11 +550,8 @@ class DeliberationsController extends AppController {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
-			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
-			$selectedRapporteur = null;
-			if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
-				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
-			$this->set('selectedRapporteur',$selectedRapporteur);
+			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
+			$this->set('selectedRapporteur', $this->Deliberation->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
 
 			$tab = array();
 			$conditions= 'Seance.traitee = 0';
@@ -625,11 +622,8 @@ class DeliberationsController extends AppController {
 						$this->set('circuits', $this->Deliberation->Circuit->generateList());
 						$this->set('datelim',$this->data['Deliberation']['date_limite']);
 						$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
-						$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
-						$selectedRapporteur = null;
-						if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
-							$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
-						$this->set('selectedRapporteur',$selectedRapporteur);
+						$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
+						$this->set('selectedRapporteur', $this->Deliberation->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
 						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 						$seances = $this->Seance->findAll($condition);
 						foreach ($seances as $seance){
@@ -699,9 +693,7 @@ class DeliberationsController extends AppController {
 							{
 								echo "pb de sauvegarde de l\'annexe ".$counter;
 							}
-						//$this->log("annexe ".$counter." enregistr�e.");
-						//echo "<br>annexe ".$counter." enregistr�e.";
-						$counter++;
+				     		$counter++;
 
 						}
 						$this->redirect('/deliberations/textsynthese/'.$id);
@@ -876,7 +868,7 @@ class DeliberationsController extends AppController {
 		$conditions= "Deliberation.seance_id = $seance_id AND Deliberation.position > $position ";
 		$delibs = $this->Deliberation->findAll($conditions);
 		foreach ($delibs as $delib) {
-			// on enleve pour 1 la d�lib qui a chang� de s�ance..
+			// on enleve pour 1 la delib qui a change de seance..
 			$delib['Deliberation']['position']= $delib['Deliberation']['position'] -1;
 			$this->Deliberation->save($delib['Deliberation']);
 		}
@@ -891,11 +883,8 @@ class DeliberationsController extends AppController {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
-			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
-			$selectedRapporteur = null;
-			if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
-				$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
-			$this->set('selectedRapporteur',$selectedRapporteur);
+			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
+			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 
 			$tab = array();
 			$conditions= 'Seance.traitee = 0';
@@ -911,11 +900,11 @@ class DeliberationsController extends AppController {
 
 		} else {
 			$oldDelib =  $this->Deliberation->read(null, $id);
-			// Si on change une delib de s�ance, il faut reclasser toutes les d�libs de l'ancienne seance...
+			// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
 			if ((($oldDelib['Deliberation']['seance_id'] != 0) AND ($oldDelib['Deliberation']['seance_id'] != null)) AND (($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']) AND ($this->data['Deliberation']['seance_id'] != null))){
                 $this->PositionneDelibsSeance($oldDelib['Deliberation']['seance_id'], $oldDelib['Deliberation']['position'] );
 			}
-			// Si on d�finie une seance a une d�lib, on la position en derniere position de la s�ance...
+			// Si on definie une seance a une delib, on la position en derniere position de la seance...
 			 if (($this->data['Deliberation']['seance_id'])!=null )
 				    $this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 
@@ -973,11 +962,9 @@ class DeliberationsController extends AppController {
 						$this->set('circuits', $this->Deliberation->Circuit->generateList());
 						$this->set('datelim',$this->data['Deliberation']['date_limite']);
 						$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
-						$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
-						$selectedRapporteur = null;
-						if($this->Deliberation->User->generateList('service_id='.$user['User']['service']))
-							$selectedRapporteur = key($this->Deliberation->User->generateList('service_id='.$user['User']['service']));
-						$this->set('selectedRapporteur',$selectedRapporteur);
+						$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
+						$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
+
 						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 						$seances = $this->Seance->findAll($condition);
 						foreach ($seances as $seance){
@@ -1078,11 +1065,11 @@ class DeliberationsController extends AppController {
 	    	$this->data['Deliberation']['date_envoi']=date('Y-m-d H:i:s', time());
 			$this->data['Deliberation']['etat']='1';
 	    	if ($this->Deliberation->save($this->data)) {
-				//on doit tester si la delib a une version anterieure, si c le cas il faut mettre à jour l'action dans la table traitement
+				//on doit tester si la delib a une version anterieure, si c le cas il faut mettre a jour l'action dans la table traitement
 				$delib=$this->Deliberation->find("Deliberation.id = $id");
 				if ($delib['Deliberation']['anterieure_id']!=0) {
 					//il existe une version anterieure de la delib
-					//on met à jour le traitement anterieure
+					//on met a jour le traitement anterieure
 					$anterieure=$delib['Deliberation']['anterieure_id'];
 					$condition="delib_id = $anterieure AND Traitement.position = '0'";
 					$traite=$this->Traitement->find($condition);
@@ -1091,7 +1078,7 @@ class DeliberationsController extends AppController {
 					$this->Traitement->save($traite);
 				}
 				//enregistrement dans la table traitements
-				// TODO Voir comment améliorer ce point (associations cakephp).
+				// TODO Voir comment ameliorer ce point (associations cakephp).
 				$circuit_id = $delib['Deliberation']['circuit_id'];
 				$this->data['Traitement']['id']='';
 				$this->data['Traitement']['delib_id']=$id;
@@ -1099,7 +1086,7 @@ class DeliberationsController extends AppController {
 				$this->data['Traitement']['position']='1';
 				$this->Traitement->save($this->data['Traitement']);
 
-				//Envoi un mail à tous les membres du circuit
+				//Envoi un mail a tous les membres du circuit
 				$condition = "circuit_id = $circuit_id";
 				$listeUsers = $this->UsersCircuit->findAll($condition);
 				foreach($listeUsers as $user)
@@ -1228,7 +1215,7 @@ class DeliberationsController extends AppController {
 			{
 				if ($valid=='1')
 				{
-					//verification du projet, s'il n'est pas pret ->report� a la seance suivante
+					//verification du projet, s'il n'est pas pret ->reporte a la seance suivante
 					$delib = $this->Deliberation->findAll("Deliberation.id = $id");
 					$type_id =$delib[0]['Seance']['type_id'];
 					if(isset($type_id)){
@@ -1252,26 +1239,26 @@ class DeliberationsController extends AppController {
 							}
 						}
 					}
-					//on a validé le projet, il passe à la personne suivante
+					//on a valide le projet, il passe a la personne suivante
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 
 					$lastpos=count($tab)-1;
 					$circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
 
-					//MAJ de la date de traitement de la dernière position courante $lastpos
+					//MAJ de la date de traitement de la derniere position courante $lastpos
 					$tab[$lastpos]['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
 					$this->Traitement->save($tab[$lastpos]['Traitement']);
 
-					//il faut verifier que le projet n'est pas arrivé en fin de circuit
+					//il faut verifier que le projet n'est pas arrive en fin de circuit
 					//position courante du projet : lastposprojet : $tab[$lastpos]['Traitement']['position'];
-					//derniere position théorique : lastposcircuit
+					//derniere position theorique : lastposcircuit
 					$lastposprojet=$tab[$lastpos]['Traitement']['position'];
 					//$lastposcircuit=$this->Circuit->getLastPosition($circuit_id);
 					$lastposcircuit=count($this->UsersCircuit->findAll("circuit_id = $circuit_id"));
 
-					if ($lastposcircuit==$lastposprojet) //on est sur la dernière personne, on va faire sortir le projet du workflow et le passer au service des assemblées
+					if ($lastposcircuit==$lastposprojet) //on est sur la derniere personne, on va faire sortir le projet du workflow et le passer au service des assemblees
 					{
-						// passage au service des assemblée : etat dans la table deliberations passe à 2
+						// passage au service des assemblee : etat dans la table deliberations passea2
 						$tab=$this->Deliberation->findAll("Deliberation.id = $id");
 						$this->data['Deliberation']['etat']=2;
 						$this->data['Deliberation']['id']=$id;
@@ -1281,7 +1268,7 @@ class DeliberationsController extends AppController {
 					else
 					{
 						$this->notifierDossierAtraiter($circuit_id, $tab[$lastpos]['Traitement']['position']+1, $id);
-						//sinon on fait passer à la personne suivante
+						//sinon on fait passerala personne suivante
 						$this->data['Traitement']['id']='';
 						$this->data['Traitement']['position']=$tab[$lastpos]['Traitement']['position']+1;
 						$this->data['Traitement']['delib_id']=$id;
@@ -1295,7 +1282,7 @@ class DeliberationsController extends AppController {
 					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
 					$lastpos=count($tab)-1;
 
-					//MAJ de la date de traitement de la dernière position courante $lastpos
+					//MAJ de la date de traitement de la derniere position courante $lastpos
 					$tab[$lastpos]['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
 					$this->Traitement->save($tab[$lastpos]['Traitement']);
 
@@ -1307,7 +1294,7 @@ class DeliberationsController extends AppController {
 					$this->data['Traitement']['circuit_id']=$circuit_id;
 					$this->Traitement->save($this->data['Traitement']);
 
-					//TODO notifier par mail toutes les personnes qui ont déjà visé le projet
+					//TODO notifier par mail toutes les personnes qui ont deja vise le projet
 					$condition = "circuit_id = $circuit_id";
 					$listeUsers = $this->UsersCircuit->findAll($condition);
 					foreach($listeUsers as $user)
@@ -1315,7 +1302,7 @@ class DeliberationsController extends AppController {
 
 					//maj de l'etat de la delib dans la table deliberations
 					$tab=$this->Deliberation->findAll("Deliberation.id = $id");
-					$this->data['Deliberation']['etat']=-1; //etat -1 : refusé
+					$this->data['Deliberation']['etat']=-1; //etat -1 : refuse
 
 				    // Retour de la position a 0 pour ne pas qu'il y ait de confusion
 					$this->data['Deliberation']['position']=0;
@@ -1363,7 +1350,7 @@ class DeliberationsController extends AppController {
         $this->set('dateClassification', $this->getDateClassification());
         $this->set('tabNature',          $this->getNatureListe());
         $this->set('tabMatiere',         $this->getMatiereListe());
-        // On affiche que les d�libs vot� pour.
+        // On affiche que les delibs vote pour.
         $deliberations =   $this->Deliberation->findAll("Deliberation.etat=3 OR Deliberation.etat=5 ");
 
         for($i = 0; $i < count($deliberations); $i++) {
@@ -1553,7 +1540,7 @@ class DeliberationsController extends AppController {
           print curl_error($ch);
         curl_close($ch);
 
-        // Assurons nous que le fichier est accessible en �criture
+        // Assurons nous que le fichier est accessible en ecriture
        if (is_writable(FILE_CLASS)) {
            if (!$handle = fopen(FILE_CLASS, 'w')) {
                echo "Impossible d'ouvrir le fichier (".FILE_CLASS.")";
@@ -1561,7 +1548,7 @@ class DeliberationsController extends AppController {
         	}
         	// Ecrivons quelque chose dans notre fichier.
         	if (fwrite($handle, utf8_encode($reponse)) === FALSE) {
-            	echo "Impossible d'�crire dans le fichier ($filename)";
+            	echo "Impossible d'ecrire dans le fichier ($filename)";
             	exit;
        	 	}
         	else
@@ -1569,7 +1556,7 @@ class DeliberationsController extends AppController {
         	fclose($handle);
         }
         else
-            echo "Le fichier ".FILE_CLASS." n'est pas accessible en �criture.";
+            echo "Le fichier ".FILE_CLASS." n'est pas accessible en ecriture.";
  		}
 
         function positionner($id=null, $sens, $seance_id)
@@ -1593,11 +1580,11 @@ class DeliberationsController extends AppController {
 			if (!$this->Deliberation->save($this->data)) {
 			   die('Erreur durant l\'enregistrement');
 			}
-			// On r�cup�re les informations de l'objet � d�placer
+			// On recupere les informations de l'objet a deplacer
 			$this->data = $this->Deliberation->read(null, $id_obj);
 			$this->data['Deliberation']['position']= $positionCourante;
 
-			//enregistrement de l'objet � d�placer avec la position courante
+			//enregistrement de l'objet a deplacer avec la position courante
 			if ($this->Deliberation->save($this->data)) {
 
 			$this->redirect("/seances/afficherProjets/$seance_id/");
@@ -1609,7 +1596,7 @@ class DeliberationsController extends AppController {
 
         function sortby($seance_id, $sortby) {
 		    $condition= "seance_id=$seance_id AND etat != -1";
-		    // Crit�re de tri
+		    // Critere de tri
 			if ($sortby == 'theme_id') $sortby = 'Theme.libelle';
 			elseif ($sortby == 'rapporteur_id') $sortby = 'Rapporteur.nom';
   		    $deliberations = $this->Deliberation->findAll($condition,null, "$sortby ASC");
@@ -1645,7 +1632,7 @@ class DeliberationsController extends AppController {
 
 	function listerProjetsServicesAssemblees()
 	{
-		//liste les projets appartenants au service des assembl�es
+		//liste les projets appartenants au service des assemblees
 		$conditions="etat = 2 ";
 		$deliberations = $this->Deliberation->findAll($conditions);
 
@@ -1693,10 +1680,10 @@ class DeliberationsController extends AppController {
 
 			$this->Email->template = 'email/traiter';
 			$addr = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/traiter/$delib_id";
-			$text = "Vous avez un dossier à traiter, Cliquer <a href='$addr'> ici</a>";
+			$text = "Vous avez un dossieratraiter, Cliquer <a href='$addr'> ici</a>";
             $this->set('data', $text);
             $this->Email->to = $to_mail;
-            $this->Email->subject = "DELIB $delib_id à traiter";
+            $this->Email->subject = "DELIB $delib_idatraiter";
        	   //  $this->Email->attach($fully_qualified_filename, optionally $new_name_when_attached);
             $result = $this->Email->send();
 		}
@@ -1720,16 +1707,15 @@ class DeliberationsController extends AppController {
 
 			if(!empty($data_comm) && $data['0']['User']['id']==$redacteur_id){
 				$commentaire = $data_comm['0']['Commentaire']['texte'];
-				$comm = "Votre dossier a été refusé pour les motifs suivants :<br/><br/>$commentaire";
+				$comm = "Votre dossier a ete refuse pour les motifs suivants :<br/><br/>$commentaire";
 				$this->set('data',$comm);
 			}elseif ($data['0']['User']['id']==$redacteur_id) {
-				$this->set('data',"Votre dossier a été refusé");
+				$this->set('data',"Votre dossier a ete refuse");
 			}else{
-            	$this->set('data', "Le dossier $delib_id a été refusé... Il est reparti au redacteur pour etre modifié");
+            	$this->set('data', "Le dossier $delib_id a ete refuse... Il est reparti au redacteur pour etre modifie");
 			}
 			$this->Email->to = $to_mail;
-            $this->Email->subject = "DELIB $delib_id Refusée !";
-       	   // $this->Email->attach($fully_qualified_filename, optionally $new_name_when_attached);
+            $this->Email->subject = "DELIB $delib_id Refusee !";
             $result = $this->Email->send();
 		}
 	}
@@ -1746,14 +1732,13 @@ class DeliberationsController extends AppController {
 			$this->Email->template = 'email/circuit';
             $this->set('data', 'Vous allez recevoir un dossier');
             $this->Email->to = $to_mail;
-            $this->Email->subject = "vous allez recevoir la délib : $delib_id";
-       	   //  $this->Email->attach($fully_qualified_filename, optionally $new_name_when_attached);
+            $this->Email->subject = "vous allez recevoir la delib : $delib_id";
             $result = $this->Email->send();
 		}
 	}
 
 	function getListPresent($delib_id){
-			return $this->Listepresence->findAll("Listepresence.delib_id= $delib_id");
+			return $this->Listepresence->findAll("Listepresence.delib_id= $delib_id", null, "acteur.position ASC");
 	}
 
 	function listerPresents($delib_id) {
@@ -1761,39 +1746,45 @@ class DeliberationsController extends AppController {
 		if (empty($this->data)) {
 			$presents = $this->getListPresent($delib_id);
 			foreach($presents as $present){
-				    	$this->data[$present['Listepresence']['user_id']]['present'] = $present['Listepresence']['present'];
-					    $this->data[$present['Listepresence']['user_id']]['mandataire'] = $present['Listepresence']['mandataire'];
+				    	$this->data[$present['Listepresence']['acteur_id']]['present'] = $present['Listepresence']['present'];
+					    $this->data[$present['Listepresence']['acteur_id']]['mandataire'] = $present['Listepresence']['mandataire'];
 			}
 			$this->set('presents',$presents);
-			$this->set('mandataires', $this->User->generateList('statut = 1'));
+			$this->set('mandataires', $this->Acteur->generateListElus());
 			$this->set('delib_id', $delib_id);
-		}
-		else {
+		} else {
+			$nbConvoques = 0;
+			$nbVoix = 0;
 			$nbPresents = 0;
 			$this->effacerListePresence($delib_id);
-			foreach($this->data as $user_id=>$tab){
+			foreach($this->data as $acteur_id => $tab){
 				$this->Listepresence->create();
-				if (!is_int($user_id))
+				if (!is_int($acteur_id))
 					continue;
-			    $this->data['Listepresence']['user_id'] = $user_id;
+
+				$nbConvoques++;
+			    $this->data['Listepresence']['acteur_id'] = $acteur_id;
 
 			    if (isset($tab['present'])){
 			        $this->data['Listepresence']['present'] = $tab['present'];
-			    	if ($tab['present']==1)
+			    	if ($tab['present']==1) {
 			    	    $nbPresents++;
+			    	    $nbVoix++;
+			    	}
 			    }
-			    if (isset($tab['mandataire']))
-			         $this->data['Listepresence']['mandataire'] = $tab['mandataire'];
-			    else
+			    if (isset($tab['mandataire']) && !empty($tab['mandataire'])) {
+					$this->data['Listepresence']['mandataire'] = $tab['mandataire'];
+		    	    $nbVoix++;
+			    } else
 			    	$this->data['Listepresence']['mandataire'] =0;
 
  			    $this->data['Listepresence']['delib_id']=$delib_id;
 			 	$this->Listepresence->save($this->data['Listepresence']);
 			}
 
-			if ($nbPresents < $this->requestAction("users/getQuorum/")) {
+			if ($nbVoix < ($nbConvoques/2))
 				   $this->reporteDelibs($delib_id);
-			}
+
 			$this->redirect('/seances/voter/'.$delib_id);
 		}
 
@@ -1825,10 +1816,13 @@ class DeliberationsController extends AppController {
 	}
 
 	function buildFirstList($delib_id) {
-		$elus = $this->User->findAll( "User.statut= 1");
+		$seanceId = $this->Deliberation->field('seance_id', "Deliberation.id=$delib_id");
+		$typeSeanceId = $this->Seance->field('type_id', "Seance.id=$seanceId");
+		$elus = $this->Typeseance->acteursConvoquesParTypeSeanceId($typeSeanceId, true);
+
 		foreach ($elus as $elu){
 			$this->Listepresence->create();
-			$this->params['data']['Listepresence']['user_id']=$elu['User']['id'];
+			$this->params['data']['Listepresence']['acteur_id']=$elu['Acteur']['id'];
 			$this->params['data']['Listepresence']['mandataire'] = '0';
 			$this->params['data']['Listepresence']['present']= 1;
 			$this->params['data']['Listepresence']['delib_id']= $delib_id;
@@ -1846,7 +1840,7 @@ class DeliberationsController extends AppController {
 
 		foreach ($previousPresents as $present){
 			$this->Listepresence->create();
-			$this->params['data']['Listepresence']['user_id']=$present['Listepresence']['user_id'];
+			$this->params['data']['Listepresence']['acteur_id']=$present['Listepresence']['acteur_id'];
 			$this->params['data']['Listepresence']['mandataire'] = $present['Listepresence']['mandataire'];
 			$this->params['data']['Listepresence']['present']= $present['Listepresence']['present'];
 			$this->params['data']['Listepresence']['delib_id']= $delib_id;
@@ -1870,14 +1864,16 @@ class DeliberationsController extends AppController {
 		if ($this->isFirstDelib($delib_id) and (empty($presents)))
 			$presents = $this->buildFirstList($delib_id);
 
-		// Si la liste est vide, on r�cup�re la liste des pr�sent lors de la derbi�re d�lib�ration.
-		// V�rifier que la liste pr�c�dente n'est pas vide...
+		// Si la liste est vide, on recupere la liste des present lors de la derbiere deliberation.
+		// Verifier que la liste precedente n'est pas vide...
 		if (empty($presents))
 			$presents = $this->copyFromPreviousList($delib_id);
 
 		for($i=0; $i<count($presents); $i++){
-			if ($presents[$i]['Listepresence']['mandataire'] !='0')
-			    $presents[$i]['Listepresence']['mandataire'] = $this->User->requestAction('/users/getPrenom/'.$presents[$i]['Listepresence']['mandataire']).' '.$this->User->requestAction('/users/getNom/'.$presents[$i]['Listepresence']['mandataire']);
+			if ($presents[$i]['Listepresence']['mandataire'] !='0') {
+				$mandataire = $this->Acteur->read('nom, prenom', $presents[$i]['Listepresence']['mandataire']);
+			    $presents[$i]['Listepresence']['mandataire'] = $mandataire['Acteur']['prenom'].$mandataire['Acteur']['nom'];
+			}
 		}
 		return ($presents);
         }
