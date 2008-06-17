@@ -1,5 +1,14 @@
 @CHARSET "UTF-8";
 
+fieldset {
+	border: 1px solid #e0ef90;
+	padding: 10px 0px 10px 0px;
+}
+fieldset legend {
+	font-weight: normal;
+}
+
+
 /* ----------- modif marine ----------- */
 
 acronym {
@@ -428,6 +437,20 @@ a.link_descendre {
 	padding: 0 0 10px 22px;
 }
 
+a.link_triasc {
+	background-image: url(../img/icons/tri_asc.png);
+	background-repeat: no-repeat;
+	background-position: center left;
+	padding: 0px 6px 0px 6px;
+}
+
+a.link_tridesc {
+	background-image: url(../img/icons/tri_desc.png);
+	background-repeat: no-repeat;
+	background-position: center left;
+	padding: 0px 6px 0px 6px;
+}
+
 a.link_calendar {
 	background-image: url(../img/calendar.png);
 	background-repeat: no-repeat;
@@ -650,10 +673,27 @@ a.link_modifier_avec_border {
 }
 
 .droite {
-	float:right;
-	width: 50%
-
+	float: right;
+	width: 50%;
 }
+
+.demi {
+	float:left;
+	width: 49.99%;
+}
+.tiers {
+	float:left;
+	width: 33.33%;
+}
+.deuxtiers {
+	float:left;
+	width: 66.66%;
+}
+.spacer {
+	clear: both;
+	height: 10px;
+}
+
 
 #vue_cadre{
 	background-color: #EAEFCE;
@@ -676,7 +716,10 @@ a.link_modifier_avec_border {
 #vue_cadre dd{
 	padding: 5px 0 15px 30px;
 	text-indent: 3%;
-
+}
+#vue_cadre dd.compact{
+	padding: 5px 0px 0px 30px;
+	text-indent: 3%;
 }
 
 ul.actions {
