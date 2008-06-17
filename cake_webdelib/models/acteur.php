@@ -57,7 +57,7 @@ class Acteur extends AppModel
 	function generateListElus() {
 		$generateListElus = array();
 
-		$acteurs = $this->findAll('typeacteur.elu=1', 'id, nom, prenom', 'position ASC');
+		$acteurs = $this->findAll('Typeacteur.elu=1', 'id, nom, prenom', 'position ASC');
 		foreach($acteurs as $acteur) {
 			$generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
 		}
@@ -80,7 +80,7 @@ class Acteur extends AppModel
 	/* retourne l'id du premier acteur élu associé à la délégation $serviceId */
 	/* retourne null si non trouvé                                            */
 	function selectActeurEluIdParDelegationId($delegationId) {
-		$users = $this->findAll('typeacteur.elu=1', 'id', 'position ASC');
+		$users = $this->findAll('Typeacteur.elu=1', 'id', 'position ASC');
 		foreach($users as $user) {
 			foreach($user['Service'] as $service) {
 				if ($service['id'] == $delegationId) return $user['Acteur']['id'];
@@ -93,7 +93,7 @@ class Acteur extends AppModel
 	/* pour rester compatible avec le plus grand nombre de bd, on ne passe pas de requête */
 	/* mais on fait le calcul en php */
 	function getPostionMaxParTypeActeurId($typeActeurId) {
-		$acteur = $this->findAll("typeacteur.id=$typeActeurId", 'position', 'position DESC', 1);
+		$acteur = $this->findAll("Typeacteur.id=$typeActeurId", 'position', 'position DESC', 1);
 		return empty($acteur) ? 0 : $acteur[0]['Acteur']['position'];
 	}
 
@@ -101,7 +101,7 @@ class Acteur extends AppModel
 	/* pour rester compatible avec le plus grand nombre de bd, on ne passe pas de requête */
 	/* mais on fait le calcul en php */
 	function getPostionMaxParActeursElus() {
-		$acteur = $this->findAll('typeacteur.elu=1', 'position', 'position DESC', 1);
+		$acteur = $this->findAll('Typeacteur.elu=1', 'position', 'position DESC', 1);
 		return empty($acteur) ? 0 : $acteur[0]['Acteur']['position'];
 	}
 
