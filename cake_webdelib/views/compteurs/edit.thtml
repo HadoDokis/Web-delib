@@ -1,9 +1,14 @@
 <?php echo $javascript->link('compteurs.js'); ?>
 
-<h2>Modification d'un compteur param&eacute;trable</h2>
+<?php
+	if($html->tagValue('Compteur/id'))
+		echo "<h2>Modification d'un compteur param&eacute;trable</h2>";
+	else
+		echo "<h2>Ajout d'un compteur param&eacute;trable</h2>";
+?>
 
 <form
-	action="<?php echo $html->url('/compteurs/edit/'.$html->tagValue('Compteur/id')); ?>"
+	action="<?php echo $html->url('/compteurs/'.($html->tagValue('Compteur/id') ? ('edit/'.$html->tagValue('Compteur/id')) : 'add')); ?>"
 	method="post"
 	id = "form_compteur"
 >
@@ -12,12 +17,12 @@
 	<?php echo $form->labelTag('Compteur/nom', 'Nom <acronym title="obligatoire">(*)</acronym>');?>
  	<?php echo $html->input('Compteur/nom', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Compteur/nom', 'Entrer un nom pour le compteur');?>
+	<?php echo $html->tagErrorMsg('Compteur/unique_nom', 'Entrer un autre nom, celui-ci est d&eacute;j&agrave; utilis&eacute;.'); ?> <br />
 </div>
 <br/>
 <div class="required">
 	<?php echo $form->labelTag('Compteur/commentaire', 'Commentaire');?>
  	<?php echo $html->input('Compteur/commentaire', array('size' => '100'));?>
-	<?php echo $html->tagErrorMsg('Compteur/commentaire', 'Entrer un commentaire pour le compteur');?>
 </div>
 <br/>
 <div class="required">
@@ -61,11 +66,21 @@
 </select>
 </div>
 
+<br>
+<div class="required">
+	<?php echo $form->labelTag('Compteur/sequence_id', 'S&eacute;quence <acronym title="obligatoire">(*)</acronym>');?>
+ 	<?php echo $html->selectTag('Compteur/sequence_id', $sequences, null, array(), null, (count($sequences)>1));?>
+	<?php echo $html->tagErrorMsg('Compteur/sequence_id', 'Selectionner une s&eacute;quence');?>
+</div>
+
+<br>
+
 
 <br/><br/><br/><br/><br/>
 <div class="submit">
+	<?php echo $html->hidden('Compteur/id')?>
 	<?php echo $html->submit('Sauvegarder', array('class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-	<?php echo $html->link('Annuler', '/compteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php echo $html->link('Annuler', '/pages/compteurs_sequences', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 
 </form>
