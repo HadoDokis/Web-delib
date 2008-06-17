@@ -10,6 +10,7 @@ class GedoooComponent extends Object {
 	 * la fonction va retourner le path ou gedooo pourra aller chercher le fichier
 	 */
 	function createFile ($path, $name, $content) {
+			$this->checkPath($path);
             if (file_exists($path.$name))
                 unlink($path.$name);
 
@@ -35,7 +36,7 @@ class GedoooComponent extends Object {
     function sendFiles ($fileModel, $fileData, $retour = 1) {
 	if ($retour == 0)
 	    $retour = 'pdf';
-	else 
+	else
 	   $retour = 'odt';
 
 	$data = array('Format' => $retour,
@@ -52,17 +53,17 @@ class GedoooComponent extends Object {
         curl_exec($ch);
         $return = curl_multi_getcontent  ($ch);
         curl_close($ch);
-        
+
         header('Content-type: application/pdf');
         header('Content-Length: '.strlen($return));
         header('Content-Disposition: attachment; filename=retour.'.$retour);
         die($return);
     }
-  
+
     function checkPath($path) {
 	if (!is_dir($path))
 	   return (mkdir($path, 0770, true));
-	else 
+	else
             return true;
     }
 
