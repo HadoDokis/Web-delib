@@ -5,16 +5,43 @@
 <tr>
 	<th>Libelle</th>
 	<th>Nb jours avant retard</th>
+	<th>Action</th>
+	<th>Compteur</th>
+	<th>Models</th>
+	<th>Convocations</th>
 	<th>Actions</th>
 </tr>
 <?php foreach ($typeseances as $typeseance): ?>
 <tr>
 	<td><?php echo $typeseance['Typeseance']['libelle']; ?></td>
 	<td><?php echo $typeseance['Typeseance']['retard']; ?></td>
+	<td><?php echo $this->controller->Typeseance->libelleAction($typeseance['Typeseance']['action'], true); ?></td>
+	<td><?php echo $typeseance['Compteur']['nom']; ?></td>
+	<td><?php
+		echo 'convocation : ' . $typeseance['Modelconvocation']['libelle'] . '<br/>';
+		echo 'orde du jour : ' . $typeseance['Modelordredujour']['libelle'] . '<br/>';
+		echo 'PV sommaire : ' . $typeseance['Modelpvsommaire']['libelle'] . '<br/>';
+		echo 'PV détaillé : ' . $typeseance['Modelpvdetaille']['libelle'] . '<br/>';
+	?></td>
+	<td><?
+		if (!empty($typeseance['Typeacteur'])) {
+			echo 'Types d\'acteur :<br/>';
+			foreach ($typeseance['Typeacteur'] as $typeacteur)
+				echo '&nbsp;&nbsp;'.$typeacteur['nom'].'<br/>';
+		}
+		if (!empty($typeseance['Acteur'])) {
+			echo 'Acteurs :<br/>';
+			foreach ($typeseance['Acteur'] as $acteur)
+				echo '&nbsp;'.$acteur['prenom'].' '.$acteur['nom'].'<br/>';
+		}
+	?></td>
 	<td class="actions">
-		<?php echo $html->link('&shy;','/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
-		<?php echo $html->link('&shy;','/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
-		<?php echo $html->link('&shy;','/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?', false)?>
+	<?php
+		echo $html->link('&shy;','/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false);
+		echo $html->link('&shy;','/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
+	    if ($this->controller->_isDeletable($typeseance, $message))
+			echo $html->link('&shy;','/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?', false);
+	?>
 	</td>
 </tr>
 <?php endforeach; ?>
