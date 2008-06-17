@@ -166,6 +166,25 @@ class MenuHelper extends Helper {
 		return $menu[$key] ? $menu[$key] : $default;
 	}
 
+	function linkBarre($linkItems = array(), $baliseSep = 'td') {
+		$menuBarreHtml = '';
+		foreach($linkItems as $linkItem) {
+			$title = $this->_getArrayValue($linkItem, 'title');
+			$url = $this->_getArrayValue($linkItem, 'url');
+			$htmlAttributes = array_key_exists('htmlAttributes', $linkItem) ? $linkItem['htmlAttributes'] : '';
+			$confirmMessage = $this->_getArrayValue($linkItem, 'confirmMessage');
+			if (array_key_exists('escapeTitle', $linkItem)) {
+				$escapeTitle  =  $this->_getArrayValue($linkItem, 'escapeTitle', false);
+			} else $escapeTitle = true;
+
+			$menuBarreHtml .= "<$baliseSep>";
+			if (!empty($title) && !empty($url) && !empty($htmlAttributes))
+				$menuBarreHtml .= $this->Html->link($title, $url, $htmlAttributes, $confirmMessage);;
+			$menuBarreHtml .= "</$baliseSep>";
+		}
+		return $menuBarreHtml;
+	}
+
 }
 
 ?>
