@@ -8,7 +8,7 @@ CREATE TABLE `typeacteurs` (
   `id` int(11) NOT NULL auto_increment,
   `nom` varchar(255) NOT NULL,
   `commentaire` varchar(255) NOT NULL,
-  `elus` tinyint(1) NOT NULL,
+  `elu` tinyint(1) NOT NULL,
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL,
   PRIMARY KEY  (`id`),
