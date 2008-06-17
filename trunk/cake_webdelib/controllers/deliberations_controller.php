@@ -11,7 +11,7 @@ class DeliberationsController extends AppController {
  */
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote','SeancesUser', 'Listepresence');
+	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence');
 	var $components = array('Gedooo','Date','Utils','Email','Acl');
 
 	// Gestion des droits
@@ -61,24 +61,12 @@ class DeliberationsController extends AppController {
 		    $balises .= $this->Gedooo->CreerBalise('nom_rapporteur', $data['Rapporteur']['prenom'], 'string');
 		    $balises .= $this->Gedooo->CreerBalise('titre_rapporteur', $data['Rapporteur']['titre'], 'string');
 		    $balises .= $this->Gedooo->CreerBalise('email_rapporteur', $data['Rapporteur']['email'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('adresse_rapporteur', $data['Rapporteur']['adresse'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('cp_rapporteur', $data['Rapporteur']['CP'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('ville_rapporteur', $data['Rapporteur']['ville'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('tel_dom_rapporteur', $data['Rapporteur']['teldom'], 'string');
 	        $balises .= $this->Gedooo->CreerBalise('tel_mob_rapporteur', $data['Rapporteur']['telmobile'], 'string');
-			$balises .= $this->Gedooo->CreerBalise('date_naissance_rapporteur', $data['Rapporteur']['date_naissance'], 'string');
-	        // Informations sur le rédacteur
+		   // Informations sur le rédacteur
 		    $balises  = $this->Gedooo->CreerBalise('prenom_redacteur', $data['Redacteur']['nom'], 'string');
 		    $balises .= $this->Gedooo->CreerBalise('nom_redacteur', $data['Redacteur']['prenom'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('titre_redacteur', $data['Redacteur']['titre'], 'string');
 		    $balises .= $this->Gedooo->CreerBalise('email_redacteur', $data['Redacteur']['email'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('adresse_redacteur', $data['Redacteur']['adresse'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('cp_redacteur', $data['Redacteur']['CP'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('ville_redacteur', $data['Redacteur']['ville'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('tel_dom_redacteur', $data['Redacteur']['teldom'], 'string');
-	        $balises .= $this->Gedooo->CreerBalise('tel_mob_redacteur', $data['Redacteur']['telmobile'], 'string');
-			$balises .= $this->Gedooo->CreerBalise('date_naissance_redacteur', $data['Redacteur']['date_naissance'], 'string');
-	 		// Informations sur la délibération
+			// Informations sur la délibération
 		    $balises .= $this->Gedooo->CreerBalise('titre_projet', $data['Deliberation']['titre'], 'string');
 		    $balises .= $this->Gedooo->CreerBalise('objet_projet', $data['Deliberation']['objet'], 'string');
 		    $balises .= $this->Gedooo->CreerBalise('position_projet', $data['Deliberation']['position'], 'string');
@@ -111,6 +99,9 @@ class DeliberationsController extends AppController {
 			$balises .= $this->Gedooo->CreerBalise('identifiant_seance', $data['Deliberation']['seance_id'], 'string');
 	 		if (isset($data['Seance']['date']))
 		        $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
+
+			debug($this->getListPresent($delib_id));
+			exit;
 
 		    // création du fichier XML
 		    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
