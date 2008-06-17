@@ -4,7 +4,7 @@ class ModelsController extends AppController {
 	var $name = 'Models';
 	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur');
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $components = array('Date','Utils','Email', 'Acl', '');
+	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
 	// Gestion des droits
 	var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel');
