@@ -60,6 +60,7 @@ $webDelib = array(
 					'Utilisateurs' => array('link' => '/users/index'),
 					'Profils' => array('link' => '/profils/index'),
 					'Droits' => array('link' => '/droits/edit'),
+					'Acteurs' => array('link' => 'acteurs_typeacteurs'),
 					'Circuits' => array('link' => '/circuits/index'),
 					'Services' => array('link' => '/services/index'),
 					'Thèmes' => array('link' => '/themes/index'),
@@ -67,7 +68,7 @@ $webDelib = array(
 					'Collectivité' => array('link' => '/collectivites/index'),
 					'Générations' => array('link' => '/models/index'),
 					'Localisations' => array('link' => '/localisations/index'),
-					'Compteurs' => array('link' => '/compteurs/index')
+					'Compteurs' => array('link' => 'compteurs_sequences')
 					)
 				)
 			)
