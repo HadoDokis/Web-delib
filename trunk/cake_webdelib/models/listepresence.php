@@ -12,9 +12,9 @@ class Listepresence extends AppModel {
 						'order' => '',
 						'counterCache' => ''
 				),
-			'User' =>
-				array('className' => 'User',
-						'foreignKey' => 'user_id',
+			'Acteur' =>
+				array('className' => 'Acteur',
+						'foreignKey' => 'acteur_id',
 						'conditions' => '',
 						'fields' => '',
 						'order' => '',
