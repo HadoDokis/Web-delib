@@ -3,114 +3,73 @@ class UsersController extends AppController {
 
 	var $name = 'Users';
 	var $helpers = array('Html', 'Form', 'Html2' );
-	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'Profil');
+	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'Profil', 'Deliberation');
 	var $components = array('Utils', 'Acl', 'Menu');
 
 	// Gestion des droits
-	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view', 'getQuorum',  'getNbElu');
+	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view');
 	var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'Users:index', 'changeMdp'=>'Users:index');
 
 	function index() {
-		$this->params['data']= $this->User->findAll();
-		$data=$this->params['data'];
-		for ($i=0; $i<count($data); $i++) {
-			$data[$i]['User']['created']=$this->Utils->mysql_DateTime($data[$i]['User']['created']);
-			$data[$i]['User']['modified']=$this->Utils->mysql_DateTime($data[$i]['User']['modified']);
-		}
-		$this->set('users', $data);
+		$this->set('users', $this->User->findAll());
 	}
 
 	function view($id = null) {
-		if (!$id) {
+		$user = $this->User->read(null, $id);
+		if (!$user) {
 			$this->Session->setFlash('Invalide id pour l\'utilisateur.');
 			$this->redirect('/users/index');
-		}
-		$this->set('user', $this->User->read(null, $id));
+		} else
+			$this->set('user', $user);
 	}
 
 	function add() {
-		if (empty($this->data)) {
-			$this->set('services', $this->User->Service->generateList());
-			$this->set('selectedServices', null);
-			$this->set('circuits', $this->User->Circuit->generateList());
-			$this->set('selectedCircuits', null);
-			$this->set('profils', $this->User->Profil->generateList());
-			$this->set('selectedProfils', null);
-			$this->set('notif',array('1'=>'oui','0'=>'non'));
+		// Initialisation
+		$sortie = false;
 
-		} else {
-			$this->data['User']['password']=md5($this->data['User']['password']);
-			$this->cleanUpFields('User');
-
-			if ($this->User->isUnique('login', $this->data['User']['login'],$user_id='null') && $this->User->save($this->data)) {
-				$this->Session->setFlash('L\'utilisateur a &eacute;t&eacute; sauvegard&eacute;');
+		if (empty($this->data))
+			// Initialisation des données
+			$this->data['User']['accept_notif'] = 0;
+		else {
+			$this->cleanUpFields();
+			if ($this->User->save($this->data)) {
+				// Ajout de l'utilisateur dans la table aros
 				$user_id = $this->User->getLastInsertId();
 				$aro = new Aro();
 				$aro->create( $user_id, null, 'Utilisateur:'.$this->data['User']['login']);
-				// Traitement du profil
+				// Rattachement au profil
 				if(!empty($this->data['User']['profil_id'])) {
 					$profilLibelle = $this->Profil->field('libelle', 'Profil.id = '.$this->data['User']['profil_id']);
 					$aro->setParent('Profil:'.$profilLibelle, $user_id);
 				}
-				$this->redirect('/users/index');
-			} else {
-
+				$this->Session->setFlash('L\'utilisateur \''.$this->data['User']['login'].'\' a &eacute;t&eacute; ajout&eacute;');
+				$sortie = true;
+			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				//$this->set('statut',array('0'=>'agent', '1'=>'elu'));
-				$this->set('notif',array('1'=>'oui','0'=>'non'));
-				$this->set('services', $this->User->Service->generateList());
-				if (empty($this->data['Service']['Service'])) {
-				    $this->data['Service']['Service'] = null;
-				}
-				$this->set('selectedServices', $this->data['Service']['Service']);
-				$this->set('circuits', $this->User->Circuit->generateList());
-				if (empty($this->data['Circuit']['Circuit'])) {
-				    $this->data['Circuit']['Circuit'] = null;
-				}
-				$this->set('selectedCircuits', $this->data['Circuit']['Circuit']);
-				$this->set('profils', $this->User->Profil->generateList());
-				if (empty($this->data['Profil']['Profil'])) {
-					$this->data['Profil']['Profil'] = null;
-				}
-				$this->set('selectedProfils', $this->data['Profil']['Profil']);
-				$this->data['User']['password']=null;
-			}
+		}
+		if ($sortie)
+			$this->redirect('/users/index');
+		else {
+			$this->set('services', $this->User->Service->generateList());
+			$this->set('selectedServices', null);
+			$this->set('profils', $this->User->Profil->generateList());
+			$this->set('notif', array('1'=>'oui','0'=>'non'));
+			$this->render('edit');
 		}
 	}
 
 	function edit($id = null) {
+		$sortie = false;
 		if (empty($this->data)) {
-			if (!$id) {
-				$this->Session->setFlash('Invalide id pour l\'utilisateur');
-				$this->redirect('/users/index');
-			}
 			$this->data = $this->User->read(null, $id);
-			$this->set('notif',array('1'=>'oui','0'=>'non'));
-			$this->set('services', $this->User->Service->generateList());
-
-			if (empty($this->data['Service'])) {
-				$this->data['Service'] = null;
-				$this->set('selectedServices', $this->data['ServiceElu']['id']);
-			}else{
-				$this->data['ServiceElu'] = null;
+			if (empty($this->data)) {
+				$this->Session->setFlash('Invalide id pour l\'utilisateur');
+				$sortie = true;
+			} else
 				$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
-			}
-			$this->set('profils', $this->User->Profil->generateList());
-			if (empty($this->data['Profil'])) {
-				$this->data['Profil'] = null;
-			}
-			//$this->set('selectedProfils', $this->_selectedArray($this->data['Profil']));
-
 		} else {
-			if ($this->data['User']['statut']=='0'){
-				$this->data['User']['service_id']=null;
-			}else{
-				$this->data['Service']['Service']=array();
-			}
-			$this->cleanUpFields('User');
-
-			if ($this->User->isUnique('login', $this->data['User']['login'],$id) && $this->User->save($this->data)) {
-
+			$this->cleanUpFields();
+			if ($this->User->save($this->data)) {
 				// Traitement du profil
 				$aro = new Aro();
 				if(!empty($this->data['User']['profil_id'])) {
@@ -120,37 +79,53 @@ class UsersController extends AppController {
 					$aro->setParent('', $id);
 				}
 
-				$this->Session->setFlash('L\'utilisateur a &eacute;t&eacute; modifi&eacute;');
-				$this->redirect('/users/index');
+				$this->Session->setFlash('L\'utilisateur \''.$this->data['User']['login'].'\' a &eacute;t&eacute; modifi&eacute;');
+				$sortie = true;
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-
-				$this->set('services', $this->User->Service->generateList());
-				if (empty($this->data['Service']['Service'])) { $this->data['Service']['Service'] = null; }
 				$this->set('selectedServices', $this->data['Service']['Service']);
-				$this->set('circuits', $this->User->Circuit->generateList());
-				if (empty($this->data['Circuit']['Circuit'])) { $this->data['Circuit']['Circuit'] = null; }
-				$this->set('selectedCircuits', $this->data['Circuit']['Circuit']);
-				$this->set('profils', $this->User->Profil->generateList());
-				if (empty($this->data['Profil']['Profil'])) { $this->data['Profil']['Profil'] = null; }
-				$this->set('selectedProfils', $this->data['Profil']['Profil']);
 			}
+		}
+		if ($sortie)
+			$this->redirect('/users/index');
+		else {
+			$this->set('services', $this->User->Service->generateList());
+			$this->set('profils', $this->User->Profil->generateList());
+			$this->set('notif',array('1'=>'oui','0'=>'non'));
 		}
 	}
 
+/* dans le controleur car utilisé dans la vue index pour l'affichage */
+	function _isDeletable($user, &$message) {
+		if ($user['User']['id'] == 1) {
+			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est protégé';
+			return false;
+		} elseif ($user['User']['id'] == $this->Session->read('user.User.id')) {
+			$message = 'L\'utilisateur courant \''.$user['User']['login'].'\' ne peut pas être supprimé';
+			return false;
+		} elseif (!empty($user['Circuit'])) {
+			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est présent dans un circuit de validation';
+			return false;
+		} elseif ($this->Deliberation->findCount(array('redacteur_id'=>$user['User']['id']))) {
+			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est l\'auteur de délibérations';
+			return false;
+		}
+		return true;
+	}
+
 	function delete($id = null) {
-		if (!$id) {
+		$messageErreur = '';
+		$user = $this->User->read('id, login', $id);
+		if (empty($user))
 			$this->Session->setFlash('Invalide id pour l\'utilisateur');
-			$this->redirect('/users/index');
-		}
-		if ($id != 1) {
+		elseif (!$this->_isDeletable($user, $messageErreur)) {
+			$this->Session->setFlash($messageErreur);
+		} elseif ($this->User->del($id)) {
 			$aro = new Aro();
-			$aro -> delete($id);
-		    if ($this->User->del($id)) {
-			    $this->Session->setFlash('L\'utilisateur a &eacute;t&eacute; supprim&eacute;');
-			    $this->redirect('/users/index');
-		    }
+			$aro->delete($id);
+			$this->Session->setFlash('L\'utilisateur \''.$user['User']['login'].'\' a &eacute;t&eacute; supprim&eacute;');
 		}
+	    $this->redirect('/users/index');
 	}
 
     function getNom ($id) {
@@ -259,32 +234,26 @@ class UsersController extends AppController {
 	}
 
 	function changeMdp($id) {
-	    if ($id == null) {
-	    	$user = $this->Session->read('user');
-	        $id = $user['User']['id'];
-	    }
-		$this->set ('id', $id);
-		$this->set('nom', $this->getNom($id));
-	    $this->set('prenom', $this->getPrenom($id));
-
-		if (!empty($this->data)) {
-			$newMdp = $this->data['User']['password'];
-            $this->data = $this->User->read(null, $id);
-            $this->data['User']['id']=$id;
-            $this->data['User']['password'] = md5($newMdp);
-            if ($this->User->save($this->data))
-                $this->redirect('/users/index');
+		if (empty($this->data)) {
+			$this->data = $this->User->read(null, $id);
+			if (empty($this->data)) {
+				$this->Session->setFlash('Invalide id pour l\'utilisateur');
+				$this->redirect('/users/index');
+			} else
+				$this->data['User']['password'] = '';
+		} else {
+			$user = $this->User->read(null, $id);
+			$user['User']['password'] = $this->data['User']['password'];
+			$user['User']['password2'] = $this->data['User']['password2'];
+			$this->cleanUpFields();
+			if ($this->User->save($user)) {
+				$this->Session->setFlash('Le mot de passe de l\'utilisateur \''.$user['User']['login'].'\' a &eacute;t&eacute; modifi&eacute;');
+				$this->redirect('/users/index');
+			} else
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 		}
 	}
 
-	function getNbElu() {
-	    $data = $this->User->findAll("User.statut = 1");
-		return count($data);
-	}
-
-	function getQuorum(){
-		return ($this->getNbElu() / 2);
-	}
 }
 
 ?>
