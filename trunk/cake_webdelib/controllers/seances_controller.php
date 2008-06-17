@@ -329,7 +329,7 @@ class SeancesController extends AppController {
 				$this->requestAction("/models/listeProjets/$id/0"),
 				$this->requestAction("/models/listeProjets/$id/1")
 	        );
-	        $generation = str_replace($search,$replace,$model[0]['Model']['texte']);
+	        $generation = str_replace($search,$replace,$model[0]['Model']['content']);
 	        $pdf->WriteHTML($generation);
 		    $emailPdf->WriteHTML($generation);
 
@@ -402,7 +402,7 @@ class SeancesController extends AppController {
 			$this->requestAction("/models/listeProjets/$id/0"),
 			$this->requestAction("/models/listeProjets/$id/1")
 		);
-		$generation = str_replace($search,$replace,$model[1]['Model']['texte']);
+		$generation = str_replace($search,$replace,$model[1]['Model']['content']);
 		$pdf->WriteHTML($generation);
 
         foreach($projets as $projet) {
