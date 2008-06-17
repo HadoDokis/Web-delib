@@ -106,7 +106,7 @@ class Typeseance extends AppModel {
 		$condIn = ($inTypeacteur ? 'acteur.typeacteur_id in ('.$inTypeacteur.')' : '').
 				(($inTypeacteur && $inId) ? ' or ' : '').
 				($inId ? 'acteur.id in ('.$inId.')' : '');
-		$condElu = isset($elu) ? ('typeacteur.elu=' . ($elu ? '1':'0')) : '';
+		$condElu = isset($elu) ? ('Typeacteur.elu=' . ($elu ? '1':'0')) : '';
 		$condition = ($condElu ? '(':'') . $condIn . ($condElu ? ') and ':'') . $condElu;
 
 		return $this->Acteur->findAll($condition, null, 'acteur.position, acteur.nom ASC', null, 1, 0);
