@@ -34,59 +34,89 @@ class DeliberationsController extends AppController {
 		$this->Deliberation->recursive = 0;
 		$this->set('deliberations', $this->Deliberation->findAll(null,null, 'Seance.date'));
 	}
- 
-        function generer ($delib_id, $model_id, $editable=null){
-            if (GENERER_DOC_SIMPLE==false){
-                $nameTP = $this->getField($delib_id, 'texte_projet_name');
-                $nameTD = $this->getField($delib_id, 'deliberation_name');
-                $nameNS = $this->getField($delib_id, 'texte_synthese_name');
+
+    function generer ($delib_id, $model_id, $editable=null){
+            // Préparation des répertoires pour la création des fichiers
+            $dyn_path = "/files/generee/$delib_id/";
+            $path = WEBROOT_PATH.$dyn_path;
+	  		if (!$this->Gedooo->checkPath($path))
+                die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+
+            //Création du model ott
+            $content = $this->requestAction("/models/getModel/$model_id");
+            $model = $this->Gedooo->createFile($path,'model_'.$model_id, $content);
+			//*****************************************
+	        //* Création du fichier XML de données    *
+  			//*****************************************
+  			// Informations sur la collectivité
+  			$data = $this->Collectivite->read(null, 1);
+  			$balises  = $this->Gedooo->CreerBalise('nom_collectivite', $data['Collectivite']['nom'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('adresse_collectivite', $data['Collectivite']['adresse'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('cp_collectivite', $data['Collectivite']['CP'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('ville_collectivite', $data['Collectivite']['ville'], 'string');
+  			$balises .= $this->Gedooo->CreerBalise('telephone_collectivite', $data['Collectivite']['telephone'], 'string');
+		    $data = $this->Deliberation->read(null, $delib_id);
+		    // Informations sur le rapporteur
+		    $balises .= $this->Gedooo->CreerBalise('prenom_rapporteur', $data['Rapporteur']['nom'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('nom_rapporteur', $data['Rapporteur']['prenom'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('titre_rapporteur', $data['Rapporteur']['titre'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('email_rapporteur', $data['Rapporteur']['email'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('adresse_rapporteur', $data['Rapporteur']['adresse'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('cp_rapporteur', $data['Rapporteur']['CP'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('ville_rapporteur', $data['Rapporteur']['ville'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('tel_dom_rapporteur', $data['Rapporteur']['teldom'], 'string');
+	        $balises .= $this->Gedooo->CreerBalise('tel_mob_rapporteur', $data['Rapporteur']['telmobile'], 'string');
+			$balises .= $this->Gedooo->CreerBalise('date_naissance_rapporteur', $data['Rapporteur']['date_naissance'], 'string');
+	        // Informations sur le rédacteur
+		    $balises  = $this->Gedooo->CreerBalise('prenom_redacteur', $data['Redacteur']['nom'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('nom_redacteur', $data['Redacteur']['prenom'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('titre_redacteur', $data['Redacteur']['titre'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('email_redacteur', $data['Redacteur']['email'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('adresse_redacteur', $data['Redacteur']['adresse'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('cp_redacteur', $data['Redacteur']['CP'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('ville_redacteur', $data['Redacteur']['ville'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('tel_dom_redacteur', $data['Redacteur']['teldom'], 'string');
+	        $balises .= $this->Gedooo->CreerBalise('tel_mob_redacteur', $data['Redacteur']['telmobile'], 'string');
+			$balises .= $this->Gedooo->CreerBalise('date_naissance_redacteur', $data['Redacteur']['date_naissance'], 'string');
+	 		// Informations sur la délibération
+		    $balises .= $this->Gedooo->CreerBalise('titre_projet', $data['Deliberation']['titre'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('objet_projet', $data['Deliberation']['objet'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('position_projet', $data['Deliberation']['position'], 'string');
+		    $balises .= $this->Gedooo->CreerBalise('identifiant_projet', $data['Deliberation']['id'], 'string');
+			if (GENERER_DOC_SIMPLE==false){
+                $nameTP = $data['Deliberation']['texte_projet_name'];
+                $nameTD = $data['Deliberation']['deliberation_name'];
+                $nameNS = $data['Deliberation']['texte_synthese_name'];
             }
             else {
                 $nameTP = 'texte_projet.html';
                 $nameTD = 'texte_delib.html';
                 $nameNS = 'note_service.html';
+                $nameDebat =  'debat.html';
             }
-          
-            $dyn_path = "/files/generee/$delib_id/"; 
-            $path = WEBROOT_PATH.$dyn_path;
-	    if (!$this->Gedooo->checkPath($path))
-                die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-            
-            //Création du fichier texte_projet
-            $content = $this->getField($delib_id, 'texte_projet');
-            $this->Gedooo->createFile($path, $nameTP, $content);
-
+		     //Création du fichier texte_projet
+            $this->Gedooo->createFile($path, $nameTP, $data['Deliberation']['texte_projet']);
+            $balises .= $this->Gedooo->CreerBalise('texte_projet', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameTP, 'content');
             //Création du fichier note de synthèse
-            $content = $this->getField($delib_id, 'texte_synthese');
-            $this->Gedooo->createFile($path, $nameNS, $content);
-            
-            //Création du fichier texte de déliberation
-            $content = $this->getField($delib_id, 'deliberation');
-            $this->Gedooo->createFile($path, $nameTD, $content);
-            
-            //Création du model ott
-            $content = $this->requestAction("/models/getModel/$model_id");
-            $model = $this->Gedooo->createFile($path,'model_'.$model_id, $content);
-            
-            // Création du fichier XML de données
-	    $data = $this->Deliberation->read(null, $delib_id); 
-	    $balises  = $this->Gedooo->CreerBalise('prenom_rapporteur', $data['Rapporteur']['nom'], 'string'); 
-	    $balises .= $this->Gedooo->CreerBalise('nom_rapporteur', $data['Rapporteur']['prenom'], 'string'); 
-	    $balises .= $this->Gedooo->CreerBalise('titre_rapporteur', $data['Rapporteur']['titre'], 'string'); 
-	    $balises .= $this->Gedooo->CreerBalise('service_rapporteur', $data['Service']['libelle'], 'string'); 
-	    $balises .= $this->Gedooo->CreerBalise('titre_projet', $data['Deliberation']['titre'], 'string'); 
-	    if (isset($data['Seance']['date']))
-	        $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date'); 
-	    $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string'); 
-	    $balises .= $this->Gedooo->CreerBalise('texte_projet', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameTP, 'content');
+            $this->Gedooo->createFile($path, $nameNS, $data['Deliberation']['texte_synthese']);
             $balises .= $this->Gedooo->CreerBalise('NoteSynthese', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameNS, 'content');
+            //Création du fichier texte de déliberation
+            $this->Gedooo->createFile($path, $nameTD,  $data['Deliberation']['deliberation']);
             $balises .= $this->Gedooo->CreerBalise('TexteDeliberation', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameTD, 'content');
-            
-	    // création du fichier XML
-	    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
-            
-            // Envoi du fichier à GEDOOo
-            $this->Gedooo->sendFiles($model, $datas, $editable);
+            //Création du fichier texte du débat
+            $this->Gedooo->createFile($path, $nameTD, $data['Deliberation']['debat']);
+		    $balises .= $this->Gedooo->CreerBalise('CommentaireDeliberation', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameDebat, 'content');
+			// Informations sur la séance
+		    $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
+			$balises .= $this->Gedooo->CreerBalise('identifiant_seance', $data['Deliberation']['seance_id'], 'string');
+	 		if (isset($data['Seance']['date']))
+		        $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
+
+		    // création du fichier XML
+		    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
+
+	            // Envoi du fichier à GEDOOo
+	            $this->Gedooo->sendFiles($model, $datas, $editable);
         }
 
 	function listerMesProjets() {
