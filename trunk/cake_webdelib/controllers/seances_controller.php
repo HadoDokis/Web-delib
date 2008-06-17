@@ -4,7 +4,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $components = array('Date','Email');
-	var $uses = array('Deliberation','Seance','User','SeancesUser', 'Collectivite', 'Listepresence', 'Vote','Model','Annex');
+	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex');
 	var $cacheAction = 0;
 
 	// Gestion des droits
@@ -223,7 +223,8 @@ class SeancesController extends AppController {
 				$deliberations[$i]['rapp_id'] = $this->requestAction("deliberations/getRapporteur/".$deliberations[$i]['Deliberation']['id']);
 			}
 			$this->set('seance_id', $id);
-			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
+//			$this->set('rapporteurs', $this->Deliberation->User->generateList('statut=1'));
+			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
 			$this->set('projets', $deliberations);
 			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($id))));
 		}
@@ -258,86 +259,73 @@ class SeancesController extends AppController {
         return $this->Seance->findAll($condition);
     }
 
-	function addListUsers($seance_id=null) {
-		if (empty($this->data)) {
-			$this->data=$this->Seance->read(null,$seance_id);
-			$this->set('seance_id',$seance_id);
-			$this->set('users', $this->User->generateList('statut=1'));
-			if (empty($this->data['SeancesUser'])) {
-				$this->data['SeancesUser'] = null;
-			}
-			$this->set('selectedUsers', $this->_selectedArray($this->data['SeancesUser'],'user_id'));
-			$this->render();
-		} else {
+	function generateConvocationList ($id_seance=null) {
+		$seance = $this->Seance->read(null, $id_seance);
+		$acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+		$model = $this->Model->read(null, $seance['Typeseance']['modelconvocation_id']);
+		$jour = $this->Date->days[intval(date('w'))];
+		$mois = $this->Date->months[intval(date('m'))];
+		$collectivite = $this->Collectivite->findAll();
+		$date_seance = $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
 
-			$this->EffacerListe($this->data['Seance']['id']);
-
-			foreach($this->data['User']['id']as $user_id) {
-				$this->params['data']['SeancesUser']['id']='';
-			    $this->params['data']['SeancesUser']['seance_id'] = $this->data['Seance']['id'];
-			    $this->params['data']['SeancesUser']['user_id'] = $user_id ;
-
-			    if ($this->SeancesUser->save($this->params['data']))
-			    {
-			    	$this->redirect('/seances/listerFuturesSeances');
-			    }else
-			    {
-			    	$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
-			    	$this->set('seance_id',$seance_id);
-					$this->set('users', $this->User->generateList());
-					$this->set('selectedUsers',null);
-			    }
-
-			}
-		}
-	}
-
-	function effacerListe($seance_id=null) {
-		$condition = "seance_id = $seance_id";
-		$presents = $this->SeancesUser->findAll($condition);
-		foreach($presents as $present)
-  		    $this->SeancesUser->del($present['SeancesUser']['id']);
-	}
-
-	function generateConvocationList ($id=null) {
-		$data =  $this->User->findAll("statut =1");
-		$type_infos = $this->getType($id);
-		$model=$this->Model->findAll();
-		$projets= $this->afficherProjets($id, 1);
-		$jour= $this->Date->days[intval(date('w'))];
-		$mois= $this->Date->months[intval(date('m'))];
-		$collectivite= $this->Collectivite->findAll();
-		$date_seance= $this->Date->frenchDateConvocation(strtotime($type_infos[0]['Seance']['date']));
+        $search = array(
+			"#LOGO_COLLECTIVITE#",
+			"#NOM_COLLECTIVITE#",
+			"#ADRESSE_COLLECTIVITE#",
+			"#CP_COLLECTIVITE#",
+			"#VILLE_COLLECTIVITE#",
+			"#TELEPHONE_COLLECTIVITE#",
+			"#NOM_ACTEUR#",
+			"#PRENOM_ACTEUR#",
+			"#SALUTATION_ACTEUR#",
+			"#TITRE_ACTEUR#",
+			"#ADRESSE1_ACTEUR#",
+			"#ADRESSE2_ACTEUR#",
+			"#CP_ACTEUR#",
+			"#VILLE_ACTEUR#",
+			"#DATE_DU_JOUR#",
+			"#TYPE_SEANCE#",
+			"#DATE_SEANCE#",
+			"#LISTE_PROJETS_SOMMAIRES#",
+			"#LISTE_PROJETS_DETAILLES#"
+		);
 
 	    vendor('fpdf/html2fpdf');
 	    $pdf = new HTML2FPDF();
-        foreach($data as $seanceUser) {
+        foreach($acteursConvoques as $acteur) {
             $pdf->AddPage();
 		    $emailPdf = new HTML2FPDF();
 		    $emailPdf->AddPage();
-	        $search = array("#LOGO_COLLECTIVITE#","#ADRESSE_COLLECTIVITE#","#NOM_ELU#","#ADRESSE_ELU#","#VILLE_ELU#","#VILLE_COLLECTIVITE#","#DATE_DU_JOUR#","#TYPE_SEANCE#","#DATE_SEANCE#","#LIEU_SEANCE#","#LISTE_PROJETS_SOMMAIRES#", "#LISTE_PROJETS_DETAILLES#");
-	        $replace = array('<img src="files/image/logo.jpg">',
-		        $collectivite[0]['Collectivite']['nom'].'<br>'.$collectivite[0]['Collectivite']['adresse'].'<br>'.$collectivite[0]['Collectivite']['CP'].' '.$collectivite[0]['Collectivite']['ville'],
-			    $seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'],
-			    $seanceUser['User']['adresse'],
-			    $seanceUser['User']['CP'].' '.$seanceUser['User']['ville'],
-			    $collectivite[0]['Collectivite']['ville'],
-			    $jour.' '.date('d').' '.$mois.' '.date('Y'),
-			    $type_infos[0]['Typeseance']['libelle'],
-			    $date_seance,
-				"un lieu a definir",
-				$this->requestAction("/models/listeProjets/$id/0"),
-				$this->requestAction("/models/listeProjets/$id/1")
-	        );
-	        $generation = str_replace($search,$replace,$model[0]['Model']['content']);
+	        $replace = array(
+			'<img src="files/image/logo.jpg">',
+			$collectivite[0]['Collectivite']['nom'],
+			$collectivite[0]['Collectivite']['adresse'],
+			$collectivite[0]['Collectivite']['CP'],
+			$collectivite[0]['Collectivite']['ville'],
+			$collectivite[0]['Collectivite']['telephone'],
+			$acteur['Acteur']['nom'],
+			$acteur['Acteur']['prenom'],
+			$acteur['Acteur']['salutation'],
+			$acteur['Acteur']['titre'],
+			$acteur['Acteur']['adresse1'],
+			$acteur['Acteur']['adresse2'],
+			$acteur['Acteur']['cp'],
+			$acteur['Acteur']['ville'],
+			$jour.' '.date('d').' '.$mois.' '.date('Y'),
+			$seance['Typeseance']['libelle'],
+			$date_seance,
+			$this->requestAction("/models/listeProjets/$id_seance/0"),
+			$this->requestAction("/models/listeProjets/$id_seance/1")
+		);
+	        $generation = str_replace($search,$replace,$model['Model']['content']);
 	        $pdf->WriteHTML($generation);
 		    $emailPdf->WriteHTML($generation);
 
             $pos =  strrpos ( getcwd(), 'webroot');
 		    $path = substr(getcwd(), 0, $pos);
-		    $convoc_path = $path."webroot/files/convocations/convoc_".$seanceUser['User']['id'].".pdf";
+		    $convoc_path = $path."webroot/files/convocations/convoc_".$acteur['Acteur']['id'].".pdf";
 		    $emailPdf->Output($convoc_path ,'F');
-		    $this->sendConvoc($seanceUser['User']['id'], $convoc_path, $type_infos[0]['Typeseance']['libelle'], $date_seance);
+		    $this->sendConvoc($acteur['Acteur']['id'], $convoc_path, $seance['Typeseance']['libelle'], $date_seance);
             unlink($convoc_path);
     	}
         $pdf->Output('convocations.pdf','D');
@@ -362,81 +350,69 @@ class SeancesController extends AppController {
 		}
 	}
 
-	function generateConvocationAnonyme ($id=null) {
-		$this->set('data', $this->SeancesUser->findAll("seance_id =$id"));
-		$type_infos = $this->getType($id);
-		$this->set('type_infos', $type_infos );
-		$this->set('model',$this->Model->findAll());
-		$this->set('projets', $this->afficherProjets($id, 1));
-		$this->set('jour', $this->Date->days[intval(date('w'))]);
-		$this->set('mois', $this->Date->months[intval(date('m'))]);
-		$this->set('collectivite',  $this->Collectivite->findAll());
-		$this->set('date_seance',  $this->Date->frenchDateConvocation(strtotime($type_infos[0]['Seance']['date'])));
-	}
-
-	function generateOrdresDuJour ($id=null) {
-		$data =  $this->User->findAll("statut =1");
-		$type_infos = $this->getType($id);
-		$model = $this->Model->findAll();
-		$projets=$this->afficherProjets($id, 1);
+	function generateOrdresDuJour ($id_seance = null) {
+		$seance = $this->Seance->read(null, $id_seance);
+		$acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+		$model = $this->Model->read(null, $seance['Typeseance']['modelordredujour_id']);
 		$jour=$this->Date->days[intval(date('w'))];
 		$mois=$this->Date->months[intval(date('m'))];
 		$collectivite=  $this->Collectivite->findAll();
-		$date_seance=  $this->Date->frenchDate(strtotime($type_infos[0]['Seance']['date']));
+		$date_seance=  $this->Date->frenchDate(strtotime($seance['Seance']['date']));
 
 		vendor('fpdf/html2fpdf');
 		$pdf = new HTML2FPDF();
 
-   		foreach($data as $seanceUser) {
-			$pdf->AddPage();
-      		$search = array("#LOGO_COLLECTIVITE#","#ADRESSE_COLLECTIVITE#","#NOM_ELU#","#ADRESSE_ELU#","#VILLE_ELU#","#VILLE_COLLECTIVITE#","#DATE_DU_JOUR#","#TYPE_SEANCE#","#DATE_SEANCE#","#LISTE_PROJETS_SOMMAIRES#", "#LISTE_PROJETS_DETAILLES#");
-			$replace = array('<img src="files/image/logo.jpg">',
-			$collectivite[0]['Collectivite']['nom'].'<br>'.$collectivite[0]['Collectivite']['adresse'].'<br>'.$collectivite[0]['Collectivite']['CP'].' '.$collectivite[0]['Collectivite']['ville'],
-			$seanceUser['User']['prenom'].' '.$seanceUser['User']['nom'],
-			$seanceUser['User']['adresse'],
-			$seanceUser['User']['CP'].' '.$seanceUser['User']['ville'],
-			$collectivite[0]['Collectivite']['nom'],
-			$jour.' '.date('d').' '.$mois.' '.date('Y'),
-			$type_infos[0]['Typeseance']['libelle'],
-			$date_seance,
-			$this->requestAction("/models/listeProjets/$id/0"),
-			$this->requestAction("/models/listeProjets/$id/1")
+		$search = array(
+			"#LOGO_COLLECTIVITE#",
+			"#NOM_COLLECTIVITE#",
+			"#ADRESSE_COLLECTIVITE#",
+			"#CP_COLLECTIVITE#",
+			"#VILLE_COLLECTIVITE#",
+			"#TELEPHONE_COLLECTIVITE#",
+			"#NOM_ACTEUR#",
+			"#PRENOM_ACTEUR#",
+			"#SALUTATION_ACTEUR#",
+			"#TITRE_ACTEUR#",
+			"#ADRESSE1_ACTEUR#",
+			"#ADRESSE2_ACTEUR#",
+			"#CP_ACTEUR#",
+			"#VILLE_ACTEUR#",
+			"#DATE_DU_JOUR#",
+			"#TYPE_SEANCE#",
+			"#DATE_SEANCE#",
+			"#LISTE_PROJETS_SOMMAIRES#",
+			"#LISTE_PROJETS_DETAILLES#"
 		);
-		$generation = str_replace($search,$replace,$model[1]['Model']['content']);
-		$pdf->WriteHTML($generation);
 
-        foreach($projets as $projet) {
-        	@$pdf->WriteHTML($projet['Deliberation']['position'].') ');
-         	@$pdf->WriteHTML('<b><u>Thème</u> : </b><br>'.$projet['Theme']['libelle'].'<br>');
-         	@$pdf->WriteHTML('<b><u>Rapporteur</u> : </b><br>'.$projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom'].'<br>');
-         	@$pdf->WriteHTML('<b><u>Service emetteur</u> : </b><br>'.$projet['Service']['libelle'].'<br>');
-            @$pdf->WriteHTML('<b><u>Titre</u> : </b><br>'.$projet['Deliberation']['titre'].'<br>');
-            @$pdf->WriteHTML('<b><u>Synthèse</u> :</b>'.$projet['Deliberation']['texte_synthese'].'<br><br>');
-        	@$pdf->AddPage();
-        }
+   		foreach($acteursConvoques as $acteur) {
+			$pdf->AddPage();
+			$replace = array(
+				'<img src="files/image/logo.jpg">',
+				$collectivite[0]['Collectivite']['nom'],
+				$collectivite[0]['Collectivite']['adresse'],
+				$collectivite[0]['Collectivite']['CP'],
+				$collectivite[0]['Collectivite']['ville'],
+				$collectivite[0]['Collectivite']['telephone'],
+				$acteur['Acteur']['nom'],
+				$acteur['Acteur']['prenom'],
+				$acteur['Acteur']['salutation'],
+				$acteur['Acteur']['titre'],
+				$acteur['Acteur']['adresse1'],
+				$acteur['Acteur']['adresse2'],
+				$acteur['Acteur']['cp'],
+				$acteur['Acteur']['ville'],
+				$jour.' '.date('d').' '.$mois.' '.date('Y'),
+				$seance['Typeseance']['libelle'],
+				$date_seance,
+				$this->requestAction("/models/listeProjets/$id_seance/0"),
+				$this->requestAction("/models/listeProjets/$id_seance/1")
+			);
+			$generation = str_replace($search,$replace,$model['Model']['content']);
+			$pdf->WriteHTML($generation);
 
-    }
-	$pdf->Output('odj.pdf','D');
+    	}
+		$pdf->Output('odj.pdf','D');
 
-
-	}
-
-	function checkLists($seance_id){
-	    $condition = "seance_id = $seance_id";
-		$inscrits = $this->SeancesUser->findAll($condition);
-		$presents = $this->Listepresence->findAll($condition);
-
-		foreach($presents as $present)
-		    if (! $this->isInList($present['User']['id'], $inscrits)){
-				//echo ("On efface ".$present['User']['nom']);
-			    $this->delUserFromList($present['User']['id'], $seance_id );
-		}
-
-		foreach($inscrits as $inscrit)
-		    if (!$this->isInList($inscrit['User']['id'], $presents)){
-				//echo ("On enregistre  ".$inscrit['User']['nom'].'<br>');
-			    $this->addUserFromList($inscrit['User']['id'], $seance_id );
-		    }
 	}
 
 	function delUserFromList($user_id, $seance_id) {
@@ -490,27 +466,21 @@ class SeancesController extends AppController {
 
 		if (empty($this->data)) {
 			$donnees = $this->Vote->findAll("delib_id = $deliberation_id");
-			$listnonvotant = array();
 			foreach($donnees as $donnee){
-				$this->data['Vote'][$donnee['Vote']['user_id']]=$donnee['Vote']['resultat'];
+				$this->data['Vote'][$donnee['Vote']['acteur_id']]=$donnee['Vote']['resultat'];
 			    $this->data['Vote']['commentaire'] = $donnee['Vote']['commentaire'];
 			}
 			$this->set('deliberation' , $this->Deliberation->findAll("Deliberation.id=$deliberation_id"));
 			$this->set('presents' , $this->requestAction('/deliberations/afficherListePresents/'.$deliberation_id));
-			$nonvotants = $this->SeancesUser->findAll("seance_id=$seance_id");
-			foreach ($nonvotants as $nonvotant)
-				array_push($listnonvotant, $nonvotant['User']['id']);
-			$this->set('listnonvotant', $listnonvotant);
-	 }
-		else {
+		} else {
  			$pour = 0;
  			$abstenu = 0;
 			$this->effacerVote($deliberation_id);
 			$nb_votant = count($this->data['Vote']);
-			foreach($this->data['Vote']as $user_id => $vote){
-				if(is_numeric($user_id)==true){
+			foreach($this->data['Vote']as $acteur_id => $vote){
+				if(is_numeric($acteur_id)==true){
 					$this->Vote->create();
-					$this->data['Vote']['user_id']=$user_id;
+					$this->data['Vote']['acteur_id']=$acteur_id;
 					$this->data['Vote']['delib_id']=$deliberation_id;
 					$this->data['Vote']['resultat']=$vote;
 					if ($vote == 3)
