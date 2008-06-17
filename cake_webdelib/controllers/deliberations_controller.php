@@ -104,7 +104,7 @@ class DeliberationsController extends AppController {
             $this->Gedooo->createFile($path, $nameTD,  $data['Deliberation']['deliberation']);
             $balises .= $this->Gedooo->CreerBalise('TexteDeliberation', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameTD, 'content');
             //Création du fichier texte du débat
-            $this->Gedooo->createFile($path, $nameTD, $data['Deliberation']['debat']);
+            $this->Gedooo->createFile($path, $nameDebat, $data['Deliberation']['debat']);
 		    $balises .= $this->Gedooo->CreerBalise('CommentaireDeliberation', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameDebat, 'content');
 			// Informations sur la séance
 		    $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
