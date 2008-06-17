@@ -4,7 +4,7 @@ class ModelsController extends AppController {
 	var $name = 'Models';
 	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation','Seance', 'Service', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote','SeancesUser', 'Listepresence');
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $components = array('Date','Utils','Email', 'Acl');
+	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
 	// Gestion des droits
 	var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel');
@@ -54,13 +54,13 @@ class ModelsController extends AppController {
 	      $this->set('USE_GEDOOO', USE_GEDOOO);
 	      if (USE_GEDOOO) {
 	          header('Content-type: '.$this->_getFileType($id));
-                  header('Content-Length: '.$this->_getSize($id));
-                  header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
-                  echo $this->_getData($id);
-                  exit();
-               }
+              header('Content-Length: '.$this->_getSize($id));
+              header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
+              echo $this->_getData($id);
+              exit();
+           }
 	       else {
-                   $this->set('model', $this->Model->read(null, $id));
+               $this->set('model', $this->Model->read(null, $id));
 	       }
         }
 
@@ -135,7 +135,14 @@ class ModelsController extends AppController {
 			 );
         	$listeUsers .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
         }
-		return $listeUsers;
+       return $listeUsers;
+        /* if (!USE_GEDOOO)
+		    return $listeUsers;
+		else {
+			$dyn_path = "/files/generee/$delib_id/";
+            $path = WEBROOT_PATH.$dyn_path;
+ 			$this->Gedooo->createFile ($path,'presents.html', $listeUsers);
+		} */
 	}
 
 	function _listeUsersAbsents($delib_id) {
@@ -339,7 +346,7 @@ class ModelsController extends AppController {
 
         function import($model_id) {
 	    $this->set('USE_GEDOOO', USE_GEDOOO);
-            $this->set('model_id', $model_id); 
+            $this->set('model_id', $model_id);
             if (! empty($this->data)){
                   if (isset($this->data['Model']['template'])){
                     if ($this->data['Model']['template']['size']!=0){
@@ -347,7 +354,7 @@ class ModelsController extends AppController {
                         $this->data['Model']['name']      = $this->data['Model']['template']['name'];
                         $this->data['Model']['size']      = $this->data['Model']['template']['size'];
                         $this->data['Model']['extension'] = $this->data['Model']['template']['type'];
-                        $this->data['Model']['content']   = $this->getFileData($this->data['Model']['template']['tmp_name'], $this->data['Model']['template']['size']); 
+                        $this->data['Model']['content']   = $this->getFileData($this->data['Model']['template']['tmp_name'], $this->data['Model']['template']['size']);
                         if ($this->Model->save($this->data))
                           $this->redirect('/models/index');
                      }
