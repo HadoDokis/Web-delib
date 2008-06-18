@@ -294,10 +294,10 @@ class SeancesController extends AppController {
 
 	    vendor('fpdf/html2fpdf');
 	    $pdf = new HTML2FPDF();
-        foreach($acteursConvoques as $acteur) {
-            $pdf->AddPage();
-		    $emailPdf = new HTML2FPDF();
-		    $emailPdf->AddPage();
+            foreach($acteursConvoques as $acteur) {
+                $pdf->AddPage();
+		$emailPdf = new HTML2FPDF();
+		$emailPdf->AddPage();
 	        $replace = array(
 			'<img src="files/image/logo.jpg">',
 			$collectivite[0]['Collectivite']['nom'],
@@ -595,8 +595,6 @@ class SeancesController extends AppController {
             $content = $this->requestAction("/models/getModel/$model_id");
             $model = $this->Gedooo->createFile($path,'model_'.$model_id, $content);
             
-	    debug($this->requestAction('/models/listeActeursPresents/1'));
-	    exit; 
 	    //
             //*****************************************
             //* Création du fichier XML de données    *
@@ -612,6 +610,8 @@ class SeancesController extends AppController {
             // Informations sur la séance
             $balises .= $this->Gedooo->CreerBalise('seance_id', $data['Seance']['id'], 'string');
             // Informations sur la séance
+	    if (isset($data['Seance']['date']))
+                $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
             $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
            if (GENERER_DOC_SIMPLE==false){
                 $nameDebat = $data['Seance']['debat_global_name'];
@@ -620,11 +620,19 @@ class SeancesController extends AppController {
                 $nameDebat =  'debat.html';
             }
 
-            //Création du fichier texte_projet
+            //Création du fichier des débats globaux à la séance 
             $this->Gedooo->createFile($path, $nameDebat, $data['Seance']['debat_global']);
             $balises .= $this->Gedooo->CreerBalise('debat_seance', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameDebat, 'content');
-            if (isset($data['Seance']['date']))
-                $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
+            
+	    // Création de la liste des projets detailles 
+	    $listeProjetsDetailles = $this->requestAction("/models/listeProjets/$seance_id/1");
+            $this->Gedooo->createFile($path, 'ProjetsDetailles.html',  $listeProjetsDetailles);
+            $balises .= $this->Gedooo->CreerBalise('ProjetsDetailles', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.'ProjetsDetailles.html', 'content');
+	    
+	    // Création de la liste des projets sommaires 
+	    $listeProjetsSommaires = $this->requestAction("/models/listeProjets/$seance_id/0");
+            $this->Gedooo->createFile($path, 'ProjetsSommaires.html',  $listeProjetsSommaires);
+            $balises .= $this->Gedooo->CreerBalise('ProjetsSommaires', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.'ProjetsSommaires.html', 'content');
 
             // création du fichier XML
             $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
