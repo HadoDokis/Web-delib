@@ -77,7 +77,7 @@ class TypeseancesController extends AppController {
 			$this->redirect('/typeseances/index');
 		else {
 			$this->set('compteurs', $this->Typeseance->Compteur->generateList());
-			$this->set('models', $this->Typeseance->Modelpvdetaille->generateList('type=\'Document\'', null, null, "{n}.Modelpvdetaille.id", "{n}.Modelpvdetaille.libelle"));
+			$this->set('models', $this->Typeseance->Modelpvdetaille->generateList('type=\'Document\'', null, null, "{n}.Modelpvdetaille.id", "{n}.Modelpvdetaille.modele"));
 			$this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true), 1 => $this->Typeseance->libelleAction(1, true)));
 			$this->set('typeacteurs', $this->Typeseance->Typeacteur->generateList());
 			$this->set('acteurs', $this->Typeseance->Acteur->generateList());

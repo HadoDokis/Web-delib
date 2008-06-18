@@ -18,10 +18,10 @@
 	<td><?php echo $this->controller->Typeseance->libelleAction($typeseance['Typeseance']['action'], true); ?></td>
 	<td><?php echo $typeseance['Compteur']['nom']; ?></td>
 	<td><?php
-		echo 'convocation : ' . $typeseance['Modelconvocation']['libelle'] . '<br/>';
-		echo 'orde du jour : ' . $typeseance['Modelordredujour']['libelle'] . '<br/>';
-		echo 'PV sommaire : ' . $typeseance['Modelpvsommaire']['libelle'] . '<br/>';
-		echo 'PV détaillé : ' . $typeseance['Modelpvdetaille']['libelle'] . '<br/>';
+		echo 'convocation : ' . $typeseance['Modelconvocation']['modele'] . '<br/>';
+		echo 'orde du jour : ' . $typeseance['Modelordredujour']['modele'] . '<br/>';
+		echo 'PV sommaire : ' . $typeseance['Modelpvsommaire']['modele'] . '<br/>';
+		echo 'PV détaillé : ' . $typeseance['Modelpvdetaille']['modele'] . '<br/>';
 	?></td>
 	<td><?
 		if (!empty($typeseance['Typeacteur'])) {

@@ -2,8 +2,8 @@
 class SeancesController extends AppController {
 
 	var $name = 'Seances';
-	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $components = array('Date','Email');
+	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2');
+	var $components = array('Date','Email', 'Gedooo');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex');
 	var $cacheAction = 0;
 
@@ -107,17 +107,19 @@ class SeancesController extends AppController {
 	}
 
 	function listerFuturesSeances() {
-		if (empty ($this->data)) {
-			$condition= 'Seance.traitee = 0';
-			$seances = $this->Seance->findAll(($condition),null,'date asc');
+            $this->set('USE_GEDOOO', USE_GEDOOO);		
+            if (empty ($this->data)) {
+                $condition= 'Seance.traitee = 0';
+	        $seances = $this->Seance->findAll(($condition),null,'date asc');
 
-			for ($i=0; $i<count($seances); $i++){
-				 $seances[$i]['Seance']['dateEn'] =  $seances[$i]['Seance']['date'];
-			    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
-
-			}
-			$this->set('seances', $seances);
-		}
+	 	for ($i=0; $i<count($seances); $i++){
+		    $seances[$i]['Seance']['dateEn'] =  $seances[$i]['Seance']['date'];
+		    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
+                    $seances[$i]['Seance']['modelconvocation_id'] =  $seances[$i]['Typeseance']['modelconvocation_id'];
+		    $seances[$i]['Seance']['modelordredujour_id'] =  $seances[$i]['Typeseance']['modelordredujour_id'];
+	       }
+                $this->set('seances', $seances);
+	    }
 	}
 
 	function listerAnciennesSeances() {
@@ -580,5 +582,54 @@ class SeancesController extends AppController {
 			}
 		}
 	}
+
+
+        function generer ($seance_id, $model_id, $editable=null){
+            // Préparation des répertoires pour la création des fichiers
+            $dyn_path = "/files/generee/seances/$seance_id/";
+            $path = WEBROOT_PATH.$dyn_path;
+            if (!$this->Gedooo->checkPath($path))
+                die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+
+            //Création du model ott
+            $content = $this->requestAction("/models/getModel/$model_id");
+            $model = $this->Gedooo->createFile($path,'model_'.$model_id, $content);
+            
+	    debug($this->requestAction('/models/listeActeursPresents/1'));
+	    exit; 
+	    //
+            //*****************************************
+            //* Création du fichier XML de données    *
+            //*****************************************
+            // Informations sur la collectivité
+            $data = $this->Collectivite->read(null, 1);
+            $balises  = $this->Gedooo->CreerBalise('nom_collectivite', $data['Collectivite']['nom'], 'string');
+            $balises .= $this->Gedooo->CreerBalise('adresse_collectivite', $data['Collectivite']['adresse'], 'string');
+            $balises .= $this->Gedooo->CreerBalise('cp_collectivite', $data['Collectivite']['CP'], 'string');
+            $balises .= $this->Gedooo->CreerBalise('ville_collectivite', $data['Collectivite']['ville'], 'string');
+            $balises .= $this->Gedooo->CreerBalise('telephone_collectivite', $data['Collectivite']['telephone'], 'string');
+            $data = $this->Seance->read(null, $seance_id);
+            // Informations sur la séance
+            $balises .= $this->Gedooo->CreerBalise('seance_id', $data['Seance']['id'], 'string');
+            // Informations sur la séance
+            $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
+           if (GENERER_DOC_SIMPLE==false){
+                $nameDebat = $data['Seance']['debat_global_name'];
+            }
+            else {
+                $nameDebat =  'debat.html';
+            }
+
+            //Création du fichier texte_projet
+            $this->Gedooo->createFile($path, $nameDebat, $data['Seance']['debat_global']);
+            $balises .= $this->Gedooo->CreerBalise('debat_seance', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameDebat, 'content');
+            if (isset($data['Seance']['date']))
+                $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
+
+            // création du fichier XML
+            $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
+            // Envoi du fichier à GEDOOo
+            $this->Gedooo->sendFiles($model, $datas, $editable);
+        }
 }
 ?>

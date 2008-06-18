@@ -15,8 +15,19 @@
 		<td><?php echo ($html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id'])); ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
 		 	<?php echo $html->link('&shy;','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'), false, false)?>
-			<?php echo $html->link('&shy;','/seances/generateConvocationList/'.$seance['Seance']['id'], array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'), false, false)?>
-			<?php echo $html->link('&shy;','/seances/generateOrdresDuJour/'.$seance['Seance']['id'], array('class'=>'link_ordre_jour', 'title'=>'Générer l\'ordre du jour détaillé'), false, false)?>
+		<?php 
+                    if (USE_GEDOOO){
+                       $urlConvoc = '/seances/generer/'.$seance['Seance']['id'].'/'.$seance['Seance']['modelconvocation_id'];
+		       $urlOdj = '/seances/generer/'.$seance['Seance']['id'].'/'.$seance['Seance']['modelordredujour_id'];
+		    }
+		    else {
+                       $urlConvoc = '/seances/generateConvocationList/'.$seance['Seance']['id'];
+		       $urlOdj = '/seances/generateOrdresDuJour/'.$seance['Seance']['id'];
+		    }
+
+		    echo $html->link('&shy;', $urlConvoc, array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'), false, false); 
+		    echo $html->link('&shy;', $urlOdj, array('class'=>'link_ordre_jour', 'title'=>'Générer l\'ordre du jour détaillé'), false, false);
+		?>
 		</td>
 		<td class="actions">
 			<?php echo $html->link('&shy;','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les débats généraux de la séance'), false, false); ?>
