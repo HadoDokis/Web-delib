@@ -11,7 +11,8 @@ class ModelsController extends AppController {
 	var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
 
 	function index() {
-		$this->set('models', $this->Model->findAll(null, null, 'type ASC '));
+            $this->set('USE_GEDOOO', USE_GEDOOO);
+            $this->set('models', $this->Model->findAll(null, null, 'type ASC '));
 	}
 
 	function add() {
@@ -27,7 +28,7 @@ class ModelsController extends AppController {
 
 	function edit($id=null) {
 		$data = $this->Model->findAll("Model.id = $id");
-		$this->set('libelle', $data['0']['Model']['libelle']);
+		$this->set('libelle', $data['0']['Model']['modele']);
 
 		if (empty($this->data)) {
 			$this->data = $this->Model->read(null, $id);
@@ -60,7 +61,8 @@ class ModelsController extends AppController {
 
 	function view($id = null) {
 	      $this->set('USE_GEDOOO', USE_GEDOOO);
-	      if (USE_GEDOOO) {
+              $data = $this->Model->read(null, $id);
+	      if (USE_GEDOOO && ($data['Model']['type'] == 'Document') ) {
 	          header('Content-type: '.$this->_getFileType($id));
                   header('Content-Length: '.$this->_getSize($id));
                   header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
