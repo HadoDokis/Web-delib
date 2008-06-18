@@ -35,43 +35,45 @@ class DeliberationsController extends AppController {
 		$this->set('deliberations', $this->Deliberation->findAll(null,null, 'Seance.date'));
 	}
 
-    function generer ($delib_id, $model_id, $editable=null){
+       function generer ($delib_id, $model_id, $editable=null){
             // Préparation des répertoires pour la création des fichiers
-            $dyn_path = "/files/generee/$delib_id/";
+            $dyn_path = "/files/generee/deliberations/$delib_id/";
             $path = WEBROOT_PATH.$dyn_path;
-	  		if (!$this->Gedooo->checkPath($path))
+            if (!$this->Gedooo->checkPath($path))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
 
             //Création du model ott
             $content = $this->requestAction("/models/getModel/$model_id");
             $model = $this->Gedooo->createFile($path,'model_'.$model_id, $content);
-			//*****************************************
+		//
+		//*****************************************
 	        //* Création du fichier XML de données    *
-  			//*****************************************
-  			// Informations sur la collectivité
-  			$data = $this->Collectivite->read(null, 1);
-  			$balises  = $this->Gedooo->CreerBalise('nom_collectivite', $data['Collectivite']['nom'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('adresse_collectivite', $data['Collectivite']['adresse'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('cp_collectivite', $data['Collectivite']['CP'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('ville_collectivite', $data['Collectivite']['ville'], 'string');
-  			$balises .= $this->Gedooo->CreerBalise('telephone_collectivite', $data['Collectivite']['telephone'], 'string');
-		    $data = $this->Deliberation->read(null, $delib_id);
-		    // Informations sur le rapporteur
-		    $balises .= $this->Gedooo->CreerBalise('prenom_rapporteur', $data['Rapporteur']['nom'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('nom_rapporteur', $data['Rapporteur']['prenom'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('titre_rapporteur', $data['Rapporteur']['titre'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('email_rapporteur', $data['Rapporteur']['email'], 'string');
+  		//*****************************************
+  		// Informations sur la collectivité
+  		$data = $this->Collectivite->read(null, 1);
+  		$balises  = $this->Gedooo->CreerBalise('nom_collectivite', $data['Collectivite']['nom'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('adresse_collectivite', $data['Collectivite']['adresse'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('cp_collectivite', $data['Collectivite']['CP'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('ville_collectivite', $data['Collectivite']['ville'], 'string');
+  		$balises .= $this->Gedooo->CreerBalise('telephone_collectivite', $data['Collectivite']['telephone'], 'string');
+		$data = $this->Deliberation->read(null, $delib_id);
+		// Informations sur le rapporteur
+		$balises .= $this->Gedooo->CreerBalise('prenom_rapporteur', $data['Rapporteur']['nom'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('nom_rapporteur', $data['Rapporteur']['prenom'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('titre_rapporteur', $data['Rapporteur']['titre'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('email_rapporteur', $data['Rapporteur']['email'], 'string');
 	        $balises .= $this->Gedooo->CreerBalise('tel_mob_rapporteur', $data['Rapporteur']['telmobile'], 'string');
-		   // Informations sur le rédacteur
-		    $balises  = $this->Gedooo->CreerBalise('prenom_redacteur', $data['Redacteur']['nom'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('nom_redacteur', $data['Redacteur']['prenom'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('email_redacteur', $data['Redacteur']['email'], 'string');
-			// Informations sur la délibération
-		    $balises .= $this->Gedooo->CreerBalise('titre_projet', $data['Deliberation']['titre'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('objet_projet', $data['Deliberation']['objet'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('position_projet', $data['Deliberation']['position'], 'string');
-		    $balises .= $this->Gedooo->CreerBalise('identifiant_projet', $data['Deliberation']['id'], 'string');
-			if (GENERER_DOC_SIMPLE==false){
+		// Informations sur le rédacteur
+		$balises  = $this->Gedooo->CreerBalise('prenom_redacteur', $data['Redacteur']['nom'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('nom_redacteur', $data['Redacteur']['prenom'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('email_redacteur', $data['Redacteur']['email'], 'string');
+		// Informations sur la délibération
+		$balises .= $this->Gedooo->CreerBalise('titre_projet', $data['Deliberation']['titre'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('objet_projet', $data['Deliberation']['objet'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('position_projet', $data['Deliberation']['position'], 'string');
+	        $balises .= $this->Gedooo->CreerBalise('identifiant_projet', $data['Deliberation']['id'], 'string');
+	   
+	   if (GENERER_DOC_SIMPLE==false){
                 $nameTP = $data['Deliberation']['texte_projet_name'];
                 $nameTD = $data['Deliberation']['deliberation_name'];
                 $nameNS = $data['Deliberation']['texte_synthese_name'];
@@ -82,7 +84,7 @@ class DeliberationsController extends AppController {
                 $nameNS = 'note_service.html';
                 $nameDebat =  'debat.html';
             }
-		     //Création du fichier texte_projet
+	    //Création du fichier texte_projet
             $this->Gedooo->createFile($path, $nameTP, $data['Deliberation']['texte_projet']);
             $balises .= $this->Gedooo->CreerBalise('texte_projet', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameTP, 'content');
             //Création du fichier note de synthèse
@@ -93,21 +95,17 @@ class DeliberationsController extends AppController {
             $balises .= $this->Gedooo->CreerBalise('TexteDeliberation', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameTD, 'content');
             //Création du fichier texte du débat
             $this->Gedooo->createFile($path, $nameDebat, $data['Deliberation']['debat']);
-		    $balises .= $this->Gedooo->CreerBalise('CommentaireDeliberation', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameDebat, 'content');
-			// Informations sur la séance
-		    $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
-			$balises .= $this->Gedooo->CreerBalise('identifiant_seance', $data['Deliberation']['seance_id'], 'string');
-	 		if (isset($data['Seance']['date']))
-		        $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
+	    $balises .= $this->Gedooo->CreerBalise('CommentaireDeliberation', 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path.$nameDebat, 'content');
+            // Informations sur la séance
+	    $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
+            $balises .= $this->Gedooo->CreerBalise('identifiant_seance', $data['Deliberation']['seance_id'], 'string');
+	    if (isset($data['Seance']['date']))
+	        $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
 
-			debug($this->getListPresent($delib_id));
-			exit;
-
-		    // création du fichier XML
-		    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
-
-	            // Envoi du fichier à GEDOOo
-	            $this->Gedooo->sendFiles($model, $datas, $editable);
+	    // création du fichier XML
+	    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
+            // Envoi du fichier à GEDOOo
+            $this->Gedooo->sendFiles($model, $datas, $editable);
         }
 
 	function listerMesProjets() {

@@ -7,7 +7,7 @@ class ModelsController extends AppController {
 	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
 	// Gestion des droits
-	var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel');
+	var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel', 'listeActeursPresents');
 	var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
 
 	function index() {
@@ -118,27 +118,48 @@ class ModelsController extends AppController {
 	}
 
 	function _listeActeursPresents($delib_id) {
-		// Lecture du modele
-		$texte = $this->Model->field('content', 'id=8');
-
-		$listeActeurs = "";
-		$acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "Acteur.position ASC");
-		foreach($acteurs as $acteur) {
-			$searchReplace = array(
-				"#NOUVELLE_PAGE#" => "<newpage>",
-				"#NOM_PRESENT#" => $acteur['Acteur']['nom'],
-			 	"#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
-			 	"#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
-			 	"#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
-			 	"#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
-			 	"#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
-			 	"#CP_PRESENT#" => $acteur['Acteur']['cp'],
-			 	"#VILLE_PRESENT#" => $acteur['Acteur']['ville']
-			 );
+            // Lecture du modele
+	    $texte = $this->Model->field('content', 'id=8');
+	    $listeActeurs = "";
+            $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "Acteur.position ASC");
+	    foreach($acteurs as $acteur) {
+	        $searchReplace = array(
+		    "#NOUVELLE_PAGE#" => "<newpage>",
+		    "#NOM_PRESENT#" => $acteur['Acteur']['nom'],
+		    "#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
+		    "#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
+		    "#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
+		    "#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
+		    "#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
+		    "#CP_PRESENT#" => $acteur['Acteur']['cp'],
+		    "#VILLE_PRESENT#" => $acteur['Acteur']['ville']
+	         );
         	$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-        }
-		return $listeActeurs;
+            }
+	    return $listeActeurs;
 	}
+
+        function listeActeursPresents($delib_id) {
+            // Lecture du modele
+            $texte = $this->Model->field('content', 'id=8');
+            $listeActeurs = "";
+            $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "Acteur.position ASC");
+            foreach($acteurs as $acteur) {
+                $searchReplace = array(
+                    "#NOUVELLE_PAGE#" => "<newpage>",
+                    "#NOM_PRESENT#" => $acteur['Acteur']['nom'],
+                    "#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
+                    "#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
+                    "#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
+                    "#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
+                    "#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
+                    "#CP_PRESENT#" => $acteur['Acteur']['cp'],
+                    "#VILLE_PRESENT#" => $acteur['Acteur']['ville']
+                 );
+                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+            }
+            return $listeActeurs;
+        }       
 
 	function _listeActeursAbsents($delib_id) {
 		// Lecture du modele
