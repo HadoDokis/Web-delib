@@ -11,14 +11,14 @@ class ModelsController extends AppController {
 	var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
 
 	function index() {
-		$this->set('models', $this->Model->findAll());
+		$this->set('models', $this->Model->findAll(null, null, 'type ASC '));
 	}
 
 	function add() {
 		if (empty($this->data)) {
 			$this->render();
 		} else{
-
+                        $this->data['Model']['type']='Document';
 			if ($this->Model->save($this->data)) {
 				$this->redirect('/models/index');
 			}
@@ -44,10 +44,18 @@ class ModelsController extends AppController {
 			$this->Session->setFlash('Invalide id pour la deliberation');
 			$this->redirect('/models/index');
 		}
-		if ($this->Model->del($id)) {
+		$data = $this->Model->read(null, $id);
+                if ($data['Model']['type'] == 'Document') {
+		    if ($this->Model->del($id)) {
 			$this->Session->setFlash('Le model a &eacute;t&eacute; supprim&eacute;e.');
 			$this->redirect('/models/index');
+		    }
 		}
+		else{
+                    $this->Session->setFlash('Impossible de supprimer ce type de modele');
+		    $this->redirect('/models/index');
+		}
+		     
 	}
 
 	function view($id = null) {
