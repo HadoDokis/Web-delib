@@ -3,9 +3,9 @@
 <?php echo $html->formTag('/models/add'); ?>
 
 <div class="optional">
-    <?php echo $html->textarea('Model/texte', array('cols' => '10', 'rows' => '20'));?>
-    <?php echo $fck->load('data[Model][texte]'); ?>
-    <?php echo $html->tagErrorMsg('Model/texte', 'Entrer la délibération.');?>
+   <?php echo $form->labelTag('Model/modele', 'Libelle');?>
+   <?php echo $html->input('Model/modele', array('size' => '50'));?>
+   <?php echo $html->tagErrorMsg('Model/modele', 'Entrer le libelle.');?>
 </div>
 
 <br/><br/><br/><br/>
