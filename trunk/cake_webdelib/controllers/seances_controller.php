@@ -115,8 +115,6 @@ class SeancesController extends AppController {
 	 	for ($i=0; $i<count($seances); $i++){
 		    $seances[$i]['Seance']['dateEn'] =  $seances[$i]['Seance']['date'];
 		    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
-                    $seances[$i]['Seance']['modelconvocation_id'] =  $seances[$i]['Typeseance']['modelconvocation_id'];
-		    $seances[$i]['Seance']['modelordredujour_id'] =  $seances[$i]['Typeseance']['modelordredujour_id'];
 	       }
                 $this->set('seances', $seances);
 	    }
@@ -584,7 +582,7 @@ class SeancesController extends AppController {
 	}
 
 
-        function generer ($seance_id, $model_id, $editable=null){
+        function generer ($seance_id, $model_id, $editable=0){
             // Préparation des répertoires et URL pour la création des fichiers
             $dyn_path = "/files/generee/seances/$seance_id/";
             $path = WEBROOT_PATH.$dyn_path;
@@ -595,11 +593,13 @@ class SeancesController extends AppController {
 
             //Création du model ott
             $content = $this->requestAction("/models/getModel/$model_id");
+	    $data = $this->Model->read(null, $model_id);
+	    $nomModel = $data['Model']['modele'];
             $model = $this->Gedooo->createFile($path,'model_'.$model_id, $content);
 	    
 	    $data = $this->Seance->read(null, $seance_id);
             $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($data['Seance']['type_id']); 
-	    echo("G&eacute;n&eacute;ration des ".count($acteursConvoques)." documents : <br>");
+	    echo("G&eacute;n&eacute;ration des ".count($acteursConvoques)." documents ($nomModel): <br>");
 	    $listFiles = array();
 	    foreach ($acteursConvoques as $acteur ) {
 	        //
@@ -643,8 +643,14 @@ class SeancesController extends AppController {
 
                 // création du fichier XML
                 $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
-                // Envoi du fichier à GEDOOo
-                $this->Gedooo->sendFiles($model, $datas, $editable, 1,  $nomFichier);
+		
+		// Envoi du fichier à GEDOOo
+                if ($editable == 0)
+                    $extension = 'pdf';
+                else
+                    $extension = 'odt';
+                $nomFichier =  $acteur['Acteur']['id'].'.'.$extension;
+		$this->Gedooo->sendFiles($model, $datas, $editable, 1,  $nomFichier);
 		
 		// Création d'un tableau pour l'affichage et le stockage des fichiers à récuperer
 		$listFiles[$urlFiles.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
