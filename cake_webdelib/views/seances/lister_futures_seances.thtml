@@ -17,8 +17,8 @@
 		 	<?php echo $html->link('&shy;','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'), false, false)?>
 		<?php 
                     if (USE_GEDOOO){
-                       $urlConvoc = '/seances/generer/'.$seance['Seance']['id'].'/'.$seance['Seance']['modelconvocation_id'];
-		       $urlOdj = '/seances/generer/'.$seance['Seance']['id'].'/'.$seance['Seance']['modelordredujour_id'];
+                       $urlConvoc = '/seances/generer/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'];
+		       $urlOdj = '/seances/generer/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'];
 		    }
 		    else {
                        $urlConvoc = '/seances/generateConvocationList/'.$seance['Seance']['id'];
