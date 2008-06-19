@@ -1,0 +1,5 @@
+<h2> Liste des fichiers g&eacute;n&eacute;r&eacute;s </h2>
+<?php
+    foreach ($listFiles as $path=> $name) 
+        echo $html->link($name, $path)."<br>";
+?>
