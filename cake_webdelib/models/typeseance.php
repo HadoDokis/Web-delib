@@ -103,13 +103,13 @@ class Typeseance extends AppModel {
 		foreach($typeseance['Acteur'] as $acteur)
 			$inId .= ($inId ? ', ' : '') . $acteur['id'];
 
-		$condIn = ($inTypeacteur ? 'acteur.typeacteur_id in ('.$inTypeacteur.')' : '').
+		$condIn = ($inTypeacteur ? 'Acteur.typeacteur_id in ('.$inTypeacteur.')' : '').
 				(($inTypeacteur && $inId) ? ' or ' : '').
-				($inId ? 'acteur.id in ('.$inId.')' : '');
+				($inId ? 'Acteur.id in ('.$inId.')' : '');
 		$condElu = isset($elu) ? ('Typeacteur.elu=' . ($elu ? '1':'0')) : '';
 		$condition = ($condElu ? '(':'') . $condIn . ($condElu ? ') and ':'') . $condElu;
 
-		return $this->Acteur->findAll($condition, null, 'acteur.position, acteur.nom ASC', null, 1, 0);
+		return $this->Acteur->findAll($condition, null, 'Acteur.position, Acteur.nom ASC', null, 1, 0);
 	}
 
 }
