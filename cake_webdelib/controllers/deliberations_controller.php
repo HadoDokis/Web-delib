@@ -1736,7 +1736,7 @@ class DeliberationsController extends AppController {
 	}
 
 	function getListPresent($delib_id){
-			return $this->Listepresence->findAll("Listepresence.delib_id= $delib_id", null, "acteur.position ASC");
+	    return $this->Listepresence->findAll("Listepresence.delib_id= $delib_id", null, "Acteur.position ASC");
 	}
 
 	function listerPresents($delib_id) {
