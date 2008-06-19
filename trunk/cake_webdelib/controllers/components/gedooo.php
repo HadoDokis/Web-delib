@@ -33,7 +33,7 @@ class GedoooComponent extends Object {
 	 * la fonction va envoyer les deux fichiers à Ged'OOo
 	 */
 
-    function sendFiles ($fileModel, $fileData, $retour = 1) {
+    function sendFiles ($fileModel, $fileData, $retour = 1, $download=0, $name='retour') {
 	if ($retour == 0)
 	    $retour = 'pdf';
 	else
@@ -54,10 +54,30 @@ class GedoooComponent extends Object {
         $return = curl_multi_getcontent  ($ch);
         curl_close($ch);
 
-        header('Content-type: application/pdf');
-        header('Content-Length: '.strlen($return));
-        header('Content-Disposition: attachment; filename=retour.'.$retour);
-        die($return);
+        if ($download== 0){
+            header('Content-type: application/pdf');
+            header('Content-Length: '.strlen($return));
+            header('Content-Disposition: attachment; filename='.utf8_encode($name).'.'.$retour);
+            die($return);
+	}
+	else {
+            // Préparation des répertoires et URL pour la création des fichiers
+            $dyn_path = "/files/generee/modeles/";
+            $path = WEBROOT_PATH.$dyn_path;
+            if (!$this->checkPath($path))
+                die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+            $fp = fopen( $path.$name.'.'. $retour , 'w');
+            fwrite($fp, $return);
+            fclose($fp);            
+
+            $zip = new ZipArchive;
+	    if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
+	        $zip->addFile($path.$name.'.'.$retour, $name.'.'.$retour);
+	        $zip->close();
+	  } else {
+	      echo 'échec';
+	  }
+	}
     }
 
     function checkPath($path) {
