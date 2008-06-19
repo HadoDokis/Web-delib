@@ -10,7 +10,7 @@ class GedoooComponent extends Object {
 	 * la fonction va retourner le path ou gedooo pourra aller chercher le fichier
 	 */
 	function createFile ($path, $name, $content) {
-			$this->checkPath($path);
+            $this->checkPath($path);
             if (file_exists($path.$name))
                 unlink($path.$name);
 
@@ -66,16 +66,16 @@ class GedoooComponent extends Object {
             $path = WEBROOT_PATH.$dyn_path;
             if (!$this->checkPath($path))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-            $fp = fopen( $path.$name.'.'. $retour , 'w');
+            $fp = fopen($path.$name, 'w');
             fwrite($fp, $return);
             fclose($fp);            
 
             $zip = new ZipArchive;
 	    if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
-	        $zip->addFile($path.$name.'.'.$retour, $name.'.'.$retour);
+	        $zip->addFile($path.$name, $name);
 	        $zip->close();
 	  } else {
-	      echo 'échec';
+	      echo 'Impossible d\'ajouter le fichier dans l\'archive';
 	  }
 	}
     }
@@ -83,8 +83,11 @@ class GedoooComponent extends Object {
     function checkPath($path) {
 	if (!is_dir($path))
 	   return (mkdir($path, 0770, true));
-	else
+	else {
+            // on nettoie ce qu'il y a dedans pour ne pas encombrer le serveur
+
             return true;
+	}
     }
 
    function CreerBalise ($nom, $valeur, $type) {
