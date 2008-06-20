@@ -107,7 +107,7 @@ class SeancesController extends AppController {
 	}
 
 	function listerFuturesSeances() {
-            $this->set('USE_GEDOOO', USE_GEDOOO);		
+            $this->set('USE_GEDOOO', USE_GEDOOO);
             if (empty ($this->data)) {
                 $condition= 'Seance.traitee = 0';
 	        $seances = $this->Seance->findAll(($condition),null,'date asc');
@@ -596,9 +596,9 @@ class SeancesController extends AppController {
 	    $data = $this->Model->read(null, $model_id);
 	    $nomModel = $data['Model']['modele'];
             $model = $this->Gedooo->createFile($path,'model_'.$model_id, $content);
-	    
+
 	    $data = $this->Seance->read(null, $seance_id);
-            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($data['Seance']['type_id']); 
+            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($data['Seance']['type_id']);
 	    echo("G&eacute;n&eacute;ration des ".count($acteursConvoques)." documents ($nomModel): <br>");
 	    $listFiles = array();
 	    foreach ($acteursConvoques as $acteur ) {
@@ -613,7 +613,7 @@ class SeancesController extends AppController {
                 $balises .= $this->Gedooo->CreerBalise('cp_collectivite', $dataColl['Collectivite']['CP'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('ville_collectivite', $dataColl['Collectivite']['ville'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('telephone_collectivite', $dataColl['Collectivite']['telephone'], 'string');
-            
+
 	         // Informations sur la séance
                 $balises .= $this->Gedooo->CreerBalise('seance_id', $seance_id, 'string');
                 // Informations sur la séance
@@ -627,23 +627,23 @@ class SeancesController extends AppController {
                    $nameDebat =  'debat.html';
                 }
 
-                //Création du fichier des débats globaux à la séance 
+                //Création du fichier des débats globaux à la séance
                 $this->Gedooo->createFile($path, $nameDebat, $data['Seance']['debat_global']);
                 $balises .= $this->Gedooo->CreerBalise('debat_seance', $urlWebroot.$nameDebat, 'content');
-            
-	        // Création de la liste des projets detailles 
+
+	        // Création de la liste des projets detailles
 	        $listeProjetsDetailles = $this->requestAction("/models/listeProjets/$seance_id/1");
                 $this->Gedooo->createFile($path, 'ProjetsDetailles.html',  $listeProjetsDetailles);
                 $balises .= $this->Gedooo->CreerBalise('ProjetsDetailles', $urlWebroot.'ProjetsDetailles.html', 'content');
-	    
-	        // Création de la liste des projets sommaires 
+
+	        // Création de la liste des projets sommaires
 	        $listeProjetsSommaires = $this->requestAction("/models/listeProjets/$seance_id/0");
                 $this->Gedooo->createFile($path, 'ProjetsSommaires.html',  $listeProjetsSommaires);
                 $balises .= $this->Gedooo->CreerBalise('ProjetsSommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
 
                 // création du fichier XML
                 $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
-		
+
 		// Envoi du fichier à GEDOOo
                 if ($editable == 0)
                     $extension = 'pdf';
@@ -651,7 +651,7 @@ class SeancesController extends AppController {
                     $extension = 'odt';
                 $nomFichier =  $acteur['Acteur']['id'].'.'.$extension;
 		$this->Gedooo->sendFiles($model, $datas, $editable, 1,  $nomFichier);
-		
+
 		// Création d'un tableau pour l'affichage et le stockage des fichiers à récuperer
 		$listFiles[$urlFiles.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
 		echo($acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom']."<br>");
@@ -660,5 +660,63 @@ class SeancesController extends AppController {
 	    $this->set('listFiles', $listFiles);
             $this->render();
         }
+
+	function detailsAvis ($seance_id=null) {
+		// initialisations
+		$deliberations=$this->afficherProjets($seance_id, 0);
+		$date_tmpstp = strtotime($this->GetDate($seance_id));
+		$toutesVisees = true;
+
+		for ($i=0; $i<count($deliberations); $i++){
+				$id_service = $deliberations[$i]['Service']['id'];
+				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+				if (empty($deliberations[$i]['Deliberation']['avis']))
+				     $toutesVisees = false;
+		}
+
+		$this->set('deliberations',$deliberations);
+		$this->set('date_seance', $this->Date->frenchDateConvocation($date_tmpstp));
+		$this->set('seance_id', $seance_id);
+		$this->set('canClose', (($date_tmpstp <= strtotime(date('Y-m-d H:i:s'))) && $toutesVisees));
+	}
+
+	function donnerAvis ($deliberation_id=null) {
+		// Initialisations
+		$sortie = false;
+		$deliberation = $this->Deliberation->read(null, $deliberation_id);
+		$seanceIdCourante = $deliberation['Seance']['id'];
+
+		if (!empty($this->data)) {
+			// En fonction de l'avis s�lectionn�
+			if (!array_key_exists('avis', $this->data['Deliberation'])) {
+				$this->Seance->invalidate('avis');
+			} elseif ($this->data['Deliberation']['avis'] == 2) {
+				// D�favorable : le projet repasse en �tat = 0
+				$this->data['Deliberation']['etat'] = 0;
+				unset($this->data['Deliberation']['seance_id']);
+				$this->Deliberation->save($this->data);
+				$sortie = true;
+			} elseif ($this->data['Deliberation']['avis'] == 1) {
+				// Favorable : on attribue une nouvelle date de s�ance si elle est s�lectionn�e
+				if (empty($this->data['Deliberation']['seance_id']))
+					unset($this->data['Deliberation']['seance_id']);
+				else
+					$this->data['Deliberation']['position'] = $this->Deliberation->findCount("seance_id =".$this->data['Deliberation']['seance_id']." AND (etat != -1 )")+1;
+				$this->Deliberation->save($this->data['Deliberation']);
+				$sortie = true;
+			}
+
+			$this->data = $deliberation;
+		}
+		if ($sortie)
+			$this->redirect('/seances/detailsAvis/'.$seanceIdCourante);
+		else {
+			$this->data = $deliberation;
+			$this->set('avis', array(1 => 'Favorable', 2 => 'D�favorable'));
+			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+			$this->set('seances', $this->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
+		}
+	}
+
 }
 ?>
