@@ -603,7 +603,6 @@ class SeancesController extends AppController {
             $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($data['Seance']['type_id']);
 	    $nbActeurs = count($acteursConvoques); 
 	    $listFiles = array();
-        //  Initialize($gauche,$haut,$largeur,$hauteur,$bord_col,$txt_col,$bg_col)
 	    Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699'); 
 	    
 	    foreach ($acteursConvoques as $acteur ) {
@@ -612,16 +611,36 @@ class SeancesController extends AppController {
                 //* Création du fichier XML de données    *
                 //*****************************************
                 // Informations sur la collectivité
+                $this->Gedooo->createFile($path, 'logo.html', '<img src="'.$urlWebroot.'files/image/logo.jpg" />');
                 $dataColl = $this->Collectivite->read(null, 1);
                 $balises  = $this->Gedooo->CreerBalise('nom_collectivite', $dataColl['Collectivite']['nom'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('adresse_collectivite', $dataColl['Collectivite']['adresse'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('cp_collectivite', $dataColl['Collectivite']['CP'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('ville_collectivite', $dataColl['Collectivite']['ville'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('telephone_collectivite', $dataColl['Collectivite']['telephone'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('logo_collectivite', $urlWebroot.'logo.html', 'content');
 
-	         // Informations sur la séance
+                // Informations sur l'acteur
+                $balises .= $this->Gedooo->CreerBalise('type_acteur', $acteur['Typeacteur']['nom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('type_commentaire_acteur', $acteur['Typeacteur']['commentaire'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('nom_acteur', $acteur['Acteur']['nom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('prenom_acteur', $acteur['Acteur']['prenom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('salutation_acteur', $acteur['Acteur']['salutation'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('titre_acteur', $acteur['Acteur']['titre'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('date_naissance_acteur', $acteur['Acteur']['date_naissance'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('adresse1_acteur', $acteur['Acteur']['adresse1'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('adresse2_acteur', $acteur['Acteur']['adresse2'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('cp_acteur', $acteur['Acteur']['cp'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('ville_acteur', $acteur['Acteur']['ville'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('email_acteur', $acteur['Acteur']['email'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('telfixe_acteur', $acteur['Acteur']['telfixe'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('telmobile_acteur', $acteur['Acteur']['telmobile'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('note_acteur', $acteur['Acteur']['note'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('position_acteur', $acteur['Acteur']['position'], 'string');
+
+	        // Informations sur la seance
                 $balises .= $this->Gedooo->CreerBalise('seance_id', $seance_id, 'string');
-                // Informations sur la séance
+                // Informations sur la seance
 	        if (isset($data['Seance']['date']))
                     $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
                 $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
@@ -639,12 +658,12 @@ class SeancesController extends AppController {
 	        // Création de la liste des projets detailles
 	        $listeProjetsDetailles = $this->requestAction("/models/listeProjets/$seance_id/1");
                 $this->Gedooo->createFile($path, 'ProjetsDetailles.html',  $listeProjetsDetailles);
-                $balises .= $this->Gedooo->CreerBalise('ProjetsDetailles', $urlWebroot.'ProjetsDetailles.html', 'content');
+                $balises .= $this->Gedooo->CreerBalise('projets_detailles', $urlWebroot.'ProjetsDetailles.html', 'content');
 
 	        // Création de la liste des projets sommaires
 	        $listeProjetsSommaires = $this->requestAction("/models/listeProjets/$seance_id/0");
                 $this->Gedooo->createFile($path, 'ProjetsSommaires.html',  $listeProjetsSommaires);
-                $balises .= $this->Gedooo->CreerBalise('ProjetsSommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
+                $balises .= $this->Gedooo->CreerBalise('projets_sommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
 
                 // création du fichier XML
                 $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
@@ -723,6 +742,5 @@ class SeancesController extends AppController {
 			$this->set('seances', $this->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 		}
 	}
-
 }
 ?>
