@@ -8,6 +8,10 @@ class DeliberationsController extends AppController {
  *  Deliberation.etat = 3 : Voté pour
  * 	Deliberation.etat = 4 : Voté contre
  * 	Deliberation.etat = 5 : envoyé
+ *
+ *  Deliberation.avis = 0 ou null : pas d'avis donné
+ *  Deliberation.avis = 1 : avis favorable
+ *  Deliberation.avis = 2 : avis défavorable
  */
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
@@ -72,7 +76,7 @@ class DeliberationsController extends AppController {
 		$balises .= $this->Gedooo->CreerBalise('objet_projet', $data['Deliberation']['objet'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('position_projet', $data['Deliberation']['position'], 'string');
 	        $balises .= $this->Gedooo->CreerBalise('identifiant_projet', $data['Deliberation']['id'], 'string');
-	   
+
 	   if (GENERER_DOC_SIMPLE==false){
                 $nameTP = $data['Deliberation']['texte_projet_name'];
                 $nameTD = $data['Deliberation']['deliberation_name'];

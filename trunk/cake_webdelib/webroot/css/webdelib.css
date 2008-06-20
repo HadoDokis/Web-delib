@@ -517,6 +517,13 @@ a.link_annexe {
 
 }
 
+a.link_donnerAvis {
+	background-image: url(../img/icons/apply.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
 a.link_valider_avec_border {
 	color: black;
 	text-decoration: none;
@@ -530,6 +537,7 @@ a.link_valider_avec_border {
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
 }
+
 a.link_refuser_avec_border {
 	color: black;
 	text-decoration: none;

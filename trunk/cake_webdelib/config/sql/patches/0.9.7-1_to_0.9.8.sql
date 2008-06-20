@@ -14,6 +14,7 @@ ALTER TABLE `deliberations` ADD `texte_synthese_type`  VARCHAR( 255 ) NULL ;
 ALTER TABLE `deliberations` ADD `deliberation_size` INT( 11 ) NOT NULL ;
 ALTER TABLE `deliberations` ADD `deliberation_type`  VARCHAR( 255 ) NULL ;
 ALTER TABLE `deliberations` ADD `deliberation_name`  VARCHAR( 255 ) NULL ;
+ALTER TABLE `deliberations` ADD `avis` INT( 1 ) NOT NULL DEFAULT '0';
 
 ALTER TABLE `users` ADD `note` VARCHAR( 25 ) NOT NULL AFTER `login` ;
 ALTER TABLE `users` DROP `titre`,
