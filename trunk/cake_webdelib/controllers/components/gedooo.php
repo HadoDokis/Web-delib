@@ -85,7 +85,10 @@ class GedoooComponent extends Object {
 	   return (mkdir($path, 0770, true));
 	else {
             // on nettoie ce qu'il y a dedans pour ne pas encombrer le serveur
-
+	    $dh = opendir($path);
+	    while (false !== ($document = readdir($dh))) 
+                if (is_file($document))
+		    unlink($document);
             return true;
 	}
     }

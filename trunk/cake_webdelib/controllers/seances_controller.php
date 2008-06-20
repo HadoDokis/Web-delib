@@ -583,6 +583,8 @@ class SeancesController extends AppController {
 
 
         function generer ($seance_id, $model_id, $editable=0){
+	    include ('vendors/progressbar.php');
+            $cpt = 1;
             // Préparation des répertoires et URL pour la création des fichiers
             $dyn_path = "/files/generee/seances/$seance_id/";
             $path = WEBROOT_PATH.$dyn_path;
@@ -599,8 +601,11 @@ class SeancesController extends AppController {
 
 	    $data = $this->Seance->read(null, $seance_id);
             $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($data['Seance']['type_id']);
-	    echo("G&eacute;n&eacute;ration des ".count($acteursConvoques)." documents ($nomModel): <br>");
+	    $nbActeurs = count($acteursConvoques); 
 	    $listFiles = array();
+        //  Initialize($gauche,$haut,$largeur,$hauteur,$bord_col,$txt_col,$bg_col)
+	    Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699'); 
+	    
 	    foreach ($acteursConvoques as $acteur ) {
 	        //
                 //*****************************************
@@ -654,7 +659,8 @@ class SeancesController extends AppController {
 
 		// Création d'un tableau pour l'affichage et le stockage des fichiers à récuperer
 		$listFiles[$urlFiles.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
-		echo($acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom']."<br>");
+                ProgressBar($cpt*(100/$nbActeurs), 'Document g&eacute;n&eacute;r&eacute; pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
+                $cpt++;
             }
 	    $listFiles[$urlFiles.'documents.zip'] = 'Tous les documents';
 	    $this->set('listFiles', $listFiles);
