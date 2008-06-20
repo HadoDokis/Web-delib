@@ -611,7 +611,7 @@ class SeancesController extends AppController {
                 //* Création du fichier XML de données    *
                 //*****************************************
                 // Informations sur la collectivité
-                $this->Gedooo->createFile($path, 'logo.html', '<img src="'.$urlWebroot.'files/image/logo.jpg" />');
+                $this->Gedooo->createFile($path, 'logo.html', '<img src="'. 'http://'.$_SERVER['HTTP_HOST'].$this->base.'/files/image/logo.jpg" />');
                 $dataColl = $this->Collectivite->read(null, 1);
                 $balises  = $this->Gedooo->CreerBalise('nom_collectivite', $dataColl['Collectivite']['nom'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('adresse_collectivite', $dataColl['Collectivite']['adresse'], 'string');
