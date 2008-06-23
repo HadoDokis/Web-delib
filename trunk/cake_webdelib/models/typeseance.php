@@ -9,6 +9,8 @@ class Typeseance extends AppModel {
     'libelle' => VALID_NOT_EMPTY,
     'action' => VALID_NOT_EMPTY,
     'compteur_id' => VALID_NOT_EMPTY,
+    'modelprojet_id' => VALID_NOT_EMPTY,
+    'modeldeliberation_id' => VALID_NOT_EMPTY,
     'modelconvocation_id' => VALID_NOT_EMPTY,
     'modelordredujour_id' => VALID_NOT_EMPTY,
     'modelpvsommaire_id' => VALID_NOT_EMPTY,
@@ -19,6 +21,12 @@ class Typeseance extends AppModel {
     'Compteur' => array(
       'className'  => 'Compteur',
       'foreignKey' => 'compteur_id'),
+    'Modelprojet' => array(
+      'className'  => 'Model',
+      'foreignKey' => 'modelprojet_id'),
+    'Modeldeliberation' => array(
+     'className'  => 'Model',
+     'foreignKey' => 'modeldeliberation_id'),
     'Modelconvocation' => array(
       'className'  => 'Model',
       'foreignKey' => 'modelconvocation_id'),
