@@ -15,7 +15,13 @@
 		    <td><?php echo $projet['Deliberation']['objet']; ?></td>
 		    <td><?php echo $projet['Deliberation']['titre']; ?></td>
 		    <td><?php echo $projet['Deliberation']['num_delib']; ?></td>
-		    <td><?php echo $html->link('&shy;','/postseances/generateDeliberation/' . $projet['Deliberation']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false)?>
+		    <td><?php 
+		     if (!USE_GEDOOO)
+		        echo $html->link('&shy;','/postseances/generateDeliberation/' . $projet['Deliberation']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false); 
+		     else
+		        echo $html->link('&shy;','/deliberations/generer/'.$projet['Deliberation']['id'].'/4', array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false); 
+			
+			?>
 
 		</tr>
 		<?php endforeach; ?>
