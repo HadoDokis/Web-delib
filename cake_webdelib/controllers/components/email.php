@@ -11,7 +11,7 @@ class EmailComponent
    * Send email using SMTP Auth by default.
    */
     var $from         = 'webdelib@adullact.org';
-    var $fromName     = "Cake PHP-Mailer";
+    var $fromName     = "Webdelib deta - linux01";
     var $smtpUserName = '';  // SMTP username
     var $smtpPassword = ''; // SMTP password
     var $smtpHostNames= "127.0.0.1";  // specify main and backup server
