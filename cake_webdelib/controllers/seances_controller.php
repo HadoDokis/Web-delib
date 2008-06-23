@@ -601,10 +601,10 @@ class SeancesController extends AppController {
 
 	    $data = $this->Seance->read(null, $seance_id);
             $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($data['Seance']['type_id']);
-	    $nbActeurs = count($acteursConvoques); 
+	    $nbActeurs = count($acteursConvoques);
 	    $listFiles = array();
-	    Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699'); 
-	    
+	    Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
+
 	    foreach ($acteursConvoques as $acteur ) {
 	        //
                 //*****************************************
@@ -720,6 +720,13 @@ class SeancesController extends AppController {
 				$this->data['Deliberation']['etat'] = 0;
 				unset($this->data['Deliberation']['seance_id']);
 				$this->Deliberation->save($this->data);
+				// ajout du commentaire
+				$this->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
+				$this->data['Commentaire']['texte'] = 'A reçu un avis défavorable en '
+					. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$deliberation['Seance']['type_id'])
+					. ' du ' . $deliberation['Seance']['date'];
+				$this->Deliberation->Commentaire->save($this->data);
+
 				$sortie = true;
 			} elseif ($this->data['Deliberation']['avis'] == 1) {
 				// Favorable : on attribue une nouvelle date de séance si elle est sélectionnée
@@ -728,6 +735,13 @@ class SeancesController extends AppController {
 				else
 					$this->data['Deliberation']['position'] = $this->Deliberation->findCount("seance_id =".$this->data['Deliberation']['seance_id']." AND (etat != -1 )")+1;
 				$this->Deliberation->save($this->data['Deliberation']);
+				// ajout du commentaire
+				$this->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
+				$this->data['Commentaire']['texte'] = 'A reçu un avis favorable en '
+					. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$deliberation['Seance']['type_id'])
+					. ' du ' . $deliberation['Seance']['date'];
+				$this->Deliberation->Commentaire->save($this->data);
+
 				$sortie = true;
 			}
 
