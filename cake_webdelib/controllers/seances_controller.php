@@ -23,7 +23,9 @@ class SeancesController extends AppController {
 		'saisirDebat'=>'Seances:listerFuturesSeances',
 		'voter'=>'Seances:listerFuturesSeances',
 		'changeRapporteur'=>'Seances:listerFuturesSeances',
-		'changeStatus'=>'Seances:listerFuturesSeances'
+		'changeStatus'=>'Seances:listerFuturesSeances',
+		'detailsAvis'=>'Seances:listerFuturesSeances',
+		'donnerAvis'=>'Seances:listerFuturesSeances'
 	);
 
 	function index() {
