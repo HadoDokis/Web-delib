@@ -40,7 +40,7 @@
 			<?php echo $html->link('&shy;','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?', false)?>
 			<br/><br/>
 			<?php echo $html->link('&shy;','/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'], array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'), false, false)?>
-			<?php echo $html->link('&shy;','/deliberations/generer/' . $deliberation['Deliberation']['id'].'/1', array('class'=>'link_pdf', 'title'=>'PDF'), false, false)?>
+			<?php echo $html->link('&shy;','/deliberations/generer/' . $deliberation['Deliberation']['id'].'/'.$deliberation['Modelprojet']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false)?>
 
 		</td>
 	</tr>
