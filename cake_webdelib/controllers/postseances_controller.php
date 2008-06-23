@@ -11,8 +11,8 @@ class PostseancesController extends AppController {
 	var $commeDroit = array('changeObjet'=>'Postseances:index', 'afficherProjets'=>'Postseances:index', 'generateDeliberation'=>'Postseances:index', 'generatePvComplet'=>'Postseances:index', 'generatePvSommaire'=>'Postseances:index');
 
 	function index() {
+		$this->set ('USE_GEDOOO', USE_GEDOOO);
 		$this->Postseances->recursive = 0;
-	//	$condition= 'date <= "'.date('Y-m-d H:i:s').'"';
 		$condition= 'Seance.traitee = 1';
 		$seances = $this->Seance->findAll(($condition),null,'date asc');
 
@@ -25,16 +25,17 @@ class PostseancesController extends AppController {
 
 	function afficherProjets ($id=null, $return=null)
 	{
-		$condition= "seance_id=$id AND etat>=2";
-		if (!isset($return)) {
-		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
-			$deliberations = $this->Deliberation->findAll($condition,null,'Deliberation.position ASC');
-		    $this->set('seance_id', $id);
-		    $this->set('projets', $deliberations);
-		    $this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->requestAction("seances/getDate/$id"))));
-		}
-		else
-		    return ($this->Deliberation->findAll($condition,null,'Deliberation.position ASC'));
+	    $this->set ('USE_GEDOOO', USE_GEDOOO);
+	    $condition= "seance_id=$id AND etat>=2";
+	    if (!isset($return)) {
+	        $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
+	        $deliberations = $this->Deliberation->findAll($condition,null,'Deliberation.position ASC');
+		$this->set('seance_id', $id);
+		$this->set('projets', $deliberations);
+		$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->requestAction("seances/getDate/$id"))));
+	    }
+	    else
+	        return ($this->Deliberation->findAll($condition,null,'Deliberation.position ASC'));
 	}
 
 	function getVote($id_delib){
@@ -77,7 +78,7 @@ class PostseancesController extends AppController {
 	}
 
 	function generateDeliberation ($id=null, $dl=1) {
-		vendor('fpdf/html2fpdf');
+	    vendor('fpdf/html2fpdf');
 	    $pdf = new HTML2FPDF();
 	    $pdf->AddPage();
 	    $pdf->WriteHTML($this->requestAction("/models/generateDeliberation/$id"));
