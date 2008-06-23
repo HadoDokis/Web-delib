@@ -677,6 +677,18 @@ class SeancesController extends AppController {
                     $extension = 'odt';
                 $nomFichier =  $acteur['Acteur']['id'].'.'.$extension;
 		$this->Gedooo->sendFiles($model, $datas, $editable, 1,  $nomFichier);
+                if ($acteur['Acteur']['accept_notif']){
+                    $to_mail   = $acteur['Acteur']['email'];
+                    $to_nom    = $acteur['Acteur']['nom'];
+                    $to_prenom = $acteur['Acteur']['prenom'];
+
+                    $this->Email->template = 'email/convoquer';
+                    $this->set('data', utf8_encode( "Vous venez de recevoir un document de Webdelib $nomModel"));
+                    $this->Email->to = $to_mail;
+                    $this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib $nomModel");
+                    $this->Email->attach($path.$nomFichier, $nomFichier);
+                    $result = $this->Email->send();
+                }
 
 		// Création d'un tableau pour l'affichage et le stockage des fichiers à récuperer
 		$listFiles[$urlFiles.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
