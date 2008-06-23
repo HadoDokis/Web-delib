@@ -592,6 +592,7 @@ class SeancesController extends AppController {
             $path = WEBROOT_PATH.$dyn_path;
 	    $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
             $urlFiles =  'http://'.$_SERVER['HTTP_HOST'].$this->base.'/files/generee/modeles/';
+	    $pathFile =  WEBROOT_PATH.'/files/generee/modeles/';
 	    if (!$this->Gedooo->checkPath($path))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
 
@@ -683,14 +684,15 @@ class SeancesController extends AppController {
                     $to_mail   = $acteur['Acteur']['email'];
                     $to_nom    = $acteur['Acteur']['nom'];
                     $to_prenom = $acteur['Acteur']['prenom'];
-
+                     $this->Email->attachments = null;
                     $this->Email->template = 'email/convoquer';
-                    $this->set('data', utf8_encode( "Vous venez de recevoir un document de Webdelib $nomModel"));
+                    $this->set('data', utf8_encode( "Vous venez de recevoir un document de Webdelib ($nomModel)"));
                     $this->Email->to = $to_mail;
-                    $this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib $nomModel");
-                    $this->Email->attach($path.$nomFichier, $nomFichier);
-                    $result = $this->Email->send();
+                    $this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ($nomModel)");
+                    $this->Email->attach($pathFile.$nomFichier, $nomFichier);
+		    $result = $this->Email->send();
                     ProgressBar($cpt*(100/$nbActeurs), 'Document envoy&eacute; &agrave; : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
+		    unset($result);
                 }
 
 		// Création d'un tableau pour l'affichage et le stockage des fichiers à récuperer
