@@ -440,6 +440,7 @@ class SeancesController extends AppController {
 	}
 
 	function details ($seance_id=null) {
+		$this->set('USE_GEDOOO', USE_GEDOOO);
 		$deliberations=$this->afficherProjets($seance_id, 0);
 		$ToutesVotees = true;
 		for ($i=0; $i<count($deliberations); $i++){
@@ -600,7 +601,7 @@ class SeancesController extends AppController {
             $content = $this->requestAction("/models/getModel/$model_id");
 	    $data = $this->Model->read(null, $model_id);
 	    $nomModel = $data['Model']['modele'];
-            $model = $this->Gedooo->createFile($path,'model_'.$model_id, $content);
+            $model = $this->Gedooo->createFile($path,'model_'.$model_id.'.odt', $content);
 
 	    $data = $this->Seance->read(null, $seance_id);
             $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($data['Seance']['type_id']);

@@ -37,6 +37,16 @@
 <div class="demi">
 	<fieldset>
 	<legend>Models pour les &eacute;ditions</legend>
+                <?php echo $form->labelTag('Typeseance/modelprojet_id', 'projet <acronym title="obligatoire">*</acronym>');?>
+                <?php echo $html->selectTag('Typeseance/modelprojet_id', $models, $html->tagValue('Typeseance/modelprojet_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
+                <?php echo $html->tagErrorMsg('Typeseance/modelprojet_id', 'Selectionner le modele de la projet');?>
+                <br/>
+
+                <?php echo $form->labelTag('Typeseance/modeldeliberation_id', 'deliberation <acronym title="obligatoire">*</acronym>');?>
+                <?php echo $html->selectTag('Typeseance/modeldeliberation_id', $models, $html->tagValue('Typeseance/modeldeliberation_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
+                <?php echo $html->tagErrorMsg('Typeseance/modeldeliberation_id', 'Selectionner le model de d&eacute;lib&eacute;ration');?>
+                <br/>
+
 		<?php echo $form->labelTag('Typeseance/modelconvocation_id', 'convocation <acronym title="obligatoire">*</acronym>');?>
 	 	<?php echo $html->selectTag('Typeseance/modelconvocation_id', $models, $html->tagValue('Typeseance/modelconvocation_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
 		<?php echo $html->tagErrorMsg('Typeseance/modelconvocation_id', 'Selectionner le model de la convocation');?>

@@ -39,7 +39,7 @@ class DeliberationsController extends AppController {
 		$this->set('deliberations', $this->Deliberation->findAll(null,null, 'Seance.date'));
 	}
 
-       function generer ($delib_id, $model_id, $editable=null){
+       function generer ($delib_id, $model_id, $editable=null, $dl=0){
             // Préparation des répertoires pour la création des fichiers
             $dyn_path = "/files/generee/deliberations/$delib_id/";
             $path = WEBROOT_PATH.$dyn_path;
@@ -49,7 +49,7 @@ class DeliberationsController extends AppController {
             $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
             //Création du model ott
             $content = $this->requestAction("/models/getModel/$model_id");
-            $model = $this->Gedooo->createFile($path,'model_'.$model_id, $content);
+            $model = $this->Gedooo->createFile($path,'model_'.$model_id.'.odt', $content);
 		//
 		//*****************************************
 	        //* Création du fichier XML de données    *
@@ -158,7 +158,7 @@ class DeliberationsController extends AppController {
 	    // création du fichier XML
 	    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
             // Envoi du fichier à GEDOOo
-            $this->Gedooo->sendFiles($model, $datas, $editable);
+	    $this->Gedooo->sendFiles($model, $datas, $editable, $dl);
         }
 
 	function listerMesProjets() {
@@ -171,8 +171,14 @@ class DeliberationsController extends AppController {
 		$deliberations=$this->Deliberation->findAll($conditions);
 
 		for ($i=0; $i<count($deliberations); $i++){
-			if (isset($deliberations[$i]['Seance']['date']))
-		        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+			if (isset($deliberations[$i]['Seance']['date'])) {
+		            $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+		            $typeSeance = $this->Typeseance->read(null, $deliberations[$i]['Seance']['type_id']); 	
+			     $deliberations[$i]['Modelprojet']['id'] = $typeSeance['Modelprojet']['id'];
+			}
+			else {
+                            $deliberations[$i]['Modelprojet']['id'] = 1;
+			}
 			$id_service = $deliberations[$i]['Service']['id'];
 			$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
 
@@ -1398,6 +1404,7 @@ class DeliberationsController extends AppController {
 	}
 
     function transmit($id=null){
+        $this->set('USE_GEDOOO', USE_GEDOOO);
         $this->set('dateClassification', $this->getDateClassification());
         $this->set('tabNature',          $this->getNatureListe());
         $this->set('tabMatiere',         $this->getMatiereListe());
@@ -1478,32 +1485,35 @@ class DeliberationsController extends AppController {
 		return $return;
 	}
 
-		function sendActe ($delib_id = null) {
+        function sendActe ($delib_id = null) {
             $url = 'https://'.HOST.'/modules/actes/actes_transac_create.php';
             $pos =  strrpos ( getcwd(), 'webroot');
-	        $path = substr(getcwd(), 0, $pos);
-			foreach ($this->data['Deliberation'] as $id => $bool ){
-				if ($bool == 1){
-					$delib_id = substr($id, 3, strlen($id));
-					$classification = $this->data['Deliberation'][$delib_id."_num_pref"];
-			    	$this->changeClassification($delib_id, $classification);
-			    	$class1 = substr($classification , 0, strpos ($classification , '.' ));
-					$rest = substr($classification , strpos ($classification , '.' )+1, strlen($classification));
-					$class2=substr($rest , 0, strpos ($classification , '.' ));
-					$rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
-					$class3=substr($rest , 0, strpos ($classification , '.' ));
-					$rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
-					$class4=substr($rest , 0, strpos ($classification , '.' ));
-					$rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
-					$class5=substr($rest , 0, strpos ($classification , '.' ));
-
-
-					$file = $path."webroot/files/delibs/DELIBERATION_$delib_id.pdf";
-					$delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
-
-        	        if (!file_exists($file)){
-  					   $err = $this->requestAction("/postseances/generateDeliberation/$delib_id");
-        	        }
+	    $path = substr(getcwd(), 0, $pos);
+	    foreach ($this->data['Deliberation'] as $id => $bool ){
+	        if ($bool == 1){
+		    $delib_id = substr($id, 3, strlen($id));
+		    $classification = $this->data['Deliberation'][$delib_id."_num_pref"];
+		    $this->changeClassification($delib_id, $classification);
+		    $class1 = substr($classification , 0, strpos ($classification , '.' ));
+		    $rest = substr($classification , strpos ($classification , '.' )+1, strlen($classification));
+		    $class2=substr($rest , 0, strpos ($classification , '.' ));
+		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
+		    $class3=substr($rest , 0, strpos ($classification , '.' ));
+		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
+		    $class4=substr($rest , 0, strpos ($classification , '.' ));
+		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
+		    $class5=substr($rest , 0, strpos ($classification , '.' ));
+                    if (!USE_GEDOOO) {
+		        $file = $path."webroot/files/delibs/DELIBERATION_$delib_id.pdf";
+		        if (!file_exists($file))
+		            $err = $this->requestAction("/postseances/generateDeliberation/$delib_id");
+		    }
+		    else { 
+		        $file =  $pathFile =  WEBROOT_PATH."/files/generee/modeles/$delib_id.pdf";
+			if (!file_exists($file))
+			   $err = $this->requestAction("/deliberations/generer/$delib_id/4/0/1");
+                    }
+		    $delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
 
         	        // Checker le code classification
         	        $data = array(
