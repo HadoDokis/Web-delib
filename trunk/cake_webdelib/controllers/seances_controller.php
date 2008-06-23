@@ -587,7 +587,7 @@ class SeancesController extends AppController {
         function generer ($seance_id, $model_id, $editable=0){
 	    include ('vendors/progressbar.php');
             $cpt = 1;
-            // Préparation des répertoires et URL pour la création des fichiers
+            // Pr�paration des répertoires et URL pour la création des fichiers
             $dyn_path = "/files/generee/seances/$seance_id/";
             $path = WEBROOT_PATH.$dyn_path;
 	    $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
@@ -595,7 +595,7 @@ class SeancesController extends AppController {
 	    if (!$this->Gedooo->checkPath($path))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
 
-            //Création du model ott
+            //Cr�ation du model ott
             $content = $this->requestAction("/models/getModel/$model_id");
 	    $data = $this->Model->read(null, $model_id);
 	    $nomModel = $data['Model']['modele'];
@@ -613,6 +613,7 @@ class SeancesController extends AppController {
                 //* Création du fichier XML de données    *
                 //*****************************************
                 // Informations sur la collectivité
+                ProgressBar($cpt*(100/$nbActeurs), 'Rassemblement des donn&eacute;es pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
                 $this->Gedooo->createFile($path, 'logo.html', '<img src="'. 'http://'.$_SERVER['HTTP_HOST'].$this->base.'/files/image/logo.jpg" />');
                 $dataColl = $this->Collectivite->read(null, 1);
                 $balises  = $this->Gedooo->CreerBalise('nom_collectivite', $dataColl['Collectivite']['nom'], 'string');
@@ -677,7 +678,8 @@ class SeancesController extends AppController {
                     $extension = 'odt';
                 $nomFichier =  $acteur['Acteur']['id'].'.'.$extension;
 		$this->Gedooo->sendFiles($model, $datas, $editable, 1,  $nomFichier);
-                if ($acteur['Acteur']['accept_notif']){
+                ProgressBar($cpt*(100/$nbActeurs), 'Document g&eacute;n&eacute;r&eacute; pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
+                if ($acteur['Acteur']['email']!=''){
                     $to_mail   = $acteur['Acteur']['email'];
                     $to_nom    = $acteur['Acteur']['nom'];
                     $to_prenom = $acteur['Acteur']['prenom'];
@@ -688,11 +690,11 @@ class SeancesController extends AppController {
                     $this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib $nomModel");
                     $this->Email->attach($path.$nomFichier, $nomFichier);
                     $result = $this->Email->send();
+                    ProgressBar($cpt*(100/$nbActeurs), 'Document envoy&eacute; &agrave; : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
                 }
 
 		// Création d'un tableau pour l'affichage et le stockage des fichiers à récuperer
 		$listFiles[$urlFiles.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
-                ProgressBar($cpt*(100/$nbActeurs), 'Document g&eacute;n&eacute;r&eacute; pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
                 $cpt++;
             }
 	    $listFiles[$urlFiles.'documents.zip'] = 'Tous les documents';
