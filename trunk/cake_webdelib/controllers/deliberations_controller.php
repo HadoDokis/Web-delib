@@ -176,7 +176,7 @@ class DeliberationsController extends AppController {
 			    $deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
 			}
 			else {
-                            $deliberations[$i]['Modelprojet']['id'] = 1;
+                            $deliberations[$i]['Model']['id'] = 1;
 			}
 			$id_service = $deliberations[$i]['Service']['id'];
 			$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
