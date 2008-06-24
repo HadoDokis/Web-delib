@@ -398,11 +398,12 @@ class DeliberationsController extends AppController {
 		    		$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+			        $deliberations[$i]['Model']['id'] = $this->getModelId( $deliberations[$i]['Deliberation']['id']);
 			}
 
 			foreach ($deliberations as $deliberation)
 			{
-
+				
 				if (isset($deliberation['Deliberation']['date_limite']))
 				    $deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
 				//on recupere la position courante de la deliberation
