@@ -444,10 +444,11 @@ class SeancesController extends AppController {
 		$deliberations=$this->afficherProjets($seance_id, 0);
 		$ToutesVotees = true;
 		for ($i=0; $i<count($deliberations); $i++){
-				$id_service = $deliberations[$i]['Service']['id'];
-				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
-				if (($deliberations[$i]['Deliberation']['etat']!=3)AND($deliberations[$i]['Deliberation']['etat']!=4))
-				     $ToutesVotees = false;
+                    $id_service = $deliberations[$i]['Service']['id'];
+		    $deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+		    $deliberations[$i]['Model']['id'] = $this->requestAction("deliberations/getModelId/". $deliberations[$i]['Deliberation']['id']);
+                    if (($deliberations[$i]['Deliberation']['etat']!=3)AND($deliberations[$i]['Deliberation']['etat']!=4))
+                        $ToutesVotees = false;
 		}
 		$this->set('deliberations',$deliberations);
 		$date_tmpstp = strtotime($this->GetDate($seance_id));
