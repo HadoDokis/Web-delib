@@ -66,10 +66,9 @@ class GedoooComponent extends Object {
             $path = WEBROOT_PATH.$dyn_path;
             if (!$this->checkPath($path))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-            $fp = fopen($path.$name, 'w');
+            $fp = fopen($path.$name.'.'.$retour, 'w');
             fwrite($fp, $return);
             fclose($fp);            
-
             $zip = new ZipArchive;
 	    if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
 	        $zip->addFile($path.$name, $name);
