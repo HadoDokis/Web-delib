@@ -40,7 +40,7 @@ function initAffichage()
 
 	<div class="demi" id="selectSeance">
 		<?php echo $form->labelTag('Deliberation/seance_id', 'Attribuer une nouvelle séance'); ?>
-		<?php echo $html->selectTag('Deliberation/seance_id', $seances);?>
+		<?php echo $html->selectTag('Deliberation/seance_id', $seances, '');?>
 		<br/>
 		<br/>
 	</div>
