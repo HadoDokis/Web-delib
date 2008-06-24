@@ -30,6 +30,8 @@ class PostseancesController extends AppController {
 	    if (!isset($return)) {
 	        $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
 	        $deliberations = $this->Deliberation->findAll($condition,null,'Deliberation.position ASC');
+	        for ($i=0; $i<count($deliberations); $i++)
+		     $deliberations[$i]['Model']['id'] =  $this->requestAction("deliberations/getModelId/". $deliberations[$i]['Deliberation']['id']); 
 		$this->set('seance_id', $id);
 		$this->set('projets', $deliberations);
 		$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->requestAction("seances/getDate/$id"))));
