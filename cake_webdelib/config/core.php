@@ -39,7 +39,7 @@
  */
     define ('VERSION', '0.9.8beta');
     define ('GENERER_DOC_SIMPLE', true);
-    define ('USE_GEDOOO', false);
+    define ('USE_GEDOOO', true);
     define ('URL_GEDOOO', 'http://gedooo.demonstrations.adullact.org/GEDOOo/generator2.php');
 /**
  * Set debug level here:
@@ -68,10 +68,10 @@
 	$webroot_path = $path2."webroot/";
 	define ('WEBROOT_PATH',  $path2."webroot");
 
-	define('PEM', $config_path.'pubKey.pem');
-	define('PASSWORD', 'demo_u');
+	define('PEM', $config_path.'client.pem');
+        define('PASSWORD', 'demo_u');
 	define('HOST', 'demo-s2low.extranet.adullact.org');
-	define('KEY', $config_path.'key.pem');
+	define('SSLKEY', $config_path.'key.pem');
 	define('CA_PATH', $config_path);
 	define('FILE_CLASS', $webroot_path.'files/actes/classification.xml');
 	define('IMPORT', true);
