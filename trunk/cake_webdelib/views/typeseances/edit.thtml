@@ -17,7 +17,7 @@
 	 	<?php echo $html->input('Typeseance/libelle', array('size' => '60'));?>
 		<?php echo $html->tagErrorMsg('Typeseance/libelle', 'Entrer le libelle.');?>
 		<?php echo $html->tagErrorMsg('Typeseance/unique_libelle', 'Entrez un autre libell&eacute;, celui-ci est d&eacute;j&agrave; utilis&eacute;.'); ?> <br />
-
+		<br/>
 		<?php echo $form->labelTag('Typeseance/retard', 'Nombre de jours avant retard');?>
 	 	<?php echo $html->input('Typeseance/retard');?>
 		<?php echo $html->tagErrorMsg('Typeseance/retard', 'Insérer un chiffre pour le nombre de jours avant retard.');?>
