@@ -214,6 +214,7 @@ class DeliberationsController extends AppController {
                         $deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
 		}
 		$this->set('deliberations', $deliberations);
+		$this->set('USE_GEDOOO', USE_GEDOOO);
 	}
 
 	function listerProjetsNonAttribues() {
@@ -312,15 +313,15 @@ class DeliberationsController extends AppController {
 
 			for ($i=0; $i<count($deliberations); $i++){
 				if(!empty($deliberations[$i]['Seance']['date']))
-		    		$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+		    		    $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+				$deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
 			}
 
 			foreach ($deliberations as $deliberation)
 			{
-
-				if (isset($deliberation['Deliberation']['date_limite'])){
+                             if (isset($deliberation['Deliberation']['date_limite'])){
 					$deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
 				}
 				//on recupere la position courante de la deliberation
@@ -354,6 +355,7 @@ class DeliberationsController extends AppController {
 			}
 		}
 		$this->set('deliberations', $delib);
+		$this->set('USE_GEDOOO', USE_GEDOOO);
 	}
 
 	function listerProjetsATraiter() {
@@ -1692,14 +1694,17 @@ class DeliberationsController extends AppController {
 
 	function listerProjetsServicesAssemblees()
 	{
-		//liste les projets appartenants au service des assemblees
-		$conditions="etat = 2 ";
-		$deliberations = $this->Deliberation->findAll($conditions);
+	    //liste les projets appartenants au service des assemblees
+	    $conditions="etat = 2 ";
+	    $deliberations = $this->Deliberation->findAll($conditions);
 
-		for ($i=0; $i<count($deliberations); $i++)
-			$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+	    for ($i=0; $i<count($deliberations); $i++){
+	        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+                $deliberations[$i]['Model']['id']    = $this->getModelId($deliberations[$i]['Deliberation']['id']); 
+	    }
 
-		$this->set('deliberations',$deliberations );
+	    $this->set('deliberations',$deliberations );
+	    $this->set('USE_GEDOOO', USE_GEDOOO);
 	}
 
     function getRapporteur($id_delib){
