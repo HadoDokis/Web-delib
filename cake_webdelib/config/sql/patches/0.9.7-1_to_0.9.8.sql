@@ -98,3 +98,6 @@ CREATE TABLE `typeseances_typeacteurs` (
   `typeacteur_id` int(11) NOT NULL,
   PRIMARY KEY  (`typeseance_id`,`typeacteur_id`)
 );
+
+ALTER TABLE `typeseances` ADD `modelprojet_id` INT( 11 ) NOT NULL AFTER `compteur_id` ,
+ADD `modeldeliberation_id` INT( 11 ) NOT NULL AFTER `modelprojet_id` ;
