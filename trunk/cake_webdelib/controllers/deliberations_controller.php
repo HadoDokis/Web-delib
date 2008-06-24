@@ -173,8 +173,7 @@ class DeliberationsController extends AppController {
 		for ($i=0; $i<count($deliberations); $i++){
 			if (isset($deliberations[$i]['Seance']['date'])) {
 		            $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
-		            $typeSeance = $this->Typeseance->read(null, $deliberations[$i]['Seance']['type_id']); 	
-			     $deliberations[$i]['Modelprojet']['id'] = $typeSeance['Modelprojet']['id'];
+			    $deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
 			}
 			else {
                             $deliberations[$i]['Modelprojet']['id'] = 1;
@@ -211,7 +210,7 @@ class DeliberationsController extends AppController {
 		        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 			$id_service = $deliberations[$i]['Service']['id'];
 			$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
-
+                        $deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
 		}
 		$this->set('deliberations', $deliberations);
 	}
@@ -406,7 +405,6 @@ class DeliberationsController extends AppController {
 
 				if (isset($deliberation['Deliberation']['date_limite']))
 				    $deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
-
 				//on recupere la position courante de la deliberation
 				$lastTraitement=array_pop($deliberation['Traitement']);
 				// Le +1 pour compter le 0
@@ -423,7 +421,6 @@ class DeliberationsController extends AppController {
 					$deliberation['act'] = "traiter";
 					$deliberation['image']='icons/atraiter.png';
 					array_push($delib, $deliberation);
-
 				}
 			}
 		}
@@ -1938,5 +1935,15 @@ class DeliberationsController extends AppController {
 		}
 		return ($presents);
         }
+
+        function getModelId($delib_id) {
+             $data = $this->Deliberation->read(null, $delib_id);
+	     $seance = $this->Seance->read(null, $data['Deliberation']['seance_id'] );
+	     if ($data['Deliberation']['etat']<3)
+		 return $seance['Typeseance']['modelprojet_id'];
+	     else
+	         return $seance['Typeseance']['modeldeliberation_id'];
+	}
+
 }
 ?>
