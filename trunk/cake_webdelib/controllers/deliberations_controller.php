@@ -1414,6 +1414,7 @@ class DeliberationsController extends AppController {
 
         for($i = 0; $i < count($deliberations); $i++) {
         	$deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
+        	$deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
         }
 
         $this->set('deliberations', $deliberations);
@@ -1490,10 +1491,21 @@ class DeliberationsController extends AppController {
             $url = 'https://'.HOST.'/modules/actes/actes_transac_create.php';
             $pos =  strrpos ( getcwd(), 'webroot');
 	    $path = substr(getcwd(), 0, $pos);
+            $configPos =  strrpos ( getcwd(), 'config');
+	    $configPath = substr(getcwd(), 0, $pos);
+	    foreach ($this->data['Deliberation'] as $id => $bool ){
+                 if ($bool == 1){
+                     $delib_id = substr($id, 3, strlen($id));
+		     if (!isset($this->data['Deliberation'][$delib_id."_num_pref"]))
+		         continue;
+                     $Tabclassification[$delib_id]= $this->data['Deliberation'][$delib_id."_num_pref"];
+		 }
+            }
 	    foreach ($this->data['Deliberation'] as $id => $bool ){
 	        if ($bool == 1){
 		    $delib_id = substr($id, 3, strlen($id));
-		    $classification = $this->data['Deliberation'][$delib_id."_num_pref"];
+		    $classification =   $Tabclassification[$delib_id];
+		    echo ("$delib_id =>  $classification<br>");
 		    $this->changeClassification($delib_id, $classification);
 		    $class1 = substr($classification , 0, strpos ($classification , '.' ));
 		    $rest = substr($classification , strpos ($classification , '.' )+1, strlen($classification));
@@ -1510,9 +1522,9 @@ class DeliberationsController extends AppController {
 		            $err = $this->requestAction("/postseances/generateDeliberation/$delib_id");
 		    }
 		    else { 
-		        $file =  $pathFile =  WEBROOT_PATH."/files/generee/modeles/$delib_id.pdf";
-			if (!file_exists($file))
-			   $err = $this->requestAction("/deliberations/generer/$delib_id/4/0/1");
+			$model_id = $this->getModelId($delib_id);
+			$err = $this->generer($delib_id, $model_id,0,1);
+		        $file =  $pathFile =  WEBROOT_PATH."/files/generee/modeles/retour.pdf";
                     }
 		    $delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
 
@@ -1525,7 +1537,7 @@ class DeliberationsController extends AppController {
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-      	                 'number'        => 'WEB_DELIB_'.$delib_id,
+      	                 'number'        => $delib[0]['Deliberation']['num_delib'],
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
@@ -1533,24 +1545,33 @@ class DeliberationsController extends AppController {
      	                 'acte_attachments[]' => "",
       	                'acte_attachments_sign[]' => ""
    	                 );
-   	          	     $ch = curl_init();
- 	            	 curl_setopt($ch, CURLOPT_URL, $url);
-  	            	 curl_setopt($ch, CURLOPT_POST, TRUE);
-  	          	     curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
-   	          	     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-  	           	     curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
-  	            	 curl_setopt($ch, CURLOPT_SSLCERT, PEM);
-   	           	     curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
-   	           	     curl_setopt($ch, CURLOPT_SSLKEY, KEY);
-  	            	 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-  	                 curl_setopt($ch, CURLOPT_VERBOSE, true);
-  	            	 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-  	               	 $response = curl_exec($ch);
-  	               	 curl_close($ch);
-				}
+			
+			$ch = curl_init();
+                         curl_setopt($ch, CURLOPT_URL, $url);
+                         curl_setopt($ch, CURLOPT_POST, TRUE);
+                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
+                         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+                         curl_setopt($ch, CURLOPT_CAPATH, $configPath.CA_PATH);
+                         curl_setopt($ch, CURLOPT_SSLCERT,  $configPath.PEM);
+                         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
+                         curl_setopt($ch, CURLOPT_SSLKEY,  $configPath.SSLKEY);
+                         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+                         curl_setopt($ch, CURLOPT_VERBOSE, true);
+			 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+			 
+			 $curl_return = curl_exec($ch);
+                         
+			 if ($curl_return === false) {
+                             echo 'curl_exec() failed.' . '<br />';
+                             echo 'curl_errno() = ' . curl_errno($ch) . '<br />';
+                             echo 'curl_error() = ' . curl_error($ch) . '<br />';
+                         }
+			 $this->changeEtat($delib_id, '5');
+			 curl_close($ch);
+		         unlink ($file);
 			}
-			$this->changeEtat($delib_id, '5');
-			$this->redirect('/deliberations/transmit');
+		    }
+		    $this->redirect('/deliberations/transmit');
 		}
 
 		function changeEtat($delib_id, $etat){
