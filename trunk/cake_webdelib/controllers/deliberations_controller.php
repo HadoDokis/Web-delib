@@ -188,6 +188,7 @@ class DeliberationsController extends AppController {
 			$this->set('UserCanAdd', false);
 
 		$this->set('deliberations', $deliberations);
+		$this->set('USE_GEDOOO', USE_GEDOOO);
 	}
 
 	function listerProjetsAttribues() {
