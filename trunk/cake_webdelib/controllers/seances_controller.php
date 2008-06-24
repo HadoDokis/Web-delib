@@ -713,12 +713,14 @@ class SeancesController extends AppController {
 		$toutesVisees = true;
 
 		for ($i=0; $i<count($deliberations); $i++){
-				$id_service = $deliberations[$i]['Service']['id'];
-				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
-				if (empty($deliberations[$i]['Deliberation']['avis']))
-				     $toutesVisees = false;
+                    $id_service = $deliberations[$i]['Service']['id'];
+		    $deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+		    $deliberations[$i]['Model']['id'] = $this->requestAction("deliberations/getModelId/". $deliberations[$i]['Deliberation']['id']);
+		    if (empty($deliberations[$i]['Deliberation']['avis']))
+		        $toutesVisees = false;
 		}
 
+		$this->set('USE_GEDOOO', USE_GEDOOO);
 		$this->set('deliberations',$deliberations);
 		$this->set('date_seance', $this->Date->frenchDateConvocation($date_tmpstp));
 		$this->set('seance_id', $seance_id);
