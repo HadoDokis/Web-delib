@@ -39,7 +39,7 @@ class DeliberationsController extends AppController {
 		$this->set('deliberations', $this->Deliberation->findAll(null,null, 'Seance.date'));
 	}
 
-       function generer ($delib_id, $model_id, $editable=null, $dl=0){
+       function generer ($delib_id, $model_id, $editable=null, $dl=0, $nomFichier='retour'){
             // Préparation des répertoires pour la création des fichiers
             $dyn_path = "/files/generee/deliberations/$delib_id/";
             $path = WEBROOT_PATH.$dyn_path;
@@ -90,26 +90,28 @@ class DeliberationsController extends AppController {
 		$balises .= $this->Gedooo->CreerBalise('position_redacteur', $data['Redacteur']['position'], 'string');
 
 		// Informations sur la délibération
-                $votes = $this->Vote->findAll("delib_id = $delib_id");
-		$nbPour = 0;
-                $nbContre = 0;
-                $nbAbsention = 0;
-                $nbSansParticipation = 0;
-		foreach ($votes as $vote) {
-                    if ($vote['Vote']['resultat'] == 3)
-		        $nbPour++;
-	            elseif ($vote['Vote']['resultat'] == 2)
-		       $nbContre++;
-		    elseif ($vote['Vote']['resultat'] == 4)
-		       $nbAbsention++;
-		    elseif ($vote['Vote']['resultat'] == 5)
-		       $nbSansParticipation++;
+                if ($data['Deliberation']['etat']>= 3) {
+		    $votes = $this->Vote->findAll("delib_id = $delib_id");
+		    $nbPour = 0;
+                    $nbContre = 0;
+                    $nbAbsention = 0;
+                    $nbSansParticipation = 0;
+		    foreach ($votes as $vote) {
+                        if ($vote['Vote']['resultat'] == 3)
+		            $nbPour++;
+	                elseif ($vote['Vote']['resultat'] == 2)
+		           $nbContre++;
+		        elseif ($vote['Vote']['resultat'] == 4)
+		           $nbAbsention++;
+		        elseif ($vote['Vote']['resultat'] == 5)
+		           $nbSansParticipation++;
+		    }
+		    $balises .= $this->Gedooo->CreerBalise('nombre_pour', $nbPour, 'string');
+		    $balises .= $this->Gedooo->CreerBalise('nombre_abstention', $nbAbsention, 'string');
+	            $balises .= $this->Gedooo->CreerBalise('nombre_contre', $nbContre, 'string');
+	            $balises .= $this->Gedooo->CreerBalise('nombre_sans_participation', $nbSansParticipation, 'string');
+		    $balises .= $this->Gedooo->CreerBalise('commentaire_vote', $votes[0]['Vote']['commentaire'], 'string');
 		}
-		$balises .= $this->Gedooo->CreerBalise('nombre_pour', $nbPour, 'string');
-		$balises .= $this->Gedooo->CreerBalise('nombre_abstention', $nbAbsention, 'string');
-		$balises .= $this->Gedooo->CreerBalise('nombre_contre', $nbContre, 'string');
-		$balises .= $this->Gedooo->CreerBalise('nombre_sans_participation', $nbSansParticipation, 'string');
-		$balises .= $this->Gedooo->CreerBalise('commentaire_vote', $votes[0]['Vote']['commentaire'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('titre_projet', $data['Deliberation']['titre'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('objet_projet', $data['Deliberation']['objet'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('position_projet', $data['Deliberation']['position'], 'string');
@@ -180,7 +182,7 @@ class DeliberationsController extends AppController {
 	    // création du fichier XML
 	    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
             // Envoi du fichier à GEDOOo
-	    $this->Gedooo->sendFiles($model, $datas, $editable, $dl);
+	    $this->Gedooo->sendFiles($model, $datas, $editable, $dl, $nomFichier);
         }
 
 	function listerMesProjets() {
@@ -1507,7 +1509,6 @@ class DeliberationsController extends AppController {
 	}
 
         function sendActe ($delib_id = null) {
-            echo("####");
 	    include ('vendors/progressbar.php');
             Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
 	    $url = 'https://'.HOST.'/modules/actes/actes_transac_create.php';
@@ -1547,8 +1548,8 @@ class DeliberationsController extends AppController {
 		    }
 		    else { 
 			$model_id = $this->getModelId($delib_id);
-			$err = $this->generer($delib_id, $model_id,0,1);
-		        $file =  $pathFile =  WEBROOT_PATH."/files/generee/modeles/retour.pdf";
+			$err = $this->generer($delib_id, $model_id,0,1, "D_$delib_id.pdf");
+		        $file =  $pathFile =  WEBROOT_PATH."/files/generee/modeles/D_$delib_id.pdf";
                     }
                     ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Document G&eacute;n&eacute;r&eacute; ');
 		    $delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");

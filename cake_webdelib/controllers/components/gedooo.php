@@ -34,7 +34,7 @@ class GedoooComponent extends Object {
 	 */
 
     function sendFiles ($fileModel, $fileData, $retour = 1, $download=0, $name='retour') {
-	if ($retour == 0)
+        if ($retour == 0)
 	    $retour = 'pdf';
 	else
 	   $retour = 'odt';
@@ -43,7 +43,6 @@ class GedoooComponent extends Object {
                       'data' => "@$fileData",
                       'model' => "@$fileModel"
                       );
-
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, URL_GEDOOO);
         curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -51,7 +50,7 @@ class GedoooComponent extends Object {
         curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_exec($ch);
-        $return = curl_multi_getcontent  ($ch);
+        $return = curl_multi_getcontent($ch);
         curl_close($ch);
 
         if ($download== 0){
@@ -66,7 +65,7 @@ class GedoooComponent extends Object {
             $path = WEBROOT_PATH.$dyn_path;
             if (!$this->checkPath($path))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-            $fp = fopen($path.$name.'.'.$retour, 'w');
+            $fp = fopen($path.$name, 'w');
             fwrite($fp, $return);
             fclose($fp);            
             $zip = new ZipArchive;
