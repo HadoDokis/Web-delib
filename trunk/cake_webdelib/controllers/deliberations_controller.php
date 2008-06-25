@@ -90,10 +90,32 @@ class DeliberationsController extends AppController {
 		$balises .= $this->Gedooo->CreerBalise('position_redacteur', $data['Redacteur']['position'], 'string');
 
 		// Informations sur la délibération
+                $votes = $this->Vote->findAll("delib_id = $delib_id");
+		$nbPour = 0;
+                $nbContre = 0;
+                $nbAbsention = 0;
+                $nbSansParticipation = 0;
+		foreach ($votes as $vote) {
+                    if ($vote['Vote']['resultat'] == 3)
+		        $nbPour++;
+	            elseif ($vote['Vote']['resultat'] == 2)
+		       $nbContre++;
+		    elseif ($vote['Vote']['resultat'] == 4)
+		       $nbAbsention++;
+		    elseif ($vote['Vote']['resultat'] == 5)
+		       $nbSansParticipation++;
+		}
+		$balises .= $this->Gedooo->CreerBalise('nombre_pour', $nbPour, 'string');
+		$balises .= $this->Gedooo->CreerBalise('nombre_abstention', $nbAbsention, 'string');
+		$balises .= $this->Gedooo->CreerBalise('nombre_contre', $nbContre, 'string');
+		$balises .= $this->Gedooo->CreerBalise('nombre_sans_participation', $nbSansParticipation, 'string');
+		$balises .= $this->Gedooo->CreerBalise('commentaire_vote', $votes[0]['Vote']['commentaire'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('titre_projet', $data['Deliberation']['titre'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('objet_projet', $data['Deliberation']['objet'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('position_projet', $data['Deliberation']['position'], 'string');
 	        $balises .= $this->Gedooo->CreerBalise('identifiant_projet', $data['Deliberation']['id'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('numero_deliberation', $data['Deliberation']['num_delib'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('classification_deliberation', $data['Deliberation']['num_pref'], 'string');
 
 	   if (GENERER_DOC_SIMPLE==false){
                 $nameTP = $data['Deliberation']['texte_projet_name'];
@@ -726,7 +748,6 @@ class DeliberationsController extends AppController {
 
 				while($counter <= ($size/2))
 				{
-					//echo $annexes['file_'.$counter]['tmp_name']."<br>";
 					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name']))
 					{
 						$uploaded = false;
@@ -787,7 +808,6 @@ class DeliberationsController extends AppController {
 
 				while($counter <= ($size/2))
 				{
-					//echo $annexes['file_'.$counter]['tmp_name']."<br>";
 					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name'])){
 						$uploaded = false;
 					}
@@ -886,7 +906,6 @@ class DeliberationsController extends AppController {
 
 				while($counter <= ($size/2))
 				{
-					//echo $annexes['file_'.$counter]['tmp_name']."<br>";
 					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name'])){
 						$uploaded = false;
 					}
@@ -1488,24 +1507,29 @@ class DeliberationsController extends AppController {
 	}
 
         function sendActe ($delib_id = null) {
-            $url = 'https://'.HOST.'/modules/actes/actes_transac_create.php';
+            echo("####");
+	    include ('vendors/progressbar.php');
+            Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
+	    $url = 'https://'.HOST.'/modules/actes/actes_transac_create.php';
             $pos =  strrpos ( getcwd(), 'webroot');
 	    $path = substr(getcwd(), 0, $pos);
             $configPos =  strrpos ( getcwd(), 'config');
 	    $configPath = substr(getcwd(), 0, $pos);
 	    foreach ($this->data['Deliberation'] as $id => $bool ){
                  if ($bool == 1){
-                     $delib_id = substr($id, 3, strlen($id));
+		     $delib_id = substr($id, 3, strlen($id));
 		     if (!isset($this->data['Deliberation'][$delib_id."_num_pref"]))
 		         continue;
                      $Tabclassification[$delib_id]= $this->data['Deliberation'][$delib_id."_num_pref"];
 		 }
             }
+            $nbDelibAEnvoyer = count($Tabclassification);
+            $nbEnvoyee = 0; 
 	    foreach ($this->data['Deliberation'] as $id => $bool ){
 	        if ($bool == 1){
+                    ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'G&eacute;n&eacute;ration du document ');
 		    $delib_id = substr($id, 3, strlen($id));
 		    $classification =   $Tabclassification[$delib_id];
-		    echo ("$delib_id =>  $classification<br>");
 		    $this->changeClassification($delib_id, $classification);
 		    $class1 = substr($classification , 0, strpos ($classification , '.' ));
 		    $rest = substr($classification , strpos ($classification , '.' )+1, strlen($classification));
@@ -1526,6 +1550,7 @@ class DeliberationsController extends AppController {
 			$err = $this->generer($delib_id, $model_id,0,1);
 		        $file =  $pathFile =  WEBROOT_PATH."/files/generee/modeles/retour.pdf";
                     }
+                    ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Document G&eacute;n&eacute;r&eacute; ');
 		    $delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
 
         	        // Checker le code classification
@@ -1537,7 +1562,8 @@ class DeliberationsController extends AppController {
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-      	                 'number'        => $delib[0]['Deliberation']['num_delib'],
+      	                 'number'        => mktime(),
+      	                 //'number'        => $delib[0]['Deliberation']['num_delib'],
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
@@ -1545,8 +1571,9 @@ class DeliberationsController extends AppController {
      	                 'acte_attachments[]' => "",
       	                'acte_attachments_sign[]' => ""
    	                 );
+                        ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Pr&eacute;paration de l\'envoi ');
 			
-			$ch = curl_init();
+			 $ch = curl_init();
                          curl_setopt($ch, CURLOPT_URL, $url);
                          curl_setopt($ch, CURLOPT_POST, TRUE);
                          curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
@@ -1558,19 +1585,20 @@ class DeliberationsController extends AppController {
                          curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
                          curl_setopt($ch, CURLOPT_VERBOSE, true);
 			 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-			 
 			 $curl_return = curl_exec($ch);
-                         
-			 if ($curl_return === false) {
+		/*	 if ($curl_return === false) {
                              echo 'curl_exec() failed.' . '<br />';
                              echo 'curl_errno() = ' . curl_errno($ch) . '<br />';
                              echo 'curl_error() = ' . curl_error($ch) . '<br />';
-                         }
-			 $this->changeEtat($delib_id, '5');
+                         } */
+			 $nbEnvoyee ++;
+                         ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Delib&eacute;ration '.$delib[0]['Deliberation']['objet'].' envoy&eacute;e ');
+			 //$this->changeEtat($delib_id, '5');
 			 curl_close($ch);
 		         unlink ($file);
 			}
 		    }
+                    echo("####");
 		    $this->redirect('/deliberations/transmit');
 		}
 
