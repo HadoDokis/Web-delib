@@ -13,10 +13,10 @@ class GedoooComponent extends Object {
             $this->checkPath($path);
             if (file_exists($path.$name))
                 unlink($path.$name);
-
-            if (!$handle = fopen($path.$name, 'a'))
+            
+	    if (!$handle = fopen($path.$name, 'a'))
                 die("Impossible d'ouvrir le fichier ($path"."$name)");
-
+            
             if (fwrite($handle, $content) === FALSE)
                 die ("Impossible d'écrire dans le fichier ($path"."$name)");
 
