@@ -403,6 +403,7 @@ class ModelsController extends AppController {
 			"#ETAT_DELIB#" => $this->_getDelibEtat($delib['Deliberation']['etat']),
 			"#LIBELLE_THEME#" => $delib['Theme']['libelle'],
 			"#LIBELLE_SERVICE#" => $delib['Service']['libelle'],
+			"#NUMERO_DELIB#" => $delib['Deliberation']['num_delib'],
 			"#TITRE_DELIB#" => $delib['Deliberation']['titre'],
 			"#LIBELLE_DELIB#" => $delib['Deliberation']['objet'],
 			"#TEXTE_DELIB#" => $delib['Deliberation']['deliberation'],
