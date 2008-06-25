@@ -161,7 +161,7 @@ class DeliberationsController extends AppController {
 
             // Création de la liste des acteurs pr�sents 
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursPresents/$delib_id");
-            $this->Gedooo->createFile($path, 'ActeursPresents.html',  $listeProjetsSommaires);
+            $this->Gedooo->createFile($path, 'ActeursPresents.html',  htmlspecialchars($listeProjetsSommaires));
             $balises .= $this->Gedooo->CreerBalise('acteurs_presents', $urlWebroot.'ActeursPresents.html', 'content');
             
             // Création de la liste des acteurs absents
