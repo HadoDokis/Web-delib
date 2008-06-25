@@ -735,10 +735,6 @@ class DeliberationsController extends AppController {
         $this->data = $this->Deliberation->read(null, $id);
 	}
     else {
-	    if ($this->data['Deliberation']['texte_doc']['size']!=0){
-		    $this->convertDoc2Html($this->data['Deliberation']['texte_doc'], $id, 'texte_synthese');
-		    unset($this->data['Deliberation']['texte_doc']);
-		}
 		$this->data['Deliberation']['id']=$id;
 		if(!empty($this->params['form'])) {
 				$deliberation = array_shift($this->params['form']);
@@ -794,10 +790,6 @@ class DeliberationsController extends AppController {
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
 		} else{
-			if ($this->data['Deliberation']['texte_doc']['size']!=0){
-			    $this->convertDoc2Html($this->data['Deliberation']['texte_doc'], $id, 'deliberation');
-				unset($this->data['Deliberation']['texte_doc']);
-			}
 			$this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
@@ -886,16 +878,6 @@ class DeliberationsController extends AppController {
 			$this->data = $this->Deliberation->read(null, $id);
 			$this->set('delib', $this->Deliberation->read(null, $id));
 		} else{
-            if (isset($this->data['Deliberation']['texte_doc'])){
-				if ($this->data['Deliberation']['texte_doc']['size']!=0){
-					$this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_doc']['name'];
-					$this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_doc']['size'];
-					$this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_doc']['type'];
-					$this->data['Deliberation']['texte_projet']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
-					$this->Deliberation->save($this->data);
-					unset($this->data['Deliberation']['texte_doc']);
-				}
-            }
 			$this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
@@ -1563,8 +1545,7 @@ class DeliberationsController extends AppController {
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-      	                 'number'        => mktime(),
-      	                 //'number'        => $delib[0]['Deliberation']['num_delib'],
+      	                 'number'        => $delib[0]['Deliberation']['num_delib'],
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
@@ -1594,12 +1575,11 @@ class DeliberationsController extends AppController {
                          } */
 			 $nbEnvoyee ++;
                          ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Delib&eacute;ration '.$delib[0]['Deliberation']['objet'].' envoy&eacute;e ');
-			 //$this->changeEtat($delib_id, '5');
+			 $this->changeEtat($delib_id, '5');
 			 curl_close($ch);
 		         unlink ($file);
 			}
 		    }
-                    echo("####");
 		    $this->redirect('/deliberations/transmit');
 		}
 
