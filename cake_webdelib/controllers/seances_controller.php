@@ -658,17 +658,17 @@ class SeancesController extends AppController {
                 }
 
                 //Création du fichier des débats globaux à la séance
-                $this->Gedooo->createFile($path, $nameDebat, $data['Seance']['debat_global']);
+                $this->Gedooo->createFile($path, $nameDebat, '<p>'.htmlentities($data['Seance']['debat_global']).'</p>');
                 $balises .= $this->Gedooo->CreerBalise('debat_seance', $urlWebroot.$nameDebat, 'content');
 
 	        // Création de la liste des projets detailles
 	        $listeProjetsDetailles = $this->requestAction("/models/listeProjets/$seance_id/1");
-                $this->Gedooo->createFile($path, 'ProjetsDetailles.html',  $listeProjetsDetailles);
+                $this->Gedooo->createFile($path, 'ProjetsDetailles.html',   '<p>'.htmlentities($listeProjetsDetailles).'</p>');
                 $balises .= $this->Gedooo->CreerBalise('projets_detailles', $urlWebroot.'ProjetsDetailles.html', 'content');
 
 	        // Création de la liste des projets sommaires
 	        $listeProjetsSommaires = $this->requestAction("/models/listeProjets/$seance_id/0");
-                $this->Gedooo->createFile($path, 'ProjetsSommaires.html',  $listeProjetsSommaires);
+                $this->Gedooo->createFile($path, 'ProjetsSommaires.html',   '<p>'.htmlentities($listeProjetsSommaires).'</p>');
                 $balises .= $this->Gedooo->CreerBalise('projets_sommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
 
                 // création du fichier XML
