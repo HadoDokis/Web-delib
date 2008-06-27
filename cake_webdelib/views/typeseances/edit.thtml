@@ -13,8 +13,8 @@
 <div class="demi">
 	<fieldset>
 	<legend>Informations générales</legend>
-		<?php echo $form->labelTag('Typeseance/libelle', 'Libelle <acronym title="obligatoire">*</acronym>');?>
-	 	<?php echo $html->input('Typeseance/libelle', array('size' => '60'));?>
+		<?php echo $form->labelTag('Typeseance/libelle', 'Libell&eacute; <acronym title="obligatoire">*</acronym>');?>
+	 	<?php echo $html->input('Typeseance/libelle', array('size' => '40'));?>
 		<?php echo $html->tagErrorMsg('Typeseance/libelle', 'Entrer le libelle.');?>
 		<?php echo $html->tagErrorMsg('Typeseance/unique_libelle', 'Entrez un autre libell&eacute;, celui-ci est d&eacute;j&agrave; utilis&eacute;.'); ?> <br />
 		<br/>
@@ -36,13 +36,13 @@
 
 <div class="demi">
 	<fieldset>
-	<legend>Models pour les &eacute;ditions</legend>
+	<legend>Mod&egrave;les pour les &eacute;ditions</legend>
                 <?php echo $form->labelTag('Typeseance/modelprojet_id', 'projet <acronym title="obligatoire">*</acronym>');?>
                 <?php echo $html->selectTag('Typeseance/modelprojet_id', $models, $html->tagValue('Typeseance/modelprojet_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
                 <?php echo $html->tagErrorMsg('Typeseance/modelprojet_id', 'Selectionner le modele de la projet');?>
                 <br/>
 
-                <?php echo $form->labelTag('Typeseance/modeldeliberation_id', 'deliberation <acronym title="obligatoire">*</acronym>');?>
+                <?php echo $form->labelTag('Typeseance/modeldeliberation_id', 'd&eacute;lib&eacute;ration <acronym title="obligatoire">*</acronym>');?>
                 <?php echo $html->selectTag('Typeseance/modeldeliberation_id', $models, $html->tagValue('Typeseance/modeldeliberation_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
                 <?php echo $html->tagErrorMsg('Typeseance/modeldeliberation_id', 'Selectionner le model de d&eacute;lib&eacute;ration');?>
                 <br/>
@@ -67,7 +67,7 @@
 <div class="spacer"></div>
 
 <fieldset>
-<legend>Convocations (union des deux s&eacute;l&eacute;ctions ci-dessous)</legend>
+<legend>Convocations (union des deux s&eacute;lections ci-dessous)</legend>
 	<div class="demi">
 		<?php echo $form->labelTag('Typeacteur/Typeacteur', 'Par type d\'acteur');?>
 	 	<?php echo $html->selectTag('Typeacteur/Typeacteur', $typeacteurs, $selectedTypeacteurs, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
