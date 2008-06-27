@@ -132,16 +132,16 @@ class DeliberationsController extends AppController {
            }
 
 	    //Création du fichier texte_projet
-            $this->Gedooo->createFile($path, $nameTP, '<p>'.htmlentities($data['Deliberation']['texte_projet']).'</p>');
+            $this->Gedooo->createFile($path, $nameTP, $data['Deliberation']['texte_projet']);
             $balises .= $this->Gedooo->CreerBalise('texte_projet', $urlWebroot.$nameTP, 'content');
             //Création du fichier note de synthèse
-            $this->Gedooo->createFile($path, $nameNS, '<p>'.htmlentities($data['Deliberation']['texte_synthese']).'</p>');
+            $this->Gedooo->createFile($path, $nameNS, $data['Deliberation']['texte_synthese']);
             $balises .= $this->Gedooo->CreerBalise('note_synthese', $urlWebroot.$nameNS, 'content');
             //Création du fichier texte de déliberation
-            $this->Gedooo->createFile($path, $nameTD, '<p>'.htmlentities($data['Deliberation']['deliberation']).'</p>');
+            $this->Gedooo->createFile($path, $nameTD, $data['Deliberation']['deliberation']);
             $balises .= $this->Gedooo->CreerBalise('texte_deliberation', $urlWebroot.$nameTD, 'content');
             //Création du fichier texte du débat
-            $this->Gedooo->createFile($path, $nameDebat, '<p>'.htmlentities($data['Deliberation']['debat']).'</p>');
+            $this->Gedooo->createFile($path, $nameDebat, $data['Deliberation']['debat']);
 	    $balises .= $this->Gedooo->CreerBalise('debat_deliberation', $urlWebroot.$nameDebat, 'content');
             // Informations sur la séance
 	    $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
