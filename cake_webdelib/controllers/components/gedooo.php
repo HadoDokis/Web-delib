@@ -13,10 +13,10 @@ class GedoooComponent extends Object {
             $this->checkPath($path);
             if (file_exists($path.$name))
                 unlink($path.$name);
-            
+
 	    if (!$handle = fopen($path.$name, 'a'))
                 die("Impossible d'ouvrir le fichier ($path"."$name)");
-            
+
             if (fwrite($handle, $content) === FALSE)
                 die ("Impossible d'écrire dans le fichier ($path"."$name)");
 
@@ -67,7 +67,7 @@ class GedoooComponent extends Object {
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
             $fp = fopen($path.$name, 'w');
             fwrite($fp, $return);
-            fclose($fp);            
+            fclose($fp);
             $zip = new ZipArchive;
 	    if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
 	        $zip->addFile($path.$name, $name);
@@ -84,7 +84,7 @@ class GedoooComponent extends Object {
 	else {
             // on nettoie ce qu'il y a dedans pour ne pas encombrer le serveur
 	    $dh = opendir($path);
-	    while (false !== ($document = readdir($dh))) 
+	    while (false !== ($document = readdir($dh)))
                 if (is_file($document))
 		    unlink($document);
             return true;
@@ -92,12 +92,23 @@ class GedoooComponent extends Object {
     }
 
    function CreerBalise ($nom, $valeur, $type) {
-       $balise  = "<champ>\n";
-       $balise .= "    <nom>$nom</nom>\n";
-       $balise .= "    <valeur>$valeur</valeur>\n";
-       $balise .= "    <type>$type</type>\n";
-       $balise .= "</champ>\n";
-       return $balise;
+       if (isset($valeur)) {
+           /*
+            *
+            *
+            * if ($type == 'content') {
+            *    wget($valeur);
+            * }*/
+
+           $balise  = "<champ>\n";
+           $balise .= "    <nom>$nom</nom>\n";
+           $balise .= "    <valeur>$valeur</valeur>\n";
+           $balise .= "    <type>$type</type>\n";
+           $balise .= "</champ>\n";
+           return $balise;
+       }
+       else
+           return '';
    }
 
 }
