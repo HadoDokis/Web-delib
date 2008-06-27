@@ -29,7 +29,7 @@
 
     function ProgressBar($indice, $affiche) {
         echo "<script>";
-        echo "document.getElementById(\"pourcentage\").innerHTML='".$indice."%';";
+        echo "document.getElementById(\"pourcentage\").innerHTML='".round($indice)."%';";
         echo "document.getElementById(\"affiche\").innerHTML='".$affiche."';";
         echo "document.getElementById('progrbar').style.width=".($indice*2).";";
         echo "</script>";
