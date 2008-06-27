@@ -110,7 +110,8 @@ class DeliberationsController extends AppController {
 		    $balises .= $this->Gedooo->CreerBalise('nombre_abstention', $nbAbsention, 'string');
 	            $balises .= $this->Gedooo->CreerBalise('nombre_contre', $nbContre, 'string');
 	            $balises .= $this->Gedooo->CreerBalise('nombre_sans_participation', $nbSansParticipation, 'string');
-		    $balises .= $this->Gedooo->CreerBalise('commentaire_vote', $votes[0]['Vote']['commentaire'], 'string');
+		    if (isset($votes[0]['Vote']['commentaire']))
+		        $balises .= $this->Gedooo->CreerBalise('commentaire_vote', $votes[0]['Vote']['commentaire'], 'string');
 		}
 		$balises .= $this->Gedooo->CreerBalise('titre_projet', $data['Deliberation']['titre'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('objet_projet', $data['Deliberation']['objet'], 'string');
@@ -132,18 +133,26 @@ class DeliberationsController extends AppController {
            }
 
 	    //Création du fichier texte_projet
-            $this->Gedooo->createFile($path, $nameTP, $data['Deliberation']['texte_projet']);
-            $balises .= $this->Gedooo->CreerBalise('texte_projet', $urlWebroot.$nameTP, 'content');
-            //Création du fichier note de synthèse
-            $this->Gedooo->createFile($path, $nameNS, $data['Deliberation']['texte_synthese']);
-            $balises .= $this->Gedooo->CreerBalise('note_synthese', $urlWebroot.$nameNS, 'content');
-            //Création du fichier texte de déliberation
-            $this->Gedooo->createFile($path, $nameTD, $data['Deliberation']['deliberation']);
-            $balises .= $this->Gedooo->CreerBalise('texte_deliberation', $urlWebroot.$nameTD, 'content');
-            //Création du fichier texte du débat
-            $this->Gedooo->createFile($path, $nameDebat, $data['Deliberation']['debat']);
-	    $balises .= $this->Gedooo->CreerBalise('debat_deliberation', $urlWebroot.$nameDebat, 'content');
-            // Informations sur la séance
+            if (!empty($data['Deliberation']['texte_projet'])) {
+	        $this->Gedooo->createFile($path, $nameTP, $data['Deliberation']['texte_projet']);
+                $balises .= $this->Gedooo->CreerBalise('texte_projet', $urlWebroot.$nameTP, 'content');
+            }
+	    //Création du fichier note de synthèse
+	    if (!empty($data['Deliberation']['texte_synthese'])){
+                $this->Gedooo->createFile($path, $nameNS, $data['Deliberation']['texte_synthese']);
+                $balises .= $this->Gedooo->CreerBalise('note_synthese', $urlWebroot.$nameNS, 'content');
+            }
+	    //Création du fichier texte de déliberation
+            if (!empty( $data['Deliberation']['deliberation'])) {
+	        $this->Gedooo->createFile($path, $nameTD, $data['Deliberation']['deliberation']);
+                $balises .= $this->Gedooo->CreerBalise('texte_deliberation', $urlWebroot.$nameTD, 'content');
+            }
+	    //Création du fichier texte du débat
+            if (!empty($data['Deliberation']['debat'])) {
+	        $this->Gedooo->createFile($path, $nameDebat, $data['Deliberation']['debat']);
+	        $balises .= $this->Gedooo->CreerBalise('debat_deliberation', $urlWebroot.$nameDebat, 'content');
+            }
+	    // Informations sur la séance
 	    $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
             $balises .= $this->Gedooo->CreerBalise('identifiant_seance', $data['Deliberation']['seance_id'], 'string');
 	    if (isset($data['Seance']['date']))
@@ -151,34 +160,40 @@ class DeliberationsController extends AppController {
 
             // CrÃ©ation de la liste des projets detailles
             $listeProjetsDetailles = $this->requestAction("/models/listeProjets/".$data['Deliberation']['seance_id']."/1");
-            $this->Gedooo->createFile($path, 'ProjetsDetailles.html', '<p>'.htmlentities($listeProjetsDetailles).'</p>');
-            $balises .= $this->Gedooo->CreerBalise('projets_detailles', $urlWebroot.'ProjetsDetailles.html', 'content');
-
+            if (!empty($listeProjetsDetailles)) {
+	        $this->Gedooo->createFile($path, 'ProjetsDetailles.html', '<p>'.htmlentities($listeProjetsDetailles).'</p>');
+                $balises .= $this->Gedooo->CreerBalise('projets_detailles', $urlWebroot.'ProjetsDetailles.html', 'content');
+            }
             // CrÃ©ation de la liste des projets sommaires
             $listeProjetsSommaires = $this->requestAction("/models/listeProjets/".$data['Deliberation']['seance_id']."/0");
-            $this->Gedooo->createFile($path, 'ProjetsSommaires.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
-            $balises .= $this->Gedooo->CreerBalise('projets_sommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
-
+            if (!empty($listeProjetsSommaires)) { 
+	        $this->Gedooo->createFile($path, 'ProjetsSommaires.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+                $balises .= $this->Gedooo->CreerBalise('projets_sommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
+            }
             // CrÃ©ation de la liste des acteurs présents 
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursPresents/$delib_id");
-            $this->Gedooo->createFile($path, 'ActeursPresents.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
-            $balises .= $this->Gedooo->CreerBalise('acteurs_presents', $urlWebroot.'ActeursPresents.html', 'content');
-            
+            if (!empty($listeProjetsSommaires)) {
+	        $this->Gedooo->createFile($path, 'ActeursPresents.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+                $balises .= $this->Gedooo->CreerBalise('acteurs_presents', $urlWebroot.'ActeursPresents.html', 'content');
+           } 
             // CrÃ©ation de la liste des acteurs absents
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursAbsents/$delib_id");
-            $this->Gedooo->createFile($path, 'ActeursAbsents.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
-            $balises .= $this->Gedooo->CreerBalise('acteurs_absents', $urlWebroot.'ActeursAbsents.html', 'content');
-	    
+            if (!empty($listeProjetsSommaires)) {
+	        $this->Gedooo->createFile($path, 'ActeursAbsents.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+                $balises .= $this->Gedooo->CreerBalise('acteurs_absents', $urlWebroot.'ActeursAbsents.html', 'content');
+	    }
             // Création de la liste des acteurs mandates
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursMandates/$delib_id");
-            $this->Gedooo->createFile($path, 'ActeursMandates.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
-            $balises .= $this->Gedooo->CreerBalise('acteurs_mandates', $urlWebroot.'ActeursMandates.html', 'content');
-          
+            if (!empty($listeProjetsSommaires)) {
+	        $this->Gedooo->createFile($path, 'ActeursMandates.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+                $balises .= $this->Gedooo->CreerBalise('acteurs_mandates', $urlWebroot.'ActeursMandates.html', 'content');
+            }
             // Création de la liste de la liste des acteurs votant
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursVotant/$delib_id");
-            $this->Gedooo->createFile($path, 'ActeursVotant.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
-            $balises .= $this->Gedooo->CreerBalise('acteurs_votant', $urlWebroot.'ActeursVotant.html', 'content');
-
+            if (!empty($listeProjetsSommaires)) {
+	        $this->Gedooo->createFile($path, 'ActeursVotant.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+                $balises .= $this->Gedooo->CreerBalise('acteurs_votant', $urlWebroot.'ActeursVotant.html', 'content');
+            }
 	    // création du fichier XML
 	    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
             // Envoi du fichier à GEDOOo
