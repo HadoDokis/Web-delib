@@ -1,10 +1,13 @@
-
 <div id="vue_cadre">
 <? $deliberation=$deliberation['0']; ?>
 
 <dl>
-	<h3>D&eacute;lib&eacute;ration n&deg; <?php echo $deliberation['Deliberation']['num_delib']?></h3>
-
+     <?php 
+         if ($deliberation['Deliberation']['num_delib']>=3)
+	    echo '<h3>D&eacute;lib&eacute;ration n&deg; '.$deliberation['Deliberation']['num_delib'].'</h3>';
+	 else
+	    echo '<h3>Identifiant projet '.$deliberation['Deliberation']['id'].'</h3>';
+?>	
 	<div class="imbrique">
 		<dt>Libelle</dt>
 		<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>

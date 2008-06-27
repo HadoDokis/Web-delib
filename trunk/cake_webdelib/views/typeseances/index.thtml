@@ -3,13 +3,13 @@
 
 <table cellpadding="0" cellspacing="0">
 <tr>
-	<th>Libelle</th>
+	<th>Libell&eacute;</th>
 	<th>Nb jours avant retard</th>
 	<th>Action</th>
 	<th>Compteur</th>
-	<th>Models</th>
+	<th>Mod&egrave;les</th>
 	<th>Convocations</th>
-	<th>Actions</th>
+	<th width='90px'>Actions</th>
 </tr>
 <?php foreach ($typeseances as $typeseance): ?>
 <tr>
@@ -19,11 +19,11 @@
 	<td><?php echo $typeseance['Compteur']['nom']; ?></td>
 	<td><?php
 		echo 'projet : ' .       $typeseance['Modelprojet']['modele'] . '<br/>';
-		echo 'deliberation : ' .  $typeseance['Modeldeliberation']['modele'] . '<br/>';
+		echo 'd&eacute;lib&eacute;ration : ' .  $typeseance['Modeldeliberation']['modele'] . '<br/>';
 		echo 'convocation : ' .  $typeseance['Modelconvocation']['modele'] . '<br/>';
 		echo 'orde du jour : ' . $typeseance['Modelordredujour']['modele'] . '<br/>';
 		echo 'PV sommaire : ' .  $typeseance['Modelpvsommaire']['modele'] . '<br/>';
-		echo 'PV détaillé : ' .  $typeseance['Modelpvdetaille']['modele'] . '<br/>';
+		echo 'PV d&eacute;taill&eacute; ' .  $typeseance['Modelpvdetaille']['modele'] . '<br/>';
 	?></td>
 	<td><?
 		if (!empty($typeseance['Typeacteur'])) {

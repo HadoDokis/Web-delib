@@ -12,7 +12,7 @@
 <!-- données concernant le circuit selectionné -->
    <table>
 
-   <th>service libelle</th>
+   <th>service libell&eacute;</th>
    <th>prenom</th>
    <th>nom </th>
   <th>position</th>

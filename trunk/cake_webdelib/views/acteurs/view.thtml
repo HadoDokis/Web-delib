@@ -3,7 +3,7 @@
 
 <dl>
 	<div class="demi">
-		<dt>Identité</dt>
+		<dt>Identit&eacute;</dt>
 		<dd>&nbsp;<?php echo $acteur['Acteur']['salutation'].' '.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].($acteur['Acteur']['titre'] ? ', ':'').$acteur['Acteur']['titre']?></dd>
 		<dt>Adresse postale</dt>
 			<dd class="compact"><?php echo $acteur['Acteur']['adresse1']?></dd>

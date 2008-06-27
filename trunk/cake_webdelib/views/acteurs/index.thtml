@@ -4,7 +4,7 @@
 
 <table cellpadding="0" cellspacing="0">
 <tr>
-	<th>Salutation</th>
+	<th>Civilit&eacute;</th>
 	<th>Nom<?php $html2->boutonsTri('/acteurs/index/Acteur.nom');?></th>
 	<th>Prenom</th>
 	<th>Titre</th>
@@ -14,7 +14,7 @@
 	<th>Téléphone</th>
 	<th>Mobile</th>
 	<th>Délégation(s)</th>
-	<th>Actions</th>
+	<th width='90px'>Actions</th>
 </tr>
 
 <?php foreach ($acteurs as $acteur): ?>

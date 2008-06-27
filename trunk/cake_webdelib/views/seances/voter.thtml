@@ -15,14 +15,14 @@
   			 </tr>
    			 <?php foreach ($presents as $present): ?>
     		 <tr>
-	 		 	<td>
-	 		 		<?php
-	 		 			echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
-	 		 			if ($present['Listepresence']['mandataire'] != '0')
-	 		 				echo ' (Mandat&eacute par '.$present['Listepresence']['mandataire'].')';
-	 		 			elseif ($present['Listepresence']['present']=='0'){
-	 		 				echo ' (Absent)';
-	 		 			}
+	 	<td>
+	 	 	<?php
+	  		echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
+	 		if ($present['Listepresence']['mandataire'] != '0')
+	                     echo ' (Donne mandat &agrave; '.$present['Listepresence']['mandataire'].')';
+	 		elseif ($present['Listepresence']['present']=='0'){
+	 		    echo ' (Absent)';
+	 		 }
 	 		 		?>
 	 		 	</td>
 	 		   	<td>

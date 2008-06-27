@@ -36,8 +36,8 @@ function initAffichageInfosElus()
 
 	<div class="demi">
 		<fieldset>
-		<legend>Identitée</legend>
-			<?php echo $form->labelTag('Acteur/salutation', 'Salutation');?>
+		<legend>Identit&eacute;</legend>
+			<?php echo $form->labelTag('Acteur/salutation', 'Civilit&eacute;');?>
 		 	<?php echo $html->input('Acteur/salutation', array('size' => '20'));?>
 			<br/>
 			<?php echo $form->labelTag('Acteur/nom', 'Nom <acronym title="obligatoire">*</acronym>');?>
