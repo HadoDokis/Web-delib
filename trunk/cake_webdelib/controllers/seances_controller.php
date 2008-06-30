@@ -744,8 +744,8 @@ class SeancesController extends AppController {
 				$this->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
 				$this->data['Commentaire']['texte'] = 'A reçu un avis défavorable en '
 					. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$deliberation['Seance']['type_id'])
-					. ' du ' . $deliberation['Seance']['date'];
-				$this->Deliberation->Commentaire->save($this->data);
+					. ' du ' . $this->Date->frenchDate(strtotime($deliberation['Seance']['date']));
+				 $this->Deliberation->Commentaire->save($this->data);
 
 				$sortie = true;
 			} elseif ($this->data['Deliberation']['avis'] == 1) {
@@ -759,7 +759,7 @@ class SeancesController extends AppController {
 				$this->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
 				$this->data['Commentaire']['texte'] = 'A reçu un avis favorable en '
 					. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$deliberation['Seance']['type_id'])
-					. ' du ' . $deliberation['Seance']['date'];
+					. ' du ' .$this->Date->frenchDate(strtotime($deliberation['Seance']['date']));
 				$this->Deliberation->Commentaire->save($this->data);
 
 				$sortie = true;
