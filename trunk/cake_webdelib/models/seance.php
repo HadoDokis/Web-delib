@@ -27,7 +27,7 @@ class Seance extends AppModel {
          $generateList = array();
 
          $condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-         $seances = $this->findAll($condition, null, 'date ASC');
+         $seances = $this->findAll($condition, null, 'date DESC');
          foreach($seances as $seance){
              $conditions= 'Seance.traitee = 0';
              $seances = $this->findAll($conditions);
