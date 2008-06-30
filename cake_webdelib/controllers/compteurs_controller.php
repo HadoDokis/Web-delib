@@ -62,7 +62,7 @@ class CompteursController extends AppController
     }
 
     /* initialisation du tableau de recherche et de remplacement pour la séquence */
-    $strnseqS = sprintf("%10d", $cptEnBase['Sequence']['num_sequence']);
+    $strnseqS = sprintf("%'_10d", $cptEnBase['Sequence']['num_sequence']);
     $strnseqZ = sprintf("%010d", $cptEnBase['Sequence']['num_sequence']);
 
     $remplaceS = array("#s#" => $cptEnBase['Sequence']['num_sequence']
