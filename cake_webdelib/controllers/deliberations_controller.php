@@ -667,7 +667,7 @@ class DeliberationsController extends AppController {
 
 			$this->data['Deliberation']['id']=$id;
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
-			unset($this->params['form']['date_limite']);
+		        unset($this->params['form']['date_limite']);
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
 			$this->cleanUpFields();
@@ -890,7 +890,6 @@ class DeliberationsController extends AppController {
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
 
 		if (empty($this->data)) {
-			$this->data = $this->Deliberation->read(null, $id);
 			$this->set('delib', $this->Deliberation->read(null, $id));
 		} else{
 			$this->data['Deliberation']['id']=$id;
@@ -954,6 +953,10 @@ class DeliberationsController extends AppController {
 	    $user=$this->Session->read('user');
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
+	                  
+			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
+			
+
 			$this->set('servEm',$this->requestAction('/services/doList/'.$this->data['Service']['id']));
 			$this->set('deliberation',$this->data);
 			$this->set('services', $this->Deliberation->Service->generateList());
@@ -978,15 +981,15 @@ class DeliberationsController extends AppController {
 			$oldDelib =  $this->Deliberation->read(null, $id);
 			// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
 			if ((($oldDelib['Deliberation']['seance_id'] != 0) AND ($oldDelib['Deliberation']['seance_id'] != null)) AND (($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']) AND ($this->data['Deliberation']['seance_id'] != null))){
-                $this->PositionneDelibsSeance($oldDelib['Deliberation']['seance_id'], $oldDelib['Deliberation']['position'] );
+                            $this->PositionneDelibsSeance($oldDelib['Deliberation']['seance_id'], $oldDelib['Deliberation']['position'] );
 			}
 			// Si on definie une seance a une delib, on la position en derniere position de la seance...
 			 if (($this->data['Deliberation']['seance_id'])!=null )
-				    $this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+                             $this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 
 			$this->data['Deliberation']['id']=$id;
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
-			unset($this->params['form']['date_limite']);
+		        unset($this->params['form']['date_limite']);
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
 
@@ -1052,6 +1055,7 @@ class DeliberationsController extends AppController {
 					}
 				}
 			}
+
 		}
 	}
 
@@ -1991,11 +1995,17 @@ class DeliberationsController extends AppController {
         function getModelId($delib_id) {
              $data = $this->Deliberation->read(null, $delib_id);
 	     $seance = $this->Seance->read(null, $data['Deliberation']['seance_id'] );
-	     if ($data['Deliberation']['etat']<3)
-		 return $seance['Typeseance']['modelprojet_id'];
-	     else
-	         return $seance['Typeseance']['modeldeliberation_id'];
+	     if (!empty($seance)){
+	         if ($data['Deliberation']['etat']<3)
+		     return $seance['Typeseance']['modelprojet_id'];
+	         else
+                     return $seance['Typeseance']['modeldeliberation_id'];
+	     }
+	     else {
+                  return 1;
+	     }
 	}
+
 
 }
 ?>
