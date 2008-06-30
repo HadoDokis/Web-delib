@@ -467,6 +467,7 @@ class SeancesController extends AppController {
 
 	function voter ($deliberation_id=null) {
 		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
+		$seance = $this->Seance->read(null, $seance_id);
 
 		if (empty($this->data)) {
 			$donnees = $this->Vote->findAll("delib_id = $deliberation_id");
@@ -499,14 +500,11 @@ class SeancesController extends AppController {
 			$this->data = $this->Deliberation->read(null, $deliberation_id);
 
 
-			if ($pour >= (($nb_votant -$abstenu) /2))
-			{
+			if ($pour >= (($nb_votant -$abstenu) /2)) {
 			     $this->data['Deliberation']['etat']=3;
-			     $this->data['Deliberation']['num_delib'] = $this->requestAction("/compteurs/suivant/1");
-			}
-
-			else
-				 $this->data['Deliberation']['etat']=4;
+			     $this->data['Deliberation']['num_delib'] = $this->requestAction("/compteurs/suivant/".$seance['Typeseance']['compteur_id']);
+			} else
+				$this->data['Deliberation']['etat']=4;
 			$this->Deliberation->save($this->data);
 			$this->redirect('seances/details/'.$seance_id);
 		}
