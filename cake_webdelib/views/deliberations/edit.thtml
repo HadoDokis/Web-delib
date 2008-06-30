@@ -71,7 +71,13 @@
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/date_limite', 'Date limite');?></td>
-		<td><input name="date_limite" size="9" />&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a></td>
+	<?php
+	    if ($deliberation['Deliberation']['date_limite'] != '01/01/1970')
+	          $value = "value='".$deliberation['Deliberation']['date_limite']."'";
+            else
+	         $value = "";
+        ?>
+		<td><input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a></td>
 	</tr>
 
 	<?php if(!empty($annexes)){  ?>
