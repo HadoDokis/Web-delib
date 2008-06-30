@@ -5,11 +5,10 @@ class TypeacteursController extends AppController
 
 	// Gestion des droits : identiques aux droits des acteurs
 	var $commeDroit = array(
-		'index' => 'Pages:acteurs_typeacteurs',
-		'add' => 'Pages:acteurs_typeacteurs',
-		'edit' => 'Pages:acteurs_typeacteurs',
-		'delete' => 'Pages:acteurs_typeacteurs',
-		'view' => 'Pages:acteurs_typeacteurs'
+		'add' => 'Typeacteurs:index',
+		'edit' => 'Typeacteurs:index',
+		'delete' => 'Typeacteurs:index',
+		'view' => 'Typeacteurs:index'
 		);
 
 	function index()
@@ -21,7 +20,7 @@ class TypeacteursController extends AppController
 	{
 		if (!$this->Typeacteur->exists()) {
 			$this->Session->setFlash('Invalide id pour le type d\'acteur');
-			$this->redirect('/pages/acteurs_typeacteurs');
+			$this->redirect('/typeacteurs/index');
 		} else
 			$this->set('typeacteur', $this->Typeacteur->read(null, $id));
 	}
@@ -37,7 +36,7 @@ class TypeacteursController extends AppController
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 		}
 		if ($sortie)
-			$this->redirect('/pages/acteurs_typeacteurs');
+			$this->redirect('/typeacteurs/index');
 		else {
 			$this->set('eluNonElu',array('1'=>'élu','0'=>'non élu'));
 			$this->render('edit');
@@ -61,7 +60,7 @@ class TypeacteursController extends AppController
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 		}
 		if ($sortie)
-			$this->redirect('/pages/acteurs_typeacteurs');
+			$this->redirect('/typeacteurs/index');
 		else
 			$this->set('eluNonElu',array('1'=>'élu','0'=>'non élu'));
 	}
@@ -70,16 +69,14 @@ class TypeacteursController extends AppController
 		$typeacteur = $this->Typeacteur->read('id, nom', $id);
 		if (empty($typeacteur)) {
 			$this->Session->setFlash('Invalide id pour le type d\'acteur');
-			$this->redirect('/pages/acteurs_typeacteurs');
 		}
 		elseif (!empty($typeacteur['Acteur'])) {
 			$this->Session->setFlash('Le type d\'acteur \''.$typeacteur['Typeacteur']['nom'].'\' est utilis&eacute; par un acteur. Suppression impossible.');
-			$this->redirect('/pages/acteurs_typeacteurs');
 		}
 		elseif ($this->Typeacteur->del($id)) {
 			$this->Session->setFlash('Le type d\'acteur \''.$typeacteur['Typeacteur']['nom'].'\' a &eacute;t&eacute; supprim&eacute;');
-			$this->redirect('/pages/acteurs_typeacteurs');
 		}
+		$this->redirect('/typeacteurs/index');
 	}
 
 }

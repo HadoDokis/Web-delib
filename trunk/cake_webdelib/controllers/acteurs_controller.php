@@ -9,11 +9,10 @@ class ActeursController extends AppController
 
 	// Gestion des droits : identiques aux droits des acteurs
 	var $commeDroit = array(
-		'index' => 'Pages:acteurs_typeacteurs',
-		'add' => 'Pages:acteurs_typeacteurs',
-		'edit' => 'Pages:acteurs_typeacteurs',
-		'delete' => 'Pages:acteurs_typeacteurs',
-		'view' => 'Pages:acteurs_typeacteurs'
+		'add' => 'Acteurs:index',
+		'edit' => 'Acteurs:index',
+		'delete' => 'Acteurs:index',
+		'view' => 'Acteurs:index'
 		);
 
 	function index($champTri = null, $sensTri = 'ASC')
@@ -26,7 +25,7 @@ class ActeursController extends AppController
 		$acteur = $this->Acteur->read(null, $id);
 		if (empty($acteur)) {
 			$this->Session->setFlash('Invalide id pour l\'acteur');
-			$this->redirect('/pages/acteurs_typeacteurs');
+			$this->redirect('/acteurs/index');
 		} else
 			$this->set('acteur', $acteur);
 	}
@@ -41,7 +40,7 @@ class ActeursController extends AppController
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 		}
 		if ($sortie)
-			$this->redirect('/pages/acteurs_typeacteurs');
+			$this->redirect('/acteurs/index');
 		else {
 			$this->Acteur->Typeacteur->recursive = 0;
 			$this->set('typeacteurs', $this->Acteur->Typeacteur->findAll(null, 'id, nom, elu'));
@@ -72,7 +71,7 @@ class ActeursController extends AppController
 					$this->set('selectedServices', null);			}
 		}
 		if ($sortie)
-			$this->redirect('/pages/acteurs_typeacteurs');
+			$this->redirect('/acteurs/index');
 		else {
 			$this->Acteur->Typeacteur->recursive = 0;
 			$this->set('typeacteurs', $this->Acteur->Typeacteur->findAll(null, 'id, nom, elu'));
@@ -121,7 +120,7 @@ function _controleEtSauve() {
 		elseif ($this->Acteur->del($id))
 			$this->Session->setFlash('L\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' a &eacute;t&eacute; supprim&eacute;');
 
-		$this->redirect('/pages/acteurs_typeacteurs');
+		$this->redirect('/acteurs/index');
 	}
 
 }

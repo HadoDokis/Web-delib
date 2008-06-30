@@ -50,9 +50,8 @@
 <ul id="actions_fiche">
 	<?php
 		echo '<li>' . $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
-
-		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Pages:acteurs_typeacteurs'))
-			echo '<li>'.$html->link('&shy;',   '/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Acteurs:edit'))
+			echo '<li>'.$html->link('&shy;', '/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
 	?>
 </ul>
 

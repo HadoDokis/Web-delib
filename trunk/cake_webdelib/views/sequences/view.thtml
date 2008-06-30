@@ -37,8 +37,11 @@
 
 <br />
 <ul id="actions_fiche">
-	<li><?php echo $html->link('&shy;', '/pages/compteurs_sequences', array('class'=>'link_annuler_sans_border', 'title'=>'Retourner à la liste'), false, false) ?> </li>
-	<li><?php echo $html->link('&shy;', '/sequences/edit/' . $sequence['Sequence']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false) ?> </li>
+	<?php
+		echo '<li>' . $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Sequences:edit'))
+			echo '<li>'.$html->link('&shy;', '/sequences/edit/' . $sequence['Sequence']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+	?>
 </ul>
 
 </div>

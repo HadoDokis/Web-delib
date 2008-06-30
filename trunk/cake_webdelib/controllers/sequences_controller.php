@@ -5,11 +5,10 @@ class SequencesController extends AppController
 
 	// Gestion des droits : identiques aux droits des compteurs
 	var $commeDroit = array(
-		'index' => 'Pages:compteurs_sequences',
-		'add' => 'Pages:compteurs_sequences',
-		'edit' => 'Pages:compteurs_sequences',
-		'delete' => 'Pages:compteurs_sequences',
-		'view' => 'Pages:compteurs_sequences'
+		'add' => 'Sequences:index',
+		'edit' => 'Sequences:index',
+		'delete' => 'Sequences:index',
+		'view' => 'Sequences:index'
 		);
 
 	function index()
@@ -21,7 +20,7 @@ class SequencesController extends AppController
 	{
 		if (!$this->Sequence->exists()) {
 			$this->Session->setFlash('Invalide id pour la séquence');
-			$this->redirect('/pages/compteurs_sequences');
+			$this->redirect('/sequences/index');
 		} else
 			$this->set('sequence', $this->Sequence->read(null, $id));
 	}
@@ -37,7 +36,7 @@ class SequencesController extends AppController
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 		}
 		if ($sortie)
-			$this->redirect('/pages/compteurs_sequences');
+			$this->redirect('/sequences/index');
 		else
 			$this->render('edit');
 	}
@@ -59,23 +58,21 @@ class SequencesController extends AppController
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 		}
 		if ($sortie)
-			$this->redirect('/pages/compteurs_sequences');
+			$this->redirect('/sequences/index');
 	}
 
 	function delete($id = null) {
 		$sequence = $this->Sequence->read('id, nom', $id);
 		if (empty($sequence)) {
 			$this->Session->setFlash('Invalide id pour la s&eacute;quence');
-			$this->redirect('/pages/compteurs_sequences');
 		}
 		elseif (!empty($sequence['Compteur'])) {
 			$this->Session->setFlash('La s&eacute;quence \''.$sequence['Sequence']['nom'].'\' est utilis&eacute;e par un compteur. Suppression impossible.');
-			$this->redirect('/pages/compteurs_sequences');
 		}
 		elseif ($this->Sequence->del($id)) {
 			$this->Session->setFlash('La s&eacute;quence \''.$sequence['Sequence']['nom'].'\' a &eacute;t&eacute; supprim&eacute;e');
-			$this->redirect('/pages/compteurs_sequences');
 		}
+		$this->redirect('/sequences/index');
 	}
 
 }

@@ -8,11 +8,10 @@ class CompteursController extends AppController
   // Gestion des droits
   var $aucunDroit = array('suivant');
   var $commeDroit = array(
-    'index'=>'Pages:compteurs_sequences',
-    'edit'=>'Pages:compteurs_sequences',
-    'view'=>'Pages:compteurs_sequences',
-    'add'=>'Pages:compteurs_sequences',
-    'delete'=>'Pages:compteurs_sequences');
+    'edit' => 'Compteurs:index',
+    'view' => 'Compteurs:index',
+    'add' => 'Compteurs:index',
+    'delete' => 'Compteurs:index');
 
   function beforeFilter()
     {
@@ -107,7 +106,7 @@ class CompteursController extends AppController
 	function view($id = null) {
 		if (!$this->Compteur->exists()) {
 			$this->Session->setFlash('Invalide id pour le compteur');
-			$this->redirect('/pages/compteurs_sequences');
+			$this->redirect('/compteurs/index');
 		} else
 			$this->set('compteur', $this->Compteur->read(null, $id));
 	}
@@ -123,7 +122,7 @@ class CompteursController extends AppController
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 		}
 		if ($sortie)
-			$this->redirect('/pages/compteurs_sequences');
+			$this->redirect('/compteurs/index');
 		else {
 			$this->set('sequences', $this->Compteur->Sequence->generateList());
 			$this->render('edit');
@@ -147,7 +146,7 @@ class CompteursController extends AppController
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 		}
 		if ($sortie)
-			$this->redirect('/pages/compteurs_sequences');
+			$this->redirect('/compteurs/index');
 		else
 			$this->set('sequences', $this->Compteur->Sequence->generateList());
 	}
@@ -156,16 +155,14 @@ class CompteursController extends AppController
 		$compteur = $this->Compteur->read('id, nom', $id);
 		if (empty($compteur)) {
 			$this->Session->setFlash('Invalide id pour le compteur');
-			$this->redirect('/pages/compteurs_sequences');
 		}
 		elseif (!empty($compteur['Typeseance'])) {
 			$this->Session->setFlash('Le compteur \''.$compteur['Compteur']['nom'].'\' est utilis&eacute; par un type de s&eacute;ance. Suppression impossible.');
-			$this->redirect('/pages/compteurs_sequences');
 		}
 		elseif ($this->Compteur->del($id)) {
 			$this->Session->setFlash('La compteur \''.$compteur['Compteur']['nom'].'\' a &eacute;t&eacute; supprim&eacute;');
-			$this->redirect('/pages/compteurs_sequences');
 		}
+		$this->redirect('/compteurs/index');
   }
 
 }
