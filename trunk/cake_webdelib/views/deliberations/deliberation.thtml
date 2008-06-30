@@ -28,7 +28,7 @@
 <a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
 </div>
 	<div class="submit">
-    	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"javascript:FermerFenetre()"));?>
+    	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir'));?>
     </div>
     </form>
-	    <?php echo $html->submit('Annuler',     array('class'=>'bt_annuler', 'name'=>'annuler', 'onclick'=>"javascript:FermerFenetre()"));?>
+	    <?php echo $html->submit('Fermer',     array('class'=>'bt_annuler', 'name'=>'annuler', 'onclick'=>"javascript:FermerFenetre()"));?>
