@@ -26,7 +26,7 @@ class Seance extends AppModel {
      function generateList() {
          $generateList = array();
          $conditions= 'Seance.traitee = 0';
-         $seances = $this->findAll($conditions);
+         $seances = $this->findAll($conditions, null, 'date ASC');
 	 foreach ($seances as $seance){
 	     $retard=$seance['Typeseance']['retard'];
              if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y")))){
