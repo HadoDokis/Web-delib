@@ -1,10 +1,11 @@
 <?php
     echo $javascript->link('fckeditor');
-	echo $javascript->link('utils');
-    echo $html->formTag('/deliberations/textprojet/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data'));
+    echo $javascript->link('utils');
+    echo $html->formTag('/deliberations/textprojet/'.$delib['Deliberation']['id'] ,null,array('enctype'=>'multipart/form-data'));
 ?>
-	<div class="optional">
+ <h2>Texte Projet : </h2>
     	<?php
+	echo ('<div class="optional">');
     	if (!GENERER_DOC_SIMPLE){
     		echo ('<h2>Texte Projet : </h2>');
 			echo '<br>Nom fichier : '.$delib['Deliberation']['texte_projet_name'];
@@ -13,18 +14,15 @@
     	    echo  $html->fileTag("Deliberation/texte_doc");
             echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
             echo '<br><br>';
+	   echo '</div>';
     	}
-    	?>
-	</div>
-<?php
 	if (GENERER_DOC_SIMPLE) {
 ?>
- <h2>Texte Projet : </h2>
 <div class="optional">
     <?php echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][texte_projet]'); ?>
-    <?php echo $html->tagErrorMsg('Deliberation/texte_projet', 'Entrer le texte du projet.'); ?>
 </div>
+
 <?php  } // fin du if ?>
 
 <div class="optional">
@@ -41,11 +39,10 @@
 </div>
 <div>
 <a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
-<?php echo '<br>'. $html->submit('Sauvegarder les annexes', array('class'=>'bt_add'));?>
 </div>
 <br/><br/>
 <div class="submit">
-	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"javascript:FermerFenetre()"));?>
+	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir'));?>
 </div>
 </form>
-	<?php echo $html->submit('Annuler',     array('class'=>'bt_annuler', 'name'=>'annuler', 'onclick'=>"javascript:FermerFenetre()"));?>
+	<?php echo $html->submit('Fermer',     array('class'=>'bt_annuler', 'name'=>'annuler', 'onclick'=>"javascript:FermerFenetre()"));?>
