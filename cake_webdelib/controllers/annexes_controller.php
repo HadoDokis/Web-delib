@@ -10,7 +10,8 @@ class AnnexesController extends AppController {
 			$this->redirect('/');
 		}
 		if ($this->Annex->del($id)) {
-			$this->redirect($this->Session->read('user.User.lasturl'));
+		    echo ('<script>window.close()</script>;');
+		    //$this->redirect($this->Session->read('user.User.lasturl'));
 		}
 	}
 
