@@ -265,13 +265,7 @@ class DeliberationsController extends AppController {
 			$condition= 'Seance.traitee = 0';
 			$seances = $this->Seance->findAll($condition);
 
-			$tab = array();
-			foreach ($seances as $seance){
-				$retard=$seance['Typeseance']['retard'];
-				if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
-					$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-			}
-			$this->set('date_seances',$tab);
+			$this->set('date_seances',$this->Seance->generateList());
 
 			$conditions="seance_id is null OR seance_id= 0 AND (etat=0 OR etat =1 OR etat =2)";
 			$deliberations= $this->Deliberation->findAll($conditions);
@@ -649,21 +643,11 @@ class DeliberationsController extends AppController {
 			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
 			$this->set('selectedRapporteur', $this->Deliberation->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
-
-			$tab = array();
-			$conditions= 'Seance.traitee = 0';
-			$seances = $this->Seance->findAll($conditions);
-			foreach ($seances as $seance){
-				$retard=$seance['Typeseance']['retard'];
-				if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
-					$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-			}
-			$this->set('date_seances',$tab);
+			$this->set('date_seances',$this->Seance->generateList());
 			$this->render();
-
 		} else {
 			if (isset($this->data['Deliberation']['seance_id']) and !empty($this->data['Deliberation']['seance_id']))
-				$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+		            $this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
 
 			$this->data['Deliberation']['id']=$id;
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
@@ -951,10 +935,8 @@ class DeliberationsController extends AppController {
 	    $user=$this->Session->read('user');
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
-	                  
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
 			
-
 			$this->set('servEm',$this->requestAction('/services/doList/'.$this->data['Service']['id']));
 			$this->set('deliberation',$this->data);
 			$this->set('services', $this->Deliberation->Service->generateList());
@@ -962,17 +944,7 @@ class DeliberationsController extends AppController {
 			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
-
-			$tab = array();
-			$conditions= 'Seance.traitee = 0';
-			$seances = $this->Seance->findAll($conditions);
-			foreach ($seances as $seance){
-				$retard=$seance['Typeseance']['retard'];
-				if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
-					$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-			}
-			$this->set('date_seances',$tab);
-
+                        $this->set('date_seances',$this->Seance->generateList());
 			$this->render();
 
 		} else {
