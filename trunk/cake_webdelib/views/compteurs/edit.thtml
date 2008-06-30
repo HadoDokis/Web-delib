@@ -34,9 +34,9 @@
     <option value="AIDEFORMAT">sélectionner les formats dans la liste</option>
     <option value="#s#">num&eacute;ro de la s&eacute;quence</option>
     <option value="#S#">num&eacute;ro de la s&eacute;quence sur 1 chiffre</option>
-    <option value="#SS#">num&eacute;ro de la s&eacute;quence sur 2 chiffres (compl&eacute;t&eacute; par un espace)</option>
-    <option value="#SSS#">num&eacute;ro de la s&eacute;quence sur 3 chiffres (compl&eacute;t&eacute; par des espaces)</option>
-    <option value="#SSSS#">num&eacute;ro de la s&eacute;quence sur 4 chiffres (compl&eacute;t&eacute; par des espaces)</option>
+    <option value="#SS#">num&eacute;ro de la s&eacute;quence sur 2 chiffres (compl&eacute;t&eacute; par un soulign&eacute;)</option>
+    <option value="#SSS#">num&eacute;ro de la s&eacute;quence sur 3 chiffres (compl&eacute;t&eacute; par des soulign&eacute;s)</option>
+    <option value="#SSSS#">num&eacute;ro de la s&eacute;quence sur 4 chiffres (compl&eacute;t&eacute; par des soulign&eacute;s)</option>
     <option value="#00#">num&eacute;ro de la s&eacute;quence sur 2 chiffres (compl&eacute;t&eacute; par un z&eacute;ro)</option>
     <option value="#000#">num&eacute;ro de la s&eacute;quence sur 3 chiffres (compl&eacute;t&eacute; par des z&eacute;ros)</option>
     <option value="#0000#">num&eacute;ro de la s&eacute;quence sur 4 chiffres (compl&eacute;t&eacute; par des z&eacute;ros)</option>
@@ -58,11 +58,8 @@
 <select onchange="InsertSelectedValueInToInput(this, 'form_compteur', 'CompteurDefReinit');">
     <option value="AIDEFORMAT">sélectionner les formats dans la liste</option>
     <option value="#AAAA#">Ann&eacute;e</option>
- <!--   <option value="#AA#">ann&eacute;e sur 2 chiffres</option> -->
-    <option value="#M#">Mois</option>
- <!--   <option value="#MM#">num&eacute;ro du mois avec z&eacute;ro significatif</option> -->
-    <option value="#J#">Jour</option>
- <!--   <option value="#JJ#">Jour</option> -->
+    <option value="#MM#">Mois</option>
+    <option value="#JJ#">Jour</option>
 </select>
 </div>
 
