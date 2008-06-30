@@ -890,14 +890,14 @@ class DeliberationsController extends AppController {
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
 
 		if (empty($this->data)) {
-			$this->set('delib', $this->Deliberation->read(null, $id));
+		    $this->data = $this->Deliberation->read(null, $id);
+		    $this->set('delib', $this->data);
 		} else{
 			$this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
 				$deliberation = array_shift($this->params['form']);
 				$annexes = $this->params['form'];
-
 				$uploaded = true;
 				$size = count($this->params['form']);
 				$counter = 1;
@@ -911,29 +911,27 @@ class DeliberationsController extends AppController {
 				}
 
 				if($uploaded) {
-					if ($this->Deliberation->save($this->data)) {
+			            if ($this->Deliberation->save($this->data)) {
 					$counter = 1;
-
-						while($counter <= ($size/2)) {
-							$this->data['Annex']['id'] = null;
-							$this->data['Annex']['deliberation_id'] = $id;
-							$this->data['Annex']['seance_id'] = 0;
-							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
-							$this->data['Annex']['type'] = 'P';
-							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
-							$this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
-							$this->data['Annex']['size'] = $annexes['file_'.$counter]['size'];
-							$this->data['Annex']['data'] = $this->getFileData($annexes['file_'.$counter]['tmp_name'], $annexes['file_'.$counter]['size']);
-							if(!$this->Annex->save($this->data))
-							{
-								echo "pb de sauvegarde de l\'annexe ".$counter;
-							}
-						$counter++;
-						}
-						$this->redirect('/deliberations/textprojet/'.$id);
-					} else {
-						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+					while($counter <= ($size/2)) {
+				            $this->data['Annex']['id'] = null;
+					    $this->data['Annex']['deliberation_id'] = $id;
+					    $this->data['Annex']['seance_id'] = 0;
+					    $this->data['Annex']['titre'] = $annexes['titre_'.$counter];
+					    $this->data['Annex']['type'] = 'P';
+					    $this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
+					    $this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
+					    $this->data['Annex']['size'] = $annexes['file_'.$counter]['size'];
+					    $this->data['Annex']['data'] = $this->getFileData($annexes['file_'.$counter]['tmp_name'], $annexes['file_'.$counter]['size']);
+					    if(!$this->Annex->save($this->data)){
+				                echo "pb de sauvegarde de l\'annexe ".$counter;
+					    }
+					    $counter++;
 					}
+					$this->redirect('/deliberations/textprojet/'.$id);
+				    } else {
+				        $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				    }
 				}
 			}
 		}
