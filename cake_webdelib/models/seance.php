@@ -25,26 +25,18 @@ class Seance extends AppModel {
      /* retourne la liste des séances futures avec le nom du type de séance  */
      function generateList() {
          $generateList = array();
-
-         $condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-         $seances = $this->findAll($condition, null, 'date DESC');
-         foreach($seances as $seance){
-             $conditions= 'Seance.traitee = 0';
-             $seances = $this->findAll($conditions);
-	     foreach ($seances as $seance){
-	         $retard=$seance['Typeseance']['retard'];
-                 if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y")))){
-	             $dateTimeStamp = strtotime($seance['Seance']['date']); 
-		     $dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
-                     $generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
-
-                 }
-            } 
-
-        }
+         $conditions= 'Seance.traitee = 0';
+         $seances = $this->findAll($conditions);
+	 foreach ($seances as $seance){
+	     $retard=$seance['Typeseance']['retard'];
+             if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y")))){
+	         $dateTimeStamp = strtotime($seance['Seance']['date']); 
+	         $dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
+                 $generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
+             }
+        } 
         return $generateList;
     }
- 
 
 }
 ?>
