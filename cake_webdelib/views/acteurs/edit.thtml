@@ -111,7 +111,7 @@ function initAffichageInfosElus()
 <div class="submit">
 	<?php echo $html->hidden('Acteur/id')?>
 	<?php echo $html->submit('Sauvegarder', array('class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-	<?php echo $html->link('Annuler', '/pages/acteurs_typeacteurs', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php echo $html->link('Annuler', '/acteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 
 </form>
