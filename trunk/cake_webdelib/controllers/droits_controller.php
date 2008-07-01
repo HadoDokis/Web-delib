@@ -12,8 +12,12 @@ class DroitsController extends AppController
 
 	/* Gestion des droits des utilisateurs sur les menus et les actions des controleurs */
 	function edit() {
+	       // Initialisation de la progressBar
+	       include ('vendors/progressbar.php');
+	       Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
+		
 		// Initialisations
-		$profilsUsersTree = array();
+                $profilsUsersTree = array();
 		$menuControllersTree = array();
 		$filtreProfils = array();
 		$filtreMenu = array();
@@ -24,6 +28,7 @@ class DroitsController extends AppController
 
 		// Chargement de l'arborescence des profils et des users associés
 		$nbProfilsUsers = $this->_chargeProfilsUsers($profilsUsersTree);
+
 		// Chargement des utilisateurs sans profils
 		$nbProfilsUsers += $this->_chargeUsersSansProfil($profilsUsersTree);
 
@@ -31,7 +36,8 @@ class DroitsController extends AppController
 		$nbMenuControllers = $this->_chargeMenuControllers($menuControllersTree, $this->Menu->load('webDelib'));
 		// Chargement des controleurs/Action qui ne sont pas dans le menu
 		$nbMenuControllers += $this->_chargeControllersActions($menuControllersTree);
-
+		ProgressBar(100, 'Chargement de chaque profil');
+                
 		if (empty($this->data))
 		{
 			// Chargement des droits pour les couples Profils/users-Menu/controleurs
@@ -408,7 +414,8 @@ class DroitsController extends AppController
 
 /* charge les droits des couples Profils/User - Menu/Controleurs dans le tableau tabDroits */
 	function _chargeDroits($profilsUsersTree, $menuControllersTree) {
-
+		$cpt = 0;
+                $nbUsers = count($this->User->findAll(null, 'id'));
 		// Parcours des profils
 		foreach($profilsUsersTree as $profilUsers) {
 			$this->iProfil++;
@@ -418,9 +425,12 @@ class DroitsController extends AppController
 			// Traitement des utilisateurs du profil courant
 			if (array_key_exists('users', $profilUsers)) {
 				foreach($profilUsers['users'] as $user) {
+					$cpt++;
+					$indice = $cpt*(100/$nbUsers);
+				        ProgressBar($indice, 'R&eacute;cup&eacute;ration des droits pour ' . $user['login']);	
 					$this->iProfil++;
 					$this->iMenu = -1;
-					$this->_chargeDroitsMenuControllers($user['id'], $menuControllersTree);
+					$this->_chargeDroitsMenuControllers($user['id'], $menuControllersTree, $indice, $user['login']);
 				}
 			}
 
@@ -432,13 +442,14 @@ class DroitsController extends AppController
 	}
 
 /* Fonction récursive sur les menus et actions des controleurs pour le chargement des droits */
-	function _chargeDroitsMenuControllers($aro, $menuControllersTree) {
+	function _chargeDroitsMenuControllers($aro, $menuControllersTree, $indice=null, $user=null) {
 		// Parcours des menus et controleurs
 		foreach($menuControllersTree as $menuController) {
 			$this->iMenu++;
 			// lecture des droits
 			$this->tabDroits[$this->iProfil][$this->iMenu] = $this->Acl->check($aro, $menuController['acosAlias']);
-
+			if ($indice != null)
+			    ProgressBar($indice, 'R&eacute;cup&eacute;ration des droits '. $menuController['title']. ' pour '.$user);
 			// Traitement des sous-menus
 			if (array_key_exists('subMenu', $menuController) and !empty($menuController['subMenu']))
 				$this->_chargeDroitsMenuControllers($aro, $menuController['subMenu']);
