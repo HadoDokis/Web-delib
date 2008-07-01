@@ -501,8 +501,10 @@ class SeancesController extends AppController {
 
 
 			if ($pour >= (($nb_votant -$abstenu) /2)) {
-			     $this->data['Deliberation']['etat']=3;
-			     $this->data['Deliberation']['num_delib'] = $this->requestAction("/compteurs/suivant/".$seance['Typeseance']['compteur_id']);
+			    $this->data['Deliberation']['etat']=3;
+			    // Attribution du numéro de la délibération
+				if (empty($this->data['Deliberation']['num_delib']))
+					 $this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id']);
 			} else
 				$this->data['Deliberation']['etat']=4;
 			$this->Deliberation->save($this->data);
@@ -750,9 +752,14 @@ class SeancesController extends AppController {
 				$sortie = true;
 			} elseif ($this->data['Deliberation']['avis'] == 1) {
 				// Favorable : on attribue une nouvelle date de séance si elle est sélectionnée
-				if (empty($this->data['Deliberation']['seance_id']))
+				if (empty($this->data['Deliberation']['seance_id'])) {
 					unset($this->data['Deliberation']['seance_id']);
-				else
+					// on calcule le numéro de la délibération car il n'y a pas de séance suivante attribuée
+					if (empty($deliberation['Deliberation']['num_delib'])) {
+						$compteurId = $this->Seance->Typeseance->field('compteur_id', 'Typeseance.id = '.$deliberation['Seance']['type_id']);
+						$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($compteurId);
+					}
+				} else
 					$this->data['Deliberation']['position'] = $this->Deliberation->findCount("seance_id =".$this->data['Deliberation']['seance_id']." AND (etat != -1 )")+1;
 				$this->Deliberation->save($this->data['Deliberation']);
 				// ajout du commentaire
