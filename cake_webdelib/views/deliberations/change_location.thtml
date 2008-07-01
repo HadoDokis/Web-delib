@@ -9,17 +9,27 @@
 <br>
 
 <div class="optional">
-    <?php echo $form->labelTag('Deliberation/localisation2_id','Localisation  2 : '); ?>
-    <?php echo $html->selectTag('Deliberation/localisation', $localisations , $selectedLocalisation2, array('id' => "$urlPage",'onChange'=>"changeLocation2($id,$selectedLocalisation1,this,$selectedLocalisation3)"),null,true); ?>
-    <?php echo $html->selectTag('Deliberation/localisation2_id',$zone2, null, array('id'=>"$urlPage",'onChange'=>"saveLocation($id,this,2)"), null,true); ?>
+    <?php 
+    
+        if ($selectedLocalisation1 != 0) {
+        echo $form->labelTag('Deliberation/localisation2_id','Localisation  2 : '); 
+        echo $html->selectTag('Deliberation/localisation', $localisations , $selectedLocalisation2, array('id' => "$urlPage",'onChange'=>"changeLocation2($id,$selectedLocalisation1,this,$selectedLocalisation3)"),null,true); 
+        echo $html->selectTag('Deliberation/localisation2_id',$zone2, null, array('id'=>"$urlPage",'onChange'=>"saveLocation($id,this,2)"), null,true); 
+	}
+    ?>
 </div>
 <br>	
 
 
 <div class="optional">
-    <?php echo $form->labelTag('Deliberation/localisation3_id','Localisation  3 : '); ?>
-    <?php echo $html->selectTag('Deliberation/localisation', $localisations , $selectedLocalisation3, array('id' => "$urlPage",'onChange'=>"changeLocation3($id,$selectedLocalisation1,$selectedLocalisation2,this)"),null,true); ?>
-	<?php echo $html->selectTag('Deliberation/localisation3_id',$zone3, null, array('id'=>"$urlPage",'onChange'=>"saveLocation($id,this,3)"), null,true); ?>
+    <?php 
+    
+    if (($selectedLocalisation1 != 0) && ($selectedLocalisation2 != 0) ) {
+        echo $form->labelTag('Deliberation/localisation3_id','Localisation  3 : '); 
+        echo $html->selectTag('Deliberation/localisation', $localisations , $selectedLocalisation3, array('id' => "$urlPage",'onChange'=>"changeLocation3($id,$selectedLocalisation1,$selectedLocalisation2,this)"),null,true); 
+         echo $html->selectTag('Deliberation/localisation3_id',$zone3, null, array('id'=>"$urlPage",'onChange'=>"saveLocation($id,this,3)"), null,true); 
+    }
+    ?>
 </div>
 <br />
 <br />

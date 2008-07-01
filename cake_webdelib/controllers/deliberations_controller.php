@@ -539,14 +539,21 @@ class DeliberationsController extends AppController {
 	}
 
 	function getParent($id_loc) {
-		if ($id_loc!=0)
-		{$condition = "id = $id_loc";
-		$parent = $this->Localisation->findAll($condition);
-		return $parent[0]['Localisation']['parent_id'];
-		}else{
-			$parent = 0;
-			return $parent;
-		}
+		if ($id_loc!=0){ 
+		    $condition = "id = $id_loc";
+		    $parent = $this->Localisation->findAll($condition);
+		    if ($parent[0]['Localisation']['parent_id']==0)
+		        return $id_loc;
+		    else
+		        return $parent[0]['Localisation']['parent_id'];
+		}else
+		    return 0;
+	}
+
+        function _hasNoSon ($id_loc) {
+               $condition = "parent_id = $id_loc";
+	       $result = $this->Localisation->findAll($condition);
+               return (0 == count($result));
 	}
 
 	function changeLocation($id=null,$pzone1=0,$pzone2=0,$pzone3=0) {
@@ -566,6 +573,25 @@ class DeliberationsController extends AppController {
 			$this->set('selectedLocalisation2', $selectedLocalisation2);
 			$selectedLocalisation3 =$this->getParent($this->data['Deliberation']['localisation3_id']);
 			$this->set('selectedLocalisation3', $selectedLocalisation3);
+                        
+			if (($pzone1 != $this->data['Deliberation']['localisation1_id']) AND ($this->_hasNoSon($pzone1)) ){ 
+                            $this->data['Deliberation']['id'] = $id;
+                            $this->data['Deliberation']['localisation1_id']= $pzone1;
+			    if ($this->Deliberation->save($this->data))
+                              $this->redirect('/deliberations/changeLocation/'.$id); 
+                        }
+                        if (($pzone2 != $this->data['Deliberation']['localisation2_id']) AND ($this->_hasNoSon($pzone2)) ){
+                            $this->data['Deliberation']['id'] = $id;
+                            $this->data['Deliberation']['localisation2_id']= $pzone2;
+                            if ($this->Deliberation->save($this->data))
+                              $this->redirect('/deliberations/changeLocation/'.$id);
+                        }
+                       if (($pzone3 != $this->data['Deliberation']['localisation3_id']) AND ($this->_hasNoSon($pzone3)) ){
+                            $this->data['Deliberation']['id'] = $id;
+                            $this->data['Deliberation']['localisation3_id']= $pzone3;
+                            if ($this->Deliberation->save($this->data))
+                              $this->redirect('/deliberations/changeLocation/'.$id);
+                        }
 
 			if($pzone1!=0){
 				$conditions = "Localisation.parent_id= $pzone1";
