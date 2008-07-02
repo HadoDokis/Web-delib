@@ -44,7 +44,7 @@ class ProfilsController extends AppController {
 				$this->redirect('/profils/index');
 			}
 			$this->data = $this->Profil->read(null, $id);
-			$profils = $this->Profil->generateList();
+			$profils = $this->Profil->generateList("Profil.id != $id");
 			$this->set('profils', $profils);
 			$this->set('selectedProfil',$this->data['Profil']['parent_id']);
 		} else {
