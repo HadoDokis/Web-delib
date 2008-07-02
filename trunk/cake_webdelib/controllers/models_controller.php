@@ -1,378 +1,372 @@
-<?php
-class ModelsController extends AppController {
+	<?php
+	class ModelsController extends AppController {
 
-	var $name = 'Models';
-	var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur');
-	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
+		var $name = 'Models';
+		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur');
+		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
+		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
-	// Gestion des droits
-	var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel', 'listeActeursPresents', 'listeActeursAbsents', 'listeActeursMandates', 'listeActeursVotant');
-	var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
+		// Gestion des droits
+		var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel', 'listeActeursPresents', 'listeActeursAbsents', 'listeActeursMandates', 'listeActeursVotant', 'listeActeursVotantContre');
+		var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
 
-	function index() {
-            $this->set('USE_GEDOOO', USE_GEDOOO);
-            $this->set('models', $this->Model->findAll(null, null, 'type ASC '));
-	}
+		function index() {
+		    $this->set('USE_GEDOOO', USE_GEDOOO);
+		    $this->set('models', $this->Model->findAll(null, null, 'type ASC '));
+		}
 
-	function add() {
-		if (empty($this->data)) {
-			$this->render();
-		} else{
-                        $this->data['Model']['type']='Document';
-			if ($this->Model->save($this->data)) {
-				$this->redirect('/models/index');
+		function add() {
+			if (empty($this->data)) {
+				$this->render();
+			} else{
+				$this->data['Model']['type']='Document';
+				if ($this->Model->save($this->data)) {
+					$this->redirect('/models/index');
+				}
 			}
 		}
-	}
 
-	function edit($id=null) {
-		$data = $this->Model->findAll("Model.id = $id");
-		$this->set('libelle', $data['0']['Model']['modele']);
+		function edit($id=null) {
+			$data = $this->Model->findAll("Model.id = $id");
+			$this->set('libelle', $data['0']['Model']['modele']);
 
-		if (empty($this->data)) {
-			$this->data = $this->Model->read(null, $id);
-		} else{
-			$this->data['Model']['id']=$id;
-			if ($this->Model->save($this->data)) {
-				$this->redirect('/models/index');
+			if (empty($this->data)) {
+				$this->data = $this->Model->read(null, $id);
+			} else{
+				$this->data['Model']['id']=$id;
+				if ($this->Model->save($this->data)) {
+					$this->redirect('/models/index');
+				}
 			}
 		}
-	}
 
-	function delete($id = null) {
-		if (!$id) {
-			$this->Session->setFlash('Invalide id pour la deliberation');
-			$this->redirect('/models/index');
+		function delete($id = null) {
+			if (!$id) {
+				$this->Session->setFlash('Invalide id pour la deliberation');
+				$this->redirect('/models/index');
+			}
+			$data = $this->Model->read(null, $id);
+			if ($data['Model']['type'] == 'Document') {
+			    if ($this->Model->del($id)) {
+				$this->Session->setFlash('Le model a &eacute;t&eacute; supprim&eacute;e.');
+				$this->redirect('/models/index');
+			    }
+			}
+			else{
+			    $this->Session->setFlash('Impossible de supprimer ce type de modele');
+			    $this->redirect('/models/index');
+			}
+
 		}
-		$data = $this->Model->read(null, $id);
-                if ($data['Model']['type'] == 'Document') {
-		    if ($this->Model->del($id)) {
-			$this->Session->setFlash('Le model a &eacute;t&eacute; supprim&eacute;e.');
-			$this->redirect('/models/index');
-		    }
+
+		function view($id = null) {
+		      $this->set('USE_GEDOOO', USE_GEDOOO);
+		      $data = $this->Model->read(null, $id);
+		      if (USE_GEDOOO && ($data['Model']['type'] == 'Document') ) {
+			  header('Content-type: '.$this->_getFileType($id));
+			  header('Content-Length: '.$this->_getSize($id));
+			  header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
+			  echo $this->_getData($id);
+			  exit();
+		       }
+		       else {
+			   $this->set('model', $this->Model->read(null, $id));
+		       }
 		}
-		else{
-                    $this->Session->setFlash('Impossible de supprimer ce type de modele');
-		    $this->redirect('/models/index');
+
+
+		// Accesseurs Déliberation
+		function _getCommentaireDelib($delib_id) {
+			$data= $this->Vote->findAll("delib_id=$delib_id");
+			if (isset($data['0']['Vote']['commentaire']))
+				return $data['0']['Vote']['commentaire'];
 		}
 
-	}
+		function _getDelibEtat($deliberationEtat) {
+			 switch ($deliberationEtat){
+				case -1:
+				$etat = 'refusé';
+				break;
+				case 0:
+				$etat = 'en cours de rédaction';
+				break;
+				case 1:
+				$etat = ' dans un circuit';
+					 break;
+				case 2:
+				$etat = 'validé';
+					 break;
+			case 3:
+				$etat = 'Voté pour';
+					 break;
+				case 4:
+				$etat = 'Voté contre';
+					 break;
+				case 5:
+				$etat = 'envoyé';
+					 break;
+			 }
+			 return $etat;
+		}
 
-	function view($id = null) {
-	      $this->set('USE_GEDOOO', USE_GEDOOO);
-              $data = $this->Model->read(null, $id);
-	      if (USE_GEDOOO && ($data['Model']['type'] == 'Document') ) {
-	          header('Content-type: '.$this->_getFileType($id));
-                  header('Content-Length: '.$this->_getSize($id));
-                  header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
-                  echo $this->_getData($id);
-                  exit();
-               }
-	       else {
-                   $this->set('model', $this->Model->read(null, $id));
-	       }
-        }
+		function _getDateDuJour(){
+			return $this->Date->frenchDate(time());
+		}
 
+		function listeProjets($seance_id, $type=0) {
+			 // $type = 0 => Liste projets Sommaires
+			 // $type = 1 => Liste projets Détaillés
+			if ($type == 1) $texte = $this->Model->field('content', 'id=12');
+			else $texte = $this->Model->field('content', 'id=13');
 
-	// Accesseurs Déliberation
-	function _getCommentaireDelib($delib_id) {
-		$data= $this->Vote->findAll("delib_id=$delib_id");
-		if (isset($data['0']['Vote']['commentaire']))
-			return $data['0']['Vote']['commentaire'];
-	}
+			$listeProjets = "";
+			$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=2",null,'Deliberation.position ASC');
+			foreach($projets as $projet) {
+			$listeProjets .= $this->_replaceBalises($texte,$projet['Deliberation']['id'] );
+		}
+			return $listeProjets;
+		}
 
-	function _getDelibEtat($deliberationEtat) {
-		 switch ($deliberationEtat){
-			case -1:
-    			$etat = 'refusé';
-    			break;
-			case 0:
-    			$etat = 'en cours de rédaction';
-    			break;
-			case 1:
-    			$etat = ' dans un circuit';
-   				 break;
-   			case 2:
-    			$etat = 'validé';
-   				 break;
-    		case 3:
-    			$etat = 'Voté pour';
-   				 break;
-   			case 4:
-    			$etat = 'Voté contre';
-   				 break;
-   			case 5:
-    			$etat = 'envoyé';
-   				 break;
-		 }
-		 return $etat;
-	}
-
-	function _getDateDuJour(){
-		return $this->Date->frenchDate(time());
-	}
-
-	function listeProjets($seance_id, $type=0) {
-		 // $type = 0 => Liste projets Sommaires
-		 // $type = 1 => Liste projets Détaillés
-		if ($type == 1) $texte = $this->Model->field('content', 'id=12');
-		else $texte = $this->Model->field('content', 'id=13');
-
-		$listeProjets = "";
-		$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=2",null,'Deliberation.position ASC');
-		foreach($projets as $projet) {
-        	$listeProjets .= $this->_replaceBalises($texte,$projet['Deliberation']['id'] );
-        }
-		return $listeProjets;
-	}
-
-	function _listeActeursPresents($delib_id) {
-            // Lecture du modele
-	    $texte = $this->Model->field('content', 'id=8');
-	    $listeActeurs = "";
-            $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "Acteur.position ASC");
-	    foreach($acteurs as $acteur) {
-	        $searchReplace = array(
-		    "#NOUVELLE_PAGE#" => "<newpage>",
-		    "#NOM_PRESENT#" => $acteur['Acteur']['nom'],
-		    "#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
-		    "#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
-		    "#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
-		    "#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
-		    "#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
-		    "#CP_PRESENT#" => $acteur['Acteur']['cp'],
-		    "#VILLE_PRESENT#" => $acteur['Acteur']['ville']
-	         );
-        	$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-	    return $listeActeurs;
-	}
-
-        function listeActeursPresents($delib_id) {
-            // Lecture du modele
-            $texte = $this->Model->field('content', 'id=8');
-            $listeActeurs = "";
-            $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "Acteur.position ASC");
-            foreach($acteurs as $acteur) {
-                $searchReplace = array(
-                    "#NOUVELLE_PAGE#" => "<newpage>",
-                    "#NOM_PRESENT#" => $acteur['Acteur']['nom'],
-                    "#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
-                    "#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
-                    "#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
-                    "#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
-                    "#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
-                    "#CP_PRESENT#" => $acteur['Acteur']['cp'],
-                    "#VILLE_PRESENT#" => $acteur['Acteur']['ville']
-                 );
-                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-            return $listeActeurs;
-        }
-
-	function _listeActeursAbsents($delib_id) {
-	    // Lecture du modele
-	    $texte = $this->Model->field('content', 'id=9');
-
-	    $listeActeurs = "";
-            $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'Acteur.position ASC');
-	    foreach($acteurs as $acteur) {
-	        $searchReplace = array(
-		    "#NOUVELLE_PAGE#" => "<newpage>",
-		    "#NOM_ABSENT#" => $acteur['Acteur']['nom'],
-		    "#PRENOM_ABSENT#" => $acteur['Acteur']['prenom'],
-		    "#SALUTATION_ABSENT#" => $acteur['Acteur']['salutation'],
-		    "#TITRE_ABSENT#" => $acteur['Acteur']['titre'],
-		    "#ADRESSE1_ABSENT#" => $acteur['Acteur']['adresse1'],
-		    "#ADRESSE2_ABSENT#" => $acteur['Acteur']['adresse2'],
-		    "#CP_ABSENT#" => $acteur['Acteur']['cp'],
-		    "#VILLE_ABSENT#" => $acteur['Acteur']['ville']
-		     );
-                 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-             }
-	     return $listeActeurs;
-	}
-
-        function listeActeursAbsents($delib_id) {
-            // Lecture du modele
-            $texte = $this->Model->field('content', 'id=9');
-
-            $listeActeurs = "";
-            $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'Acteur.position ASC');
-            foreach($acteurs as $acteur) {
-                $searchReplace = array(
-                    "#NOUVELLE_PAGE#" => "<newpage>",
-                    "#NOM_ABSENT#" => $acteur['Acteur']['nom'],
-                    "#PRENOM_ABSENT#" => $acteur['Acteur']['prenom'],
-                    "#SALUTATION_ABSENT#" => $acteur['Acteur']['salutation'],
-                    "#TITRE_ABSENT#" => $acteur['Acteur']['titre'],
-                    "#ADRESSE1_ABSENT#" => $acteur['Acteur']['adresse1'],
-                    "#ADRESSE2_ABSENT#" => $acteur['Acteur']['adresse2'],
-                    "#CP_ABSENT#" => $acteur['Acteur']['cp'],
-                    "#VILLE_ABSENT#" => $acteur['Acteur']['ville']
-                     );
-                 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-             }
-             return $listeActeurs;
-        }
-
-	function _listeActeursMandates($delib_id) {
-	    // Lecture du modele
-	    $texte = $this->Model->field('content', 'id=10');
-
-	    $listeActeurs = "";
-	    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'Acteur.position ASC');
-	    foreach($acteurs as $acteur) {
-	 	$mandataire = $this->Acteur->findById($acteur['Listepresence']['mandataire']);
-		$searchReplace = array(
-			"#NOUVELLE_PAGE#" => "<newpage>",
-			"#NOM_MANDATE#" => $acteur['Acteur']['nom'],
-			"#PRENOM_MANDATE#" => $acteur['Acteur']['prenom'],
-			"#SALUTATION_MANDATE#" => $acteur['Acteur']['salutation'],
-			"#TITRE_MANDATE#" => $acteur['Acteur']['titre'],
-           		"#NOM_MANDATAIRE#" => $mandataire['Acteur']['nom'],
-		 	"#PRENOM_MANDATAIRE#" => $mandataire['Acteur']['prenom'],
-		 	"#SALUTATION_MANDATAIRE#" => $mandataire['Acteur']['salutation'],
-		 	"#TITRE_MANDATAIRE#" => $mandataire['Acteur']['titre'],
-		 	"#ADRESSE1_MANDATAIRE#" => $mandataire['Acteur']['adresse1'],
-		 	"#ADRESSE2_MANDATAIRE#" => $mandataire['Acteur']['adresse2'],
-		 	"#CP_MANDATAIRE#" => $mandataire['Acteur']['cp'],
-                        "#VILLE_MANDATAIRE#" => $mandataire['Acteur']['ville']
+		function _listeActeursPresents($delib_id) {
+		    // Lecture du modele
+		    $texte = $this->Model->field('content', 'id=8');
+		    $listeActeurs = "";
+		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "Acteur.position ASC");
+		    foreach($acteurs as $acteur) {
+			$searchReplace = array(
+			    "#NOUVELLE_PAGE#" => "<newpage>",
+			    "#NOM_PRESENT#" => $acteur['Acteur']['nom'],
+			    "#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
+			    "#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
+			    "#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
+			    "#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
+			    "#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
+			    "#CP_PRESENT#" => $acteur['Acteur']['cp'],
+			    "#VILLE_PRESENT#" => $acteur['Acteur']['ville']
 			 );
-             	$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-	    return $listeActeurs;
-	}
+			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+		    }
+		    return $listeActeurs;
+		}
 
-        function listeActeursMandates($delib_id) {
-            // Lecture du modele
-            $texte = $this->Model->field('content', 'id=10');
+		function listeActeursPresents($delib_id) {
+		    // Lecture du modele
+		    $texte = $this->Model->field('content', 'id=8');
+		    $listeActeurs = "";
+		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "Acteur.position ASC");
+		    foreach($acteurs as $acteur) {
+			$searchReplace = array(
+			    "#NOUVELLE_PAGE#" => "<newpage>",
+			    "#NOM_PRESENT#" => $acteur['Acteur']['nom'],
+			    "#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
+			    "#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
+			    "#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
+			    "#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
+			    "#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
+			    "#CP_PRESENT#" => $acteur['Acteur']['cp'],
+			    "#VILLE_PRESENT#" => $acteur['Acteur']['ville']
+			 );
+			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+		    }
+		    return $listeActeurs;
+		}
 
-            $listeActeurs = "";
-            $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'Acteur.position ASC');
-            foreach($acteurs as $acteur) {
-                $mandataire = $this->Acteur->findById($acteur['Listepresence']['mandataire']);
-                $searchReplace = array(
-                        "#NOUVELLE_PAGE#" => "<newpage>",
-                        "#NOM_MANDATE#" => $acteur['Acteur']['nom'],
-                        "#PRENOM_MANDATE#" => $acteur['Acteur']['prenom'],
-                        "#SALUTATION_MANDATE#" => $acteur['Acteur']['salutation'],
-                        "#TITRE_MANDATE#" => $acteur['Acteur']['titre'],
-                        "#NOM_MANDATAIRE#" => $mandataire['Acteur']['nom'],
-                        "#PRENOM_MANDATAIRE#" => $mandataire['Acteur']['prenom'],
-                        "#SALUTATION_MANDATAIRE#" => $mandataire['Acteur']['salutation'],
-                        "#TITRE_MANDATAIRE#" => $mandataire['Acteur']['titre'],
-                        "#ADRESSE1_MANDATAIRE#" => $mandataire['Acteur']['adresse1'],
-                        "#ADRESSE2_MANDATAIRE#" => $mandataire['Acteur']['adresse2'],
-                        "#CP_MANDATAIRE#" => $mandataire['Acteur']['cp'],
-                        "#VILLE_MANDATAIRE#" => $mandataire['Acteur']['ville']
-                         );
-                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-            return $listeActeurs;
-        }
+		function _listeActeursAbsents($delib_id) {
+		    // Lecture du modele
+		    $texte = $this->Model->field('content', 'id=9');
 
-	function _listeActeursVotant($delib_id) {
-            // Lecture du modele
-	    $texte = $this->Model->field('content', 'id=11');
+		    $listeActeurs = "";
+		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'Acteur.position ASC');
+		    foreach($acteurs as $acteur) {
+			$searchReplace = array(
+			    "#NOUVELLE_PAGE#" => "<newpage>",
+			    "#NOM_ABSENT#" => $acteur['Acteur']['nom'],
+			    "#PRENOM_ABSENT#" => $acteur['Acteur']['prenom'],
+			    "#SALUTATION_ABSENT#" => $acteur['Acteur']['salutation'],
+			    "#TITRE_ABSENT#" => $acteur['Acteur']['titre'],
+			    "#ADRESSE1_ABSENT#" => $acteur['Acteur']['adresse1'],
+			    "#ADRESSE2_ABSENT#" => $acteur['Acteur']['adresse2'],
+			    "#CP_ABSENT#" => $acteur['Acteur']['cp'],
+			    "#VILLE_ABSENT#" => $acteur['Acteur']['ville']
+			     );
+			 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+		     }
+		     return $listeActeurs;
+		}
 
-	    $listeActeurs = "";
-	    $votes = $this->Vote->findAll("delib_id = $delib_id");
-	    foreach($votes as $vote) {
-	        $votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
-		if ($vote['Vote']['resultat']==2)
-		    $resultat = "contre";
-		elseif ($vote['Vote']['resultat']==3)
-		    $resultat = "pour";
-		elseif ($vote['Vote']['resultat']==4)
-		    $resultat = "abstention";
-		elseif ($vote['Vote']['resultat']==5)
-		    $resultat = "Pas de participation";
+		function listeActeursAbsents($delib_id) {
+		    // Lecture du modele
+		    $texte = $this->Model->field('content', 'id=9');
 
-		$searchReplace = array(
-		    "#NOUVELLE_PAGE#" => "<newpage>",
-		    "#NOM_VOTANT#" => $votant['Acteur']['nom'],
-		    "#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
-		    "#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
-		    "#TITRE_VOTANT#" => $votant['Acteur']['titre'],
-		    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
-		    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
-		    "#CP_VOTANT#" => $votant['Acteur']['cp'],
-		    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
-		    "#RESULTAT_VOTANT#" => $resultat,
-		    "#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
-		);
-        	$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-	    return $listeActeurs;
-	}
+		    $listeActeurs = "";
+		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'Acteur.position ASC');
+		    foreach($acteurs as $acteur) {
+			$searchReplace = array(
+			    "#NOUVELLE_PAGE#" => "<newpage>",
+			    "#NOM_ABSENT#" => $acteur['Acteur']['nom'],
+			    "#PRENOM_ABSENT#" => $acteur['Acteur']['prenom'],
+			    "#SALUTATION_ABSENT#" => $acteur['Acteur']['salutation'],
+			    "#TITRE_ABSENT#" => $acteur['Acteur']['titre'],
+			    "#ADRESSE1_ABSENT#" => $acteur['Acteur']['adresse1'],
+			    "#ADRESSE2_ABSENT#" => $acteur['Acteur']['adresse2'],
+			    "#CP_ABSENT#" => $acteur['Acteur']['cp'],
+			    "#VILLE_ABSENT#" => $acteur['Acteur']['ville']
+			     );
+			 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+		     }
+		     return $listeActeurs;
+		}
 
-        function listeActeursVotant($delib_id) {
-            // Lecture du modele
-            $texte = $this->Model->field('content', 'id=11');
+		function _listeActeursMandates($delib_id) {
+		    // Lecture du modele
+		    $texte = $this->Model->field('content', 'id=10');
 
-            $listeActeurs = "";
-            $votes = $this->Vote->findAll("delib_id = $delib_id");
-            foreach($votes as $vote) {
-                $votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
-                if ($vote['Vote']['resultat']==2)
-                    $resultat = "contre";
-                elseif ($vote['Vote']['resultat']==3)
-                    $resultat = "pour";
-                elseif ($vote['Vote']['resultat']==4)
-                    $resultat = "abstention";
-                elseif ($vote['Vote']['resultat']==5)
-                    $resultat = "Pas de participation";
+		    $listeActeurs = "";
+		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'Acteur.position ASC');
+		    foreach($acteurs as $acteur) {
+			$mandataire = $this->Acteur->findById($acteur['Listepresence']['mandataire']);
+			$searchReplace = array(
+				"#NOUVELLE_PAGE#" => "<newpage>",
+				"#NOM_MANDATE#" => $acteur['Acteur']['nom'],
+				"#PRENOM_MANDATE#" => $acteur['Acteur']['prenom'],
+				"#SALUTATION_MANDATE#" => $acteur['Acteur']['salutation'],
+				"#TITRE_MANDATE#" => $acteur['Acteur']['titre'],
+				"#NOM_MANDATAIRE#" => $mandataire['Acteur']['nom'],
+				"#PRENOM_MANDATAIRE#" => $mandataire['Acteur']['prenom'],
+				"#SALUTATION_MANDATAIRE#" => $mandataire['Acteur']['salutation'],
+				"#TITRE_MANDATAIRE#" => $mandataire['Acteur']['titre'],
+				"#ADRESSE1_MANDATAIRE#" => $mandataire['Acteur']['adresse1'],
+				"#ADRESSE2_MANDATAIRE#" => $mandataire['Acteur']['adresse2'],
+				"#CP_MANDATAIRE#" => $mandataire['Acteur']['cp'],
+				"#VILLE_MANDATAIRE#" => $mandataire['Acteur']['ville']
+				 );
+			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+		    }
+		    return $listeActeurs;
+		}
 
-                $searchReplace = array(
-                    "#NOUVELLE_PAGE#" => "<newpage>",
-                    "#NOM_VOTANT#" => $votant['Acteur']['nom'],
-                    "#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
-                    "#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
-                    "#TITRE_VOTANT#" => $votant['Acteur']['titre'],
-                    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
-                    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
-                    "#CP_VOTANT#" => $votant['Acteur']['cp'],
-                    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
-                    "#RESULTAT_VOTANT#" => $resultat,
+		function listeActeursMandates($delib_id) {
+		    // Lecture du modele
+		    $texte = $this->Model->field('content', 'id=10');
+
+		    $listeActeurs = "";
+		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'Acteur.position ASC');
+		    foreach($acteurs as $acteur) {
+			$mandataire = $this->Acteur->findById($acteur['Listepresence']['mandataire']);
+			$searchReplace = array(
+				"#NOUVELLE_PAGE#" => "<newpage>",
+				"#NOM_MANDATE#" => $acteur['Acteur']['nom'],
+				"#PRENOM_MANDATE#" => $acteur['Acteur']['prenom'],
+				"#SALUTATION_MANDATE#" => $acteur['Acteur']['salutation'],
+				"#TITRE_MANDATE#" => $acteur['Acteur']['titre'],
+				"#NOM_MANDATAIRE#" => $mandataire['Acteur']['nom'],
+				"#PRENOM_MANDATAIRE#" => $mandataire['Acteur']['prenom'],
+				"#SALUTATION_MANDATAIRE#" => $mandataire['Acteur']['salutation'],
+				"#TITRE_MANDATAIRE#" => $mandataire['Acteur']['titre'],
+				"#ADRESSE1_MANDATAIRE#" => $mandataire['Acteur']['adresse1'],
+				"#ADRESSE2_MANDATAIRE#" => $mandataire['Acteur']['adresse2'],
+				"#CP_MANDATAIRE#" => $mandataire['Acteur']['cp'],
+				"#VILLE_MANDATAIRE#" => $mandataire['Acteur']['ville']
+				 );
+			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+		    }
+		    return $listeActeurs;
+		}
+
+		function _listeActeursVotant($delib_id) {
+		    // Lecture du modele
+		    $texte = $this->Model->field('content', 'id=11');
+
+		    $listeActeurs = "";
+		    $votes = $this->Vote->findAll("delib_id = $delib_id");
+		    foreach($votes as $vote) {
+			$votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
+			if ($vote['Vote']['resultat']==2)
+			    $resultat = "contre";
+			elseif ($vote['Vote']['resultat']==3)
+			    $resultat = "pour";
+			elseif ($vote['Vote']['resultat']==4)
+			    $resultat = "abstention";
+			elseif ($vote['Vote']['resultat']==5)
+			    $resultat = "Pas de participation";
+
+			$searchReplace = array(
+			    "#NOUVELLE_PAGE#" => "<newpage>",
+			    "#NOM_VOTANT#" => $votant['Acteur']['nom'],
+			    "#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
+			    "#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
+			    "#TITRE_VOTANT#" => $votant['Acteur']['titre'],
+			    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
+			    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
+			    "#CP_VOTANT#" => $votant['Acteur']['cp'],
+			    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
+			    "#RESULTAT_VOTANT#" => $resultat,
+			    "#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
+			);
+			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+		    }
+		    return $listeActeurs;
+		}
+
+		function listeActeursVotant($delib_id) {
+		    // Lecture du modele
+		    $texte = $this->Model->field('content', 'id=11');
+
+		    $listeActeurs = "";
+		    $votes = $this->Vote->findAll("delib_id = $delib_id");
+		    foreach($votes as $vote) {
+			$votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
+			if ($vote['Vote']['resultat']==2)
+			    $resultat = "contre";
+			elseif ($vote['Vote']['resultat']==3)
+			    $resultat = "pour";
+			elseif ($vote['Vote']['resultat']==4)
+			    $resultat = "abstention";
+			elseif ($vote['Vote']['resultat']==5)
+			    $resultat = "Pas de participation";
+
+			$searchReplace = array(
+			    "#NOUVELLE_PAGE#" => "<newpage>",
+			    "#NOM_VOTANT#" => $votant['Acteur']['nom'],
+			    "#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
+			    "#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
+			    "#TITRE_VOTANT#" => $votant['Acteur']['titre'],
+			    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
+			    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
+			    "#CP_VOTANT#" => $votant['Acteur']['cp'],
+			    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
+			    "#RESULTAT_VOTANT#" => $resultat,
+			    "#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
+			);
+			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+		    }
+		    return $listeActeurs;
+		}
+
+	       function listeActeursVotantContre($delib_id) {
+		    // Lecture du modele
+		    $texte = $this->Model->field('content', 'id=14');
+
+		    $listeActeurs = "";
+		    $votes = $this->Vote->findAll("Vote.delib_id = $delib_id AND Vote.resultat=2");
+		    foreach($votes as $vote) {
+			$votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
+			$searchReplace = array(
+			    "#NOUVELLE_PAGE#" => "<newpage>",
+			    "#NOM_VOTANT#" => $votant['Acteur']['nom'],
+			    "#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
+			    "#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
+			    "#TITRE_VOTANT#" => $votant['Acteur']['titre'],
+			    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
+			    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
+			    "#CP_VOTANT#" => $votant['Acteur']['cp'],
+			    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
                     "#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
                 );
                 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
             }
             return $listeActeurs;
         }
-
-        function listeActeursVotantContre($delib_id) {
-            // Lecture du modele
-            $texte = $this->Model->field('content', 'id=14');
-
-            $listeActeurs = "";
-            $votes = $this->Vote->findAll("Vote.delib_id = $delib_id AND Vote.resultat=2");
-            foreach($votes as $vote) {
-                $votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
-                $searchReplace = array(
-                    "#NOUVELLE_PAGE#" => "<newpage>",
-                    "#NOM_VOTANT#" => $votant['Acteur']['nom'],
-                    "#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
-                    "#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
-                    "#TITRE_VOTANT#" => $votant['Acteur']['titre'],
-                    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
-                    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
-                    "#CP_VOTANT#" => $votant['Acteur']['cp'],
-                    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
-                    "#RESULTAT_VOTANT#" => $resultat,
-                    "#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
-                );
-                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-           // debug($listeActeurs); exit;
-            return $listeActeurs;
-
-        }
-
-
-
 
 	function _replaceBalisesSeance($texte, $seance_id) {
 		// Lecture des informations en base
