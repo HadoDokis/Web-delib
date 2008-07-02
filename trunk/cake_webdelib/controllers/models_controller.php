@@ -56,7 +56,7 @@ class ModelsController extends AppController {
                     $this->Session->setFlash('Impossible de supprimer ce type de modele');
 		    $this->redirect('/models/index');
 		}
-		     
+
 	}
 
 	function view($id = null) {
@@ -169,7 +169,7 @@ class ModelsController extends AppController {
                 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
             }
             return $listeActeurs;
-        }       
+        }
 
 	function _listeActeursAbsents($delib_id) {
 	    // Lecture du modele
@@ -342,6 +342,37 @@ class ModelsController extends AppController {
             }
             return $listeActeurs;
         }
+
+        function listeActeursVotantContre($delib_id) {
+            // Lecture du modele
+            $texte = $this->Model->field('content', 'id=14');
+
+            $listeActeurs = "";
+            $votes = $this->Vote->findAll("Vote.delib_id = $delib_id AND Vote.resultat=2");
+            foreach($votes as $vote) {
+                $votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
+                $searchReplace = array(
+                    "#NOUVELLE_PAGE#" => "<newpage>",
+                    "#NOM_VOTANT#" => $votant['Acteur']['nom'],
+                    "#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
+                    "#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
+                    "#TITRE_VOTANT#" => $votant['Acteur']['titre'],
+                    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
+                    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
+                    "#CP_VOTANT#" => $votant['Acteur']['cp'],
+                    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
+                    "#RESULTAT_VOTANT#" => $resultat,
+                    "#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
+                );
+                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+            }
+           // debug($listeActeurs); exit;
+            return $listeActeurs;
+
+        }
+
+
+
 
 	function _replaceBalisesSeance($texte, $seance_id) {
 		// Lecture des informations en base

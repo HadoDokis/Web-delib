@@ -45,7 +45,7 @@ class DeliberationsController extends AppController {
             $path = WEBROOT_PATH.$dyn_path;
             if (!$this->Gedooo->checkPath($path))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
- 
+
             $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
             //Création du model ott
             $content = $this->requestAction("/models/getModel/$model_id");
@@ -166,16 +166,16 @@ class DeliberationsController extends AppController {
             }
             // CrÃ©ation de la liste des projets sommaires
             $listeProjetsSommaires = $this->requestAction("/models/listeProjets/".$data['Deliberation']['seance_id']."/0");
-            if (!empty($listeProjetsSommaires)) { 
+            if (!empty($listeProjetsSommaires)) {
 	        $this->Gedooo->createFile($path, 'ProjetsSommaires.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
                 $balises .= $this->Gedooo->CreerBalise('projets_sommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
             }
-            // CrÃ©ation de la liste des acteurs présents 
+            // CrÃ©ation de la liste des acteurs présents
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursPresents/$delib_id");
             if (!empty($listeProjetsSommaires)) {
 	        $this->Gedooo->createFile($path, 'ActeursPresents.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
                 $balises .= $this->Gedooo->CreerBalise('acteurs_presents', $urlWebroot.'ActeursPresents.html', 'content');
-           } 
+           }
             // CrÃ©ation de la liste des acteurs absents
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursAbsents/$delib_id");
             if (!empty($listeProjetsSommaires)) {
@@ -194,9 +194,16 @@ class DeliberationsController extends AppController {
 	        $this->Gedooo->createFile($path, 'ActeursVotant.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
                 $balises .= $this->Gedooo->CreerBalise('acteurs_votant', $urlWebroot.'ActeursVotant.html', 'content');
             }
+            // Création de la liste de la liste des acteurs votant contre
+            $listeProjetsSommaires = $this->requestAction("/models/listeActeursVotantContre/$delib_id");
+            if (!empty($listeProjetsSommaires)) {
+                $this->Gedooo->createFile($path, 'ActeursVotantContre.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+                $balises .= $this->Gedooo->CreerBalise('acteurs_votant_contre', $urlWebroot.'ActeursVotantContre.html', 'content');
+            }
+
 	    // création du fichier XML
 	    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
-            // Envoi du fichier à GEDOOo
+        // Envoi du fichier à GEDOOo
 	    $this->Gedooo->sendFiles($model, $datas, $editable, $dl, $nomFichier);
         }
 
@@ -439,7 +446,7 @@ class DeliberationsController extends AppController {
 
 			foreach ($deliberations as $deliberation)
 			{
-				
+
 				if (isset($deliberation['Deliberation']['date_limite']))
 				    $deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
 				//on recupere la position courante de la deliberation
@@ -539,7 +546,7 @@ class DeliberationsController extends AppController {
 	}
 
 	function getParent($id_loc) {
-		if ($id_loc!=0){ 
+		if ($id_loc!=0){
 		    $condition = "id = $id_loc";
 		    $parent = $this->Localisation->findAll($condition);
 		    if ($parent[0]['Localisation']['parent_id']==0)
@@ -573,12 +580,12 @@ class DeliberationsController extends AppController {
 			$this->set('selectedLocalisation2', $selectedLocalisation2);
 			$selectedLocalisation3 =$this->getParent($this->data['Deliberation']['localisation3_id']);
 			$this->set('selectedLocalisation3', $selectedLocalisation3);
-                        
-			if (($pzone1 != $this->data['Deliberation']['localisation1_id']) AND ($this->_hasNoSon($pzone1)) ){ 
+
+			if (($pzone1 != $this->data['Deliberation']['localisation1_id']) AND ($this->_hasNoSon($pzone1)) ){
                             $this->data['Deliberation']['id'] = $id;
                             $this->data['Deliberation']['localisation1_id']= $pzone1;
 			    if ($this->Deliberation->save($this->data))
-                              $this->redirect('/deliberations/changeLocation/'.$id); 
+                              $this->redirect('/deliberations/changeLocation/'.$id);
                         }
                         if (($pzone2 != $this->data['Deliberation']['localisation2_id']) AND ($this->_hasNoSon($pzone2)) ){
                             $this->data['Deliberation']['id'] = $id;
@@ -962,7 +969,7 @@ class DeliberationsController extends AppController {
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
-			
+
 			$this->set('servEm',$this->requestAction('/services/doList/'.$this->data['Service']['id']));
 			$this->set('deliberation',$this->data);
 			$this->set('services', $this->Deliberation->Service->generateList());
@@ -1522,7 +1529,7 @@ class DeliberationsController extends AppController {
 		 }
             }
             $nbDelibAEnvoyer = count($Tabclassification);
-            $nbEnvoyee = 0; 
+            $nbEnvoyee = 0;
 	    foreach ($this->data['Deliberation'] as $id => $bool ){
 	        if ($bool == 1){
                     ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'G&eacute;n&eacute;ration du document ');
@@ -1543,7 +1550,7 @@ class DeliberationsController extends AppController {
 		        if (!file_exists($file))
 		            $err = $this->requestAction("/postseances/generateDeliberation/$delib_id");
 		    }
-		    else { 
+		    else {
 			$model_id = $this->getModelId($delib_id);
 			$err = $this->generer($delib_id, $model_id,0,1, "D_$delib_id.pdf");
 		        $file =  $pathFile =  WEBROOT_PATH."/files/generee/modeles/D_$delib_id.pdf";
@@ -1569,7 +1576,7 @@ class DeliberationsController extends AppController {
       	                'acte_attachments_sign[]' => ""
    	                 );
                         ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Pr&eacute;paration de l\'envoi ');
-			
+
 			 $ch = curl_init();
                          curl_setopt($ch, CURLOPT_URL, $url);
                          curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -1745,7 +1752,7 @@ class DeliberationsController extends AppController {
 
 	    for ($i=0; $i<count($deliberations); $i++){
 	        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
-                $deliberations[$i]['Model']['id']    = $this->getModelId($deliberations[$i]['Deliberation']['id']); 
+                $deliberations[$i]['Model']['id']    = $this->getModelId($deliberations[$i]['Deliberation']['id']);
 	    }
 
 	    $this->set('deliberations',$deliberations );
