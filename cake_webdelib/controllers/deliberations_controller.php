@@ -197,10 +197,9 @@ class DeliberationsController extends AppController {
             // Création de la liste de la liste des acteurs votant contre
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursVotantContre/$delib_id");
             if (!empty($listeProjetsSommaires)) {
-                $this->Gedooo->createFile($path, 'ActeursVotantContre.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+	        $this->Gedooo->createFile($path, 'ActeursVotantContre.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
                 $balises .= $this->Gedooo->CreerBalise('acteurs_votant_contre', $urlWebroot.'ActeursVotantContre.html', 'content');
             }
-
 	    // création du fichier XML
 	    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
         // Envoi du fichier à GEDOOo
