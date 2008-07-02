@@ -22,42 +22,44 @@ class ProfilsController extends AppController {
 	}
 
 	function add() {
-		if (empty($this->data)) {
-			$profils = $this->Profil->generateList(null,'id ASC');
-			$this->set('profils', $profils);
-			$this->render();
-		} else {
+		$sortie = false;
+		if (!empty($this->data)) {
 			$this->cleanUpFields();
 			if ($this->Profil->save($this->data)) {
 				$this->Session->setFlash('Le profil a &eacute;t&eacute; sauvegard&eacute;');
-				$this->redirect('/profils/index');
-			} else {
+				$sortie = true;
+			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-			}
 		}
+		if ($sortie)
+			$this->redirect('/profils/index');
+		else
+			$this->set('profils', $this->Profil->generateList(null,'Profil.libelle ASC'));
 	}
 
 	function edit($id = null) {
+		$sortie = false;
 		if (empty($this->data)) {
-			if (!$id) {
-				$this->Session->setFlash('Invalide id pour le profil');
-				$this->redirect('/profils/index');
-			}
 			$this->data = $this->Profil->read(null, $id);
-			$profils = $this->Profil->generateList("Profil.id != $id");
-			$this->set('profils', $profils);
-			$this->set('selectedProfil',$this->data['Profil']['parent_id']);
+			if (empty($this->data)) {
+				$this->Session->setFlash('Invalide id pour le profil');
+				$sortie = true;
+			}
 		} else {
 			$this->cleanUpFields();
-			$tab = $this->Profil->findAll("Profil.id=$id");
-
 			if ($this->Profil->save($this->data)) {
 				$this->Session->setFlash('Le profil a &eacute;t&eacute; modifi&eacute;');
-				$this->redirect('/profils/index');
-			} else {
+				$sortie = true;
+			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-			}
 		}
+		if ($sortie)
+			$this->redirect('/profils/index');
+		else {
+			$this->set('profils', $this->Profil->generateList("Profil.id != $id", 'Profil.libelle ASC'));
+			$this->set('selectedProfil',$this->data['Profil']['parent_id']);
+		}
+
 	}
 
 	function delete($id = null) {
