@@ -71,8 +71,18 @@ class DroitsController extends AppController
 			$this->tabDroits = str_split($this->data['Droits']['strDroits'], $nbMenuControllers);
 			$this->tabDroits = array_map('str_split', $this->tabDroits);
 			$this->_majDroits($profilsUsersTree, $menuControllersTree);
+ 
+                        echo ('<script>');
+                        echo ('    document.getElementById("pourcentage").style.display="none"; ');
+                        echo ('    document.getElementById("progrbar").style.display="none";');
+                        echo ('    document.getElementById("affiche").style.display="none";');
+                        echo ('    document.getElementById("contTemp").style.display="none";');
+                        echo ('</script>');
 
-			$this->redirect('/pages/administration');
+                        echo ("Enregistrement effectu&eacute;e <br />");
+                        echo ("<a href='/pages/gestion_utilisateurs'>Retour a la page precedente</a>");
+                        exit;
+			//$this->redirect('/pages/administration');
 		}
 
 	}
