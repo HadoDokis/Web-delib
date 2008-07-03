@@ -336,7 +336,12 @@ a.link_debat {
 	padding: 0 0 10px 22px;
 }
 
-
+a.link_secretaire {
+	background-image: url(../img/icons/secretaire.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
 
 a.link_voir {
 	background-image: url(../img/icons/find.png);
