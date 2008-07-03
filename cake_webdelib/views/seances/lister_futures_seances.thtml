@@ -30,6 +30,7 @@
 		?>
 		</td>
 		<td class="actions">
+			<?php echo $html->link('&shy;','/seances/saisirSecretaire/' . $seance['Seance']['id'], array('class'=>'link_secretaire', 'title'=>'Choix du secrétaire de la séance'), false, false); ?>
 			<?php echo $html->link('&shy;','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les débats généraux de la séance'), false, false); ?>
 			<?php
 				if ($seance['Typeseance']['action']==0)
