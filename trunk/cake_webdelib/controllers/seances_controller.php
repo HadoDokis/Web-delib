@@ -25,7 +25,8 @@ class SeancesController extends AppController {
 		'changeRapporteur'=>'Seances:listerFuturesSeances',
 		'changeStatus'=>'Seances:listerFuturesSeances',
 		'detailsAvis'=>'Seances:listerFuturesSeances',
-		'donnerAvis'=>'Seances:listerFuturesSeances'
+		'donnerAvis'=>'Seances:listerFuturesSeances',
+		'saisirSecretaire'=>'Seances:listerFuturesSeances'
 	);
 
 	function index() {
@@ -782,6 +783,12 @@ class SeancesController extends AppController {
 			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 			$this->set('seances', $this->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
 		}
+	}
+
+	function saisirSecretaire($seance_id) {
+
+
+
 	}
 }
 ?>
