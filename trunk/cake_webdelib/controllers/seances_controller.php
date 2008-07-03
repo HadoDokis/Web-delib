@@ -617,7 +617,7 @@ class SeancesController extends AppController {
                 //* Création du fichier XML de données    *
                 //*****************************************
                 // Informations sur la collectivité
-                ProgressBar($cpt*(100/$nbActeurs), 'Rassemblement des donn&eacute;es pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
+                ProgressBar($cpt*(100/$nbActeurs), 'Lecture des donn&eacute;es pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
                 $this->Gedooo->createFile($path, 'logo.html', '<img src="'. 'http://'.$_SERVER['HTTP_HOST'].$this->base.'/files/image/logo.jpg" />');
                 $dataColl = $this->Collectivite->read(null, 1);
                 $balises  = $this->Gedooo->CreerBalise('nom_collectivite', $dataColl['Collectivite']['nom'], 'string');
@@ -649,7 +649,7 @@ class SeancesController extends AppController {
                 $balises .= $this->Gedooo->CreerBalise('seance_id', $seance_id, 'string');
                 // Informations sur la seance
 	        if (isset($data['Seance']['date']))
-                    $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
+                    $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frenchDateConvocation(strtotime($data['Seance']['date'])), 'string');
                 $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
                 if (GENERER_DOC_SIMPLE==false){
                     $nameDebat = $data['Seance']['debat_global_name'];
@@ -664,14 +664,13 @@ class SeancesController extends AppController {
 
 	        // Création de la liste des projets detailles
 	        $listeProjetsDetailles = $this->requestAction("/models/listeProjets/$seance_id/1");
-                $this->Gedooo->createFile($path, 'ProjetsDetailles.html',   '<p>'.htmlentities($listeProjetsDetailles).'</p>');
+                $this->Gedooo->createFile($path, 'ProjetsDetailles.html',  $listeProjetsDetailles);
                 $balises .= $this->Gedooo->CreerBalise('projets_detailles', $urlWebroot.'ProjetsDetailles.html', 'content');
 
 	        // Création de la liste des projets sommaires
 	        $listeProjetsSommaires = $this->requestAction("/models/listeProjets/$seance_id/0");
-                $this->Gedooo->createFile($path, 'ProjetsSommaires.html',   '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+                $this->Gedooo->createFile($path, 'ProjetsSommaires.html',  $listeProjetsSommaires);
                 $balises .= $this->Gedooo->CreerBalise('projets_sommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
-
                 // création du fichier XML
                 $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
 
