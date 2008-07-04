@@ -226,6 +226,15 @@ h2 {
 	padding-left: 1%;
 }
 
+h3 {
+	font: normal normal 16px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	color:#444444;
+	/* couleur NON-web */
+	border-bottom: 1px solid #e0ef90;
+	padding-left: 1%;
+	width: 80%;
+}
+
 a {
 	color: #444444;
 }
