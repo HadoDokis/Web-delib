@@ -104,3 +104,13 @@ ADD `modeldeliberation_id` INT( 11 ) NOT NULL AFTER `modelprojet_id` ;
 
 
 ALTER TABLE `seances` ADD `secretaire_id` INT( 11 ) NULL AFTER `traitee`;
+
+ALTER TABLE `deliberations`
+ADD `vote_nb_oui` INT( 3 ) NOT NULL ,
+ADD `vote_nb_non` INT( 3 ) NOT NULL ,
+ADD `vote_nb_abstention` INT( 3 ) NOT NULL ,
+ADD `vote_nb_retrait` INT( 3 ) NOT NULL ,
+ADD `vote_commentaire` VARCHAR( 500 ) NOT NULL ;
+
+ALTER TABLE `votes`
+  DROP `commentaire`;
