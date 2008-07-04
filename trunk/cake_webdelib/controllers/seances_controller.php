@@ -466,7 +466,7 @@ class SeancesController extends AppController {
   		    $this->Vote->del($vote['Vote']['id']);
 	}
 
-	function voter ($deliberation_id=null) {
+	function voter($deliberation_id=null) {
 		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
 		$seance = $this->Seance->read(null, $seance_id);
 
@@ -479,27 +479,40 @@ class SeancesController extends AppController {
 			$this->set('deliberation' , $this->Deliberation->findAll("Deliberation.id=$deliberation_id"));
 			$this->set('presents' , $this->requestAction('/deliberations/afficherListePresents/'.$deliberation_id));
 		} else {
- 			$pour = 0;
- 			$abstenu = 0;
-			$this->effacerVote($deliberation_id);
-			$nb_votant = count($this->data['Vote']);
-			foreach($this->data['Vote']as $acteur_id => $vote){
-				if(is_numeric($acteur_id)==true){
-					$this->Vote->create();
-					$this->data['Vote']['acteur_id']=$acteur_id;
-					$this->data['Vote']['delib_id']=$deliberation_id;
-					$this->data['Vote']['resultat']=$vote;
-					if ($vote == 3)
-					     $pour ++;
-					if (($vote == 2)||($vote == 4))
-						$abstenu ++;
+			switch ($this->data['Vote']['typeVote']) {
+			case 1:
+				// Saisie du détail du vote
+	 			$pour = 0;
+ 				$abstenu = 0;
+				$this->effacerVote($deliberation_id);
+				$nb_votant = count($this->data['Vote']);
+				foreach($this->data['Vote']as $acteur_id => $vote){
+					if(is_numeric($acteur_id)==true){
+						$this->Vote->create();
+						$this->data['Vote']['acteur_id']=$acteur_id;
+						$this->data['Vote']['delib_id']=$deliberation_id;
+						$this->data['Vote']['resultat']=$vote;
+						if ($vote == 3)
+						     $pour ++;
+						if (($vote == 2)||($vote == 4))
+							$abstenu ++;
 
-				    $this->Vote->save($this->data['Vote']);
+				    	$this->Vote->save($this->data['Vote']);
+					}
 				}
+    			break;
+			case 2:
+				// Saisie du total du vote
+
+    			break;
+			case 3:
+				// Saisie du resultat global
+
+			    break;
 			}
 
-			$this->data = $this->Deliberation->read(null, $deliberation_id);
 
+			$this->data = $this->Deliberation->read(null, $deliberation_id);
 
 			if ($pour >= (($nb_votant -$abstenu) /2)) {
 			    $this->data['Deliberation']['etat']=3;
@@ -512,6 +525,7 @@ class SeancesController extends AppController {
 			$this->redirect('seances/details/'.$seance_id);
 		}
 	}
+
 
 	function saisirDebat ($id = null)	{
 		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$id);
