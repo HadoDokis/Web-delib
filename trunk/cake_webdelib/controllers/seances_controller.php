@@ -467,62 +467,81 @@ class SeancesController extends AppController {
 	}
 
 	function voter($deliberation_id=null) {
-		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$deliberation_id);
-		$seance = $this->Seance->read(null, $seance_id);
+		$this->Deliberation->recursive = -1;
+		$deliberation = $this->Deliberation->read(null, $deliberation_id);
+		$seance = $this->Seance->read(null, $deliberation['Deliberation']['seance_id']);
 
 		if (empty($this->data)) {
+			// Initialisation du détail du vote
 			$donnees = $this->Vote->findAll("delib_id = $deliberation_id");
 			foreach($donnees as $donnee){
-				$this->data['Vote'][$donnee['Vote']['acteur_id']]=$donnee['Vote']['resultat'];
-			    $this->data['Vote']['commentaire'] = $donnee['Vote']['commentaire'];
+				$this->data['detailVote'][$donnee['Vote']['acteur_id']]=$donnee['Vote']['resultat'];
 			}
-			$this->set('deliberation' , $this->Deliberation->findAll("Deliberation.id=$deliberation_id"));
+			// Initialisation du total des voix
+			$this->data['Deliberation']['vote_nb_oui'] = $deliberation['Deliberation']['vote_nb_oui'];
+			$this->data['Deliberation']['vote_nb_non'] = $deliberation['Deliberation']['vote_nb_non'];
+			$this->data['Deliberation']['vote_nb_abstention'] = $deliberation['Deliberation']['vote_nb_abstention'];
+			$this->data['Deliberation']['vote_nb_retrait'] = $deliberation['Deliberation']['vote_nb_retrait'];
+			// Initialisation du resultat
+			$this->data['Deliberation']['etat'] = $deliberation['Deliberation']['etat'];
+			// Initialisation du commentaire
+			$this->data['Deliberation']['vote_commentaire'] = $deliberation['Deliberation']['vote_commentaire'];
+
+			$this->set('deliberation' , $deliberation);
 			$this->set('presents' , $this->requestAction('/deliberations/afficherListePresents/'.$deliberation_id));
 		} else {
+			$this->data['Deliberation']['id'] = $deliberation_id;
+			$this->effacerVote($deliberation_id);
 			switch ($this->data['Vote']['typeVote']) {
 			case 1:
 				// Saisie du détail du vote
-	 			$pour = 0;
- 				$abstenu = 0;
-				$this->effacerVote($deliberation_id);
-				$nb_votant = count($this->data['Vote']);
-				foreach($this->data['Vote']as $acteur_id => $vote){
-					if(is_numeric($acteur_id)==true){
-						$this->Vote->create();
-						$this->data['Vote']['acteur_id']=$acteur_id;
-						$this->data['Vote']['delib_id']=$deliberation_id;
-						$this->data['Vote']['resultat']=$vote;
-						if ($vote == 3)
-						     $pour ++;
-						if (($vote == 2)||($vote == 4))
-							$abstenu ++;
-
-				    	$this->Vote->save($this->data['Vote']);
-					}
+				$this->data['Deliberation']['vote_nb_oui'] = 0;
+				$this->data['Deliberation']['vote_nb_non'] = 0;
+				$this->data['Deliberation']['vote_nb_abstention'] = 0;
+				$this->data['Deliberation']['vote_nb_retrait'] = 0;
+				foreach($this->data['detailVote']as $acteur_id => $vote){
+					$this->Vote->create();
+					$this->data['Vote']['acteur_id']=$acteur_id;
+					$this->data['Vote']['delib_id']=$deliberation_id;
+					$this->data['Vote']['resultat']=$vote;
+			    	$this->Vote->save($this->data['Vote']);
+					if ($vote == 3)
+						$this->data['Deliberation']['vote_nb_oui']++;
+					elseif ($vote == 2)
+						$this->data['Deliberation']['vote_nb_non']++;
+					elseif ($vote == 4)
+						$this->data['Deliberation']['vote_nb_abstention']++;
+					elseif ($vote == 5)
+						$this->data['Deliberation']['vote_nb_retrait']++;
 				}
+				if ($this->data['Deliberation']['vote_nb_oui']>$this->data['Deliberation']['vote_nb_non'])
+					$this->data['Deliberation']['etat'] = 3;
+				else
+					$this->data['Deliberation']['etat'] = 4;
     			break;
 			case 2:
 				// Saisie du total du vote
-
+				if ($this->data['Deliberation']['vote_nb_oui']>$this->data['Deliberation']['vote_nb_non'])
+					$this->data['Deliberation']['etat'] = 3;
+				else
+					$this->data['Deliberation']['etat'] = 4;
     			break;
 			case 3:
 				// Saisie du resultat global
-
+				$this->data['Deliberation']['vote_nb_oui'] = 0;
+				$this->data['Deliberation']['vote_nb_non'] = 0;
+				$this->data['Deliberation']['vote_nb_abstention'] = 0;
+				$this->data['Deliberation']['vote_nb_retrait'] = 0;
 			    break;
 			}
 
+		    // Attribution du numéro de la délibération si adoptée et si pas déjà attribué
+			if ( ($this->data['Deliberation']['etat'] == 3)
+				&& empty($deliberation['Deliberation']['num_delib']) )
+				$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id']);
 
-			$this->data = $this->Deliberation->read(null, $deliberation_id);
-
-			if ($pour >= (($nb_votant -$abstenu) /2)) {
-			    $this->data['Deliberation']['etat']=3;
-			    // Attribution du numéro de la délibération
-				if (empty($this->data['Deliberation']['num_delib']))
-					 $this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id']);
-			} else
-				$this->data['Deliberation']['etat']=4;
 			$this->Deliberation->save($this->data);
-			$this->redirect('seances/details/'.$seance_id);
+			$this->redirect('seances/details/'.$deliberation['Deliberation']['seance_id']);
 		}
 	}
 
@@ -807,10 +826,10 @@ class SeancesController extends AppController {
             $this->set('seance_id', $seance_id);
             $seance = $this->Seance->read(null, $seance_id);
             $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
-            foreach( $acteursConvoques as  $acteurConvoque) 
+            foreach( $acteursConvoques as  $acteurConvoque)
 	        $tab[$acteurConvoque['Acteur']['id']] =  $acteurConvoque['Acteur']['prenom'].' '. $acteurConvoque['Acteur']['nom'];
             $this->set('acteurs', $tab);
-            
+
 	    if (empty($this->data)) {
 	        $this->set('selectedActeurs', $seance['Seance']['secretaire_id']);
             }
