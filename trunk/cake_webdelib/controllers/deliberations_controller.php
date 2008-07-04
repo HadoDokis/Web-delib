@@ -1976,7 +1976,7 @@ class DeliberationsController extends AppController {
 
 	function afficherListePresents($delib_id=null)	{
 		$condition = "Listepresence.delib_id= $delib_id";
-		$presents = $this->Listepresence->findAll($condition);
+		$presents = $this->Listepresence->findAll($condition, null, "Acteur.position ASC");
 		if ($this->isFirstDelib($delib_id) and (empty($presents)))
 			$presents = $this->buildFirstList($delib_id);
 
