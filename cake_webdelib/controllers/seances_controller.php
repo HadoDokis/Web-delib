@@ -4,7 +4,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2');
 	var $components = array('Date','Email', 'Gedooo');
-	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex');
+	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex', 'Typeseance');
 	var $cacheAction = 0;
 
 	// Gestion des droits
@@ -647,6 +647,11 @@ class SeancesController extends AppController {
 
 	        // Informations sur la seance
                 $balises .= $this->Gedooo->CreerBalise('seance_id', $seance_id, 'string');
+                $balises .= $this->Gedooo->CreerBalise('nom_secretaire', $data['Secretaire']['nom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('prenom_secretaire', $data['Secretaire']['prenom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('salutation_secretaire', $data['Secretaire']['salutation'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('titre_secretaire', $data['Secretaire']['titre'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('note_secretaire', $data['Secretaire']['note'], 'string');
                 // Informations sur la seance
 	        if (isset($data['Seance']['date']))
                     $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frenchDateConvocation(strtotime($data['Seance']['date'])), 'string');
@@ -659,7 +664,7 @@ class SeancesController extends AppController {
                 }
 
                 //Création du fichier des débats globaux à la séance
-                $this->Gedooo->createFile($path, $nameDebat, '<p>'.htmlentities($data['Seance']['debat_global']).'</p>');
+		$this->Gedooo->createFile($path, $nameDebat, '<p>'.htmlentities($data['Seance']['debat_global']).'</p>');
                 $balises .= $this->Gedooo->CreerBalise('debat_seance', $urlWebroot.$nameDebat, 'content');
 
 	        // Création de la liste des projets detailles
@@ -785,9 +790,21 @@ class SeancesController extends AppController {
 	}
 
 	function saisirSecretaire($seance_id) {
-
-
-
+            $this->set('seance_id', $seance_id);
+            $seance = $this->Seance->read(null, $seance_id);
+            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+            foreach( $acteursConvoques as  $acteurConvoque) 
+	        $tab[$acteurConvoque['Acteur']['id']] =  $acteurConvoque['Acteur']['prenom'].' '. $acteurConvoque['Acteur']['nom'];
+            $this->set('acteurs', $tab);
+            
+	    if (empty($this->data)) {
+	        $this->set('selectedActeurs', $seance['Seance']['secretaire_id']);
+            }
+	    else {
+		$seance['Seance']['secretaire_id'] = $this->data['Acteur']['Acteur'];
+		if ($this->Seance->save($seance))
+		    $this->redirect('/seances/listerFuturesSeances');
+	    }
 	}
 }
 ?>
