@@ -15,13 +15,19 @@ class Seance extends AppModel {
     var $displayField="libelle";
 
     var $belongsTo=array(
-	'Typeseance'=>array(
+      'Typeseance'=>array(
 	'className'=>'Typeseance',
 	'conditions'=>'',
 	'order'=>'',
 	'dependent'=>false,
-	'foreignKey'=>'type_id')
-		);
+	'foreignKey'=>'type_id'),
+      'Secretaire' => array('className' => 'Acteur',
+        'conditions' => '',
+        'order' => '',
+        'dependent' => false,
+        'foreignKey' => 'secretaire_id')
+    );
+
      /* retourne la liste des séances futures avec le nom du type de séance  */
      function generateList() {
          $generateList = array();
