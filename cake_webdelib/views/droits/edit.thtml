@@ -16,7 +16,7 @@
 	<?php $onclick = "javascript:appliquerModifications($nbMenuControllers, $nbProfilsUsers)"; ?>
 	<?php echo $html->submit('Sauvegarder', array('class'=>'bt_save_border', 'name'=>'sauvegarder', 'onclick'=>$onclick)); ?>
 	&nbsp;
-	<?php echo $html->link('Annuler', '/pages/administration', array('class'=>'link_annuler', 'name'=>'Annuler'), 'Voulez-vous quitter? Attention, en quittant vous perdrez vos éventuelles modifications.'); ?>
+	<?php echo $html->link('Annuler', '/pages/gestion_utilisateurs', array('class'=>'link_annuler', 'name'=>'Annuler'), 'Voulez-vous quitter? Attention, en quittant vous perdrez vos éventuelles modifications.'); ?>
 	</form>
 </td>
 <td>&nbsp;&nbsp;</td>
