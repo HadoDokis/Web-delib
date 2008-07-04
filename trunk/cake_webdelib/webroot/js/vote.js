@@ -1,3 +1,31 @@
+window.onload=initAffichage;
+
+function initAffichage() {
+
+// Saisie des présents masquée
+	blocElement = document.getElementById("saisiePresents");
+	blocElement.style.display = 'none';
+
+// Affichage du type de saisie du vote
+	selectElement = document.getElementById("VoteTypeVote");
+	selectElement.value=1;
+	affichageTypeVote(selectElement);
+}
+
+function affichageTypeVote(selectElement) {
+	blocElement = document.getElementById("voteDetail");
+	blocElement.style.display = (selectElement.value == 1) ? '' : 'none';
+	blocElement = document.getElementById("voteTotal");
+	blocElement.style.display = (selectElement.value == 2) ? '' : 'none';
+	blocElement = document.getElementById("voteResultat");
+	blocElement.style.display = (selectElement.value == 3) ? '' : 'none';
+}
+function affichageListePresents(selectElement) {
+	blocElement = document.getElementById("saisiePresents");
+	blocElement.style.display = (selectElement.value == 2) ? '' : 'none';
+}
+
+
 function vote(){
 
 document.getElementById('VoteRes0').value=0;
