@@ -23,9 +23,9 @@
 		 	echo '<td>'.$html->image('../img/icons/bloque.png', array('title'=>'Projet en cours d\'&eacute;laboration')).'</td>';
 			echo '<td>&nbsp;</td>';
 		}
-	    elseif (($deliberation['Deliberation']['etat']==3) || ($deliberation['Deliberation']['etat']==4)){
+	    elseif (($deliberation['Deliberation']['etat']==3) || ($deliberation['Deliberation']['etat']==4)  || ($deliberation['Deliberation']['etat']==5)    ){
 	        echo '<td>'.$html->image('../img/icons/votee.png', array('title'=>'Deliberation vot&eacute;e')).'</td>';
-	        if ($deliberation['Deliberation']['etat']==3)
+	        if (($deliberation['Deliberation']['etat']==3) || ($deliberation['Deliberation']['etat']==5))
 	            echo '<td>'.$html->image('../img/icons/thumbs_up.png', array('title'=>'Vot&eacute;e Pour')).'</td>';
 	  	    else
 	    	    echo '<td>'.$html->image('../img/icons/thumbs_down.png', array('title'=>'Vot&eacute;e Contre')).'</td>';
