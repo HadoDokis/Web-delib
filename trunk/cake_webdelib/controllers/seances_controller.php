@@ -245,18 +245,17 @@ class SeancesController extends AppController {
        	}
     }
 
-	function getDate($id=null)
+    function getDate($id=null)
     {
 		if (empty($id))
 			return '';
 		else{
 		$condition = "Seance.id = $id";
         $objCourant = $this->Seance->findAll($condition);
-       // debug($objCourant);
 		return $objCourant['0']['Seance']['date'];}
     }
 
-	function getType($id)
+    function getType($id)
     {
 		$condition = "Seance.id = $id";
         return $this->Seance->findAll($condition);
@@ -774,24 +773,6 @@ class SeancesController extends AppController {
                 $balises .= $this->Gedooo->CreerBalise('telephone_collectivite', $dataColl['Collectivite']['telephone'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('logo_collectivite', $urlWebroot.'logo.html', 'content');
 
-                // Informations sur l'acteur
-                $balises .= $this->Gedooo->CreerBalise('type_acteur', $acteur['Typeacteur']['nom'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('type_commentaire_acteur', $acteur['Typeacteur']['commentaire'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('nom_acteur', $acteur['Acteur']['nom'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('prenom_acteur', $acteur['Acteur']['prenom'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('salutation_acteur', $acteur['Acteur']['salutation'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('titre_acteur', $acteur['Acteur']['titre'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('date_naissance_acteur', $acteur['Acteur']['date_naissance'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('adresse1_acteur', $acteur['Acteur']['adresse1'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('adresse2_acteur', $acteur['Acteur']['adresse2'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('cp_acteur', $acteur['Acteur']['cp'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('ville_acteur', $acteur['Acteur']['ville'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('email_acteur', $acteur['Acteur']['email'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('telfixe_acteur', $acteur['Acteur']['telfixe'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('telmobile_acteur', $acteur['Acteur']['telmobile'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('note_acteur', $acteur['Acteur']['note'], 'string');
-                $balises .= $this->Gedooo->CreerBalise('position_acteur', $acteur['Acteur']['position'], 'string');
-
 	        // Informations sur la seance
                 $balises .= $this->Gedooo->CreerBalise('seance_id', $seance_id, 'string');
                 $balises .= $this->Gedooo->CreerBalise('nom_secretaire', $data['Secretaire']['nom'], 'string');
@@ -845,13 +826,7 @@ class SeancesController extends AppController {
                     $extension = 'pdf';
                 else
                     $extension = 'odt';
-                $nomFichier =  $acteur['Acteur']['id'].'.'.$extension;
-		$this->Gedooo->sendFiles($model, $datas, $editable, 1,  $nomFichier);
-
-		// Création d'un tableau pour l'affichage et le stockage des fichiers à récuperer
-		$listFiles[$urlFiles.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
-                $cpt++;
-	    $this->set('listFiles', $listFiles);
+		$this->Gedooo->sendFiles($model, $datas, $editable);
             $this->render();
         }
 
@@ -1084,7 +1059,6 @@ class SeancesController extends AppController {
             $texte = $this->Model->field('content', 'id=7');
             $listeActeurs = "";
             $acteurs = $this->getListActeurs($seance_id, 4);
-                debug($acteurs);
             foreach($acteurs as $acteur_id => $delib_id) {
                 $mandate = $this->Acteur->findById($acteur_id);
 		$delib = $this->Deliberation->findById($delib_id);

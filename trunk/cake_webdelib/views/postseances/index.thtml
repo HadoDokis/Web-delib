@@ -22,8 +22,8 @@
 		    echo $html->link('&shy;','/postseances/generatePvComplet/' . $seance['Seance']['id'], array('class'=>'link_pvcomplet', 'title'=>'Générer PV complet'), false, false);
 		}
 		else {
-                   echo $html->link('&shy;','/deliberations/generer/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'], array('class'=>'link_pvsommaire', 'title'=>'Generation du pv sommaire'), false, false);
-                   echo $html->link('&shy;','/deliberations/generer/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'], array('class'=>'link_pvcomplet', 'title'=>'Generation du pv complet'), false, false);
+                   echo $html->link('&shy;','/seances/genererPV/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'], array('class'=>'link_pvsommaire', 'title'=>'Generation du pv sommaire'), false, false);
+                   echo $html->link('&shy;','/seances/genererPV/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'], array('class'=>'link_pvcomplet', 'title'=>'Generation du pv complet'), false, false);
 		} 
 		?>
 		</td>

@@ -300,8 +300,7 @@
 			    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
 			    "#CP_VOTANT#" => $votant['Acteur']['cp'],
 			    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
-			    "#RESULTAT_VOTANT#" => $resultat,
-			    "#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
+			    "#RESULTAT_VOTANT#" => $resultat
 			);
 			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
 		    }
@@ -335,8 +334,7 @@
 			    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
 			    "#CP_VOTANT#" => $votant['Acteur']['cp'],
 			    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
-			    "#RESULTAT_VOTANT#" => $resultat,
-			    "#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
+			    "#RESULTAT_VOTANT#" => $resultat
 			);
 			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
 		    }
