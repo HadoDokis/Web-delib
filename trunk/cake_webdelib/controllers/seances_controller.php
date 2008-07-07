@@ -4,7 +4,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2');
 	var $components = array('Date','Email', 'Gedooo');
-	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex', 'Typeseance');
+	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex', 'Typeseance', 'Acteur');
 	var $cacheAction = 0;
 
 	// Gestion des droits
@@ -26,13 +26,13 @@ class SeancesController extends AppController {
 		'changeStatus'=>'Seances:listerFuturesSeances',
 		'detailsAvis'=>'Seances:listerFuturesSeances',
 		'donnerAvis'=>'Seances:listerFuturesSeances',
-		'saisirSecretaire'=>'Seances:listerFuturesSeances'
+		'saisirSecretaire'=>'Seances:listerFuturesSeances',
+		'getListActeurs'=>'Seances:listerFuturesSeances'
 	);
 
 	function index() {
 		$this->Seance->recursive = 0;
 		$seances = $this->Seance->findAll(null,null,'date asc');
-
 		for ($i=0; $i<count($seances); $i++)
 		    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
 
@@ -744,6 +744,117 @@ class SeancesController extends AppController {
             $this->render();
         }
 
+        function genererPV ($seance_id, $model_id, $editable=0) {
+            $dyn_path = "/files/generee/seances/$seance_id/";
+            $path = WEBROOT_PATH.$dyn_path;
+	    $urlWebroot = 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+            $urlFiles = 'http://'.$_SERVER['HTTP_HOST'].$this->base.'/files/generee/modeles/';
+	    $pathFile =  WEBROOT_PATH.'/files/generee/modeles/';
+	    if (!$this->Gedooo->checkPath($path))
+                die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+
+            //Cr�ation du model ott
+            $content = $this->requestAction("/models/getModel/$model_id");
+	    $data = $this->Model->read(null, $model_id);
+	    $nomModel = $data['Model']['modele'];
+            $model = $this->Gedooo->createFile($path,'model_'.$model_id.'.odt', $content);
+
+	    $data = $this->Seance->read(null, $seance_id);
+	        //
+                //*****************************************
+                //* Création du fichier XML de données    *
+                //*****************************************
+                // Informations sur la collectivité
+                $this->Gedooo->createFile($path, 'logo.html', '<img src="'. 'http://'.$_SERVER['HTTP_HOST'].$this->base.'/files/image/logo.jpg" />');
+                $dataColl = $this->Collectivite->read(null, 1);
+                $balises  = $this->Gedooo->CreerBalise('nom_collectivite', $dataColl['Collectivite']['nom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('adresse_collectivite', $dataColl['Collectivite']['adresse'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('cp_collectivite', $dataColl['Collectivite']['CP'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('ville_collectivite', $dataColl['Collectivite']['ville'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('telephone_collectivite', $dataColl['Collectivite']['telephone'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('logo_collectivite', $urlWebroot.'logo.html', 'content');
+
+                // Informations sur l'acteur
+                $balises .= $this->Gedooo->CreerBalise('type_acteur', $acteur['Typeacteur']['nom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('type_commentaire_acteur', $acteur['Typeacteur']['commentaire'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('nom_acteur', $acteur['Acteur']['nom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('prenom_acteur', $acteur['Acteur']['prenom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('salutation_acteur', $acteur['Acteur']['salutation'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('titre_acteur', $acteur['Acteur']['titre'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('date_naissance_acteur', $acteur['Acteur']['date_naissance'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('adresse1_acteur', $acteur['Acteur']['adresse1'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('adresse2_acteur', $acteur['Acteur']['adresse2'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('cp_acteur', $acteur['Acteur']['cp'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('ville_acteur', $acteur['Acteur']['ville'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('email_acteur', $acteur['Acteur']['email'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('telfixe_acteur', $acteur['Acteur']['telfixe'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('telmobile_acteur', $acteur['Acteur']['telmobile'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('note_acteur', $acteur['Acteur']['note'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('position_acteur', $acteur['Acteur']['position'], 'string');
+
+	        // Informations sur la seance
+                $balises .= $this->Gedooo->CreerBalise('seance_id', $seance_id, 'string');
+                $balises .= $this->Gedooo->CreerBalise('nom_secretaire', $data['Secretaire']['nom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('prenom_secretaire', $data['Secretaire']['prenom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('salutation_secretaire', $data['Secretaire']['salutation'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('titre_secretaire', $data['Secretaire']['titre'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('note_secretaire', $data['Secretaire']['note'], 'string');
+                // Informations sur la seance
+	        if (isset($data['Seance']['date']))
+                    $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frenchDateConvocation(strtotime($data['Seance']['date'])), 'string');
+                $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
+                if (GENERER_DOC_SIMPLE==false)
+                    $nameDebat = $data['Seance']['debat_global_name'];
+                else 
+                   $nameDebat =  'debat.html';
+
+                //Création du fichier des débats globaux à la séance
+		$this->Gedooo->createFile($path, $nameDebat, '<p>'.htmlentities($data['Seance']['debat_global']).'</p>');
+                $balises .= $this->Gedooo->CreerBalise('debat_seance', $urlWebroot.$nameDebat, 'content');
+	    
+                $listeProjetsDetailles = $this->listeActeursMouvements($seance_id);
+                $this->Gedooo->createFile($path, 'mouvements.html',  $listeProjetsDetailles);
+                $balises .= $this->Gedooo->CreerBalise('liste_mouvements', $urlWebroot.'mouvements.html', 'content');
+                
+                $listeProjetsDetailles = $this->listeActeursPresents($seance_id);
+                $this->Gedooo->createFile($path, 'presents.html',  $listeProjetsDetailles);
+                $balises .= $this->Gedooo->CreerBalise('liste_presents', $urlWebroot.'presents.html', 'content');
+                
+                $listeProjetsDetailles = $this->listeActeursAbsents($seance_id);
+                $this->Gedooo->createFile($path, 'absents.html',  $listeProjetsDetailles);
+                $balises .= $this->Gedooo->CreerBalise('liste_absents', $urlWebroot.'absents.html', 'content');
+    
+                $listeProjetsDetailles = $this->listeActeursMandates($seance_id);
+                $this->Gedooo->createFile($path, 'mandates.html',  $listeProjetsDetailles);
+                $balises .= $this->Gedooo->CreerBalise('liste_mandates', $urlWebroot.'mandates.html', 'content');
+	    
+	        // Création de la liste des projets detailles
+	        $listeProjetsDetailles = $this->requestAction("/models/listeProjets/$seance_id/1");
+                $this->Gedooo->createFile($path, 'ProjetsDetailles.html',  $listeProjetsDetailles);
+                $balises .= $this->Gedooo->CreerBalise('projets_detailles', $urlWebroot.'ProjetsDetailles.html', 'content');
+
+	        // Création de la liste des projets sommaires
+	        $listeProjetsSommaires = $this->requestAction("/models/listeProjets/$seance_id/0");
+                $this->Gedooo->createFile($path, 'ProjetsSommaires.html',  $listeProjetsSommaires);
+                $balises .= $this->Gedooo->CreerBalise('projets_sommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
+                // création du fichier XML
+                $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
+
+		// Envoi du fichier à GEDOOo
+                if ($editable == 0)
+                    $extension = 'pdf';
+                else
+                    $extension = 'odt';
+                $nomFichier =  $acteur['Acteur']['id'].'.'.$extension;
+		$this->Gedooo->sendFiles($model, $datas, $editable, 1,  $nomFichier);
+
+		// Création d'un tableau pour l'affichage et le stockage des fichiers à récuperer
+		$listFiles[$urlFiles.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
+                $cpt++;
+	    $this->set('listFiles', $listFiles);
+            $this->render();
+        }
+
 	function detailsAvis ($seance_id=null) {
 		// initialisations
 		$deliberations=$this->afficherProjets($seance_id, 0);
@@ -822,7 +933,7 @@ class SeancesController extends AppController {
 		}
 	}
 
-	function saisirSecretaire($seance_id) {
+        function saisirSecretaire($seance_id) {
             $this->set('seance_id', $seance_id);
             $seance = $this->Seance->read(null, $seance_id);
             $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
@@ -838,6 +949,163 @@ class SeancesController extends AppController {
 		if ($this->Seance->save($seance))
 		    $this->redirect('/seances/listerFuturesSeances');
 	    }
+        }
+
+        function getListActeurs($seance_id, $choixListe=1) {
+	    $presents = array();
+	    $absents  = array();
+	    $mandats = array();
+	    $mouvements = array();
+	    $tab = array();
+
+	    $delibs = $this->Deliberation->findAll("Deliberation.seance_id = $seance_id");
+	    $nb_delib = count($delibs);
+	    foreach ($delibs as $delib) 
+		array_push($tab, $delib['Deliberation']['id']); 
+	    
+	    $conditions = "Listepresence.delib_id=";
+            $conditions .= implode(" OR Listepresence.delib_id=", $tab);           
+	    $presences = $this->Listepresence->findAll($conditions, null, 'Acteur.position');
+	    foreach( $presences as  $presence) {
+	       $acteur_id = $presence['Listepresence']['acteur_id'];
+	       $tot_presents = $this->Listepresence->findAll("Listepresence.acteur_id =  $acteur_id AND ($conditions) AND Listepresence.present=1");
+	       $nb_presence = count($tot_presents);
+	       if ($nb_presence == $nb_delib) 
+	           array_push($presents, $acteur_id);
+	       elseif ( $nb_presence == 0) {
+		   $tmp = $this->Listepresence->findAll("Listepresence.acteur_id =  $acteur_id AND ($conditions) AND Listepresence.present=0 AND Listepresence.mandataire=0");
+                   $nb_absence=count($tmp);
+                   if ( $nb_absence ==  $nb_delib) 
+	               array_push($absents, $acteur_id);
+                   else {
+		        $tmp2 = $this->Listepresence->findAll("Listepresence.acteur_id =  $acteur_id AND ($conditions) AND Listepresence.present=0 AND Listepresence.mandataire!=0");
+	               foreach($tmp2 as $mandat) {
+                           if (!isset($mandat['Listepresence']['acteur_id']))
+			       $mandat['Listepresence']['acteur_id'] = array();
+			    $mandats[$mandat['Listepresence']['acteur_id']] = $mandat['Listepresence']['mandataire'];
+		       }
+	           }
+	       }
+               else { 
+	           foreach ($tot_presents as $pres) {
+	               if (!isset($mouvements[$acteur_id]))
+		           $mouvements[$acteur_id] = array();
+	               $mouvements[$acteur_id] =  $pres['Listepresence']['delib_id'];
+		   }
+	       }
+	   }
+	   
+	   if ($choixListe ==1 )
+	       return(array_unique($presents));
+           elseif ($choixListe ==2 )
+	       return(array_unique($absents));
+           elseif ($choixListe ==3 )
+	       return(array_unique($mandats));
+           elseif ($choixListe ==4 )
+	       return(array_unique($mouvements));
+	} 
+
+       	function listeActeursPresents($seance_id) {
+	    // Lecture du modele
+	    $texte = $this->Model->field('content', 'id=8');
+	    $listeActeurs = "";
+            $acteurs = $this->getListActeurs($seance_id, 1);
+            foreach($acteurs as $key => $acteur_id) {
+                $acteur = $this->Acteur->findById($acteur_id );
+	        $searchReplace = array(
+		    "#NOUVELLE_PAGE#" => "<newpage>",
+		    "#NOM_PRESENT#" => $acteur['Acteur']['nom'],
+		    "#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
+		    "#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
+		    "#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
+		    "#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
+		    "#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
+		    "#CP_PRESENT#" => $acteur['Acteur']['cp'],
+		    "#VILLE_PRESENT#" => $acteur['Acteur']['ville']
+		 );
+		$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+            }
+	    return($listeActeurs);
 	}
+ 
+        function listeActeursAbsents($seance_id) {
+	     // Lecture du modele
+	    $texte = $this->Model->field('content', 'id=9');
+	    $listeActeurs = "";
+            $acteurs = $this->getListActeurs($seance_id, 2);
+            foreach($acteurs as $id =>$acteur_id ) {
+                $acteur = $this->Acteur->findById($acteur_id);
+	        $searchReplace = array(
+		    "#NOUVELLE_PAGE#" => "<newpage>",
+		    "#NOM_ABSENT#" => $acteur['Acteur']['nom'],
+		    "#PRENOM_ABSENT#" => $acteur['Acteur']['prenom'],
+		    "#SALUTATION_ABSENT#" => $acteur['Acteur']['salutation'],
+		    "#TITRE_ABSENT#" => $acteur['Acteur']['titre'],
+		    "#ADRESSE1_ABSENT#" => $acteur['Acteur']['adresse1'],
+		    "#ADRESSE2_ABSENT#" => $acteur['Acteur']['adresse2'],
+		    "#CP_ABSENT#" => $acteur['Acteur']['cp'],
+		    "#VILLE_ABSENT#" => $acteur['Acteur']['ville']
+		 );
+		 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+            }
+	    return( $listeActeurs); 
+	}
+
+        function listeActeursMandates($seance_id) {
+            // Lecture du modele
+            $texte = $this->Model->field('content', 'id=10');
+            $listeActeurs = "";
+            $acteurs = $this->getListActeurs($seance_id, 3);
+            foreach($acteurs as $mandate_id => $mandataire_id) {
+                $mandataire = $this->Acteur->findById($mandataire_id);
+                $mandate = $this->Acteur->findById($mandate_id);
+                $searchReplace = array(
+                    "#NOUVELLE_PAGE#" => "<newpage>",
+                    "#NOM_MANDATE#" => $mandate['Acteur']['nom'],
+                    "#PRENOM_MANDATE#" => $mandate['Acteur']['prenom'],
+                    "#SALUTATION_MANDATE#" => $mandate['Acteur']['salutation'],
+                    "#TITRE_MANDATE#" => $mandate['Acteur']['titre'],
+                    "#NOM_MANDATAIRE#" => $mandataire['Acteur']['nom'],
+                    "#PRENOM_MANDATAIRE#" => $mandataire['Acteur']['prenom'],
+                    "#SALUTATION_MANDATAIRE#" => $mandataire['Acteur']['salutation'],
+                    "#TITRE_MANDATAIRE#" => $mandataire['Acteur']['titre'],
+                    "#ADRESSE1_MANDATAIRE#" => $mandataire['Acteur']['adresse1'],
+                    "#ADRESSE2_MANDATAIRE#" => $mandataire['Acteur']['adresse2'],
+                    "#CP_MANDATAIRE#" => $mandataire['Acteur']['cp'],
+                    "#VILLE_MANDATAIRE#" => $mandataire['Acteur']['ville']
+                );
+                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+            }
+            return($listeActeurs);
+        }
+
+        function listeActeursMouvements($seance_id) {
+            // Lecture du modele
+            $texte = $this->Model->field('content', 'id=7');
+            $listeActeurs = "";
+            $acteurs = $this->getListActeurs($seance_id, 4);
+                debug($acteurs);
+            foreach($acteurs as $acteur_id => $delib_id) {
+                $mandate = $this->Acteur->findById($acteur_id);
+		$delib = $this->Deliberation->findById($delib_id);
+                $searchReplace = array(
+                    "#NOUVELLE_PAGE#" => "<newpage>",
+                    "#NOM_ACTEUR#" => $mandate['Acteur']['nom'],
+                    "#PRENOM_ACTEUR#" => $mandate['Acteur']['prenom'],
+                    "#SALUTATION_ACTEUR#" => $mandate['Acteur']['salutation'],
+                    "#TITRE_ACTEUR#" => $mandate['Acteur']['titre'],
+                    "#ADRESSE1_ACTEUR#" => $mandate['Acteur']['adresse1'],
+                    "#ADRESSE2_ACTEUR#" => $mandate['Acteur']['adresse2'],
+                    "#CP_ACTEUR#" => $mandate['Acteur']['cp'],
+                    "#VILLE_ACTEUR#" => $mandate['Acteur']['ville'],
+                    "#IDENTIFIANT_DELIB#" => $delib['Deliberation']['id'],
+                    "#TITRE_DELIB#" => $delib['Deliberation']['titre'],
+                    "#OBJET_DELIB#" => $delib['Deliberation']['objet'],
+                    "#NUMERO_DELIB#" => $delib['Deliberation']['num_delib']
+                );
+                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+            }
+            return($listeActeurs);
+        }
 }
 ?>
