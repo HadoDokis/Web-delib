@@ -90,29 +90,11 @@ class DeliberationsController extends AppController {
 		$balises .= $this->Gedooo->CreerBalise('position_redacteur', $data['Redacteur']['position'], 'string');
 
 		// Informations sur la délibération
-                if ($data['Deliberation']['etat']>= 3) {
-		    $votes = $this->Vote->findAll("delib_id = $delib_id");
-		    $nbPour = 0;
-                    $nbContre = 0;
-                    $nbAbsention = 0;
-                    $nbSansParticipation = 0;
-		    foreach ($votes as $vote) {
-                        if ($vote['Vote']['resultat'] == 3)
-		            $nbPour++;
-	                elseif ($vote['Vote']['resultat'] == 2)
-		           $nbContre++;
-		        elseif ($vote['Vote']['resultat'] == 4)
-		           $nbAbsention++;
-		        elseif ($vote['Vote']['resultat'] == 5)
-		           $nbSansParticipation++;
-		    }
-		    $balises .= $this->Gedooo->CreerBalise('nombre_pour', $nbPour, 'string');
-		    $balises .= $this->Gedooo->CreerBalise('nombre_abstention', $nbAbsention, 'string');
-	            $balises .= $this->Gedooo->CreerBalise('nombre_contre', $nbContre, 'string');
-	            $balises .= $this->Gedooo->CreerBalise('nombre_sans_participation', $nbSansParticipation, 'string');
-		    if (isset($votes[0]['Vote']['commentaire']))
-		        $balises .= $this->Gedooo->CreerBalise('commentaire_vote', $votes[0]['Vote']['commentaire'], 'string');
-		}
+		$balises .= $this->Gedooo->CreerBalise('nombre_pour',  $data['Deliberation']['vote_nb_oui']   , 'string');
+		$balises .= $this->Gedooo->CreerBalise('nombre_abstention',  $data['Deliberation']['vote_nb_abstention'], 'string');
+	        $balises .= $this->Gedooo->CreerBalise('nombre_contre',  $data['Deliberation']['vote_nb_non'], 'string');
+	        $balises .= $this->Gedooo->CreerBalise('nombre_sans_participation',  $data['Deliberation']['vote_nb_retrait'], 'string');
+		$balises .= $this->Gedooo->CreerBalise('commentaire_vote',  $data['Deliberation']['vote_commentaire'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('titre_projet', $data['Deliberation']['titre'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('objet_projet', $data['Deliberation']['objet'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('position_projet', $data['Deliberation']['position'], 'string');
@@ -1428,7 +1410,10 @@ class DeliberationsController extends AppController {
 		return $listeAnterieure;
 	}
 
-    function transmit($id=null){
+    function transmit($id=null, $message= null){
+       if (!empty( $message))
+             $this->set('message', $message);
+
         $this->set('USE_GEDOOO', USE_GEDOOO);
         $this->set('dateClassification', $this->getDateClassification());
         $this->set('tabNature',          $this->getNatureListe());
@@ -1589,16 +1574,30 @@ class DeliberationsController extends AppController {
                          curl_setopt($ch, CURLOPT_VERBOSE, true);
 			 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 			 $curl_return = curl_exec($ch);
+			 $pos = strpos($curl_return, 'OK');
+			 if ($pos === false) {
+                              echo ('<script>');
+                              echo ('    document.getElementById("pourcentage").style.display="none"; ');
+                              echo ('    document.getElementById("progrbar").style.display="none";');
+                              echo ('    document.getElementById("affiche").style.display="none";');
+                              echo ('    document.getElementById("contTemp").style.display="none";');
+                              echo ('</script>');
+			      echo($curl_return);
+			     die ('<br /><a href ="/deliberations/transmit"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
+                         }
+			 else {
+
 		/*	 if ($curl_return === false) {
                              echo 'curl_exec() failed.' . '<br />';
                              echo 'curl_errno() = ' . curl_errno($ch) . '<br />';
                              echo 'curl_error() = ' . curl_error($ch) . '<br />';
                          } */
-			 $nbEnvoyee ++;
-                         ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Delib&eacute;ration '.$delib[0]['Deliberation']['objet'].' envoy&eacute;e ');
-			 $this->changeEtat($delib_id, '5');
-			 curl_close($ch);
-		         unlink ($file);
+			      $nbEnvoyee ++;
+                              ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Delib&eacute;ration '.$delib[0]['Deliberation']['objet'].' envoy&eacute;e ');
+			       $this->changeEtat($delib_id, '5');
+			       curl_close($ch);
+		               unlink ($file);
+			    }
 			}
 		    }
 		    $this->redirect('/deliberations/transmit');

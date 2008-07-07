@@ -7,6 +7,8 @@
 
 <?php echo $javascript->link('utils.js'); ?>
 <div class="deliberations">
+
+<?php if (isset($message))  echo ($message); ?>
 <h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
 <form action="<?php echo $html->url('/deliberations/sendActe'); ?>" method="post" enctype='multipart/form-data' >
     La Classification enregistrée date du <?php echo $html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
