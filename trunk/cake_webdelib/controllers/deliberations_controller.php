@@ -1538,9 +1538,9 @@ class DeliberationsController extends AppController {
 		    }
 		    else {
 			$model_id = $this->getModelId($delib_id);
-			$err = $this->generer($delib_id, $model_id,0,1, "D_$delib_id.pdf");
-		        $file =  $pathFile =  WEBROOT_PATH."/files/generee/modeles/D_$delib_id.pdf";
-                    }
+			$err = $this->requestAction("/deliberations/generer/$delib_id/$model_id/0/1/D_$delib_id.pdf");
+		        $file =  WEBROOT_PATH."/files/generee/modeles/D_$delib_id.pdf";
+		   }
                     ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Document G&eacute;n&eacute;r&eacute; ');
 		    $delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
 
