@@ -7,7 +7,7 @@ class UsersController extends AppController {
 	var $components = array('Utils', 'Acl', 'Menu');
 
 	// Gestion des droits
-	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view');
+	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view', 'changeFormat');
 	var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'Users:index', 'changeMdp'=>'Users:index');
 
 	function index() {
@@ -254,6 +254,11 @@ class UsersController extends AppController {
 		}
 	}
 
+        function changeFormat($id) {
+            $this->Session->del('user.format.sortie');
+	    $this->Session->write('user.format.sortie', $id);
+	    //redirection sur la page où on était avant de changer de service
+	    $this->redirect($this->Session->read('user.User.lasturl'));
+	}
 }
-
 ?>

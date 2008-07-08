@@ -115,6 +115,14 @@ function changeService(params)
 	document.location=url;
 }
 
+
+function changeFormat(params)
+{
+    var url = params.id+"users/changeFormat/"+params.value;
+    document.location=url;
+}
+
+
 function changeRapporteur(params,delib)
 {
 	var url = params.id+"seances/changeRapporteur/"+params.value+"/"+delib;

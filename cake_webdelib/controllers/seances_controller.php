@@ -621,7 +621,8 @@ class SeancesController extends AppController {
 
         function generer ($seance_id, $model_id, $editable=0){
 	    include ('vendors/progressbar.php');
-            $cpt = 1;
+            $editable = $this->Session->read('user.format.sortie');
+	    $cpt = 1;
             // Pr�paration des répertoires et URL pour la création des fichiers
             $dyn_path = "/files/generee/seances/$seance_id/";
             $path = WEBROOT_PATH.$dyn_path;
@@ -744,7 +745,9 @@ class SeancesController extends AppController {
         }
 
         function genererPV ($seance_id, $model_id, $editable=0) {
-            $dyn_path = "/files/generee/seances/$seance_id/";
+            $editable = $this->Session->read('user.format.sortie');
+	    
+	    $dyn_path = "/files/generee/seances/$seance_id/";
             $path = WEBROOT_PATH.$dyn_path;
 	    $urlWebroot = 'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
             $urlFiles = 'http://'.$_SERVER['HTTP_HOST'].$this->base.'/files/generee/modeles/';

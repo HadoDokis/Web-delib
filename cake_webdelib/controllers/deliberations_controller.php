@@ -40,7 +40,8 @@ class DeliberationsController extends AppController {
 	}
 
        function generer ($delib_id, $model_id, $editable=null, $dl=0, $nomFichier='retour'){
-            // Préparation des répertoires pour la création des fichiers
+            $editable = $this->Session->read('user.format.sortie');
+	    // Préparation des répertoires pour la création des fichiers
             $dyn_path = "/files/generee/deliberations/$delib_id/";
             $path = WEBROOT_PATH.$dyn_path;
             if (!$this->Gedooo->checkPath($path))
