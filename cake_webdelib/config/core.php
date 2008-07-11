@@ -37,7 +37,7 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '1.0');
+    define ('VERSION', '1.0 ');
     define ('GENERER_DOC_SIMPLE', true);
     define ('USE_GEDOOO', true);
     define ('URL_GEDOOO', 'http://gedooo.demonstrations.adullact.org/GEDOOo/generator2.php');
@@ -52,7 +52,7 @@
  * With the other debug levels you get to click the "flash message" to continue.
  *
  */
-    define('DEBUG', 1);
+    define('DEBUG', 0);
     ini_set('max_execution_time', '300');
 
 /***
