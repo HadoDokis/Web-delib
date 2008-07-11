@@ -80,7 +80,8 @@ class DroitsController extends AppController
                         echo ('</script>');
 
                         echo ("Enregistrement effectu&eacute;e <br />");
-                        echo ("<a href='/pages/gestion_utilisateurs'>Retour a la page precedente</a>");
+	                $urlWebroot = 'http://'.$_SERVER['HTTP_HOST'].$this->base;
+                        echo ("<a href=' $urlWebroot/pages/gestion_utilisateurs'>Retour a la page precedente</a>");
                         exit;
 			//$this->redirect('/pages/administration');
 		}
