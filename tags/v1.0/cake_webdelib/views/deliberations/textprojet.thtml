@@ -1,0 +1,48 @@
+<?php
+    echo $javascript->link('fckeditor');
+    echo $javascript->link('utils');
+    echo $html->formTag('/deliberations/textprojet/'.$delib['Deliberation']['id'] ,null,array('enctype'=>'multipart/form-data'));
+?>
+ <h2>Texte Projet : </h2>
+    	<?php
+	echo ('<div class="optional">');
+    	if (!GENERER_DOC_SIMPLE){
+    		echo ('<h2>Texte Projet : </h2>');
+			echo '<br>Nom fichier : '.$delib['Deliberation']['texte_projet_name'];
+			echo '<br>Taille : '.$delib['Deliberation']['texte_projet_size'];
+			echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$html->tagValue('Deliberation/id').'/texte_projet').'<br><br><br>';
+    	    echo  $html->fileTag("Deliberation/texte_doc");
+            echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
+            echo '<br><br>';
+	   echo '</div>';
+    	}
+	if (GENERER_DOC_SIMPLE) {
+?>
+<div class="optional">
+    <?php echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Deliberation][texte_projet]'); ?>
+</div>
+
+<?php  } // fin du if ?>
+
+<div class="optional">
+	<?php if(!empty($annexes)){  ?>
+	<?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?>
+	<?php foreach ($annexes as $annexe) :
+			echo '<br>Titre : '.$annexe['Annex']['titre'];
+			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
+			echo '<br>Taille : '.$annexe['Annex']['size'];
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
+	<?php endforeach; } ?>
+</div>
+<div id="cible">
+</div>
+<div>
+<a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
+</div>
+<br/><br/>
+<div class="submit">
+	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir'));?>
+</div>
+</form>
+	<?php echo $html->submit('Fermer',     array('class'=>'bt_annuler', 'name'=>'annuler', 'onclick'=>"javascript:FermerFenetre()"));?>

@@ -1,0 +1,17 @@
+<h2>Nouveau mod&egrave;le : </h2>
+<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $html->formTag('/models/add'); ?>
+
+<div class="optional">
+   <?php echo $form->labelTag('Model/modele', 'Libelle');?>
+   <?php echo $html->input('Model/modele', array('size' => '50'));?>
+   <?php echo $html->tagErrorMsg('Model/modele', 'Entrer le libelle.');?>
+</div>
+
+<br/><br/><br/><br/>
+
+<div class="submit">
+	<?php echo $html->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/models/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+</form>

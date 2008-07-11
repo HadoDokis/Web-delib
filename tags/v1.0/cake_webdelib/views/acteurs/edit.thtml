@@ -1,0 +1,117 @@
+<script>
+window.onload=initAffichageInfosElus;
+
+function afficheInfosElus(typeActeur)
+{
+	divElement = document.getElementById("infoElus");
+
+	if((typeActeur.value.length==0) || (typeActeur.value==null)) {
+		divElement.style.display = 'none';
+	} else {
+		if (typeActeur.options[typeActeur.selectedIndex].className == '1')
+			divElement.style.display = '';
+		else
+			divElement.style.display = 'none';
+	}
+}
+
+function initAffichageInfosElus()
+{
+	selectTypeActeur = document.getElementById("ActeurTypeacteurId");
+	afficheInfosElus(selectTypeActeur);
+}
+</script>
+
+<?php
+	if($html->tagValue('Acteur/id'))
+		echo "<h2>Modification d'un acteur</h2>";
+	else
+		echo "<h2>Ajout d'un acteur</h2>";
+?>
+
+<form
+	action="<?php echo $html->url('/acteurs/'.($html->tagValue('Acteur/id') ? 'edit/'.$html->tagValue('Acteur/id') : 'add')); ?>"
+	method="post"
+>
+
+	<div class="demi">
+		<fieldset>
+		<legend>Identit&eacute;</legend>
+			<?php echo $form->labelTag('Acteur/salutation', 'Civilit&eacute;');?>
+		 	<?php echo $html->input('Acteur/salutation', array('size' => '20'));?>
+			<br/>
+			<?php echo $form->labelTag('Acteur/nom', 'Nom <acronym title="obligatoire">*</acronym>');?>
+		 	<?php echo $html->input('Acteur/nom', array('size' => '50'));?>
+			<?php echo $html->tagErrorMsg('Acteur/nom', 'Entrer un nom pour l\'acteur');?>
+			<br/>
+			<?php echo $form->labelTag('Acteur/prenom', 'Prénom <acronym title="obligatoire">*</acronym>');?>
+		 	<?php echo $html->input('Acteur/prenom', array('size' => '50'));?>
+			<?php echo $html->tagErrorMsg('Acteur/prenom', 'Entrer un prenom pour l\'acteur');?>
+			<br/>
+			<?php echo $form->labelTag('Acteur/titre', 'Titre');?>
+		 	<?php echo $html->input('Acteur/titre', array('size' => '50'));?>
+		</fieldset>
+		<fieldset>
+		<legend>Adresse postale</legend>
+			<?php echo $form->labelTag('Acteur/adress1', 'Adresse 1');?>
+		 	<?php echo $html->input('Acteur/adresse1', array('size' => '50'));?>
+			<br/>
+			<?php echo $form->labelTag('Acteur/adress2', 'Adresse 2');?>
+		 	<?php echo $html->input('Acteur/adresse2', array('size' => '50'));?>
+			<br/>
+			<?php echo $form->labelTag('Acteur/cp', 'Code postal');?>
+		 	<?php echo $html->input('Acteur/cp', array('size' => '20'));?>
+			<br/>
+			<?php echo $form->labelTag('Acteur/ville', 'Ville');?>
+		 	<?php echo $html->input('Acteur/ville', array('size' => '50'));?>
+			<br/>
+		</fieldset>
+		<fieldset>
+		<legend>Contacts</legend>
+			<?php echo $form->labelTag('Acteur/telfixe', 'Téléphone fixe');?>
+		 	<?php echo $html->input('Acteur/telfixe', array('size' => '20'));?>
+			<br/>
+			<?php echo $form->labelTag('Acteur/telmobile', 'Téléphone mobile');?>
+		 	<?php echo $html->input('Acteur/telmobile', array('size' => '20'));?>
+			<br/>
+			<?php echo $form->labelTag('Acteur/email', 'Email');?>
+		 	<?php echo $html->input('Acteur/email', array('size' => '50'));?>
+			<?php echo $html->tagErrorMsg('Acteur/email', 'Adresse email non valide.');?>
+		</fieldset>
+	</div>
+
+	<div class="demi">
+		<fieldset>
+		<legend>Type</legend>
+			<?php echo $form->labelTag('Acteur/typeacteur_id', 'Type d\'acteur <acronym title="obligatoire">*</acronym>');?>
+		 	<?php echo $html2->selectTagPlus('Acteur/typeacteur_id', $typeacteurs, null, array('onchange' => "afficheInfosElus(this);"), null, (count($typeacteurs)>1) && (!$html->tagValue('Acteur/id')), false, 'Typeacteur', 'id', 'nom', 'elu', 'class');?>
+			<?php echo $html->tagErrorMsg('Acteur/typeacteur_id', 'Selectionner un type d\'acteur');?>
+			<div class="spacer"></div>
+			<div id='infoElus'>
+			    <?php echo $form->labelTag('Acteur/position', 'Ordre dans le conseil');?>
+			 	<?php echo $html->input('Acteur/position', array('size' => '3'));?>
+				<div class="spacer"></div>
+				<?php echo $form->labelTag('Service/Service', 'Délégation(s)');?>
+			 	<?php echo $html->selectTag('Service/Service', $services, $selectedServices, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
+				<?php echo $html->tagErrorMsg('Acteur/service', 'Sélectionnez un ou plusieurs services');?>
+				<div class="spacer"></div>
+				<?php echo $form->labelTag('Acteur/date_naissance', 'Date de naissance');?>
+				<?php echo $html->dayOptionTag('Acteur/date_naissance',null,null,false); ?>-<?php echo $html2->monthOptionTagFr('Acteur/date_naissance');?>-<?php echo $html->yearOptionTag('Acteur/date_naissance',null,null,null,null); ?>
+			</div>
+		</fieldset>
+		<div class="spacer"></div>
+		<fieldset>
+		<legend>Autres informations</legend>
+			<?php echo $form->labelTag('Acteur/note', 'Note');?>
+ 			<?php echo $html->textarea('Acteur/note', array('cols' => '30'));?>
+		</fieldset>
+	</div>
+	<div class="spacer"></div>
+
+<div class="submit">
+	<?php echo $html->hidden('Acteur/id')?>
+	<?php echo $html->submit('Sauvegarder', array('class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
+	<?php echo $html->link('Annuler', '/acteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+
+</form>

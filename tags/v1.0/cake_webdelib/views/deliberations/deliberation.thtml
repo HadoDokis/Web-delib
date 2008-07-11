@@ -1,0 +1,34 @@
+<?php
+    echo $javascript->link('fckeditor');
+	echo $javascript->link('utils');
+?>
+
+<?php echo $html->formTag('/deliberations/deliberation/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
+<h2>Délibération : </h2>
+<div class="optional">
+    <?php echo $html->textarea('Deliberation/deliberation', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Deliberation][deliberation]'); ?>
+    <?php echo $html->tagErrorMsg('Deliberation/deliberation', 'Entrer la délibération.');?>
+</div>
+
+<div class="optional">
+	<?php if(!empty($annexes)){  ?>
+	<?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?>
+	<?php foreach ($annexes as $annexe) :
+			echo '<br>Titre : '.$annexe['Annex']['titre'];
+			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
+			echo '<br>Taille : '.$annexe['Annex']['size'];
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
+	<?php endforeach; } ?>
+</div>
+<div id="cible">
+
+</div>
+<div>
+<a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
+</div>
+	<div class="submit">
+    	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir'));?>
+    </div>
+    </form>
+	    <?php echo $html->submit('Fermer',     array('class'=>'bt_annuler', 'name'=>'annuler', 'onclick'=>"javascript:FermerFenetre()"));?>
