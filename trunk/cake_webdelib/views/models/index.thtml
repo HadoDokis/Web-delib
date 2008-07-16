@@ -22,7 +22,7 @@
 	             echo $html->link('&shy;','/models/edit/' . $model['Model']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
 	    ?>
 	    <?php
-	         if ( $model['Model']['type'] == 'Document')
+	         if ( ($model['Model']['type'] == 'Document') && ($model['Model']['id'] != 1) )
 		     echo $html->link('&shy;','/models/delete/' . $model['Model']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), false, false);
             ?>
 	</td>
