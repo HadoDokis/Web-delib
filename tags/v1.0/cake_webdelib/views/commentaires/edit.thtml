@@ -1,0 +1,14 @@
+<h2>Modifier commentaire</h2>
+<form action="<?php echo $html->url('/commentaires/edit/'.$html->tagValue('Commentaire/id')); ?>" method="post">
+<?php echo $html->hidden('Commentaire/delib_id',array('value'=> "$delib_id")); ?>
+<div class="required"> 
+		<?php echo $html->textarea('Commentaire/texte',array('cols'=>'50','rows'=>'10')); ?>
+</div>
+<br/><br/><br/><br/><br/>
+<div class="submit">
+	<?php echo $form->labelTag('Commentaire/id', '&nbsp;');?>
+	<?php echo $html->hidden('Commentaire/id')?>
+	<?php echo $html->submit('Modifier', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/commentaires/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+</form>
