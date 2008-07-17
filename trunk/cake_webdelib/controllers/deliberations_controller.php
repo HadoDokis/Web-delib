@@ -145,43 +145,43 @@ class DeliberationsController extends AppController {
             // CrÃ©ation de la liste des projets detailles
             $listeProjetsDetailles = $this->requestAction("/models/listeProjets/".$data['Deliberation']['seance_id']."/1");
             if (!empty($listeProjetsDetailles)) {
-	        $this->Gedooo->createFile($path, 'ProjetsDetailles.html', '<p>'.htmlentities($listeProjetsDetailles).'</p>');
+	        $this->Gedooo->createFile($path, 'ProjetsDetailles.html', '<p>'.$listeProjetsDetailles.'</p>');
                 $balises .= $this->Gedooo->CreerBalise('projets_detailles', $urlWebroot.'ProjetsDetailles.html', 'content');
             }
             // CrÃ©ation de la liste des projets sommaires
             $listeProjetsSommaires = $this->requestAction("/models/listeProjets/".$data['Deliberation']['seance_id']."/0");
             if (!empty($listeProjetsSommaires)) {
-	        $this->Gedooo->createFile($path, 'ProjetsSommaires.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+	        $this->Gedooo->createFile($path, 'ProjetsSommaires.html', '<p>'.$listeProjetsSommaires.'</p>');
                 $balises .= $this->Gedooo->CreerBalise('projets_sommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
             }
             // CrÃ©ation de la liste des acteurs présents
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursPresents/$delib_id");
             if (!empty($listeProjetsSommaires)) {
-	        $this->Gedooo->createFile($path, 'ActeursPresents.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+	        $this->Gedooo->createFile($path, 'ActeursPresents.html', '<p>'.$listeProjetsSommaires.'</p>');
                 $balises .= $this->Gedooo->CreerBalise('acteurs_presents', $urlWebroot.'ActeursPresents.html', 'content');
            }
             // CrÃ©ation de la liste des acteurs absents
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursAbsents/$delib_id");
             if (!empty($listeProjetsSommaires)) {
-	        $this->Gedooo->createFile($path, 'ActeursAbsents.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+	        $this->Gedooo->createFile($path, 'ActeursAbsents.html', '<p>'.$listeProjetsSommaires.'</p>');
                 $balises .= $this->Gedooo->CreerBalise('acteurs_absents', $urlWebroot.'ActeursAbsents.html', 'content');
 	    }
             // Création de la liste des acteurs mandates
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursMandates/$delib_id");
             if (!empty($listeProjetsSommaires)) {
-	        $this->Gedooo->createFile($path, 'ActeursMandates.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+	        $this->Gedooo->createFile($path, 'ActeursMandates.html', '<p>'.$listeProjetsSommaires.'</p>');
                 $balises .= $this->Gedooo->CreerBalise('acteurs_mandates', $urlWebroot.'ActeursMandates.html', 'content');
             }
             // Création de la liste de la liste des acteurs votant
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursVotant/$delib_id");
             if (!empty($listeProjetsSommaires)) {
-	        $this->Gedooo->createFile($path, 'ActeursVotant.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+	        $this->Gedooo->createFile($path, 'ActeursVotant.html', '<p>'.$listeProjetsSommaires.'</p>');
                 $balises .= $this->Gedooo->CreerBalise('acteurs_votant', $urlWebroot.'ActeursVotant.html', 'content');
             }
             // Création de la liste de la liste des acteurs votant contre
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursVotantContre/$delib_id");
             if (!empty($listeProjetsSommaires)) {
-	        $this->Gedooo->createFile($path, 'ActeursVotantContre.html', '<p>'.htmlentities($listeProjetsSommaires).'</p>');
+	        $this->Gedooo->createFile($path, 'ActeursVotantContre.html', '<p>'.$listeProjetsSommaires.'</p>');
                 $balises .= $this->Gedooo->CreerBalise('acteurs_votant_contre', $urlWebroot.'ActeursVotantContre.html', 'content');
             }
 	    // création du fichier XML
