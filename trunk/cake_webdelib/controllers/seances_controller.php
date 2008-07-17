@@ -697,7 +697,7 @@ class SeancesController extends AppController {
                 }
 
                 //Création du fichier des débats globaux à la séance
-		$this->Gedooo->createFile($path, $nameDebat, '<p>'.htmlentities($data['Seance']['debat_global']).'</p>');
+		$this->Gedooo->createFile($path, $nameDebat, '<p>'.$data['Seance']['debat_global'].'</p>');
                 $balises .= $this->Gedooo->CreerBalise('debat_seance', $urlWebroot.$nameDebat, 'content');
 
 	        // Création de la liste des projets detailles
@@ -793,7 +793,7 @@ class SeancesController extends AppController {
                    $nameDebat =  'debat.html';
 
                 //Création du fichier des débats globaux à la séance
-		$this->Gedooo->createFile($path, $nameDebat, '<p>'.htmlentities($data['Seance']['debat_global']).'</p>');
+		$this->Gedooo->createFile($path, $nameDebat, '<p>'.$data['Seance']['debat_global'].'</p>');
                 $balises .= $this->Gedooo->CreerBalise('debat_seance', $urlWebroot.$nameDebat, 'content');
 	    
                 $listeProjetsDetailles = $this->listeActeursMouvements($seance_id);
