@@ -112,6 +112,9 @@ $webDelib = array(
 					)
 				)
 			),
+		'Recherches' => array(
+			'link' => '/deliberations/rechercheMutliCriteres',
+			),
 		'Utilisateurs' => array(
 			'link' => 'gestion_utilisateurs',
 			'subMenu' => array(
