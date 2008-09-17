@@ -19,7 +19,7 @@ class DeliberationsController extends AppController {
 	var $components = array('Gedooo','Date','Utils','Email','Acl');
 
 	// Gestion des droits
-	var $demandeDroit = array('add', 'listerHistorique', 'listerMesProjets', 'listerProjetsNonAttribues', 'listerProjetsATraiter', 'listerProjetsServicesAssemblees');
+	var $demandeDroit = array('add', 'listerHistorique', 'listerMesProjets', 'listerProjetsNonAttribues', 'listerProjetsATraiter', 'listerProjetsServicesAssemblees', 'rechercheMutliCriteres');
 	var $commeDroit = array(
 		'view'=>'Deliberations:listerMesProjets',
 		'edit'=>'Deliberations:listerMesProjets',
@@ -2017,6 +2017,8 @@ class DeliberationsController extends AppController {
 	     }
 	}
 
-
+        function rechercheMutliCriteres () {
+            return true;
+       }
 }
 ?>
