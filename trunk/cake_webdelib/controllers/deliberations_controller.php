@@ -1499,6 +1499,8 @@ class DeliberationsController extends AppController {
 	}
 
         function sendActe ($delib_id = null) {
+	    if (!is_file(FILE_CLASS))
+	     $this->getClassification();
 	    include ('vendors/progressbar.php');
             Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
 	    $url = 'https://'.HOST.'/modules/actes/actes_transac_create.php';
@@ -1553,7 +1555,8 @@ class DeliberationsController extends AppController {
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-      	                 'number'        => $delib[0]['Deliberation']['num_delib'],
+      	                 // 'number'        => $delib[0]['Deliberation']['num_delib'],
+      	                 'number'        => time(), 
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
@@ -1627,25 +1630,30 @@ class DeliberationsController extends AppController {
 		}
 
        function getDateClassification(){
-	       $doc = new DOMDocument();
+	   $doc = new DOMDocument();
            if(!$doc->load(FILE_CLASS))
                die("Error opening xml file");
            return($doc->getElementsByTagName('DateClassification')->item(0)->nodeValue);
         }
 
- 		function getClassification($id=null){
-                $url = 'https://'.HOST.'/modules/actes/actes_classification_fetch.php';
-        		$data = array(
-        		'api'           => '1',
-        		);
+ 	function getClassification($id=null){
+	    $pos =  strrpos ( getcwd(), 'webroot');
+	    $path = substr(getcwd(), 0, $pos);
+	    $configPos =  strrpos ( getcwd(), 'config');
+	    $configPath = substr(getcwd(), 0, $pos);
+
+	    $url = 'https://'.HOST.'/modules/actes/actes_classification_fetch.php';
+            $data = array(
+         	'api'           => '1',
+            );
         $url .= '?'.http_build_query($data);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
-        curl_setopt($ch, CURLOPT_SSLCERT, PEM);
+        curl_setopt($ch, CURLOPT_CAPATH, $configPath.CA_PATH);
+        curl_setopt($ch, CURLOPT_SSLCERT,  $configPath.PEM);
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
-        curl_setopt($ch, CURLOPT_SSLKEY, KEY);
+	curl_setopt($ch, CURLOPT_SSLKEY,  $configPath.SSLKEY);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
         $reponse = curl_exec($ch);
