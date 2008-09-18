@@ -56,5 +56,18 @@ class CommentairesController extends AppController {
 		$this->set('commentaire', $this->Commentaire->read(null, $id));
 	}
 
+	function prendreEnCompte($id = null, $delib_id) {
+		if (!$id) {
+			$this->Session->setFlash('Invalide id pour le commentaire');
+			$this->redirect('/deliberations/traiter/'.$delib_id);
+		}
+		$this->data = $this->Commentaire->read(null, $id);
+$this->log($this->data);
+		$this->data['Commentaire']['pris_en_compte'] = 1;
+		if ($this->Commentaire->save($this->data)) {
+			$this->redirect('/deliberations/traiter/'.$delib_id);
+		}
+	}
+
 }
 ?>

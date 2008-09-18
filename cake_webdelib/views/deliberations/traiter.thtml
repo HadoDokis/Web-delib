@@ -125,7 +125,11 @@
 		echo"<dt>Commentaires</dt><br />";
 		foreach ($commentaires as $commentaire){
 			echo '<dd><u>'. $commentaire['Commentaire']['prenomAgent'].' '.$commentaire['Commentaire']['nomAgent'] .' <br/></u>';
-		    echo $commentaire['Commentaire']['texte'].' '.$html->link('Supprimer','/commentaires/delete/'.$commentaire['Commentaire']['id'].'/'.$deliberation['Deliberation']['id']);
+		    echo $commentaire['Commentaire']['texte'].' ';
+		    if ($commentaire['Commentaire']['agent_id'] == $this->controller->Session->read('user.User.id'))
+		    	echo $html->link('Supprimer','/commentaires/delete/'.$commentaire['Commentaire']['id'].'/'.$deliberation['Deliberation']['id']);
+		    else
+		    	echo $html->link('Prendre en compte','/commentaires/prendreEnCompte/'.$commentaire['Commentaire']['id'].'/'.$deliberation['Deliberation']['id']);
 			echo '</dd>';
 		}
 	}
