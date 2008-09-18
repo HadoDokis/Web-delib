@@ -37,8 +37,8 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '1.0 ');
-    define ('GENERER_DOC_SIMPLE', true);
+    define ('VERSION', '1.1_beta ');
+    define ('GENERER_DOC_SIMPLE', false);
     define ('USE_GEDOOO', true);
     define ('URL_GEDOOO', 'http://gedooo.demonstrations.adullact.org/GEDOOo/generator2.php');
 /**
