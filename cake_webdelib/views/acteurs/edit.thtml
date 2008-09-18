@@ -41,29 +41,29 @@ function initAffichageInfosElus()
 		 	<?php echo $html->input('Acteur/salutation', array('size' => '20'));?>
 			<br/>
 			<?php echo $form->labelTag('Acteur/nom', 'Nom <acronym title="obligatoire">*</acronym>');?>
-		 	<?php echo $html->input('Acteur/nom', array('size' => '50'));?>
+		 	<?php echo $html->input('Acteur/nom', array('size' => '40'));?>
 			<?php echo $html->tagErrorMsg('Acteur/nom', 'Entrer un nom pour l\'acteur');?>
 			<br/>
 			<?php echo $form->labelTag('Acteur/prenom', 'Prénom <acronym title="obligatoire">*</acronym>');?>
-		 	<?php echo $html->input('Acteur/prenom', array('size' => '50'));?>
+		 	<?php echo $html->input('Acteur/prenom', array('size' => '40'));?>
 			<?php echo $html->tagErrorMsg('Acteur/prenom', 'Entrer un prenom pour l\'acteur');?>
 			<br/>
 			<?php echo $form->labelTag('Acteur/titre', 'Titre');?>
-		 	<?php echo $html->input('Acteur/titre', array('size' => '50'));?>
+		 	<?php echo $html->input('Acteur/titre', array('size' => '40'));?>
 		</fieldset>
 		<fieldset>
 		<legend>Adresse postale</legend>
 			<?php echo $form->labelTag('Acteur/adress1', 'Adresse 1');?>
-		 	<?php echo $html->input('Acteur/adresse1', array('size' => '50'));?>
+		 	<?php echo $html->input('Acteur/adresse1', array('size' => '40'));?>
 			<br/>
 			<?php echo $form->labelTag('Acteur/adress2', 'Adresse 2');?>
-		 	<?php echo $html->input('Acteur/adresse2', array('size' => '50'));?>
+		 	<?php echo $html->input('Acteur/adresse2', array('size' => '40'));?>
 			<br/>
 			<?php echo $form->labelTag('Acteur/cp', 'Code postal');?>
 		 	<?php echo $html->input('Acteur/cp', array('size' => '20'));?>
 			<br/>
 			<?php echo $form->labelTag('Acteur/ville', 'Ville');?>
-		 	<?php echo $html->input('Acteur/ville', array('size' => '50'));?>
+		 	<?php echo $html->input('Acteur/ville', array('size' => '40'));?>
 			<br/>
 		</fieldset>
 		<fieldset>
@@ -75,7 +75,7 @@ function initAffichageInfosElus()
 		 	<?php echo $html->input('Acteur/telmobile', array('size' => '20'));?>
 			<br/>
 			<?php echo $form->labelTag('Acteur/email', 'Email');?>
-		 	<?php echo $html->input('Acteur/email', array('size' => '50'));?>
+		 	<?php echo $html->input('Acteur/email', array('size' => '40'));?>
 			<?php echo $html->tagErrorMsg('Acteur/email', 'Adresse email non valide.');?>
 		</fieldset>
 	</div>
