@@ -1263,7 +1263,7 @@ class DeliberationsController extends AppController {
 				$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
 				$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
 				$this->set('tab_anterieure',$tab_anterieure);
-				$commentaires = $this->Commentaire->findAll("delib_id =  $id");
+				$commentaires = $this->Commentaire->findAll("delib_id = $id and pris_en_compte = 0", null, "created ASC");
 				for($i=0; $i< count($commentaires) ; $i++) {
 					$nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
 					$prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
@@ -1567,7 +1567,7 @@ class DeliberationsController extends AppController {
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
       	                 // 'number'        => $delib[0]['Deliberation']['num_delib'],
-      	                 'number'        => time(), 
+      	                 'number'        => time(),
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
