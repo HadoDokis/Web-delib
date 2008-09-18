@@ -7,7 +7,6 @@
     	<?php
 	echo ('<div class="optional">');
     	if (!GENERER_DOC_SIMPLE){
-    		echo ('<h2>Texte Projet : </h2>');
 			echo '<br>Nom fichier : '.$delib['Deliberation']['texte_projet_name'];
 			echo '<br>Taille : '.$delib['Deliberation']['texte_projet_size'];
 			echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$html->tagValue('Deliberation/id').'/texte_projet').'<br><br><br>';
