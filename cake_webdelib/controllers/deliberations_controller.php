@@ -893,7 +893,18 @@ class DeliberationsController extends AppController {
 		    $this->data = $this->Deliberation->read(null, $id);
 		    $this->set('delib', $this->data);
 		} else{
-			$this->data['Deliberation']['id']=$id;
+	             if (isset($this->data['Deliberation']['texte_doc'])){
+                         if ($this->data['Deliberation']['texte_doc']['size']!=0){
+                             $this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_doc']['name'];
+                             $this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_doc']['size'];
+                             $this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_doc']['type'];
+                             $this->data['Deliberation']['texte_projet']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+                             $this->Deliberation->save($this->data);
+                              unset($this->data['Deliberation']['texte_doc']);
+                         }
+                     }
+
+                         $this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
 				$deliberation = array_shift($this->params['form']);
