@@ -37,10 +37,11 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '1.1_beta ');
+    define ('VERSION', '1.1beta ');
     define ('GENERER_DOC_SIMPLE', false);
     define ('USE_GEDOOO', true);
-    define ('URL_GEDOOO', 'http://gedooo.demonstrations.adullact.org/GEDOOo/generator2.php');
+   // define ('URL_GEDOOO', 'http://gedooo.demonstrations.adullact.org/GEDOOo/generator2.php');
+    define ('URL_GEDOOO', 'http://gedooo.services.adullact.org/phpgedooo/generator.php');
 /**
  * Set debug level here:
  * - 0: production
@@ -52,7 +53,7 @@
  * With the other debug levels you get to click the "flash message" to continue.
  *
  */
-    define('DEBUG', 0);
+    define('DEBUG', 1);
     ini_set('max_execution_time', '300');
 
 /***
@@ -68,12 +69,12 @@
 	$webroot_path = $path2."webroot/";
 	define ('WEBROOT_PATH',  $path2."webroot");
 
-	define('PEM', $config_path.'client.pem');
+	define('PEM', '/var/www/webdelib_demo/app/config/client.pem');
         define('PASSWORD', 'demo_u');
 	define('HOST', 'demo-s2low.extranet.adullact.org');
-	define('SSLKEY', $config_path.'key.pem');
-	define('CA_PATH', $config_path);
-	define('FILE_CLASS', $webroot_path.'files/actes/classification.xml');
+	define('SSLKEY', '/var/www/webdelib_demo/app/config/key.pem');
+	define('CA_PATH', '/var/www/webdelib_demo/app/config/');
+	define('FILE_CLASS', '/var/www/webdelib_demo/app/webroot/files/actes/classification.xml');
 	define('IMPORT', true);
 
 	// LDAP
