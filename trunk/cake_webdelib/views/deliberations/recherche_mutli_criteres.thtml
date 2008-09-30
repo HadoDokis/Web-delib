@@ -1,0 +1,60 @@
+<h2>Recherche multi-crit&egrave;re</h2>
+<?php echo $html->formTag('/deliberations/rechercheMutliCriteres/', null,array('name'=>'Deliberation','enctype'=>'multipart/form-data'));?>
+
+<div id="add_form">
+<table id="sample">
+    <tr>
+            <td><?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?></td>
+            <td><?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs, null,null,null,true);?></td>
+    </tr>
+    <tr>
+            <td><?php echo $form->labelTag('Deliberation/seance1_id','Entre '); ?></td>
+            <td><?php echo $html->selectTag('Deliberation/seance1_id',$date_seances,null,null,null,true); ?></td>
+            <td><?php echo $form->labelTag('Deliberation/seance2_id',' et '); ?></td>
+            <td><?php echo $html->selectTag('Deliberation/seance2_id',$date_seances,null,null,null,true); ?></td>
+    </tr>
+    <tr>
+            <td><?php echo $form->labelTag('Deliberation/texte', 'Texte ');?></td>
+            <td><?php echo $html->input('Deliberation/texte', array('size' => '30'));?></td>
+    </tr>
+    <tr>
+            <td><?php echo $form->labelTag('Deliberation/service_id', 'Service Emetteur');?></td>
+            <td><?php echo $html->selectTag('Deliberation/service_id', $services, null,null,null,true);?></td>
+    </tr>
+    <tr>
+            <td><?php echo $form->labelTag('Deliberation/theme_id', 'Theme ');?></td>
+            <td><?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), true);?></td>
+    </tr>
+</table>
+<br />
+   <?php  echo $html->submit('Rechercher', array('class'=>'bt_add', 'name'=>'Rechercher')); ?>
+</div>
+<?php  if (isset($is_result)) { ?>
+<br />
+<br />
+<table>
+    <tr>
+        <th>identifiant</th>
+        <th>titres</th>
+        <th>objets</th>
+        <th>actions</th>
+    </tr>
+   <tr> <td colspan='5' class='Border' height='1' >  </td>
+
+    <?php foreach ($results as $result) { ?>
+    <tr>
+            <td><?php echo $result['Deliberation']['id']; ?></td>
+            <td><?php echo $result['Deliberation']['titre']; ?></td>
+            <td><?php echo $result['Deliberation']['objet']; ?></td>
+            <td width = 50px >
+	             <?php echo $html->link("view", "/deliberations/view/".$result['Deliberation']['id']); 
+                      if (!USE_GEDOOO)
+                          echo $html->link('&shy;','/postseances/generateDeliberation/' . $result['Deliberation']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false);
+                     else
+                        echo $html->link('&shy;','/deliberations/generer/'.$result['Deliberation']['id'].'/'.$result['Model']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false);
+             ?></td>
+     
+     <?php    } // fin du for ?>
+    </tr>
+</table>
+<?php    } // fin du if ?>
