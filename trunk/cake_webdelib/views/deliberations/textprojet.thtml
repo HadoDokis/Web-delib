@@ -4,16 +4,16 @@
     echo $html->formTag('/deliberations/textprojet/'.$delib['Deliberation']['id'] ,null,array('enctype'=>'multipart/form-data'));
 ?>
  <h2>Texte Projet : </h2>
-    	<?php
-	echo ('<div class="optional">');
+<?php
+        echo ('<div class="optional">');
     	if (!GENERER_DOC_SIMPLE){
-			echo '<br>Nom fichier : '.$delib['Deliberation']['texte_projet_name'];
-			echo '<br>Taille : '.$delib['Deliberation']['texte_projet_size'];
-			echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$html->tagValue('Deliberation/id').'/texte_projet').'<br><br><br>';
+	    echo '<br>Nom fichier : '.$delib['Deliberation']['texte_projet_name'];
+	    echo '<br>Taille : '.$delib['Deliberation']['texte_projet_size'];
+	    echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$html->tagValue('Deliberation/id').'/texte_projet').'<br><br><br>';
     	    echo  $html->fileTag("Deliberation/texte_doc");
             echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
             echo '<br><br>';
-	   echo '</div>';
+	    echo '</div>';
     	}
 	if (GENERER_DOC_SIMPLE) {
 ?>
@@ -21,7 +21,6 @@
     <?php echo $html->textarea('Deliberation/texte_projet', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][texte_projet]'); ?>
 </div>
-
 <?php  } // fin du if ?>
 
 <div class="optional">
