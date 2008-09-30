@@ -1,12 +1,23 @@
 <h2>Saisie des débats généraux :</h2>
 <?php echo $javascript->link('fckeditor'); ?>
-<?php echo $html->formTag('/seances/saisirDebatGlobal/'.$html->tagValue('Seance/id'),null,array('enctype'=>'multipart/form-data','name'=>'debat')); ?>
+<?php echo ('<div class="optional">');
 
-<div class="optional">
-    <?php echo $html->textarea('Seance/debat_global', array('cols' => '10', 'rows' => '20'));?>
-    <?php echo $fck->load('data[Seance][debat_global]'); ?>
-    <?php echo $html->tagErrorMsg('Seance/debat_global', 'Entrer le texte de debat.');?>
-</div>
+echo $html->formTag('/seances/saisirDebatGlobal/'.$seance['Seance']['id'] ,null,array('enctype'=>'multipart/form-data'));
+if (!GENERER_DOC_SIMPLE){
+    echo '<br>Nom fichier : '.$seance['Seance']['debat_global_name'];
+    echo '<br>Taille : '.$seance['Seance']['debat_global_size'];
+    echo '<br>'.$html->link('Telecharger','/seances/download/'.$html->tagValue('Seance/id').'/debat_global').'<br><br><br>';
+    echo  $html->fileTag("Seance/texte_doc");
+    echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
+    echo '<br><br>';
+}
+if (GENERER_DOC_SIMPLE) {          ?>
+    <div class="optional">
+        <?php echo $html->textarea('Seance/debat_global', array('cols' => '10', 'rows' => '20'));?>
+        <?php echo $fck->load('data[Seance][debat_global]'); ?>
+        <?php echo $html->tagErrorMsg('Seance/debat_global', 'Entrer le texte de debat.');?>
+    </div>
+<?php  } // fin du if ?>
 
 <div class="optional">
 	<?php if(!empty($annexes)){  ?>
