@@ -546,18 +546,28 @@ class SeancesController extends AppController {
 
 
 	function saisirDebat ($id = null)	{
-		$seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$id);
-
-		if (empty($this->data)) {
-			$this->data = $this->Deliberation->read(null, $id);
-		} else {
-			$this->data['Deliberation']['id']=$id;
-			if ($this->Deliberation->save($this->data)) {
-				$this->redirect('/seances/details/'.$seance_id);
-			} else {
-				$this->Session->setFlash('Please correct errors below.');
-			}
-		}
+            $seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$id);
+            if (empty($this->data)) {
+                $this->data = $this->Deliberation->read(null, $id);        
+	        $this->set('delib', $this->data);  
+	    } 
+            else { 
+		if (isset($this->data['Deliberation']['texte_doc'])){
+                    if ($this->data['Deliberation']['texte_doc']['size']!=0){
+                        $this->data['Deliberation']['debat_name'] = $this->data['Deliberation']['texte_doc']['name'];
+                        $this->data['Deliberation']['debat_size'] = $this->data['Deliberation']['texte_doc']['size'];
+                        $this->data['Deliberation']['debat_type'] = $this->data['Deliberation']['texte_doc']['type'];
+                        $this->data['Deliberation']['debat']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+                        unset($this->data['Deliberation']['texte_doc']);
+                    }
+                }
+		$this->data['Deliberation']['id']=$id;
+                if ($this->Deliberation->save($this->data)) {
+                    $this->redirect('/seances/saisirDebat/'.$id);
+                } else {
+                    $this->Session->setFlash('Please correct errors below.');
+                }
+            }
 	}
 
 
@@ -570,8 +580,21 @@ class SeancesController extends AppController {
 		if (empty($this->data)) {
 			$this->data = $this->Seance->read(null, $id);
 			$this->set('annexes',$this->Annex->findAll('Annex.seance_id='.$id.' AND type="A"'));
+		        $this->set('seance', $this->data);
 		} else{
-			$this->data['Seance']['id']=$id;
+                     if (isset($this->data['Seance']['texte_doc'])){
+			if ($this->data['Seance']['texte_doc']['size']!=0){
+                             $this->data['Seance']['id'] = $id;
+			     $this->data['Seance']['debat_global_name'] = $this->data['Seance']['texte_doc']['name'];
+                             $this->data['Seance']['debat_global_size'] = $this->data['Seance']['texte_doc']['size'];
+                             $this->data['Seance']['debat_global_type'] = $this->data['Seance']['texte_doc']['type'];
+                             $this->data['Seance']['debat_global']      = $this->getFileData($this->data['Seance']['texte_doc']['tmp_name'], $this->data['Seance']['texte_doc']['size']);
+                             $this->Seance->save($this->data);
+                             unset($this->data['Seance']['texte_doc']);
+                         }
+                     }
+		
+		        $this->data['Seance']['id']=$id;
 			if(!empty($this->params['form']))
 			{
 				$seance = array_shift($this->params['form']);
@@ -715,8 +738,11 @@ class SeancesController extends AppController {
 		// Envoi du fichier à GEDOOo
                 if ($editable == 0)
                     $extension = 'pdf';
-                else
+                elseif  ($editable == 1)
                     $extension = 'odt';
+	        elseif  ($editable == 2)
+		    $extension = 'html';
+
                 $nomFichier =  $acteur['Acteur']['id'].'.'.$extension;
 		$this->Gedooo->sendFiles($model, $datas, $editable, 1,  $nomFichier);
                 ProgressBar($cpt*(100/$nbActeurs), 'Document g&eacute;n&eacute;r&eacute; pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
@@ -827,8 +853,10 @@ class SeancesController extends AppController {
 		// Envoi du fichier à GEDOOo
                 if ($editable == 0)
                     $extension = 'pdf';
-                else
+                elseif ($editable == 1)
                     $extension = 'odt';
+		elseif ($editable == 2)
+		    $extension = 'html';
 		$this->Gedooo->sendFiles($model, $datas, $editable);
             $this->render();
         }
@@ -1084,5 +1112,35 @@ class SeancesController extends AppController {
             }
             return($listeActeurs);
         }
+
+        function download($id=null, $file){
+            header('Content-type: '.$this->getFileType($id, $file));
+            header('Content-Length: '.$this->getSize($id, $file));
+            header('Content-Disposition: attachment; filename='.$this->getFileName($id, $file));
+            echo $this->getData($id, $file);
+            exit();
+        }
+
+
+        function getFileType($id=null, $file) {
+            $objCourant = $this->Seance->read(null, $id);
+            return $objCourant['Seance'][$file."_type"];
+        }
+
+        function getFileName($id=null, $file) {
+            $objCourant = $this->Seance->read(null, $id);
+            return $objCourant['Seance'][$file."_name"];
+        }
+
+        function getSize($id=null, $file) {
+             $objCourant = $this->Seance->read(null, $id);
+            return $objCourant['Seance'][$file."_size"];
+        }
+
+        function getData($id=null, $file) {
+            $objCourant = $this->Seance->read(null, $id);
+            return $objCourant['Seance'][$file];
+        }
+
 }
 ?>

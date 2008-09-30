@@ -748,25 +748,33 @@ class DeliberationsController extends AppController {
 
 	if (empty($this->data)) {
         $this->data = $this->Deliberation->read(null, $id);
+	 $this->set('delib', $this->data);
 	}
     else {
-		$this->data['Deliberation']['id']=$id;
-		if(!empty($this->params['form'])) {
-				$deliberation = array_shift($this->params['form']);
-				$annexes = $this->params['form'];
+	     if (isset($this->data['Deliberation']['texte_doc'])){
+                if ($this->data['Deliberation']['texte_doc']['size']!=0){
+                    $this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_doc']['name'];
+                    $this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_doc']['size'];
+                    $this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_doc']['type'];
+                    $this->data['Deliberation']['texte_synthese']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+                    $this->Deliberation->save($this->data);
+                     unset($this->data['Deliberation']['texte_doc']);
+                 }
+             }
+	     $this->data['Deliberation']['id']=$id;
+	     if(!empty($this->params['form'])) {
+	         $deliberation = array_shift($this->params['form']);
+		 $annexes = $this->params['form'];
+		 $uploaded = true;
+	         $size = count($this->params['form']);
+		 $counter = 1;
 
-				$uploaded = true;
-				$size = count($this->params['form']);
-				$counter = 1;
-
-				while($counter <= ($size/2))
-				{
-					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name']))
-					{
-						$uploaded = false;
-					}
-					$counter++;
-				}
+		 while($counter <= ($size/2)) {
+		     if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name'])) {
+	    		$uploaded = false;
+	         }
+                    $counter++;
+ 	    }
 
 				if($uploaded) {
 					if ($this->Deliberation->save($this->data)) {
@@ -803,9 +811,20 @@ class DeliberationsController extends AppController {
 		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="D"'));
 
 		if (empty($this->data)) {
-			$this->data = $this->Deliberation->read(null, $id);
+		    $this->data = $this->Deliberation->read(null, $id);
+                    $this->set('delib', $this->data); 
 		} else{
-			$this->data['Deliberation']['id']=$id;
+                    if (isset($this->data['Deliberation']['texte_doc'])){
+                        if ($this->data['Deliberation']['texte_doc']['size']!=0){
+                            $this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['texte_doc']['name'];
+                            $this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['texte_doc']['size'];
+                            $this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['texte_doc']['type'];
+                            $this->data['Deliberation']['deliberation']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+                            $this->Deliberation->save($this->data);
+                            unset($this->data['Deliberation']['texte_doc']);
+                         }
+                    }
+	                $this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
 				$deliberation = array_shift($this->params['form']);
@@ -2029,7 +2048,62 @@ class DeliberationsController extends AppController {
 	}
 
         function rechercheMutliCriteres () {
-            return true;
+            $this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
+	    $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
+            $this->set('date_seances',$this->Seance->generateAllList());
+            $this->set('services', $this->Deliberation->Service->generateList());
+            $this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
+            $this->set ('USE_GEDOOO', USE_GEDOOO);
+
+
+            if (!empty($this->data)) {
+              $conditions = "";
+              if (!empty($this->data['Deliberation']['rapporteur_id']))
+	          $conditions .= " Deliberation.rapporteur_id = ".$this->data['Deliberation']['rapporteur_id'];
+              
+	      if (!empty($this->data['Deliberation']['service_id'])){
+                  if ($conditions != "")
+		      $conditions .= " AND ";
+	          $conditions .= " Deliberation.service_id = ".$this->data['Deliberation']['service_id'];
+              }
+ 
+	      if (!empty($this->data['Deliberation']['theme_id'])){
+                  if ($conditions != "")
+		      $conditions .= " AND ";
+                  $conditions .= " Deliberation.theme_id = ".$this->data['Deliberation']['theme_id'];
+	      }
+	     
+	      if (!empty($this->data['Deliberation']['texte'])) {
+	          $texte = $this->data['Deliberation']['texte']; 
+	          if ($conditions != "")
+		     $conditions .= " AND ";
+	          $conditions .= " (Deliberation.objet LIKE '%$texte%' OR Deliberation.titre LIKE '%$texte%')";
+              }
+
+              $seanced = $this->Seance->read (null ,$this->data['Deliberation']['seance1_id']);
+              $seance1 =  $seanced['Seance']['date'];
+              $seanced2 = $this->Seance->read (null ,$this->data['Deliberation']['seance2_id']);
+              $seance2 =  $seanced2['Seance']['date'];
+              
+	      $seances = $this->Seance->findAll("Seance.date BETWEEN '$seance1' AND '$seance2' ");
+              $tab_seances = array();
+	      if (!empty($seances)){
+	          foreach($seances as $seance)
+	              array_push ($tab_seances,  $seance['Seance']['id']);
+                  $values = (implode(', ', $tab_seances));
+	           if ($conditions != "")
+		       $conditions .= " AND ";
+                    $conditions .= " Deliberation.seance_id IN ($values)";
+              }
+	      $resultats = $this->Deliberation->findAll($conditions);
+	      for ($i=0; $i<count($resultats); $i++)
+	          $resultats[$i]['Model']['id'] =  $this->requestAction("deliberations/getModelId/".$resultats[$i]['Deliberation']['id']);
+
+	      
+	      $this->set('is_result', true);
+	      $this->set('results', $resultats);
+              
+	   }
        }
 }
 ?>

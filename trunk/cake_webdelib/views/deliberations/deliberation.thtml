@@ -1,15 +1,29 @@
 <?php
     echo $javascript->link('fckeditor');
-	echo $javascript->link('utils');
+    echo $javascript->link('utils');
 ?>
 
 <?php echo $html->formTag('/deliberations/deliberation/'.$html->tagValue('Deliberation/id'),null,array('enctype'=>'multipart/form-data')); ?>
 <h2>Délibération : </h2>
+<?php
+        echo ('<div class="optional">');
+        if (!GENERER_DOC_SIMPLE){
+            echo '<br>Nom fichier : '.$delib['Deliberation']['deliberation_name'];
+            echo '<br>Taille : '.$delib['Deliberation']['deliberation_size'];
+            echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$html->tagValue('Deliberation/id').'/deliberation').'<br><br><br>';
+            echo  $html->fileTag("Deliberation/texte_doc");
+            echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
+            echo '<br><br>';
+            echo '</div>';
+        }
+        if (GENERER_DOC_SIMPLE) {
+?>
 <div class="optional">
     <?php echo $html->textarea('Deliberation/deliberation', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][deliberation]'); ?>
     <?php echo $html->tagErrorMsg('Deliberation/deliberation', 'Entrer la délibération.');?>
 </div>
+<?php  } // fin du if ?>
 
 <div class="optional">
 	<?php if(!empty($annexes)){  ?>

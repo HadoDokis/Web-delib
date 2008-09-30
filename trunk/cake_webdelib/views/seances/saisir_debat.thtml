@@ -1,13 +1,24 @@
 <h2>Saisie des debats :</h2>
 <?php echo $javascript->link('fckeditor'); ?>
-<?php echo $html->formTag('/seances/saisirDebat/'.$html->tagValue('Deliberation/id'),null,array('name'=>'debat')); ?>
+<?php echo $html->formTag('/seances/saisirDebat/'.$delib['Deliberation']['id'],null, array('enctype'=>'multipart/form-data')); ?>
 
+<?php
+    if (!GENERER_DOC_SIMPLE){
+        echo '<br>Nom fichier : '.$delib['Deliberation']['debat_name'];
+        echo '<br>Taille : '.$delib['Deliberation']['debat_size'];
+        echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$delib['Deliberation']['id'].'/debat').'<br><br><br>';
+        echo  $html->fileTag("Deliberation/texte_doc");
+        echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
+        echo '<br><br>';
+    }
+    if (GENERER_DOC_SIMPLE) {
+?>   
 <div class="optional">
     <?php echo $html->textarea('Deliberation/debat', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][debat]'); ?>
     <?php echo $html->tagErrorMsg('Deliberation/debat', 'Entrer le texte de debat.');?>
 </div>
-
+<?php  } // fin du if ?>
 <div class="submit">
    	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"javascript:FermerFenetre()"));?>
 </div>
