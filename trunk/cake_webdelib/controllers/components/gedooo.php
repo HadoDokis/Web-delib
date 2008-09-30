@@ -10,9 +10,9 @@ class GedoooComponent extends Object {
 	 * la fonction va retourner le path ou gedooo pourra aller chercher le fichier
 	 */
 	function createFile ($path, $name, $content) {
-            $this->checkPath($path);
+	    $this->checkPath($path);
             if (file_exists($path.$name))
-                if (unlink($path.$name)  === FALSE)
+               if (unlink($path.$name)  === FALSE)
 		     die("Impossible de supprimer le fichier existant ($path"."$name)");
 
 	    if (!$handle = fopen($path.$name, 'a'))
@@ -37,9 +37,11 @@ class GedoooComponent extends Object {
     function sendFiles ($fileModel, $fileData, $retour = 1, $download=0, $name='retour') {
         if ($retour == 0)
 	    $retour = 'pdf';
-	else
+	elseif ($retour ==1)
 	   $retour = 'odt';
-
+        elseif ($retour ==2)
+	    $retour = 'html';           
+	
 	$data = array('Format' => $retour,
                       'data' => "@$fileData",
                       'model' => "@$fileModel"
