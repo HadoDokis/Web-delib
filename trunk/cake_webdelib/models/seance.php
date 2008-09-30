@@ -43,6 +43,19 @@ class Seance extends AppModel {
         } 
         return $generateList;
     }
+    
+
+
+    function generateAllList() {
+         $generateList = array();
+         $seances = $this->findAll(null, null, 'date ASC');
+         foreach ($seances as $seance){
+                 $dateTimeStamp = strtotime($seance['Seance']['date']);
+                 $dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
+                 $generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
+        }
+        return $generateList;
+    }
 
 }
 ?>
