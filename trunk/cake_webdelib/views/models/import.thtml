@@ -2,7 +2,7 @@
     echo $javascript->link('fckeditor');
     echo $javascript->link('utils');
 ?>
-<h2>Import du mod&egrave;le : </h2>
+<h2>Import du mod&egrave;le : <?php echo $libelle; ?></h2>
 <div class="optional">
 <?php
     echo $html->formTag('/models/import/'.$model_id, null,array('enctype'=>'multipart/form-data'));
