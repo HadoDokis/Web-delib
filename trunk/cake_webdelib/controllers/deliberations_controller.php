@@ -139,9 +139,10 @@ class DeliberationsController extends AppController {
 	    // Informations sur la séance
 	    $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
             $balises .= $this->Gedooo->CreerBalise('identifiant_seance', $data['Deliberation']['seance_id'], 'string');
-	    if (isset($data['Seance']['date']))
+	    if (isset($data['Seance']['date'])) {
 	        $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
-
+                $balises .= $this->Gedooo->CreerBalise('date_seance_maj', strtoupper($this->Date->frenchDateConvocation(strtotime($data['Seance']['date']))), 'string');
+            }
             // CrÃ©ation de la liste des projets detailles
             $listeProjetsDetailles = $this->requestAction("/models/listeProjets/".$data['Deliberation']['seance_id']."/1");
             if (!empty($listeProjetsDetailles)) {

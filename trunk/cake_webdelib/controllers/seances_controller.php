@@ -709,9 +709,12 @@ class SeancesController extends AppController {
                 $balises .= $this->Gedooo->CreerBalise('titre_secretaire', $data['Secretaire']['titre'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('note_secretaire', $data['Secretaire']['note'], 'string');
                 // Informations sur la seance
-	        if (isset($data['Seance']['date']))
+	        if (isset($data['Seance']['date'])){
                     $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frenchDateConvocation(strtotime($data['Seance']['date'])), 'string');
-                $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
+                    $balises .= $this->Gedooo->CreerBalise('date_seance_maj', strtoupper($this->Date->frenchDateConvocation(strtotime($data['Seance']['date']))), 'string');
+                }
+
+		$balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
                 if (GENERER_DOC_SIMPLE==false){
                     $nameDebat = $data['Seance']['debat_global_name'];
                 }
@@ -810,8 +813,10 @@ class SeancesController extends AppController {
                 $balises .= $this->Gedooo->CreerBalise('titre_secretaire', $data['Secretaire']['titre'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('note_secretaire', $data['Secretaire']['note'], 'string');
                 // Informations sur la seance
-	        if (isset($data['Seance']['date']))
+	        if (isset($data['Seance']['date'])) {
                     $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frenchDateConvocation(strtotime($data['Seance']['date'])), 'string');
+		    $balises .= $this->Gedooo->CreerBalise('date_seance_maj', strtoupper($this->Date->frenchDateConvocation(strtotime($data['Seance']['date']))), 'string');
+		}
                 $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
                 if (GENERER_DOC_SIMPLE==false)
                     $nameDebat = $data['Seance']['debat_global_name'];
