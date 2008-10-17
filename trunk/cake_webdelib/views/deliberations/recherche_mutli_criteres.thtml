@@ -1,4 +1,4 @@
-<h2>Recherche multi-crit&egrave;re</h2>
+<h2>Recherche multi-crit&egrave;res</h2>
 <?php echo $html->formTag('/deliberations/rechercheMutliCriteres/', null,array('name'=>'Deliberation','enctype'=>'multipart/form-data'));?>
 
 <div id="add_form">
@@ -14,7 +14,7 @@
             <td><?php echo $html->selectTag('Deliberation/seance2_id',$date_seances,null,null,null,true); ?></td>
     </tr>
     <tr>
-            <td><?php echo $form->labelTag('Deliberation/texte', 'Texte ');?></td>
+            <td><?php echo $form->labelTag('Deliberation/texte', 'Libell&eacute; ');?></td>
             <td><?php echo $html->input('Deliberation/texte', array('size' => '30'));?></td>
     </tr>
     <tr>
