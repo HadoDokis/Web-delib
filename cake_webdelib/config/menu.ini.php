@@ -49,7 +49,7 @@ $OldwebDelib = array(
 				'items' => array(
 					'Editions' => array('link' => '/postseances/index'),
 					'Contrôle de légalité' => array('link' => '/deliberations/transmit'),
-					'Export GED' => array('link' => 'exportged')
+					'Export GED/Intranet' => array('link' => 'exportged')
 					)
 				)
 			),
@@ -108,7 +108,7 @@ $webDelib = array(
 				'items' => array(
 					'Editions' => array('link' => '/postseances/index'),
 					'Contrôle de légalité' => array('link' => '/deliberations/transmit'),
-					'Export GED' => array('link' => 'exportged')
+					'Export GED/Intranet' => array('link' => 'exportged')
 					)
 				)
 			),
