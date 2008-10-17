@@ -43,7 +43,7 @@
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/localisation', 'Localisation');?></td>
-		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/changeLocation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=600,height=400');">[Choisir localisation]</a></td>
+		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/changeLocation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600');">[Choisir localisation]</a></td>
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/texte_projet', 'Texte projet');?></td>
