@@ -8,7 +8,7 @@
     if (!GENERER_DOC_SIMPLE){
         echo '<br>Nom fichier : '.$delib['Deliberation']['texte_synthese_name'];
         echo '<br>Taille : '.$delib['Deliberation']['texte_synthese_size'];
-        echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$html->tagValue('Deliberation/id').'/texte_synthese').'<br><br><br>';
+        echo '<br>'.$html->link('Recuperer le fichier','/deliberations/download/'.$html->tagValue('Deliberation/id').'/texte_synthese').'<br><br><br>';
         echo  $html->fileTag("Deliberation/texte_doc");
         echo $html->submit('Ecraser', array('class'=>'bt_add', 'name'=>'importer'));
         echo '<br><br>';
@@ -24,7 +24,6 @@
     <?php echo $html->tagErrorMsg('Deliberation/texte_synthese', 'Entrer le texte de synthese.');?>
 </div>
 <?php  } // fin du if ?>
-
 <div class="optional">
 	<?php if(!empty($annexes)){  ?>
 	<?php echo $form->labelTag('Annexe/titre', 'Annexe(s) :');?>
@@ -32,14 +31,16 @@
 			echo '<br>Titre : '.$annexe['Annex']['titre'];
 			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
 			echo '<br>Taille : '.$annexe['Annex']['size'];
-			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
+			echo '<br>'.$html->link('Ecraser','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
 	<?php endforeach; } ?>
 </div>
 <div id="cible">
 
 </div>
 <div>
+<br />
 <a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
+<br /><br /><br />
 </div>
 	<div class="submit">
     	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir'));?>

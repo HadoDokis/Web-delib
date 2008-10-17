@@ -9,9 +9,9 @@
     	if (!GENERER_DOC_SIMPLE){
 	    echo '<br>Nom fichier : '.$delib['Deliberation']['texte_projet_name'];
 	    echo '<br>Taille : '.$delib['Deliberation']['texte_projet_size'];
-	    echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$html->tagValue('Deliberation/id').'/texte_projet').'<br><br><br>';
+	    echo '<br>'.$html->link("Recuperer le fichier",'/deliberations/download/'.$html->tagValue('Deliberation/id').'/texte_projet').'<br><br><br>';
     	    echo  $html->fileTag("Deliberation/texte_doc");
-            echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
+            echo $html->submit('Ecraser', array('class'=>'bt_add', 'name'=>'importer'));
             echo '<br><br>';
 	    echo '</div>';
     	}
@@ -30,7 +30,7 @@
 			echo '<br>Titre : '.$annexe['Annex']['titre'];
 			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
 			echo '<br>Taille : '.$annexe['Annex']['size'];
-			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
+			echo '<br>'.$html->link('Ecraser','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
 	<?php endforeach; } ?>
 </div>
 <div id="cible">
