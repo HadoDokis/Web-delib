@@ -490,6 +490,8 @@
 	function import($model_id) {
 		$this->set('USE_GEDOOO', USE_GEDOOO);
 		$this->set('model_id', $model_id);
+                $Model = $this->Model->read(null, $model_id);
+		$this->set('libelle', $Model['Model']['modele']);
 		if (! empty($this->data)){
 			if (isset($this->data['Model']['template'])){
 				if ($this->data['Model']['template']['size']!=0){
