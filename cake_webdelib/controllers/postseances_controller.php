@@ -14,7 +14,7 @@ class PostseancesController extends AppController {
 		$this->set ('USE_GEDOOO', USE_GEDOOO);
 		$this->Postseances->recursive = 0;
 		$condition= 'Seance.traitee = 1';
-		$seances = $this->Seance->findAll(($condition),null,'date asc');
+		$seances = $this->Seance->findAll(($condition),null,'date desc');
 
 		for ($i=0; $i<count($seances); $i++)
 		    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
