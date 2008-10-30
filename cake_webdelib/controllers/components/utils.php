@@ -106,6 +106,16 @@ class UtilsComponent extends Object
     	return $simplifiedArray;
     }	
 	
+    function strtocamel($str){
+        $a = "&";
+        $b = "Et";
+        $str = str_replace ($a, $b, $str);       
+        $str = explode(' ', strtolower($str));
+        for($i = 1; $i < count($str); $i++)
+            $str[$i] = strtoupper(substr($str[$i], 0, 1)) . substr($str[$i], 1);
+
+        return implode('', $str);
+    }
 	
 }
 ?>
