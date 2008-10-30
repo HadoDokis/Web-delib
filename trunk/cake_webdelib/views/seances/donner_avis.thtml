@@ -23,7 +23,7 @@ function initAffichage()
 }
 </script>
 
-<h2> Donner un avis pour le projet : "<?php echo $html->tagValue('Deliberation/titre')?>"</h2>
+<h2> Donner un avis pour le projet : "<?php echo $html->tagValue('Deliberation/objet')?>"</h2>
 
 <?php echo $html->formTag('/seances/donnerAvis/'.$html->tagValue('Deliberation/id'), null, array('name'=>'Session')); ?>
 
