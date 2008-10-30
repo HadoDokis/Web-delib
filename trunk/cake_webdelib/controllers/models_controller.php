@@ -7,7 +7,7 @@
 		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
 		// Gestion des droits
-		var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel', 'listeActeursPresents', 'listeActeursAbsents', 'listeActeursMandates', 'listeActeursVotant', 'listeActeursVotantContre');
+		var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel', 'listeActeursPresents', 'listeActeursAbsents', 'listeActeursMandates', 'listeActeursVotant', 'listeActeursVotantContre', 'listeActeursAbstenus');
 		var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
 
 		function index() {
@@ -358,13 +358,36 @@
 			    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
 			    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
 			    "#CP_VOTANT#" => $votant['Acteur']['cp'],
-			    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
-                    "#COMMENTAIRE_VOTE#" => $vote['Vote']['commentaire']
+			    "#VILLE_VOTANT#" => $votant['Acteur']['ville']
                 );
                 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
             }
             return $listeActeurs;
         }
+
+         function listeActeursAbstenus($delib_id) {
+                    // Lecture du modele
+                    $texte = $this->Model->field('content', 'id=15');
+                    $listeActeurs = "";
+                    $votes = $this->Vote->findAll("Vote.delib_id = $delib_id AND Vote.resultat=4");
+                    foreach($votes as $vote) {
+                        $votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
+                        $searchReplace = array(
+                            "#NOUVELLE_PAGE#" => "<newpage>",
+                            "#NOM_ABSTENANT#" => $votant['Acteur']['nom'],
+                            "#PRENOM_ABSTENANT#" => $votant['Acteur']['prenom'],
+                            "#SALUTATION_ABSTENANT#" => $votant['Acteur']['salutation'],
+                            "#TITRE_ABSTENANT#" => $votant['Acteur']['titre'],
+                            "#ADRESSE1_ABSTENANT#" => $votant['Acteur']['adresse1'],
+                            "#ADRESSE2_ABSTENANT#" => $votant['Acteur']['adresse2'],
+                            "#CP_ABSTENANT#" => $votant['Acteur']['cp'],
+                            "#VILLE_ABSTENANT#" => $votant['Acteur']['ville']
+                );
+                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
+            }
+            return $listeActeurs;
+        }
+ 
 
 	function _replaceBalisesSeance($texte, $seance_id) {
 		// Lecture des informations en base
@@ -431,6 +454,11 @@
 			"#LIBELLE_DELIB#" => $delib['Deliberation']['objet'],
 			"#TEXTE_DELIB#" => $delib['Deliberation']['deliberation'],
 			"#TEXTE_SYNTHESE#" => $delib['Deliberation']['texte_synthese'],
+			"#VOTE_POUR#" => $delib['Deliberation']['vote_nb_oui'],	
+			"#VOTE_CONTRE#" => $delib['Deliberation']['vote_nb_non'],
+		        "#VOTE_ABSTENTION#" => $delib['Deliberation']['vote_nb_abstention'], 	
+			"#VOTE_RETRAIT#" => $delib['Deliberation']['vote_nb_retrait'],
+			"#VOTE_COMMENTAIRE#" => $delib['Deliberation']['vote_commentaire'],
 			"#TEXTE_PROJET#" => $delib['Deliberation']['texte_projet'],
 			"#POSITION_DELIB#" => $delib['Deliberation']['position'],
 			"#DEBAT_DELIB#" => $delib['Deliberation']['debat'],
