@@ -41,7 +41,7 @@
 		</td>
 
 		<td><?php echo $html->input('Deliberation/'.$delib['Deliberation']['id'].'_num_pref',array('id'=>$delib['Deliberation']['id'].'classif1', 'size' => '60','disabled'=>'disabled', 'value' => $delib['Deliberation'][$delib['Deliberation']['id'].'_num_pref'] ));?><br/>
-		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base;?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id'];?>', 'Select_attribut', 'scrollbars=0,,width=570,height=450');" id=<?php echo $delib['Deliberation']['id'];?>"_classification_text">[Choisir la classification]</a>
+		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base;?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id'];?>', 'Select_attribut', 'scrollbars=yes,,width=570,height=450');" id=<?php echo $delib['Deliberation']['id'];?>"_classification_text">[Choisir la classification]</a>
 		 <?php echo $html->hidden('Deliberation/'.$delib['Deliberation']['id'].'_num_pref',array('id'=>$delib['Deliberation']['id'].'classif2','name'=>$delib['Deliberation']['id'].'classif2'))?>
 		</td>
 		   <?php
