@@ -34,7 +34,7 @@ class GedoooComponent extends Object {
 	 * la fonction va envoyer les deux fichiers à Ged'OOo
 	 */
 
-    function sendFiles ($fileModel, $fileData, $retour = 1, $download=0, $name='retour') {
+    function sendFiles ($fileModel, $fileData, $retour = 1, $download=0, $name='retour', $seance_id=null) {
         if ($retour == 0)
 	    $retour = 'pdf';
 	elseif ($retour ==1)
@@ -64,14 +64,17 @@ class GedoooComponent extends Object {
 	}
 	else {
             // Préparation des répertoires et URL pour la création des fichiers
-            $dyn_path = "/files/generee/modeles/";
-            $path = WEBROOT_PATH.$dyn_path;
+            if ($seance_id == null)
+	        $dyn_path = "/files/generee/modeles/";
+            else 
+	         $dyn_path = "/files/generee/modeles/$seance_id/";
+	    $path = WEBROOT_PATH.$dyn_path;
             if (!$this->checkPath($path))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
             $fp = fopen($path.$name, 'w');
             fwrite($fp, $return);
-            fclose($fp);
-            $zip = new ZipArchive;
+	    fclose($fp);
+	    $zip = new ZipArchive;
 	    if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
 	        $zip->addFile($path.$name, $name);
 	        $zip->close();
