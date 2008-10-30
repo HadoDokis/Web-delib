@@ -37,10 +37,9 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '1.1beta ');
+    define ('VERSION', '1.1');
     define ('GENERER_DOC_SIMPLE', false);
     define ('USE_GEDOOO', true);
-   // define ('URL_GEDOOO', 'http://gedooo.demonstrations.adullact.org/GEDOOo/generator2.php');
     define ('URL_GEDOOO', 'http://gedooo.services.adullact.org/phpgedooo/generator.php');
 /**
  * Set debug level here:
@@ -69,23 +68,30 @@
 	$webroot_path = $path2."webroot/";
 	define ('WEBROOT_PATH',  $path2."webroot");
 
-	define('PEM', '/var/www/webdelib_demo/app/config/client.pem');
+	define('PEM', '/var/www/webdelib/app/config/client.pem');
         define('PASSWORD', 'demo_u');
 	define('HOST', 'demo-s2low.extranet.adullact.org');
-	define('SSLKEY', '/var/www/webdelib_demo/app/config/key.pem');
-	define('CA_PATH', '/var/www/webdelib_demo/app/config/');
-	define('FILE_CLASS', '/var/www/webdelib_demo/app/webroot/files/actes/classification.xml');
+	define('SSLKEY', '/var/www/webdelib/app/config/key.pem');
+	define('CA_PATH', '/var/www/webdelib/app/config/');
+/*
+        define('PEM', '/var/www/s2low/key/client.pem');
+        define('PASSWORD', 'lolotte');
+        define('HOST', 'www.s2low.org');
+        define('SSLKEY', '/var/www/s2low/key/key.pem');
+        define('CA_PATH', '/var/www/s2low/key/');
+ */
+	define('FILE_CLASS', '/var/www/webdelib/app/webroot/files/actes/classification.xml');
 	define('IMPORT', true);
-
+	
 	// LDAP
-    define ('LDAP_HOST', 'hostname');
-    define ('PORT',      '389');
-    define ('BASE_DN',   'dc=domaine,dc=com');
-    define ('MANAGER',   'cn=manager,dc=domaine,dc=com');
-    define ('LDAP_PASS', '');
+        define ('LDAP_HOST', 'hostname');
+        define ('PORT',      '389');
+        define ('BASE_DN',   'dc=domaine,dc=com');
+        define ('MANAGER',   'cn=manager,dc=domaine,dc=com');
+        define ('LDAP_PASS', '');
 
 	// Mapping Champ LDAP
-    define ('MAIL', 'mail');
+        define ('MAIL', 'mail');
 	define ('COMMON_NAME', 'cn');
 	define ('UNIQUE_ID', 'uid');
 	define ('PASSWORD_USER', 'userpassword');
