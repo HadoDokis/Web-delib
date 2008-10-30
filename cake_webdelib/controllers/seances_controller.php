@@ -650,8 +650,8 @@ class SeancesController extends AppController {
             $dyn_path = "/files/generee/seances/$seance_id/";
             $path = WEBROOT_PATH.$dyn_path;
 	    $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
-            $urlFiles =  'http://'.$_SERVER['HTTP_HOST'].$this->base.'/files/generee/modeles/';
-	    $pathFile =  WEBROOT_PATH.'/files/generee/modeles/';
+            $urlFiles =  'http://'.$_SERVER['HTTP_HOST'].$this->base."/files/generee/modeles/$seance_id/";
+	    $pathFile =  WEBROOT_PATH."/files/generee/modeles/$seance_id/";
 	    if (!$this->Gedooo->checkPath($path))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
 
@@ -708,15 +708,24 @@ class SeancesController extends AppController {
                 $balises .= $this->Gedooo->CreerBalise('salutation_secretaire', $data['Secretaire']['salutation'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('titre_secretaire', $data['Secretaire']['titre'], 'string');
                 $balises .= $this->Gedooo->CreerBalise('note_secretaire', $data['Secretaire']['note'], 'string');
-                // Informations sur la seance
+	    
+		$balises .= $this->Gedooo->CreerBalise('date_jour_courant', $this->Date->frenchDate(strtotime("now")), 'string');
+		
+		// Informations sur la seance
 	        if (isset($data['Seance']['date'])){
                     $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frenchDateConvocation(strtotime($data['Seance']['date'])), 'string');
                     $balises .= $this->Gedooo->CreerBalise('date_seance_maj', strtoupper($this->Date->frenchDateConvocation(strtotime($data['Seance']['date']))), 'string');
+	            $balises .= $this->Gedooo->CreerBalise('date_seance_sans_heure', $this->Date->frenchDate(strtotime($data['Seance']['date'])), 'string');
+                    $balises .= $this->Gedooo->CreerBalise('date_seance_lettres_maj', strtoupper($this->Date->dateLettres(strtotime($data['Seance']['date']))), 'string');
+                    $balises .= $this->Gedooo->CreerBalise('date_seance_lettres', $this->Date->dateLettres(strtotime($data['Seance']['date'])), 'string');
                 }
 
 		$balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
                 if (GENERER_DOC_SIMPLE==false){
-                    $nameDebat = $data['Seance']['debat_global_name'];
+		    if ( $data['Seance']['debat_global_name']== "")
+		        $nameDebat = "vide";
+		    else
+                        $nameDebat = $data['Seance']['debat_global_name'];
                 }
                 else {
                    $nameDebat =  'debat.html';
@@ -747,18 +756,18 @@ class SeancesController extends AppController {
 		    $extension = 'html';
 
                 $nomFichier =  $acteur['Acteur']['id'].'.'.$extension;
-		$this->Gedooo->sendFiles($model, $datas, $editable, 1,  $nomFichier);
+		$this->Gedooo->sendFiles($model, $datas, $editable, 1,  $nomFichier, $seance_id);
                 ProgressBar($cpt*(100/$nbActeurs), 'Document g&eacute;n&eacute;r&eacute; pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
                 if ($acteur['Acteur']['email']!=''){
                     $to_mail   = $acteur['Acteur']['email'];
                     $to_nom    = $acteur['Acteur']['nom'];
                     $to_prenom = $acteur['Acteur']['prenom'];
-                     $this->Email->attachments = null;
+                    $this->Email->attachments = null;
                     $this->Email->template = 'email/convoquer';
                     $this->set('data', utf8_encode( "Vous venez de recevoir un document de Webdelib ($nomModel)"));
                     $this->Email->to = $to_mail;
                     $this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ($nomModel)");
-                    $this->Email->attach($pathFile.$nomFichier, $nomFichier);
+		    $this->Email->attach($pathFile.$nomFichier, $nomFichier);
 		    $result = $this->Email->send();
                     ProgressBar($cpt*(100/$nbActeurs), 'Document envoy&eacute; &agrave; : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
 		    unset($result);
@@ -770,6 +779,7 @@ class SeancesController extends AppController {
             }
 	    $listFiles[$urlFiles.'documents.zip'] = 'Tous les documents';
 	    $this->set('listFiles', $listFiles);
+	    $this->set('seance_id', $seance_id);
             $this->render();
         }
 
@@ -819,7 +829,10 @@ class SeancesController extends AppController {
 		}
                 $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
                 if (GENERER_DOC_SIMPLE==false)
-                    $nameDebat = $data['Seance']['debat_global_name'];
+                    if ( $data['Seance']['debat_global_name']== "")
+		        $nameDebat = "vide";
+	            else
+		        $nameDebat = $data['Seance']['debat_global_name'];
                 else 
                    $nameDebat =  'debat.html';
 
