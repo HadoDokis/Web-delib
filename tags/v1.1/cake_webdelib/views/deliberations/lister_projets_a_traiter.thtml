@@ -1,0 +1,59 @@
+<div class="deliberations">
+<h2>Mes projets &agrave; traiter</h2>
+
+<table cellspacing="0" cellpadding="0">
+	<tr>
+		<th Width='5%' >Urgence</th>
+		<th Width='20%' >Etat de l'envoi</th>
+		<th Width='20%' >D&eacute;tenteur du dossier</th>
+		<th>Titre</th>
+		<th Width='10%'>Action</th>
+
+	</tr>
+	<tr>
+		<td colspan='5' class='Border' height='1' >
+		</td>
+	</tr>
+<!-- ------------------------------------------------- -->
+<?php foreach ($deliberations as $deliberation){ ?>
+
+	<tr>
+		<td rowspan=3 style="text-align:center"><?php echo $html->image($deliberation['image'], array('title'=>'A traiter'));?></td>
+		<td align='center'><?php echo $deliberation['Deliberation']['objet']; ?></td>
+		<td align='left'>Service emetteur :<br/><?php echo $deliberation['Service']['libelle']; ?></td>
+		<td align='left'>Date de séance : <?php if ($deliberation['Deliberation']['reporte']==1)
+						echo "Reporté au ";
+					echo $deliberation['Seance']['date']; ?></td>
+		<td rowspan=4 class="actions" >
+			<?php echo $html->link('&shy;',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>$deliberation['act']), false, false)?>
+			<?php 
+			if ($USE_GEDOOO)
+			    echo $html->link('&shy;','/deliberations/generer/' . $deliberation['Deliberation']['id'].'/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+			else 
+			    echo $html->link('&shy;','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+			?>
+		</td>
+	</tr>
+	<tr>
+		<td>Identifiant projet : <?php echo $deliberation['Deliberation']['id']; ?></td>
+		<td class='corps' rowspan=2 align='left'>Thème : <?php echo $deliberation['Theme']['libelle']; ?></td>
+		<td class='corps' rowspan=3 align='left'><?php echo $deliberation['Deliberation']['titre']; ?></td>
+
+	</tr>
+	<tr>
+		<td>N&deg; classification :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
+
+
+	</tr>
+	<tr>
+		<td colspan="2" align="center">A traiter avant le : <?php echo $deliberation['Deliberation']['date_limite']; ?></td>
+		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td>
+	</tr>
+	<tr>
+		<td colspan='5' class='Border' height='1' >
+		</td>
+	</tr>
+<!-- ------------------------------------------------- -->
+<?php } ?>
+</table>
+</div>
