@@ -81,6 +81,14 @@ class DeliberationsController extends AppController {
 	        $balises .= $this->Gedooo->CreerBalise('ville_rapporteur', $data['Rapporteur']['ville'], 'string');
 	        $balises .= $this->Gedooo->CreerBalise('note_rapporteur', $data['Rapporteur']['note'], 'string');
 
+		// Information sur le secretaire
+		$secretaire = $this->Acteur->read(null, $data['Seance']['secretaire_id'] );
+                $balises .= $this->Gedooo->CreerBalise('nom_secretaire', $secretaire['Acteur']['nom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('prenom_secretaire', $secretaire['Acteur']['prenom'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('salutation_secretaire', $secretaire['Acteur']['salutation'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('titre_secretaire', $secretaire['Acteur']['titre'], 'string');
+                $balises .= $this->Gedooo->CreerBalise('note_secretaire', $secretaire['Acteur']['note'], 'string');
+
 		// Informations sur le rédacteur
 		$balises .= $this->Gedooo->CreerBalise('prenom_redacteur', $data['Redacteur']['prenom'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('nom_redacteur', $data['Redacteur']['nom'], 'string');
@@ -105,10 +113,27 @@ class DeliberationsController extends AppController {
 		$balises .= $this->Gedooo->CreerBalise('classification_deliberation', $data['Deliberation']['num_pref'], 'string');
 
 	   if (GENERER_DOC_SIMPLE==false){
-                $nameTP = $data['Deliberation']['texte_projet_name'];
-                $nameTD = $data['Deliberation']['deliberation_name'];
-                $nameNS = $data['Deliberation']['texte_synthese_name'];
-            }
+                if ($data['Deliberation']['texte_projet_name']== "")
+		     $nameTP = "vide";
+		else 
+		    $nameTP = $data['Deliberation']['texte_projet_name'];
+                
+		if ($data['Deliberation']['deliberation_name']=="")
+		    $nameTD = "vide";
+		else    
+		    $nameTD = $data['Deliberation']['deliberation_name'];
+                
+		if ($data['Deliberation']['texte_synthese_name']=="")
+	            $nameNS = "vide";
+		else
+		    $nameNS = $data['Deliberation']['texte_synthese_name'];
+            
+	        if  ($data['Deliberation']['debat_name']=="")
+	          $nameDebat = "vide";
+		else
+		  $nameDebat = $data['Deliberation']['debat_name'];
+
+	    }
             else {
                 $nameTP = 'texte_projet.html';
                 $nameTD = 'texte_delib.html';
@@ -139,9 +164,15 @@ class DeliberationsController extends AppController {
 	    // Informations sur la séance
 	    $balises .= $this->Gedooo->CreerBalise('type_seance', $this->requestAction('/typeseances/getField/'.$data['Seance']['type_id'].'/libelle'), 'string');
             $balises .= $this->Gedooo->CreerBalise('identifiant_seance', $data['Deliberation']['seance_id'], 'string');
+
+	    $balises .= $this->Gedooo->CreerBalise('date_jour_courant', $this->Date->frenchDate(strtotime("now")), 'string');
+	    
 	    if (isset($data['Seance']['date'])) {
 	        $balises .= $this->Gedooo->CreerBalise('date_seance', $this->Date->frDate($data['Seance']['date']), 'date');
                 $balises .= $this->Gedooo->CreerBalise('date_seance_maj', strtoupper($this->Date->frenchDateConvocation(strtotime($data['Seance']['date']))), 'string');
+                $balises .= $this->Gedooo->CreerBalise('date_seance_lettres_maj', strtoupper($this->Date->dateLettres(strtotime($data['Seance']['date']))), 'string');
+                $balises .= $this->Gedooo->CreerBalise('date_seance_lettres', $this->Date->dateLettres(strtotime($data['Seance']['date'])), 'string');
+	        $balises .= $this->Gedooo->CreerBalise('date_seance_sans_heure', $this->Date->frenchDate(strtotime($data['Seance']['date'])), 'string');
             }
             // CrÃ©ation de la liste des projets detailles
             $listeProjetsDetailles = $this->requestAction("/models/listeProjets/".$data['Deliberation']['seance_id']."/1");
@@ -159,32 +190,40 @@ class DeliberationsController extends AppController {
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursPresents/$delib_id");
             if (!empty($listeProjetsSommaires)) {
 	        $this->Gedooo->createFile($path, 'ActeursPresents.html', '<p>'.$listeProjetsSommaires.'</p>');
-                $balises .= $this->Gedooo->CreerBalise('acteurs_presents', $urlWebroot.'ActeursPresents.html', 'content');
+                $balises .= $this->Gedooo->CreerBalise('liste_presents', $urlWebroot.'ActeursPresents.html', 'content');
            }
             // CrÃ©ation de la liste des acteurs absents
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursAbsents/$delib_id");
             if (!empty($listeProjetsSommaires)) {
 	        $this->Gedooo->createFile($path, 'ActeursAbsents.html', '<p>'.$listeProjetsSommaires.'</p>');
-                $balises .= $this->Gedooo->CreerBalise('acteurs_absents', $urlWebroot.'ActeursAbsents.html', 'content');
+                $balises .= $this->Gedooo->CreerBalise('liste_absents', $urlWebroot.'ActeursAbsents.html', 'content');
 	    }
             // Création de la liste des acteurs mandates
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursMandates/$delib_id");
             if (!empty($listeProjetsSommaires)) {
 	        $this->Gedooo->createFile($path, 'ActeursMandates.html', '<p>'.$listeProjetsSommaires.'</p>');
-                $balises .= $this->Gedooo->CreerBalise('acteurs_mandates', $urlWebroot.'ActeursMandates.html', 'content');
+                $balises .= $this->Gedooo->CreerBalise('liste_mandates', $urlWebroot.'ActeursMandates.html', 'content');
             }
             // Création de la liste de la liste des acteurs votant
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursVotant/$delib_id");
             if (!empty($listeProjetsSommaires)) {
 	        $this->Gedooo->createFile($path, 'ActeursVotant.html', '<p>'.$listeProjetsSommaires.'</p>');
-                $balises .= $this->Gedooo->CreerBalise('acteurs_votant', $urlWebroot.'ActeursVotant.html', 'content');
+                $balises .= $this->Gedooo->CreerBalise('liste_votants', $urlWebroot.'ActeursVotant.html', 'content');
             }
             // Création de la liste de la liste des acteurs votant contre
             $listeProjetsSommaires = $this->requestAction("/models/listeActeursVotantContre/$delib_id");
             if (!empty($listeProjetsSommaires)) {
 	        $this->Gedooo->createFile($path, 'ActeursVotantContre.html', '<p>'.$listeProjetsSommaires.'</p>');
-                $balises .= $this->Gedooo->CreerBalise('acteurs_votant_contre', $urlWebroot.'ActeursVotantContre.html', 'content');
+                $balises .= $this->Gedooo->CreerBalise('liste_votants_contre', $urlWebroot.'ActeursVotantContre.html', 'content');
             }
+            // Création de la liste de la liste des acteurs qui se sont abstenus
+            $listeProjetsSommaires = $this->requestAction("/models/listeActeursAbstenus/$delib_id");
+            if (!empty($listeProjetsSommaires)) {
+                $this->Gedooo->createFile($path, 'ActeursAbstenus.html', '<p>'.$listeProjetsSommaires.'</p>');
+                $balises .= $this->Gedooo->CreerBalise('liste_abstenus', $urlWebroot.'ActeursAbstenus.html', 'content');
+            }
+
+
 	    // création du fichier XML
 	    $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
         // Envoi du fichier à GEDOOo
@@ -915,9 +954,11 @@ class DeliberationsController extends AppController {
 		} else{
 	             if (isset($this->data['Deliberation']['texte_doc'])){
                          if ($this->data['Deliberation']['texte_doc']['size']!=0){
-                             $this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_doc']['name'];
+                             $this->data['Deliberation']['texte_projet_name'] = $this->Utils->strtocamel($this->data['Deliberation']['texte_doc']['name']);
                              $this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_doc']['size'];
                              $this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_doc']['type'];
+			     if ($this->data['Deliberation']['texte_projet_type'] != 'application/vnd.oasis.opendocument.text') 
+                                 die("<a href=''>Le fichier n'est pas un format OpenOffice</a>"); 
                              $this->data['Deliberation']['texte_projet']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
                              $this->Deliberation->save($this->data);
                               unset($this->data['Deliberation']['texte_doc']);
@@ -1537,8 +1578,6 @@ class DeliberationsController extends AppController {
 	    $url = 'https://'.HOST.'/modules/actes/actes_transac_create.php';
             $pos =  strrpos ( getcwd(), 'webroot');
 	    $path = substr(getcwd(), 0, $pos);
-            $configPos =  strrpos ( getcwd(), 'config');
-	    $configPath = substr(getcwd(), 0, $pos);
 	    foreach ($this->data['Deliberation'] as $id => $bool ){
                  if ($bool == 1){
 		     $delib_id = substr($id, 3, strlen($id));
@@ -1586,8 +1625,8 @@ class DeliberationsController extends AppController {
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-      	                 // 'number'        => $delib[0]['Deliberation']['num_delib'],
       	                 'number'        => time(),
+			 //'number'        => $delib[0]['Deliberation']['num_delib'],
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
@@ -1599,17 +1638,25 @@ class DeliberationsController extends AppController {
 
 			 $ch = curl_init();
                          curl_setopt($ch, CURLOPT_URL, $url);
+			// curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
                          curl_setopt($ch, CURLOPT_POST, TRUE);
                          curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
-                         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-                         curl_setopt($ch, CURLOPT_CAPATH, $configPath.CA_PATH);
-                         curl_setopt($ch, CURLOPT_SSLCERT,  $configPath.PEM);
+			 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+                         curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
+                         curl_setopt($ch, CURLOPT_SSLCERT, PEM);
                          curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
-                         curl_setopt($ch, CURLOPT_SSLKEY,  $configPath.SSLKEY);
+                         curl_setopt($ch, CURLOPT_SSLKEY,  SSLKEY);
                          curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
                          curl_setopt($ch, CURLOPT_VERBOSE, true);
 			 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 			 $curl_return = curl_exec($ch);
+			 
+			 if ($curl_return === false) {
+			     echo 'KO\nErreur dans le module curl.' . '<br />';
+			     echo 'curl_errno() = ' . curl_errno($ch) . '<br />';
+			     echo 'curl_error() = ' . curl_error($ch) . '<br />';
+			 }
+
 			 $pos = strpos($curl_return, 'OK');
 			 if ($pos === false) {
                               echo ('<script>');
@@ -1670,21 +1717,20 @@ class DeliberationsController extends AppController {
  	function getClassification($id=null){
 	    $pos =  strrpos ( getcwd(), 'webroot');
 	    $path = substr(getcwd(), 0, $pos);
-	    $configPos =  strrpos ( getcwd(), 'config');
-	    $configPath = substr(getcwd(), 0, $pos);
 
 	    $url = 'https://'.HOST.'/modules/actes/actes_classification_fetch.php';
             $data = array(
          	'api'           => '1',
-            );
+             );
         $url .= '?'.http_build_query($data);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_CAPATH, $configPath.CA_PATH);
-        curl_setopt($ch, CURLOPT_SSLCERT,  $configPath.PEM);
+    //	curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
+        curl_setopt($ch, CURLOPT_SSLCERT,  PEM);
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
-	curl_setopt($ch, CURLOPT_SSLKEY,  $configPath.SSLKEY);
+	curl_setopt($ch, CURLOPT_SSLKEY,  SSLKEY);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
         $reponse = curl_exec($ch);
@@ -1710,7 +1756,7 @@ class DeliberationsController extends AppController {
         }
         else
             echo "Le fichier ".FILE_CLASS." n'est pas accessible en ecriture.";
- 		}
+}
 
         function positionner($id=null, $sens, $seance_id)
         {
@@ -2096,7 +2142,12 @@ class DeliberationsController extends AppController {
 		       $conditions .= " AND ";
                     $conditions .= " Deliberation.seance_id IN ($values)";
               }
-	      $resultats = $this->Deliberation->findAll($conditions);
+	      
+              if ($conditions != "")
+                  $conditions .= " AND ";
+              $conditions .= " Deliberation.etat != -1";
+
+              $resultats = $this->Deliberation->findAll($conditions);
 	      for ($i=0; $i<count($resultats); $i++)
 	          $resultats[$i]['Model']['id'] =  $this->requestAction("deliberations/getModelId/".$resultats[$i]['Deliberation']['id']);
 
