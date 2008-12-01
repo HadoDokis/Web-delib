@@ -744,7 +744,14 @@ class SeancesController extends AppController {
 	        $listeProjetsSommaires = $this->requestAction("/models/listeProjets/$seance_id/0");
                 $this->Gedooo->createFile($path, 'ProjetsSommaires.html',  $listeProjetsSommaires);
                 $balises .= $this->Gedooo->CreerBalise('projets_sommaires', $urlWebroot.'ProjetsSommaires.html', 'content');
-                // création du fichier XML
+               
+                // Création de la liste des projets ODJ
+                $listeProjetsOdj = $this->requestAction("/models/listeProjets/$seance_id/2");
+                $this->Gedooo->createFile($path, 'ProjetsOdj.html',  $listeProjetsOdj);
+                $balises .= $this->Gedooo->CreerBalise('projets_odj', $urlWebroot.'ProjetsOdj.html', 'content');
+ 
+		
+		// création du fichier XML
                 $datas    = $this->Gedooo->createFile($path,'data.xml', $balises);
 
 		// Envoi du fichier à GEDOOo
