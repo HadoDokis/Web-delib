@@ -112,6 +112,9 @@ class DeliberationsController extends AppController {
 		$balises .= $this->Gedooo->CreerBalise('numero_deliberation', $data['Deliberation']['num_delib'], 'string');
 		$balises .= $this->Gedooo->CreerBalise('classification_deliberation', $data['Deliberation']['num_pref'], 'string');
 
+                $balises .= $this->Gedooo->CreerBalise('service_emetteur',  $data['Service']['libelle']   , 'string');
+		$balises .= $this->Gedooo->CreerBalise('theme_projet',  $data['Theme']['libelle'], 'string');
+
 	   if (GENERER_DOC_SIMPLE==false){
                 if ($data['Deliberation']['texte_projet_name']== "")
 		     $nameTP = "vide";
@@ -803,7 +806,8 @@ class DeliberationsController extends AppController {
              }
 	     $this->data['Deliberation']['id']=$id;
 	     if(!empty($this->params['form'])) {
-	         $deliberation = array_shift($this->params['form']);
+	        $form = $this->params['form'];
+		 $deliberation = array_shift($this->params['form']);
 		 $annexes = $this->params['form'];
 		 $uploaded = true;
 	         $size = count($this->params['form']);
@@ -823,7 +827,7 @@ class DeliberationsController extends AppController {
 							$this->data['Annex']['id'] = null;
 							$this->data['Annex']['deliberation_id'] = $id;
 							$this->data['Annex']['seance_id'] = 0;
-							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
+							$this->data['Annex']['titre'] = $form['titre_'.$counter];
 							$this->data['Annex']['type'] = 'S';
 							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
 							$this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
@@ -867,6 +871,7 @@ class DeliberationsController extends AppController {
 	                $this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
+			        $form = $this->params['form'];
 				$deliberation = array_shift($this->params['form']);
 				$annexes = $this->params['form'];
 
@@ -890,7 +895,7 @@ class DeliberationsController extends AppController {
 							$this->data['Annex']['id'] = null;
 							$this->data['Annex']['deliberation_id'] = $id;
 							$this->data['Annex']['seance_id'] = 0;
-							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
+							$this->data['Annex']['titre'] = $form['titre_'.$counter];
 							$this->data['Annex']['type'] = 'D';
 							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
 							$this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
@@ -968,6 +973,7 @@ class DeliberationsController extends AppController {
                          $this->data['Deliberation']['id']=$id;
 			if(!empty($this->params['form']))
 			{
+				$form = $this->params['form'];
 				$deliberation = array_shift($this->params['form']);
 				$annexes = $this->params['form'];
 				$uploaded = true;
@@ -989,7 +995,7 @@ class DeliberationsController extends AppController {
 				            $this->data['Annex']['id'] = null;
 					    $this->data['Annex']['deliberation_id'] = $id;
 					    $this->data['Annex']['seance_id'] = 0;
-					    $this->data['Annex']['titre'] = $annexes['titre_'.$counter];
+					    $this->data['Annex']['titre'] = $form['titre_'.$counter];
 					    $this->data['Annex']['type'] = 'P';
 					    $this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
 					    $this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
