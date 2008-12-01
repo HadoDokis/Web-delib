@@ -114,13 +114,16 @@
 		}
 
 		function listeProjets($seance_id, $type=0) {
-			 // $type = 0 => Liste projets Sommaires
-			 // $type = 1 => Liste projets Détaillés
-			if ($type == 1) $texte = $this->Model->field('content', 'id=12');
-			else $texte = $this->Model->field('content', 'id=13');
+                         // $type = 0 => Liste projets Sommaires
+                         // $type = 1 => Liste projets Détaillés
+                         // $type = 2 => Ordre du Jour
+
+                        if     ($type == 1) $texte = $this->Model->field('content', 'id=12');
+                        elseif ($type == 0) $texte = $this->Model->field('content', 'id=13');
+                        elseif ($type == 2) $texte = $this->Model->field('content', 'id=9999');
 
 			$listeProjets = "";
-			$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=2",null,'Deliberation.position ASC');
+			$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=0",null,'Deliberation.position ASC');
 			foreach($projets as $projet) {
 			$listeProjets .= $this->_replaceBalises($texte,$projet['Deliberation']['id'] );
 		}
@@ -423,6 +426,10 @@
 		return  str_replace(array_keys($searchReplace),array_values($searchReplace), $texte);
 	}
 
+        function odt2html ($delib_id, $content) {
+            return ($content);
+        }
+
 	function _replaceBalises($texte, $delib_id) {
 		// Lecture des informations en base
 		$delib = $this->Deliberation->findById($delib_id);
@@ -436,7 +443,11 @@
 			$dateSeance = "";
 			$libelleSeance = "";
 		}
-
+                if (GENERER_DOC_SIMPLE == false){
+	            $delib['Deliberation']['deliberation'] = $this->odt2html($delib_id, $delib['Deliberation']['deliberation']);
+	            $delib['Deliberation']['texte_synthese'] = $this->odt2html($delib_id, $delib['Deliberation']['texte_synthese']);
+	            $delib['Deliberation']['texte_projet'] = $this->odt2html($delib_id, $delib['Deliberation']['texte_projet']);
+	        } 
 		// Initialisation du tableau de remplacement
 		$searchReplace = array(
 			"#NOUVELLE_PAGE#" => "<newpage>",
@@ -460,6 +471,11 @@
 			"#VOTE_RETRAIT#" => $delib['Deliberation']['vote_nb_retrait'],
 			"#VOTE_COMMENTAIRE#" => $delib['Deliberation']['vote_commentaire'],
 			"#TEXTE_PROJET#" => $delib['Deliberation']['texte_projet'],
+			"#VOTE_POUR#" => $delib['Deliberation']['vote_nb_oui'],	
+			"#VOTE_CONTRE#" => $delib['Deliberation']['vote_nb_non'],
+		        "#VOTE_ABSTENTION#" => $delib['Deliberation']['vote_nb_abstention'], 	
+			"#VOTE_RETRAIT#" => $delib['Deliberation']['vote_nb_retrait'],
+			"#VOTE_COMMENTAIRE#" => $delib['Deliberation']['vote_commentaire'],
 			"#POSITION_DELIB#" => $delib['Deliberation']['position'],
 			"#DEBAT_DELIB#" => $delib['Deliberation']['debat'],
 			"#COMMENTAIRE_DELIB#" => $this->_getCommentaireDelib($delib_id),
