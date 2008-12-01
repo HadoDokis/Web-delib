@@ -31,7 +31,7 @@
 			echo '<br>Titre : '.$annexe['Annex']['titre'];
 			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
 			echo '<br>Taille : '.$annexe['Annex']['size'];
-			echo '<br>'.$html->link('Ecraser','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
+			echo '<br>'.$html->link('Recuperer','/annexes/download/'.$annexe['Annex']['id']);?> | <?php echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);?><br/><br/>
 	<?php endforeach; } ?>
 </div>
 <div id="cible">
