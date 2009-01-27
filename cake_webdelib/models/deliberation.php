@@ -5,7 +5,7 @@ class Deliberation extends AppModel {
 
 	var	$cacheQueries = false;
 
-	//dependent : pour les suppression en cascades. ici Ã  false pour ne pas modifier le referentiel
+	//dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
 	var $belongsTo = array(
 		'Service'=>array(
 			'className'    => 'Service',
