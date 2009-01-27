@@ -9,13 +9,13 @@ class UtilsComponent extends Object
 	function mysql_DateTime($d) { 
 		$date = substr($d,8,2)."/";        // jour 
   		$date = $date.substr($d,5,2)."/";  // mois 
-  		$date = $date.substr($d,0,4). " "; // annÃ©e 
+  		$date = $date.substr($d,0,4). " "; // année 
   		$date = $date.substr($d,11,5);     // heures et minutes 
   		return $date; 
 	} 
  
 /*
- * CrÃ©ation : 11 mai 2006
+ * Création : 11 mai 2006
  * Christophe Espiau
  * 
  * To change the template for this generated file go to
@@ -48,12 +48,12 @@ class UtilsComponent extends Object
 	
 	/*
 	 * Retourne sous la forme " X h Y min" le nombre 
-	 * d'heures et des minutes que reprï¿½sente une durï¿½e .
-	 * La valeur retournï¿½e est arrondie ï¿½ la minute la plus proche.
+	 * d'heures et des minutes que represente une duree .
+	 * La valeur retournee est arrondie a la minute la plus proche.
 	 * 
-	 * @param int $nbOfSeconds Une durï¿½e exprimï¿½e en secondes.
+	 * @param int $nbOfSeconds Une duree exprimee en secondes.
 	 * 
-	 * @return string Une durï¿½e au format 'xx h yy min'.
+	 * @return string Une duree au format 'xx h yy min'.
 	 * 
 	 */
 	function formattedTime($nbOfSeconds) {
@@ -63,9 +63,9 @@ class UtilsComponent extends Object
 			return 0;
 		}
 		
-		// Si la durï¿½e ï¿½ formatter est nï¿½gative,
+		// Si la duree a formatter est negative,
 		// on calcule sa valeur positive et on la retourne
-		// prï¿½cï¿½dï¿½e du signe - (moins).
+		// precedee du signe - (moins).
 		elseif ($nbOfSeconds < 0)
 		{
 			return "- ".$this->formattedTime(- $nbOfSeconds);
@@ -80,7 +80,7 @@ class UtilsComponent extends Object
 			return 0;
 		}
 		
-		// Arrondissement ï¿½ la minute la plus proche.
+		// Arrondissement a la minute la plus proche.
 		$minutes += round($seconds/60);
 		
 		$debut = $hours." h ";
