@@ -37,8 +37,8 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '1.1');
-    define ('GENERER_DOC_SIMPLE', false);
+    define ('VERSION', '1.1-2');
+    define ('GENERER_DOC_SIMPLE', true);
     define ('USE_GEDOOO', true);
     define ('URL_GEDOOO', 'http://gedooo.services.adullact.org/phpgedooo/generator.php');
 /**
@@ -52,8 +52,8 @@
  * With the other debug levels you get to click the "flash message" to continue.
  *
  */
-    define('DEBUG', 1);
-    ini_set('max_execution_time', '300');
+    define('DEBUG', 0);
+    ini_set('max_execution_time', '30000');
 
 /***
  *   Configuration pour la télétransmission S2LOW
@@ -61,16 +61,25 @@
  **/
  	$pos =  strrpos ( getcwd(), 'config');
 	$path = substr(getcwd(), 0, $pos);
-	$config_path = $path."config/";
+	$config_path = "/var/www/demonstrations/webdelib.demonstrations.adullact.org/app/config/";
 
 	$pos2 =  strrpos ( getcwd(), 'webroot');
 	$path2 = substr(getcwd(), 0, $pos2);
 	$webroot_path = $path2."webroot/";
 	define ('WEBROOT_PATH',  $path2."webroot");
 
+<<<<<<< .mine
+	define('PEM', $config_path.'client.pem');
+=======
 	define('PEM', '/var/www/webdelib/app/config/client.pem');
+>>>>>>> .r1474
         define('PASSWORD', 'demo_u');
 	define('HOST', 'demo-s2low.extranet.adullact.org');
+<<<<<<< .mine
+	define('SSLKEY', $config_path.'key.pem');
+	define('CA_PATH', $config_path);
+	define('FILE_CLASS', $webroot_path.'files/actes/classification.xml');
+=======
 	define('SSLKEY', '/var/www/webdelib/app/config/key.pem');
 	define('CA_PATH', '/var/www/webdelib/app/config/');
 /*
@@ -81,6 +90,7 @@
         define('CA_PATH', '/var/www/s2low/key/');
  */
 	define('FILE_CLASS', '/var/www/webdelib/app/webroot/files/actes/classification.xml');
+>>>>>>> .r1474
 	define('IMPORT', true);
 	
 	// LDAP
