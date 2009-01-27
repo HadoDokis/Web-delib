@@ -9,7 +9,7 @@
         echo " <a href=".$html->url("/circuits/delete/$circuit_id")."> Supprimer ce circuit</a>";
 ?>
 
-<!-- donnÃ©es concernant le circuit selectionnÃ© -->
+<!-- données concernant le circuit selectionné -->
    <table>
 
    <th>service libell&eacute;</th>
