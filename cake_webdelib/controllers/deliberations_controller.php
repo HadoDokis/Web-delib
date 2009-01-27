@@ -1717,7 +1717,8 @@ class DeliberationsController extends AppController {
 	   $doc = new DOMDocument();
            if(!$doc->load(FILE_CLASS))
                die("Error opening xml file");
-           return($doc->getElementsByTagName('DateClassification')->item(0)->nodeValue);
+     //      return($doc->getElementsByTagName('DateClassification')->item(0)->nodeValue);
+           return true; 
         }
 
  	function getClassification($id=null){

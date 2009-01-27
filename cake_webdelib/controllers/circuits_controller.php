@@ -112,7 +112,7 @@ class CircuitsController extends AppController {
 
 		$this->set('services', $services);
 
-		//traitement du circuit (crÃ©ation ou modification)
+		//traitement du circuit (création ou modification)
 		if (empty($this->data)) {
 			if ($service_id!=null) {
 				$liste_users=$this->UsersService->findAll("UsersService.service_id=$service_id");
@@ -135,7 +135,7 @@ class CircuitsController extends AppController {
         $data = $this->UsersCircuit->findAll($condition);
         $position = $this->getLastPosition($circuit_id) + 1;
 
-        //on recherche si l'utilisateur existe dÃ©jÃ  dans le circuit de validation
+        //on recherche si l'utilisateur existe déjà dans le circuit de validation
 		$uniq=true;
 		$i=0;
 		while(($uniq==true)&&($i<sizeof($data)))
@@ -163,7 +163,7 @@ class CircuitsController extends AppController {
 		}
 		else
 		{
-			$this->Session->setFlash("L'utilisateur est dÃ©jÃ  dans le circuit !");
+			$this->Session->setFlash("L'utilisateur est déjà dans le circuit !");
 			$this->redirect("/circuits/index/$circuit_id/$service_id");
 		}
 	}
@@ -185,7 +185,7 @@ class CircuitsController extends AppController {
 		//position du suivant ou du precedent
         $id_obj = $obj['0']['UsersCircuit']['id'];
 		$newPosition = $obj['0']['UsersCircuit']['position'];
-		// On rÃ©cupÃ¨re les informations de l'objet courant
+		// On récupère les informations de l'objet courant
 		$this->data = $this->UsersCircuit->read(null, $oldIdPos);
 		$this->data['UsersCircuit']['position'] = $newPosition;
 
@@ -193,11 +193,11 @@ class CircuitsController extends AppController {
 		if (!$this->UsersCircuit->save($this->data)) {
 		   die('Erreur durant l\'enregistrement');
 		}
-		// On rÃ©cupÃ¨re les informations de l'objet Ã  dÃ©placer
+		// On récupère les informations de l'objet à déplacer
 		$this->data = $this->UsersCircuit->read(null, $id_obj);
 		$this->data['UsersCircuit']['position']= $positionCourante;
 
-		//enregistrement de l'objet Ã  dÃ©placer avec la position courante
+		//enregistrement de l'objet à déplacer avec la position courante
 		if ($this->UsersCircuit->save($this->data)) {
 			if ($sens ==2)
 			    return true;

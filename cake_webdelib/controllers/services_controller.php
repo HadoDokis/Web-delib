@@ -11,7 +11,7 @@ class ServicesController extends AppController {
     function changeService($newServiceActif) {
     	$this->Session->del('user.User.service');
        	$this->Session->write('user.User.service',$newServiceActif);
-		//redirection sur la page oÃ¹ on Ã©tait avant de changer de service
+		//redirection sur la page où on était avant de changer de service
        	$this->Redirect($this->Session->read('user.User.lasturl'));
     }
 
@@ -89,7 +89,6 @@ class ServicesController extends AppController {
 	}
 
 	function doList($id){
-
 		$liste = $this->GetParentList($id).$this->getLibelle($id);
 		return $liste;
 	}
