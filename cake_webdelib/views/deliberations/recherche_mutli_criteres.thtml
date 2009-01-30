@@ -51,7 +51,7 @@
                       if (!USE_GEDOOO)
                           echo $html->link('&shy;','/postseances/generateDeliberation/' . $result['Deliberation']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false);
                      else
-                        echo $html->link('&shy;','/deliberations/generer/'.$result['Deliberation']['id'].'/'.$result['Model']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false);
+                        echo $html->link('&shy;','/models/generer/'.$result['Deliberation']['id'].'/null/'.$result['Model']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false);
              ?></td>
      
      <?php    } // fin du for ?>
