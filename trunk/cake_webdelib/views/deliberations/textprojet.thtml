@@ -9,7 +9,7 @@
     	if (!GENERER_DOC_SIMPLE){
 	    echo '<br>Nom fichier : '.$delib['Deliberation']['texte_projet_name'];
 	    echo '<br>Taille : '.$delib['Deliberation']['texte_projet_size'];
-	    echo '<br>'.$html->link("Recuperer le fichier",'/deliberations/download/'.$html->tagValue('Deliberation/id').'/texte_projet').'<br><br><br>';
+	    echo '<br>'.$html->link("Visualiser le fichier", $url).'<br><br><br>';
     	    echo  $html->fileTag("Deliberation/texte_doc");
             echo $html->submit('Ecraser', array('class'=>'bt_add', 'name'=>'importer'));
             echo '<br><br>';

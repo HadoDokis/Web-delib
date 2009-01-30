@@ -27,7 +27,7 @@
 		     if (!USE_GEDOOO)
 		        echo $html->link('&shy;','/postseances/generateDeliberation/' . $projet['Deliberation']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false); 
 		     else
-		        echo $html->link('&shy;','/deliberations/generer/'.$projet['Deliberation']['id'].'/'.$projet['Model']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false); 
+                         echo $html->link('&shy;','/models/generer/' .$projet['Deliberation']['id'].'/null/'.$projet['Model']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
 			
 			?>
 
