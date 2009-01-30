@@ -12,8 +12,7 @@ class GedoooComponent extends Object {
 	function createFile ($path, $name, $content) {
 	    $this->checkPath($path);
             if (file_exists($path.$name))
-               if (unlink($path.$name)  === FALSE)
-		     die("Impossible de supprimer le fichier existant ($path"."$name)");
+               @unlink($path.$name);
 
 	    if (!$handle = fopen($path.$name, 'a'))
                 die("Impossible d'ouvrir le fichier ($path"."$name)");
