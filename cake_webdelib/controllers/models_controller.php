@@ -1,14 +1,15 @@
 <?php
 	class ModelsController extends AppController {
-
+		
 		var $name = 'Models';
 		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur');
 		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
 		// Gestion des droits
-		var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel', 'listeActeursPresents', 'listeActeursAbsents', 'listeActeursMandates', 'listeActeursVotant', 'listeActeursVotantContre', 'listeActeursAbstenus');
+		var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel', 'listeActeursPresents', 'listeActeursAbsents', 'listeActeursMandates', 'listeActeursVotant', 'listeActeursVotantContre', 'listeActeursAbstenus', 'makeBalises', 'generer');
 		var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
+                
 
 		function index() {
 		    $this->set('USE_GEDOOO', USE_GEDOOO);
@@ -75,462 +76,6 @@
 		}
 
 
-		// Accesseurs Déliberation
-		function _getCommentaireDelib($delib_id) {
-			$data= $this->Vote->findAll("delib_id=$delib_id");
-			if (isset($data['0']['Vote']['commentaire']))
-				return $data['0']['Vote']['commentaire'];
-		}
-
-		function _getDelibEtat($deliberationEtat) {
-			 switch ($deliberationEtat){
-				case -1:
-				$etat = 'refusé';
-				break;
-				case 0:
-				$etat = 'en cours de rédaction';
-				break;
-				case 1:
-				$etat = ' dans un circuit';
-					 break;
-				case 2:
-				$etat = 'validé';
-					 break;
-			case 3:
-				$etat = 'Voté pour';
-					 break;
-				case 4:
-				$etat = 'Voté contre';
-					 break;
-				case 5:
-				$etat = 'envoyé';
-					 break;
-			 }
-			 return $etat;
-		}
-
-		function _getDateDuJour(){
-			return $this->Date->frenchDate(time());
-		}
-
-		function listeProjets($seance_id, $type=0) {
-                         // $type = 0 => Liste projets Sommaires
-                         // $type = 1 => Liste projets Détaillés
-                         // $type = 2 => Ordre du Jour
-
-                        if     ($type == 1) $texte = $this->Model->field('content', 'id=12');
-                        elseif ($type == 0) $texte = $this->Model->field('content', 'id=13');
-                        elseif ($type == 2) $texte = $this->Model->field('content', 'id=9999');
-
-			$listeProjets = "";
-			$projets = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=0",null,'Deliberation.position ASC');
-			foreach($projets as $projet) {
-			$listeProjets .= $this->_replaceBalises($texte,$projet['Deliberation']['id'] );
-		}
-			return $listeProjets;
-		}
-
-		function _listeActeursPresents($delib_id) {
-		    // Lecture du modele
-		    $texte = $this->Model->field('content', 'id=8');
-		    $listeActeurs = "";
-		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "Acteur.position ASC");
-		    foreach($acteurs as $acteur) {
-			$searchReplace = array(
-			    "#NOUVELLE_PAGE#" => "<newpage>",
-			    "#NOM_PRESENT#" => $acteur['Acteur']['nom'],
-			    "#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
-			    "#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
-			    "#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
-			    "#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
-			    "#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
-			    "#CP_PRESENT#" => $acteur['Acteur']['cp'],
-			    "#VILLE_PRESENT#" => $acteur['Acteur']['ville']
-			 );
-			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-		    }
-		    return $listeActeurs;
-		}
-
-		function listeActeursPresents($delib_id) {
-		    // Lecture du modele
-		    $texte = $this->Model->field('content', 'id=8');
-		    $listeActeurs = "";
-		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 1", null, "Acteur.position ASC");
-		    foreach($acteurs as $acteur) {
-			$searchReplace = array(
-			    "#NOUVELLE_PAGE#" => "<newpage>",
-			    "#NOM_PRESENT#" => $acteur['Acteur']['nom'],
-			    "#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
-			    "#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
-			    "#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
-			    "#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
-			    "#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
-			    "#CP_PRESENT#" => $acteur['Acteur']['cp'],
-			    "#VILLE_PRESENT#" => $acteur['Acteur']['ville']
-			 );
-			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-		    }
-		    return $listeActeurs;
-		}
-
-		function _listeActeursAbsents($delib_id) {
-		    // Lecture du modele
-		    $texte = $this->Model->field('content', 'id=9');
-
-		    $listeActeurs = "";
-		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'Acteur.position ASC');
-		    foreach($acteurs as $acteur) {
-			$searchReplace = array(
-			    "#NOUVELLE_PAGE#" => "<newpage>",
-			    "#NOM_ABSENT#" => $acteur['Acteur']['nom'],
-			    "#PRENOM_ABSENT#" => $acteur['Acteur']['prenom'],
-			    "#SALUTATION_ABSENT#" => $acteur['Acteur']['salutation'],
-			    "#TITRE_ABSENT#" => $acteur['Acteur']['titre'],
-			    "#ADRESSE1_ABSENT#" => $acteur['Acteur']['adresse1'],
-			    "#ADRESSE2_ABSENT#" => $acteur['Acteur']['adresse2'],
-			    "#CP_ABSENT#" => $acteur['Acteur']['cp'],
-			    "#VILLE_ABSENT#" => $acteur['Acteur']['ville']
-			     );
-			 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-		     }
-		     return $listeActeurs;
-		}
-
-		function listeActeursAbsents($delib_id) {
-		    // Lecture du modele
-		    $texte = $this->Model->field('content', 'id=9');
-
-		    $listeActeurs = "";
-		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire = 0", null, 'Acteur.position ASC');
-		    foreach($acteurs as $acteur) {
-			$searchReplace = array(
-			    "#NOUVELLE_PAGE#" => "<newpage>",
-			    "#NOM_ABSENT#" => $acteur['Acteur']['nom'],
-			    "#PRENOM_ABSENT#" => $acteur['Acteur']['prenom'],
-			    "#SALUTATION_ABSENT#" => $acteur['Acteur']['salutation'],
-			    "#TITRE_ABSENT#" => $acteur['Acteur']['titre'],
-			    "#ADRESSE1_ABSENT#" => $acteur['Acteur']['adresse1'],
-			    "#ADRESSE2_ABSENT#" => $acteur['Acteur']['adresse2'],
-			    "#CP_ABSENT#" => $acteur['Acteur']['cp'],
-			    "#VILLE_ABSENT#" => $acteur['Acteur']['ville']
-			     );
-			 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-		     }
-		     return $listeActeurs;
-		}
-
-		function _listeActeursMandates($delib_id) {
-		    // Lecture du modele
-		    $texte = $this->Model->field('content', 'id=10');
-
-		    $listeActeurs = "";
-		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'Acteur.position ASC');
-		    foreach($acteurs as $acteur) {
-			$mandataire = $this->Acteur->findById($acteur['Listepresence']['mandataire']);
-			$searchReplace = array(
-				"#NOUVELLE_PAGE#" => "<newpage>",
-				"#NOM_MANDATE#" => $acteur['Acteur']['nom'],
-				"#PRENOM_MANDATE#" => $acteur['Acteur']['prenom'],
-				"#SALUTATION_MANDATE#" => $acteur['Acteur']['salutation'],
-				"#TITRE_MANDATE#" => $acteur['Acteur']['titre'],
-				"#NOM_MANDATAIRE#" => $mandataire['Acteur']['nom'],
-				"#PRENOM_MANDATAIRE#" => $mandataire['Acteur']['prenom'],
-				"#SALUTATION_MANDATAIRE#" => $mandataire['Acteur']['salutation'],
-				"#TITRE_MANDATAIRE#" => $mandataire['Acteur']['titre'],
-				"#ADRESSE1_MANDATAIRE#" => $mandataire['Acteur']['adresse1'],
-				"#ADRESSE2_MANDATAIRE#" => $mandataire['Acteur']['adresse2'],
-				"#CP_MANDATAIRE#" => $mandataire['Acteur']['cp'],
-				"#VILLE_MANDATAIRE#" => $mandataire['Acteur']['ville']
-				 );
-			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-		    }
-		    return $listeActeurs;
-		}
-
-		function listeActeursMandates($delib_id) {
-		    // Lecture du modele
-		    $texte = $this->Model->field('content', 'id=10');
-
-		    $listeActeurs = "";
-		    $acteurs = $this->Listepresence->findAll("delib_id = $delib_id AND present = 0 and mandataire != 0", null, 'Acteur.position ASC');
-		    foreach($acteurs as $acteur) {
-			$mandataire = $this->Acteur->findById($acteur['Listepresence']['mandataire']);
-			$searchReplace = array(
-				"#NOUVELLE_PAGE#" => "<newpage>",
-				"#NOM_MANDATE#" => $acteur['Acteur']['nom'],
-				"#PRENOM_MANDATE#" => $acteur['Acteur']['prenom'],
-				"#SALUTATION_MANDATE#" => $acteur['Acteur']['salutation'],
-				"#TITRE_MANDATE#" => $acteur['Acteur']['titre'],
-				"#NOM_MANDATAIRE#" => $mandataire['Acteur']['nom'],
-				"#PRENOM_MANDATAIRE#" => $mandataire['Acteur']['prenom'],
-				"#SALUTATION_MANDATAIRE#" => $mandataire['Acteur']['salutation'],
-				"#TITRE_MANDATAIRE#" => $mandataire['Acteur']['titre'],
-				"#ADRESSE1_MANDATAIRE#" => $mandataire['Acteur']['adresse1'],
-				"#ADRESSE2_MANDATAIRE#" => $mandataire['Acteur']['adresse2'],
-				"#CP_MANDATAIRE#" => $mandataire['Acteur']['cp'],
-				"#VILLE_MANDATAIRE#" => $mandataire['Acteur']['ville']
-				 );
-			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-		    }
-		    return $listeActeurs;
-		}
-
-		function _listeActeursVotant($delib_id) {
-		    // Lecture du modele
-		    $texte = $this->Model->field('content', 'id=11');
-
-		    $listeActeurs = "";
-		    $votes = $this->Vote->findAll("delib_id = $delib_id");
-		    foreach($votes as $vote) {
-			$votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
-			if ($vote['Vote']['resultat']==2)
-			    $resultat = "contre";
-			elseif ($vote['Vote']['resultat']==3)
-			    $resultat = "pour";
-			elseif ($vote['Vote']['resultat']==4)
-			    $resultat = "abstention";
-			elseif ($vote['Vote']['resultat']==5)
-			    $resultat = "Pas de participation";
-
-			$searchReplace = array(
-			    "#NOUVELLE_PAGE#" => "<newpage>",
-			    "#NOM_VOTANT#" => $votant['Acteur']['nom'],
-			    "#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
-			    "#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
-			    "#TITRE_VOTANT#" => $votant['Acteur']['titre'],
-			    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
-			    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
-			    "#CP_VOTANT#" => $votant['Acteur']['cp'],
-			    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
-			    "#RESULTAT_VOTANT#" => $resultat
-			);
-			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-		    }
-		    return $listeActeurs;
-		}
-
-		function listeActeursVotant($delib_id) {
-		    // Lecture du modele
-		    $texte = $this->Model->field('content', 'id=11');
-
-		    $listeActeurs = "";
-		    $votes = $this->Vote->findAll("delib_id = $delib_id");
-		    foreach($votes as $vote) {
-			$votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
-			if ($vote['Vote']['resultat']==2)
-			    $resultat = "contre";
-			elseif ($vote['Vote']['resultat']==3)
-			    $resultat = "pour";
-			elseif ($vote['Vote']['resultat']==4)
-			    $resultat = "abstention";
-			elseif ($vote['Vote']['resultat']==5)
-			    $resultat = "Pas de participation";
-
-			$searchReplace = array(
-			    "#NOUVELLE_PAGE#" => "<newpage>",
-			    "#NOM_VOTANT#" => $votant['Acteur']['nom'],
-			    "#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
-			    "#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
-			    "#TITRE_VOTANT#" => $votant['Acteur']['titre'],
-			    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
-			    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
-			    "#CP_VOTANT#" => $votant['Acteur']['cp'],
-			    "#VILLE_VOTANT#" => $votant['Acteur']['ville'],
-			    "#RESULTAT_VOTANT#" => $resultat
-			);
-			$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-		    }
-		    return $listeActeurs;
-		}
-
-	       function listeActeursVotantContre($delib_id) {
-		    // Lecture du modele
-		    $texte = $this->Model->field('content', 'id=14');
-
-		    $listeActeurs = "";
-		    $votes = $this->Vote->findAll("Vote.delib_id = $delib_id AND Vote.resultat=2");
-		    foreach($votes as $vote) {
-			$votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
-			$searchReplace = array(
-			    "#NOUVELLE_PAGE#" => "<newpage>",
-			    "#NOM_VOTANT#" => $votant['Acteur']['nom'],
-			    "#PRENOM_VOTANT#" => $votant['Acteur']['prenom'],
-			    "#SALUTATION_VOTANT#" => $votant['Acteur']['salutation'],
-			    "#TITRE_VOTANT#" => $votant['Acteur']['titre'],
-			    "#ADRESSE1_VOTANT#" => $votant['Acteur']['adresse1'],
-			    "#ADRESSE2_VOTANT#" => $votant['Acteur']['adresse2'],
-			    "#CP_VOTANT#" => $votant['Acteur']['cp'],
-			    "#VILLE_VOTANT#" => $votant['Acteur']['ville']
-                );
-                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-            return $listeActeurs;
-        }
-
-         function listeActeursAbstenus($delib_id) {
-                    // Lecture du modele
-                    $texte = $this->Model->field('content', 'id=15');
-                    $listeActeurs = "";
-                    $votes = $this->Vote->findAll("Vote.delib_id = $delib_id AND Vote.resultat=4");
-                    foreach($votes as $vote) {
-                        $votant = $this->Acteur->findById($vote['Vote']['acteur_id']);
-                        $searchReplace = array(
-                            "#NOUVELLE_PAGE#" => "<newpage>",
-                            "#NOM_ABSTENANT#" => $votant['Acteur']['nom'],
-                            "#PRENOM_ABSTENANT#" => $votant['Acteur']['prenom'],
-                            "#SALUTATION_ABSTENANT#" => $votant['Acteur']['salutation'],
-                            "#TITRE_ABSTENANT#" => $votant['Acteur']['titre'],
-                            "#ADRESSE1_ABSTENANT#" => $votant['Acteur']['adresse1'],
-                            "#ADRESSE2_ABSTENANT#" => $votant['Acteur']['adresse2'],
-                            "#CP_ABSTENANT#" => $votant['Acteur']['cp'],
-                            "#VILLE_ABSTENANT#" => $votant['Acteur']['ville']
-                );
-                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-            return $listeActeurs;
-        }
- 
-
-	function _replaceBalisesSeance($texte, $seance_id) {
-		// Lecture des informations en base
-		$seance = $this->Seance->findById($seance_id);
-		$collectivite = $this->Collectivite->findById(1);
-
-		// Initialisation ses balises documentaires
-		$listeProjetsSommaires = "";
-		$listeProjetsDetailles = "";
-		if (strpos($texte, '#LISTE_PROJETS_SOMMAIRES#'))
-			$listeProjetsSommaires = $this->listeProjets($seance_id,0);
-		if (strpos($texte, '#LISTE_PROJETS_DETAILLES#'))
-			$listeProjetsDetailles = $this->listeProjets($seance_id,1);
-
-		// Initialisation du tableau de remplacement
-		$searchReplace = array(
-			"#NOUVELLE_PAGE#" => "<newpage>",
-			"#DATE_DU_JOUR#" => $this->_getDateDuJour(),
-			"#SEANCE_ID#" => $seance_id,
-			"#DEBAT_SEANCE#" => $seance['Seance']['debat_global'],
-			"#DATE_SEANCE#" => $this->Date->frenchDate(strtotime($seance['Seance']['date'])),
-	 		"#LIBELLE_TYPE_SEANCE#" => $seance['Typeseance']['libelle'],
-			"#LOGO_COLLECTIVITE#" => '<img src="files/image/logo.jpg">',
-			"#NOM_COLLECTIVITE#" => $collectivite['Collectivite']['nom'],
-			"#ADRESSE_COLLECTIVITE#" => $collectivite['Collectivite']['adresse'],
-			"#CP_COLLECTIVITE#" => $collectivite['Collectivite']['CP'],
-			"#VILLE_COLLECTIVITE#" => $collectivite['Collectivite']['ville'],
-			"#TELEPHONE_COLLECTIVITE#" => $collectivite['Collectivite']['telephone'],
-			"#LISTE_PROJETS_SOMMAIRES#" => $listeProjetsSommaires,
-			"#LISTE_PROJETS_DETAILLES#" => $listeProjetsDetailles
-		);
-
-		return  str_replace(array_keys($searchReplace),array_values($searchReplace), $texte);
-	}
-
-        function odt2html ($delib_id, $content) {
-            return ($content);
-        }
-
-	function _replaceBalises($texte, $delib_id) {
-		// Lecture des informations en base
-		$delib = $this->Deliberation->findById($delib_id);
-		$collectivite = $this->Collectivite->findById(1);
-
-		// Traitement de la séance
-		if (!empty($delib['Deliberation']['seance_id'])){
-			$dateSeance = $this->Date->frenchDate(strtotime($delib['Seance']['date']));
-			$libelleSeance = $this->Typeseance->field('libelle', 'Typeseance.id = '.$delib['Seance']['type_id']);
-		} else {
-			$dateSeance = "";
-			$libelleSeance = "";
-		}
-                if (GENERER_DOC_SIMPLE == false){
-	            $delib['Deliberation']['deliberation'] = $this->odt2html($delib_id, $delib['Deliberation']['deliberation']);
-	            $delib['Deliberation']['texte_synthese'] = $this->odt2html($delib_id, $delib['Deliberation']['texte_synthese']);
-	            $delib['Deliberation']['texte_projet'] = $this->odt2html($delib_id, $delib['Deliberation']['texte_projet']);
-	        } 
-		// Initialisation du tableau de remplacement
-		$searchReplace = array(
-			"#NOUVELLE_PAGE#" => "<newpage>",
-			"#IDENTIFIANT_PROJET#" => $delib_id,
-			"#DATE_DU_JOUR#" => $this->_getDateDuJour(),
-			"#SEANCE_ID#" => $delib['Deliberation']['seance_id'],
-			"#DEBAT_SEANCE#" => $delib['Seance']['debat_global'],
-			"#DATE_SEANCE#" => $dateSeance,
-			"#LIBELLE_TYPE_SEANCE#" => $libelleSeance,
-			"#ETAT_DELIB#" => $this->_getDelibEtat($delib['Deliberation']['etat']),
-			"#LIBELLE_THEME#" => $delib['Theme']['libelle'],
-			"#LIBELLE_SERVICE#" => $delib['Service']['libelle'],
-			"#NUMERO_DELIB#" => $delib['Deliberation']['num_delib'],
-			"#TITRE_DELIB#" => $delib['Deliberation']['titre'],
-			"#LIBELLE_DELIB#" => $delib['Deliberation']['objet'],
-			"#TEXTE_DELIB#" => $delib['Deliberation']['deliberation'],
-			"#TEXTE_SYNTHESE#" => $delib['Deliberation']['texte_synthese'],
-			"#VOTE_POUR#" => $delib['Deliberation']['vote_nb_oui'],	
-			"#VOTE_CONTRE#" => $delib['Deliberation']['vote_nb_non'],
-		        "#VOTE_ABSTENTION#" => $delib['Deliberation']['vote_nb_abstention'], 	
-			"#VOTE_RETRAIT#" => $delib['Deliberation']['vote_nb_retrait'],
-			"#VOTE_COMMENTAIRE#" => $delib['Deliberation']['vote_commentaire'],
-			"#TEXTE_PROJET#" => $delib['Deliberation']['texte_projet'],
-			"#VOTE_POUR#" => $delib['Deliberation']['vote_nb_oui'],	
-			"#VOTE_CONTRE#" => $delib['Deliberation']['vote_nb_non'],
-		        "#VOTE_ABSTENTION#" => $delib['Deliberation']['vote_nb_abstention'], 	
-			"#VOTE_RETRAIT#" => $delib['Deliberation']['vote_nb_retrait'],
-			"#VOTE_COMMENTAIRE#" => $delib['Deliberation']['vote_commentaire'],
-			"#POSITION_DELIB#" => $delib['Deliberation']['position'],
-			"#DEBAT_DELIB#" => $delib['Deliberation']['debat'],
-			"#COMMENTAIRE_DELIB#" => $this->_getCommentaireDelib($delib_id),
-			"#SALUTATION_RAPPORTEUR#" => $delib['Rapporteur']['salutation'],
-			"#NOM_RAPPORTEUR#" => $delib['Rapporteur']['nom'],
-			"#PRENOM_RAPPORTEUR#" => $delib['Rapporteur']['prenom'],
-			"#TITRE_RAPPORTEUR#" => $delib['Rapporteur']['titre'],
-			"#ADRESSE1_RAPPORTEUR#" => $delib['Rapporteur']['adresse1'],
-			"#ADRESSE2_RAPPORTEUR#" => $delib['Rapporteur']['adresse2'],
-			"#CP_RAPPORTEUR#" => $delib['Rapporteur']['cp'],
-			"#VILLE_RAPPORTEUR#" => $delib['Rapporteur']['ville'],
-			"#NOM_REDACTEUR#" => $delib['Redacteur']['nom'],
-			"#PRENOM_REDACTEUR#" => $delib['Redacteur']['prenom'],
-			"#LOGO_COLLECTIVITE#" => '<img src="files/image/logo.jpg">',
-			"#NOM_COLLECTIVITE#" => $collectivite['Collectivite']['nom'],
-			"#ADRESSE_COLLECTIVITE#" => $collectivite['Collectivite']['adresse'],
-			"#CP_COLLECTIVITE#" => $collectivite['Collectivite']['CP'],
-			"#VILLE_COLLECTIVITE#" => $collectivite['Collectivite']['ville'],
-			"#TELEPHONE_COLLECTIVITE#" => $collectivite['Collectivite']['telephone'],
-			"#LISTE_PRESENTS#" => $this->_listeActeursPresents($delib_id),
-			"#LISTE_ABSENTS#" => $this->_listeActeursAbsents($delib_id),
-			"#LISTE_MANDATAIRES#" => $this->_listeActeursMandates($delib_id),
-			"#LISTE_VOTANTS#" =>$this->_listeActeursVotant($delib_id)
-		);
-
-		return  str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-	}
-
-	function generateDeliberation($delib_id) {
-		$data = $this->Model->findAll('Model.id=4');
-		$texte = $data['0']['Model']['content'];
-		return $this->_replaceBalises($texte, $delib_id );
-	}
-
-	function generateProjet($delib_id) {
-		$data = $this->Model->findAll('Model.id=1');
-		$texte = $data['0']['Model']['content'];
-		return $this->_replaceBalises($texte, $delib_id);
-	}
-
-	function generatePVSommaire($seance_id) {
-		$seance = $this->Seance->read(null, $seance_id);
-		$model = $this->Model->read(null, $seance['Typeseance']['modelpvsommaire_id']);
-		$texte = $model['Model']['content'];
-		return $this->_replaceBalisesSeance($texte, $seance_id);
-	}
-
-	function generatePVDetaille($seance_id) {
-		$seance = $this->Seance->read(null, $seance_id);
-		$model = $this->Model->read(null, $seance['Typeseance']['modelpvdetaille_id']);
-		$texte = $model['Model']['content'];
-		return $this->_replaceBalisesSeance($texte, $seance_id);
-	}
-
-
 	function import($model_id) {
 		$this->set('USE_GEDOOO', USE_GEDOOO);
 		$this->set('model_id', $model_id);
@@ -586,5 +131,368 @@
 		$objCourant = $this->Model->findAll($condition);
 		return $objCourant['0']['Model']['content'];
 	}
+
+	function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null)  {
+               // Information sur le rapporteur
+               $oMainPart->addElement(new GDO_FieldType('salutation_rapporteur',       utf8_encode($delib['Rapporteur']['salutation']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('prenom_rapporteur',           utf8_encode($delib['Rapporteur']['prenom']),     'text'));
+               $oMainPart->addElement(new GDO_FieldType('nom_rapporteur',              utf8_encode($delib['Rapporteur']['nom']),        'text'));
+               $oMainPart->addElement(new GDO_FieldType('titre_rapporteur',            utf8_encode($delib['Rapporteur']['titre']),      'text'));
+               $oMainPart->addElement(new GDO_FieldType('position_rapporteur',         utf8_encode($delib['Rapporteur']['position']),   'text'));
+               $oMainPart->addElement(new GDO_FieldType('email_rapporteur',            utf8_encode($delib['Rapporteur']['email']),      'text'));
+               $oMainPart->addElement(new GDO_FieldType('telmobile_rapporteur',        utf8_encode($delib['Rapporteur']['telmobile']),  'text'));
+               $oMainPart->addElement(new GDO_FieldType('telfixe_rapporteur',          utf8_encode($delib['Rapporteur']['telfixe']),    'text'));
+               $oMainPart->addElement(new GDO_FieldType('date_naissance_rapporteur',   utf8_encode($delib['Rapporteur']['date_naissance']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('adresse1_rapporteur',         utf8_encode($delib['Rapporteur']['adresse1']),   'text'));
+               $oMainPart->addElement(new GDO_FieldType('adresse2_rapporteur',         utf8_encode($delib['Rapporteur']['adresse2']),   'text'));
+               $oMainPart->addElement(new GDO_FieldType('cp_rapporteur',               utf8_encode($delib['Rapporteur']['cp']),         'text'));
+               $oMainPart->addElement(new GDO_FieldType('ville_rapporteur',            utf8_encode($delib['Rapporteur']['ville']),      'text'));
+               $oMainPart->addElement(new GDO_FieldType('note_rapporteur',             utf8_encode($delib['Rapporteur']['note']),       'text'));
+               
+               // Information sur le secretaire
+               $secretaire = $this->Acteur->read(null, $delib['Seance']['secretaire_id'] );
+               $oMainPart->addElement(new GDO_FieldType('nom_secretaire', utf8_encode($secretaire['Acteur']['nom']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('prenom_secretaire', utf8_encode($secretaire['Acteur']['prenom']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('salutation_secretaire', utf8_encode($secretaire['Acteur']['salutation']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('titre_secretaire', utf8_encode($secretaire['Acteur']['titre']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('note_secretaire', utf8_encode($secretaire['Acteur']['note']), 'text'));
+               
+               // Informations sur le rédacteur
+               $oMainPart->addElement(new GDO_FieldType('prenom_redacteur', utf8_encode($delib['Redacteur']['prenom']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('nom_redacteur', utf8_encode($delib['Redacteur']['nom']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('email_redacteur', utf8_encode($delib['Redacteur']['email']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('telmobile_redacteur', utf8_encode($delib['Redacteur']['telmobile']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('telfixe_redacteur', utf8_encode($delib['Redacteur']['telfixe']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('date_naissance_redacteur', utf8_encode($delib['Redacteur']['date_naissance']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('note_redacteur', utf8_encode($delib['Redacteur']['note']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('position_redacteur', utf8_encode($delib['Redacteur']['position']), 'text'));
+               
+               // Informations sur la délibération
+               $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($delib['Seance']['date']),    'date'));
+               $oMainPart->addElement(new GDO_FieldType('titre_projet',                utf8_encode($delib['Deliberation']['titre']),    'text'));
+               $oMainPart->addElement(new GDO_FieldType('objet_projet',                utf8_encode($delib['Deliberation']['objet']),    'text'));
+               $oMainPart->addElement(new GDO_FieldType('position_projet',             utf8_encode($delib['Deliberation']['position']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('identifiant_projet',          utf8_encode($delib['Deliberation']['id']),       'text'));
+               $oMainPart->addElement(new GDO_FieldType('numero_deliberation',         utf8_encode($delib['Deliberation']['num_delib']),'text'));
+               $oMainPart->addElement(new GDO_FieldType('classification_deliberation', utf8_encode($delib['Deliberation']['num_pref']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('service_emetteur',            utf8_encode($delib['Service']['libelle']) ,      'text'));
+               $oMainPart->addElement(new GDO_FieldType('theme_projet',                utf8_encode($delib['Theme']['libelle']),         'text'));
+               
+               $oMainPart->addElement(new GDO_FieldType('nombre_pour',  utf8_encode($delib['Deliberation']['vote_nb_oui'])   , 'text'));
+               $oMainPart->addElement(new GDO_FieldType('nombre_abstention', utf8_encode( $delib['Deliberation']['vote_nb_abstention']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('nombre_contre',  utf8_encode($delib['Deliberation']['vote_nb_non']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', utf8_encode( $delib['Deliberation']['vote_nb_retrait']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('commentaire_vote',  utf8_encode($delib['Deliberation']['vote_commentaire']), 'text'));
+               
+               $commentaires = new GDO_IterationType("Commentaires");
+               foreach($delib['Commentaire'] as $commentaire) {
+                   $oDevPart = new GDO_PartType();
+                   $oDevPart->addElement(new GDO_FieldType("texte_commentaire", utf8_encode($commentaire['texte']), "text"));
+                   $commentaires->addPart($oDevPart);
+                }
+               @$oMainPart->addElement($commentaires);
+
+               if (GENERER_DOC_SIMPLE) {
+                   $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text', $delib['Deliberation']['texte_projet']));
+                   $oMainPart->addElement(new GDO_ContentType('note_synthese', '', 'text/html', 'text', $delib['Deliberation']['texte_synthese']));
+                   $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '', 'text/html', 'text', $delib['Deliberation']['deliberation']));
+                   $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '', 'text/html', 'text', $delib['Deliberation']['debat']));
+               }
+               else {
+                   $dyn_path = "/files/generee/deliberations/".$delib['Deliberation']['id']."/";
+                   $path = WEBROOT_PATH.$dyn_path;
+                   
+                   if (!$this->Gedooo->checkPath($path))
+                       die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+
+                   $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+
+                   if ($delib['Deliberation']['texte_projet_name']== "")
+                       $nameTP = "vide";
+                   else {
+                       $nameTP = $delib['Deliberation']['texte_projet_name'];
+                       $this->Gedooo->createFile($path, $nameTP, $delib['Deliberation']['texte_projet']);
+                       $extTP = $u->getMimeType($path.$nameTP);
+                       $oMainPart->addElement(new GDO_ContentType('texte_projet',       '',  $extTP,    'url', $urlWebroot.$nameTP ));
+                   }
+
+                   if ($delib['Deliberation']['deliberation_name']=="")
+                       $nameTD = "vide";
+                   else{
+                       $nameTD = $delib['Deliberation']['deliberation_name'];
+                       $extTD  = $u->getMimeType($path.$nameTD);
+                       $this->Gedooo->createFile($path, $nameTD, $delib['Deliberation']['deliberation']); 
+                       $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '',  $extTD ,   'url', $urlWebroot.$nameTD));
+                   }
+                   
+                   if ($delib['Deliberation']['texte_synthese_name']=="")
+                       $nameNS = "vide";
+                   else {
+                       $nameNS = $delib['Deliberation']['texte_synthese_name'];
+                       $extNS   = $u->getMimeType($path.$nameNS);
+                       $this->Gedooo->createFile($path, $nameNS,  $delib['Deliberation']['texte_synthese']);
+                       $oMainPart->addElement(new GDO_ContentType('note_synthese',      '',  $extNS ,   'url', $urlWebroot.$nameNS));
+                   }
+                   
+                   $nameDebat = "debat";
+                   $extDebat =  $u->getMimeType($path.$nameDebat);
+                   $this->Gedooo->createFile($path,  $nameDebat,  $delib['Deliberation']['debat']);
+                   $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '',  $extDebat, 'url', $urlWebroot.$nameDebat));
+               }
+               if (!$isDelib)
+                  return $oMainPart;
+            
+	       //LISTE DES PRESENCES...
+               $acteurs = $this->Listepresence->findAll("delib_id = ".$delib['Deliberation']['id'], null, 'Acteur.position ASC');
+               if (!empty($acteurs)) {
+		     foreach($acteurs as $acteur) {
+                         if ( $acteur['Listepresence']['present'] == 1 ){
+		             $acteurs_presents[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                                     'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                                     'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                                     'titre_acteur'=> $acteur['Acteur']['titre'], 
+                                                     'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                                     'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                                     'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                                     'cp_acteur' => $acteur['Acteur']['cp'],
+                                                     'ville_acteur' => $acteur['Acteur']['ville'],
+                                                     'email_acteur' => $acteur['Acteur']['email'],
+                                                     'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                                     'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                                     'note_acteur' => $acteur['Acteur']['note']);
+                         }
+                         elseif(($acteur['Listepresence']['present'] == 0) AND ($acteur['Listepresence']['mandataire']==0)) {
+                             $acteurs_absents[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                                     'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                                     'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                                     'titre_acteur'=> $acteur['Acteur']['titre'],
+                                                     'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                                     'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                                     'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                                     'cp_acteur' => $acteur['Acteur']['cp'],
+                                                     'ville_acteur' => $acteur['Acteur']['ville'],
+                                                     'email_acteur' => $acteur['Acteur']['email'],
+                                                     'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                                     'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                                     'note_acteur' => $acteur['Acteur']['note']);
+ 
+			 }
+                         elseif(($acteur['Listepresence']['present'] == 0) AND ($acteur['Listepresence']['mandataire']!=0)) {
+                             $acteurs_remplaces[] = array(
+                                                     'nom_acteur' => $acteur['Acteur']['nom'],
+                                                     'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                                     'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                                     'titre_acteur'=> $acteur['Acteur']['titre'],
+                                                     'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                                     'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                                     'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                                     'cp_acteur' => $acteur['Acteur']['cp'],
+                                                     'ville_acteur' => $acteur['Acteur']['ville'],
+                                                     'email_acteur' => $acteur['Acteur']['email'],
+                                                     'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                                     'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                                     'note_acteur' => $acteur['Acteur']['note'],
+                                                     
+                                                     'nom_mandate' => $acteur['Mandataire']['nom'],
+                                                     'prenom_mandate' => $acteur['Mandataire']['prenom'],
+                                                     'salutation_mandate'=> $acteur['Mandataire']['salutation'],
+                                                     'titre_mandate'=> $acteur['Mandataire']['titre'],
+                                                     'date_naissance_mandate' => $acteur['Mandataire']['date_naissance'],
+                                                     'adresse1_mandate' => $acteur['Mandataire']['adresse1'],
+                                                     'adresse2_mandate' => $acteur['Mandataire']['adresse2'],
+                                                     'cp_mandate' => $acteur['Mandataire']['cp'],
+                                                     'ville_mandate' => $acteur['Mandataire']['ville'],
+                                                     'email_mandate' => $acteur['Mandataire']['email'],
+                                                     'telfixe_mandate' => $acteur['Mandataire']['telfixe'],
+                                                     'telmobile_mandate' => $acteur['Mandataire']['telmobile'],
+                                                     'note_mandate' => $acteur['Mandataire']['note']);
+                         }
+		    }
+	        }
+               @ $oMainPart->addElement($this->makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, ''));
+               @ $oMainPart->addElement($this->makeBlocsActeurs("ActeursAbsents", $acteurs_absents, false, ''));
+               @ $oMainPart->addElement($this->makeBlocsActeurs("ActeursMandates", $acteurs_remplaces, true, ''));
+               return $oMainPart;
+        }
+
+        function makeBlocsActeurs ($nomBloc, $listActeur, $isMandate, $type) {
+            if (empty($listActeur))
+	        return true;
+	    $acteurs = new GDO_IterationType("$nomBloc");
+            foreach($listActeur as $acteur) {
+                $oDevPart = new GDO_PartType();
+                $oDevPart->addElement(new GDO_FieldType("nom_acteur".$type, utf8_encode($acteur['nom_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type, utf8_encode($acteur['prenom_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,utf8_encode($acteur['prenom_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("titre_acteur".$type, utf8_encode($acteur['titre_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("date_naissance_acteur".$type, utf8_encode($acteur['date_naissance_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("adresse1_acteur".$type, utf8_encode($acteur['adresse1_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("adresse2_acteur".$type, utf8_encode($acteur['adresse2_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("cp_acteur".$type, utf8_encode($acteur['cp_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("ville_acteur".$type, utf8_encode($acteur['ville_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("email_acteur".$type, utf8_encode($acteur['email_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("telfixe_acteur".$type,utf8_encode($acteur['telfixe_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("telmobile_acteur".$type,  utf8_encode($acteur['prenom_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("note_acteur".$type, utf8_encode($acteur['note_acteur']), "text"));
+                if (isset($acteur['nom_mandate'])) {
+                    $oDevPart->addElement(new GDO_FieldType('nom_mandate', utf8_encode($acteur['nom_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('prenom_mandate', utf8_encode($acteur['prenom_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('salutation_mandate', utf8_encode($acteur['salutation_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('titre_mandate', utf8_encode($acteur['titre_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('date_naissance_mandate', utf8_encode($acteur['date_naissance_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('adresse1_mandate', utf8_encode($acteur['adresse1_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('adresse2_mandate', utf8_encode($acteur['adresse2_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('cp_mandate', utf8_encode($acteur['cp_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('ville_mandate', utf8_encode($acteur['ville_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('email_mandate', utf8_encode($acteur['email_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('telfixe_mandate', utf8_encode($acteur['telfixe_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('telmobile_mandate', utf8_encode($acteur['telmobile_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('note_mandate', utf8_encode($acteur['note_mandate']), "text"));
+                }
+                $acteurs->addPart($oDevPart);
+            } 
+            return $acteurs;
+	}
+
+        function generer ($delib_id=null, $seance_id=null,  $model_id, $editable=null, $dl=0, $nomFichier='retour', $isPV=0) {
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_IterationType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_PartType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_FusionType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+
+            //*****************************************
+            // Choix du format de sortie
+            //*****************************************
+	    if ($editable== null)
+                $editable = $this->Session->read('user.format.sortie');
+	    $sMimeType = "application/pdf";
+            
+            //*****************************************
+	    // Préparation des répertoires pour la création des fichiers
+            //*****************************************
+            $dyn_path = "/files/generee/fd/$seance_id/$delib_id/";
+            $path = WEBROOT_PATH.$dyn_path;
+            if (!$this->Gedooo->checkPath($path))
+                die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+            $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+            
+            //*****************************************
+	    //Création du model ott
+            //*****************************************
+	    $u = new GDO_Utility();
+            $content = $this->requestAction("/models/getModel/$model_id");
+            $sModele = $this->Gedooo->createFile($path,'model_'.$model_id.'.odt', $content);
+	    $path_model = $path.'model_'.$model_id.'.odt';
+            
+            $bTemplate = $u->ReadFile($path_model);
+	    $oTemplate = new GDO_ContentType("",
+                                "modele.odt",
+                                $u->getMimeType($path_model),
+                                "binary",
+                                $bTemplate);
+            
+            //*****************************************
+	    // Organisation des données
+            //*****************************************
+	    $oMainPart = new GDO_PartType();
+
+	    // Informations sur la collectivité
+            $data = $this->Collectivite->read(null, 1);
+	    $oMainPart->addElement(new GDO_FieldType('nom_collectivite', utf8_encode($data['Collectivite']['nom']) , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('adresse_collectivite', utf8_encode($data['Collectivite']['adresse']) , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('cp_collectivite', utf8_encode($data['Collectivite']['CP']) , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('ville_collectivite', utf8_encode($data['Collectivite']['ville']) , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('telephone_collectivite', utf8_encode($data['Collectivite']['telephone']) , "text"));
+            $oMainPart->addElement(new GDO_FieldType('date_jour_courant', utf8_encode(utf8_encode($this->Date->frenchDate(strtotime("now")))), 'text'));
+           
+            //*****************************************
+	    // Génération d'une délibération ou d'un texte de projet
+            //*****************************************
+            if ($delib_id != "null") {
+	        $delib = $this->Deliberation->read(null,$delib_id);
+                $oMainPart = $this->makeBalisesProjet($delib, $oMainPart, true, $u);
+            }
+            
+            //*****************************************
+	    // Génération d'une convocation, ordre du jour ou PV 
+            //*****************************************
+             if ($seance_id != "null") {
+                 $projets  = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=0",null,'Deliberation.position ASC');
+                 $blocProjets = new GDO_IterationType("Projets");
+		 foreach ($projets as $projet) {
+		     $oDevPart = new GDO_PartType();
+		     if ($isPV)
+		         $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, true, $u);
+		     else 
+		         $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, false, $u);
+		     $blocProjets->addPart($oDevPart);
+                 }
+                 $oMainPart->addElement($blocProjets);
+
+		 $seance = $this->Seance->read(null, $seance_id);
+                 $oMainPart->addElement(new GDO_FieldType('date_seance',$seance['Seance']['date'] , "text"));
+                 $oMainPart->addElement(new GDO_FieldType('type_seance',$seance['Typeseance']['libelle'] , "text"));
+                 $oDevPart->addElement(new GDO_FieldType("nom_secretaire", utf8_encode($seance['Secretaire']['nom']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("prenom_secretaire", utf8_encode($seance['Secretaire']['prenom']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("salutation_secretaire",utf8_encode($seance['Secretaire']['prenom']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("titre_secretaire", utf8_encode($seance['Secretaire']['titre']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("date_naissance_secretaire", utf8_encode($seance['Secretaire']['date_naissance']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("adresse1_secretaire", utf8_encode($seance['Secretaire']['adresse1']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("adresse2_secretaire", utf8_encode($seance['Secretaire']['adresse2']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("cp_secretaire", utf8_encode($seance['Secretaire']['cp']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("ville_secretaire", utf8_encode($seance['Secretaire']['ville']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("email_secretaire", utf8_encode($seance['Secretaire']['email']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("telfixe_secretaire",utf8_encode($seance['Secretaire']['telfixe']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("note_secretaire", utf8_encode($seance['Secretaire']['note']), "text"));
+                 
+		 if (!$isPV) { // une convocation ou un ordre du jour
+                     require_once ('vendors/progressbar.php');
+                     Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
+                     $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+                     $nbActeurs = count($acteursConvoques);
+                     $cpt=0;
+                     if (empty($acteursConvoques))
+		        return "";
+                     foreach ($acteursConvoques as $acteur) {
+                         $cpt++;
+                         ProgressBar($cpt*(100/$nbActeurs), 'Lecture des donn&eacute;es pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
+                         $oMainPart->addElement(new GDO_FieldType("nom_acteur", utf8_encode($acteur['Acteur']['nom']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("prenom_acteur", utf8_encode($acteur['Acteur']['prenom']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("salutation_acteur",utf8_encode($acteur['Acteur']['prenom']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("titre_acteur", utf8_encode($acteur['Acteur']['titre']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("date_naissance_acteur", utf8_encode($acteur['Acteur']['date_naissance']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("adresse1_acteur", utf8_encode($acteur['Acteur']['adresse1']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("adresse2_acteur", utf8_encode($acteur['Acteur']['adresse2']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("cp_acteur", utf8_encode($acteur['Acteur']['cp']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("ville_acteur", utf8_encode($acteur['Acteur']['ville']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("email_acteur", utf8_encode($acteur['Acteur']['email']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("telfixe_acteur",utf8_encode($acteur['Acteur']['telfixe']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("note_acteur", utf8_encode($acteur['Acteur']['note']), "text"));
+                         $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+                         $oFusion->process();
+                         $nomFichier = $acteur['Acteur']['id'].'-'.utf8_encode($acteur['Acteur']['nom']).'.pdf';
+                         $listFiles[$urlWebroot.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
+                         $oFusion->SendContentToFile($path.$nomFichier);
+                     }
+                     $this->set('listFiles', $listFiles);
+                     return true;
+		}
+	    }
+
+            //*****************************************
+            // Lancement de la fusion
+            //*****************************************
+            $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+            $oFusion->process();
+            if ($dl ==1) 
+	        $oFusion->SendContentToFile($path.$nomFichier);
+            else 
+	        $oFusion->SendContentToClient();  
+        }
 }
 ?>
