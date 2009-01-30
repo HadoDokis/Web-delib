@@ -88,8 +88,12 @@ class ServicesController extends AppController {
 		//debug($this->data);exit;
 	}
 
-	function doList($id){
-		$liste = $this->GetParentList($id).$this->getLibelle($id);
+	function doList($id=null){
+	        if ($id != null)
+		    $liste = $this->GetParentList($id).$this->getLibelle($id);
+		else
+		    $liste=array();
+		   
 		return $liste;
 	}
 
