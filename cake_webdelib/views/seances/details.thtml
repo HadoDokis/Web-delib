@@ -42,7 +42,7 @@
 		if (!$USE_GEDOOO)
 		    echo $html->link('&shy;','/deliberations/convert/' .$deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
 		else
-		    echo $html->link('&shy;','/deliberations/generer/' .$deliberation['Deliberation']['id'].'/'.$deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
+		    echo $html->link('&shy;','/models/generer/' .$deliberation['Deliberation']['id'].'/null/'.$deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
 		    ?>
 		<?php echo $html->link('&shy;','/seances/voter/' .$deliberation['Deliberation']['id'], array('class'=>'link_voter', 'title'=>'Voter les projets'), false, false)?>
 	</td>

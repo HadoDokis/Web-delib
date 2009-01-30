@@ -28,7 +28,7 @@
 			<?php echo $html->link('&shy;',"/deliberations/".$deliberation['action']."/" . $deliberation['Deliberation']['id'], array('class'=>"link_".$deliberation['act'], 'title'=>$deliberation['act']), false, false)?>
                <?php 
 			if ($USE_GEDOOO)
-			    echo $html->link('&shy;','/deliberations/generer/' . $deliberation['Deliberation']['id'].'/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+			    echo $html->link('&shy;','/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
 			else 
 			    echo $html->link('&shy;','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
 			?>
