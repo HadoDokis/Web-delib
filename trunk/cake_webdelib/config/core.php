@@ -37,11 +37,7 @@
  * release/app/.htaccess
  * release/app/webroot/.htaccess
  */
-    define ('VERSION', '<b> 1.9a </b>');
-    define ('GENERER_DOC_SIMPLE', false);
-    define ('USE_GEDOOO', true);
-    // MACCRO POUR GEDOOs
-    define("GEDOOO_WSDL",  "http://gedooo.demonstrations.adullact.org:8080/axis2/services/OfficeService?wsdl");
+
 /**
  * Set debug level here:
  * - 0: production
@@ -54,63 +50,6 @@
  *
  */
     define('DEBUG', 0);
-
-/***
- *   Configuration pour la télétransmission S2LOW
- *
- **/
- 	$pos =  strrpos ( getcwd(), 'config');
-	$path = substr(getcwd(), 0, $pos);
-	$config_path = $path."config/";
-
-	$pos2 =  strrpos ( getcwd(), 'webroot');
-	$path2 = substr(getcwd(), 0, $pos2);
-	$webroot_path = $path2."webroot/";
-	define ('WEBROOT_PATH',  $path2."webroot");
-
-	define('PEM', '/var/www/webdelib_demo/app/config/client.pem');
-        define('PASSWORD', 'demo_u');
-	define('HOST', 'demo-s2low.extranet.adullact.org');
-	define('SSLKEY', '/var/www/webdelib_demo/app/config/key.pem');
-	define('CA_PATH', '/var/www/webdelib_demo/app/config/');
-/*
-        define('PEM', '/var/www/s2low/key/client.pem');
-        define('PASSWORD', 'lolotte');
-        define('HOST', 'www.s2low.org');
-        define('SSLKEY', '/var/www/s2low/key/key.pem');
-        define('CA_PATH', '/var/www/s2low/key/');
- */
-	define('FILE_CLASS', '/var/www/webdelib_demo/app/webroot/files/actes/classification.xml');
-	define('IMPORT', true);
-	
-	// LDAP
-        define ('LDAP_HOST', 'hostname');
-        define ('PORT',      '389');
-        define ('BASE_DN',   'dc=domaine,dc=com');
-        define ('MANAGER',   'cn=manager,dc=domaine,dc=com');
-        define ('LDAP_PASS', '');
-
-	// Mapping Champ LDAP
-        define ('MAIL', 'mail');
-	define ('COMMON_NAME', 'cn');
-	define ('UNIQUE_ID', 'uid');
-	define ('PASSWORD_USER', 'userpassword');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**
@@ -206,4 +145,16 @@ define('CAKE_ADMIN', 'admin');
  */
 	define('ACL_CLASSNAME', 'DB_ACL');
 	define('ACL_FILENAME', 'dbacl' . DS . 'db_acl');
+  
+    $pos =  strrpos ( getcwd(), 'config');
+    $path = substr(getcwd(), 0, $pos);
+    $config_path = $path."config/";
+    $pos2 =  strrpos ( getcwd(), 'webroot');
+    $path2 = substr(getcwd(), 0, $pos2);
+    $webroot_path = $path2."webroot/";
+    define ('WEBROOT_PATH',  $path2."webroot");
+
+ 
+    require_once ('webdelib.inc');
+    define ('VERSION', '<b> 1.9a </b>');
 ?>
