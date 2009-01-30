@@ -59,15 +59,15 @@
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/texte_projet', 'Texte projet');?></td>
-		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textprojet/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600,scrollbars=yes');">[Texte projet]</a></td>
+		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textprojet/<?php echo $deliberation['Deliberation']['id']?>','popup','width=1024,height=728,scrollbars=yes');">[Texte projet]</a></td>
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/texte_synthese', 'Note synthese');?></td>
-		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textsynthese/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600,scrollbars=yes');">[Note de synthese]</a></td>
+		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textsynthese/<?php echo $deliberation['Deliberation']['id']?>','popup','width=1024,height=728,scrollbars=yes');">[Note de synthese]</a></td>
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/deliberation', 'Deliberation');?></td>
-		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/deliberation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600,scrollbars=yes');">[Texte deliberation]</a></td>
+		<td><a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/deliberation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=1024,height=728,scrollbars=yes');">[Texte deliberation]</a></td>
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Deliberation/date_limite', 'Date limite');?></td>
