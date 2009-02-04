@@ -133,6 +133,15 @@
 	}
 
 	function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null)  {
+               $oMainPart->addElement(new GDO_FieldType('titre_projet',                utf8_encode($delib['Deliberation']['titre']),    'text'));
+               $oMainPart->addElement(new GDO_FieldType('objet_projet',                utf8_encode($delib['Deliberation']['objet']),    'text'));
+               $oMainPart->addElement(new GDO_FieldType('position_projet',             utf8_encode($delib['Deliberation']['position']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('identifiant_projet',          utf8_encode($delib['Deliberation']['id']),       'text'));
+               $oMainPart->addElement(new GDO_FieldType('numero_deliberation',         utf8_encode($delib['Deliberation']['num_delib']),'text'));
+               $oMainPart->addElement(new GDO_FieldType('classification_deliberation', utf8_encode($delib['Deliberation']['num_pref']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('service_emetteur',            utf8_encode($delib['Service']['libelle']) ,      'text'));
+               $oMainPart->addElement(new GDO_FieldType('theme_projet',                utf8_encode($delib['Theme']['libelle']),         'text'));
+               
                // Information sur le rapporteur
                $oMainPart->addElement(new GDO_FieldType('salutation_rapporteur',       utf8_encode($delib['Rapporteur']['salutation']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('prenom_rapporteur',           utf8_encode($delib['Rapporteur']['prenom']),     'text'));
@@ -168,16 +177,6 @@
                $oMainPart->addElement(new GDO_FieldType('position_redacteur', utf8_encode($delib['Redacteur']['position']), 'text'));
                
                // Informations sur la délibération
-               $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($delib['Seance']['date']),    'date'));
-               $oMainPart->addElement(new GDO_FieldType('titre_projet',                utf8_encode($delib['Deliberation']['titre']),    'text'));
-               $oMainPart->addElement(new GDO_FieldType('objet_projet',                utf8_encode($delib['Deliberation']['objet']),    'text'));
-               $oMainPart->addElement(new GDO_FieldType('position_projet',             utf8_encode($delib['Deliberation']['position']), 'text'));
-               $oMainPart->addElement(new GDO_FieldType('identifiant_projet',          utf8_encode($delib['Deliberation']['id']),       'text'));
-               $oMainPart->addElement(new GDO_FieldType('numero_deliberation',         utf8_encode($delib['Deliberation']['num_delib']),'text'));
-               $oMainPart->addElement(new GDO_FieldType('classification_deliberation', utf8_encode($delib['Deliberation']['num_pref']), 'text'));
-               $oMainPart->addElement(new GDO_FieldType('service_emetteur',            utf8_encode($delib['Service']['libelle']) ,      'text'));
-               $oMainPart->addElement(new GDO_FieldType('theme_projet',                utf8_encode($delib['Theme']['libelle']),         'text'));
-               
                $oMainPart->addElement(new GDO_FieldType('nombre_pour',  utf8_encode($delib['Deliberation']['vote_nb_oui'])   , 'text'));
                $oMainPart->addElement(new GDO_FieldType('nombre_abstention', utf8_encode( $delib['Deliberation']['vote_nb_abstention']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('nombre_contre',  utf8_encode($delib['Deliberation']['vote_nb_non']), 'text'));
@@ -220,8 +219,8 @@
                        $nameTD = "vide";
                    else{
                        $nameTD = $delib['Deliberation']['deliberation_name'];
-                       $extTD  = $u->getMimeType($path.$nameTD);
                        $this->Gedooo->createFile($path, $nameTD, $delib['Deliberation']['deliberation']); 
+                       $extTD  = $u->getMimeType($path.$nameTD);
                        $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '',  $extTD ,   'url', $urlWebroot.$nameTD));
                    }
                    
@@ -229,19 +228,18 @@
                        $nameNS = "vide";
                    else {
                        $nameNS = $delib['Deliberation']['texte_synthese_name'];
-                       $extNS   = $u->getMimeType($path.$nameNS);
                        $this->Gedooo->createFile($path, $nameNS,  $delib['Deliberation']['texte_synthese']);
+                       $extNS   = $u->getMimeType($path.$nameNS);
                        $oMainPart->addElement(new GDO_ContentType('note_synthese',      '',  $extNS ,   'url', $urlWebroot.$nameNS));
                    }
                    
-                   $nameDebat = "debat";
-                   $extDebat =  $u->getMimeType($path.$nameDebat);
+                   $nameDebat = "vide";
                    $this->Gedooo->createFile($path,  $nameDebat,  $delib['Deliberation']['debat']);
+                   $extDebat =  $u->getMimeType($path.$nameDebat);
                    $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '',  $extDebat, 'url', $urlWebroot.$nameDebat));
                }
                if (!$isDelib)
                   return $oMainPart;
-            
 	       //LISTE DES PRESENCES...
                $acteurs = $this->Listepresence->findAll("delib_id = ".$delib['Deliberation']['id'], null, 'Acteur.position ASC');
                if (!empty($acteurs)) {
@@ -309,16 +307,46 @@
                          }
 		    }
 	        }
-               @ $oMainPart->addElement($this->makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, ''));
-               @ $oMainPart->addElement($this->makeBlocsActeurs("ActeursAbsents", $acteurs_absents, false, ''));
-               @ $oMainPart->addElement($this->makeBlocsActeurs("ActeursMandates", $acteurs_remplaces, true, ''));
+               @$oMainPart->addElement($this->makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, '_present'));
+               @$oMainPart->addElement($this->makeBlocsActeurs("ActeursAbsents", $acteurs_absents, false, '_absent'));
+               @$oMainPart->addElement($this->makeBlocsActeurs("ActeursMandates", $acteurs_remplaces, true, '_mandataire'));
                return $oMainPart;
         }
 
         function makeBlocsActeurs ($nomBloc, $listActeur, $isMandate, $type) {
-            if (empty($listActeur))
-	        return true;
-	    $acteurs = new GDO_IterationType("$nomBloc");
+	  $acteurs = new GDO_IterationType("$nomBloc");
+          if ( count($listActeur) == 0 ) {
+              $oDevPart = new GDO_PartType();
+              $oDevPart->addElement(new GDO_FieldType("nom_acteur".$type,            ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type,         ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,     ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("titre_acteur".$type,          ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("date_naissance_acteur".$type, ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("adresse1_acteur".$type,       ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("adresse2_acteur".$type,       ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("cp_acteur".$type,             ' ', "text")); 
+              $oDevPart->addElement(new GDO_FieldType("ville_acteur".$type,          ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("email_acteur".$type,          ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("telfixe_acteur".$type,        ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("telmobile_acteur".$type,      ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("note_acteur".$type,           ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('nom_mandate',                 ' ', "text")); 
+              $oDevPart->addElement(new GDO_FieldType('prenom_mandate',              ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('salutation_mandate',          ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('titre_mandate',               ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('date_naissance_mandate',      ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('adresse1_mandate',            ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('adresse2_mandate',            ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('cp_mandate',                  ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('ville_mandate',               ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('email_mandate',               ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('telfixe_mandate',             ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('telmobile_mandate',           ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('note_mandate',                ' ', "text"));
+              $acteurs->addPart($oDevPart);
+              return $acteurs;
+            }
+            
             foreach($listActeur as $acteur) {
                 $oDevPart = new GDO_PartType();
                 $oDevPart->addElement(new GDO_FieldType("nom_acteur".$type, utf8_encode($acteur['nom_acteur']), "text"));
@@ -403,13 +431,13 @@
 
 	    // Informations sur la collectivité
             $data = $this->Collectivite->read(null, 1);
-	    $oMainPart->addElement(new GDO_FieldType('nom_collectivite', utf8_encode($data['Collectivite']['nom']) , "text"));
-	    $oMainPart->addElement(new GDO_FieldType('adresse_collectivite', utf8_encode($data['Collectivite']['adresse']) , "text"));
-	    $oMainPart->addElement(new GDO_FieldType('cp_collectivite', utf8_encode($data['Collectivite']['CP']) , "text"));
-	    $oMainPart->addElement(new GDO_FieldType('ville_collectivite', utf8_encode($data['Collectivite']['ville']) , "text"));
-	    $oMainPart->addElement(new GDO_FieldType('telephone_collectivite', utf8_encode($data['Collectivite']['telephone']) , "text"));
-            $oMainPart->addElement(new GDO_FieldType('date_jour_courant', utf8_encode(utf8_encode($this->Date->frenchDate(strtotime("now")))), 'text'));
-           
+            $oMainPart->addElement(new GDO_FieldType('nom_collectivite',$data['Collectivite']['nom'] , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('adresse_collectivite',$data['Collectivite']['adresse'] , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('cp_collectivite',$data['Collectivite']['CP'] , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('ville_collectivite',$data['Collectivite']['ville'] , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('telephone_collectivite',$data['Collectivite']['telephone'] , "text"));
+            $oMainPart->addElement(new GDO_FieldType('date_jour_courant',utf8_encode($this->Date->frenchDate(strtotime("now"))), 'text'));
+            
             //*****************************************
 	    // Génération d'une délibération ou d'un texte de projet
             //*****************************************
@@ -433,7 +461,6 @@
 		     $blocProjets->addPart($oDevPart);
                  }
                  $oMainPart->addElement($blocProjets);
-
 		 $seance = $this->Seance->read(null, $seance_id);
                  $oMainPart->addElement(new GDO_FieldType('date_seance',$seance['Seance']['date'] , "text"));
                  $oMainPart->addElement(new GDO_FieldType('type_seance',$seance['Typeseance']['libelle'] , "text"));
@@ -449,8 +476,8 @@
                  $oDevPart->addElement(new GDO_FieldType("email_secretaire", utf8_encode($seance['Secretaire']['email']), "text"));
                  $oDevPart->addElement(new GDO_FieldType("telfixe_secretaire",utf8_encode($seance['Secretaire']['telfixe']), "text"));
                  $oDevPart->addElement(new GDO_FieldType("note_secretaire", utf8_encode($seance['Secretaire']['note']), "text"));
-                 
-		 if (!$isPV) { // une convocation ou un ordre du jour
+		 
+                 if (!$isPV) { // une convocation ou un ordre du jour
                      require_once ('vendors/progressbar.php');
                      Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
                      $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
