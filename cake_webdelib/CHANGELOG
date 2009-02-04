@@ -7,10 +7,9 @@
   *)  Moteur de recherche simple.
 
 1.1-2
-  *) Uniformisation de l'encodage des fichiers : tous sont encondés en ISO-8859-15
+  *) Uniformisation de l'encodage des fichiers : tous sont encodés en ISO-8859-15
 
-2.0
-
+2.0 {en cours}
   *) Suppression des composants documentaires
   *) Ajout de variable pour la génération des documents
   *) Importation de la partie PHP de GEDOOo dans WEBDELIB
