@@ -4,6 +4,10 @@
 <div id="add_form">
 <table id="sample">
     <tr>
+            <td><?php echo $form->labelTag('Deliberation/id', 'Identifiant du projet');?></td>
+            <td><?php echo $html->input('Deliberation/id', array('size' => '20'));?></td>
+    </tr>
+    <tr>
             <td><?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?></td>
             <td><?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs, null,null,null,true);?></td>
     </tr>
