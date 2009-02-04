@@ -1,6 +1,18 @@
+1.1-1
   *)  Ajout de balises pour la generation des documents.
   *)  Validation des commentaires.
   *)  Import de fichiers odt pour les textes de projet, notes de synthese et textes de deliberation.
   *)  Correction de bug d'affichage
   *)  Agrandissement du champ commentaire lors des votes.
   *)  Moteur de recherche simple.
+
+1.1-2
+  *) Uniformisation de l'encodage des fichiers : tous sont encondés en ISO-8859-15
+
+2.0
+
+  *) Suppression des composants documentaires
+  *) Ajout de variable pour la génération des documents
+  *) Importation de la partie PHP de GEDOOo dans WEBDELIB
+  *) Ajout de la possiblité de rechercher un projet via son identifiant
+  *) Les pièces jointes d'une délibération sont envoyées au TdT
