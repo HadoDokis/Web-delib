@@ -1922,7 +1922,6 @@ class DeliberationsController extends AppController {
             $this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
             $this->set ('USE_GEDOOO', USE_GEDOOO);
 
-
             if (!empty($this->data)) {
               $conditions = "";
               if (!empty($this->data['Deliberation']['rapporteur_id']))
@@ -1932,6 +1931,12 @@ class DeliberationsController extends AppController {
                   if ($conditions != "")
 		      $conditions .= " AND ";
 	          $conditions .= " Deliberation.service_id = ".$this->data['Deliberation']['service_id'];
+              }
+
+             if (!empty($this->data['Deliberation']['id'])){
+                  if ($conditions != "")
+                      $conditions .= " AND ";
+                  $conditions .= " Deliberation.id = ".$this->data['Deliberation']['id'];
               }
  
 	      if (!empty($this->data['Deliberation']['theme_id'])){
