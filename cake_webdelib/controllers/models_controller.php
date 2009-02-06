@@ -431,11 +431,11 @@
 
 	    // Informations sur la collectivité
             $data = $this->Collectivite->read(null, 1);
-            $oMainPart->addElement(new GDO_FieldType('nom_collectivite',$data['Collectivite']['nom'] , "text"));
-	    $oMainPart->addElement(new GDO_FieldType('adresse_collectivite',$data['Collectivite']['adresse'] , "text"));
-	    $oMainPart->addElement(new GDO_FieldType('cp_collectivite',$data['Collectivite']['CP'] , "text"));
-	    $oMainPart->addElement(new GDO_FieldType('ville_collectivite',$data['Collectivite']['ville'] , "text"));
-	    $oMainPart->addElement(new GDO_FieldType('telephone_collectivite',$data['Collectivite']['telephone'] , "text"));
+            $oMainPart->addElement(new GDO_FieldType('nom_collectivite',utf8_encode($data['Collectivite']['nom']) , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('adresse_collectivite',utf8_encode($data['Collectivite']['adresse']) , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('cp_collectivite',utf8_encode($data['Collectivite']['CP']) , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('ville_collectivite',utf8_encode($data['Collectivite']['ville']) , "text"));
+	    $oMainPart->addElement(new GDO_FieldType('telephone_collectivite',utf8_encode($data['Collectivite']['telephone']) , "text"));
             $oMainPart->addElement(new GDO_FieldType('date_jour_courant',utf8_encode($this->Date->frenchDate(strtotime("now"))), 'text'));
             
             //*****************************************
