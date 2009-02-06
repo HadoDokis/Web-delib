@@ -9,12 +9,13 @@
     ////////////////////////
     // Configuration S2LOW
     ////////////////////////
-    define('PEM', '/var/www/webdelib/app/config/client.pem');
+    define('WEBDELIB_PATH', '/var/www/webdelib/app/');
+    define('PEM',        WEBDELIB_PATH.'config/client.pem');
+    define('SSLKEY',     WEBDELIB_PATH.'config/key.pem');
+    define('CA_PATH',    WEBDELIB_PATH.'config/');
+    define('FILE_CLASS', WEBDELIB_PATH.'webroot/files/actes/classification.xml');
     define('PASSWORD', 'demo_u');
     define('HOST', 'demo-s2low.extranet.adullact.org');
-    define('SSLKEY', '/var/www/webdelib/app/config/key.pem');
-    define('CA_PATH', '/var/www/webdelib/app/config/');
-    define('FILE_CLASS', '/var/www/webdelib/app/webroot/files/actes/classification.xml');
 
     ////////////////////////
     // Configuration du LDAP 
