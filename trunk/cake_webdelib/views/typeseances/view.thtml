@@ -11,7 +11,6 @@
 	<dd><?php echo $typeseance['Typeseance']['retard']; ?></dd>
 	</div>
 	<div class="spacer"></div>
-
 	<div class="demi">
 		<dt>Action</dt>
 		<dd>&nbsp;<?php echo $typeseance['Typeseance']['action'] ? 'Avis' : 'Vote'?></dd>
@@ -24,21 +23,21 @@
 
 	<div class="demi">
 		<dt>Model de la convocation</dt>
-		<dd>&nbsp;<?php echo $typeseance['Modelconvocation']['libelle']?></dd>
+		<dd>&nbsp;<?php echo $typeseance['Modelconvocation']['modele']; ?></dd>
 	</div>
 	<div class="demi">
 		<dt>Model de l'ordre du jour</dt>
-		<dd>&nbsp;<?php echo $typeseance['Modelordredujour']['libelle']?></dd>
+		<dd>&nbsp;<?php echo $typeseance['Modelordredujour']['modele']?></dd>
 	</div>
 	<div class="spacer"></div>
 
 	<div class="demi">
 		<dt>Model du PV sommaire</dt>
-		<dd>&nbsp;<?php echo $typeseance['Modelpvsommaire']['libelle']?></dd>
+		<dd>&nbsp;<?php echo $typeseance['Modelpvsommaire']['modele']?></dd>
 	</div>
 	<div class="demi">
 		<dt>Model du PV détaillé</dt>
-		<dd>&nbsp;<?php echo $typeseance['Modelpvdetaille']['libelle']?></dd>
+		<dd>&nbsp;<?php echo $typeseance['Modelpvdetaille']['modele']?></dd>
 	</div>
 	<div class="spacer"></div>
 
