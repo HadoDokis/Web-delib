@@ -330,19 +330,19 @@
               $oDevPart->addElement(new GDO_FieldType("telfixe_acteur".$type,        ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType("telmobile_acteur".$type,      ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType("note_acteur".$type,           ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('nom_mandate',                 ' ', "text")); 
-              $oDevPart->addElement(new GDO_FieldType('prenom_mandate',              ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('salutation_mandate',          ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('titre_mandate',               ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('date_naissance_mandate',      ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('adresse1_mandate',            ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('adresse2_mandate',            ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('cp_mandate',                  ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('ville_mandate',               ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('email_mandate',               ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('telfixe_mandate',             ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('telmobile_mandate',           ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType('note_mandate',                ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('nom_acteur_mandate',                 ' ', "text")); 
+              $oDevPart->addElement(new GDO_FieldType('prenom_acteur_mandate',              ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('salutation_acteur_mandate',          ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('titre_acteur_mandate',               ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('date_naissance_acteur_mandate',      ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('adresse1_acteur_mandate',            ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('adresse2_acteur_mandate',            ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('cp_acteur_mandate',                  ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('ville_acteur_mandate',               ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('email_acteur_mandate',               ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('telfixe_acteur_mandate',             ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('telmobile_acteur_mandate',           ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('note_acteur_mandate',                ' ', "text"));
               $acteurs->addPart($oDevPart);
               return $acteurs;
             }
@@ -363,19 +363,19 @@
                 $oDevPart->addElement(new GDO_FieldType("telmobile_acteur".$type,  utf8_encode($acteur['prenom_acteur']), "text"));
                 $oDevPart->addElement(new GDO_FieldType("note_acteur".$type, utf8_encode($acteur['note_acteur']), "text"));
                 if (isset($acteur['nom_mandate'])) {
-                    $oDevPart->addElement(new GDO_FieldType('nom_mandate', utf8_encode($acteur['nom_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('prenom_mandate', utf8_encode($acteur['prenom_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('salutation_mandate', utf8_encode($acteur['salutation_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('titre_mandate', utf8_encode($acteur['titre_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('date_naissance_mandate', utf8_encode($acteur['date_naissance_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('adresse1_mandate', utf8_encode($acteur['adresse1_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('adresse2_mandate', utf8_encode($acteur['adresse2_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('cp_mandate', utf8_encode($acteur['cp_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('ville_mandate', utf8_encode($acteur['ville_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('email_mandate', utf8_encode($acteur['email_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('telfixe_mandate', utf8_encode($acteur['telfixe_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('telmobile_mandate', utf8_encode($acteur['telmobile_mandate']), "text"));
-                    $oDevPart->addElement(new GDO_FieldType('note_mandate', utf8_encode($acteur['note_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('nom_acteur_mandate', utf8_encode($acteur['nom_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('prenom_acteur_mandate', utf8_encode($acteur['prenom_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('salutation_acteur_mandate', utf8_encode($acteur['salutation_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('titre_acteur_mandate', utf8_encode($acteur['titre_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('date_naissance_acteur_mandate', utf8_encode($acteur['date_naissance_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('adresse1_acteur_mandate', utf8_encode($acteur['adresse1_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('adresse2_acteur_mandate', utf8_encode($acteur['adresse2_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('cp_acteur_mandate', utf8_encode($acteur['cp_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('ville_acteur_mandate', utf8_encode($acteur['ville_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('email_acteur_mandate', utf8_encode($acteur['email_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('telfixe_acteur_mandate', utf8_encode($acteur['telfixe_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('telmobile_acteur_mandate', utf8_encode($acteur['telmobile_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('note_acteur_mandate', utf8_encode($acteur['note_mandate']), "text"));
                 }
                 $acteurs->addPart($oDevPart);
             } 
@@ -452,8 +452,8 @@
              if ($seance_id != "null") {
                  $projets  = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=0",null,'Deliberation.position ASC');
                  $blocProjets = new GDO_IterationType("Projets");
+		 $oDevPart = new GDO_PartType();
 		 foreach ($projets as $projet) {
-		     $oDevPart = new GDO_PartType();
 		     if ($isPV)
 		         $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, true, $u);
 		     else 
@@ -462,8 +462,10 @@
                  }
                  $oMainPart->addElement($blocProjets);
 		 $seance = $this->Seance->read(null, $seance_id);
-                 $oMainPart->addElement(new GDO_FieldType('date_seance',$seance['Seance']['date'] , "text"));
+                 
+		 $oMainPart->addElement(new GDO_FieldType('date_seance',$seance['Seance']['date'] , "text"));
                  $oMainPart->addElement(new GDO_FieldType('type_seance',$seance['Typeseance']['libelle'] , "text"));
+
                  $oDevPart->addElement(new GDO_FieldType("nom_secretaire", utf8_encode($seance['Secretaire']['nom']), "text"));
                  $oDevPart->addElement(new GDO_FieldType("prenom_secretaire", utf8_encode($seance['Secretaire']['prenom']), "text"));
                  $oDevPart->addElement(new GDO_FieldType("salutation_secretaire",utf8_encode($seance['Secretaire']['prenom']), "text"));
