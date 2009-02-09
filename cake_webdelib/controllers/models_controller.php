@@ -489,6 +489,7 @@
 		        return "";
                      foreach ($acteursConvoques as $acteur) {
                          $cpt++;
+                         $zip = new ZipArchive;
                          ProgressBar($cpt*(100/$nbActeurs), 'Lecture des donn&eacute;es pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
                          $oMainPart->addElement(new GDO_FieldType("nom_acteur", utf8_encode($acteur['Acteur']['nom']), "text"));
                          $oMainPart->addElement(new GDO_FieldType("prenom_acteur", utf8_encode($acteur['Acteur']['prenom']), "text"));
@@ -507,7 +508,12 @@
                          $nomFichier = $acteur['Acteur']['id'].'-'.utf8_encode($acteur['Acteur']['nom']).'.pdf';
                          $listFiles[$urlWebroot.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
                          $oFusion->SendContentToFile($path.$nomFichier);
+                         if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
+                             $zip->addFile($path.$nomFichier, $nomFichier);
+                             $zip->close();
+                         } 
                      }
+                     $listFiles[$urlWebroot.'documents.zip'] = 'documents.pdf';
                      $this->set('listFiles', $listFiles);
                      return true;
 		}
