@@ -513,7 +513,7 @@
                              $zip->close();
                          } 
                      }
-                     $listFiles[$urlWebroot.'documents.zip'] = 'documents.pdf';
+                     $listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
                      $this->set('listFiles', $listFiles);
                      return true;
 		}
