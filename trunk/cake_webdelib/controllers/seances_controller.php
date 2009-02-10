@@ -422,7 +422,7 @@ class SeancesController extends AppController {
                             $this->data['Deliberation']['commission_name'] = $this->data['Deliberation']['texte_doc']['name'];
                             $this->data['Deliberation']['commission_size'] = $this->data['Deliberation']['texte_doc']['size'];
                             $this->data['Deliberation']['commission_type'] = $this->data['Deliberation']['texte_doc']['type'];
-                            $this->data['Deliberation']['commission_content']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+                            $this->data['Deliberation']['commission']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
                             unset($this->data['Deliberation']['texte_doc']);
                         }
                     }    
