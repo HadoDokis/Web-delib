@@ -4,21 +4,53 @@
 
 <?php
     if (!GENERER_DOC_SIMPLE){
-        echo '<br>Nom fichier : '.$delib['Deliberation']['debat_name'];
-        echo '<br>Taille : '.$delib['Deliberation']['debat_size'];
-        echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$delib['Deliberation']['id'].'/debat').'<br><br><br>';
-        echo  $html->fileTag("Deliberation/texte_doc");
-        echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
-        echo '<br><br>';
+        if ($isCommission) {
+            echo '<br>Nom fichier : '.$delib['Deliberation']['commission_name'];
+            echo '<br>Taille : '.$delib['Deliberation']['commission_size'];
+            echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$delib['Deliberation']['id'].'/commission').'<br><br><br>';
+            echo  $html->fileTag("Deliberation/texte_doc");
+            echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
+            echo '<br><br>';
+        }
+        else {
+            echo '<br>Nom fichier : '.$delib['Deliberation']['debat_name'];
+            echo '<br>Taille : '.$delib['Deliberation']['debat_size'];
+            echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$delib['Deliberation']['id'].'/debat').'<br><br><br>';
+            echo  $html->fileTag("Deliberation/texte_doc");
+            echo $html->submit('Importer', array('class'=>'bt_add', 'name'=>'importer'));
+            echo '<br><br>';
+        }
+       
     }
     if (GENERER_DOC_SIMPLE) {
+      if (!$isCommission) {
 ?>   
+
 <div class="optional">
     <?php echo $html->textarea('Deliberation/debat', array('cols' => '10', 'rows' => '20'));?>
     <?php echo $fck->load('data[Deliberation][debat]'); ?>
     <?php echo $html->tagErrorMsg('Deliberation/debat', 'Entrer le texte de debat.');?>
 </div>
-<?php  } // fin du if ?>
+
+
+
+<?php   } 
+        else {
+?>
+
+   <div class="optional">
+    <?php echo $html->textarea('Deliberation/commission', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Deliberation][commission]'); ?>
+    <?php echo $html->tagErrorMsg('Deliberation/commission', 'Entrer le texte de debat.');?>
+</div>
+
+
+
+<?php   } 
+     } // fin du if ?>
+
+
+
 <div class="submit">
    	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir', 'onclick'=>"javascript:FermerFenetre()"));?>
 </div>
