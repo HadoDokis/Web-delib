@@ -407,20 +407,38 @@ class SeancesController extends AppController {
 
 	function saisirDebat ($id = null)	{
             $seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$id);
+            $seance = $this->Seance->read(null, $seance_id);
+            $isCommission = $seance['Typeseance']['action'];
+
             if (empty($this->data)) {
                 $this->data = $this->Deliberation->read(null, $id);        
+	        $this->set('isCommission', $isCommission);  
 	        $this->set('delib', $this->data);  
 	    } 
             else { 
-		if (isset($this->data['Deliberation']['texte_doc'])){
-                    if ($this->data['Deliberation']['texte_doc']['size']!=0){
-                        $this->data['Deliberation']['debat_name'] = $this->data['Deliberation']['texte_doc']['name'];
-                        $this->data['Deliberation']['debat_size'] = $this->data['Deliberation']['texte_doc']['size'];
-                        $this->data['Deliberation']['debat_type'] = $this->data['Deliberation']['texte_doc']['type'];
-                        $this->data['Deliberation']['debat']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
-                        unset($this->data['Deliberation']['texte_doc']);
+                if ( $isCommission == true) {
+                    if (isset($this->data['Deliberation']['texte_doc'])){
+                        if ($this->data['Deliberation']['texte_doc']['size']!=0){
+                            $this->data['Deliberation']['commission_name'] = $this->data['Deliberation']['texte_doc']['name'];
+                            $this->data['Deliberation']['commission_size'] = $this->data['Deliberation']['texte_doc']['size'];
+                            $this->data['Deliberation']['commission_type'] = $this->data['Deliberation']['texte_doc']['type'];
+                            $this->data['Deliberation']['commission_content']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+                            unset($this->data['Deliberation']['texte_doc']);
+                        }
+                    }    
+                }
+                else {
+		    if (isset($this->data['Deliberation']['texte_doc'])){
+                        if ($this->data['Deliberation']['texte_doc']['size']!=0){
+                            $this->data['Deliberation']['debat_name'] = $this->data['Deliberation']['texte_doc']['name'];
+                            $this->data['Deliberation']['debat_size'] = $this->data['Deliberation']['texte_doc']['size'];
+                            $this->data['Deliberation']['debat_type'] = $this->data['Deliberation']['texte_doc']['type'];
+                            $this->data['Deliberation']['debat']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+                            unset($this->data['Deliberation']['texte_doc']);
+                        }
                     }
                 }
+
 		$this->data['Deliberation']['id']=$id;
                 if ($this->Deliberation->save($this->data)) {
                     $this->redirect('/seances/saisirDebat/'.$id);
