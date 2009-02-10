@@ -49,7 +49,7 @@
  * With the other debug levels you get to click the "flash message" to continue.
  *
  */
-    define('DEBUG', 0);
+    define('DEBUG', 1);
 
 
 /**
