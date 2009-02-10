@@ -196,6 +196,7 @@
                    $oMainPart->addElement(new GDO_ContentType('note_synthese', '', 'text/html', 'text', $delib['Deliberation']['texte_synthese']));
                    $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '', 'text/html', 'text', $delib['Deliberation']['deliberation']));
                    $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '', 'text/html', 'text', $delib['Deliberation']['debat']));
+                   $oMainPart->addElement(new GDO_ContentType('debat_commission', '', 'text/html', 'text', $delib['Deliberation']['commission']));
                }
                else {
                    $dyn_path = "/files/generee/deliberations/".$delib['Deliberation']['id']."/";
@@ -237,6 +238,12 @@
                    $this->Gedooo->createFile($path,  $nameDebat,  $delib['Deliberation']['debat']);
                    $extDebat =  $u->getMimeType($path.$nameDebat);
                    $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '',  $extDebat, 'url', $urlWebroot.$nameDebat));
+
+                   $nameCommission = "vide";
+                   $this->Gedooo->createFile($path,  $nameCommission,  $delib['Deliberation']['commission']);
+                   $extCommi =  $u->getMimeType($path.$nameCommission);
+                   $oMainPart->addElement(new GDO_ContentType('debat_commission', '',  $extCommi, 'url', $urlWebroot.$nameCommission));
+
                }
                if (!$isDelib)
                   return $oMainPart;
