@@ -32,10 +32,22 @@ class DateComponent extends Object {
 		else {
 		    $tmp =  explode(' ', $mysqlDate);
 		    $temp = explode('-', $tmp[0]);
-		    return($temp[2].'/'.$temp[1].'/'.$temp[0]);;
+		    return($temp[2].'/'.$temp[1].'/'.$temp[0]);
 		}
  
        }
+
+       function Hour ($mysqlDate) {
+                if (empty($mysqlDate))
+	            return null;
+		else {
+		    $tmp =  explode(' ', $mysqlDate);
+		    return($tmp[1]);
+		}
+ 
+       }
+
+
 
        function dateLettres ($timestamp)
        {
