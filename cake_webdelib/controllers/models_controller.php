@@ -133,10 +133,13 @@
 	}
 
 	function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null)  {
+	       $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($delib['Seance']['date']),   'date'));
+	       $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
                $oMainPart->addElement(new GDO_FieldType('titre_projet',                utf8_encode($delib['Deliberation']['titre']),    'text'));
                $oMainPart->addElement(new GDO_FieldType('objet_projet',                utf8_encode($delib['Deliberation']['objet']),    'text'));
                $oMainPart->addElement(new GDO_FieldType('position_projet',             utf8_encode($delib['Deliberation']['position']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('identifiant_projet',          utf8_encode($delib['Deliberation']['id']),       'text'));
+               $oMainPart->addElement(new GDO_FieldType('identifiant_seance',          utf8_encode($delib['Deliberation']['seance_id']),'text'));
                $oMainPart->addElement(new GDO_FieldType('numero_deliberation',         utf8_encode($delib['Deliberation']['num_delib']),'text'));
                $oMainPart->addElement(new GDO_FieldType('classification_deliberation', utf8_encode($delib['Deliberation']['num_pref']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('service_emetteur',            utf8_encode($delib['Service']['libelle']) ,      'text'));
@@ -233,17 +236,24 @@
                        $extNS   = $u->getMimeType($path.$nameNS);
                        $oMainPart->addElement(new GDO_ContentType('note_synthese',      '',  $extNS ,   'url', $urlWebroot.$nameNS));
                    }
-                   
-                   $nameDebat = "vide";
-                   $this->Gedooo->createFile($path,  $nameDebat,  $delib['Deliberation']['debat']);
-                   $extDebat =  $u->getMimeType($path.$nameDebat);
-                   $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '',  $extDebat, 'url', $urlWebroot.$nameDebat));
+                  
+                   if ($delib['Deliberation']['debat_name']=="")
+                       $nameDebat = "debat";
+                   else {
+                       $nameDebat =  $delib['Deliberation']['debat_name'];
+                       $this->Gedooo->createFile($path,  $nameDebat,  $delib['Deliberation']['debat']);
+                       $extDebat =  $u->getMimeType($path.$nameDebat);
+                       $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '',  $extDebat, 'url', $urlWebroot.$nameDebat));
+                   }                   
 
-                   $nameCommission = "vide";
-                   $this->Gedooo->createFile($path,  $nameCommission,  $delib['Deliberation']['commission']);
-                   $extCommi =  $u->getMimeType($path.$nameCommission);
-                   $oMainPart->addElement(new GDO_ContentType('debat_commission', '',  $extCommi, 'url', $urlWebroot.$nameCommission));
-
+                   if ($delib['Deliberation']['commission_name']=="")
+                       $nameCommission = "commission";
+                   else {
+                       $nameCommission =  $delib['Deliberation']['commission_name'];
+                       $this->Gedooo->createFile($path,  $nameCommission,  $delib['Deliberation']['commission']);
+                       $extCommi =  $u->getMimeType($path.$nameCommission);
+                       $oMainPart->addElement(new GDO_ContentType('debat_commission', '',  $extCommi, 'url', $urlWebroot.$nameCommission));
+                   }
                }
                if (!$isDelib)
                   return $oMainPart;
@@ -470,12 +480,13 @@
                  $oMainPart->addElement($blocProjets);
 		 $seance = $this->Seance->read(null, $seance_id);
                  
-		 $oMainPart->addElement(new GDO_FieldType('date_seance',$seance['Seance']['date'] , "text"));
+                 $oMainPart->addElement(new GDO_FieldType('date_seance',  $this->Date->frDate($seance['Seance']['date']),   'date'));
+                 $oMainPart->addElement(new GDO_FieldType('heure_seance', $this->Date->Hour  ($seance['Seance']['date']),   'date'));
                  $oMainPart->addElement(new GDO_FieldType('type_seance',$seance['Typeseance']['libelle'] , "text"));
-
+                 $oMainPart->addElement(new GDO_FieldType('identifiant_seance',  utf8_encode($seance['Seance']['id']),'text'));
                  $oDevPart->addElement(new GDO_FieldType("nom_secretaire", utf8_encode($seance['Secretaire']['nom']), "text"));
                  $oDevPart->addElement(new GDO_FieldType("prenom_secretaire", utf8_encode($seance['Secretaire']['prenom']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("salutation_secretaire",utf8_encode($seance['Secretaire']['prenom']), "text"));
+                 $oDevPart->addElement(new GDO_FieldType("salutation_secretaire",utf8_encode($seance['Secretaire']['salutation']), "text"));
                  $oDevPart->addElement(new GDO_FieldType("titre_secretaire", utf8_encode($seance['Secretaire']['titre']), "text"));
                  $oDevPart->addElement(new GDO_FieldType("date_naissance_secretaire", utf8_encode($seance['Secretaire']['date_naissance']), "text"));
                  $oDevPart->addElement(new GDO_FieldType("adresse1_secretaire", utf8_encode($seance['Secretaire']['adresse1']), "text"));
@@ -500,7 +511,7 @@
                          ProgressBar($cpt*(100/$nbActeurs), 'Lecture des donn&eacute;es pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
                          $oMainPart->addElement(new GDO_FieldType("nom_acteur", utf8_encode($acteur['Acteur']['nom']), "text"));
                          $oMainPart->addElement(new GDO_FieldType("prenom_acteur", utf8_encode($acteur['Acteur']['prenom']), "text"));
-                         $oMainPart->addElement(new GDO_FieldType("salutation_acteur",utf8_encode($acteur['Acteur']['prenom']), "text"));
+                         $oMainPart->addElement(new GDO_FieldType("salutation_acteur",utf8_encode($acteur['Acteur']['salutation']), "text"));
                          $oMainPart->addElement(new GDO_FieldType("titre_acteur", utf8_encode($acteur['Acteur']['titre']), "text"));
                          $oMainPart->addElement(new GDO_FieldType("date_naissance_acteur", utf8_encode($acteur['Acteur']['date_naissance']), "text"));
                          $oMainPart->addElement(new GDO_FieldType("adresse1_acteur", utf8_encode($acteur['Acteur']['adresse1']), "text"));
