@@ -327,9 +327,10 @@
                          }
 		    }
 	        }
-               @$oMainPart->addElement($this->makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, '_present'));
+               $oMainPart->addElement($this->makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, '_present'));
                @$oMainPart->addElement($this->makeBlocsActeurs("ActeursAbsents", $acteurs_absents, false, '_absent'));
                @$oMainPart->addElement($this->makeBlocsActeurs("ActeursMandates", $acteurs_remplaces, true, '_mandataire'));
+
                return $oMainPart;
         }
 
@@ -472,8 +473,8 @@
              if ($seance_id != "null") {
                  $projets  = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=0",null,'Deliberation.position ASC');
                  $blocProjets = new GDO_IterationType("Projets");
-		 $oDevPart = new GDO_PartType();
 		 foreach ($projets as $projet) {
+		     $oDevPart = new GDO_PartType();
 		     if ($isPV)
 		         $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, true, $u);
 		     else 
