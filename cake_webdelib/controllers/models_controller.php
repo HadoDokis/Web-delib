@@ -134,7 +134,10 @@
 
 	function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null)  {
 	       $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($delib['Seance']['date']),   'date'));
-	       $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
+	       $date_lettres =  $this->Date->dateLettres(strtotime($delib['Seance']['date']));
+	       $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text'));
+               $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
+               
                $oMainPart->addElement(new GDO_FieldType('titre_projet',                utf8_encode($delib['Deliberation']['titre']),    'text'));
                $oMainPart->addElement(new GDO_FieldType('objet_projet',                utf8_encode($delib['Deliberation']['objet']),    'text'));
                $oMainPart->addElement(new GDO_FieldType('position_projet',             utf8_encode($delib['Deliberation']['position']), 'text'));
@@ -481,6 +484,8 @@
 		 $seance = $this->Seance->read(null, $seance_id);
                  
                  $oMainPart->addElement(new GDO_FieldType('date_seance',  $this->Date->frDate($seance['Seance']['date']),   'date'));
+	         $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
+	         $oMainPart->addElement(new GDO_FieldType('date_seance_lettres', utf8_encode($date_lettres),                     'text'));
                  $oMainPart->addElement(new GDO_FieldType('heure_seance', $this->Date->Hour  ($seance['Seance']['date']),   'date'));
                  $oMainPart->addElement(new GDO_FieldType('type_seance',$seance['Typeseance']['libelle'] , "text"));
                  $oMainPart->addElement(new GDO_FieldType('identifiant_seance',  utf8_encode($seance['Seance']['id']),'text'));
