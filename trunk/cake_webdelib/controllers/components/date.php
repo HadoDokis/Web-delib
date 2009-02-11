@@ -42,7 +42,7 @@ class DateComponent extends Object {
 	            return null;
 		else {
 		    $tmp =  explode(' ', $mysqlDate);
-		    return($tmp[1]);
+		    return(substr($tmp[1], 0, 5));
 		}
  
        }
