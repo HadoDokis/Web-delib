@@ -24,13 +24,9 @@
 		    <td><?php echo $projet['Deliberation']['titre']; ?></td>
 		    <td><?php echo $projet['Deliberation']['num_delib']; ?></td>
 		    <td><?php 
-		     if (!USE_GEDOOO)
-		        echo $html->link('&shy;','/postseances/generateDeliberation/' . $projet['Deliberation']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false); 
-		     else
-                         echo $html->link('&shy;','/models/generer/' .$projet['Deliberation']['id'].'/null/'.$projet['Model']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
-			
+                         echo $html->link('&shy;','/models/generer/' .$projet['Deliberation']['id'].'/null/'.$projet['Model']['id'].'/null', array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
 			?>
-
+		     </td>
 		</tr>
 		<?php endforeach; ?>
 </table>

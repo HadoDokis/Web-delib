@@ -422,10 +422,12 @@
             //*****************************************
             // Choix du format de sortie
             //*****************************************
-	    if ($editable== null)
-                $editable = $this->Session->read('user.format.sortie');
-	    $sMimeType = "application/pdf";
-            
+	    $sMimeType = "pdf";
+	    if ($editable=='null') 
+                if ($this->Session->read('user.format.sortie')==0)
+	            $sMimeType = "application/pdf";
+		else 
+	            $sMimeType = "odt";
             //*****************************************
 	    // Préparation des répertoires pour la création des fichiers
             //*****************************************
@@ -532,7 +534,7 @@
                          $oMainPart->addElement(new GDO_FieldType("email_acteur", utf8_encode($acteur['Acteur']['email']), "text"));
                          $oMainPart->addElement(new GDO_FieldType("telfixe_acteur",utf8_encode($acteur['Acteur']['telfixe']), "text"));
                          $oMainPart->addElement(new GDO_FieldType("note_acteur", utf8_encode($acteur['Acteur']['note']), "text"));
-                         $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+                         $oFusion = new GDO_FusionType($oTemplate, 'pdf', $oMainPart);
                          $oFusion->process();
                          $nomFichier = $acteur['Acteur']['id'].'-'.utf8_encode($acteur['Acteur']['nom']).'.pdf';
                          $listFiles[$urlWebroot.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
