@@ -125,7 +125,7 @@
 
 </dl>
 <ul id="actions_fiche">
-	<li><?php echo $html->link('&shy;', '/', array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false)?></li>
+	<li><?php echo $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?></li>
 	<li><?php echo $html->link('&shy;','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
 	<li><?php echo $html->link('&shy;','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
 	<li><?php echo $html->link('&shy;','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?></li>

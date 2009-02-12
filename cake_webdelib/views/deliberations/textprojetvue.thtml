@@ -28,6 +28,5 @@
 
 <div class="actions">
 	<?php echo $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false)?>
-	<?php //echo $html->link('&shy;','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?>
 
 </div>
