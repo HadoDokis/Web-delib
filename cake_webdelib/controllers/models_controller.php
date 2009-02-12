@@ -422,7 +422,7 @@
             //*****************************************
             // Choix du format de sortie
             //*****************************************
-	    $sMimeType = "pdf";
+	    $sMimeType = "application/pdf";
 	    if ($editable=='null') 
                 if ($this->Session->read('user.format.sortie')==0)
 	            $sMimeType = "application/pdf";
