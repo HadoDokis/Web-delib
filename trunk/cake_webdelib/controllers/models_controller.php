@@ -216,7 +216,8 @@
                    if ($delib['Deliberation']['texte_projet_name']== "")
                        $nameTP = "vide";
                    else {
-                       $nameTP = $delib['Deliberation']['texte_projet_name'];
+		       $infos = (pathinfo($delib['Deliberation']['texte_projet_name']));
+                       $nameTP = 'tp.'.$infos['extension'];
                        $this->Gedooo->createFile($path, $nameTP, $delib['Deliberation']['texte_projet']);
                        $extTP = $u->getMimeType($path.$nameTP);
                        $oMainPart->addElement(new GDO_ContentType('texte_projet',       '',  $extTP,    'url', $urlWebroot.$nameTP ));
@@ -225,7 +226,8 @@
                    if ($delib['Deliberation']['deliberation_name']=="")
                        $nameTD = "vide";
                    else{
-                       $nameTD = $delib['Deliberation']['deliberation_name'];
+		       $infos = (pathinfo($delib['Deliberation']['deliberation_name']));
+		       $nameTD = 'td.'.$infos['extension'];
                        $this->Gedooo->createFile($path, $nameTD, $delib['Deliberation']['deliberation']); 
                        $extTD  = $u->getMimeType($path.$nameTD);
                        $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '',  $extTD ,   'url', $urlWebroot.$nameTD));
@@ -234,7 +236,8 @@
                    if ($delib['Deliberation']['texte_synthese_name']=="")
                        $nameNS = "vide";
                    else {
-                       $nameNS = $delib['Deliberation']['texte_synthese_name'];
+		       $infos = (pathinfo($delib['Deliberation']['texte_synthese_name']));
+		       $nameNS = 'ns.'.$infos['extension'];
                        $this->Gedooo->createFile($path, $nameNS,  $delib['Deliberation']['texte_synthese']);
                        $extNS   = $u->getMimeType($path.$nameNS);
                        $oMainPart->addElement(new GDO_ContentType('note_synthese',      '',  $extNS ,   'url', $urlWebroot.$nameNS));
@@ -243,7 +246,8 @@
                    if ($delib['Deliberation']['debat_name']=="")
                        $nameDebat = "debat";
                    else {
-                       $nameDebat =  $delib['Deliberation']['debat_name'];
+		       $infos = (pathinfo($delib['Deliberation']['debat_name']));
+		       $nameDebat = 'debat.'.$infos['extension'];
                        $this->Gedooo->createFile($path,  $nameDebat,  $delib['Deliberation']['debat']);
                        $extDebat =  $u->getMimeType($path.$nameDebat);
                        $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '',  $extDebat, 'url', $urlWebroot.$nameDebat));
@@ -252,7 +256,8 @@
                    if ($delib['Deliberation']['commission_name']=="")
                        $nameCommission = "commission";
                    else {
-                       $nameCommission =  $delib['Deliberation']['commission_name'];
+		       $infos = (pathinfo($delib['Deliberation']['commission_name']));
+		       $nameCommission = 'commission.'.$infos['extension'];
                        $this->Gedooo->createFile($path,  $nameCommission,  $delib['Deliberation']['commission']);
                        $extCommi =  $u->getMimeType($path.$nameCommission);
                        $oMainPart->addElement(new GDO_ContentType('debat_commission', '',  $extCommi, 'url', $urlWebroot.$nameCommission));
@@ -327,7 +332,7 @@
                          }
 		    }
 	        }
-               $oMainPart->addElement($this->makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, '_present'));
+               @$oMainPart->addElement($this->makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, '_present'));
                @$oMainPart->addElement($this->makeBlocsActeurs("ActeursAbsents", $acteurs_absents, false, '_absent'));
                @$oMainPart->addElement($this->makeBlocsActeurs("ActeursMandates", $acteurs_remplaces, true, '_mandataire'));
 
