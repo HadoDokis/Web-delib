@@ -7,7 +7,7 @@
 		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
 		// Gestion des droits
-		var $aucunDroit = array('sendToGedoo', 'makeProjetXML', 'generateDeliberation', 'generateProjet', 'generatePVDetaille', 'generatePVSommaire', 'listeProjets', 'getModel', 'listeActeursPresents', 'listeActeursAbsents', 'listeActeursMandates', 'listeActeursVotant', 'listeActeursVotantContre', 'listeActeursAbstenus', 'makeBalises', 'generer');
+		var $aucunDroit = array('getModel', 'makeBalisesProjet', 'generer');
 		var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
                 
 
@@ -534,15 +534,18 @@
                          $oMainPart->addElement(new GDO_FieldType("email_acteur", utf8_encode($acteur['Acteur']['email']), "text"));
                          $oMainPart->addElement(new GDO_FieldType("telfixe_acteur",utf8_encode($acteur['Acteur']['telfixe']), "text"));
                          $oMainPart->addElement(new GDO_FieldType("note_acteur", utf8_encode($acteur['Acteur']['note']), "text"));
-                         $oFusion = new GDO_FusionType($oTemplate, 'pdf', $oMainPart);
+                         $oFusion = new GDO_FusionType($oTemplate, 'application/pdf', $oMainPart);
                          $oFusion->process();
                          $nomFichier = $acteur['Acteur']['id'].'-'.utf8_encode($acteur['Acteur']['nom']).'.pdf';
                          $listFiles[$urlWebroot.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
                          $oFusion->SendContentToFile($path.$nomFichier);
+                         */                         
                          if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
                              $zip->addFile($path.$nomFichier, $nomFichier);
                              $zip->close();
                          } 
+                         // envoi des mails si le champ est renseigné
+                         @$this->sendDocument($acteur['Acteur']['email'], $nomFichier, $path, '');                         
                      }
                      $listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
                      $this->set('listFiles', $listFiles);
@@ -559,6 +562,18 @@
 	        $oFusion->SendContentToFile($path.$nomFichier);
             else 
 	        $oFusion->SendContentToClient();  
+        }
+
+        function sendDocument($to, $fichier, $path, $doc) {
+            if ($to != '') {
+                $this->Email->template = 'email/convoquer';
+                $this->Email->to = $to;
+                $this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ");
+                $this->Email->attach($path.$fichier, $fichier);
+                return  $this->Email->send();
+            }
+            else
+                return true;
         }
 }
 ?>
