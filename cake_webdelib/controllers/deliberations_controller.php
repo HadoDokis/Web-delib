@@ -1688,23 +1688,21 @@ class DeliberationsController extends AppController {
 	}
 
 	function notifierDossierAtraiter($circuit_id, $pos, $delib_id){
-		$conditions = "UsersCircuit.circuit_id=$circuit_id and UsersCircuit.position=$pos";
-		$data = $this->UsersCircuit->findAll($conditions);
-		// Si l'utilisateur accepte les mails
-		if ($data['0']['User']['accept_notif']){
-			$to_mail = $data['0']['User']['email'];
-			$to_nom = $data['0']['User']['nom'];
-			$to_prenom = $data['0']['User']['prenom'];
-
-			$this->Email->template = 'email/traiter';
-			$addr = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/traiter/$delib_id";
-			$text = "Vous avez un dossieratraiter, Cliquer <a href='$addr'> ici</a>";
-            $this->set('data', $text);
-            $this->Email->to = $to_mail;
-            $this->Email->subject = "DELIB $delib_idatraiter";
-       	   //  $this->Email->attach($fully_qualified_filename, optionally $new_name_when_attached);
-            $result = $this->Email->send();
-		}
+            $conditions = "UsersCircuit.circuit_id=$circuit_id and UsersCircuit.position=$pos";
+	    $data = $this->UsersCircuit->findAll($conditions);
+	    // Si l'utilisateur accepte les mails
+	    if ($data['0']['User']['accept_notif']){
+	  	$to_mail = $data['0']['User']['email'];
+		$to_nom = $data['0']['User']['nom'];
+		$to_prenom = $data['0']['User']['prenom'];
+		$this->Email->template = 'email/traiter';
+                $addr = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/traiter/$delib_id";
+		$text = "Vous avez un dossieratraiter, Cliquer <a href='$addr'> ici</a>";
+                $this->set('data', $text);
+                $this->Email->to = $to_mail;
+                $this->Email->subject = "DELIB $delib_idatraiter";
+                $result = $this->Email->send();
+            }
 	}
 
 	function notifierDossierRefuse($delib_id,$user_id){
