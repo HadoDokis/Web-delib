@@ -120,10 +120,10 @@ $webDelib = array(
 			'subMenu' => array(
 				'items' => array(
 					'Profils' => array('link' => '/profils/index'),
-					'Utilisateurs' => array('link' => '/users/index'),
 					'Droits' => array('link' => '/droits/edit'),
-					'Circuits' => array('link' => '/circuits/index'),
-					'Services' => array('link' => '/services/index')
+					'Services' => array('link' => '/services/index'),
+					'Utilisateurs' => array('link' => '/users/index'),
+					'Circuits' => array('link' => '/circuits/index')
 					)
 				)
 			),
