@@ -539,17 +539,17 @@
                          $nomFichier = $acteur['Acteur']['id'].'-'.utf8_encode($acteur['Acteur']['nom']).'.pdf';
                          $listFiles[$urlWebroot.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
                          $oFusion->SendContentToFile($path.$nomFichier);
-                         */                         
                          if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
                              $zip->addFile($path.$nomFichier, $nomFichier);
                              $zip->close();
                          } 
                          // envoi des mails si le champ est renseigné
-                         @$this->sendDocument($acteur['Acteur']['email'], $nomFichier, $path, '');                         
+                        $this->sendDocument($acteur['Acteur']['email'], $nomFichier, $path, '');                         
                      }
                      $listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
                      $this->set('listFiles', $listFiles);
-                     return true;
+                     $this->render();
+                     exit;
 		}
 	    }
 
@@ -567,13 +567,14 @@
         function sendDocument($to, $fichier, $path, $doc) {
             if ($to != '') {
                 $this->Email->template = 'email/convoquer';
+                $this->Email->attachments = null;
                 $this->Email->to = $to;
                 $this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ");
+                $this->set('data',  utf8_encode("Vous venez de recevoir un document de Webdelib "));
                 $this->Email->attach($path.$fichier, $fichier);
-                return  $this->Email->send();
+                $res =  $this->Email->send();
+                unset($res);
             }
-            else
-                return true;
         }
 }
 ?>
