@@ -1,0 +1,76 @@
+<div class="deliberations">
+<?php if ($UserCanAdd) { ?>
+<h2>Mes projets en cours de r&eacute;daction</h2>
+
+
+<table cellspacing="0" cellpadding="0">
+	<tr>
+		<th Width='5%' >Urgence</th>
+		<th Width='20%' >Etat de l'envoi</th>
+		<th Width='20%' >D&eacute;tenteur du dossier</th>
+		<th>Titre</th>
+		<th Width='15%'>Action</th>
+
+	</tr>
+	<tr>
+		<td colspan='5' class='Border' height='1' >
+		</td>
+	</tr>
+<!-- ------------------------------------------------- -->
+<?php foreach ($deliberations as $deliberation){ ?>
+
+	<tr>
+		<td rowspan=3 style="text-align:center">
+		    <?php
+	        	if ($deliberation['Deliberation']['anterieure_id']!=0)
+	     	    	echo $html->image('/icons/refuse.png', array('title'=>'Projet retourné'));
+	     	    else
+	     	    	echo $html->image('/icons/encours.png', array('title'=>'En cours de rédaction'));
+		     	
+		    ?>
+		</td>
+		<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
+		<td>Service &eacute;metteur :<br/><?php echo $deliberation['Service']['libelle']; ?></td>
+		<td>Date de s&eacute;ance : <?php if ($deliberation['Deliberation']['reporte']==1)
+						echo "Report&eacute; au ";
+					echo $deliberation['Seance']['date']; ?></td>
+		<td rowspan=3 class="actions">
+			<?php echo $html->link('&shy;','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
+			<?php echo $html->link('&shy;','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
+			<?php echo $html->link('&shy;','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?', false)?>
+			<br/><br/>
+			<?php echo $html->link('&shy;','/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'], array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'), false, false)?>
+		<?php 
+			if ($USE_GEDOOO)
+			    echo $html->link('&shy;','/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+			else 
+			    echo $html->link('&shy;','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+			?>
+		</td>
+	</tr>
+	<tr>
+		<td>Identifiant projet : <?php echo $deliberation['Deliberation']['id']; ?></td>
+		<td class='corps' rowspan=1 >Th&egrave;me : <?php echo $deliberation['Theme']['libelle']; ?></td>
+		<td class='corps' rowspan=2 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
+
+	</tr>
+	<tr>
+
+		<td>N&deg; classification :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
+		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td>
+	</tr>
+	<tr>
+		<td colspan='5' class='Border' height='1' >
+		</td>
+	</tr>
+<!-- ------------------------------------------------- -->
+<?php } ?>
+</table>
+
+<ul class="actions">
+	<li><?php
+		     if ($UserCanAdd)
+	             echo $html->link('Ajouter un projet', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un projet')); ?></li>
+</ul>
+<?php } ?>
+</div>
