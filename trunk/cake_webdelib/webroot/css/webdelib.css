@@ -36,13 +36,14 @@ a:hover.list_form  {
   text-decoration: none;
   border-bottom: 1px black solid;
 }
-table#sample {
+
+table.sample {
 	border: 1px solid #cccccc;
 	font-size: 1em;
 	width:80%;
 }
 
-table#sample tr td {
+table.sample tr td {
 	border: 0px;
 	padding: 9px 9px 4px 9px ;
 	vertical-align: top;
@@ -91,7 +92,6 @@ label {
 }
 
 #tableau_bord {
-
 	padding-left: 20px;
 }
 
@@ -270,13 +270,13 @@ table.table_action {
 	white-space: normal;
 	border: 0px;
 }
+
 table.table_action tr td {
 	border: 0px;
 	padding: 10px 10px 4px 10px;
 	vertical-align: top;
 	text-align: left;
 }
-
 
 #pied {
 	height: 10px;
@@ -287,6 +287,10 @@ table.table_action tr td {
 td.actions {
 	padding: 0 4px 0 4px ;
 	height: 25px;
+}
+
+td.ordre a {
+	text-decoration: none;
 }
 
 a.link_delib {
@@ -528,7 +532,6 @@ a.link_annexe {
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
-
 }
 
 a.link_donnerAvis {
@@ -565,6 +568,7 @@ a.link_refuser_avec_border {
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
 }
+
 a.link_commentaire_avec_border {
 	color: black;
 	text-decoration: none;
@@ -578,6 +582,7 @@ a.link_commentaire_avec_border {
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
 }
+
 a.link_modifier_avec_border {
 	color: black;
 	text-decoration: none;
@@ -613,6 +618,7 @@ a.link_modifier_avec_border {
 	height: 22px;
 	cursor: pointer;
 }
+
 .bt_add {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	background-image: url(../img/icons/edit_add.png);
@@ -626,6 +632,7 @@ a.link_modifier_avec_border {
 	height: 22px;
 	cursor: pointer;
 }
+
 .bt_annuler {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	background-image: url(../img/icons/edit_cancel.png);
@@ -640,6 +647,7 @@ a.link_modifier_avec_border {
 	cursor: pointer;
 	text-align: right;
 }
+
 .bt_fin {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	background-image: url(../img/icons/apply.png);
@@ -716,7 +724,6 @@ a.link_modifier_avec_border {
 	height: 10px;
 }
 
-
 #vue_cadre{
 	background-color: #EAEFCE;
 }
@@ -739,6 +746,7 @@ a.link_modifier_avec_border {
 	padding: 5px 0 15px 30px;
 	text-indent: 3%;
 }
+
 #vue_cadre dd.compact{
 	padding: 5px 0px 0px 30px;
 	text-indent: 3%;
@@ -809,6 +817,7 @@ ul.actions {
 #menuPrincipal a:visited {
 	color:#444;
 }
+
 #menuPrincipal a {
 	text-decoration: none;
 }
@@ -868,6 +877,7 @@ table#tableDroits {
 }
 
 /*---------------- fin modifs christophe ------------------------*/
+
 /*graphique circuit validation*/
 .graphique {
 	float:left;
@@ -875,3 +885,37 @@ table#tableDroits {
 	text-align:center;
 }
 
+/*----------------- Affichage des annexes dans l'édition des délibérations */
+div.annexesGauche {
+	float: left;
+	width: 130px;
+}
+div.annexesDroite {
+	float: left;
+}
+div.fckEditorProjet {
+	float: left;
+	width: 80%;
+	padding: 2px;
+}
+
+/* Mise en forme des onglets */
+.onglet {
+	font: normal normal 16px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	border-bottom:  1px solid #e0ef90;
+	margin-top: 5px;
+	margin-bottom: 20px;
+}
+.onglet a{
+	padding-right: 10px;
+	padding-left: 10px;
+	text-decoration: none;
+}
+.onglet a.ongletCourant{
+/*	font-weight: bold;*/
+	background: #fff;
+	padding-bottom: 1px;
+	border-left:  1px solid #e0ef90;
+	border-top:  1px solid #e0ef90;
+	border-right:  1px solid #e0ef90;
+}
