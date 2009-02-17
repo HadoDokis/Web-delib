@@ -146,7 +146,8 @@ $webDelib = array(
 					'Modèles d\'édition' => array('link' => '/models/index'),
 					'Séquences' => array('link' => '/sequences/index'),
 					'Compteurs' => array('link' => '/compteurs/index'),
-					'Types de séance' => array('link' => '/typeseances/index')
+					'Types de séance' => array('link' => '/typeseances/index'),
+					'Informations sup.' => array('link' => '/infosupdefs/index')
 					)
 				)
 			)
