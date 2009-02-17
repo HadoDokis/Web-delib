@@ -62,7 +62,6 @@ class CommentairesController extends AppController {
 			$this->redirect('/deliberations/traiter/'.$delib_id);
 		}
 		$this->data = $this->Commentaire->read(null, $id);
-$this->log($this->data);
 		$this->data['Commentaire']['pris_en_compte'] = 1;
 		if ($this->Commentaire->save($this->data)) {
 			$this->redirect('/deliberations/traiter/'.$delib_id);
