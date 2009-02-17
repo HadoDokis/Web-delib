@@ -2,7 +2,7 @@
 <?php echo $html->formTag('/deliberations/rechercheMutliCriteres/', null,array('name'=>'Deliberation','enctype'=>'multipart/form-data'));?>
 
 <div id="add_form">
-<table id="sample">
+<table class="sample">
     <tr>
             <td><?php echo $form->labelTag('Deliberation/id', 'Identifiant du projet');?></td>
             <td><?php echo $html->input('Deliberation/id', array('size' => '20'));?></td>
@@ -51,13 +51,13 @@
             <td><?php echo $result['Deliberation']['titre']; ?></td>
             <td><?php echo $result['Deliberation']['objet']; ?></td>
             <td width = 50px >
-	             <?php echo $html->link("view", "/deliberations/view/".$result['Deliberation']['id']); 
+	             <?php echo $html->link("view", "/deliberations/view/".$result['Deliberation']['id']);
                       if (!USE_GEDOOO)
                           echo $html->link('&shy;','/postseances/generateDeliberation/' . $result['Deliberation']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false);
                      else
                         echo $html->link('&shy;','/models/generer/'.$result['Deliberation']['id'].'/null/'.$result['Model']['id'], array('class'=>'link_delib', 'title'=>'Générer Délibération'), false, false);
              ?></td>
-     
+
      <?php    } // fin du for ?>
     </tr>
 </table>
