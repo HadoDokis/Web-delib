@@ -156,7 +156,7 @@ function add_field() {
 	var input1 = document.createElement('input');
 	input1.id = 'AnnexeTitre_'+n;
  	input1.type = 'text';
-	input1.size = '30';
+	input1.size = '40';
 	input1.name = 'titre_'+n;
 	var titre = document.createTextNode('Titre annexe');
 	div1.appendChild(titre);
@@ -215,14 +215,12 @@ function checkForm (Form, id){
 		valide = false;
 	}
 
-
 	if (erreur == 0) {
 		return true;
     }
 	if (erreur == 1) {
 		message = "Le libelle est obligatoire";
     }
-
 
 	if (valide == false) {
 	    alert (message);
@@ -231,3 +229,34 @@ function checkForm (Form, id){
 
 }
 
+/******************************************************************************/
+/* Gestion des onglets pour l'affichage des informations supplémentaires      */
+/******************************************************************************/
+function afficheOnglet(nOnglet, nbOngletMax) {
+	for (var i = 1; i<=nbOngletMax; i++) {
+		if (i == nOnglet) {
+			document.getElementById('tab'+i).style.display = '';
+			document.getElementById('lienTab'+i).className = 'ongletCourant';
+		} else {
+			document.getElementById('tab'+i).style.display = 'none';
+			document.getElementById('lienTab'+i).className = '';
+		}
+	}
+}
+
+function infoSupSupprimerFichier(infoSupCode, titre) {
+	/* Masque le nom du fichier et les liens */
+	document.getElementById(infoSupCode+'AfficheFichier').style.display = 'none';
+	/* Affiche le span pour l'affichage de l'input */
+	var sInput = document.getElementById(infoSupCode+'InputFichier');
+	sInput.style.display = '';
+	/* Creation de l'input file */
+	var inputFichier = document.createElement('input');
+	inputFichier.type = 'file';
+	inputFichier.id = 'Infosup'+infoSupCode;
+	inputFichier.name = 'data[Infosup]['+infoSupCode+']';
+	inputFichier.title = titre;
+	inputFichier.size = '60';
+	/* Ajoute l'input file au span */
+	sInput.appendChild(inputFichier);
+}
