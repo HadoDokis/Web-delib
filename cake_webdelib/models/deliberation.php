@@ -56,10 +56,13 @@ class Deliberation extends AppModel {
 			'foreignKey'   => 'delib_id'),
 		'Annexe'=>array(
 			'className'    => 'Annex',
-			'foreignKey'   => 'deliberation_id'),
+			'foreignKey'   => 'deliberation_id',
+			'dependent' => true),
 		'Commentaire'=>array(
 			'className'    => 'Commentaire',
-			'foreignKey'   => 'delib_id')
+			'foreignKey'   => 'delib_id'),
+		'Infosup'=>array(
+			'dependent' => true)
 		);
 
 }
