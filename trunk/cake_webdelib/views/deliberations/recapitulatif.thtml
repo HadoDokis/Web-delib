@@ -5,7 +5,7 @@
 <br/>
 
 <div id="add_form">
-<table id="sample">
+<table class="sample">
 	<tr>
 		<td width="20%"><?php echo $form->labelTag('Deliberation/objet', 'Libelle');?></td>
 		<td width="60%"><?php echo $deliberation['Deliberation']['objet'];?></td>
