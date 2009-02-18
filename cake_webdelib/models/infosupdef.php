@@ -79,14 +79,14 @@ class Infosupdef extends AppModel
 		// lecture de l'élément a intervertir
 		$recTo = $this->find('ordre = '.($recFrom['Infosupdef']['ordre'] + $gap), 'id, ordre', null, -1);
 
-		// Si pas d'élément suivant alors on sort sans rien faire
+		// Si pas d'élément à intervertir alors on sort sans rien faire
 		if (empty($recTo)) return;
 
 		// Mise à jour du champ ordre pour les deux enregistrements
 		$recFrom['Infosupdef']['ordre'] += $gap;
-		$this->save($recFrom);
+		$this->save($recFrom, false);
 		$recTo['Infosupdef']['ordre'] -= $gap;
-		$this->save($recTo);
+		$this->save($recTo, false);
 
 		return;
 	}
