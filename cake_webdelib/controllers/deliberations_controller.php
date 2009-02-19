@@ -311,28 +311,32 @@ class DeliberationsController extends AppController {
 		$conditions = "Traitement.circuit_id = $circuit_id AND Traitement.delib_id=$delib_id ";
         $objCourant = $this->Traitement->findAll($conditions, null, "Traitement.position DESC");
 		return $objCourant['0']['Traitement']['position'];
-
 	}
 
 	function view($id = null) {
-		if (!$id) {
-			$this->Session->setFlash('Invalide id de deliberation.');
-			$this->redirect('/deliberations/listerProjetsATraiter');
+		$this->data = $this->Deliberation->findById($id);
+		if (empty($this->data)) {
+			$this->Session->setFlash('Invalide id pour la d&eacute;lib&eacute;ration : affichage de la vue impossible.');
+			$this->redirect('/deliberations/listerMesProjets');
 		}
+
+		// Compactage des informations supplémentaires
+		$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
+
+		// Lecture des versions anterieures
+		$listeAnterieure=array();
+		$tab_anterieure=$this->chercherVersionAnterieure($id, $this->data, 0, $listeAnterieure, 'view');
+		$this->set('tab_anterieure',$tab_anterieure);
+
+		// Lecture des droits en modification
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
-
-			//affichage anterieure
-		$nb_recursion=0;
-		$action='view';
-		$listeAnterieure=array();
-		$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
-		$tab_anterieure=$this->chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
-		$this->set('tab_anterieure',$tab_anterieure);
 		if ($this->Acl->check($user_id, "Deliberations:add"))
 			$this->set('userCanEdit', true);
 		else
 			$this->set('userCanEdit', false);
+
+		// Lecture et initialisation des commentaires
 		$commentaires = $this->Commentaire->findAll("delib_id =  $id");
 		for($i=0; $i< count($commentaires) ; $i++) {
 			$nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
@@ -342,21 +346,23 @@ class DeliberationsController extends AppController {
 		}
 		$this->set('commentaires',$commentaires);
 
-		$deliberation= $this->Deliberation->read(null, $id);
-		if(!empty($deliberation['Seance']['date']))
-			$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
-		$id_service = $deliberation['Service']['id'];
-		$deliberation['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+		// Mise en forme des données du projet ou de la délibération
+		if(!empty($this->data['Seance']['date']))
+			$this->data['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data['Seance']['date']));
 
-		$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
+		$id_service = $this->data['Service']['id'];
+		$this->data['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+
+		$tab_circuit=$this->data['Deliberation']['circuit_id'];
 		$delib=array();
 		//on recupere la position courante de la deliberation
-		$lastTraitement=array_pop($deliberation['Traitement']);
-		$deliberation['positionDelib']=$lastTraitement['position'];
+		$lastTraitement=array_pop($this->data['Traitement']);
+		$this->data['positionDelib']=$lastTraitement['position'];
 		//on recupere la position de l'user dans le circuit
-		array_push($delib, $deliberation);
-		$this->set('deliberation', $delib);
 		$this->set('user_circuit', $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC'));
+		// Définitions des infosup
+		$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
+
 	}
 
 	function getFileData($fileName, $fileSize) {
