@@ -13,7 +13,7 @@
 		<br/><?php echo $collectivite['0']['Collectivite']['CP'].' '.$collectivite['0']['Collectivite']['ville']; ?>
 		<br/><br/><?php echo $collectivite['0']['Collectivite']['telephone']; ?>
 	</td>
-	<td><img src="files/image/logo.jpg"></td>
+	<td><?php  echo $html->image($logo_path);?></td>
 	<td  class="actions">
 		<?php echo $html->link('&shy;','/collectivites/edit/1', array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
 
