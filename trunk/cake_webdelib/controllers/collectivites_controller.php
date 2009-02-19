@@ -15,6 +15,7 @@
 	function index() {
 		$this->Seance->recursive = 0;
 		$this->set('collectivite', $this->Collectivite->findAll());
+                $this->set('logo_path',   'http://'.$_SERVER['HTTP_HOST'].$this->base."/files/image/logo.jpg");
 	}
 
  	function edit($id = null) {
