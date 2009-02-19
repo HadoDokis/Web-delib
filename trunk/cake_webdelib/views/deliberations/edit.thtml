@@ -12,7 +12,7 @@
 		<?php echo $html->input('Redacteur/nom', array('size'=>'30','value'=>$deliberation['Redacteur']['nom'].' '.$deliberation['Redacteur']['prenom'], 'disabled'=>'disabled'));?>
 		<br/>
 		<?php echo $form->labelTag('Service/libelle','Service emetteur');?>
-		<?php echo $html->input('Service/libelle',array('size' => '52','value'=>$servEm, 'disabled'=>'disabled'));?>
+		<?php echo $html->input('Service/libelle',array('size' => '45','value'=>$servEm, 'disabled'=>'disabled'));?>
 	</div>
 	<div class='demi'>
 		<?php echo $form->labelTag('Deliberation/created','Date cr&eacute;ation')?>
