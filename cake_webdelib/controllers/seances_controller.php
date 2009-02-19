@@ -77,7 +77,7 @@ class SeancesController extends AppController {
 		if (empty($this->data)) {
 			if (!$id) {
 				$this->Session->setFlash('Invalide id pour la seance');
-				$this->redirect('/seances/index');
+				$this->redirect('/seances/listerFuturesSeances');
 			}
 			$this->data = $this->Seance->read(null, $id);
 			$this->set('typeseances', $this->Seance->Typeseance->generateList());
@@ -87,7 +87,7 @@ class SeancesController extends AppController {
 			$this->cleanUpFields('Seance');
 			if ($this->Seance->save($this->data)) {
 				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;');
-				$this->redirect('/seances/index');
+				$this->redirect('/seances/listerFuturesSeances');
 			} else {
 				$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
 				if (empty($this->data['Typeseance']['Typeseance'])) { $this->data['Typeseance']['Typeseance'] = null; }
@@ -411,11 +411,11 @@ class SeancesController extends AppController {
             $isCommission = $seance['Typeseance']['action'];
 
             if (empty($this->data)) {
-                $this->data = $this->Deliberation->read(null, $id);        
-	        $this->set('isCommission', $isCommission);  
-	        $this->set('delib', $this->data);  
-	    } 
-            else { 
+                $this->data = $this->Deliberation->read(null, $id);
+	        $this->set('isCommission', $isCommission);
+	        $this->set('delib', $this->data);
+	    }
+            else {
                 if ( $isCommission == true) {
                     if (isset($this->data['Deliberation']['texte_doc'])){
                         if ($this->data['Deliberation']['texte_doc']['size']!=0){
@@ -425,7 +425,7 @@ class SeancesController extends AppController {
                             $this->data['Deliberation']['commission']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
                             unset($this->data['Deliberation']['texte_doc']);
                         }
-                    }    
+                    }
                 }
                 else {
 		    if (isset($this->data['Deliberation']['texte_doc'])){
@@ -471,7 +471,7 @@ class SeancesController extends AppController {
                              unset($this->data['Seance']['texte_doc']);
                          }
                      }
-		
+
 		        $this->data['Seance']['id']=$id;
 			if(!empty($this->params['form']))
 			{
@@ -624,22 +624,22 @@ class SeancesController extends AppController {
 
 	    $delibs = $this->Deliberation->findAll("Deliberation.seance_id = $seance_id");
 	    $nb_delib = count($delibs);
-	    foreach ($delibs as $delib) 
-		array_push($tab, $delib['Deliberation']['id']); 
-	    
+	    foreach ($delibs as $delib)
+		array_push($tab, $delib['Deliberation']['id']);
+
 	    $conditions = "Listepresence.delib_id=";
-            $conditions .= implode(" OR Listepresence.delib_id=", $tab);           
+            $conditions .= implode(" OR Listepresence.delib_id=", $tab);
 	    $presences = $this->Listepresence->findAll($conditions, null, 'Acteur.position');
 	    foreach( $presences as  $presence) {
 	       $acteur_id = $presence['Listepresence']['acteur_id'];
 	       $tot_presents = $this->Listepresence->findAll("Listepresence.acteur_id =  $acteur_id AND ($conditions) AND Listepresence.present=1");
 	       $nb_presence = count($tot_presents);
-	       if ($nb_presence == $nb_delib) 
+	       if ($nb_presence == $nb_delib)
 	           array_push($presents, $acteur_id);
 	       elseif ( $nb_presence == 0) {
 		   $tmp = $this->Listepresence->findAll("Listepresence.acteur_id =  $acteur_id AND ($conditions) AND Listepresence.present=0 AND Listepresence.mandataire=0");
                    $nb_absence=count($tmp);
-                   if ( $nb_absence ==  $nb_delib) 
+                   if ( $nb_absence ==  $nb_delib)
 	               array_push($absents, $acteur_id);
                    else {
 		        $tmp2 = $this->Listepresence->findAll("Listepresence.acteur_id =  $acteur_id AND ($conditions) AND Listepresence.present=0 AND Listepresence.mandataire!=0");
@@ -650,7 +650,7 @@ class SeancesController extends AppController {
 		       }
 	           }
 	       }
-               else { 
+               else {
 	           foreach ($tot_presents as $pres) {
 	               if (!isset($mouvements[$acteur_id]))
 		           $mouvements[$acteur_id] = array();
@@ -658,7 +658,7 @@ class SeancesController extends AppController {
 		   }
 	       }
 	   }
-	   
+
 	   if ($choixListe ==1 )
 	       return(array_unique($presents));
            elseif ($choixListe ==2 )
@@ -667,7 +667,7 @@ class SeancesController extends AppController {
 	       return(array_unique($mandats));
            elseif ($choixListe ==4 )
 	       return(array_unique($mouvements));
-	} 
+	}
 
        	function listeActeursPresents($seance_id) {
 	    // Lecture du modele
@@ -691,7 +691,7 @@ class SeancesController extends AppController {
             }
 	    return($listeActeurs);
 	}
- 
+
         function listeActeursAbsents($seance_id) {
 	     // Lecture du modele
 	    $texte = $this->Model->field('content', 'id=9');
@@ -712,7 +712,7 @@ class SeancesController extends AppController {
 		 );
 		 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
             }
-	    return( $listeActeurs); 
+	    return( $listeActeurs);
 	}
 
         function listeActeursMandates($seance_id) {
