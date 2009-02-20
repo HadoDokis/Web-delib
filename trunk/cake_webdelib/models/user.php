@@ -85,5 +85,36 @@ class User extends AppModel {
 		return true;
 	}
 
+	/* Retourne le circuit par défaut défini pour l'utilisateur $id */
+	/* Si l'utilisateur n'a pas de circuit par défaut, retourne le circuit défini */
+	/* au niveau du premier service de l'utilisateur. */
+	/* Si $field est vide alors retourne la structure de la classe circuit */
+	/* Si $field est spécifiée, retourne la valeur du champ $field */
+	function circuitDefaut($id = null, $field = '') {
+		$circuitDefautId = 0;
+		$user = $this->findById($id);
+		// Circuit par défaut défini au niveau de l'utilisateur
+		if (!empty($user['User']['circuit_defaut_id']))
+			$circuitDefautId = $user['User']['circuit_defaut_id'];
+		else {
+			// Premier circuit par défaut défini pour les services de l'utilisateur
+			foreach ($user['Service'] as $service) {
+				if (!empty($service['circuit_defaut_id'])) {
+					$circuitDefautId = $service['circuit_defaut_id'];
+					break;
+				}
+			}
+		}
+		if ($circuitDefautId > 0) {
+			$this->Circuit->recursive = -1;
+			$circuit = $this->Circuit->findById($circuitDefautId);
+			if (empty($field))
+				return $circuit;
+			else
+				return $circuit['Circuit'][$field];
+		} else
+			return null;
+	}
+
 }
 ?>
