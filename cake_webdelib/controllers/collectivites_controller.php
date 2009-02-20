@@ -9,7 +9,7 @@
 	var $uses = array( 'Collectivite', 'User');
 
 	// Gestion des droits
-	var $aucunDroit = array('synchronize');
+	var $aucunDroit = array('synchronize', 'setMails');
 	var $commeDroit = array('edit'=>'Collectivites:index', 'setLogo'=>'Collectivites:index');
 
 	function index() {
@@ -45,12 +45,54 @@
 			$content_dir = $path.'webroot/files/image/';
 			$tmp_file =  $this->data['Image']['logo']['tmp_name'];
 
-    		if( !move_uploaded_file($tmp_file, 	$content_dir.$name_file) ){
+    		if( !move_uploaded_file($tmp_file, 	$content_dir.$name_file) )
        		    exit("Impossible de copier le fichier dans $content_dir");
-   			 }
 			$this->redirect('/collectivites');
 		}}
  	}
+
+
+        function setMails($id = null) {
+            $path = CONFIG_PATH.'emails/';
+            $this->set('email_path', $path);
+
+            if (!empty($this->data)) {
+                $cpt = 1;
+                foreach ($this->data['Mail'] as $mail){
+                    if ($cpt == 1) {
+                         if ($mail['name']=='') continue;
+                         $name_file = 'refus';
+                         $tmp_file =  $mail['tmp_name'];
+                         if( !move_uploaded_file($tmp_file, $path.$name_file) )
+                             exit("Impossible de copier le fichier dans $content_dir");
+                    }  
+                    if ($cpt == 2) {
+                         if ($mail['name']=='') continue;
+                         $name_file = 'traiter';
+                         $tmp_file =  $mail['tmp_name'];
+                         if( !move_uploaded_file($tmp_file, $path.$name_file) )
+                             exit("Impossible de copier le fichier dans $content_dir");
+                    }  
+                    if ($cpt ==  3) {
+                         if ($mail['name']=='') continue;
+                         $name_file = 'insertion';
+                         $tmp_file =  $mail['tmp_name'];
+                         if( !move_uploaded_file($tmp_file, $path.$name_file) )
+                             exit("Impossible de copier le fichier dans $content_dir");
+                    }  
+                    if ($cpt == 4) {
+                         if ($mail['name']=='') continue;
+                         $name_file = 'convocation';
+                         $tmp_file =  $mail['tmp_name'];
+                         if( !move_uploaded_file($tmp_file, $path.$name_file) )
+                             exit("Impossible de copier le fichier dans $content_dir");
+                    }  
+                    $cpt++;
+
+                }
+                $this->redirect('/collectivites/');
+            }
+        }
 
  	function synchronize() {
 	    $ldapconn = ldap_connect(LDAP_HOST, PORT)
