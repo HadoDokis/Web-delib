@@ -44,7 +44,7 @@
 		<?php
 			foreach ($user['Service'] as $service){
 				echo '<dd>&nbsp;';
-				echo $service['libelle'].'<br/>';
+					echo $service['libelle'].'<br/>';
 				echo '</dd>';
 			};
 		?>
@@ -52,9 +52,15 @@
 	<div class="spacer"></div>
 
 	<div class="tiers">
+		<dt>Circuit par d&eacute;faut</dt>
+		<dd>&nbsp;<?php echo $circuitDefautLibelle?></dd>
+	</div>
+	<div class="tiers">
 		<dt>Note</dt>
 		<dd>&nbsp;<?php echo $user['User']['note']?></dd>
 	</div>
+	<div class="spacer"></div>
+
 	<div class="tiers">
 		<dt>Date de cr&eacute;ation</dt>
 		<dd>&nbsp;<?php echo $user['User']['created']?></dd>
