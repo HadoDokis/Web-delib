@@ -76,8 +76,10 @@ class ServicesController extends AppController {
 			$this->Session->setFlash('Invalide id pour le service');
 			$this->redirect('/services/index');
 		}
+                $service = $this->Service->read(null, $id);
+                $service['Service']['actif'] = 0;
 
-		if ($this->Service->del($id)) {
+		if ($this->Service->save($service)) {
 			$this->Session->setFlash('Le service a &eacute;t&eacute; supprim&eacute;');
 			$this->redirect('/services/index');
 		}

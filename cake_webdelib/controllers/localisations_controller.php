@@ -67,15 +67,16 @@ class LocalisationsController extends AppController {
 	}
 
 	function delete($id = null) {
-		if (!$id) {
-			$this->Session->setFlash('Invalide id pour La localisation');
-			$this->redirect('/localisations/index');
-		}
-
-		if ($this->Localisation->del($id)) {
-			$this->Session->setFlash('La localisation a &eacute;t&eacute; supprim&eacute;e');
-			$this->redirect('/localisations/index');
-		}
+	    if (!$id) {
+                $this->Session->setFlash('Invalide id pour La localisation');
+                $this->redirect('/localisations/index');
+            }
+            $localisation = $this->Localisation->read(null, $id);
+            $localisation['Localisation']['actif'] = 0;
+            if ( $this->Localisation->save($localisation)) {
+                $this->Session->setFlash('La localisation a &eacute;t&eacute; supprim&eacute;e');
+                $this->redirect('/localisations/index');
+	     }
 	}
 
 	function changeParentId($curruentParentId, $newParentId) {
