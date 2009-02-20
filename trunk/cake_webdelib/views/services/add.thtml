@@ -5,9 +5,13 @@
  	<?php echo $html->input('Service/libelle', array('size' => '50'));?>
 	<?php echo $html->tagErrorMsg('Service/libelle', 'Entrer le libelle.');?>
 </div>
-<div>
+<div class="optional">
 	<?php echo $form->labelTag('Service/parent_id', 'Appartient &agrave; : ');?>
 	<?php echo $html->selectTag('Service/parent_id', 	$services)?>
+</div>
+<div class="optional">
+	<?php echo $form->labelTag('Service/circuit_defaut_id', 'Circuit par d&eacute;faut');?>
+	<?php echo $html->selectTag('Service/circuit_defaut_id', $circuits);?>
 </div>
 
 <br/><br/><br/><br/>
