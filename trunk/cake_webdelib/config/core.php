@@ -49,7 +49,7 @@
  * With the other debug levels you get to click the "flash message" to continue.
  *
  */
-    define('DEBUG', 1);
+    define('DEBUG', 0);
 
 
 /**
@@ -146,15 +146,15 @@ define('CAKE_ADMIN', 'admin');
 	define('ACL_CLASSNAME', 'DB_ACL');
 	define('ACL_FILENAME', 'dbacl' . DS . 'db_acl');
   
-    $pos =  strrpos ( getcwd(), 'config');
-    $path = substr(getcwd(), 0, $pos);
-    $config_path = $path."config/";
     $pos2 =  strrpos ( getcwd(), 'webroot');
     $path2 = substr(getcwd(), 0, $pos2);
     $webroot_path = $path2."webroot/";
+    
     define ('WEBROOT_PATH',  $path2."webroot");
+    define ('CONFIG_PATH', $path2."config/");
+
 
  
     require_once ('webdelib.inc');
-    define ('VERSION', '<b> 1.9a </b>');
+    define ('VERSION', '<b> 2.0alpha </b>');
 ?>
