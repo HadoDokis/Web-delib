@@ -3,6 +3,7 @@ class ServicesController extends AppController {
 
 	var $name = 'Services';
 	var $helpers = array('Html', 'Form','Tree' );
+	var $uses = array('Service', 'Circuit');
 
 	// Gestion des droits
 	var $aucunDroit = array('changeParentId', 'changeService', 'doList', 'getLibelle', 'getParentList', 'isEditable', 'view');
@@ -31,12 +32,13 @@ class ServicesController extends AppController {
 			$this->redirect('/services/index');
 		}
 		$this->set('service', $this->Service->read(null, $id));
+		$this->set('circuitDefaut', $this->Circuit->findById($this->Service->field('circuit_defaut_id', 'id = '.$id)));
 	}
 
 	function add() {
 		if (empty($this->data)) {
-			$services = $this->Service->generateList(null,'id ASC');
-			$this->set('services', $services);
+			$this->set('services', $this->Service->generateList(null,'id ASC'));
+			$this->set('circuits', $this->Circuit->generateList());
 			$this->render();
 		} else {
 			$this->cleanUpFields();
@@ -45,6 +47,8 @@ class ServicesController extends AppController {
 				$this->redirect('/services/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->set('services', $this->Service->generateList(null,'id ASC'));
+				$this->set('circuits', $this->Circuit->generateList());
 			}
 		}
 	}
@@ -60,6 +64,7 @@ class ServicesController extends AppController {
 			$this->set('isEditable', $this->isEditable($id));
 			$this->set('services', $services);
 			$this->set('selectedService',$this->data['Service']['parent_id']);
+			$this->set('circuits', $this->Circuit->generateList());
 		} else {
 			$this->cleanUpFields();
 			if ($this->Service->save($this->data)) {
@@ -67,6 +72,12 @@ class ServicesController extends AppController {
 				$this->redirect('/services/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$services = $this->Service->generateList("Service.id != $id");
+
+				$this->set('isEditable', $this->isEditable($id));
+				$this->set('services', $services);
+				$this->set('selectedService',$this->data['Service']['parent_id']);
+				$this->set('circuits', $this->Circuit->generateList());
 			}
 		}
 	}
@@ -76,8 +87,8 @@ class ServicesController extends AppController {
 			$this->Session->setFlash('Invalide id pour le service');
 			$this->redirect('/services/index');
 		}
-                $service = $this->Service->read(null, $id);
-                $service['Service']['actif'] = 0;
+		$service = $this->Service->read(null, $id);
+		$service['Service']['actif'] = 0;
 
 		if ($this->Service->save($service)) {
 			$this->Session->setFlash('Le service a &eacute;t&eacute; supprim&eacute;');
@@ -95,7 +106,7 @@ class ServicesController extends AppController {
 		    $liste = $this->GetParentList($id).$this->getLibelle($id);
 		else
 		    $liste=array();
-		   
+
 		return $liste;
 	}
 

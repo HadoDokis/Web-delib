@@ -1017,6 +1017,9 @@ class DeliberationsController extends AppController {
 			$circuits=$this->Deliberation->Circuit->generateList(null, "libelle ASC");
             $old_circuit  = $this->data['Deliberation']['circuit_id'];
 
+			//circuit par défaut de l'utilisateur connecté
+			$circuit_id = $this->User->circuitDefaut($this->Session->read('user.User.id'), 'id');
+
 			//affichage du circuit existant
 			if($circuit_id == null)
 				$circuit_id=$this->data['Deliberation']['circuit_id'];
@@ -1052,7 +1055,6 @@ class DeliberationsController extends AppController {
 				$this->changeCircuit($id, $circuit_id);
 
 			if ($this->Deliberation->save($this->data)) {
-
 				$this->redirect('/deliberations/recapitulatif/'.$id);
 			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
@@ -1651,8 +1653,8 @@ class DeliberationsController extends AppController {
                 $this->set('data', $this->paramMails('refus', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
                 $this->Email->to =  $data['0']['User']['email'];
                 $this->Email->subject = "DELIB $delib_id Refusee !";
-                $result = $this->Email->send(); 
-            } 
+                $result = $this->Email->send();
+            }
         }
 
         function notifierInsertionCircuit ($delib_id, $user_id) {
@@ -1911,7 +1913,7 @@ class DeliberationsController extends AppController {
                  "#TITRE_PROJET#"=> $delib['Deliberation']['titre'],
                  "#LIBELLE_CIRCUIT#"=> $delib['Circuit']['libelle'],
                  "#ADRESSE_A_TRAITER#" =>  $addr1,
-                 "#ADRESSE_A_VISUALISER#" =>  $addr2 
+                 "#ADRESSE_A_VISUALISER#" =>  $addr2
              );
 
             return utf8_encode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $content))));

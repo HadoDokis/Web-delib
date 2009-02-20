@@ -19,8 +19,10 @@ class UsersController extends AppController {
 		if (!$user) {
 			$this->Session->setFlash('Invalide id pour l\'utilisateur.');
 			$this->redirect('/users/index');
-		} else
+		} else {
 			$this->set('user', $user);
+			$this->set('circuitDefautLibelle', $this->User->circuitDefaut($id, 'libelle'));
+		}
 	}
 
 	function add() {
@@ -54,6 +56,7 @@ class UsersController extends AppController {
 			$this->set('selectedServices', null);
 			$this->set('profils', $this->User->Profil->generateList());
 			$this->set('notif', array('1'=>'oui','0'=>'non'));
+			$this->set('circuits', $this->Circuit->generateList());
 			$this->render('edit');
 		}
 	}
@@ -92,6 +95,7 @@ class UsersController extends AppController {
 			$this->set('services', $this->User->Service->generateList());
 			$this->set('profils', $this->User->Profil->generateList());
 			$this->set('notif',array('1'=>'oui','0'=>'non'));
+			$this->set('circuits', $this->Circuit->generateList());
 		}
 	}
 
