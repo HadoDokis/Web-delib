@@ -43,7 +43,7 @@ CREATE TABLE `infosups` (
 --
 
 ALTER TABLE `localisations` ADD `order` VARCHAR( 50 ) NOT NULL AFTER `parent_id` ;
-ALTER TABLE `localisations` ADD `actif` VARCHAR( 1 ) NOT NULL DEFAULT '1';
+ALTER TABLE `localisations` ADD `actif` TINYINT( 1 ) NOT NULL DEFAULT '1' AFTER `libelle` ;
 
 -- --------------------------------------------------------
 --
@@ -51,8 +51,8 @@ ALTER TABLE `localisations` ADD `actif` VARCHAR( 1 ) NOT NULL DEFAULT '1';
 --
 
 ALTER TABLE `services` ADD `order` VARCHAR( 50 ) NOT NULL AFTER `parent_id` ;
-ALTER TABLE `services` ADD `actif` VARCHAR( 1 ) NOT NULL DEFAULT '1';
-
+ALTER TABLE `services` ADD `circuit_defaut_id` INT( 11 ) NOT NULL AFTER `libelle` ;
+ALTER TABLE `services` ADD `actif` TINYINT( 1 ) NOT NULL DEFAULT '1' AFTER `circuit_defaut_id` ;
 
 -- --------------------------------------------------------
 --
@@ -60,4 +60,13 @@ ALTER TABLE `services` ADD `actif` VARCHAR( 1 ) NOT NULL DEFAULT '1';
 --
 
 ALTER TABLE `themes` ADD `order` VARCHAR( 50 ) NOT NULL AFTER `parent_id` ;
-ALTER TABLE `themes` ADD `actif` VARCHAR( 1 ) NOT NULL DEFAULT '1';
+ALTER TABLE `themes` ADD `actif` TINYINT( 1 ) NOT NULL DEFAULT '1' AFTER `libelle` ;
+
+
+-- --------------------------------------------------------
+--
+-- Modification de la table `users`
+--
+
+ALTER TABLE `users` ADD `circuit_defaut_id` INT( 11 ) NOT NULL AFTER `note` ;
+
