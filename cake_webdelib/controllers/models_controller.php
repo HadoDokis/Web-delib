@@ -2,12 +2,12 @@
 	class ModelsController extends AppController {
 		
 		var $name = 'Models';
-		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur');
+		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef');
 		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
 		// Gestion des droits
-		var $aucunDroit = array('getModel', 'makeBalisesProjet', 'generer');
+		var $aucunDroit = array('getModel', 'makeBalisesProjet', 'generer', 'paramMails');
 		var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
                 
 
@@ -61,18 +61,13 @@
 		}
 
 		function view($id = null) {
-		      $this->set('USE_GEDOOO', USE_GEDOOO);
-		      $data = $this->Model->read(null, $id);
-		      if (USE_GEDOOO && ($data['Model']['type'] == 'Document') ) {
-			  header('Content-type: '.$this->_getFileType($id));
-			  header('Content-Length: '.$this->_getSize($id));
-			  header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
-			  echo $this->_getData($id);
-			  exit();
-		       }
-		       else {
-			   $this->set('model', $this->Model->read(null, $id));
-		       }
+		    $this->set('USE_GEDOOO', USE_GEDOOO);
+		    $data = $this->Model->read(null, $id);
+		    header('Content-type: '.$this->_getFileType($id));
+		    header('Content-Length: '.$this->_getSize($id));
+		    header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
+		    echo $this->_getData($id);
+		    exit();
 		}
 
 
@@ -196,6 +191,10 @@
                    $commentaires->addPart($oDevPart);
                 }
                @$oMainPart->addElement($commentaires);
+
+               foreach($delib['Infosup'] as $champs) {
+                   $oMainPart->addElement($this->addField($champs, $u, $delib['Deliberation']['id'])); 
+               }
 
                if (GENERER_DOC_SIMPLE) {
                    $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text', $delib['Deliberation']['texte_projet']));
@@ -544,7 +543,7 @@
                              $zip->close();
                          } 
                          // envoi des mails si le champ est renseigné
-                        $this->sendDocument($acteur['Acteur']['email'], $nomFichier, $path, '');                         
+                        $this->sendDocument($acteur['Acteur'], $nomFichier, $path, '');                         
                      }
                      $listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
                      $this->set('listFiles', $listFiles);
@@ -564,17 +563,50 @@
 	        $oFusion->SendContentToClient();  
         }
 
-        function sendDocument($to, $fichier, $path, $doc) {
-            if ($to != '') {
+        function sendDocument($acteur, $fichier, $path, $doc) {
+            if ($acteur['email'] != '') {
                 $this->Email->template = 'email/convoquer';
                 $this->Email->attachments = null;
-                $this->Email->to = $to;
+                $this->Email->to = $acteur['email'];
                 $this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ");
-                $this->set('data',  utf8_encode("Vous venez de recevoir un document de Webdelib "));
+                $this->set('data',   $this->paramMails('convocation',  $acteur ));
                 $this->Email->attach($path.$fichier, $fichier);
                 $res =  $this->Email->send();
                 unset($res);
             }
         }
+
+        function  addField($champs, $u, $delib_id) {
+             $champs_def = $this->Infosupdef->read(null, $champs['infosupdef_id']);
+             
+            if ($champs['text'] != '')
+                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
+             elseif ($champs['date'] != '0000-00-00')
+                 return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
+             elseif ($champs['file_size'] != 0 ) {
+                 $dyn_path = "/files/generee/deliberations/".$delib_id."/";
+                 $path = WEBROOT_PATH.$dyn_path;
+                 $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+                 $infos = (pathinfo($champs['file_name']));
+	         $name = time().'.'.$infos['extension'];
+                 $this->Gedooo->createFile($path, $name, $champs['content']);
+                 $ext = $u->getMimeType($path.$name);
+                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', $ext , 'url', $urlWebroot.$name));
+             }
+             elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
+                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', 'text/html', 'text', $champs['content']));
+             }
+        }
+
+        function paramMails($type,  $acteur) {
+            $handle  = fopen(CONFIG_PATH.'/emails/'.$type.'.txt', 'r');
+            $content = fread($handle, filesize(CONFIG_PATH.'/emails/'.$type.'.txt'));
+            $searchReplace = array(
+                "#NOM#" => $acteur['nom'],
+                "#PRENOM#" => $acteur['prenom'],
+             );
+            return utf8_encode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $content))));
+        }
+
 }
 ?>
