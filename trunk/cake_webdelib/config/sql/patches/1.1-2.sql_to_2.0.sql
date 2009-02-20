@@ -17,7 +17,6 @@ CREATE TABLE `infosupdefs` (
 
 
 -- --------------------------------------------------------
-
 --
 -- Structure de la table `infosups`
 --
@@ -36,3 +35,29 @@ CREATE TABLE `infosups` (
   KEY `deliberation_id` (`deliberation_id`),
   KEY `infosupdef_id` (`infosupdef_id`)
 );
+
+
+-- --------------------------------------------------------
+--
+-- Modification de la table `localisations`
+--
+
+ALTER TABLE `localisations` ADD `order` VARCHAR( 50 ) NOT NULL AFTER `parent_id` ;
+ALTER TABLE `localisations` ADD `actif` VARCHAR( 1 ) NOT NULL DEFAULT '1';
+
+-- --------------------------------------------------------
+--
+-- Modification de la table `services`
+--
+
+ALTER TABLE `services` ADD `order` VARCHAR( 50 ) NOT NULL AFTER `parent_id` ;
+ALTER TABLE `services` ADD `actif` VARCHAR( 1 ) NOT NULL DEFAULT '1';
+
+
+-- --------------------------------------------------------
+--
+-- Modification de la table `themes`
+--
+
+ALTER TABLE `themes` ADD `order` VARCHAR( 50 ) NOT NULL AFTER `parent_id` ;
+ALTER TABLE `themes` ADD `actif` VARCHAR( 1 ) NOT NULL DEFAULT '1';
