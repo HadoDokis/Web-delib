@@ -1616,77 +1616,57 @@ class DeliberationsController extends AppController {
 		$this->set('delib_id', $id);
 	}
 
-	function deliberationvue ($id = null) {
-		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="D"'));
-		$this->set('deliberation', $this->Deliberation->read(null, $id));
-		$this->set('delib_id', $id);
+        function deliberationvue ($id = null) {
+            $this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="D"'));
+            $this->set('deliberation', $this->Deliberation->read(null, $id));
+            $this->set('delib_id', $id);
 	}
 
-	function notifierDossierAtraiter($circuit_id, $pos, $delib_id){
-		$conditions = "UsersCircuit.circuit_id=$circuit_id and UsersCircuit.position=$pos";
-		$data = $this->UsersCircuit->findAll($conditions);
-		// Si l'utilisateur accepte les mails
-		if ($data['0']['User']['accept_notif']){
-			$to_mail = $data['0']['User']['email'];
-			$to_nom = $data['0']['User']['nom'];
-			$to_prenom = $data['0']['User']['prenom'];
-
-			$this->Email->template = 'email/traiter';
-			$addr = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/traiter/$delib_id";
-			$text = "Vous avez un dossieratraiter, Cliquer <a href='$addr'> ici</a>";
-            $this->set('data', $text);
-            $this->Email->to = $to_mail;
-            $this->Email->subject = "DELIB $delib_idatraiter";
-            $result = $this->Email->send();
-		}
+        function notifierDossierAtraiter($circuit_id, $pos, $delib_id){
+            $conditions = "UsersCircuit.circuit_id=$circuit_id and UsersCircuit.position=$pos";
+            $data = $this->UsersCircuit->findAll($conditions);
+            // Si l'utilisateur accepte les mails
+            if ($data['0']['User']['accept_notif']){
+                $to_mail = $data['0']['User']['email'];
+                $this->Email->template = 'email/traiter';
+                $this->set('data',  $this->paramMails('traiter', $this->Deliberation->read(null, delib_id),  $data['0']['User']));
+                $this->Email->to = $to_mail;
+                $this->Email->subject = "DELIB $delib_idatraiter";
+                $result = $this->Email->send();
+            }
 	}
 
-	function notifierDossierRefuse($delib_id,$user_id){
-		$condition = "Deliberation.id = $delib_id";
-		$data = $this->Deliberation->findAll($condition);
-		$redacteur_id = $data['0']['Deliberation']['redacteur_id'];
-		$data_comm = $this->Commentaire->findAll("delib_id = $delib_id");
+        function notifierDossierRefuse($delib_id,$user_id){
+            $condition = "Deliberation.id = $delib_id";
+            $data = $this->Deliberation->findAll($condition);
+            $redacteur_id = $data['0']['Deliberation']['redacteur_id'];
+            $data_comm = $this->Commentaire->findAll("delib_id = $delib_id");
 
-		$condition = "User.id = $user_id";
-		$data = $this->User->findAll($condition);
+            $condition = "User.id = $user_id";
+            $data = $this->User->findAll($condition);
 
-		// Si l'utilisateur accepte les mails
-		if ($data['0']['User']['accept_notif']){
-			$to_mail = $data['0']['User']['email'];
-			$to_nom = $data['0']['User']['nom'];
-			$to_prenom = $data['0']['User']['prenom'];
-			$this->Email->template = 'email/refuse';
+            // Si l'utilisateur accepte les mails
+            if ($data['0']['User']['accept_notif']){
+                $this->Email->template = 'email/refuse';
+                $this->set('data', $this->paramMails('refus', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
+                $this->Email->to =  $data['0']['User']['email'];
+                $this->Email->subject = "DELIB $delib_id Refusee !";
+                $result = $this->Email->send(); 
+            } 
+        }
 
-			if(!empty($data_comm) && $data['0']['User']['id']==$redacteur_id){
-				$commentaire = $data_comm['0']['Commentaire']['texte'];
-				$comm = "Votre dossier a ete refuse pour les motifs suivants :<br/><br/>$commentaire";
-				$this->set('data',$comm);
-			}elseif ($data['0']['User']['id']==$redacteur_id) {
-				$this->set('data',"Votre dossier a ete refuse");
-			}else{
-            	$this->set('data', "Le dossier $delib_id a ete refuse... Il est reparti au redacteur pour etre modifie");
-			}
-			$this->Email->to = $to_mail;
-            $this->Email->subject = "DELIB $delib_id Refusee !";
-            $result = $this->Email->send();
-		}
-	}
+        function notifierInsertionCircuit ($delib_id, $user_id) {
+            $condition = "User.id = $user_id";
+            $data = $this->User->findAll($condition);
 
-	function notifierInsertionCircuit ($delib_id, $user_id) {
-		$condition = "User.id = $user_id";
-		$data = $this->User->findAll($condition);
-
-		// Si l'utilisateur accepte les mails
-		if ($data['0']['User']['accept_notif']){
-			$to_mail = $data['0']['User']['email'];
-			$to_nom = $data['0']['User']['nom'];
-			$to_prenom = $data['0']['User']['prenom'];
-			$this->Email->template = 'email/circuit';
-            $this->set('data', 'Vous allez recevoir un dossier');
-            $this->Email->to = $to_mail;
-            $this->Email->subject = "vous allez recevoir la delib : $delib_id";
-            $result = $this->Email->send();
-		}
+            // Si l'utilisateur accepte les mails
+            if ($data['0']['User']['accept_notif']){
+                $this->Email->template = 'email/circuit';
+                $this->set('data',  $this->paramMails('insertion', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
+                $this->Email->to = $data['0']['User']['email'];
+                $this->Email->subject = "vous allez recevoir la delib : $delib_id";
+                $result = $this->Email->send();
+            }
 	}
 
 	function getListPresent($delib_id){
@@ -1916,5 +1896,26 @@ class DeliberationsController extends AppController {
 
 	   }
        }
+
+       function paramMails($type, $delib, $acteur) {
+            $handle  = fopen(CONFIG_PATH.'/emails/'.$type.'.txt', 'r');
+            $content = fread($handle, filesize(CONFIG_PATH.'/emails/'.$type.'.txt'));
+            $addr1    = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/traiter/".$delib['Deliberation']['id'];
+            $addr2    = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/view/".$delib['Deliberation']['id'];
+
+             $searchReplace = array(
+                 "#NOM#" => $acteur['nom'],
+                 "#PRENOM#" => $acteur['prenom'],
+                 "#IDENTIFIANT_PROJET#"=> $delib['Deliberation']['id'],
+                 "#OBJET_PROJET#"=> $delib['Deliberation']['objet'],
+                 "#TITRE_PROJET#"=> $delib['Deliberation']['titre'],
+                 "#LIBELLE_CIRCUIT#"=> $delib['Circuit']['libelle'],
+                 "#ADRESSE_A_TRAITER#" =>  $addr1,
+                 "#ADRESSE_A_VISUALISER#" =>  $addr2 
+             );
+
+            return utf8_encode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $content))));
+        }
+
 }
 ?>
