@@ -18,7 +18,7 @@
 
     	<tr>
     	    <td><?php echo $projet['Deliberation']['position']; ?></td>
-		    <td><?php echo $projet['Theme']['libelle']; ?></td>
+		    <td><?php echo '['.$projet['Theme']['order'].'] '.$projet['Theme']['libelle']; ?></td>
 		    <td><?php echo $projet['Service']['libelle']; ?></td>
 		    <td><?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$projet['rapp_id'],array('id'=>"$urlPage",'onChange'=>"changeRapporteur(this,$id_delib)"),null,false);?></td>
 		    <td><?php echo $projet['Deliberation']['objet']; ?></td>
