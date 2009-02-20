@@ -5,6 +5,10 @@
  	<?php echo $html->input('Theme/libelle', array('size' => '60'));?>
 	<?php echo $html->tagErrorMsg('Theme/libelle', 'Entrer le libelle.');?>
 </div>
+<div class="optional">
+	<?php echo $form->labelTag('Theme/order', 'Classement');?>
+ 	<?php echo $html->input('Theme/order', array('size' => '10'));?>
+</div>
 <br/>
 <div>
 	<?php
