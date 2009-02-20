@@ -9,13 +9,13 @@ class ThemesController extends AppController {
 	var $commeDroit = array('edit'=>'Themes:index', 'add'=>'Themes:index', 'delete'=>'Themes:index');
 
 	function getLibelle ($id = null) {
-		$condition = "Theme.id = $id";
-        $objCourant = $this->Theme->findAll($condition);
-		return $objCourant['0']['Theme']['libelle'];
+            $condition = "Theme.id = $id";
+            $objCourant = $this->Theme->findAll($condition);
+            return $objCourant['0']['Theme']['libelle'];
 	}
 
 	function index() {
-		$this->set('data', $this->Theme->findAllThreaded(null, null, 'Theme.id ASC'));
+            $this->set('data', $this->Theme->findAllThreaded(null, null, 'Theme.id ASC'));
 	}
 
 	function view($id = null) {
@@ -65,15 +65,16 @@ class ThemesController extends AppController {
 	}
 
 	function delete($id = null) {
-		if (!$id) {
-			$this->Session->setFlash('Invalide id pour le Th&egrave;me');
-			$this->redirect('/themes/index');
-		}
-
-		if ($this->Theme->del($id)) {
-			$this->Session->setFlash('Le Th&egrave;me a &eacute;t&eacute; supprim&eacute;');
-			$this->redirect('/themes/index');
-		}
+	    if (!$id) {
+                $this->Session->setFlash('Invalide id pour le Th&egrave;me');
+                $this->redirect('/themes/index');
+            }
+            $theme = $this->Theme->read(null, $id);
+            $theme['Theme']['actif'] = 0;
+            if ( $this->Theme->save( $theme)) {
+                $this->Session->setFlash('Le Th&egrave;me a &eacute;t&eacute; d&eacute;sactiv&eacute;');
+                $this->redirect('/themes/index');
+            }
 	}
 
 	function changeParentId($curruentParentId, $newParentId) {

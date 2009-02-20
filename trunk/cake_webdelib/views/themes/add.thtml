@@ -4,6 +4,11 @@
 	<?php echo $form->labelTag('Theme/libelle', 'Libelle');?>
  	<?php echo $html->input('Theme/libelle', array('size' => '50'));?>
 	<?php echo $html->tagErrorMsg('Theme/libelle', 'Entrer le libelle.');?>
+ 	<?php echo $html->input('Theme/order', array('size' => '10'));?>
+</div>
+<div class="optional">
+        <?php echo $form->labelTag('Theme/order', 'Classement');?>
+        <?php echo $html->input('Theme/order', array('size' => '10'));?>
 </div>
 <div>
 	<?php echo $form->labelTag('Theme/parent_id', 'Appartient &agrave; ');?>
