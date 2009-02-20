@@ -4,6 +4,8 @@
 <div class="imbrique">
 	<dt>Libelle</dt>
 	<dd>&nbsp;<?php echo $service['Service']['libelle']?></dd>
+	<dt>Circuit par d&eacute;faut</dt>
+	<dd>&nbsp;<?php echo $circuitDefaut['Circuit']['libelle']?></dd>
 </div>
 <div class="imbrique">
 	<div class="gauche">
