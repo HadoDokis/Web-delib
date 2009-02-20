@@ -71,6 +71,9 @@
 			<?php echo $form->labelTag('User/accept_notif', 'Notification email'); ?>
 			<?php echo $html->radio('User/accept_notif',$notif);?>
 			<br /><br />
+			<?php echo $form->labelTag('User/circuit_defaut_id', 'Circuit par d&eacute;faut');?>
+			<?php echo $html->selectTag('User/circuit_defaut_id', $circuits);?>
+			<br /><br />
 			<?php echo $form->labelTag('User/note', 'Note');?>
  			<?php echo $html->textarea('User/note', array('cols' => '30'));?>
 		</div>
