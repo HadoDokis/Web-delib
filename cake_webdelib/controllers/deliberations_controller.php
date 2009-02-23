@@ -73,8 +73,7 @@ class DeliberationsController extends AppController {
 
 	function listerProjetsAttribues() {
 		if (empty ($this->data)) {
-			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-			$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
+			$this->set('date_seances', $this->Deliberation->Seance->generateList());
 			$conditions="seance_id != 0";
 			$this->set('deliberations', $this->Deliberation->findAll($conditions));
 		}
@@ -141,8 +140,7 @@ class DeliberationsController extends AppController {
 			else
 			{
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-				$this->set('date_seances', $this->Deliberation->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
+				$this->set('date_seances', $this->Deliberation->Seance->generateList());
 				$conditions="seance_id is null";
 				$this->set('deliberations', $this->Deliberation->findAll($conditions));
 			}

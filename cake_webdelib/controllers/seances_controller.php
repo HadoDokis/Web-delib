@@ -547,53 +547,40 @@ class SeancesController extends AppController {
 		$seanceIdCourante = $deliberation['Seance']['id'];
 
 		if (!empty($this->data)) {
-			// En fonction de l'avis sélectionné
 			if (!array_key_exists('avis', $this->data['Deliberation'])) {
 				$this->Seance->invalidate('avis');
-			} elseif ($this->data['Deliberation']['avis'] == 2) {
-				// Défavorable : le projet repasse en état = 0
-				$this->data['Deliberation']['etat'] = 0;
-				unset($this->data['Deliberation']['seance_id']);
-				$this->Deliberation->save($this->data);
-				// ajout du commentaire
-				$this->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
-				$this->data['Commentaire']['texte'] = 'A reçu un avis défavorable en '
-					. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$deliberation['Seance']['type_id'])
-					. ' du ' . $this->Date->frenchDate(strtotime($deliberation['Seance']['date']));
-				 $this->Deliberation->Commentaire->save($this->data);
-
-				$sortie = true;
-			} elseif ($this->data['Deliberation']['avis'] == 1) {
-				// Favorable : on attribue une nouvelle date de séance si elle est sélectionnée
+			} else {
+				// Initialisations liées à la nouvelle date de séance ou non
 				if (empty($this->data['Deliberation']['seance_id'])) {
 					unset($this->data['Deliberation']['seance_id']);
-					// on calcule le numéro de la délibération car il n'y a pas de séance suivante attribuée
+					// Calcul du numéro de la délibération car il n'y a pas de séance suivante attribuée
 					if (empty($deliberation['Deliberation']['num_delib'])) {
 						$compteurId = $this->Seance->Typeseance->field('compteur_id', 'Typeseance.id = '.$deliberation['Seance']['type_id']);
 						$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($compteurId);
 					}
 				} else
 					$this->data['Deliberation']['position'] = $this->Deliberation->findCount("seance_id =".$this->data['Deliberation']['seance_id']." AND (etat != -1 )")+1;
+
+				// Sauvegarde de la délibération
 				$this->Deliberation->save($this->data['Deliberation']);
+
 				// ajout du commentaire
 				$this->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
-				$this->data['Commentaire']['texte'] = 'A reçu un avis favorable en '
-					. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$deliberation['Seance']['type_id'])
-					. ' du ' .$this->Date->frenchDate(strtotime($deliberation['Seance']['date']));
+				$this->data['Commentaire']['texte'] = 'A reçu un avis ';
+				$this->data['Commentaire']['texte'].= ($this->data['Deliberation']['avis'] == 1) ? 'favorable' : 'défavorable';
+				$this->data['Commentaire']['texte'].= ' en '. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$deliberation['Seance']['type_id']);
+				$this->data['Commentaire']['texte'].= ' du ' .$this->Date->frenchDate(strtotime($deliberation['Seance']['date']));
 				$this->Deliberation->Commentaire->save($this->data);
 
 				$sortie = true;
 			}
-
-			$this->data = $deliberation;
 		}
 		if ($sortie)
 			$this->redirect('/seances/detailsAvis/'.$seanceIdCourante);
 		else {
 			$this->data = $deliberation;
 			$this->set('avis', array(1 => 'Favorable', 2 => 'Défavorable'));
-			$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-			$this->set('seances', $this->Seance->generateList($condition,'date asc',null,'{n}.Seance.id','{n}.Seance.date'));
+			$this->set('seances', $this->Seance->generateList('Seance.id != ' . $seanceIdCourante));
 		}
 	}
 
