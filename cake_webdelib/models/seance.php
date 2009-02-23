@@ -29,21 +29,23 @@ class Seance extends AppModel {
     );
 
      /* retourne la liste des séances futures avec le nom du type de séance  */
-     function generateList() {
+     function generateList($conditionSup = null) {
          $generateList = array();
-         $conditions= 'Seance.traitee = 0';
+         $conditions = 'Seance.traitee = 0';
+         if (!empty($conditionSup))
+         	$conditions .= ' AND '.$conditionSup;
          $seances = $this->findAll($conditions, null, 'date ASC');
          foreach ($seances as $seance){
 	     $retard=$seance['Typeseance']['retard'];
              if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y")))){
-	         $dateTimeStamp = strtotime($seance['Seance']['date']); 
+	         $dateTimeStamp = strtotime($seance['Seance']['date']);
 	         $dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
                  $generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
              }
-        } 
+        }
         return $generateList;
     }
-    
+
 
 
     function generateAllList() {
