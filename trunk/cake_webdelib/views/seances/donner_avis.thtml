@@ -1,35 +1,10 @@
-<script>
-window.onload=initAffichage;
-
-function afficheSelectSeance(avis)
-{
-	divElement = document.getElementById("selectSeance");
-
-	if (avis.value == 1)
-		divElement.style.display = '';
-	else
-		divElement.style.display = 'none';
-}
-
-function initAffichage()
-{
-	radioAvis = document.getElementById("avis_1");
-	if (radioAvis.checked)
-		afficheSelectSeance(radioAvis);
-	else {
-		radioAvis = document.getElementById("avis_2");
-			afficheSelectSeance(radioAvis);
-	}
-}
-</script>
-
 <h2> Donner un avis pour le projet : "<?php echo $html->tagValue('Deliberation/objet')?>"</h2>
 
 <?php echo $html->formTag('/seances/donnerAvis/'.$html->tagValue('Deliberation/id'), null, array('name'=>'Session')); ?>
 
 	<div class="demi">
 		<?php echo $form->labelTag('Deliberation/avis', 'Donner un avis <acronym title="obligatoire">*</acronym>'); ?>
-		<?php echo $html->radio('Deliberation/avis', $avis, null, array('onchange' => "afficheSelectSeance(this);"));?>
+		<?php echo $html->radio('Deliberation/avis', $avis);?>
 		<?php echo $html->tagErrorMsg('Seance/avis', 'Selectionner un avis');?>
 		<br/>
 		<br/>
