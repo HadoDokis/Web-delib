@@ -1018,7 +1018,8 @@ class DeliberationsController extends AppController {
             $old_circuit  = $this->data['Deliberation']['circuit_id'];
 
 			//circuit par défaut de l'utilisateur connecté
-			$circuit_id = $this->User->circuitDefaut($this->Session->read('user.User.id'), 'id');
+			if($circuit_id == null)
+				$circuit_id = $this->User->circuitDefaut($this->Session->read('user.User.id'), 'id');
 
 			//affichage du circuit existant
 			if($circuit_id == null)
