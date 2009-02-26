@@ -774,7 +774,7 @@ class DeliberationsController extends AppController {
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
-			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
+			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateList());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
@@ -848,7 +848,7 @@ class DeliberationsController extends AppController {
 						$this->set('circuits', $this->Deliberation->Circuit->generateList());
 						$this->set('datelim',$this->data['Deliberation']['date_limite']);
 						$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
-						$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
+						$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
 						$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 
 						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
