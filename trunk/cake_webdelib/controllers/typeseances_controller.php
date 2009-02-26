@@ -40,7 +40,7 @@ class TypeseancesController extends AppController {
 			$this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true), 1 => $this->Typeseance->libelleAction(1, true)));
 			$this->set('typeacteurs', $this->Typeseance->Typeacteur->generateList());
 			$this->set('selectedTypeacteurs', null);
-			$this->set('acteurs', $this->Typeseance->Acteur->generateList());
+			$this->set('acteurs', $this->Typeseance->Acteur->generateList('nom'));
 			$this->set('selectedActeurs', null);
 			$this->render('edit');
 		}
@@ -80,7 +80,7 @@ class TypeseancesController extends AppController {
 			$this->set('models', $this->Typeseance->Modelpvdetaille->generateList('type=\'Document\'', null, null, "{n}.Modelpvdetaille.id", "{n}.Modelpvdetaille.modele"));
 			$this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true), 1 => $this->Typeseance->libelleAction(1, true)));
 			$this->set('typeacteurs', $this->Typeseance->Typeacteur->generateList());
-			$this->set('acteurs', $this->Typeseance->Acteur->generateList());
+			$this->set('acteurs', $this->Typeseance->Acteur->generateList('nom'));
 		}
 	}
 

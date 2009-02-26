@@ -54,11 +54,13 @@ class Acteur extends AppModel
 	}
 
 	/* retourne la liste des acteurs élus [id]=>[prenom et nom] pour utilisation html->selectTag */
-	function generateListElus() {
+	function generateListElus($order_by=null) {
 		$generateListElus = array();
-
-		$acteurs = $this->findAll('Typeacteur.elu=1', 'id, nom, prenom', 'position ASC');
-		foreach($acteurs as $acteur) {
+                if ($order_by==null)
+		    $acteurs = $this->findAll('Typeacteur.elu=1', 'id, nom, prenom', 'position ASC');
+		else
+                    $acteurs = $this->findAll(null, 'id, nom, prenom', $order_by.' ASC');
+                foreach($acteurs as $acteur) {
 			$generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
 		}
 
@@ -66,10 +68,13 @@ class Acteur extends AppModel
 	}
 
 	/* retourne la liste des acteurs [id]=>[prenom et nom] pour utilisation html->selectTag */
-	function generateList() {
+	function generateList($order_by=null) {
 		$generateList = array();
 
-		$acteurs = $this->findAll(null, 'id, nom, prenom', 'position ASC');
+		if ($order_by==null)
+                    $acteurs = $this->findAll(null, 'id, nom, prenom', 'position ASC');
+                else
+                    $acteurs = $this->findAll(null, 'id, nom, prenom', $order_by.' ASC');
 		foreach($acteurs as $acteur) {
 			$generateList[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
 		}
