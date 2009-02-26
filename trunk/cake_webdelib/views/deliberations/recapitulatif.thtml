@@ -92,9 +92,7 @@
 </table>
 <br/>
 <div class="centre">
-	<?php echo $html->link('Modifier', '/deliberations/add/'.$deliberation['Deliberation']['id'], array('class'=>'link_add', 'title'=>'ajouter un deliberation')); ?><br/><br/>
-	<?php echo $html->link('Insérer la deliberation dans le circuit', '/deliberations/addIntoCircuit/'.$deliberation['Deliberation']['id'], array('class'=>'link_add', 'title'=>'ajouter un deliberation')); ?>
+	<?php echo $html->link('Modifier', '/deliberations/add/'.$deliberation['Deliberation']['id'], array('class'=>'link_add', 'title'=>'Modifier le projet de délibération')); ?><br/><br/>
+	<?php echo $html->link('Insérer la deliberation dans le circuit', '/deliberations/addIntoCircuit/'.$deliberation['Deliberation']['id'], array('class'=>'link_add', 'title'=>'Insérer la délibération dans le circuit')); ?>
 </div>
 </div>
-
-
