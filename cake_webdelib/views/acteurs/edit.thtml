@@ -96,7 +96,9 @@ function initAffichageInfosElus()
 				<?php echo $html->tagErrorMsg('Acteur/service', 'Sélectionnez un ou plusieurs services');?>
 				<div class="spacer"></div>
 				<?php echo $form->labelTag('Acteur/date_naissance', 'Date de naissance');?>
-				<?php echo $html->dayOptionTag('Acteur/date_naissance',null,null,false); ?>-<?php echo $html2->monthOptionTagFr('Acteur/date_naissance');?>-<?php echo $html->yearOptionTag('Acteur/date_naissance',null,null,null,null); ?>
+				<?php echo $html->dayOptionTag('Acteur/date_naissance',null,null,false); ?>-
+                                <?php echo $html2->monthOptionTagFr('Acteur/date_naissance');?>-
+                                <?php echo $html2->yearOptionTag('Acteur/date_naissance',null, 1920, 1990, null); ?>
 			</div>
 		</fieldset>
 		<div class="spacer"></div>

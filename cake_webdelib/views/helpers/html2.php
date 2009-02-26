@@ -214,6 +214,42 @@ class Html2Helper extends HtmlHelper
         return $opt;
     }
 
+         /**
+ * Returns a SELECT element for years
+ *
+ * @param string $tagName Prefix name for the SELECT element
+ * @deprecated  string $value
+ * @param integer $minYear First year in sequence
+ * @param integer $maxYear Last year in sequence
+ * @param string $selected Option which is selected.
+ * @param array $optionAttr Attribute array for the option elements.
+ * @param boolean $showEmpty Show/hide the empty select option
+ * @return mixed
+ * @access public
+ */
+        function yearOptionTag($tagName, $value = null, $minYear = null, $maxYear = null, $selected = null, $selectAttr = null, $optionAttr = null, $showEmpty = true) {
+                if (empty($selected) && ($this->tagValue($tagName))) {
+                    $selected = date('Y', strtotime($this->tagValue($tagName)));
+                }
+
+                $yearValue = empty($selected) ? ($showEmpty ? NULL : date('Y')) : $selected;
+                $currentYear = date('Y');
+                $maxYear = is_null($maxYear) ? $currentYear + 11 : $maxYear + 1;
+                $minYear = is_null($minYear) ? $currentYear - 60 : $minYear;
+
+                if ($minYear > $maxYear) {
+                        $tmpYear = $minYear;
+                        $minYear = $maxYear;
+                        $maxYear = $tmpYear;
+                }
+
+                for ($yearCounter = $minYear; $yearCounter < $maxYear; $yearCounter++) {
+                        $years[$yearCounter] = $yearCounter;
+                }
+
+                return $this->selectTag($tagName . "_year", $years, $yearValue, $selectAttr, $optionAttr, $showEmpty);
+        }
+
 
 	function ukToFrenchDate($date)
 	{
