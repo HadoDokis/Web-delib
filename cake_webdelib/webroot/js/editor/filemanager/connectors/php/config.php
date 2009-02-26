@@ -39,7 +39,8 @@ $path = substr(getcwd(), 0, $pos);
 $Config['UserFilesAbsolutePath'] = $path.'webroot/files/image/';
 
 // Path to user files relative to the document root.
-$Config['UserFilesPath'] = $path.'webroot/files/image/';
+//$Config['UserFilesPath'] = $path.'webroot/files/image/';
+  $Config['UserFilesPath'] = preg_replace('/js\/editor\/filemanager\/connectors\/php\/connector\.php(.*)$/','','http://'.$_SERVER['HTTP_HOST']) . '/files/image/'; 
 
 // Due to security issues with Apache modules, it is recommended to leave the
 // following setting enabled.
