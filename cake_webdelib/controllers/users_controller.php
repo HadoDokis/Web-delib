@@ -185,10 +185,10 @@ class UsersController extends AppController {
     function login() {
 		//pas de message d'erreur
 		$this->set('errorMsg',"");
-		//si le formulaire d'authentification a Ã©tÃ© soumis
+		//si le formulaire d'authentification a été soumis
 		if (!empty($this->data))
 		{
-			//cherche si utilisateur enregistrÃ© possede ce login
+			//cherche si utilisateur enregistré possede ce login
 			$user = $this->User->findByLogin($this->data['User']['login']);
 
 			//si le mdp n'est pas vide et correspond a celui de la bdd
@@ -198,19 +198,12 @@ class UsersController extends AppController {
 				$this->Session->write('user',$user);
 
 				//services auquels appartient l'agent
-				if(empty ($user['Service'])){
-				$this->Session->write('user.User.service', $user['ServiceElu']['id']);
-				}else{
-    			$services = $this->Utils->simplifyArray($user['Service']);
-    			foreach ($services as $key=>$service){
-    				$service = $this->requestAction("services/doList/$key");
-    				$services[$key]=$service;
-    			}
-    			$this->Session->write('user.Service',$services);
-    			$this->Session->write('user.User.service', key($services));
-				}
-    			//debug($this->Session->read());
-				//exit;
+				$services = array();
+   				foreach ($user['Service'] as $service)
+   					$services[$service['id']] = $this->Service->doList($service['id']);
+
+    			$this->Session->write('user.Service', $services);
+   				$this->Session->write('user.User.service', key($services));
 
 				// Chargement du menu dans la session
                 $this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
@@ -219,7 +212,7 @@ class UsersController extends AppController {
  			}
 			else
 			{
-				//sinon on prÃ©pare le message d'erreur a afficher dans la vue
+				//sinon on prépare le message d'erreur a afficher dans la vue
 				$this->set('errorMsg','Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
 				$this->layout='connection';
 			}
