@@ -42,9 +42,6 @@ class DeliberationsController extends AppController {
 		// Suppression des projets ajoutés mais vierges
 		$this->checkEmptyDelib();
 
- 		//liste les projets dont je suis le redacteur et qui sont en cours de redaction
- 		//il faut verifier la position du projet de delib dans la table traitement s'il existe car
-		//si la position est à  0 cela notifie un refus
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
 		$conditions="etat =0 AND redacteur_id = $user_id";
@@ -52,16 +49,16 @@ class DeliberationsController extends AppController {
 
 		for ($i=0; $i<count($deliberations); $i++){
 			if (isset($deliberations[$i]['Seance']['date'])) {
-		            $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
-			    $deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
+				$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+				$deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
 			}
 			else {
-                            $deliberations[$i]['Model']['id'] = 1;
+				$deliberations[$i]['Model']['id'] = 1;
 			}
 			$id_service = $deliberations[$i]['Service']['id'];
-			$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
-
+			$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 		}
+
 		if ($this->Acl->check($user_id, "Deliberations:add"))
 			$this->set('UserCanAdd', true);
 		else
@@ -87,10 +84,10 @@ class DeliberationsController extends AppController {
 
 		for ($i=0; $i<count($deliberations); $i++){
 			if (isset($deliberations[$i]['Seance']['date']))
-		        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+			$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 			$id_service = $deliberations[$i]['Service']['id'];
-			$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
-                        $deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
+			$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+			$deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
 		}
 		$this->set('deliberations', $deliberations);
 		$this->set('USE_GEDOOO', USE_GEDOOO);
@@ -187,7 +184,7 @@ class DeliberationsController extends AppController {
 				if(!empty($deliberations[$i]['Seance']['date']))
 		    		    $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 				$id_service = $deliberations[$i]['Service']['id'];
-				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 				$deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
 			}
 
@@ -272,8 +269,8 @@ class DeliberationsController extends AppController {
 				if(!empty($deliberations[$i]['Seance']['date']))
 		    		$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
 				$id_service = $deliberations[$i]['Service']['id'];
-				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
-			        $deliberations[$i]['Model']['id'] = $this->getModelId( $deliberations[$i]['Deliberation']['id']);
+				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+				$deliberations[$i]['Model']['id'] = $this->getModelId( $deliberations[$i]['Deliberation']['id']);
 			}
 
 			foreach ($deliberations as $deliberation)
@@ -350,7 +347,7 @@ class DeliberationsController extends AppController {
 			$this->data['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data['Seance']['date']));
 
 		$id_service = $this->data['Service']['id'];
-		$this->data['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+		$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 
 		$tab_circuit=$this->data['Deliberation']['circuit_id'];
 		$delib=array();
@@ -776,8 +773,8 @@ class DeliberationsController extends AppController {
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
 
 			$this->set('titreFormulaire', $nouveau ? 'Nouveau projet' : 'Modification du projet');
-			$this->set('servEm',$this->requestAction('/services/doList/'.$this->data['Service']['id']));
-			$this->set('deliberation',$this->data);
+			$this->set('servEm', $this->Deliberation->Service->doList($this->data['Service']['id']));
+			$this->set('deliberation', $this->data);
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
@@ -888,7 +885,7 @@ class DeliberationsController extends AppController {
 			$deliberation['Deliberation']['created'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Deliberation']['created']));
 			$deliberation['Deliberation']['modified'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Deliberation']['modified']));
 			$id_service = $deliberation['Service']['id'];
-			$deliberation['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+			$deliberation['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 
 			$tab_circuit=$deliberation['Deliberation']['circuit_id'];
 			$delib=array();
@@ -1094,7 +1091,7 @@ class DeliberationsController extends AppController {
 				$deliberation= $this->Deliberation->read(null, $id);
 				$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
 				$id_service = $deliberation['Service']['id'];
-				$deliberation['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+				$deliberation['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 
 				$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
 				$delib=array();
