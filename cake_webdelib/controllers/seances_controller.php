@@ -220,7 +220,7 @@ class SeancesController extends AppController {
 			$deliberations = $this->Deliberation->findAll($condition,null,'Deliberation.position ASC');
 			for ($i=0; $i<count($deliberations); $i++) {
 				$id_service = $deliberations[$i]['Service']['id'];
-				$deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 				$deliberations[$i]['rapp_id'] = $this->requestAction("deliberations/getRapporteur/".$deliberations[$i]['Deliberation']['id']);
 			}
 			$this->set('seance_id', $id);
@@ -305,7 +305,7 @@ class SeancesController extends AppController {
 		$ToutesVotees = true;
 		for ($i=0; $i<count($deliberations); $i++){
                     $id_service = $deliberations[$i]['Service']['id'];
-		    $deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+		    $deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 		    $deliberations[$i]['Model']['id'] = $this->requestAction("deliberations/getModelId/". $deliberations[$i]['Deliberation']['id']);
                     if (($deliberations[$i]['Deliberation']['etat']!=3)AND($deliberations[$i]['Deliberation']['etat']!=4))
                         $ToutesVotees = false;
@@ -527,7 +527,7 @@ class SeancesController extends AppController {
 
 		for ($i=0; $i<count($deliberations); $i++){
                     $id_service = $deliberations[$i]['Service']['id'];
-		    $deliberations[$i]['Service']['libelle'] = $this->requestAction("services/doList/$id_service");
+		    $deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 		    $deliberations[$i]['Model']['id'] = $this->requestAction("deliberations/getModelId/". $deliberations[$i]['Deliberation']['id']);
 		    if (empty($deliberations[$i]['Deliberation']['avis']))
 		        $toutesVisees = false;
