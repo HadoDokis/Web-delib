@@ -327,9 +327,10 @@ class DeliberationsController extends AppController {
 		$this->set('tab_anterieure',$tab_anterieure);
 
 		// Lecture des droits en modification
-		$user=$this->Session->read('user');
-		$user_id=$user['User']['id'];
-		if ($this->Acl->check($user_id, "Deliberations:add"))
+		$user_id = $this->Session->read('user.User.id');
+		if ($this->Acl->check($user_id, "Deliberations:add") &&
+			$this->Deliberation->isModifiable($id, $user_id)
+		)
 			$this->set('userCanEdit', true);
 		else
 			$this->set('userCanEdit', false);
@@ -762,6 +763,12 @@ class DeliberationsController extends AppController {
 	function edit($id=null, $nouveau=false) {
 	    $user=$this->Session->read('user');
 		if (empty($this->data)) {
+			/* teste si projet modifiable */
+			if (!$this->Deliberation->isModifiable($id, $user['User']['id'])) {
+				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.");
+				$this->redirect('/deliberations/listerMesProjets');
+			}
+
 			$this->data = $this->Deliberation->read(null, $id);
 
 			$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
