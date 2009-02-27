@@ -101,7 +101,10 @@ class Deliberation extends AppModel {
 			$isModifiable = ($delib['Deliberation']['redacteur_id'] == $userId);
 			break;
 		case 1 :
-			$isModifiable = ($this->Traitement->tourUserDansCircuit($userId, $delibId) > -1);
+			if ($this->Circuit->UsersCircuit->findCount("user_id = $userId AND circuit_id = ".$delib['Deliberation']['circuit_id']) == 0 )
+				$isModifiable = false;
+			else
+				$isModifiable = ($this->Traitement->tourUserDansCircuit($userId, $delibId) > -1);
 			break;
 		}
 
