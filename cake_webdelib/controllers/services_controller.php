@@ -6,7 +6,7 @@ class ServicesController extends AppController {
 	var $uses = array('Service', 'Circuit');
 
 	// Gestion des droits
-	var $aucunDroit = array('changeParentId', 'changeService', 'doList', 'getLibelle', 'getParentList', 'isEditable', 'view');
+	var $aucunDroit = array('changeParentId', 'changeService', 'isEditable', 'view');
 	var $commeDroit = array('edit'=>'Services:index', 'add'=>'Services:index', 'delete'=>'Services:index');
 
     function changeService($newServiceActif) {
@@ -15,12 +15,6 @@ class ServicesController extends AppController {
 		//redirection sur la page où on était avant de changer de service
        	$this->Redirect($this->Session->read('user.User.lasturl'));
     }
-
-	function getLibelle ($id = null) {
-		$condition = "Service.id = $id";
-        $objCourant = $this->Service->findAll($condition);
-		return $objCourant['0']['Service']['libelle'];
-	}
 
 	function index() {
 		$this->set('data', $this->Service->findAllThreaded(null, null, 'Service.id ASC'));
@@ -101,31 +95,6 @@ class ServicesController extends AppController {
 		//debug($this->data);exit;
 	}
 
-	function doList($id=null){
-	        if ($id != null)
-		    $liste = $this->GetParentList($id).$this->getLibelle($id);
-		else
-		    $liste=array();
-
-		return $liste;
-	}
-
-	function getParentList($id){
-		$tab = "";
-		$condition = "id = $id";
-		$liste = $this->Service->findAll($condition);
-		$list = $liste[0];
-		$parent_id = $list['Service']['parent_id'];
-		if ($parent_id != 0){
-			$parentliste = $this->Service->findAll("id = $parent_id");
-			$libelle_parent = $parentliste[0]['Service']['libelle'];
-			$id_parent = $parentliste[0]['Service']['id'];
-
-			$tab = $this->getParentList($id_parent).$libelle_parent.'/';
-		}
-
-		return $tab;
-	}
 
 	function isEditable ($id) {
 		$condition = "parent_id = $id";
