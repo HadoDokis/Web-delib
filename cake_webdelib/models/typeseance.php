@@ -120,5 +120,14 @@ class Typeseance extends AppModel {
 		return $this->Acteur->findAll($condition, null, 'Acteur.position, Acteur.nom ASC', null, 1, 0);
 	}
 
+	/* retourne d'id du modèle d 'édition du type de séance $typeseance_id en sonction de l'état du projet de délibération */
+	function modeleProjetDelibParTypeSeanceId($typeseance_id, $etat) {
+		$typeseance = $this->find("id = $typeseance_id", 'modelprojet_id, modeldeliberation_id', null, -1);
+		if ($etat<3)
+			return $typeseance['Typeseance']['modelprojet_id'];
+		else
+			return $typeseance['Typeseance']['modeldeliberation_id'];
+	}
+
 }
 ?>
