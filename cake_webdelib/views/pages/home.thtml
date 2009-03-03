@@ -8,8 +8,8 @@
         echo $this->requestAction('/deliberations/listerProjetsDansMesCircuits', array('return'));
         echo('<br/>');
 	}
-	if ($this->controller->Acl->check($userId, 'Deliberations:listerMesProjets')) {
-        echo $this->requestAction('/deliberations/listerMesProjets', array('return'));
+	if ($this->controller->Acl->check($userId, 'Deliberations:mesProjetsRedaction')) {
+        echo $this->requestAction('/deliberations/mesProjetsRedaction', array('return'));
         echo('<br/>');
      }
 	if ($this->controller->Acl->check($userId, 'Seances:listerFuturesSeances'))
