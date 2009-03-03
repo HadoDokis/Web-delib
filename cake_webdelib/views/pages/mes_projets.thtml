@@ -1,0 +1,18 @@
+<div id="content">
+	<div id="tableau_bord">
+<?php
+	$userId = $this->controller->Session->read('user.User.id');
+	if ($this->controller->Acl->check($userId, 'Deliberations:mesProjetsRedaction')) {
+        echo $this->requestAction('/deliberations/mesProjetsRedaction', array('return'));
+        echo('<br/>');
+     }
+	if ($this->controller->Acl->check($userId, 'Deliberations:listerProjetsATraiter')) {
+	    echo $this->requestAction('/deliberations/listerProjetsATraiter', array('return'));
+        echo('<br/>');
+	}
+	if ($this->controller->Acl->check($userId, 'Deliberations:listerProjetsDansMesCircuits')) {
+        echo $this->requestAction('/deliberations/listerProjetsDansMesCircuits', array('return'));
+	}
+?>
+	</div>
+</div>
