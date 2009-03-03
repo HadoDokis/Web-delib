@@ -3,11 +3,11 @@
  * Gestion dynamique des droits des utilisateurs sur les actions (méthodes) des controleurs
  *
  * 	Utilisation des variables suivantes à placer dans les contrôleurs :
- *  $demandeDroit = array('actionName') -> liste des actions (méthodes) qui sont concernées par le contrôle des droits
+ *  $demandeDroit = array('actionName') -> liste des actions qui sont concernées par le contrôle des droits
  *  $demandePost = array('actionName') -> liste des actions qui demandent un post pour être exécuté (utilisée avec le composant security)
  *  $aucunDroit = array('actionName')|Null -> listes des actions qui ne sont pas soumises au contrôle des droits (si vide, aucune actions n'est soumises au contrôle)
- *  $ajouteDroit = array('newActionName') -> listes des actions qui sont ajoutés pour le contrôle des droits alors que la méthode existante n'existe pas'
- *  $commeDroit = 'controllerAction'|array('actionName'=>'controllerAction') ->
+ *  $ajouteDroit = array('newActionName') -> listes des actions qui sont ajoutés pour le contrôle des droits alors que la méthode n'existe pas'
+ *  $commeDroit = array('actionName'=>'controllerAction'|array('controllerAction')) -> liste des actions soumises aux mêmes droits que d'autres actions (réalise un OU dans le cas d'un array)
  *  $libelleControleurDroit = string -> permet de définir un nom métier pour le controleur
  *  $libellesActionsDroit = array(string=>string) -> permet de définir un nom pour les méthodes du controleur
  *
@@ -53,18 +53,29 @@ class DroitsComponent extends Object
 		if ($controller == 'App') return true;
 
 		// Initialisation de la liste des actions soumises aux droits
-		if ($controller != 'Pages')
-		{
+		if ($controller != 'Pages'){
 			$listeActions = $this->listeActionsControleur($controller);
 			$listeActionsComme = $this->_listeActionsCommeControleur($controller);
 		}
 
 		// Vérifie les droits si controller = 'Pages' ou si l'action est dans la liste des actions soumises aux droits
 		if ($controller == 'Pages' or in_array($action, $listeActions) or array_key_exists($action, $listeActionsComme)) {
-			if (array_key_exists($action, $listeActionsComme)) $controllerAction = $listeActionsComme[$action];
-			return $this->Acl->check($userId, $controllerAction);
+			if (array_key_exists($action, $listeActionsComme)) {
+				// Traite les droits de commeDroit
+				if (is_array($listeActionsComme[$action])) {
+					foreach($listeActionsComme[$action] as $ctrlActionComme) {
+						if ($this->Acl->check($userId, $ctrlActionComme)) return true;
+					}
+					return false;
+				}
+				else
+					return $this->Acl->check($userId, $listeActionsComme[$action]);
+			}
+			else
+				return $this->Acl->check($userId, $controllerAction);
 		}
-		else return true;
+		else
+			return true;
 	}
 
 /* détermine la liste des actions (méthodes) qui sont soumises aux droits d'un controleur */
