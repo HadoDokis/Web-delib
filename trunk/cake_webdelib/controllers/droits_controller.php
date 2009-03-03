@@ -15,7 +15,7 @@ class DroitsController extends AppController
 	       // Initialisation de la progressBar
 	       include ('vendors/progressbar.php');
 	       Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
-		
+
 		// Initialisations
                 $profilsUsersTree = array();
 		$menuControllersTree = array();
@@ -37,7 +37,7 @@ class DroitsController extends AppController
 		// Chargement des controleurs/Action qui ne sont pas dans le menu
 		$nbMenuControllers += $this->_chargeControllersActions($menuControllersTree);
 		ProgressBar(100, 'Chargement de chaque profil');
-                
+
 		if (empty($this->data))
 		{
 			// Chargement des droits pour les couples Profils/users-Menu/controleurs
@@ -71,7 +71,7 @@ class DroitsController extends AppController
 			$this->tabDroits = str_split($this->data['Droits']['strDroits'], $nbMenuControllers);
 			$this->tabDroits = array_map('str_split', $this->tabDroits);
 			$this->_majDroits($profilsUsersTree, $menuControllersTree);
- 
+
                         echo ('<script>');
                         echo ('    document.getElementById("pourcentage").style.display="none"; ');
                         echo ('    document.getElementById("progrbar").style.display="none";');
@@ -438,7 +438,7 @@ class DroitsController extends AppController
 				foreach($profilUsers['users'] as $user) {
 					$cpt++;
 					$indice = $cpt*(100/$nbUsers);
-				        ProgressBar($indice, 'R&eacute;cup&eacute;ration des droits pour ' . $user['login']);	
+				        ProgressBar($indice, 'Lecture des droits pour ' . $user['login']);
 					$this->iProfil++;
 					$this->iMenu = -1;
 					$this->_chargeDroitsMenuControllers($user['id'], $menuControllersTree, $indice, $user['login']);
@@ -460,7 +460,7 @@ class DroitsController extends AppController
 			// lecture des droits
 			$this->tabDroits[$this->iProfil][$this->iMenu] = $this->Acl->check($aro, $menuController['acosAlias']);
 			if ($indice != null)
-			    ProgressBar($indice, 'R&eacute;cup&eacute;ration des droits '. $menuController['title']. ' pour '.$user);
+			    ProgressBar($indice, 'Lecture des droits '. $menuController['title']. ' pour '.$user);
 			// Traitement des sous-menus
 			if (array_key_exists('subMenu', $menuController) and !empty($menuController['subMenu']))
 				$this->_chargeDroitsMenuControllers($aro, $menuController['subMenu']);
