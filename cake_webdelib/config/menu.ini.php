@@ -16,78 +16,33 @@
  *
  */
 
-$OldwebDelib = array(
-	'menuClass' => array('menuNiveau0', 'menuNiveau1'),
-	'currentItem' => 'menuCourant',
-	'items' => array(
-		'Accueil' => array('link' => '/'),
-		'Projets' => array(
-			'link' => '/deliberations/listerMesProjets',
-			'subMenu' => array(
-				'items' => array(
-					'Historique' => array('link' => '/deliberations/listerHistorique'),
-					'Nouveau...' => array('link' => '/deliberations/add'),
-					'A attribuer' => array('link' => '/deliberations/listerProjetsNonAttribues'),
-					'A traiter' => array('link' => '/deliberations/listerProjetsATraiter'),
-					'A faire voter' => array('link' => '/deliberations/listerProjetsServicesAssemblees')
-					)
-				)
-			),
-		'Séances' => array(
-			'link' => '/seances/listerFuturesSeances',
-			'subMenu' => array(
-				'items' => array(
-					'Nouvelle...' => array('link' => '/seances/add'),
-					'Passées' => array('link' => '/seances/listerAnciennesSeances'),
-					'Calendrier' => array('link' => '/seances/afficherCalendrier')
-					)
-				)
-			),
-		'Post-séance' => array(
-			'link' => 'postseance',
-			'subMenu' => array(
-				'items' => array(
-					'Editions' => array('link' => '/postseances/index'),
-					'Contrôle de légalité' => array('link' => '/deliberations/transmit'),
-					'Export GED/Intranet' => array('link' => 'exportged')
-					)
-				)
-			),
-		'Administration' => array(
-			'link' => 'administration',
-			'subMenu' => array(
-				'items' => array(
-					'Utilisateurs' => array('link' => '/users/index'),
-					'Profils' => array('link' => '/profils/index'),
-					'Droits' => array('link' => '/droits/edit'),
-					'Acteurs' => array('link' => 'acteurs_typeacteurs'),
-					'Circuits' => array('link' => '/circuits/index'),
-					'Services' => array('link' => '/services/index'),
-					'Thèmes' => array('link' => '/themes/index'),
-					'Types de séance' => array('link' => '/typeseances/index'),
-					'Collectivité' => array('link' => '/collectivites/index'),
-					'Générations' => array('link' => '/models/index'),
-					'Localisations' => array('link' => '/localisations/index'),
-					'Compteurs' => array('link' => 'compteurs_sequences')
-					)
-				)
-			)
-		)
-	);
-
 $webDelib = array(
 	'menuClass' => array('menuNiveau0', 'menuNiveau1'),
 	'currentItem' => 'menuCourant',
 	'items' => array(
 		'Accueil' => array('link' => '/'),
-		'Projets' => array(
-			'link' => '/deliberations/listerMesProjets',
+		'Mes projets' => array(
+			'link' => 'mes_projets',
 			'subMenu' => array(
 				'items' => array(
-					'Historique' => array('link' => '/deliberations/listerHistorique'),
 					'Nouveau...' => array('link' => '/deliberations/add'),
-					'A attribuer' => array('link' => '/deliberations/listerProjetsNonAttribues'),
+					'Refusés' => array('link' => '/deliberations/mesProjetsRefuses'),
+					'En cours de rédaction' => array('link' => '/deliberations/mesProjetsRedaction'),
+					'En cours de validation' => array('link' => '/deliberations/mesProjetsValidation'),
+					'Validés' => array('link' => '/deliberations/mesProjetsValides'),
+					'Votés et adoptés' => array('link' => '/deliberations/mesProjetsVotesOui'),
+					'Votés et non adoptés' => array('link' => '/deliberations/mesProjetsVotesNon'),
+					'Transmis au contrôle de légalité' => array('link' => '/deliberations/mesProjetsTransmis'),
 					'A traiter' => array('link' => '/deliberations/listerProjetsATraiter'),
+					'Dans mes circuits' => array('link' => '/deliberations/listerProjetsDansMesCircuits')
+					)
+				)
+			),
+		'Tous les projets' => array(
+			'link' => '/pages/tous_les_projets',
+			'subMenu' => array(
+				'items' => array(
+					'A attribuer' => array('link' => '/deliberations/listerProjetsNonAttribues'),
 					'A faire voter' => array('link' => '/deliberations/listerProjetsServicesAssemblees')
 					)
 				)
