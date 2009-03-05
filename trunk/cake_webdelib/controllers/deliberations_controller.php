@@ -54,7 +54,7 @@ class DeliberationsController extends AppController {
 
 			$this->set('date_seances',$this->Seance->generateList());
 
-			$conditions="seance_id is null OR seance_id= 0 AND (etat=0 OR etat =1 OR etat =2)";
+			$conditions="(seance_id is null OR seance_id=0) AND (etat=0 OR etat=1 OR etat=2)";
 			$deliberations= $this->Deliberation->findAll($conditions);
 			$delib=array();
 			foreach ($deliberations as $deliberation){
@@ -73,7 +73,7 @@ class DeliberationsController extends AppController {
 				array_push($delib, $deliberation);
 			}
 			$this->set('deliberations',$delib);
-
+		    $this->set('USE_GEDOOO', USE_GEDOOO);
 		}
 		else
 		{
@@ -90,6 +90,7 @@ class DeliberationsController extends AppController {
 				$this->set('date_seances', $this->Deliberation->Seance->generateList());
 				$conditions="seance_id is null";
 				$this->set('deliberations', $this->Deliberation->findAll($conditions));
+			    $this->set('USE_GEDOOO', USE_GEDOOO);
 			}
 		}
 	}
@@ -206,11 +207,11 @@ class DeliberationsController extends AppController {
 				else
 					$conditions=$conditions." AND (";
 
-				$conditions=$conditions." circuit_id = ".$data['UsersCircuit']['circuit_id'];
+				$conditions=$conditions."circuit_id = ".$data['UsersCircuit']['circuit_id'];
 				$cpt++;
 			}
 			if ($cpt>=0)
-				$conditions=$conditions." )";
+				$conditions=$conditions.")";
 
 			$deliberations = $this->Deliberation->findAll($conditions);
 
@@ -1910,7 +1911,7 @@ class DeliberationsController extends AppController {
 			$titreVue = 'Mes projets refus&eacute;s';
 			$iconeEtat = array(
 				'image' => '/icons/refuse.png',
-				'titre' => 'Refuse');
+				'titre' => 'Refus&eacute;');
 			$listeActions = array('view', 'generer');
 			break;
 		case 0 :
@@ -1922,35 +1923,35 @@ class DeliberationsController extends AppController {
 			$titreVue = 'Mes projets en cours d\'&eacute;laboration et de validation';
 			$iconeEtat = array(
 				'image' => '/icons/fini.png',
-				'titre' => 'En cous d\'elaboration et de validation');
+				'titre' => 'En cous d\'&eacute;laboration et de validation');
 			$listeActions = array('view', 'generer');
 			break;
 		case 2:
 			$titreVue = 'Mes projets valid&eacute;s';
 			$iconeEtat = array(
 				'image' => '/icons/fini.png',
-				'titre' => 'Valide');
+				'titre' => 'Valid&eacute;');
 			$listeActions = array('view', 'generer');
 			break;
 		case 3:
 			$titreVue = 'Mes projets vot&eacute;s et adopt&eacute;s';
 			$iconeEtat = array(
 				'image' => '/icons/fini.png',
-				'titre' => 'Vote et adopte');
+				'titre' => 'Vot&eacute; et adopt&eacute;');
 			$listeActions = array('view', 'generer');
 			break;
 		case 4:
 			$titreVue = 'Mes projets vot&eacute;s et non adopt&eacute;s';
 			$iconeEtat = array(
 				'image' => '/icons/fini.png',
-				'titre' => 'Vote et non adopte');
+				'titre' => 'Vot&eacute; et non adopt&eacute;');
 			$listeActions = array('view', 'generer');
 			break;
 		case 5:
 			$titreVue = 'Mes projets transmis au contr&ocirc;le de l&eacute;galit&eacute;';
 			$iconeEtat = array(
 				'image' => '/icons/fini.png',
-				'titre' => 'Transmis au controle de legalite');
+				'titre' => 'Transmis au controle de l&eacute;galit&eacute;');
 			$listeActions = array('view', 'generer');
 			break;
 		}
@@ -1965,10 +1966,10 @@ class DeliberationsController extends AppController {
         	if ($etat == 0) {
         		if ($this->data[$i]['Deliberation']['anterieure_id']!=0) {
 					$iconeEtat['image'] = '/icons/refuse.png';
-					$iconeEtat['titre'] = 'Refusé';
+					$iconeEtat['titre'] = 'Refus&eacute;';
         		} else {
 					$iconeEtat['image'] = '/icons/encours.png';
-					$iconeEtat['titre'] = 'En cours de rédaction';
+					$iconeEtat['titre'] = 'En cours de r&eacute;daction';
         		}
         	}
 			$this->data[$i]['iconeEtat'] = $iconeEtat;
