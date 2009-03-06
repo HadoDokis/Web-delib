@@ -1,11 +1,9 @@
 <div id="content">
-	<div id="tableau_bord">
 <?php
 	$userId = $this->controller->Session->read('user.User.id');
-	if ($this->controller->Acl->check($userId, 'Deliberations:listerProjetsNonAttribues')) {
-        echo $this->requestAction('/deliberations/listerProjetsNonAttribues', array('return'));
+	if ($this->controller->Acl->check($userId, 'Deliberations:tousLesProjetsSansSeance')) {
+        echo $this->requestAction('/deliberations/tousLesProjetsSansSeance', array('return'));
         echo('<br/>');
      }
 ?>
-	</div>
 </div>
