@@ -154,7 +154,7 @@
 		$onclick = "javascript:return checkForm(form, ".$html->tagValue('Deliberation/id').")";
 		echo $html->submit('Sauvegarder', array('class'=>'bt_save_border', 'name'=>'Sauvegarder', 'onclick'=>$onclick));
 	?>
-	<?php echo $html->link('Annuler', '/deliberations/mesProjetsRedaction', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php echo $html->link('Annuler', $redirect, array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 
 </form>
