@@ -42,8 +42,9 @@ $webDelib = array(
 			'link' => '/pages/tous_les_projets',
 			'subMenu' => array(
 				'items' => array(
-					'A attribuer' => array('link' => '/deliberations/listerProjetsNonAttribues'),
-					'A faire voter' => array('link' => '/deliberations/listerProjetsServicesAssemblees')
+					'A attribuer' => array('link' => '/deliberations/tousLesProjetsSansSeance'),
+					'A valider' => array('link' => '/deliberations/tousLesProjetsValidation'),
+					'A faire voter' => array('link' => '/deliberations/tousLesProjetsAFaireVoter')
 					)
 				)
 			),
