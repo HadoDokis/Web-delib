@@ -30,70 +30,25 @@ class DeliberationsController extends AppController {
 		'mesProjetsTransmis',
 		'listerProjetsATraiter',
 		'listerProjetsDansMesCircuits',
-		'listerProjetsNonAttribues',
-		'listerProjetsServicesAssemblees',
-		'rechercheMutliCriteres'
+		'rechercheMutliCriteres',
+		'tousLesProjetsSansSeance',
+		'tousLesProjetsValidation',
+		'tousLesProjetsAFaireVoter',
+		'editerProjetValide'
 	);
 	var $commeDroit = array(
 		'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets'),
-		'edit'=>'Deliberations:mesProjetsRedaction',
+		'edit'=>array('Deliberations:mesProjetsRedaction', 'Deliberations:editerProjetValide', 'Deliberations:listerProjetsATraiter'),
 		'delete'=>'Deliberations:mesProjetsRedaction',
 		'attribuercircuit'=>'Deliberations:mesProjetsRedaction',
 		'addIntoCircuit'=>'Deliberations:mesProjetsRedaction',
-		'traiter'=>'Deliberations:listerProjetsATraiter'
+		'traiter'=>'Deliberations:listerProjetsATraiter',
+		'attribuerSeance'=>'Deliberations:tousLesProjetsSansSeance',
+		'validerEnUrgence'=>'Deliberations:tousLesProjetsValidation'
 	);
+	var $libelleControleurDroit = 'Projets';
+	var $libellesActionsDroit = array('editerProjetValide' => 'Editer projets valid&eacute;s');
 
-	function listerProjetsNonAttribues() {
-		if (empty ($this->data))
-		{
-			$this->checkEmptyDelib();
-			$user=$this->Session->read('user');
-			$user_id=$user['User']['id'];
-			$condition= 'Seance.traitee = 0';
-			$seances = $this->Seance->findAll($condition);
-
-			$this->set('date_seances',$this->Seance->generateList());
-
-			$conditions="(seance_id is null OR seance_id=0) AND (etat=0 OR etat=1 OR etat=2)";
-			$deliberations= $this->Deliberation->findAll($conditions);
-			$delib=array();
-			foreach ($deliberations as $deliberation){
-
-				$etat = $deliberation['Deliberation']['etat'];
-				switch ($etat){
-					case 0 :
-					$deliberation['etatProjet'] = 'en cours de redaction'; break;
-					case 1:
-					$deliberation['etatProjet'] = 'en cours de validation';	break;
-					case 2:
-					$deliberation['etatProjet'] = 'validé';	break;
-					default:
-					$deliberation['etatProjet'] = 'inconnu'; break;
-				}
-				array_push($delib, $deliberation);
-			}
-			$this->set('deliberations',$delib);
-		    $this->set('USE_GEDOOO', USE_GEDOOO);
-		}
-		else
-		{
-			$deliberation['Deliberation']['seance_id']= $this->data['Deliberation']['seance_id'];
-			$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
-
-			if ($this->Deliberation->save($this->data))
-			{
-				$this->redirect('deliberations/listerProjetsNonAttribues');
-			}
-			else
-			{
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				$this->set('date_seances', $this->Deliberation->Seance->generateList());
-				$conditions="seance_id is null";
-				$this->set('deliberations', $this->Deliberation->findAll($conditions));
-			    $this->set('USE_GEDOOO', USE_GEDOOO);
-			}
-		}
-	}
 
 	function listerProjetsDansMesCircuits() {
 		/**
@@ -276,8 +231,8 @@ class DeliberationsController extends AppController {
 
 		// Lecture des droits en modification
 		$user_id = $this->Session->read('user.User.id');
-		if ($this->Acl->check($user_id, "Deliberations:add") &&
-			$this->Deliberation->isModifiable($id, $user_id)
+		if ($this->Droits->check($user_id, "Deliberations:edit") &&
+			$this->Deliberation->estModifiable($id, $user_id)
 		)
 			$this->set('userCanEdit', true);
 		else
@@ -710,14 +665,24 @@ class DeliberationsController extends AppController {
 
 	function edit($id=null, $nouveau=false) {
 	    $user=$this->Session->read('user');
-		if (empty($this->data)) {
-			/* teste si projet modifiable */
-			if (!$this->Deliberation->isModifiable($id, $user['User']['id'])) {
-				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.");
-				$this->redirect('/deliberations/mesProjetsRedaction');
-			}
+	    /* initialisation du lien de redirection */
+		if ($this->Acl->check($user['User']['id'], "Pages:mes_projets"))
+			$redirect = '/pages/mes_projets';
+		elseif ($this->Acl->check($user['User']['id'], "Pages:tous_les_projets"))
+			$redirect = '/pages/tous_les_projets';
+		else
+			$redirect = '/';
 
+		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
+
+			/* teste si le projet est modifiable par l'utilisateur connecté */
+			if (!$this->Deliberation->estModifiable($id, $user['User']['id']) &&
+				!($this->data['Deliberation']['etat'] == 2 && $this->Acl->check($user['User']['id'], "Deliberations:editerProjetValide"))
+			) {
+				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.");
+				$this->redirect($redirect);
+			}
 
 			$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
 
@@ -733,6 +698,7 @@ class DeliberationsController extends AppController {
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateList());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
+			$this->set('redirect', $redirect);
 			$this->render();
 
 		} else {
@@ -795,7 +761,7 @@ class DeliberationsController extends AppController {
 
 							$counter++;
 						}
-						$this->redirect('/deliberations/mesProjetsRedaction');
+						$this->redirect($redirect);
 					} else {
 						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 						$this->set('services', $this->Deliberation->Service->generateList());
@@ -805,6 +771,7 @@ class DeliberationsController extends AppController {
 						$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
 						$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
 						$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
+						$this->set('redirect', $redirect);
 
 						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
 						$seances = $this->Seance->findAll($condition);
@@ -1536,21 +1503,6 @@ class DeliberationsController extends AppController {
 		return $tmp['0']['Deliberation']['id'] +1 ;
 	}
 
-	function listerProjetsServicesAssemblees()
-	{
-	    //liste les projets appartenants au service des assemblees
-	    $conditions="etat = 2 ";
-	    $deliberations = $this->Deliberation->findAll($conditions);
-
-	    for ($i=0; $i<count($deliberations); $i++){
-	        $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
-                $deliberations[$i]['Model']['id']    = $this->getModelId($deliberations[$i]['Deliberation']['id']);
-	    }
-
-	    $this->set('deliberations',$deliberations );
-	    $this->set('USE_GEDOOO', USE_GEDOOO);
-	}
-
     function getRapporteur($id_delib){
     	$condition= "Deliberation.id=$id_delib";
     	$deliberation = $this->Deliberation->findAll($condition);
@@ -1909,49 +1861,30 @@ class DeliberationsController extends AppController {
 		switch ($etat){
 		case -1 :
 			$titreVue = 'Mes projets refus&eacute;s';
-			$iconeEtat = array(
-				'image' => '/icons/refuse.png',
-				'titre' => 'Refus&eacute;');
 			$listeActions = array('view', 'generer');
 			break;
 		case 0 :
 			$titreVue = 'Mes projets en cours de r&eacute;daction';
-			$iconeEtat = array('image' => '', 'titre' => '');
 			$listeActions = array('view', 'edit', 'delete', 'attribuercircuit', 'generer');
 			break;
 		case 1:
 			$titreVue = 'Mes projets en cours d\'&eacute;laboration et de validation';
-			$iconeEtat = array(
-				'image' => '/icons/fini.png',
-				'titre' => 'En cous d\'&eacute;laboration et de validation');
 			$listeActions = array('view', 'generer');
 			break;
 		case 2:
 			$titreVue = 'Mes projets valid&eacute;s';
-			$iconeEtat = array(
-				'image' => '/icons/fini.png',
-				'titre' => 'Valid&eacute;');
 			$listeActions = array('view', 'generer');
 			break;
 		case 3:
 			$titreVue = 'Mes projets vot&eacute;s et adopt&eacute;s';
-			$iconeEtat = array(
-				'image' => '/icons/fini.png',
-				'titre' => 'Vot&eacute; et adopt&eacute;');
 			$listeActions = array('view', 'generer');
 			break;
 		case 4:
 			$titreVue = 'Mes projets vot&eacute;s et non adopt&eacute;s';
-			$iconeEtat = array(
-				'image' => '/icons/fini.png',
-				'titre' => 'Vot&eacute; et non adopt&eacute;');
 			$listeActions = array('view', 'generer');
 			break;
 		case 5:
 			$titreVue = 'Mes projets transmis au contr&ocirc;le de l&eacute;galit&eacute;';
-			$iconeEtat = array(
-				'image' => '/icons/fini.png',
-				'titre' => 'Transmis au controle de l&eacute;galit&eacute;');
 			$listeActions = array('view', 'generer');
 			break;
 		}
@@ -1963,16 +1896,10 @@ class DeliberationsController extends AppController {
 
 		/* initialisation pour chaque projet ou délibération */
         for($i = 0; $i < count($this->data); $i++) {
-        	if ($etat == 0) {
-        		if ($this->data[$i]['Deliberation']['anterieure_id']!=0) {
-					$iconeEtat['image'] = '/icons/refuse.png';
-					$iconeEtat['titre'] = 'Refus&eacute;';
-        		} else {
-					$iconeEtat['image'] = '/icons/encours.png';
-					$iconeEtat['titre'] = 'En cours de r&eacute;daction';
-        		}
-        	}
-			$this->data[$i]['iconeEtat'] = $iconeEtat;
+        	if ($this->data[$i]['Deliberation']['etat'] == 0 && $this->data[$i]['Deliberation']['anterieure_id']!=0)
+				$this->data[$i]['iconeEtat'] = $this->Deliberation->iconeEtat(-1);
+        	else
+				$this->data[$i]['iconeEtat'] = $this->Deliberation->iconeEtat($this->data[$i]['Deliberation']['etat']);
 
 			if (isset($this->data[$i]['Seance']['date'])) {
 				$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
@@ -1993,6 +1920,167 @@ class DeliberationsController extends AppController {
 		$this->render('mesProjets');
 	}
 
+/*
+ * Affiche la liste de tous les projets en cours de validation
+ * Permet de valider en urgence un projet
+ */
+	function tousLesProjetsValidation() {
+		/* Initialisations */
+		$titreVue = 'Projets en cours d\'&eacute;laboration et de validation';
+		$iconeEtat = array(
+			'image' => '/icons/fini.png',
+			'titre' => 'En cous d\'&eacute;laboration et de validation');
+
+		/* lecture en base */
+		$userId = $this->Session->read('user.User.id');
+		$conditions = "Deliberation.etat = 1";
+		$this->data = $this->Deliberation->findAll($conditions, null, 'Deliberation.created DESC', null, null, 0);
+
+		/* initialisation pour chaque projet */
+        for($i = 0; $i < count($this->data); $i++) {
+			$this->data[$i]['iconeEtat'] = $iconeEtat;
+
+			if (isset($this->data[$i]['Seance']['date'])) {
+				$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
+				$this->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($this->data[$i]['Seance']['type_id'], 1);
+			} else
+				$this->data[$i]['Model']['id'] = 1;
+
+			$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
+
+			$this->data[$i]['Actions'] = array('view', 'validerEnUrgence', 'generer');
+		}
+
+		/* passage des variables à la vue */
+		$this->set('titreVue', $titreVue);
+		$this->set('USE_GEDOOO', USE_GEDOOO);
+
+		/* on affiche la vue */
+		$this->render('tousLesProjets');
+	}
+
+/*
+ *
+ * Affiche la liste de tous les projets en cours de redaction, validation, validés sans séance
+ * Permet de modifier un projet validé si l'utilisateur à les droits editerProjetValide
+ *
+ */
+	function tousLesProjetsSansSeance() {
+		/* Initialisations */
+		$titreVue = 'Projets en cours de r&eacute;daction, d\'&eacute;laboration, valid&eacute;s non associ&eacute;s &agrave; une s&eacute;ance';
+		$userId = $this->Session->read('user.User.id');
+		$editerProjetValide = $this->Acl->check($userId, "Deliberations:editerProjetValide");
+
+		/* lecture en base */
+		$conditions = "(Deliberation.seance_id is null OR Deliberation.seance_id=0) AND (Deliberation.etat=0 OR Deliberation.etat=1 OR Deliberation.etat=2)";
+		$this->data = $this->Deliberation->findAll($conditions, null, 'Deliberation.created DESC', null, null, 0);
+
+		/* initialisation pour chaque projet */
+        for($i = 0; $i < count($this->data); $i++) {
+			$this->data[$i]['iconeEtat'] = array(
+				'image' => '/icons/fini.png',
+				'titre' => $this->Deliberation->libelleEtat($this->data[$i]['Deliberation']['etat']));
+
+			$this->data[$i]['Model']['id'] = 1;
+
+			$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
+
+			$this->data[$i]['Actions'] = array('view', 'generer', 'attribuerSeance');
+			if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {
+				$this->data[$i]['Actions'][] = 'edit';
+				$this->data[$i]['iconeEtat']['image'] = '/icons/encours.png';
+			}
+		}
+
+		/* passage des variables à la vue */
+		$this->set('titreVue', $titreVue);
+		$this->set('USE_GEDOOO', USE_GEDOOO);
+		$this->set('date_seances', $this->Seance->generateList());
+
+		/* on affiche la vue */
+		$this->render('tousLesProjets');
+	}
+
+/*
+ *
+ * Affiche la liste de tous les projets validés liés à une séance
+ *
+ */
+	function tousLesProjetsAFaireVoter() {
+		/* Initialisations */
+		$titreVue = 'Projets valid&eacute;s associ&eacute;s &agrave; une s&eacute;ance';
+		$userId = $this->Session->read('user.User.id');
+		$editerProjetValide = $this->Acl->check($userId, "Deliberations:editerProjetValide");
+
+		/* lecture en base */
+		$conditions = "Deliberation.seance_id!=0 AND Deliberation.etat=2";
+		$this->data = $this->Deliberation->findAll($conditions, null, 'Deliberation.created DESC', null, null, 0);
+
+		/* initialisation pour chaque projet */
+        for($i = 0; $i < count($this->data); $i++) {
+			$this->data[$i]['iconeEtat'] = array(
+				'image' => '/icons/fini.png',
+				'titre' => $this->Deliberation->libelleEtat($this->data[$i]['Deliberation']['etat']));
+
+			$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
+			$this->data[$i]['Model']['id'] = $this->getModelId($this->data[$i]['Deliberation']['id']);
+
+			$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
+
+			$this->data[$i]['Actions'] = array('view', 'generer');
+			if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {
+				$this->data[$i]['Actions'][] = 'edit';
+				$this->data[$i]['iconeEtat']['image'] = '/icons/encours.png';
+			}
+		}
+
+		/* passage des variables à la vue */
+		$this->set('titreVue', $titreVue);
+		$this->set('USE_GEDOOO', USE_GEDOOO);
+
+		/* on affiche la vue */
+		$this->render('tousLesProjets');
+	}
+
+	function attribuerSeance () {
+		if (!empty($this->data)) {
+			$this->data['Deliberation']['position'] = $this->getLastPosition($this->data['Deliberation']['seance_id']);
+			$this->Deliberation->save($this->data);
+		}
+
+		$this->redirect('/deliberations/tousLesProjetsSansSeance');
+	}
+
+/*
+ * Permet de valider un projet en cours de validation en court circuitant le circuit de validation
+ *
+ */
+	function validerEnUrgence($delibId) {
+		// Lecture de la délibération
+		$this->Deliberation->recursive = -1;
+		$this->data = $this->Deliberation->read('id, etat', $delibId);
+
+		if (empty($this->data))
+			$this->Session->setFlash('Invalide id pour le projet de d&eacute;lib&eacute;ration');
+		else {
+			if ($this->data['Deliberation']['etat']!=1)
+				$this->Session->setFlash('Le projet de d&eacute;lib&eacute;ration doit &ecirc;tre en cours d\'&eacute;laboration');
+			else {
+				$this->data['Deliberation']['etat'] = 2;
+				if ($this->Deliberation->save($this->data)) {
+					// ajout du commentaire
+					$this->data['Commentaire']['id'] = '';
+					$this->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
+					$this->data['Commentaire']['texte'] = 'Validé en urgence le '.date('d-m-Y à H:i:s');
+					$this->data['Commentaire']['texte'].= ', par '. $this->User->prenomNomLogin($this->Session->read('user.User.id'));
+					$this->Deliberation->Commentaire->save($this->data);
+				}
+			}
+		}
+
+
+		$this->redirect('/deliberations/tousLesProjetsValidation');
+	}
 
 }
 ?>
