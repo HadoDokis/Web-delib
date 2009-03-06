@@ -116,5 +116,17 @@ class User extends AppModel {
 			return null;
 	}
 
+/*
+ * retourne le prenom, nom et (login) de l'utilisateur $id
+ *
+ */
+	function prenomNomLogin($id) {
+		$this->recursive=-1;
+		$this->data = $this->read('prenom, nom, login', $id);
+		if (empty($this->data))
+			return '';
+		else
+			return $this->data['User']['prenom'].' '.$this->data['User']['nom'].' ('.$this->data['User']['login'].')';
+	}
 }
 ?>
