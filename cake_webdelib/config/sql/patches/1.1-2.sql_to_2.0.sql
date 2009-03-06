@@ -62,6 +62,11 @@ ALTER TABLE `services` ADD `actif` TINYINT( 1 ) NOT NULL DEFAULT '1' AFTER `circ
 ALTER TABLE `themes` ADD `order` VARCHAR( 50 ) NOT NULL AFTER `parent_id` ;
 ALTER TABLE `themes` ADD `actif` TINYINT( 1 ) NOT NULL DEFAULT '1' AFTER `libelle` ;
 
+-- --------------------------------------------------------
+--
+-- Modification de la table `profils`
+--
+ALTER TABLE `profils` ADD `actif` TINYINT( 1 ) NOT NULL DEFAULT '1' AFTER `libelle` ;
 
 -- --------------------------------------------------------
 --
