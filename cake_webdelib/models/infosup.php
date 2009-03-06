@@ -74,7 +74,10 @@ class Infosup extends AppModel
 				$infosup['Infosup']['file_name'] = $valeur['name'];
 				$infosup['Infosup']['file_size'] = $valeur['size'];
 				$infosup['Infosup']['file_type'] = $valeur['type'];
-				$infosup['Infosup']['content'] = fread(fopen($valeur['tmp_name'], "r"), $valeur['size']);
+				if (empty($valeur['tmp_name']))
+					$infosup['Infosup']['content'] = '';
+				else
+					$infosup['Infosup']['content'] = fread(fopen($valeur['tmp_name'], "r"), $valeur['size']);
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
 				$infosup['Infosup']['content'] = $valeur;
 			}
