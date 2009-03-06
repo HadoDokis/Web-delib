@@ -23,21 +23,29 @@
 		<td><?php echo $deliberation['Deliberation']['objet'];?></td>
 		<td>Service &eacute;metteur :<br/><?php echo $deliberation['Service']['libelle'];?></td>
 		<td>Date de s&eacute;ance :
-			<?php if ($deliberation['Deliberation']['reporte']==1) echo "Report&eacute; au ";?>
-			<?php echo $deliberation['Seance']['date'];?>
+			<?php
+			if (in_array('attribuerSeance', $deliberation['Actions'])) {
+				echo '<form action="'.$html->url('/deliberations/attribuerSeance').'" method="post">';
+					echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true);
+					echo $html->tagErrorMsg('Deliberation/seance_id', 'Choisissez une date.');
+					echo $html->hidden('Deliberation/id',array('value'=> $deliberation['Deliberation']['id']));
+					echo $html->submit('', array('class'=>'bt_save', 'name'=>'sauvegarder'));
+				echo '</form>';
+			} else {
+				if ($deliberation['Deliberation']['reporte']==1) echo "Report&eacute; au ";
+				echo $deliberation['Seance']['date'];
+			}
+			?>
 		</td>
 		<td rowspan=3 class="actions">
 		<?php
-			if (in_array('view', $listeActions))
+			if (in_array('view', $deliberation['Actions']))
 				echo $html->link('&shy;','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false);
-			if (in_array('edit', $listeActions))
+			if (in_array('edit', $deliberation['Actions']))
 				echo $html->link('&shy;','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
-			if (in_array('delete', $listeActions))
-				echo $html->link('&shy;','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?', false);
-			echo '<br/><br/>';
-			if (in_array('attribuercircuit', $listeActions))
-				echo $html->link('&shy;','/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'], array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'), false, false);
-			if (in_array('generer', $listeActions)) {
+			if (in_array('validerEnUrgence', $deliberation['Actions']))
+				echo $html->link('&shy;',"/deliberations/validerEnUrgence/" . $deliberation['Deliberation']['id'], array('class'=>"link_traiter", 'title'=>'Valider en urgence'), 'Confirmez-vous la validation en urgence du projet \''.$deliberation['Deliberation']['id'].'\'', false);
+			if (in_array('generer', $deliberation['Actions'])) {
 				if ($USE_GEDOOO)
 					echo $html->link('&shy;','/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
 				else
@@ -62,11 +70,5 @@
 <?php } ?>
 
 </table>
-
-<?php if ($UserCanAdd) { ?>
-	<ul class="actions">
-		<li><?php echo $html->link('Ajouter un projet', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un projet'));?></li>
-	</ul>
-<?php } ?>
 
 </div>
