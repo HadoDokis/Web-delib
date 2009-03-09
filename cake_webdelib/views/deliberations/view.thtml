@@ -14,6 +14,9 @@
 
 		<dt>Titre</dt>
 		<dd>&nbsp;<?php echo $this->data['Deliberation']['titre']?></dd>
+
+		<dt>Etat</dt>
+		<dd>&nbsp;<?php echo $this->data['Deliberation']['libelleEtat']?></dd>
 	</div>
 
 	<div class="imbrique">
