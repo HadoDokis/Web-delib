@@ -113,29 +113,31 @@ class Deliberation extends AppModel {
 
 /*
  * retourne le libellé correspondant à l'état $etat des projets et délibérations
+ * si $codesSpeciaux = true, retourne les libellés avec les codes spéciaux des accents
+ * si $codesSpeciaux = false, retourne les libellés sans les accents (listes)
  */
-	function libelleEtat($etat) {
+	function libelleEtat($etat, $codesSpeciaux=true) {
  		switch($etat) {
 		case -1 :
-			return 'Refus&eacute;';
+			return $codesSpeciaux ? 'Refus&eacute;' : 'Refusé';
 			break;
 		case 0 :
-			return 'En cours de r&eacute;daction';
+			return $codesSpeciaux ? 'En cours de r&eacute;daction' : 'En cours de rédaction';
 			break;
 		case 1:
-			return 'En cous d\'&eacute;laboration et de validation';
+			return $codesSpeciaux ? 'En cous d\'&eacute;laboration et de validation' : 'En cous d\'élaboration et de validation';
 			break;
 		case 2:
-			return 'Valid&eacute;';
+			return $codesSpeciaux ? 'Valid&eacute;' : 'Validé';
 			break;
 		case 3:
-			return 'Vot&eacute; et adopt&eacute;';
+			return $codesSpeciaux ? 'Vot&eacute; et adopt&eacute;' : 'Voté et adopté';
 			break;
 		case 4:
-			return 'Vot&eacute; et non adopt&eacute;';
+			return $codesSpeciaux ? 'Vot&eacute; et non adopt&eacute;' : 'Voté et non adopté';
 			break;
 		case 5:
-			return 'Transmis au contr&ocirc;le de l&eacute;galit&eacute;';
+			return $codesSpeciaux ? 'Transmis au contr&ocirc;le de l&eacute;galit&eacute;' : 'Transmis au contrôle de légalité';
 			break;
 		}
 	}
@@ -185,6 +187,11 @@ class Deliberation extends AppModel {
 		}
  	}
 
+	function generateListEtat() {
+		$ret = array();
+		for($i=-1; $i <= 5; $i++) $ret[$i] = $this->libelleEtat($i, false);
+		return $ret;
+	}
 
 }
 ?>
