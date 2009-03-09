@@ -34,7 +34,8 @@ $webDelib = array(
 					'Votés et non adoptés' => array('link' => '/deliberations/mesProjetsVotesNon'),
 					'Transmis au contrôle de légalité' => array('link' => '/deliberations/mesProjetsTransmis'),
 					'A traiter' => array('link' => '/deliberations/listerProjetsATraiter'),
-					'Dans mes circuits' => array('link' => '/deliberations/listerProjetsDansMesCircuits')
+					'Dans mes circuits' => array('link' => '/deliberations/listerProjetsDansMesCircuits'),
+					'Recherches' => array('link' => '/deliberations/mesProjetsRecherche')
 					)
 				)
 			),
@@ -44,7 +45,8 @@ $webDelib = array(
 				'items' => array(
 					'A attribuer' => array('link' => '/deliberations/tousLesProjetsSansSeance'),
 					'A valider' => array('link' => '/deliberations/tousLesProjetsValidation'),
-					'A faire voter' => array('link' => '/deliberations/tousLesProjetsAFaireVoter')
+					'A faire voter' => array('link' => '/deliberations/tousLesProjetsAFaireVoter'),
+					'Recherches' => array('link' => '/deliberations/tousLesProjetsRecherche')
 					)
 				)
 			),
@@ -67,9 +69,6 @@ $webDelib = array(
 					'Export GED/Intranet' => array('link' => 'exportged')
 					)
 				)
-			),
-		'Recherches' => array(
-			'link' => '/deliberations/rechercheMutliCriteres',
 			),
 		'Utilisateurs' => array(
 			'link' => 'gestion_utilisateurs',
