@@ -37,6 +37,7 @@ class Infosupdef extends AppModel
 	);
 
 	function validates() {
+$this->log($this->data);
 		// unicité du nom
 		$this->isUnique('nom', $this->data['Infosupdef']['nom'], $this->data['Infosupdef']['id']);
 
@@ -113,7 +114,7 @@ class Infosupdef extends AppModel
 		foreach($recs as $n=>$rec) {
 			if (($n+1) != $rec['Infosupdef']['ordre']) {
 				$rec['Infosupdef']['ordre'] = ($n+1);
-				$this->save($rec);
+				$this->save($rec, false);
 			}
 		}
 	}
