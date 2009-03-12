@@ -69,7 +69,10 @@ class Infosup extends AppModel
 				$infosup['Infosup']['text'] = $valeur;
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
 				$date = explode('/', $valeur);
-				$infosup['Infosup']['date'] = $date[2].'-'.$date[1].'-'.$date[0];
+				if (count($date) == 3)
+					$infosup['Infosup']['date'] = $date[2].'-'.$date[1].'-'.$date[0];
+				else
+					$infosup['Infosup']['date'] = '';
 			} elseif ($infosupdef['Infosupdef']['type'] == 'file') {
 				$infosup['Infosup']['file_name'] = $valeur['name'];
 				$infosup['Infosup']['file_size'] = $valeur['size'];
