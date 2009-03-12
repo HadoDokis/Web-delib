@@ -743,7 +743,8 @@ class DeliberationsController extends AppController {
 					if ($this->Deliberation->save($this->data))
 					{
 						/* sauvegarde des informations supplémentaires */
-						$this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
+						if (array_key_exists('Infosup', $this->data))
+							$this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
 
 						$delib_id = $id;
 						$counter = 1;
