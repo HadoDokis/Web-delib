@@ -5,6 +5,8 @@
 	if ($this->controller->Acl->check($userId, 'Deliberations:listerProjetsATraiter')) {
 	    echo $this->requestAction('/deliberations/listerProjetsATraiter', array('return'));
         echo('<br/>');
+	}
+	if ($this->controller->Acl->check($userId, 'Deliberations:listerProjetsDansMesCircuits')) {
         echo $this->requestAction('/deliberations/listerProjetsDansMesCircuits', array('return'));
         echo('<br/>');
 	}
