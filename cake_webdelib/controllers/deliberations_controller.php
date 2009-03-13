@@ -88,16 +88,18 @@ class DeliberationsController extends AppController {
 			$deliberations = $this->Deliberation->findAll($conditions);
 
 			for ($i=0; $i<count($deliberations); $i++){
-				if(!empty($deliberations[$i]['Seance']['date']))
-		    		    $deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
-				$id_service = $deliberations[$i]['Service']['id'];
-				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-				$deliberations[$i]['Model']['id'] = $this->getModelId($deliberations[$i]['Deliberation']['id']);
+				if(!empty($deliberations[$i]['Seance']['date'])) {
+					$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
+					$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
+				} else
+					$deliberations[$i]['Model']['id'] = 1;
+
+				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($deliberations[$i]['Service']['id']);
 			}
 
 			foreach ($deliberations as $deliberation)
 			{
-                             if (isset($deliberation['Deliberation']['date_limite'])){
+				if (isset($deliberation['Deliberation']['date_limite'])){
 					$deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
 				}
 				//on recupere la position courante de la deliberation
@@ -148,6 +150,7 @@ class DeliberationsController extends AppController {
 		$this->set('USE_GEDOOO', USE_GEDOOO);
 		$user=$this->Session->read('user');
 		$user_id=$user['User']['id'];
+
 		//recherche de tous les circuits ou apparait l'utilisateur logue
 		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "UsersCircuit.position ASC");
 		$conditions="etat=1 ";
@@ -173,11 +176,13 @@ class DeliberationsController extends AppController {
 
 
 			for ($i=0; $i<count($deliberations); $i++){
-				if(!empty($deliberations[$i]['Seance']['date']))
+				if(!empty($deliberations[$i]['Seance']['date'])) {
 		    		$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
-				$id_service = $deliberations[$i]['Service']['id'];
-				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-				$deliberations[$i]['Model']['id'] = $this->getModelId( $deliberations[$i]['Deliberation']['id']);
+					$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
+				} else
+					$deliberations[$i]['Model']['id'] = 1;
+
+				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($deliberations[$i]['Service']['id']);
 			}
 
 			foreach ($deliberations as $deliberation)
@@ -203,6 +208,7 @@ class DeliberationsController extends AppController {
 					array_push($delib, $deliberation);
 				}
 			}
+
 		}
 		$this->set('deliberations', $delib);
 		$this->render('listerProjetsATraiter');
