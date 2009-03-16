@@ -1873,7 +1873,7 @@ class DeliberationsController extends AppController {
 
 			if (isset($this->data[$i]['Seance']['date'])) {
 				$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
-				$this->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($this->data[$i]['Seance']['type_id'], 1);
+				$this->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($this->data[$i]['Seance']['type_id'], $this->data[$i]['Deliberation']['etat']);
 			} else
 				$this->data[$i]['Model']['id'] = 1;
 
@@ -1950,7 +1950,7 @@ class DeliberationsController extends AppController {
 				'titre' => $this->Deliberation->libelleEtat($this->data[$i]['Deliberation']['etat']));
 
 			$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
-			$this->data[$i]['Model']['id'] = $this->getModelId($this->data[$i]['Deliberation']['id']);
+			$this->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($this->data[$i]['Seance']['type_id'], $this->data[$i]['Deliberation']['etat']);
 
 			$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
 
@@ -2167,7 +2167,7 @@ class DeliberationsController extends AppController {
 
 					if (isset($this->data[$i]['Seance']['date'])) {
 						$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
-						$this->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($this->data[$i]['Seance']['type_id'], 1);
+						$this->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($this->data[$i]['Seance']['type_id'], $this->data[$i]['Deliberation']['etat']);
 					} else
 						$this->data[$i]['Model']['id'] = 1;
 
