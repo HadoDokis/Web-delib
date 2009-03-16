@@ -7,7 +7,6 @@ class TypeseancesController extends AppController {
 
 	// Gestion des droits
 	var $commeDroit = array('edit'=>'Typeseances:index', 'add'=>'Typeseances:index', 'delete'=>'Typeseances:index', 'view'=>'Typeseances:index');
-	var $aucunDroit = array('getField');
 
 	function index() {
 		$this->set('typeseances', $this->Typeseance->findAll());
@@ -105,16 +104,6 @@ class TypeseancesController extends AppController {
 
 		$this->redirect('/typeseances/index');
 	}
-
-	function getField($id = null, $field =null) {
-		$condition = "Typeseance.id = $id";
-		$dataValeur = $this->Typeseance->findAll($condition, $field);
-		if(!empty ($dataValeur['0']['Typeseance'][$field]))
-			return $dataValeur['0'] ['Typeseance'][$field];
-		else
-			return '';
-	}
-
 
 }
 ?>
