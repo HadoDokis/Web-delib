@@ -385,6 +385,9 @@ CREATE TABLE `deliberations` (
   `localisation3_id` int(11) NOT NULL default '0',
   `montant` int(10) NOT NULL,
   `debat` longblob NOT NULL,
+  `debat_name` varchar(255) NOT NULL,
+  `debat_size` int(11) NOT NULL,
+  `debat_type` varchar(255) NOT NULL,
   `avis` int(1) NOT NULL,
   `created` datetime NOT NULL default '0000-00-00 00:00:00',
   `modified` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -393,6 +396,10 @@ CREATE TABLE `deliberations` (
   `vote_nb_abstention` int(3) NOT NULL,
   `vote_nb_retrait` int(3) NOT NULL,
   `vote_commentaire` varchar(500) NOT NULL,
+  `commission` longblob NOT NULL,
+  `commission_size` int(11) NOT NULL,
+  `commission_type` varchar(255) NOT NULL,
+  `commission_name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`)
 );
 
