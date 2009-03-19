@@ -1,5 +1,0 @@
-<div id="content">
-	<h2>Cette page n'existe pas</h2>
-	La page que vous tentez d'ouvrir n'existe pas.<br><br>
-	<?php echo $html->link('Retour &agrave; l\'accueil', '/', null, false, false);?>
-</div>
