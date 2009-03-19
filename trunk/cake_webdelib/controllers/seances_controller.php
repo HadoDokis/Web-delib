@@ -216,12 +216,11 @@ class SeancesController extends AppController {
 	{
 		$condition= "seance_id=$id AND (etat != -1 )";
 		if (!isset($return)) {
-		    $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id") - 1 );
+		    $this->set('lastPosition', $this->Deliberation->getLastPosition($id) - 1 );
 			$deliberations = $this->Deliberation->findAll($condition,null,'Deliberation.position ASC');
 			for ($i=0; $i<count($deliberations); $i++) {
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-				$deliberations[$i]['rapp_id'] = $this->requestAction("deliberations/getRapporteur/".$deliberations[$i]['Deliberation']['id']);
 			}
 			$this->set('seance_id', $id);
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
@@ -306,7 +305,7 @@ class SeancesController extends AppController {
 		for ($i=0; $i<count($deliberations); $i++){
                     $id_service = $deliberations[$i]['Service']['id'];
 		    $deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-		    $deliberations[$i]['Model']['id'] = $this->requestAction("deliberations/getModelId/". $deliberations[$i]['Deliberation']['id']);
+			$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
                     if (($deliberations[$i]['Deliberation']['etat']!=3)AND($deliberations[$i]['Deliberation']['etat']!=4))
                         $ToutesVotees = false;
 		}
@@ -406,7 +405,7 @@ class SeancesController extends AppController {
 
 
 	function saisirDebat ($id = null)	{
-            $seance_id = $this->requestAction('/deliberations/getCurrentSeance/'.$id);
+            $seance_id = $this->Deliberation->getCurrentSeance($id);
             $seance = $this->Seance->read(null, $seance_id);
             $isCommission = $seance['Typeseance']['action'];
 
@@ -528,7 +527,7 @@ class SeancesController extends AppController {
 		for ($i=0; $i<count($deliberations); $i++){
                     $id_service = $deliberations[$i]['Service']['id'];
 		    $deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-		    $deliberations[$i]['Model']['id'] = $this->requestAction("deliberations/getModelId/". $deliberations[$i]['Deliberation']['id']);
+			$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
 		    if (empty($deliberations[$i]['Deliberation']['avis']))
 		        $toutesVisees = false;
 		}
