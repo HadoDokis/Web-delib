@@ -4,7 +4,7 @@ class PostseancesController extends AppController {
 	var $name = 'Postseances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 	var $components = array('Date');
-	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Theme');
+	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance');
 
 	// Gestion des droits
 	var $aucunDroit = array('getNom', 'getPresence', 'getVote');
@@ -28,10 +28,10 @@ class PostseancesController extends AppController {
 	    $this->set ('USE_GEDOOO', USE_GEDOOO);
 	    $condition= "seance_id=$id AND etat>=2";
 	    if (!isset($return)) {
-	        $this->set('lastPosition', $this->requestAction("deliberations/getLastPosition/$id"));
+	        $this->set('lastPosition', $this->Deliberation->getLastPosition($id));
 	        $deliberations = $this->Deliberation->findAll($condition,null,'Deliberation.position ASC');
 	        for ($i=0; $i<count($deliberations); $i++)
-		     $deliberations[$i]['Model']['id'] =  $this->requestAction("deliberations/getModelId/". $deliberations[$i]['Deliberation']['id']); 
+		     $deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
 		$this->set('seance_id', $id);
 		$this->set('projets', $deliberations);
 		$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->requestAction("seances/getDate/$id"))));
