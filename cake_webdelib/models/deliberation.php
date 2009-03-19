@@ -193,5 +193,45 @@ class Deliberation extends AppModel {
 		return $ret;
 	}
 
+	function getCurrentPosition($id){
+		$delib = $this->find("Deliberation.id = $id", 'position', null, -1);
+		return  $delib['Deliberation']['position'];
+	}
+
+	function getCurrentSeance($id) {
+		$delib = $this->find("Deliberation.id = $id", 'seance_id', null, -1);
+		return  $delib['Deliberation']['seance_id'];
+	}
+
+	function getLastPosition($seance_id) {
+		return $this->findCount("seance_id =$seance_id AND (etat != -1 )") + 1;
+	}
+
+	function isFirstDelib($delib_id) {
+		$position  = $this->getCurrentPosition($delib_id);
+		return  ($position == 1);
+	}
+
+	function changeEtat($delib_id, $etat){
+		$this->data = $this->read(null, $delib_id);
+		$this->data['Deliberation']['id']=$delib_id;
+		$this->data['Deliberation']['etat'] = $etat;
+		$this->save($this->data);
+	}
+
+	function changeSeance($delib_id, $seance_id){
+		$this->data = $this->read(null, $delib_id);
+		$this->data['Deliberation']['id']=$delib_id;
+		$this->data['Deliberation']['seance_id'] = $seance_id;
+		$this->save($this->data);
+	}
+
+	function changeClassification($delib_id, $classification){
+		$this->data = $this->read(null, $delib_id);
+		$this->data['Deliberation']['id']=$delib_id;
+		$this->data['Deliberation']['num_pref'] = $classification;
+		$this->save($this->data);
+	}
+
 }
 ?>
