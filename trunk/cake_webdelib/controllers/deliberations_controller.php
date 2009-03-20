@@ -416,7 +416,6 @@ class DeliberationsController extends AppController {
                     $this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_doc']['size'];
                     $this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_doc']['type'];
                     $this->data['Deliberation']['texte_synthese']      = $this->_getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
-                    $this->Deliberation->save($this->data);
                      unset($this->data['Deliberation']['texte_doc']);
                  }
              }
@@ -480,7 +479,6 @@ class DeliberationsController extends AppController {
                             $this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['texte_doc']['size'];
                             $this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['texte_doc']['type'];
                             $this->data['Deliberation']['deliberation']      = $this->_getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
-                            $this->Deliberation->save($this->data);
                             unset($this->data['Deliberation']['texte_doc']);
                          }
                     }
@@ -567,7 +565,6 @@ class DeliberationsController extends AppController {
                              $this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_doc']['size'];
                              $this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_doc']['type'];
                              $this->data['Deliberation']['texte_projet']      = $this->_getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
-                             $this->Deliberation->save($this->data);
                              unset($this->data['Deliberation']['texte_doc']);
                          }
                      }
