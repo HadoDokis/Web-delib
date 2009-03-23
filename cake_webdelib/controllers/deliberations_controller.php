@@ -942,17 +942,17 @@ class DeliberationsController extends AppController {
 				}
 				$this->set('commentaires', $commentaires);
 				$deliberation= $this->Deliberation->read(null, $id);
-				$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
+				if (!empty($deliberation['Seance']['date']))
+				    $deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
 				$id_service = $deliberation['Service']['id'];
 				$deliberation['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 
 				$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
 				$delib=array();
-					//on recupere la position courante de la deliberation
-					$lastTraitement=array_pop($deliberation['Traitement']);
-					$deliberation['positionDelib']=$lastTraitement['position'];
-					//on recupere la position de l'user dans le circuit
-
+				//on recupere la position courante de la deliberation
+				$lastTraitement=array_pop($deliberation['Traitement']);
+				$deliberation['positionDelib']=$lastTraitement['position'];
+				//on recupere la position de l'user dans le circuit
 				array_push($delib, $deliberation);
 				$this->set('deliberation', $delib);
 				$this->set('user_circuit', $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit",null,'UsersCircuit.position ASC'));
@@ -964,7 +964,7 @@ class DeliberationsController extends AppController {
 				{
 					//verification du projet, s'il n'est pas pret ->reporte a la seance suivante
 					$delib = $this->Deliberation->findAll("Deliberation.id = $id");
-					$type_id =$delib[0]['Seance']['type_id'];
+			                $type_id =$delib[0]['Seance']['type_id'];
 					if(isset($type_id)){
 						$type = $this->Typeseance->findAll("Typeseance.id = $type_id");
 						$date_seance = $delib[0]['Seance']['date'];;
@@ -978,9 +978,9 @@ class DeliberationsController extends AppController {
 								$this->data['Deliberation']['reporte']=1;
 								$this->data['Deliberation']['id']=$id;
 								if (isset($this->data['Deliberation']['seance_id']))
-						    		$position = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
+						    		    $position = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
 								else
-						    		$position = 0;
+						    		    $position = 0;
 								$this->data['Deliberation']['position']=$position;
 								$this->Deliberation->save($this->data);
 							}
@@ -1041,17 +1041,17 @@ class DeliberationsController extends AppController {
 					$this->data['Traitement']['circuit_id']=$circuit_id;
 					$this->Traitement->save($this->data['Traitement']);
 
-					//TODO notifier par mail toutes les personnes qui ont deja vise le projet
+					// TODO notifier par mail toutes les personnes qui ont deja vise le projet
 					$condition = "circuit_id = $circuit_id";
 					$listeUsers = $this->UsersCircuit->findAll($condition);
 					foreach($listeUsers as $user)
 						$this->_notifierDossierRefuse($id, $user['User']['id']);
 
-					//maj de l'etat de la delib dans la table deliberations
+					// maj de l'etat de la delib dans la table deliberations
 					$tab=$this->Deliberation->findAll("Deliberation.id = $id");
 					$this->data['Deliberation']['etat']=-1; //etat -1 : refuse
 
-				    // Retour de la position a 0 pour ne pas qu'il y ait de confusion
+				        // Retour de la position a 0 pour ne pas qu'il y ait de confusion
 					$this->data['Deliberation']['position']=0;
 					$this->data['Deliberation']['id']=$id;
 					$this->Deliberation->save($this->data['Deliberation']);
@@ -1897,9 +1897,10 @@ class DeliberationsController extends AppController {
 			$this->render('rechercheMutliCriteres');
 		} else {
 			$conditions = "";
-			if (!empty($this->data['Deliberation']['rapporteur_id']))
-				$conditions .= " Deliberation.rapporteur_id = ".$this->data['Deliberation']['rapporteur_id'];
 
+			if (!empty($this->data['Deliberation']['rapporteur_id'])){
+			        $conditions .= " Deliberation.rapporteur_id = ".$this->data['Deliberation']['rapporteur_id'];
+                        }
 			if (!empty($this->data['Deliberation']['service_id'])){
 				if ($conditions != "")
 					$conditions .= " AND ";
@@ -1907,9 +1908,13 @@ class DeliberationsController extends AppController {
 			}
 
 			if (!empty($this->data['Deliberation']['id'])){
-				if ($conditions != "")
-					$conditions .= " AND ";
-				$conditions .= " Deliberation.id = ".$this->data['Deliberation']['id'];
+			    if (!is_numeric($this->data['Deliberation']['id'])) {
+			        $this->Session->setFlash('Vous devez saisir un identifiant valide');
+                                $this->redirect('/deliberations/mesProjetsRecherche');
+		            }
+		            if ($conditions != "")
+			        $conditions .= " AND ";
+			    $conditions .= " Deliberation.id = ".$this->data['Deliberation']['id'];
 			}
 
 			if (!empty($this->data['Deliberation']['theme_id'])){
@@ -1982,9 +1987,13 @@ class DeliberationsController extends AppController {
 			}
 
 			if (!empty($this->data['Deliberation']['id'])){
-				if ($conditions != "")
-					$conditions .= " AND ";
-				$conditions .= " Deliberation.id = ".$this->data['Deliberation']['id'];
+                            if (!is_numeric($this->data['Deliberation']['id'])) {
+                                $this->Session->setFlash('Vous devez saisir un identifiant valide');
+                                $this->redirect('/deliberations/tousLesProjetsRecherche');
+                            }
+		            if ($conditions != "")
+			        $conditions .= " AND ";
+			     $conditions .= " Deliberation.id = ".$this->data['Deliberation']['id'];
 			}
 
 			if (!empty($this->data['Deliberation']['theme_id'])){
