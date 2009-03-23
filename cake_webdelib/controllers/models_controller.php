@@ -128,11 +128,15 @@
 	}
 
 	function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null)  {
-	       $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($delib['Seance']['date']),   'date'));
-	       $date_lettres =  $this->Date->dateLettres(strtotime($delib['Seance']['date']));
-	       $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text'));
-               $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
-
+               if ($delib['Deliberation']['seance_id'] != 0 ) { 
+	           $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($delib['Seance']['date']),   'date'));
+	           $date_lettres =  $this->Date->dateLettres(strtotime($delib['Seance']['date']));
+	           $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text'));
+                   $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
+	           $seance = $this->Seance->read(null, ($delib['Seance']['id']));       
+                   $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),    'text'));
+ 
+               }
                $oMainPart->addElement(new GDO_FieldType('titre_projet',                utf8_encode($delib['Deliberation']['titre']),    'text'));
                $oMainPart->addElement(new GDO_FieldType('objet_projet',                utf8_encode($delib['Deliberation']['objet']),    'text'));
                $oMainPart->addElement(new GDO_FieldType('position_projet',             utf8_encode($delib['Deliberation']['position']), 'text'));
@@ -469,7 +473,7 @@
 	    // Génération d'une délibération ou d'un texte de projet
             //*****************************************
             if ($delib_id != "null") {
-	        $delib = $this->Deliberation->read(null,$delib_id);
+	        $delib = $this->Deliberation->read(null, $delib_id);
                 $oMainPart = $this->makeBalisesProjet($delib, $oMainPart, true, $u);
             }
 
@@ -480,9 +484,11 @@
                  $projets  = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=0",null,'Deliberation.position ASC');
                  $blocProjets = new GDO_IterationType("Projets");
 		 foreach ($projets as $projet) {
+		 //$projet =  $projets['0'];
 		     $oDevPart = new GDO_PartType();
-		     if ($isPV)
+		     if ($isPV){
 		         $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, true, $u);
+		     }
 		     else
 		         $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, false, $u);
 		     $blocProjets->addPart($oDevPart);
@@ -494,20 +500,20 @@
 	         $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
 	         $oMainPart->addElement(new GDO_FieldType('date_seance_lettres', utf8_encode($date_lettres),                     'text'));
                  $oMainPart->addElement(new GDO_FieldType('heure_seance', $this->Date->Hour  ($seance['Seance']['date']),   'date'));
-                 $oMainPart->addElement(new GDO_FieldType('type_seance',$seance['Typeseance']['libelle'] , "text"));
+                 $oMainPart->addElement(new GDO_FieldType('type_seance',utf8_encode($seance['Typeseance']['libelle']) , "text"));
                  $oMainPart->addElement(new GDO_FieldType('identifiant_seance',  utf8_encode($seance['Seance']['id']),'text'));
-                 $oDevPart->addElement(new GDO_FieldType("nom_secretaire", utf8_encode($seance['Secretaire']['nom']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("prenom_secretaire", utf8_encode($seance['Secretaire']['prenom']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("salutation_secretaire",utf8_encode($seance['Secretaire']['salutation']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("titre_secretaire", utf8_encode($seance['Secretaire']['titre']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("date_naissance_secretaire", utf8_encode($seance['Secretaire']['date_naissance']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("adresse1_secretaire", utf8_encode($seance['Secretaire']['adresse1']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("adresse2_secretaire", utf8_encode($seance['Secretaire']['adresse2']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("cp_secretaire", utf8_encode($seance['Secretaire']['cp']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("ville_secretaire", utf8_encode($seance['Secretaire']['ville']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("email_secretaire", utf8_encode($seance['Secretaire']['email']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("telfixe_secretaire",utf8_encode($seance['Secretaire']['telfixe']), "text"));
-                 $oDevPart->addElement(new GDO_FieldType("note_secretaire", utf8_encode($seance['Secretaire']['note']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("nom_secretaire", utf8_encode($seance['Secretaire']['nom']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("prenom_secretaire", utf8_encode($seance['Secretaire']['prenom']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("salutation_secretaire",utf8_encode($seance['Secretaire']['salutation']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("titre_secretaire", utf8_encode($seance['Secretaire']['titre']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("date_naissance_secretaire", utf8_encode($seance['Secretaire']['date_naissance']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("adresse1_secretaire", utf8_encode($seance['Secretaire']['adresse1']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("adresse2_secretaire", utf8_encode($seance['Secretaire']['adresse2']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("cp_secretaire", utf8_encode($seance['Secretaire']['cp']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("ville_secretaire", utf8_encode($seance['Secretaire']['ville']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("email_secretaire", utf8_encode($seance['Secretaire']['email']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("telfixe_secretaire",utf8_encode($seance['Secretaire']['telfixe']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("note_secretaire", utf8_encode($seance['Secretaire']['note']), "text"));
 
                  if (!$isPV) { // une convocation ou un ordre du jour
                      require_once ('vendors/progressbar.php');
@@ -551,7 +557,6 @@
                      exit;
 		}
 	    }
-
             //*****************************************
             // Lancement de la fusion
             //*****************************************
