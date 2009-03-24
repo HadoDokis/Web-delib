@@ -129,14 +129,14 @@ function changeRapporteur(params,delib)
 	document.location=url;
 }
 
-function add_field() {
+function add_field(num) {
 
 	var a = document.getElementById('lien_annexe');
 	a.firstChild.nodeValue = 'Joindre une autre annexe';
 
   if(navigator.appName=='Microsoft Internet Explorer'){
   	var br = document.createElement('br');
- 	var d = document.getElementById('cible');
+ 	var d = document.getElementById('cible'+num);
 	var p = document.createElement("p");
 	d.appendChild(p);
 	var n = d.childNodes.length;
@@ -144,7 +144,7 @@ function add_field() {
   }
 
  else {
-	var d = document.getElementById('cible');
+	var d = document.getElementById('cible'+num);
 	var p = document.createElement("p");
 	var n = d.childNodes.length;
 	var br = document.createElement('br');
@@ -152,40 +152,24 @@ function add_field() {
  	d.appendChild(p);
  }
 
-	var div1 = document.createElement('div');
-	var input1 = document.createElement('input');
-	input1.id = 'AnnexeTitre_'+n;
- 	input1.type = 'text';
-	input1.size = '40';
-	input1.name = 'titre_'+n;
-	var titre = document.createTextNode('Titre annexe');
-	div1.appendChild(titre);
-	div1.appendChild(document.createElement('br'));
-	div1.appendChild(input1);
-	p.appendChild(div1);
-
 	var div2 = document.createElement('div');
 	var input2 = document.createElement('input');
 	input2.id = 'AnnexeFile_'+n;
 	input2.type = 'file';
 	input2.size = '40';
-	input2.name = 'file_'+n;
-	var chemin = document.createTextNode('Chemin annexe');
-	div2.appendChild(chemin);
-	div2.appendChild(document.createElement('br'));
-	div2.appendChild(br);
+	input2.name = num+'_file_'+n;
 	div2.appendChild(input2);
 	p.appendChild(div2);
 
-	var link = document.createElement('a');
-	link.id = 'Lien_'+n;
-	link.href = 'javascript:del_field('+n+')';
-	text = document.createTextNode('Supprimer');
-	link.appendChild(text);
-	p.appendChild(br);
-	p.appendChild(link);
+//	var link = document.createElement('a');
+//	link.id = 'Lien_'+n;
+//	link.href = 'javascript:del_field('+n+')';
+//	text = document.createTextNode('Supprimer');
+//	link.appendChild(text);
+//	p.appendChild(br);
+//	p.appendChild(link);
 
-	document.getElementById('cible').style.visibility = 'visible';
+	document.getElementById('cible'+num).style.visibility = 'visible';
 }
 
 function del_field(node)
