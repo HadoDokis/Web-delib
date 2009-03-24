@@ -26,15 +26,10 @@ $webDelib = array(
 			'subMenu' => array(
 				'items' => array(
 					'Nouveau...' => array('link' => '/deliberations/add'),
-					'Refusés' => array('link' => '/deliberations/mesProjetsRefuses'),
 					'En cours de rédaction' => array('link' => '/deliberations/mesProjetsRedaction'),
 					'En cours de validation' => array('link' => '/deliberations/mesProjetsValidation'),
+					'A traiter' => array('link' => '/deliberations/mesProjetsATraiter'),
 					'Validés' => array('link' => '/deliberations/mesProjetsValides'),
-					'Votés et adoptés' => array('link' => '/deliberations/mesProjetsVotesOui'),
-					'Votés et non adoptés' => array('link' => '/deliberations/mesProjetsVotesNon'),
-					'Transmis au contrôle de légalité' => array('link' => '/deliberations/mesProjetsTransmis'),
-					'A traiter' => array('link' => '/deliberations/listerProjetsATraiter'),
-					'Dans mes circuits' => array('link' => '/deliberations/listerProjetsDansMesCircuits'),
 					'Recherches' => array('link' => '/deliberations/mesProjetsRecherche')
 					)
 				)
