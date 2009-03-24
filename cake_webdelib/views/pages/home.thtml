@@ -2,12 +2,12 @@
 	<div id="tableau_bord">
 <?php
 	$userId = $this->controller->Session->read('user.User.id');
-	if ($this->controller->Acl->check($userId, 'Deliberations:listerProjetsATraiter')) {
-	    echo $this->requestAction('/deliberations/listerProjetsATraiter', array('return'));
+	if ($this->controller->Acl->check($userId, 'Deliberations:mesProjetsATraiter')) {
+	    echo $this->requestAction('/deliberations/mesProjetsATraiter', array('return'));
         echo('<br/>');
 	}
-	if ($this->controller->Acl->check($userId, 'Deliberations:listerProjetsDansMesCircuits')) {
-        echo $this->requestAction('/deliberations/listerProjetsDansMesCircuits', array('return'));
+	if ($this->controller->Acl->check($userId, 'Deliberations:mesProjetsValidation')) {
+        echo $this->requestAction('/deliberations/mesProjetsValidation', array('return'));
         echo('<br/>');
 	}
 	if ($this->controller->Acl->check($userId, 'Deliberations:mesProjetsRedaction')) {
