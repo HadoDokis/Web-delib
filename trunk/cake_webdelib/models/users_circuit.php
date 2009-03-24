@@ -9,7 +9,7 @@ class UsersCircuit extends AppModel {
 	);
 
 	var $useTable="users_circuits";
-	
+
 	var $belongsTo = array(
 			'Circuit' =>
 				array('className' => 'Circuit',
@@ -38,5 +38,19 @@ class UsersCircuit extends AppModel {
 				)
 
 	);
+
+/*
+ * retourne la liste des id des circuits de l'utilisateur $userId sous forme : circuit1Id, circuit2Id, ...
+ */
+	function listeCircuitsParUtilisateur($userId) {
+		$listeCircuits = '';
+
+		$circuits = $this->findAll('user_id = '. $userId, 'circuit_id', null, null, 1, -1);
+		foreach($circuits as $circuit) {
+			$listeCircuits .= (empty($listeCircuits) ? '' : ', ') . $circuit['UsersCircuit']['circuit_id'];
+		}
+
+		return $listeCircuits;
+	}
 }
 ?>
