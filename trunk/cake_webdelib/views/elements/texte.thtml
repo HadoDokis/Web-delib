@@ -1,0 +1,60 @@
+<?php
+    echo $javascript->link('fckeditor');
+    echo $javascript->link('utils');
+    $delib  = $this->data;
+    if ($key=='texte_projet'){
+        $cible   = 1;
+	$libelle = 'Texte du projet';
+	$type    = 'P';
+    }
+    elseif  ($key=='texte_synthese'){
+        $cible=2;
+	$libelle = 'Note de Synth&egrave;se';
+	$type    = 'S';
+    }
+    elseif  ($key=='deliberation'){
+        $cible=3;
+	$libelle = 'Texte de d&eacute;lib&eacute;ration';
+	$type    = 'D';
+    }
+?>
+<div class="optional">
+<?php
+        if (!GENERER_DOC_SIMPLE){
+            $url  = "/deliberations/download/".$delib['Deliberation']['id']."/$key";
+            $url2 = "/deliberations/supprimerText/".$delib['Deliberation']['id']."/$key";
+            if ($delib['Deliberation'][$key."_name"] !="") {
+                echo  ' Nom fichier : [ ';
+                echo  $html->link($delib['Deliberation'][$key."_name"], $url, array('title'=>'Recuperer le fichier')).' ]';
+                echo  $html->link("Supprimer", $url2, array('title'=>'Supprimer le fichier'), 'Voulez-vous supprimer ce fichier ?').'<br><br><br>';
+            }
+            else {
+                echo ($libelle.' : ');
+                echo  $html->fileTag("Deliberation/".$key, array('size'=>'60'));
+            }
+            echo '</div>';
+        }
+?>
+<?php
+        if (GENERER_DOC_SIMPLE) {
+?>
+<div class="optional">
+    <?php echo $html->textarea("Deliberation/$key", array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Deliberation][$key]'); ?>
+</div>
+<?php  } // fin du if ?>
+
+<fieldset>
+    <legend>Annexe(s) : </legend>
+        <?php if(!empty($annexes)){  ?>
+        <?php foreach ($annexes as $annexe) :
+	        if ($annexe['Annex']['type']== $type) {
+                echo '    Nom fichier : [ ';
+                echo $html->link($annexe['Annex']['filename'],'/annexes/download/'.$annexe['Annex']['id']) . ' ]';?> |
+        <?php   echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']).'<br>';  } ?>
+        <?php endforeach; } ?>
+   <br />
+    <div> <a href="javascript:add_field(<?php echo $cible; ?>)" id="lien_annexe" class="link_annexe">Joindre une annexe</a>  </div>
+    <br />
+    <div id="cible<?php echo $cible; ?>"> </div>
+</fieldset>

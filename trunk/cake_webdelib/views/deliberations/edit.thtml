@@ -26,8 +26,11 @@
 <?php if (!empty($infosupdefs)): ?>
 <div class='onglet'>
 	<a></a>
-	<a href="javascript:afficheOnglet(1, 2)" id='lienTab1' class="ongletCourant">Informations principales</a>
-	<a href="javascript:afficheOnglet(2, 2)" id='lienTab2'>Informations suppl&eacute;mentaires</a>
+	<a href="javascript:afficheOnglet(1, 5)" id='lienTab1' class="ongletCourant">Informations principales</a>
+	<a href="javascript:afficheOnglet(2, 5)" id='lienTab2'>Texte de projet</a>
+	<a href="javascript:afficheOnglet(3, 5)" id='lienTab3'>Note de synth&egrave;se</a>
+	<a href="javascript:afficheOnglet(4, 5)" id='lienTab4'>Texte de d&eacute;lib&eacute;ration</a>
+	<a href="javascript:afficheOnglet(5, 5)" id='lienTab5'>Informations suppl&eacute;mentaires</a>
 </div>
 <?php endif; ?>
 
@@ -64,18 +67,6 @@
 	<a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/changeLocation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=800,height=600');">[Choisir localisation]</a>
 	<div class='spacer'></div>
 
-	<?php echo $form->labelTag('Deliberation/texte_projet', 'Texte projet');?>
-	<a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textprojet/<?php echo $deliberation['Deliberation']['id']?>','popup','width=1024,height=728,scrollbars=yes');">[Texte projet]</a>
-	<div class='spacer'></div>
-
-	<?php echo $form->labelTag('Deliberation/texte_synthese', 'Note synthese');?>
-	<a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/textsynthese/<?php echo $deliberation['Deliberation']['id']?>','popup','width=1024,height=728,scrollbars=yes');">[Note de synthese]</a>
-	<div class='spacer'></div>
-
-	<?php echo $form->labelTag('Deliberation/deliberation', 'Deliberation');?>
-	<a class="list_form" href="javascript:OuvrirFenetre('<?php echo $this->base?>/deliberations/deliberation/<?php echo $deliberation['Deliberation']['id']?>','popup','width=1024,height=728,scrollbars=yes');">[Texte deliberation]</a>
-	<div class='spacer'></div>
-
 	<?php echo $form->labelTag('Deliberation/date_limite', 'Date limite');?>
 	<?php
 		if ($deliberation['Deliberation']['date_limite'] != '01/01/1970')
@@ -92,20 +83,21 @@
 	<div class="annexesDroite">
 		<?php if(!empty($annexes)){
 			foreach ($annexes as $annexe) {
-				echo 'Titre : '.$annexe['Annex']['titre'].'<br>';
-				echo 'Nom fichier : '.$annexe['Annex']['filename'].'<br>';
-				echo 'Taille : '.$annexe['Annex']['size'].' '.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']).' '.$html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);
-				echo '<br/><br/>';
+			        if ($annexe['Annex']['type']== 'G') {
+				    echo '[ '.$html->link($annexe['Annex']['filename'] ,'/annexes/download/'.$annexe['Annex']['id']).' ]';
+				    echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);
+			      	    echo '<br/><br/>';
+			        }
 			};
 		}; ?>
-		<div id="cible"> </div>
-		<a href="javascript:add_field()" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
+		<div id="cible0"> </div>
+		<a href="javascript:add_field(0)" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
 	</div>
 	<div class='spacer'></div>
 <?php if (!empty($infosupdefs)): ?>
 </div>
 
-<div id="tab2" style="display: none;">
+<div id="tab5" style="display: none;">
 	<?php
 	foreach($infosupdefs as $infosupdef) {
 		$fieldName = 'Infosup/'.$infosupdef['Infosupdef']['code'];
@@ -147,6 +139,17 @@
 </div>
 <?php endif; ?>
 
+<div id="tab2" style="display: none;">
+    <?php echo $this->element('texte', array('key' => 'texte_projet'));?>
+</div>
+<div id="tab3" style="display: none;">
+    <?php echo $this->element('texte', array('key' => 'texte_synthese'));?>
+</div>
+<div id="tab4" style="display: none;">
+    <?php echo $this->element('texte', array('key' => 'deliberation'));?>
+</div>
+
+ 
 <div class="spacer" style="border-top: solid 1px #e0ef90;"></div>
 <div class="submit">
 	<?php echo $html->hidden('Deliberation/id')?>
