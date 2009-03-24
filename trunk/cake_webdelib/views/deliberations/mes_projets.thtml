@@ -34,6 +34,8 @@
 				echo $html->link('&shy;','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
 			if (in_array('delete', $listeActions))
 				echo $html->link('&shy;','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?', false);
+			if (in_array('traiter', $listeActions))
+				echo $html->link('&shy;',"/deliberations/traiter/" . $deliberation['Deliberation']['id'], array('class'=>"link_traiter", 'title'=>'Traiter'), false, false);
 			echo '<br/><br/>';
 			if (in_array('attribuercircuit', $listeActions))
 				echo $html->link('&shy;','/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'], array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'), false, false);
@@ -49,11 +51,12 @@
 	<tr>
 		<td>Identifiant projet : <?php echo $deliberation['Deliberation']['id']; ?></td>
 		<td class='corps' rowspan=1 >Th&egrave;me : <?php echo $deliberation['Theme']['libelle']; ?></td>
-		<td class='corps' rowspan=2 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
+		<td class='corps' rowspan=1 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
 	</tr>
 	<tr>
 		<td>N&deg; classification :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
 		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td>
+		<td>A traiter avant le : <?php echo $deliberation['Deliberation']['date_limite']; ?></td>
 	</tr>
 	<tr>
 		<td colspan='5' class='Border' height='1' >
