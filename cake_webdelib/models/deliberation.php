@@ -64,6 +64,7 @@ class Deliberation extends AppModel {
 		'Infosup'=>array(
 			'dependent' => true)
 		);
+
 /*
  * Indique si le projet de délibération $delibId est modifiable pour $userId.
  * Attention : ne tient pas compte des droits qui sont fait dans le controller
