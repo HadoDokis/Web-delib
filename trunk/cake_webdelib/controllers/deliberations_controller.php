@@ -101,7 +101,7 @@ class DeliberationsController extends AppController {
 	}
 
 	function _getFileData($fileName, $fileSize) {
-		return fread(fopen($fileName, "r"), $fileSize);
+		return @fread(fopen($fileName, "r"), $fileSize);
 	}
 
 	function saveLocation($id=null,$idLoc=0,$zone) 	{
@@ -237,11 +237,18 @@ class DeliberationsController extends AppController {
 	 $this->layout = 'fckeditor';
 	 $this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="S"'));
 
-	if (empty($this->data)) {
-        $this->data = $this->Deliberation->read(null, $id);
-	 $this->set('delib', $this->data);
+         if (empty($this->data)) {
+             $this->data = $this->Deliberation->read(null, $id);
+             $dyn_path = "/files/generee/fd/null/".$this->data['Deliberation']['id']."/";
+             $path = WEBROOT_PATH.$dyn_path;
+             if (!empty( $this->data['Deliberation']['texte_synthese']))
+                 $this->Gedooo->createFile($path, $this->data['Deliberation']['texte_synthese_name'], $this->data['Deliberation']['texte_synthese']);
+
+             $this->set('url', $dyn_path.$this->data['Deliberation']['texte_synthese_name']);
+             $this->set('url2', "/deliberations/supprimerText/$id/2");
+	     $this->set('delib', $this->data);
 	}
-    else {
+        else {
 	     if (isset($this->data['Deliberation']['texte_doc'])){
                 if ($this->data['Deliberation']['texte_doc']['size']!=0){
                     $this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_doc']['name'];
@@ -304,6 +311,15 @@ class DeliberationsController extends AppController {
 		if (empty($this->data)) {
 		    $this->data = $this->Deliberation->read(null, $id);
                     $this->set('delib', $this->data);
+                    $dyn_path = "/files/generee/fd/null/".$this->data['Deliberation']['id']."/";
+                    $path = WEBROOT_PATH.$dyn_path;
+                    if (empty( $this->data['Deliberation']['deliberation_name']))
+                         $this->data['Deliberation']['deliberation_name'] = 'deliberation.html';
+                    if (!empty( $this->data['Deliberation']['deliberation']))
+                        $this->Gedooo->createFile($path, $this->data['Deliberation']['deliberation_name'], $this->data['Deliberation']['deliberation']);
+
+                    $this->set('url', $dyn_path.$this->data['Deliberation']['deliberation_name']);
+		    $this->set('url2', "/deliberations/supprimerText/$id/3");
 		} else{
                     if (isset($this->data['Deliberation']['texte_doc'])){
                         if ($this->data['Deliberation']['texte_doc']['size']!=0){
@@ -376,74 +392,55 @@ class DeliberationsController extends AppController {
 		exit();
 	}
 
-	function textprojet ($id = null) {
-		$this->layout = 'fckeditor';
-		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
+	function _saveAnnexe ($id, $file, $type) {
+                if (is_array($file)){
+                    $this->Annex->create();
+                    $this->data['Annex']['deliberation_id'] = $id;
+                    $this->data['Annex']['seance_id'] = 0;
+                    $this->data['Annex']['titre'] = 'titre'; //$form['titre_'.$counter];
+                    $this->data['Annex']['type'] =  $type;
+                    $this->data['Annex']['filename'] = $file['name'];
+                    $this->data['Annex']['filetype'] = $file['type'];
+                    $this->data['Annex']['size'] = $file['size'];
+                    $this->data['Annex']['data'] = $this->_getFileData($file['tmp_name'], $file['size']);
+                    if(!$this->Annex->save($this->data['Annex'])){
+                        echo "pb de sauvegarde de l\'annexe ";
+                        debug($this->data['Annex']);
+                    }
+                }
+            return true; 
+	}
 
-		if (empty($this->data)) {
-		    $this->data = $this->Deliberation->read(null, $id);
-		    $this->set('delib', $this->data);
-		    $dyn_path = "/files/generee/fd/null/".$this->data['Deliberation']['id']."/";
-		    $path = WEBROOT_PATH.$dyn_path;
-		    if (empty( $this->data['Deliberation']['texte_projet_name']))
-		         $this->data['Deliberation']['texte_projet_name'] = 'vide.html';
-		    if (!empty( $this->data['Deliberation']['texte_projet']))
-		        $this->Gedooo->createFile($path, $this->data['Deliberation']['texte_projet_name'], $this->data['Deliberation']['texte_projet']);
-		    $this->set('url', $dyn_path.$this->data['Deliberation']['texte_projet_name']);
-		} else{
-	             if (isset($this->data['Deliberation']['texte_doc'])){
-                         if ($this->data['Deliberation']['texte_doc']['size']!=0){
-                             $this->data['Deliberation']['texte_projet_name'] = $this->Utils->strtocamel($this->data['Deliberation']['texte_doc']['name']);
-                             $this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_doc']['size'];
-                             $this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_doc']['type'];
-                             $this->data['Deliberation']['texte_projet']      = $this->_getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
-                             unset($this->data['Deliberation']['texte_doc']);
-                         }
-                     }
+	function textprojet ($id = null) { 
+            $this->layout = 'fckeditor';
+	    $this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
+            if (!empty($this->params['form']))
+                $this->_saveAnnexe($id, $this->params['form'], 'P');
+		    
+            $delib = $this->Deliberation->read(null, $id);
+	    $this->set('delib', $delib);
+		
+            if (empty($this->data)) {
+	        $dyn_path = "/files/generee/fd/null/".$this->data['Deliberation']['id']."/";
+	        $path = WEBROOT_PATH.$dyn_path;
+	        if (empty($delib['Deliberation']['texte_projet_name']))
+	            $delib['Deliberation']['texte_projet_name'] = 'vide.html';
+	        if (!empty( $delib['Deliberation']['texte_projet']))
+	            $this->Gedooo->createFile($path, $delib['Deliberation']['texte_projet_name'], $delib['Deliberation']['texte_projet']);
 
-                         $this->data['Deliberation']['id']=$id;
-			if(!empty($this->params['form']))
-			{
-				$form = $this->params['form'];
-				$deliberation = array_shift($this->params['form']);
-				$annexes = $this->params['form'];
-				$uploaded = true;
-				$size = count($this->params['form']);
-				$counter = 1;
-
-				while($counter <= ($size/2))
-				{
-					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name'])){
-						$uploaded = false;
-					}
-					$counter++;
-				}
-
-				if($uploaded) {
-			            if ($this->Deliberation->save($this->data)) {
-					$counter = 1;
-					while($counter <= ($size/2)) {
-				            $this->data['Annex']['id'] = null;
-					    $this->data['Annex']['deliberation_id'] = $id;
-					    $this->data['Annex']['seance_id'] = 0;
-					    $this->data['Annex']['titre'] = $form['titre_'.$counter];
-					    $this->data['Annex']['type'] = 'P';
-					    $this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
-					    $this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
-					    $this->data['Annex']['size'] = $annexes['file_'.$counter]['size'];
-					    $this->data['Annex']['data'] = $this->_getFileData($annexes['file_'.$counter]['tmp_name'], $annexes['file_'.$counter]['size']);
-					    if(!$this->Annex->save($this->data)){
-				                echo "pb de sauvegarde de l\'annexe ".$counter;
-					    }
-					    $counter++;
-					}
-					$this->redirect('/deliberations/textprojet/'.$id);
-				    } else {
-				        $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				    }
-				}
-			}
-		}
+	        $this->set('url', $dyn_path.$this->data['Deliberation']['texte_projet_name']);
+	        $this->set('url2', "/deliberations/supprimerText/$id/1");
+	    }
+            else{
+                if ($this->data['Deliberation']['texte_doc']['size']!=0){
+                    $delib['Deliberation']['texte_projet_name'] = $this->Utils->strtocamel($this->data['Deliberation']['texte_doc']['name']);
+                    $delib['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_doc']['size'];
+                    $delib['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_doc']['type'];
+                    $delib['Deliberation']['texte_projet'] = $this->_getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+                    if ($this->Deliberation->save($delib))
+                        $this->redirect("/deliberations/textprojet/$id");
+                }
+            }
 	}
 
 	function _PositionneDelibsSeance($seance_id, $position) {
@@ -486,7 +483,7 @@ class DeliberationsController extends AppController {
 			$this->set('deliberation', $this->data);
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
-			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
+			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id));
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateList());
@@ -510,75 +507,79 @@ class DeliberationsController extends AppController {
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
 
-			$this->cleanUpFields();
+                        // Si le texte de projet existe, on l'enregistre
+                        if  (isset($this->data['Deliberation']['texte_projet']['size'])) {
+		            $this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
+		            $this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
+		            $this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'] ;
+			    $tp =  $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
+		            $this->data['Deliberation']['texte_projet']      =  $tp;
+                        }
 
-			if(!empty($this->params['form']))
-			{
+                        // Si la note de synthèse existe, on l'enregistre
+                        if  (isset($this->data['Deliberation']['texte_synthese']['size'])) {
+                            $this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
+                            $this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
+                            $this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'] ;
+                            $ts =  $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
+                            $this->data['Deliberation']['texte_synthese']      =  $ts;
+                        }
+
+                        // Si le texte de délibération existe, on l'enregistre
+                        if  (isset($this->data['Deliberation']['deliberation']['size'])) {
+                            $this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
+                            $this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
+                            $this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'] ;
+                            $tp =  $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
+                            $this->data['Deliberation']['deliberation']      =  $tp;
+                        }
+
+			$this->cleanUpFields();
+                    
+			if(!empty($this->params['form'])) {
 				$deliberation = array_shift($this->params['form']);
 				$annexes = $this->params['form'];
-
-				$uploaded = true;
 				$size = count($this->params['form']);
-				$counter = 1;
+				$counter = 0;
 
-				while($counter <= ($size/2))
-				{
-					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name']))
-						$uploaded = false;
-					$counter++;
-				}
+				while($counter <= ($size)) { 
+				    if (isset($this->params['form']['0_file_'.$counter])) 
+                                        $this->_saveAnnexe($id, $this->params['form']['0_file_'.$counter], 'G');
+                                     if(isset($this->params['form']['1_file_'.$counter]))
+                                        $this->_saveAnnexe($id, $this->params['form']['1_file_'.$counter], 'P');
+                                     if(isset($this->params['form']['2_file_'.$counter]))
+                                        $this->_saveAnnexe($id, $this->params['form']['2_file_'.$counter], 'S');
+                                     if(isset($this->params['form']['3_file_'.$counter]))
+                                        $this->_saveAnnexe($id, $this->params['form']['3_file_'.$counter], 'D');
+			             $counter++;
+				} 
+                                
+			        if ($this->Deliberation->save($this->data)) {
+			             /* sauvegarde des informations supplémentaires */
+				     if (array_key_exists('Infosup', $this->data))
+				         $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
+                                         $this->redirect($redirect);
+				} else {
+				     $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				     $this->set('services', $this->Deliberation->Service->generateList());
+				     $this->set('themes', $this->Deliberation->Theme->generateList());
+				     $this->set('circuits', $this->Deliberation->Circuit->generateList());
+				     $this->set('datelim',$this->data['Deliberation']['date_limite']);
+				     $this->set('annexes',$this->Annex->findAll('deliberation_id='.$id));
+				     $this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
+				     $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
+				     $this->set('redirect', $redirect);
 
-				if($uploaded)
-				{
-
-					if ($this->Deliberation->save($this->data))
-					{
-						/* sauvegarde des informations supplémentaires */
-						if (array_key_exists('Infosup', $this->data))
-							$this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
-
-						$delib_id = $id;
-						$counter = 1;
-
-						while($counter <= ($size/2)){
-							$this->data['Annex']['id'] = null;
-							$this->data['Annex']['deliberation_id'] = $delib_id;
-							$this->data['Annex']['seance_id'] = 0;
-							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
-							$this->data['Annex']['type'] = 'G';
-							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
-							$this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
-							$this->data['Annex']['size'] = $annexes['file_'.$counter]['size'];
-							$this->data['Annex']['data'] = $this->_getFileData($annexes['file_'.$counter]['tmp_name'], $annexes['file_'.$counter]['size']);
-							if(!$this->Annex->save($this->data))
-								echo "pb de sauvegarde de l\'annexe ".$counter;
-
-							$counter++;
-						}
-						$this->redirect($redirect);
-					} else {
-						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-						$this->set('services', $this->Deliberation->Service->generateList());
-						$this->set('themes', $this->Deliberation->Theme->generateList());
-						$this->set('circuits', $this->Deliberation->Circuit->generateList());
-						$this->set('datelim',$this->data['Deliberation']['date_limite']);
-						$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="G"'));
-						$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
-						$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
-						$this->set('redirect', $redirect);
-
-						$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-						$seances = $this->Seance->findAll($condition);
-						foreach ($seances as $seance){
-							$retard=$seance['Typeseance']['retard'];
-							if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
-								$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-						}
-						$this->set('date_seances',$tab);
-					}
-				}
-			}
-
+				     $condition= 'date >= "'.date('Y-m-d H:i:s').'"';
+				     $seances = $this->Seance->findAll($condition);
+				     foreach ($seances as $seance){
+				         $retard=$seance['Typeseance']['retard'];
+					 if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
+					    $tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+				     }
+				     $this->set('date_seances',$tab);
+			        }
+			    }
 		}
 	}
 
@@ -1074,10 +1075,12 @@ class DeliberationsController extends AppController {
    	                 );
 		    $nb_pj=0;
 		    foreach ($delib['0']['Annexe'] as $annexe) {
-			$pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/", $annexe['filename'], $annexe['data']);
-			$data["acte_attachments[$nb_pj]"] = "@$pj_file";
-      	                $data["acte_attachments_sign[$nb_pj]"] = "";
-			$nb_pj++;
+                        if ($annexe['type'] == 'G') {
+			    $pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/", $annexe['filename'], $annexe['data']);
+			    $data["acte_attachments[$nb_pj]"] = "@$pj_file";
+      	                    $data["acte_attachments_sign[$nb_pj]"] = "";
+		         }
+			 $nb_pj++;
                     }
                     ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Pr&eacute;paration de l\'envoi ');
 
@@ -1104,7 +1107,7 @@ class DeliberationsController extends AppController {
                               echo ('    document.getElementById("affiche").style.display="none";');
                               echo ('    document.getElementById("contTemp").style.display="none";');
                               echo ('</script>');
-			      echo($curl_return);
+			     // debug(curl_error($ch));
 			      die ('<br /><a href ="/deliberations/transmit"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
                          }
 			 else {
@@ -1999,6 +2002,35 @@ class DeliberationsController extends AppController {
 			$this->render('tousLesProjets');
 			}
 		}
+	}
+
+        function supprimerText ($id, $type) {
+            // $type = 1 : texte projet 
+            // $type = 2 : note de synthese
+            // $type = 3 : texte deliberation
+            $delib = $this->Deliberation->read(null, $id);
+	    if ($type == 'texte_projet'){
+                 $delib['Deliberation']['texte_projet']= '';
+                 $delib['Deliberation']['texte_projet_name']= '';
+                 $delib['Deliberation']['texte_projet_size']= '0';
+                 $delib['Deliberation']['texte_projet_type']= '';
+	    }
+            if ($type == 'texte_synthese'){
+                 $delib['Deliberation']['texte_synthese']= '';
+                 $delib['Deliberation']['texte_synthese_name']= '';
+                 $delib['Deliberation']['texte_synthese_size']= '0';
+                 $delib['Deliberation']['texte_synthese_type']= '';
+            }
+            if ($type == 'deliberation'){
+                 $delib['Deliberation']['deliberation']= '';
+                 $delib['Deliberation']['deliberation_name']= '';
+                 $delib['Deliberation']['deliberation_size']= '0';
+                 $delib['Deliberation']['deliberation_type']= '';
+            }
+ 
+
+	    $this->Deliberation->save($delib);
+	    $this->redirect( "/deliberations/edit/$id");
 	}
 
 }
