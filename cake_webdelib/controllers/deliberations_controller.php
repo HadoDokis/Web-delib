@@ -21,15 +21,10 @@ class DeliberationsController extends AppController {
 	// Gestion des droits
 	var $demandeDroit = array(
 		'add',
-		'mesProjetsRefuses',
 		'mesProjetsRedaction',
 		'mesProjetsValidation',
 		'mesProjetsValides',
-		'mesProjetsVotesOui',
-		'mesProjetsVotesNon',
-		'mesProjetsTransmis',
-		'listerProjetsATraiter',
-		'listerProjetsDansMesCircuits',
+		'mesProjetsATraiter',
 		'mesProjetsRecherche',
 		'tousLesProjetsSansSeance',
 		'tousLesProjetsValidation',
@@ -39,180 +34,17 @@ class DeliberationsController extends AppController {
 	);
 	var $commeDroit = array(
 		'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets'),
-		'edit'=>array('Deliberations:mesProjetsRedaction', 'Deliberations:editerProjetValide', 'Deliberations:listerProjetsATraiter'),
+		'edit'=>array('Deliberations:add', 'Deliberations:mesProjetsRedaction', 'Deliberations:editerProjetValide'),
 		'delete'=>'Deliberations:mesProjetsRedaction',
 		'attribuercircuit'=>'Deliberations:mesProjetsRedaction',
 		'addIntoCircuit'=>'Deliberations:mesProjetsRedaction',
-		'traiter'=>'Deliberations:listerProjetsATraiter',
+		'traiter'=>'Deliberations:mesProjetsATraiter',
 		'attribuerSeance'=>'Deliberations:tousLesProjetsSansSeance',
 		'validerEnUrgence'=>'Deliberations:tousLesProjetsValidation'
 	);
 	var $libelleControleurDroit = 'Projets';
 	var $libellesActionsDroit = array('editerProjetValide' => 'Editer projets valid&eacute;s');
 
-
-	function listerProjetsDansMesCircuits() {
-		/**
-		 * TODO BUG SI UNE PERSONNE QUI APPARAIT a PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN
-		 * MEME CIRCUIT
-		 * PB : si une personne apparait plusieurs fois dans le circuit mais sous des services diffÃ©rents
-		 * A FAIRE : verifier aussi le service, voir si un meme user peut appartenir Ã  plusieurs services
-		 * et apparaitre plusieurs fois dans le meme circuit
-		 * CSQ : qui se connecte? un user ou un user service? remise en cause de la relation "un user
-		 * peut appartenir Ã  plusieurs services
-		 */
-		//liste les projets apparais dans le circuit de validation
-		$user=$this->Session->read('user');
-		$user_id=$user['User']['id'];
-		//recherche de tous les circuits ou apparait l'utilisateur logue
-		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "UsersCircuit.position ASC");
-		$conditions="etat=1 ";
-		$delib=array();
-		$cpt=0;
-
-		if ($data_circuit!=null)
-		{
-			foreach ($data_circuit as $data)
-			{
-				if ($cpt>0)
-					$conditions=$conditions." OR ";
-				else
-					$conditions=$conditions." AND (";
-
-				$conditions=$conditions." circuit_id = ".$data['UsersCircuit']['circuit_id'];
-				$cpt++;
-			}
-			if ($cpt>=0)
-				$conditions=$conditions." )";
-
-			$deliberations = $this->Deliberation->findAll($conditions);
-
-			for ($i=0; $i<count($deliberations); $i++){
-				if(!empty($deliberations[$i]['Seance']['date'])) {
-					$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
-					$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
-				} else
-					$deliberations[$i]['Model']['id'] = 1;
-
-				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($deliberations[$i]['Service']['id']);
-			}
-
-			foreach ($deliberations as $deliberation)
-			{
-				if (isset($deliberation['Deliberation']['date_limite'])){
-					$deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
-				}
-				//on recupere la position courante de la deliberation
-				$lastTraitement=array_pop($deliberation['Traitement']);
-				$deliberation['positionDelib']=$lastTraitement['position'];
-
-				//on recupere la position de l'user dans le circuit
-				foreach ($data_circuit as $data)
-				{
-					if ($data['UsersCircuit']['circuit_id']==$lastTraitement['circuit_id'])
-					{
-						$position_user=$data['UsersCircuit']['position'];
-						$deliberation['positionUser']=$position_user;
-					}
-				}
-				// on n'affiche que les delib traitees ou qui sont en attente
-				$deliberation['action']="view";
-				$deliberation['act']="voir";
-
-				if ($deliberation['positionUser'] < $deliberation['positionDelib'])
-					{
-						$deliberation['image']='/icons/fini.png';
-						$deliberation['etat']="Trait&eacute";
-						array_push($delib, $deliberation);
-					}elseif ($deliberation['positionUser'] > $deliberation['positionDelib'])
-					{
-						$deliberation['image']='/icons/attente.png';
-						$deliberation['etat']="En attente";
-						array_push($delib, $deliberation);
-					}
-			}
-		}
-		$this->set('deliberations', $delib);
-		$this->set('USE_GEDOOO', USE_GEDOOO);
-	}
-
-	function listerProjetsATraiter() {
-		/**
-		 * TODO BUG SI UNE PERSONNE QUI APPARAIT a PLUSIEURS SERVICES APPARAIT PLUSIEURS FOIS DANS UN
-		 * MEME CIRCUIT
-		 * PB : si une personne apparait plusieurs fois dans le circuit mais sous des services diffÃ©rents
-		 * A FAIRE : verifier aussi le service, voir si un meme user peut appartenir Ã  plusieurs services
-		 * et apparaitre plusieurs fois dans le meme circuit
-		 * CSQ : qui se connecte? un user ou un user service? remise en cause de la relation "un user
-		 * peut appartenir Ã  plusieurs services
-		 */
-		//liste les projets ou j'apparais dans le circuit de validation
-		$this->set('USE_GEDOOO', USE_GEDOOO);
-		$user=$this->Session->read('user');
-		$user_id=$user['User']['id'];
-
-		//recherche de tous les circuits ou apparait l'utilisateur logue
-		$data_circuit=$this->UsersCircuit->findAll("user_id=$user_id", null, "UsersCircuit.position ASC");
-		$conditions="etat=1 ";
-		$delib=array();
-		$cpt=0;
-
-		if ($data_circuit!=null)
-		{
-			foreach ($data_circuit as $data)
-			{
-				if ($cpt>0)
-					$conditions=$conditions." OR ";
-				else
-					$conditions=$conditions." AND (";
-
-				$conditions=$conditions."circuit_id = ".$data['UsersCircuit']['circuit_id'];
-				$cpt++;
-			}
-			if ($cpt>=0)
-				$conditions=$conditions.")";
-
-			$deliberations = $this->Deliberation->findAll($conditions);
-
-
-			for ($i=0; $i<count($deliberations); $i++){
-				if(!empty($deliberations[$i]['Seance']['date'])) {
-		    		$deliberations[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberations[$i]['Seance']['date']));
-					$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
-				} else
-					$deliberations[$i]['Model']['id'] = 1;
-
-				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($deliberations[$i]['Service']['id']);
-			}
-
-			foreach ($deliberations as $deliberation)
-			{
-
-				if (isset($deliberation['Deliberation']['date_limite']))
-				    $deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
-				//on recupere la position courante de la deliberation
-				$lastTraitement=array_pop($deliberation['Traitement']);
-				// Le +1 pour compter le 0
-				$posCourante = count($deliberation['Traitement'])+1;
-
-				//on recupere la position de l'user dans le circuit
-				foreach ($data_circuit as $data)
-					if ($data['UsersCircuit']['circuit_id']==$lastTraitement['circuit_id']){
-						$position_user=$data['UsersCircuit']['position'];
-					}
-
-				if (	$posCourante == $position_user  ){
-					$deliberation['action'] = "traiter";
-					$deliberation['act'] = "traiter";
-					$deliberation['image']='icons/atraiter.png';
-					array_push($delib, $deliberation);
-				}
-			}
-
-		}
-		$this->set('deliberations', $delib);
-		$this->render('listerProjetsATraiter');
-	}
 
 	function view($id = null) {
 		$this->data = $this->Deliberation->findById($id);
@@ -231,7 +63,7 @@ class DeliberationsController extends AppController {
 
 		// Lecture des droits en modification
 		$user_id = $this->Session->read('user.User.id');
-		if ($this->Droits->check($user_id, "Deliberations:edit") &&
+		if ($this->Droits->check($user_id, "Deliberations:add") &&
 			$this->Deliberation->estModifiable($id, $user_id)
 		)
 			$this->set('userCanEdit', true);
@@ -921,7 +753,7 @@ class DeliberationsController extends AppController {
 	function traiter($id = null, $valid=null) {
 		if (!$id) {
 			$this->Session->setFlash('Invalide id pour la deliberation.');
-			$this->redirect('/deliberations/listerProjetsATraiter');
+			$this->redirect('/deliberations/mesProjetsATraiter');
 		}
 		else
 		{
@@ -1010,7 +842,7 @@ class DeliberationsController extends AppController {
 						$this->data['Deliberation']['etat']=2;
 						$this->data['Deliberation']['id']=$id;
 						$this->Deliberation->save($this->data['Deliberation']);
-						$this->redirect('/deliberations/listerProjetsATraiter');
+						$this->redirect('/deliberations/mesProjetsATraiter');
 					}
 					else
 					{
@@ -1021,7 +853,7 @@ class DeliberationsController extends AppController {
 						$this->data['Traitement']['delib_id']=$id;
 						$this->data['Traitement']['circuit_id']=$circuit_id;
 						$this->Traitement->save($this->data['Traitement']);
-						$this->redirect('/deliberations/listerProjetsATraiter');
+						$this->redirect('/deliberations/mesProjetsATraiter');
 					}
 				}
 				else
@@ -1067,7 +899,7 @@ class DeliberationsController extends AppController {
 					$delib['Deliberation']['modified']='';
 					$this->Deliberation->save($delib['Deliberation']);
 
-					$this->redirect('/deliberations/listerProjetsATraiter');
+					$this->redirect('/deliberations/mesProjetsATraiter');
 				}
 			}
 		}
@@ -1613,76 +1445,171 @@ class DeliberationsController extends AppController {
 	     }
 	}
 
-       function _paramMails($type, $delib, $acteur) {
-            $handle  = fopen(CONFIG_PATH.'/emails/'.$type.'.txt', 'r');
-            $content = fread($handle, filesize(CONFIG_PATH.'/emails/'.$type.'.txt'));
-            $addr1    = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/traiter/".$delib['Deliberation']['id'];
-            $addr2    = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/view/".$delib['Deliberation']['id'];
+	function _paramMails($type, $delib, $acteur) {
+		$handle  = fopen(CONFIG_PATH.'/emails/'.$type.'.txt', 'r');
+		$content = fread($handle, filesize(CONFIG_PATH.'/emails/'.$type.'.txt'));
+		$addr1    = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/traiter/".$delib['Deliberation']['id'];
+		$addr2    = "http://".$_SERVER['SERVER_NAME'].$this->base."/deliberations/view/".$delib['Deliberation']['id'];
 
-             $searchReplace = array(
-                 "#NOM#" => $acteur['nom'],
-                 "#PRENOM#" => $acteur['prenom'],
-                 "#IDENTIFIANT_PROJET#"=> $delib['Deliberation']['id'],
-                 "#OBJET_PROJET#"=> $delib['Deliberation']['objet'],
-                 "#TITRE_PROJET#"=> $delib['Deliberation']['titre'],
-                 "#LIBELLE_CIRCUIT#"=> $delib['Circuit']['libelle'],
-                 "#ADRESSE_A_TRAITER#" =>  $addr1,
-                 "#ADRESSE_A_VISUALISER#" =>  $addr2
-             );
+		$searchReplace = array(
+			"#NOM#" => $acteur['nom'],
+			"#PRENOM#" => $acteur['prenom'],
+			"#IDENTIFIANT_PROJET#"=> $delib['Deliberation']['id'],
+			"#OBJET_PROJET#"=> $delib['Deliberation']['objet'],
+			"#TITRE_PROJET#"=> $delib['Deliberation']['titre'],
+			"#LIBELLE_CIRCUIT#"=> $delib['Circuit']['libelle'],
+			"#ADRESSE_A_TRAITER#" =>  $addr1,
+			"#ADRESSE_A_VISUALISER#" =>  $addr2
+		);
 
-            return utf8_encode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $content))));
-        }
-
-	function mesProjetsRefuses() {
-		$this->_mesProjets(
-			'Mes projets refus&eacute;s',
-			array('view', 'generer'),
-			'Deliberation.etat = -1');
+		return utf8_encode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $content))));
 	}
 
+/*
+ * Affiche la liste des projets en cours de redaction (etat = 0) dont l'utilisateur connecté
+ * est le rédacteur.
+ */
 	function mesProjetsRedaction() {
 		// Suppression des projets ajoutés mais vierges
 		$this->_checkEmptyDelib();
 
+		$userId=$this->Session->read('user.User.id');
+		$conditions = 'Deliberation.etat = 0 AND Deliberation.redacteur_id = ' . $userId;
+
 		$this->_mesProjets(
 			'Mes projets en cours de r&eacute;daction',
 			array('view', 'edit', 'delete', 'attribuercircuit', 'generer'),
-			'Deliberation.etat = 0');
+			$conditions);
 	}
 
+/*
+ * Affiche la liste des projets en cours de validation (etat = 1) qui sont dans les circuits
+ * de validation de l'utilisateur connecté et dont le tour de validation est venu.
+ */
+	function mesProjetsATraiter() {
+		$this->data = array();
+		$userId=$this->Session->read('user.User.id');
+
+		$listeCircuits = $this->UsersCircuit->listeCircuitsParUtilisateur($userId);
+
+		if (!empty($listeCircuits)) {
+			$conditions = 'Deliberation.etat = 1 AND Deliberation.circuit_id IN ('.$listeCircuits.')';
+			$ordre = 'Deliberation.created DESC';
+			$this->data = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
+
+			/* initialisation pour chaque projet et suppression des projets non concernés */
+    	    foreach($this->data as $i=>$delib) {
+				if ($this->Traitement->tourUserDansCircuit($userId, $this->data[$i]['Deliberation']['id']) == 0) {
+					$this->data[$i]['iconeEtat'] = array(
+						'image' => '/icons/atraiter.png',
+						'titre' => 'A traiter');
+
+					if (isset($this->data[$i]['Seance']['date'])) {
+						$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
+						$this->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($this->data[$i]['Seance']['type_id'], $this->data[$i]['Deliberation']['etat']);
+					} else
+						$this->data[$i]['Model']['id'] = 1;
+
+					$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
+
+					if (isset($this->data[$i]['Deliberation']['date_limite']))
+						$this->data[$i]['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($this->data[$i]['Deliberation']['date_limite']));
+				} else
+					unset($this->data[$i]);
+			}
+
+		}
+
+		/* passage des variables à la vue */
+		$this->set('titreVue', 'Mes projets &agrave; traiter');
+		$this->set('listeActions', array('traiter', 'generer'));
+		$this->set('USE_GEDOOO', USE_GEDOOO);
+		$this->set('UserCanAdd', false);
+
+		/* on affiche la vue */
+		$this->render('mesProjets');
+	}
+
+/*
+ * Affiche la liste des projets en cours de validation (etat = 1) qui sont dans les circuits
+ * de validation de l'utilisateur connecté et dont ce n'est pas le tour de valider et les projets
+ * dont il est le rédacteur
+ */
 	function mesProjetsValidation() {
-		$this->_mesProjets(
-			'Mes projets en cours d\'&eacute;laboration et de validation',
-			array('view', 'generer'),
-			'Deliberation.etat = 1');
+		$this->data = array();
+		$userId=$this->Session->read('user.User.id');
+
+		$listeCircuits = $this->UsersCircuit->listeCircuitsParUtilisateur($userId);
+		$conditions = 'Deliberation.etat = 1 AND ';
+		$conditions .= empty($listeCircuits) ? '' : '(Deliberation.circuit_id IN ('.$listeCircuits.') OR ';
+		$conditions .= 'Deliberation.redacteur_id = ' . $userId;
+		$conditions .= empty($listeCircuits) ? '' : ')';
+
+		$ordre = 'Deliberation.created DESC';
+		$this->data = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
+
+		/* initialisation pour chaque projet et suppression des projets non concernés */
+   	    foreach($this->data as $i=>$delib) {
+			$estRedacteurHorsCircuits = empty($listeCircuits) || strpos($listeCircuits, $this->data[$i]['Deliberation']['circuit_id'])===false;
+			if ($estRedacteurHorsCircuits)
+				$tourDansCircuit = 0;
+			else
+				$tourDansCircuit = $this->Traitement->tourUserDansCircuit($userId, $this->data[$i]['Deliberation']['id']);
+
+			if ($estRedacteurHorsCircuits || $tourDansCircuit != 0) {
+				if ($estRedacteurHorsCircuits)
+					$this->data[$i]['iconeEtat'] = array(
+						'image' => '/icons/fini.png',
+						'titre' => 'Projet du r&eacute;dacteur');
+				elseif ($tourDansCircuit == -1)
+					$this->data[$i]['iconeEtat'] = array(
+						'image' => '/icons/fini.png',
+						'titre' => 'Projet dans mes circuits : trait&eacute');
+				else
+					$this->data[$i]['iconeEtat'] = array(
+						'image' => '/icons/attente.png',
+						'titre' => 'Projet dans mes circuits : en attente');
+
+				if (isset($this->data[$i]['Seance']['date'])) {
+					$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
+					$this->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($this->data[$i]['Seance']['type_id'], $this->data[$i]['Deliberation']['etat']);
+				} else
+					$this->data[$i]['Model']['id'] = 1;
+
+				$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
+
+				if (isset($this->data[$i]['Deliberation']['date_limite']))
+					$this->data[$i]['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($this->data[$i]['Deliberation']['date_limite']));
+			} else
+				unset($this->data[$i]);
+		}
+
+		/* passage des variables à la vue */
+		$this->set('titreVue', 'Mes projets en cours d\'&eacute;laboration et de validation');
+		$this->set('listeActions', array('view', 'generer'));
+		$this->set('USE_GEDOOO', USE_GEDOOO);
+		$this->set('UserCanAdd', false);
+
+		/* on affiche la vue */
+		$this->render('mesProjets');
 	}
 
+/*
+ * Affiche les projets validés (etat = 2) dont l'utilisateur connecté est le rédacteur
+ * ou qu'il est dans les circuits de validation des projets
+ */
 	function mesProjetsValides() {
+		$userId=$this->Session->read('user.User.id');
+		$listeCircuits = $this->UsersCircuit->listeCircuitsParUtilisateur($userId);
+		$conditions = 'Deliberation.etat = 2 AND ';
+		$conditions .= empty($listeCircuits) ? '' : '(Deliberation.circuit_id IN ('.$listeCircuits.') OR ';
+		$conditions .= 'Deliberation.redacteur_id = ' . $userId;
+		$conditions .= empty($listeCircuits) ? '' : ')';
+
 		$this->_mesProjets(
 			'Mes projets valid&eacute;s',
 			array('view', 'generer'),
-			'Deliberation.etat = 2');
-	}
-
-	function mesProjetsVotesOui() {
-		$this->_mesProjets(
-			'Mes projets vot&eacute;s et adopt&eacute;s',
-			array('view', 'generer'),
-			'Deliberation.etat = 3');
-	}
-
-	function mesProjetsVotesNon() {
-		$this->_mesProjets(
-			'Mes projets vot&eacute;s et non adopt&eacute;s',
-			array('view', 'generer'),
-			'Deliberation.etat = 4');
-	}
-
-	function mesProjetsTransmis() {
-		$this->_mesProjets(
-			'Mes projets transmis au contr&ocirc;le de l&eacute;galit&eacute;',
-			array('view', 'generer'),
-			'Deliberation.etat = 5');
+			$conditions);
 	}
 
 /*
@@ -1690,10 +1617,8 @@ class DeliberationsController extends AppController {
  */
 	function _mesProjets($titreVue, $listeActions, $conditions, $ordre = 'Deliberation.created DESC') {
 
-		/* lecture en base */
 		$userId = $this->Session->read('user.User.id');
-		$conditions .= empty($conditions) ? '' : " AND ";
-		$conditions .= "Deliberation.redacteur_id = $userId";
+
 		$this->data = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
 
 		/* initialisation pour chaque projet ou délibération */
@@ -1710,6 +1635,9 @@ class DeliberationsController extends AppController {
 				$this->data[$i]['Model']['id'] = 1;
 
 			$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
+
+			if (isset($this->data[$i]['Deliberation']['date_limite']))
+				$this->data[$i]['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($this->data[$i]['Deliberation']['date_limite']));
 		}
 
 		/* passage des variables à la vue */
@@ -1956,6 +1884,13 @@ class DeliberationsController extends AppController {
 				$this->Session->setFlash('Vous devez saisir au moins un crit&egrave;re.');
 				$this->redirect('/deliberations/mesProjetsRecherche');
 			} else
+				$userId=$this->Session->read('user.User.id');
+				$listeCircuits = $this->UsersCircuit->listeCircuitsParUtilisateur($userId);
+				$conditions .= ' AND ';
+				$conditions .= empty($listeCircuits) ? '' : '(Deliberation.circuit_id IN ('.$listeCircuits.') OR ';
+				$conditions .= 'Deliberation.redacteur_id = ' . $userId;
+				$conditions .= empty($listeCircuits) ? '' : ')';
+
 				$this->_mesProjets(
 					'R&eacute;sultat de la recherche parmi mes projets',
 					array('view', 'generer'),
