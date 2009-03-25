@@ -26,9 +26,9 @@
 <div class='onglet'>
 	<a></a>
 	<a href="javascript:afficheOnglet(1)" id='lienTab1' class="ongletCourant">Informations principales</a>
-	<a href="javascript:afficheOnglet(2)" id='lienTab2'>Texte de projet</a>
-	<a href="javascript:afficheOnglet(3)" id='lienTab3'>Note de synth&egrave;se</a>
-	<a href="javascript:afficheOnglet(4)" id='lienTab4'>Texte de d&eacute;lib&eacute;ration</a>
+	<a href="javascript:afficheOnglet(2)" id='lienTab2'>Texte projet</a>
+	<a href="javascript:afficheOnglet(3)" id='lienTab3'>Note synth&egrave;se</a>
+	<a href="javascript:afficheOnglet(4)" id='lienTab4'>Texte d&eacute;lib&eacute;ration</a>
 <?php if (!empty($infosupdefs)): ?>
 	<a href="javascript:afficheOnglet(5)" id='lienTab5'>Informations suppl&eacute;mentaires</a>
 <?php endif; ?>
