@@ -23,20 +23,18 @@
 	</div>
 <div class="spacer"></div>
 
-<?php if (!empty($infosupdefs)): ?>
 <div class='onglet'>
 	<a></a>
-	<a href="javascript:afficheOnglet(1, 5)" id='lienTab1' class="ongletCourant">Informations principales</a>
-	<a href="javascript:afficheOnglet(2, 5)" id='lienTab2'>Texte de projet</a>
-	<a href="javascript:afficheOnglet(3, 5)" id='lienTab3'>Note de synth&egrave;se</a>
-	<a href="javascript:afficheOnglet(4, 5)" id='lienTab4'>Texte de d&eacute;lib&eacute;ration</a>
-	<a href="javascript:afficheOnglet(5, 5)" id='lienTab5'>Informations suppl&eacute;mentaires</a>
-</div>
-<?php endif; ?>
-
+	<a href="javascript:afficheOnglet(1)" id='lienTab1' class="ongletCourant">Informations principales</a>
+	<a href="javascript:afficheOnglet(2)" id='lienTab2'>Texte de projet</a>
+	<a href="javascript:afficheOnglet(3)" id='lienTab3'>Note de synth&egrave;se</a>
+	<a href="javascript:afficheOnglet(4)" id='lienTab4'>Texte de d&eacute;lib&eacute;ration</a>
 <?php if (!empty($infosupdefs)): ?>
-<div id="tab1">
+	<a href="javascript:afficheOnglet(5)" id='lienTab5'>Informations suppl&eacute;mentaires</a>
 <?php endif; ?>
+</div>
+
+<div id="tab1">
 	<?php echo $form->labelTag('Deliberation/objet', 'Libelle <acronym title="obligatoire">(*)</acronym>');?>
  	<?php echo $html->textarea('Deliberation/objet', array('cols' => '60'));?>
 	<div class='spacer'></div>
@@ -94,9 +92,21 @@
 		<a href="javascript:add_field(0)" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
 	</div>
 	<div class='spacer'></div>
-<?php if (!empty($infosupdefs)): ?>
 </div>
 
+<div id="tab2" style="display: none;">
+    <?php echo $this->element('texte', array('key' => 'texte_projet'));?>
+</div>
+
+<div id="tab3" style="display: none;">
+    <?php echo $this->element('texte', array('key' => 'texte_synthese'));?>
+</div>
+
+<div id="tab4" style="display: none;">
+    <?php echo $this->element('texte', array('key' => 'deliberation'));?>
+</div>
+
+<?php if (!empty($infosupdefs)): ?>
 <div id="tab5" style="display: none;">
 	<?php
 	foreach($infosupdefs as $infosupdef) {
@@ -139,17 +149,6 @@
 </div>
 <?php endif; ?>
 
-<div id="tab2" style="display: none;">
-    <?php echo $this->element('texte', array('key' => 'texte_projet'));?>
-</div>
-<div id="tab3" style="display: none;">
-    <?php echo $this->element('texte', array('key' => 'texte_synthese'));?>
-</div>
-<div id="tab4" style="display: none;">
-    <?php echo $this->element('texte', array('key' => 'deliberation'));?>
-</div>
-
- 
 <div class="spacer" style="border-top: solid 1px #e0ef90;"></div>
 <div class="submit">
 	<?php echo $html->hidden('Deliberation/id')?>
