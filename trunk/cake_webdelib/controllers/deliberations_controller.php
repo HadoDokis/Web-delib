@@ -263,7 +263,7 @@ class DeliberationsController extends AppController {
                         debug($this->data['Annex']);
                     }
                 }
-            return true; 
+            return true;
 	}
 
 
@@ -330,7 +330,7 @@ class DeliberationsController extends AppController {
 		        unset($this->params['form']['date_limite']);
 			$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
 			$this->data['Deliberation']['service_id']=$user['User']['service'];
-                        if (!GENERER_DOC_SIMPLE){ 
+                        if (!GENERER_DOC_SIMPLE){
                             // Si le texte de projet existe, on l'enregistre
                             if  (isset($this->data['Deliberation']['texte_projet']['size'])) {
 		                $this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
@@ -359,15 +359,15 @@ class DeliberationsController extends AppController {
                             }
                         }
 			$this->cleanUpFields();
-                    
+
 			if(!empty($this->params['form'])) {
 				$deliberation = array_shift($this->params['form']);
 				$annexes = $this->params['form'];
 				$size = count($this->params['form']);
 				$counter = 0;
 
-				while($counter <= ($size)) { 
-				    if (isset($this->params['form']['0_file_'.$counter])) 
+				while($counter <= ($size)) {
+				    if (isset($this->params['form']['0_file_'.$counter]))
                                         $this->_saveAnnexe($id, $this->params['form']['0_file_'.$counter], 'G');
                                      if(isset($this->params['form']['1_file_'.$counter]))
                                         $this->_saveAnnexe($id, $this->params['form']['1_file_'.$counter], 'P');
@@ -376,8 +376,8 @@ class DeliberationsController extends AppController {
                                      if(isset($this->params['form']['3_file_'.$counter]))
                                         $this->_saveAnnexe($id, $this->params['form']['3_file_'.$counter], 'D');
 			             $counter++;
-				} 
-                                
+				}
+
 			        if ($this->Deliberation->save($this->data)) {
 			             /* sauvegarde des informations supplémentaires */
 				     if (array_key_exists('Infosup', $this->data))
@@ -1532,19 +1532,21 @@ class DeliberationsController extends AppController {
 
 		/* initialisation pour chaque projet */
         for($i = 0; $i < count($this->data); $i++) {
+			$this->data[$i]['Actions'] = array('view', 'generer', 'attribuerSeance');
+
 			$this->data[$i]['iconeEtat'] = array(
 				'image' => '/icons/fini.png',
 				'titre' => $this->Deliberation->libelleEtat($this->data[$i]['Deliberation']['etat']));
+
+			if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {
+				$this->data[$i]['Actions'][] = 'edit';
+				$this->data[$i]['iconeEtat']['image'] = '/icons/valide_editable.png';
+			}
 
 			$this->data[$i]['Model']['id'] = 1;
 
 			$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
 
-			$this->data[$i]['Actions'] = array('view', 'generer', 'attribuerSeance');
-			if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {
-				$this->data[$i]['Actions'][] = 'edit';
-				$this->data[$i]['iconeEtat']['image'] = '/icons/encours.png';
-			}
 		}
 
 		/* passage des variables à la vue */
@@ -1571,20 +1573,20 @@ class DeliberationsController extends AppController {
 
 		/* initialisation pour chaque projet */
         for($i = 0; $i < count($this->data); $i++) {
+			$this->data[$i]['Actions'] = array('view', 'generer');
 			$this->data[$i]['iconeEtat'] = array(
 				'image' => '/icons/fini.png',
 				'titre' => $this->Deliberation->libelleEtat($this->data[$i]['Deliberation']['etat']));
+
+			if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {
+				$this->data[$i]['Actions'][] = 'edit';
+				$this->data[$i]['iconeEtat']['image'] = '/icons/valide_editable.png';
+			}
 
 			$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
 			$this->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($this->data[$i]['Seance']['type_id'], $this->data[$i]['Deliberation']['etat']);
 
 			$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
-
-			$this->data[$i]['Actions'] = array('view', 'generer');
-			if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {
-				$this->data[$i]['Actions'][] = 'edit';
-				$this->data[$i]['iconeEtat']['image'] = '/icons/encours.png';
-			}
 		}
 
 		/* passage des variables à la vue */
@@ -1829,7 +1831,7 @@ class DeliberationsController extends AppController {
 	}
 
         function supprimerText ($id, $type) {
-            // $type = 1 : texte projet 
+            // $type = 1 : texte projet
             // $type = 2 : note de synthese
             // $type = 3 : texte deliberation
             $delib = $this->Deliberation->read(null, $id);
@@ -1851,7 +1853,7 @@ class DeliberationsController extends AppController {
                  $delib['Deliberation']['deliberation_size']= '0';
                  $delib['Deliberation']['deliberation_type']= '';
             }
- 
+
 
 	    $this->Deliberation->save($delib);
 	    $this->redirect( "/deliberations/edit/$id");
