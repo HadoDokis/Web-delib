@@ -216,14 +216,18 @@ function checkForm (Form, id){
 /******************************************************************************/
 /* Gestion des onglets pour l'affichage des informations supplémentaires      */
 /******************************************************************************/
-function afficheOnglet(nOnglet, nbOngletMax) {
-	for (var i = 1; i<=nbOngletMax; i++) {
-		if (i == nOnglet) {
-			document.getElementById('tab'+i).style.display = '';
-			document.getElementById('lienTab'+i).className = 'ongletCourant';
-		} else {
-			document.getElementById('tab'+i).style.display = 'none';
-			document.getElementById('lienTab'+i).className = '';
+function afficheOnglet(nOnglet) {
+	for (var i = 1; i<=10; i++) {
+		divTab = document.getElementById('tab'+i);
+		lienTab = document.getElementById('lienTab'+i);
+		if (divTab && lienTab) {
+			if (i == nOnglet) {
+				divTab.style.display = '';
+				lienTab.className = 'ongletCourant';
+			} else {
+				divTab.style.display = 'none';
+				lienTab.className = '';
+			}
 		}
 	}
 }
