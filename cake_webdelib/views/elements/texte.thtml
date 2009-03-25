@@ -58,3 +58,4 @@
     <br />
     <div id="cible<?php echo $cible; ?>"> </div>
 </fieldset>
+<div class='spacer'></div>
