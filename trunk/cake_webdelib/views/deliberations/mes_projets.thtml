@@ -37,8 +37,11 @@
 			if (in_array('traiter', $listeActions))
 				echo $html->link('&shy;',"/deliberations/traiter/" . $deliberation['Deliberation']['id'], array('class'=>"link_traiter", 'title'=>'Traiter'), false, false);
 			echo '<br/><br/>';
-			if (in_array('attribuercircuit', $listeActions))
-				echo $html->link('&shy;','/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'], array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'), false, false);
+			if (in_array('attribuercircuit', $listeActions)) {
+				$actionAttribuer = '/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'];
+				$actionAttribuer .= $deliberation['Deliberation']['circuit_id'] ? '/'.$deliberation['Deliberation']['circuit_id'] : '';
+				echo $html->link('&shy;', $actionAttribuer, array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'), false, false);
+			}
 			if (in_array('generer', $listeActions)) {
 				if ($USE_GEDOOO)
 					echo $html->link('&shy;','/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
