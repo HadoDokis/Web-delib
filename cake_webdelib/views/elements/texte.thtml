@@ -26,6 +26,7 @@
             if ($delib['Deliberation'][$key."_name"] !="") {
                 echo  ' Nom fichier : [ ';
                 echo  $html->link($delib['Deliberation'][$key."_name"], $url, array('title'=>'Recuperer le fichier')).' ]';
+				echo '&nbsp;&nbsp;';
                 echo  $html->link("Supprimer", $url2, array('title'=>'Supprimer le fichier'), 'Voulez-vous supprimer ce fichier ?').'<br><br><br>';
             }
             else {
