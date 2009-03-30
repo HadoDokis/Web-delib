@@ -9,6 +9,7 @@
  *		'items' => array(					liste des éléments du menu
  *			str => array(					nom affiché de l'élément du menu
  *				'link' => str,				lien cake du style /nomContoleur/index
+ *				'title' => str,				infobulle
  *				'subMenu' => array()		sous-menu qui a la même structure que le menu
  *			)
  *		)
@@ -23,25 +24,45 @@ $webDelib = array(
 		'Accueil' => array('link' => '/'),
 		'Mes projets' => array(
 			'link' => 'mes_projets',
+			'title' => 'Projets que j\'ai créés ou qui sont dans mes circuits d\'élaboration et de validation',
 			'subMenu' => array(
 				'items' => array(
 					'Nouveau...' => array('link' => '/deliberations/add'),
-					'En cours de rédaction' => array('link' => '/deliberations/mesProjetsRedaction'),
-					'En cours de validation' => array('link' => '/deliberations/mesProjetsValidation'),
-					'A traiter' => array('link' => '/deliberations/mesProjetsATraiter'),
-					'Validés' => array('link' => '/deliberations/mesProjetsValides'),
-					'Recherches' => array('link' => '/deliberations/mesProjetsRecherche')
+					'En cours de rédaction' => array(
+						'link' => '/deliberations/mesProjetsRedaction',
+						'title' => 'Projets que j\'ai créés'),
+					'En cours de validation' => array(
+						'link' => '/deliberations/mesProjetsValidation',
+						'title' => 'Projets qui sont dans mes circuits d\'élaboration et de validation ou que j\'ai créés'),
+					'A traiter' => array(
+						'link' => '/deliberations/mesProjetsATraiter',
+						'title' => 'Projets qui sont dans mes circuits d\'élaboration et de validation'),
+					'Validés' => array(
+						'link' => '/deliberations/mesProjetsValides',
+						'title' => 'Projets qui sont dans mes circuits d\'élaboration et de validation ou que j\'ai créés'),
+					'Recherches' => array(
+						'link' => '/deliberations/mesProjetsRecherche',
+						'title' => 'Parmi les projets qui sont dans mes circuits d\'élaboration et de validation ou que j\'ai créés')
 					)
 				)
 			),
 		'Tous les projets' => array(
 			'link' => '/pages/tous_les_projets',
+			'title' => 'Projets de tous les rédacteurs',
 			'subMenu' => array(
 				'items' => array(
-					'A attribuer' => array('link' => '/deliberations/tousLesProjetsSansSeance'),
-					'A valider' => array('link' => '/deliberations/tousLesProjetsValidation'),
-					'A faire voter' => array('link' => '/deliberations/tousLesProjetsAFaireVoter'),
-					'Recherches' => array('link' => '/deliberations/tousLesProjetsRecherche')
+					'A attribuer' => array(
+						'link' => '/deliberations/tousLesProjetsSansSeance',
+						'title' => 'Projets en cours de rédaction, d\'élaboration, validés non associés à une séance'),
+					'A valider' => array(
+						'link' => '/deliberations/tousLesProjetsValidation',
+						'title' => 'Projets en cours d\'élaboration et de validation'),
+					'A faire voter' => array(
+						'link' => '/deliberations/tousLesProjetsAFaireVoter',
+						'title' => 'Projets validés associés à une séance'),
+					'Recherches' => array(
+						'link' => '/deliberations/tousLesProjetsRecherche',
+						'title' => 'Parmi tous les projets')
 					)
 				)
 			),
