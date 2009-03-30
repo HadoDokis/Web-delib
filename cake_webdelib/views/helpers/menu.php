@@ -42,6 +42,12 @@ class MenuHelper extends Helper {
 			elseif ($menuItem['link'] == '') $menuItem['link']='/';
 			else $menuItem['link'] = $this->_initLien($menuItem['link']);
 
+			// Initialisation de l'infobulle
+			if (array_key_exists('title', $menuItem))
+				$htmlAttributes = array('title'=>$menuItem['title']);
+			else
+				$htmlAttributes = array();
+
 			// Determine si on est sur l'élément courant
 			if (!$currentItemFound) {
 				$isCurrentItem = $this->_isCurrent($menuItem);
@@ -50,7 +56,7 @@ class MenuHelper extends Helper {
 
 			// Construction du html
 			$this->__menuHtml[$level] .= '<'.$itemTag.ife($isCurrentItem and !empty($currentItem), ' class=\''.$currentItem.'\'').'>';
-			$this->__menuHtml[$level] .= $this->Html->link($title, $menuItem['link'], null, null, false);
+			$this->__menuHtml[$level] .= $this->Html->link($title, $menuItem['link'], $htmlAttributes, null, false);
 			$this->__menuHtml[$level] .= '</'.$itemTag.'>'."\n";
 
 			// Dans le cas du menu courant, teste si il y à un sous-menu et le traite
