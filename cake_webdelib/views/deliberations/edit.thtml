@@ -75,35 +75,25 @@
 	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a>
 	<div class='spacer'></div>
 
-	<div class="annexesGauche">
-		<?php echo $form->labelTag('Annexe/titre', 'Annexe(s)'); ?>
-	</div>
-	<div class="annexesDroite">
-		<?php if(!empty($annexes)){
-			foreach ($annexes as $annexe) {
-			        if ($annexe['Annex']['type']== 'G') {
-				    echo '[ '.$html->link($annexe['Annex']['filename'] ,'/annexes/download/'.$annexe['Annex']['id']).' ]';
-				    echo $html->link('Supprimer','/annexes/delete/'.$annexe['Annex']['id']);
-			      	    echo '<br/><br/>';
-			        }
-			};
-		}; ?>
-		<div id="cible0"> </div>
-		<a href="javascript:add_field(0)" id="lien_annexe" class="link_annexe">Joindre une annexe</a>
-	</div>
-	<div class='spacer'></div>
+    <?php echo $this->element('annexe', array('typeAnnexes'=>'G'));?>
 </div>
 
 <div id="tab2" style="display: none;">
     <?php echo $this->element('texte', array('key' => 'texte_projet'));?>
+	<div class='spacer'></div>
+    <?php echo $this->element('annexe', array('typeAnnexes'=>'P'));?>
 </div>
 
 <div id="tab3" style="display: none;">
     <?php echo $this->element('texte', array('key' => 'texte_synthese'));?>
+	<div class='spacer'></div>
+    <?php echo $this->element('annexe', array('typeAnnexes'=>'S'));?>
 </div>
 
 <div id="tab4" style="display: none;">
     <?php echo $this->element('texte', array('key' => 'deliberation'));?>
+	<div class='spacer'></div>
+    <?php echo $this->element('annexe', array('typeAnnexes'=>'D'));?>
 </div>
 
 <?php if (!empty($infosupdefs)): ?>
@@ -135,7 +125,7 @@
 				else {
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
-						echo '['.$html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id']).']';
+						echo '['.$html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
 						echo '&nbsp;&nbsp;';
 						echo $html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?');
 					echo '</span>';
@@ -149,6 +139,10 @@
 <?php endif; ?>
 
 <div class="spacer" style="border-top: solid 1px #e0ef90;"></div>
+
+<div id="AnnexeASupprimer">
+</div>
+
 <div class="submit">
 	<?php echo $html->hidden('Deliberation/id')?>
 	<?php
