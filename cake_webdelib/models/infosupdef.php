@@ -37,7 +37,6 @@ class Infosupdef extends AppModel
 	);
 
 	function validates() {
-$this->log($this->data);
 		// unicité du nom
 		$this->isUnique('nom', $this->data['Infosupdef']['nom'], $this->data['Infosupdef']['id']);
 
