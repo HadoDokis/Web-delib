@@ -1,0 +1,20 @@
+<div class="annexesGauche">
+	<?php echo $form->labelTag('Annexes'.$typeAnnexes.'/titre', 'Annexe(s)'); ?>
+</div>
+<div class="annexesDroite">
+	<?php if(!empty($annexes)){
+		foreach ($annexes as $annexe) {
+			if ($annexe['Annex']['type'] == $typeAnnexes) {
+				$divId = 'afficheAnnexe'.$annexe['Annex']['id'];
+				echo '<div id="'.$divId.'">';
+					echo '[ '.$html->link($annexe['Annex']['filename'] ,'/annexes/download/'.$annexe['Annex']['id']).' ]&nbsp;&nbsp;';
+					echo $html->link('Supprimer', "javascript:supprimerAnnexe(".$annexe['Annex']['id'].")", null, 'Voulez-vous vraiment supprimer cette annexe ?');
+				echo '</div>';
+			}
+		};
+	}; ?>
+	<div id="inputAnnexes<?php echo $typeAnnexes;?>"></div>
+	<br/>
+	<a href="javascript:ajouterAnnexe('inputAnnexes<?php echo $typeAnnexes;?>', 'Annexes<?php echo $typeAnnexes;?>')" class="link_annexe">Joindre une annexe</a>
+</div>
+<div class='spacer'></div>
