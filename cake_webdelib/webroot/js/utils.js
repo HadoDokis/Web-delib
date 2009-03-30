@@ -232,6 +232,9 @@ function afficheOnglet(nOnglet) {
 	}
 }
 
+/******************************************************************************/
+/* Fonction de suppression d'une information supplémentaire de type fichier   */
+/******************************************************************************/
 function infoSupSupprimerFichier(infoSupCode, titre) {
 	/* Masque le nom du fichier et les liens */
 	document.getElementById(infoSupCode+'AfficheFichier').style.display = 'none';
@@ -247,4 +250,67 @@ function infoSupSupprimerFichier(infoSupCode, titre) {
 	inputFichier.size = '60';
 	/* Ajoute l'input file au span */
 	sInput.appendChild(inputFichier);
+}
+
+/******************************************************************************/
+/* Fonction de suppression d'un fichier joint                                 */
+/******************************************************************************/
+function supprimerFichierJoint(modele, champ, titre) {
+	/* Masque le nom du fichier et les liens */
+	document.getElementById(modele+champ+'AfficheFichierJoint').style.display = 'none';
+	/* Affiche le span pour l'affichage de l'input */
+	var sInput = document.getElementById(modele+champ+'InputFichierJoint');
+	sInput.style.display = '';
+	/* Creation de l'input file */
+	var inputFichier = document.createElement('input');
+	inputFichier.type = 'file';
+	inputFichier.id = modele+champ;
+	inputFichier.name = 'data['+modele+']['+champ+']';
+	inputFichier.title = titre;
+	inputFichier.size = '60';
+	/* Ajoute l'input file au span */
+	sInput.appendChild(inputFichier);
+}
+
+/******************************************************************************/
+/* Fonction de suppression d'une annexe                                       */
+/******************************************************************************/
+function supprimerAnnexe(annexeId) {
+	/* Masque l'affichage de l'annexe */
+	document.getElementById('afficheAnnexe'+annexeId).style.display = 'none';
+	/* ajout de l'annexeId à la liste des suppression */
+	divAnnexeASupprimer = document.getElementById('AnnexeASupprimer');
+	i = divAnnexeASupprimer.getElementsByTagName('input').length + 1;
+	/* Creation de l'input hidden */
+	var supAnnexe = document.createElement('input');
+	supAnnexe.type = 'hidden';
+	supAnnexe.id = 'AnnexesASupprimer'+i;
+	supAnnexe.name = 'data[AnnexesASupprimer]['+i+']';
+	supAnnexe.value = annexeId;
+	/* Ajoute l'input hidden */
+	divAnnexeASupprimer.appendChild(supAnnexe);
+}
+
+/******************************************************************************/
+/* Fonction d'ajout d'un champs input pour une nouvelle annexe                */
+/******************************************************************************/
+function ajouterAnnexe(inputAnnexesDivId, dataSection) {
+	inputAnnexesDiv = document.getElementById(inputAnnexesDivId);
+	i = inputAnnexesDiv.getElementsByTagName('input').length + 1;
+
+	/* Creation du div */
+	var inputDiv = document.createElement('div');
+
+	/* Creation de l'input file */
+	var inputAnnexe = document.createElement('input');
+	inputAnnexe.type = 'file';
+	inputAnnexe.id = dataSection+i;
+	inputAnnexe.name = 'data['+dataSection+']['+i+']';
+	inputAnnexe.size = '60';
+	/* Ajoute l'input file au div */
+	inputDiv.appendChild(inputAnnexe);
+
+	/* Ajoute du div à la liste des input */
+	inputAnnexesDiv.appendChild(inputDiv);
+
 }
