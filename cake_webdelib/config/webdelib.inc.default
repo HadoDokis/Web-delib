@@ -20,13 +20,12 @@
     ////////////////////////
     // Configuration du LDAP 
     ////////////////////////
-    define ('LDAP_HOST', 'hostname');
-    define ('PORT',      '389');
-    define ('BASE_DN',   'dc=domaine,dc=com');
-    define ('MANAGER',   'cn=manager,dc=domaine,dc=com');
-    define ('LDAP_PASS', '');
-    define ('MAIL', 'mail');
-    define ('COMMON_NAME', 'cn');
+    define ('USE_LDAP',   false);
+    define ('LDAP_HOST', 'linux03');
+    define ('LDAP_PORT', '389');
+    // DN de la forme :              uid=$login, ou=users,dc=adullact,dc=org
     define ('UNIQUE_ID', 'uid');
-    define ('PASSWORD_USER', 'userpassword');
+    define ('BASE_DN',   'ou=users,dc=adullact,dc=org');
+
+
 ?>
