@@ -43,6 +43,10 @@ class Infosupdef extends AppModel
 		// unicité du code
 		$this->isUnique('code', $this->data['Infosupdef']['code'], $this->data['Infosupdef']['id']);
 
+		// une infosup de type fichier ne peut pas faire l'objet d'une recherche
+		if ($this->data['Infosupdef']['type'] == 'file' && $this->data['Infosupdef']['recherche'])
+			$this->invalidate('rechercheIncompatibleAvecTypeFichier');
+
 		$errors = $this->invalidFields();
 		return count($errors) == 0;
 	}
@@ -55,6 +59,11 @@ class Infosupdef extends AppModel
 	/* retourne le libellé correspondant au type $type */
 	function libelleType($type) {
 		return $this->types[$type];
+	}
+
+	/* retourne le libellé correspondant au booléen $recherche */
+	function libelleRecherche($recherche) {
+		return $recherche ? 'Oui' : 'Non';
 	}
 
 	/* retourne true si l'instance $aSupprimer peut être supprimée et false dans le cas contraire */
@@ -101,6 +110,9 @@ class Infosupdef extends AppModel
 		/* calcul du n° d'ordre en cas d'ajout */
 		if(empty($this->data['Infosupdef']['id']))
 			$this->data['Infosupdef']['ordre'] = $this->findCount(null, -1) + 1;
+
+		/* Camelisation du code */
+		$this->data['Infosupdef']['code'] = Inflector::variable($this->data['Infosupdef']['code']);
 
 		return true;
 	}
