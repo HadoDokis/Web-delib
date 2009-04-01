@@ -75,3 +75,9 @@ ALTER TABLE `profils` ADD `actif` TINYINT( 1 ) NOT NULL DEFAULT '1' AFTER `libel
 
 ALTER TABLE `users` ADD `circuit_defaut_id` INT( 11 ) NOT NULL AFTER `note` ;
 
+
+-- --------------------------------------------------------
+--
+-- Modification de la table `infosupdefs`
+--
+ALTER TABLE `infosupdefs` ADD `recherche` TINYINT( 1 ) NOT NULL DEFAULT '0' AFTER `type` ;
