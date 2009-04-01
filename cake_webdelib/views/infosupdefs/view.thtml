@@ -11,10 +11,11 @@
 	<dt>Num&eacute;ro d'ordre</dt>
 		<dd class="compact"><?php echo $this->data['Infosupdef']['ordre']; ?></dd>
 	<dt>Type</dt>
-		<dd class="compact"><?php echo $this->data['Infosupdef']['type']; ?></dd>
+		<dd class="compact"><?php echo $this->data['Infosupdef']['libelleType']; ?></dd>
 	<dt>Taille</dt>
 		<dd class="compact"><?php echo $this->data['Infosupdef']['taille']; ?></dd>
-<div class="imbrique">
+	<dt>Inclure dans la recherche</dt>
+		<dd class="compact"><?php echo $this->data['Infosupdef']['libelleRecherche']; ?></dd>
 	<div class="gauche">
 		<dt>Date de cr&eacute;ation</dt>
 		<dd>&nbsp;<?php echo $this->data['Infosupdef']['created']?></dd>
@@ -23,7 +24,6 @@
 		<dt>Date de modification</dt>
 		<dd>&nbsp;<?php echo $this->data['Infosupdef']['modified']?></dd>
 	</div>
-</div>
 </dl>
 
 <ul id="actions_fiche">

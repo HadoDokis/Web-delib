@@ -30,8 +30,13 @@
 	<br/>
 	<div class="required">
 		<?php echo $form->labelTag('Infosupdef/type', 'type <acronym title="obligatoire">(*)</acronym>');?>
-		<?php $htmlAttributes = array();?>
-		<?php if($html->tagValue('Infosupdef/id') && !$this->controller->Infosupdef->isDeletable($this->data, $mesErr)) $htmlAttributes['disabled'] = 'disabled'; ?>
+		<?php
+			$htmlAttributes = array();
+			if($html->tagValue('Infosupdef/id') && !$this->controller->Infosupdef->isDeletable($this->data, $mesErr)) {
+				$htmlAttributes['disabled'] = 'disabled';
+				echo $html->hidden('Infosupdef/type');
+			}
+		?>
 	 	<?php echo $html->selectTag('Infosupdef/type', $types, null, $htmlAttributes, null, (!$html->tagValue('Infosupdef/id')));?>
 		<?php echo $html->tagErrorMsg('Infosupdef/type', 'Selectionner un type');?>
 	</div>
@@ -39,6 +44,12 @@
 	<div class="required">
 		<?php echo $form->labelTag('Infosupdef/taille', 'Taille');?>
 	 	<?php echo $html->input('Infosupdef/taille', array('size' => '2', 'title'=>'Taille du champ affiché dans le formulaire d\'édition des projets (uniquement pour le type Texte)'));?>
+	</div>
+	<br/>
+	<div class="required">
+		<?php echo $form->labelTag('Infosupdef/recherche', 'Inclure dans la recherche');?>
+ 		<?php echo $html->checkBox('Infosupdef/recherche', 'letitre');?>
+		<?php echo $html->tagErrorMsg('Infosupdef/rechercheIncompatibleAvecTypeFichier', 'Une information de type \'Fichier\' ne peut pas &ecirc;tre inclue dans la recherche'); ?>
 	</div>
 	<br/>
 
