@@ -23,6 +23,9 @@ class InfosupdefsController extends AppController
 		if (empty($this->data)) {
 			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible');
 			$this->redirect('/infosupdefs/index');
+		} else {
+			$this->data['Infosupdef']['libelleType'] = $this->Infosupdef->libelleType($this->data['Infosupdef']['type']);
+			$this->data['Infosupdef']['libelleRecherche'] = $this->Infosupdef->libelleRecherche($this->data['Infosupdef']['recherche']);
 		}
 	}
 
