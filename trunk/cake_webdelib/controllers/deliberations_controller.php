@@ -1643,14 +1643,16 @@ class DeliberationsController extends AppController {
 
 	function mesProjetsRecherche() {
 		if (empty($this->data)) {
+			$this->set('action', '/deliberations/mesProjetsRecherche/');
+			$this->set('titreVue', 'Recherche multi-crit&egrave;res parmi mes projets');
+
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateAllList());
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('etats', $this->Deliberation->generateListEtat());
-			$this->set('action', '/deliberations/mesProjetsRecherche/');
-			$this->set('titreVue', 'Recherche multi-crit&egrave;res parmi mes projets');
+			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, nom, commentaire, type, taille', 'ordre', null, 1, -1));
 
 			$this->render('rechercheMutliCriteres');
 		} else {
@@ -1710,6 +1712,12 @@ class DeliberationsController extends AppController {
 				$conditions .= " Deliberation.etat = " . $this->data['Deliberation']['etat'];
 			}
 
+			if (array_key_exists('Infosup', $this->data)) {
+				$rechercheInfoSup = $this->Deliberation->Infosup->selectInfosup($this->data['Infosup']);
+				if (!empty($rechercheInfoSup))
+					$conditions .= (empty($conditions)?'':' AND') . " Deliberation.id IN ($rechercheInfoSup)";
+			}
+
 			if (empty($conditions)) {
 				$this->Session->setFlash('Vous devez saisir au moins un crit&egrave;re.');
 				$this->redirect('/deliberations/mesProjetsRecherche');
@@ -1730,14 +1738,16 @@ class DeliberationsController extends AppController {
 
 	function tousLesProjetsRecherche() {
 		if (empty($this->data)) {
+			$this->set('action', '/deliberations/tousLesProjetsRecherche/');
+			$this->set('titreVue', 'Recherche multi-crit&egrave;res parmi tous les projets');
+
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateAllList());
 			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('etats', $this->Deliberation->generateListEtat());
-			$this->set('action', '/deliberations/tousLesProjetsRecherche/');
-			$this->set('titreVue', 'Recherche multi-crit&egrave;res parmi tous les projets');
+			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, nom, commentaire, type, taille', 'ordre', null, 1, -1));
 
 			$this->render('rechercheMutliCriteres');
 		} else {
@@ -1796,6 +1806,12 @@ class DeliberationsController extends AppController {
 				$conditions .= " Deliberation.etat = " . $this->data['Deliberation']['etat'];
 			}
 
+			if (array_key_exists('Infosup', $this->data)) {
+				$rechercheInfoSup = $this->Deliberation->Infosup->selectInfosup($this->data['Infosup']);
+				if (!empty($rechercheInfoSup))
+					$conditions .= (empty($conditions)?'':' AND') . " Deliberation.id IN ($rechercheInfoSup)";
+			}
+
 			if (empty($conditions)) {
 				$this->Session->setFlash('Vous devez saisir au moins un crit&egrave;re.');
 				$this->redirect('/deliberations/tousLesProjetsRecherche');
@@ -1821,12 +1837,12 @@ class DeliberationsController extends AppController {
 					$this->data[$i]['Actions'] = array('view', 'generer');
 				}
 
-			/* passage des variables à la vue */
-			$this->set('titreVue', $titreVue);
-			$this->set('USE_GEDOOO', USE_GEDOOO);
+				/* passage des variables à la vue */
+				$this->set('titreVue', $titreVue);
+				$this->set('USE_GEDOOO', USE_GEDOOO);
 
-			/* on affiche la vue */
-			$this->render('tousLesProjets');
+				/* on affiche la vue */
+				$this->render('tousLesProjets');
 			}
 		}
 	}
