@@ -90,5 +90,58 @@ class Infosup extends AppModel
 		}
 	}
 
+ /*
+  * Retourne la liste des deliberation_id sous la forme 'delibId1, delib_id2, ...'
+  * correspondant à $recherches qui est sous la forme array('infosupdef_id'=>'valeur')
+  */
+	function selectInfosup($recherches) {
+		// initialisations
+		$ret = '';
+		$iAlias = 0;
+		$from = '';
+		$condition = '';
+		$jointure = '';
+		$repSelect = array();
+		// construction des différentes clauses
+		foreach($recherches as $infosupdefId => $recherche) {
+			if (!empty($recherche)) {
+				$infosupType = $this->Infosupdef->field('type', "id = $infosupdefId");
+				$iAlias++;
+				$alias = 'infosups'.$iAlias;
+				$from .= (empty($from) ? '' : ', ') . 'infosups ' . $alias;
+				$jointure.= ($iAlias > 1) ? "infosups1.deliberation_id = $alias.deliberation_id AND " : '';
+				if ($infosupType == 'text') {
+					$champRecherche = $alias.'.text';
+					$operateurRecherche = (strpos($recherche, '%')===false) ? '=' : 'like';
+				}
+				elseif ($infosupType == 'richText') {
+					$champRecherche = $alias.'.content';
+					$operateurRecherche = (strpos($recherche, '%')===false) ? '=' : 'like';
+				}
+				else {
+					$champRecherche = $alias.'.date';
+					$operateurRecherche = '=';
+					$temp = explode('/', $recherche);
+		    		$recherche = $temp[2].'-'.$temp[1].'-'.$temp[0];
+				}
+				$condition .= (empty($condition) ? '' : ' AND ') . "($alias.infosupdef_id = $infosupdefId AND $champRecherche $operateurRecherche '$recherche')";
+			}
+		}
+		if ($iAlias) {
+			// construction et exécution de la requête
+			$select = 'select infosups1.deliberation_id ';
+			$select .= 'from ' . $from . ' ';
+			$select .= 'where ' . $jointure . $condition;
+			$repSelect = $this->query($select);
+			if (empty($repSelect))
+				$ret = '-1';
+			else {
+				foreach($repSelect as $infosup)
+					$ret .= (empty($ret) ? '' : ', ') .$infosup['infosups1']['deliberation_id'];
+			}
+		}
+
+		return $ret;
+	}
 }
 ?>
