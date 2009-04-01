@@ -182,46 +182,60 @@ class UsersController extends AppController {
 	   	    return '';
 	}
 
-    function login() {
-		//pas de message d'erreur
-		$this->set('errorMsg',"");
-		//si le formulaire d'authentification a été soumis
-		if (!empty($this->data))
-		{
-			//cherche si utilisateur enregistré possede ce login
-			$user = $this->User->findByLogin($this->data['User']['login']);
+        function login() {
+            //pas de message d'erreur
+            $this->set('errorMsg',"");
+            //si le formulaire d'authentification a Ã©tÃ© soumis
+            if (!empty($this->data)) {
+                $isAuthentif = false;
+                //cherche si utilisateur enregistrÃ© possede ce login
+                $user = $this->User->findByLogin($this->data['User']['login']);
+                if (empty($user)){
+                    $this->set('errorMsg',"L'utilisateur ".$this->data['User']['login']." n'existe pas dans l'application.");
+                    $this->layout='connection';
+                    $this->render();
+                    exit;
+                }
 
-			//si le mdp n'est pas vide et correspond a celui de la bdd
-			if (!empty($user['User']['password']) && ($user['User']['password'] == md5($this->data['User']['password'])))
-			{
-				//on stocke l'utilisateur en session
-				$this->Session->write('user',$user);
+                if ($user['User']['id']==1){
+                    $isAuthentif =  ($user['User']['password'] == md5($this->data['User']['password']));
+                }
+                else {
+                    if (USE_LDAP)
+                        $isAuthentif = $this->_checkLDAP($this->data['User']['login'], $this->data['User']['password']);
+                    else
+                        $isAuthentif =  ($user['User']['password'] == md5($this->data['User']['password']));
+                }
 
-				//services auquels appartient l'agent
-				$services = array();
-   				foreach ($user['Service'] as $service)
-   					$services[$service['id']] = $this->Service->doList($service['id']);
+                if ($isAuthentif) {
+                    //on stocke l'utilisateur en session
+		    $this->Session->write('user',$user);
 
-    			$this->Session->write('user.Service', $services);
-   				$this->Session->write('user.User.service', key($services));
+                    //services auquels appartient l'agent
+                    $services = array();
+                    foreach ($user['Service'] as $service)
+                        $services[$service['id']] = $this->Service->doList($service['id']);
 
-				// Chargement du menu dans la session
-                $this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
+                    $this->Session->write('user.Service', $services);
+                    $this->Session->write('user.User.service', key($services));
 
-				$this->redirect('/');
- 			}
-			else
-			{
-				//sinon on prépare le message d'erreur a afficher dans la vue
-				$this->set('errorMsg','Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
-				$this->layout='connection';
-			}
-		}
-		else
-		{
-			$this->layout='connection';
-		}
-	}
+                    // Chargement du menu dans la session
+                    $this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
+                    $this->redirect('/');
+                }
+                else{
+                    //sinon on prÃ©pare le message d'erreur a afficher dans la vue
+                    $this->set('errorMsg','Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
+                    $this->layout='connection';
+                }
+            }
+            else {
+                $this->layout='connection';
+            }
+        }
+
+ 
+
 
 	function logout() {
 		//on supprime les infos utilisateur de la session
@@ -257,5 +271,12 @@ class UsersController extends AppController {
 	    //redirection sur la page où on était avant de changer de service
 	    $this->redirect($this->Session->read('user.User.lasturl'));
 	}
+
+        function _checkLDAP($login, $password) {
+            $DN = UNIQUE_ID."=$login, ".BASE_DN;
+            $conn=ldap_connect(LDAP_HOST, LDAP_PORT) or  die("connexion impossible au serveur LDAP");
+            ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+            return(@ldap_bind($conn, $DN,  $password));
+        }
 }
 ?>
