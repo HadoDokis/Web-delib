@@ -273,10 +273,33 @@ class UsersController extends AppController {
 	}
 
         function _checkLDAP($login, $password) {
-            $DN = UNIQUE_ID."=$login, ".BASE_DN;
+          //  $DN = UNIQUE_ID."=$login, ".BASE_DN;
             $conn=ldap_connect(LDAP_HOST, LDAP_PORT) or  die("connexion impossible au serveur LDAP");
-            ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-            return(@ldap_bind($conn, $DN,  $password));
+            @ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+            @ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // required for AD
+
+
+        $bind_attr = 'dn';
+        $search_filter = "(" .UNIQUE_ID."=" . $login . ")";
+        $result = @ldap_search($conn, BASE_DN , $search_filter, array("dn", $bind_attr));
+
+        $info = ldap_get_entries($conn, $result);
+        if($info['count'] == 0)
+                return false;
+
+        if ($bind_attr == "dn") {
+                $found_bind_user = $info[0]['dn'];
+        } else {
+                $found_bind_user = $info[0][strtolower($bind_attr)][0];
         }
+        if (!empty($found_bind_user)) {
+            return(@ldap_bind($conn, $info[0]['dn'],  $password));
+        } else {
+            return false;
+        }
+
+
+        
+     }
 }
 ?>
