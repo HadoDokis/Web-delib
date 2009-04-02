@@ -20,12 +20,15 @@
     ////////////////////////
     // Configuration du LDAP 
     ////////////////////////
-    define ('USE_LDAP',   false);
-    define ('LDAP_HOST', 'linux03');
-    define ('LDAP_PORT', '389');
-    // DN de la forme :              uid=$login, ou=users,dc=adullact,dc=org
-    define ('UNIQUE_ID', 'uid');
-    define ('BASE_DN',   'ou=users,dc=adullact,dc=org');
+    define ('USE_OPENLDAP', false);
+    define ('USE_AD', true);
+    define ('LDAP_HOST',       'x.x.x.x');
+    define ('LDAP_PORT',       '389');
+    define ('LDAP_LOGIN',       NULL);
+    define ('LDAP_PASSWD',      NULL);
+    define ('BASE_DN',         'OU=Utilisateurs,dc=mairie-xxx,dc=xxx');
+    define ('ACCOUNT_SUFFIX',  '@mairie-xxx.xxx');
+    define ('DN',              'dn');
 
 
 ?>

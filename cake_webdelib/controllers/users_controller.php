@@ -201,10 +201,16 @@ class UsersController extends AppController {
                     $isAuthentif =  ($user['User']['password'] == md5($this->data['User']['password']));
                 }
                 else {
-                    if (USE_LDAP)
+                    if (USE_AD){
+                        include ("vendors/adLDAP.php");
+                        $ldap=new adLDAP();
+                        $isAuthentif = $ldap->authenticate($this->data['User']['login'], $this->data['User']['password']);
+                    }
+                    elseif (USE_OPENLDAP)
                         $isAuthentif = $this->_checkLDAP($this->data['User']['login'], $this->data['User']['password']);
                     else
                         $isAuthentif =  ($user['User']['password'] == md5($this->data['User']['password']));
+
                 }
 
                 if ($isAuthentif) {
