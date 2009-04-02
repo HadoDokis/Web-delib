@@ -40,6 +40,9 @@ class Service extends AppModel {
 	/* fonction récursive de doList */
 	function _doList($id) {
 		$service = $this->find("id = $id", 'libelle, parent_id', null, -1);
+		if (!AFFICHE_HIERARCHIE_SERVICE)
+		    return $service['Service']['libelle'];
+
 		if (empty($service['Service']['parent_id']))
 			return $service['Service']['libelle'];
 		else
