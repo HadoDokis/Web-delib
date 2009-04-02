@@ -112,7 +112,6 @@ $webDelib = array(
 			'subMenu' => array(
 				'items' => array(
 					'Collectivité' => array('link' => '/collectivites/index'),
-					'Localisations' => array('link' => '/localisations/index'),
 					'Thèmes' => array('link' => '/themes/index'),
 					'Modèles d\'édition' => array('link' => '/models/index'),
 					'Séquences' => array('link' => '/sequences/index'),
