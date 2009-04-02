@@ -2,7 +2,7 @@
 	class ModelsController extends AppController {
 
 		var $name = 'Models';
-		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Localisation', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef');
+		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef');
 		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
@@ -128,14 +128,14 @@
 	}
 
 	function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null)  {
-               if ($delib['Deliberation']['seance_id'] != 0 ) { 
+               if ($delib['Deliberation']['seance_id'] != 0 ) {
 	           $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($delib['Seance']['date']),   'date'));
 	           $date_lettres =  $this->Date->dateLettres(strtotime($delib['Seance']['date']));
 	           $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text'));
                    $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
-	           $seance = $this->Seance->read(null, ($delib['Seance']['id']));       
+	           $seance = $this->Seance->read(null, ($delib['Seance']['id']));
                    $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),    'text'));
- 
+
                }
                $oMainPart->addElement(new GDO_FieldType('titre_projet',                utf8_encode($delib['Deliberation']['titre']),    'text'));
                $oMainPart->addElement(new GDO_FieldType('objet_projet',                utf8_encode($delib['Deliberation']['objet']),    'text'));
