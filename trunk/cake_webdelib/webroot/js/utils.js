@@ -67,48 +67,6 @@ function disable(id,val)
 }
 
 
-function saveLocation(idDelib,idLoc,zone)
-{
-
-	if(idLoc.value== ""){
-	var url = idLoc.id+"deliberations/saveLocation/"+idDelib+"/0/"+zone;
-	document.location=url;
-
-	}else{
-	var url = idLoc.id+"deliberations/saveLocation/"+idDelib+"/"+idLoc.value+"/"+zone;
-	document.location=url;
-	}
-}
-
-function changeLocation1(idDelib,zone1,zone2,zone3)
-{
-	if(zone1.value==""){
-		saveLocation(idDelib,zone1,1);
-	}else{
-		var url = zone1.id+"deliberations/changeLocation/"+idDelib+"/"+zone1.value+"/"+zone2+"/"+zone3;
-		document.location=url;
-	}
-}
-
-function changeLocation2(idDelib,zone1,zone2,zone3)
-{
-	if(zone2.value==""){
-		saveLocation(idDelib,zone2,2);
-	}else{
-		var url = zone2.id+"deliberations/changeLocation/"+idDelib+"/"+zone1+"/"+zone2.value+"/"+zone3;
-		document.location=url;
-	}
-}
-
-function changeLocation3(idDelib,zone1,zone2,zone3)
-{
-	if(zone3.value==""){
-		saveLocation(idDelib,zone3,3);
-	}else{
-		var url = zone3.id+"deliberations/changeLocation/"+idDelib+"/"+zone1+"/"+zone2+"/"+zone3.value;
-		document.location=url;
-	}
-}
 function changeService(params)
 {
 	var url = params.id+"services/changeService/"+params.value;
