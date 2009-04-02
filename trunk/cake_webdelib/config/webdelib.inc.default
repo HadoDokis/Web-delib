@@ -1,4 +1,7 @@
 <?php
+
+    define ('AFFICHE_HIERARCHIE_SERVICE', false);
+
     ////////////////////////
     // Configuration GEDOOo
     ////////////////////////
