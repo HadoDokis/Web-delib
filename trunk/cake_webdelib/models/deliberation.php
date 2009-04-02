@@ -42,13 +42,7 @@ class Deliberation extends AppModel {
 			'conditions'   => '',
 			'order'        => '',
 			'dependent'    =>  true,
-			'foreignKey'   => 'seance_id'),
-		'Localisation'=> array(
-			'className'    => 'Localisation',
-			'conditions'   => '',
-			'order'        => '',
-			'dependent'    =>  true,
-			'foreignKey'   => 'localisation1_id')
+			'foreignKey'   => 'seance_id')
 		);
 	var $hasMany = array(
 		'Traitement'=>array(
