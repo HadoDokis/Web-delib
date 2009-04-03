@@ -1,18 +1,22 @@
 <?php echo $javascript->link('calendrier.js'); ?>
 <?php echo $javascript->link('utils.js'); ?>
 
-<h2><?php echo $titreFormulaire;?></h2>
-<?php echo $html->formTag('/deliberations/edit/'.$html->tagValue('Deliberation/id'), null,array('name'=>'Deliberation','enctype'=>'multipart/form-data'));?>
+<?php
+	if($html->tagValue('Deliberation/id')) {
+		echo "<h2>Modification du projet : ".$html->tagValue('Deliberation/id')."</h2>";
+		echo $html->formTag('/deliberations/edit/'.$html->tagValue('Deliberation/id'), null, array('name'=>'Deliberation', 'enctype'=>'multipart/form-data'));
+	} else {
+		echo "<h2>Ajout d'un projet</h2>";
+		echo $html->formTag('/deliberations/add', null, array('name'=>'Deliberation', 'enctype'=>'multipart/form-data'));
+	}
+?>
 
 	<div class='demi'>
-		<?php echo $form->labelTag('Deliberation/id', 'Id projet');?>
-		<?php echo $html->input('Deliberation/id',array('size' => '10','disabled'=>'disabled'));?>
-		<br/>
 		<?php echo $form->labelTag('Redacteur/nom','Redacteur')?>
-		<?php echo $html->input('Redacteur/nom', array('size'=>'30','value'=>$deliberation['Redacteur']['nom'].' '.$deliberation['Redacteur']['prenom'], 'disabled'=>'disabled'));?>
+		<?php echo $html->input('Redacteur/nom', array('size'=>'30','value'=>$this->data['Redacteur']['nom'].' '.$this->data['Redacteur']['prenom'], 'disabled'=>'disabled'));?>
 		<br/>
 		<?php echo $form->labelTag('Service/libelle','Service emetteur');?>
-		<?php echo $html->input('Service/libelle',array('size' => '45','value'=>$servEm, 'disabled'=>'disabled'));?>
+		<?php echo $html->input('Service/libelle',array('size' => '45','value'=>$this->data['Service']['libelle'], 'disabled'=>'disabled'));?>
 	</div>
 	<div class='demi'>
 		<?php echo $form->labelTag('Deliberation/created','Date cr&eacute;ation')?>
@@ -48,7 +52,7 @@
 	<div class='spacer'></div>
 
 	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
-	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs,$selectedRapporteur,null,null,true);?>
+	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs);?>
 	<div class='spacer'></div>
 
 	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme <acronym title="obligatoire">(*)</acronym>');?>
@@ -63,8 +67,8 @@
 
 	<?php echo $form->labelTag('Deliberation/date_limite', 'Date limite');?>
 	<?php
-		if ($deliberation['Deliberation']['date_limite'] != '01/01/1970')
-			$value = "value='".$deliberation['Deliberation']['date_limite']."'";
+		if (!empty($this->data['Deliberation']['date_limite']) && $this->data['Deliberation']['date_limite'] != '01/01/1970')
+			$value = "value='".$this->data['Deliberation']['date_limite']."'";
 		else
 			$value = "";
 	?>
@@ -142,7 +146,10 @@
 <div class="submit">
 	<?php echo $html->hidden('Deliberation/id')?>
 	<?php
-		$onclick = "javascript:return checkForm(form, ".$html->tagValue('Deliberation/id').")";
+		if ($html->tagValue('Deliberation/id'))
+			$onclick = "javascript:return checkForm(form, ".$html->tagValue('Deliberation/id').")";
+		else
+			$onclick = "javascript:return checkForm(form, 0)";
 		echo $html->submit('Sauvegarder', array('class'=>'bt_save_border', 'name'=>'Sauvegarder', 'onclick'=>$onclick));
 	?>
 	<?php echo $html->link('Annuler', $redirect, array('class'=>'link_annuler', 'name'=>'Annuler'))?>
