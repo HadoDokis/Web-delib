@@ -105,14 +105,97 @@ class DeliberationsController extends AppController {
 	}
 
 	function add() {
-		/* initialisations */
-		$this->Deliberation->create();
-		$user=$this->Session->read('user');
-		$this->data['Deliberation']['redacteur_id']=$user['User']['id'];
-		$this->data['Deliberation']['service_id']=$user['User']['service'];
+		// initialisations
+		$sortie = false;
+	    /* initialisation du lien de redirection */
+		$redirect = '/pages/mes_projets';
+	    /* initialisation du rédateur et du service emetteur */
+	    $user = $this->Session->read('user');
 
-		$this->Deliberation->save($this->data);
-		$this->redirect('/deliberations/edit/'.$this->Deliberation->getLastInsertId().'/1');
+		if (!empty($this->data)) {
+			$this->data['Deliberation']['redacteur_id'] = $user['User']['id'];
+			$this->data['Deliberation']['service_id'] = $user['User']['service'];
+
+			if (($this->data['Deliberation']['seance_id'])!=null )
+				$this->data['Deliberation']['position'] = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
+
+			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
+
+			if (!GENERER_DOC_SIMPLE){
+				// Initialisation du texte de projet
+				if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
+					$this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
+					$this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
+					$this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'] ;
+					if (empty($this->data['Deliberation']['texte_projet']['tmp_name']))
+						$this->data['Deliberation']['texte_projet'] = '';
+					else {
+						$tp = $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
+						$this->data['Deliberation']['texte_projet'] = $tp;
+					}
+				}
+				// Initialisation de la note de synthèse
+				if (array_key_exists('texte_synthese', $this->data['Deliberation'])) {
+					$this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
+					$this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
+					$this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'] ;
+					if (empty($this->data['Deliberation']['texte_synthese']['tmp_name']))
+						$this->data['Deliberation']['texte_synthese'] = '';
+					else {
+						$ts = $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
+						$this->data['Deliberation']['texte_synthese'] = $ts;
+					}
+				}
+				// Initialisation du texte de délibération
+				if (array_key_exists('deliberation', $this->data['Deliberation'])) {
+					$this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
+					$this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
+					$this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'] ;
+					if (empty($this->data['Deliberation']['deliberation']['tmp_name']))
+						$this->data['Deliberation']['deliberation'] = '';
+					else {
+						$td = $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
+						$this->data['Deliberation']['deliberation'] = $td;
+					}
+				}
+			}
+			$this->cleanUpFields();
+
+			if ($this->Deliberation->save($this->data)) {
+				$delibId = $this->Deliberation->getLastInsertId();
+				/* sauvegarde des informations supplémentaires */
+				if (array_key_exists('Infosup', $this->data))
+					$this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $delibId);
+				/* sauvegarde des annexes */
+				if (array_key_exists('AnnexesG', $this->data))
+					foreach($this->data['AnnexesG'] as $annexe) $this->_saveAnnexe($delibId, $annexe, 'G');
+				if (array_key_exists('AnnexesP', $this->data))
+					foreach($this->data['AnnexesP'] as $annexe) $this->_saveAnnexe($delibId, $annexe, 'P');
+				if (array_key_exists('AnnexesS', $this->data))
+					foreach($this->data['AnnexesS'] as $annexe) $this->_saveAnnexe($delibId, $annexe, 'S');
+				if (array_key_exists('AnnexesD', $this->data))
+					foreach($this->data['AnnexesD'] as $annexe) $this->_saveAnnexe($delibId, $annexe, 'D');
+
+				$this->Session->setFlash('Le projet \''.$delibId.'\' a &eacute;t&eacute; ajout&eacute;');
+				$sortie = true;
+			} else
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+		}
+		if ($sortie)
+			$this->redirect($redirect);
+		else {
+			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($user['User']['service']);
+			$this->data['Redacteur']['nom'] = $this->Deliberation->User->field('nom', 'User.id = ' . $user['User']['id']);
+			$this->data['Redacteur']['prenom'] = $this->Deliberation->User->field('prenom', 'User.id = ' . $user['User']['id']);
+
+			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
+			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
+			$this->set('date_seances',$this->Seance->generateList());
+			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
+			$this->set('redirect', $redirect);
+
+			$this->render('edit');
+		}
 	}
 
 	/* Supprime les projets de délibération de l'utilisateur connecté pour lesquels le titre et l'bjet sont vides */
@@ -168,7 +251,7 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-	function edit($id=null, $nouveau=false) {
+	function edit($id=null) {
 	    $user=$this->Session->read('user');
 	    /* initialisation du lien de redirection */
 		if ($this->Acl->check($user['User']['id'], "Pages:mes_projets"))
@@ -192,15 +275,10 @@ class DeliberationsController extends AppController {
 			$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
 
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
+			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Service']['id']);
 
-			$this->set('titreFormulaire', $nouveau ? 'Nouveau projet' : 'Modification du projet');
-			$this->set('servEm', $this->Deliberation->Service->doList($this->data['Service']['id']));
-			$this->set('deliberation', $this->data);
-			$this->set('services', $this->Deliberation->Service->generateList());
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
-			$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id));
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
-			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateList());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('redirect', $redirect);
@@ -329,14 +407,17 @@ class DeliberationsController extends AppController {
 	}
 
 	function delete($id = null) {
-		if (!$id) {
-			$this->Session->setFlash('Invalide id pour la deliberation');
-			$this->redirect('/deliberations/mesProjetsRedaction');
+		$delib = $this->Deliberation->read(null, $id);
+		if (empty($delib)) {
+			$this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible');
+		} else if ($this->Deliberation->del($id)) {
+			// Il faut reclasser toutes les delibs de la seance
+			if (!empty($delib['Deliberation']['seance_id']))
+				$this->_PositionneDelibsSeance($delib['Deliberation']['seance_id'], $delib['Deliberation']['position'] );
+
+			$this->Session->setFlash('Le projet \''.$id.'\' a &eacute;t&eacute; supprim&eacute;.');
 		}
-		if ($this->Deliberation->del($id)) {
-			$this->Session->setFlash('La deliberation a &eacute;t&eacute; supprim&eacute;e.');
-			$this->redirect('/deliberations/mesProjetsRedaction');
-		}
+		$this->redirect('/deliberations/mesProjetsRedaction');
 	}
 
    function convert($id=null) {
