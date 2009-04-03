@@ -27,10 +27,10 @@
 			echo $fck->load('data[Deliberation]['.$key.']');
 		echo '</div>';
 	} else {
-		$url  = "/deliberations/download/".$delib['Deliberation']['id']."/$key";
 		if (empty($delib['Deliberation'][$key."_name"]))
 			echo  $html->fileTag("Deliberation/".$key, array('size'=>'60', 'title'=>$libelle));
 		else {
+			$url  = "/deliberations/download/".$delib['Deliberation']['id']."/$key";
 			echo '<span id="Deliberation'.$key.'InputFichierJoint" style="display: none;"></span>';
 			echo '<span id="Deliberation'.$key.'AfficheFichierJoint">';
 				echo '['.$html->link($delib['Deliberation'][$key."_name"], $url, array('title'=>'Recuperer le fichier')).']';
