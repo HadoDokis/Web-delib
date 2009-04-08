@@ -287,8 +287,12 @@ class DeliberationsController extends AppController {
 		} else {
 			$oldDelib =  $this->Deliberation->find('Deliberation.id = '.$id, 'seance_id, position', '', -1);
 			// Si on definit une seance a une delib, on la position en derniere position de la seance...
-			if (!($this->data['Deliberation']['seance_id'] === $oldDelib['Deliberation']['seance_id']))
-				$this->data['Deliberation']['position'] = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
+			if (!($this->data['Deliberation']['seance_id'] === $oldDelib['Deliberation']['seance_id'])) {
+				if ($this->data['Deliberation']['seance_id'])
+					$this->data['Deliberation']['position'] = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
+				else
+					$this->data['Deliberation']['position'] = 0;
+			}
 
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
 
