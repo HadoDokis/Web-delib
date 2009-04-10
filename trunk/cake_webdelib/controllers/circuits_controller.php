@@ -210,32 +210,28 @@ class CircuitsController extends AppController {
 	}
 
 	function supprimerUser($id) {
-		$position     = $this->getCurrentPosition($id);
-		$circuit_id   = $this->getCurrentCircuit($id);
-		$lastPosition = $this->getLastPosition($circuit_id);
-
-		if ($lastPosition != $position) {
-			$conditions = "circuit_id = $circuit_id and position > $position ";
-			$order = "position ASC";
-			$obj = $this->UsersCircuit->findAll($conditions, null, $order);
-
-			foreach ($obj as $user)
-			    $this->intervertirPosition($user['UsersCircuit']['id'], 2);
-
-			$conditions = "circuit_id = $circuit_id and position = $lastPosition-1";
-			$avantDernier = $this->UsersCircuit->findAll($conditions);
-
-		    $this->data = $this->UsersCircuit->read(null, $avantDernier[0]['UsersCircuit']['id']);
-		    $this->data['UsersCircuit']['position'] = $lastPosition-1;
-			$this->UsersCircuit->save($this->data);
-
+		$iPosition = 0;
+    	$userCircuit = $this->UsersCircuit->read("id, circuit_id", $id);
+    	if (empty($userCircuit)) {
+			$this->Session->setFlash('Invalide id pour l\'utilisateur dans le circuit');
+			$redirect = $this->Session->read('user.User.lasturl');
+    	} elseif ($this->UsersCircuit->del($id)) {
+    		$circuit_id = $userCircuit['UsersCircuit']['circuit_id'];
+			$redirect = "/circuits/index/$circuit_id/";
+			$usersCircuit = $this->UsersCircuit->findAll("circuit_id = $circuit_id", 'id, position', 'position ASC', null, 1, -1);
+			foreach ($usersCircuit as $userCircuit) {
+				$iPosition++;
+				if ($userCircuit['UsersCircuit']['position'] != $iPosition) {
+					$userCircuit['UsersCircuit']['position'] = $iPosition;
+					$this->UsersCircuit->save($userCircuit);
+				}
+			}
+		} else {
+		    $this->Session->setFlash('Suppression impossible');
+			$redirect = $this->Session->read('user.User.lasturl');
 		}
 
-		if ($this->UsersCircuit->del($id))
-		    $this->redirect("/circuits/index/$circuit_id/");
-	    else
-		    $this->Session->setFlash('Suppression impossible');
-
+	    $this->redirect($redirect);
 	}
 
 	function isEditable ($circuit_id) {
