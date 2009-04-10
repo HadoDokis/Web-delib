@@ -146,13 +146,12 @@ function sendToClient() {
 $sMimeType = $this->getMimeType();
 $sFileName = $this->getName();
 $bContent  = $this->getContent();
-
 header("Content-type: $sMimeType");
 header("Content-disposition: attachment; filename=".$sFileName);
 header("Content-length: " . strlen($bContent));
-
 echo $bContent;
-    }
+exit;
+}
 
 
     // }}}
