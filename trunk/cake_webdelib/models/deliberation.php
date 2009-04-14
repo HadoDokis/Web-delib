@@ -120,7 +120,7 @@ class Deliberation extends AppModel {
 			return $codesSpeciaux ? 'En cours de r&eacute;daction' : 'En cours de rédaction';
 			break;
 		case 1:
-			return $codesSpeciaux ? 'En cous d\'&eacute;laboration et de validation' : 'En cous d\'élaboration et de validation';
+			return $codesSpeciaux ? 'En cours d\'&eacute;laboration et de validation' : 'En cours d\'élaboration et de validation';
 			break;
 		case 2:
 			return $codesSpeciaux ? 'Valid&eacute;' : 'Validé';
@@ -136,51 +136,6 @@ class Deliberation extends AppModel {
 			break;
 		}
 	}
-
-/*
- * retourne un tableau array('image'=>, 'titre'=>) correspondant à l'état $etat des projets et délibérations
- * pour l'affichage dans les vues
- *
- */
- 	function iconeEtat($etat) {
- 		switch($etat) {
-		case -1 :
-			return array(
-				'image' => '/icons/refuse.png',
-				'titre' => $this->libelleEtat($etat));
-			break;
-		case 0 :
-			return array(
-				'image' => '/icons/encours.png',
-				'titre' => $this->libelleEtat($etat));
-			break;
-		case 1:
-			return array(
-				'image' => '/icons/fini.png',
-				'titre' => $this->libelleEtat($etat));
-			break;
-		case 2:
-			return array(
-				'image' => '/icons/fini.png',
-				'titre' => $this->libelleEtat($etat));
-			break;
-		case 3:
-			return array(
-				'image' => '/icons/fini.png',
-				'titre' => $this->libelleEtat($etat));
-			break;
-		case 4:
-			return array(
-				'image' => '/icons/fini.png',
-				'titre' => $this->libelleEtat($etat));
-			break;
-		case 5:
-			return array(
-				'image' => '/icons/fini.png',
-				'titre' => $this->libelleEtat($etat));
-			break;
-		}
- 	}
 
 	function generateListEtat() {
 		$ret = array();
