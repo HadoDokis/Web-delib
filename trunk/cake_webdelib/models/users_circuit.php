@@ -52,5 +52,12 @@ class UsersCircuit extends AppModel {
 
 		return $listeCircuits;
 	}
+
+/*
+ * retourne true si l'utilisateur $userId est dans le circuit $circuitId
+ */
+ 	function estDansCircuit($userId, $circuitId) {
+ 		return $this->findCount("user_id = $userId AND circuit_id = $circuitId", -1);
+ 	}
 }
 ?>
