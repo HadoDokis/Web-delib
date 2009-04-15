@@ -1,0 +1,47 @@
+<div class="seances">
+<h2>S&eacute;ances &agrave; traiter</h2>
+
+
+<table cellpadding="0" cellspacing="0" border="0">
+	<tr>
+		<th>Type</th>
+		<th>Date S&eacute;ance</th>
+		<th>Préparation</th>
+		<th>En cours</th>
+	</tr>
+	<?php foreach ($seances as $seance): ?>
+	<tr>
+		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
+		<td><?php echo ($html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id'])); ?></td>
+		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
+		 	<?php echo $html->link('&shy;','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'), false, false)?>
+		<?php
+                    if (USE_GEDOOO){
+                       $urlConvoc = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'];
+		       $urlOdj = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'];
+		    }
+		    else {
+                       $urlConvoc = '/seances/generateConvocationList/'.$seance['Seance']['id'];
+		       $urlOdj = '/seances/generateOrdresDuJour/'.$seance['Seance']['id'];
+		    }
+
+		    echo $html->link('&shy;', $urlConvoc, array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'), 'Etes-vous sur de vouloir lancer la génération des documents ?', false);
+		    echo $html->link('&shy;', $urlOdj, array('class'=>'link_ordre_jour', 'title'=>'Générer l\'ordre du jour détaillé'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
+		?>
+		</td>
+		<td class="actions">
+			<?php echo $html->link('&shy;','/seances/saisirSecretaire/' . $seance['Seance']['id'], array('class'=>'link_secretaire', 'title'=>'Choix du secrétaire de séance'), false, false); ?>
+			<?php echo $html->link('&shy;','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les débats généraux de la séance'), false, false); ?>
+			<?php
+				if ($seance['Typeseance']['action']==0)
+					echo $html->link('&shy;','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voter', 'title'=>'Afficher les projets et voter'), false, false);
+				else
+					echo $html->link('&shy;','/seances/detailsAvis/' . $seance['Seance']['id'],array('class'=>'link_donnerAvis', 'title'=>'Afficher les projets et donner un avis'), false, false);
+			?>
+		</td>
+	</tr>
+	<?php endforeach; ?>
+
+</table>
+
+</div>

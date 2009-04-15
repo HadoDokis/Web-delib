@@ -1,0 +1,158 @@
+<?php echo $javascript->link('calendrier.js'); ?>
+<?php echo $javascript->link('utils.js'); ?>
+
+<?php
+	if($html->tagValue('Deliberation/id')) {
+		echo "<h2>Modification du projet : ".$html->tagValue('Deliberation/id')."</h2>";
+		echo $html->formTag('/deliberations/edit/'.$html->tagValue('Deliberation/id'), null, array('name'=>'Deliberation', 'enctype'=>'multipart/form-data'));
+	} else {
+		echo "<h2>Ajout d'un projet</h2>";
+		echo $html->formTag('/deliberations/add', null, array('name'=>'Deliberation', 'enctype'=>'multipart/form-data'));
+	}
+?>
+
+	<div class='demi'>
+		<?php echo $form->labelTag('Redacteur/nom','Redacteur')?>
+		<?php echo $html->input('Redacteur/nom', array('size'=>'30','value'=>$this->data['Redacteur']['nom'].' '.$this->data['Redacteur']['prenom'], 'disabled'=>'disabled'));?>
+		<br/>
+		<?php echo $form->labelTag('Service/libelle','Service emetteur');?>
+		<?php echo $html->input('Service/libelle',array('size' => '40','value'=>$this->data['Service']['libelle'], 'disabled'=>'disabled'));?>
+	</div>
+	<div class='demi'>
+		<?php echo $form->labelTag('Deliberation/created','Date cr&eacute;ation')?>
+		<?php echo $html->input('Deliberation/created', array('size'=>'20', 'disabled'=>'disabled'));?>
+		<br/>
+		<?php echo $form->labelTag('Deliberation/modified','Date modification')?>
+		<?php echo $html->input('Deliberation/modified', array('size'=>'20', 'disabled'=>'disabled'));?>
+	</div>
+<div class="spacer"></div>
+
+<div class='onglet'>
+	<a></a>
+	<a href="javascript:afficheOnglet(1)" id='lienTab1' class="ongletCourant">Informations principales</a>
+	<a href="javascript:afficheOnglet(2)" id='lienTab2'>Texte projet</a>
+	<a href="javascript:afficheOnglet(3)" id='lienTab3'>Note synth&egrave;se</a>
+	<a href="javascript:afficheOnglet(4)" id='lienTab4'>Texte d&eacute;lib&eacute;ration</a>
+<?php if (!empty($infosupdefs)): ?>
+	<a href="javascript:afficheOnglet(5)" id='lienTab5'>Informations suppl&eacute;mentaires</a>
+<?php endif; ?>
+</div>
+
+<div id="tab1">
+	<?php echo $form->labelTag('Deliberation/objet', 'Libelle <acronym title="obligatoire">(*)</acronym>');?>
+ 	<?php echo $html->textarea('Deliberation/objet', array('cols' => '60'));?>
+	<div class='spacer'></div>
+
+	<?php echo $form->labelTag('Deliberation/titre', 'Titre');?>
+ 	<?php echo $html->textarea('Deliberation/titre', array('cols' => '60'));?>
+	<div class='spacer'></div>
+
+	<?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
+	<?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>
+	<div class='spacer'></div>
+
+	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
+	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs);?>
+	<div class='spacer'></div>
+
+	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme <acronym title="obligatoire">(*)</acronym>');?>
+	<?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), false);?>
+	<div class='spacer'></div>
+
+	<?php echo $form->labelTag('Deliberation/num_pref', 'Num Pref');?>
+	<?php echo $html->input('Deliberation/num_pref',array('id'=>'classif1', 'size' => '60','disabled'=>'disabled'));?>
+		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base?>/deliberations/classification', 'Select_attribut', 'scrollbars=yes,width=570,height=450');" id="classification_text">[Choisir la classification]</a>
+		 <?php echo $html->hidden('Deliberation/num_pref',array('id'=>'classif2','name'=>'classif2'))?>
+	<div class='spacer'></div>
+
+	<?php echo $form->labelTag('Deliberation/date_limite', 'Date limite');?>
+	<?php
+		if (!empty($this->data['Deliberation']['date_limite']) && $this->data['Deliberation']['date_limite'] != '01/01/1970')
+			$value = "value='".$this->data['Deliberation']['date_limite']."'";
+		else
+			$value = "";
+	?>
+	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a>
+	<div class='spacer'></div>
+
+    <?php echo $this->element('annexe', array('typeAnnexes'=>'G'));?>
+</div>
+
+<div id="tab2" style="display: none;">
+    <?php echo $this->element('texte', array('key' => 'texte_projet'));?>
+	<div class='spacer'></div>
+    <?php echo $this->element('annexe', array('typeAnnexes'=>'P'));?>
+</div>
+
+<div id="tab3" style="display: none;">
+    <?php echo $this->element('texte', array('key' => 'texte_synthese'));?>
+	<div class='spacer'></div>
+    <?php echo $this->element('annexe', array('typeAnnexes'=>'S'));?>
+</div>
+
+<div id="tab4" style="display: none;">
+    <?php echo $this->element('texte', array('key' => 'deliberation'));?>
+	<div class='spacer'></div>
+    <?php echo $this->element('annexe', array('typeAnnexes'=>'D'));?>
+</div>
+
+<?php if (!empty($infosupdefs)): ?>
+<div id="tab5" style="display: none;">
+	<?php
+	foreach($infosupdefs as $infosupdef) {
+		$fieldName = 'Infosup/'.$infosupdef['Infosupdef']['code'];
+		echo "<div class='required'>";
+			echo $form->labelTag($fieldName, $infosupdef['Infosupdef']['nom']);
+			if ($infosupdef['Infosupdef']['type'] == 'text') {
+				echo $html->input($fieldName, array('size'=>$infosupdef['Infosupdef']['taille'], 'title'=>$infosupdef['Infosupdef']['commentaire']));
+			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
+				echo $html->input($fieldName, array('size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+				echo '&nbsp;';
+				$fieldId = "'Deliberation.Infosup".Inflector::camelize($infosupdef['Infosupdef']['code'])."'";
+				echo $html->link($html->image("calendar.png", "border='0'"), "javascript:show_calendar($fieldId, 'f');", array(), false, false);
+			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
+				echo $javascript->link('fckeditor');
+				$tagName = 'data[Infosup]['.$infosupdef['Infosupdef']['code'].']';
+				echo '<div class="annexesGauche"></div>';
+				echo '<div class="fckEditorProjet">';
+					echo $html->textarea($fieldName, array('size'=>$infosupdef['Infosupdef']['taille']));
+					echo $fck->load($tagName);
+				echo '</div>';
+				echo '<div class="spacer"></div>';
+			} elseif ($infosupdef['Infosupdef']['type'] == 'file') {
+				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
+					echo  $html->fileTag($fieldName, array('size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+				else {
+					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
+					echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
+						echo '['.$html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
+						echo '&nbsp;&nbsp;';
+						echo $html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?');
+					echo '</span>';
+				}
+			}
+		echo '</div>';
+		echo '<br>';
+	};
+	?>
+</div>
+<?php endif; ?>
+
+<div class="spacer" style="border-top: solid 1px #e0ef90;"></div>
+
+<div id="AnnexeASupprimer">
+</div>
+
+<div class="submit">
+	<?php echo $html->hidden('Deliberation/id')?>
+	<?php
+		if ($html->tagValue('Deliberation/id'))
+			$onclick = "javascript:return checkForm(form, ".$html->tagValue('Deliberation/id').")";
+		else
+			$onclick = "javascript:return checkForm(form, 0)";
+		echo $html->submit('Sauvegarder', array('class'=>'bt_save_border', 'name'=>'Sauvegarder', 'onclick'=>$onclick));
+	?>
+	<?php echo $html->link('Annuler', $redirect, array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+
+</form>
