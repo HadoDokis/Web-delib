@@ -16,7 +16,7 @@
 		<?php echo $html->input('Redacteur/nom', array('size'=>'30','value'=>$this->data['Redacteur']['nom'].' '.$this->data['Redacteur']['prenom'], 'disabled'=>'disabled'));?>
 		<br/>
 		<?php echo $form->labelTag('Service/libelle','Service emetteur');?>
-		<?php echo $html->input('Service/libelle',array('size' => '45','value'=>$this->data['Service']['libelle'], 'disabled'=>'disabled'));?>
+		<?php echo $html->input('Service/libelle',array('size' => '40','value'=>$this->data['Service']['libelle'], 'disabled'=>'disabled'));?>
 	</div>
 	<div class='demi'>
 		<?php echo $form->labelTag('Deliberation/created','Date cr&eacute;ation')?>
