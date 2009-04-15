@@ -21,10 +21,10 @@
     define('HOST', 'demo-s2low.extranet.adullact.org');
 
     ////////////////////////
-    // Configuration du LDAP 
+    // Configuration du LDAP
     ////////////////////////
     define ('USE_OPENLDAP', false);
-    define ('USE_AD', true);
+    define ('USE_AD', false);
     define ('LDAP_HOST',       'x.x.x.x');
     define ('LDAP_PORT',       '389');
     define ('LDAP_LOGIN',       NULL);
