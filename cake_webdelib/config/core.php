@@ -50,7 +50,8 @@
  *
  */
     define('DEBUG', 0);
-
+    ini_set('max_execution_time', 9999);
+    ini_set('memory_limit', '999M');
 
 /**
  * Turn of caching checking wide.
@@ -143,8 +144,8 @@ define('CAKE_ADMIN', 'admin');
 /**
  * To use Access Control Lists with Cake...
  */
-	define('ACL_CLASSNAME', 'DB_ACL');
-	define('ACL_FILENAME', 'dbacl' . DS . 'db_acl');
+    define('ACL_CLASSNAME', 'DB_ACL');
+    define('ACL_FILENAME', 'dbacl' . DS . 'db_acl');
   
     $pos2 =  strrpos ( getcwd(), 'webroot');
     $path2 = substr(getcwd(), 0, $pos2);
@@ -152,9 +153,7 @@ define('CAKE_ADMIN', 'admin');
     
     define ('WEBROOT_PATH',  $path2."webroot");
     define ('CONFIG_PATH', $path2."config/");
-
-
  
     require_once ('webdelib.inc');
-    define ('VERSION', '<b> 2.0alpha </b>');
+    define ('VERSION', '<b> 2.0 </b>');
 ?>
