@@ -1,0 +1,28 @@
+<div id="vue_cadre">
+<h3>Fiche profil</h3>
+
+<div class="imbrique">
+	<dt>Libelle</dt>
+	<dd>&nbsp;<?php echo $profil['Profil']['libelle']?></dd>
+</div>
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Date creation</dt>
+		<dd>&nbsp;<?php echo $profil['Profil']['created']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Date modification</dt>
+		<dd>&nbsp;<?php echo $profil['Profil']['modified']?></dd>
+	</div>
+</div>
+
+<ul id="actions_fiche">
+	<?php
+		echo '<li>' . $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+
+		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Profils:index'))
+			echo '<li>'.$html->link('&shy;',   '/profils/edit/' . $profil['Profil']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+	?>
+</ul>
+
+</div>

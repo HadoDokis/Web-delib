@@ -1,0 +1,16 @@
+<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $html->formTag('/models/edit/'.$html->tagValue('Model/id')); ?>
+<h2>Modification du mod&egrave;le : <?php echo $libelle; ?></h2>
+<div class="optional">
+    <?php echo $html->textarea('Model/content', array('cols' => '10', 'rows' => '20'));?>
+    <?php echo $fck->load('data[Model][content]'); ?>
+    <?php echo $html->tagErrorMsg('Model/content', 'Entrer la délibération.');?>
+</div>
+<br/><br/><br/><br/><br/>
+<div class="submit">
+	<?php echo $form->labelTag('Model/id', '&nbsp;');?>
+	<?php echo $html->hidden('Model/id')?>
+	<?php echo $html->submit('Modifier', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/models/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+</form>
