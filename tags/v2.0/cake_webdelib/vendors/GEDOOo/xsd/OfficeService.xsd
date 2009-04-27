@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://gedooo/OfficeService" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:gedooo="http://gedooo/OfficeService">
+    <xs:include schemaLocation=""></xs:include>
+    <xs:element name="OfficeService">
+		<xs:complexType>
+            <xs:choice minOccurs="1" maxOccurs="1">
+            	<xs:element ref="gedooo:publipostage"  ></xs:element>
+            	<xs:element name="multiPresentation" type="gedooo:jobMultiPresentation"></xs:element>
+            	<xs:element ref="gedooo:convertirEnPdf"></xs:element>
+            </xs:choice>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="serviceType">
+		<xs:sequence maxOccurs="1" minOccurs="1">
+			<xs:element name="service" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence maxOccurs="1" minOccurs="1">
+						<xs:element name="endpoint" type="xs:string"
+							maxOccurs="1" minOccurs="1">
+						</xs:element>
+						<xs:element name="methode" type="xs:string"
+							maxOccurs="1" minOccurs="1">
+						</xs:element>
+						<xs:element name="xml" minOccurs="1" maxOccurs="1" type="xs:string">
+							
+						</xs:element>
+					</xs:sequence>					
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="nom" type="xs:string" use="required"></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="documentType">
+        <xs:sequence maxOccurs="1" minOccurs="1">			<xs:element name="champ" type="gedooo:champType" maxOccurs="unbounded" minOccurs="0" />
+			<xs:element name="bloc" type="gedooo:blocType" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="depot" type="gedooo:serviceType" />
+		</xs:sequence>
+		<xs:attribute name="nom" type="xs:string" use="required"></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="champType">
+		<xs:sequence maxOccurs="1" minOccurs="1">
+			<xs:element name="nom" type="xs:string"></xs:element>
+			<xs:element name="valeur" type="xs:string"></xs:element>
+			<xs:element name="type" type="xs:string"></xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="fichierDocumentType">
+        <xs:all minOccurs="1" maxOccurs="1">
+			<xs:element name="fichier" type="xs:base64Binary"></xs:element>
+			<xs:element name="nomFichier" type="xs:string"></xs:element>
+			<xs:element name="contentType" type="xs:string"></xs:element>
+		</xs:all>
+	</xs:complexType>
+
+	<xs:complexType name="blocType">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="ligne">
+				<xs:complexType>
+					<xs:sequence minOccurs="1" maxOccurs="unbounded">
+						<xs:element name="champ" type="gedooo:champType" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element name="bloc" type="gedooo:blocType" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+				<xs:key name="nom-de-bloc-a-partir-d-une-ligne">
+		    		<xs:selector xpath="bloc" />
+		    		<xs:field xpath="@nom" />
+		    	</xs:key>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="nom" type="xs:string" use="required" />
+	</xs:complexType>
+
+
+	<xs:element name="convertirEnPdf">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="documentAConvertirEnPdf" maxOccurs="unbounded" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="retrait" type="gedooo:serviceType" maxOccurs="1" minOccurs="1">
+							</xs:element>
+							<xs:element name="depot" type="gedooo:serviceType">
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="publipostage">
+	<xs:complexType>
+		<xs:sequence minOccurs="1" maxOccurs="1">
+				<xs:element ref="gedooo:jobPublipostage"  ></xs:element>
+		</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="jobPublipostage">
+		<xs:complexType>
+	        <xs:sequence minOccurs="1" maxOccurs="1">
+				<xs:element name="documentAProduire" type="gedooo:documentType" minOccurs="1" maxOccurs="unbounded"></xs:element>
+				<xs:choice minOccurs="1" maxOccurs="1">
+					<xs:element name="documentTemplate" type="gedooo:serviceType" minOccurs="1" maxOccurs="1"></xs:element>
+					<xs:element name="fileTemplate" type="gedooo:fichierDocumentType" minOccurs="1" maxOccurs="1"></xs:element>
+					<xs:element name="urlTemplate" type="xs:anyURI" minOccurs="1" maxOccurs="1"></xs:element>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="jobMultiPresentation">
+        <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:sequence minOccurs="1" maxOccurs="unbounded">
+        		<xs:element name="documentTemplate" type="gedooo:serviceType">
+        		</xs:element>
+        		<xs:element name="fileTemplate" type="gedooo:fichierDocumentType">
+        		</xs:element>
+        		<xs:element name="urlTemplate" type="xs:anyURI"></xs:element>
+        	</xs:sequence>
+        	<xs:element name="documentAProduire" type="gedooo:documentType" minOccurs="1" maxOccurs="1"></xs:element>
+        </xs:sequence>
+	</xs:complexType>
+</xs:schema>
