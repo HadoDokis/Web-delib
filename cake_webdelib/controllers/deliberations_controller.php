@@ -190,6 +190,7 @@ class DeliberationsController extends AppController {
 
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
+			$this->set('selectedRapporteur', $this->Deliberation->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
 			$this->set('date_seances',$this->Seance->generateList());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('redirect', $redirect);
@@ -279,6 +280,7 @@ class DeliberationsController extends AppController {
 
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
+			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateList());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('redirect', $redirect);
