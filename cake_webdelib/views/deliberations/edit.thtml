@@ -52,7 +52,7 @@
 	<div class='spacer'></div>
 
 	<?php echo $form->labelTag('Deliberation/rapporteur_id', 'Rapporteur');?>
-	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs);?>
+	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs, $selectedRapporteur);?>
 	<div class='spacer'></div>
 
 	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme <acronym title="obligatoire">(*)</acronym>');?>
