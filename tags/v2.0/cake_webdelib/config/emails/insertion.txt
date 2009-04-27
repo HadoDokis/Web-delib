@@ -1,8 +1,0 @@
-Bonjour #PRENOM# #NOM#,
-
-Le projet avec l'identifiant #IDENTIFIANT_PROJET# dont l'objet est :  #OBJET_PROJET# vient d'etre inséré dans le circuit : #LIBELLE_CIRCUIT#
-Vous pouvez le visualiser à l'adresse : #ADRESSE_A_VISUALISER#
-
-Très cordialement.
-
-Webdelib
