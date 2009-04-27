@@ -1,7 +1,0 @@
-Bonjour #PRENOM# #NOM#,
-Votre dossier (identifiant projet #IDENTIFIANT_PROJET#) doit être traité.
-Vous pouvez y accéder à l'adresse : #ADRESSE_A_TRAITER#"
-
-Très cordialement.
-
-Webdelib
