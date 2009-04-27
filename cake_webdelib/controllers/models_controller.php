@@ -201,11 +201,11 @@
                }
 
                if (GENERER_DOC_SIMPLE) {
-                   $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text', $delib['Deliberation']['texte_projet']));
-                   $oMainPart->addElement(new GDO_ContentType('note_synthese', '', 'text/html', 'text', $delib['Deliberation']['texte_synthese']));
-                   $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '', 'text/html', 'text', $delib['Deliberation']['deliberation']));
-                   $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '', 'text/html', 'text', $delib['Deliberation']['debat']));
-                   $oMainPart->addElement(new GDO_ContentType('debat_commission', '', 'text/html', 'text', $delib['Deliberation']['commission']));
+                   $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',       '<small></small>'.$delib['Deliberation']['texte_projet']));
+                   $oMainPart->addElement(new GDO_ContentType('note_synthese', '', 'text/html', 'text',      '<small></small>'.$delib['Deliberation']['texte_synthese']));
+                   $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '', 'text/html', 'text', '<small></small>'.$delib['Deliberation']['deliberation']));
+                   $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '', 'text/html', 'text', '<small></small>'.$delib['Deliberation']['debat']));
+                   $oMainPart->addElement(new GDO_ContentType('debat_commission', '', 'text/html', 'text',   '<small></small>'.$delib['Deliberation']['commission']));
                }
                else {
                    $dyn_path = "/files/generee/deliberations/".$delib['Deliberation']['id']."/";
@@ -599,7 +599,7 @@
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', $ext , 'url', $urlWebroot.$name));
              }
              elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
-                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', 'text/html', 'text', $champs['content']));
+                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', 'text/html', 'text', '<small></small>'.$champs['content']));
              }
         }
 
