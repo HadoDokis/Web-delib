@@ -541,7 +541,7 @@
                          $oMainPart->addElement(new GDO_FieldType("note_acteur", utf8_encode($acteur['Acteur']['note']), "text"));
                          $oFusion = new GDO_FusionType($oTemplate, 'application/pdf', $oMainPart);
                          $oFusion->process();
-                         $nomFichier = $acteur['Acteur']['id'].'-'.utf8_encode($acteur['Acteur']['nom']).'.pdf';
+                         $nomFichier = $acteur['Acteur']['id'].'-'.Inflector::camelize($this->Utils->strSansAccent($acteur['Acteur']['nom'])).'.pdf';
                          $listFiles[$urlWebroot.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
                          $oFusion->SendContentToFile($path.$nomFichier);
                          if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
