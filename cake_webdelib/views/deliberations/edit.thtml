@@ -70,7 +70,7 @@
 		if (!empty($this->data['Deliberation']['date_limite']) && $this->data['Deliberation']['date_limite'] != '01/01/1970')
 			$value = "value='".$this->data['Deliberation']['date_limite']."'";
 		else
-			$value = "";
+			$value = "value=''";
 	?>
 	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", "border='0'"); ?></a>
 	<div class='spacer'></div>
