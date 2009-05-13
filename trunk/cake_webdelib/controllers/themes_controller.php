@@ -28,7 +28,7 @@ class ThemesController extends AppController {
 
     function add() {
 		if (empty($this->data)) {
-			$themes = $this->Theme->generateList(null);
+			$themes = $this->Theme->generateList('Theme.actif=1');
 			$this->set('themes', $themes);
 			$this->render();
 		} else {
@@ -49,7 +49,7 @@ class ThemesController extends AppController {
 				$this->redirect('/Themes/index');
 			}
 			$this->data = $this->Theme->read(null, $id);
-			$themes = $this->Theme->generateList("Theme.id != $id");
+			$themes = $this->Theme->generateList("Theme.id != $id AND Theme.actif=1");
 			$this->set('isEditable', $this->isEditable($id));
 			$this->set('themes', $themes);
 			$this->set('selectedTheme',$this->data['Theme']['parent_id']);

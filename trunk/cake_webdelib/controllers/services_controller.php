@@ -31,7 +31,7 @@ class ServicesController extends AppController {
 
 	function add() {
 		if (empty($this->data)) {
-			$this->set('services', $this->Service->generateList(null,'id ASC'));
+			$this->set('services', $this->Service->generateList('Service.actif = 1','id ASC'));
 			$this->set('circuits', $this->Circuit->generateList());
 			$this->render();
 		} else {
@@ -41,7 +41,7 @@ class ServicesController extends AppController {
 				$this->redirect('/services/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				$this->set('services', $this->Service->generateList(null,'id ASC'));
+				$this->set('services', $this->Service->generateList('Service.actif = 1','id ASC'));
 				$this->set('circuits', $this->Circuit->generateList());
 			}
 		}
@@ -54,7 +54,7 @@ class ServicesController extends AppController {
 				$this->redirect('/services/index');
 			}
 			$this->data = $this->Service->read(null, $id);
-			$services = $this->Service->generateList("Service.id != $id");
+			$services = $this->Service->generateList("Service.id != $id AND Service.actif = 1");
 			$this->set('isEditable', $this->isEditable($id));
 			$this->set('services', $services);
 			$this->set('selectedService',$this->data['Service']['parent_id']);
@@ -66,7 +66,7 @@ class ServicesController extends AppController {
 				$this->redirect('/services/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				$services = $this->Service->generateList("Service.id != $id");
+				$services = $this->Service->generateList("Service.id != $id  AND Service.actif = 1");
 
 				$this->set('isEditable', $this->isEditable($id));
 				$this->set('services', $services);

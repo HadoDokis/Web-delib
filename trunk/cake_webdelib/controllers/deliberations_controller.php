@@ -188,7 +188,7 @@ class DeliberationsController extends AppController {
 			$this->data['Redacteur']['nom'] = $this->Deliberation->User->field('nom', 'User.id = ' . $user['User']['id']);
 			$this->data['Redacteur']['prenom'] = $this->Deliberation->User->field('prenom', 'User.id = ' . $user['User']['id']);
 
-			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
+			$this->set('themes', $this->Deliberation->Theme->generateList('Theme.actif=1','libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->Deliberation->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
 			$this->set('date_seances',$this->Seance->generateList());
@@ -278,7 +278,7 @@ class DeliberationsController extends AppController {
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
 			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Service']['id']);
 
-			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
+			$this->set('themes', $this->Deliberation->Theme->generateList('Theme.actif=1','libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateList());
@@ -361,8 +361,8 @@ class DeliberationsController extends AppController {
 				$this->redirect($redirect);
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				$this->set('services', $this->Deliberation->Service->generateList());
-				$this->set('themes', $this->Deliberation->Theme->generateList());
+				$this->set('services', $this->Deliberation->Service->generateList('Service.actif=1'));
+				$this->set('themes', $this->Deliberation->Theme->generateList('Theme.actif=1'));
 				$this->set('circuits', $this->Deliberation->Circuit->generateList());
 				$this->set('datelim',$this->data['Deliberation']['date_limite']);
 				$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id));
@@ -1525,7 +1525,7 @@ class DeliberationsController extends AppController {
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateAllList());
-			$this->set('services', $this->Deliberation->Service->generateList());
+			$this->set('services', $this->Deliberation->Service->generateList(null));
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('etats', $this->Deliberation->generateListEtat());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, nom, commentaire, type, taille', 'ordre', null, 1, -1));
@@ -1625,7 +1625,7 @@ class DeliberationsController extends AppController {
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateAllList());
-			$this->set('services', $this->Deliberation->Service->generateList());
+			$this->set('services', $this->Deliberation->Service->generateList(null));
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('etats', $this->Deliberation->generateListEtat());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, nom, commentaire, type, taille', 'ordre', null, 1, -1));
