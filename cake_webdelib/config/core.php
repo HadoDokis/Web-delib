@@ -155,5 +155,5 @@ define('CAKE_ADMIN', 'admin');
     define ('CONFIG_PATH', $path2."config/");
  
     require_once ('webdelib.inc');
-    define ('VERSION', '<b> 2.0 </b>');
+    define ('VERSION', '<b> 2.0.1 </b>');
 ?>
