@@ -127,8 +127,8 @@
 		return $objCourant['0']['Model']['content'];
 	}
 
-	function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null)  {
-               if ($delib['Deliberation']['seance_id'] != 0 ) {
+	function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null, $isPV=false)  {
+	       if (($delib['Deliberation']['seance_id'] != 0 )&& ($isPV==false)) {
 	           $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($delib['Seance']['date']),   'date'));
 	           $date_lettres =  $this->Date->dateLettres(strtotime($delib['Seance']['date']));
 	           $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text'));
@@ -487,10 +487,10 @@
 		 //$projet =  $projets['0'];
 		     $oDevPart = new GDO_PartType();
 		     if ($isPV){
-		         $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, true, $u);
+		         $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, true, $u, true);
 		     }
 		     else
-		         $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, false, $u);
+		         $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, false, $u, true);
 		     $blocProjets->addPart($oDevPart);
                  }
                  $oMainPart->addElement($blocProjets);
@@ -556,6 +556,30 @@
                      $this->render();
                      exit;
 		}
+		else {
+                   if (GENERER_DOC_SIMPLE) {
+                       $oMainPart->addElement(new GDO_ContentType('debat_seance', '', 'text/html', 'text',       '<small></small>'.$seance['Seance']['debat_global']));
+                   }
+                   else {
+                       $dyn_path = "/files/generee/PV/".$seance['Seance']['id']."/";
+                       $path = WEBROOT_PATH.$dyn_path;
+
+                       if (!$this->Gedooo->checkPath($path))
+                           die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+
+                        $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+
+                       if ($seance['Seance']['debat_global_name']== "")
+                           $nameDSeance = "vide";
+                       else {
+                           $infos = (pathinfo($seance['Seance']['debat_global_name']));
+                           $nameDSeance = 'nameDSeance.'.$infos['extension'];
+                           $this->Gedooo->createFile($path, $nameDSeance, $seance['Seance']['debat_global']);
+                           $extTP = $u->getMimeType($path.$nameDSeance);
+                           $oMainPart->addElement(new GDO_ContentType('debat_seance', '',  $extTP,    'url', $urlWebroot.$nameDSeance ));
+                       }
+	            }
+                }
 	    }
             //*****************************************
             // Lancement de la fusion
