@@ -52,7 +52,7 @@ class UsersController extends AppController {
 		if ($sortie)
 			$this->redirect('/users/index');
 		else {
-			$this->set('services', $this->User->Service->generateList());
+			$this->set('services', $this->User->Service->generateList('Service.actif=1'));
 			$this->set('selectedServices', null);
 			$this->set('profils', $this->User->Profil->generateList());
 			$this->set('notif', array('1'=>'oui','0'=>'non'));
@@ -92,7 +92,7 @@ class UsersController extends AppController {
 		if ($sortie)
 			$this->redirect('/users/index');
 		else {
-			$this->set('services', $this->User->Service->generateList());
+			$this->set('services', $this->User->Service->generateList('Service.actif=1'));
 			$this->set('profils', $this->User->Profil->generateList());
 			$this->set('notif',array('1'=>'oui','0'=>'non'));
 			$this->set('circuits', $this->Circuit->generateList());

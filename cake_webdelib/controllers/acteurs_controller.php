@@ -44,7 +44,7 @@ class ActeursController extends AppController
 		else {
 			$this->Acteur->Typeacteur->recursive = 0;
 			$this->set('typeacteurs', $this->Acteur->Typeacteur->findAll(null, 'id, nom, elu'));
-			$this->set('services', $this->Acteur->Service->generateList());
+			$this->set('services', $this->Acteur->Service->generateList('Service.actif=1'));
 			$this->set('selectedServices', null);
 			$this->render('edit');
 		}
@@ -75,7 +75,7 @@ class ActeursController extends AppController
 		else {
 			$this->Acteur->Typeacteur->recursive = 0;
 			$this->set('typeacteurs', $this->Acteur->Typeacteur->findAll(null, 'id, nom, elu'));
-			$this->set('services', $this->Acteur->Service->generateList());
+			$this->set('services', $this->Acteur->Service->generateList('Service.actif=1'));
 		}
 	}
 

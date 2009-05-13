@@ -104,7 +104,7 @@ class CircuitsController extends AppController {
 
 		$this->set('circuits', $circuits);
 
-		$services=$this->Service->generateList(null, "libelle ASC");
+		$services=$this->Service->generateList('Service.actif=1', "libelle ASC");
 		if (isset($service_id))
 		    $this->set('service_id', $service_id);
 		else
