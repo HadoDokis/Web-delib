@@ -335,9 +335,27 @@
                          }
 		    }
 	        }
+	        $acteurs = $this->Vote->findAll("resultat =2 AND delib_id = ".$delib['Deliberation']['id']);
+		foreach ($acteurs as $acteur) {
+                     $acteurs_contre[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                               'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                               'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                               'titre_acteur'=> $acteur['Acteur']['titre'],
+                                               'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                               'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                               'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                               'cp_acteur' => $acteur['Acteur']['cp'],
+                                               'ville_acteur' => $acteur['Acteur']['ville'],
+                                               'email_acteur' => $acteur['Acteur']['email'],
+                                               'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                               'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                               'note_acteur' => $acteur['Acteur']['note']);
+		}
+
                @$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, '_present'));
                @$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbsents", $acteurs_absents, false, '_absent'));
                @$oMainPart->addElement($this->_makeBlocsActeurs("ActeursMandates", $acteurs_remplaces, true, '_mandataire'));
+               @$oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre", $acteurs_contre, false, '_contre'));
 
                return $oMainPart;
         }
