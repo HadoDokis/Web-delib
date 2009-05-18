@@ -104,15 +104,18 @@ class Infosupdef extends AppModel
 	/* Donne un numéro d'ordre pour un nouvel enregistrement */
 	function beforeSave() {
 		/* valeur par defaut pour la taille du champ input lors de la saisie */
-		if (empty($this->data['Infosupdef']['taille']))
+		if (array_key_exists('taille', $this->data['Infosupdef']) &&
+			empty($this->data['Infosupdef']['taille']))
 			$this->data['Infosupdef']['taille'] = 20;
 
 		/* calcul du n° d'ordre en cas d'ajout */
-		if(empty($this->data['Infosupdef']['id']))
+		if (!array_key_exists('id', $this->data['Infosupdef']) ||
+			empty($this->data['Infosupdef']['id']))
 			$this->data['Infosupdef']['ordre'] = $this->findCount(null, -1) + 1;
 
 		/* Camelisation du code */
-		$this->data['Infosupdef']['code'] = Inflector::variable($this->data['Infosupdef']['code']);
+		if (array_key_exists('code', $this->data['Infosupdef']))
+			$this->data['Infosupdef']['code'] = Inflector::variable($this->data['Infosupdef']['code']);
 
 		return true;
 	}
