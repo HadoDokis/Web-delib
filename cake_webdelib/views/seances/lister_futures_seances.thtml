@@ -11,7 +11,7 @@
 	</tr>
 	<?php foreach ($seances as $seance): ?>
 	<tr>
-		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
+		<td width="200"><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo ($html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id'])); ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
 		 	<?php echo $html->link('&shy;','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'), false, false)?>
