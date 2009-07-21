@@ -15,8 +15,11 @@
             <td><?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs, null,null,null,true);?></td>
     </tr>
     <tr>
-            <td><?php echo $form->labelTag('Deliberation/seance1_id','Entre '); ?></td>
+            <td><?php echo $form->labelTag('Deliberation/seance1_id','Date s&eacute;ance entre '); ?></td>
             <td><?php echo $html->selectTag('Deliberation/seance1_id',$date_seances,null,null,null,true); ?></td>
+    </tr>
+    <tr>
+
             <td><?php echo $form->labelTag('Deliberation/seance2_id',' et '); ?></td>
             <td><?php echo $html->selectTag('Deliberation/seance2_id',$date_seances,null,null,null,true); ?></td>
     </tr>
