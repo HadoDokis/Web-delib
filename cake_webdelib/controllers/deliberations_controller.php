@@ -685,6 +685,8 @@ class DeliberationsController extends AppController {
 
 					// maj de l'etat de la delib dans la table deliberations
 					$tab=$this->Deliberation->findAll("Deliberation.id = $id");
+                                        $this->_notifierDossierRefuse($id, $tab[0]['Redacteur']['id']);
+                          
 					$this->data['Deliberation']['etat']=-1; //etat -1 : refuse
 
 				        // Retour de la position a 0 pour ne pas qu'il y ait de confusion
