@@ -108,6 +108,7 @@ class SeancesController extends AppController {
 	}
 
 	function listerFuturesSeances() {
+            $this->set('AFFICHE_CONVOCS_ANONYME', AFFICHE_CONVOCS_ANONYME);
             $this->set('USE_GEDOOO', USE_GEDOOO);
             if (empty ($this->data)) {
                 $condition= 'Seance.traitee = 0';
