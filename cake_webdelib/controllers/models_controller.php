@@ -177,9 +177,9 @@
                $oMainPart->addElement(new GDO_FieldType('email_redacteur', utf8_encode($delib['Redacteur']['email']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('telmobile_redacteur', utf8_encode($delib['Redacteur']['telmobile']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('telfixe_redacteur', utf8_encode($delib['Redacteur']['telfixe']), 'text'));
-               $oMainPart->addElement(new GDO_FieldType('date_naissance_redacteur', utf8_encode($delib['Redacteur']['date_naissance']), 'text'));
+//               $oMainPart->addElement(new GDO_FieldType('date_naissance_redacteur', utf8_encode($delib['Redacteur']['date_naissance']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('note_redacteur', utf8_encode($delib['Redacteur']['note']), 'text'));
-               $oMainPart->addElement(new GDO_FieldType('position_redacteur', utf8_encode($delib['Redacteur']['position']), 'text'));
+//               $oMainPart->addElement(new GDO_FieldType('position_redacteur', utf8_encode($delib['Redacteur']['position']), 'text'));
 
                // Informations sur la délibération
                $oMainPart->addElement(new GDO_FieldType('nombre_pour',  utf8_encode($delib['Deliberation']['vote_nb_oui'])   , 'text'));
@@ -576,13 +576,13 @@
 
                          $oFusion = new GDO_FusionType($oTemplate, 'application/pdf', $oMainPart);
                          $oFusion->process();
-                          
+
                          $oFusion->SendContentToFile($path.$nomFichier);
                          if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
                              $zip->addFile($path.$nomFichier, $nomFichier);
                              $zip->close();
                          }
-                         if ($unique==true) break; 
+                         if ($unique==true) break;
 
                          // envoi des mails si le champ est renseigné
                         $this->_sendDocument($acteur['Acteur'], $nomFichier, $path, '');
