@@ -146,14 +146,14 @@ define('CAKE_ADMIN', 'admin');
  */
     define('ACL_CLASSNAME', 'DB_ACL');
     define('ACL_FILENAME', 'dbacl' . DS . 'db_acl');
-  
+
     $pos2 =  strrpos ( getcwd(), 'webroot');
     $path2 = substr(getcwd(), 0, $pos2);
     $webroot_path = $path2."webroot/";
-    
+
     define ('WEBROOT_PATH',  $path2."webroot");
     define ('CONFIG_PATH', $path2."config/");
- 
+
     require_once ('webdelib.inc');
-    define ('VERSION', '<b> 2.0.1 </b>');
+    define ('VERSION', '<b> 2.0.2 </b>');
 ?>
