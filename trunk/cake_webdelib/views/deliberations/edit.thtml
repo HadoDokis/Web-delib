@@ -105,6 +105,8 @@
 			echo $form->labelTag($fieldName, $infosupdef['Infosupdef']['nom']);
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
 				echo $html->input($fieldName, array('size'=>$infosupdef['Infosupdef']['taille'], 'title'=>$infosupdef['Infosupdef']['commentaire']));
+			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
+				echo $html->checkBox($fieldName, '', array('title'=>$infosupdef['Infosupdef']['commentaire']));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
 				echo $html->input($fieldName, array('size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				echo '&nbsp;';
