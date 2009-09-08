@@ -685,11 +685,11 @@ class DeliberationsController extends AppController {
 
 					// maj de l'etat de la delib dans la table deliberations
 					$tab=$this->Deliberation->findAll("Deliberation.id = $id");
-                                        $this->_notifierDossierRefuse($id, $tab[0]['Redacteur']['id']);
-                          
+					$this->_notifierDossierRefuse($id, $tab[0]['Redacteur']['id']);
+
 					$this->data['Deliberation']['etat']=-1; //etat -1 : refuse
 
-				        // Retour de la position a 0 pour ne pas qu'il y ait de confusion
+					// Retour de la position a 0 pour ne pas qu'il y ait de confusion
 					$this->data['Deliberation']['position']=0;
 					$this->data['Deliberation']['id']=$id;
 					$this->Deliberation->save($this->data['Deliberation']);
@@ -1531,6 +1531,7 @@ class DeliberationsController extends AppController {
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('etats', $this->Deliberation->generateListEtat());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, nom, commentaire, type, taille', 'ordre', null, 1, -1));
+			$this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
 
 			$this->render('rechercheMutliCriteres');
 		} else {
@@ -1631,6 +1632,7 @@ class DeliberationsController extends AppController {
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('etats', $this->Deliberation->generateListEtat());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, nom, commentaire, type, taille', 'ordre', null, 1, -1));
+			$this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
 
 			$this->render('rechercheMutliCriteres');
 		} else {
