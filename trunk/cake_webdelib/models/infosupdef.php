@@ -33,7 +33,13 @@ class Infosupdef extends AppModel
 		'text' => 'Texte',
 		'richText' => 'Texte enrichi',
 		'date' => 'Date',
-		'file' => 'Fichier'
+		'file' => 'Fichier',
+		'boolean' => 'Booléen'
+	);
+
+	var $listSelectBoolean = array(
+		'1' => 'Oui',
+		'0' => 'Non'
 	);
 
 	function validates() {
