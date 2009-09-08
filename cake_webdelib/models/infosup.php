@@ -32,6 +32,8 @@ class Infosup extends AppModel
 			$infosupdef = $this->Infosupdef->find('id = '.$infosup['infosupdef_id'], 'code, type', null, -1);
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
 				$ret[$infosupdef['Infosupdef']['code']] =  $infosup['text'];
+			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
+				$ret[$infosupdef['Infosupdef']['code']] = $infosup['content'];
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
 				if (empty($infosup['date']) || $infosup['date'] == '0000-00-00')
 					$ret[$infosupdef['Infosupdef']['code']] = '';
@@ -41,8 +43,8 @@ class Infosup extends AppModel
 				}
 			} elseif ($infosupdef['Infosupdef']['type'] == 'file') {
 				$ret[$infosupdef['Infosupdef']['code']] = $infosup['file_name'];
-			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
-				$ret[$infosupdef['Infosupdef']['code']] = $infosup['content'];
+			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
+				$ret[$infosupdef['Infosupdef']['code']] =  $infosup['text'];
 			}
 		}
 
@@ -67,6 +69,8 @@ class Infosup extends AppModel
 			/* affectation de la valeur en fonction du type */
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
 				$infosup['Infosup']['text'] = $valeur;
+			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
+				$infosup['Infosup']['content'] = $valeur;
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
 				$date = explode('/', $valeur);
 				if (count($date) == 3)
@@ -81,8 +85,8 @@ class Infosup extends AppModel
 					$infosup['Infosup']['content'] = '';
 				else
 					$infosup['Infosup']['content'] = fread(fopen($valeur['tmp_name'], "r"), $valeur['size']);
-			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
-				$infosup['Infosup']['content'] = $valeur;
+			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
+				$infosup['Infosup']['text'] = $valeur;
 			}
 
 			/* Sauvegarde de l'info sup */
@@ -104,7 +108,7 @@ class Infosup extends AppModel
 		$repSelect = array();
 		// construction des différentes clauses
 		foreach($recherches as $infosupdefId => $recherche) {
-			if (!empty($recherche)) {
+			if (strlen(trim($recherche))) {
 				$infosupType = $this->Infosupdef->field('type', "id = $infosupdefId");
 				$iAlias++;
 				$alias = 'infosups'.$iAlias;
@@ -118,11 +122,15 @@ class Infosup extends AppModel
 					$champRecherche = $alias.'.content';
 					$operateurRecherche = (strpos($recherche, '%')===false) ? '=' : 'like';
 				}
-				else {
+				elseif ($infosupType == 'date') {
 					$champRecherche = $alias.'.date';
 					$operateurRecherche = '=';
 					$temp = explode('/', $recherche);
 		    		$recherche = $temp[2].'-'.$temp[1].'-'.$temp[0];
+				}
+				elseif ($infosupType == 'boolean') {
+					$champRecherche = $alias.'.text';
+					$operateurRecherche = '=';
 				}
 				$condition .= (empty($condition) ? '' : ' AND ') . "($alias.infosupdef_id = $infosupdefId AND $champRecherche $operateurRecherche '$recherche')";
 			}
