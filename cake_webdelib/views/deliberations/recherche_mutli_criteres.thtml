@@ -52,6 +52,8 @@
 				echo '&nbsp;';
 				$fieldId = "'Deliberation.Infosup".Inflector::camelize($infosupdef['Infosupdef']['id'])."'";
 				echo $html->link($html->image("calendar.png", "border='0'"), "javascript:show_calendar($fieldId, 'f');", array(), false, false);
+			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
+				echo $html->selectTag($fieldName, $listeBoolean, null, null, null, true);
 			}
 			echo '</td>';
 		echo '</tr>';
