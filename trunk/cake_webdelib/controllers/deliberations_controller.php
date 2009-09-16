@@ -195,6 +195,9 @@ class DeliberationsController extends AppController {
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('redirect', $redirect);
 
+			/* valeurs initiales des info supplémentaires */
+			$this->data['Infosup'] = $this->Infosupdef->valeursInitiales();
+
 			$this->render('edit');
 		}
 	}
