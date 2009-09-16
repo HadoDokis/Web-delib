@@ -32,6 +32,14 @@ class InfosupdefsController extends AppController
 	function add() {
 		$sortie = false;
 		if (!empty($this->data)) {
+			/* traitement de la valeur par defaut */
+			if ($this->data['Infosupdef']['type'] == 'date')
+				$this->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_date'];
+			elseif ($this->data['Infosupdef']['type'] == 'boolean')
+				$this->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_boolean'];
+			elseif ($this->data['Infosupdef']['type'] == 'file')
+				$this->data['Infosupdef']['val_initiale'] = '';
+
 			if ($this->{$this->modelClass}->save($this->data)) {
 				$this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$this->data['Infosupdef']['nom'].'\' a &eacute;t&eacute; ajout&eacute;e');
 				$sortie = true;
@@ -42,6 +50,12 @@ class InfosupdefsController extends AppController
 			$this->redirect('/infosupdefs/index');
 		else {
 			$this->set('types', $this->{$this->modelClass}->generateListType());
+			$this->set('listEditBoolean', $this->{$this->modelClass}->listEditBoolean);
+			if (isset($this->data['Infosupdef']))
+				$this->set('codePropose', Inflector::variable($this->data['Infosupdef']['code']));
+			else
+				$this->set('codePropose', '');
+
 			$this->render('edit');
 		}
 	}
@@ -54,7 +68,20 @@ class InfosupdefsController extends AppController
 				$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible');
 				$sortie = true;
 			}
+			/* traitement de la valeur par defaut pour les dates et les booleens */
+			if ($this->data['Infosupdef']['type'] == 'date')
+				$this->data['Infosupdef']['val_initiale_date'] = $this->data['Infosupdef']['val_initiale'];
+			elseif ($this->data['Infosupdef']['type'] == 'boolean')
+				$this->data['Infosupdef']['val_initiale_boolean'] = $this->data['Infosupdef']['val_initiale'];
 		} else {
+			/* traitement de la valeur par defaut */
+			if ($this->data['Infosupdef']['type'] == 'date')
+				$this->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_date'];
+			elseif ($this->data['Infosupdef']['type'] == 'boolean')
+				$this->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_boolean'];
+			elseif ($this->data['Infosupdef']['type'] == 'file')
+				$this->data['Infosupdef']['val_initiale'] = '';
+
 			if ($this->{$this->modelClass}->save($this->data)) {
 				$this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$this->data['Infosupdef']['nom'].'\' a &eacute;t&eacute; modifi&eacute;e');
 				$sortie = true;
@@ -63,8 +90,11 @@ class InfosupdefsController extends AppController
 		}
 		if ($sortie)
 			$this->redirect('/infosupdefs/index');
-		else
+		else {
 			$this->set('types', $this->{$this->modelClass}->generateListType());
+			$this->set('listEditBoolean', $this->{$this->modelClass}->listEditBoolean);
+			$this->set('codePropose', Inflector::variable($this->data['Infosupdef']['code']));
+		}
 	}
 
 	function delete($id = null) {
