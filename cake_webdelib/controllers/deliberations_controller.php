@@ -705,6 +705,20 @@ class DeliberationsController extends AppController {
 					$delib['Deliberation']['modified']='';
 					$this->Deliberation->save($delib['Deliberation']);
 
+					$delib_id = $this->Deliberation->getLastInsertId();
+					// Copie des annexes
+					$annexes = $tab[0]['Annexe'];
+					foreach($annexes as $annexe) {
+						$annexe['deliberation_id'] = $delib_id;
+						$this->Annex->save($annexe, false);
+					}
+					// Copie des infos supplémentaires
+					$infoSups = $tab[0]['Infosup'];
+					foreach($infoSups as $infoSup) {
+						$infoSup['deliberation_id'] = $delib_id;
+						$this->Deliberation->Infosup->save($infoSup, false);
+					}
+
 					$this->redirect('/deliberations/mesProjetsATraiter');
 				}
 			}
