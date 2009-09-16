@@ -42,6 +42,11 @@ class Infosupdef extends AppModel
 		'0' => 'Non'
 	);
 
+	var $listEditBoolean = array(
+		'0' => 'décoché',
+		'1' => 'coché'
+	);
+
 	function validates() {
 		// unicité du nom
 		$this->isUnique('nom', $this->data['Infosupdef']['nom'], $this->data['Infosupdef']['id']);
@@ -49,9 +54,9 @@ class Infosupdef extends AppModel
 		// unicité du code
 		$this->isUnique('code', $this->data['Infosupdef']['code'], $this->data['Infosupdef']['id']);
 
-		// une infosup de type fichier ne peut pas faire l'objet d'une recherche
-		if ($this->data['Infosupdef']['type'] == 'file' && $this->data['Infosupdef']['recherche'])
-			$this->invalidate('rechercheIncompatibleAvecTypeFichier');
+		// conformité du code
+		if ($this->data['Infosupdef']['code'] != Inflector::variable($this->data['Infosupdef']['code']))
+			$this->invalidate('non_conforme_code');
 
 		$errors = $this->invalidFields();
 		return count($errors) == 0;
@@ -106,12 +111,9 @@ class Infosupdef extends AppModel
 		return;
 	}
 
-	/* Initialise la valeur par défaut pour la taille */
-	/* Donne un numéro d'ordre pour un nouvel enregistrement */
 	function beforeSave() {
 		/* valeur par defaut pour la taille du champ input lors de la saisie */
-		if (array_key_exists('taille', $this->data['Infosupdef']) &&
-			empty($this->data['Infosupdef']['taille']))
+		if ($this->data['Infosupdef']['type'] == 'text' && empty($this->data['Infosupdef']['taille']))
 			$this->data['Infosupdef']['taille'] = 20;
 
 		/* calcul du n° d'ordre en cas d'ajout */
@@ -119,9 +121,9 @@ class Infosupdef extends AppModel
 			empty($this->data['Infosupdef']['id']))
 			$this->data['Infosupdef']['ordre'] = $this->findCount(null, -1) + 1;
 
-		/* Camelisation du code */
-		if (array_key_exists('code', $this->data['Infosupdef']))
-			$this->data['Infosupdef']['code'] = Inflector::variable($this->data['Infosupdef']['code']);
+		/* pas de recherche possible pour les infosup de type fichier */
+		if ($this->data['Infosupdef']['type'] == 'file')
+			$this->data['Infosupdef']['recherche'] = 0;
 
 		return true;
 	}
@@ -139,5 +141,19 @@ class Infosupdef extends AppModel
 		}
 	}
 
+/*
+ * retourne un tableau ['code']['val_init'] des valeurs initiales des infosup
+ */
+	function valeursInitiales() {
+		$ret = array();
+
+		$recs = $this->findAll(null, 'code, val_initiale', 'ordre', null, 1, -1);
+		foreach($recs as $rec) {
+			if (!empty($rec['Infosupdef']['val_initiale']))
+				$ret[$rec['Infosupdef']['code']] = $rec['Infosupdef']['val_initiale'];
+		}
+
+		return $ret;
+	}
 }
 ?>
