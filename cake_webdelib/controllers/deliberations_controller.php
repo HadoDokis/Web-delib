@@ -709,17 +709,30 @@ class DeliberationsController extends AppController {
 					$this->Deliberation->save($delib['Deliberation']);
 
 					$delib_id = $this->Deliberation->getLastInsertId();
-					// Copie des annexes
+					// Copie des annexes du projet refusé vers le nouveau projet
 					$annexes = $tab[0]['Annexe'];
 					foreach($annexes as $annexe) {
+						$annexe['id'] = null;
+						$annexe['created'] = null;
+						$annexe['modified'] = null;
 						$annexe['deliberation_id'] = $delib_id;
 						$this->Annex->save($annexe, false);
 					}
-					// Copie des infos supplémentaires
+					// Copie des infos supplémentaires du projet refusé vers le nouveau projet
 					$infoSups = $tab[0]['Infosup'];
 					foreach($infoSups as $infoSup) {
+						$infoSup['id'] = null;
 						$infoSup['deliberation_id'] = $delib_id;
 						$this->Deliberation->Infosup->save($infoSup, false);
+					}
+					// Copie des commentaires du projet refusé vers le nouveau projet
+					$commentaires = $tab[0]['Commentaire'];
+					foreach($commentaires as $commentaire) {
+						$commentaire['id'] = null;
+						$commentaire['created'] = null;
+						$commentaire['modified'] = null;
+						$commentaire['delib_id'] = $delib_id;
+						$this->Deliberation->Commentaire->save($commentaire, false);
 					}
 
 					$this->redirect('/deliberations/mesProjetsATraiter');
