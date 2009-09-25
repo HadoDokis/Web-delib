@@ -145,7 +145,8 @@
                $oMainPart->addElement(new GDO_FieldType('numero_deliberation',         utf8_encode($delib['Deliberation']['num_delib']),'text'));
                $oMainPart->addElement(new GDO_FieldType('classification_deliberation', utf8_encode($delib['Deliberation']['num_pref']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('service_emetteur',            utf8_encode($delib['Service']['libelle']) ,      'text'));
-               $oMainPart->addElement(new GDO_FieldType('T1_theme_projet',                utf8_encode($delib['Theme']['libelle']),         'text'));
+               $oMainPart->addElement(new GDO_FieldType('theme_projet',                utf8_encode($delib['Theme']['libelle']),         'text'));
+               $oMainPart->addElement(new GDO_FieldType('T1_theme',                utf8_encode($delib['Theme']['libelle']),         'text'));
 
                // Information sur le rapporteur
                $oMainPart->addElement(new GDO_FieldType('salutation_rapporteur',       utf8_encode($delib['Rapporteur']['salutation']), 'text'));
