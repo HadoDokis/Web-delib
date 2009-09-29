@@ -146,7 +146,7 @@
                $oMainPart->addElement(new GDO_FieldType('classification_deliberation', utf8_encode($delib['Deliberation']['num_pref']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('service_emetteur',            utf8_encode($delib['Service']['libelle']) ,      'text'));
                $oMainPart->addElement(new GDO_FieldType('theme_projet',                utf8_encode($delib['Theme']['libelle']),         'text'));
-               $oMainPart->addElement(new GDO_FieldType('T1_theme',                utf8_encode($delib['Theme']['libelle']),         'text'));
+               $oMainPart->addElement(new GDO_FieldType('T1_theme',                    utf8_encode($delib['Theme']['libelle']),         'text'));
 
                // Information sur le rapporteur
                $oMainPart->addElement(new GDO_FieldType('salutation_rapporteur',       utf8_encode($delib['Rapporteur']['salutation']), 'text'));
@@ -580,6 +580,9 @@
                      require_once ('vendors/progressbar.php');
                      Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
                      $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+		     if (file_exists($path.'documents.zip'))
+		         unlink($path.'documents.zip');
+
                      $nbActeurs = count($acteursConvoques);
                      $cpt=0;
                      $model_tmp = $this->Model->read(null, $model_id);
@@ -589,6 +592,13 @@
                      foreach ($acteursConvoques as $acteur) {
                          $cpt++;
                          $zip = new ZipArchive;
+                         if ($sMimeType=='odt')
+                             $extension ='odt';
+                         else
+                             $extension='pdf';
+
+                         $this->set('unique', $unique);
+
                          if ($unique== false) {
                              ProgressBar($cpt*(100/$nbActeurs), 'Lecture des donn&eacute;es pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
                              $oMainPart->addElement(new GDO_FieldType("nom_acteur", utf8_encode($acteur['Acteur']['nom']), "text"));
@@ -603,29 +613,32 @@
                              $oMainPart->addElement(new GDO_FieldType("email_acteur", utf8_encode($acteur['Acteur']['email']), "text"));
                              $oMainPart->addElement(new GDO_FieldType("telfixe_acteur",utf8_encode($acteur['Acteur']['telfixe']), "text"));
                              $oMainPart->addElement(new GDO_FieldType("note_acteur", utf8_encode($acteur['Acteur']['note']), "text"));
-                             $nomFichier = $acteur['Acteur']['id'].'-'.Inflector::camelize($this->Utils->strSansAccent($acteur['Acteur']['nom'])).'.pdf';
+                             $nomFichier = $acteur['Acteur']['id'].'-'.Inflector::camelize($this->Utils->strSansAccent($acteur['Acteur']['nom'])).".$extension";
                              $listFiles[$urlWebroot.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
                          }
                          else {
                              ProgressBar(100, "Génération de l'apercu ". $model_tmp['Model']['modele']);
-                             $nomFichier ='Apercu.pdf';
+                             $nomFichier ='Apercu.'.$extension;
                              $listFiles[$urlWebroot.$nomFichier] = 'Apercu';
                          }
-
-                         $oFusion = new GDO_FusionType($oTemplate, 'application/pdf', $oMainPart);
+                   
+                         $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
                          $oFusion->process();
-
                          $oFusion->SendContentToFile($path.$nomFichier);
-                         if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
-                             $zip->addFile($path.$nomFichier, $nomFichier);
-                             $zip->close();
-                         }
-                         if ($unique==true) break;
+                         if ($unique== false) {
+                             if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
+                                 $zip->addFile($path.$nomFichier, $nomFichier);
+                                 $zip->close();
+                             }
+			 }
+			 else
+			     break;
 
                          // envoi des mails si le champ est renseigné
                         $this->_sendDocument($acteur['Acteur'], $nomFichier, $path, '');
                      }
-                     $listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
+		     if ($unique== false)
+                         $listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
                      $this->set('listFiles', $listFiles);
                      $this->render();
                      exit;

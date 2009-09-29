@@ -1,3 +1,12 @@
+<?php
+    if (CONVOCS_MODIFIABLES) {
+        $urlPage =  FULL_BASE_URL . $this->webroot;
+        echo ("<br />Choix du format de sortie des &eacute;ditions : ");
+        $format = $this->controller->Session->read('user.format.sortie');
+        echo $html->selectTag('User/Sortie', array (0=>'pdf', 1=>'odt') , $format, array('id' => "$urlPage", 'onChange'=>'changeFormat(this)'),null,false);
+    }
+?>
+<br /><br />
 <div class="seances">
 <h2>S&eacute;ances &agrave; traiter</h2>
 
@@ -16,8 +25,8 @@
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
 		 	<?php echo $html->link('&shy;','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'), false, false)?>
 		<?php
-                       $urlConvoc = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'];
-		       $urlOdj = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'];
+                       $urlConvoc = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'].'/null/';
+		       $urlOdj = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/';
                        $urlConvocUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'].'/null/0/retour/0/true';
 		       $urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/0/retour/0/true';
                     
