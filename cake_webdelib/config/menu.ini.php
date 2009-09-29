@@ -81,7 +81,8 @@ $webDelib = array(
 			'subMenu' => array(
 				'items' => array(
 					'Editions' => array('link' => '/postseances/index'),
-					'Contrôle de légalité' => array('link' => '/deliberations/transmit'),
+					'Contrôle de légalité : à télétransmettre' => array('link' => '/deliberations/toSend'),
+					'Contrôle de légalité : télétransmises' => array('link' => '/deliberations/transmit'),
 					'Export GED/Intranet' => array('link' => 'exportged')
 					)
 				)
