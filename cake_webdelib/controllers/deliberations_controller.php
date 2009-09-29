@@ -238,7 +238,6 @@ class DeliberationsController extends AppController {
                     $this->data['Annex']['data'] = $this->_getFileData($file['tmp_name'], $file['size']);
                     if(!$this->Annex->save($this->data['Annex'])){
                         echo "pb de sauvegarde de l\'annexe ";
-                        debug($this->data['Annex']);
                     }
                 }
             return true;
@@ -761,24 +760,111 @@ class DeliberationsController extends AppController {
 		return $listeAnterieure;
 	}
 
-    function transmit($id=null, $message= null){
-       if (!empty( $message))
+    function transmit( $message=null, $page=1){
+       $nbDelibParPage = 5;
+       $nbDelibs = 0;
+       if ($message!='null')
              $this->set('message', $message);
 
         $this->set('USE_GEDOOO', USE_GEDOOO);
+	$this->set('host', HOST );
+        $this->set('dateClassification', $this->_getDateClassification());
+        $nbDelibs = count($this->Deliberation->findAll("Deliberation.etat=5"));
+
+        // On affiche que les delibs vote pour.
+	$deliberations = $this->Deliberation->findAll("Deliberation.etat=5", null, null,  $nbDelibParPage,  $page);
+	for($i = 0; $i < count($deliberations); $i++) {
+	    if (empty($deliberations[$i]['Deliberation']['DateAR'])) {
+	        if (isset($deliberations[$i]['Deliberation']['tdt_id'])){
+                    $flux   = $this->_getFluxRetour($deliberations[$i]['Deliberation']['tdt_id']); 
+                    $codeRetour = substr($flux, 3, 1);
+		    $this->set('codeRetour',  $codeRetour);
+                    if($codeRetour==4) {
+                        $dateAR = $this->_getDateAR($res = mb_substr( $flux, strpos($flux, '<actes:ARActe'), strlen($flux)));
+                        $this->Deliberation->changeDateAR($deliberations[$i]['Deliberation']['id'], $dateAR);
+		        $deliberations[$i]['Deliberation']['DateAR'] =  $dateAR;
+                    }
+		}
+	    }
+        }
+	$this->set('nbDelibs',  $nbDelibs );
+        $this->set('deliberations', $this->Deliberation->findAll("Deliberation.etat=5", null, null,  $nbDelibParPage,  $page));
+	if ($page>1)
+	    $this->set('previous', $page-1);
+        if  ($nbDelibs > $nbDelibParPage*$page )
+	    $this->set('next', $page+1);
+
+    }
+
+    function _getDateAR($fluxRetour) {
+       // +21 Correspond a la longueur du string : actes:DateReception"
+       $date = substr($fluxRetour, strpos($fluxRetour, 'actes:DateReception')+21, 10);
+       return ($this->Date->frenchDate(strtotime($date )));
+    }
+
+    function _getFluxRetour ($tdt_id) {
+        $url = 'https://'.HOST."/modules/actes/actes_transac_get_status.php?transaction=$tdt_id"; 
+ 
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+      //  curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
+        curl_setopt($ch, CURLOPT_SSLCERT, PEM);
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
+        curl_setopt($ch, CURLOPT_SSLKEY,  SSLKEY);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        $curl_return = curl_exec($ch);
+        return($curl_return);
+    }
+
+    function getAR($tdt_id) {
+        $url = 'https://'.HOST."/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+      //  curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
+        curl_setopt($ch, CURLOPT_SSLCERT, PEM);
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
+        curl_setopt($ch, CURLOPT_SSLKEY,  SSLKEY);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        $curl_return = curl_exec($ch);
+        header('Content-type: application/pdf');
+        header('Content-Length: '.strlen($curl_return));
+	header('Content-Disposition: attachment; filename=Acquittement.pdf');
+	echo $curl_return;
+	exit();
+    }
+
+    function toSend ($id=null, $message= null){
+        if (!empty( $message))
+             $this->set('message', $message);
+
+        $this->set('USE_GEDOOO', USE_GEDOOO);
+        $this->set('host', HOST );
         $this->set('dateClassification', $this->_getDateClassification());
         $this->set('tabNature',          $this->_getNatureListe());
         $this->set('tabMatiere',         $this->_getMatiereListe());
         // On affiche que les delibs vote pour.
-        $deliberations =   $this->Deliberation->findAll("Deliberation.etat=3 OR Deliberation.etat=5 ");
+        $deliberations = $this->Deliberation->findAll("Deliberation.etat=3");
 
         for($i = 0; $i < count($deliberations); $i++) {
-        	$deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
-			$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
+                $deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
+                        $deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
         }
 
         $this->set('deliberations', $deliberations);
     }
+
 
     function _getNatureListe(){
         $tab = array();
@@ -934,7 +1020,8 @@ class DeliberationsController extends AppController {
 			 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 			 $curl_return = curl_exec($ch);
 
-			 $pos = strpos($curl_return, 'OK');
+			 $pos    = strpos($curl_return, 'OK');
+			 $tdt_id = substr  ($curl_return , 3 , strlen($curl_return) );
 			 if ($pos === false) {
                               echo ('<script>');
                               echo ('    document.getElementById("pourcentage").style.display="none"; ');
@@ -942,13 +1029,13 @@ class DeliberationsController extends AppController {
                               echo ('    document.getElementById("affiche").style.display="none";');
                               echo ('    document.getElementById("contTemp").style.display="none";');
                               echo ('</script>');
-			     // debug(curl_error($ch));
 			      die ('<br /><a href ="/deliberations/transmit"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
                          }
 			 else {
                               ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Delib&eacute;ration '.$delib[0]['Deliberation']['num_delib'].' envoy&eacute;e ');
                               $nbEnvoyee ++;
 			      $this->Deliberation->changeEtat($delib_id, '5');
+			      $this->Deliberation->changeIdTdt($delib_id, $tdt_id);
 			      curl_close($ch);
 		              unlink ($file);
 			    }
