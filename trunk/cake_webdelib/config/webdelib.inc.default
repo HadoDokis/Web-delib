@@ -2,6 +2,7 @@
 
     define ('AFFICHE_HIERARCHIE_SERVICE', false);
     define ('AFFICHE_CONVOCS_ANONYME', false);
+    define ('CONVOCS_MODIFIABLES', false);
 
     ////////////////////////
     // Configuration GEDOOo
