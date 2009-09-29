@@ -10,11 +10,10 @@
 
 <?php if (isset($message))  echo ($message); ?>
 <h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
-<form action="<?php echo $html->url('/deliberations/sendActe'); ?>" method="post" enctype='multipart/form-data' >
-    La Classification enregistrée date du <?php echo $html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
+    La Classification enregistrée date du <?php echo $dateClassification ?> <br /><br />
+    <?php echo  $nbDelibs ?> d&eacute;lib&eacute;rations t&eacute;l&eacute;transmises <br /><br />
 	<table>
-	<th></th>
- 	<th>Numéro Généré</th>
+ 	<th>N° délibération</th>
  	<th>Objet</th>
  	<th>Titre</th>
  	<th>Classification</th>
@@ -22,43 +21,39 @@
 <tr>
 <?php
 	foreach ($deliberations as $delib) {
-		if ($delib['Deliberation']['etat']!= 5)
-			echo("<td>".$html->checkbox('Deliberation/id_'.$delib['Deliberation']['id'])."</td>");
-		else
-		    echo("<td></td>");
-
-		    if (!USE_GEDOOO)
-		        echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/postseances/generateDeliberation/'.$delib['Deliberation']['id']);
-		    else 
-		        echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/models/generer/'.$delib['Deliberation']['id'].'/null/'.$delib['Model']['id'].'/0');
+		    echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/models/generer/'.$delib['Deliberation']['id'].'/null/'.$delib['Model']['id'].'/0');
 		?>
 		</td>
 		<td>
-		<?php echo $html->link($delib['Deliberation']['objet'], '/postseances/changeObjet/'.$delib['Deliberation']['id']); ?>
+		<?php echo $delib['Deliberation']['objet']; ?>
 		</td>
 		<td>
 		<?php echo ($delib['Deliberation']['titre']); ?>
 		</td>
 
-		<td><?php echo $html->input('Deliberation/'.$delib['Deliberation']['id'].'_num_pref',array('id'=>$delib['Deliberation']['id'].'classif1', 'size' => '60','disabled'=>'disabled', 'value' => $delib['Deliberation'][$delib['Deliberation']['id'].'_num_pref'] ));?><br/>
-		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base;?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id'];?>', 'Select_attribut', 'scrollbars=yes,,width=570,height=450');" id=<?php echo $delib['Deliberation']['id'];?>"_classification_text">[Choisir la classification]</a>
-		 <?php echo $html->hidden('Deliberation/'.$delib['Deliberation']['id'].'_num_pref',array('id'=>$delib['Deliberation']['id'].'classif2','name'=>$delib['Deliberation']['id'].'classif2'))?>
+		<td><?php echo $delib['Deliberation']['num_pref']; ?></td>
+		<td>
+		   <?php 
+		       if ($codeRetour ==4)
+		           echo $html->link("Acquitement reçu le ".$delib['Deliberation']['dateAR'], '/deliberations/getAR/'.$delib['Deliberation']['tdt_id']); 
+		       elseif($codeRetour ==3)
+		           echo 'Transmis';
+		       elseif ($codeRetour==2)
+		           echo 'En attente de transmission';
+		       elseif ($codeRetour==1)
+		           echo 'Posté';
+	           ?>
 		</td>
-		   <?php
-		        if ($delib['Deliberation']['etat']== 5)
-		           echo("<td>envoyé</td>");
-		        else
- 					echo("<td>non envoyé</td>");
-		   ?>
-		</tr>
+	</tr>
 <?php	 } ?>
 
 	</table>
 	<br />
-
-	<div class="submit">
-		<?php echo $html->submit('Envoyer');?>
-	</div>
-
-</form>
+         <?php 
+	     if (isset($previous))
+	         echo $html->link('<--    ', "/deliberations/transmit/null/$previous"); 
+	     if (isset($next))
+	     echo $html->link('    -->', "/deliberations/transmit/null/$next"); 
+	 ?>
+	     
 </div>
