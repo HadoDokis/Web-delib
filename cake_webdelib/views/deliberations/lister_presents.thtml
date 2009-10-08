@@ -14,7 +14,12 @@
 		<?php echo $html->radio($present['Acteur']['id'].'/present', array(0=>'non'),null,array('onclick'=>"javascript:disable('liste_$pres','2');")); ?>
 	</td>
 	<td>
- 	    <?php echo $html->selectTag($present['Acteur']['id'].'/mandataire', $mandataires, null,array('disabled'=>'disabled',"id"=>"liste_".$present['Acteur']['id']),null,true);?>
+ 	   <?php 
+	   if (empty($present['Acteur']['id']))
+	       echo $html->selectTag($present['Acteur']['id'].'/mandataire', $mandataires, null,array('disabled'=>'disabled',"id"=>"liste_".$present['Acteur']['id']),null,true);
+	   else 
+	       echo $html->selectTag($present['Acteur']['id'].'/mandataire', $mandataires, null,array("id"=>"liste_".$present['Acteur']['id']),null,true);
+	   ?>
     </td>
 </tr>
 <?php endforeach; ?>
