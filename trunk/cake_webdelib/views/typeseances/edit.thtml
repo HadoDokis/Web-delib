@@ -60,7 +60,7 @@
 		<?php echo $html->tagErrorMsg('Typeseance/modelpvsommaire_id', 'Selectionner le model du PV sommaire');?>
 		<br/>
 		<?php echo $form->labelTag('Typeseance/modelpvdetaille_id', 'PV d&eacute;taill&eacute; <acronym title="obligatoire">*</acronym>');?>
-	 	<?php echo $html->selectTag('Typeseance/modelpvdetaille_id', $models, $html->tagValue('Typeseance/modelpvsommaire_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
+	 	<?php echo $html->selectTag('Typeseance/modelpvdetaille_id', $models, $html->tagValue('Typeseance/modelpvdetaille_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
 		<?php echo $html->tagErrorMsg('Typeseance/modelpvdetaille_id', 'Selectionner le model du PV d&eacute;taill&eacute;');?>
 	</fieldset>
 </div>
