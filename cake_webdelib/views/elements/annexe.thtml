@@ -1,5 +1,14 @@
 <div class="annexesGauche">
-	<?php echo $form->labelTag('Annexes'.$typeAnnexes.'/titre', 'Annexe(s)'); ?>
+<?php 
+        if ($typeAnnexes=='G')
+	    $libelle = 'Pièces jointes au contrôle de légalité';
+	 else
+	    $libelle = 'Information complémentaire';
+	    
+	 echo $form->labelTag('Annexes'.$typeAnnexes.'/titre', $libelle); 
+?>
+
+
 </div>
 <div class="annexesDroite">
 	<?php if(!empty($this->data['Annexe'])){
