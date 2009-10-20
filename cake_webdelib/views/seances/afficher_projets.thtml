@@ -3,7 +3,7 @@
 	<tr>
 		<th>Position</th>
 		<?php echo ('<th>'.$html->link('Theme', "/deliberations/sortby/$seance_id/theme_id",null,'Etes-vous sur de vouloir trier par theme ?'). "</th>"); ?>
-		<th>Service emetteur</th>
+		<?php echo ('<th>'.$html->link('Service emetteur', "/deliberations/sortby/$seance_id/service_id",null,'Etes-vous sur de vouloir trier par service ?'). "</th>"); ?>
 		<?php echo ('<th>'.$html->link('Rapporteur', "/deliberations/sortby/$seance_id/rapporteur_id", null,'Etes-vous sur de vouloir trier par rapporteur ?'). "</th>"); ?>
 		<?php echo ('<th>'.$html->link('Libelle', "/deliberations/sortby/$seance_id/objet",null,'Etes-vous sur de vouloir trier par libelle ?'). "</th>"); ?>
 		<?php echo ('<th>'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre",null,'Etes-vous sur de vouloir trier par titre ?'). "</th>"); ?>

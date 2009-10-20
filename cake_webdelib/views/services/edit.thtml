@@ -17,6 +17,10 @@
 	<?php echo $form->labelTag('Service/circuit_defaut_id', 'Circuit par d&eacute;faut');?>
 	<?php echo $html->selectTag('Service/circuit_defaut_id', $circuits);?>
 </div>
+<div class="optional">
+    <?php echo $form->labelTag('Service/order', 'Crit&egrave;re de tri');?>
+    <?php echo $html->input('Service/order', array('size' => '10'));?>
+</div>
 <br/><br/><br/><br/><br/>
 <div class="submit">
 	<?php echo $form->labelTag('Service/id', '&nbsp;');?>
