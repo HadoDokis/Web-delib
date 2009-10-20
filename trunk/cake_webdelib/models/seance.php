@@ -29,7 +29,7 @@ class Seance extends AppModel {
     );
 
      /* retourne la liste des séances futures avec le nom du type de séance  */
-     function generateList($conditionSup = null) {
+     function generateList($conditionSup=null, $afficherTtesLesSeances = null) {
          $generateList = array();
          $conditions = 'Seance.traitee = 0';
          if (!empty($conditionSup))
@@ -37,11 +37,18 @@ class Seance extends AppModel {
          $seances = $this->findAll($conditions, null, 'date ASC');
          foreach ($seances as $seance){
 	     $retard=$seance['Typeseance']['retard'];
-             if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y")))){
-	         $dateTimeStamp = strtotime($seance['Seance']['date']);
-	         $dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
-                 $generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
-             }
+	     if (isset($afficherTtesLesSeances )) {
+	          $dateTimeStamp = strtotime($seance['Seance']['date']);
+		  $dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
+		  $generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
+	     }
+	     else {
+                 if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y")))){
+	             $dateTimeStamp = strtotime($seance['Seance']['date']);
+	             $dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
+                     $generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
+                 }
+            }
         }
         return $generateList;
     }
