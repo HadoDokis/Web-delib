@@ -17,6 +17,7 @@
 		<th>Date S&eacute;ance</th>
 		<th>Préparation</th>
 		<th>En cours</th>
+		<th>Finition</th>
 	</tr>
 	<?php foreach ($seances as $seance): ?>
 	<tr>
@@ -47,6 +48,11 @@
 					echo $html->link('&shy;','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voter', 'title'=>'Afficher les projets et voter'), false, false);
 				else
 					echo $html->link('&shy;','/seances/detailsAvis/' . $seance['Seance']['id'],array('class'=>'link_donnerAvis', 'title'=>'Afficher les projets et donner un avis'), false, false);
+
+                      echo ('</td>');
+                      echo ('<td>');
+	               echo $html->link('&shy;','/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'].'/null/0/retour/1/', array('class'=>'link_pvsommaire', 'title'=>'Generation du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
+                      echo $html->link('&shy;','/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'].'/null/0/retour/1/', array('class'=>'link_pvcomplet', 'title'=>'Generation du pv complet'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
 			?>
 		</td>
 	</tr>
