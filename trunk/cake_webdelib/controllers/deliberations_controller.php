@@ -1187,8 +1187,13 @@ class DeliberationsController extends AppController {
         function sortby($seance_id, $sortby) {
 		    $condition= "seance_id=$seance_id AND etat != -1";
 		    // Critere de tri
-			if ($sortby == 'theme_id') $sortby = 'Theme.order';
-			elseif ($sortby == 'rapporteur_id') $sortby = 'Rapporteur.nom';
+		    if ($sortby == 'theme_id') 
+		        $sortby = 'Theme.order';
+	            elseif  ($sortby == 'service_id') 
+		        $sortby = 'Service.order';
+		    elseif ($sortby == 'rapporteur_id') 
+		        $sortby = 'Rapporteur.nom';
+
   		    $deliberations = $this->Deliberation->findAll($condition,null, "$sortby ASC");
 		    for($i=0; $i<count($deliberations); $i++){
 			    $deliberations[$i]['Deliberation']['position']=$i+1;
