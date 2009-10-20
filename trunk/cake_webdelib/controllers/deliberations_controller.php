@@ -254,15 +254,23 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-	function edit($id=null) {
-	    $user=$this->Session->read('user');
-	    /* initialisation du lien de redirection */
+        function edit($id=null) {
+	         $user=$this->Session->read('user');
+	        /* initialisation du lien de redirection */
 		if ($this->Acl->check($user['User']['id'], "Pages:mes_projets"))
 			$redirect = '/pages/mes_projets';
 		elseif ($this->Acl->check($user['User']['id'], "Pages:tous_les_projets"))
 			$redirect = '/pages/tous_les_projets';
 		else
 			$redirect = '/';
+                if ($this->Acl->check($user['User']['id'], "Deliberations:editerProjetValide"))
+	           $afficherTtesLesSeances = true;
+                else
+	           $afficherTtesLesSeances = null;
+
+                $pos  =  strrpos ( getcwd(), 'webroot');
+		$path = substr(getcwd(), 0, $pos);
+                $path_projet = $path."webroot/files/generee/projet/$id/";
 
 		if (empty($this->data)) {
 			$this->data = $this->Deliberation->read(null, $id);
@@ -275,21 +283,28 @@ class DeliberationsController extends AppController {
 				$this->redirect($redirect);
 			}
 
+			if (!GENERER_DOC_SIMPLE) {
+			    $this->Gedooo->createFile($path_projet, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
+			    $this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
+			    $this->Gedooo->createFile($path_projet, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
+			    foreach ($this->data['Infosup']  as $infosup)
+                                if(($infosup['file_name']!="") && (!empty( $infosup['content'])))    
+                                    $this->Gedooo->createFile($path_projet, 'infosup'.$infosup['infosupdef_id'] .'.odt', $infosup['content']);
+			}
 			$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
-
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
 			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Service']['id']);
 
 			$this->set('themes', $this->Deliberation->Theme->generateList('Theme.actif=1','libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
-			$this->set('date_seances',$this->Seance->generateList());
+			$this->set('date_seances',$this->Seance->generateList(null ,$afficherTtesLesSeances ));
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('redirect', $redirect);
 			$this->render();
 
 		} else {
-			$oldDelib =  $this->Deliberation->find('Deliberation.id = '.$id, 'seance_id, position', '', -1);
+			$oldDelib =  $this->Deliberation->find('Deliberation.id = '.$id, 'seance_id, position', '');
 			// Si on definit une seance a une delib, on la position en derniere position de la seance...
 			if (!($this->data['Deliberation']['seance_id'] === $oldDelib['Deliberation']['seance_id'])) {
 				if ($this->data['Deliberation']['seance_id'])
@@ -300,53 +315,82 @@ class DeliberationsController extends AppController {
 
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
 
-			if (!GENERER_DOC_SIMPLE){
-				// Initialisation du texte de projet
-				if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
-					$this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
-					$this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
-					$this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'] ;
-					if (empty($this->data['Deliberation']['texte_projet']['tmp_name']))
-						$this->data['Deliberation']['texte_projet'] = '';
-					else {
-						$tp = $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
-						$this->data['Deliberation']['texte_projet'] = $tp;
-					}
+			if (!GENERER_DOC_SIMPLE) {
+                            if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
+				$this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
+				$this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
+				$this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'] ;
+				if (empty($this->data['Deliberation']['texte_projet']['tmp_name'])) {
+		                    $this->data['Deliberation']['texte_projet'] = '';
+                                }
+				else {
+				    $tp = $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
+				    $this->data['Deliberation']['texte_projet'] = $tp;
 				}
-				// Initialisation de la note de synthèse
-				if (array_key_exists('texte_synthese', $this->data['Deliberation'])) {
-					$this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
-					$this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
-					$this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'] ;
-					if (empty($this->data['Deliberation']['texte_synthese']['tmp_name']))
-						$this->data['Deliberation']['texte_synthese'] = '';
-					else {
-						$ts = $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
-						$this->data['Deliberation']['texte_synthese'] = $ts;
-					}
+			    }
+			    else {
+                                $stat = stat($path_projet.'texte_projet.odt');
+			        $td = $this->_getFileData($path_projet.'texte_projet.odt', $stat['size'] );
+			        $this->data['Deliberation']['texte_projet'] = $td;
+			    }
+			    // Initialisation de la note de synth¿se
+			    if (array_key_exists('texte_synthese', $this->data['Deliberation'])) {
+			        $this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
+				$this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
+				$this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'] ;
+				if (empty($this->data['Deliberation']['texte_synthese']['tmp_name']))
+				    $this->data['Deliberation']['texte_synthese'] = '';
+				else {
+				    $ts = $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
+				    $this->data['Deliberation']['texte_synthese'] = $ts;
 				}
-				// Initialisation du texte de délibération
-				if (array_key_exists('deliberation', $this->data['Deliberation'])) {
-					$this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
-					$this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
-					$this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'] ;
-					if (empty($this->data['Deliberation']['deliberation']['tmp_name']))
-						$this->data['Deliberation']['deliberation'] = '';
-					else {
-						$td = $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
-						$this->data['Deliberation']['deliberation'] = $td;
-					}
-				}
+			    }
+                            else {
+                                $stat = stat($path_projet.'texte_synthese.odt');
+                                $ts = $this->_getFileData($path_projet.'texte_synthese.odt', $stat['size'] );
+                                $this->data['Deliberation']['texte_synthese'] = $ts;
+                            }
+
+			    // Initialisation du texte de d¿lib¿ration
+			    if (array_key_exists('deliberation', $this->data['Deliberation'])) {
+				$this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
+				$this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
+				$this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'] ;
+				if (empty($this->data['Deliberation']['deliberation']['tmp_name']))
+			            $this->data['Deliberation']['deliberation'] = '';
+				else {
+				    $td = $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
+				    $this->data['Deliberation']['deliberation'] = $td;
+			        }
+                            }
+                            else {
+                                $stat = stat($path_projet.'deliberation.odt');
+                                $ts = $this->_getFileData($path_projet.'deliberation.odt', $stat['size'] );
+                                $this->data['Deliberation']['deliberation'] = $ts;
+                            }
 			}
 			$this->cleanUpFields();
 
 			if ($this->Deliberation->save($this->data)) {
+
 				// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
 				if (!empty($oldDelib['Deliberation']['seance_id']) AND ($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']))
 					$this->_PositionneDelibsSeance($oldDelib['Deliberation']['seance_id'], $oldDelib['Deliberation']['position'] );
 				/* sauvegarde des informations supplémentaires */
+			        $infossups = $this->Infosupdef->findAll("type='file'", '', '', 0);
+                                foreach ( $infossups  as $infosup) {
+				             $name = 'infosup'.$infosup['Infosupdef']['id'] .'.odt' ;
+				             if (file_exists($path_projet.$name)){
+				                 $code = $infosup['Infosupdef']['code'];
+				                 $stat = stat($path_projet.$name);
+				                 if ($stat > 0) {
+				                     $content = $this->_getFileData($path_projet.$name, $stat['size'] );
+                                                     $this->data['Infosup'][$code] = $content  ;
+				                 }
+				             }
+				}
 				if (array_key_exists('Infosup', $this->data))
-					$this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
+				     $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
 				/* suppression des annexes */
 				if (array_key_exists('AnnexesASupprimer', $this->data))
 					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
