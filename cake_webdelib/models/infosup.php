@@ -81,10 +81,15 @@ class Infosup extends AppModel
 				$infosup['Infosup']['file_name'] = $valeur['name'];
 				$infosup['Infosup']['file_size'] = $valeur['size'];
 				$infosup['Infosup']['file_type'] = $valeur['type'];
-				if (empty($valeur['tmp_name']))
-					$infosup['Infosup']['content'] = '';
-				else
+				if (empty($valeur['tmp_name'])) 
+				    $infosup['Infosup']['content'] = '';
+				elseif (file_exists($valeur['tmp_name']))
 					$infosup['Infosup']['content'] = fread(fopen($valeur['tmp_name'], "r"), $valeur['size']);
+                                elseif (!empty($valeur)) {
+				    $infosup['Infosup']['file_name'] = $code;
+                                    $infosup['Infosup']['file_size'] = strlen($valeur);
+				    $infosup['Infosup']['content']= $valeur;
+				}
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
 				$infosup['Infosup']['text'] = $valeur;
 			}
