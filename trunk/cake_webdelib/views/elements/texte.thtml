@@ -1,7 +1,9 @@
 <?php
 	echo $javascript->link('fckeditor');
 	echo $javascript->link('utils');
-	$delib  = $this->data;
+	$delib = $this->data;
+	if (!empty($delib['Deliberation']))
+             $id    = $delib['Deliberation']['id'] ;
 	if ($key=='texte_projet'){
 		$cible = 1;
 		$libelle = 'Texte projet';
@@ -27,16 +29,16 @@
 			echo $fck->load('data[Deliberation]['.$key.']');
 		echo '</div>';
 	} else {
-		if (empty($delib['Deliberation'][$key."_name"]))
-			echo  $html->fileTag("Deliberation/".$key, array('size'=>'60', 'title'=>$libelle));
-		else {
-			$url  = "/deliberations/download/".$delib['Deliberation']['id']."/$key";
-			echo '<span id="Deliberation'.$key.'InputFichierJoint" style="display: none;"></span>';
-			echo '<span id="Deliberation'.$key.'AfficheFichierJoint">';
-				echo '['.$html->link($delib['Deliberation'][$key."_name"], $url, array('title'=>'Recuperer le fichier')).']';
-				echo '&nbsp;&nbsp;';
-				echo $html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', '".$key."', '".$libelle."')", null, 'Voulez-vous vraiment supprimer le fichier ?');
-			echo '</span>';
-		}
+	    if (empty($delib['Deliberation'][$key."_name"]))
+                echo  $html->fileTag("Deliberation/".$key, array('size'=>'60', 'title'=>$libelle));
+            else {
+                $url =    PROTOCOLE_DL."://".$_SERVER[SERVER_NAME]."/files/generee/projet/$id/$key.odt";
+   	        echo '<span id="Deliberation'.$key.'InputFichierJoint" style="display: none;"></span>';
+	        echo '<span id="Deliberation'.$key.'AfficheFichierJoint">'; 
+                echo "<a href='$url'>$libelle</a>";
+	        echo '&nbsp;&nbsp;';
+	        echo $html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', '".$key."', '".$libelle."')", null, 'Voulez-vous vraiment supprimer le fichier ?');
+                echo '</span>';
+	    }
 	}
 ?>
