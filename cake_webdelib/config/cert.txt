@@ -1,3 +1,3 @@
  * le certificat du CA :           openssl pkcs12 -in certificat.p12 -out ca.pem -cacerts -nokeys
  * la partie x509 du certificat :  openssl pkcs12 -in certificat.p12 -out client.pem -clcerts -nokeys
- * la clÃ© privÃ©e du certificat :   openssl pkcs12 -in certificat.p12 -out key.pem -nocerts
+ * la clé privée du certificat :   openssl pkcs12 -in certificat.p12 -out key.pem -nocerts
