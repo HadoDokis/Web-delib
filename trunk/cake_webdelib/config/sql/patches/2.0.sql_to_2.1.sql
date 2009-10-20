@@ -11,4 +11,16 @@ ALTER TABLE `infosupdefs` ADD `val_initiale` VARCHAR( 255 ) NULL AFTER `type` ;
 --
 
 ALTER TABLE `deliberations` ADD `tdt_id` INT( 11 ) NULL AFTER `num_pref` ,
-ADD `dateAR` VARCHAR( 100 ) NULL AFTER `tdt_id` 
+ADD `dateAR` VARCHAR( 100 ) NULL AFTER `tdt_id` ;
+
+
+UPDATE `aros_acos` SET `_create` = '1',
+`_read` = '1',
+`_update` = '1',
+`_delete` = '1' WHERE `aros_acos`.`id` =31 LIMIT 1 ;
+
+
+UPDATE `aros_acos` SET `_create` = '1',
+`_read` = '1',
+`_update` = '1',
+`_delete` = '1' WHERE `aros_acos`.`id` =7 LIMIT 1 ;
