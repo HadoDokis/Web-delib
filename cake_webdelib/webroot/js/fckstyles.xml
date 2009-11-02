@@ -71,6 +71,7 @@
 	<Style name="Big" element="big" />
 	<Style name="Small" element="small" />
 	<Style name="Typewriter" element="tt" />
+<!-- 
 
 	<Style name="Computer Code" element="code" />
 	<Style name="Keyboard Phrase" element="kbd" />
@@ -82,7 +83,6 @@
 
 	<Style name="Cited Work" element="cite" />
 	<Style name="Inline Quotation" element="q" />
-
 	<Style name="Language: RTL" element="span">
 		<Attribute name="dir" value="rtl" />
 	</Style>
@@ -94,7 +94,9 @@
 	</Style>
 	<Style name="Language: LTR Strong" element="bdo">
 		<Attribute name="dir" value="ltr" />
+
 	</Style>
+-->
 
 	<!-- Object Styles -->
 
