@@ -1092,7 +1092,7 @@ class DeliberationsController extends AppController {
                               echo ('    document.getElementById("contTemp").style.display="none";');
                               echo ('</script>');
 			      echo ('<br />Les d&eacute;lib&eacute;rations ont &eacute;t&eacute; correctement envoy&eacute;es.');
-			      die ('<br /><a href ="/deliberations/transmit"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
+			      die ('<br /><a href ="/deliberations/transmit" id="retour"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
 		}
 
 
@@ -1227,9 +1227,9 @@ class DeliberationsController extends AppController {
             if ($data['0']['User']['accept_notif']){
                 $to_mail = $data['0']['User']['email'];
                 $this->Email->template = 'email/traiter';
-                $this->set('data',  $this->_paramMails('traiter', $this->Deliberation->read(null, delib_id),  $data['0']['User']));
+                $this->set('data',  $this->_paramMails('traiter', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
                 $this->Email->to = $to_mail;
-                $this->Email->subject = "DELIB $delib_idatraiter";
+                $this->Email->subject = "DELIB $delib_id";
                 $result = $this->Email->send();
             }
 	}
@@ -1696,6 +1696,7 @@ class DeliberationsController extends AppController {
 			$this->set('date_seances',$this->Seance->generateAllList());
 			$this->set('services', $this->Deliberation->Service->generateList(null));
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
+			$this->set('circuits', $this->Deliberation->Circuit->generateList(null,'libelle asc',null,'{n}.Circuit.id','{n}.Circuit.libelle'));
 			$this->set('etats', $this->Deliberation->generateListEtat());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, nom, commentaire, type, taille', 'ordre', null, 1, -1));
 			$this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
@@ -1728,6 +1729,12 @@ class DeliberationsController extends AppController {
 					$conditions .= " AND ";
 				$conditions .= " Deliberation.theme_id = ".$this->data['Deliberation']['theme_id'];
 			}
+
+                        if (!empty($this->data['Deliberation']['circuit_id'])){
+                                if ($conditions != "")
+                                        $conditions .= " AND ";
+                                $conditions .= " Deliberation.circuit_id = ".$this->data['Deliberation']['circuit_id'];
+                        }
 
 			if (!empty($this->data['Deliberation']['texte'])) {
 				$texte = $this->data['Deliberation']['texte'];
@@ -1797,6 +1804,7 @@ class DeliberationsController extends AppController {
 			$this->set('date_seances',$this->Seance->generateAllList());
 			$this->set('services', $this->Deliberation->Service->generateList(null));
 			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
+			$this->set('circuits', $this->Deliberation->Circuit->generateList(null,'libelle asc',null,'{n}.Circuit.id','{n}.Circuit.libelle'));
 			$this->set('etats', $this->Deliberation->generateListEtat());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, nom, commentaire, type, taille', 'ordre', null, 1, -1));
 			$this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
@@ -1828,6 +1836,12 @@ class DeliberationsController extends AppController {
 					$conditions .= " AND ";
 				$conditions .= " Deliberation.theme_id = ".$this->data['Deliberation']['theme_id'];
 			}
+                       
+                        if (!empty($this->data['Deliberation']['circuit_id'])){
+                                if ($conditions != "")
+                                        $conditions .= " AND ";
+                                $conditions .= " Deliberation.circuit_id = ".$this->data['Deliberation']['circuit_id'];
+                        }
 
 			if (!empty($this->data['Deliberation']['texte'])) {
 				$texte = $this->data['Deliberation']['texte'];
