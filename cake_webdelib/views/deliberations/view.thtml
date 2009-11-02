@@ -107,7 +107,7 @@
 ?>
 
 <?php if(!empty($this->data['Annexe'])) { ?>
-	<dt>Annexe(s) Globale(s) </dt>
+	<dt>Pi&egrave;ces jointes envoy&eacute;es au contr&ocirc;le de l&eacute;galit&eacute; </dt>
 	<dd>
  <?php foreach ($this->data['Annexe'] as $annexe) {
 			if ($annexe['type'] == "G"){
