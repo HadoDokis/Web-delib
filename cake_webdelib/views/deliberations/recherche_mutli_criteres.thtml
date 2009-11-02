@@ -36,6 +36,10 @@
             <td><?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), true);?></td>
     </tr>
     <tr>
+            <td><?php echo $form->labelTag('Deliberation/circuit_id', 'Circuit ');?></td>
+            <td><?php echo $html->selectTag('Deliberation/circuit_id', $circuits, $html->tagValue('Deliberation/circuit_id'), array(), array(), true);?></td>
+    </tr>
+    <tr>
             <td><?php echo $form->labelTag('Deliberation/etat', 'Etat ');?></td>
             <td><?php echo $html->selectTag('Deliberation/etat', $etats, $html->tagValue('Deliberation/etat'), array(), array(), true);?></td>
     </tr>
