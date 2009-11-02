@@ -813,16 +813,17 @@ class DeliberationsController extends AppController {
         $this->set('USE_GEDOOO', USE_GEDOOO);
 	$this->set('host', HOST );
         $this->set('dateClassification', $this->_getDateClassification());
-        $nbDelibs = count($this->Deliberation->findAll("Deliberation.etat=5"));
 
         // On affiche que les delibs vote pour.
-	$deliberations = $this->Deliberation->findAll("Deliberation.etat=5", null, null,  $nbDelibParPage,  $page);
-	for($i = 0; $i < count($deliberations); $i++) {
+	$deliberations = $this->Deliberation->findAll("Deliberation.etat=5", null, "num_delib ASC",  $nbDelibParPage,  $page);
+        $nbDelibs = count($deliberations);
+	for($i = 0; $i < $nbDelibs; $i++) {
 	    if (empty($deliberations[$i]['Deliberation']['DateAR'])) {
 	        if (isset($deliberations[$i]['Deliberation']['tdt_id'])){
                     $flux   = $this->_getFluxRetour($deliberations[$i]['Deliberation']['tdt_id']); 
                     $codeRetour = substr($flux, 3, 1);
-		    $this->set('codeRetour',  $codeRetour);
+		    $deliberations[$i]['Deliberation']['code_retour'] = $codeRetour;
+
                     if($codeRetour==4) {
                         $dateAR = $this->_getDateAR($res = mb_substr( $flux, strpos($flux, '<actes:ARActe'), strlen($flux)));
                         $this->Deliberation->changeDateAR($deliberations[$i]['Deliberation']['id'], $dateAR);
@@ -832,7 +833,7 @@ class DeliberationsController extends AppController {
 	    }
         }
 	$this->set('nbDelibs',  $nbDelibs );
-        $this->set('deliberations', $this->Deliberation->findAll("Deliberation.etat=5", null, null,  $nbDelibParPage,  $page));
+        $this->set('deliberations', $deliberations);
 	if ($page>1)
 	    $this->set('previous', $page-1);
         if  ($nbDelibs > $nbDelibParPage*$page )

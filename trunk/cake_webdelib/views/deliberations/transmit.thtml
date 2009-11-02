@@ -21,7 +21,7 @@
 <tr>
 <?php
 	foreach ($deliberations as $delib) {
-		    echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/models/generer/'.$delib['Deliberation']['id'].'/null/'.$delib['Model']['id'].'/0');
+	    echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/models/generer/'.$delib['Deliberation']['id'].'/null/'.$delib['Model']['id'].'/0');
 		?>
 		</td>
 		<td>
@@ -34,13 +34,13 @@
 		<td><?php echo $delib['Deliberation']['num_pref']; ?></td>
 		<td>
 		   <?php 
-		       if ($codeRetour ==4)
+		       if ($delib['Deliberation']['code_retour'] ==4)
 		           echo $html->link("Acquitement reçu le ".$delib['Deliberation']['dateAR'], '/deliberations/getAR/'.$delib['Deliberation']['tdt_id']); 
-		       elseif($codeRetour ==3)
+		       elseif($delib['Deliberation']['code_retour']==3)
 		           echo 'Transmis';
-		       elseif ($codeRetour==2)
+		       elseif ($delib['Deliberation']['code_retour']==2)
 		           echo 'En attente de transmission';
-		       elseif ($codeRetour==1)
+		       elseif ($delib['Deliberation']['code_retour']==1)
 		           echo 'Posté';
 	           ?>
 		</td>
