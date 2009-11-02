@@ -51,6 +51,48 @@
 	<td>//div[@id='menuPrincipal']/ul[2]/li[4]/a</td>
 	<td></td>
 </tr>
+
+
+<tr>
+        <td>open</td>
+        <td>/services/index</td>
+        <td></td>
+</tr>
+<tr>
+        <td>open</td>
+        <td>/services/add</td>
+        <td></td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>ServiceLibelle</td>
+        <td>TEST</td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>Ajouter</td>
+        <td></td>
+</tr>
+<tr>
+        <td>open</td>
+        <td>/services/add</td>
+        <td></td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>ServiceLibelle</td>
+        <td>Sous - TEST</td>
+</tr>
+<tr>
+        <td>select</td>
+        <td>ServiceParentId</td>
+        <td>label=Défaut</td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>Ajouter</td>
+        <td></td>
+</tr>
 <tr>
 	<td>open</td>
 	<td>/users/add</td>
@@ -89,12 +131,102 @@
 <tr>
 	<td>addSelection</td>
 	<td>ServiceService</td>
-	<td>label=Défaut</td>
+	<td>label=TEST</td>
 </tr>
 <tr>
 	<td>click</td>
 	<td>Ajouter</td>
 	<td></td>
+</tr>
+<tr>
+        <td>open</td>
+        <td>/users/add</td>
+        <td></td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>UserLogin</td>
+        <td>valideur</td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>UserPassword</td>
+        <td>valideur</td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>UserPassword2</td>
+        <td>valideur</td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>UserNom</td>
+        <td>Valideur</td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>UserPrenom</td>
+        <td>Selenium</td>
+</tr>
+<tr>
+        <td>select</td>
+        <td>UserProfilId</td>
+        <td>label=Valideur</td>
+</tr>
+<tr>
+        <td>addSelection</td>
+        <td>ServiceService</td>
+        <td>label=TEST</td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>Ajouter</td>
+        <td></td>
+</tr>
+<tr>
+        <td>open</td>
+        <td>/users/add</td>
+        <td></td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>UserLogin</td>
+        <td>valideur2</td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>UserPassword</td>
+        <td>valideur2</td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>UserPassword2</td>
+        <td>valideur2</td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>UserNom</td>
+        <td>Valideur 2</td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>UserPrenom</td>
+        <td>Selenium</td>
+</tr>
+<tr>
+        <td>select</td>
+        <td>UserProfilId</td>
+        <td>label=Valideur</td>
+</tr>
+<tr>
+        <td>addSelection</td>
+        <td>ServiceService</td>
+        <td>label=TEST</td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>Ajouter</td>
+        <td></td>
 </tr>
 <tr>
 	<td>open</td>
@@ -134,7 +266,7 @@
 <tr>
 	<td>addSelection</td>
 	<td>ServiceService</td>
-	<td>label=Défaut</td>
+	<td>label=TEST</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -142,28 +274,89 @@
 	<td></td>
 </tr>
 <tr>
+        <td>open</td>
+        <td>/pages/gestion_utilisateurs</td>
+        <td></td>
+</tr>
+<tr>
+        <td>open</td>
+        <td>/circuits/index</td>
+        <td></td>
+</tr>
+<tr>
+        <td>open</td>
+        <td>/circuits/add</td>
+        <td></td>
+</tr>
+<tr>
+        <td>type</td>
+        <td>CircuitLibelle</td>
+        <td>Circuit de test</td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>Ajouter</td>
+        <td></td>
+</tr> 
+<tr>
+        <td>open</td>
+        <td>/circuits/index</td>
+        <td></td>
+</tr>
+<tr>
+        <td>select</td>
+	<td>CircuitLibelle</td>
+	<td>label=Circuit de test</td>
+</tr>
+
+<tr>
+        <td>select</td>
+        <td>ServiceLibelle</td>
+        <td>label=TEST</td>
+</tr>
+<tr>
+        <td>open</td>
+	<td>/circuits/addUser/1/2/2</td>
+        <td></td>
+</tr>
+<tr>
+        <td>open</td>
+	<td>/circuits/addUser/1/2/3</td>
+        <td></td>
+</tr>
+<tr>
+        <td>open</td>
+	<td>/circuits/addUser/1/2/4</td>
+        <td></td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
 	<td>link=Déconnexion</td>
 	<td></td>
 </tr>
 <tr>
+        <td>open</td>
+        <td>/users/login</td>
+        <td></td>
+</tr>
+<tr>
 	<td>type</td>
 	<td>UserLogin</td>
 	<td>admin</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>UserPassword</td>
-	<td>admin</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='OK']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>open</td>
-	<td>/pages/gestion_acteurs</td>
+	</tr>
+	<tr>
+		<td>type</td>
+		<td>UserPassword</td>
+		<td>admin</td>
+	</tr>
+	<tr>
+		<td>clickAndWait</td>
+		<td>//input[@value='OK']</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>open</td>
+		<td>/pages/gestion_acteurs</td>
 	<td></td>
 </tr>
 <tr>
@@ -416,6 +609,11 @@
 	<td>click</td>
 	<td>Sauvegarder</td>
 	<td></td>
+</tr>
+<tr>
+        <td>open</td>
+        <td>/users/logout</td>
+        <td></td>
 </tr>
 </tbody></table>
 </body>
