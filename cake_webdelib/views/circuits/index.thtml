@@ -2,7 +2,7 @@
 <h2>Nouveau circuit</h2>
 <?php
 	$loc=$html->url("/circuits/index/");
-    echo $html->selectTag('Circuit/libelle', $circuits, $circuit_id, array("onChange"=>"lister_circuits(this, '$loc');"), null, true);
+    echo $html->selectTag('Circuit/libelle', $circuits, $circuit_id, array("label"=> $circuit_id, "onChange"=>"lister_circuits(this, '$loc');"), null, true);
     echo " <a href=".$html->url("/circuits/add")." class=\"link_add\"> Ajouter un circuit</a> ";
 	echo "<br /><br />";
     if ($lastPosition ==0)
