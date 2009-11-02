@@ -1,6 +1,9 @@
 Bonjour #PRENOM# #NOM#,
-Votre dossier (identifiant projet #IDENTIFIANT_PROJET#) doit être traité.
-Vous pouvez y accéder à l'adresse : #ADRESSE_A_TRAITER#"
+
+Le projet avec l'identifiant #IDENTIFIANT_PROJET# dont l'objet est :  #OBJET_PROJET# est arrivé dans votre bannette "Projets à traiter".
+Il est arrivé via le circuit : #LIBELLE_CIRCUIT#
+
+Vous pouvez le traiter à l'adresse : <a href="#ADRESSE_A_TRAITER#">#ADRESSE_A_TRAITER#</a>
 
 Très cordialement.
 
