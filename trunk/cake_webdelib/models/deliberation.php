@@ -197,5 +197,19 @@ class Deliberation extends AppModel {
 		$this->save($this->data);
 	}
 
+        function getModelId($delib_id) {
+             $data = $this->read(null, $delib_id);
+             $seance = $this->Seance->read(null, $data['Deliberation']['seance_id'] );
+             if (!empty($seance)){
+                 if ($data['Deliberation']['etat']<3)
+                     return $seance['Typeseance']['modelprojet_id'];
+                 else
+                     return $seance['Typeseance']['modeldeliberation_id'];
+             }
+             else {
+                  return 1;
+             }
+        }
+
 }
 ?>
