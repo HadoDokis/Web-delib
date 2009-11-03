@@ -56,10 +56,10 @@
 				echo $html->link('&shy;', $actionAttribuer, array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'), false, false);
 			}
 			if (in_array('generer', $deliberation['Actions'])) {
-				if ($USE_GEDOOO)
-					echo $html->link('&shy;','/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
-				else
-					echo $html->link('&shy;','/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+			    if ($deliberation['Seance']['traitee']==0)
+		                echo $html->link('&shy;','/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+			     else
+			         echo $html->link('&shy;', '/deliberations/downloadDelib/'.$deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
 			}
 		?>
 		</td>
