@@ -21,7 +21,7 @@
 <tr>
 <?php
 	foreach ($deliberations as $delib) {
-	    echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/models/generer/'.$delib['Deliberation']['id'].'/null/'.$delib['Model']['id'].'/0');
+	     echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/'.$delib['Deliberation']['id']);
 		?>
 		</td>
 		<td>

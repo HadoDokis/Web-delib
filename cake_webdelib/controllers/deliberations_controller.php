@@ -33,7 +33,7 @@ class DeliberationsController extends AppController {
 		'editerProjetValide'
 	);
 	var $commeDroit = array(
-		'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets'),
+		'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
 		'edit'=>array('Deliberations:add', 'Deliberations:mesProjetsRedaction', 'Deliberations:editerProjetValide'),
 		'delete'=>'Deliberations:mesProjetsRedaction',
 		'attribuercircuit'=>'Deliberations:mesProjetsRedaction',
@@ -223,6 +223,17 @@ class DeliberationsController extends AppController {
 		header('Content-Disposition: attachment; filename='.$delib['Deliberation'][$fileName]);
 		echo $delib['Deliberation'][$file];
 		exit();
+	}
+
+        function downloadDelib($delib_id) {
+            $delib = $this->Deliberation->read(null, $delib_id);
+            header('Content-type: application/pdf');
+            header('Content-Length: '.strlen($delib['Deliberation']['delib_pdf']));
+            header('Content-Disposition: attachment; filename='.$delib['Deliberation']['num_delib'].'.pdf');
+            echo $delib['Deliberation']['delib_pdf'];
+            exit();
+ 
+
 	}
 
 	function _saveAnnexe ($id, $file, $type) {
@@ -1011,18 +1022,18 @@ class DeliberationsController extends AppController {
 		    $class4=substr($rest , 0, strpos ($classification , '.' ));
 		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
 		    $class5=substr($rest , 0, strpos ($classification , '.' ));
-                    if (!USE_GEDOOO) {
-		        $file = $path."webroot/files/delibs/DELIBERATION_$delib_id.pdf";
-		        if (!file_exists($file))
-		            $err = $this->requestAction("/postseances/generateDeliberation/$delib_id");
-		    }
-		    else {
-			$model_id = $this->_getModelId($delib_id);
-			$err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.pdf");
-		        $file =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.pdf";
-		   }
+
+
+
                     ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Document G&eacute;n&eacute;r&eacute; ');
 		    $delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
+
+		    //Création du fichier de délibération au format pdf (on ne passe plus par la génération)
+		    $file =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.pdf";
+                    $fp = fopen($file, 'w');
+		    fwrite($fp, $delib[0]['Deliberation']['delib_pdf']);
+		    fclose($fp);
+                    
         	        // Checker le code classification
         	        $data = array(
       	                 'api'           => '1',
