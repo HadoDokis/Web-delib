@@ -1540,6 +1540,7 @@ class DeliberationsController extends AppController {
  */
 	function mesProjetsValides() {
 		$userId=$this->Session->read('user.User.id');
+                $editerProjetValide = $this->Acl->check($userId, "Deliberations:editerProjetValide");
 		$listeCircuits = $this->UsersCircuit->listeCircuitsParUtilisateur($userId);
 		$conditions = 'Deliberation.etat = 2 AND ';
 		$conditions .= empty($listeCircuits) ? '' : '(Deliberation.circuit_id IN ('.$listeCircuits.') OR ';
@@ -1550,9 +1551,9 @@ class DeliberationsController extends AppController {
 		$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
 
 		$this->_afficheProjets(
-			$projets,
-			'Mes projets valid&eacute;s',
-			array('view', 'generer'));
+			    $projets,
+			    'Mes projets valid&eacute;s',
+			    array('view', 'generer'));
 	}
 
 /*
@@ -1569,21 +1570,22 @@ class DeliberationsController extends AppController {
         foreach($this->data as $i=>$projet) {
 			// initialisation des icônes
         	if ($this->data[$i]['Deliberation']['etat'] == 0 && $this->data[$i]['Deliberation']['anterieure_id']!=0)
-				$this->data[$i]['iconeEtat'] = $this->_iconeEtat(-1);
+	            $this->data[$i]['iconeEtat'] = $this->_iconeEtat(-1);
         	elseif ($this->data[$i]['Deliberation']['etat'] == 1) {
-				$estDansCircuit = $this->UsersCircuit->estDansCircuit($userId, $this->data[$i]['Deliberation']['circuit_id']);
-				$tourDansCircuit = $estDansCircuit ? $this->Traitement->tourUserDansCircuit($userId, $this->data[$i]['Deliberation']['id']) : 0;
-				$estRedacteur = $userId == $this->data[$i]['Deliberation']['redacteur_id'];
-				$this->data[$i]['iconeEtat'] = $this->_iconeEtat(1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
+			$estDansCircuit = $this->UsersCircuit->estDansCircuit($userId, $this->data[$i]['Deliberation']['circuit_id']);
+			$tourDansCircuit = $estDansCircuit ? $this->Traitement->tourUserDansCircuit($userId, $this->data[$i]['Deliberation']['id']) : 0;
+			$estRedacteur = $userId == $this->data[$i]['Deliberation']['redacteur_id'];
+			$this->data[$i]['iconeEtat'] = $this->_iconeEtat(1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
         	}
         	else
-				$this->data[$i]['iconeEtat'] = $this->_iconeEtat($this->data[$i]['Deliberation']['etat'], $editerProjetValide);
+			$this->data[$i]['iconeEtat'] = $this->_iconeEtat($this->data[$i]['Deliberation']['etat'], $editerProjetValide);
 
-			// initialisation des actions
-			$this->data[$i]['Actions'] = $listeActions;
-			if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide)
-				$this->data[$i]['Actions'][] = 'edit';
-
+		// initialisation des actions
+		$this->data[$i]['Actions'] = $listeActions;
+		if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {
+			$this->data[$i]['Actions'][] = 'edit';
+			$this->data[$i]['Actions'][] = 'attribuerCircuit';
+                }
 			// initialisation des dates, modèle et service
 			if (isset($this->data[$i]['Seance']['date'])) {
 				$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
@@ -1631,13 +1633,11 @@ class DeliberationsController extends AppController {
 		$conditions = "(Deliberation.seance_id is null OR Deliberation.seance_id=0) AND (Deliberation.etat=0 OR Deliberation.etat=1 OR Deliberation.etat=2)";
 		$ordre = 'Deliberation.created DESC';
 		$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
-
 		$this->set('date_seances', $this->Seance->generateList());
-
 		$this->_afficheProjets(
 			$projets,
 			'Projets non associ&eacute;s &agrave; une s&eacute;ance',
-			array('view', 'generer', 'attribuerSeance'));
+			 array('view', 'generer', 'attribuerSeance'));
 	}
 
 /*
