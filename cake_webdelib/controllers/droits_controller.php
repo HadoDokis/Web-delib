@@ -79,7 +79,7 @@ class DroitsController extends AppController
                         echo ('    document.getElementById("contTemp").style.display="none";');
                         echo ('</script>');
 
-                        echo ("Enregistrement effectu&eacute;e <br />");
+                        echo ("Enregistrement effectu&eacute; <br />");
 	                $urlWebroot = 'http://'.$_SERVER['HTTP_HOST'].$this->base;
                         echo ("<a href=' $urlWebroot/pages/gestion_utilisateurs'>Retour a la page precedente</a>");
                         exit;
