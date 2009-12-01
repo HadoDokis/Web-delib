@@ -25,7 +25,8 @@ class SeancesController extends AppController {
 		'detailsAvis'=>'Seances:listerFuturesSeances',
 		'donnerAvis'=>'Seances:listerFuturesSeances',
 		'saisirSecretaire'=>'Seances:listerFuturesSeances',
-		'getListActeurs'=>'Seances:listerFuturesSeances'
+		'getListActeurs'=>'Seances:listerFuturesSeances',
+		'saisirCommentaire'=>'Seances:listerFuturesSeances'
 	);
 
 	function index() {
@@ -596,6 +597,7 @@ class SeancesController extends AppController {
 				$this->data['Commentaire']['texte'].= ($this->data['Deliberation']['avis'] == 1) ? 'favorable' : 'défavorable';
 				$this->data['Commentaire']['texte'].= ' en '. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$deliberation['Seance']['type_id']);
 				$this->data['Commentaire']['texte'].= ' du ' .$this->Date->frenchDate(strtotime($deliberation['Seance']['date']));
+				 $this->data['Commentaire']['commentaire_auto'] = 1;
 				$this->Deliberation->Commentaire->save($this->data);
 
 				$sortie = true;
@@ -812,6 +814,22 @@ class SeancesController extends AppController {
             $objCourant = $this->Seance->read(null, $id);
             return $objCourant['Seance'][$file];
         }
+
+	function saisirCommentaire($seance_id) {
+            $seance = $this->Seance->read(null, $seance_id); 
+            $this->set('seance_id',$seance_id);
+            if (empty($this->data)) {
+	        $this->data =  $seance;
+	    }
+	    else {
+                $seance['Seance']['commentaire'] = $this->data['Seance']['commentaire'];
+                if ($this->Seance->save($seance)) {
+                    $this->redirect('/seances/listerFuturesSeances');
+                } else {
+                    $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+                }
+            }
+	}
 
 }
 ?>
