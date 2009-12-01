@@ -135,6 +135,7 @@
                    $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
 	           $seance = $this->Seance->read(null, ($delib['Seance']['id']));
                    $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),    'text'));
+		   $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
 
                }
                $oMainPart->addElement(new GDO_FieldType('titre_projet',                utf8_encode($delib['Deliberation']['titre']),    'text'));
@@ -183,19 +184,31 @@
 //               $oMainPart->addElement(new GDO_FieldType('position_redacteur', utf8_encode($delib['Redacteur']['position']), 'text'));
 
                // Informations sur la délibération
+	       $nb_votant = $delib['Deliberation']['vote_nb_oui'] + $delib['Deliberation']['vote_nb_abstention'] + $delib['Deliberation']['vote_nb_non'];
                $oMainPart->addElement(new GDO_FieldType('nombre_pour',  utf8_encode($delib['Deliberation']['vote_nb_oui'])   , 'text'));
                $oMainPart->addElement(new GDO_FieldType('nombre_abstention', utf8_encode( $delib['Deliberation']['vote_nb_abstention']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('nombre_contre',  utf8_encode($delib['Deliberation']['vote_nb_non']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', utf8_encode( $delib['Deliberation']['vote_nb_retrait']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('nombre_votant', $nb_votant, 'text'));
                $oMainPart->addElement(new GDO_FieldType('commentaire_vote',  utf8_encode($delib['Deliberation']['vote_commentaire']), 'text'));
 
                $commentaires = new GDO_IterationType("Commentaires");
                foreach($delib['Commentaire'] as $commentaire) {
                    $oDevPart = new GDO_PartType();
-                   $oDevPart->addElement(new GDO_FieldType("texte_commentaire", utf8_encode($commentaire['texte']), "text"));
+		   if ($commentaire['commentaire_auto']==0)
+                       $oDevPart->addElement(new GDO_FieldType("texte_commentaire", utf8_encode($commentaire['texte']), "text"));
                    $commentaires->addPart($oDevPart);
                 }
                @$oMainPart->addElement($commentaires);
+
+               $avisCommission = new GDO_IterationType("AvisCommission");
+               foreach($delib['Commentaire'] as $commentaire) {
+                   $oDevPart = new GDO_PartType();
+		   if ($commentaire['commentaire_auto']==1)
+                       $oDevPart->addElement(new GDO_FieldType("avis", utf8_encode($commentaire['texte']), "text"));
+                   $avisCommission->addPart($oDevPart);
+                }
+               @$oMainPart->addElement($avisCommission);
 
                foreach($delib['Infosup'] as $champs) {
                    $oMainPart->addElement($this->_addField($champs, $u, $delib['Deliberation']['id']));
@@ -559,6 +572,7 @@
 		 $seance = $this->Seance->read(null, $seance_id);
 
                  $oMainPart->addElement(new GDO_FieldType('date_seance',  $this->Date->frDate($seance['Seance']['date']),   'date'));
+		 $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
 	         $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
 	         $oMainPart->addElement(new GDO_FieldType('date_seance_lettres', utf8_encode($date_lettres),                     'text'));
                  $oMainPart->addElement(new GDO_FieldType('heure_seance', $this->Date->Hour  ($seance['Seance']['date']),   'date'));
