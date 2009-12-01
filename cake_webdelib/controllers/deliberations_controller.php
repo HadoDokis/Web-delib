@@ -911,11 +911,12 @@ class DeliberationsController extends AppController {
         $this->set('tabNature',          $this->_getNatureListe());
         $this->set('tabMatiere',         $this->_getMatiereListe());
         // On affiche que les delibs vote pour.
-        $deliberations = $this->Deliberation->findAll("Deliberation.etat=3");
+        $deliberations = $this->Deliberation->findAll("Deliberation.etat=3 and Deliberation.delib_pdf != '' ");
 
         for($i = 0; $i < count($deliberations); $i++) {
                 $deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
-                        $deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
+             //           $deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
+	         
         }
 
         $this->set('deliberations', $deliberations);
@@ -1023,8 +1024,6 @@ class DeliberationsController extends AppController {
 		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
 		    $class5=substr($rest , 0, strpos ($classification , '.' ));
 
-
-
                     ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Document G&eacute;n&eacute;r&eacute; ');
 		    $delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
 
@@ -1033,7 +1032,6 @@ class DeliberationsController extends AppController {
                     $fp = fopen($file, 'w');
 		    fwrite($fp, $delib[0]['Deliberation']['delib_pdf']);
 		    fclose($fp);
-                    
         	        // Checker le code classification
         	        $data = array(
       	                 'api'           => '1',
@@ -1085,6 +1083,7 @@ class DeliberationsController extends AppController {
                               echo ('    document.getElementById("affiche").style.display="none";');
                               echo ('    document.getElementById("contTemp").style.display="none";');
                               echo ('</script>');
+			      echo 'Erreur Curl : ' .  $curl_return;
 			      die ('<br /><a href ="/deliberations/transmit"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
                          }
 			 else {
