@@ -191,22 +191,26 @@
                $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', utf8_encode( $delib['Deliberation']['vote_nb_retrait']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('nombre_votant', $nb_votant, 'text'));
                $oMainPart->addElement(new GDO_FieldType('commentaire_vote',  utf8_encode($delib['Deliberation']['vote_commentaire']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('date_reception',  utf8_encode($delib['Deliberation']['dateAR']), 'text'));
+
 
                $commentaires = new GDO_IterationType("Commentaires");
                foreach($delib['Commentaire'] as $commentaire) {
                    $oDevPart = new GDO_PartType();
-		   if ($commentaire['commentaire_auto']==0)
+		   if ($commentaire['commentaire_auto']==0){
                        $oDevPart->addElement(new GDO_FieldType("texte_commentaire", utf8_encode($commentaire['texte']), "text"));
-                   $commentaires->addPart($oDevPart);
+                       $commentaires->addPart($oDevPart);
+		   }
                 }
                @$oMainPart->addElement($commentaires);
 
                $avisCommission = new GDO_IterationType("AvisCommission");
                foreach($delib['Commentaire'] as $commentaire) {
                    $oDevPart = new GDO_PartType();
-		   if ($commentaire['commentaire_auto']==1)
+		   if ($commentaire['commentaire_auto']==1) {
                        $oDevPart->addElement(new GDO_FieldType("avis", utf8_encode($commentaire['texte']), "text"));
-                   $avisCommission->addPart($oDevPart);
+                       $avisCommission->addPart($oDevPart);
+		   }
                 }
                @$oMainPart->addElement($avisCommission);
 
