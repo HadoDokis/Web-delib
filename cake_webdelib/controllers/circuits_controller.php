@@ -4,10 +4,79 @@ class CircuitsController extends AppController {
 	var $name = 'Circuits';
 	var $helpers = array('Html', 'Form' , 'Javascript');
 	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'UsersCircuit', 'Deliberation');
+	var $components = array('Parafwebservice');
 
 	// Gestion des droits
-	var $aucunDroit = array('getCurrentCircuit', 'getCurrentPosition', 'getLastPosition', 'intervertirPosition', 'isEditable');
+	var $aucunDroit = array('getCurrentCircuit', 'getCurrentPosition', 'getLastPosition', 'intervertirPosition', 'isEditable','test');
 	var $commeDroit = array('addUser'=>'Circuits:index', 'supprimerUser'=>'Circuits:index', 'add'=>'Circuits:index', 'delete'=>'Circuits:index', 'view'=>'Circuits:index', 'edit'=>'Circuits:index');
+
+        function test () {
+                //echo $this->Parafwebservice->test();
+
+                /*$echo = $this->Parafwebservice->echoWebservice();
+                echo $echo;*/
+
+                $types = $this->Parafwebservice->getListeTypesWebservice();
+                debug($types);
+
+                $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+                debug($soustypes);
+
+                $circuit = $this->Parafwebservice->getCircuit(TYPETECH, 'C1');
+                debug($circuit);
+
+                //$histo = $this->Parafwebservice->getHistoDossierWebservice('R-006-00-C2-20091005035902');
+                //echo $histo;
+                //var_dump($histo);
+                //$rechdos = $this->Parafwebservice->rechercherDossierWebservice('HELIOS', 'C1', '', '', '');
+                //echo $rechdos;
+                //var_dump($rechdos);
+
+                //$archdos = $this->Parafwebservice->archiverDossierWebservice('test_20091126_02', 'ARCHIVER');
+                //echo $archdos;
+                //var_dump($archdos);
+
+                /*$effdos = $this->Parafwebservice->effacerDossierRejeteWebservice('R-006-00-C2-20091005035902');
+                echo $effdos;
+                var_dump($effdos);*/
+
+                //$remorddos = $this->Parafwebservice->exercerDroitRemordWebservice('R-006-00-C2-20091005035902');
+                //echo $remorddos;
+                //var_dump($remorddos);
+/*
+                $typetech = "ACTES";
+                $soustype = "C1";
+                $emailemetteur = "htexier@cogitis.fr";
+                $dossierid = "test_20091202_04";
+                $visibilite = "PUBLIC";
+                $nomfichierpdf = "testdocprincip.pdf";
+                $pdf = file_get_contents(DOSPDF."/".$nomfichierpdf);
+                $creerdos = $this->Parafwebservice->creerDossierWebservice($typetech, $soustype, $emailemetteur, $dossierid, '', '', $visibilite, '', $pdf);
+                echo $creerdos;
+*/
+                /*$getdos = $this->Parafwebservice->getDossierWebservice('R-006-00-C2-20091005035902');
+                echo $getdos;*/
+
+                //$envoitdt = $this->Parafwebservice->envoyerDossierTdTWebservice('R-006-00-C2-20091005035902');
+                //echo $envoitdt;
+                //var_dump($envoitdt);
+
+                //$statutdt = $this->Parafwebservice->getStatutTdTWebservice('R-006-00-C2-20091005035902');
+                //echo $statutdt;
+                //var_dump($statutdt);
+
+                //$forcetape = $this->Parafwebservice->forcerEtapeWebservice('test_20091202_04', 'OK', 'Etape TdT sauté', '');
+                //echo $forcetape;
+                //var_dump($forcetape);
+
+                /*$getdossier = $this->Parafwebservice->getDossierWebservice('test_20091202_01');//test_20091126_01
+                echo $getdossier;
+                var_dump($getdossier);*/
+
+            exit;
+        }
+
+
 
 	function view($id = null) {
 		if (!$id) {
@@ -59,113 +128,127 @@ class CircuitsController extends AppController {
 		}
 	}
 
-	function index($circuit_id=null, $service_id=null) {
-		$this->set('lastPosition', '-1');
+        function index($circuit_id=null, $service_id=null) {
+            $this->set('lastPosition', '-1');
+            $listeUsers['id']=array();
+            $listeUsers['nom']=array();
+            $listeUsers['prenom']=array();
+            $listeUserCircuit['id']=array();
+            $listeUserCircuit['circuit_id']=array();
+            $listeUserCircuit['libelle']=array();
+       	    $listeUserCircuit['user_id']=array();
+       	    $listeUserCircuit['nom']=array();
+            $listeUserCircuit['prenom']=array();
+            $listeUserCircuit['service_id']=array();
+       	    $listeUserCircuit['position']=array();
+            $listeUserCircuit['service_libelle']=array();
+            if (USE_PARAPH)            
+                $listCircuitsParaph = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+            $circuits=$this->Circuit->generateList(null, "libelle ASC");
 
-		$listeUsers['id']=array();
-		$listeUsers['nom']=array();
-		$listeUsers['prenom']=array();
-		$listeUserCircuit['id']=array();
-       	$listeUserCircuit['circuit_id']=array();
-       	$listeUserCircuit['libelle']=array();
-       	$listeUserCircuit['user_id']=array();
-       	$listeUserCircuit['nom']=array();
-       	$listeUserCircuit['prenom']=array();
-       	$listeUserCircuit['service_id']=array();
-       	$listeUserCircuit['position']=array();
-       	$listeUserCircuit['service_libelle']=array();
-		$circuits=$this->Circuit->generateList(null, "libelle ASC");
-
-		//affichage du circuit existant
-		if (isset($circuit_id)){
-		    $this->set('circuit_id', $circuit_id);
-		    $condition = "UsersCircuit.circuit_id = $circuit_id";
-		    $desc = 'UsersCircuit.position ASC';
-
-		    $this->set('isEditable', $this->isEditable($circuit_id));
-       		$tmplisteUserCircuit = $this->UsersCircuit->findAll($condition, null, $desc);
-
-       		for ($i=0; $i<count($tmplisteUserCircuit);$i++) {
-       			array_push($listeUserCircuit['id'], $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
-       			array_push($listeUserCircuit['circuit_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['circuit_id']);
-       			array_push($listeUserCircuit['libelle'], $tmplisteUserCircuit[$i]['Circuit']['libelle']);
-       			array_push($listeUserCircuit['user_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['user_id']);
-       			array_push($listeUserCircuit['nom'], $tmplisteUserCircuit[$i]['User']['nom']);
-       			array_push($listeUserCircuit['prenom'], $tmplisteUserCircuit[$i]['User']['prenom']);
-       			array_push($listeUserCircuit['service_libelle'], $tmplisteUserCircuit[$i]['Service']['libelle']);
-       			array_push($listeUserCircuit['service_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['service_id']);
-       			array_push($listeUserCircuit['position'], $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
-       		}
-  			$this->set('listeUserCircuit', $listeUserCircuit);
-  			$this->set('lastPosition', $this->getLastPosition($circuit_id));
+             //affichage du circuit existant 
+            if (isset($circuit_id)){
+                $this->set('circuit_id', $circuit_id);
+                $condition = "UsersCircuit.circuit_id = $circuit_id";
+                $desc = 'UsersCircuit.position ASC';
+                $this->set('isEditable', $this->isEditable($circuit_id));
+                $tmplisteUserCircuit = $this->UsersCircuit->findAll($condition, null, $desc);
+                for ($i=0; $i<count($tmplisteUserCircuit);$i++) {
+		    if ($tmplisteUserCircuit[$i]['UsersCircuit']['service_id']== -1) {
+		          array_push($listeUserCircuit['id'],   $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
+		          array_push($listeUserCircuit['nom'], $listCircuitsParaph['soustype'][$tmplisteUserCircuit[$i]['UsersCircuit']['user_id']]);
+                          array_push($listeUserCircuit['prenom'], TYPETECH);
+			  array_push($listeUserCircuit['service_libelle'], 'i-parapheur');
+                          array_push($listeUserCircuit['position'],  $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
+                    }
+		    else {
+       	                array_push($listeUserCircuit['id'], $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
+       	                array_push($listeUserCircuit['circuit_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['circuit_id']);
+     	                array_push($listeUserCircuit['libelle'], $tmplisteUserCircuit[$i]['Circuit']['libelle']);
+                        array_push($listeUserCircuit['user_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['user_id']);
+                        array_push($listeUserCircuit['nom'], $tmplisteUserCircuit[$i]['User']['nom']);
+       	                array_push($listeUserCircuit['prenom'], $tmplisteUserCircuit[$i]['User']['prenom']);
+                        array_push($listeUserCircuit['service_libelle'], $tmplisteUserCircuit[$i]['Service']['libelle']);
+                        array_push($listeUserCircuit['service_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['service_id']);
+                        array_push($listeUserCircuit['position'], $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
+                    }
 		}
-		else
-			$this->set('circuit_id', '0');
+                $this->set('listeUserCircuit', $listeUserCircuit);
+                $this->set('lastPosition', $this->getLastPosition($circuit_id));
+            }
+            else
+                $this->set('circuit_id', '0');
 
-		$this->set('circuits', $circuits);
+            $this->set('circuits', $circuits);
 
-		$services=$this->Service->generateList('Service.actif=1', "libelle ASC");
-		if (isset($service_id))
-		    $this->set('service_id', $service_id);
-		else
-		    $this->set('service_id', '0');
+            $services=$this->Service->generateList('Service.actif=1', "libelle ASC");
+            if (USE_PARAPH) 
+                $services['-1']= 'i-parapheur';
+                
+            if (isset($service_id))
+                $this->set('service_id', $service_id);
+            else
+                $this->set('service_id', '0');
+            $this->set('services', $services);
 
-		$this->set('services', $services);
-
-		//traitement du circuit (création ou modification)
-		if (empty($this->data)) {
-			if ($service_id!=null) {
-				$liste_users=$this->UsersService->findAll("UsersService.service_id=$service_id");
-
-				for ($i=0; $i<count($liste_users);$i++){
-				    array_push($listeUsers['id'], $liste_users[$i]['UsersService']['user_id']);
-				    array_push($listeUsers['nom'],  $this->requestAction("users/getNom/".$liste_users[$i]['UsersService']['user_id']));
-				    array_push($listeUsers['prenom'], $this->requestAction("users/getPrenom/".$liste_users[$i]['UsersService']['user_id']));
-				}
-				$this->set('service_id', $service_id);
-  			    $this->set('listeUser', $listeUsers);
-			}
-			$this->render();
+           //traitement du circuit (création ou modification)
+            if (empty($this->data)) {
+                if ($service_id!=null) {
+                    if ($service_id == -1){
+			for ($i=0; $i<count($listCircuitsParaph['soustype']);$i++){
+                            array_push($listeUsers['id'], $i);
+                            array_push($listeUsers['prenom'], TYPETECH);
+                            array_push($listeUsers['nom'], $listCircuitsParaph['soustype'][$i]);
+                        }
+                    }
+                    else {
+                        $liste_users=$this->UsersService->findAll("UsersService.service_id=$service_id");
+                        for ($i=0; $i<count($liste_users);$i++){
+                            array_push($listeUsers['id'], $liste_users[$i]['UsersService']['user_id']);
+                            array_push($listeUsers['nom'],  $this->requestAction("users/getNom/".$liste_users[$i]['UsersService']['user_id']));
+                            array_push($listeUsers['prenom'], $this->requestAction("users/getPrenom/".$liste_users[$i]['UsersService']['user_id']));
+                        }
+                    }
+                    $this->set('service_id', $service_id);
+                    $this->set('listeUser', $listeUsers);
+                    $this->render();
 		}
-	}
+	    }
+        }
 
 	function addUser($circuit_id=null, $service_id=null, $user_id=null)
 	{
-		$condition = "circuit_id = $circuit_id";
-        $data = $this->UsersCircuit->findAll($condition);
-        $position = $this->getLastPosition($circuit_id) + 1;
+            $condition = "circuit_id = $circuit_id";
+            $data = $this->UsersCircuit->findAll($condition);
+            $position = $this->getLastPosition($circuit_id) + 1;
 
-        //on recherche si l'utilisateur existe déjà dans le circuit de validation
-		$uniq=true;
-		$i=0;
-		while(($uniq==true)&&($i<sizeof($data)))
-		{
-			if ($data[$i]['UsersCircuit']['user_id']==$user_id)
-			{
-				$uniq=false; //il existe
-			}
-			$i++;
-		}
+            //on recherche si l'utilisateur existe déjà dans le circuit de validation
+	    $uniq=true;
+	    $i=0;
+	    while(($uniq==true)&&($i<sizeof($data))) {
+                 if (($data[$i]['UsersCircuit']['user_id']==$user_id)&&($service_id!=-1)) {
+                     $uniq=false; //il existe
+                 }
+                 $i++;
+            }
 
-		if ($uniq==true)
-		{
-       		$this->params['data']['UsersCircuit']['position'] = $position;
-			$this->params['data']['UsersCircuit']['circuit_id'] = $circuit_id ;
-			$this->params['data']['UsersCircuit']['service_id'] = $service_id ;
-			$this->params['data']['UsersCircuit']['user_id']   = $user_id ;
+            if ($uniq==true)  {
+                $this->params['data']['UsersCircuit']['position'] = $position;
+                $this->params['data']['UsersCircuit']['circuit_id'] = $circuit_id ;
+                $this->params['data']['UsersCircuit']['service_id'] = $service_id ;
+                $this->params['data']['UsersCircuit']['user_id']   = $user_id ;
 
-			if ($this->UsersCircuit->save($this->params['data'])){
-			    $this->redirect("/circuits/index/$circuit_id/$service_id");
-			}
-			else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-			}
-		}
-		else
-		{
-			$this->Session->setFlash("L'utilisateur est déjà dans le circuit !");
-			$this->redirect("/circuits/index/$circuit_id/$service_id");
-		}
+                if ($this->UsersCircuit->save($this->params['data'])){
+                    $this->redirect("/circuits/index/$circuit_id/$service_id");
+                }
+                else {
+                    $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+                }
+            }
+            else {
+                 $this->Session->setFlash("L'utilisateur est déjà dans le circuit !");
+		 $this->redirect("/circuits/index/$circuit_id/$service_id");
+            }
 	}
 
     function intervertirPosition ($oldIdPos, $sens) {
@@ -234,30 +317,29 @@ class CircuitsController extends AppController {
 	    $this->redirect($redirect);
 	}
 
-	function isEditable ($circuit_id) {
-		$condition = "circuit_id=$circuit_id and etat=1";
-		$delibInCircuit = $this->Deliberation->findAll($condition);
-		return empty($delibInCircuit);
-	}
-
-  	function getCurrentPosition($id){
-    	$conditions = "UsersCircuit.id = $id";
-    	$field = 'position';
-    	$obj = $this->UsersCircuit->findAll($conditions);
-
-    	return  $obj['0']['UsersCircuit']['position'];
+    function isEditable ($circuit_id) {
+        $condition = "circuit_id=$circuit_id and etat=1";
+        $delibInCircuit = $this->Deliberation->findAll($condition);
+        return empty($delibInCircuit);
     }
 
-    function getCurrentCircuit($id)
-    {
-		$condition = "UsersCircuit.id = $id";
+    function getCurrentPosition($id){
+        $conditions = "UsersCircuit.id = $id";
+        $field = 'position';
+        $obj = $this->UsersCircuit->findAll($conditions);
+
+        return  $obj['0']['UsersCircuit']['position'];
+    }
+
+    function getCurrentCircuit($id){
+        $condition = "UsersCircuit.id = $id";
         $objCourant = $this->UsersCircuit->findAll($condition);
-		return $objCourant['0']['UsersCircuit']['circuit_id'];
+        return $objCourant['0']['UsersCircuit']['circuit_id'];
 
     }
 
-   	function getLastPosition($circuit_id) {
-		return count($this->UsersCircuit->findAll("circuit_id = $circuit_id"));
+    function getLastPosition($circuit_id) {
+        return count($this->UsersCircuit->findAll("circuit_id = $circuit_id"));
     }
 
 
