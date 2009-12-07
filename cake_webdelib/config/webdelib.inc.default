@@ -38,18 +38,19 @@
     ////////////////////////
     // Configuration Webservice
     ////////////////////////
+    define('USE_PARAPH', true);
     define('WSACTION', 'https://x.x.x.x/alfresco');
-	define('WSTO', 'https://x.x.x.x/ws-iparapheur');
-	define('CACERT',     WEBDELIB_PATH.'config/cert_paraf/AC.pem');
-	define('CLIENTCERT', WEBDELIB_PATH.'config/cert_paraf/iparapheur-client_AC.pem');
-	define('PASSPHRASE', 'iparapheur-client');
-	define('HTTPAUTH',   'webservice@webdelib');
-	define('HTTPPASSWD', 'webservice123');
-	define('HTTPTYPE',   'Basic');
-	define('VERSSOAP', '1.1');
-	define('USEMTOM', TRUE);
-	define ('WSDL', 'ws-iparapheur.wsdl');
-	define('TYPETECH', 'ACTES');
-	define('DOSPDF',  WEBDELIB_PATH.'config/dospdf');
+    define('WSTO', 'https://x.x.x.x/ws-iparapheur');
+    define('CACERT',     WEBDELIB_PATH.'config/cert_paraf/AC.pem');
+    define('CLIENTCERT', WEBDELIB_PATH.'config/cert_paraf/iparapheur-client_AC.pem');
+    define('PASSPHRASE', 'iparapheur-client');
+    define('HTTPAUTH',   'webservice@webdelib');
+    define('HTTPPASSWD', 'webservice123');
+    define('HTTPTYPE',   'Basic');
+    define('VERSSOAP', '1.1');
+    define('USEMTOM', TRUE);
+    define ('WSDL', 'ws-iparapheur.wsdl');
+    define('TYPETECH', 'ACTES');
+    define('DOSPDF',  WEBDELIB_PATH.'config/dospdf');
 
 ?>
