@@ -597,7 +597,7 @@ class SeancesController extends AppController {
 				$this->data['Commentaire']['texte'].= ($this->data['Deliberation']['avis'] == 1) ? 'favorable' : 'défavorable';
 				$this->data['Commentaire']['texte'].= ' en '. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$deliberation['Seance']['type_id']);
 				$this->data['Commentaire']['texte'].= ' du ' .$this->Date->frenchDate(strtotime($deliberation['Seance']['date']));
-				 $this->data['Commentaire']['commentaire_auto'] = 1;
+				$this->data['Commentaire']['commentaire_auto'] = 1;
 				$this->Deliberation->Commentaire->save($this->data);
 
 				$sortie = true;
