@@ -48,9 +48,11 @@ class AppController extends Controller {
 	var $userProfil = null;
 
 	function checkSession() {
-		$this->infoUser = "<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ";
-   		$this->agentServices = $this->Session->read('user.Service');
+            $this->infoUser = "<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ";
+   	    $this->agentServices = $this->Session->read('user.Service');
  	    $this->lienDeconnexion = "[<span class=\"deconnexion\"><a href=\"".$this->base."/users/logout\"> D&eacute;connexion</a></span>]";
+
+                if (CRON_DISPATCHER) return true;
 
 		if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login')
 		{
