@@ -26,6 +26,7 @@
  * @lastmodified	$Date: 2007-02-04 23:18:05 -0600 (Sun, 04 Feb 2007) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
+ define('CRON_DISPATCHER',false); 
 /**
  * Do not change
  */
