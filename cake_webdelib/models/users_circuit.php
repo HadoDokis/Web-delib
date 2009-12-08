@@ -59,5 +59,46 @@ class UsersCircuit extends AppModel {
  	function estDansCircuit($userId, $circuitId) {
  		return $this->findCount("user_id = $userId AND circuit_id = $circuitId", -1);
  	}
+
+        function afficheListeCircuit($circuit_id,  $listCircuitsParaph=null){ 
+
+            $listeUsers['id']=array();
+            $listeUsers['nom']=array();
+            $listeUsers['prenom']=array();
+            $listeUserCircuit['id']=array();
+            $listeUserCircuit['circuit_id']=array();
+            $listeUserCircuit['libelle']=array();
+            $listeUserCircuit['user_id']=array();
+            $listeUserCircuit['nom']=array();
+            $listeUserCircuit['prenom']=array();
+            $listeUserCircuit['service_id']=array();
+            $listeUserCircuit['position']=array();
+            $listeUserCircuit['service_libelle']=array();
+
+            $condition = "UsersCircuit.circuit_id = $circuit_id";
+            $desc = 'UsersCircuit.position ASC';
+            $tmplisteUserCircuit = $this->findAll($condition, null, $desc);
+            for ($i=0; $i<count($tmplisteUserCircuit);$i++) {
+                if ($tmplisteUserCircuit[$i]['UsersCircuit']['service_id']== -1) {
+                    array_push($listeUserCircuit['id'],   $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
+                    array_push($listeUserCircuit['nom'], $listCircuitsParaph['soustype'][$tmplisteUserCircuit[$i]['UsersCircuit']['user_id']]);
+                    array_push($listeUserCircuit['prenom'], TYPETECH);
+                    array_push($listeUserCircuit['service_libelle'], 'i-parapheur');
+                    array_push($listeUserCircuit['position'],  $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
+                }
+                else {
+                    array_push($listeUserCircuit['id'], $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
+                    array_push($listeUserCircuit['circuit_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['circuit_id']);
+                    array_push($listeUserCircuit['libelle'], $tmplisteUserCircuit[$i]['Circuit']['libelle']);
+                    array_push($listeUserCircuit['user_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['user_id']);
+                    array_push($listeUserCircuit['nom'], $tmplisteUserCircuit[$i]['User']['nom']);
+                    array_push($listeUserCircuit['prenom'], $tmplisteUserCircuit[$i]['User']['prenom']);
+                    array_push($listeUserCircuit['service_libelle'], $tmplisteUserCircuit[$i]['Service']['libelle']);
+                    array_push($listeUserCircuit['service_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['service_id']);
+                    array_push($listeUserCircuit['position'], $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
+                }
+           }
+           return  $listeUserCircuit; 
+        }
 }
 ?>
