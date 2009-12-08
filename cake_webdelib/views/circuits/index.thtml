@@ -64,7 +64,10 @@
 	if (isset($listeUser)) {
 		for ($i=0; $i<count($listeUser['id']); $i++){
 	    	echo("<tr>");   
-	        echo ("<td>".$listeUser['id'][$i]."</td>");
+		if ($service_id != -1)
+	             echo ("<td>".$listeUser['id'][$i]."</td>");
+		else
+		      echo ("<td>&nbsp;</td>");
 	        echo("<td>".$listeUser['prenom'][$i]."</td>");
 	        echo("<td>".$listeUser['nom'][$i]."</td>");
 	        echo("<td><a href='".$loc.$listeUser['id'][$i]."/'>Ajouter au circuit</a></td>");
