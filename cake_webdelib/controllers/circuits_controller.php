@@ -11,12 +11,13 @@ class CircuitsController extends AppController {
 	var $commeDroit = array('addUser'=>'Circuits:index', 'supprimerUser'=>'Circuits:index', 'add'=>'Circuits:index', 'delete'=>'Circuits:index', 'view'=>'Circuits:index', 'edit'=>'Circuits:index');
 
         function test () {
+	        if (!defined('CRON_DISPATCHER')) { $this->redirect('/'); exit(); } 
                 //echo $this->Parafwebservice->test();
 
                 /*$echo = $this->Parafwebservice->echoWebservice();
                 echo $echo;*/
 
-                $types = $this->Parafwebservice->getListeTypesWebservice();
+/*                $types = $this->Parafwebservice->getListeTypesWebservice();
                 debug($types);
 
                 $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
@@ -24,9 +25,11 @@ class CircuitsController extends AppController {
 
                 $circuit = $this->Parafwebservice->getCircuit(TYPETECH, 'C1');
                 debug($circuit);
+*/
+                $histo = $this->Parafwebservice->getHistoDossierWebservice('webdelib_1');
+                debug($histo);
+		debug($this->Deliberation->findAll());
 
-                //$histo = $this->Parafwebservice->getHistoDossierWebservice('R-006-00-C2-20091005035902');
-                //echo $histo;
                 //var_dump($histo);
                 //$rechdos = $this->Parafwebservice->rechercherDossierWebservice('HELIOS', 'C1', '', '', '');
                 //echo $rechdos;
@@ -129,7 +132,6 @@ class CircuitsController extends AppController {
 	}
 
         function index($circuit_id=null, $service_id=null) {
-            $this->set('lastPosition', '-1');
             $listeUsers['id']=array();
             $listeUsers['nom']=array();
             $listeUsers['prenom']=array();
@@ -142,37 +144,23 @@ class CircuitsController extends AppController {
             $listeUserCircuit['service_id']=array();
        	    $listeUserCircuit['position']=array();
             $listeUserCircuit['service_libelle']=array();
-            if (USE_PARAPH)            
+
+            $this->set('lastPosition', '-1');
+            if (USE_PARAPH) {
+	        $i=0;
                 $listCircuitsParaph = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+                foreach  ($listCircuitsParaph['soustype'] as $circuitParaph){
+		    $listCircuitsParaph['circuit'][$i]= $this->Parafwebservice->getCircuit(TYPETECH,  $circuitParaph);
+		    $i++;
+                }
+            }
             $circuits=$this->Circuit->generateList(null, "libelle ASC");
 
              //affichage du circuit existant 
             if (isset($circuit_id)){
                 $this->set('circuit_id', $circuit_id);
-                $condition = "UsersCircuit.circuit_id = $circuit_id";
-                $desc = 'UsersCircuit.position ASC';
                 $this->set('isEditable', $this->isEditable($circuit_id));
-                $tmplisteUserCircuit = $this->UsersCircuit->findAll($condition, null, $desc);
-                for ($i=0; $i<count($tmplisteUserCircuit);$i++) {
-		    if ($tmplisteUserCircuit[$i]['UsersCircuit']['service_id']== -1) {
-		          array_push($listeUserCircuit['id'],   $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
-		          array_push($listeUserCircuit['nom'], $listCircuitsParaph['soustype'][$tmplisteUserCircuit[$i]['UsersCircuit']['user_id']]);
-                          array_push($listeUserCircuit['prenom'], TYPETECH);
-			  array_push($listeUserCircuit['service_libelle'], 'i-parapheur');
-                          array_push($listeUserCircuit['position'],  $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
-                    }
-		    else {
-       	                array_push($listeUserCircuit['id'], $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
-       	                array_push($listeUserCircuit['circuit_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['circuit_id']);
-     	                array_push($listeUserCircuit['libelle'], $tmplisteUserCircuit[$i]['Circuit']['libelle']);
-                        array_push($listeUserCircuit['user_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['user_id']);
-                        array_push($listeUserCircuit['nom'], $tmplisteUserCircuit[$i]['User']['nom']);
-       	                array_push($listeUserCircuit['prenom'], $tmplisteUserCircuit[$i]['User']['prenom']);
-                        array_push($listeUserCircuit['service_libelle'], $tmplisteUserCircuit[$i]['Service']['libelle']);
-                        array_push($listeUserCircuit['service_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['service_id']);
-                        array_push($listeUserCircuit['position'], $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
-                    }
-		}
+		$listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
                 $this->set('listeUserCircuit', $listeUserCircuit);
                 $this->set('lastPosition', $this->getLastPosition($circuit_id));
             }
@@ -196,9 +184,14 @@ class CircuitsController extends AppController {
                 if ($service_id!=null) {
                     if ($service_id == -1){
 			for ($i=0; $i<count($listCircuitsParaph['soustype']);$i++){
+			    $circ = "";
                             array_push($listeUsers['id'], $i);
-                            array_push($listeUsers['prenom'], TYPETECH);
-                            array_push($listeUsers['nom'], $listCircuitsParaph['soustype'][$i]);
+			    foreach ($listCircuitsParaph['circuit'][$i] as $etape)
+			        for($j=0; $j<count($etape) ; $j++)
+				    $circ .= utf8_decode($etape[$j]['Prenom']).' '.utf8_decode($etape[$j]['Nom']).', ';
+
+                            array_push($listeUsers['nom'],   $circ);
+                            array_push($listeUsers['prenom'], "<u>".$listCircuitsParaph['soustype'][$i]. '</u> : ');
                         }
                     }
                     else {
