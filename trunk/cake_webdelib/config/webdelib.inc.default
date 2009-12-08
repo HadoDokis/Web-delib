@@ -51,6 +51,6 @@
     define('USEMTOM', TRUE);
     define ('WSDL', 'ws-iparapheur.wsdl');
     define('TYPETECH', 'ACTES');
-    define('DOSPDF',  WEBDELIB_PATH.'config/dospdf');
-
+    define ('VISIBILITY', 'PUBLIC');
+     
 ?>
