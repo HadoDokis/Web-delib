@@ -406,7 +406,23 @@
                                                'telmobile_acteur' => $acteur['Acteur']['telmobile'],
                                                'note_acteur' => $acteur['Acteur']['note']);
                }
-
+               $acteurs = $this->Vote->findAll("resultat =5 AND delib_id = ".$delib['Deliberation']['id']);
+               foreach ($acteurs as $acteur) {
+                 $acteurs_sans_participation[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                               'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                               'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                               'titre_acteur'=> $acteur['Acteur']['titre'],
+                                               'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                               'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                               'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                               'cp_acteur' => $acteur['Acteur']['cp'],
+                                               'ville_acteur' => $acteur['Acteur']['ville'],
+                                               'email_acteur' => $acteur['Acteur']['email'],
+                                               'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                               'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                               'note_acteur' => $acteur['Acteur']['note']);
+               }
+ 
 	
 
                @$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents",   $acteurs_presents, false, '_present'));
@@ -415,6 +431,7 @@
                @$oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre",     $acteurs_contre, false, '_contre'));
                @$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPour",       $acteurs_pour, false, '_pour'));
                @$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbstention", $acteurs_abstention, false, '_abstention'));
+               @$oMainPart->addElement($this->_makeBlocsActeurs("ActeursSansParticipation", $acteurs_sans_participation, false, '_sans_participation'));
 
 
                return $oMainPart;
