@@ -27,8 +27,7 @@ class ParafwebserviceComponent extends Object {
 		    	$requestMessage = new WSMessage($this->requestPayloadString, 
 										        array(
 										        	"to" => WSTO,
-										        	"attachments" => array("fichierPDF" => $attachment,
-										        	)
+										        	"attachments" => $attachment
 										       	));
 		    }
 		    
@@ -133,7 +132,8 @@ class ParafwebserviceComponent extends Object {
 		return $this->traiteXMLMessageRetour();		
 	}
 	
-	function creerDossierWebservice($typetech, $soustype, $emailemetteur, $dossierid, $annotpub='', $annotpriv='', $visibilite, $datelim='', $pdf){
+	function creerDossierWebservice($typetech, $soustype, $emailemetteur, $dossierid, $annotpub='', $annotpriv='', $visibilite, $datelim='', $pdf, $docsannexes=array()){
+		$attachments = array('fichierPDF'=>$pdf);
 		$this->requestPayloadString = '<ns:CreerDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
 								         <ns:TypeTechnique>'.$typetech.'</ns:TypeTechnique>
 								         <ns:SousType>'.$soustype.'</ns:SousType>
@@ -141,14 +141,29 @@ class ParafwebserviceComponent extends Object {
 								         <ns:DossierID>'.$dossierid.'</ns:DossierID>
 								         <ns:DocumentPrincipal xm:contentType="application/pdf">
 								         	<xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:fichierPDF"></xop:Include>
-								         </ns:DocumentPrincipal>
-								         <ns:XPathPourSignature></ns:XPathPourSignature>
+								         </ns:DocumentPrincipal>';
+		$this->requestPayloadString .= '<ns:DocumentsAnnexes>';
+			
+		for($i=0; $i<count($docsannexes); $i++){		
+		         $this->requestPayloadString .= '<ns:DocAnnexe>
+		               <ns:nom>'.$docsannexes[$i][3].'</ns:nom>
+		               <ns:fichier xm:contentType="'.$docsannexes[$i][1].'">
+		               <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:annexe_'.$i.'"></xop:Include>
+		               </ns:fichier>
+		               <ns:mimetype>'.$docsannexes[$i][1].'</ns:mimetype>
+		               <ns:encoding>'.$docsannexes[$i][2].'</ns:encoding>
+		            </ns:DocAnnexe>';
+		         $attachments = array_merge($attachments, array("annexe_".$i => $docsannexes[$i][0]));
+		}      
+     
+        $this->requestPayloadString .= '</ns:DocumentsAnnexes>';
+		$this->requestPayloadString .= '<ns:XPathPourSignature></ns:XPathPourSignature>
 								         <ns:AnnotationPublique>'.$annotpub.'</ns:AnnotationPublique>
 								         <ns:AnnotationPrivee>'.$annotpriv.'</ns:AnnotationPrivee>
 								         <ns:Visibilite>'.$visibilite.'</ns:Visibilite>
 								         <ns:DateLimite>'.$datelim.'</ns:DateLimite>
 									   </ns:CreerDossierRequest>';
-		$this->lancerRequete($pdf);
+		$this->lancerRequete($attachments);
 		//return $this->responseMessage->str;	
 		return $this->traiteXMLMessageRetour();			
 	}
