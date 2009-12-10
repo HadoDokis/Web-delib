@@ -2,16 +2,16 @@
 class DeliberationsController extends AppController {
 /*
  * Deliberation.etat = -1 : refusé
- *	Deliberation.etat = 0 : en cours de rédaction
- *  Deliberation.etat = 1 : dans un circuit
- * 	Deliberation.etat = 2 : validé
- *  Deliberation.etat = 3 : Voté pour
- * 	Deliberation.etat = 4 : Voté contre
- * 	Deliberation.etat = 5 : envoyé
+ * Deliberation.etat = 0 : en cours de rédaction
+ * Deliberation.etat = 1 : dans un circuit
+ * Deliberation.etat = 2 : validé
+ * Deliberation.etat = 3 : Voté pour
+ * Deliberation.etat = 4 : Voté contre
+ * Deliberation.etat = 5 : envoyé
  *
- *  Deliberation.avis = 0 ou null : pas d'avis donné
- *  Deliberation.avis = 1 : avis favorable
- *  Deliberation.avis = 2 : avis défavorable
+ * Deliberation.avis = 0 ou null : pas d'avis donné
+ * Deliberation.avis = 1 : avis favorable
+ * Deliberation.avis = 2 : avis défavorable
  */
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
@@ -73,8 +73,14 @@ class DeliberationsController extends AppController {
 		// Lecture et initialisation des commentaires
 		$commentaires = $this->Commentaire->findAll("delib_id =  $id");
 		for($i=0; $i< count($commentaires) ; $i++) {
-			$nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
-			$prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
+		        if($commentaires[$i]['Commentaire']['agent_id'] == -1) {
+			    $nomAgent = 'i-parapheur';
+			    $prenomAgent = '';
+			}  
+			else {
+			    $nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
+			    $prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
+			}
 			$commentaires[$i]['Commentaire']['nomAgent'] = $nomAgent;
 			$commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
 		}
@@ -557,10 +563,9 @@ class DeliberationsController extends AppController {
                         $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
                         $soustype = $soustypes ['soustype'][$user['UsersCircuit']['user_id']];
                         $emailemetteur = "htexier@cogitis.fr";
-                        $dossierid = "webdelib_$id";
                         $nomfichierpdf = "P_$id.pdf";
                         $pdf = file_get_contents($file);
-                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, $dossierid, '', '', VISIBILITY, '', $pdf);
+                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', '', VISIBILITY, '', $pdf);
 		    }
 
                 }
@@ -640,10 +645,16 @@ class DeliberationsController extends AppController {
 				$this->set('tab_anterieure',$tab_anterieure);
 				$commentaires = $this->Commentaire->findAll("delib_id = $id and pris_en_compte = 0", null, "created ASC");
 				for($i=0; $i< count($commentaires) ; $i++) {
-					$nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
-					$prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
-					$commentaires[$i]['Commentaire']['nomAgent'] = $nomAgent;
-					$commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
+                                    if($commentaires[$i]['Commentaire']['agent_id'] == -1) {
+                                        $nomAgent = 'i-parapheur';
+                                        $prenomAgent = '';
+                                    }
+                                    else {
+                                        $nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
+                                        $prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
+                                    }
+				    $commentaires[$i]['Commentaire']['nomAgent'] = $nomAgent;
+			            $commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
 				}
 				$this->set('commentaires', $commentaires);
 				$deliberation= $this->Deliberation->read(null, $id);
@@ -738,10 +749,9 @@ class DeliberationsController extends AppController {
                                                 $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
                                                 $soustype = $soustypes ['soustype'][$usersCircuit[$lastposprojet]['UsersCircuit']['user_id']];
                                                 $emailemetteur = "htexier@cogitis.fr";
-                                                $dossierid = "webdelib_$id";
                                                 $nomfichierpdf = "P_$id.pdf";
                                                 $pdf = file_get_contents($file);
-                                                $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, $dossierid, '', '', VISIBILITY, '', $pdf); 
+                                                $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', '', VISIBILITY, '', $pdf); 
                                             }
 					    else {
 					        //sinon on fait passerala personne suivante
@@ -757,78 +767,23 @@ class DeliberationsController extends AppController {
 				}
 				else
 				{
-					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
-					$lastpos=count($tab)-1;
+                                    $this->Deliberation->refusDossier($id);
+                                    $delibTmp = $this->Deliberation->read(null, $id);
 
-					//MAJ de la date de traitement de la derniere position courante $lastpos
-					$tab[$lastpos]['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
-					$this->Traitement->save($tab[$lastpos]['Traitement']);
+                                    // TODO notifier par mail toutes les personnes qui ont deja vise le projet
+                                    $this->Deliberation->_notifierDossierRefuse($id, $delibTmp['Deliberation']['redacteur_id']);
+              
+                                    $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
+                                    $circuit_id=$delibTmp['Deliberation']['circuit_id'];
 
-					$this->data['Traitement']['id']='';
-					//maj de la table traitements
-					$this->data['Traitement']['position']=0;
-					$circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
-					$this->data['Traitement']['delib_id']=$id;
-					$this->data['Traitement']['circuit_id']=$circuit_id;
-					$this->Traitement->save($this->data['Traitement']);
+                                    $condition = "circuit_id = $circuit_id";
+                                    $listeUsers = $this->UsersCircuit->findAll($condition);
+                                    foreach($listeUsers as $user) {
+                                       if ($user['UsersCircuit']['service_id'] != -1)
+                                           $this->_notifierDossierRefuse($id, $user['User']['id']);
+                                    }
 
-					// TODO notifier par mail toutes les personnes qui ont deja vise le projet
-					$condition = "circuit_id = $circuit_id";
-					$listeUsers = $this->UsersCircuit->findAll($condition);
-					foreach($listeUsers as $user) {
-					    if ($user['UsersCircuit']['service_id'] != -1)	
-                                                $this->_notifierDossierRefuse($id, $user['User']['id']);
-                                        }
-					// maj de l'etat de la delib dans la table deliberations
-					$tab=$this->Deliberation->findAll("Deliberation.id = $id");
-					$this->_notifierDossierRefuse($id, $tab[0]['Redacteur']['id']);
-
-					$this->data['Deliberation']['etat']=-1; //etat -1 : refuse
-
-					// Retour de la position a 0 pour ne pas qu'il y ait de confusion
-					$this->data['Deliberation']['position']=0;
-					$this->data['Deliberation']['id']=$id;
-					$this->Deliberation->save($this->data['Deliberation']);
-
-					//enregistrement d'une nouvelle delib
-					$delib['Deliberation']=$tab[0]['Deliberation'];
-					$delib['Deliberation']['id']='';
-					$delib['Deliberation']['etat']=0;
-					$delib['Deliberation']['anterieure_id']=$id;
-					$delib['Deliberation']['date_envoi']=0;
-					//$delib['Deliberation']['circuit_id']=0;
-					$delib['Deliberation']['created']='';
-					$delib['Deliberation']['modified']='';
-					$this->Deliberation->save($delib['Deliberation']);
-
-					$delib_id = $this->Deliberation->getLastInsertId();
-					// Copie des annexes du projet refusé vers le nouveau projet
-					$annexes = $tab[0]['Annexe'];
-					foreach($annexes as $annexe) {
-						$annexe['id'] = null;
-						$annexe['created'] = null;
-						$annexe['modified'] = null;
-						$annexe['deliberation_id'] = $delib_id;
-						$this->Annex->save($annexe, false);
-					}
-					// Copie des infos supplémentaires du projet refusé vers le nouveau projet
-					$infoSups = $tab[0]['Infosup'];
-					foreach($infoSups as $infoSup) {
-						$infoSup['id'] = null;
-						$infoSup['deliberation_id'] = $delib_id;
-						$this->Deliberation->Infosup->save($infoSup, false);
-					}
-					// Copie des commentaires du projet refusé vers le nouveau projet
-					$commentaires = $tab[0]['Commentaire'];
-					foreach($commentaires as $commentaire) {
-						$commentaire['id'] = null;
-						$commentaire['created'] = null;
-						$commentaire['modified'] = null;
-						$commentaire['delib_id'] = $delib_id;
-						$this->Deliberation->Commentaire->save($commentaire, false);
-					}
-
-					$this->redirect('/deliberations/mesProjetsATraiter');
+	       			    $this->redirect('/deliberations/mesProjetsATraiter');
 				}
 			}
 		}
@@ -1726,6 +1681,7 @@ class DeliberationsController extends AppController {
 					// ajout du commentaire
 					$this->data['Commentaire']['id'] = '';
 					$this->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
+					$this->data['Commentaire']['commentaire_auto'] = 1;
 					$this->data['Commentaire']['texte'] = 'Validé en urgence le '.date('d-m-Y à H:i:s');
 					$this->data['Commentaire']['texte'].= ', par '. $this->User->prenomNomLogin($this->Session->read('user.User.id'));
 					$this->Deliberation->Commentaire->save($this->data);
