@@ -3,91 +3,90 @@ class CircuitsController extends AppController {
 
 	var $name = 'Circuits';
 	var $helpers = array('Html', 'Form' , 'Javascript');
-	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'UsersCircuit', 'Deliberation');
+	var $uses = array('Commentaire', 'Circuit', 'User', 'Service', 'UsersService', 'UsersCircuit', 'Deliberation', 'Traitement');
 	var $components = array('Parafwebservice');
 
 	// Gestion des droits
-	var $aucunDroit = array('getCurrentCircuit', 'getCurrentPosition', 'getLastPosition', 'intervertirPosition', 'isEditable','test');
+	var $aucunDroit = array('getCurrentCircuit', 'getCurrentPosition', 'getLastPosition', 'intervertirPosition', 'isEditable','listDelibsDansParapheur');
 	var $commeDroit = array('addUser'=>'Circuits:index', 'supprimerUser'=>'Circuits:index', 'add'=>'Circuits:index', 'delete'=>'Circuits:index', 'view'=>'Circuits:index', 'edit'=>'Circuits:index');
 
-        function test () {
-	        if (!defined('CRON_DISPATCHER')) { $this->redirect('/'); exit(); } 
-                //echo $this->Parafwebservice->test();
+        function listDelibsDansParapheur() {
+            //On récupère la liste des id 
+            $circuits = $this->UsersCircuit->findAll('UsersCircuit.service_id = -1', 'circuit_id');
+	    // Si empty de circuit => On utilise pas de parapheur dasn les circuits 
+            if (empty($circuits))
+                 return true;
 
-                /*$echo = $this->Parafwebservice->echoWebservice();
-                echo $echo;*/
+            foreach ($circuits as $circuit) {
+                $delibs = $this->Deliberation->findAll("Deliberation.etat = 1 AND Deliberation.circuit_id =  ".$circuit['UsersCircuit']['circuit_id']);
+                foreach($delibs as $delib){
+                    $circuit_id = $delib['Deliberation']['circuit_id'];
+		    $nbEtapes = $this->UsersCircuit->findCount("UsersCircuit.circuit_id=$circuit_id");
+                    $delib_id   = $delib['Deliberation']['id'];
+                    $traitement = $this->Traitement->find("Traitement.delib_id = $delib_id AND Traitement.circuit_id = $circuit_id ", "MAX(position) as pos");
+                    $positionCourante   = $traitement[0]['pos'];
+                    $tmp = $this->UsersCircuit->find("UsersCircuit.circuit_id=$circuit_id AND UsersCircuit.service_id = -1 AND UsersCircuit.position=  $positionCourante ");
+                    if (!empty($tmp)){
+                        if ($this->_checkEtatParapheur($delib_id)) {
+			    $this->Traitement->create();
+			    $traitement['Traitement']['delib_id']   =  $delib_id;
+			    $traitement['Traitement']['circuit_id'] = $circuit_id;
+			    $traitement['Traitement']['position']   =  $positionCourante + 1;
+			    $this->Traitement->save($traitement['Traitement']);
+                            if ($nbEtapes ==  $positionCourante ) {
+                                // on change l'etat de la delib à 2
+                               $del = $this->Deliberation->read(null,  $delib_id);
+			       $del['Deliberation']['etat'] = 2;
+			       $this->Deliberation->save($del);
+			    }
+		        }
+	            }
+                }
+            }
+	    $this->layout = null;
+        }
+   
+        function _checkEtatParapheur($delib_id) {
+            $histo = $this->Parafwebservice->getHistoDossierWebservice(PREFIX_WEBDELIB.$delib_id);
+	    for ($i =0; $i < count($histo['logdossier']); $i++){
+	       if (($histo['logdossier'][$i]['status']  ==  'Signe') || ($histo['logdossier'][$i]['status']  ==  'Archive')) {
+	           // TODO LIST : Récupéré la date et heure de signature  + QUi l'a signé (annotation)
+		   // On est obligé de supprimé le projet sinon, on ne peut pas le ré-insérer dans un autre circuit du parapheur
+		   $archdos = $this->Parafwebservice->archiverDossierWebservice(PREFIX_WEBDELIB.$delib_id, 'SUPPRIMER');
+		   $this->Commentaire->create();
+                   $comm ['Commentaire']['delib_id'] = $delib_id;
+                   $comm ['Commentaire']['agent_id'] = -1;
+		   $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom']." : ".$histo['logdossier'][$i]['annotation']);	
+		   $comm ['Commentaire']['commentaire_auto'] = 0;
+                   $this->Commentaire->save($comm['Commentaire']); 
+                   return true;
+		   
+	       }
+	       elseif(($histo['logdossier'][$i]['status']=='RejetSignataire')||($histo['logdossier'][$i]['status']=='RejetVisa') ){ // Cas de refus dans le parapheur
+		   $this->Deliberation->refusDossier($delib_id);
 
-/*                $types = $this->Parafwebservice->getListeTypesWebservice();
-                debug($types);
+                   $this->Commentaire->create();
+                   $comm ['Commentaire']['delib_id'] = $delib_id;
+                   $comm ['Commentaire']['agent_id'] = -1;
+                   $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom']." : ".$histo['logdossier'][$i]['annotation']);
+                   $comm ['Commentaire']['commentaire_auto'] = 0;
+                   $this->Commentaire->save($comm['Commentaire']);
 
-                $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
-                debug($soustypes);
+		   //             Supprimer le dossier du parapheur
+                   $effdos = $this->Parafwebservice->effacerDossierRejeteWebservice(PREFIX_WEBDELIB.$delib_id);
+	       }
 
-                $circuit = $this->Parafwebservice->getCircuit(TYPETECH, 'C1');
-                debug($circuit);
-*/
-                $histo = $this->Parafwebservice->getHistoDossierWebservice('webdelib_1');
-                debug($histo);
-		debug($this->Deliberation->findAll());
-
-                //var_dump($histo);
-                //$rechdos = $this->Parafwebservice->rechercherDossierWebservice('HELIOS', 'C1', '', '', '');
-                //echo $rechdos;
-                //var_dump($rechdos);
-
-                //$archdos = $this->Parafwebservice->archiverDossierWebservice('test_20091126_02', 'ARCHIVER');
-                //echo $archdos;
-                //var_dump($archdos);
-
-                /*$effdos = $this->Parafwebservice->effacerDossierRejeteWebservice('R-006-00-C2-20091005035902');
-                echo $effdos;
-                var_dump($effdos);*/
-
-                //$remorddos = $this->Parafwebservice->exercerDroitRemordWebservice('R-006-00-C2-20091005035902');
-                //echo $remorddos;
-                //var_dump($remorddos);
-/*
-                $typetech = "ACTES";
-                $soustype = "C1";
-                $emailemetteur = "htexier@cogitis.fr";
-                $dossierid = "test_20091202_04";
-                $visibilite = "PUBLIC";
-                $nomfichierpdf = "testdocprincip.pdf";
-                $pdf = file_get_contents(DOSPDF."/".$nomfichierpdf);
-                $creerdos = $this->Parafwebservice->creerDossierWebservice($typetech, $soustype, $emailemetteur, $dossierid, '', '', $visibilite, '', $pdf);
-                echo $creerdos;
-*/
-                /*$getdos = $this->Parafwebservice->getDossierWebservice('R-006-00-C2-20091005035902');
-                echo $getdos;*/
-
-                //$envoitdt = $this->Parafwebservice->envoyerDossierTdTWebservice('R-006-00-C2-20091005035902');
-                //echo $envoitdt;
-                //var_dump($envoitdt);
-
-                //$statutdt = $this->Parafwebservice->getStatutTdTWebservice('R-006-00-C2-20091005035902');
-                //echo $statutdt;
-                //var_dump($statutdt);
-
-                //$forcetape = $this->Parafwebservice->forcerEtapeWebservice('test_20091202_04', 'OK', 'Etape TdT sauté', '');
-                //echo $forcetape;
-                //var_dump($forcetape);
-
-                /*$getdossier = $this->Parafwebservice->getDossierWebservice('test_20091202_01');//test_20091126_01
-                echo $getdossier;
-                var_dump($getdossier);*/
-
-            exit;
+            }
+            return false;
         }
 
-
-
-	function view($id = null) {
-		if (!$id) {
-			$this->Session->setFlash('Invalide id pour le circuit.');
-			$this->redirect('/circuits/index');
-		}
-		$this->set('circuit', $this->Circuit->read(null, $id));
-	}
+        function view($id = null) {
+            if (!$id) {
+                $this->Session->setFlash('Invalide id pour le circuit.');
+                $this->redirect('/circuits/index');
+            }
+            $this->set('circuit', $this->Circuit->read(null, $id));
+        }
 
 	function edit($id = null) {
 		if (empty($this->data)) {
@@ -219,7 +218,7 @@ class CircuitsController extends AppController {
 	    $uniq=true;
 	    $i=0;
 	    while(($uniq==true)&&($i<sizeof($data))) {
-                 if (($data[$i]['UsersCircuit']['user_id']==$user_id)&&($service_id!=-1)) {
+                 if (($data[$i]['UsersCircuit']['user_id']==$user_id)&& ($data[$i]['UsersCircuit']['service_id']==$service_id)) {
                      $uniq=false; //il existe
                  }
                  $i++;
