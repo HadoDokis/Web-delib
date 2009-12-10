@@ -11,7 +11,7 @@ class CircuitsController extends AppController {
 	var $commeDroit = array('addUser'=>'Circuits:index', 'supprimerUser'=>'Circuits:index', 'add'=>'Circuits:index', 'delete'=>'Circuits:index', 'view'=>'Circuits:index', 'edit'=>'Circuits:index');
 
         function listDelibsDansParapheur() {
-            //On récupère la liste des id 
+            //On rï¿½cupï¿½re la liste des id 
             $circuits = $this->UsersCircuit->findAll('UsersCircuit.service_id = -1', 'circuit_id');
 	    // Si empty de circuit => On utilise pas de parapheur dasn les circuits 
             if (empty($circuits))
@@ -34,7 +34,7 @@ class CircuitsController extends AppController {
 			    $traitement['Traitement']['position']   =  $positionCourante + 1;
 			    $this->Traitement->save($traitement['Traitement']);
                             if ($nbEtapes ==  $positionCourante ) {
-                                // on change l'etat de la delib à 2
+                                // on change l'etat de la delib ï¿½ 2
                                $del = $this->Deliberation->read(null,  $delib_id);
 			       $del['Deliberation']['etat'] = 2;
 			       $this->Deliberation->save($del);
@@ -46,37 +46,43 @@ class CircuitsController extends AppController {
 	    $this->layout = null;
         }
    
-        function _checkEtatParapheur($delib_id) {
+        function _checkEtatParapheur($delib_id, $tdt=false) {
             $histo = $this->Parafwebservice->getHistoDossierWebservice(PREFIX_WEBDELIB.$delib_id);
 	    for ($i =0; $i < count($histo['logdossier']); $i++){
-	       if (($histo['logdossier'][$i]['status']  ==  'Signe') || ($histo['logdossier'][$i]['status']  ==  'Archive')) {
-	           // TODO LIST : Récupéré la date et heure de signature  + QUi l'a signé (annotation)
-		   // On est obligé de supprimé le projet sinon, on ne peut pas le ré-insérer dans un autre circuit du parapheur
-		   $archdos = $this->Parafwebservice->archiverDossierWebservice(PREFIX_WEBDELIB.$delib_id, 'SUPPRIMER');
-		   $this->Commentaire->create();
-                   $comm ['Commentaire']['delib_id'] = $delib_id;
-                   $comm ['Commentaire']['agent_id'] = -1;
-		   $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom']." : ".$histo['logdossier'][$i]['annotation']);	
-		   $comm ['Commentaire']['commentaire_auto'] = 0;
-                   $this->Commentaire->save($comm['Commentaire']); 
-                   return true;
-		   
-	       }
-	       elseif(($histo['logdossier'][$i]['status']=='RejetSignataire')||($histo['logdossier'][$i]['status']=='RejetVisa') ){ // Cas de refus dans le parapheur
-		   $this->Deliberation->refusDossier($delib_id);
-
-                   $this->Commentaire->create();
-                   $comm ['Commentaire']['delib_id'] = $delib_id;
-                   $comm ['Commentaire']['agent_id'] = -1;
-                   $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom']." : ".$histo['logdossier'][$i]['annotation']);
-                   $comm ['Commentaire']['commentaire_auto'] = 0;
-                   $this->Commentaire->save($comm['Commentaire']);
-
-		   //             Supprimer le dossier du parapheur
-                   $effdos = $this->Parafwebservice->effacerDossierRejeteWebservice(PREFIX_WEBDELIB.$delib_id);
-	       }
-
+			if(!$tdt){
+	    	   if (($histo['logdossier'][$i]['status']  ==  'Signe') || ($histo['logdossier'][$i]['status']  ==  'Archive')) {
+	           // TODO LIST : Rï¿½cupï¿½rï¿½ la date et heure de signature  + QUi l'a signï¿½ (annotation)
+			   // On est obligï¿½ de supprimï¿½ le projet sinon, on ne peut pas le rï¿½-insï¿½rer dans un autre circuit du parapheur
+			   $archdos = $this->Parafwebservice->archiverDossierWebservice(PREFIX_WEBDELIB.$delib_id, 'SUPPRIMER');
+			   $this->Commentaire->create();
+	                   $comm ['Commentaire']['delib_id'] = $delib_id;
+	                   $comm ['Commentaire']['agent_id'] = -1;
+			   $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom']." : ".$histo['logdossier'][$i]['annotation']);	
+			   $comm ['Commentaire']['commentaire_auto'] = 0;
+	                   $this->Commentaire->save($comm['Commentaire']); 
+	                   return true;
+			   
+		       }
+		       elseif(($histo['logdossier'][$i]['status']=='RejetSignataire')||($histo['logdossier'][$i]['status']=='RejetVisa') ){ // Cas de refus dans le parapheur
+			   $this->Deliberation->refusDossier($delib_id);
+	
+	                   $this->Commentaire->create();
+	                   $comm ['Commentaire']['delib_id'] = $delib_id;
+	                   $comm ['Commentaire']['agent_id'] = -1;
+	                   $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom']." : ".$histo['logdossier'][$i]['annotation']);
+	                   $comm ['Commentaire']['commentaire_auto'] = 0;
+	                   $this->Commentaire->save($comm['Commentaire']);
+	
+			   //             Supprimer le dossier du parapheur
+	                   $effdos = $this->Parafwebservice->effacerDossierRejeteWebservice(PREFIX_WEBDELIB.$delib_id);
+		       }			 
             }
+            else{
+            	if ($histo['logdossier'][$i]['status']  ==  'EnCoursTransmission'){
+            		return true;
+            	}
+            }
+	    }
             return false;
         }
 
@@ -178,7 +184,7 @@ class CircuitsController extends AppController {
                 $this->set('service_id', '0');
             $this->set('services', $services);
 
-           //traitement du circuit (création ou modification)
+           //traitement du circuit (crï¿½ation ou modification)
             if (empty($this->data)) {
                 if ($service_id!=null) {
                     if ($service_id == -1){
@@ -214,7 +220,7 @@ class CircuitsController extends AppController {
             $data = $this->UsersCircuit->findAll($condition);
             $position = $this->getLastPosition($circuit_id) + 1;
 
-            //on recherche si l'utilisateur existe déjà dans le circuit de validation
+            //on recherche si l'utilisateur existe dï¿½jï¿½ dans le circuit de validation
 	    $uniq=true;
 	    $i=0;
 	    while(($uniq==true)&&($i<sizeof($data))) {
@@ -238,7 +244,7 @@ class CircuitsController extends AppController {
                 }
             }
             else {
-                 $this->Session->setFlash("L'utilisateur est déjà dans le circuit !");
+                 $this->Session->setFlash("L'utilisateur est dï¿½jï¿½ dans le circuit !");
 		 $this->redirect("/circuits/index/$circuit_id/$service_id");
             }
 	}
@@ -260,7 +266,7 @@ class CircuitsController extends AppController {
 		//position du suivant ou du precedent
         $id_obj = $obj['0']['UsersCircuit']['id'];
 		$newPosition = $obj['0']['UsersCircuit']['position'];
-		// On récupère les informations de l'objet courant
+		// On rï¿½cupï¿½re les informations de l'objet courant
 		$this->data = $this->UsersCircuit->read(null, $oldIdPos);
 		$this->data['UsersCircuit']['position'] = $newPosition;
 
@@ -268,11 +274,11 @@ class CircuitsController extends AppController {
 		if (!$this->UsersCircuit->save($this->data)) {
 		   die('Erreur durant l\'enregistrement');
 		}
-		// On récupère les informations de l'objet à déplacer
+		// On rï¿½cupï¿½re les informations de l'objet ï¿½ dï¿½placer
 		$this->data = $this->UsersCircuit->read(null, $id_obj);
 		$this->data['UsersCircuit']['position']= $positionCourante;
 
-		//enregistrement de l'objet à déplacer avec la position courante
+		//enregistrement de l'objet ï¿½ dï¿½placer avec la position courante
 		if ($this->UsersCircuit->save($this->data)) {
 			if ($sens ==2)
 			    return true;
