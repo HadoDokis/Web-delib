@@ -181,7 +181,7 @@ class ParafwebserviceComponent extends Object {
 	    $str = base64_decode($fichierPES->nodeValue);
 		if(!file_put_contents("dossier/recup/" . $nom_dossier . "_recup.xml", $str)){
 		}
-		else echo "le fichier a bien ï¿½tï¿½ rï¿½cupï¿½rï¿½ !";*/
+		else echo "le fichier a bien été récupéré !";*/
 	}
 	
 	
