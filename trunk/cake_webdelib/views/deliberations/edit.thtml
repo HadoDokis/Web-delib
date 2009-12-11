@@ -39,7 +39,7 @@
 </div>
 
 <div id="tab1">
-	<?php echo $form->labelTag('Deliberation/objet', 'Libelle <acronym title="obligatoire">(*)</acronym>');?>
+	<?php echo $form->labelTag('Deliberation/objet', 'Libellé <acronym title="obligatoire">(*)</acronym>');?>
  	<?php echo $html->textarea('Deliberation/objet', array('cols' => '60'));?>
 	<div class='spacer'></div>
 
@@ -55,7 +55,7 @@
 	<?php echo $html->selectTag('Deliberation/rapporteur_id', $rapporteurs, $selectedRapporteur);?>
 	<div class='spacer'></div>
 
-	<?php echo $form->labelTag('Deliberation/theme_id', 'Theme <acronym title="obligatoire">(*)</acronym>');?>
+	<?php echo $form->labelTag('Deliberation/theme_id', 'Thème <acronym title="obligatoire">(*)</acronym>');?>
 	<?php echo $html->selectTag('Deliberation/theme_id', $themes, $html->tagValue('Deliberation/theme_id'), array(), array(), false);?>
 	<div class='spacer'></div>
 
