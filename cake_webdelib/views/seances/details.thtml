@@ -5,12 +5,12 @@
 <tr>
     <th>Etat</th>
     <th>Résultat</th>
-	<th>Theme</th>
-	<th>Service emetteur</th>
-	<th>Rapporteur</th>
-	<th>Libelle</th>
-	<th>Titre</th>
-	<th>Actions</th>
+    <th>Thème</th>
+    <th>Service émetteur</th>
+    <th>Rapporteur</th>
+    <th>Libellé</th>
+    <th>Titre</th>
+    <th>Actions</th>
 </tr>
 <?php foreach ($deliberations as $deliberation): ?>
 <tr>

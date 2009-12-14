@@ -1,4 +1,4 @@
-<h2><?php echo $html->image('icons/synthese.png')?> Note de Synthese : </h2>
+<h2><?php echo $html->image('icons/synthese.png')?> Note de Synthèse : </h2>
 
 <div class="pave">
 <?php 

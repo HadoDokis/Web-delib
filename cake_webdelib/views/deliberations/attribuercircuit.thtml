@@ -12,8 +12,8 @@
 <!-- données concernant le circuit selectionné -->
 <table>
 	<tr>
-		<th>service libelle</th>
-		<th>prenom</th>
+		<th>service libellé</th>
+		<th>prénom</th>
 		<th>nom </th>
 		<th>position</th>
 	</tr>

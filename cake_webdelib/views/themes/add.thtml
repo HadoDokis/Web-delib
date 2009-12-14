@@ -1,9 +1,9 @@
 <h2>Ajout d'un th&egrave;me</h2>
 <form action="<?php echo $html->url('/themes/add'); ?>" method="post">
 <div class="optional">
-	<?php echo $form->labelTag('Theme/libelle', 'Libelle');?>
+	<?php echo $form->labelTag('Theme/libelle', 'Libellé');?>
  	<?php echo $html->input('Theme/libelle', array('size' => '50'));?>
-	<?php echo $html->tagErrorMsg('Theme/libelle', 'Entrer le libelle.');?>
+	<?php echo $html->tagErrorMsg('Theme/libelle', 'Entrer le libellé.');?>
 </div>
 <div class="optional">
         <?php echo $form->labelTag('Theme/order', 'Crit&egrave;re de tri');?>

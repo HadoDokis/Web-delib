@@ -15,7 +15,7 @@
 		<?php echo $form->labelTag('Redacteur/nom','Redacteur')?>
 		<?php echo $html->input('Redacteur/nom', array('size'=>'30','value'=>$this->data['Redacteur']['nom'].' '.$this->data['Redacteur']['prenom'], 'disabled'=>'disabled'));?>
 		<br/>
-		<?php echo $form->labelTag('Service/libelle','Service emetteur');?>
+		<?php echo $form->labelTag('Service/libelle','Service émetteur');?>
 		<?php echo $html->input('Service/libelle',array('size' => '40','value'=>$this->data['Service']['libelle'], 'disabled'=>'disabled'));?>
 	</div>
 	<div class='demi'>
@@ -47,7 +47,7 @@
  	<?php echo $html->textarea('Deliberation/titre', array('cols' => '60'));?>
 	<div class='spacer'></div>
 
-	<?php echo $form->labelTag('Deliberation/seance_id','Date seance'); ?>
+	<?php echo $form->labelTag('Deliberation/seance_id','Date séance'); ?>
 	<?php echo $html->selectTag('Deliberation/seance_id',$date_seances,null,null,null,true); ?>
 	<div class='spacer'></div>
 

@@ -5,9 +5,9 @@
 <tr>
 	<th>Login</th>
 	<th>Nom</th>
-	<th>Prenom</th>
+	<th>Prénom</th>
 	<th>Profil</th>
-	<th>Telephone</th>
+	<th>Téléphone</th>
 	<th>Mobile</th>
 	<th>Service(s)</th>
 	<th>Actions</th>

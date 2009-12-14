@@ -1,9 +1,9 @@
 <h2>Ajout d'un service</h2>
 <form action="<?php echo $html->url('/services/add'); ?>" method="post">
 <div class="optional">
-	<?php echo $form->labelTag('Service/libelle', 'Libelle');?>
+	<?php echo $form->labelTag('Service/libelle', 'Libellé');?>
  	<?php echo $html->input('Service/libelle', array('size' => '50'));?>
-	<?php echo $html->tagErrorMsg('Service/libelle', 'Entrer le libelle.');?>
+	<?php echo $html->tagErrorMsg('Service/libelle', 'Entrer le libellé.');?>
 </div>
 <div class="optional">
 	<?php echo $form->labelTag('Service/parent_id', 'Appartient &agrave; : ');?>

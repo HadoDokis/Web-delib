@@ -24,8 +24,8 @@
 		<td class="actions" width="80px"> <!-- largeur en fonction des icones -->
 	  	<?php echo $html->link('&shy;','/postseances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir les délibérations'), false, false); ?>
 		<?php 
-                   echo $html->link('&shy;','/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'].'/null/0/retour/1/', array('class'=>'link_pvsommaire', 'title'=>'Generation du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
-                   echo $html->link('&shy;','/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'].'/null/0/retour/1/', array('class'=>'link_pvcomplet', 'title'=>'Generation du pv complet'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
+                   echo $html->link('&shy;','/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'].'/null/0/retour/1/', array('class'=>'link_pvsommaire', 'title'=>'Génération du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
+                   echo $html->link('&shy;','/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'].'/null/0/retour/1/', array('class'=>'link_pvcomplet', 'title'=>'Génération du pv détaillé'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
 		?>
 		</td>
 	</tr>
