@@ -1971,5 +1971,36 @@ class DeliberationsController extends AppController {
 		}
  	}
 
+        function sendToParapheur() {
+            $circuits = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+
+	    if (empty($this->data)) {
+	        $delibs = $this->Deliberation->findAll("Deliberation.etat = 3 ");
+	        $this->set ('deliberations', $delibs);
+		$this->set ('circuits', $circuits ['soustype']);
+            }
+	    else {
+	        if ($this->data['Deliberation']['circuit_id']== '') {
+		    $this->Session->setFlash( "Vous devez saisir un circuit avant l'envoi.");
+		    $this->redirect('/deliberations/sendToParapheur');
+		    exit;
+		}
+                foreach ($this->data['Deliberation'] as $id => $bool ){
+                    if ($bool == 1){
+                        $delib_id = substr($id, 3, strlen($id));
+                        $delib = $this->Deliberation->read(null, $delib_id);
+                        $soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
+                        $emailemetteur = "htexier@cogitis.fr";
+                        $nomfichierpdf = "D_$id.pdf";
+                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$delib_id, '', '', VISIBILITY, '', $delib['Deliberation']['delib_pdf']);
+			
+			$delib['Deliberation']['etat_parapheur']= 1;
+		        $this->Deliberation->save($delib);
+                    }
+                }
+		$this->redirect('/deliberations/sendToParapheur');
+            }
+	}
+
 }
 ?>
