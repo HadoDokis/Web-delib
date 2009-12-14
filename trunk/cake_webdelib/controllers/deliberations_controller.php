@@ -752,8 +752,9 @@ class DeliberationsController extends AppController {
                                                 $soustype = $soustypes ['soustype'][$usersCircuit[$lastposprojet]['UsersCircuit']['user_id']];
                                                 $emailemetteur = "htexier@cogitis.fr";
                                                 $nomfichierpdf = "P_$id.pdf";
+						$objet = $delib ['0']['Deliberation']['objet'];
                                                 $pdf = file_get_contents($file);
-                                                $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', "", VISIBILITY, '', $pdf); 
+                                                $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', $objet, VISIBILITY, '', $pdf); 
                                             }
 					    else {
 					        //sinon on fait passerala personne suivante
@@ -1994,7 +1995,7 @@ class DeliberationsController extends AppController {
                         $soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
                         $emailemetteur = "htexier@cogitis.fr";
                         $nomfichierpdf = "D_$id.pdf";
-                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$delib_id, '', '', VISIBILITY, '', $delib['Deliberation']['delib_pdf']);
+                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$delib_id, '',  $delib['Deliberation']['objet'], VISIBILITY, '', $delib['Deliberation']['delib_pdf']);
 			
 			$delib['Deliberation']['etat_parapheur']= 1;
 		        $this->Deliberation->save($delib);
