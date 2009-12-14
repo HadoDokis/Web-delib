@@ -556,16 +556,18 @@ class DeliberationsController extends AppController {
 		    if ($user['UsersCircuit']['service_id']!= -1)
 		        $this->_notifierInsertionCircuit($id, $user['User']['id']);
 	            else{
-                        $model_id = $this->_getModelId($id);
-                        $err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
-                        $file =  WEBROOT_PATH."/files/generee/fd/null/$id/P_$id.pdf";
+		        if (($user['UsersCircuit']['service_id']== -1)&&($user['UsersCircuit']['position']==1)) {
+                            $model_id = $this->_getModelId($id);
+                            $err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
+                            $file =  WEBROOT_PATH."/files/generee/fd/null/$id/P_$id.pdf";
 
-                        $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
-                        $soustype = $soustypes ['soustype'][$user['UsersCircuit']['user_id']];
-                        $emailemetteur = "htexier@cogitis.fr";
-                        $nomfichierpdf = "P_$id.pdf";
-                        $pdf = file_get_contents($file);
-                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', '', VISIBILITY, '', $pdf);
+                            $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+                            $soustype = $soustypes ['soustype'][$user['UsersCircuit']['user_id']];
+                            $emailemetteur = "htexier@cogitis.fr";
+                            $nomfichierpdf = "P_$id.pdf";
+                            $pdf = file_get_contents($file);
+                            $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', $delib['Deliberation']['objet'], VISIBILITY, '', $pdf);
+			}
 		    }
 
                 }
@@ -751,7 +753,7 @@ class DeliberationsController extends AppController {
                                                 $emailemetteur = "htexier@cogitis.fr";
                                                 $nomfichierpdf = "P_$id.pdf";
                                                 $pdf = file_get_contents($file);
-                                                $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', '', VISIBILITY, '', $pdf); 
+                                                $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', "", VISIBILITY, '', $pdf); 
                                             }
 					    else {
 					        //sinon on fait passerala personne suivante
