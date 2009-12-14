@@ -40,9 +40,9 @@
 			<?php echo $form->labelTag('User/nom', 'Nom <acronym title="obligatoire">*</acronym>');?>
  			<?php echo $html->input('User/nom', array('size' => '30'));?>
 			<?php echo $html->tagErrorMsg('User/nom', 'Entrez le nom.');?> <br />
-			<?php echo $form->labelTag('User/prenom', 'Prenom <acronym title="obligatoire">*</acronym>');?>
+			<?php echo $form->labelTag('User/prenom', 'Prénom <acronym title="obligatoire">*</acronym>');?>
 	 		<?php echo $html->input('User/prenom', array('size' => '30'));?>
-			<?php echo $html->tagErrorMsg('User/prenom', 'Entrez le prenom.');?>
+			<?php echo $html->tagErrorMsg('User/prenom', 'Entrez le prénom.');?>
 		</div>
 		<div class="demi">
 			<?php echo $form->labelTag('User/telfixe', 'Tel fixe');?>

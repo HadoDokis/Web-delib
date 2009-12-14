@@ -1,9 +1,9 @@
 <h2>Modification d'un th&egrave;me</h2>
 <form action="<?php echo $html->url('/themes/edit/'.$html->tagValue('Service/id')); ?>" method="post">
 <div class="optional">
-	<?php echo $form->labelTag('Theme/libelle', 'Libelle');?>
+	<?php echo $form->labelTag('Theme/libelle', 'Libellé');?>
  	<?php echo $html->input('Theme/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Theme/libelle', 'Entrer le libelle.');?>
+	<?php echo $html->tagErrorMsg('Theme/libelle', 'Entrer le libellé.');?>
 </div>
 <div class="optional">
 	<?php echo $form->labelTag('Theme/order', 'Crit&egrave;re de tri');?>

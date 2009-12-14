@@ -46,7 +46,7 @@ function initAffichageInfosElus()
 			<br/>
 			<?php echo $form->labelTag('Acteur/prenom', 'Prénom <acronym title="obligatoire">*</acronym>');?>
 		 	<?php echo $html->input('Acteur/prenom', array('size' => '40'));?>
-			<?php echo $html->tagErrorMsg('Acteur/prenom', 'Entrer un prenom pour l\'acteur');?>
+			<?php echo $html->tagErrorMsg('Acteur/prenom', 'Entrer un prénom pour l\'acteur');?>
 			<br/>
 			<?php echo $form->labelTag('Acteur/titre', 'Titre');?>
 		 	<?php echo $html->input('Acteur/titre', array('size' => '40'));?>

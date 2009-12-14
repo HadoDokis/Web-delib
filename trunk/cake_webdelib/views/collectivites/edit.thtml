@@ -22,9 +22,9 @@
 </div>
 <br />
 <div > 
-		<?php echo $form->labelTag('Collectivite/telephone', 'Num telephone');?>
+		<?php echo $form->labelTag('Collectivite/telephone', 'Num téléphone');?>
  		<?php echo $html->input('Collectivite/telephone');?>
-		<?php echo $html->tagErrorMsg('Collectivite/telephone', 'Entrer le Num telephone.');?>
+		<?php echo $html->tagErrorMsg('Collectivite/telephone', 'Entrer le Num téléphone.');?>
 </div>
 <br/><br/><br/><br/><br/>
 <div class="submit">

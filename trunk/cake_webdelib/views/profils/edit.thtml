@@ -1,9 +1,9 @@
 <h2>Modification d'un profil</h2>
 <form action="<?php echo $html->url('/profils/edit/'.$html->tagValue('Profil/id')); ?>" method="post">
 <div class="optional"> 
-	<?php echo $form->labelTag('Profil/libelle', 'Libelle');?>
+	<?php echo $form->labelTag('Profil/libelle', 'Libellé');?>
  	<?php echo $html->input('Profil/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Profil/libelle', 'Entrer le libelle.');?>
+	<?php echo $html->tagErrorMsg('Profil/libelle', 'Entrer le libellé.');?>
 </div>
 <br/>
 <div>	

@@ -1,9 +1,9 @@
 <h2>Edit Circuit</h2>
 <form action="<?php echo $html->url('/circuits/edit/'.$html->tagValue('Circuit/id')); ?>" method="post">
 <div class="required"> 
-	<?php echo $form->labelTag('Circuit/libelle', 'Libelle');?>
+	<?php echo $form->labelTag('Circuit/libelle', 'Libellé');?>
  	<?php echo $html->input('Circuit/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Circuit/libelle', 'Entrer le libelle.');?>
+	<?php echo $html->tagErrorMsg('Circuit/libelle', 'Entrer le libellé.');?>
 </div>
 <?php echo $html->hidden('Circuit/id')?>
 <div class="submit">

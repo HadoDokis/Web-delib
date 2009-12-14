@@ -23,7 +23,7 @@
 
 <dl>
 <div class="imbrique">
-	<dt>Libelle</dt>
+	<dt>Libellé</dt>
 	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
 
 	<dt>Titre</dt>
@@ -32,11 +32,11 @@
 
 <div class="imbrique">
 	<div class="gauche">
-		<dt>Theme</dt>
+		<dt>Thème</dt>
 		<dd>&nbsp;<?php echo $deliberation['Theme']['libelle']?><br> </dd>
 	</div>
 	<div class="droite">
-		<dt>Service emetteur</dt>
+		<dt>Service émetteur</dt>
 		<dd>&nbsp;<?php echo $deliberation['Service']['libelle']?></dd>
 	</div>
 </div>
@@ -47,7 +47,7 @@
 		<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref']?></dd>
 	</div>
 	<div class="droite">
-		<dt>Date Seance</dt>
+		<dt>Date Séance</dt>
 		<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
 	</div>
 </div>
@@ -77,7 +77,7 @@
 
 <div class="imbrique">
 	<div class="gauche">
-		<dt>Redacteur</dt>
+		<dt>Rédacteur</dt>
 		<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['prenom'].' '.$deliberation['Redacteur']['nom'], '/users/view/' .$deliberation['Redacteur']['id'])?></dd>
 	</div>
 	<div class="droite">
@@ -88,7 +88,7 @@
 
 <div class="imbrique">
 	<div class="gauche">
-		<dt>Date creation</dt>
+		<dt>Date création</dt>
 		<dd>&nbsp;<?php echo $deliberation['Deliberation']['created']?></dd>
 	</div>
 	<div class="droite">
@@ -102,16 +102,16 @@
 	<dd>&nbsp;
 		<?php echo $html->link('Projet','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?>
 		&nbsp;
-		<?php echo $html->link('Synthese','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?>
+		<?php echo $html->link('Synthèse','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?>
 		&nbsp;
-		<?php echo $html->link('Deliberation','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?>
+		<?php echo $html->link('Déliberation','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?>
 	</dd>
 </div>
 
 <?php
 	if ($tab_anterieure!=null)
 	{
-		echo"<dt>Versions Anterieures</dt>";
+		echo"<dt>Versions Antérieures</dt>";
 		foreach ($tab_anterieure as $anterieure)
 		{
 			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";

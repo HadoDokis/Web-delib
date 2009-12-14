@@ -6,7 +6,7 @@
 <tr>
 	<th>Civilit&eacute;</th>
 	<th>Nom<?php $html2->boutonsTri('/acteurs/index/Acteur.nom');?></th>
-	<th>Prenom</th>
+	<th>Prénom</th>
 	<th>Titre</th>
 	<th>Type d'acteur<?php $html2->boutonsTri('/acteurs/index/Typeacteur.nom');?></th>
 	<th>Elus<?php $html2->boutonsTri('/acteurs/index/Typeacteur.elu', true);?></th>

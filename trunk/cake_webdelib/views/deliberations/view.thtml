@@ -9,7 +9,7 @@
 	?>
 
 	<div class="imbrique">
-		<dt>Libelle</dt>
+		<dt>Libellé</dt>
 		<dd>&nbsp;<?php echo $this->data['Deliberation']['objet']?></dd>
 
 		<dt>Titre</dt>
@@ -21,11 +21,11 @@
 
 	<div class="imbrique">
 		<div class="gauche">
-			<dt>Theme</dt>
+			<dt>Thème</dt>
 			<dd>&nbsp;<?php echo $html->link($this->data['Theme']['libelle'], '/themes/view/' .$this->data['Theme']['id'])?><br> </dd>
 		</div>
 		<div class="droite">
-			<dt>Service emetteur</dt>
+			<dt>Service émetteur</dt>
 			<dd>&nbsp;<?php echo $html->link($this->data['Service']['libelle'], '/services/view/' .$this->data['Service']['id'])?></dd>
 		</div>
 	</div>
@@ -36,7 +36,7 @@
 			<dd>&nbsp;<?php echo $this->data['Deliberation']['num_pref']?></dd>
 		</div>
 		<div class="droite">
-			<dt>Date Seance</dt>
+			<dt>Date Séance</dt>
 			<dd>&nbsp;<?php echo $this->data['Seance']['date']?></dd>
 		</div>
 	</div>
@@ -66,7 +66,7 @@
 
 	<div class="imbrique">
 		<div class="gauche">
-			<dt>Redacteur</dt>
+			<dt>Rédacteur</dt>
 			<dd>&nbsp;<?php echo $html->link($this->data['Redacteur']['prenom'].' '.$this->data['Redacteur']['nom'], '/users/view/' .$this->data['Redacteur']['id'])?></dd>
 		</div>
 		<div class="droite">
@@ -79,7 +79,7 @@
 
 <div class="imbrique">
 	<div class="gauche">
-		<dt>Date creation</dt>
+		<dt>Date création</dt>
 		<dd>&nbsp;<?php echo $this->data['Deliberation']['created']?></dd>
 	</div>
 	<div class="droite">
@@ -122,7 +122,7 @@
 <?php
 	if ($tab_anterieure!=null)
 	{
-		echo"<dt>Versions Anterieures</dt>";
+		echo"<dt>Versions Antérieures</dt>";
 		foreach ($tab_anterieure as $anterieure)
 		{
 			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";
