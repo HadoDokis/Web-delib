@@ -566,7 +566,7 @@ class DeliberationsController extends AppController {
                             $emailemetteur = "htexier@cogitis.fr";
                             $nomfichierpdf = "P_$id.pdf";
                             $pdf = file_get_contents($file);
-                            $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', utf8_encode($delib['Deliberation']['objet']), VISIBILITY, '', $pdf);
+                            $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', utf8_encode($this->_objetParaph($delib['Deliberation']['objet'])), VISIBILITY, '', $pdf);
 			}
 		    }
 
@@ -752,7 +752,7 @@ class DeliberationsController extends AppController {
                                                 $soustype = $soustypes ['soustype'][$usersCircuit[$lastposprojet]['UsersCircuit']['user_id']];
                                                 $emailemetteur = "htexier@cogitis.fr";
                                                 $nomfichierpdf = "P_$id.pdf";
-						$objet = utf8_encode($delib ['0']['Deliberation']['objet']);
+						$objet = utf8_encode($this->_objetParaph($delib ['0']['Deliberation']['objet']));
                                                 $pdf = file_get_contents($file);
                                                 $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', $objet, VISIBILITY, '', $pdf); 
                                             }
@@ -1995,7 +1995,7 @@ class DeliberationsController extends AppController {
                         $soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
                         $emailemetteur = "htexier@cogitis.fr";
                         $nomfichierpdf = "D_$id.pdf";
-                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$delib_id, '',  utf8_encode($delib['Deliberation']['objet']), VISIBILITY, '', $delib['Deliberation']['delib_pdf']);
+                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$delib_id, '',  utf8_encode($this->_objetParaph($delib['Deliberation']['objet'])), VISIBILITY, '', $delib['Deliberation']['delib_pdf']);
 			
 			$delib['Deliberation']['etat_parapheur']= 1;
 		        $this->Deliberation->save($delib);
@@ -2004,6 +2004,11 @@ class DeliberationsController extends AppController {
 		$this->redirect('/deliberations/sendToParapheur');
             }
 	}
+
+    function _objetParaph($objet){
+        return str_replace("&", "&amp;", $objet);               
+
+    }
 
 }
 ?>
