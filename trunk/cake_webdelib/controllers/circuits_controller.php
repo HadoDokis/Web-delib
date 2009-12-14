@@ -15,8 +15,9 @@ class CircuitsController extends AppController {
             $circuits = $this->UsersCircuit->findAll('UsersCircuit.service_id = -1', 'circuit_id');
 	    // Si empty de circuit => On utilise pas de parapheur dasn les circuits 
             if (empty($circuits))
-                 return true;
+                 return true; 
 
+            // Controle de l'avancement des projets dans le parapheur
             foreach ($circuits as $circuit) {
                 $delibs = $this->Deliberation->findAll("Deliberation.etat = 1 AND Deliberation.circuit_id =  ".$circuit['UsersCircuit']['circuit_id']);
                 foreach($delibs as $delib){
@@ -43,13 +44,20 @@ class CircuitsController extends AppController {
 	            }
                 }
             }
+
+            // Controle de l'avancement des délibérations dans le parapheur
+	    $delibs = $this->Deliberation->findAll("Deliberation.etat = 3 AND Deliberation.etat_parapheur = 1 ");
+            foreach ($delibs as $delib) {
+                 $this->_checkEtatParapheur($delib['Deliberation']['id']);
+	    }
+
 	    $this->layout = null;
         }
    
         function _checkEtatParapheur($delib_id, $tdt=false) {
             $histo = $this->Parafwebservice->getHistoDossierWebservice(PREFIX_WEBDELIB.$delib_id);
 	    for ($i =0; $i < count($histo['logdossier']); $i++){
-			if(!$tdt){
+		if(!$tdt){
 	    	   if (($histo['logdossier'][$i]['status']  ==  'Signe') || ($histo['logdossier'][$i]['status']  ==  'Archive')) {
 	           // TODO LIST : Récupère la date et heure de signature  + QUi l'a signé (annotation)
 			   $this->Commentaire->create();
@@ -58,6 +66,7 @@ class CircuitsController extends AppController {
 			   $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom']." : ".$histo['logdossier'][$i]['annotation']);	
 			   $comm ['Commentaire']['commentaire_auto'] = 0;
 	                   $this->Commentaire->save($comm['Commentaire']); 
+
 			   $delib=$this->Deliberation->read(null, $delib_id);
 			   if ($delib['Deliberation']['etat_parapheur']==1){
 			       // etat_paraph à 1, donc, nous sommes en post_seance, on ne supprime pas le projet
