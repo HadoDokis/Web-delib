@@ -61,7 +61,7 @@ class SeancesController extends AppController {
 			$this->data['Seance']['date'] = $this->data['Seance']['date'].' '.$this->data['Seance']['date_hour'].':'.$this->data['Seance']['date_min'];
 
 			if ($this->Seance->save($this->data)) {
-				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;');
+				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e');
 				$this->redirect('/seances/listerFuturesSeances');
 			} else {
 				$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
@@ -87,7 +87,7 @@ class SeancesController extends AppController {
 		} else {
 			$this->cleanUpFields('Seance');
 			if ($this->Seance->save($this->data)) {
-				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;');
+				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e');
 				$this->redirect('/seances/listerFuturesSeances');
 			} else {
 				$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
