@@ -83,15 +83,14 @@ class CircuitsController extends AppController {
 			   
 		       }
 		       elseif(($histo['logdossier'][$i]['status']=='RejetSignataire')||($histo['logdossier'][$i]['status']=='RejetVisa') ){ // Cas de refus dans le parapheur
-			   $this->Deliberation->refusDossier($delib_id);
-	
+			   
 	                   $this->Commentaire->create();
 	                   $comm ['Commentaire']['delib_id'] = $delib_id;
 	                   $comm ['Commentaire']['agent_id'] = -1;
 	                   $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom']." : ".$histo['logdossier'][$i]['annotation']);
 	                   $comm ['Commentaire']['commentaire_auto'] = 0;
 	                   $this->Commentaire->save($comm['Commentaire']);
-	
+					   $this->Deliberation->refusDossier($delib_id);
 			   //             Supprimer le dossier du parapheur
 	                   $effdos = $this->Parafwebservice->effacerDossierRejeteWebservice(PREFIX_WEBDELIB.$delib_id);
 		       }			 
