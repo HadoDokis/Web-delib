@@ -76,7 +76,7 @@ class CircuitsController extends AppController {
 			   else {
 			   // On est dans un circuit d'élaboration, 
 			   // On est obligé de supprimé le projet sinon, on ne peut pas le ré-insérer dans un autre circuit du parapheur
-			       $archdos = $this->Parafwebservice->archiverDossierWebservice(PREFIX_WEBDELIB.$delib_id, 'SUPPRIMER');
+			       $archdos = $this->Parafwebservice->archiverDossierWebservice(PREFIX_WEBDELIB.$delib_id, 'EFFACER');
 			   }
 			       
 	                   return true;
