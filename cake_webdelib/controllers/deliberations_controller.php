@@ -32,6 +32,9 @@ class DeliberationsController extends AppController {
 		'tousLesProjetsRecherche',
 		'editerProjetValide'
 	);
+ 
+        var $aucunDroit = array('accepteDossier');
+
 	var $commeDroit = array(
 		'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
 		'edit'=>array('Deliberations:add', 'Deliberations:mesProjetsRedaction', 'Deliberations:editerProjetValide'),
@@ -127,6 +130,11 @@ class DeliberationsController extends AppController {
 		$redirect = '/pages/mes_projets';
 	    /* initialisation du rédateur et du service emetteur */
 	    $user = $this->Session->read('user');
+	    if ($this->Acl->check($user['User']['id'], "Deliberations:editerProjetValide"))
+	        $afficherTtesLesSeances = true;
+            else
+                $afficherTtesLesSeances = false;
+
 
 		if (!empty($this->data)) {
 			$this->data['Deliberation']['redacteur_id'] = $user['User']['id'];
@@ -207,7 +215,7 @@ class DeliberationsController extends AppController {
 			$this->set('themes', $this->Deliberation->Theme->generateList('Theme.actif=1','libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->Deliberation->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
-			$this->set('date_seances',$this->Seance->generateList());
+			$this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances));
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('redirect', $redirect);
 
@@ -290,10 +298,11 @@ class DeliberationsController extends AppController {
 			$redirect = '/pages/tous_les_projets';
 		else
 			$redirect = '/';
+
                 if ($this->Acl->check($user['User']['id'], "Deliberations:editerProjetValide"))
 	           $afficherTtesLesSeances = true;
                 else
-	           $afficherTtesLesSeances = null;
+	           $afficherTtesLesSeances = false;
 
                 $pos  =  strrpos ( getcwd(), 'webroot');
 		$path = substr(getcwd(), 0, $pos);
@@ -687,110 +696,109 @@ class DeliberationsController extends AppController {
 			}
 			else
 			{
-				if ($valid=='1')
-				{
-					//verification du projet, s'il n'est pas pret ->reporte a la seance suivante
-					$delib = $this->Deliberation->findAll("Deliberation.id = $id");
-			                $type_id =$delib[0]['Seance']['type_id'];
-					if(isset($type_id)){
-						$type = $this->Typeseance->findAll("Typeseance.id = $type_id");
-						$date_seance = $delib[0]['Seance']['date'];;
-						$retard = $type[0]['Typeseance']['retard'];
+		            if ($valid=='1') {
+			        //$err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
+				 $this->accepteDossier($id);
+		            }
+			    else {
+                                $this->Deliberation->refusDossier($id);
+                                $delibTmp = $this->Deliberation->read(null, $id);
 
-						$condition= 'date > "'.date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))).'"';
-						$seances = $this->Seance->findAll(($condition),null,'date asc');
-						if (!empty($date_seance)){
-						    if (mktime(date("H") , date("i") ,date("s") , date("m") , date("d")+$retard , date("Y"))>= strtotime($date_seance)){
-						        $this->data['Deliberation']['seance_id']=$seances[0]['Seance']['id'];
-							$this->data['Deliberation']['reporte']=1;
-							$this->data['Deliberation']['id']=$id;
-							if (isset($this->data['Deliberation']['seance_id']))
-						    	    $position = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
-							else
-						    	    $position = 0;
-							$this->data['Deliberation']['position']=$position;
-							$this->Deliberation->save($this->data);
-						    }
-						}
-					}
-					//on a valide le projet, il passe a la personne suivante
-					$tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
-
-					$lastpos=count($tab)-1;
-					$circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
-
-					//MAJ de la date de traitement de la derniere position courante $lastpos
-					$tab[$lastpos]['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
-					$this->Traitement->save($tab[$lastpos]['Traitement']);
-
-					//il faut verifier que le projet n'est pas arrive en fin de circuit
-					//position courante du projet : lastposprojet : $tab[$lastpos]['Traitement']['position'];
-					//derniere position theorique : lastposcircuit
-					$lastposprojet=$tab[$lastpos]['Traitement']['position'];
-					//$lastposcircuit=$this->Circuit->getLastPosition($circuit_id);
-					$usersCircuit = $this->UsersCircuit->findAll("circuit_id = $circuit_id", null, "UsersCircuit.position ASC");
-					$lastposcircuit=count($usersCircuit);
-
-					if ($lastposcircuit==$lastposprojet) //on est sur la derniere personne, on va faire sortir le projet du workflow et le passer au service des assemblees
-					{
-						// passage au service des assemblee : etat dans la table deliberations passea2
-						$tab=$this->Deliberation->findAll("Deliberation.id = $id");
-						$this->data['Deliberation']['etat']=2;
-						$this->data['Deliberation']['id']=$id;
-						$this->Deliberation->save($this->data['Deliberation']);
-						$this->redirect('/deliberations/mesProjetsATraiter');
-					}
-					else
-					{
-                                            // l'étape suivante est la création d'un dossier
-					    if ($usersCircuit[$lastposprojet]['UsersCircuit']['service_id'] == -1) {
-                                                $model_id = $this->_getModelId($id);
-			                        $err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
-		                                $file =  WEBROOT_PATH."/files/generee/fd/null/$id/P_$id.pdf";
-
-                                                $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
-                                                $soustype = $soustypes ['soustype'][$usersCircuit[$lastposprojet]['UsersCircuit']['user_id']];
-                                                $emailemetteur = "htexier@cogitis.fr";
-                                                $nomfichierpdf = "P_$id.pdf";
-						$objet = utf8_encode($this->_objetParaph($delib ['0']['Deliberation']['objet']));
-                                                $pdf = file_get_contents($file);
-                                                $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', $objet, VISIBILITY, '', $pdf); 
-                                            }
-					    else {
-					        //sinon on fait passerala personne suivante
-					        $this->_notifierDossierAtraiter($circuit_id, $tab[$lastpos]['Traitement']['position']+1, $id);
-			                    }
-					    $this->data['Traitement']['id']='';
-					    $this->data['Traitement']['position']=$tab[$lastpos]['Traitement']['position']+1;
-					    $this->data['Traitement']['delib_id']=$id;
-					    $this->data['Traitement']['circuit_id']=$circuit_id;
-					    $this->Traitement->save($this->data['Traitement']);
-					    $this->redirect('/deliberations/mesProjetsATraiter');
-				        }
-				}
-				else
-				{
-                                    $this->Deliberation->refusDossier($id);
-                                    $delibTmp = $this->Deliberation->read(null, $id);
-
-                                    // TODO notifier par mail toutes les personnes qui ont deja vise le projet
-                                    $this->Deliberation->_notifierDossierRefuse($id, $delibTmp['Deliberation']['redacteur_id']);
+                                // TODO notifier par mail toutes les personnes qui ont deja vise le projet
+                                $this->Deliberation->_notifierDossierRefuse($id, $delibTmp['Deliberation']['redacteur_id']);
               
-                                    $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
-                                    $circuit_id=$delibTmp['Deliberation']['circuit_id'];
+                                $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
+                                $circuit_id=$delibTmp['Deliberation']['circuit_id'];
 
-                                    $condition = "circuit_id = $circuit_id";
-                                    $listeUsers = $this->UsersCircuit->findAll($condition);
-                                    foreach($listeUsers as $user) {
-                                       if ($user['UsersCircuit']['service_id'] != -1)
-                                           $this->_notifierDossierRefuse($id, $user['User']['id']);
-                                    }
+                                $condition = "circuit_id = $circuit_id";
+                                $listeUsers = $this->UsersCircuit->findAll($condition);
+                                foreach($listeUsers as $user) {
+                                   if ($user['UsersCircuit']['service_id'] != -1)
+                                       $this->_notifierDossierRefuse($id, $user['User']['id']);
+                                }
 
-	       			    $this->redirect('/deliberations/mesProjetsATraiter');
-				}
+	       			$this->redirect('/deliberations/mesProjetsATraiter');
+			    }
 			}
 		}
 	}
+
+        function accepteDossier($id) {
+            //verification du projet, s'il n'est pas pret ->reporte a la seance suivante
+            $delib = $this->Deliberation->findAll("Deliberation.id = $id");
+            $type_id =$delib[0]['Seance']['type_id'];
+            if(isset($type_id)){
+                $type = $this->Typeseance->findAll("Typeseance.id = $type_id");
+                $date_seance = $delib[0]['Seance']['date'];;
+                $retard = $type[0]['Typeseance']['retard'];
+
+                $condition= 'date > "'.date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))).'"';
+                $seances = $this->Seance->findAll(($condition),null,'date asc');
+                if (!empty($date_seance)){
+                    if (mktime(date("H") , date("i") ,date("s") , date("m") , date("d")+$retard , date("Y"))>= strtotime($date_seance)){
+                        $this->data['Deliberation']['seance_id']=$seances[0]['Seance']['id'];
+                        $this->data['Deliberation']['reporte']=1;
+                        $this->data['Deliberation']['id']=$id;
+                        if (isset($this->data['Deliberation']['seance_id']))
+                            $position = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
+                        else
+                            $position = 0;
+                        $this->data['Deliberation']['position']=$position;
+                        $this->Deliberation->save($this->data);
+                    }
+                }
+            }
+            //on a valide le projet, il passe a la personne suivante
+            $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
+            $lastpos=count($tab)-1;
+            $circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
+
+            //MAJ de la date de traitement de la derniere position courante $lastpos
+            $tab[$lastpos]['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
+            $this->Traitement->save($tab[$lastpos]['Traitement']);
+
+            //il faut verifier que le projet n'est pas arrive en fin de circuit
+            //position courante du projet : lastposprojet : $tab[$lastpos]['Traitement']['position'];
+            //derniere position theorique : lastposcircuit
+            $lastposprojet=$tab[$lastpos]['Traitement']['position'];
+           //$lastposcircuit=$this->Circuit->getLastPosition($circuit_id);
+            $usersCircuit = $this->UsersCircuit->findAll("circuit_id = $circuit_id", null, "UsersCircuit.position ASC");
+            $lastposcircuit=count($usersCircuit);
+                 
+            if ($lastposcircuit==$lastposprojet) { //on est sur la derniere personne, on va faire sortir le projet du workflow et le passer au service des assemblees
+                                                // passage au service des assemblee : etat dans la table deliberations passea2
+                $tab=$this->Deliberation->findAll("Deliberation.id = $id");
+                $this->data['Deliberation']['etat']=2;
+                $this->data['Deliberation']['id']=$id;
+                $this->Deliberation->save($this->data['Deliberation']);
+                $this->redirect('/deliberations/mesProjetsATraiter');
+            }
+            else { // l'étape suivante est la création d'un dossier
+                if($usersCircuit[$lastposprojet]['UsersCircuit']['service_id'] == -1) {
+                    $model_id = $this->_getModelId($id);
+                    $err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
+                    $file =  WEBROOT_PATH."/files/generee/fd/null/$id/P_$id.pdf";
+
+                    $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+                    $soustype = $soustypes ['soustype'][$usersCircuit[$lastposprojet]['UsersCircuit']['user_id']];
+                    $emailemetteur = "htexier@cogitis.fr";
+                    $nomfichierpdf = "P_$id.pdf";
+                    $objet = utf8_encode($this->_objetParaph($delib ['0']['Deliberation']['objet']));
+                    $pdf = file_get_contents($file);
+                    $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$id, '', $objet, VISIBILITY, '', $pdf);
+                }
+                else {
+                    //sinon on fait passerala personne suivante
+                    $this->_notifierDossierAtraiter($circuit_id, $tab[$lastpos]['Traitement']['position']+1, $id);
+                }
+                $this->data['Traitement']['id']='';
+                $this->data['Traitement']['position']=$tab[$lastpos]['Traitement']['position']+1;
+                $this->data['Traitement']['delib_id']=$id;
+                $this->data['Traitement']['circuit_id']=$circuit_id;
+                $this->Traitement->save($this->data['Traitement']);
+                $this->redirect('/deliberations/mesProjetsATraiter');
+            }
+        }
 
 	function _chercherVersionAnterieure($delib_id, $tab_delib, $nb_recursion, $listeAnterieure, $action)
 	{
