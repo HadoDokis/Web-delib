@@ -145,14 +145,14 @@
 
 </dl>
 <ul id="actions_fiche">
-	<li><?php echo $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?></li>
-	<li><?php echo $html->link('&shy;','/deliberations/textprojetvue/' . $this->data['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
-	<li><?php echo $html->link('&shy;','/deliberations/textsynthesevue/' . $this->data['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
-	<li><?php echo $html->link('&shy;','/deliberations/deliberationvue/' . $this->data['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?></li>
+	<li><?php echo $html->link(SHY, $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?></li>
+	<li><?php echo $html->link(SHY,'/deliberations/textprojetvue/' . $this->data['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
+	<li><?php echo $html->link(SHY,'/deliberations/textsynthesevue/' . $this->data['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
+	<li><?php echo $html->link(SHY,'/deliberations/deliberationvue/' . $this->data['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?></li>
 	<li>
 	<?php
 	    if ($userCanEdit)
-		    echo $html->link('&shy;', '/deliberations/edit/' . $this->data['Deliberation']['id'],array('class'=>'link_modifier','title'=>'Modifier'), false, false);?>
+		    echo $html->link(SHY, '/deliberations/edit/' . $this->data['Deliberation']['id'],array('class'=>'link_modifier','title'=>'Modifier'), false, false);?>
 	</li>
 
 </ul>

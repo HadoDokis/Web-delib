@@ -30,13 +30,13 @@ foreach ($users as $user):
 	?></td>
 
 	<td class="actions">
-		<?php echo $html->link('&shy;','/users/view/' . $user['User']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
-		<?php echo $html->link('&shy;','/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
-		<?php echo $html->link('&shy;','/users/changeMdp/' . $user['User']['id'], array('class'=>'link_mdp', 'title'=>'Nouveau mot de passe'), false, false)?>
+		<?php echo $html->link(SHY,'/users/view/' . $user['User']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
+		<?php echo $html->link(SHY,'/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
+		<?php echo $html->link(SHY,'/users/changeMdp/' . $user['User']['id'], array('class'=>'link_mdp', 'title'=>'Nouveau mot de passe'), false, false)?>
 
 		<?php
 		    if ($this->controller->_isDeletable($user, $message))
-		        echo $html->link('&shy;','/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?', false)?>
+		        echo $html->link(SHY,'/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?', false)?>
 	</td>
 </tr>
 <? endforeach; ?>

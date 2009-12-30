@@ -54,8 +54,8 @@
 
 <br />
 <ul id="actions_fiche">
-	<li><?php echo $html->link('&shy;', '/typeseances/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retourner à la liste'), false, false) ?> </li>
-	<li><?php echo $html->link('&shy;', '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false) ?> </li>
+	<li><?php echo $html->link(SHY, '/typeseances/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retourner à la liste'), false, false) ?> </li>
+	<li><?php echo $html->link(SHY, '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false) ?> </li>
 </ul>
 
 </div>

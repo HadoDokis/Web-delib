@@ -34,15 +34,15 @@
 		if ($isEditable){
 	        $loc="/circuits/intervertirPosition/";
 	        if ($listeUserCircuit['position'][$i]!= $lastPosition)
-	         	echo ("<td class=\"actions\">".$html->link('&shy;', $loc.$listeUserCircuit['id'][$i].'/0/',array('class'=>'link_descendre','title'=>'Descendre'), false, false));
+	         	echo ("<td class=\"actions\">".$html->link(SHY, $loc.$listeUserCircuit['id'][$i].'/0/',array('class'=>'link_descendre','title'=>'Descendre'), false, false));
 	       else
 	            echo("<td class=\"actions\">&nbsp;</td>");
 	        if ($listeUserCircuit['position'][$i]!='1')
-	        	echo ("<td class=\"actions\">".$html->link('&shy;', $loc.$listeUserCircuit['id'][$i].'/1/',array('class'=>'link_monter','title'=>'Monter'), false, false));
+	        	echo ("<td class=\"actions\">".$html->link(SHY, $loc.$listeUserCircuit['id'][$i].'/1/',array('class'=>'link_monter','title'=>'Monter'), false, false));
 	        else
 	            echo("<td class=\"actions\">&nbsp;</td>");
 			$loc="/circuits/supprimerUser/";
-	       echo ("<td class=\"actions\">".$html->link('&shy;', $loc.$listeUserCircuit['id'][$i].'/',array('class'=>'link_supprimer','title'=>'Supprimer'), false, false));
+	       echo ("<td class=\"actions\">".$html->link(SHY, $loc.$listeUserCircuit['id'][$i].'/',array('class'=>'link_supprimer','title'=>'Supprimer'), false, false));
 	        echo("</tr>");
 		}
 		}
