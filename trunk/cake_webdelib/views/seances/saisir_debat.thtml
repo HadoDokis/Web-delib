@@ -1,5 +1,5 @@
 <h2>Saisie des débats :</h2>
-<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $javascript->link('fckeditor/fckeditor'); ?>
 <?php echo $html->formTag('/seances/saisirDebat/'.$delib['Deliberation']['id'],null, array('enctype'=>'multipart/form-data')); ?>
 
 <?php
