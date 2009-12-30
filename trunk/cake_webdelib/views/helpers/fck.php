@@ -13,7 +13,7 @@ class FckHelper extends Helper
         foreach (explode('[', str_replace(']','', $id)) as $v) {
             $did .= ucfirst($v);
         }
-	$url = 'http://'.$_SERVER['HTTP_HOST'].$this->base.'/js/';
+	$url = 'http://'.$_SERVER['HTTP_HOST'].$this->base.'/js/fckeditor/';
         return <<<FCK_CODE
              <script type="text/javascript">
              fckLoader_$did = function () {
@@ -35,7 +35,7 @@ FCK_CODE;
         $output .= "//<![CDATA[\n";
         $output .= "function openFileBrowser(id){\n";
         $output .= "var fck = new FCKeditor(id);\n";
-        $output .= "fck.BasePath = '".$this->webroot."js/'\n";
+        $output .= "fck.BasePath = '".$this->webroot."js/fckeditor/'\n";
         $output .= "var url = fck.BasePath + 'editor/filemanager/browser/default/browser.html?Type=Image&Connector=connectors/php/connector.php';\n";
         $output .= "var sOptions = 'toolbar=no,status=no,resizable=yes,dependent=yes,scrollbars=yes';\n";
         $output .= "sOptions += ',width=640';\n";

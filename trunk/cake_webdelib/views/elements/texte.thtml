@@ -1,9 +1,10 @@
 <?php
-	echo $javascript->link('fckeditor');
+	echo $javascript->link('fckeditor/fckeditor');
 	echo $javascript->link('utils');
 	$delib = $this->data;
 	if (!empty($delib['Deliberation']))
              $id    = $delib['Deliberation']['id'] ;
+
 	if ($key=='texte_projet'){
 		$cible = 1;
 		$libelle = 'Texte projet';
@@ -32,7 +33,7 @@
 	    if (empty($delib['Deliberation'][$key."_name"]))
                 echo  $html->fileTag("Deliberation/".$key, array('size'=>'60', 'title'=>$libelle));
             else {
-                $url =    PROTOCOLE_DL."://".$_SERVER[SERVER_NAME]."/files/generee/projet/$id/$key.odt";
+                $url =    PROTOCOLE_DL."://".$_SERVER['SERVER_NAME']."/files/generee/projet/$id/$key.odt";
    	        echo '<span id="Deliberation'.$key.'InputFichierJoint" style="display: none;"></span>';
 	        echo '<span id="Deliberation'.$key.'AfficheFichierJoint">'; 
                 echo "<a href='$url'>$libelle</a>";
