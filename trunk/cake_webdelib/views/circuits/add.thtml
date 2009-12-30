@@ -1,9 +1,9 @@
 <h2>Nouveau Circuit</h2>
 <form action="<?php echo $html->url('/circuits/add'); ?>" method="post">
 <div class="required"> 
-	<?php echo $form->labelTag('Circuit/libelle', 'LibellÃ©');?>
+	<?php echo $form->labelTag('Circuit/libelle', 'Libellé');?>
  	<?php echo $html->input('Circuit/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Circuit/libelle', 'Entrer le libellÃ©.');?>
+	<?php echo $html->tagErrorMsg('Circuit/libelle', 'Entrer le libellé.');?>
 </div>
 
 
