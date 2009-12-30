@@ -30,9 +30,9 @@
 
 <ul id="actions_fiche">
 	<?php
-		echo '<li>' . $html->link('&shy;', $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+		echo '<li>' . $html->link(SHY, $this->controller->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
 		if ($this->controller->Droits->check($this->controller->Session->read('user.User.id'), 'Infosupdefs:edit'))
-			echo '<li>'.$html->link('&shy;', '/infosupdefs/edit/' . $this->data['Infosupdef']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+			echo '<li>'.$html->link(SHY, '/infosupdefs/edit/' . $this->data['Infosupdef']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
 	?>
 </ul>
 

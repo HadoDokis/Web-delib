@@ -8,5 +8,5 @@
 
 
 <div class="submit">
-	<?php echo $html->link('&shy;', '/models/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?>
+	<?php echo $html->link(SHY, '/models/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?>
 </div>

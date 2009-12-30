@@ -57,9 +57,9 @@
 	</tr>
 	<tr>
 		<td><?php echo $form->labelTag('Annexe/titre', 'Texte ');?></td>
-		<td id="actions_fiche">	<li><?php echo $html->link('&shy;','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
-								<li><?php echo $html->link('&shy;','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
-								<li><?php echo $html->link('&shy;','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?></li>
+		<td id="actions_fiche">	<li><?php echo $html->link(SHY,'/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
+								<li><?php echo $html->link(SHY,'/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
+								<li><?php echo $html->link(SHY,'/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?></li>
 		</td>
 	</tr>
 	<tr>

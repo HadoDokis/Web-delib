@@ -14,16 +14,16 @@
 	<td><?php echo $model['Model']['type']; ?></td>
 	<td><?php echo $model['Model']['name']; ?></td>
 	<td class="actions">
-            <?php echo $html->link('&shy;','/models/view/' . $model['Model']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
+            <?php echo $html->link(SHY,'/models/view/' . $model['Model']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
 	    <?php
 	      if ($USE_GEDOOO && ($model['Model']['type'] == 'Document'))
-		     echo $html->link('&shy;','/models/import/' . $model['Model']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
+		     echo $html->link(SHY,'/models/import/' . $model['Model']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
               else
-	             echo $html->link('&shy;','/models/edit/' . $model['Model']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
+	             echo $html->link(SHY,'/models/edit/' . $model['Model']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
 	    ?>
 	    <?php
 	         if ( ($model['Model']['type'] == 'Document') && ($model['Model']['id'] != 1) )
-		     echo $html->link('&shy;','/models/delete/' . $model['Model']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), false, false);
+		     echo $html->link(SHY,'/models/delete/' . $model['Model']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), false, false);
             ?>
 	</td>
 </tr>

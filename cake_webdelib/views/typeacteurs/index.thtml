@@ -16,9 +16,9 @@
 	<td><?php echo $typeacteur['Typeacteur']['commentaire']; ?></td>
 	<td><?php echo $typeacteur['Typeacteur']['elu'] ? 'élu' : 'non élu'; ?></td>
 	<td class="actions">
-		<?php echo $html->link('&shy;','/typeacteurs/view/' . $typeacteur['Typeacteur']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
-		<?php echo $html->link('&shy;','/typeacteurs/edit/' . $typeacteur['Typeacteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
-		<?php if (empty($typeacteur['Acteur'])) echo $html->link('&shy;','/typeacteurs/delete/' . $typeacteur['Typeacteur']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Voulez-vous supprimer le type d\'acteur \''.$typeacteur['Typeacteur']['nom'].'\' ?', false); ?>
+		<?php echo $html->link(SHY,'/typeacteurs/view/' . $typeacteur['Typeacteur']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
+		<?php echo $html->link(SHY,'/typeacteurs/edit/' . $typeacteur['Typeacteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
+		<?php if (empty($typeacteur['Acteur'])) echo $html->link(SHY,'/typeacteurs/delete/' . $typeacteur['Typeacteur']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Voulez-vous supprimer le type d\'acteur \''.$typeacteur['Typeacteur']['nom'].'\' ?', false); ?>
 	</td>
 </tr>
 <?php endforeach; ?>

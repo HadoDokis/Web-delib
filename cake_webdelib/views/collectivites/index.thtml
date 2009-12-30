@@ -15,10 +15,10 @@
 	</td>
 	<td><?php  echo $html->image($logo_path);?></td>
 	<td  class="actions">
-		<?php echo $html->link('&shy;','/collectivites/edit/1', array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
+		<?php echo $html->link(SHY,'/collectivites/edit/1', array('class'=>'link_modifier', 'title'=>'Modifier'), false, false)?>
 
-		<?php echo $html->link('&shy;','/collectivites/setLogo/0', array('class'=>'link_inserer_logo', 'title'=>'Insérer Logo'), false, false)?>
-		<?php //echo $html->link('&shy;','/collectivites/setMails/0', array('class'=>'link_param_mail', 'title'=>'Parametrage des mails'), false, false)?>
+		<?php echo $html->link(SHY,'/collectivites/setLogo/0', array('class'=>'link_inserer_logo', 'title'=>'Insérer Logo'), false, false)?>
+		<?php //echo $html->link(SHY,'/collectivites/setMails/0', array('class'=>'link_param_mail', 'title'=>'Parametrage des mails'), false, false)?>
 	</td>
 
 

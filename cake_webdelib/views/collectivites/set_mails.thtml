@@ -6,22 +6,22 @@
   <tr> 
     <td> Projet refus&eacute; </td>
     <td> <?php echo $html->file('Mail/refus', array('size' => '40'))?></td>
-    <td> <?php echo $html->link('&shy;', $email_path.'refus', array('class'=>'link_voir', 'title'=>'Voir'), false, false) ?></td>
+    <td> <?php echo $html->link(SHY, $email_path.'refus', array('class'=>'link_voir', 'title'=>'Voir'), false, false) ?></td>
   </tr>
   <tr>
     <td> Projet &agrave; traiter  </td>
     <td> <?php echo $html->file('Mail/traiter', array('size' => '40'))?> </td>
-    <td> <?php echo $html->link('&shy;', $email_path.'traiter', array('class'=>'link_voir', 'title'=>'Voir'), false, false) ?></td>
+    <td> <?php echo $html->link(SHY, $email_path.'traiter', array('class'=>'link_voir', 'title'=>'Voir'), false, false) ?></td>
   </tr>
   <tr>
     <td> Notification d'insertion dans le circuit  </td>
     <td> <?php echo $html->file('Mail/insertion', array('size' => '40'))?> </td>
-    <td> <?php echo $html->link('&shy;', $email_path.'insertion', array('class'=>'link_voir', 'title'=>'Voir'), false, false) ?></td>
+    <td> <?php echo $html->link(SHY, $email_path.'insertion', array('class'=>'link_voir', 'title'=>'Voir'), false, false) ?></td>
   </tr>
   <tr>
     <td> Convocation  </td>
     <td> <?php echo $html->file('Mail/convocation', array('size' => '40'))?></td>
-    <td> <?php echo $html->link('&shy;', $email_path.'convocation', array('class'=>'link_voir', 'title'=>'Voir'), false, false) ?></td>
+    <td> <?php echo $html->link(SHY, $email_path.'convocation', array('class'=>'link_voir', 'title'=>'Voir'), false, false) ?></td>
   </tr>
 </table>
 

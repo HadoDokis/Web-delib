@@ -24,7 +24,7 @@
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo ($html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id'])); ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
-		 	<?php echo $html->link('&shy;','/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'), false, false)?>
+		 	<?php echo $html->link(SHY,'/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets'), false, false)?>
 		<?php
                        $urlConvoc = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'].'/null/';
 		       $urlOdj = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/';
@@ -32,28 +32,28 @@
 		       $urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/0/retour/0/true';
                     
                      if (AFFICHE_CONVOCS_ANONYME)
-		        echo $html->link('&shy;', $urlConvocUnique, array('class'=>'link_convocation_unique', 'title'=>"Apercu d'une convocation"), 'Etes-vous sur de vouloir lancer la génération de l\'apercu  ?', false);
+		        echo $html->link(SHY, $urlConvocUnique, array('class'=>'link_convocation_unique', 'title'=>"Apercu d'une convocation"), 'Etes-vous sur de vouloir lancer la génération de l\'apercu  ?', false);
 
-		    echo $html->link('&shy;', $urlConvoc, array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'), 'Etes-vous sur de vouloir lancer la génération des documents ?', false);
+		    echo $html->link(SHY, $urlConvoc, array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'), 'Etes-vous sur de vouloir lancer la génération des documents ?', false);
                     if (AFFICHE_CONVOCS_ANONYME)
-		        echo $html->link('&shy;', $urlOdjUnique, array('class'=>'link_ordre_jour_unique', 'title'=>"Apercu de l'ordre jour"),  'Etes-vous sur de vouloir lancer la génération de l\'apercu ?', false);
-		    echo $html->link('&shy;', $urlOdj, array('class'=>'link_ordre_jour', 'title'=>'Générer l\'ordre du jour détaillé'),  'Etes-vous sur de vouloir lancer la génération des documents  ?', false);
+		        echo $html->link(SHY, $urlOdjUnique, array('class'=>'link_ordre_jour_unique', 'title'=>"Apercu de l'ordre jour"),  'Etes-vous sur de vouloir lancer la génération de l\'apercu ?', false);
+		    echo $html->link(SHY, $urlOdj, array('class'=>'link_ordre_jour', 'title'=>'Générer l\'ordre du jour détaillé'),  'Etes-vous sur de vouloir lancer la génération des documents  ?', false);
 		?>
 		</td>
 		<td class="actions">
-			<?php echo $html->link('&shy;','/seances/saisirCommentaire/' . $seance['Seance']['id'], array('class'=>'link_commentaire_seance', 'title'=>'Saisir un commentaire pour la séance'), false, false); ?>
-			<?php echo $html->link('&shy;','/seances/saisirSecretaire/' . $seance['Seance']['id'], array('class'=>'link_secretaire', 'title'=>'Choix du secrétaire de séance'), false, false); ?>
-			<?php echo $html->link('&shy;','/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les débats généraux de la séance'), false, false); ?>
+			<?php echo $html->link(SHY,'/seances/saisirCommentaire/' . $seance['Seance']['id'], array('class'=>'link_commentaire_seance', 'title'=>'Saisir un commentaire pour la séance'), false, false); ?>
+			<?php echo $html->link(SHY,'/seances/saisirSecretaire/' . $seance['Seance']['id'], array('class'=>'link_secretaire', 'title'=>'Choix du secrétaire de séance'), false, false); ?>
+			<?php echo $html->link(SHY,'/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les débats généraux de la séance'), false, false); ?>
 			<?php
 				if ($seance['Typeseance']['action']==0)
-					echo $html->link('&shy;','/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voter', 'title'=>'Afficher les projets et voter'), false, false);
+					echo $html->link(SHY,'/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voter', 'title'=>'Afficher les projets et voter'), false, false);
 				else
-					echo $html->link('&shy;','/seances/detailsAvis/' . $seance['Seance']['id'],array('class'=>'link_donnerAvis', 'title'=>'Afficher les projets et donner un avis'), false, false);
+					echo $html->link(SHY,'/seances/detailsAvis/' . $seance['Seance']['id'],array('class'=>'link_donnerAvis', 'title'=>'Afficher les projets et donner un avis'), false, false);
 
                       echo ('</td>');
                       echo ('<td>');
-	               echo $html->link('&shy;','/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'].'/null/0/retour/1/', array('class'=>'link_pvsommaire', 'title'=>'Generation du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
-                      echo $html->link('&shy;','/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'].'/null/0/retour/1/', array('class'=>'link_pvcomplet', 'title'=>'Generation du pv complet'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
+	               echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'].'/null/0/retour/1/', array('class'=>'link_pvsommaire', 'title'=>'Generation du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
+                      echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'].'/null/0/retour/1/', array('class'=>'link_pvcomplet', 'title'=>'Generation du pv complet'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
 			?>
 		</td>
 	</tr>

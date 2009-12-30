@@ -39,10 +39,10 @@
 	?></td>
 	<td class="actions">
 	<?php
-		echo $html->link('&shy;','/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false);
-		echo $html->link('&shy;','/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
+		echo $html->link(SHY,'/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false);
+		echo $html->link(SHY,'/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
 	    if ($this->controller->_isDeletable($typeseance, $message))
-			echo $html->link('&shy;','/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?', false);
+			echo $html->link(SHY,'/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?', false);
 	?>
 	</td>
 </tr>
