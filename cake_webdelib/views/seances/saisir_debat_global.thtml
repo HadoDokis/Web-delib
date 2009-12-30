@@ -1,5 +1,5 @@
 <h2>Saisie des débats généraux :</h2>
-<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $javascript->link('fckeditor/fckeditor'); ?>
 <?php echo ('<div class="optional">');
 
 echo $html->formTag('/seances/saisirDebatGlobal/'.$seance['Seance']['id'] ,null,array('enctype'=>'multipart/form-data'));
