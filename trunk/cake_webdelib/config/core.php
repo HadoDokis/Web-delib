@@ -147,6 +147,13 @@ define('CAKE_ADMIN', 'admin');
     define('ACL_CLASSNAME', 'DB_ACL');
     define('ACL_FILENAME', 'dbacl' . DS . 'db_acl');
 
+    $pos = strripos($_SERVER['HTTP_USER_AGENT'], 'Chrome');
+    if ($pos === false)
+        define ('SHY',  '&shy;');
+    else
+        define ('SHY',  '&nbsp;');
+
+
     $pos2 =  strrpos ( getcwd(), 'webroot');
     $path2 = substr(getcwd(), 0, $pos2);
     $webroot_path = $path2."webroot/";
