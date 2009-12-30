@@ -31,6 +31,7 @@
     define ('LDAP_PORT',       '389');
     define ('LDAP_LOGIN',       NULL);
     define ('LDAP_PASSWD',      NULL);
+    define ('UNIQUE_ID',       'UID');
     define ('BASE_DN',         'OU=Utilisateurs,dc=mairie-xxx,dc=xxx');
     define ('ACCOUNT_SUFFIX',  '@mairie-xxx.xxx');
     define ('DN',              'dn');
@@ -52,5 +53,7 @@
     define ('WSDL', 'ws-iparapheur.wsdl');
     define('TYPETECH', 'ACTES');
     define ('VISIBILITY', 'PUBLIC');
-     
+    define ('PREFIX_WEBDELIB', 'WD_');
+
+
 ?>
