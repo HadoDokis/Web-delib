@@ -1,5 +1,5 @@
 <h2>Nouveau mod&egrave;le : </h2>
-<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $javascript->link('fckeditor/fckeditor'); ?>
 <?php echo $html->formTag('/models/add'); ?>
 
 <div class="optional">
