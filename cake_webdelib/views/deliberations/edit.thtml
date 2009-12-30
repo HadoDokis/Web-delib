@@ -113,7 +113,7 @@
 				$fieldId = "'Deliberation.Infosup".Inflector::camelize($infosupdef['Infosupdef']['code'])."'";
 				echo $html->link($html->image("calendar.png", "border='0'"), "javascript:show_calendar($fieldId, 'f');", array(), false, false);
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
-				echo $javascript->link('fckeditor');
+				echo $javascript->link('fckeditor/fckeditor');
 				$tagName = 'data[Infosup]['.$infosupdef['Infosupdef']['code'].']';
 				echo '<div class="annexesGauche"></div>';
 				echo '<div class="fckEditorProjet">';
@@ -131,7 +131,7 @@
                                    echo '['.$html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
                                }
                                else {
-                                   $url = PROTOCOLE_DL."://".$_SERVER[SERVER_NAME]."/files/generee/projet/".$this->data['Deliberation']['id']."/infosup".$infosupdef['Infosupdef']['id'].".odt";
+                                   $url = PROTOCOLE_DL."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/infosup".$infosupdef['Infosupdef']['id'].".odt";
                                    echo "<a href='$url'>".$this->data['Infosup'][$infosupdef['Infosupdef']['code']]."</a> ";
 
                                }
