@@ -1,5 +1,5 @@
 <?php
-    echo $javascript->link('fckeditor');
+    echo $javascript->link('fckeditor/fckeditor');
     echo $javascript->link('utils');
 ?>
 <h2>Import du mod&egrave;le : <?php echo $libelle; ?></h2>

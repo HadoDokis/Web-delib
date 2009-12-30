@@ -1,4 +1,4 @@
-<?php echo $javascript->link('fckeditor'); ?>
+<?php echo $javascript->link('fckeditor/fckeditor'); ?>
 <?php echo $html->formTag('/models/edit/'.$html->tagValue('Model/id')); ?>
 <h2>Modification du mod&egrave;le : <?php echo $libelle; ?></h2>
 <div class="optional">
