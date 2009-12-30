@@ -40,26 +40,26 @@
 		<td rowspan=3 class="actions">
 		<?php
 			if (in_array('view', $deliberation['Actions']))
-				echo $html->link('&shy;','/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false);
+				echo $html->link(SHY, '/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false);
 			if (in_array('edit', $deliberation['Actions']))
-				echo $html->link('&shy;','/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
+				echo $html->link(SHY,'/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
 			if (in_array('delete', $deliberation['Actions']))
-				echo $html->link('&shy;','/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?', false);
+				echo $html->link(SHY,'/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?', false);
 			if (in_array('traiter', $deliberation['Actions']))
-				echo $html->link('&shy;',"/deliberations/traiter/" . $deliberation['Deliberation']['id'], array('class'=>"link_traiter", 'title'=>'Traiter'), false, false);
+				echo $html->link(SHY,"/deliberations/traiter/" . $deliberation['Deliberation']['id'], array('class'=>"link_traiter", 'title'=>'Traiter'), false, false);
 			if (in_array('validerEnUrgence', $deliberation['Actions']))
-				echo $html->link('&shy;',"/deliberations/validerEnUrgence/" . $deliberation['Deliberation']['id'], array('class'=>"link_traiter", 'title'=>'Valider en urgence'), 'Confirmez-vous la validation en urgence du projet \''.$deliberation['Deliberation']['id'].'\'', false);
+				echo $html->link(SHY,"/deliberations/validerEnUrgence/" . $deliberation['Deliberation']['id'], array('class'=>"link_traiter", 'title'=>'Valider en urgence'), 'Confirmez-vous la validation en urgence du projet \''.$deliberation['Deliberation']['id'].'\'', false);
 			echo '<br/><br/>';
 			if (in_array('attribuerCircuit', $deliberation['Actions'])) {
 				$actionAttribuer = '/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'];
 				$actionAttribuer .= $deliberation['Deliberation']['circuit_id'] ? '/'.$deliberation['Deliberation']['circuit_id'] : '';
-				echo $html->link('&shy;', $actionAttribuer, array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'), false, false);
+				echo $html->link(SHY, $actionAttribuer, array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'), false, false);
 			}
 			if (in_array('generer', $deliberation['Actions'])) {
 			    if ($deliberation['Seance']['traitee']==0)
-		                echo $html->link('&shy;','/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+		                echo $html->link(SHY,'/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
 			     else
-			         echo $html->link('&shy;', '/deliberations/downloadDelib/'.$deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+			         echo $html->link(SHY, '/deliberations/downloadDelib/'.$deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
 			}
 		?>
 		</td>
