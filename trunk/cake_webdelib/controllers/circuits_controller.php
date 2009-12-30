@@ -28,19 +28,8 @@ class CircuitsController extends AppController {
                     $positionCourante   = $traitement[0]['pos'];
                     $tmp = $this->UsersCircuit->find("UsersCircuit.circuit_id=$circuit_id AND UsersCircuit.service_id = -1 AND UsersCircuit.position=  $positionCourante ");
                     if (!empty($tmp)){
-                        if ($this->_checkEtatParapheur($delib_id)) {
-			    $this->Traitement->create();
-			    $traitement['Traitement']['delib_id']   =  $delib_id;
-			    $traitement['Traitement']['circuit_id'] = $circuit_id;
-			    $traitement['Traitement']['position']   =  $positionCourante + 1;
-			    $this->Traitement->save($traitement['Traitement']);
-                            if ($nbEtapes ==  $positionCourante ) {
-                                // on change l'etat de la delib à 2
-                               $del = $this->Deliberation->read(null,  $delib_id);
-			       $del['Deliberation']['etat'] = 2;
-			       $this->Deliberation->save($del);
-			    }
-		        }
+                        if ($this->_checkEtatParapheur($delib_id)) 
+			    $this->requestAction("/deliberations/accepteDossier/$delib_id");
 	            }
                 }
             }
@@ -50,7 +39,6 @@ class CircuitsController extends AppController {
             foreach ($delibs as $delib) {
                  $this->_checkEtatParapheur($delib['Deliberation']['id']);
 	    }
-
 	    $this->layout = null;
         }
    
@@ -78,9 +66,7 @@ class CircuitsController extends AppController {
 			   // On est obligé de supprimé le projet sinon, on ne peut pas le ré-insérer dans un autre circuit du parapheur
 			       $archdos = $this->Parafwebservice->archiverDossierWebservice(PREFIX_WEBDELIB.$delib_id, 'EFFACER');
 			   }
-			       
 	                   return true;
-			   
 		       }
 		       elseif(($histo['logdossier'][$i]['status']=='RejetSignataire')||($histo['logdossier'][$i]['status']=='RejetVisa') ){ // Cas de refus dans le parapheur
 			   
@@ -90,7 +76,7 @@ class CircuitsController extends AppController {
 	                   $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom']." : ".$histo['logdossier'][$i]['annotation']);
 	                   $comm ['Commentaire']['commentaire_auto'] = 0;
 	                   $this->Commentaire->save($comm['Commentaire']);
-					   $this->Deliberation->refusDossier($delib_id);
+	                   $this->Deliberation->refusDossier($delib_id);
 			   //             Supprimer le dossier du parapheur
 	                   $effdos = $this->Parafwebservice->effacerDossierRejeteWebservice(PREFIX_WEBDELIB.$delib_id);
 		       }			 
