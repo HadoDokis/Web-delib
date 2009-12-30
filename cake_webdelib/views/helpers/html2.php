@@ -292,8 +292,8 @@ class Html2Helper extends HtmlHelper
 
 /* affiche une flèche vers le bas et une flèche vers le bas pour le tri asc et desc de $urlChampTri */
 	function boutonsTri($urlChampTri = null, $inverse = false) {
-		echo $this->link('&shy;', $urlChampTri.'/'.($inverse ? 'DESC':'ASC'), array('class'=>'link_triasc','title'=>'Trier par ordre croissant'), false, false);
-		echo $this->link('&shy;', $urlChampTri.'/'.($inverse ? 'ASC':'DESC'), array('class'=>'link_tridesc','title'=>'Trier par ordre décroissant'), false, false);
+		echo $this->link(SHY, $urlChampTri.'/'.($inverse ? 'DESC':'ASC'), array('class'=>'link_triasc','title'=>'Trier par ordre croissant'), false, false);
+		echo $this->link(SHY, $urlChampTri.'/'.($inverse ? 'ASC':'DESC'), array('class'=>'link_tridesc','title'=>'Trier par ordre décroissant'), false, false);
 	}
 
 }
