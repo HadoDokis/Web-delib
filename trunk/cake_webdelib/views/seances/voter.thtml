@@ -1,6 +1,9 @@
 <?php echo $javascript->link('vote'); ?>
+<?php
+    if (isset($message))
+        echo '<div id="flashMessage" class="message">'.$message.'</div>	'; 
+?>
 <cake:nocache>
-
 <h2> Vote pour le projet : "<?php echo $deliberation['Deliberation']['objet']?>"</h2>
 
 <h3>Liste des présents : <?php echo $html->selectTag('Vote/listePresents', array(1=>'masquée', 2=>'affichée'), 1, array('onchange' => "affichageListePresents(this);"), null, false); ?></h3>
