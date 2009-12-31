@@ -358,6 +358,7 @@ class SeancesController extends AppController {
 		$seance = $this->Seance->read(null, $deliberation['Deliberation']['seance_id']);
 
 		if (empty($this->data)) {
+		        $nbAbsent = 0;
 			// Initialisation du détail du vote
 			$donnees = $this->Vote->findAll("delib_id = $deliberation_id");
 			foreach($donnees as $donnee){
@@ -374,7 +375,16 @@ class SeancesController extends AppController {
 			$this->data['Deliberation']['vote_commentaire'] = $deliberation['Deliberation']['vote_commentaire'];
 
 			$this->set('deliberation' , $deliberation);
-			$this->set('presents' , $this->requestAction('/deliberations/afficherListePresents/'.$deliberation_id));
+			$listPresents =  $this->requestAction('/deliberations/afficherListePresents/'.$deliberation_id);
+			$this->set('presents', $listPresents);
+
+			$nbPresent = count ($listPresents);
+			foreach ( $listPresents as $present)
+                            if(($present['Listepresence']['present']==0)&&($present['Listepresence']['mandataire']==0))
+			        $nbAbsent++;
+			if ($nbPresent/2 < $nbAbsent)
+			    $this->set('message', 'Attention, le quorum n\'est plus atteint...');
+
 		} else {
 			$this->data['Deliberation']['id'] = $deliberation_id;
 			$this->effacerVote($deliberation_id);
