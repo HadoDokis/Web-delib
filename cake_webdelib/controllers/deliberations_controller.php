@@ -1328,9 +1328,9 @@ class DeliberationsController extends AppController {
 			 	$this->Listepresence->save($this->data['Listepresence']);
 			}
 
-			if ($nbVoix < ($nbConvoques/2))
-				   $this->_reporteDelibs($delib_id);
-
+			//if ($nbVoix < ($nbConvoques/2)) {
+			     //   $this->_reporteDelibs($delib_id);
+                       // }
 			$this->redirect('/seances/voter/'.$delib_id);
 		}
 
@@ -1343,7 +1343,7 @@ class DeliberationsController extends AppController {
 		$delibs = $this->Deliberation->findAll($conditions);
 		foreach ($delibs as $delib)
 			$this->Deliberation->changeSeance($delib['Deliberation']['id'], 0);
-		$this->Session->setFlash('Le quorum n\'est plus atteint, toutes les projets suivants sont &agrave; attribuer...');
+		$this->Session->setFlash("Le quorum n\'est plus atteint...");
 		$this->redirect('seances/listerFuturesSeances');
 		exit;
 	}
