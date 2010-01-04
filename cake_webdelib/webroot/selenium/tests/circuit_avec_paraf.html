@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>circuit_avec_paraf</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">circuit_avec_paraf</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/users/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserLogin</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/circuits/index</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Ajouter un circuit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>CircuitLibelle</td>
+	<td>test_circuit_paraf</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Ajouter</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectAndWait</td>
+	<td>CircuitLibelle</td>
+	<td>label=test_circuit_paraf</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>ServiceLibelle</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>ServiceLibelle</td>
+	<td>label=TEST</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//select[@id='ServiceLibelle']/option[4]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Ajouter au circuit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>ServiceLibelle</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>ServiceLibelle</td>
+	<td>label=i-parapheur</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//option[@value='-1']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//div[@id='centre']/table[2]/tbody/tr[5]/td[4]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>ServiceLibelle</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>ServiceLibelle</td>
+	<td>label=TEST</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//select[@id='ServiceLibelle']/option[4]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//div[@id='centre']/table[2]/tbody/tr[5]/td[4]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>ServiceLibelle</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>ServiceLibelle</td>
+	<td>label=i-parapheur</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//option[@value='-1']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//div[@id='centre']/table[2]/tbody/tr[4]/td[4]/a</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
