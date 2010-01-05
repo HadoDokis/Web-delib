@@ -17,6 +17,7 @@ ALTER TABLE `deliberations` ADD `delib_pdf` LONGBLOB NULL AFTER `vote_commentair
 ALTER TABLE `seances` ADD `commentaire` VARCHAR( 500 ) NULL AFTER `traitee`;
 ALTER TABLE `commentaires` ADD `commentaire_auto` TINYINT( 1 ) NOT NULL AFTER `pris_en_compte` 
 
+ALTER TABLE `acteurs` CHANGE `date_naissance` `date_naissance` DATE NULL ;
 
 UPDATE `aros_acos` SET `_create` = '1',
 `_read` = '1',
