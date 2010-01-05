@@ -91,13 +91,18 @@ function _controleEtSauve() {
 			if (array_key_exists('Service', $this->data))
 				$this->data['Service']['Service'] = array();
 			$this->data['Acteur']['position'] = 999;
-			$this->data['Acteur']['date_naissance_day'] = 0;
-			$this->data['Acteur']['date_naissance_month'] = 0;
-			$this->data['Acteur']['date_naissance_year'] = 0;
+	              $this->data['Acteur']['date_naissance_day'] = 0;
+	              $this->data['Acteur']['date_naissance_month'] = 0;
+	              $this->data['Acteur']['date_naissance_year'] = 0;
 		}
 	}
-
-	$this->cleanUpFields();
+	if (empty( $this->data['Acteur']['date_naissance_day']) || empty( $this->data['Acteur']['date_naissance_month']) || empty( $this->data['Acteur']['date_naissance_year'])) {
+            $this->data['Acteur']['date_naissance'] = null;
+	}
+	else {
+             $this->data['Acteur']['date_naissance'] =  $this->data['Acteur']['date_naissance_year'].'-'.$this->data['Acteur']['date_naissance_month'].'-'.$this->data['Acteur']['date_naissance_day'];
+	}
+	//$this->cleanUpFields();
 	return $this->Acteur->save($this->data);
 }
 
