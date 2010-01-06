@@ -1,0 +1,27 @@
+<div id="vue_cadre">
+    <h3>Renvoyer le projet &agrave;</h3>
+
+    <?php echo "<form action='". $html->url("/deliberations/retour/$delib_id")."'  method='post' >";  ?>
+
+    <table id='retour' >
+    <tr>
+    <?php 
+
+        for ($i = 0; $i< $nbTraitements; $i++)
+	    echo '<td align="center">'. $html->image('icons/user.png') .'</td>';
+
+        echo ('</tr><tr>');
+
+        for ($i = 0; $i< $nbTraitements; $i++){
+            $user[$i] = $liste['prenom'][$i].' '.$liste['nom'][$i];
+            echo "<td><input type='radio' name='data[Deliberation][radio]' id='radio_$i' value='$i'  />".$user[$i]."</td>";
+        }
+        
+    ?>
+    </tr>
+    </table>
+   <br> <br> <br> 
+    
+    <?php echo $html->submit('Envoyer'); ?>
+</div>
+</form>
