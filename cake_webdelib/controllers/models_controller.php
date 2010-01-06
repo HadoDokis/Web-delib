@@ -138,7 +138,11 @@
 		   $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
 
                }
-               $oMainPart->addElement(new GDO_FieldType('titre_projet',                utf8_encode($delib['Deliberation']['titre']),    'text'));
+	       $titre = utf8_encode($delib['Deliberation']['titre']);
+               $titre =  str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $titre);
+               $oMainPart->addElement(new GDO_FieldType('titre_projet',                $titre,    'text'));
+
+
                $objet = utf8_encode($delib['Deliberation']['objet']);
                $objet = str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $objet);
 	       $oMainPart->addElement(new GDO_FieldType('objet_projet',                $objet,     'text'));
@@ -449,7 +453,7 @@
               $oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type,         ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,     ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType("titre_acteur".$type,          ' ', "text"));
-              $oDevPart->addElement(new GDO_FieldType("date_naissance_acteur".$type, ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("date_naissance_acteur".$type, ' ', "date"));
               $oDevPart->addElement(new GDO_FieldType("adresse1_acteur".$type,       ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType("adresse2_acteur".$type,       ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType("cp_acteur".$type,             ' ', "text"));
@@ -481,7 +485,11 @@
                 $oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type, utf8_encode($acteur['prenom_acteur']), "text"));
                 $oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,utf8_encode($acteur['salutation_acteur']), "text"));
                 $oDevPart->addElement(new GDO_FieldType("titre_acteur".$type, utf8_encode($acteur['titre_acteur']), "text"));
-                $oDevPart->addElement(new GDO_FieldType("date_naissance_acteur".$type, utf8_encode($acteur['date_naissance_acteur']), "text"));
+                if ($acteur['date_naissance_acteur'] != null)
+                    $oDevPart->addElement(new GDO_FieldType("date_naissance_acteur".$type,  $this->Date->frDate($acteur['date_naissance_acteur']), "date"));
+                else 
+		      $oDevPart->addElement(new GDO_FieldType("date_naissance_acteur".$type, '', "date"));
+
                 $oDevPart->addElement(new GDO_FieldType("adresse1_acteur".$type, utf8_encode($acteur['adresse1_acteur']), "text"));
                 $oDevPart->addElement(new GDO_FieldType("adresse2_acteur".$type, utf8_encode($acteur['adresse2_acteur']), "text"));
                 $oDevPart->addElement(new GDO_FieldType("cp_acteur".$type, utf8_encode($acteur['cp_acteur']), "text"));
