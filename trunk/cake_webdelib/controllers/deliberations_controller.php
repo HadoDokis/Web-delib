@@ -42,6 +42,7 @@ class DeliberationsController extends AppController {
 		'attribuercircuit'=>'Deliberations:mesProjetsRedaction',
 		'addIntoCircuit'=>'Deliberations:mesProjetsRedaction',
 		'traiter'=>'Deliberations:mesProjetsATraiter',
+		'retour'=>'Deliberations:mesProjetsATraiter',
 		'attribuerSeance'=>'Deliberations:tousLesProjetsSansSeance',
 		'validerEnUrgence'=>'Deliberations:tousLesProjetsValidation'
 	);
@@ -638,6 +639,31 @@ class DeliberationsController extends AppController {
 		}
 	}
 
+        function retour($delib_id) {
+	    $delib = $this->Deliberation->read(null, $delib_id);
+	    $circuit_id = $delib['Deliberation']['circuit_id'];
+            if (empty($this->data)) {
+	        $nbTraitements = $this->Traitement->getNbTraitements($delib_id);
+                $liste =  $this->UsersCircuit->afficheListeCircuit($circuit_id);
+		$this->set('delib_id', $delib_id);
+		$this->set('nbTraitements', $nbTraitements );
+		$this->set('liste',   $liste);
+	    }
+	    else {
+		$retourA = $this->data['Deliberation']['radio'];
+	        $traitements = $this->Traitement->findAll("Traitement.delib_id = $delib_id AND Traitement.circuit_id = $circuit_id ");        
+                // on Ré-initialise la date du premier traitement a qui l'on renvoi le projet
+                $traitement['Traitement']['date_traitement'] = $traitements[$retourA ]['Traitement']['date_traitement']='0000-00-00 00:00:00';
+                $traitement['Traitement']['id'] = $traitements[$retourA ]['Traitement']['id'];
+	        $this->Traitement->save($traitement);	
+
+                for ($i=$retourA+1 ; $i <=count($traitements); $i++ )
+		     if (isset($traitements[$i]['Traitement']['id']))
+                    $this->Traitement->del($traitements[$i]['Traitement']['id']);
+
+		$this->redirect('/');
+	    }
+	}
 
 	function traiter($id = null, $valid=null) {
 		if (!$id) {
@@ -677,8 +703,11 @@ class DeliberationsController extends AppController {
 				$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
 				$delib=array();
 				//on recupere la position courante de la deliberation
+				//$deliberation['positionDelib']=$lastTraitement['position'];
+				$deliberation['positionDelib']=count($deliberation['Traitement']);
 				$lastTraitement=array_pop($deliberation['Traitement']);
-				$deliberation['positionDelib']=$lastTraitement['position'];
+				
+				
 				//on recupere la position de l'user dans le circuit
 				array_push($delib, $deliberation);
 				$this->set('deliberation', $delib);
@@ -705,7 +734,7 @@ class DeliberationsController extends AppController {
                                 $delibTmp = $this->Deliberation->read(null, $id);
 
                                 // TODO notifier par mail toutes les personnes qui ont deja vise le projet
-                                $this->Deliberation->_notifierDossierRefuse($id, $delibTmp['Deliberation']['redacteur_id']);
+                                $this->_notifierDossierRefuse($id, $delibTmp['Deliberation']['redacteur_id']);
               
                                 $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
                                 $circuit_id=$delibTmp['Deliberation']['circuit_id'];
@@ -1054,7 +1083,7 @@ class DeliberationsController extends AppController {
      	                 'acte_pdf_file_sign' => "",
    	                 );
 		    $nb_pj=0;
-		    foreach ($delib['0']['Annexe'] as $annexe) {
+		    foreach ($delib['0']['Annex'] as $annexe) {
                         if ($annexe['type'] == 'G') {
 			    $pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/", $annexe['filename'], $annexe['data']);
 			    $data["acte_attachments[$nb_pj]"] = "@$pj_file";
