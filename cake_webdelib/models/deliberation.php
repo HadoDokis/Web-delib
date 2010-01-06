@@ -48,7 +48,7 @@ class Deliberation extends AppModel {
 		'Traitement'=>array(
 			'className'    => 'Traitement',
 			'foreignKey'   => 'delib_id'),
-		'Annexe'=>array(
+		'Annex'=>array(
 			'className'    => 'Annex',
 			'foreignKey'   => 'deliberation_id',
 			'dependent' => true),
@@ -246,18 +246,17 @@ class Deliberation extends AppModel {
              $delib['Deliberation']['created']='';
              $delib['Deliberation']['modified']='';
              $this->save($delib['Deliberation']);
-
  
              $delib_id = $this->getLastInsertId();
              // Copie des annexes du projet refusé vers le nouveau projet
-             $annexes = $tab[0]['Annexe'];
+             $annexes = $tab[0]['Annex'];
              foreach($annexes as $annexe) {
-                 $annexe['id'] = null;
-                 $annexe['created'] = null;
-                 $annexe['modified'] = null;
-                 $annexe['deliberation_id'] = $delib_id;
-                 $this->Annex->save($annexe, false);
+		 $tmp['Annex']= $annexe;
+		 $tmp['Annex']['id']=null;
+		 $tmp['Annex']['deliberation_id']= $delib_id ;
+		 $this->Annex->save( $tmp, false);
              }
+
              // Copie des infos supplémentaires du projet refusé vers le nouveau projet
              $infoSups = $tab[0]['Infosup'];
              foreach($infoSups as $infoSup) {
