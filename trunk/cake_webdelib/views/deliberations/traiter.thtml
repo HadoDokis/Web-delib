@@ -3,6 +3,7 @@
 	$defBarre = array();
 	$defBarre[] = array('title'=>'Valider', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/1', 'htmlAttributes'=>array('class'=>'link_valider_avec_border', 'title'=>'Valider le projet'));
 	$defBarre[] = array('title'=>'Refuser', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/0', 'htmlAttributes'=>array('class'=>'link_refuser_avec_border', 'title'=>'Refuser le projet'));
+	 $defBarre[] = array('title'=>"Renvoyer à", 'url'=>'/deliberations/retour/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_retour_avec_border', 'title'=>'Renvoi du projet'));
 	$defBarre[] = array();
 	$defBarre[] = array('title'=>'Ajouter un commentaire', 'url'=>'/commentaires/add/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_commentaire_avec_border', 'title'=>'Ajouter un commentaire (affichés plus bas)'));
 	$defBarre[] = array();
@@ -137,7 +138,7 @@
 
 
 <?php if(!empty($deliberation['Annexe'])) { ?>
-	<dt>Annexe(s) Globale(s) </dt>
+	<dt>Pi&egrave;ces jointes au contr&ocirc;le de l&eacute;galit&eacute;</dt>
 	<dd>
  		<?php foreach ($deliberation['Annexe'] as $annexe) {
 			if ($annexe['type'] == "G"){
