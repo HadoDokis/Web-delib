@@ -151,43 +151,43 @@ class DateComponent extends Object {
 	    $nbAnnee = date('Y',$timestamp);
             switch ($nbAnnee) {
                 case 2004:
-                    $nbAnnee = "deux mil quatre";
+                    $nbAnnee = "deux mille quatre";
                     break;
                 case 2005:
-                    $nbAnnee = "deux mil cinq";
+                    $nbAnnee = "deux mille cinq";
                     break;
                 case 2006:
-                    $nbAnnee = "deux mil six";
+                    $nbAnnee = "deux mille six";
                     break;
                 case 2007:
-                    $nbAnnee = "deux mil sept";
+                    $nbAnnee = "deux mille sept";
                     break;
                 case 2008:
-                    $nbAnnee = "deux mil huit";
+                    $nbAnnee = "deux mille huit";
                     break;
                 case 2009:
-                    $nbAnnee = "deux mil neuf";
+                    $nbAnnee = "deux mille neuf";
                     break;
                 case 2010:
-                    $nbAnnee = "deux mil dix";
+                    $nbAnnee = "deux mille dix";
                     break;
                 case 2011:
-                    $nbAnnee = "deux mil onze";
+                    $nbAnnee = "deux mille onze";
                     break;
                 case 2012:
-                    $nbAnnee= "deux mil douze";
+                    $nbAnnee= "deux mille douze";
                     break;
                 case 2013:
-                    $nbAnnee= "deux mil treize";
+                    $nbAnnee= "deux mille treize";
                     break;
                 case 2014:
-                    $nbAnnee= "deux mil quatorze";
+                    $nbAnnee= "deux mille quatorze";
                     break;
                 case 2015:
-                    $nbAnnee= "deux mil quinze";
+                    $nbAnnee= "deux mille quinze";
                     break;
            }
-	   return("$jour $nbJour $Mois  $nbAnnee");
+	   return("L'an $nbAnnee le $nbjour $Mois ");
        }	       
 }
 
