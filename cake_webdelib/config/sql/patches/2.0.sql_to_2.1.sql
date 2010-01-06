@@ -38,3 +38,9 @@ UPDATE `aros_acos` SET `_create` = '1',
 `_read` = '1',
 `_update` = '1',
 `_delete` = '1' WHERE `aros_acos`.`id` =7 LIMIT 1 ;
+
+
+
+ALTER TABLE `deliberations` ADD `debat_name` VARCHAR( 2555 ) NOT NULL AFTER `debat` ,
+ADD `debat_size` INT( 11 ) NOT NULL AFTER `debat_name` ,
+ADD `debat_type` VARCHAR( 255 ) NOT NULL AFTER `debat_size` ;
