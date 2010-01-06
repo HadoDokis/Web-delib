@@ -20,7 +20,6 @@
 	<?php if(!empty($annexes)){  ?>
 	<?php echo $html->image('/icons/bookmark.png').'Annexe(s) :';?>
 	<?php foreach ($annexes as $annexe) :
-			echo '<br>Titre : '.$annexe['Annex']['titre'];
 			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
 			echo '<br>Taille : '.$annexe['Annex']['size'];
 			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
