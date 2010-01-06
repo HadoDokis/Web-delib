@@ -1,9 +1,9 @@
 <h2>Modification d'un service</h2>
 <form action="<?php echo $html->url('/services/edit/'.$html->tagValue('Service/id')); ?>" method="post">
 <div class="optional">
-	<?php echo $form->labelTag('Service/libelle', 'LibellÃ©');?>
+	<?php echo $form->labelTag('Service/libelle', 'Libellé');?>
  	<?php echo $html->input('Service/libelle', array('size' => '60'));?>
-	<?php echo $html->tagErrorMsg('Service/libelle', 'Entrer le libellÃ©.');?>
+	<?php echo $html->tagErrorMsg('Service/libelle', 'Entrer le libellé.');?>
 </div>
 <div class="optional">
 	<?php
