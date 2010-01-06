@@ -596,6 +596,20 @@ a.link_refuser_avec_border {
 	padding: 4px 4px 4px 25px;
 }
 
+a.link_retour_avec_border {
+        color: black;
+        text-decoration: none;
+        font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+        border-top: 1px solid #e0ef90;
+        border-right: 1px solid #e0ef90;
+        border-left: none;
+        border-bottom: none;
+        background-image: url(../img/icons/retour.png);
+        background-repeat: no-repeat;
+        background-position: top left;
+        padding: 4px 4px 4px 25px;
+}
+
 a.link_commentaire_avec_border {
 	color: black;
 	text-decoration: none;
@@ -884,6 +898,18 @@ table#tableDroits {
 	border: 0;
 }
 /* Fin mise en forme du tableau des droits */
+table#retour {
+    border: 0;
+}
+
+#retour td {
+    border: 0;
+    text-align: center;
+}
+#retour tr {
+    border: 0;
+}
+
 
 
 /*---------------- modifs christophe ------------------------*/
