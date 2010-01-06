@@ -31,5 +31,10 @@ class Traitement extends AppModel {
 			return -1;
 	}
 
+        function getNbTraitements ($delib_id) {
+            $traitements = $this->findAll("Traitement.delib_id = $delib_id");
+	    return (count($traitements)-1);
+	}
+
 }
 ?>
