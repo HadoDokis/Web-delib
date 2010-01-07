@@ -8,20 +8,23 @@
 	if ($key=='texte_projet'){
 		$cible = 1;
 		$libelle = 'Texte projet';
+                $filename = $delib['Deliberation']['texte_projet_name'];
 		$type = 'P';
 	}
 	elseif ($key=='texte_synthese'){
 		$cible = 2;
 		$libelle = 'Note synth&egrave;se';
+                $filename = $delib['Deliberation']['texte_synthese_name'];
 		$type = 'S';
 	}
 	elseif ($key=='deliberation'){
 		$cible = 3;
 		$libelle = 'Texte d&eacute;lib&eacute;ration';
+                $filename = $delib['Deliberation']['deliberation_name'];
 		$type = 'D';
     }
 
-	echo $form->labelTag("Deliberation/".$key, $libelle);
+      echo $form->labelTag("Deliberation/".$key, $libelle);
 
 	if (GENERER_DOC_SIMPLE){
 		echo '<div class="annexesGauche"></div>';
@@ -36,7 +39,7 @@
                 $url =    PROTOCOLE_DL."://".$_SERVER['SERVER_NAME']."/files/generee/projet/$id/$key.odt";
    	        echo '<span id="Deliberation'.$key.'InputFichierJoint" style="display: none;"></span>';
 	        echo '<span id="Deliberation'.$key.'AfficheFichierJoint">'; 
-                echo "<a href='$url'>$libelle</a>";
+                echo "<a href='$url'>$filename</a>";
 	        echo '&nbsp;&nbsp;';
 	        echo $html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', '".$key."', '".$libelle."')", null, 'Voulez-vous vraiment supprimer le fichier ?');
                 echo '</span>';
