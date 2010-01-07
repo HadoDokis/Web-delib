@@ -187,7 +187,7 @@ class DateComponent extends Object {
                     $nbAnnee= "deux mille quinze";
                     break;
            }
-	   return("L'an $nbAnnee le $nbjour $Mois ");
+	   return("L'an $nbAnnee le $nbJour $Mois ");
        }	       
 }
 
