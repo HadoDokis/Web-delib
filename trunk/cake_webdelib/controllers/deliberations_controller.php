@@ -756,7 +756,9 @@ class DeliberationsController extends AppController {
             //verification du projet, s'il n'est pas pret ->reporte a la seance suivante
             $delib = $this->Deliberation->findAll("Deliberation.id = $id");
             $type_id =$delib[0]['Seance']['type_id'];
-            if(isset($type_id)){
+            /* // 
+	        On désactive cette fonctionnalité de repot automatique car avec les type de séance, cela n'a plus de sens!
+	    if(isset($type_id)){
                 $type = $this->Typeseance->findAll("Typeseance.id = $type_id");
                 $date_seance = $delib[0]['Seance']['date'];;
                 $retard = $type[0]['Typeseance']['retard'];
@@ -775,8 +777,9 @@ class DeliberationsController extends AppController {
                         $this->data['Deliberation']['position']=$position;
                         $this->Deliberation->save($this->data);
                     }
-                }
+                } 
             }
+	    */
             //on a valide le projet, il passe a la personne suivante
             $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
             $lastpos=count($tab)-1;
