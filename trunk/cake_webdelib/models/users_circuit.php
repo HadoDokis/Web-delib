@@ -78,12 +78,16 @@ class UsersCircuit extends AppModel {
             $condition = "UsersCircuit.circuit_id = $circuit_id";
             $desc = 'UsersCircuit.position ASC';
             $tmplisteUserCircuit = $this->findAll($condition, null, $desc);
+         
+
             for ($i=0; $i<count($tmplisteUserCircuit);$i++) {
                 if ($tmplisteUserCircuit[$i]['UsersCircuit']['service_id']== -1) {
                     array_push($listeUserCircuit['id'],   $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
                     array_push($listeUserCircuit['nom'], $listCircuitsParaph['soustype'][$tmplisteUserCircuit[$i]['UsersCircuit']['user_id']]);
                     array_push($listeUserCircuit['prenom'], TYPETECH);
+                    array_push($listeUserCircuit['service_id'], -1);
                     array_push($listeUserCircuit['service_libelle'], 'i-parapheur');
+                    array_push($listeUserCircuit['user_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['user_id']);
                     array_push($listeUserCircuit['position'],  $tmplisteUserCircuit[$i]['UsersCircuit']['position']);
                 }
                 else {
