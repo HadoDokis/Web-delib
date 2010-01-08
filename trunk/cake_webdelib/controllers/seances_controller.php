@@ -140,14 +140,19 @@ class SeancesController extends AppController {
             $this->data=$this->Seance->read(null,$seance_id);
 	    // Avant de cloturer la séance, on stock les délibérations en base de données au format pdf
             if ($this->data['Typeseance']['action'] == 0)
-	        $this->_stockDelibs($seance_id);
+	        $result = $this->_stockDelibs($seance_id);
 
-            $this->data['Seance']['traitee']=1;
-            if ($this->Seance->save($this->data))
+	    if ($result) {
+                $this->data['Seance']['traitee']=1;
+                if ($this->Seance->save($this->data))
                 $this->redirect('/seances/listerFuturesSeances');
+	    }
+	    else 
+	        $this->Session->setFlash("Au moins une délibération n'a pas été générée correctement : La séance ne peut pas être cloturée.");
 	}
 
         function _stockDelibs($seance_id) {
+	    $result = true;
             $delibs = $this->Deliberation->findAll("Deliberation.seance_id=$seance_id", null, "Deliberation.position ASC");
             foreach ($delibs as $delib) {
 	         $delib_id = $delib['Deliberation']['id'];
@@ -162,11 +167,13 @@ class SeancesController extends AppController {
                  $handle = fopen($filename, "r");
                  $content = fread($handle, filesize($filename));
                  fclose($handle);
-
+                 if (filesize($filename) ==0)
+		     $result = false;
                  // On stock le fichier en base de données.
 		 $tmp_delib['Deliberation']['delib_pdf'] = $content;
 		 $this->Deliberation->save($tmp_delib);
 	    }
+	    return  $result;
 	}
 
 	function afficherCalendrier ($annee=null){
