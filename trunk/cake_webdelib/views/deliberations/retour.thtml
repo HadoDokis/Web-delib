@@ -5,8 +5,7 @@
 
     <table id='retour' >
     <tr>
-    <?php 
-
+    <?php
         for ($i = 0; $i< $nbTraitements; $i++)
 	    echo '<td align="center">'. $html->image('icons/user.png') .'</td>';
 

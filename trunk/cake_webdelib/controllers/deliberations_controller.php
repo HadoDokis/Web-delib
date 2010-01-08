@@ -644,13 +644,33 @@ class DeliberationsController extends AppController {
 	    $circuit_id = $delib['Deliberation']['circuit_id'];
             if (empty($this->data)) {
 	        $nbTraitements = $this->Traitement->getNbTraitements($delib_id);
-                $liste =  $this->UsersCircuit->afficheListeCircuit($circuit_id);
+                if (USE_PARAPH){
+                    $listCircuitsParaph = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+                    $liste =  $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
+		}
+		else {
+                    $liste =  $this->UsersCircuit->afficheListeCircuit($circuit_id);
+		}
 		$this->set('delib_id', $delib_id);
 		$this->set('nbTraitements', $nbTraitements );
 		$this->set('liste',   $liste);
 	    }
 	    else {
 		$retourA = $this->data['Deliberation']['radio'];
+                $user = $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $circuit_id ", null, "UsersCircuit.position ASC");
+		if ($user[$retourA]['UsersCircuit']['service_id'] == -1) {
+		    $model_id = $this->_getModelId($delib_id);
+                    $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/P_$delib_id.pdf");
+                    $file =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/P_$delib_id.pdf";
+
+                    $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+                    $soustype = $soustypes['soustype'][$user[$retourA]['UsersCircuit']['user_id']];
+                    $emailemetteur = "htexier@cogitis.fr";
+                    $nomfichierpdf = "P_$delib_id.pdf";
+                    $objet = utf8_encode($this->_objetParaph($delib['Deliberation']['objet']));
+                    $pdf = file_get_contents($file);
+                    $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, $emailemetteur, PREFIX_WEBDELIB.$delib_id, '', $objet, VISIBILITY, '', $pdf);
+		}
 	        $traitements = $this->Traitement->findAll("Traitement.delib_id = $delib_id AND Traitement.circuit_id = $circuit_id ");        
                 // on Ré-initialise la date du premier traitement a qui l'on renvoi le projet
                 $traitement['Traitement']['date_traitement'] = $traitements[$retourA ]['Traitement']['date_traitement']='0000-00-00 00:00:00';
