@@ -15,7 +15,7 @@ class DeliberationsController extends AppController {
  */
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $uses = array('Acteur', 'Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef');
+	var $uses = array('Acteur', 'Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup');
 	var $components = array('Gedooo','Date','Utils','Email','Acl', 'Parafwebservice');
 
 	// Gestion des droits
@@ -407,7 +407,26 @@ class DeliberationsController extends AppController {
                             }
 			}
 			$this->cleanUpFields();
-
+                          
+			if (!GENERER_DOC_SIMPLE) { // pour pouvoir supprimer les annexes...
+                            foreach( $this->data['Infosup'] as $code => $val ){
+			        $infodef = $this->Infosupdef->find("Infosupdef.code='$code' AND Infosupdef.type='file' ", "Infosupdef.id");
+			        if (!empty($infodef['Infosupdef']['id'])){
+			            $infodef_id= $infodef['Infosupdef']['id'];
+			            if ($this->data['Infosup'][$code]['tmp_name'] == ""){
+			                $infoSup = $this->Infosup->find("deliberation_id=$id AND infosupdef_id= $infodef_id");
+				        $infoSup['Infosup']['file_name'] = '';
+				        $infoSup['Infosup']['file_size'] = 0;
+				        $infoSup['Infosup']['file_type'] = '';
+                                        $infoSup['Infosup']['content'] = '';
+                                        if ($this->Infosup->save($infoSup)) {
+					    unset($this->data['Infosup'][$code]);
+					    @unlink($path_projet.'infosup'.$infodef_id.'.odt');
+					}
+			            }
+			        }
+			    }
+			}
 			if ($this->Deliberation->save($this->data)) {
 
 				// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
@@ -426,8 +445,10 @@ class DeliberationsController extends AppController {
 				                 }
 				             }
 				}
-				if (array_key_exists('Infosup', $this->data))
-				     $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
+
+				if (array_key_exists('Infosup', $this->data)) {
+				    $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
+				}
 				/* suppression des annexes */
 				if (array_key_exists('AnnexesASupprimer', $this->data))
 					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
