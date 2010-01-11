@@ -325,8 +325,8 @@ class DeliberationsController extends AppController {
 			    $this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
 			    $this->Gedooo->createFile($path_projet, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
 			    foreach ($this->data['Infosup']  as $infosup)
-                                if(($infosup['file_name']!="") && (!empty( $infosup['content'])))    
-                                    $this->Gedooo->createFile($path_projet, 'infosup'.$infosup['infosupdef_id'] .'.odt', $infosup['content']);
+                                if(($infosup['file_name']!="") && (!empty($infosup['content'])))    
+                                    $this->Gedooo->createFile($path_projet, $infosup['file_name'] , $infosup['content']);
 			}
 			$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
@@ -444,8 +444,7 @@ class DeliberationsController extends AppController {
                                                      $this->data['Infosup'][$code] = $content  ;
 				                 }
 				             }
-				}
-
+			            }
 				if (array_key_exists('Infosup', $this->data)) {
 				    $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
 				}
