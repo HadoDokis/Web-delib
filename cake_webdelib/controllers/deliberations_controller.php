@@ -1731,8 +1731,17 @@ class DeliberationsController extends AppController {
 	function validerEnUrgence($delibId) {
 		// Lecture de la délibération
 		$this->Deliberation->recursive = -1;
-		$this->data = $this->Deliberation->read('id, etat', $delibId);
-
+		$this->data = $this->Deliberation->read(null, $delibId);
+                if (USE_PARAPH) {
+		   $circuit_id   = $this->data['Deliberation']['circuit_id'];
+		   $position     = $this->Traitement->find("Traitement.delib_id = $delibId AND Traitement.circuit_id= $circuit_id", 'Max(position)'); 
+		   $UsersCircuit = $this->UsersCircuit->find("UsersCircuit.circuit_id = $circuit_id AND UsersCircuit.position = ".$position[0]['Max(position)']);
+		   if ($UsersCircuit['UsersCircuit']['service_id'] == -1){
+		       $this->Session->setFlash('Le projet ne peux être validé en urgence : il est actuellement bloqué dans un parapheur...'); 
+		       $this->redirect('/deliberations/tousLesProjetsValidation');
+		   }
+                }
+		exit;
 		if (empty($this->data))
 			$this->Session->setFlash('Invalide id pour le projet de d&eacute;lib&eacute;ration');
 		else {
