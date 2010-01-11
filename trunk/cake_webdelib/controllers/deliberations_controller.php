@@ -1741,7 +1741,6 @@ class DeliberationsController extends AppController {
 		       $this->redirect('/deliberations/tousLesProjetsValidation');
 		   }
                 }
-		exit;
 		if (empty($this->data))
 			$this->Session->setFlash('Invalide id pour le projet de d&eacute;lib&eacute;ration');
 		else {
