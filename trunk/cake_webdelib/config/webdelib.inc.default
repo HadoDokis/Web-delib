@@ -7,6 +7,7 @@
     ////////////////////////
     // Configuration GEDOOo
     ////////////////////////
+    define ('PROTOCOLE_DL', 'vnd.sun.star.webdav');
     define ('GENERER_DOC_SIMPLE', false);
     define ('USE_GEDOOO', true);
     define("GEDOOO_WSDL",  "http://gedooo.local:8080/axis2/services/OfficeService?wsdl");
