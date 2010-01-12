@@ -1759,6 +1759,7 @@ class DeliberationsController extends AppController {
 		   if ($UsersCircuit['UsersCircuit']['service_id'] == -1){
 		       $this->Session->setFlash('Le projet ne peux être validé en urgence : il est actuellement bloqué dans un parapheur...'); 
 		       $this->redirect('/deliberations/tousLesProjetsValidation');
+		       exit;
 		   }
                 }
 		if (empty($this->data))
@@ -2089,7 +2090,9 @@ class DeliberationsController extends AppController {
 		        $this->Deliberation->save($delib);
                     }
                 }
+	        $this->Session->setFlash( "Les documents ont été envoyés au parapheur électronique.");
 		$this->redirect('/deliberations/sendToParapheur');
+		exit;
             }
 	}
 
