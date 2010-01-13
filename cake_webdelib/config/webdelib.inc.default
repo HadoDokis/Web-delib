@@ -38,9 +38,9 @@
     define ('DN',              'dn');
 
     ////////////////////////
-    // Configuration Webservice
+    // Configuration Webservice du parapheur électronique
     ////////////////////////
-    define('USE_PARAPH', true);
+    define('USE_PARAPH', false);
     define('WSACTION', 'https://x.x.x.x/alfresco');
     define('WSTO', 'https://x.x.x.x/ws-iparapheur');
     define('CACERT',     WEBDELIB_PATH.'config/cert_paraf/AC.pem');
