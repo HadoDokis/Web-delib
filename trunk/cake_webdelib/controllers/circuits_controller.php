@@ -169,7 +169,11 @@ class CircuitsController extends AppController {
             if (isset($circuit_id)){
                 $this->set('circuit_id', $circuit_id);
                 $this->set('isEditable', $this->isEditable($circuit_id));
-		$listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
+		if (USE_PARAPH)
+		    $listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
+		else 
+		    $listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id);
+
                 $this->set('listeUserCircuit', $listeUserCircuit);
                 $this->set('lastPosition', $this->getLastPosition($circuit_id));
             }
