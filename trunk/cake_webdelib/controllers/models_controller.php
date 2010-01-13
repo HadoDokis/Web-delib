@@ -745,6 +745,8 @@
 
             if ($champs['text'] != '')
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
+	    elseif  ($champs['text'] == '')
+                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
              elseif ($champs['date'] != '0000-00-00')
                  return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
              elseif ($champs['file_size'] != 0 ) {
