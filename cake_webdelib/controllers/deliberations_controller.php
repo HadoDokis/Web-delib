@@ -100,9 +100,10 @@ class DeliberationsController extends AppController {
 
 		$tab_circuit=$this->data['Deliberation']['circuit_id'];
 		$delib=array();
-		//on recupere la position courante de la deliberation
-		$lastTraitement=array_pop($this->data['Traitement']);
-		$this->data['positionDelib']=$lastTraitement['position'];
+
+                //on recupere la position courante de la deliberation
+                $this->data['positionDelib']=count($this->data['Traitement']);
+
 		//on recupere la position de l'user dans le circuit
 		$userscircuit = $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC');
 		if (USE_PARAPH)
