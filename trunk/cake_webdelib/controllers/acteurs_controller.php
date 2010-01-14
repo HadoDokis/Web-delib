@@ -5,7 +5,7 @@ class ActeursController extends AppController
 
 	var $helpers = array('Html', 'Html2');
 
-	var $uses = array('Acteur', 'Deliberation');
+	var $uses = array('Acteur', 'Deliberation', 'Vot');
 
 	// Gestion des droits : identiques aux droits des acteurs
 	var $commeDroit = array(
@@ -112,6 +112,11 @@ function _controleEtSauve() {
 			$message = 'L\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' ne peut pas être supprimé car il est le rapporteur de délibérations';
 			return false;
 		}
+                if ($this->Vote->findCount(array('acteur_id'=>$acteur['Acteur']['id']))) {
+                        $message = 'L\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' ne peut pas être supprimé car il est le rapporteur de délibérations';
+                        return false;
+                }
+
 		return true;
 	}
 
