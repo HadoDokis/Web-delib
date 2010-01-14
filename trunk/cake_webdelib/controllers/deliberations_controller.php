@@ -434,18 +434,23 @@ class DeliberationsController extends AppController {
 				if (!empty($oldDelib['Deliberation']['seance_id']) AND ($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']))
 					$this->_PositionneDelibsSeance($oldDelib['Deliberation']['seance_id'], $oldDelib['Deliberation']['position'] );
 				/* sauvegarde des informations supplémentaires */
-			        $infossups = $this->Infosupdef->findAll("type='file'", '', '', 0);
-                                foreach ( $infossups  as $infosup) {
-				             $name = 'infosup'.$infosup['Infosupdef']['id'] .'.odt' ;
-				             if (file_exists($path_projet.$name)){
-				                 $code = $infosup['Infosupdef']['code'];
-				                 $stat = stat($path_projet.$name);
-				                 if ($stat > 0) {
-				                     $content = $this->_getFileData($path_projet.$name, $stat['size'] );
-                                                     $this->data['Infosup'][$code] = $content  ;
-				                 }
-				             }
-			            }
+			        $infossupDefs = $this->Infosupdef->findAll("type='odtFile'", '', '', 0);
+                                foreach ( $infossupDefs as $infodef) {
+                                    $infodef_id = $infodef['Infosupdef']['id'];
+                                    $infosups = $this->Infosup->findAll("Infosup.infosupdef_id = $infodef_id AND Infosup.deliberation_id = $id");
+				    foreach ( $infosups  as $infosup) {
+				        $name = $infosup['Infosup']['file_name'] ;
+				        if (file_exists($path_projet.$name)){
+				            $code = $infosup['Infosupdef']['code'];
+				            $stat = stat($path_projet.$name);
+				            if ($stat > 0) {
+				                $infosup['Infosup']['content'] = $this->_getFileData($path_projet.$name, $stat['size'] );
+						$this->Infosup->save($infosup);
+				            }
+				        }
+				    }
+                               } 
+
 				if (array_key_exists('Infosup', $this->data)) {
 				    $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
 				}
