@@ -41,7 +41,8 @@ class Infosup extends AppModel
 					$date = explode('-', $infosup['date']);
 					$ret[$infosupdef['Infosupdef']['code']] = $date[2].'/'.$date[1].'/'.$date[0];
 				}
-			} elseif ($infosupdef['Infosupdef']['type'] == 'file') {
+			} elseif ($infosupdef['Infosupdef']['type'] == 'file' ||
+					$infosupdef['Infosupdef']['type'] == 'odtFile' ) {
 				$ret[$infosupdef['Infosupdef']['code']] = $infosup['file_name'];
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
 				$ret[$infosupdef['Infosupdef']['code']] =  $infosup['text'];
@@ -77,18 +78,19 @@ class Infosup extends AppModel
 					$infosup['Infosup']['date'] = $date[2].'-'.$date[1].'-'.$date[0];
 				else
 					$infosup['Infosup']['date'] = '';
-			} elseif ($infosupdef['Infosupdef']['type'] == 'file') {
+			} elseif ($infosupdef['Infosupdef']['type'] == 'file' ||
+					$infosupdef['Infosupdef']['type'] == 'odtFile') {
 				$infosup['Infosup']['file_name'] = $valeur['name'];
 				$infosup['Infosup']['file_size'] = $valeur['size'];
 				$infosup['Infosup']['file_type'] = $valeur['type'];
-				if (empty($valeur['tmp_name'])) 
-				    $infosup['Infosup']['content'] = '';
+				if (empty($valeur['tmp_name']))
+					$infosup['Infosup']['content'] = '';
 				elseif (file_exists($valeur['tmp_name']))
 					$infosup['Infosup']['content'] = fread(fopen($valeur['tmp_name'], "r"), $valeur['size']);
-                                elseif (!empty($valeur)) {
-				    $infosup['Infosup']['file_name'] = $code;
-                                    $infosup['Infosup']['file_size'] = strlen($valeur);
-				    $infosup['Infosup']['content']= $valeur;
+				elseif (!empty($valeur)) {
+					$infosup['Infosup']['file_name'] = $code;
+					$infosup['Infosup']['file_size'] = strlen($valeur);
+					$infosup['Infosup']['content']= $valeur;
 				}
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
 				$infosup['Infosup']['text'] = $valeur;
@@ -100,7 +102,7 @@ class Infosup extends AppModel
 	}
 
  /*
-  * Retourne la liste des deliberation_id sous la forme 'delibId1, delib_id2, ...'
+  * Retourne la liste des deliberation_id sous la forme 'delib_id1, delib_id2, ...'
   * correspondant à $recherches qui est sous la forme array('infosupdef_id'=>'valeur')
   */
 	function selectInfosup($recherches) {

@@ -34,7 +34,8 @@ class Infosupdef extends AppModel
 		'richText' => 'Texte enrichi',
 		'date' => 'Date',
 		'file' => 'Fichier',
-		'boolean' => 'Booléen'
+		'boolean' => 'Booléen',
+		'odtFile' => 'Fichier OpenOffice.org'
 	);
 
 	var $listSelectBoolean = array(
@@ -121,9 +122,12 @@ class Infosupdef extends AppModel
 			empty($this->data['Infosupdef']['id']))
 			$this->data['Infosupdef']['ordre'] = $this->findCount(null, -1) + 1;
 
-		/* pas de recherche possible pour les infosup de type fichier */
-		if ($this->data['Infosupdef']['type'] == 'file')
+		/* pas de recherche possible pour les infosup de type fichier et fichier odt */
+		if ($this->data['Infosupdef']['type'] == 'file' ||
+				$this->data['Infosupdef']['type'] == 'odtFile') {
 			$this->data['Infosupdef']['recherche'] = 0;
+			$this->data['Infosupdef']['val_initiale'] = '';
+		}
 
 		return true;
 	}
@@ -141,7 +145,7 @@ class Infosupdef extends AppModel
 		}
 	}
 
-/*
+/**
  * retourne un tableau ['code']['val_init'] des valeurs initiales des infosup
  */
 	function valeursInitiales() {
@@ -155,5 +159,6 @@ class Infosupdef extends AppModel
 
 		return $ret;
 	}
+
 }
 ?>
