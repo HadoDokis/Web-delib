@@ -37,6 +37,8 @@ function afficheOptions(typeInfoSup) {
 		document.getElementById("val_initiale_boolean").style.display = '';
 		document.getElementById("recherche").style.display = '';
 		break;
+	case "odtFile":
+		break;
 	}
 }
 
