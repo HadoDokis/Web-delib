@@ -38,7 +38,7 @@
     define ('DN',              'dn');
 
     ////////////////////////
-    // Configuration Webservice du parapheur Ã©lectronique
+    // Configuration Webservice du parapheur électronique
     ////////////////////////
     define('USE_PARAPH', false);
     define('WSACTION', 'https://x.x.x.x/alfresco');
