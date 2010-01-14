@@ -121,18 +121,29 @@
 					echo $fck->load($tagName);
 				echo '</div>';
 				echo '<div class="spacer"></div>';
-                       } elseif ($infosupdef['Infosupdef']['type'] == 'file') {
+			} elseif ($infosupdef['Infosupdef']['type'] == 'file') {
 				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
 					echo  $html->fileTag($fieldName, array('size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				else {
-			            echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
-				    echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
-				    echo '['.$html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
-				    echo '&nbsp;&nbsp;';
-				    echo $html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
-				    echo '</span>';
+					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
+					echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
+					echo '['.$html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
+					echo '&nbsp;&nbsp;';
+					echo $html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
+					echo '</span>';
 				}
-                       }
+			} elseif ($infosupdef['Infosupdef']['type'] == 'odtFile') {
+				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
+					echo  $html->fileTag($fieldName, array('size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+				else {
+					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
+					echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
+					echo '['.$html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
+					echo '&nbsp;&nbsp;';
+					echo $html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
+					echo '</span>';
+				}
+			}
 		   echo '</div>';
 		echo '<br>';
 	};
