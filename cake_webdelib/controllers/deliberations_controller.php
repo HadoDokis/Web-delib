@@ -1111,12 +1111,11 @@ class DeliberationsController extends AppController {
 		    $delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
 
 		    //Création du fichier de délibération au format pdf (on ne passe plus par la génération)
-		    $file =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.pdf";
-                    $fp = fopen($file, 'w');
-		    fwrite($fp, $delib[0]['Deliberation']['delib_pdf']);
-		    fclose($fp);
-        	        // Checker le code classification
-        	        $data = array(
+                    $file =  $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/fd/null/$delib_id/", "D_$delib_id.pdf",  $delib[0]['Deliberation']['delib_pdf']);
+                    if (!file_exists( $file ))
+		        die ("Problème lors de la récupération du fichier");
+        	    // Checker le code classification
+        	    $data = array(
       	                 'api'           => '1',
      	                 'nature_code'   => '1',
      	                 'classif1'      => $class1 ,
@@ -1166,7 +1165,7 @@ class DeliberationsController extends AppController {
                               echo ('    document.getElementById("affiche").style.display="none";');
                               echo ('    document.getElementById("contTemp").style.display="none";');
                               echo ('</script>');
-			      echo 'Erreur Curl : ' .  $curl_return;
+			      echo 'Erreur Curl : ' . curl_error($ch);
 			      die ('<br /><a href ="/deliberations/transmit"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
                          }
 			 else {
