@@ -2,7 +2,7 @@
 	class ModelsController extends AppController {
 
 		var $name = 'Models';
-		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef');
+		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef');
 		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
@@ -741,12 +741,17 @@
         }
 
         function _addField($champs, $u, $delib_id) {
-             $champs_def = $this->Infosupdef->read(null, $champs['infosupdef_id']);
+            $champs_def = $this->Infosupdef->read(null, $champs['infosupdef_id']);
+
+            if(($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']!= "")) {
+                $tmp= $this->Infosuplistedef->find('id = '.$champs['text'], 'nom', null, -1);
+		$champs['text'] = $tmp['Infosuplistedef']['nom'];
+            }
+	    elseif (($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']== "")) 
+	         return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
 
             if ($champs['text'] != '')
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
-	    elseif  ($champs['text'] == '')
-                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
              elseif ($champs['date'] != '0000-00-00')
                  return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
              elseif ($champs['file_size'] != 0 ) {
@@ -762,6 +767,8 @@
              elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', 'text/html', 'text', '<small></small>'.$champs['content']));
              }
+	    elseif  ($champs['text'] == '' )
+                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
         }
 
         function paramMails($type,  $acteur) {
