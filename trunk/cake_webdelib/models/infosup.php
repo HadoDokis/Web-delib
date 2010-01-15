@@ -24,14 +24,17 @@ class Infosup extends AppModel
 		'Infosupdef'
 	);
 
-	/* transforme la structure [0]['id']['deliberation_id']... en ['code_infosup']=>valeur, ... */
-	function compacte($infosups = array()) {
+/**
+ * Transforme la structure [0]['id']['deliberation_id']... en ['code_infosup']=>valeur, ...
+ * Pour les infosup de type 'list', la paramètre $retIdEleListe permet de retourner soit l'id de l'élément de la liste soit sa valeur
+ */
+	function compacte($infosups = array(), $retIdEleListe = false) {
 		$ret = array();
 
 		foreach($infosups as $infosup) {
 			$infosupdef = $this->Infosupdef->find('id = '.$infosup['infosupdef_id'], 'code, type', null, -1);
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
-				$ret[$infosupdef['Infosupdef']['code']] =  $infosup['text'];
+				$ret[$infosupdef['Infosupdef']['code']] = $infosup['text'];
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
 				$ret[$infosupdef['Infosupdef']['code']] = $infosup['content'];
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
@@ -46,6 +49,13 @@ class Infosup extends AppModel
 				$ret[$infosupdef['Infosupdef']['code']] = $infosup['file_name'];
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
 				$ret[$infosupdef['Infosupdef']['code']] =  $infosup['text'];
+			} elseif ($infosupdef['Infosupdef']['type'] == 'list') {
+				if ($retIdEleListe || empty($infosup['text']))
+					$ret[$infosupdef['Infosupdef']['code']] = $infosup['text'];
+				else {
+					$ele = $this->Infosupdef->Infosuplistedef->find('id = '.$infosup['text'], 'nom', null, -1);
+					$ret[$infosupdef['Infosupdef']['code']] = $ele['Infosuplistedef']['nom'];
+				}
 			}
 		}
 
@@ -94,6 +104,8 @@ class Infosup extends AppModel
 				}
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
 				$infosup['Infosup']['text'] = $valeur;
+			} elseif ($infosupdef['Infosupdef']['type'] == 'list') {
+				$infosup['Infosup']['text'] = $valeur;
 			}
 
 			/* Sauvegarde de l'info sup */
@@ -124,18 +136,18 @@ class Infosup extends AppModel
 				if ($infosupType == 'text') {
 					$champRecherche = $alias.'.text';
 					$operateurRecherche = (strpos($recherche, '%')===false) ? '=' : 'like';
-				}
-				elseif ($infosupType == 'richText') {
+				} elseif ($infosupType == 'richText') {
 					$champRecherche = $alias.'.content';
 					$operateurRecherche = (strpos($recherche, '%')===false) ? '=' : 'like';
-				}
-				elseif ($infosupType == 'date') {
+				} elseif ($infosupType == 'date') {
 					$champRecherche = $alias.'.date';
 					$operateurRecherche = '=';
 					$temp = explode('/', $recherche);
 		    		$recherche = $temp[2].'-'.$temp[1].'-'.$temp[0];
-				}
-				elseif ($infosupType == 'boolean') {
+				} elseif ($infosupType == 'boolean') {
+					$champRecherche = $alias.'.text';
+					$operateurRecherche = '=';
+				} elseif ($infosupType == 'list') {
 					$champRecherche = $alias.'.text';
 					$operateurRecherche = '=';
 				}
