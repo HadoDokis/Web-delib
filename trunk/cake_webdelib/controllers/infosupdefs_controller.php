@@ -104,8 +104,10 @@ class InfosupdefsController extends AppController
 			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : suppression impossible');
 		elseif (!$this->{$this->modelClass}->isDeletable($aSupprimer, $messageErreur))
 			$this->Session->setFlash($messageErreur);
-		elseif ($this->{$this->modelClass}->del($id))
+		elseif ($this->{$this->modelClass}->del($id)) {
+			$this->{$this->modelClass}->Infosuplistedef->delList($id);
 			$this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$aSupprimer['Infosupdef']['nom'].'\' a &eacute;t&eacute; supprim&eacute;e');
+		}
 
 		$this->redirect('/infosupdefs/index');
 	}
