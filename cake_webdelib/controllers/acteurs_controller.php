@@ -5,7 +5,7 @@ class ActeursController extends AppController
 
 	var $helpers = array('Html', 'Html2');
 
-	var $uses = array('Acteur', 'Deliberation', 'Vot');
+	var $uses = array('Acteur', 'Deliberation', 'Vote');
 
 	// Gestion des droits : identiques aux droits des acteurs
 	var $commeDroit = array(
