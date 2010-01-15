@@ -28,7 +28,7 @@ class Infosup extends AppModel
  * Transforme la structure [0]['id']['deliberation_id']... en ['code_infosup']=>valeur, ...
  * Pour les infosup de type 'list', la paramètre $retIdEleListe permet de retourner soit l'id de l'élément de la liste soit sa valeur
  */
-	function compacte($infosups = array(), $retIdEleListe = false) {
+	function compacte($infosups = array(), $retIdEleListe = true) {
 		$ret = array();
 
 		foreach($infosups as $infosup) {
