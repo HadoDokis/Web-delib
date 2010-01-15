@@ -293,6 +293,13 @@ td.ordre a {
 	text-decoration: none;
 }
 
+a.link_liste {
+	background-image: url(../img/icons/liste.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 10px 22px;
+}
+
 a.link_delib {
 	background-image: url(../img/icons/delib.png);
 	background-repeat: no-repeat;
@@ -374,7 +381,6 @@ a.link_voir {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 10px 22px;
-
 }
 
 a.link_modifier {
@@ -935,7 +941,7 @@ table#retour {
 	text-align:center;
 }
 
-/*----------------- Affichage des annexes dans l'édition des délibérations */
+/*----------------- Affichage des annexes dans l'ï¿½dition des dï¿½libï¿½rations */
 div.annexesGauche {
 	float: left;
 	width: 130px;
