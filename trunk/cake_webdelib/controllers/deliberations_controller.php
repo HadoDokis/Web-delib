@@ -58,7 +58,7 @@ class DeliberationsController extends AppController {
 		}
 
 		// Compactage des informations supplémentaires
-		$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
+		$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup'], false);
 
 		// Lecture des versions anterieures
 		$listeAnterieure=array();
