@@ -25,6 +25,8 @@
 	<td><?php echo $this->controller->Infosupdef->libelleType($rowElement['Infosupdef']['type']); ?></td>
 	<td><?php echo $this->controller->Infosupdef->libelleRecherche($rowElement['Infosupdef']['recherche']); ?></td>
 	<td class="actions">
+		<?php if ($rowElement['Infosupdef']['type'] == 'list')
+			echo $html->link(SHY,'/infosuplistedefs/index/' . $rowElement['Infosupdef']['id'], array('class'=>'link_liste', 'title'=>'Liste'), false, false); ?>
 		<?php echo $html->link(SHY,'/infosupdefs/view/' . $rowElement['Infosupdef']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false); ?>
 		<?php echo $html->link(SHY,'/infosupdefs/edit/' . $rowElement['Infosupdef']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false); ?>
 		<?php if ($this->controller->Infosupdef->isDeletable($rowElement, $mesErr))

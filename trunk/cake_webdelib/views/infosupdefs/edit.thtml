@@ -12,6 +12,7 @@ function afficheOptions(typeInfoSup) {
 	document.getElementById("val_initiale_boolean").style.display = 'none';
 	document.getElementById("val_initiale_date").style.display = 'none';
 	document.getElementById("recherche").style.display = 'none';
+	document.getElementById("gestionListe").style.display = 'none';
 
 	/* si le choix est vide : on sort */
 	if((typeInfoSup.value.length==0) || (typeInfoSup.value==null)) return;
@@ -38,6 +39,10 @@ function afficheOptions(typeInfoSup) {
 		document.getElementById("recherche").style.display = '';
 		break;
 	case "odtFile":
+		break;
+	case "list":
+		document.getElementById("recherche").style.display = '';
+		document.getElementById("gestionListe").style.display = '';
 		break;
 	}
 }
@@ -120,6 +125,10 @@ function initAffichage() {
 	<div class="required" id="recherche">
 		<?php echo $form->labelTag('Infosupdef/recherche', 'Inclure dans la recherche');?>
  		<?php echo $html->checkBox('Infosupdef/recherche');?>
+	</div>
+	<br/>
+	<div id="gestionListe">
+		<span>Note : la gestion des éléments de la liste est accessible &agrave; partir de la liste des informations suppl&eacute;mentaires.</span>
 	</div>
 	<br/>
 
