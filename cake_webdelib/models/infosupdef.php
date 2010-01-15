@@ -38,7 +38,7 @@ class Infosupdef extends AppModel
 		'date' => 'Date',
 		'file' => 'Fichier',
 		'boolean' => 'Booléen',
-		'odtFile' => 'Fichier OpenOffice.org',
+		'odtFile' => 'Fichier ODT',
 		'list' => 'Liste'
 	);
 
