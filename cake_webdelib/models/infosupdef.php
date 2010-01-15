@@ -21,7 +21,10 @@ class Infosupdef extends AppModel
 
 	var $displayField = "nom";
 
-	var $hasMany = 'Infosup';
+	var $hasMany = array(
+		'Infosup',
+		'Infosuplistedef'
+		);
 
 	var $validate = array(
 		'nom' => VALID_NOT_EMPTY,
@@ -35,7 +38,8 @@ class Infosupdef extends AppModel
 		'date' => 'Date',
 		'file' => 'Fichier',
 		'boolean' => 'Booléen',
-		'odtFile' => 'Fichier OpenOffice.org'
+		'odtFile' => 'Fichier OpenOffice.org',
+		'list' => 'Liste'
 	);
 
 	var $listSelectBoolean = array(
@@ -155,6 +159,20 @@ class Infosupdef extends AppModel
 		foreach($recs as $rec) {
 			if (!empty($rec['Infosupdef']['val_initiale']))
 				$ret[$rec['Infosupdef']['code']] = $rec['Infosupdef']['val_initiale'];
+		}
+
+		return $ret;
+	}
+
+/**
+ * Retourne les éléments des infosup de type 'list'
+ */
+	function generateListes() {
+		$ret = array();
+
+		$recs = $this->findAll("type = 'list'", 'id, code', 'ordre', null, 1, -1);
+		foreach($recs as $rec) {
+			$ret[$rec['Infosupdef']['code']] = $this->Infosuplistedef->generateList('actif = 1 AND infosupdef_id = '.$rec['Infosupdef']['id'], 'ordre');
 		}
 
 		return $ret;
