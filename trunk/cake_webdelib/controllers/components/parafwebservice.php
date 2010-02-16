@@ -4,13 +4,6 @@ class ParafwebserviceComponent extends Object {
 	var $requestPayloadString;
 	var $responseMessage;
 	
-	
-	/*function startup(&$controller)
-	{
-		// This method takes a reference to the controller which is loading it.
-		// Perform controller initialization here.
-	}*/
-	
 	function test(){
 		return "test";
 	}	
