@@ -755,11 +755,13 @@
              elseif ($champs['date'] != '0000-00-00')
                  return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
              elseif ($champs['file_size'] != 0 ) {
+	          
                  $dyn_path = "/files/generee/deliberations/".$delib_id."/";
                  $path = WEBROOT_PATH.$dyn_path;
                  $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
                  $infos = (pathinfo($champs['file_name']));
-	         $name = time().'.'.$infos['extension'];
+	        // $name = time().'.'.$infos['extension'];
+	         $name = $champs['file_name'];
                  $this->Gedooo->createFile($path, $name, $champs['content']);
                  $ext = $u->getMimeType($path.$name);
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', $ext , 'url', $urlWebroot.$name));
