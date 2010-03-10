@@ -56,5 +56,12 @@
     define ('VISIBILITY', 'PUBLIC');
     define ('PREFIX_WEBDELIB', 'WD_');
 
+   ////////////////////////
+    // Configuration ASAL@AE
+    ////////////////////////
+    define("ASALAE_WSDL",  "http://asalae.services.adullact.org/webservices/wsdl");
+    define('SIREN_VERSANT', '491011698');
+    define('SIREN_ARCHIVE', '227806460');
+    define('NUMERO_AGREMENT', 'ACCORDWD01');
 
 ?>
