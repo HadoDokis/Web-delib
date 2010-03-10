@@ -1720,8 +1720,11 @@ class DeliberationsController extends AppController {
 		// lecture en base
 		$conditions = "(Deliberation.seance_id is null OR Deliberation.seance_id=0) AND (Deliberation.etat=0 OR Deliberation.etat=1 OR Deliberation.etat=2)";
 		$ordre = 'Deliberation.created DESC';
+
 		$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
-		$this->set('date_seances', $this->Seance->generateList());
+                $afficherTtesLesSeances = $this->Acl->check($this->Session->read('user.User.id'), "Deliberations:editerProjetValide");
+                $this->set('date_seances',$this->Seance->generateList(null ,$afficherTtesLesSeances ));
+	//	$this->set('date_seances', $this->Seance->generateList());
 		$this->_afficheProjets(
 			$projets,
 			'Projets non associ&eacute;s &agrave; une s&eacute;ance',
@@ -2124,11 +2127,11 @@ class DeliberationsController extends AppController {
             $client = new SoapClient(ASALAE_WSDL);
             foreach ($this->data['Deliberation'] as $id => $bool ){
                 if ($bool == 1){
-		    // Création de l'archive
-                    @PclTarCreate($path."versement.tgz") ; 
                     $delib_id = substr($id, 3, strlen($id));
                     $delib = $this->Deliberation->read(null, $delib_id);
                     $path = WEBROOT_PATH."/files/generee/delibs/$delib_id/";
+		    // Création de l'archive
+                    @PclTarCreate($path."versement.tgz") ; 
 
                     $pathDelib = $this->Gedooo->createFile($path, "delib.pdf",  $delib['Deliberation']['delib_pdf']);
 		    // Ajout du fichier de délibération
