@@ -964,7 +964,7 @@ class DeliberationsController extends AppController {
         return($curl_return);
     }
 
-    function getAR($tdt_id) {
+    function getAR($tdt_id, $toFile = false) {
         $url = 'https://'.HOST."/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -980,11 +980,15 @@ class DeliberationsController extends AppController {
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         $curl_return = curl_exec($ch);
-        header('Content-type: application/pdf');
-        header('Content-Length: '.strlen($curl_return));
-	header('Content-Disposition: attachment; filename=Acquittement.pdf');
-	echo $curl_return;
-	exit();
+	if ($toFile == false){
+            header('Content-type: application/pdf');
+            header('Content-Length: '.strlen($curl_return));
+	    header('Content-Disposition: attachment; filename=Acquittement.pdf');
+	    echo $curl_return;
+	    exit();
+	}
+	else
+	    return $curl_return;
     }
 
     function toSend ($id=null, $message= null){
@@ -2108,8 +2112,104 @@ class DeliberationsController extends AppController {
 
     function _objetParaph($objet){
         return str_replace("&", "&amp;", $objet);
-
     }
+
+    function verserAsalae() {
+        vendor('pcltar/pcltar.lib');
+        if (empty($this->data)) {
+            $delibs = $this->Deliberation->findAll("Deliberation.etat = 5");
+            $this->set ('deliberations', $delibs);
+        }
+        else {
+            $client = new SoapClient(ASALAE_WSDL);
+            foreach ($this->data['Deliberation'] as $id => $bool ){
+                if ($bool == 1){
+		    // Création de l'archive
+                    @PclTarCreate($path."versement.tgz") ; 
+                    $delib_id = substr($id, 3, strlen($id));
+                    $delib = $this->Deliberation->read(null, $delib_id);
+                    $path = WEBROOT_PATH."/files/generee/delibs/$delib_id/";
+
+                    $pathDelib = $this->Gedooo->createFile($path, "delib.pdf",  $delib['Deliberation']['delib_pdf']);
+		    // Ajout du fichier de délibération
+	            @PclTarAddList($path."versement.tgz", $path."delib.pdf", '.', $path) ;
+                    $Docs =  array('Attachment' =>
+                                        array('@attributes'=>
+                                              array('format'=>'pdf',
+                                                    'mimeCode'=>'application/pdf',
+                                                    'filename'=>'delib.pdf'),
+                                                     '@value'=>''
+                                                   ),
+                                             'Description'=>'Acte',
+                                             'Type'  => 'CDO'
+                                      ) ;
+
+
+
+                    if ( $delib['Deliberation']['tdt_id'] != null) {
+                        $AR = $this->getAR($delib['Deliberation']['tdt_id'], true);
+                        $path_AR =  $this->Gedooo->createFile($path, "bordereau.pdf", $AR, '.', $path);
+		        // Ajout du fichier de bordereau
+	                @PclTarAddList($path."versement.tgz", $path."bordereau.pdf", '.', $path) ;
+		        array_push ($Docs,  array('Attachment' => 
+				        array('@attributes'=>
+				               array('format'=>'pdf', 
+					             'mimeCode'=>'application/pdf', 
+						     'filename'=>'bordereau.pdf'), 
+						     '@value'=>'' 
+					            ), 
+				              'Description'=>'Bordereau', 
+				              'Type'  => 'CDO'
+				        )
+                                    );
+				
+                    }
+        	    $document  = file_get_contents($path."versement.tgz");
+											    
+                    $options = array(
+		                     'TransferIdentifier' => SIREN_VERSANT.'_'.$delib['Deliberation']['num_delib'],
+		                     'Comment'            =>  utf8_encode($delib['Deliberation']['objet']),
+                                     'TransferringAgency' => array('Identification'=>SIREN_VERSANT),
+                                     'ArchivalAgency'     => array('Identification'=>SIREN_ARCHIVE),
+				     'Contains'           => array( 
+				                                    'ArchivalAgreement'    => NUMERO_AGREMENT,  
+								    'DescriptionLanguage' => 'fr',
+								    'DescriptionLevel'     => 'file',
+								    'Name'=> utf8_encode('Déliberation envoyee depuis WebDelib'),
+
+				                                    'ContentDescription' => array(
+				                                        'CustodialHistory' => utf8_encode("Délibération en provenance de Webdelib"),
+				                                        'Description' => utf8_encode($delib['Deliberation']['objet']),
+								        'DescriptionAudience'  => 'external',
+									'Language'             => 'fr', 
+									'OriginatingAgency' => array('Identification'=>SIREN_VERSANT),
+									'ContentDescriptive' => array('KeywordAudience'=>'external',
+									                              'KeywordContent' =>'Deliberation',
+												      'KeywordReference' =>'1',
+												      'KeywordType' => 'genreform'
+												      ),
+
+								        'Appraisal'=>array('Code'=>'001C',
+								                           'StartDate'=>date('c'))
+								         ),
+								        'Document' => $Docs 
+									) 
+                                    );
+
+                    $seda = @$client->__soapCall("wsGSeda", array($options));
+		    $ret  = @$client->__soapCall("wsDepot", array("bordereau.xml", $seda, "versement.tgz", $document));
+
+		    // Changement d'état de la délibération
+		    $delib['Deliberation']['etat_asalae']= $ret;
+		    $this->Deliberation->save($delib);
+                }
+            }
+	    $this->Session->setFlash( "Les documents ont été transférés à AS@LAE");
+	    $this->redirect('/deliberations/verserAsalae');
+            exit;
+
+        }
+    } 
 
 }
 ?>
