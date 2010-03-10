@@ -23,7 +23,7 @@ foreach ($users as $user):
 	<td><?php echo $user['Profil']['libelle']; ?></td>
 	<td><?php echo $user['User']['telfixe']; ?></td>
 	<td><?php echo $user['User']['telmobile']; ?></td>
-	<td><?
+	<td><?php
 		foreach ($user['Service'] as $service):
 			echo $service['libelle'].'<br/>';
 		endforeach;
@@ -39,7 +39,7 @@ foreach ($users as $user):
 		        echo $html->link(SHY,'/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?', false)?>
 	</td>
 </tr>
-<? endforeach; ?>
+<?php endforeach; ?>
 </table>
 
 <ul class="actions">
