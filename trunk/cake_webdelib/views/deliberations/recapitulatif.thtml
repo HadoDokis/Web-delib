@@ -84,7 +84,7 @@
 			<br/><?php echo $user['User']['prenom']. ' ' .$user['User']['nom']; ?>
 			<br/><?php echo $user['Service']['libelle'];?>
 			</div>
-			<? } ?>
+			<?php } ?>
 		</td>
 	</tr>
 </table>
