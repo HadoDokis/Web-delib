@@ -50,17 +50,17 @@ class adLDAP {
 	// http://adldap.sourceforge.net/faq.php
 
 	// You can set your default variables here, or when you invoke the class
-	var $_account_suffix="@mydomain.local";
-	var $_base_dn = "DC=mydomain,DC=local"; 
+	var $_account_suffix = ACCOUNT_SUFFIX;
+	var $_base_dn = BASE_DN; 
 	
 	// An array of domain controllers. Specify multiple controllers if you 
 	// would like the class to balance the LDAP queries amongst multiple servers
-	var $_domain_controllers = array ("dc01.mydomain.local");
+	var $_domain_controllers = array (LDAP_HOST);
 	
 	// optional account with higher privileges for searching
 	// not really that optional because you can't query much as a user
-	var $_ad_username=NULL;
-	var $_ad_password=NULL;
+	var $_ad_username=LDAP_LOGIN;
+	var $_ad_password=LDAP_PASSWD;
 	
 	// AD does not return the primary group. http://support.microsoft.com/?kbid=321360
 	// This tweak will resolve the real primary group, but may be resource intensive. 
