@@ -259,8 +259,6 @@ class DeliberationsController extends AppController {
             header('Content-Disposition: attachment; filename='.$delib['Deliberation']['num_delib'].'.pdf');
             echo $delib['Deliberation']['delib_pdf'];
             exit();
-
-
 	}
 
 	function _saveAnnexe ($id, $file, $type) {
@@ -1293,6 +1291,8 @@ class DeliberationsController extends AppController {
 		        $sortby = 'Service.order';
 		    elseif ($sortby == 'rapporteur_id')
 		        $sortby = 'Rapporteur.nom';
+		    elseif ($sortby == 'titre')
+		        $sortby = 'Deliberation.titre';
 
   		    $deliberations = $this->Deliberation->findAll($condition,null, "$sortby ASC");
 		    for($i=0; $i<count($deliberations); $i++){
@@ -2084,7 +2084,7 @@ class DeliberationsController extends AppController {
             $circuits = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
 
 	    if (empty($this->data)) {
-	        $delibs = $this->Deliberation->findAll("Deliberation.etat = 3 ");
+	        $delibs = $this->Deliberation->findAll("Deliberation.etat = 3 AND Deliberation.delib_pdf != ''");
 	        $this->set ('deliberations', $delibs);
 		$this->set ('circuits', $circuits ['soustype']);
             }
