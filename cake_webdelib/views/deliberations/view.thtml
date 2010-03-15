@@ -57,7 +57,7 @@
 				<br/><?php echo $user['User']['prenom']. ' ' .$user['User']['nom']; ?>
 				<br/><?php echo $user['Service']['libelle'];?>
 			</div>
-		<? } ?>
+		<?php } ?>
 		</dd>
 	</div>
 	<br/>
@@ -116,7 +116,7 @@
 				echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
 			}
  		}	  ?></dd>
- <? } ?>
+ <?php } ?>
 
 <?php
 	if ($tab_anterieure!=null)
