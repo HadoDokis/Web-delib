@@ -465,6 +465,12 @@ a.link_traiter {
 	background-position: top left;
 	padding: 0 0 10px 22px;
 }
+a.link_jump {
+        background-image: url(../img/icons/jump.png);
+        background-repeat: no-repeat;
+        background-position: top left;
+        padding: 0 0 10px 22px;
+}
 
 a.link_monter {
 	background-image: url(../img/icons/monter.png);
