@@ -28,7 +28,7 @@ class CircuitsController extends AppController {
                     $positionCourante   = $traitement[0]['pos'];
                     $tmp = $this->UsersCircuit->find("UsersCircuit.circuit_id=$circuit_id AND UsersCircuit.service_id = -1 AND UsersCircuit.position=  $positionCourante ");
                     if (!empty($tmp)){
-                        if ($this->_checkEtatParapheur($delib_id)) 
+                        if ($this->_checkEtatParapheur($delib_id, false, $delib['Deliberation']['objet'])) 
 			    $this->requestAction("/deliberations/accepteDossier/$delib_id");
 	            }
                 }
@@ -37,13 +37,13 @@ class CircuitsController extends AppController {
             // Controle de l'avancement des délibérations dans le parapheur
 	    $delibs = $this->Deliberation->findAll("Deliberation.etat = 3 AND Deliberation.etat_parapheur = 1 ");
             foreach ($delibs as $delib) {
-                 $this->_checkEtatParapheur($delib['Deliberation']['id']);
+                 $this->_checkEtatParapheur($delib['Deliberation']['id'], false, $delib['Deliberation']['objet']);
 	    }
 	    $this->layout = null;
         }
    
-        function _checkEtatParapheur($delib_id, $tdt=false) {
-            $histo = $this->Parafwebservice->getHistoDossierWebservice(PREFIX_WEBDELIB.$delib_id);
+        function _checkEtatParapheur($delib_id, $tdt=false, $objet) {
+            $histo = $this->Parafwebservice->getHistoDossierWebservice("$delib_id $objet");
 	    for ($i =0; $i < count($histo['logdossier']); $i++){
 		if(!$tdt){
 	    	   if (($histo['logdossier'][$i]['status']  ==  'Signe') || ($histo['logdossier'][$i]['status']  ==  'Archive')) {
@@ -64,7 +64,7 @@ class CircuitsController extends AppController {
 			   else {
 			   // On est dans un circuit d'élaboration, 
 			   // On est obligé de supprimé le projet sinon, on ne peut pas le ré-insérer dans un autre circuit du parapheur
-			       $archdos = $this->Parafwebservice->archiverDossierWebservice(PREFIX_WEBDELIB.$delib_id, 'EFFACER');
+			       $archdos = $this->Parafwebservice->archiverDossierWebservice("$delib_id $objet", 'EFFACER');
 			   }
 	                   return true;
 		       }
@@ -78,7 +78,7 @@ class CircuitsController extends AppController {
 	                   $this->Commentaire->save($comm['Commentaire']);
 	                   $this->Deliberation->refusDossier($delib_id);
 			   //             Supprimer le dossier du parapheur
-	                   $effdos = $this->Parafwebservice->effacerDossierRejeteWebservice(PREFIX_WEBDELIB.$delib_id);
+	                   $effdos = $this->Parafwebservice->effacerDossierRejeteWebservice("$delib_id $objet");
 		       }			 
             }
             else{
