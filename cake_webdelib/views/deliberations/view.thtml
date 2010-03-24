@@ -130,8 +130,7 @@
 ?>
 
 <?php
-	if(!empty($commentaires))
-	{
+	if(!empty($commentaires)) {
 		echo"<dt>Commentaires</dt><br />";
 		foreach ($commentaires as $commentaire){
 			echo '<dd><u>'. $commentaire['Commentaire']['prenomAgent'].' '.$commentaire['Commentaire']['nomAgent'] .' <br/></u>';
@@ -139,6 +138,15 @@
 			echo '</dd>';
 		}
 	}
+?>
+<?php
+      if (!empty($historiques)) {
+          echo"<dt>Historique</dt><br />";
+          foreach ($historiques as $historique){
+              echo '<dd>'.$historique['Historique']['commentaire'];
+              echo '</dd>';
+          }
+      }
 ?>
 
 
