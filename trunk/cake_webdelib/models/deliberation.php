@@ -45,6 +45,9 @@ class Deliberation extends AppModel {
 			'foreignKey'   => 'seance_id')
 		);
 	var $hasMany = array(
+	        'Historique' =>array(
+                        'className'    => 'Historique',
+                        'foreignKey'   => 'delib_id'),
 		'Traitement'=>array(
 			'className'    => 'Traitement',
 			'foreignKey'   => 'delib_id'),
