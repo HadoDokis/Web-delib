@@ -66,3 +66,12 @@
   *) Compatibilité avec le navigateur Chrome pour Windows
   *) Ajout des variables : avisCommission, date_reception, commentaire_seance, total_votant, acteur_sans_participation
 
+2.1.1
+=====
+  *) Actualisation du logo
+  *) Correction des short_open_tag
+  *) Correction d'un bug lors de la ré-attribution d'un projet à un circuit
+  *) Possibilité (en fonction des droits) de sauter une étape du circuit
+  *) Enregistrement de la vie du projet dans un historique ( exploitable dans la génération des documents)
+  *) Insertion dans le parapheur électronique avec le libellé du projet.
+  
