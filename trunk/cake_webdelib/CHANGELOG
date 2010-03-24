@@ -74,4 +74,4 @@
   *) Possibilité (en fonction des droits) de sauter une étape du circuit
   *) Enregistrement de la vie du projet dans un historique ( exploitable dans la génération des documents)
   *) Insertion dans le parapheur électronique avec le libellé du projet.
-  
+  *) Export vers AS@LAE 
