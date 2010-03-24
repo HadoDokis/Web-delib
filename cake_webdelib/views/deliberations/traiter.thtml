@@ -69,7 +69,7 @@
 		<br/><?php echo $user['Service']['libelle'];?>
 	</div>
 
-	<? } ?>
+	<?php } ?>
 </dd>
 </div>
 <br/>
@@ -148,7 +148,7 @@
 			}
  		}	  ?>
  	</dd>
- <? } ?>
+ <?php } ?>
 
 </dl>
 
