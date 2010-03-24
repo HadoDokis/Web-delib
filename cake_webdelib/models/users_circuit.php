@@ -104,5 +104,11 @@ class UsersCircuit extends AppModel {
            }
            return  $listeUserCircuit; 
         }
+
+	function positionExists($circuit_id, $position) {
+            $conditions = "UsersCircuit.circuit_id = $circuit_id AND UsersCircuit.position=$position";
+            $users   = $this->find($conditions);
+            return (!empty($users));
+        }
 }
 ?>
