@@ -51,6 +51,11 @@ class User extends AppModel {
 			'insertQuery' => '')
 		);
 
+         var $hasMany = array(
+                'Historique' =>array(
+                        'className'    => 'Historique',
+                        'foreignKey'   => 'delib_id'));
+
 	function validates()
 	{
 		// unicité du login
