@@ -2,7 +2,7 @@
 	class ModelsController extends AppController {
 
 		var $name = 'Models';
-		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef');
+		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique');
 		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
 		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
@@ -142,9 +142,9 @@
                $titre =  str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $titre);
                $oMainPart->addElement(new GDO_FieldType('titre_projet',                $titre,    'text'));
 
-
                $objet = utf8_encode($delib['Deliberation']['objet']);
                $objet = str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $objet);
+
 	       $oMainPart->addElement(new GDO_FieldType('objet_projet',                $objet,     'text'));
                $oMainPart->addElement(new GDO_FieldType('libelle_projet',              $objet,    'text'));
 
@@ -156,6 +156,7 @@
                $oMainPart->addElement(new GDO_FieldType('service_emetteur',            utf8_encode($delib['Service']['libelle']) ,      'text'));
                $oMainPart->addElement(new GDO_FieldType('theme_projet',                utf8_encode($delib['Theme']['libelle']),         'text'));
                $oMainPart->addElement(new GDO_FieldType('T1_theme',                    utf8_encode($delib['Theme']['libelle']),         'text'));
+               $oMainPart->addElement(new GDO_FieldType('critere-trie_theme',          utf8_encode($delib['Theme']['order']),         'text'));
 
                // Information sur le rapporteur
                $oMainPart->addElement(new GDO_FieldType('salutation_rapporteur',       utf8_encode($delib['Rapporteur']['salutation']), 'text'));
@@ -219,8 +220,16 @@
                        $oDevPart->addElement(new GDO_FieldType("avis", utf8_encode($commentaire['texte']), "text"));
                        $avisCommission->addPart($oDevPart);
 		   }
-                }
+               }
                @$oMainPart->addElement($avisCommission);
+
+               @$historique =  new GDO_IterationType("Historique");
+	       foreach($delib['Historique'] as $histo) {
+                   $oDevPart = new GDO_PartType();
+                   $oDevPart->addElement(new GDO_FieldType("log", utf8_encode($histo['commentaire']), "text"));
+                   $historique->addPart($oDevPart);
+               }
+               @$oMainPart->addElement($historique);
 
                foreach($delib['Infosup'] as $champs) {
                    $oMainPart->addElement($this->_addField($champs, $u, $delib['Deliberation']['id']));
