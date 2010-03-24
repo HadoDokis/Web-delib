@@ -1,4 +1,4 @@
-<?
+<?php
     vendor('fpdf/html2fpdf');
 	$pdf = new HTML2FPDF();
 	

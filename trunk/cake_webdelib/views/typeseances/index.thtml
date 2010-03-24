@@ -25,7 +25,7 @@
 		echo 'PV sommaire : ' .  $typeseance['Modelpvsommaire']['modele'] . '<br/>';
 		echo 'PV d&eacute;taill&eacute; ' .  $typeseance['Modelpvdetaille']['modele'] . '<br/>';
 	?></td>
-	<td><?
+	<td><?php
 		if (!empty($typeseance['Typeacteur'])) {
 			echo 'Types d\'acteur :<br/>';
 			foreach ($typeseance['Typeacteur'] as $typeacteur)
