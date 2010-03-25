@@ -47,6 +47,7 @@ class CircuitsController extends AppController {
 	    for ($i =0; $i < count($histo['logdossier']); $i++){
 		if(!$tdt){
 	    	   if (($histo['logdossier'][$i]['status']  ==  'Signe') || ($histo['logdossier'][$i]['status']  ==  'Archive')) {
+		           
 	           // TODO LIST : Récupère la date et heure de signature  + QUi l'a signé (annotation)
 			   $this->Commentaire->create();
 	                   $comm ['Commentaire']['delib_id'] = $delib_id;
@@ -57,6 +58,11 @@ class CircuitsController extends AppController {
 
 			   $delib=$this->Deliberation->read(null, $delib_id);
 			   if ($delib['Deliberation']['etat_parapheur']==1){
+		               if ($histo['logdossier'][$i]['status']  ==  'Signe') {
+		                   $dossier = $this->Parafwebservice->GetDossierWebservice("$delib_id $objet");
+				   if (!empty($dossier['getdossier'][10]))
+				       $delib['Deliberation']['signature'] = base64_decode($dossier['getdossier'][10]);
+			       }
 			       // etat_paraph à 1, donc, nous sommes en post_seance, on ne supprime pas le projet
                                $delib['Deliberation']['etat_parapheur']=2;      
 			       $this->Deliberation->save($delib);
