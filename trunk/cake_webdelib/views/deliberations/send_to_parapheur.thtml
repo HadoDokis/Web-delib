@@ -32,7 +32,8 @@
 			   echo  ("<td>En cours de signature</td>");
 			}
 		        elseif($delib['Deliberation']['etat_parapheur']==2) {
-			   echo  ("<td>Délibération signée</td>");
+			   $delib_id = $delib['Deliberation']['id'];
+			   echo  ("<td><a href='/deliberations/downloadSignature/$delib_id'>Délibération signée</a></td>");
 		        }
 			else{
  		            echo("<td>&nbsp;</td>");
