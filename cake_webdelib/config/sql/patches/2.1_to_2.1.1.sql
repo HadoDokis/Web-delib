@@ -1,4 +1,5 @@
 ALTER TABLE `deliberations` ADD `etat_asalae` TINYINT( 1 ) NULL AFTER `etat_parapheur` ;
+ALTER TABLE `deliberations` ADD `signature` BLOB NULL AFTER `delib_pdf` ;
 
 CREATE TABLE `historiques` (
 `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -9,3 +10,4 @@ CREATE TABLE `historiques` (
 `modified` DATETIME NOT NULL ,
 `created` DATETIME NOT NULL
 ) ENGINE = MYISAM ;
+
