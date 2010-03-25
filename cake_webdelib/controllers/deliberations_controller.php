@@ -265,6 +265,15 @@ class DeliberationsController extends AppController {
             exit();
 	}
 
+	function downloadSignature($delib_id) {
+	    $delib = $this->Deliberation->read(null, $delib_id);
+            header('Content-type: application/zip');
+            header('Content-Length: '.strlen($delib['Deliberation']['signature']));
+            header('Content-Disposition: attachment; filename='.$delib['Deliberation']['num_delib'].'.zip');
+            echo $delib['Deliberation']['signature'];
+            exit();
+	}
+
 	function _saveAnnexe ($id, $file, $type) {
                 if (is_array($file) && !empty($file['name'])){
                     $this->Annex->create();
