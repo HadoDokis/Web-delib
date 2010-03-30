@@ -953,7 +953,7 @@ class DeliberationsController extends AppController {
         $this->set('deliberations', $deliberations);
 	if ($page>1)
 	    $this->set('previous', $page-1);
-        if  ($nbDelibs > $nbDelibParPage*$page )
+        if  ($nbDelibs >= $nbDelibParPage*$page )
 	    $this->set('next', $page+1);
 
     }
