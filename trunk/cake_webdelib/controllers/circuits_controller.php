@@ -244,7 +244,7 @@ class CircuitsController extends AppController {
                  $i++;
             }
 
-            if ($uniq==true)  {
+            if ($uniq==true || NOT_UNIQUE_CIRCUIT)  {
                 $this->params['data']['UsersCircuit']['position'] = $position;
                 $this->params['data']['UsersCircuit']['circuit_id'] = $circuit_id ;
                 $this->params['data']['UsersCircuit']['service_id'] = $service_id ;
