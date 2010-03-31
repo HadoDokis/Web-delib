@@ -1,8 +1,10 @@
 <?php
 
     define ('AFFICHE_HIERARCHIE_SERVICE', false);
-    define ('AFFICHE_CONVOCS_ANONYME', false);
-    define ('CONVOCS_MODIFIABLES', false);
+    define ('AFFICHE_CONVOCS_ANONYME',    false);
+    define ('CONVOCS_MODIFIABLES',        false);
+    define ('NOT_UNIQUE_CIRCUIT',         true);
+
 
     ////////////////////////
     // Configuration GEDOOo
