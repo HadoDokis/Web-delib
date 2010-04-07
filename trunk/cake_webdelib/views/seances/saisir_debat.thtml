@@ -33,8 +33,6 @@
     <?php echo $html->tagErrorMsg('Deliberation/debat', 'Entrer le texte de debat.');?>
 </div>
 
-
-
 <?php   } 
         else {
 ?>
@@ -55,6 +53,17 @@
 <div class="submit">
    	<?php echo $html->submit('Enregistrer', array('class'=>'bt_add', 'name'=>'saisir'));?>
 </form>
-      <?php echo $html->link('Retour au vote', "/seances/details/$seance_id", array('class'=>'link_annuler', 'name'=>'Annuler'), 'Etes vous sur de vous quitter cette page ?')?>
+      <?php 
+       if (!$isCommission) {
+           echo $html->link('Retour au vote', "/seances/details/$seance_id", array('class'=>'link_annuler', 'name'=>'Annuler'), 'Etes vous sur de vous quitter cette page ?');
+        } 
+	else {
+           echo $html->link('Retour au vote', "/seances/detailsAvis/$seance_id", array('class'=>'link_annuler', 'name'=>'Annuler'), 'Etes vous sur de vous quitter cette page ?');
+
+
+	}
+
+	   
+	   ?>
     <?php // echo $html->submit('Annuler', array('class'=>'bt_annuler', 'name'=>'retour', 'onclick'=>"javascript:FermerFenetre2()"));?>
 </div>
