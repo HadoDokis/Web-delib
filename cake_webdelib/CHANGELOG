@@ -77,3 +77,4 @@
   *) Récupération de la signature des dossiers envoyés dans le parapheur électronique
   *) Export vers AS@LAE 
   *) Possibilité d'avoir plusieurs fois le même utilisateur dans un circuit d'élaboration
+  *) Correction d'un bug lors de la saisie des débats de projets en commission
