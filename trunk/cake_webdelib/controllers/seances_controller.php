@@ -137,12 +137,14 @@ class SeancesController extends AppController {
 	}
 
 	function changeStatus ($seance_id) {
+	    $result = false;
             $this->data=$this->Seance->read(null,$seance_id);
+	     
 	    // Avant de cloturer la séance, on stock les délibérations en base de données au format pdf
             if ($this->data['Typeseance']['action'] == 0)
 	        $result = $this->_stockDelibs($seance_id);
 
-	    if ($result) {
+	    if ($result || $this->data['Typeseance']['action']== 1) {
                 $this->data['Seance']['traitee']=1;
                 if ($this->Seance->save($this->data))
                 $this->redirect('/seances/listerFuturesSeances');
