@@ -2128,8 +2128,17 @@ class DeliberationsController extends AppController {
                         $soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
                         $nomfichierpdf = "D_$id.pdf";
 			$objetDossier = utf8_encode($this->_objetParaph("$delib_id ".$delib['Deliberation']['objet']));
-                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $delib['Deliberation']['delib_pdf']);
-
+			$annexes = array();
+			$tmp1=0;
+			foreach ($delib['Annex'] as $annex) {
+			    if ($annex['type']=='G')
+			    $annexes[$tmp1][3] = $annex['filename'];
+			    $annexes[$tmp1][2] = 'UTF-8';
+			    $annexes[$tmp1][1] = $annex['filetype'];
+                            $annexes[$tmp1][0] = $annex['data'];
+			    $tmp1 ++;
+			}
+                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $delib['Deliberation']['delib_pdf'], $annexes);
 			$delib['Deliberation']['etat_parapheur']= 1;
 		        $this->Deliberation->save($delib);
                     }
