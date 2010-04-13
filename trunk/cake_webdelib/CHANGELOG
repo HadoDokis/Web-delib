@@ -74,7 +74,10 @@
   *) Possibilité (en fonction des droits) de sauter une étape du circuit
   *) Enregistrement de la vie du projet dans un historique ( exploitable dans la génération des documents)
   *) Insertion dans le parapheur électronique avec le libellé du projet.
+  *) Insertion des pièces jointes dans le parapheur électronique
   *) Récupération de la signature des dossiers envoyés dans le parapheur électronique
   *) Export vers AS@LAE 
   *) Possibilité d'avoir plusieurs fois le même utilisateur dans un circuit d'élaboration
   *) Correction d'un bug lors de la saisie des débats de projets en commission
+  *) Possibilité de saisir les débats de délib en postseances 
+  *) Enregistrement des PVs au format PDF
