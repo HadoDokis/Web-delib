@@ -971,7 +971,7 @@ class DeliberationsController extends AppController {
         curl_setopt($ch, CURLOPT_URL, $url);
         // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
         curl_setopt($ch, CURLOPT_POST, TRUE);
-      //  curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
         curl_setopt($ch, CURLOPT_SSLCERT, PEM);
@@ -990,7 +990,7 @@ class DeliberationsController extends AppController {
         curl_setopt($ch, CURLOPT_URL, $url);
         // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
         curl_setopt($ch, CURLOPT_POST, TRUE);
-      //  curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
         curl_setopt($ch, CURLOPT_SSLCERT, PEM);
@@ -1236,6 +1236,7 @@ class DeliberationsController extends AppController {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
     //	curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
         curl_setopt($ch, CURLOPT_SSLCERT,  PEM);
