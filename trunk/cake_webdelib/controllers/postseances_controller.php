@@ -8,7 +8,7 @@ class PostseancesController extends AppController {
 
 	// Gestion des droits
 	var $aucunDroit = array('getNom', 'getPresence', 'getVote');
-	var $commeDroit = array('changeObjet'=>'Postseances:index', 'afficherProjets'=>'Postseances:index', 'generateDeliberation'=>'Postseances:index', 'generatePvComplet'=>'Postseances:index', 'generatePvSommaire'=>'Postseances:index');
+	var $commeDroit = array('changeObjet'=>'Postseances:index', 'afficherProjets'=>'Postseances:index', 'generateDeliberation'=>'Postseances:index', 'generatePvComplet'=>'Postseances:index', 'generatePvSommaire'=>'Postseances:index', 'changeStatus'=>'Postseances:index', 'downloadPV'=>'Postseances:index');
 
 	function index() {
 		$this->set ('USE_GEDOOO', USE_GEDOOO);
@@ -20,7 +20,6 @@ class PostseancesController extends AppController {
 		    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
 
 		$this->set('seances', $seances);
-
 	}
 
 	function afficherProjets ($id=null, $return=null)
@@ -109,6 +108,74 @@ class PostseancesController extends AppController {
 			     $this->redirect('/deliberations/transmit');
 	    }
 	}
+
+        function changeStatus ($seance_id) {
+            $result = false;
+            $this->data=$this->Seance->read(null,$seance_id);
+
+            // Avant de cloturer la séance, on stock les délibérations en base de données au format pdf
+            $result = $this->_stockPvs($seance_id);
+exit;
+            if ($result || $this->data['Typeseance']['action']== 1) {
+                $this->data['Seance']['pv_figes']=1;
+                if ($this->Seance->save($this->data))
+                $this->redirect('/postseances/afficherProjets/'.$seance_id);
+            }
+            else
+                $this->Session->setFlash("Au moins un PV n'a pas été généré correctement...");
+        }
+
+        function _stockPvs($seance_id) {
+	    require_once ('vendors/progressbar.php');
+	    Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
+            $result = true;
+
+            $seance = $this->Seance->read(null, $seance_id);
+            $model_pv_sommaire = $seance['Typeseance']['modelpvsommaire_id'];
+            $model_pv_complet  = $seance['Typeseance']['modelpvdetaille_id'];
+	    ProgressBar(1, 'Génération du PV Sommaire');
+            $retour1 = $this->requestAction("/models/generer/null/$seance_id/$model_pv_sommaire/0/1/pv_sommaire.pdf/1/false");
+	    ProgressBar(50, 'Génération du PV Complet');
+            $retour2 = $this->requestAction("/models/generer/null/$seance_id/$model_pv_complet/0/1/pv_complet.pdf/1/false");
+            ProgressBar(99, 'Sauvegarde des PVs');
+            echo ('<script>');
+            echo ('    document.getElementById("pourcentage").style.display="none"; ');
+            echo ('    document.getElementById("progrbar").style.display="none";');
+            echo ('    document.getElementById("affiche").style.display="none";');
+            echo ('    document.getElementById("contTemp").style.display="none";');
+            echo ('</script>');
+            $path = WEBROOT_PATH."/files/generee/PV/$seance_id";
+            $pv_sommaire = file_get_contents("$path/pv_sommaire.pdf");
+            $pv_complet = file_get_contents("$path/pv_complet.pdf");
+
+	    if (!empty($pv_sommaire) && !empty($pv_complet)) {
+	        $seance['Seance']['pv_figes'] = 1 ;
+	        $seance['Seance']['pv_sommaire'] = $pv_sommaire ;
+	        $seance['Seance']['pv_complet'] = $pv_complet;
+                if ($this->Seance->save($seance))
+		    die ("Enregistrement des pvs effectués<br> <a href='/postseances/index'>Retour en Post-Séances</a>");
+	    }
+	    else {
+	        echo('Au moins une génération a échouée, les pvs ne peuvent être figés');
+		die ("<br> <a href='/postseances/index'>Retour en Post-Séances</a>'");
+            }   
+	}
+
+        function downloadPV($seance_id, $type) {
+            $seance = $this->Seance->read(null, $seance_id);
+            header('Content-type: application/pdf');
+            if ($type == "sommaire") {
+                header('Content-Length: '.strlen($seance['Seance']['pv_sommaire']));
+                header('Content-Disposition: attachment; filename=pv_sommaire.pdf');
+                die($seance['Seance']['pv_sommaire']);
+            }
+            else { 
+                header('Content-Length: '.strlen($seance['Seance']['pv_complet']));
+                header('Content-Disposition: attachment; filename=pv_complet.pdf');
+                die($seance['Seance']['pv_complet']);
+            }
+        }
+
 
 }
 ?>

@@ -1,3 +1,5 @@
+ALTER TABLE `seances` ADD `pv_figes` TINYINT NULL AFTER `debat_global_type`; 
+ALTER TABLE `seances`  ADD `pv_sommaire` LONGBLOB NULL,  ADD `pv_complet` LONGBLOB NULL;
 
 CREATE TABLE `historiques` (
 `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,

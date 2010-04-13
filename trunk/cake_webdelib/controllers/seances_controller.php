@@ -454,6 +454,12 @@ class SeancesController extends AppController {
 	function saisirDebat ($id = null)	{
             $seance_id = $this->Deliberation->getCurrentSeance($id);
             $seance = $this->Seance->read(null, $seance_id);
+	    if ($seance['Seance']['pv_figes']==1) {
+                $this->Session->setFlash('Les pvs ont été figés, vous ne pouvez plus saisir de débat pour cette délibération...');
+	        $this->redirect('/postseances/index');
+		exit;
+	    }
+	     
             $isCommission = $seance['Typeseance']['action'];
 
             if (empty($this->data)) {
