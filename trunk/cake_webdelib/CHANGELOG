@@ -81,3 +81,4 @@
   *) Correction d'un bug lors de la saisie des débats de projets en commission
   *) Possibilité de saisir les débats de délib en postseances 
   *) Enregistrement des PVs au format PDF
+  *) Correction d'un bug dans l'affichage des délibérations télétransmises
