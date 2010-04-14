@@ -1,15 +1,15 @@
 <h2>Liste des projets pour la séance du <?php echo $date_seance; ?></h2>
 <table>
 	<tr>
-		<th>Position</th>
-		<?php echo ('<th>'.$html->link('Thème', "/deliberations/sortby/$seance_id/theme_id",null,'Etes-vous sur de vouloir trier par theme ?'). "</th>"); ?>
-		<?php echo ('<th>'.$html->link('Service émetteur', "/deliberations/sortby/$seance_id/service_id",null,'Etes-vous sur de vouloir trier par service ?'). "</th>"); ?>
-		<?php echo ('<th>'.$html->link('Rapporteur', "/deliberations/sortby/$seance_id/rapporteur_id", null,'Etes-vous sur de vouloir trier par rapporteur ?'). "</th>"); ?>
+		<th width='4%'>Ordre</th>
+		<?php echo ('<th width="13%">'.$html->link('Thème', "/deliberations/sortby/$seance_id/theme_id",null,'Etes-vous sur de vouloir trier par theme ?'). "</th>"); ?>
+		<?php echo ('<th width="13%">'.$html->link('Service émetteur', "/deliberations/sortby/$seance_id/service_id",null,'Etes-vous sur de vouloir trier par service ?'). "</th>"); ?>
+		<?php echo ('<th width="5%">'.$html->link('Rapporteur', "/deliberations/sortby/$seance_id/rapporteur_id", null,'Etes-vous sur de vouloir trier par rapporteur ?'). "</th>"); ?>
 		<?php echo ('<th>'.$html->link('Libellé', "/deliberations/sortby/$seance_id/objet",null,'Etes-vous sur de vouloir trier par libelle ?'). "</th>"); ?>
-		<?php echo ('<th>'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre",null,'Etes-vous sur de vouloir trier par titre ?'). "</th>"); ?>
-		<th>Identifiant projet</th>
-		<th>&nbsp;&nbsp;</th>
-		<th>&nbsp;&nbsp;</th>
+		<?php echo ('<th width="10%">'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre",null,'Etes-vous sur de vouloir trier par titre ?'). "</th>"); ?>
+		<th width='4%'>Identifiant</th>
+		<th width='2%'>&nbsp;&nbsp;</th>
+		<th width='2%'>&nbsp;&nbsp;</th>
 	</tr>
 
 	<?php foreach($projets as $projet):
