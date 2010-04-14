@@ -932,8 +932,9 @@ class DeliberationsController extends AppController {
         $this->set('dateClassification', $this->_getDateClassification());
 
         // On affiche que les delibs vote pour.
-	$deliberations = $this->Deliberation->findAll("Deliberation.etat=5", null, "num_delib ASC",  $nbDelibParPage,  $page);
-        $nbDelibs = count($deliberations);
+	$deliberations = $this->Deliberation->findAll("Deliberation.etat=5", null, "num_delib ASC",  $nbDelibParPage,  $page);        $tmp_delibs = $this->Deliberation->findAll("Deliberation.etat=5");
+        $nbDelibs = count($tmp_delibs);
+
 	for($i = 0; $i < $nbDelibs; $i++) {
 	    if (empty($deliberations[$i]['Deliberation']['DateAR'])) {
 	        if (isset($deliberations[$i]['Deliberation']['tdt_id'])){
