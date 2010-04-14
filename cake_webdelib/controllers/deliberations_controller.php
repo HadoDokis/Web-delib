@@ -1705,7 +1705,7 @@ class DeliberationsController extends AppController {
 				$this->data[$i]['Model']['id'] = 1;
 
 			$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
-
+                        $this->data[$i]['Seance']['libelle'] = $this->Typeseance->getLibelle($this->data[$i]['Seance']['type_id']);
 			if (isset($this->data[$i]['Deliberation']['date_limite']))
 				$this->data[$i]['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($this->data[$i]['Deliberation']['date_limite']));
 		}

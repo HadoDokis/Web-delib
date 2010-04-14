@@ -129,5 +129,10 @@ class Typeseance extends AppModel {
 			return $typeseance['Typeseance']['modelprojet_id'];
 	}
 
+	function getLibelle ($type_id) {
+              $libelle = $this->read('libelle', $type_id);
+              return $libelle['Typeseance']['libelle'];
+	}
+
 }
 ?>

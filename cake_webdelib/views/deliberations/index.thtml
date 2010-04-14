@@ -3,11 +3,11 @@
 
 <table cellspacing="0" cellpadding="0">
 	<tr>
-		<th Width='5%' >Urgence</th>
-		<th Width='20%' >Etat de l'envoi</th>
-		<th Width='20%' >D&eacute;tenteur du dossier</th>
-		<th>Titre</th>
-		<th Width='15%'>Action</th>
+		<th Width='5%' align="right">Vue </th>
+		<th Width='10%' align="left">synth&eacute;tique</th>
+		<th>&nbsp;</th>
+		<th Width='20%' >&nbsp;</th>
+		<th Width='15%'>Actions</th>
 
 	</tr>
 	<tr>
@@ -17,12 +17,12 @@
 
 <?php foreach ($this->data as $deliberation){ ?>
 	<tr>
-		<td rowspan=3 style="text-align:center">
+		<td rowspan=3 style="text-align:center" Width='5%'>
 		    <?php echo $html->image($deliberation['iconeEtat']['image'], array('title'=>$deliberation['iconeEtat']['titre']));?>
 		</td>
-		<td><?php echo $deliberation['Deliberation']['objet'];?></td>
 		<td>Service &eacute;metteur :<br/><?php echo $deliberation['Service']['libelle'];?></td>
-		<td>Date de s&eacute;ance :
+		<td><?php echo $deliberation['Deliberation']['objet'];?></td>
+		<td>S&eacute;ance :<br />
 		<?php
 			if (in_array('attribuerSeance', $deliberation['Actions'])) {
 				echo '<form action="'.$html->url('/deliberations/attribuerSeance').'" method="post">';
@@ -32,7 +32,7 @@
 					echo $html->submit('', array('class'=>'bt_save', 'name'=>'sauvegarder'));
 				echo '</form>';
 			} else {
-				if ($deliberation['Deliberation']['reporte']==1) echo "Report&eacute; au ";
+                                echo $deliberation['Seance']['libelle'].'<br />';	
 				echo $deliberation['Seance']['date'];
 			}
 		?>
@@ -69,14 +69,14 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Identifiant projet : <?php echo $deliberation['Deliberation']['id']; ?></td>
-		<td class='corps' rowspan=1 >Th&egrave;me : <?php echo $deliberation['Theme']['libelle']; ?></td>
+		<td>Circuit : <br /><?php echo $deliberation['Circuit']['libelle']; ?></td>
 		<td class='corps' rowspan=1 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
+		<td>A traiter avant le :<br /><?php echo $deliberation['Deliberation']['date_limite']; ?></td>
 	</tr>
 	<tr>
-		<td>N&deg; classification :<?php echo $deliberation['Deliberation']['num_pref']; ?></td>
-		<td>Circuit : <?php echo $deliberation['Circuit']['libelle']; ?></td>
-		<td>A traiter avant le : <?php echo $deliberation['Deliberation']['date_limite']; ?></td>
+		<td>projet : <?php echo $deliberation['Deliberation']['id']; ?></td>
+		<td class='corps' rowspan=1 >Th&egrave;me : <?php echo $deliberation['Theme']['libelle']; ?></td>
+		<td>Classification : <?php echo $deliberation['Deliberation']['num_pref'];  ?></td>
 	</tr>
 	<tr>
 		<td colspan='5' class='Border' height='1' >
