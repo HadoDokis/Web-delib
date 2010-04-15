@@ -4,7 +4,11 @@
 	<title>Web-delib</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 	<?php echo $html->css('webdelib'); ?>
+	<?php echo $html->css('jquery.jgrowl'); ?>
 	<?php echo $javascript->link('utils'); ?>
+	<?php echo $javascript->link('jquery', true); ?>
+	<?php echo $javascript->link('jquery.jgrowl', true); ?>
+
 </head>
 <body>
 <div id="conteneur">
