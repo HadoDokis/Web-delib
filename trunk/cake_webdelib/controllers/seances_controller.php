@@ -15,6 +15,7 @@ class SeancesController extends AppController {
 		'delete'=>'Seances:listerFuturesSeances',
 		'edit'=>'Seances:listerFuturesSeances',
 		'afficherProjets'=>'Seances:listerFuturesSeances',
+		'changePosition'=>'Seances:listerFuturesSeances',
 		'addListUsers'=>'Seances:listerFuturesSeances',
 		'saisirDebatGlobal'=>'Seances:listerFuturesSeances',
 		'details'=>'Seances:listerFuturesSeances',
@@ -258,11 +259,13 @@ class SeancesController extends AppController {
 			for ($i=0; $i<count($deliberations); $i++) {
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+				$lst_pos[$i+1] = $i+1;
 			}
 			$this->set('seance_id', $id);
 			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
 			$this->set('projets', $deliberations);
 			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($id))));
+			$this->set('lst_pos', $lst_pos);
 		}
 		else
 		    return ($this->Deliberation->findAll($condition,null,'Deliberation.position ASC'));
@@ -854,6 +857,43 @@ class SeancesController extends AppController {
                     $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
                 }
             }
+	}
+
+	function changePosition ($new_position, $delib_id) {
+	    $delib = $this->Deliberation->read(null, $delib_id);
+	    $seance_id = $delib['Deliberation']['seance_id'];
+	    $old_position = $delib['Deliberation']['position'];
+            
+	    // Normalement, ce cas n'arrive jamais, le select ne redirige pas si le nouveau est identique
+	    // à l'ancien
+	    if ($new_position == $old_position) {
+                $this->Session->setFlash("Positions identiques, aucun changement dans l'ordre du jour");
+                $this->redirect("/seances/afficherProjets/$seance_id");
+	    }
+
+            if ($new_position > $old_position) 
+	        $condition = "Deliberation.position > $old_position AND Deliberation.position <= $new_position";
+            else 
+	        $condition = "Deliberation.position < $old_position AND Deliberation.position >= $new_position";
+
+            $conditions    = "seance_id=".$delib['Deliberation']['seance_id']." AND (etat != -1 ) AND $condition";
+            $deliberations = $this->Deliberation->findAll($conditions,null,'Deliberation.position ASC');
+	    
+	    $delib['Deliberation']['position'] = $new_position; 
+	    $this->Deliberation->save($delib); 
+
+	    $nb_delibs     = count($deliberations);
+            foreach ($deliberations as $deliberation) {
+                if ($new_position > $old_position) 
+                    $deliberation['Deliberation']['position']= $deliberation['Deliberation']['position']-1;
+                else
+                    $deliberation['Deliberation']['position']= $deliberation['Deliberation']['position']+1;
+
+		$this->Deliberation->save($deliberation);
+	    }
+
+            $this->Session->setFlash("Projet [id:$delib_id] déplacée en position : $new_position, ancienne position : $old_position ",  'growl');
+            $this->redirect("/seances/afficherProjets/$seance_id");
 	}
 
 }

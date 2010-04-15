@@ -1,14 +1,13 @@
 <div class="deliberations">
 <?php echo '<h2>'.$titreVue.'</h2>';?>
 
-<table cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
 	<tr>
-		<th Width='5%' align="right">Vue </th>
-		<th Width='10%' align="left">synth&eacute;tique</th>
-		<th>&nbsp;</th>
-		<th Width='20%' >&nbsp;</th>
-		<th Width='15%'>Actions</th>
-
+		<th width='5%' align="right">Vue </th>
+		<th width='10%' align="left">synth&eacute;tique</th>
+		<th width='50%'> &nbsp;</th>
+		<th width='18%' >&nbsp;</th>
+		<th width='10%'>Actions</th>
 	</tr>
 	<tr>
 		<td colspan='5' class='Border' height='1' >
@@ -17,7 +16,8 @@
 
 <?php foreach ($this->data as $deliberation){ ?>
 	<tr>
-		<td rowspan=3 style="text-align:center" Width='5%'>
+		<td rowspan=3 style="text-align:center;">
+		    <br />
 		    <?php echo $html->image($deliberation['iconeEtat']['image'], array('title'=>$deliberation['iconeEtat']['titre']));?>
 		</td>
 		<td>Service &eacute;metteur :<br/><?php echo $deliberation['Service']['libelle'];?></td>
@@ -44,7 +44,7 @@
 			if (in_array('edit', $deliberation['Actions']))
 				echo $html->link(SHY,'/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
 			if (in_array('delete', $deliberation['Actions']))
-				echo $html->link(SHY,'/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer la deliberation "' . $deliberation['Deliberation']['titre']. '" ?', false);
+				echo $html->link(SHY,'/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer le projet "' . $deliberation['Deliberation']['titre']. '" ?', false);
 			if (in_array('traiter', $deliberation['Actions']))
 				echo $html->link(SHY,"/deliberations/traiter/" . $deliberation['Deliberation']['id'], array('class'=>"link_traiter", 'title'=>'Traiter'), false, false);
 			if (in_array('validerEnUrgence', $deliberation['Actions']))
