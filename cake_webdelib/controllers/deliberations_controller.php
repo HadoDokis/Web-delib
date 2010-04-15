@@ -899,7 +899,7 @@ class DeliberationsController extends AppController {
                 $this->data['Traitement']['delib_id']=$id;
                 $this->data['Traitement']['circuit_id']=$circuit_id;
                 $this->Traitement->save($this->data['Traitement']);
-		$this->Session->setFlash('Vous venez de traiter le projet : '.$id, 'growl');
+		$this->Session->setFlash("Le projet ($id) a avancé d'une position", 'growl');
                 $this->redirect('/deliberations/mesProjetsATraiter');
             }
         }
@@ -1786,7 +1786,7 @@ class DeliberationsController extends AppController {
 			$this->data['Deliberation']['position'] = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
 			$this->Deliberation->save($this->data);
 		}
-
+                $this->Session->setFlash('La séance a bien été attribuée', 'growl');
 		$this->redirect('/deliberations/tousLesProjetsSansSeance');
 	}
 
@@ -1827,7 +1827,7 @@ class DeliberationsController extends AppController {
 				}
 			}
 		}
-
+                $this->Session->setFlash('Le projet '.$this->data['Deliberation']['id'].'a été validé en urgence', 'growl');
 		$this->redirect('/deliberations/tousLesProjetsValidation');
 	}
 
