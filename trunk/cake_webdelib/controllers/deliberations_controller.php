@@ -773,7 +773,6 @@ class DeliberationsController extends AppController {
 				$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
 				$delib=array();
 				//on recupere la position courante de la deliberation
-				//$deliberation['positionDelib']=$lastTraitement['position'];
 				$deliberation['positionDelib']=count($deliberation['Traitement']);
 				$lastTraitement=array_pop($deliberation['Traitement']);
 
@@ -815,10 +814,10 @@ class DeliberationsController extends AppController {
                                    if ($user['UsersCircuit']['service_id'] != -1)
                                        $this->_notifierDossierRefuse($id, $user['User']['id']);
                                 }
-
 			        $this->Historique->enregistre($id, $this->Session->read('user.User.id'),  'Projet refusé' );
-
+				$this->Session->setFlash('Vous venez de refuser le projet : '.$id, 'growl');
 	       			$this->redirect('/deliberations/mesProjetsATraiter');
+				exit;
 			    }
 			}
 		}
@@ -900,6 +899,7 @@ class DeliberationsController extends AppController {
                 $this->data['Traitement']['delib_id']=$id;
                 $this->data['Traitement']['circuit_id']=$circuit_id;
                 $this->Traitement->save($this->data['Traitement']);
+		$this->Session->setFlash('Vous venez de traiter le projet : '.$id, 'growl');
                 $this->redirect('/deliberations/mesProjetsATraiter');
             }
         }
@@ -2270,7 +2270,7 @@ class DeliberationsController extends AppController {
             $this->accepteDossier($delib_id);
 	    $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a sauté l'étape : ".$pos['Traitement']['position']);
 
-            $this->Session->setFlash('Le projet est maintenant à la position : '.$new_pos, 'growl', array('type'=>'erreur'));
+            $this->Session->setFlash('Le projet est maintenant à la position : '.$new_pos, 'growl');
 	    $this->redirect('/deliberations/tousLesProjetsValidation');
 	    exit;
 	}
