@@ -15,6 +15,10 @@ acronym {
 	color : red;
 }
 
+.info {
+    color: black;
+    font-style: italic;
+}
 .pave {
 	width: 80%;
 	height:100%;
@@ -143,7 +147,6 @@ label {
 	/*background-color: #fff;*/
 	background-color: transparent;
 	margin: 8px 0px;
-	font-weight: bold;
 	text-align: center;
 }
 
