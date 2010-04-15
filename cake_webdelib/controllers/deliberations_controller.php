@@ -55,7 +55,7 @@ class DeliberationsController extends AppController {
 	function view($id = null) {
 		$this->data = $this->Deliberation->findById($id);
 		if (empty($this->data)) {
-			$this->Session->setFlash('Invalide id pour la d&eacute;lib&eacute;ration : affichage de la vue impossible.');
+			$this->Session->setFlash('Invalide id pour la d&eacute;lib&eacute;ration : affichage de la vue impossible.', 'growl');
 			$this->redirect('/deliberations/mesProjetsRedaction');
 		}
 
@@ -206,10 +206,10 @@ class DeliberationsController extends AppController {
 				if (array_key_exists('AnnexesD', $this->data))
 					foreach($this->data['AnnexesD'] as $annexe) $this->_saveAnnexe($delibId, $annexe, 'D');
 
-				$this->Session->setFlash('Le projet \''.$delibId.'\' a &eacute;t&eacute; ajout&eacute;');
+				$this->Session->setFlash('Le projet \''.$delibId.'\' a &eacute;t&eacute; ajout&eacute;',  'growl');
 				$sortie = true;
 			} else
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
 		}
 		if ($sortie)
 			$this->redirect($redirect);
@@ -329,7 +329,7 @@ class DeliberationsController extends AppController {
 			if (!$this->Deliberation->estModifiable($id, $user['User']['id']) &&
 				!($this->data['Deliberation']['etat'] == 2 && $this->Acl->check($user['User']['id'], "Deliberations:editerProjetValide"))
 			) {
-				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.");
+				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
 				$this->redirect($redirect);
 			}
 
@@ -479,10 +479,11 @@ class DeliberationsController extends AppController {
 					foreach($this->data['AnnexesS'] as $annexe) $this->_saveAnnexe($id, $annexe, 'S');
 				if (array_key_exists('AnnexesD', $this->data))
 					foreach($this->data['AnnexesD'] as $annexe) $this->_saveAnnexe($id, $annexe, 'D');
-
+                        
+			        $this->Session->setFlash("Le projet $id a été enregistré", 'growl' );
 				$this->redirect($redirect);
 			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur') );
 				$this->set('services', $this->Deliberation->Service->generateList('Service.actif=1'));
 				$this->set('themes', $this->Deliberation->Theme->generateList('Theme.actif=1'));
 				$this->set('circuits', $this->Deliberation->Circuit->generateList());
@@ -510,7 +511,7 @@ class DeliberationsController extends AppController {
 		$user=$this->Session->read('user');
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalide id pour la deliberation');
+				$this->Session->setFlash('Invalide id pour la deliberation', 'growl', array('type'=>'erreur'));
 				$this->redirect('/deliberations/mesProjetsRedaction');
 			}
 			$deliberation = $this->Deliberation->read(null, $id);
@@ -549,13 +550,13 @@ class DeliberationsController extends AppController {
 	function delete($id = null) {
 		$delib = $this->Deliberation->read(null, $id);
 		if (empty($delib)) {
-			$this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible');
+			$this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible', 'growl', array('type'=>'erreur'));
 		} else if ($this->Deliberation->del($id)) {
 			// Il faut reclasser toutes les delibs de la seance
 			if (!empty($delib['Deliberation']['seance_id']))
 				$this->_PositionneDelibsSeance($delib['Deliberation']['seance_id'], $delib['Deliberation']['position'] );
 
-			$this->Session->setFlash('Le projet \''.$id.'\' a &eacute;t&eacute; supprim&eacute;.');
+			$this->Session->setFlash('Le projet \''.$id.'\' a &eacute;t&eacute; supprim&eacute;.', 'growl');
 		}
 		$this->redirect('/deliberations/mesProjetsRedaction');
 	}
@@ -622,12 +623,12 @@ class DeliberationsController extends AppController {
 
                 }
 
-
+		$this->Session->setFlash('Projet inséré dans le circuit', 'growl');
                 $this->redirect('/deliberations/mesProjetsRedaction');
 	    } else
-		$this->Session->setFlash('Probleme de sauvegarde.');
+		$this->Session->setFlash('Probleme de sauvegarde.', 'growl', array('type'=>'erreur'));
     	}else{
-    		$this->Session->setFlash('Vous devez assigner un circuit a la deliberation	.');
+    		$this->Session->setFlash('Vous devez assigner un circuit a la deliberation.', 'growl', array('type'=>'erreur'));
     		$this->redirect('/deliberations/recapitulatif/'.$id);
     	}
     }
@@ -678,7 +679,7 @@ class DeliberationsController extends AppController {
 		if ($this->Deliberation->save($this->data)) {
                     $this->redirect('/deliberations/recapitulatif/'.$id);
 		} else
-                   $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+                   $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.',  'growl', array('type'=>'erreur'));
 	    }
 	}
 
@@ -733,8 +734,10 @@ class DeliberationsController extends AppController {
 	}
 
 	function traiter($id = null, $valid=null) {
-		if (!$id) {
-			$this->Session->setFlash('Invalide id pour la deliberation.');
+	        $check_delib = $this->Deliberation->read(null, $id);
+
+		if (!$id ||  empty( $check_delib)) {
+			$this->Session->setFlash('identifiant invalide pour le projet : '.$id, 'growl', array('type'=>'erreur'));
 			$this->redirect('/deliberations/mesProjetsATraiter');
 		}
 		else
@@ -1301,7 +1304,7 @@ class DeliberationsController extends AppController {
 			$this->redirect("/seances/afficherProjets/$seance_id/");
 			}
 			else {
-		 	   $this->Session->setFlash('Erreur durant l\'enregistrement');
+		 	   $this->Session->setFlash('Erreur durant l\'enregistrement', 'growl', array('type'=>'erreur'));
 			}
         }
 
@@ -1450,7 +1453,7 @@ class DeliberationsController extends AppController {
 		$delibs = $this->Deliberation->findAll($conditions);
 		foreach ($delibs as $delib)
 			$this->Deliberation->changeSeance($delib['Deliberation']['id'], 0);
-		$this->Session->setFlash("Le quorum n\'est plus atteint...");
+		$this->Session->setFlash("Le quorum n\'est plus atteint...", 'growl', array('type'=>'erreur'));
 		$this->redirect('seances/listerFuturesSeances');
 		exit;
 	}
@@ -1800,16 +1803,16 @@ class DeliberationsController extends AppController {
 		   $position     = $this->Traitement->find("Traitement.delib_id = $delibId AND Traitement.circuit_id= $circuit_id", 'Max(position)');
 		   $UsersCircuit = $this->UsersCircuit->find("UsersCircuit.circuit_id = $circuit_id AND UsersCircuit.position = ".$position[0]['Max(position)']);
 		   if ($UsersCircuit['UsersCircuit']['service_id'] == -1){
-		       $this->Session->setFlash('Le projet ne peux être validé en urgence : il est actuellement bloqué dans un parapheur...');
+		       $this->Session->setFlash('Le projet ne peux être validé en urgence : il est actuellement bloqué dans un parapheur...', 'growl', array('type'=>'erreur'));
 		       $this->redirect('/deliberations/tousLesProjetsValidation');
 		       exit;
 		   }
                 }
 		if (empty($this->data))
-			$this->Session->setFlash('Invalide id pour le projet de d&eacute;lib&eacute;ration');
+			$this->Session->setFlash('Invalide id pour le projet de d&eacute;lib&eacute;ration', 'growl', array('type'=>'erreur'));
 		else {
 			if ($this->data['Deliberation']['etat']!=1)
-				$this->Session->setFlash('Le projet de d&eacute;lib&eacute;ration doit &ecirc;tre en cours d\'&eacute;laboration');
+				$this->Session->setFlash('Le projet de d&eacute;lib&eacute;ration doit &ecirc;tre en cours d\'&eacute;laboration', 'growl', array('type'=>'erreur'));
 			else {
 			        $this->Historique->enregistre($delibId, $this->Session->read('user.User.id'), 'Projet validé en urgence' );
 				$this->data['Deliberation']['etat'] = 2;
@@ -1859,7 +1862,7 @@ class DeliberationsController extends AppController {
 
 			if (!empty($this->data['Deliberation']['id'])){
 			    if (!is_numeric($this->data['Deliberation']['id'])) {
-			        $this->Session->setFlash('Vous devez saisir un identifiant valide');
+			        $this->Session->setFlash('Vous devez saisir un identifiant valide', 'growl', array('type'=>'erreur'));
                                 $this->redirect('/deliberations/mesProjetsRecherche');
 		            }
 		            if ($conditions != "")
@@ -1915,7 +1918,7 @@ class DeliberationsController extends AppController {
 			}
 
 			if (empty($conditions)) {
-				$this->Session->setFlash('Vous devez saisir au moins un crit&egrave;re.');
+				$this->Session->setFlash('Vous devez saisir au moins un crit&egrave;re.', 'growl', array('type'=>'erreur'));
 				$this->redirect('/deliberations/mesProjetsRecherche');
 			} else {
 				$userId=$this->Session->read('user.User.id');
@@ -1967,7 +1970,7 @@ class DeliberationsController extends AppController {
 
 			if (!empty($this->data['Deliberation']['id'])){
                             if (!is_numeric($this->data['Deliberation']['id'])) {
-                                $this->Session->setFlash('Vous devez saisir un identifiant valide');
+                                $this->Session->setFlash('Vous devez saisir un identifiant valide', 'growl', array('type'=>'erreur'));
                                 $this->redirect('/deliberations/tousLesProjetsRecherche');
                             }
 		            if ($conditions != "")
@@ -2023,7 +2026,7 @@ class DeliberationsController extends AppController {
 			}
 
 			if (empty($conditions)) {
-				$this->Session->setFlash('Vous devez saisir au moins un crit&egrave;re.');
+				$this->Session->setFlash('Vous devez saisir au moins un crit&egrave;re.', 'growl', array('type'=>'erreur'));
 				$this->redirect('/deliberations/tousLesProjetsRecherche');
 			} else {
 				// lecture en base
@@ -2119,7 +2122,7 @@ class DeliberationsController extends AppController {
             }
 	    else {
 	        if ($this->data['Deliberation']['circuit_id']== '') {
-		    $this->Session->setFlash( "Vous devez saisir un circuit avant l'envoi.");
+		    $this->Session->setFlash( "Vous devez saisir un circuit avant l'envoi.", 'growl', array('type'=>'erreur'));
 		    $this->redirect('/deliberations/sendToParapheur');
 		    exit;
 		}
@@ -2145,7 +2148,7 @@ class DeliberationsController extends AppController {
 		        $this->Deliberation->save($delib);
                     }
                 }
-	        $this->Session->setFlash( "Les documents ont été envoyés au parapheur électronique.");
+	        $this->Session->setFlash( "Les documents ont été envoyés au parapheur électronique.", 'growl');
 		$this->redirect('/deliberations/sendToParapheur');
 		exit;
             }
@@ -2245,7 +2248,7 @@ class DeliberationsController extends AppController {
 		    $this->Deliberation->save($delib);
                 }
             }
-	    $this->Session->setFlash( "Les documents ont été transférés à AS@LAE");
+	    $this->Session->setFlash( "Les documents ont été transférés à AS@LAE", 'growl', array('type'=>'erreur'));
 	    $this->redirect('/deliberations/verserAsalae');
             exit;
 
@@ -2259,7 +2262,7 @@ class DeliberationsController extends AppController {
 	$pos = $this->Traitement->find("Traitement.delib_id = $delib_id AND Traitement.circuit_id = $circuit_id AND Traitement.date_traitement=0");
         $new_pos = $pos['Traitement']['position']+1;
 	if (!$this->UsersCircuit->positionExists($circuit_id, $new_pos)){
-            $this->Session->setFlash('La personne suivante est le dernier valideur du circuit, vous devez valider le projet.');
+            $this->Session->setFlash('La personne suivante est le dernier valideur du circuit, vous devez valider le projet.', 'growl', array('type'=>'erreur'));
 	    $this->redirect('/deliberations/tousLesProjetsValidation');
 	    exit;
         }
@@ -2267,7 +2270,7 @@ class DeliberationsController extends AppController {
             $this->accepteDossier($delib_id);
 	    $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a sauté l'étape : ".$pos['Traitement']['position']);
 
-            $this->Session->setFlash('Le projet est maintenant à la position : '.$new_pos);
+            $this->Session->setFlash('Le projet est maintenant à la position : '.$new_pos, 'growl', array('type'=>'erreur'));
 	    $this->redirect('/deliberations/tousLesProjetsValidation');
 	    exit;
 	}
