@@ -87,6 +87,13 @@ function changeRapporteur(params,delib)
 	document.location=url;
 }
 
+function changePosition(params,delib)
+{
+        var url = params.id+"seances/changePosition/"+params.value+"/"+delib;
+        document.location=url;
+}
+
+
 function add_field(num) {
 
 	var a = document.getElementById('lien_annexe');
