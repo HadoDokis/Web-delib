@@ -41,11 +41,12 @@ class SeancesController extends AppController {
 
 
 	function view($id = null) {
-		if (!$id) {
-			$this->Session->setFlash('Invalide id pour la seance.');
+	        $seance = $this->Seance->read(null, $id);
+		if (!$id || empty($seance)) {
+			$this->Session->setFlash('identifiant invalide pour la seance.', 'growl', array('type'=>'erreur'));
 			$this->redirect('/seances/index');
 		}
-		$this->set('seance', $this->Seance->read(null, $id));
+		$this->set('seance', $seance);
 	}
 
 	function add($timestamp=null) {
@@ -62,10 +63,10 @@ class SeancesController extends AppController {
 			$this->data['Seance']['date'] = $this->data['Seance']['date'].' '.$this->data['Seance']['date_hour'].':'.$this->data['Seance']['date_min'];
 
 			if ($this->Seance->save($this->data)) {
-				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e');
+				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
 				$this->redirect('/seances/listerFuturesSeances');
 			} else {
-				$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
+				$this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
 				$this->set('typeseances', $this->Seance->Typeseance->generateList());
 				if (empty($this->data['Typeseance']['Typeseance'])) {
 					$this->data['Typeseance']['Typeseance'] = null;
@@ -78,7 +79,7 @@ class SeancesController extends AppController {
 	function edit($id = null) {
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalide id pour la seance');
+				$this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
 				$this->redirect('/seances/listerFuturesSeances');
 			}
 			$this->data = $this->Seance->read(null, $id);
@@ -88,10 +89,10 @@ class SeancesController extends AppController {
 		} else {
 			$this->cleanUpFields('Seance');
 			if ($this->Seance->save($this->data)) {
-				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e');
+				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
 				$this->redirect('/seances/listerFuturesSeances');
 			} else {
-				$this->Session->setFlash('Corrigez les erreurs ci-dessous.');
+				$this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
 				if (empty($this->data['Typeseance']['Typeseance'])) { $this->data['Typeseance']['Typeseance'] = null; }
 					$this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
 			}
@@ -100,11 +101,15 @@ class SeancesController extends AppController {
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalide id pour la seance');
+			$this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
 			$this->redirect('/seances/index');
 		}
 		if ($this->Seance->del($id)) {
 			$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; suprim&eacute;e');
+			$this->redirect('/seances/index');
+		}
+		else {
+			$this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
 			$this->redirect('/seances/index');
 		}
 	}
@@ -458,7 +463,7 @@ class SeancesController extends AppController {
             $seance_id = $this->Deliberation->getCurrentSeance($id);
             $seance = $this->Seance->read(null, $seance_id);
 	    if ($seance['Seance']['pv_figes']==1) {
-                $this->Session->setFlash('Les pvs ont été figés, vous ne pouvez plus saisir de débat pour cette délibération...');
+                $this->Session->setFlash('Les pvs ont été figés, vous ne pouvez plus saisir de débat pour cette délibération...', 'growl', array('type'=>'erreur'));
 	        $this->redirect('/postseances/index');
 		exit;
 	    }
@@ -498,7 +503,7 @@ class SeancesController extends AppController {
                 if ($this->Deliberation->save($this->data)) {
                     $this->redirect('/seances/saisirDebat/'.$id);
                 } else {
-                    $this->Session->setFlash('Please correct errors below.');
+                    $this->Session->setFlash('Please correct errors below.', 'growl', array('type'=>'erreur'));
                 }
             }
 	}
@@ -567,7 +572,7 @@ class SeancesController extends AppController {
 						}
 						$this->redirect('/seances/listerFuturesSeances');
 					} else {
-						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
 					}
 				}
 			}
@@ -854,7 +859,7 @@ class SeancesController extends AppController {
                 if ($this->Seance->save($seance)) {
                     $this->redirect('/seances/listerFuturesSeances');
                 } else {
-                    $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+                    $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
                 }
             }
 	}
@@ -867,7 +872,7 @@ class SeancesController extends AppController {
 	    // Normalement, ce cas n'arrive jamais, le select ne redirige pas si le nouveau est identique
 	    // à l'ancien
 	    if ($new_position == $old_position) {
-                $this->Session->setFlash("Positions identiques, aucun changement dans l'ordre du jour");
+                $this->Session->setFlash("Positions identiques, aucun changement dans l'ordre du jour", 'growl', array('type'=>'erreur'));
                 $this->redirect("/seances/afficherProjets/$seance_id");
 	    }
 
