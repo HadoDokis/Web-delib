@@ -4,7 +4,7 @@
 	method="post">
 
 <div class="required"><?php echo $form->labelTag('Seance/date', 'Date');?>
-<?php echo $html->dayOptionTag('Seance/date',null,null,false); ?>-<?php echo $html2->monthOptionTagFr('Seance/date',null,null,false); ?>-<?php echo $html->yearOptionTag('Seance/date',null,date("Y"),date('Y')+10); ?>&agrave; <?php echo $html->hourOptionTag('Seance/date',null,true,null); ?>h<?php echo $html->minuteOptionTag('Seance/date',null,null,false); ?>min
+<?php echo $html->dayOptionTag('Seance/date',null,null,false); ?>-<?php echo $html2->monthOptionTagFr('Seance/date',null,null,false); ?>-<?php echo $html->yearOptionTag('Seance/date',null,2009,date('Y')+10); ?>&agrave; <?php echo $html->hourOptionTag('Seance/date',null,true,null); ?>h<?php echo $html->minuteOptionTag('Seance/date',null,null,false); ?>min
 <?php echo $html->tagErrorMsg('Seance/date', 'Entrer une date valide.');?>
 </div>
 <br />
