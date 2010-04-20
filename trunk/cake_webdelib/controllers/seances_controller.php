@@ -146,6 +146,7 @@ class SeancesController extends AppController {
 	    $result = false;
             $this->data=$this->Seance->read(null,$seance_id);
 	     
+	    $this->Session->setFlash("Enregistrement des délibérations en base de données", 'growl', array('type'=>'important'));
 	    // Avant de cloturer la séance, on stock les délibérations en base de données au format pdf
             if ($this->data['Typeseance']['action'] == 0)
 	        $result = $this->_stockDelibs($seance_id);
