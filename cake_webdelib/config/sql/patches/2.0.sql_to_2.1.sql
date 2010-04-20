@@ -39,17 +39,9 @@ UPDATE `aros_acos` SET `_create` = '1',
 `_update` = '1',
 `_delete` = '1' WHERE `aros_acos`.`id` =7 LIMIT 1 ;
 
-
-
-ALTER TABLE `deliberations` ADD `debat_name` VARCHAR( 2555 ) NOT NULL AFTER `debat` ,
-ADD `debat_size` INT( 11 ) NOT NULL AFTER `debat_name` ,
-ADD `debat_type` VARCHAR( 255 ) NOT NULL AFTER `debat_size` ;
-
-
 --
 -- Structure de la table `infosuplistedefs`
 --
-
 CREATE TABLE `infosuplistedefs` (
   `id` int(11) NOT NULL auto_increment,
   `infosupdef_id` int(11) NOT NULL,
@@ -61,3 +53,7 @@ CREATE TABLE `infosuplistedefs` (
   PRIMARY KEY  (`id`),
   KEY `INFOSUPDEF_ID_ORDRE` (`infosupdef_id`,`ordre`)
 );
+
+ALTER TABLE `deliberations` ADD `debat_name` VARCHAR( 2555 ) NOT NULL AFTER `debat` ,
+ADD `debat_size` INT( 11 ) NOT NULL AFTER `debat_name` ,
+ADD `debat_type` VARCHAR( 255 ) NOT NULL AFTER `debat_size` ;
