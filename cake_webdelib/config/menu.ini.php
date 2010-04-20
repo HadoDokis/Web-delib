@@ -23,14 +23,14 @@ $webDelib = array(
 	'items' => array(
 		'Accueil' => array('link' => '/'),
 		'Mes projets' => array(
-			'link' => 'mes_projets',
+			'link' => '/deliberations/mesProjetsRedaction',
 			'title' => 'Projets que j\'ai créés ou qui sont dans mes circuits d\'élaboration et de validation',
 			'subMenu' => array(
 				'items' => array(
-					'Nouveau...' => array('link' => '/deliberations/add'),
 					'En cours de rédaction' => array(
 						'link' => '/deliberations/mesProjetsRedaction',
 						'title' => 'Projets que j\'ai créés'),
+					'Nouveau...' => array('link' => '/deliberations/add'),
 					'En cours de validation' => array(
 						'link' => '/deliberations/mesProjetsValidation',
 						'title' => 'Projets qui sont dans mes circuits d\'élaboration et de validation ou que j\'ai créés'),
@@ -47,7 +47,7 @@ $webDelib = array(
 				)
 			),
 		'Tous les projets' => array(
-			'link' => '/pages/tous_les_projets',
+			'link' => '/deliberations/tousLesProjetsSansSeance',
 			'title' => 'Projets de tous les rédacteurs',
 			'subMenu' => array(
 				'items' => array(
@@ -77,7 +77,7 @@ $webDelib = array(
 				)
 			),
 		'Post-séance' => array(
-			'link' => 'postseance',
+			'link' => '/postseances/index',
 			'subMenu' => array(
 				'items' => array(
 					'Editions' => array('link' => '/postseances/index'),
