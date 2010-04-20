@@ -140,9 +140,9 @@
 			position: 		'top-right', // Is this still needed?
 			glue: 			'after',
 			theme: 			'default',
-			corners: 		'10px',
+			corners: 		'50px',
 			check: 			250,
-			life: 			800,
+			life: 			1000,
 			speed: 			'normal',
 			easing: 		'swing',
 			closer: 		true,

@@ -16,8 +16,10 @@ acronym {
 }
 
 .info {
-    color: black;
+    color: #e0ef90;
     font-style: italic;
+    font-style: bold;
+    text-align: center;
 }
 .pave {
 	width: 80%;
@@ -221,6 +223,7 @@ body {
 }
 
 h2 {
+        -moz-border-radius : 12px;	
 	font: normal normal 20px/24px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	color:#444444;
 	/* couleur NON-web */
@@ -840,12 +843,13 @@ ul.actions {
 #menuPrincipal ul.menuNiveau0 {
 	margin: 0;
 	padding: 2px 0px 2px 0px;
+	border-bottom: 1px solid #888888;
 }
 
 #menuPrincipal ul.menuNiveau1 {
 	margin: 0;
-	padding: 6px 0px 0px 10px;
-	border-top:1px solid #888888;
+	padding: 0px 0px 0px 10px;
+	border-bottom: 1px solid #888888;
 }
 
 #menuPrincipal li {
@@ -862,8 +866,13 @@ ul.actions {
 }
 
 #menuPrincipal li.menuCourant {
+        background-color: #efefef;
 	border-left: 1px solid #888888;
 	border-right: 1px solid #888888;
+	moz-opacity:0.5;
+	webkit-opacity;0.5;
+	opacity:0.5;
+
 }
 
 #menuPrincipal a:link,
