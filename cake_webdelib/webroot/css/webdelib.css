@@ -993,3 +993,6 @@ div.fckEditorProjet {
 	border-top:  1px solid #e0ef90;
 	border-right:  1px solid #e0ef90;
 }
+#buttons {
+   text-decoration: none;
+}

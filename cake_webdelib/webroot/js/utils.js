@@ -277,5 +277,21 @@ function ajouterAnnexe(inputAnnexesDivId, dataSection) {
 
 	/* Ajoute du div à la liste des input */
 	inputAnnexesDiv.appendChild(inputDiv);
-
+}
+/******************************************************************************/
+/* Fonction pour eviter les doubles click                                     */
+/******************************************************************************/
+var clicAutorise = true;
+function disableDiv(nameDiv) {
+    if (clicAutorise){
+        var targetElement;
+	targetElement = document.getElementById(nameDiv) ;
+	if (targetElement.style.display == "none")
+	{
+	    targetElement.style.display = "" ;
+	} else {
+	    targetElement.style.display = "none" ;
+	}
+    }
+   clicAutorise = false;
 }
