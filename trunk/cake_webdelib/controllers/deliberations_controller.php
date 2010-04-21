@@ -790,6 +790,8 @@ class DeliberationsController extends AppController {
                                         $userscircuit[$i]['Service']['libelle']= 'i-parapheur';
                                     }
                                 }
+
+		                $this->set('historiques',$this->Historique->findAll("Historique.delib_id = $id"));
                                 $this->set('user_circuit', $userscircuit);
 			}
 			else
@@ -1600,11 +1602,10 @@ class DeliberationsController extends AppController {
 			$conditions = 'Deliberation.etat = 1 AND Deliberation.circuit_id IN ('.$listeCircuits.')';
 			$ordre = 'Deliberation.created DESC';
 			$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
-
 			// suppression des projets non concernés
-    	    foreach($projets as $i=>$delib)
-				if (!($this->Traitement->tourUserDansCircuit($userId, $projets[$i]['Deliberation']['id']) === 0))
-					unset($projets[$i]);
+    	                foreach($projets as $i=>$delib)
+		            if (!($this->Traitement->tourUserDansCircuit($userId, $projets[$i]['Deliberation']['id']) === 0))
+			        unset($projets[$i]); 
 		}
 
 		$this->_afficheProjets(
