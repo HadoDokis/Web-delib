@@ -1,3 +1,4 @@
+<div id='loading' style="display:none;">&nbsp;</div>
 <div id="buttons">
 <?php 
     $deliberation=$deliberation['0']; 
@@ -44,6 +45,7 @@
 		<dd>&nbsp;<?php echo $deliberation['Service']['libelle']?></dd>
 	</div>
 </div>
+
 
 <div class="imbrique">
 	<div class="gauche">

@@ -285,12 +285,15 @@ var clicAutorise = true;
 function disableDiv(nameDiv) {
     if (clicAutorise){
         var targetElement;
+	var loadingElement;
 	targetElement = document.getElementById(nameDiv) ;
-	if (targetElement.style.display == "none")
-	{
+        loadingElement = document.getElementById('loading');
+	if (targetElement.style.display == "none"){
 	    targetElement.style.display = "" ;
+            loadingElement.style.display = "none" ;
 	} else {
 	    targetElement.style.display = "none" ;
+            loadingElement.style.display = "" ;
 	}
     }
    clicAutorise = false;
