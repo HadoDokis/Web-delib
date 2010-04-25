@@ -1,0 +1,17 @@
+<h2>Ajout du logo</h2>
+
+	<form method="post" enctype="multipart/form-data" action="<?php echo $this->webroot;?>collectivites/setLogo">
+
+    <p>Image : &nbsp; &nbsp; &nbsp; &nbsp; <?php echo $html->file('Image/logo', array('size' => '40'))?>
+    <br/><br/><i>(au format jpg ou jpeg)</i>
+    </p>
+    <br/><br/>
+    <div class="submit">
+		<?php echo $html->submit('Ajouter logo', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+		<?php echo $html->link('Annuler', '/collectivites/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	</div>
+          
+      </form>
+
+
+

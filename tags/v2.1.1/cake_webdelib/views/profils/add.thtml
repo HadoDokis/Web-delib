@@ -1,0 +1,20 @@
+<h2>Ajout d'un profil</h2>
+<form action="<?php echo $html->url('/profils/add'); ?>" method="post">
+<div class="optional">
+	<?php echo $form->labelTag('Profil/libelle', 'Libellé');?>
+ 	<?php echo $html->input('Profil/libelle', array('size' => '50'));?>
+	<?php echo $html->tagErrorMsg('Profil/libelle', 'Entrer le libellé.');?>
+</div>
+<br/>
+<div>
+	<?php echo $form->labelTag('Profil/parent_id', 'Appartient à ');?>
+	<?php echo $html->selectTag('Profil/parent_id', 	$profils)?>
+</div>
+
+<br/><br/><br/><br/>
+
+<div class="submit">
+	<?php echo $html->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/profils/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+</form>

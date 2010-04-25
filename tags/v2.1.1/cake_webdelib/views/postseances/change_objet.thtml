@@ -1,0 +1,12 @@
+<h2>Changement de l'objet pour la délibération  </h2>
+<form action="<?php echo $html->url('/postseances/changeObjet/'.$delib_id); ?>" method="post">
+<div class="required">
+	<?php echo $form->labelTag('Deliberation/objet', 'Nouvel Objet');?>
+ 	<?php echo $html->input('Deliberation/objet');?>
+	<?php echo $html->tagErrorMsg('Deliberation/objet', 'L\'objet est obligatoire');?>
+</div>
+<div class="submit">
+	<?php echo $html->submit('Changer', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/deliberations/transmit', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+</form>
