@@ -1,9 +1,10 @@
 <?php
+
 class PostseancesController extends AppController {
 
 	var $name = 'Postseances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
-	var $components = array('Date');
+	var $components = array('Date', 'Gedooo');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance');
 
 	// Gestion des droits
@@ -129,13 +130,16 @@ exit;
 	    require_once ('vendors/progressbar.php');
 	    Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
             $result = true;
+   
+            $path = WEBROOT_PATH."/files/generee/PV/$seance_id";
+	    $this->Gedooo->createFile("$path/", 'empty', '');
 
             $seance = $this->Seance->read(null, $seance_id);
+	    ProgressBar(1, 'Préparation PV Sommaire : '.$seance['Typeseance']['libelle']);
             $model_pv_sommaire = $seance['Typeseance']['modelpvsommaire_id'];
             $model_pv_complet  = $seance['Typeseance']['modelpvdetaille_id'];
-	    ProgressBar(1, 'Génération du PV Sommaire');
             $retour1 = $this->requestAction("/models/generer/null/$seance_id/$model_pv_sommaire/0/1/pv_sommaire.pdf/1/false");
-	    ProgressBar(50, 'Génération du PV Complet');
+	    ProgressBar(50, 'Préparation du PV Complet : '.$seance['Typeseance']['libelle']);
             $retour2 = $this->requestAction("/models/generer/null/$seance_id/$model_pv_complet/0/1/pv_complet.pdf/1/false");
             ProgressBar(99, 'Sauvegarde des PVs');
             echo ('<script>');

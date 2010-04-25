@@ -701,17 +701,16 @@
                      exit;
 		}
 		else {
+                   $dyn_path = "/files/generee/PV/".$seance['Seance']['id']."/";
+                   $path = WEBROOT_PATH.$dyn_path;
+                   if (!$this->Gedooo->checkPath($path))
+                       die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+
                    if (GENERER_DOC_SIMPLE) {
                        $oMainPart->addElement(new GDO_ContentType('debat_seance', '', 'text/html', 'text',       '<small></small>'.$seance['Seance']['debat_global']));
                    }
                    else {
-                       $dyn_path = "/files/generee/PV/".$seance['Seance']['id']."/";
-                       $path = WEBROOT_PATH.$dyn_path;
-
-                       if (!$this->Gedooo->checkPath($path))
-                           die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-
-                        $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+                       $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
 
                        if ($seance['Seance']['debat_global_name']== "")
                            $nameDSeance = "vide";
