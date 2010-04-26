@@ -770,7 +770,7 @@
                  $infos = (pathinfo($champs['file_name']));
 	        // $name = time().'.'.$infos['extension'];
 	         $name = $champs['file_name'];
-		 $name = str_replace(" ", "_", $name);
+		 $name = utf8_decode(str_replace(" ", "_", $name));
                  $this->Gedooo->createFile($path, $name, $champs['content']);
                  $ext = $u->getMimeType($path.$name);
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', $ext , 'url', $urlWebroot.$name));
