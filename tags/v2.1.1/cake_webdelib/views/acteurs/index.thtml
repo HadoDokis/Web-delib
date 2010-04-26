@@ -1,0 +1,47 @@
+<div class="seances">
+
+<h2>Liste des acteurs</h2>
+
+<table cellpadding="0" cellspacing="0">
+<tr>
+	<th>Civilit&eacute;</th>
+	<th>Nom<?php $html2->boutonsTri('/acteurs/index/Acteur.nom');?></th>
+	<th>Prénom</th>
+	<th>Titre</th>
+	<th>Type d'acteur<?php $html2->boutonsTri('/acteurs/index/Typeacteur.nom');?></th>
+	<th>Elus<?php $html2->boutonsTri('/acteurs/index/Typeacteur.elu', true);?></th>
+	<th>N° d'ordre<?php $html2->boutonsTri('/acteurs/index/Acteur.position');?></th>
+	<th>Téléphone</th>
+	<th>Mobile</th>
+	<th>Délégation(s)</th>
+	<th width='90px'>Actions</th>
+</tr>
+
+<?php foreach ($acteurs as $acteur): ?>
+<tr>
+	<td><?php echo $acteur['Acteur']['salutation']; ?></td>
+	<td><?php echo $acteur['Acteur']['nom']; ?></td>
+	<td><?php echo $acteur['Acteur']['prenom']; ?></td>
+	<td><?php echo $acteur['Acteur']['titre']; ?></td>
+	<td><?php echo $acteur['Typeacteur']['nom']; ?></td>
+	<td><?php echo $this->controller->Acteur->Typeacteur->libelleElu($acteur['Typeacteur']['elu'], true); ?></td>
+	<td><?php echo $this->controller->Acteur->libelleOrdre($acteur['Acteur']['position']); ?></td>
+	<td><?php echo $acteur['Acteur']['telfixe']; ?></td>
+	<td><?php echo $acteur['Acteur']['telmobile']; ?></td>
+	<td><?php foreach ($acteur['Service'] as $service) echo $service['libelle'].'<br/>';?></td>
+	<td class="actions">
+		<?php echo $html->link(SHY,'/acteurs/view/' . $acteur['Acteur']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false); ?>
+		<?php echo $html->link(SHY,'/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false); ?>
+		<?php
+		    if ($this->controller->_isDeletable($acteur, $message))
+				echo $html->link(SHY,'/acteurs/delete/' . $acteur['Acteur']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Voulez-vous supprimer l\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' ?', false); ?>
+	</td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<ul class="actions">
+	<li><?php echo $html->link('Ajouter un acteur', '/acteurs/add/', array('class'=>'link_add', 'title'=>'Ajouter un acteur')); ?></li>
+</ul>
+
+</div>

@@ -1,0 +1,6 @@
+Bonjour #PRENOM# #NOM#,
+Votre dossier (identifiant projet #IDENTIFIANT_PROJET#) a été refusé.
+
+Très cordialement.
+
+Webdelib
