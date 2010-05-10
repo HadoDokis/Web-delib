@@ -605,7 +605,10 @@ class DeliberationsController extends AppController {
 		$listeUsers = $this->UsersCircuit->findAll($condition);
 		foreach($listeUsers as $user){
 		    if ($user['UsersCircuit']['service_id']!= -1)
-		        $this->_notifierInsertionCircuit($id, $user['User']['id']);
+		        if ($user['UsersCircuit']['position']==1)
+		            $this->_notifierDossierAtraiter($circuit_id, 1, $id);
+			else
+		            $this->_notifierInsertionCircuit($id, $user['User']['id']);
 	            else{
 		        if (($user['UsersCircuit']['service_id']== -1)&&($user['UsersCircuit']['position']==1)) {
                             $model_id = $this->_getModelId($id);
