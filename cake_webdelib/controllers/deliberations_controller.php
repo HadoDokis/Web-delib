@@ -795,7 +795,11 @@ class DeliberationsController extends AppController {
                                 }
 
 		                $this->set('historiques',$this->Historique->findAll("Historique.delib_id = $id"));
-                                $this->set('user_circuit', $userscircuit);
+		                // Compactage des informations supplémentaires
+	                 	$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($deliberation['Infosup'], false);
+		                $this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
+        
+	                        $this->set('user_circuit', $userscircuit);
 			}
 			else
 			{
