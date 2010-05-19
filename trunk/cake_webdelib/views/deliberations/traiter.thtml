@@ -103,6 +103,7 @@
 	</div>
 </div>
 
+
 <div class="imbrique">
 	<dt>Textes</dt>
 	<dd>&nbsp;
@@ -140,6 +141,24 @@
 		}
 	}
 ?>
+<?php
+    if(!empty($infosupdefs)) {
+        echo '<dt>Informations Suppl&eacute;mentaires </dt>';
+        echo '<dd><br>';
+        foreach ($infosupdefs as $infosupdef) {
+            echo $infosupdef['Infosupdef']['nom'].' : ';
+            if (array_key_exists($infosupdef['Infosupdef']['code'], $this->data['Infosup'])) {
+                if ($infosupdef['Infosupdef']['type'] == 'richText')
+                    echo '[Texte enrichi]';
+                else
+                    echo $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
+                }
+                echo '<br>';
+        }
+        echo '</dd>';
+    }
+?>
+
 
 <?php
       if (!empty($historiques)) {
