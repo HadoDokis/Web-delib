@@ -3,9 +3,17 @@
 <head>
 	<title>Web-delib</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
         <script type="text/javascript">
-            window.history.forward(); 
-        </script>
+            function noBack(){
+                window.history.forward();
+            }
+            noBack();
+            window.onload=noBack;
+            window.onpageshow=function(evt){if(evt.persisted)noBack();}
+            window.onunload=function(){void(0);}
+        </script> 
+
 	<?php echo $html->css('webdelib'); ?>
 	<?php echo $html->css('jquery.jgrowl'); ?>
 	<?php echo $javascript->link('utils'); ?>
