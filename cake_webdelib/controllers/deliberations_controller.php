@@ -720,6 +720,9 @@ class DeliberationsController extends AppController {
                     $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $pdf);
 		}
 	        $traitements = $this->Traitement->findAll("Traitement.delib_id = $delib_id AND Traitement.circuit_id = $circuit_id", null, 'position ASC');
+
+                $this->_notifierDossierAtraiter($circuit_id, $traitements[$retourA ]['Traitement']['position'], $delib_id);
+
                 // on Ré-initialise la date du premier traitement a qui l'on renvoi le projet
                 $traitement['Traitement']['date_traitement'] = $traitements[$retourA ]['Traitement']['date_traitement']='0000-00-00 00:00:00';
                 $traitement['Traitement']['id'] = $traitements[$retourA ]['Traitement']['id'];
