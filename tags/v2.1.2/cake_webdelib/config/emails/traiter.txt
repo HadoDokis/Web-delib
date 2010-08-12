@@ -1,0 +1,8 @@
+Bonjour,
+
+Vous avez un dossier en attente de validation.
+
+Numéro du projet : #IDENTIFIANT_PROJET#
+Objet :  #OBJET_PROJET#
+
+Vous pouvez y accéder à l'adresse : <a href='#ADRESSE_A_TRAITER#'>Projet à traiter</a>

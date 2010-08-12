@@ -1,0 +1,89 @@
+<?php
+	if($html->tagValue('Typeseance/id'))
+		echo "<h2>Modification d'un type de s&eacute;ance</h2>";
+	else
+		echo "<h2>Ajout d'un type de s&eacute;ance</h2>";
+?>
+
+<form
+	action="<?php echo $html->url('/typeseances/'.($html->tagValue('Typeseance/id') ? 'edit/'.$html->tagValue('Typeseance/id') : 'add')); ?>"
+	method="post"
+>
+
+<div class="demi">
+	<fieldset>
+	<legend>Informations générales</legend>
+		<?php echo $form->labelTag('Typeseance/libelle', 'Libell&eacute; <acronym title="obligatoire">*</acronym>');?>
+	 	<?php echo $html->input('Typeseance/libelle', array('size' => '40'));?>
+		<?php echo $html->tagErrorMsg('Typeseance/libelle', 'Entrer le libelle.');?>
+		<?php echo $html->tagErrorMsg('Typeseance/unique_libelle', 'Entrez un autre libell&eacute;, celui-ci est d&eacute;j&agrave; utilis&eacute;.'); ?> <br />
+		<br/>
+		<?php echo $form->labelTag('Typeseance/retard', 'Nombre de jours avant retard');?>
+	 	<?php echo $html->input('Typeseance/retard');?>
+		<?php echo $html->tagErrorMsg('Typeseance/retard', 'Insérer un chiffre pour le nombre de jours avant retard.');?>
+		<br/>
+		<br/>
+		<?php echo $form->labelTag('Typeseance/action', 'Action en séance<acronym title="obligatoire">*</acronym>');?>
+	 	<?php echo $html->selectTag('Typeseance/action', $actions, $html->tagValue('Typeseance/action'), array(), null, !$html->tagValue('Typeseance/id'));?>
+		<?php echo $html->tagErrorMsg('Typeseance/action', 'Selectionner une action');?>
+		<br/>
+		<br/>
+		<?php echo $form->labelTag('Typeseance/compteur_id', 'Compteur <acronym title="obligatoire">*</acronym>');?>
+	 	<?php echo $html->selectTag('Typeseance/compteur_id', $compteurs, $html->tagValue('Typeseance/compteur_id'), array(), null, (count($compteurs)>1) && (!$html->tagValue('Typeseance/id')));?>
+		<?php echo $html->tagErrorMsg('Typeseance/compteur_id', 'Selectionner un compteur');?>
+	</fieldset>
+</div>
+
+<div class="demi">
+	<fieldset>
+	<legend>Mod&egrave;les pour les &eacute;ditions</legend>
+                <?php echo $form->labelTag('Typeseance/modelprojet_id', 'projet <acronym title="obligatoire">*</acronym>');?>
+                <?php echo $html->selectTag('Typeseance/modelprojet_id', $models, $html->tagValue('Typeseance/modelprojet_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
+                <?php echo $html->tagErrorMsg('Typeseance/modelprojet_id', 'Selectionner le modele de la projet');?>
+                <br/>
+
+                <?php echo $form->labelTag('Typeseance/modeldeliberation_id', 'd&eacute;lib&eacute;ration <acronym title="obligatoire">*</acronym>');?>
+                <?php echo $html->selectTag('Typeseance/modeldeliberation_id', $models, $html->tagValue('Typeseance/modeldeliberation_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
+                <?php echo $html->tagErrorMsg('Typeseance/modeldeliberation_id', 'Selectionner le model de d&eacute;lib&eacute;ration');?>
+                <br/>
+
+		<?php echo $form->labelTag('Typeseance/modelconvocation_id', 'convocation <acronym title="obligatoire">*</acronym>');?>
+	 	<?php echo $html->selectTag('Typeseance/modelconvocation_id', $models, $html->tagValue('Typeseance/modelconvocation_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
+		<?php echo $html->tagErrorMsg('Typeseance/modelconvocation_id', 'Selectionner le model de la convocation');?>
+		<br/>
+		<?php echo $form->labelTag('Typeseance/modelordredujour_id', 'ordre du jour <acronym title="obligatoire">*</acronym>');?>
+	 	<?php echo $html->selectTag('Typeseance/modelordredujour_id', $models, $html->tagValue('Typeseance/modelordredujour_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
+		<?php echo $html->tagErrorMsg('Typeseance/modelordredujour_id', 'Selectionner le model de l\'ordre du jour');?>
+		<br/>
+		<?php echo $form->labelTag('Typeseance/modelpvsommaire_id', 'PV sommaire <acronym title="obligatoire">*</acronym>');?>
+	 	<?php echo $html->selectTag('Typeseance/modelpvsommaire_id', $models, $html->tagValue('Typeseance/modelpvsommaire_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
+		<?php echo $html->tagErrorMsg('Typeseance/modelpvsommaire_id', 'Selectionner le model du PV sommaire');?>
+		<br/>
+		<?php echo $form->labelTag('Typeseance/modelpvdetaille_id', 'PV d&eacute;taill&eacute; <acronym title="obligatoire">*</acronym>');?>
+	 	<?php echo $html->selectTag('Typeseance/modelpvdetaille_id', $models, $html->tagValue('Typeseance/modelpvdetaille_id'), array(), null, !$html->tagValue('Typeseance/id'));?>
+		<?php echo $html->tagErrorMsg('Typeseance/modelpvdetaille_id', 'Selectionner le model du PV d&eacute;taill&eacute;');?>
+	</fieldset>
+</div>
+<div class="spacer"></div>
+
+<fieldset>
+<legend>Convocations (union des deux s&eacute;lections ci-dessous)</legend>
+	<div class="demi">
+		<?php echo $form->labelTag('Typeacteur/Typeacteur', 'Par type d\'acteur');?>
+	 	<?php echo $html->selectTag('Typeacteur/Typeacteur', $typeacteurs, $selectedTypeacteurs, array('multiple' => 'multiple', 'class' => 'selectMultiple'), array(), true);?>
+		<?php echo $html->tagErrorMsg('Typeseance/typeacteur', 'Sélectionnez au moins un type d\'acteur ou au moins un acteur');?>
+	</div>
+	<div class="demi">
+		<?php echo $form->labelTag('Acteur/Acteur', 'Par acteur');?>
+	 	<?php echo $html->selectTag('Acteur/Acteur', $acteurs, $selectedActeurs, array('multiple' => 'multiple', 'class' => 'selectMultiple', 'size' => 8), array(), true);?>
+	</div>
+</fieldset>
+
+<br/>
+<div class="submit">
+	<?php echo $html->hidden('Typeseance/id')?>
+	<?php //echo $form->labelTag('Typeseance/id', '&nbsp;');?>
+	<?php echo $html->submit('Sauvegarder', array('class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
+	<?php echo $html->link('Annuler', '/typeseances/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+</form>

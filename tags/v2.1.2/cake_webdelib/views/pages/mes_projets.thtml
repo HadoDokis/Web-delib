@@ -1,0 +1,9 @@
+<div id="content">
+	<?php
+	$userId = $this->controller->Session->read('user.User.id');
+	if ($this->controller->Acl->check($userId, 'Deliberations:mesProjetsRedaction')) {
+        echo $this->requestAction('/deliberations/mesProjetsRedaction', array('return'));
+        echo('<br/>');
+     }
+	?>
+</div>

@@ -1,0 +1,22 @@
+<h2>Ajout d'un th&egrave;me</h2>
+<form action="<?php echo $html->url('/themes/add'); ?>" method="post">
+<div class="optional">
+	<?php echo $form->labelTag('Theme/libelle', 'Libellé');?>
+ 	<?php echo $html->input('Theme/libelle', array('size' => '50'));?>
+	<?php echo $html->tagErrorMsg('Theme/libelle', 'Entrer le libellé.');?>
+</div>
+<div class="optional">
+        <?php echo $form->labelTag('Theme/order', 'Crit&egrave;re de tri');?>
+        <?php echo $html->input('Theme/order', array('size' => '10'));?>
+</div>
+<div>
+	<?php echo $form->labelTag('Theme/parent_id', 'Appartient &agrave; ');?>
+	<?php echo $html->selectTag('Theme/parent_id', 	$themes)?>
+</div>
+<br/><br/><br/><br/>
+
+<div class="submit">
+	<?php echo $html->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php echo $html->link('Annuler', '/themes/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+</div>
+</form>
