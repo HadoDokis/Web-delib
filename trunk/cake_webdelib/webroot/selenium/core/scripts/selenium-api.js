@@ -663,6 +663,7 @@ Selenium.prototype.doMouseMoveAt = function(locator, coordString) {
 };
 
 Selenium.prototype.doType = function(locator, value) {
+   netscape.security.PrivilegeManager.enablePrivilege('UniversalFileRead');
     /**
    * Sets the value of an input field, as though you typed it in.
    *

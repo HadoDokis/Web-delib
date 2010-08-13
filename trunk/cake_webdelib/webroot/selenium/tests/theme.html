@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<link rel="selenium.base" />
+<title>webdelib</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">webdelib</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/users/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][login]']</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/pages/administration']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/themes/index']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@class='link_add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[Theme][libelle]']</td>
+	<td>Nouveau theme</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@class='link_add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[Theme][libelle]']</td>
+	<td>Nouveau sous-theme</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>xpath=//select[@name='data[Theme][parent_id]']</td>
+	<td>label=Nouveau theme</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='arbre']//a[last()-2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[Theme][libelle]']</td>
+	<td>Nouveau thème</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='arbre']//a[last()-1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[Theme][libelle]']</td>
+	<td>Nouveau sous-thème</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='arbre']//a[last()]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>glob:*</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='arbre']//a[last()]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>glob:*</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
