@@ -7,7 +7,7 @@
  * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
 
-class Html2Helper extends HtmlHelper
+class Form2Helper extends FormHelper
 {
 
 	/*
@@ -91,6 +91,30 @@ class Html2Helper extends HtmlHelper
 		return  mktime($hms[0],$hms[1],$hms[2],$amj[1],$amj[2],$amj[0]);
       }
 
+//    function monthOptionTagFra($tagName, $value=null, $selected=null,  $selectAttr=null, $optionAttr=null, $showEmpty = true)
+//    {
+//        $value = isset($value)? $value : $this->tagValue($tagName."_month");
+//        $monthValue = empty($selected) ? null : $selected ;
+//        $months=array('01'=>'Janvier','02'=>'Fevrier','03'=>'Mars',
+//        '04'=>'Avril','05'=>'Mai','06'=>'Juin','07'=>'Juillet','08'=>'Aout',
+//        '09'=>'Septembre','10'=>'Octobre','11'=>'Novembre','12'=>'Decembre');
+//        $option = $this->selectTag($tagName.'_month', $months, $monthValue, $selectAttr, $optionAttr, $showEmpty);
+//        return $option;
+//    }
+
+// pour la variable $tagname, penser à l'envoyer via $html->value car c'est impossible de le faire ici
+	function monthOptionTagFr($tagName, $value = null, $selected = null, $selectAttr = null, $optionAttr = null, $showEmpty = true) {
+		$expl_date=explode('-',$selected);
+		$selected=$expl_date[1];
+		if (empty($selected) && ($tagName)) {
+			$selected = date('m', strtotime($tagName));
+		}
+		$monthValue = empty($selected) ? ($showEmpty ? NULL : date('m')) : $selected;
+		$months = array('01' => 'Janvier', '02' => 'Fevrier', '03' => 'Mars', '04' => 'Avril', '05' => 'Mai', '06' => 'Juin', '07' => 'Juillet', '08' => 'Août', '09' => 'Septembre', '10' => 'Octobre', '11' => 'Novembre', '12' => 'Decembre');
+		
+		return $this->select($tagName."_month", $months, $monthValue, $selectAttr, $optionAttr, $showEmpty);
+	}
+
 
 
      function yearOptionTagFr($tagName, $value=null, $minYear=null, $maxYear=null, $selected=null, $selectAttr=null, $optionAttr=null, $showEmpty = true)
@@ -113,7 +137,7 @@ class Html2Helper extends HtmlHelper
          {
              $years[$yearCounter] = $yearCounter;
          }
-         $option = $this->selectTag($tagName."_year", $years, $yearValue, $selectAttr, $optionAttr, $showEmpty);
+         $option = $this->select($tagName."_year", $years, $yearValue, $selectAttr, $optionAttr, $showEmpty);
          return $option;
      }
 
@@ -206,9 +230,10 @@ class Html2Helper extends HtmlHelper
  * @return mixed
  * @access public
  */
+// pour la variable $tagname, penser à l'envoyer via $html->value car c'est impossible de le faire ici
         function yearOptionTag($tagName, $value = null, $minYear = null, $maxYear = null, $selected = null, $selectAttr = null, $optionAttr = null, $showEmpty = true) {
-                if (empty($selected) && ($this->tagValue($tagName))) {
-                    $selected = date('Y', strtotime($this->tagValue($tagName)));
+                if (empty($selected) && ($tagName)) {
+                    $selected = date('Y', strtotime($tagName));
                 }
 
                 $yearValue = empty($selected) ? ($showEmpty ? NULL : date('Y')) : $selected;
@@ -226,7 +251,7 @@ class Html2Helper extends HtmlHelper
                         $years[$yearCounter] = $yearCounter;
                 }
 
-                return $this->selectTag($tagName . "_year", $years, $yearValue, $selectAttr, $optionAttr, $showEmpty);
+                return $this->select($tagName . "_year", $years, $yearValue, $selectAttr, $optionAttr, $showEmpty);
         }
 
 
@@ -238,6 +263,51 @@ class Html2Helper extends HtmlHelper
 	function ukToFrenchDateWithHour($date)
 	{
 		return date("d-m-Y \a H:i",strtotime($date));
+	}
+
+	/* idem selectTag mais ajoute l'attribut $optionPlusAttr aux options, renseignée avec les données de $optElements[][$optEleModel][$optElePlus] */
+	/* - $optElements = array[i]=>array[$optEleModel]=>array[$optEleValue, $optEleText, $optElePlus] */
+	/* - $optEleValue : attribut 'valeur' des options (utilisé dans selectTag) */
+	/* - $optEleText : texte des options (utilisé dans selectTag) */
+	function selectTagPlus($fieldName, $optElements, $selected = null, $selectAttr = null, $optionAttr = null, $showEmpty = true, $return = false, $optEleModel, $optEleValue, $optEleText, $optElePlus, $optionPlusAttr) {
+		// construction du tableau pour la fonction selectTag
+		foreach($optElements as $optElement) {
+			$optionElements[$optElement[$optEleModel][$optEleValue]] = $optElement[$optEleModel][$optEleText];
+		}
+
+		// ajout de l'attribut '$optionPlusAttr'
+		$optionAttr[$optionPlusAttr] = 'optionElementAttrPlusATraiter';
+		//debug(array($fieldName, $optionElements, $selected, $selectAttr, $optionAttr, $showEmpty, true));
+
+		$options=array();
+		foreach($optionAttr as $key=>$value) {
+			$options[$key]=$value;
+		}
+		$values=array();
+		foreach($optionElements as $key=>$value) {
+			$values[$key]=$value;
+		}
+		$options['options']=$values;
+		$options['default']=$selected;
+		$options['label']=false;
+		$options['div']=false;
+		$options['empty']=$showEmpty;
+		$options['return']=$return;
+		$options['onchange']=$selectAttr;
+		// appel de la fonction cake
+		$selectTag = $this->input($fieldName, $options);
+		$selectTagTab = explode("\n", $selectTag);
+
+		// affectation de l'attribut supplémentaire
+		$iOption = $showEmpty ? 2 : 1;
+		if ($showEmpty)
+			$selectTagTab[1] = str_replace($optionPlusAttr.'="optionElementAttrPlusATraiter"', '', $selectTagTab[1]);
+		foreach($optElements as $optElement) {
+			$selectTagTab[$iOption] = str_replace('optionElementAttrPlusATraiter', $optElement[$optEleModel][$optElePlus], $selectTagTab[$iOption]);
+			$iOption++;
+		}
+		
+		return $this->output(implode("\n", $selectTagTab), $return);
 	}
 
 /* affiche une flèche vers le bas et une flèche vers le bas pour le tri asc et desc de $urlChampTri */

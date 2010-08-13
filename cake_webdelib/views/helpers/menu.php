@@ -19,13 +19,14 @@ class MenuHelper extends Helper {
 	function menu($menu=array(), $echo = true, $returnStr = true)
 	{
 		// Teste si le menu est non vide
-		if (empty($menu) && count($menu) < 1) return null;
+		if (empty($menu) || count($menu) < 1) return null;
 
 		// Initialisations
 		$isCurrentItem = false;
 		$currentItemFound = false;
 
 		// Lecture des variables du menu
+//debug($menu);
 		$menuClass = $this->_getArrayValue($menu, 'menuClass', '');
 		$itemTag = $this->_getArrayValue($menu, 'itemTag', 'li');
 		$currentItem = $this->_getArrayValue($menu, 'currentItem', '');
@@ -35,8 +36,7 @@ class MenuHelper extends Helper {
 		$level = count($this->__menuHtml)-1;
 
 		$items = $menu['items'];
-		foreach($items as $title => $menuItem)
-		{
+		foreach($items as $title => $menuItem) {
 			// Initialisation du lien
 			if (!array_key_exists('link', $menuItem)) $menuItem['link']='/';
 			elseif ($menuItem['link'] == '') $menuItem['link']='/';
