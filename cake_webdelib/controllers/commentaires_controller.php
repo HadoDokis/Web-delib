@@ -6,7 +6,7 @@ class CommentairesController extends AppController {
 
 	function add($delib_id=null) {
 		if (!$delib_id) {
-			$this->Session->setFlash('Invalide id pour la deliberation du commentaire.');
+			$this->Session->setFlash('Invalide id pour la d&eacute;lib&eacute;ration du commentaire.');
 			$this->redirect('/');
 		}
 		$this->set('delib_id',$delib_id);

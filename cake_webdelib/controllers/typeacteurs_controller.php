@@ -28,8 +28,8 @@ class TypeacteursController extends AppController
 	function add() {
 		$sortie = false;
 		if (!empty($this->data)) {
-			$this->cleanUpFields();
-			if ($this->Typeacteur->save($this->data)) {
+			$this->Typeacteur->create($this->data);
+			if ($this->Typeacteur->save()) {
 				$this->Session->setFlash('Le type d\'acteur \''.$this->data['Typeacteur']['nom'].'\' a &eacute;t&eacute; ajout&eacute;');
 				$sortie = true;
 			} else
@@ -52,7 +52,6 @@ class TypeacteursController extends AppController
 				$sortie = true;
 			}
 		} else {
-			$this->cleanUpFields();
 			if ($this->Typeacteur->save($this->data)) {
 				$this->Session->setFlash('Le type d\'acteur \''.$this->data['Typeacteur']['nom'].'\' a &eacute;t&eacute; modifi&eacute;');
 				$sortie = true;

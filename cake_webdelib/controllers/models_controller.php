@@ -3,17 +3,47 @@
 
 		var $name = 'Models';
 		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique');
-		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
+		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
 		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
 		// Gestion des droits
-		var $aucunDroit = array('getModel', 'makeBalisesProjet', 'generer', 'paramMails');
-		var $commeDroit = array('edit'=>'Models:index', 'add'=>'Models:index', 'delete'=>'Models:index', 'view'=>'Models:index', 'import'=>'Models:index', 'getFileData'=>'Models:index');
-
+		var $aucunDroit = array(
+			'getModel',
+			'makeBalisesProjet',
+			'generer',
+			'paramMails'
+		);
+		var $commeDroit = array(
+			'edit'=>'Models:index',
+			'add'=>'Models:index',
+			'delete'=>'Models:index',
+			'view'=>'Models:index',
+			'import'=>'Models:index',
+			'getFileData'=>'Models:index'
+		);
 
 		function index() {
-		    $this->set('USE_GEDOOO', USE_GEDOOO);
-		    $this->set('models', $this->Model->findAll(null, null, 'type ASC '));
+		    $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+		    $models=$this->Model->find('all', array('fields'=>array('id'), 'recursive'=>-1));
+		    $deletable=array();
+		    foreach ($models as $model) {
+		    	$id=$model['Model']['id'];
+		    	if ($this->Typeseance->find('first',array('conditions'=>array(
+															'OR'=>array(
+																'Typeseance.modelprojet_id'=>$id,
+																'Typeseance.modeldeliberation_id'=>$id,
+																'Typeseance.modelconvocation_id'=>$id,
+																'Typeseance.modelordredujour_id'=>$id,
+																'Typeseance.modelpvsommaire_id'=>$id,
+																'Typeseance.modelpvdetaille_id'=>$id
+															)
+														)
+				)))
+					$deletable[$id]=false;
+				else $deletable[$id]=true;
+		    }
+		    $this->set('deletable',$deletable);
+		    $this->set('models', $this->Model->find('all', array('order'=>array('type ASC '))));
 		}
 
 		function add() {
@@ -43,38 +73,57 @@
 
 		function delete($id = null) {
 			if (!$id) {
-				$this->Session->setFlash('Invalide id pour la deliberation');
+				$this->Session->setFlash('Invalide id pour la d&eacute;lib&eacute;ration');
 				$this->redirect('/models/index');
 			}
 			$data = $this->Model->read(null, $id);
-			if ($data['Model']['type'] == 'Document') {
-			    if ($this->Model->del($id)) {
-				$this->Session->setFlash('Le model a &eacute;t&eacute; supprim&eacute;e.');
-				$this->redirect('/models/index');
-			    }
+			if (($data['Model']['type'] == 'Document')&&(!$this->Typeseance->find('first',array('conditions'=>array(
+																									'OR'=>array(
+																										'Typeseance.modelprojet_id'=>$id,
+																										'Typeseance.modeldeliberation_id'=>$id,
+																										'Typeseance.modelconvocation_id'=>$id,
+																										'Typeseance.modelordredujour_id'=>$id,
+																										'Typeseance.modelpvsommaire_id'=>$id,
+																										'Typeseance.modelpvdetaille_id'=>$id
+																									)
+																								)
+			)))) {
+				if ($this->Model->delete($id)) {
+						$this->Session->setFlash('Le model a &eacute;t&eacute; supprim&eacute;e.');
+						$this->redirect('/models/index');
+					}
+				else{
+					$this->Session->setFlash('Impossible de supprimer ce type de modele');
+					$this->redirect('/models/index');
+				}
 			}
 			else{
-			    $this->Session->setFlash('Impossible de supprimer ce type de modele');
-			    $this->redirect('/models/index');
+				$this->Session->setFlash('Impossible de supprimer ce type de modele');
+				$this->redirect('/models/index');
 			}
-
 		}
 
 		function view($id = null) {
-		    $this->set('USE_GEDOOO', USE_GEDOOO);
 		    $data = $this->Model->read(null, $id);
-		    header('Content-type: '.$this->_getFileType($id));
-		    header('Content-Length: '.$this->_getSize($id));
-		    header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
-		    echo $this->_getData($id);
-		    exit();
+		    if (!empty($data['Model']['name'])) {
+				$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+				header('Content-type: '.$this->_getFileType($id));
+				header('Content-Length: '.$this->_getSize($id));
+				header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
+				echo $this->_getData($id);
+				exit();
+			}
+			else {
+				$this->Session->setFlash('Aucun fichier li&eacute; &agrave; ce mod&egrave;le');
+				$this->redirect('/models/index');
+			}
 		}
 
 
 	function import($model_id) {
-		$this->set('USE_GEDOOO', USE_GEDOOO);
+		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$this->set('model_id', $model_id);
-                $Model = $this->Model->read(null, $model_id);
+        $Model = $this->Model->read(null, $model_id);
 		$this->set('libelle', $Model['Model']['modele']);
 		if (! empty($this->data)){
 			if (isset($this->data['Model']['template'])){
@@ -193,7 +242,7 @@
 //               $oMainPart->addElement(new GDO_FieldType('position_redacteur', utf8_encode($delib['Redacteur']['position']), 'text'));
 
                // Informations sur la délibération
-	       $nb_votant = $delib['Deliberation']['vote_nb_oui'] + $delib['Deliberation']['vote_nb_abstention'] + $delib['Deliberation']['vote_nb_non'];
+	       	   $nb_votant = $delib['Deliberation']['vote_nb_oui']+$delib['Deliberation']['vote_nb_abstention']+$delib['Deliberation']['vote_nb_non'];
                $oMainPart->addElement(new GDO_FieldType('nombre_pour',  utf8_encode($delib['Deliberation']['vote_nb_oui'])   , 'text'));
                $oMainPart->addElement(new GDO_FieldType('nombre_abstention', utf8_encode( $delib['Deliberation']['vote_nb_abstention']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('nombre_contre',  utf8_encode($delib['Deliberation']['vote_nb_non']), 'text'));
@@ -235,7 +284,7 @@
                    $oMainPart->addElement($this->_addField($champs, $u, $delib['Deliberation']['id']));
                }
 
-               if (GENERER_DOC_SIMPLE) {
+               if (Configure::read('GENERER_DOC_SIMPLE')) {
                    if (isset($delib['Deliberation']['texte_projet']))
                        $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',       '<small></small>'.$delib['Deliberation']['texte_projet']));
                    if (isset($delib['Deliberation']['texte_synthese']))
@@ -256,10 +305,12 @@
 
                    $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
 
-                   if ($delib['Deliberation']['texte_projet_name']== "")
+                   if ($delib['Deliberation']['texte_projet_name']== "") {
                        $nameTP = "vide";
+                       $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',''));
+                   }
                    else {
-		       $infos = (pathinfo($delib['Deliberation']['texte_projet_name']));
+		       		   $infos = (pathinfo($delib['Deliberation']['texte_projet_name']));
                        $nameTP = 'tp.'.$infos['extension'];
                        $this->Gedooo->createFile($path, $nameTP, $delib['Deliberation']['texte_projet']);
                        $extTP = $u->getMimeType($path.$nameTP);
@@ -537,7 +588,7 @@
             include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
-
+            $genereConvocation = false;
             //*****************************************
             // Choix du format de sortie
             //*****************************************
@@ -577,14 +628,14 @@
 	    $oMainPart = new GDO_PartType();
 
 	    // Informations sur la collectivité
-            $data = $this->Collectivite->read(null, 1);
-            $oMainPart->addElement(new GDO_FieldType('nom_collectivite',utf8_encode($data['Collectivite']['nom']) , "text"));
+        $data = $this->Collectivite->read(null, 1);
+        $oMainPart->addElement(new GDO_FieldType('nom_collectivite',utf8_encode($data['Collectivite']['nom']) , "text"));
 	    $oMainPart->addElement(new GDO_FieldType('adresse_collectivite',utf8_encode($data['Collectivite']['adresse']) , "text"));
 	    $oMainPart->addElement(new GDO_FieldType('cp_collectivite',utf8_encode($data['Collectivite']['CP']) , "text"));
 	    $oMainPart->addElement(new GDO_FieldType('ville_collectivite',utf8_encode($data['Collectivite']['ville']) , "text"));
 	    $oMainPart->addElement(new GDO_FieldType('telephone_collectivite',utf8_encode($data['Collectivite']['telephone']) , "text"));
-            $oMainPart->addElement(new GDO_FieldType('date_jour_courant',utf8_encode($this->Date->frenchDate(strtotime("now"))), 'text'));
-            $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
+        $oMainPart->addElement(new GDO_FieldType('date_jour_courant',utf8_encode($this->Date->frenchDate(strtotime("now"))), 'text'));
+        $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
 
             //*****************************************
 	    // Génération d'une délibération ou d'un texte de projet
@@ -598,7 +649,7 @@
 	    // Génération d'une convocation, ordre du jour ou PV
             //*****************************************
              if ($seance_id != "null") {
-                 $projets  = $this->Deliberation->findAll("seance_id=$seance_id AND etat>=0",null,'Deliberation.position ASC');
+                 $projets  = $this->Deliberation->find('all',array('conditions'=>array("seance_id"=>$seance_id, "etat >="=>0), 'order' => array ('Deliberation.position ASC')));
                  $blocProjets = new GDO_IterationType("Projets");
 		 foreach ($projets as $projet) {
 		 //$projet =  $projets['0'];
@@ -635,7 +686,7 @@
 
                  if (!$isPV) { // une convocation ou un ordre du jour
                      require_once ('vendors/progressbar.php');
-                     Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
+                   //  Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
                      $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
 		     if (file_exists($path.'documents.zip'))
 		         unlink($path.'documents.zip');
@@ -645,7 +696,7 @@
                      $model_tmp = $this->Model->read(null, $model_id);
                      $this->set('nom_modele',  $model_tmp['Model']['modele']);
                      if (empty($acteursConvoques))
-		        return "";
+					 	 return "";
                      foreach ($acteursConvoques as $acteur) {
                          $cpt++;
                          $zip = new ZipArchive;
@@ -657,7 +708,7 @@
                          $this->set('unique', $unique);
 
                          if ($unique== false) {
-                             ProgressBar($cpt*(100/$nbActeurs), 'Lecture des donn&eacute;es pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
+                             ProgressBar($cpt*(100/$nbActeurs), 'Lecture des données pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
                              $oMainPart->addElement(new GDO_FieldType("nom_acteur", utf8_encode($acteur['Acteur']['nom']), "text"));
                              $oMainPart->addElement(new GDO_FieldType("prenom_acteur", utf8_encode($acteur['Acteur']['prenom']), "text"));
                              $oMainPart->addElement(new GDO_FieldType("salutation_acteur",utf8_encode($acteur['Acteur']['salutation']), "text"));
@@ -679,26 +730,30 @@
                              $listFiles[$urlWebroot.$nomFichier] = 'Apercu';
                          }
                    
-                         $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
-                         $oFusion->process();
-                         $oFusion->SendContentToFile($path.$nomFichier);
+                         try {
+                             $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+                             $oFusion->process();
+                             $oFusion->SendContentToFile($path.$nomFichier);
+                         }
+                         catch (Exception $e){
+                             $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
+                         }
                          if ($unique== false) {
                              if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
                                  $zip->addFile($path.$nomFichier, $nomFichier);
                                  $zip->close();
                              }
-			 }
-			 else
-			     break;
-
+			 			 }
+						 else
+							 break;
                          // envoi des mails si le champ est renseigné
                         $this->_sendDocument($acteur['Acteur'], $nomFichier, $path, '');
                      }
 		     if ($unique== false)
                          $listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
                      $this->set('listFiles', $listFiles);
-                     $this->render();
-                     exit;
+                     $this->render('generer');
+		     $genereConvocation = true;
 		}
 		else {
                    $dyn_path = "/files/generee/PV/".$seance['Seance']['id']."/";
@@ -706,7 +761,7 @@
                    if (!$this->Gedooo->checkPath($path))
                        die("Webdelib ne peut pas ecrire dans le repertoire : $path");
 
-                   if (GENERER_DOC_SIMPLE) {
+                   if (Configure::read('GENERER_DOC_SIMPLE')) {
                        $oMainPart->addElement(new GDO_ContentType('debat_seance', '', 'text/html', 'text',       '<small></small>'.$seance['Seance']['debat_global']));
                    }
                    else {
@@ -721,32 +776,57 @@
                            $extTP = $u->getMimeType($path.$nameDSeance);
                            $oMainPart->addElement(new GDO_ContentType('debat_seance', '',  $extTP,    'url', $urlWebroot.$nameDSeance ));
                        }
-	            }
+	            	}
                 }
 	    }
-            //*****************************************
-            // Lancement de la fusion
-            //*****************************************
-            $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
-            $oFusion->process();
-            if ($dl ==1)
-	        $oFusion->SendContentToFile($path.$nomFichier);
-            else
-	        $oFusion->SendContentToClient();
-        }
-
-        function _sendDocument($acteur, $fichier, $path, $doc) {
-            if ($acteur['email'] != '') {
-                $this->Email->template = 'email/convoquer';
-                $this->Email->attachments = null;
-                $this->Email->to = $acteur['email'];
-                $this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ");
-                $this->set('data',   $this->paramMails('convocation',  $acteur ));
-                $this->Email->attach($path.$fichier, $fichier);
-                $res =  $this->Email->send();
-                unset($res);
+	     
+	    if ($genereConvocation == false) {
+                //*****************************************
+                // Lancement de la fusion
+                //*****************************************
+                try {
+                    $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+                    $oFusion->process();
+                    if ($dl ==1)
+	                $oFusion->SendContentToFile($path.$nomFichier);
+                    else
+	                $oFusion->SendContentToClient();
+                }
+                catch (Exception $e){
+                    $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
+                }
             }
         }
+
+		function _sendDocument($acteur, $fichier, $path, $doc) {
+			if ($acteur['email'] != '') {
+				if (Configure::read("SMTP_USE")) {
+					$this->Email->smtpOptions = array(
+						'port'=>Configure::read("SMTP_PORT"), 
+						'timeout'=>Configure::read("SMTP_TIMEOUT"),
+						'host' => Configure::read("SMTP_HOST"),
+						'username'=>Configure::read("SMTP_USERNAME"),
+						'password'=>Configure::read("SMTP_PASSWORD"),
+						'client' =>Configure::read("SMTP_CLIENT")
+						);
+					$this->Email->delivery = 'smtp';
+				}
+				else
+					$this->Email->delivery = 'mail';
+
+				$this->Email->from = Configure::write("MAIL_FROM");
+				$this->Email->to = $acteur['email'];
+				
+				$this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ");
+
+				$this->Email->sendAs = 'text';
+				$this->Email->template = 'convocation';
+				$this->set('data',   $this->paramMails('convocation',  $acteur ));
+				$this->Email->attachments = null;
+
+				$this->Email->send();
+			}
+		}
 
         function _addField($champs, $u, $delib_id) {
             $champs_def = $this->Infosupdef->read(null, $champs['infosupdef_id']);

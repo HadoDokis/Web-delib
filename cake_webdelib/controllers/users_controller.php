@@ -2,16 +2,72 @@
 class UsersController extends AppController {
 
 	var $name = 'Users';
-	var $helpers = array('Html', 'Form', 'Html2' );
+	var $helpers = array('Form', 'Html', 'Html2', 'Session');
 	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'Profil', 'Deliberation');
-	var $components = array('Utils', 'Acl', 'Menu');
+	var $components = array('Utils', 'Acl', 'Menu', 'Dbdroits');
+	
+	var $paginate = array(
+		'User' => array(
+			'fields' => array('DISTINCT User.id', 'User.login', 'User.nom', 'User.prenom', 'User.telfixe', 'User.telmobile', 'Profil.libelle'),
+			'limit' => 20,
+			'joins' => array(
+				array(
+					'table' => 'users_services',
+					'alias' => 'UsersServices',
+					'type' => 'LEFT',
+					'conditions'=> array(
+						'User.id = UsersServices.user_id'
+					)
+				),
+				array(
+					'table' => 'services',
+					'alias' => 'Service',
+					'type' => 'LEFT',
+					'conditions'=> array(
+						'Service.id = UsersServices.service_id'
+					)
+				)
+			),
+			'order' => array(
+				'User.login' => 'asc'
+			)
+		)
+	);
 
 	// Gestion des droits
-	var $aucunDroit = array('login', 'logout', 'getAdresse', 'getCP', 'getNom', 'getPrenom', 'getVille', 'view', 'changeFormat');
-	var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'Users:index', 'changeMdp'=>'Users:index');
+	var $aucunDroit = array(
+		'login',
+		'logout',
+		'getAdresse',
+		'getCP',
+		'getNom',
+		'getPrenom',
+		'getVille',
+		'view',
+		'changeFormat',
+		'changeUserMdp',
+	);
+	
+	var $commeDroit = array(
+		'add'=>'Users:index',
+		'delete'=>'Users:index',
+		'edit'=>'Users:index',
+		'changeMdp'=>'Users:index'
+	);
 
 	function index() {
-		$this->set('users', $this->User->findAll());
+		/*$users = $this->paginate('User');
+		for ($i=0;$i<count($users);$i++) {
+			if (isset($users[$i])) {
+				for ($j=$i+1;$j<count($users);$j++) {
+					if ((isset($users[$j])) && ($users[$i]['User']['id']==$users[$j]['User']['id']))
+						$users=Set::remove($users,$j);
+				}
+			}
+		}*/
+		//$this->set('users', $users);
+		$this->set('users', $this->paginate('User'));
+		$this->set('Users', $this);
 	}
 
 	function view($id = null) {
@@ -33,17 +89,17 @@ class UsersController extends AppController {
 			// Initialisation des données
 			$this->data['User']['accept_notif'] = 0;
 		else {
-			$this->cleanUpFields();
 			if ($this->User->save($this->data)) {
 				// Ajout de l'utilisateur dans la table aros
-				$user_id = $this->User->getLastInsertId();
-				$aro = new Aro();
-				$aro->create( $user_id, null, 'Utilisateur:'.$this->data['User']['login']);
-				// Rattachement au profil
-				if(!empty($this->data['User']['profil_id'])) {
-					$profilLibelle = $this->Profil->field('libelle', 'Profil.id = '.$this->data['User']['profil_id']);
-					$aro->setParent('Profil:'.$profilLibelle, $user_id);
-				}
+				$user_id = $this->User->id;
+				$Profil=$this->Profil->find('first',array('conditions'=>array('id'=>$this->data['User']['profil_id']),'recursive'=>-1));
+				$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']));
+            	$this->Dbdroits->MajCruDroits(
+					array('model'=>'Utilisateur','foreign_key'=>$user_id,'alias'=>$this->data['User']['login']),
+					array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']),
+					$this->data['Droits']
+				);
+				//$this->_setNewPermissions( $this->data['User']['profil_id'], $user_id, $this->data['User']['login'] );
 				$this->Session->setFlash('L\'utilisateur \''.$this->data['User']['login'].'\' a &eacute;t&eacute; ajout&eacute;');
 				$sortie = true;
 			} else
@@ -52,11 +108,11 @@ class UsersController extends AppController {
 		if ($sortie)
 			$this->redirect('/users/index');
 		else {
-			$this->set('services', $this->User->Service->generateList('Service.actif=1'));
+			$this->set('services', $this->User->Service->generatetreelist(array('Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
 			$this->set('selectedServices', null);
-			$this->set('profils', $this->User->Profil->generateList());
+			$this->set('profils', $this->User->Profil->find('list'));
 			$this->set('notif', array('1'=>'oui','0'=>'non'));
-			$this->set('circuits', $this->Circuit->generateList());
+			$this->set('circuits', $this->Circuit->find('list'));
 			$this->render('edit');
 		}
 	}
@@ -68,20 +124,24 @@ class UsersController extends AppController {
 			if (empty($this->data)) {
 				$this->Session->setFlash('Invalide id pour l\'utilisateur');
 				$sortie = true;
-			} else
+			} else {
 				$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
+				$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Utilisateur','foreign_key'=>$id));
+			}
 		} else {
-			$this->cleanUpFields();
+			$userDb = $this->User->find('first', array('conditions'=>array('id'=>$id), 'recursive'=>-1));
 			if ($this->User->save($this->data)) {
-				// Traitement du profil
-				$aro = new Aro();
-				if(!empty($this->data['User']['profil_id'])) {
-					$profilLibelle = $this->Profil->field('libelle', 'Profil.id = '.$this->data['User']['profil_id']);
-					$aro->setParent('Profil:'.$profilLibelle, $id);
-				} else {
-					$aro->setParent('', $id);
+			
+				if ($userDb['User']['profil_id']!=$this->data['User']['profil_id']) {
+					$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']));
 				}
-
+				
+				$this->Dbdroits->MajCruDroits(
+					array('model'=>'Utilisateur', 'foreign_key'=>$this->data['User']['id'], 'alias'=>$this->data['User']['login']),
+					array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']),
+					$this->data['Droits']
+				);
+				
 				$this->Session->setFlash('L\'utilisateur \''.$this->data['User']['login'].'\' a &eacute;t&eacute; modifi&eacute;');
 				$sortie = true;
 			} else {
@@ -92,10 +152,11 @@ class UsersController extends AppController {
 		if ($sortie)
 			$this->redirect('/users/index');
 		else {
-			$this->set('services', $this->User->Service->generateList('Service.actif=1'));
-			$this->set('profils', $this->User->Profil->generateList());
+			$this->set('services', $this->User->Service->generatetreelist(array('Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+			$this->set('profils', $this->User->Profil->find('list'));
 			$this->set('notif',array('1'=>'oui','0'=>'non'));
-			$this->set('circuits', $this->Circuit->generateList());
+			$this->set('circuits', $this->Circuit->find('list'));
+			$this->set('listeCtrlAction', $this->Menu->menuCtrlActionAffichage());
 		}
 	}
 
@@ -126,7 +187,8 @@ class UsersController extends AppController {
 			$this->Session->setFlash($messageErreur);
 		} elseif ($this->User->del($id)) {
 			$aro = new Aro();
-			$aro->delete($id);
+			$aro_id = $aro->find('first',array('conditions'=>array('model'=>'Utilisateur', 'foreign_key'=>$id),'fields'=>array('id')));
+			$aro->delete($aro_id['Aro']['id']);
 			$this->Session->setFlash('L\'utilisateur \''.$user['User']['login'].'\' a &eacute;t&eacute; supprim&eacute;');
 		}
 	    $this->redirect('/users/index');
@@ -194,19 +256,19 @@ class UsersController extends AppController {
                     $this->set('errorMsg',"L'utilisateur ".$this->data['User']['login']." n'existe pas dans l'application.");
                     $this->layout='connection';
                     $this->render();
-                    exit;
+                    //exit;
                 }
 
                 if ($user['User']['id']==1){
                     $isAuthentif =  ($user['User']['password'] == md5($this->data['User']['password']));
                 }
                 else {
-                    if (USE_AD){
+                    if (Configure::read('USE_AD')){
                         include ("vendors/adLDAP.php");
                         $ldap=new adLDAP();
                         $isAuthentif = $ldap->authenticate($this->data['User']['login'], $this->data['User']['password']);
                     }
-                    elseif (USE_OPENLDAP)
+                    elseif (Configure::read('USE_OPENLDAP'))
                         $isAuthentif = $this->_checkLDAP($this->data['User']['login'], $this->data['User']['password']);
                     else
                         $isAuthentif =  ($user['User']['password'] == md5($this->data['User']['password']));
@@ -215,8 +277,7 @@ class UsersController extends AppController {
 
                 if ($isAuthentif) {
                     //on stocke l'utilisateur en session
-		    $this->Session->write('user',$user);
-
+		    		$this->Session->write('user',$user);
                     //services auquels appartient l'agent
                     $services = array();
                     foreach ($user['Service'] as $service)
@@ -227,8 +288,7 @@ class UsersController extends AppController {
 
                     // Chargement du menu dans la session
                     $this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
-		    $this->Session->setFlash('Bienvenue '.$user['User']['prenom'], 'growl');
-
+		    		$this->Session->setFlash('Bienvenue '.$user['User']['prenom'], 'growl');
                     $this->redirect('/');
                 }
                 else{
@@ -243,8 +303,6 @@ class UsersController extends AppController {
         }
 
  
-
-
 	function logout() {
 		//on supprime les infos utilisateur de la session
 		$this->Session->delete('user');
@@ -258,38 +316,41 @@ class UsersController extends AppController {
 			if (empty($this->data)) {
 				$this->Session->setFlash('Invalide id pour l\'utilisateur');
 				$this->redirect('/users/index');
-			} else
+			}
+			else
 				$this->data['User']['password'] = '';
 		} else {
-			$user = $this->User->read(null, $id);
-			$user['User']['password'] = $this->data['User']['password'];
-			$user['User']['password2'] = $this->data['User']['password2'];
-			$this->cleanUpFields();
-			if ($this->User->save($user)) {
-				$this->Session->setFlash('Le mot de passe de l\'utilisateur \''.$user['User']['login'].'\' a &eacute;t&eacute; modifi&eacute;');
-				$this->redirect('/users/index');
-			} else
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+			if ($this->User->validatesPassword($this->data)) {
+				$user = $this->User->read(null, $id);
+				if ($this->User->saveField('password', $this->data['User']['password'])) {
+					$this->Session->setFlash('Le mot de passe de l\'utilisateur \''.$user['User']['login'].'\' a &eacute;t&eacute; modifi&eacute;');
+					$this->redirect('/users/index');
+				}
+				else
+					$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
+			}
+			else
+				$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
 		}
 	}
 
-        function changeFormat($id) {
-            $this->Session->del('user.format.sortie');
+    function changeFormat($id) {
+        $this->Session->del('user.format.sortie');
 	    $this->Session->write('user.format.sortie', $id);
 	    //redirection sur la page où on était avant de changer de service
 	    $this->redirect($this->Session->read('user.User.lasturl'));
 	}
 
-        function _checkLDAP($login, $password) {
-          //  $DN = UNIQUE_ID."=$login, ".BASE_DN;
-            $conn=ldap_connect(LDAP_HOST, LDAP_PORT) or  die("connexion impossible au serveur LDAP");
+    function _checkLDAP($login, $password) {
+          //  $DN = Configure::read('UNIQUE_ID')."=$login, ".BASE_DN;
+            $conn=ldap_connect(LDAP_Configure::read('HOST'), LDAP_PORT) or  die("connexion impossible au serveur LDAP");
             @ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
             @ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // required for AD
 
 
         $bind_attr = 'dn';
-        $search_filter = "(" .UNIQUE_ID."=" . $login . ")";
-        $result = @ldap_search($conn, BASE_DN , $search_filter, array("dn", $bind_attr));
+        $search_filter = "(" .Configure::read('UNIQUE_ID')."=" . $login . ")";
+        $result = @ldap_search($conn, Configure::read('BASE_DN') , $search_filter, array("dn", $bind_attr));
 
         $info = ldap_get_entries($conn, $result);
         if($info['count'] == 0)
@@ -306,8 +367,31 @@ class UsersController extends AppController {
             return false;
         }
 
-
-        
      }
+
+	function changeUserMdp() {
+		if (empty($this->data)) {
+			$this->data = $this->User->read(null, $this->Session->read('user.User.id'));
+			if (empty($this->data)) {
+				$this->Session->setFlash('Invalide id pour l\'utilisateur');
+				$this->redirect('/');
+			}
+			else
+				$this->data['User']['password'] = '';
+		} else {
+			if (($this->User->validatesPassword($this->data)) && ($this->User->validOldPassword($this->data))) {
+				$user = $this->User->read(null, $this->Session->read('user.User.id'));
+				if ($this->User->saveField('password', $this->data['User']['password'])) {
+					$this->Session->setFlash('Votre mot de passe a &eacute;t&eacute; modifi&eacute;');
+					$this->redirect('/');
+				}
+				else
+					$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
+			}
+			else
+				$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
+		}
+	}
+
 }
 ?>

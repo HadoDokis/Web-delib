@@ -2,12 +2,21 @@
 class ServicesController extends AppController {
 
 	var $name = 'Services';
-	var $helpers = array('Html', 'Form','Tree' );
+	var $helpers = array('Session', 'Tree');
 	var $uses = array('Service', 'Circuit');
 
 	// Gestion des droits
-	var $aucunDroit = array('changeParentId', 'changeService', 'isEditable', 'view');
-	var $commeDroit = array('edit'=>'Services:index', 'add'=>'Services:index', 'delete'=>'Services:index');
+	var $aucunDroit = array(
+		'changeParentId',
+		'changeService',
+		'isEditable',
+		'view'
+	);
+	var $commeDroit = array(
+		'edit'=>'Services:index',
+		'add'=>'Services:index',
+		'delete'=>'Services:index'
+	);
 
     function changeService($newServiceActif) {
     	$this->Session->del('user.User.service');
@@ -17,63 +26,81 @@ class ServicesController extends AppController {
     }
 
 	function index() {
-		$this->set('data', $this->Service->findAllThreaded(null, null, 'Service.id ASC'));
+		$services = $this->Service->find('threaded',array('order'=>'Service.id ASC','recursive'=>-1));
+		$this->_isDeletable($services);
+		$this->set('data', $services);
+	}
+
+	function _isDeletable(&$services) {
+		foreach($services as &$service) {
+			if ($this->Service->find('first', array(
+					'conditions'=>array('UserService.service_id'=>$service['Service']['id']),
+					'joins' => array(
+						array('table' => 'users_services',
+							'alias' => 'UserService',
+							'type' => 'LEFT',
+							'conditions' => array(
+								'Service.id = UserService.service_id',
+							)
+						)
+					),
+					'recursive'=>-1)))
+				$service['Service']['deletable'] = false;
+			else
+				$service['Service']['deletable'] = true;
+			if ($service['children'] != array())
+				$this->_isDeletable(&$service['children']);
+		}
 	}
 
 	function view($id = null) {
-		if (!$id) {
+		$service = $this->Service->read(null, $id);
+		if (!$id || empty($service)) {
 			$this->Session->setFlash('Invalide id pour le Service.');
 			$this->redirect('/services/index');
 		}
-		$this->set('service', $this->Service->read(null, $id));
+		$this->set('service', $service);
 		$this->set('circuitDefaut', $this->Circuit->findById($this->Service->field('circuit_defaut_id', 'id = '.$id)));
 	}
 
 	function add() {
-		if (empty($this->data)) {
-			$this->set('services', $this->Service->generateList('Service.actif = 1','id ASC'));
-			$this->set('circuits', $this->Circuit->generateList());
-			$this->render();
-		} else {
-			$this->cleanUpFields();
+		if (!empty($this->data)) {
+			if (empty($this->data['Service']['parent_id'])) $this->data['Service']['parent_id']=0;
+			if (empty($this->data['Service']['circuit_defaut_id'])) $this->data['Service']['circuit_defaut_id']=0;
 			if ($this->Service->save($this->data)) {
 				$this->Session->setFlash('Le service a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/services/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				$this->set('services', $this->Service->generateList('Service.actif = 1','id ASC'));
-				$this->set('circuits', $this->Circuit->generateList());
 			}
 		}
+		$this->set('services', $this->Service->generatetreelist(array('Service.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+		$this->set('circuits', $this->Circuit->find('list'));
 	}
 
 	function edit($id = null) {
 		if (empty($this->data)) {
-			if (!$id) {
+			$this->data = $this->Service->read(null, $id);
+			if ((!$id) || (empty($this->data))) {
 				$this->Session->setFlash('Invalide id pour le service');
 				$this->redirect('/services/index');
 			}
-			$this->data = $this->Service->read(null, $id);
-			$services = $this->Service->generateList("Service.id != $id AND Service.actif = 1");
-			$this->set('isEditable', $this->isEditable($id));
-			$this->set('services', $services);
-			$this->set('selectedService',$this->data['Service']['parent_id']);
-			$this->set('circuits', $this->Circuit->generateList());
-		} else {
-			$this->cleanUpFields();
+		}
+		else {
+			if (empty($this->data['Service']['parent_id'])) $this->data['Service']['parent_id']=0;
+			if (empty($this->data['Service']['circuit_defaut_id'])) $this->data['Service']['circuit_defaut_id']=0;
 			if ($this->Service->save($this->data)) {
-				$this->Session->setFlash('Le service a &eacute;t&eacute; modifi&eacute;');
+				$this->Session->setFlash('Le service a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/services/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				$services = $this->Service->generateList("Service.id != $id  AND Service.actif = 1");
-
-				$this->set('isEditable', $this->isEditable($id));
-				$this->set('services', $services);
-				$this->set('selectedService',$this->data['Service']['parent_id']);
-				$this->set('circuits', $this->Circuit->generateList());
 			}
 		}
+		$services=$this->Service->generatetreelist(array('Service.id <>'=>$id,'Service.actif'=>1),null,null,'&nbsp;&nbsp;&nbsp;&nbsp;');
+		$this->set('isEditable', $this->isEditable($id));
+		$this->set('services', $services);
+		$this->set('selectedService',$this->data['Service']['parent_id']);
+		$this->set('circuits', $this->Circuit->find('list'));
 	}
 
 	function delete($id = null) {
@@ -81,11 +108,20 @@ class ServicesController extends AppController {
 			$this->Session->setFlash('Invalide id pour le service');
 			$this->redirect('/services/index');
 		}
-		$service = $this->Service->read(null, $id);
-		$service['Service']['actif'] = 0;
-
-		if ($this->Service->save($service)) {
-			$this->Session->setFlash('Le service a &eacute;t&eacute; supprim&eacute;');
+		
+		if (!$this->Service->find('first',array('conditions'=>array('parent_id'=>$id, 'actif'=>1),'recursive'=>-1))) {
+			$this->Service->id=$id;
+			if ($this->Service->saveField('actif',0)) {
+				$this->Session->setFlash('Le service a &eacute;t&eacute; supprim&eacute;');
+				$this->redirect('/services/index');
+			}
+			else {
+				$this->Session->setFlash('Impossible de supprimer ce service');
+				$this->redirect('/services/index');
+			}
+		}
+		else {
+			$this->Session->setFlash('Ce service poss&egrave;de au moins un fils, il ne peut donc être supprim&eacute;');
 			$this->redirect('/services/index');
 		}
 	}

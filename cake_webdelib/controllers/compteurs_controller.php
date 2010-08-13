@@ -15,6 +15,7 @@ class CompteursController extends AppController
 	function beforeFilter() {
 		if (property_exists($this, 'demandePost'))
 		call_user_func_array(array($this->Security, 'requirePost'), $this->demandePost);
+		parent::beforeFilter();
     }
 
 	function index() {
@@ -32,7 +33,6 @@ class CompteursController extends AppController
 	function add() {
 		$sortie = false;
 		if (!empty($this->data)) {
-			$this->cleanUpFields();
 			if ($this->Compteur->save($this->data)) {
 				$this->Session->setFlash('Le compteur \''.$this->data['Compteur']['nom'].'\' a &eacute;t&eacute; ajout&eacute;');
 				$sortie = true;
@@ -42,7 +42,7 @@ class CompteursController extends AppController
 		if ($sortie)
 			$this->redirect('/compteurs/index');
 		else {
-			$this->set('sequences', $this->Compteur->Sequence->generateList());
+			$this->set('sequences', $this->Compteur->Sequence->find('list'));
 			$this->render('edit');
 		}
 	}
@@ -56,7 +56,6 @@ class CompteursController extends AppController
 				$sortie = true;
 			}
 		} else {
-			$this->cleanUpFields();
 			if ($this->Compteur->save($this->data)) {
 				$this->Session->setFlash('Le compteur \''.$this->data['Compteur']['nom'].'\' a &eacute;t&eacute; modifi&eacute;');
 				$sortie = true;
@@ -66,7 +65,7 @@ class CompteursController extends AppController
 		if ($sortie)
 			$this->redirect('/compteurs/index');
 		else
-			$this->set('sequences', $this->Compteur->Sequence->generateList());
+			$this->set('sequences', $this->Compteur->Sequence->find('list'));
 	}
 
 	function delete($id = null) {

@@ -36,7 +36,7 @@
 */
 class DroitsComponent extends Object
 {
-	var $components = array('Acl');
+	var $components = array('Acl','Xacl');
 
 
 /* vérifie si l'utilisateur $userId est autorisée à exécuter l'action $controllerAction */
@@ -57,22 +57,22 @@ class DroitsComponent extends Object
 			$listeActions = $this->listeActionsControleur($controller);
 			$listeActionsComme = $this->_listeActionsCommeControleur($controller);
 		}
-
+		
 		// Vérifie les droits si controller = 'Pages' ou si l'action est dans la liste des actions soumises aux droits
 		if ($controller == 'Pages' or in_array($action, $listeActions) or array_key_exists($action, $listeActionsComme)) {
 			if (array_key_exists($action, $listeActionsComme)) {
 				// Traite les droits de commeDroit
 				if (is_array($listeActionsComme[$action])) {
 					foreach($listeActionsComme[$action] as $ctrlActionComme) {
-						if ($this->Acl->check($userId, $ctrlActionComme)) return true;
+						if ($this->Xacl->check($userId, $ctrlActionComme)) return true;
 					}
 					return false;
 				}
 				else
-					return $this->Acl->check($userId, $listeActionsComme[$action]);
+					return $this->Xacl->check($userId, $listeActionsComme[$action]);
 			}
 			else
-				return $this->Acl->check($userId, $controllerAction);
+				return $this->Xacl->check($userId, $controllerAction);
 		}
 		else
 			return true;
@@ -82,9 +82,22 @@ class DroitsComponent extends Object
 /* en fonction des variables $demandeDroit, $aucunDroit, $demandePost, $commeDroit, $ajouteDroit */
 	function listeActionsControleur($controllerName) {
 
+                $pluginName = ""; 
 		// chargement du controleur
 		$file = APP."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
-		require_once($file);
+                if (file_exists($file)){
+		    require_once($file);
+                }
+                else{
+                    $plugins = Configure::listObjects('plugin');
+                    foreach  ($plugins as $plugin){
+                        $file = APP."plugins".DS.strtolower($plugin).DS."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
+                        $pluginName = $plugin; 
+                        require_once(APP."plugins".DS.strtolower($plugin).DS.strtolower($plugin).'_app_controller.php');
+                        require_once($file);
+                    }
+                }
+
 		$subClassVars = get_class_vars($controllerName.'Controller');
 
 		// Si $demandeDroit est définie et non vide alors retourne cette liste
@@ -100,15 +113,21 @@ class DroitsComponent extends Object
 		}
 
 		// Création de la liste des actions du controleur
-		$parentClassMethods = get_class_methods('AppController');
-		$subClassMethods = get_class_methods($controllerName.'Controller');
+                if ( $pluginName = ""){
+		    $parentClassMethods = get_class_methods('AppController');
+		    $subClassMethods = get_class_methods($controllerName.'Controller');
+                }
+                else{
+                    $parentClassMethods = get_class_methods($pluginName.'AppController');
+		    $subClassMethods = get_class_methods($pluginName.$controllerName.'Controller');
+                }
 		$classMethods = array_diff($subClassMethods, $parentClassMethods);
 
 		// Suppression des actions privées et protégées (commencent par '_')
 		$classMethods = array_filter($classMethods, array($this, '_nonPrivee'));
 
 		// Ajout des actions du scaffold
-		if(array_key_exists('scaffold', $subClassVars))
+		if(array_key_exists('scaffold', $subClassVars) && !($subClassVars['scaffold'] === false))
 		{
 			if (!in_array('index', $classMethods)) $classMethods[] = 'index';
 			if (!in_array('view', $classMethods)) $classMethods[] = 'view';
@@ -140,7 +159,7 @@ class DroitsComponent extends Object
 		{
 			$classMethods = array_merge($classMethods, $subClassVars['ajouteDroit']);
 		}
-
+                
 		return $classMethods;
 
 	}
@@ -151,8 +170,18 @@ class DroitsComponent extends Object
 		$listeActionsLibelles = array();
 
 		// chargement du controleur
-		$file = APP."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
-		require_once($file);
+                $file = APP."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
+                if (file_exists($file)){
+                    require_once($file);
+                }
+                else{
+                    $plugins = Configure::listObjects('plugin');
+                    foreach  ($plugins as $plugin){
+                        $file = APP."plugins".DS.strtolower($plugin).DS."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
+                        require_once($file);
+                    }
+                }
+
 		$subClassVars = get_class_vars($controllerName.'Controller');
 
 		// initialisation du tableau des libelles
@@ -179,8 +208,18 @@ class DroitsComponent extends Object
 /* Retourne le libellé défini dans $libelleControleurDroit */
 	function libelleControleur($controllerName) {
 		// chargement du controleur
-		$file = APP."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
-		require_once($file);
+                $file = APP."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
+                if (file_exists($file)){
+                    require_once($file);
+                }
+                else{
+                    $plugins = Configure::listObjects('plugin');
+                    foreach  ($plugins as $plugin){
+                        $file = APP."plugins".DS.strtolower($plugin).DS."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
+                        require_once($file);
+                    }
+                }
+
 		$subClassVars = get_class_vars($controllerName.'Controller');
 
 		// teste si $libelleControleurDroit est défini et non vide
@@ -200,9 +239,18 @@ class DroitsComponent extends Object
 /* retourne la liste $commeDroit si elle est définie et non vide */
 	function _listeActionsCommeControleur($controllerName) {
 
-		// chargement du controleur
-		$file = APP."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
-		require_once($file);
+                 // chargement du controleur^M
+                $file = APP."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
+                if (file_exists($file)){
+                    require_once($file);
+                }
+                else{
+                    $plugins = Configure::listObjects('plugin');
+                    foreach  ($plugins as $plugin){
+                        $file = APP."plugins".DS.strtolower($plugin).DS."controllers".DS.Inflector::underscore($controllerName)."_controller.php";
+                        require_once($file);
+                    }
+                }
 		$subClassVars = get_class_vars($controllerName.'Controller');
 
 		if(array_key_exists('commeDroit', $subClassVars) and !empty($subClassVars['commeDroit']))
