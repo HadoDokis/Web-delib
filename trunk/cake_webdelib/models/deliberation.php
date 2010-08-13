@@ -4,6 +4,15 @@ class Deliberation extends AppModel {
 	var $name = 'Deliberation';
 
 	var	$cacheQueries = false;
+	
+	var $validate = array(
+		'objet' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'L\'objet est obligatoire'
+			)
+		)
+	);
 
 	//dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
 	var $belongsTo = array(
@@ -44,10 +53,11 @@ class Deliberation extends AppModel {
 			'dependent'    =>  true,
 			'foreignKey'   => 'seance_id')
 		);
+		
 	var $hasMany = array(
-	        'Historique' =>array(
-                        'className'    => 'Historique',
-                        'foreignKey'   => 'delib_id'),
+        'Historique' =>array(
+            'className'    => 'Historique',
+            'foreignKey'   => 'delib_id'),
 		'Traitement'=>array(
 			'className'    => 'Traitement',
 			'foreignKey'   => 'delib_id'),
@@ -215,7 +225,7 @@ class Deliberation extends AppModel {
         }
 
 	function refusDossier($id) {
-            $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
+            $tab=$this->Traitement->find('all', array('conditions'=>array("delib_id" => $id), 'order' => array("id ASC")));
             $lastpos=count($tab)-1;
 
             //MAJ de la date de traitement de la derniere position courante $lastpos
@@ -246,8 +256,8 @@ class Deliberation extends AppModel {
              $delib['Deliberation']['anterieure_id']=$id;
              $delib['Deliberation']['date_envoi']=0;
              //$delib['Deliberation']['circuit_id']=0;
-             $delib['Deliberation']['created']='';
-             $delib['Deliberation']['modified']='';
+             $delib['Deliberation']['created']=date('Y-m-d H:i:s', time());
+             $delib['Deliberation']['modified']=date('Y-m-d H:i:s', time());
              $this->save($delib['Deliberation']);
  
              $delib_id = $this->getLastInsertId();

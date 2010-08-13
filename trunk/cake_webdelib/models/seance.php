@@ -7,12 +7,41 @@ class Seance extends AppModel {
 			 'Juillet','Août','Septembre','Octobre','Novembre','Décembre');
 
     var	$cacheQueries = false;
+	
+	var $validate = array(
+		'type_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer le type de seance associé.'
+			)
+		),
+		'avis' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Sélectionner un avis'
+			)
+		),
+		'date' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer une date valide.'
+			)
+		),
+		'commission' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer le texte de débat.'
+			)
+		),
+		'debat_global' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer le texte de débat.'
+			)
+		)
+	);
 
-    var $validate = array(
- 	'type_id' => VALID_NOT_EMPTY,
-    );
-
-    var $displayField="libelle";
+    //var $displayField="libelle";
 
     var $belongsTo=array(
       'Typeseance'=>array(
@@ -28,32 +57,30 @@ class Seance extends AppModel {
         'foreignKey' => 'secretaire_id')
     );
 
-     /* retourne la liste des séances futures avec le nom du type de séance  */
-     function generateList($conditionSup=null, $afficherTtesLesSeances = false) {
-         $generateList = array();
-         $conditions = 'Seance.traitee = 0';
-         if (!empty($conditionSup))
-         	$conditions .= ' AND '.$conditionSup;
-         $seances = $this->findAll($conditions, null, 'date ASC');
-
-
-         foreach ($seances as $seance){
-	     if ($afficherTtesLesSeances) {
-	          $dateTimeStamp = strtotime($seance['Seance']['date']);
-		  $dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
-		  $generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
-	     }
-	     else {
-	         $retard=$seance['Typeseance']['retard'];
-                 if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y")))){
-	             $dateTimeStamp = strtotime($seance['Seance']['date']);
-	             $dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
-                     $generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
-                 }
-            }
-        }
-        return $generateList;
-    }
+	/* retourne la liste des séances futures avec le nom du type de séance  */
+	function generateList($conditionSup=null, $afficherTtesLesSeances = false) {
+		$generateList = array();
+		$conditions = array('Seance.traitee' => '0');
+		if (!empty($conditionSup))
+			$conditions = Set::pushDiff($conditions,$conditionSup);
+		$seances = $this->find('all',array('conditions'=>$conditions, 'order'=>'date ASC'));
+		foreach ($seances as $seance) {
+			if ($afficherTtesLesSeances) {
+				$dateTimeStamp = strtotime($seance['Seance']['date']);
+				$dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
+				$generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
+			}
+			else {
+				$retard=$seance['Typeseance']['retard'];
+				if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y")))){
+					$dateTimeStamp = strtotime($seance['Seance']['date']);
+					$dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
+					$generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
+				}
+			}
+		}
+		return $generateList;
+	}
 
 
 

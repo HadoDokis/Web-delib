@@ -4,18 +4,79 @@ class Typeseance extends AppModel {
   var $name = 'Typeseance';
 
   var $displayField = 'libelle';
-
-  var $validate = array(
-    'libelle' => VALID_NOT_EMPTY,
-    'action' => VALID_NOT_EMPTY,
-    'compteur_id' => VALID_NOT_EMPTY,
-    'modelprojet_id' => VALID_NOT_EMPTY,
-    'modeldeliberation_id' => VALID_NOT_EMPTY,
-    'modelconvocation_id' => VALID_NOT_EMPTY,
-    'modelordredujour_id' => VALID_NOT_EMPTY,
-    'modelpvsommaire_id' => VALID_NOT_EMPTY,
-    'modelpvdetaille_id' => VALID_NOT_EMPTY
-  );
+	
+	var $validate = array(
+		'libelle' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer le libellé.'
+			),
+			array(
+				'rule' => 'isUnique',
+				'message' => 'Entrez un autre libellé, celui-ci est déjà utilisé.'
+			)
+		),/*
+		'retard' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Insérer un chiffre pour le nombre de jours avant retard.'
+			)
+		),*/
+		'action' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Sélectionner une action'
+			)
+		),
+		'compteur_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Sélectionner un compteur'
+			)
+		),
+		'modelprojet_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Sélectionner le modèle de la projet'
+			)
+		),
+		'modeldeliberation_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Sélectionner le modèle de délibération'
+			)
+		),
+		'modelconvocation_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Sélectionner le modèle de la convocation'
+			)
+		),
+		'modelordredujour_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Sélectionner le modèle de l\'ordre du jour'
+			)
+		),
+		'modelpvsommaire_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Sélectionner le modèle du PV sommaire'
+			)
+		),
+		'modelpvdetaille_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Selectionner le modèle du PV détaillé'
+			)
+		),
+		'typeacteur' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Selectionnez au moins un type d\'acteur ou au moins un acteur'
+			)
+		)
+	);
 
   var $belongsTo = array(
     'Compteur' => array(
@@ -66,19 +127,6 @@ class Typeseance extends AppModel {
       'deleteQuery'=>'')
     );
 
-
-	function validates() {
-		// unicité du libelle
-		$this->isUnique('libelle', $this->data['Typeseance']['libelle'], $this->data['Typeseance']['id']);
-
-		// teste la présence d'au moins un type d'acteur ou d'un acteur pour les convocations
-		if ( (!array_key_exists('Typeacteur', $this->data) || empty($this->data['Typeacteur']['Typeacteur'][0]))
-		&& (!array_key_exists('Acteur', $this->data) || empty($this->data['Acteur']['Acteur'][0])) )
-			$this->invalidate('typeacteur');
-
-		$errors = $this->invalidFields();
-		return count($errors) == 0;
-	}
 
 	/* retourne le libellé correspondant au champ action 0 : voter, 1 donner un avis */
 	function libelleAction($action = null, $majuscule = false) {

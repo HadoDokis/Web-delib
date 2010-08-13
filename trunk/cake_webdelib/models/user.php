@@ -4,12 +4,61 @@ class User extends AppModel {
 	var $name = 'User';
 
 	var $validate = array(
-		'login' => VALID_NOT_EMPTY,
-		'password' => VALID_NOT_EMPTY,
-		'password2' => VALID_NOT_EMPTY,
-		'nom' => VALID_NOT_EMPTY,
-		'prenom' => VALID_NOT_EMPTY,
-		'profil_id' => VALID_NOT_EMPTY
+		'login' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrez le login.'
+			),
+			array(
+				'rule' => 'isUnique',
+				'message' => 'Entrez un autre login, celui-ci est déjà utilisé.'
+			)
+		),
+		'password' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrez le mot de passe.'
+			)
+		),
+		'password2' => array(
+			array(
+				'rule' => array('samePassword'),
+				'message' => 'Les mots de passe sont différents.'
+			),
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrez le mot de passe de confirmation.'
+			)
+		),
+		'nom' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrez le nom.'
+			)
+		),
+		'prenom' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrez le prénom.'
+			)
+		),
+		'email' => array(
+			array(
+				'rule' => 'emailDemande',
+				'message' => 'Entrez l\'email.'
+			),
+			array(
+				'rule' => 'email',
+				'allowEmpty' => true,
+				'message' => 'Adresse email non valide.'
+			)
+		),
+		'profil_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Selectionner le profil utilisateur'
+			)
+		)
 	);
 
 	var $displayField = "nom";
@@ -56,38 +105,33 @@ class User extends AppModel {
                         'className'    => 'Historique',
                         'foreignKey'   => 'delib_id'));
 
-	function validates()
-	{
-		// unicité du login
-		$this->isUnique('login', $this->data['User']['login'], $this->data['User']['id']);
+	function samePassword() {
+		return ((!empty($this->data['User']['password'])) && ($this->data['User']['password']==$this->data['User']['password2']));
+	}
 
-		// mot de passe confirmé
-		if (!empty($this->data['User']['password'])
-			&& !empty($this->data['User']['password2'])
-			&& ($this->data['User']['password']!=$this->data['User']['password2']))
-			$this->invalidate('passwordDifferents');
+	function validatesPassword($data) {
+		return ((!empty($data['User']['password'])) && ($data['User']['password']==$data['User']['password2']));
+	}
+	
+	function validOldPassword($data) {
+		$oldPass = $this->find('first',array('conditions'=>array('id'=>$data['User']['id']),'fields'=>array('password'),'recursive'=>-1));
+		return (md5($data['User']['oldpassword'])==$oldPass['User']['password']);
+	}
 
-		// adresse mail valide si présente
-		if (!empty($this->data['User']['email'])
-			&& !preg_match(VALID_EMAIL, $this->data['User']['email'] ) )
-            $this->invalidate('email');
-
-		// mail obligatoire si notification mail
-		if ($this->data['User']['accept_notif'] && empty($this->data['User']['email']))
-            $this->invalidate('emailDemande');
-
-		// service obligatoire
-		if (!array_key_exists('Service', $this->data))
-            $this->invalidate('service');
-
-		$errors = $this->invalidFields();
-		return count($errors) == 0;
+	function emailDemande() {
+		return (!($this->data['User']['accept_notif'] && empty($this->data['User']['email'])));
 	}
 
 	function beforeSave() {
 		if (array_key_exists('password', $this->data['User']))
 			$this->data['User']['password'] = md5($this->data['User']['password']);
 		return true;
+	}
+	
+	function beforeValidate() {
+		if (empty($this->data['Service']['Service'])) {
+			$this->invalidate('Service', true);
+		}
 	}
 
 	/* Retourne le circuit par défaut défini pour l'utilisateur $id */

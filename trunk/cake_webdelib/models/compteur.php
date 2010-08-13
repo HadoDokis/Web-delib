@@ -20,11 +20,30 @@ class Compteur extends AppModel
 	var $name = 'Compteur';
 
 	var $displayField = 'nom';
-
+	
 	var $validate = array(
-		'nom' => VALID_NOT_EMPTY,
-		'def_compteur' => VALID_NOT_EMPTY,
-		'sequence_id' => VALID_NOT_EMPTY
+		'nom' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer un nom pour le compteur'
+			),
+			array(
+				'rule' => 'isUnique',
+				'message' => 'Entrer un autre nom, celui-ci est déjà utilisé.'
+			)
+		),
+		'def_compteur' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer la définition du compteur'
+			)
+		),
+		'sequence_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Selectionner une séquence'
+			)
+		)
 	);
 
 	var $belongsTo = 'Sequence';
@@ -32,14 +51,6 @@ class Compteur extends AppModel
 	var $hasMany = 'Typeseance';
 
 	var $cacheQueries = false;
-
-	function validates() {
-		// unicité du nom
-		$this->isUnique('nom', $this->data['Compteur']['nom'], $this->data['Compteur']['id']);
-
-		$errors = $this->invalidFields();
-		return count($errors) == 0;
-	}
 
 /**
 * Retourne la valeur suivante du compteur,

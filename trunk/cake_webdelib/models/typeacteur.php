@@ -20,24 +20,25 @@ class Typeacteur extends AppModel
 	var $name = 'Typeacteur';
 
 	var $displayField = "nom";
-
-	var $validate = array('nom' => VALID_NOT_EMPTY);
+	
+	var $validate = array(
+		'nom' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer un nom pour le type d\'acteur'
+			),
+			array(
+				'rule' => 'isUnique',
+				'message' => 'Entrer un autre nom, celui-ci est déjà utilisé.'
+			)
+		),
+		'elu' => array(
+			'rule' => 'notEmpty',
+			'message' => 'Choisir un statut (élu ou non élu)'
+		)
+	);
 
 	var $hasMany = 'Acteur';
-
-	function validates()
-	{
-		// unicité du nom
-		$this->isUnique('nom', $this->data['Typeacteur']['nom'], $this->data['Typeacteur']['id']);
-
-		// choix elu/non elu fait
-		if (!array_key_exists('elu', $this->data['Typeacteur']))
-            $this->invalidate('elu');
-
-
-		$errors = $this->invalidFields();
-		return count($errors) == 0;
-	}
 
 	/* retourne le libellé correspondant au champ elu 1 : élu, 0 : non élu */
 	function libelleElu($elu = null, $majuscule = false) {
