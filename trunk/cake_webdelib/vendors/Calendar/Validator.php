@@ -27,11 +27,11 @@
 /**
  * Validation Error Messages
  */
-if (!defined('CALENDAR_VALUE_TOOSMALL')) {
-    define('CALENDAR_VALUE_TOOSMALL', 'Too small: min = ');
+if (!Configure::read('CALENDAR_VALUE_TOOSMALL')) {
+    Configure::write('CALENDAR_VALUE_TOOSMALL', 'Too small: min = ');
 }
-if (!defined('CALENDAR_VALUE_TOOLARGE')) {
-    define('CALENDAR_VALUE_TOOLARGE', 'Too large: max = ');
+if (!Configure::read('CALENDAR_VALUE_TOOLARGE')) {
+    Configure::write('CALENDAR_VALUE_TOOLARGE', 'Too large: max = ');
 }
 
 /**
@@ -104,13 +104,13 @@ class Calendar_Validator
         $min = $this->cE->getMinYears();
         if ($min > $y) {
            $this->errors[] = new Calendar_Validation_Error(
-                'Year', $y, CALENDAR_VALUE_TOOSMALL.$min);
+                'Year', $y, Configure::read('CALENDAR_VALUE_TOOSMALL').$min);
             return false;
         }
         $max = $this->cE->getMaxYears();
         if ($y > $max) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Year', $y, CALENDAR_VALUE_TOOLARGE.$max);
+                'Year', $y, Configure::read('CALENDAR_VALUE_TOOLARGE').$max);
             return false;
         }
         return true;
@@ -127,13 +127,13 @@ class Calendar_Validator
         $min = 1;
         if ($min > $m) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Month', $m, CALENDAR_VALUE_TOOSMALL.$min);
+                'Month', $m, Configure::read('CALENDAR_VALUE_TOOSMALL').$min);
             return false;
         }
         $max = $this->cE->getMonthsInYear($this->calendar->thisYear());
         if ($m > $max) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Month', $m, CALENDAR_VALUE_TOOLARGE.$max);
+                'Month', $m, Configure::read('CALENDAR_VALUE_TOOLARGE').$max);
             return false;
         }
         return true;
@@ -150,14 +150,14 @@ class Calendar_Validator
         $min = 1;
         if ($min > $d) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Day', $d, CALENDAR_VALUE_TOOSMALL.$min);
+                'Day', $d, Configure::read('CALENDAR_VALUE_TOOSMALL').$min);
             return false;
         }
         $max = $this->cE->getDaysInMonth(
             $this->calendar->thisYear(), $this->calendar->thisMonth());
         if ($d > $max) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Day', $d, CALENDAR_VALUE_TOOLARGE.$max);
+                'Day', $d, Configure::read('CALENDAR_VALUE_TOOLARGE').$max);
             return false;
         }
         return true;
@@ -174,13 +174,13 @@ class Calendar_Validator
         $min = 0;
         if ($min > $h) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Hour', $h, CALENDAR_VALUE_TOOSMALL.$min);
+                'Hour', $h, Configure::read('CALENDAR_VALUE_TOOSMALL').$min);
             return false;
         }
         $max = ($this->cE->getHoursInDay($this->calendar->thisDay())-1);
         if ($h > $max) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Hour', $h, CALENDAR_VALUE_TOOLARGE.$max);
+                'Hour', $h, Configure::read('CALENDAR_VALUE_TOOLARGE').$max);
             return false;
         }
         return true;
@@ -197,13 +197,13 @@ class Calendar_Validator
         $min = 0;
         if ($min > $i) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Minute', $i, CALENDAR_VALUE_TOOSMALL.$min);
+                'Minute', $i, Configure::read('CALENDAR_VALUE_TOOSMALL').$min);
             return false;
         }
         $max = ($this->cE->getMinutesInHour($this->calendar->thisHour())-1);
         if ($i > $max) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Minute', $i, CALENDAR_VALUE_TOOLARGE.$max);
+                'Minute', $i, Configure::read('CALENDAR_VALUE_TOOLARGE').$max);
             return false;
         }
         return true;
@@ -220,13 +220,13 @@ class Calendar_Validator
         $min = 0;
         if ($min > $s) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Second', $s, CALENDAR_VALUE_TOOSMALL.$min);
+                'Second', $s, Configure::read('CALENDAR_VALUE_TOOSMALL').$min);
             return false;
         }
         $max = ($this->cE->getSecondsInMinute($this->calendar->thisMinute())-1);
         if ($s > $max) {
             $this->errors[] = new Calendar_Validation_Error(
-                'Second', $s, CALENDAR_VALUE_TOOLARGE.$max);
+                'Second', $s, Configure::read('CALENDAR_VALUE_TOOLARGE').$max);
             return false;
         }
         return true;

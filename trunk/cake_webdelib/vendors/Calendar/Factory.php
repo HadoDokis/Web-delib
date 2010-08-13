@@ -29,8 +29,8 @@
  * Allows Calendar include path to be redefined
  * @ignore
  */
-if (!defined('CALENDAR_ROOT')) {
-    define('CALENDAR_ROOT', 'Calendar'.DIRECTORY_SEPARATOR);
+if (!Configure::read('CALENDAR_ROOT')) {
+    Configure::write('CALENDAR_ROOT', 'Calendar'.DS);
 }
 
 /**
@@ -72,26 +72,26 @@ class Calendar_Factory
      */
     function create($type, $y = 2000, $m = 1, $d = 1, $h = 0, $i = 0, $s = 0)
     {
-        $firstDay = defined('CALENDAR_FIRST_DAY_OF_WEEK') ? CALENDAR_FIRST_DAY_OF_WEEK : 1;
+        $firstDay = Configure::read('CALENDAR_FIRST_DAY_OF_WEEK') ? Configure::read('CALENDAR_FIRST_DAY_OF_WEEK') : 1;
         switch ($type) {
             case 'Day':
                // require_once CALENDAR_ROOT.'Day.php';
                 return new Calendar_Day($y,$m,$d);
             case 'Month':
                 // Set default state for which month type to build
-                if (!defined('CALENDAR_MONTH_STATE')) {
-                    define('CALENDAR_MONTH_STATE', CALENDAR_USE_MONTH);
+                if (!Configure::read('CALENDAR_MONTH_STATE')) {
+                    Configure::write('CALENDAR_MONTH_STATE', Configure::read('CALENDAR_USE_MONTH'));
                 }
-                switch (CALENDAR_MONTH_STATE) {
-                    case CALENDAR_USE_MONTH_WEEKDAYS:
+                switch (Configure::read('CALENDAR_MONTH_STATE')) {
+                    case Configure::read('CALENDAR_USE_MONTH_WEEKDAYS'):
                        // require_once CALENDAR_ROOT.'Month/Weekdays.php';
                         $class = 'Calendar_Month_Weekdays';
                         break;
-                    case CALENDAR_USE_MONTH_WEEKS:
+                    case Configure::read('CALENDAR_USE_MONTH_WEEKS'):
                         //require_once CALENDAR_ROOT.'Month/Weeks.php';
                         $class = 'Calendar_Month_Weeks';
                         break;
-                    case CALENDAR_USE_MONTH:
+                    case Configure::read('CALENDAR_USE_MONTH'):
                     default:
                         //require_once CALENDAR_ROOT.'Month.php';
                         $class = 'Calendar_Month';
@@ -99,19 +99,19 @@ class Calendar_Factory
                 }
                 return new $class($y, $m, $firstDay);
             case 'Week':
-                require_once CALENDAR_ROOT.'Week.php';
+                require_once Configure::read('CALENDAR_ROOT').'Week.php';
                 return new Calendar_Week($y, $m, $d, $firstDay);
             case 'Hour':
-                require_once CALENDAR_ROOT.'Hour.php';
+                require_once Configure::read('CALENDAR_ROOT').'Hour.php';
                 return new Calendar_Hour($y, $m, $d, $h);
             case 'Minute':
-                require_once CALENDAR_ROOT.'Minute.php';
+                require_once Configure::read('CALENDAR_ROOT').'Minute.php';
                 return new Calendar_Minute($y, $m, $d, $h, $i);
             case 'Second':
-                require_once CALENDAR_ROOT.'Second.php';
+                require_once Configure::read('CALENDAR_ROOT').'Second.php';
                 return new Calendar_Second($y,$m,$d,$h,$i,$s);
             case 'Year':
-                require_once CALENDAR_ROOT.'Year.php';
+                require_once Configure::read('CALENDAR_ROOT').'Year.php';
                 return new Calendar_Year($y);
             default:
                 require_once 'PEAR.php';
