@@ -90,9 +90,11 @@
   *) Correction d'un bug lors de l'enregistrement des PVs (en mode editeur en ligne).
   *) Correction d'encodage des caractères spéciaux (CP1252).
   *) La premiere personne d'un circuit d'élaboration ne recevra plus le mail d'insertion mais le mail a traiter...
-  *) Lors d'un retour de dossier, la personne a qui est renvoyé le dossier recevra un mail de notification.
-  *) Rétablissement du menu sinon cela posait un problème de droit.
-  *) Correction de problème d'encodage lorsque l'on utilise l'éditeur en ligne en mode 'source'
-  *) Désactivation du bouton précédent du navigateur pour eviter les effets de bords (exemple, je clique sur précédent apres avoir validé un projet...)
-  *) Patch pour les navigateurs IE 6 : le message jgrowl empeche l'ouverture de la page avec ce navigateur.
-  *) Envoi d'un mail lors du retour d'un dossier dans la banette à Traiter.
+  *) Lors d'un retour de dossier, la personne a qui est renvoyé le dossier recevra un mail de notification. 
+  *) Rétablissement du menu sinon cela posait un problème de droit. 
+  *) Correction de problème d'encodage lorsque l'on utilise l'éditeur en ligne en mode 'source' 
+  *) Désactivation du bouton précédent du navigateur pour eviter les effets de bords (exemple, je clique sur précédent apres avoir validé un projet...) 
+  *) Patch pour les navigateurs IE 6 : le message jgrowl empeche l'ouverture de la page avec ce navigateur. 
+2.2
+===
+  *) Upgrade du framework CakePHP 1.2.7 
