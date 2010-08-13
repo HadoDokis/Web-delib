@@ -40,7 +40,7 @@
 class AppModel extends Model{
 
 
-function isUnique($field, $value, $id)
+/*function isUnique($field, $value, $id)
     {
         $fields[$this->name.'.'.$field] = $value;
         if (empty($id))
@@ -58,6 +58,6 @@ function isUnique($field, $value, $id)
         }
         else 
             return true;
-   }
+   }*/
 }
 ?>
