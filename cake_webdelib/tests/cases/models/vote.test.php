@@ -2,9 +2,9 @@
 
 	require_once( dirname( __FILE__ ).'/../cake_app_model_test_case.php' );
 
-	App::import('Model', 'Seance');
+	App::import('Model', 'Vote');
 
-	class SeanceTestCase extends CakeAppModelTestCase {
+	class VoteTestCase extends CakeAppModelTestCase {
 
 	}
 
