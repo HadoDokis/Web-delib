@@ -50,17 +50,17 @@ class adLDAP {
 	// http://adldap.sourceforge.net/faq.php
 
 	// You can set your default variables here, or when you invoke the class
-	var $_account_suffix = ACCOUNT_SUFFIX;
-	var $_base_dn = BASE_DN; 
+	var $_account_suffix = Configure::read('ACCOUNT_SUFFIX');
+	var $_base_dn = Configure::read('BASE_DN'); 
 	
 	// An array of domain controllers. Specify multiple controllers if you 
 	// would like the class to balance the LDAP queries amongst multiple servers
-	var $_domain_controllers = array (LDAP_HOST);
+	var $_domain_controllers = array (LDAP_Configure::read('HOST'));
 	
 	// optional account with higher privileges for searching
 	// not really that optional because you can't query much as a user
-	var $_ad_username=LDAP_LOGIN;
-	var $_ad_password=LDAP_PASSWD;
+	var $_ad_username=Configure::read('LDAP_LOGIN');
+	var $_ad_password=Configure::read('LDAP_PASSWD');
 	
 	// AD does not return the primary group. http://support.microsoft.com/?kbid=321360
 	// This tweak will resolve the real primary group, but may be resource intensive. 
@@ -171,8 +171,8 @@ class adLDAP {
 	
 	// Add a user to a group
 	function group_add_user($group,$user){
-		//adding a user is a bit fiddly, we need to get the full DN of the user
-		//and add it using the full DN of the group
+		//adding a user is a bit fiddly, we need to get the full Configure::read('DN') of the user
+		//and add it using the full Configure::read('DN') of the group
 		
 		//find the user's dn
 		$user_info=$this->user_info($user,array("cn"));
@@ -639,20 +639,20 @@ class adLDAP {
 			if (in_array("INTERDOMAIN_TRUST_ACCOUNT",$options)){ $val=$val+2048; }
 			if (in_array("WORKSTATION_TRUST_ACCOUNT",$options)){ $val=$val+4096; }
 			if (in_array("SERVER_TRUST_ACCOUNT",$options)){ $val=$val+8192; }
-			if (in_array("DONT_EXPIRE_PASSWORD",$options)){ $val=$val+65536; }
+			if (in_array("DONT_EXPIRE_Configure::read('PASSWORD')",$options)){ $val=$val+65536; }
 			if (in_array("MNS_LOGON_ACCOUNT",$options)){ $val=$val+131072; }
 			if (in_array("SMARTCARD_REQUIRED",$options)){ $val=$val+262144; }
 			if (in_array("TRUSTED_FOR_DELEGATION",$options)){ $val=$val+524288; }
 			if (in_array("NOT_DELEGATED",$options)){ $val=$val+1048576; }
 			if (in_array("USE_DES_KEY_ONLY",$options)){ $val=$val+2097152; }
 			if (in_array("DONT_REQ_PREAUTH",$options)){ $val=$val+4194304; } 
-			if (in_array("PASSWORD_EXPIRED",$options)){ $val=$val+8388608; }
+			if (in_array("Configure::read('PASSWORD')_EXPIRED",$options)){ $val=$val+8388608; }
 			if (in_array("TRUSTED_TO_AUTH_FOR_DELEGATION",$options)){ $val=$val+16777216; }
 		}
 		return ($val);
 	}
 	
-	// Take an ldap query and return the nice names, without all the LDAP prefixes (eg. CN, DN)
+	// Take an ldap query and return the nice names, without all the LDAP prefixes (eg. CN, Configure::read('DN'))
 	function nice_names($groups){
 
 		$group_array=array();
