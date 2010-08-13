@@ -35,7 +35,7 @@ class DroitsHelper extends Helper {
 			if ($menu['nbElement']>0) {
 				$idTogColImgId = $celId . 'Img';
 				$htmlCel .=  "<a href=\"javascript:toggleCol('$celId', ".$menu['nbElement'].", $nbLigneTable, '$idTogColImgId');\">";
-				$htmlCel .=  $this->Html->image('/icons/replier.png', array('id'=>$idTogColImgId));
+				$htmlCel .=  $this->Html->image('/img/icons/replier.png', array('id'=>$idTogColImgId));
 				$htmlCel .=  "</a> ";
 			};
 			$htmlCel .= $menu['title'] . '</th>';
@@ -76,7 +76,6 @@ class DroitsHelper extends Helper {
 
 /* Affiche les lignes du tableau (récursive) */
 	function _afficheLigneTableau($profilsTree, $structColonnes, $nbCol, $tabDroits, &$iLigne=0, $prof=0) {
-
 		// Initialisations
 		static $altProfil = false;
 		$altUser = false;
@@ -96,9 +95,9 @@ class DroitsHelper extends Helper {
 					if ($profil['nbElement']>0) {
 						$togLigImgId = 'togLigImg' . $iLigne;
 						echo "<a href=\"javascript:toggleLigne(" . ($iLigne+1) . ", " . ($iLigne+$profil['nbElement']) . ", '$togLigImgId');\">";
-						echo $this->Html->image('/icons/replier.png', array('id'=>$togLigImgId));
+						echo $this->Html->image('/img/icons/replier.png', array('id'=>$togLigImgId));
 						echo "</a>";
-					} else echo $this->Html->image('/icons/tiret.png');
+					} else echo $this->Html->image('/img/icons/tiret.png');
 
 					if ($profil['libelle'] == 'Sans profil') echo ' Utilisateurs sans profil';
 					else echo 'Profil : ' . $profil['libelle'];
@@ -107,7 +106,8 @@ class DroitsHelper extends Helper {
 				// Affichage des cellules du profil
 				for($i=1; $i<=$nbCol; $i++) {
 					echo '<td id=\'l'.$iLigne.'c'.$i.'\'>';
-					echo "<input type='checkbox' " . ($tabDroits[$iLigne-1][$i-1]=='1' ? "checked " : "") . "onclick='toggleCheckBox($i, ".($i+$structColonnes[$i-1]).", $iLigne, " . ($iLigne+$profil['nbElement']) . ")'></input>";
+					$tabDroitValue = Set::classicExtract( $tabDroits, ( $iLigne-1 ).'.'.( $i-1 ) );
+					echo "<input type='checkbox' " . ($tabDroitValue=='1' ? "checked " : "") . "onclick='toggleCheckBox($i, ".($i+$structColonnes[$i-1]).", $iLigne, " . ($iLigne+$profil['nbElement']) . ")'></input>";
 					echo '</td>';
 				}
 			echo '</tr>';
