@@ -12,7 +12,12 @@ class InfosupdefsController extends AppController
 		'delete' => 'Infosupdefs:index',
 		'view' => 'Infosupdefs:index',
 		'changerOrdre' => 'Infosupdefs:index'
-		);
+	);
+	
+	function beforeFilter() {
+		$this->set('Infosupdef',$this->Infosupdef);
+		parent::beforeFilter();
+	}
 
 	function index() {
 		$this->data = $this->{$this->modelClass}->findAll(null, null, 'ordre', null, 1, -1);
@@ -104,7 +109,7 @@ class InfosupdefsController extends AppController
 			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : suppression impossible');
 		elseif (!$this->{$this->modelClass}->isDeletable($aSupprimer, $messageErreur))
 			$this->Session->setFlash($messageErreur);
-		elseif ($this->{$this->modelClass}->del($id)) {
+		elseif ($this->{$this->modelClass}->delete($id)) {
 			$this->{$this->modelClass}->Infosuplistedef->delList($id);
 			$this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$aSupprimer['Infosupdef']['nom'].'\' a &eacute;t&eacute; supprim&eacute;e');
 		}

@@ -2,14 +2,20 @@
 class TypeseancesController extends AppController {
 
 	var $name = 'Typeseances';
-	var $helpers = array('Html', 'Form');
 	var $uses = array('Typeseance', 'Model', 'Compteur', 'Seance');
 
 	// Gestion des droits
-	var $commeDroit = array('edit'=>'Typeseances:index', 'add'=>'Typeseances:index', 'delete'=>'Typeseances:index', 'view'=>'Typeseances:index');
+	var $commeDroit = array(
+		'edit'=>'Typeseances:index',
+		'add'=>'Typeseances:index',
+		'delete'=>'Typeseances:index',
+		'view'=>'Typeseances:index'
+	);
 
 	function index() {
 		$this->set('typeseances', $this->Typeseance->findAll());
+		$this->set('Typeseance', $this->Typeseance);
+		$this->set('Typeseances', $this);
 	}
 
 	function view($id = null) {
@@ -24,7 +30,6 @@ class TypeseancesController extends AppController {
 	function add() {
 		$sortie = false;
 		if (!empty($this->data)) {
-			$this->cleanUpFields();
 			if ($this->Typeseance->save($this->data)) {
 				$this->Session->setFlash('Le type de seance \''.$this->data['Typeseance']['libelle'].'\' a &eacute;t&eacute; sauvegard&eacute;');
 				$sortie = true;
@@ -34,10 +39,10 @@ class TypeseancesController extends AppController {
 		if ($sortie)
 			$this->redirect('/typeseances/index');
 		else {
-			$this->set('compteurs', $this->Typeseance->Compteur->generateList());
-			$this->set('models', $this->Typeseance->Modelpvdetaille->generateList('type=\'Document\'', null, null, "{n}.Modelpvdetaille.id", "{n}.Modelpvdetaille.modele"));
+			$this->set('compteurs', $this->Typeseance->Compteur->find('list'));
+			$this->set('models', $this->Model->find('list',array('conditions'=>array('type'=>'Document'),'fields' => array('Model.id','Model.modele'))));
 			$this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true), 1 => $this->Typeseance->libelleAction(1, true)));
-			$this->set('typeacteurs', $this->Typeseance->Typeacteur->generateList());
+			$this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
 			$this->set('selectedTypeacteurs', null);
 			$this->set('acteurs', $this->Typeseance->Acteur->generateList('nom'));
 			$this->set('selectedActeurs', null);
@@ -57,7 +62,6 @@ class TypeseancesController extends AppController {
 				$this->set('selectedActeurs', $this->_selectedArray($this->data['Acteur']));
 			}
 		} else {
-			$this->cleanUpFields();
 			if ($this->Typeseance->save($this->data)) {
 				$this->Session->setFlash('Le type de s&eacute;ance \''.$this->data['Typeseance']['libelle'].'\' a &eacute;t&eacute; modifi&eacute;');
 				$sortie = true;
@@ -75,10 +79,10 @@ class TypeseancesController extends AppController {
 		if ($sortie)
 			$this->redirect('/typeseances/index');
 		else {
-			$this->set('compteurs', $this->Typeseance->Compteur->generateList());
-			$this->set('models', $this->Typeseance->Modelpvdetaille->generateList('type=\'Document\'', null, null, "{n}.Modelpvdetaille.id", "{n}.Modelpvdetaille.modele"));
+			$this->set('compteurs', $this->Typeseance->Compteur->find('list'));
+			$this->set('models', $this->Model->find('list',array('conditions'=>array('type'=>'Document'), 'fields' => array('Model.id','Model.modele'))));
 			$this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true), 1 => $this->Typeseance->libelleAction(1, true)));
-			$this->set('typeacteurs', $this->Typeseance->Typeacteur->generateList());
+			$this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
 			$this->set('acteurs', $this->Typeseance->Acteur->generateList('nom'));
 		}
 	}

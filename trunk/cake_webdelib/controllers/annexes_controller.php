@@ -23,26 +23,26 @@ class AnnexesController extends AppController {
 	}
 
 	function getFileType($id=null) {
-		$condition = "Annex.id = $id";
-       	$objCourant = $this->Annex->findAll($condition);
+		$condition = array("Annex.id" => $id);
+       	$objCourant = $this->Annex->find('all', array('conditions'=>$condition));
 		return $objCourant['0']['Annex']['filetype'];
 	}
 
 	function getFileName($id=null) {
-		$condition = "Annex.id = $id";
-       	$objCourant = $this->Annex->findAll($condition);
+		$condition = array("Annex.id" => $id);
+       	$objCourant = $this->Annex->find('all', array('conditions'=>$condition));
 		return $objCourant['0']['Annex']['filename'];
 	}
 
 	function getSize($id=null) {
-		$condition = "Annex.id = $id";
-       	$objCourant = $this->Annex->findAll($condition);
+		$condition = array("Annex.id" => $id);
+       	$objCourant = $this->Annex->find('all', array('conditions'=>$condition));
 		return $objCourant['0']['Annex']['size'];
 	}
 
 	function getData($id=null) {
-		$condition = "Annex.id = $id";
-       	$objCourant = $this->Annex->findAll($condition);
+		$condition = array("Annex.id" => $id);
+       	$objCourant = $this->Annex->find('all', array('conditions'=>$condition));
 		return $objCourant['0']['Annex']['data'];
 	}
 

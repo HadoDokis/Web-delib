@@ -42,7 +42,7 @@ class UtilsComponent extends Object
 		else
 		{
 		    $temp = explode('/', $dateFr);
-		    return($temp[2].'-'.$temp[1].'-'.$temp[0]);;
+		    return($temp[2].'-'.$temp[1].'-'.$temp[0]);
 		}
 	}
 	

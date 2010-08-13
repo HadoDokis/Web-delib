@@ -2,13 +2,17 @@
 class SeancesController extends AppController {
 
 	var $name = 'Seances';
-	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2');
+	var $helpers = array('Html', 'Form', 'Form2', 'Javascript', 'Fck', 'Html2');
 	var $components = array('Date','Email', 'Gedooo');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex', 'Typeseance', 'Acteur');
 	var $cacheAction = 0;
 
 	// Gestion des droits
-	var $demandeDroit = array('listerFuturesSeances', 'add', 'afficherCalendrier');
+	var $demandeDroit = array(
+		'listerFuturesSeances',
+		'add',
+		'afficherCalendrier'
+	);
 	var $commeDroit = array(
 		'index'=>'Seances:listerFuturesSeances',
 		'view'=>'Seances:listerFuturesSeances',
@@ -50,28 +54,30 @@ class SeancesController extends AppController {
 	}
 
 	function add($timestamp=null) {
+		$this->set('typeseances', $this->Seance->Typeseance->find('list'));
+		$this->set('selectedTypeseances', null);
+		
 		if (empty($this->data)) {
 			if (isset($timestamp))
 			    $this->set('date', date('d/m/Y',$timestamp));
-
-			$this->set('typeseances', $this->Seance->Typeseance->generateList());
-			$this->set('selectedTypeseances', null);
 			$this->render();
 		} else {
-			$this->cleanUpFields('Seance');
-			$this->data['Seance']['date']=  $this->Utils->FrDateToUkDate($this->params['form']['date']);
-			$this->data['Seance']['date'] = $this->data['Seance']['date'].' '.$this->data['Seance']['date_hour'].':'.$this->data['Seance']['date_min'];
-
-			if ($this->Seance->save($this->data)) {
-				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
-				$this->redirect('/seances/listerFuturesSeances');
-			} else {
-				$this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-				$this->set('typeseances', $this->Seance->Typeseance->generateList());
-				if (empty($this->data['Typeseance']['Typeseance'])) {
-					$this->data['Typeseance']['Typeseance'] = null;
+			if (count(explode('/',$this->params['form']['date']))!=3) {
+				$this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type'=>'erreur'));
+			}
+			else {
+				$this->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($this->params['form']['date']);
+				$this->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
+				if ($this->Seance->save($this->data)) {
+					$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
+					$this->redirect('/seances/listerFuturesSeances');
+				} else {
+					$this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
+					if (empty($this->data['Typeseance']['Typeseance'])) {
+						$this->data['Typeseance']['Typeseance'] = null;
+					}
+					$this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
 				}
-				$this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
 			}
 		}
 	}
@@ -83,11 +89,10 @@ class SeancesController extends AppController {
 				$this->redirect('/seances/listerFuturesSeances');
 			}
 			$this->data = $this->Seance->read(null, $id);
-			$this->set('typeseances', $this->Seance->Typeseance->generateList());
 			if (empty($this->data['Typeseance'])) { $this->data['Typeseance'] = null; }
 				$this->set('selectedTypeseances', $this->_selectedArray($this->data['Typeseance']));
 		} else {
-			$this->cleanUpFields('Seance');
+			$this->data['Seance']['date'] = $this->data['Seance']['date']['year'].'-'.$this->data['Seance']['date_month'].'-'.$this->data['Seance']['date']['day'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
 			if ($this->Seance->save($this->data)) {
 				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
 				$this->redirect('/seances/listerFuturesSeances');
@@ -97,6 +102,7 @@ class SeancesController extends AppController {
 					$this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
 			}
 		}
+		$this->set('typeseances', $this->Seance->Typeseance->find('list'));
 	}
 
 	function delete($id = null) {
@@ -115,8 +121,8 @@ class SeancesController extends AppController {
 	}
 
 	function listerFuturesSeances() {
-            $this->set('AFFICHE_CONVOCS_ANONYME', AFFICHE_CONVOCS_ANONYME);
-            $this->set('USE_GEDOOO', USE_GEDOOO);
+            $this->set('AFFICHE_CONVOCS_ANONYME', Configure::read('AFFICHE_CONVOCS_ANONYME'));
+            $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
             if (empty ($this->data)) {
                 $condition= 'Seance.traitee = 0';
 	        $seances = $this->Seance->findAll(($condition),null,'date asc');
@@ -152,12 +158,13 @@ class SeancesController extends AppController {
 	        $result = $this->_stockDelibs($seance_id);
 
 	    if ($result || $this->data['Typeseance']['action']== 1) {
-                $this->data['Seance']['traitee']=1;
-                if ($this->Seance->save($this->data))
-                $this->redirect('/seances/listerFuturesSeances');
+                if ($this->Seance->saveField('traitee', 1))
+                	$this->redirect('/seances/listerFuturesSeances');
 	    }
 	    else 
 	        $this->Session->setFlash("Au moins une délibération n'a pas été générée correctement : La séance ne peut pas être cloturée.");
+	        
+	    $this->redirect('/seances/details/'.$seance_id);
 	}
 
         function _stockDelibs($seance_id) {
@@ -186,10 +193,10 @@ class SeancesController extends AppController {
 	}
 
 	function afficherCalendrier ($annee=null){
+	
+		require_once(APP_PATH.'vendors'.DS.'Calendar'.DS.'includeCalendarVendor.php');
 
-		vendor('Calendar/includeCalendarVendor');
-
-		define ('CALENDAR_MONTH_STATE',CALENDAR_USE_MONTH_WEEKDAYS);
+		Configure::write('CALENDAR_MONTH_STATE',Configure::read('CALENDAR_USE_MONTH_WEEKDAYS'));
 
 		if (!isset($annee))
 		     $annee = date('Y');
@@ -210,7 +217,7 @@ class SeancesController extends AppController {
 
 		$calendrier = "<table>\n<tr   style=\"vertical-align:top;\">\n";
 		while ( $Month = $Year->fetch() ) {
-
+		
 	  		$calendrier .= "<td><table class=\"month\">\n" ;
 	     	$calendrier .= "<caption class=\"month\">".$this->Date->months[$Month->thisMonth('int')]."</caption>\n" ;
 	     	$calendrier .= "<tr><th>Lu</th><th>Ma</th><th>Me</th><th>Je</th><th>Ve</th><th>Sa</th><th>Di</th></tr>\n";
@@ -256,32 +263,31 @@ class SeancesController extends AppController {
 		$this->set('calendrier',$calendrier);
 	}
 
-	function afficherProjets ($id=null, $return=null)
-	{
-		$condition= "seance_id=$id AND (etat != -1 )";
+	function afficherProjets ($id=null, $return=null) {
+		$condition= array ("seance_id"=>$id, "etat <>"=>"-1");
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->Deliberation->getLastPosition($id) - 1 );
-			$deliberations = $this->Deliberation->findAll($condition,null,'Deliberation.position ASC');
+			$deliberations = $this->Deliberation->find('all', array ('conditions'=>$condition,'order'=>array('Deliberation.position ASC')));
+			$lst_pos=array();
 			for ($i=0; $i<count($deliberations); $i++) {
 				$id_service = $deliberations[$i]['Service']['id'];
 				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 				$lst_pos[$i+1] = $i+1;
 			}
 			$this->set('seance_id', $id);
-			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
+			$this->set('rapporteurs', $this->Acteur->generateListElus());
 			$this->set('projets', $deliberations);
 			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->GetDate($id))));
 			$this->set('lst_pos', $lst_pos);
 		}
 		else
-		    return ($this->Deliberation->findAll($condition,null,'Deliberation.position ASC'));
+		    return ($this->Deliberation->find('all',array('conditions'=>$condition,'order'=>array('Deliberation.position ASC'))));
 	}
 
     function changeRapporteur($newRapporteur,$delib_id) {
-    	$this->Deliberation->create();
-    	$this->data['Deliberation']['id']=$delib_id;
+    	$this->data = $this->Deliberation->read(null, $delib_id);
     	$this->data['Deliberation']['rapporteur_id']= $newRapporteur;
-		if ($this->Deliberation->save($this->data['Deliberation'])){
+		if ($this->Deliberation->save($this->data)){
     		//redirection sur la page oÃ¹ on Ã©tait avant de changer de service
        		$this->Redirect($this->Session->read('user.User.lasturl'));
        	}
@@ -302,25 +308,6 @@ class SeancesController extends AppController {
 		$condition = "Seance.id = $id";
         return $this->Seance->findAll($condition);
     }
-
-	function sendConvoc($user_id,  $convoc_path, $type_seance, $date_seance) {
-		$condition = "User.id = $user_id";
-		$data = $this->User->findAll($condition);
-		// Si l'utilisateur accepte les mails
-		if ($data['0']['User']['accept_notif']){
-			$to_mail = $data['0']['User']['email'];
-			$to_nom = $data['0']['User']['nom'];
-			$to_prenom = $data['0']['User']['prenom'];
-
-			$this->Email->template = 'email/convoquer';
-			$text = "Convocation";
-            $this->set('data', utf8_encode( "Vous venez de recevoir une convocation au  $type_seance du $date_seance"));
-            $this->Email->to = $to_mail;
-            $this->Email->subject = utf8_encode("Convocation au $type_seance du $date_seance");
-       	    $this->Email->attach($convoc_path, 'convocation.pdf');
-            $result = $this->Email->send();
-		}
-	}
 
 	function delUserFromList($user_id, $seance_id) {
 		$data = $this->Listepresence->findAll("seance_id = $seance_id AND user_id = $user_id");
@@ -345,7 +332,7 @@ class SeancesController extends AppController {
 	}
 
 	function details ($seance_id=null) {
-		$this->set('USE_GEDOOO', USE_GEDOOO);
+		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$deliberations=$this->afficherProjets($seance_id, 0);
 		$ToutesVotees = true;
 		for ($i=0; $i<count($deliberations); $i++){
@@ -413,20 +400,22 @@ class SeancesController extends AppController {
 				$this->data['Deliberation']['vote_nb_non'] = 0;
 				$this->data['Deliberation']['vote_nb_abstention'] = 0;
 				$this->data['Deliberation']['vote_nb_retrait'] = 0;
-				foreach($this->data['detailVote']as $acteur_id => $vote){
-					$this->Vote->create();
-					$this->data['Vote']['acteur_id']=$acteur_id;
-					$this->data['Vote']['delib_id']=$deliberation_id;
-					$this->data['Vote']['resultat']=$vote;
-			    	$this->Vote->save($this->data['Vote']);
-					if ($vote == 3)
-						$this->data['Deliberation']['vote_nb_oui']++;
-					elseif ($vote == 2)
-						$this->data['Deliberation']['vote_nb_non']++;
-					elseif ($vote == 4)
-						$this->data['Deliberation']['vote_nb_abstention']++;
-					elseif ($vote == 5)
-						$this->data['Deliberation']['vote_nb_retrait']++;
+				if (!empty($this->data['detailVote'])) {
+					foreach($this->data['detailVote'] as $acteur_id => $vote){
+						$this->Vote->create();
+						$this->data['Vote']['acteur_id']=$acteur_id;
+						$this->data['Vote']['delib_id']=$deliberation_id;
+						$this->data['Vote']['resultat']=$vote;
+						$this->Vote->save($this->data['Vote']);
+						if ($vote == 3)
+							$this->data['Deliberation']['vote_nb_oui']++;
+						elseif ($vote == 2)
+							$this->data['Deliberation']['vote_nb_non']++;
+						elseif ($vote == 4)
+							$this->data['Deliberation']['vote_nb_abstention']++;
+						elseif ($vote == 5)
+							$this->data['Deliberation']['vote_nb_retrait']++;
+					}
 				}
 				if ($this->data['Deliberation']['vote_nb_oui']>$this->data['Deliberation']['vote_nb_non'])
 					$this->data['Deliberation']['etat'] = 3;
@@ -455,58 +444,58 @@ class SeancesController extends AppController {
 				$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id']);
 
 			$this->Deliberation->save($this->data);
-			$this->redirect('seances/details/'.$deliberation['Deliberation']['seance_id']);
+			$this->redirect('/seances/details/'.$deliberation['Deliberation']['seance_id']);
 		}
 	}
 
 
 	function saisirDebat ($id = null)	{
-            $seance_id = $this->Deliberation->getCurrentSeance($id);
-            $seance = $this->Seance->read(null, $seance_id);
-	    if ($seance['Seance']['pv_figes']==1) {
-                $this->Session->setFlash('Les pvs ont été figés, vous ne pouvez plus saisir de débat pour cette délibération...', 'growl', array('type'=>'erreur'));
-	        $this->redirect('/postseances/index');
-		exit;
-	    }
-	     
-            $isCommission = $seance['Typeseance']['action'];
+		$seance_id = $this->Deliberation->getCurrentSeance($id);
+		$seance = $this->Seance->read(null, $seance_id);
+		if ($seance['Seance']['pv_figes']==1) {
+			$this->Session->setFlash('Les pvs ont été figés, vous ne pouvez plus saisir de débat pour cette délibération...', 'growl', array('type'=>'erreur'));
+			$this->redirect('/postseances/index');
+			exit;
+		}
 
-            if (empty($this->data)) {
-                $this->data = $this->Deliberation->read(null, $id);
-	        $this->set('isCommission', $isCommission);
-	        $this->set('delib', $this->data);
-	    }
-            else {
-                if ( $isCommission == true) {
-                    if (isset($this->data['Deliberation']['texte_doc'])){
-                        if ($this->data['Deliberation']['texte_doc']['size']!=0){
-                            $this->data['Deliberation']['commission_name'] = $this->data['Deliberation']['texte_doc']['name'];
-                            $this->data['Deliberation']['commission_size'] = $this->data['Deliberation']['texte_doc']['size'];
-                            $this->data['Deliberation']['commission_type'] = $this->data['Deliberation']['texte_doc']['type'];
-                            $this->data['Deliberation']['commission']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
-                            unset($this->data['Deliberation']['texte_doc']);
-                        }
-                    }
-                }
-                else {
-		    if (isset($this->data['Deliberation']['texte_doc'])){
-                        if ($this->data['Deliberation']['texte_doc']['size']!=0){
-                            $this->data['Deliberation']['debat_name'] = $this->data['Deliberation']['texte_doc']['name'];
-                            $this->data['Deliberation']['debat_size'] = $this->data['Deliberation']['texte_doc']['size'];
-                            $this->data['Deliberation']['debat_type'] = $this->data['Deliberation']['texte_doc']['type'];
-                            $this->data['Deliberation']['debat']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
-                            unset($this->data['Deliberation']['texte_doc']);
-                        }
-                    }
-                }
+		$isCommission = $seance['Typeseance']['action'];
 
-		$this->data['Deliberation']['id']=$id;
-                if ($this->Deliberation->save($this->data)) {
-                    $this->redirect('/seances/saisirDebat/'.$id);
-                } else {
-                    $this->Session->setFlash('Please correct errors below.', 'growl', array('type'=>'erreur'));
-                }
-            }
+		if (empty($this->data)) {
+			$this->data = $this->Deliberation->read(null, $id);
+			$this->set('isCommission', $isCommission);
+			$this->set('delib', $this->data);
+		}
+		else {
+			if ( $isCommission == true) {
+				if (isset($this->data['Deliberation']['texte_doc'])){
+					if ($this->data['Deliberation']['texte_doc']['size']!=0){
+						$this->data['Deliberation']['commission_name'] = $this->data['Deliberation']['texte_doc']['name'];
+						$this->data['Deliberation']['commission_size'] = $this->data['Deliberation']['texte_doc']['size'];
+						$this->data['Deliberation']['commission_type'] = $this->data['Deliberation']['texte_doc']['type'];
+						$this->data['Deliberation']['commission']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+						unset($this->data['Deliberation']['texte_doc']);
+					}
+				}
+			}
+			else {
+				if (isset($this->data['Deliberation']['texte_doc'])){
+					if ($this->data['Deliberation']['texte_doc']['size']!=0){
+						$this->data['Deliberation']['debat_name'] = $this->data['Deliberation']['texte_doc']['name'];
+						$this->data['Deliberation']['debat_size'] = $this->data['Deliberation']['texte_doc']['size'];
+						$this->data['Deliberation']['debat_type'] = $this->data['Deliberation']['texte_doc']['type'];
+						$this->data['Deliberation']['debat']      = $this->getFileData($this->data['Deliberation']['texte_doc']['tmp_name'], $this->data['Deliberation']['texte_doc']['size']);
+						unset($this->data['Deliberation']['texte_doc']);
+					}
+				}
+			}
+
+			$this->data['Deliberation']['id']=$id;
+			if ($this->Deliberation->save($this->data)) {
+				$this->redirect('/seances/saisirDebat/'.$id);
+			} else {
+				$this->Session->setFlash('Please correct errors below.', 'growl', array('type'=>'erreur'));
+			}
+		}
 	}
 
 
@@ -521,61 +510,23 @@ class SeancesController extends AppController {
 			$this->set('annexes',$this->Annex->findAll('Annex.seance_id='.$id.' AND type="A"'));
 		        $this->set('seance', $this->data);
 		} else{
-                     if (isset($this->data['Seance']['texte_doc'])){
-			if ($this->data['Seance']['texte_doc']['size']!=0){
-                             $this->data['Seance']['id'] = $id;
-			     $this->data['Seance']['debat_global_name'] = $this->data['Seance']['texte_doc']['name'];
-                             $this->data['Seance']['debat_global_size'] = $this->data['Seance']['texte_doc']['size'];
-                             $this->data['Seance']['debat_global_type'] = $this->data['Seance']['texte_doc']['type'];
-                             $this->data['Seance']['debat_global']      = $this->getFileData($this->data['Seance']['texte_doc']['tmp_name'], $this->data['Seance']['texte_doc']['size']);
-                             $this->Seance->save($this->data);
-                             unset($this->data['Seance']['texte_doc']);
-                         }
-                     }
+             if (isset($this->data['Seance']['texte_doc'])){
+				if ($this->data['Seance']['texte_doc']['size']!=0){
+                     $this->data['Seance']['id'] = $id;
+			    	 $this->data['Seance']['debat_global_name'] = $this->data['Seance']['texte_doc']['name'];
+                     $this->data['Seance']['debat_global_size'] = $this->data['Seance']['texte_doc']['size'];
+                     $this->data['Seance']['debat_global_type'] = $this->data['Seance']['texte_doc']['type'];
+                     $this->data['Seance']['debat_global']      = $this->getFileData($this->data['Seance']['texte_doc']['tmp_name'], $this->data['Seance']['texte_doc']['size']);
+                     $this->Seance->save($this->data);
+                     unset($this->data['Seance']['texte_doc']);
+                 }
+             }
 
-		        $this->data['Seance']['id']=$id;
-			if(!empty($this->params['form']))
-			{
-				$seance = array_shift($this->params['form']);
-				$annexes = $this->params['form'];
-
-				$uploaded = true;
-				$size = count($this->params['form']);
-				$counter = 1;
-
-				while($counter <= ($size/2))
-				{
-					if(!is_uploaded_file($annexes['file_'.$counter]['tmp_name'])){
-						$uploaded = false;
-					}
-					$counter++;
-				}
-
-				if($uploaded) {
-					if ($this->Seance->save($this->data)) {
-					$counter = 1;
-
-						while($counter <= ($size/2)) {
-							$this->data['Annex']['id'] = null;
-							$this->data['Annex']['deliberation_id'] = 0;
-							$this->data['Annex']['seance_id'] = $id;
-							$this->data['Annex']['titre'] = $annexes['titre_'.$counter];
-							$this->data['Annex']['type'] = 'A';
-							$this->data['Annex']['filename'] = $annexes['file_'.$counter]['name'];
-							$this->data['Annex']['filetype'] = $annexes['file_'.$counter]['type'];
-							$this->data['Annex']['size'] = $annexes['file_'.$counter]['size'];
-							$this->data['Annex']['data'] = $this->getFileData($annexes['file_'.$counter]['tmp_name'], $annexes['file_'.$counter]['size']);
-							if(!$this->Annex->save($this->data))
-							{
-								echo "pb de sauvegarde de l\'annexe ".$counter;
-							}
-						$counter++;
-						}
-						$this->redirect('/seances/listerFuturesSeances');
-					} else {
-						$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-					}
-				}
+	        $this->data['Seance']['id']=$id;
+			if ($this->Seance->save($this->data)) {
+				$this->redirect('/seances/listerFuturesSeances');
+			} else {
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
 			}
 		}
 	}
@@ -594,7 +545,6 @@ class SeancesController extends AppController {
 		        $toutesVisees = false;
 		}
 
-		$this->set('USE_GEDOOO', USE_GEDOOO);
 		$this->set('deliberations',$deliberations);
 		$this->set('date_seance', $this->Date->frenchDateConvocation($date_tmpstp));
 		$this->set('seance_id', $seance_id);
@@ -642,7 +592,12 @@ class SeancesController extends AppController {
 		else {
 			$this->data = $deliberation;
 			$this->set('avis', array(1 => 'Favorable', 2 => 'Défavorable'));
-			$this->set('seances', $this->Seance->generateList('Seance.id != ' . $seanceIdCourante));
+		    $user = $this->Session->read('user');
+			if ($this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))
+			    $afficherTtesLesSeances = true;
+		    else
+		        $afficherTtesLesSeances = false;
+			$this->set('seances', $this->Seance->generateList(array('Seance.id <>'=> $seanceIdCourante), $afficherTtesLesSeances));
 		}
 	}
 
@@ -654,14 +609,13 @@ class SeancesController extends AppController {
 	        $tab[$acteurConvoque['Acteur']['id']] =  $acteurConvoque['Acteur']['prenom'].' '. $acteurConvoque['Acteur']['nom'];
             $this->set('acteurs', $tab);
 
-	    if (empty($this->data)) {
-	        $this->set('selectedActeurs', $seance['Seance']['secretaire_id']);
-            }
-	    else {
-		$seance['Seance']['secretaire_id'] = $this->data['Acteur']['Acteur'];
-		if ($this->Seance->save($seance))
-		    $this->redirect('/seances/listerFuturesSeances');
-	    }
+			if (empty($this->data)) {
+			    $this->set('selectedActeurs', $seance['Seance']['secretaire_id']);
+		    }
+			else {
+				if ($this->Seance->saveField('secretaire_id',$this->data['Acteur']['secretaire_id']))
+					$this->redirect('/seances/listerFuturesSeances');
+			}
         }
 
         function getListActeurs($seance_id, $choixListe=1) {
@@ -853,16 +807,16 @@ class SeancesController extends AppController {
             $seance = $this->Seance->read(null, $seance_id); 
             $this->set('seance_id',$seance_id);
             if (empty($this->data)) {
-	        $this->data =  $seance;
-	    }
-	    else {
-                $seance['Seance']['commentaire'] = $this->data['Seance']['commentaire'];
-                if ($this->Seance->save($seance)) {
-                    $this->redirect('/seances/listerFuturesSeances');
-                } else {
-                    $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-                }
-            }
+	       		$this->data =  $seance;
+			}
+			else {
+				$this->Seance->id=$seance_id;
+	            if ($this->Seance->saveField('commentaire',$this->data['Seance']['commentaire'])) {
+	                $this->redirect('/seances/listerFuturesSeances');
+	            } else {
+	                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
+	            }
+	        }
 	}
 
 	function changePosition ($new_position, $delib_id) {

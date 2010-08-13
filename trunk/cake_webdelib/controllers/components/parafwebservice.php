@@ -2,43 +2,44 @@
 class ParafwebserviceComponent extends Object {
 	
 	var $requestPayloadString;
-	var $responseMessage;
+	var $responseMessage='';
 	
 	function test(){
 		return "test";
 	}	
 	
 	function lancerRequete($attachment=false){
+		
 		try {
 		    if(!$attachment){
 				$requestMessage = new WSMessage($this->requestPayloadString, 
 			        array(
-			        		"to"=>WSTO
+			        		"to"=>Configure::read('WSTO')
 			        	));
 		    }
 		    else {
 		    	$requestMessage = new WSMessage($this->requestPayloadString, 
 										        array(
-										        	"to" => WSTO,
+										        	"to" => Configure::read('WSTO'),
 										        	"attachments" => $attachment
 										       	));
 		    }
-		    
+
 		    $client = new WSClient(array (     								
-		     								"useSOAP"   => VERSSOAP,
-			              					"useMTOM"   => USEMTOM,
-			      							"action"    => WSACTION,
+		     								"useSOAP"   => Configure::read('VERSSOAP'),
+			              					"useMTOM"   => Configure::read('USEMTOM'),
+			      							"action"    => Configure::read('WSACTION'),
 			      							
-		      							   	"CACert"    => CACERT,         
-					                        "clientCert"=> CLIENTCERT,     
-					                        "passphrase"=> PASSPHRASE,     
+		      							   	"CACert"    => Configure::read('CACERT'),         
+					                        "clientCert"=> Configure::read('CLIENTCERT'),     
+					                        "passphrase"=> Configure::read('PASSPHRASE'),     
 		     								
-		     								"httpAuthUsername" => HTTPAUTH,    
-					                       	"httpAuthPassword" => HTTPPASSWD,
-					                       	"httpAuthType"     => HTTPTYPE,     
+		     								"httpAuthUsername" => Configure::read('HTTPAUTH'),    
+					                       	"httpAuthPassword" => Configure::read('HTTPPASSWD'),
+					                       	"httpAuthType"     => Configure::read('HTTPTYPE'),     
 		     
 			      							));
-		    
+
 		    $this->responseMessage = $client->request($requestMessage);		    
 		    //echo $this->responseMessage->str;
 	
@@ -259,6 +260,7 @@ class ParafwebserviceComponent extends Object {
 		$dom = new DomDocument();
 		$dom->loadXML($this->responseMessage->str);		
 		$dataset = $dom->getElementsByTagName( "SousType" );
+		$response=null;
 		foreach( $dataset as $row )
 		{
 			$response['soustype'][] = $row->nodeValue;

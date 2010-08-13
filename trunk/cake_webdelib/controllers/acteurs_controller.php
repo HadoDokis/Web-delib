@@ -3,7 +3,7 @@ class ActeursController extends AppController
 {
 	var $name = 'Acteurs';
 
-	var $helpers = array('Html', 'Html2');
+	var $helpers = array('Html', 'Html2', 'Form', 'Form2');
 
 	var $uses = array('Acteur', 'Deliberation', 'Vote');
 
@@ -13,12 +13,40 @@ class ActeursController extends AppController
 		'edit' => 'Acteurs:index',
 		'delete' => 'Acteurs:index',
 		'view' => 'Acteurs:index'
-		);
+	);
+		
+	var $paginate = array(
+		'Acteur' => array(
+			'limit' => 20,
+			'joins' => array(
+				array(
+					'table' => 'acteurs_services',
+					'alias' => 'ActeursServices',
+					'type' => 'left',
+					'conditions'=> array(
+						'ActeursServices.acteur_id = Acteur.id'
+					)
+				),
+				array(
+					'table' => 'services',
+					'alias' => 'Service',
+					'type' => 'left',
+					'conditions'=> array(
+						'Service.id = ActeursServices.service_id',
+						'Service.id' => 1
+					)
+				)
+			),
+			'order' => array(
+				'Acteur.nom' => 'asc'
+			)
+		)
+	);
 
-	function index($champTri = null, $sensTri = 'ASC')
-	{
-		$order = $champTri ? $champTri.' '.$sensTri : null;
-		$this->set('acteurs', $this->Acteur->findAll(null, null, $order));
+	function index() {
+		$this->set('acteurs', $this->paginate('Acteur'));
+		$this->set('Acteur',$this->Acteur);
+		$this->set('Acteurs',$this);
 	}
 
 	function view($id = null) {
@@ -33,6 +61,9 @@ class ActeursController extends AppController
 	function add() {
 		$sortie = false;
 		if (!empty($this->data)) {
+		    $this->data['Acteur']['date_naissance_day'] = $this->data['Acteur']['date_naissance']['day'];
+		    $this->data['Acteur']['date_naissance_month'] = $this->data['Acteur']['_month'];
+		    $this->data['Acteur']['date_naissance_year'] = $this->data['Acteur']['_year'];
 			if ($this->_controleEtSauve()) {
 				$this->Session->setFlash('L\'acteur \''.$this->data['Acteur']['prenom'].' '.$this->data['Acteur']['nom'].'\' a &eacute;t&eacute; ajout&eacute;');
 				$sortie = true;
@@ -43,8 +74,8 @@ class ActeursController extends AppController
 			$this->redirect('/acteurs/index');
 		else {
 			$this->Acteur->Typeacteur->recursive = 0;
-			$this->set('typeacteurs', $this->Acteur->Typeacteur->findAll(null, 'id, nom, elu'));
-			$this->set('services', $this->Acteur->Service->generateList('Service.actif=1'));
+			$this->set('typeacteurs', $this->Acteur->Typeacteur->find('all', array('fields'=>array( 'id', 'nom', 'elu'))));
+			$this->set('services', $this->Acteur->Service->generatetreelist(array('Service.actif'=>'1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
 			$this->set('selectedServices', null);
 			$this->render('edit');
 		}
@@ -74,8 +105,8 @@ class ActeursController extends AppController
 			$this->redirect('/acteurs/index');
 		else {
 			$this->Acteur->Typeacteur->recursive = 0;
-			$this->set('typeacteurs', $this->Acteur->Typeacteur->findAll(null, 'id, nom, elu'));
-			$this->set('services', $this->Acteur->Service->generateList('Service.actif=1'));
+			$this->set('typeacteurs', $this->Acteur->Typeacteur->find('all', array('fields'=>array( 'id', 'nom', 'elu'))));
+			$this->set('services', $this->Acteur->Service->generatetreelist(array('Service.actif'=>'1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
 		}
 	}
 
@@ -90,7 +121,7 @@ function _controleEtSauve() {
 			// pour un non élu : suppression des informations éventuellement saisies (service, position, date naissance)
 			if (array_key_exists('Service', $this->data))
 				$this->data['Service']['Service'] = array();
-			$this->data['Acteur']['position'] = 999;
+				$this->data['Acteur']['position'] = 999;
 	              $this->data['Acteur']['date_naissance_day'] = 0;
 	              $this->data['Acteur']['date_naissance_month'] = 0;
 	              $this->data['Acteur']['date_naissance_year'] = 0;
@@ -102,20 +133,19 @@ function _controleEtSauve() {
 	else {
              $this->data['Acteur']['date_naissance'] =  $this->data['Acteur']['date_naissance_year'].'-'.$this->data['Acteur']['date_naissance_month'].'-'.$this->data['Acteur']['date_naissance_day'];
 	}
-	//$this->cleanUpFields();
 	return $this->Acteur->save($this->data);
 }
 
 /* dans le controleur car utilisé dans la vue index pour l'affichage */
 	function _isDeletable($acteur, &$message) {
-		if ($this->Deliberation->findCount(array('rapporteur_id'=>$acteur['Acteur']['id']))) {
+		if ($this->Deliberation->find('count',array('conditions'=>array('rapporteur_id'=>$acteur['Acteur']['id'])))) {
 			$message = 'L\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' ne peut pas être supprimé car il est le rapporteur de délibérations';
 			return false;
 		}
-                if ($this->Vote->findCount(array('acteur_id'=>$acteur['Acteur']['id']))) {
-                        $message = 'L\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' ne peut pas être supprimé car il est le rapporteur de délibérations';
-                        return false;
-                }
+		if ($this->Vote->find('count',array('conditions'=>array('acteur_id'=>$acteur['Acteur']['id'])))) {
+			$message = 'L\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' ne peut pas être supprimé car il est le rapporteur de délibérations';
+			return false;
+		}
 
 		return true;
 	}

@@ -14,9 +14,9 @@ class DeliberationsController extends AppController {
  * Deliberation.avis = 2 : avis défavorable
  */
 	var $name = 'Deliberations';
-	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'fpdf', 'Html2' );
+	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
 	var $uses = array('Acteur', 'Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique');
-	var $components = array('Gedooo','Date','Utils','Email','Acl', 'Parafwebservice');
+	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Parafwebservice');
 
 	// Gestion des droits
 	var $demandeDroit = array(
@@ -34,7 +34,7 @@ class DeliberationsController extends AppController {
 		'goNext'
 	);
 
-        var $aucunDroit = array('accepteDossier');
+    var $aucunDroit = array('accepteDossier');
 
 	var $commeDroit = array(
 		'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
@@ -48,8 +48,14 @@ class DeliberationsController extends AppController {
 		'validerEnUrgence'=>'Deliberations:tousLesProjetsValidation'
 	);
 	var $libelleControleurDroit = 'Projets';
-	var $libellesActionsDroit = array('editerProjetValide' => 'Editer projets valid&eacute;s',
-	                                  'goNext'=> 'Sauter une étape');
+	var $ajouteDroit = array(
+		'editerProjetValide',
+		'goNext'
+	);
+	var $libellesActionsDroit = array(
+		'editerProjetValide' => 'Editer projets valid&eacute;s',
+		'goNext'=> 'Sauter une &eacute;tape'
+	);
 
 
 	function view($id = null) {
@@ -104,17 +110,16 @@ class DeliberationsController extends AppController {
 
 		$tab_circuit=$this->data['Deliberation']['circuit_id'];
 		$delib=array();
-
                 //on recupere la position courante de la deliberation
                 $this->data['positionDelib']=count($this->data['Traitement']);
 
 		//on recupere la position de l'user dans le circuit
 		$userscircuit = $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC');
-		if (USE_PARAPH)
-	            $soustypes    = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+		if (Configure::read('USE_PARAPH'))
+	            $soustypes    = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
 		for ($i = 0; $i <count ($userscircuit); $i++){
                     if($userscircuit[$i]['UsersCircuit']['service_id']== -1){
-		        $userscircuit[$i]['User']['prenom']= TYPETECH;
+		        $userscircuit[$i]['User']['prenom']= Configure::read('TYPETECH');
 		        $userscircuit[$i]['User']['nom']= $soustypes['soustype'][$userscircuit[$i]['UsersCircuit']['user_id']];
 		        $userscircuit[$i]['Service']['libelle']= 'i-parapheur';
                     }
@@ -136,22 +141,19 @@ class DeliberationsController extends AppController {
 		$redirect = '/pages/mes_projets';
 	    /* initialisation du rédateur et du service emetteur */
 	    $user = $this->Session->read('user');
-	    if ($this->Acl->check($user['User']['id'], "Deliberations:editerProjetValide"))
+	    if ($this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))
 	        $afficherTtesLesSeances = true;
-            else
-                $afficherTtesLesSeances = false;
-
+        else
+            $afficherTtesLesSeances = false;
 
 		if (!empty($this->data)) {
 			$this->data['Deliberation']['redacteur_id'] = $user['User']['id'];
 			$this->data['Deliberation']['service_id'] = $user['User']['service'];
 
-			if (($this->data['Deliberation']['seance_id'])!=null )
+			if (($this->data['Deliberation']['seance_id'])!=null)
 				$this->data['Deliberation']['position'] = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
-
 			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
-
-			if (!GENERER_DOC_SIMPLE){
+			if (!Configure::read('GENERER_DOC_SIMPLE')){
 				// Initialisation du texte de projet
 				if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
 					$this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
@@ -189,7 +191,6 @@ class DeliberationsController extends AppController {
 					}
 				}
 			}
-			$this->cleanUpFields();
 
 			if ($this->Deliberation->save($this->data)) {
 				$delibId = $this->Deliberation->getLastInsertId();
@@ -211,16 +212,18 @@ class DeliberationsController extends AppController {
 			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
 		}
-		if ($sortie)
-			$this->redirect($redirect);
+		if ($sortie) $this->redirect($redirect);
 		else {
 			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($user['User']['service']);
-			$this->data['Redacteur']['nom'] = $this->Deliberation->User->field('nom', 'User.id = ' . $user['User']['id']);
-			$this->data['Redacteur']['prenom'] = $this->Deliberation->User->field('prenom', 'User.id = ' . $user['User']['id']);
+			$this->data['Redacteur']['nom'] = $this->User->field('nom', array('User.id' => $user['User']['id']));
+			$this->data['Redacteur']['prenom'] = $this->User->field('prenom', array('User.id' => $user['User']['id']));
+			
+			$this->data['Deliberation']['created'] = date('Y-m-d H:i:s');
+			$this->data['Deliberation']['modified'] = date('Y-m-d H:i:s');
 
-			$this->set('themes', $this->Deliberation->Theme->generateList('Theme.actif=1','libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
-			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
-			$this->set('selectedRapporteur', $this->Deliberation->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
+			$this->set('themes', $this->Deliberation->Theme->generatetreelist(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+			$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
+			$this->set('selectedRapporteur', $this->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
 			$this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances));
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
@@ -306,34 +309,35 @@ class DeliberationsController extends AppController {
         function edit($id=null) {
 	         $user=$this->Session->read('user');
 	        /* initialisation du lien de redirection */
-		if ($this->Acl->check($user['User']['id'], "Pages:mes_projets"))
+		if ($this->Xacl->check($user['User']['id'], "Pages:mes_projets"))
 			$redirect = '/pages/mes_projets';
-		elseif ($this->Acl->check($user['User']['id'], "Pages:tous_les_projets"))
+		elseif ($this->Xacl->check($user['User']['id'], "Pages:tous_les_projets"))
 			$redirect = '/pages/tous_les_projets';
 		else
 			$redirect = '/';
 
-                if ($this->Acl->check($user['User']['id'], "Deliberations:editerProjetValide"))
+                if ($this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))
 	           $afficherTtesLesSeances = true;
                 else
 	           $afficherTtesLesSeances = false;
 
                 $pos  =  strrpos ( getcwd(), 'webroot');
-		$path = substr(getcwd(), 0, $pos);
+				$path = substr(getcwd(), 0, $pos);
                 $path_projet = $path."webroot/files/generee/projet/$id/";
 
 		if (empty($this->data)) {
+		
 			$this->data = $this->Deliberation->read(null, $id);
 
 			/* teste si le projet est modifiable par l'utilisateur connecté */
 			if (!$this->Deliberation->estModifiable($id, $user['User']['id']) &&
-				!($this->data['Deliberation']['etat'] == 2 && $this->Acl->check($user['User']['id'], "Deliberations:editerProjetValide"))
+				!($this->data['Deliberation']['etat'] == 2 && $this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))
 			) {
 				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
 				$this->redirect($redirect);
 			}
 
-			if (!GENERER_DOC_SIMPLE) {
+			if (!Configure::read('GENERER_DOC_SIMPLE')) {
 			    $this->Gedooo->createFile($path_projet, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
 			    $this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
 			    $this->Gedooo->createFile($path_projet, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
@@ -345,10 +349,10 @@ class DeliberationsController extends AppController {
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
 			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Service']['id']);
 
-			$this->set('themes', $this->Deliberation->Theme->generateList('Theme.actif=1','libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
-			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
+			$this->set('themes', $this->Deliberation->Theme->generatetreelist(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+			$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
-			$this->set('date_seances',$this->Seance->generateList(null ,$afficherTtesLesSeances ));
+			$this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances));
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
 			$this->set('redirect', $redirect);
@@ -364,9 +368,7 @@ class DeliberationsController extends AppController {
 					$this->data['Deliberation']['position'] = 0;
 			}
 
-			$this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
-
-			if (!GENERER_DOC_SIMPLE) {
+			if (!Configure::read('GENERER_DOC_SIMPLE')) {
                             if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
 				$this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
 				$this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
@@ -420,33 +422,35 @@ class DeliberationsController extends AppController {
                                 $this->data['Deliberation']['deliberation'] = $ts;
                             }
 			}
-			$this->cleanUpFields();
 
-			if (!GENERER_DOC_SIMPLE) { // pour pouvoir supprimer les annexes...
-                            foreach( $this->data['Infosup'] as $code => $val ){
-			        $infodef = $this->Infosupdef->find("Infosupdef.code='$code' AND Infosupdef.type='file' ", "Infosupdef.id");
-			        if (!empty($infodef['Infosupdef']['id'])){
-			            $infodef_id= $infodef['Infosupdef']['id'];
-			            if ($this->data['Infosup'][$code]['tmp_name'] == ""){
-			                $infoSup = $this->Infosup->find("deliberation_id=$id AND infosupdef_id= $infodef_id");
-				        $infoSup['Infosup']['file_name'] = '';
-				        $infoSup['Infosup']['file_size'] = 0;
-				        $infoSup['Infosup']['file_type'] = '';
-                                        $infoSup['Infosup']['content'] = '';
-                                        if ($this->Infosup->save($infoSup)) {
-					    unset($this->data['Infosup'][$code]);
-					    @unlink($path_projet.'infosup'.$infodef_id.'.odt');
+			if (!Configure::read('GENERER_DOC_SIMPLE')&&(isset($this->data['Infosup']))) { // pour pouvoir supprimer les annexes...
+				foreach( $this->data['Infosup'] as $code => $val ) {
+					$infodef = $this->Infosupdef->find("Infosupdef.code='$code' AND Infosupdef.type='file' ", "Infosupdef.id");
+					if (!empty($infodef['Infosupdef']['id'])){
+						$infodef_id= $infodef['Infosupdef']['id'];
+							if ($this->data['Infosup'][$code]['tmp_name'] == "") {
+								$infoSup = $this->Infosup->find("deliberation_id=$id AND infosupdef_id= $infodef_id");
+								$infoSup['Infosup']['file_name'] = '';
+								$infoSup['Infosup']['file_size'] = 0;
+								$infoSup['Infosup']['file_type'] = '';
+								$infoSup['Infosup']['content'] = '';
+								if ($this->Infosup->save($infoSup)) {
+								unset($this->data['Infosup'][$code]);
+								@unlink($path_projet.'infosup'.$infodef_id.'.odt');
+							}
+						}
 					}
-			            }
-			        }
-			    }
+				}
 			}
+			//debug($this->params['form']['date_limite']);
+			$this->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
+			//debug($this->data['Deliberation']['date_limite']);
 			if ($this->Deliberation->save($this->data)) {
 
 				// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
 				if (!empty($oldDelib['Deliberation']['seance_id']) AND ($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']))
 					$this->_PositionneDelibsSeance($oldDelib['Deliberation']['seance_id'], $oldDelib['Deliberation']['position'] );
-				/* sauvegarde des informations supplémentaires */
+				// sauvegarde des informations supplémentaires
 			        $infossupDefs = $this->Infosupdef->findAll("type='odtFile'", '', '', 0);
                                 foreach ( $infossupDefs as $infodef) {
                                     $infodef_id = $infodef['Infosupdef']['id'];
@@ -480,16 +484,16 @@ class DeliberationsController extends AppController {
 				if (array_key_exists('AnnexesD', $this->data))
 					foreach($this->data['AnnexesD'] as $annexe) $this->_saveAnnexe($id, $annexe, 'D');
                         
-			        $this->Session->setFlash("Le projet $id a été enregistré", 'growl' );
+			        $this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
 				$this->redirect($redirect);
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur') );
-				$this->set('services', $this->Deliberation->Service->generateList('Service.actif=1'));
-				$this->set('themes', $this->Deliberation->Theme->generateList('Theme.actif=1'));
-				$this->set('circuits', $this->Deliberation->Circuit->generateList());
+				$this->set('services', $this->Deliberation->Service->find('list',array('conditions'=>array('Service.actif'=>'1'))));
+				$this->set('themes', $this->Deliberation->Theme->find('list',array('conditions'=>array('Theme.actif'=>'1'))));
+				$this->set('circuits', $this->Deliberation->Circuit->find('list'));
 				$this->set('datelim',$this->data['Deliberation']['date_limite']);
 				$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id));
-				$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus('nom'));
+				$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
 				$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 				$this->set('redirect', $redirect);
 
@@ -499,6 +503,7 @@ class DeliberationsController extends AppController {
 					$retard=$seance['Typeseance']['retard'];
 					if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
 						$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+					else $tab[$seance['Seance']['id']]=$this->Seance->generateList(null, $afficherTtesLesSeances);
 				}
 				$this->set('date_seances',$tab);
 				$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
@@ -533,11 +538,11 @@ class DeliberationsController extends AppController {
 			array_push($delib, $deliberation);
 			$this->set('deliberation', $delib);
                         $userscircuit = $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC');
-                        if (USE_PARAPH)
-                             $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+                        if (Configure::read('USE_PARAPH'))
+                             $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
                         for ($i = 0; $i <count ($userscircuit); $i++){
                             if($userscircuit[$i]['UsersCircuit']['service_id']== -1){
-                                $userscircuit[$i]['User']['prenom']= TYPETECH;
+                                $userscircuit[$i]['User']['prenom']= Configure::read('TYPETECH');
                                 $userscircuit[$i]['User']['nom']= $soustypes['soustype'][$userscircuit[$i]['UsersCircuit']['user_id']];
                                 $userscircuit[$i]['Service']['libelle']= 'i-parapheur';
                             }
@@ -561,80 +566,72 @@ class DeliberationsController extends AppController {
 		$this->redirect('/deliberations/mesProjetsRedaction');
 	}
 
-   function convert($id=null) {
-            vendor('fpdf/html2fpdf');
-	    $pdf = new HTML2FPDF();
-	    $pdf->AddPage();
-	    $pdf->WriteHTML($this->requestAction("/models/generateProjet/$id"));
-	    $pos =  strrpos ( getcwd(), 'webroot');
-	    $path = substr(getcwd(), 0, $pos);
-	    $projet_path = $path."webroot/files/delibs/PROJET_$id.pdf";
-	    $pdf->Output($projet_path ,'F');
-	    $pdf->Output("projet_$id.pdf",'D');
-    }
+		function addIntoCircuit($id = null){
+			$this->data = $this->Deliberation->read(null,$id);
+			if ($this->data['Deliberation']['circuit_id']!= 0){
+			    $circuit = $this->Circuit->read(null, $this->data['Deliberation']['circuit_id']);
+			    $message = "Projet injecté au circuit : ".$circuit['Circuit']['libelle'];
+			    $this->Historique->enregistre($id, $this->Session->read('user.User.id'), $message);
+				$this->data['Deliberation']['id'] = $id;
+				$this->data['Deliberation']['date_envoi']=date('Y-m-d H:i:s', time());
+				$this->data['Deliberation']['etat']='1';
+				if ($this->Deliberation->save($this->data)) {
+					//on doit tester si la delib a une version anterieure, si c le cas il faut mettre a jour l'action dans la table traitement
+					$delib=$this->Deliberation->find("Deliberation.id = $id");
+					if ($delib['Deliberation']['anterieure_id']!=0) {
+						//il existe une version anterieure de la delib
+						//on met a jour le traitement anterieure
+						$anterieure=$delib['Deliberation']['anterieure_id'];
+						$condition="delib_id = $anterieure AND Traitement.position = '0'";
+						$traite=$this->Traitement->find($condition);
+						$traite['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
+						$this->Traitement->save($traite);
+					}
+					//enregistrement dans la table traitements
+					// TODO Voir comment ameliorer ce point (associations cakephp).
+					$circuit_id = $delib['Deliberation']['circuit_id'];
+					$this->data['Traitement']['id']='';
+					$this->data['Traitement']['delib_id']=$id;
+					$this->data['Traitement']['circuit_id']=$circuit_id;
+					$this->data['Traitement']['position']='1';
+					$this->Traitement->save($this->data['Traitement']);
 
-    function addIntoCircuit($id = null){
-        $this->data = $this->Deliberation->read(null,$id);
-    	if ($this->data['Deliberation']['circuit_id']!= 0){
-            $this->data['Deliberation']['id'] = $id;
-	    $this->data['Deliberation']['date_envoi']=date('Y-m-d H:i:s', time());
-            $this->data['Deliberation']['etat']='1';
-	    if ($this->Deliberation->save($this->data)) {
-	        //on doit tester si la delib a une version anterieure, si c le cas il faut mettre a jour l'action dans la table traitement
-		$delib=$this->Deliberation->find("Deliberation.id = $id");
-		if ($delib['Deliberation']['anterieure_id']!=0) {
-		    //il existe une version anterieure de la delib
-		    //on met a jour le traitement anterieure
-	  	    $anterieure=$delib['Deliberation']['anterieure_id'];
-	 	    $condition="delib_id = $anterieure AND Traitement.position = '0'";
-		    $traite=$this->Traitement->find($condition);
-		    $traite['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
-		    $this->Traitement->save($traite);
-		}
-		//enregistrement dans la table traitements
-		// TODO Voir comment ameliorer ce point (associations cakephp).
-		$circuit_id = $delib['Deliberation']['circuit_id'];
-		$this->data['Traitement']['id']='';
-		$this->data['Traitement']['delib_id']=$id;
-		$this->data['Traitement']['circuit_id']=$circuit_id;
-		$this->data['Traitement']['position']='1';
-		$this->Traitement->save($this->data['Traitement']);
+					//Envoi un mail a tous les membres du circuit
+					$condition = "circuit_id = $circuit_id";
+					$listeUsers = $this->UsersCircuit->findAll($condition);
+					foreach($listeUsers as $user){
+						if ($user['UsersCircuit']['service_id']!= -1) {
+							if ($user['UsersCircuit']['position']==1)
+								$this->_notifierDossierAtraiter($circuit_id, 1, $id);
+							else
+								$this->_notifierInsertionCircuit($id, $user['User']['id']);
+						}
+						else {
+							if (($user['UsersCircuit']['service_id']== -1)&&($user['UsersCircuit']['position']==1)) {
+								$model_id = $this->_getModelId($id);
+								$err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
+								$file =  WEBROOT_PATH."/files/generee/fd/null/$id/P_$id.pdf";
 
-		//Envoi un mail a tous les membres du circuit
-		$condition = "circuit_id = $circuit_id";
-		$listeUsers = $this->UsersCircuit->findAll($condition);
-		foreach($listeUsers as $user){
-		    if ($user['UsersCircuit']['service_id']!= -1)
-		        if ($user['UsersCircuit']['position']==1)
-		            $this->_notifierDossierAtraiter($circuit_id, 1, $id);
-			else
-		            $this->_notifierInsertionCircuit($id, $user['User']['id']);
-	            else{
-		        if (($user['UsersCircuit']['service_id']== -1)&&($user['UsersCircuit']['position']==1)) {
-                            $model_id = $this->_getModelId($id);
-                            $err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
-                            $file =  WEBROOT_PATH."/files/generee/fd/null/$id/P_$id.pdf";
-
-                            $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
-                            $soustype = $soustypes ['soustype'][$user['UsersCircuit']['user_id']];
-                            $nomfichierpdf = "P_$id.pdf";
-                            $pdf = file_get_contents($file);
-			    $objetDossier = "$id ".utf8_encode($this->_objetParaph($delib['Deliberation']['objet']));
-                            $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $pdf);
+								$soustypes = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+								$soustype = $soustypes ['soustype'][$user['UsersCircuit']['user_id']];
+								$nomfichierpdf = "P_$id.pdf";
+								$pdf = file_get_contents($file);
+								$objetDossier = "$id ".utf8_encode($this->_objetParaph($delib['Deliberation']['objet']));
+								$creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $pdf);
+							}
+						}
+					}
+					$this->Session->setFlash('Projet ins&eacute;r&eacute; dans le circuit', 'growl');
+					$this->redirect('/deliberations/mesProjetsRedaction');
+				} else {
+					$this->Session->setFlash('Probl&egrave;me de sauvegarde.', 'growl', array('type'=>'erreur'));
+					$this->redirect('/deliberations/attribuercircuit/'.$id);
+				}
+			}else{
+				$this->Session->setFlash('Vous devez assigner un circuit &agrave; la d&eacute;lib&eacute;ration.', 'growl', array('type'=>'erreur'));
+				$this->redirect('/deliberations/recapitulatif/'.$id);
 			}
-		    }
-
-                }
-
-		$this->Session->setFlash('Projet inséré dans le circuit', 'growl');
-                $this->redirect('/deliberations/mesProjetsRedaction');
-	    } else
-		$this->Session->setFlash('Probleme de sauvegarde.', 'growl', array('type'=>'erreur'));
-    	}else{
-    		$this->Session->setFlash('Vous devez assigner un circuit a la deliberation.', 'growl', array('type'=>'erreur'));
-    		$this->redirect('/deliberations/recapitulatif/'.$id);
-    	}
-    }
+		}
 
 	function _changeCircuit ($delib_id, $circuit_id) {
 	    $traitements = $this->Traitement->findAll("delib_id =$delib_id ");
@@ -644,46 +641,52 @@ class DeliberationsController extends AppController {
     }
 
 	function attribuercircuit ($id = null, $circuit_id=null) {
-	    $listCircuitsParaph = null;
-            if (USE_PARAPH)
-                $listCircuitsParaph = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+		$listCircuitsParaph = null;
+		if (Configure::read('USE_PARAPH'))
+			$listCircuitsParaph = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+			
+		/*if (isset($circuit_id)){
+			$this->set('circuit_id', $circuit_id);
+			$listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
+			$this->set('listeUserCircuit', $listeUserCircuit);
+		}else
+			$this->set('circuit_id','0');*/
+		
+		$circuits=$this->Deliberation->Circuit->find('list',array('order'=>array("libelle ASC")));
+		$this->set('circuits', $circuits);
 
-            if (empty($this->data)) {
-                $this->data = $this->Deliberation->read(null, $id);
-                $this->set('lastPosition', '-1');
-		$circuits=$this->Deliberation->Circuit->generateList(null, "libelle ASC");
-                $old_circuit  = $this->data['Deliberation']['circuit_id'];
+		if (empty($this->data)) {
+			$this->data = $this->Deliberation->read(null, $id);
+			$this->set('lastPosition', '-1');
+			$old_circuit  = $this->data['Deliberation']['circuit_id'];
 
 			//circuit par défaut de l'utilisateur connecté
 			if($circuit_id == null)
-                            $circuit_id = $this->User->circuitDefaut($this->Session->read('user.User.id'), 'id');
+				$circuit_id = $this->User->circuitDefaut($this->Session->read('user.User.id'), 'id');
 
 			//affichage du circuit existant
 			if($circuit_id == null)
 				$circuit_id=$this->data['Deliberation']['circuit_id'];
+				
 			if (isset($circuit_id)){
-			    $this->set('circuit_id', $circuit_id);
-                            $listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
-  			    $this->set('listeUserCircuit', $listeUserCircuit);
-  			}else
-		            $this->set('circuit_id','0');
+				$this->set('circuit_id', $circuit_id);
+				$listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
+				$this->set('listeUserCircuit', $listeUserCircuit);
+			}else
+				$this->set('circuit_id','0');
+				
+		} else {
+			$this->data['Deliberation']['id']=$id;
+			$this->data = $this->Deliberation->find('first',array('conditions'=>array("Deliberation.id"=>$id),'recursive'=>-1));
 
-			$this->set('circuits', $circuits);
-            } else {
-                $this->data['Deliberation']['id']=$id;
-		$old = $this->Deliberation->findAll("Deliberation.id=$id");
-                $circuit = $this->Circuit->read(null, $circuit_id);
-		$message = "Projet injecté dans le circuit : ".$circuit['Circuit']['libelle'];
-		$this->Historique->enregistre($id, $this->Session->read('user.User.id'), $message);
-             
-                if($old['0']['Deliberation']['circuit_id'] != $circuit_id )
-		    $this->_changeCircuit($id, $circuit_id);
-
-		if ($this->Deliberation->save($this->data)) {
-                    $this->redirect('/deliberations/recapitulatif/'.$id);
-		} else
-                   $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.',  'growl', array('type'=>'erreur'));
-	    }
+			if($this->data['Deliberation']['circuit_id'] != $circuit_id )
+				$this->_changeCircuit($id, $circuit_id);
+		        $this->Deliberation->id = $id;
+			if ($this->Deliberation->saveField('circuit_id', $circuit_id)) {
+				$this->redirect('/deliberations/recapitulatif/'.$id);
+			} else
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.',  'growl', array('type'=>'erreur'));
+		}
 	}
 
         function retour($delib_id) {
@@ -691,8 +694,8 @@ class DeliberationsController extends AppController {
 	    $circuit_id = $delib['Deliberation']['circuit_id'];
             if (empty($this->data)) {
 	        $nbTraitements = $this->Traitement->getNbTraitements($delib_id);
-                if (USE_PARAPH){
-                    $listCircuitsParaph = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+                if (Configure::read('USE_PARAPH')){
+                    $listCircuitsParaph = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
                     $liste =  $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
 		}
 		else {
@@ -710,19 +713,19 @@ class DeliberationsController extends AppController {
                     $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/P_$delib_id.pdf");
                     $file =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/P_$delib_id.pdf";
 
-                    $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+                    $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
                     $soustype = $soustypes['soustype'][$user[$retourA]['UsersCircuit']['user_id']];
                     $nomfichierpdf = "P_$delib_id.pdf";
                     $objet = utf8_encode($this->_objetParaph($delib['Deliberation']['objet']));
                     $pdf = file_get_contents($file);
 		    $objetDossier = "$id $objet";
 
-                    $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $pdf);
+                    $creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $pdf);
 		}
 	        $traitements = $this->Traitement->findAll("Traitement.delib_id = $delib_id AND Traitement.circuit_id = $circuit_id", null, 'position ASC');
-
-                $this->_notifierDossierAtraiter($circuit_id, $traitements[$retourA ]['Traitement']['position'], $delib_id);
-
+	        
+	        $this->_notifierDossierAtraiter($circuit_id, $traitements[$retourA ]['Traitement']['position'], $delib_id);
+	        
                 // on Ré-initialise la date du premier traitement a qui l'on renvoi le projet
                 $traitement['Traitement']['date_traitement'] = $traitements[$retourA ]['Traitement']['date_traitement']='0000-00-00 00:00:00';
                 $traitement['Traitement']['id'] = $traitements[$retourA ]['Traitement']['id'];
@@ -733,7 +736,7 @@ class DeliberationsController extends AppController {
 		     if (isset($traitements[$i]['Traitement']['id']))
                     $this->Traitement->del($traitements[$i]['Traitement']['id']);
 		$name = $user[$retourA]['User']['prenom']." ". $user[$retourA]['User']['nom'];
-                $this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Projet retourné à $name");
+                $this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Projet retourn&eacute; &agrave; $name");
 		                                
 		$this->redirect('/');
 	    }
@@ -786,56 +789,56 @@ class DeliberationsController extends AppController {
 				//on recupere la position de l'user dans le circuit
 				array_push($delib, $deliberation);
 				$this->set('deliberation', $delib);
-                                $userscircuit = $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC');
-                                if (USE_PARAPH)
-                                    $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
-                                for ($i = 0; $i <count ($userscircuit); $i++){
-                                    if($userscircuit[$i]['UsersCircuit']['service_id']== -1){
-                                        $userscircuit[$i]['User']['prenom']= TYPETECH;
-                                        $userscircuit[$i]['User']['nom']= $soustypes['soustype'][$userscircuit[$i]['UsersCircuit']['user_id']];
-                                        $userscircuit[$i]['Service']['libelle']= 'i-parapheur';
-                                    }
-                                }
+                        $userscircuit = $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC');
+                        if (Configure::read('USE_PARAPH'))
+                            $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+                        for ($i = 0; $i <count ($userscircuit); $i++){
+                            if($userscircuit[$i]['UsersCircuit']['service_id']== -1){
+                                $userscircuit[$i]['User']['prenom']= Configure::read('TYPETECH');
+                                $userscircuit[$i]['User']['nom']= $soustypes['soustype'][$userscircuit[$i]['UsersCircuit']['user_id']];
+                                $userscircuit[$i]['Service']['libelle']= 'i-parapheur';
+                            }
+                        }
 
-		                $this->set('historiques',$this->Historique->findAll("Historique.delib_id = $id"));
-		                // Compactage des informations supplémentaires
-	                 	$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($deliberation['Infosup'], false);
-		                $this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
-        
-	                        $this->set('user_circuit', $userscircuit);
+                $this->set('historiques',$this->Historique->findAll("Historique.delib_id = $id"));
+                
+                // Compactage des informations supplémentaires
+             	$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($deliberation['Infosup'], false);
+                $this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
+
+                $this->set('user_circuit', $userscircuit);
 			}
 			else
 			{
-		            if ($valid=='1') {
-			        $this->Historique->enregistre($id, $this->Session->read('user.User.id'), 'Projet visé' );
-				$this->accepteDossier($id);
-		            }
+	            if ($valid=='1') {
+			        $this->Historique->enregistre($id, $this->Session->read('user.User.id'), 'Projet vis&eacute;' );
+					$this->accepteDossier($id);
+	            }
 			    else {
-                                $this->Deliberation->refusDossier($id);
-                                $delibTmp = $this->Deliberation->read(null, $id);
+                    $this->Deliberation->refusDossier($id);
+                    $delibTmp = $this->Deliberation->read(null, $id);
 
-                                // TODO notifier par mail toutes les personnes qui ont deja vise le projet
-                                $this->_notifierDossierRefuse($id, $delibTmp['Deliberation']['redacteur_id']);
+                    // TODO notifier par mail toutes les personnes qui ont deja vise le projet
+                    $this->_notifierDossierRefuse($id, $delibTmp['Deliberation']['redacteur_id']);
 
-                                $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
-                                $circuit_id=$delibTmp['Deliberation']['circuit_id'];
+                    $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
+                    $circuit_id=$delibTmp['Deliberation']['circuit_id'];
 
-                                $condition = "circuit_id = $circuit_id";
-                                $listeUsers = $this->UsersCircuit->findAll($condition);
-                                foreach($listeUsers as $user) {
-                                   if ($user['UsersCircuit']['service_id'] != -1)
-                                       $this->_notifierDossierRefuse($id, $user['User']['id']);
-                                }
-			        $this->Historique->enregistre($id, $this->Session->read('user.User.id'),  'Projet refusé' );
-				$this->Session->setFlash('Vous venez de refuser le projet : '.$id, 'growl');
+                    $condition = "circuit_id = $circuit_id";
+                    $listeUsers = $this->UsersCircuit->findAll($condition);
+                    foreach($listeUsers as $user) {
+                       if ($user['UsersCircuit']['service_id'] != -1)
+                           $this->_notifierDossierRefuse($id, $user['User']['id']);
+		            }
+				    $this->Historique->enregistre($id, $this->Session->read('user.User.id'),  'Projet refus&eacute;' );
+					$this->Session->setFlash('Vous venez de refuser le projet : '.$id, 'growl');
 	       			$this->redirect('/deliberations/mesProjetsATraiter');
-				exit;
 			    }
 			}
 		}
 	}
 
-        function accepteDossier($id) {
+        function accepteDossier($id, $isGoNext=false) {
             //verification du projet, s'il n'est pas pret ->reporte a la seance suivante
             $delib = $this->Deliberation->findAll("Deliberation.id = $id");
             $type_id =$delib[0]['Seance']['type_id'];
@@ -894,13 +897,13 @@ class DeliberationsController extends AppController {
                     $err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
                     $file =  WEBROOT_PATH."/files/generee/fd/null/$id/P_$id.pdf";
 
-                    $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+                    $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
                     $soustype = $soustypes ['soustype'][$usersCircuit[$lastposprojet]['UsersCircuit']['user_id']];
                     $nomfichierpdf = "P_$id.pdf";
                     $objet = utf8_encode($this->_objetParaph($delib ['0']['Deliberation']['objet']));
                     $pdf = file_get_contents($file);
 		    $objetDossier = "$id $objet";
-                    $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $pdf);
+                    $creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $pdf);
                 }
                 else {
                     //sinon on fait passerala personne suivante
@@ -911,8 +914,12 @@ class DeliberationsController extends AppController {
                 $this->data['Traitement']['delib_id']=$id;
                 $this->data['Traitement']['circuit_id']=$circuit_id;
                 $this->Traitement->save($this->data['Traitement']);
-		$this->Session->setFlash("Le projet ($id) a avancé d'une position", 'growl');
-                $this->redirect('/deliberations/mesProjetsATraiter');
+                if ($isGoNext)
+                    return true;
+                else {
+		    $this->Session->setFlash("Le projet ($id) a avanc&eacute; d'une position", 'growl');
+                    $this->redirect('/deliberations/mesProjetsATraiter');
+                }
             }
         }
 
@@ -942,8 +949,8 @@ class DeliberationsController extends AppController {
        if ($message!='null')
              $this->set('message', $message);
 
-        $this->set('USE_GEDOOO', USE_GEDOOO);
-	$this->set('host', HOST );
+        $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+	$this->set('host', Configure::read('HOST') );
         $this->set('dateClassification', $this->_getDateClassification());
 
         // On affiche que les delibs vote pour.
@@ -981,18 +988,17 @@ class DeliberationsController extends AppController {
     }
 
     function _getFluxRetour ($tdt_id) {
-        $url = 'https://'.HOST."/modules/actes/actes_transac_get_status.php?transaction=$tdt_id";
+        $url = 'https://'.Configure::read('HOST')."/modules/actes/actes_transac_get_status.php?transaction=$tdt_id";
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
         curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
-        curl_setopt($ch, CURLOPT_SSLCERT, PEM);
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
-        curl_setopt($ch, CURLOPT_SSLKEY,  SSLKEY);
+        curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
+        curl_setopt($ch, CURLOPT_SSLKEY,  Configure::read('SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -1001,16 +1007,16 @@ class DeliberationsController extends AppController {
     }
 
     function getAR($tdt_id, $toFile = false) {
-        $url = 'https://'.HOST."/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
+        $url = 'https://'.Configure::read('HOST')."/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
-        curl_setopt($ch, CURLOPT_SSLCERT, PEM);
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
-        curl_setopt($ch, CURLOPT_SSLKEY,  SSLKEY);
+        curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
+        curl_setopt($ch, CURLOPT_SSLKEY,  Configure::read('SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -1026,32 +1032,31 @@ class DeliberationsController extends AppController {
 	    return $curl_return;
     }
 
-    function toSend ($id=null, $message= null){
-        if (!empty( $message))
-             $this->set('message', $message);
+	function toSend ($id=null, $message= null){
+		if (!empty( $message))
+			$this->set('message', $message);
 
-        $this->set('USE_GEDOOO', USE_GEDOOO);
-        $this->set('host', HOST );
-        $this->set('dateClassification', $this->_getDateClassification());
-        $this->set('tabNature',          $this->_getNatureListe());
-        $this->set('tabMatiere',         $this->_getMatiereListe());
-        // On affiche que les delibs vote pour.
-        $deliberations = $this->Deliberation->findAll("Deliberation.etat=3 and Deliberation.delib_pdf != '' ");
+		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+		$this->set('host', Configure::read('HOST') );
+		$this->set('dateClassification', $this->_getDateClassification());
+		$this->set('tabNature',          $this->_getNatureListe());
+		$this->set('tabMatiere',         $this->_getMatiereListe());
+		// On affiche que les delibs vote pour.
+		$deliberations = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.etat"=>3, "Deliberation.delib_pdf <>"=>'')));
 
-        for($i = 0; $i < count($deliberations); $i++) {
-                $deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
-             //           $deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
+		for($i = 0; $i < count($deliberations); $i++) {
+			$deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
+			//$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
+		}
 
-        }
-
-        $this->set('deliberations', $deliberations);
-    }
+		$this->set('deliberations', $deliberations);
+	}
 
 
     function _getNatureListe(){
         $tab = array();
     	$doc = new DOMDocument('1.0', 'UTF-8');
-        if(!$doc->load(FILE_CLASS))
+        if(!$doc->load(Configure::read('FILE_CLASS')))
             die("Error opening xml file");
         $NaturesActes = $doc->getElementsByTagName('NatureActe');
 		foreach ($NaturesActes as $NatureActe)
@@ -1068,7 +1073,7 @@ class DeliberationsController extends AppController {
     function _getMatiereListe(){
 
  		$tab = array();
-		$xml = simplexml_load_file(FILE_CLASS);
+		$xml = simplexml_load_file(Configure::read('FILE_CLASS'));
 		$namespaces = $xml->getDocNamespaces();
 		$xml=$xml->children($namespaces["actes"]);
 
@@ -1116,19 +1121,20 @@ class DeliberationsController extends AppController {
 	}
 
         function sendActe ($delib_id = null) {
-	    if (!is_file(FILE_CLASS))
+	    $Tabclassification = array();
+	    if (!is_file(Configure::read('FILE_CLASS')))
 	     $this->getClassification();
 	    include ('vendors/progressbar.php');
             Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
-	    $url = 'https://'.HOST.'/modules/actes/actes_transac_create.php';
+	    $url = 'https://'.Configure::read('HOST').'/modules/actes/actes_transac_create.php';
             $pos =  strrpos ( getcwd(), 'webroot');
 	    $path = substr(getcwd(), 0, $pos);
 	    foreach ($this->data['Deliberation'] as $id => $bool ){
                  if ($bool == 1){
 		     $delib_id = substr($id, 3, strlen($id));
-		     if (!isset($this->data['Deliberation'][$delib_id."_num_pref"]))
+		     if (!isset($this->params['form'][$delib_id."classif2"]))
 		         continue;
-                     $Tabclassification[$delib_id]= $this->data['Deliberation'][$delib_id."_num_pref"];
+                     $Tabclassification[$delib_id]= $this->params['form'][$delib_id."classif2"];
 		 }
             }
             $nbDelibAEnvoyer = count($Tabclassification);
@@ -1165,7 +1171,8 @@ class DeliberationsController extends AppController {
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-			 'number'        => $delib[0]['Deliberation']['num_delib'],
+			// 'number'        => $delib[0]['Deliberation']['num_delib'],
+			 'number'        => time(),
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
@@ -1188,10 +1195,10 @@ class DeliberationsController extends AppController {
                          curl_setopt($ch, CURLOPT_POST, TRUE);
                          curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
 			 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-                         curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
-                         curl_setopt($ch, CURLOPT_SSLCERT, PEM);
-                         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
-                         curl_setopt($ch, CURLOPT_SSLKEY,  SSLKEY);
+                         curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+                         curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
+                         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
+                         curl_setopt($ch, CURLOPT_SSLKEY,  Configure::read('SSLKEY'));
                          curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
                          curl_setopt($ch, CURLOPT_VERBOSE, true);
 			 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -1206,6 +1213,7 @@ class DeliberationsController extends AppController {
                               echo ('    document.getElementById("affiche").style.display="none";');
                               echo ('    document.getElementById("contTemp").style.display="none";');
                               echo ('</script>');
+			      echo ("Tentative d'envoi à : $url<br />");
 			      echo 'Erreur Curl : ' . curl_error($ch);
 			      die ('<br /><a href ="/deliberations/transmit"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
                          }
@@ -1231,61 +1239,60 @@ class DeliberationsController extends AppController {
 
 
        function _getDateClassification(){
-	   $doc = new DOMDocument();
-           if(!$doc->load(FILE_CLASS))
-               die("Error opening xml file");
-	   $date = $doc->getElementsByTagName('DateClassification')->item(0)->nodeValue;
-	   return ($this->Date->frenchDate(strtotime($date )));
+		   $doc = new DOMDocument();
+	       if(!$doc->load(Configure::read('FILE_CLASS')))
+	           die("Error opening xml file");
+		   $date = $doc->getElementsByTagName('DateClassification')->item(0)->nodeValue;
+		   return ($this->Date->frenchDate(strtotime($date )));
            //return true;
         }
 
- 	function getClassification($id=null){
-	    $pos =  strrpos ( getcwd(), 'webroot');
-	    $path = substr(getcwd(), 0, $pos);
+	 	function getClassification($id=null){
+			$pos =  strrpos ( getcwd(), 'webroot');
+			$path = substr(getcwd(), 0, $pos);
 
-	    $url = 'https://'.HOST.'/modules/actes/actes_classification_fetch.php';
-            $data = array(
-         	'api'           => '1',
-             );
-        $url .= '?'.http_build_query($data);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-    //	curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+			$url = 'https://'.Configure::read('HOST').'/modules/actes/actes_classification_fetch.php';
+		        $data = array(
+		     	'api'           => '1',
+		         );
+		    $url .= '?'.http_build_query($data);
+		    $ch = curl_init();
+		    curl_setopt($ch, CURLOPT_URL, $url);
+			//	curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
 
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_CAPATH, CA_PATH);
-        curl_setopt($ch, CURLOPT_SSLCERT,  PEM);
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, PASSWORD);
-	curl_setopt($ch, CURLOPT_SSLKEY,  SSLKEY);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        $reponse = curl_exec($ch);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+		    curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+		    curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
+		    curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
+			curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+		    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+		    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		    $reponse = curl_exec($ch);
 
-        if (curl_errno($ch))
-          print curl_error($ch);
-        curl_close($ch);
+		    if (curl_errno($ch))
+				print curl_error($ch);
+		    curl_close($ch);
 
-        // Assurons nous que le fichier est accessible en ecriture
-       if (is_writable(FILE_CLASS)) {
-           if (!$handle = fopen(FILE_CLASS, 'w')) {
-               echo "Impossible d'ouvrir le fichier (".FILE_CLASS.")";
-               exit;
-        	}
-        	// Ecrivons quelque chose dans notre fichier.
-        	if (fwrite($handle, utf8_encode($reponse)) === FALSE) {
-            	echo "Impossible d'ecrire dans le fichier ($filename)";
-            	exit;
-       	 	}
-        	else
-            	$this->redirect('/deliberations/transmit');
-        	fclose($handle);
-        }
-        else
-            echo "Le fichier ".FILE_CLASS." n'est pas accessible en ecriture.";
-}
+		    // Assurons nous que le fichier est accessible en ecriture
+			if (is_writable(Configure::read('FILE_CLASS'))) {
+				if (!$handle = fopen(Configure::read('FILE_CLASS'), 'w')) {
+					echo "Impossible d'ouvrir le fichier (".Configure::read('FILE_CLASS').")";
+					exit;
+		    	}
+		    	// Ecrivons quelque chose dans notre fichier.
+		    	elseif (fwrite($handle, utf8_encode($reponse)) === FALSE) {
+		        	echo "Impossible d'ecrire dans le fichier ($filename)";
+		        	exit;
+		   	 	}
+		    	else
+		        	$this->redirect('/deliberations/transmit');
+		    	fclose($handle);
+		    }
+		    else
+		        echo "Le fichier ".Configure::read('FILE_CLASS')." n'est pas accessible en ecriture.";
+		}
 
-        function positionner($id=null, $sens, $seance_id)
-        {
+        function positionner($id=null, $sens, $seance_id) {
 			$positionCourante = $this->Deliberation->getCurrentPosition($id);
 			$lastPosition = $this->Deliberation->getLastPosition($seance_id);
         	if ($sens != 0)
@@ -1320,7 +1327,7 @@ class DeliberationsController extends AppController {
         }
 
         function sortby($seance_id, $sortby) {
-		    $condition= "seance_id=$seance_id AND etat != -1";
+		    $condition = array ("seance_id"=>$seance_id, "etat <>" => "-1");
 		    // Critere de tri
 		    if ($sortby == 'theme_id')
 		        $sortby = 'Theme.order';
@@ -1331,12 +1338,12 @@ class DeliberationsController extends AppController {
 		    elseif ($sortby == 'titre')
 		        $sortby = 'Deliberation.titre';
 
-  		    $deliberations = $this->Deliberation->findAll($condition,null, "$sortby ASC");
+  		    $deliberations = $this->Deliberation->find('all', array('conditions' => $condition, 'order' => array ("$sortby ASC")));
 		    for($i=0; $i<count($deliberations); $i++){
 			    $deliberations[$i]['Deliberation']['position']=$i+1;
 		    	$this->Deliberation->save($deliberations[$i]['Deliberation']);
 		    }
-		    $this->redirect("seances/afficherProjets/$seance_id");
+		    $this->redirect("/seances/afficherProjets/$seance_id");
 	    }
 
 	function textprojetvue ($id = null) {
@@ -1363,11 +1370,32 @@ class DeliberationsController extends AppController {
             // Si l'utilisateur accepte les mails
             if ($data['0']['User']['accept_notif']){
                 $to_mail = $data['0']['User']['email'];
-                $this->Email->template = 'email/traiter';
-                $this->set('data',  $this->_paramMails('traiter', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
-                $this->Email->to = $to_mail;
-                $this->Email->subject = "DELIB $delib_id";
-                $result = $this->Email->send();
+                
+                if (Configure::read("SMTP_USE")) {
+					$this->Email->smtpOptions = array(
+						'port'=>Configure::read("SMTP_PORT"), 
+						'timeout'=>Configure::read("SMTP_TIMEOUT"),
+						'host' => Configure::read("SMTP_HOST"),
+						'username'=>Configure::read("SMTP_USERNAME"),
+						'password'=>Configure::read("SMTP_PASSWORD"),
+						'client' =>Configure::read("SMTP_CLIENT")
+						);
+					$this->Email->delivery = 'smtp';
+				}
+				else
+					$this->Email->delivery = 'mail';
+
+				$this->Email->from = Configure::write("MAIL_FROM");
+				$this->Email->to = $to_mail;
+				
+				$this->Email->subject = "DELIB $delib_id";
+
+				$this->Email->sendAs = 'text';
+				$this->Email->template = 'traiter';
+				$this->set('data',  $this->_paramMails('traiter', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
+				$this->Email->attachments = null;
+
+				$this->Email->send();
             }
 	}
 
@@ -1382,11 +1410,32 @@ class DeliberationsController extends AppController {
 
             // Si l'utilisateur accepte les mails
             if ($data['0']['User']['accept_notif']){
-                $this->Email->template = 'email/refuse';
-                $this->set('data', $this->_paramMails('refus', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
-                $this->Email->to =  $data['0']['User']['email'];
-                $this->Email->subject = "DELIB $delib_id Refusee !";
-                $result = $this->Email->send();
+            	
+                if (Configure::read("SMTP_USE")) {
+					$this->Email->smtpOptions = array(
+						'port'=>Configure::read("SMTP_PORT"), 
+						'timeout'=>Configure::read("SMTP_TIMEOUT"),
+						'host' => Configure::read("SMTP_HOST"),
+						'username'=>Configure::read("SMTP_USERNAME"),
+						'password'=>Configure::read("SMTP_PASSWORD"),
+						'client' =>Configure::read("SMTP_CLIENT")
+						);
+					$this->Email->delivery = 'smtp';
+				}
+				else
+					$this->Email->delivery = 'mail';
+
+				$this->Email->from = Configure::write("MAIL_FROM");
+				$this->Email->to =  $data['0']['User']['email'];
+				
+				$this->Email->subject = "DELIB $delib_id Refusee !";
+
+				$this->Email->sendAs = 'text';
+				$this->Email->template = 'refus';
+				$this->set('data', $this->_paramMails('refus', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
+				$this->Email->attachments = null;
+
+				$this->Email->send();
             }
         }
 
@@ -1396,25 +1445,43 @@ class DeliberationsController extends AppController {
 
             // Si l'utilisateur accepte les mails
             if ($data['0']['User']['accept_notif']){
-                $this->Email->template = 'email/circuit';
-                $this->set('data',  $this->_paramMails('insertion', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
-                $this->Email->to = $data['0']['User']['email'];
-                $this->Email->subject = "vous allez recevoir la delib : $delib_id";
-                $result = $this->Email->send();
+            
+                if (Configure::read("SMTP_USE")) {
+					$this->Email->smtpOptions = array(
+						'port'=>Configure::read("SMTP_PORT"), 
+						'timeout'=>Configure::read("SMTP_TIMEOUT"),
+						'host' => Configure::read("SMTP_HOST"),
+						'username'=>Configure::read("SMTP_USERNAME"),
+						'password'=>Configure::read("SMTP_PASSWORD"),
+						'client' =>Configure::read("SMTP_CLIENT")
+						);
+					$this->Email->delivery = 'smtp';
+				}
+				else
+					$this->Email->delivery = 'mail';
+
+				$this->Email->from = Configure::write("MAIL_FROM");
+				$this->Email->to =  $data['0']['User']['email'];
+				$this->Email->subject = "vous allez recevoir la delib : $delib_id";
+				$this->Email->sendAs = 'text';
+				$this->Email->template = 'insertion';
+				$this->set('data',  $this->_paramMails('insertion', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
+				$this->Email->attachments = null;
+
+				$this->Email->send();
             }
 	}
 
 	function _getListPresent($delib_id){
-	    return $this->Listepresence->findAll("Listepresence.delib_id= $delib_id", null, "Acteur.position ASC");
+	    return $this->Listepresence->find('all', array('conditions'=>array("Listepresence.delib_id" => $delib_id), 'order'=>array("Acteur.position ASC")));
 	}
 
 	function listerPresents($delib_id) {
-
 		if (empty($this->data)) {
 			$presents = $this->_getListPresent($delib_id);
 			foreach($presents as $present){
-				    	$this->data[$present['Listepresence']['acteur_id']]['present'] = $present['Listepresence']['present'];
-					    $this->data[$present['Listepresence']['acteur_id']]['mandataire'] = $present['Listepresence']['mandataire'];
+		    	$this->data[$present['Listepresence']['acteur_id']]['present'] = $present['Listepresence']['present'];
+			    $this->data[$present['Listepresence']['acteur_id']]['mandataire'] = $present['Listepresence']['mandataire'];
 			}
 			$this->set('presents',$presents);
 			$this->set('mandataires', $this->Acteur->generateListElus());
@@ -1470,10 +1537,11 @@ class DeliberationsController extends AppController {
 	}
 
 	function _effacerListePresence($delib_id) {
-		$condition = "delib_id = $delib_id";
+		$this->Listepresence->deleteAll(array("delib_id" => $delib_id));
+		/*$condition = "delib_id = $delib_id";
 		$presents = $this->Listepresence->findAll($condition);
 		foreach($presents as $present)
-  		    $this->Listepresence->del($present['Listepresence']['id']);
+  		    $this->Listepresence->del($present['Listepresence']['id']);*/
 	}
 
 	function _buildFirstList($delib_id) {
@@ -1583,12 +1651,12 @@ class DeliberationsController extends AppController {
  */
 	function mesProjetsRedaction() {
 		$userId=$this->Session->read('user.User.id');
-		$listeLiens = $this->Acl->check($userId, "Deliberations:add") ? array('add') : array();
+		$listeLiens = $this->Xacl->check($userId, "Deliberations:add") ? array('add') : array();
 
-		$conditions = 'Deliberation.etat = 0 AND Deliberation.redacteur_id = ' . $userId;
-		$ordre = 'Deliberation.created DESC';
+		$conditions = array('Deliberation.etat' => 0, 'Deliberation.redacteur_id' => $userId);
+		$ordre = array('Deliberation.created DESC');
 
-		$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
+		$projets = $this->Deliberation->find('all', array('conditions' => $conditions, 'ordre' => $ordre, 'recursive' => 0));
 
 		$this->_afficheProjets(
 			$projets,
@@ -1664,7 +1732,7 @@ class DeliberationsController extends AppController {
  */
 	function mesProjetsValides() {
 		$userId=$this->Session->read('user.User.id');
-                $editerProjetValide = $this->Acl->check($userId, "Deliberations:editerProjetValide");
+                $editerProjetValide = $this->Xacl->check($userId, "Deliberations:editerProjetValide");
 		$listeCircuits = $this->UsersCircuit->listeCircuitsParUtilisateur($userId);
 		$conditions = 'Deliberation.etat = 2 AND ';
 		$conditions .= empty($listeCircuits) ? '' : '(Deliberation.circuit_id IN ('.$listeCircuits.') OR ';
@@ -1686,7 +1754,7 @@ class DeliberationsController extends AppController {
 	function _afficheProjets(&$projets, $titreVue, $listeActions, $listeLiens=array()) {
 		// initialisation de l'utilisateur connecté et des droits
 		$userId = $this->Session->read('user.User.id');
-		$editerProjetValide = $this->Acl->check($userId, "Deliberations:editerProjetValide");
+		$editerProjetValide = $this->Xacl->check($userId, "Deliberations:editerProjetValide");
 
 		$this->data = $projets;
 
@@ -1696,38 +1764,40 @@ class DeliberationsController extends AppController {
         	if ($this->data[$i]['Deliberation']['etat'] == 0 && $this->data[$i]['Deliberation']['anterieure_id']!=0)
 	            $this->data[$i]['iconeEtat'] = $this->_iconeEtat(-1);
         	elseif ($this->data[$i]['Deliberation']['etat'] == 1) {
-			$estDansCircuit = $this->UsersCircuit->estDansCircuit($userId, $this->data[$i]['Deliberation']['circuit_id']);
-			$tourDansCircuit = $estDansCircuit ? $this->Traitement->tourUserDansCircuit($userId, $this->data[$i]['Deliberation']['id']) : 0;
-			$estRedacteur = $userId == $this->data[$i]['Deliberation']['redacteur_id'];
-			$this->data[$i]['iconeEtat'] = $this->_iconeEtat(1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
+				$estDansCircuit = $this->UsersCircuit->estDansCircuit($userId, $this->data[$i]['Deliberation']['circuit_id']);
+				$tourDansCircuit = $estDansCircuit ? $this->Traitement->tourUserDansCircuit($userId, $this->data[$i]['Deliberation']['id']) : 0;
+				$estRedacteur = $userId == $this->data[$i]['Deliberation']['redacteur_id'];
+				$this->data[$i]['iconeEtat'] = $this->_iconeEtat(1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
         	}
         	else
-			$this->data[$i]['iconeEtat'] = $this->_iconeEtat($this->data[$i]['Deliberation']['etat'], $editerProjetValide);
-
-		// initialisation des actions
-		$this->data[$i]['Actions'] = $listeActions;
-		if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {
-			$this->data[$i]['Actions'][] = 'edit';
-			$this->data[$i]['Actions'][] = 'attribuerCircuit';
-                }
+				$this->data[$i]['iconeEtat'] = $this->_iconeEtat($this->data[$i]['Deliberation']['etat'], $editerProjetValide);
+				
+			// initialisation des actions
+			$this->data[$i]['Actions'] = $listeActions;
+			if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {
+				$this->data[$i]['Actions'][] = 'edit';
+				$this->data[$i]['Actions'][] = 'attribuerCircuit';
+		    }
 			// initialisation des dates, modèle et service
 			if (isset($this->data[$i]['Seance']['date'])) {
 				$this->data[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data[$i]['Seance']['date']));
 				$this->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($this->data[$i]['Seance']['type_id'], $this->data[$i]['Deliberation']['etat']);
-			} else
+			}
+			else
 				$this->data[$i]['Model']['id'] = 1;
-
-			$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
-                        $this->data[$i]['Seance']['libelle'] = $this->Typeseance->getLibelle($this->data[$i]['Seance']['type_id']);
+			
+			if (isset($this->data[$i]['Service']['id']))
+				$this->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($this->data[$i]['Service']['id']);
+	        $this->data[$i]['Seance']['libelle'] = $this->Typeseance->getLibelle($this->data[$i]['Seance']['type_id']);
 			if (isset($this->data[$i]['Deliberation']['date_limite']))
 				$this->data[$i]['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($this->data[$i]['Deliberation']['date_limite']));
 		}
 
 		// passage des variables à la vue
 		$this->set('titreVue', $titreVue);
-		$this->set('USE_GEDOOO', USE_GEDOOO);
+		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$this->set('listeLiens', $listeLiens);
-
+		
 		// on affiche la vue index
 		$this->render('index');
 	}
@@ -1759,13 +1829,21 @@ class DeliberationsController extends AppController {
  */
 	function tousLesProjetsSansSeance() {
 		// lecture en base
-		$conditions = "(Deliberation.seance_id is null OR Deliberation.seance_id=0) AND (Deliberation.etat=0 OR Deliberation.etat=1 OR Deliberation.etat=2)";
-		$ordre = 'Deliberation.created DESC';
-
-		$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
-                $afficherTtesLesSeances = $this->Acl->check($this->Session->read('user.User.id'), "Deliberations:editerProjetValide");
-                $this->set('date_seances',$this->Seance->generateList(null ,$afficherTtesLesSeances ));
-	//	$this->set('date_seances', $this->Seance->generateList());
+		$projets = $this->Deliberation->find('all',array('conditions'=>array(
+								'OR'=>array(
+									array('Deliberation.seance_id'=>null),
+									array('Deliberation.seance_id'=>0)
+								),
+								'AND'=>array(
+									array(
+										'OR'=>array(
+											array('Deliberation.etat'=>0),
+											array('Deliberation.etat'=>1),
+											array('Deliberation.etat'=>2)
+								)))),
+								'order'=>array('Deliberation.created DESC'), 'recursive'=>0));
+        $afficherTtesLesSeances = $this->Xacl->check($this->Session->read('user.User.id'), "Deliberations:editerProjetValide");
+        $this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances));
 		$this->_afficheProjets(
 			$projets,
 			'Projets non associ&eacute;s &agrave; une s&eacute;ance',
@@ -1792,11 +1870,13 @@ class DeliberationsController extends AppController {
  * Appelée depuis la vue deliberations/tous_les_projets
  */
 	function attribuerSeance () {
-		if (!empty($this->data)) {
+		if (isset($this->data['Deliberation']['seance_id']) && !empty($this->data['Deliberation']['seance_id'])) {
 			$this->data['Deliberation']['position'] = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
 			$this->Deliberation->save($this->data);
+		    $this->Session->setFlash('La s&eacute;ance a bien &eacute;t&eacute; attribu&eacute;e', 'growl');
 		}
-                $this->Session->setFlash('La séance a bien été attribuée', 'growl');
+		else
+			$this->Session->setFlash('Erreur lors de l`attribution de la s&eacute;ance', 'growl');
 		$this->redirect('/deliberations/tousLesProjetsSansSeance');
 	}
 
@@ -1808,12 +1888,12 @@ class DeliberationsController extends AppController {
 		// Lecture de la délibération
 		$this->Deliberation->recursive = -1;
 		$this->data = $this->Deliberation->read(null, $delibId);
-                if (USE_PARAPH) {
+                if (Configure::read('USE_PARAPH')) {
 		   $circuit_id   = $this->data['Deliberation']['circuit_id'];
 		   $position     = $this->Traitement->find("Traitement.delib_id = $delibId AND Traitement.circuit_id= $circuit_id", 'Max(position)');
 		   $UsersCircuit = $this->UsersCircuit->find("UsersCircuit.circuit_id = $circuit_id AND UsersCircuit.position = ".$position[0]['Max(position)']);
 		   if ($UsersCircuit['UsersCircuit']['service_id'] == -1){
-		       $this->Session->setFlash('Le projet ne peux être validé en urgence : il est actuellement bloqué dans un parapheur...', 'growl', array('type'=>'erreur'));
+		       $this->Session->setFlash('Le projet ne peux &ecirc;tre valid&eacute; en urgence : il est actuellement bloqu&eacute; dans un parapheur...', 'growl', array('type'=>'erreur'));
 		       $this->redirect('/deliberations/tousLesProjetsValidation');
 		       exit;
 		   }
@@ -1824,20 +1904,13 @@ class DeliberationsController extends AppController {
 			if ($this->data['Deliberation']['etat']!=1)
 				$this->Session->setFlash('Le projet de d&eacute;lib&eacute;ration doit &ecirc;tre en cours d\'&eacute;laboration', 'growl', array('type'=>'erreur'));
 			else {
-			        $this->Historique->enregistre($delibId, $this->Session->read('user.User.id'), 'Projet validé en urgence' );
-				$this->data['Deliberation']['etat'] = 2;
-				if ($this->Deliberation->save($this->data)) {
-					// ajout du commentaire
-					$this->data['Commentaire']['id'] = '';
-					$this->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
-					$this->data['Commentaire']['commentaire_auto'] = 1;
-					$this->data['Commentaire']['texte'] = 'Validé en urgence le '.date('d-m-Y à H:i:s');
-					$this->data['Commentaire']['texte'].= ', par '. $this->User->prenomNomLogin($this->Session->read('user.User.id'));
-					$this->Deliberation->Commentaire->save($this->data);
-				}
+                            $this->data['Deliberation']['etat'] = 2;
+                            if ($this->Deliberation->save($this->data)) {
+                                $this->Historique->enregistre($delibId, $this->Session->read('user.User.id'), 'Projet validé en urgence' );
+			    }
 			}
 		}
-                $this->Session->setFlash('Le projet '.$this->data['Deliberation']['id'].'a été validé en urgence', 'growl');
+        $this->Session->setFlash('Le projet '.$this->data['Deliberation']['id'].' a &eacute;t&eacute; valid&eacute; en urgence', 'growl');
 		$this->redirect('/deliberations/tousLesProjetsValidation');
 	}
 
@@ -1846,12 +1919,12 @@ class DeliberationsController extends AppController {
 			$this->set('action', '/deliberations/mesProjetsRecherche/');
 			$this->set('titreVue', 'Recherche multi-crit&egrave;res parmi mes projets');
 
-			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
+			$this->set('rapporteurs', $this->Acteur->generateListElus());
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateAllList());
-			$this->set('services', $this->Deliberation->Service->generateList(null));
-			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
-			$this->set('circuits', $this->Deliberation->Circuit->generateList(null,'libelle asc',null,'{n}.Circuit.id','{n}.Circuit.libelle'));
+			$this->set('services', $this->Deliberation->Service->generatetreelist(null, null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
+			$this->set('themes', $this->Deliberation->Theme->find('list',array('order'=>array('libelle asc'),'fields' => array('Theme.id', 'Theme.libelle'))));
+			$this->set('circuits', $this->Deliberation->Circuit->find('list',array('order'=>array('libelle asc'),'fields' => array('Circuit.id', 'Circuit.libelle'))));
 			$this->set('etats', $this->Deliberation->generateListEtat());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, code, nom, commentaire, type, taille', 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
@@ -1955,12 +2028,12 @@ class DeliberationsController extends AppController {
 			$this->set('action', '/deliberations/tousLesProjetsRecherche/');
 			$this->set('titreVue', 'Recherche multi-crit&egrave;res parmi tous les projets');
 
-			$this->set('rapporteurs', $this->Deliberation->Acteur->generateListElus());
+			$this->set('rapporteurs', $this->Acteur->generateListElus());
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateAllList());
-			$this->set('services', $this->Deliberation->Service->generateList(null));
-			$this->set('themes', $this->Deliberation->Theme->generateList(null,'libelle asc',null,'{n}.Theme.id','{n}.Theme.libelle'));
-			$this->set('circuits', $this->Deliberation->Circuit->generateList(null,'libelle asc',null,'{n}.Circuit.id','{n}.Circuit.libelle'));
+			$this->set('services', $this->Deliberation->Service->generatetreelist(null, null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
+			$this->set('themes', $this->Deliberation->Theme->find('list',array('order'=>array('libelle asc'),'fields' => array('Theme.id','Theme.libelle'))));
+			$this->set('circuits', $this->Deliberation->Circuit->find('list',array('order'=>array('libelle asc'),'fields' => array('Circuit.id', 'Circuit.libelle'))));
 			$this->set('etats', $this->Deliberation->generateListEtat());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, code, nom, commentaire, type, taille', 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
@@ -2061,107 +2134,107 @@ class DeliberationsController extends AppController {
  		switch($etat) {
 		case -1 : // refusé
 			return array(
-				'image' => '/icons/refuse.png',
+				'image' => '/img/icons/refuse.png',
 				'titre' => $this->Deliberation->libelleEtat($etat));
 			break;
 		case 0 : // en cours de rédaction
 			return array(
-				'image' => '/icons/encours.png',
+				'image' => '/img/icons/encours.png',
 				'titre' => $this->Deliberation->libelleEtat($etat));
 			break;
 		case 1: // en cours de validation
 			if ($estDansCircuit) {
 				if ($tourDansCircuit == -1)
 					return array(
-						'image' => '/icons/fini.png',
+						'image' => '/img/icons/fini.png',
 						'titre' => $this->Deliberation->libelleEtat($etat) . ' : trait&eacute');
 				elseif ($tourDansCircuit == 0)
 					return array(
-						'image' => '/icons/atraiter.png',
+						'image' => '/img/icons/atraiter.png',
 						'titre' => $this->Deliberation->libelleEtat($etat) . ' : &agrave; traiter');
 				else
 					return array(
-						'image' => '/icons/attente.png',
+						'image' => '/img/icons/attente.png',
 						'titre' => $this->Deliberation->libelleEtat($etat) . ' : en attente');
 			} else {
 				if ($estRedacteur)
 					return array(
-						'image' => '/icons/fini.png',
+						'image' => '/img/icons/fini.png',
 						'titre' => $this->Deliberation->libelleEtat($etat) . ' : projet dont je suis le r&eacute;dacteur');
 				else
 					return array(
-						'image' => '/icons/fini.png',
+						'image' => '/img/icons/fini.png',
 						'titre' => $this->Deliberation->libelleEtat($etat));
 			}
 			break;
 		case 2: // validé
 			if ($editerProjetValide)
 				return array(
-					'image' => '/icons/valide_editable.png',
+					'image' => '/img/icons/valide_editable.png',
 					'titre' => $this->Deliberation->libelleEtat($etat));
 			else
 				return array(
-					'image' => '/icons/fini.png',
+					'image' => '/img/icons/fini.png',
 					'titre' => $this->Deliberation->libelleEtat($etat));
 			break;
 		case 3: // voté et adopté
 			return array(
-				'image' => '/icons/fini.png',
+				'image' => '/img/icons/fini.png',
 				'titre' => $this->Deliberation->libelleEtat($etat));
 			break;
 		case 4: // voté et non adopté
 			return array(
-				'image' => '/icons/fini.png',
+				'image' => '/img/icons/fini.png',
 				'titre' => $this->Deliberation->libelleEtat($etat));
 			break;
 		case 5: // transmis au contrôle de légalité
 			return array(
-				'image' => '/icons/fini.png',
+				'image' => '/img/icons/fini.png',
 				'titre' => $this->Deliberation->libelleEtat($etat));
 			break;
 		}
  	}
 
-        function sendToParapheur() {
-            $circuits = $this->Parafwebservice->getListeSousTypesWebservice(TYPETECH);
+	function sendToParapheur() {
+		$circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
 
-	    if (empty($this->data)) {
-	        $delibs = $this->Deliberation->findAll("Deliberation.etat = 3 AND Deliberation.delib_pdf != ''");
-	        $this->set ('deliberations', $delibs);
-		$this->set ('circuits', $circuits ['soustype']);
-            }
-	    else {
-	        if ($this->data['Deliberation']['circuit_id']== '') {
-		    $this->Session->setFlash( "Vous devez saisir un circuit avant l'envoi.", 'growl', array('type'=>'erreur'));
-		    $this->redirect('/deliberations/sendToParapheur');
-		    exit;
+		if (empty($this->data)) {
+			$delibs = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.etat" => 3,'Deliberation.delib_pdf <>'=> '')));
+			$this->set('deliberations', $delibs);
+			$this->set('circuits', $circuits['soustype']);
 		}
-                foreach ($this->data['Deliberation'] as $id => $bool ){
-                    if ($bool == 1){
-                        $delib_id = substr($id, 3, strlen($id));
-                        $delib = $this->Deliberation->read(null, $delib_id);
-                        $soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
-                        $nomfichierpdf = "D_$id.pdf";
-			$objetDossier = utf8_encode($this->_objetParaph("$delib_id ".$delib['Deliberation']['objet']));
-			$annexes = array();
-			$tmp1=0;
-			foreach ($delib['Annex'] as $annex) {
-			    if ($annex['type']=='G')
-			    $annexes[$tmp1][3] = $annex['filename'];
-			    $annexes[$tmp1][2] = 'UTF-8';
-			    $annexes[$tmp1][1] = $annex['filetype'];
-                            $annexes[$tmp1][0] = $annex['data'];
-			    $tmp1 ++;
+		else {
+			if ($this->data['Deliberation']['circuit_id'] == '') {
+				$this->Session->setFlash("Vous devez saisir un circuit avant l'envoi.", 'growl', array('type'=>'erreur'));
+				$this->redirect('/deliberations/sendToParapheur');
+				exit;
 			}
-                        $creerdos = $this->Parafwebservice->creerDossierWebservice(TYPETECH, $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $delib['Deliberation']['delib_pdf'], $annexes);
-			$delib['Deliberation']['etat_parapheur']= 1;
-		        $this->Deliberation->save($delib);
-                    }
-                }
-	        $this->Session->setFlash( "Les documents ont été envoyés au parapheur électronique.", 'growl');
-		$this->redirect('/deliberations/sendToParapheur');
-		exit;
-            }
+			foreach ($this->data['Deliberation'] as $id => $bool ) {
+				if ($bool == 1) {
+					$delib_id = substr($id, 3, strlen($id));
+					$delib = $this->Deliberation->read(null, $delib_id);
+					$soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
+					$nomfichierpdf = "D_$id.pdf";
+					$objetDossier = utf8_encode($this->_objetParaph("$delib_id ".$delib['Deliberation']['objet']));
+					$annexes = array();
+					$tmp1=0;
+					foreach ($delib['Annex'] as $annex) {
+						if ($annex['type'] == 'G')
+						$annexes[$tmp1][3] = $annex['filename'];
+						$annexes[$tmp1][2] = 'UTF-8';
+						$annexes[$tmp1][1] = $annex['filetype'];
+						$annexes[$tmp1][0] = $annex['data'];
+						$tmp1++;
+					}
+					$creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $delib['Deliberation']['delib_pdf'], $annexes);
+					$delib['Deliberation']['etat_parapheur']= 1;
+					$this->Deliberation->save($delib);
+				}
+			}
+			$this->Session->setFlash( "Les documents ont &eacute;t&eacute; envoy&eacute;s au parapheur &eacute;lectronique.", 'growl');
+			$this->redirect('/deliberations/sendToParapheur');
+			exit;
+		}
 	}
 
     function _objetParaph($objet){
@@ -2169,37 +2242,33 @@ class DeliberationsController extends AppController {
     }
 
     function verserAsalae() {
-        vendor('pcltar/pcltar.lib');
+        App::import('Vendor','pcltar'.DS.'pcltar.lib');
         if (empty($this->data)) {
             $delibs = $this->Deliberation->findAll("Deliberation.etat = 5");
             $this->set ('deliberations', $delibs);
         }
         else {
-            $client = new SoapClient(ASALAE_WSDL);
-
+            $client = new SoapClient(Configure::read('ASALAE_WSDL'));
             foreach ($this->data['Deliberation'] as $id => $bool ){
                 if ($bool == 1){
                     $delib_id = substr($id, 3, strlen($id));
                     $delib = $this->Deliberation->read(null, $delib_id);
                     $path = WEBROOT_PATH."/files/generee/delibs/$delib_id/";
 		    // Création de l'archive
-                    PclTarCreate($path."versement.tgz") ; 
+                    @PclTarCreate($path."versement.tgz") ; 
 
                     $pathDelib = $this->Gedooo->createFile($path, "delib.pdf",  $delib['Deliberation']['delib_pdf']);
 		    // Ajout du fichier de délibération
-	            PclTarAddList($path."versement.tgz", $path."delib.pdf", '.', $path) ;
+	            @PclTarAddList($path."versement.tgz", $path."delib.pdf", '.', $path) ;
                     $Docs =  array('Attachment' =>
                                         array('@attributes'=>
-                                              array('format'=>'fmt/18',
+                                              array('format'=>'pdf',
                                                     'mimeCode'=>'application/pdf',
                                                     'filename'=>'delib.pdf'),
                                                      '@value'=>''
                                                    ),
                                              'Description'=>'Acte',
-                                             'Type'  => array(
-                                '@attributes' => array(
-                                'listVersionID' => 'edition 2009'),
-                                '@value' => 'CDO')
+                                             'Type'  => 'CDO'
                                       ) ;
 
 
@@ -2208,18 +2277,16 @@ class DeliberationsController extends AppController {
                         $AR = $this->getAR($delib['Deliberation']['tdt_id'], true);
                         $path_AR =  $this->Gedooo->createFile($path, "bordereau.pdf", $AR, '.', $path);
 		        // Ajout du fichier de bordereau
-	                PclTarAddList($path."versement.tgz", $path."bordereau.pdf", '.', $path) ;
+	                @PclTarAddList($path."versement.tgz", $path."bordereau.pdf", '.', $path) ;
 		        array_push ($Docs,  array('Attachment' => 
 				        array('@attributes'=>
-				               array('format'=>'fmt/18', 
+				               array('format'=>'pdf', 
 					             'mimeCode'=>'application/pdf', 
 						     'filename'=>'bordereau.pdf'), 
 						     '@value'=>'' 
 					            ), 
 				              'Description'=>'Bordereau', 
-				              'Type'  => array(
-                                '@attributes' => array('listVersionID' => 'edition 2009'),
-                                '@value' => 'CDO')
+				              'Type'  => 'CDO'
 				        )
                                     );
 				
@@ -2227,58 +2294,44 @@ class DeliberationsController extends AppController {
         	    $document  = file_get_contents($path."versement.tgz");
 											    
                     $options = array(
-		                     'TransferIdentifier' => IDENTIFIANT_VERSANT.'_'.$delib['Deliberation']['num_delib'],
+		                     'TransferIdentifier' => Configure::read('SIREN_VERSANT').'_'.$delib['Deliberation']['num_delib'],
 		                     'Comment'            =>  utf8_encode($delib['Deliberation']['objet']),
-                                     'TransferringAgency' => array('Identification'=>IDENTIFIANT_VERSANT),
-                                     'ArchivalAgency'     => array('Identification'=>SIREN_ARCHIVE),
+                                     'TransferringAgency' => array('Identification'=>Configure::read('SIREN_VERSANT')),
+                                     'ArchivalAgency'     => array('Identification'=>Configure::read('SIREN_ARCHIVE')),
 				     'Contains'           => array( 
-				                                    'ArchivalAgreement'    => NUMERO_AGREMENT,  
-								    'DescriptionLanguage' =>  array(
-                                                     	'@attributes' => array('listVersionID' => 'edition 2009'),
-                                                     	'@value' => 'fr'),
-								    'DescriptionLevel'     => array(
-                                                     	'@attributes' => array('listVersionID' => 'edition 2009'),
-                                                     	'@value' => 'file'),
+				                                    'ArchivalAgreement'    => Configure::read('NUMERO_AGREMENT'),  
+								    'DescriptionLanguage' => 'fr',
+								    'DescriptionLevel'     => 'file',
 								    'Name'=> utf8_encode('Déliberation envoyee depuis WebDelib'),
 
 				                                    'ContentDescription' => array(
 				                                        'CustodialHistory' => utf8_encode("Délibération en provenance de Webdelib"),
 				                                        'Description' => utf8_encode($delib['Deliberation']['objet']),
-									'Language'             =>  array(
-                                                                                      '@attributes' => array('listVersionID' => 'edition 2009'),
-                                                                                      '@value' => 'fr'), 
-									'OriginatingAgency' => array('Identification'=>IDENTIFIANT_VERSANT),
-									'ContentDescriptive' => array('KeywordContent' =>'Deliberation',
+								        'DescriptionAudience'  => 'external',
+									'Language'             => 'fr', 
+									'OriginatingAgency' => array('Identification'=>Configure::read('SIREN_VERSANT')),
+									'ContentDescriptive' => array('KeywordAudience'=>'external',
+									                              'KeywordContent' =>'Deliberation',
 												      'KeywordReference' =>'1',
-												      'KeywordType' =>array(
-												                '@attributes' => array('listVersionID' => 'edition 2009'),
-																																                                                                                                                                           '@value' => 'genreform')
+												      'KeywordType' => 'genreform'
 												      ),
 
+								        'Appraisal'=>array('Code'=>'001C',
+								                           'StartDate'=>date('c'))
 								         ),
-									 'Appraisal' => array(
-                                                                               'Code' => array(
-                                                     		               '@attributes' => array('listVersionID' => 'edition 2009'),
-                                                     		               '@value' => 'conserver'),
-                                                     	                       'Duration' => 'P1Y',
-                                                     	                       'StartDate' => date('Y-m-d')), 
-                                                                          'AccessRestriction' => array(
-                                                     	                      'Code' => array(
-                                                     	                      '@attributes' => array('listVersionID' => 'edition 2009'),
-                                                     		               '@value' => 'AR038'),
-                                                                               'StartDate' => date('Y-m-d')),
 								        'Document' => $Docs 
 									) 
                                     );
 
-                    $seda = @$client->__soapCall("wsGSeda", array($options, IDENTIFIANT_VERSANT, MOT_DE_PASSE));
-		    $ret  = @$client->__soapCall("wsDepot", array("bordereau.xml", $seda, "versement.tgz", $document, IDENTIFIANT_VERSANT, MOT_DE_PASSE));
+                    $seda = @$client->__soapCall("wsGSeda", array($options));
+		    $ret  = @$client->__soapCall("wsDepot", array("bordereau.xml", $seda, "versement.tgz", $document));
+
 		    // Changement d'état de la délibération
 		    $delib['Deliberation']['etat_asalae']= $ret;
-		//    $this->Deliberation->save($delib);
+		    $this->Deliberation->save($delib);
                 }
             }
-	    $this->Session->setFlash( "Les documents ont été transférés à AS@LAE", 'growl', array('type'=>'erreur'));
+	    $this->Session->setFlash( "Les documents ont &eacute;t&eacute; transf&eacute;r&eacute;s à AS@LAE", 'growl', array('type'=>'erreur'));
 	    $this->redirect('/deliberations/verserAsalae');
             exit;
 
@@ -2297,10 +2350,10 @@ class DeliberationsController extends AppController {
 	    exit;
         }
 	else {
-            $this->accepteDossier($delib_id);
+            $this->accepteDossier($delib_id, true);
 	    $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a sauté l'étape : ".$pos['Traitement']['position']);
 
-            $this->Session->setFlash('Le projet est maintenant à la position : '.$new_pos, 'growl');
+            $this->Session->setFlash('Le projet est maintenant &agrave; la position : '.$new_pos, 'growl');
 	    $this->redirect('/deliberations/tousLesProjetsValidation');
 	    exit;
 	}

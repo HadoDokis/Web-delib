@@ -9,13 +9,23 @@
 	var $uses = array( 'Collectivite', 'User');
 
 	// Gestion des droits
-	var $aucunDroit = array('synchronize', 'setMails');
-	var $commeDroit = array('edit'=>'Collectivites:index', 'setLogo'=>'Collectivites:index');
+	var $aucunDroit = array(
+		'synchronize',
+		'setMails'
+	);
+	var $commeDroit = array(
+		'edit'=>'Collectivites:index',
+		'setLogo'=>'Collectivites:index'
+		
+		//FIXME: ajout gd mais à vérifier
+		,'view'=>'Collectivites:index'
+		,'add'=>'Collectivites:index'
+		,'delete'=>'Collectivites:index'
+	);
 
 	function index() {
-		$this->Seance->recursive = 0;
-		$this->set('collectivite', $this->Collectivite->findAll());
-                $this->set('logo_path',   'http://'.$_SERVER['HTTP_HOST'].$this->base."/files/image/logo.jpg");
+		$this->set('collectivite', $this->Collectivite->find('all',array('recursive'=>-1)));
+        $this->set('logo_path',   'http://'.$_SERVER['HTTP_HOST'].$this->base."/files/image/logo.jpg");
 	}
 
  	function edit($id = null) {
@@ -25,7 +35,7 @@
 		else {
 			if(!empty($this->params['form']))
 				$this->Collectivite->save($this->data);
-			$this->redirect('/collectivites');
+				$this->redirect('/collectivites');
 		}
  	}
 
@@ -38,17 +48,20 @@
             if( !strstr($type_file, 'jpg') && !strstr($type_file, 'jpeg') ){
                 //exit("Le fichier n'est pas une image au format jpg/jpeg");
                 $this->Session->setFlash("Le fichier n'est pas une image au format jpg/jpeg");
-    		}else {
-			$name_file = 'logo.jpg';
-			$pos =  strrpos ( getcwd(), 'webroot');
-			$path = substr(getcwd(), 0, $pos);
-			$content_dir = $path.'webroot/files/image/';
-			$tmp_file =  $this->data['Image']['logo']['tmp_name'];
+    		}
+    		else {
+				$name_file = 'logo.jpg';
+				$pos = strrpos(getcwd(), 'webroot');
+				$path = substr(getcwd(), 0, $pos);
+				$content_dir = $path.'webroot/files/image/';
+				$tmp_file = $this->data['Image']['logo']['tmp_name'];
 
-    		if( !move_uploaded_file($tmp_file, 	$content_dir.$name_file) )
-       		    exit("Impossible de copier le fichier dans $content_dir");
-			$this->redirect('/collectivites');
-		}}
+				if(!move_uploaded_file($tmp_file, 	$content_dir.$name_file))
+		   		    //exit("Impossible de copier le fichier dans $content_dir");
+                	$this->Session->setFlash("Impossible de copier le fichier dans $content_dir");
+				$this->redirect('/collectivites');
+			}
+		}
  	}
 
 
@@ -95,8 +108,8 @@
         }
 
  	function synchronize() {
-	    $ldapconn = ldap_connect(LDAP_HOST, PORT)
-		    or die("Impossible de se connecter au serveur LDAP {LDAP_HOST}");
+	    $ldapconn = ldap_connect(LDAP_Configure::read('HOST'), PORT)
+		    or die("Impossible de se connecter au serveur LDAP {LDAP_Configure::read('HOST')}");
 		if ($ldapconn) {
     		// bind with appropriate dn to give update access
     	    $r=ldap_bind($ldapconn, MANAGER, LDAP_PASS);
