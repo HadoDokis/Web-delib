@@ -80,7 +80,11 @@ label {
 	float: left;
 	padding: 0 .5em 0 0;
 	text-align: right;
-	width: 120px;
+	width: 100px;
+}
+
+#password label{
+        width: 250px;
 }
 
 #login_form {
@@ -144,7 +148,7 @@ label {
 	background-color: #fff;
 }
 
-.error_message {
+.error-message {
 	color: #f00;
 	/*background-color: #fff;*/
 	background-color: transparent;
@@ -396,6 +400,13 @@ a.link_modifier {
 	padding: 0 0 10px 22px;
 }
 
+a.link_modifier_left {
+	background-image: url(../img/icons/klpq.png);
+	background-repeat: no-repeat;
+	background-position: left top;
+	padding: 0 0 10px 22px;
+}
+
 a.link_supprimer {
 	background-image: url(../img/icons/edittrash.png);
 	background-repeat: no-repeat;
@@ -438,6 +449,13 @@ a.link_add {
 	padding: 0 0 10px 22px;
 }
 
+a.link_traiter {
+	background-image: url(../img/icons/traiter.png);
+	background-repeat: no-repeat;
+	background-position: top left;
+	padding: 0 0 10px 22px;
+}
+
 a.link_addUsers {
 	background-image: url(../img/icons/identity.png);
 	background-repeat: no-repeat;
@@ -465,12 +483,6 @@ a.link_convocation_anonyme {
 	padding: 0 0 10px 22px;
 }
 
-a.link_traiter {
-	background-image: url(../img/icons/traiter.png);
-	background-repeat: no-repeat;
-	background-position: top left;
-	padding: 0 0 10px 22px;
-}
 a.link_jump {
         background-image: url(../img/icons/jump.png);
         background-repeat: no-repeat;
@@ -1002,4 +1014,8 @@ div.fckEditorProjet {
     background-image: url(../img/loading.gif);
     background-repeat: no-repeat;
     height : 200px;
+}
+
+.paginate {
+	margin-top: 20px;
 }

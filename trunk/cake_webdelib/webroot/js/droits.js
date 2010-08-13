@@ -258,3 +258,11 @@ function appliquerModifications(nbCol, nbLigne) {
 	Element = document.getElementById('frmAppliquer');
 	Element.submit();
 };
+
+/* coche ou décoche les checkBox des cellules comprises entres les colonnes c1 à c2 et entre les lignes l1 à l2*/
+function toggleCheckBoxDroits(idCheckBox, nbCheckBox) {
+	valCheckBox = $('#chkBoxDroits'+idCheckBox).attr('checked');
+	for(i=1; i<=nbCheckBox; i++) {
+		$('#chkBoxDroits'+(idCheckBox+i)).attr('checked', valCheckBox);
+	}
+};
