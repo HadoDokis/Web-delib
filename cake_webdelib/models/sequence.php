@@ -12,7 +12,7 @@
 * @version			1.0
 * @modifiedby
 * @lastmodified	$Date: 2007-10-14
-* @license
+* * @license
 */
 
 class Sequence extends AppModel
@@ -20,21 +20,27 @@ class Sequence extends AppModel
 	var $name = 'Sequence';
 
 	var $displayField = "nom";
-
-	var $validate = array('nom' => VALID_NOT_EMPTY);
+	
+	var $validate = array(
+		'nom' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer un nom pour la séquence'
+			),
+			array(
+				'rule' => 'isUnique',
+				'message' => 'Entrer un autre nom, celui-ci est déjà utilisé.'
+			)
+		),
+		'num_sequence' => array(
+			'rule' => 'numeric',
+			'allowEmpty' => true,
+			'message' => 'Le numéro de séquence doit être un nombre.'
+		)
+	);
 
 	var $hasMany = 'Compteur';
 
 	var $cacheQueries = false;
-
-	function validates()
-	{
-		// unicité du nom
-		$this->isUnique('nom', $this->data['Sequence']['nom'], $this->data['Sequence']['id']);
-
-		$errors = $this->invalidFields();
-		return count($errors) == 0;
-	}
-
 }
 ?>

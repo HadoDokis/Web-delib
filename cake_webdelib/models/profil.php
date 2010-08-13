@@ -3,9 +3,13 @@ class Profil extends AppModel {
 
 	var $name = 'Profil';
 	var $displayField="libelle";
-	var $validate = array
-	(
-		'libelle' => VALID_NOT_EMPTY,
+	var $validate = array (
+		'libelle' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer le libellé.'
+			)
+		)
 	);
 
 	var $belongsTo = array

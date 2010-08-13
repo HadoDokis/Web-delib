@@ -20,11 +20,39 @@ class Acteur extends AppModel
 	var $name = 'Acteur';
 
 	var $displayField = "nom";
-
+	
 	var $validate = array(
-		'typeacteur_id' => VALID_NOT_EMPTY,
-		'nom' => VALID_NOT_EMPTY,
-		'prenom' => VALID_NOT_EMPTY
+		'nom' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer un nom pour l\'acteur'
+			)
+		),
+		'prenom' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer un prénom pour l\'acteur'
+			)
+		),
+		'email' => array(
+			array(
+				'rule' => 'email',
+				'allowEmpty' => true,
+				'message' => 'Adresse email non valide.'
+			)
+		),
+		'service' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Sélectionnez un ou plusieurs services'
+			)
+		),
+		'typeacteur_id' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Selectionner un type d\'acteur'
+			)
+		)
 	);
 
 	var $belongsTo = 'Typeacteur';
@@ -43,27 +71,16 @@ class Acteur extends AppModel
 			'deleteQuery'=>'')
 		);
 
-	function validates() {
-		// adresse mail valide si présente
-		if (!empty($this->data['Acteur']['email'])
-			&& !preg_match(VALID_EMAIL, $this->data['Acteur']['email'] ) )
-            $this->invalidate('email');
-
-		$errors = $this->invalidFields();
-		return count($errors) == 0;
-	}
-
 	/* retourne la liste des acteurs élus [id]=>[prenom et nom] pour utilisation html->selectTag */
 	function generateListElus($order_by=null) {
 		$generateListElus = array();
-                if ($order_by==null)
-		    $acteurs = $this->findAll('Typeacteur.elu=1', 'id, nom, prenom', 'position ASC');
+		if ($order_by==null)
+			$acteurs = $this->findAll('Typeacteur.elu=1', 'id, nom, prenom', 'position ASC');
 		else
-                    $acteurs = $this->findAll(null, 'id, nom, prenom', $order_by.' ASC');
-                foreach($acteurs as $acteur) {
-			$generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
+			$acteurs = $this->findAll(null, 'id, nom, prenom', $order_by.' ASC');
+		foreach($acteurs as $acteur) {
+				$generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
 		}
-
 		return $generateListElus;
 	}
 

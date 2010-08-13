@@ -88,8 +88,7 @@ class Infosup extends AppModel
 					$infosup['Infosup']['date'] = $date[2].'-'.$date[1].'-'.$date[0];
 				else
 					$infosup['Infosup']['date'] = '';
-			} elseif ($infosupdef['Infosupdef']['type'] == 'file' ||
-					$infosupdef['Infosupdef']['type'] == 'odtFile') {
+			} elseif ($infosupdef['Infosupdef']['type'] == 'file' || $infosupdef['Infosupdef']['type'] == 'odtFile') {
 				$infosup['Infosup']['file_name'] = $valeur['name'];
 				$infosup['Infosup']['file_size'] = $valeur['size'];
 				$infosup['Infosup']['file_type'] = $valeur['type'];

@@ -45,7 +45,7 @@ class UsersCircuit extends AppModel {
 	function listeCircuitsParUtilisateur($userId) {
 		$listeCircuits = '';
 
-		$circuits = $this->findAll('user_id = '. $userId, 'circuit_id', null, null, 1, -1);
+		$circuits = $this->find('all',array('conditions'=>array('user_id'=>$userId), 'fields'=>array('circuit_id'), 'recursive'=>-1));
 		foreach($circuits as $circuit) {
 			$listeCircuits .= (empty($listeCircuits) ? '' : ', ') . $circuit['UsersCircuit']['circuit_id'];
 		}
@@ -84,7 +84,7 @@ class UsersCircuit extends AppModel {
                 if ($tmplisteUserCircuit[$i]['UsersCircuit']['service_id']== -1) {
                     array_push($listeUserCircuit['id'],   $tmplisteUserCircuit[$i]['UsersCircuit']['id']);
                     array_push($listeUserCircuit['nom'], $listCircuitsParaph['soustype'][$tmplisteUserCircuit[$i]['UsersCircuit']['user_id']]);
-                    array_push($listeUserCircuit['prenom'], TYPETECH);
+                    array_push($listeUserCircuit['prenom'], Configure::read('TYPETECH'));
                     array_push($listeUserCircuit['service_id'], -1);
                     array_push($listeUserCircuit['service_libelle'], 'i-parapheur');
                     array_push($listeUserCircuit['user_id'], $tmplisteUserCircuit[$i]['UsersCircuit']['user_id']);

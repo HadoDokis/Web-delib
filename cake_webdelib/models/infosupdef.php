@@ -24,12 +24,39 @@ class Infosupdef extends AppModel
 	var $hasMany = array(
 		'Infosup',
 		'Infosuplistedef'
-		);
-
+	);
+	
 	var $validate = array(
-		'nom' => VALID_NOT_EMPTY,
-		'type' => VALID_NOT_EMPTY,
-		'code' => VALID_NOT_EMPTY
+		'nom' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer un nom pour l\'information supplémentaire'
+			),
+			array(
+				'rule' => 'isUnique',
+				'message' => 'Entrer un autre nom, celui-ci est déjà utilisé.'
+			)
+		),
+		'type' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Selectionner un type'
+			)
+		),
+		'code' => array(
+			array(
+				'rule' => 'notEmpty',
+				'message' => 'Entrer un code pour l\'information supplémentaire'
+			),
+			array(
+				'rule' => 'isUnique',
+				'message' => 'Entrer un autre code, celui-ci est déjà utilisé.'
+			),
+			array(
+				'rule' => 'non_conforme_code',
+				'message' => 'Le code est non conforme, essayer celui ci : %s'
+			)
+		)
 	);
 
 	var $types = array(
@@ -51,20 +78,27 @@ class Infosupdef extends AppModel
 		'0' => 'décoché',
 		'1' => 'coché'
 	);
+	
+	/**
+	* FIXME: faire plus générique, car les règles d'un champ sont soit dans un
+	* 	array (règle unique pour un champ), soit dans un array d'array (règles
+	*	multiples pour un champ).
+	*/
 
-	function validates() {
-		// unicité du nom
-		$this->isUnique('nom', $this->data['Infosupdef']['nom'], $this->data['Infosupdef']['id']);
+	function beforeValidate() {
+		$codepropose = Inflector::variable($this->data['Infosupdef']['code']);
 
-		// unicité du code
-		$this->isUnique('code', $this->data['Infosupdef']['code'], $this->data['Infosupdef']['id']);
-
-		// conformité du code
-		if ($this->data['Infosupdef']['code'] != Inflector::variable($this->data['Infosupdef']['code']))
-			$this->invalidate('non_conforme_code');
-
-		$errors = $this->invalidFields();
-		return count($errors) == 0;
+		foreach( $this->validate as $field => $rules ) {
+			foreach( $rules as $key => $rule ) {
+				if( $rule['rule'] == 'non_conforme_code' ) {
+					$this->validate[$field][$key]['message'] = sprintf( $rule['message'], $codepropose );
+				}
+			}
+		}
+	}
+	
+	function non_conforme_code() {
+		return $this->data['Infosupdef']['code'] == Inflector::variable($this->data['Infosupdef']['code']);
 	}
 
 	/* retourne la liste code/libellé pour les types d'information */
@@ -85,8 +119,7 @@ class Infosupdef extends AppModel
 	/* retourne true si l'instance $aSupprimer peut être supprimée et false dans le cas contraire */
 	/* documente la raison de la non suppression dans $message */
 	function isDeletable($aSupprimer, &$message) {
-		$infosup = $this->Infosup->find('infosupdef_id = '.$aSupprimer['Infosupdef']['id'], 'id', null, -1);
-		if ($infosup) {
+		if ($this->Infosup->find('first', array('conditions'=>array('infosupdef_id' => $aSupprimer['Infosupdef']['id']), 'recursive'-1))) {
 			$message = "L'information suppl&eacute;mentaire '".$aSupprimer['Infosupdef']['nom']."' est utilis&eacute;e dans au moins un projet : suppression impossible";
 			return false;
 		} else
@@ -118,7 +151,7 @@ class Infosupdef extends AppModel
 
 	function beforeSave() {
 		/* valeur par defaut pour la taille du champ input lors de la saisie */
-		if ($this->data['Infosupdef']['type'] == 'text' && empty($this->data['Infosupdef']['taille']))
+		if (isset($this->data['Infosupdef']['type']) && $this->data['Infosupdef']['type'] == 'text' && empty($this->data['Infosupdef']['taille']))
 			$this->data['Infosupdef']['taille'] = 20;
 
 		/* calcul du n° d'ordre en cas d'ajout */
@@ -127,8 +160,7 @@ class Infosupdef extends AppModel
 			$this->data['Infosupdef']['ordre'] = $this->findCount(null, -1) + 1;
 
 		/* pas de recherche possible pour les infosup de type fichier et fichier odt */
-		if ($this->data['Infosupdef']['type'] == 'file' ||
-				$this->data['Infosupdef']['type'] == 'odtFile') {
+		if (isset($this->data['Infosupdef']['type']) && ($this->data['Infosupdef']['type'] == 'file' || $this->data['Infosupdef']['type'] == 'odtFile')) {
 			$this->data['Infosupdef']['recherche'] = 0;
 			$this->data['Infosupdef']['val_initiale'] = '';
 		}
@@ -138,7 +170,6 @@ class Infosupdef extends AppModel
 
 	/* Réordonne les numéros d'ordre après une suppression */
 	function afterDelete() {
-
 		$recs = $this->findAll(null, 'id, ordre', 'ordre', null, 1, -1);
 
 		foreach($recs as $n=>$rec) {
@@ -172,7 +203,7 @@ class Infosupdef extends AppModel
 
 		$recs = $this->findAll("type = 'list'", 'id, code', 'ordre', null, 1, -1);
 		foreach($recs as $rec) {
-			$ret[$rec['Infosupdef']['code']] = $this->Infosuplistedef->generateList('actif = 1 AND infosupdef_id = '.$rec['Infosupdef']['id'], 'ordre');
+			$ret[$rec['Infosupdef']['code']] = $this->Infosuplistedef->find('list',array('conditions'=>array('actif' => '1','infosupdef_id' => $rec['Infosupdef']['id']),'order'=>array('ordre')));
 		}
 
 		return $ret;
