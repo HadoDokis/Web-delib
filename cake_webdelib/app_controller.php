@@ -39,28 +39,31 @@
  */
 class AppController extends Controller {
 
-	var $components=array( 'Utils', 'Acl', 'Droits');
-	var $helpers = array('Menu', 'Html', 'Ajax', 'Form', 'Javascript');
-	var $beforeFilter = array('checkSession');
-	var $infoUser = "";
-	var $lienDeconnexion = "";
-	var $agentServices = null;
-	var $userProfil = null;
+	var $components = array( 'Utils', 'Acl', 'Xacl', 'Droits');
+	var $helpers = array('Html', 'Form', 'Javascript', 'Session', 'Menu');
+	//var $beforeFilter = array('requireLogin'=>array('except'=>array('index')));
 
-	function checkSession() {
-            $this->infoUser = "<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ";
-   	    $this->agentServices = $this->Session->read('user.Service');
- 	    $this->lienDeconnexion = "[<span class=\"deconnexion\"><a href=\"".$this->base."/users/logout\"> D&eacute;connexion</a></span>]";
+	function beforeFilter() {
+		$this->set('Droits',$this->Droits);
+		$this->set('name',$this->name);
+		$this->set('Xacl',$this->Xacl);
+		$this->set('infoUser',"<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ");
+		$this->set('user_id',$this->Session->read('user.User.id'));
+		$this->set('agentServices',$this->Session->read('user.Service'));
+		$this->set('lienDeconnexion',"[<span class=\"deconnexion\"><a href=\"".$this->base."/users/logout\"> D&eacute;connexion</a></span>]");
+		$this->set('session_service_id', $this->Session->read('user.User.service'));
+		$this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
 
-                if (CRON_DISPATCHER) return true;
+        if (CRON_DISPATCHER) return true;
 
-		if(substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login')
+		if((substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login')&&($this->action!='writeSession'))
 		{
+
 			//s'il n'y a pas d'utilisateur connecte en session
 			if (!$this->Session->Check('user')) {
 				//le forcer a se connecter
 				$this->redirect("/users/login");
-				exit();
+				//exit();
 			}
 			else {
 		 		// Contrôle des droits
@@ -70,15 +73,11 @@ class AppController extends Controller {
         			if ($controllerAction != 'Services:doList') {
         		   	    $this->log($_SERVER["REMOTE_ADDR"]." : ($user_id)->".substr($this->here, 0, strlen($this->here)));
         			}
-          		    return;
+          		    //return;
         		}
                 else {
-                   if (DEBUG==1)
-                       die("accès refusé pour $user_id (".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom').") à $controllerAction");
-                    else
-                        $this->redirect('/users/logout');
-
-                  }
+                   $this->redirect('/users/logout');
+                }
             }
 		}
 	}
@@ -106,5 +105,37 @@ class AppController extends Controller {
 				$this->redirect('/');
  		}
 	}
+
+	function afterFilter() {
+		if( $this->Session->check( 'user.User' ) ) {
+			$this->Session->write( 'user.User.lasturl', $this->Session->read( 'user.User.oldurl' ) );
+		}
+	}
+
+	function beforeRender() {
+		if( $this->Session->check( 'user.User' ) ) {
+			$this->Session->write( 'user.User.oldurl', Router::url( null, true ) );
+		}
+	}
+
+	function _selectedArray($data, $key = 'id') {
+		if (!is_array($data)) {
+			$model = $data;
+			if (!empty($this->data[$model][$model])) {
+				return $this->data[$model][$model];
+			}
+			if (!empty($this->data[$model])) {
+				$data = $this->data[$model];
+			}
+		}
+		$array = array();
+		if (!empty($data)) {
+			foreach ($data as $var) {
+				$array[$var[$key]] = $var[$key];
+			}
+		}
+		return $array;
+	}
+
 }
 ?>
