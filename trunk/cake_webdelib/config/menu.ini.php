@@ -77,7 +77,7 @@ $webDelib = array(
 				)
 			),
 		'Post-séance' => array(
-			'link' => 'postseances',
+			'link' => '/postseances/index',
 			'subMenu' => array(
 				'items' => array(
 					'Editions' => array('link' => '/postseances/index'),
@@ -93,10 +93,10 @@ $webDelib = array(
 			'subMenu' => array(
 				'items' => array(
 					'Profils' => array('link' => '/profils/index'),
-					'Droits' => array('link' => '/droits/edit'),
+					//'Droits' => array('link' => '/droits/edit'),
 					'Services' => array('link' => '/services/index'),
 					'Utilisateurs' => array('link' => '/users/index'),
-					'Circuits' => array('link' => '/circuits/index')
+					'Circuits' => array('link' => '/cakeflow/circuits/index')
 					)
 				)
 			),

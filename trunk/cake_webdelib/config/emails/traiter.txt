@@ -1,8 +1,10 @@
-Bonjour,
+Bonjour #PRENOM# #NOM#,
 
-Vous avez un dossier en attente de validation.
+Le projet avec l'identifiant #IDENTIFIANT_PROJET# dont l'objet est :  #OBJET_PROJET# est arrivé dans votre bannette "Projets à traiter".
+Il est arrivé via le circuit : #LIBELLE_CIRCUIT#
 
-Numéro du projet : #IDENTIFIANT_PROJET#
-Objet :  #OBJET_PROJET#
+Vous pouvez le traiter à l'adresse : <a href="#ADRESSE_A_TRAITER#">#ADRESSE_A_TRAITER#</a>
 
-Vous pouvez y accéder à l'adresse : <a href='#ADRESSE_A_TRAITER#'>Projet à traiter</a>
+Très cordialement.
+
+Webdelib
