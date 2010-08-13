@@ -29,14 +29,14 @@
  * Allows Calendar include path to be redefined
  * @ignore
  */
-if (!defined('CALENDAR_ROOT')) {
-    define('CALENDAR_ROOT', 'Calendar'.DIRECTORY_SEPARATOR);
+if (!Configure::read('CALENDAR_ROOT')) {
+    Configure::write('CALENDAR_ROOT', 'Calendar'.DS);
 }
 
 /**
  * Load Calendar decorator base class
  */
-require_once CALENDAR_ROOT.'Decorator.php';
+require_once Configure::read('CALENDAR_ROOT').'Decorator.php';
 
 /**
  * Static utlities to help with fetching textual representations of months and

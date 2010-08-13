@@ -28,23 +28,23 @@
 /**
  * Allows Calendar include path to be redefined
  */
-if (!defined('CALENDAR_ROOT')) {
-    define('CALENDAR_ROOT', 'Calendar'.DIRECTORY_SEPARATOR);
+if (!Configure::read('CALENDAR_ROOT')) {
+    Configure::write('CALENDAR_ROOT', 'Calendar'.DS);
 }
 
 /**
  * Constant which defines the calculation engine to use
  */
-if (!defined('CALENDAR_ENGINE')) {
-    define('CALENDAR_ENGINE', 'UnixTS');
+if (!Configure::read('CALENDAR_ENGINE')) {
+    Configure::write('CALENDAR_ENGINE', 'UnixTS');
 }
 
 /**
  * Define Calendar Month states
  */
-define('CALENDAR_USE_MONTH',          1);
-define('CALENDAR_USE_MONTH_WEEKDAYS', 2);
-define('CALENDAR_USE_MONTH_WEEKS',    3);
+Configure::write('CALENDAR_USE_MONTH',          1);
+Configure::write('CALENDAR_USE_MONTH_WEEKDAYS', 2);
+Configure::write('CALENDAR_USE_MONTH_WEEKS',    3);
 
 /**
  * Contains a factory method to return a Singleton instance of a class
@@ -66,7 +66,7 @@ class Calendar_Engine_Factory
     function & getEngine()
     {
         static $engine = false;
-        switch (CALENDAR_ENGINE) {
+        switch (Configure::read('CALENDAR_ENGINE')) {
             case 'PearDate':
                 $class = 'Calendar_Engine_PearDate';
                 break;
@@ -77,7 +77,7 @@ class Calendar_Engine_Factory
         }
         if (!$engine) {
             if (!class_exists($class)) {
-                require_once CALENDAR_ROOT.'Engine'.DIRECTORY_SEPARATOR.CALENDAR_ENGINE.'.php';
+                require_once Configure::read('CALENDAR_ROOT').'Engine'.DS.Configure::read('CALENDAR_ENGINE').'.php';
             }
             $engine = new $class;
         }
@@ -296,7 +296,7 @@ class Calendar
                 return $this->toArray($stamp);
                 break;
             case 'object':
-                require_once CALENDAR_ROOT.'Factory.php';
+                require_once Configure::read('CALENDAR_ROOT').'Factory.php';
                 return Calendar_Factory::createByTimestamp($returnType,$stamp);
                 break;
             case 'timestamp':
@@ -400,7 +400,7 @@ class Calendar
     function & getValidator()
     {
         if (!isset($this->validator)) {
-            require_once CALENDAR_ROOT.'Validator.php';
+            require_once Configure::read('CALENDAR_ROOT').'Validator.php';
             $this->validator = & new Calendar_Validator($this);
         }
         return $this->validator;
@@ -430,12 +430,12 @@ class Calendar
     function defineFirstDayOfWeek($firstDay = null)
     {
         if (defined('CALENDAR_FIRST_DAY_OF_WEEK')) {
-            if (!is_null($firstDay) && ($firstDay != CALENDAR_FIRST_DAY_OF_WEEK)) {
+            if (!is_null($firstDay) && ($firstDay != Configure::read('CALENDAR_FIRST_DAY_OF_WEEK'))) {
                 $msg = 'CALENDAR_FIRST_DAY_OF_WEEK constant already defined.'
                   .' The $firstDay parameter will be ignored.';
                 trigger_error($msg, E_USER_WARNING);
             }
-            return CALENDAR_FIRST_DAY_OF_WEEK;
+            return Configure::read('CALENDAR_FIRST_DAY_OF_WEEK');
         }
         if (is_null($firstDay)) {
             $firstDay = $this->cE->getFirstDayOfWeek(
@@ -444,8 +444,8 @@ class Calendar
                 $this->thisDay()
             );
         }
-        define ('CALENDAR_FIRST_DAY_OF_WEEK', $firstDay);
-        return CALENDAR_FIRST_DAY_OF_WEEK;
+        Configure::write('CALENDAR_FIRST_DAY_OF_WEEK', $firstDay);
+        return Configure::read('CALENDAR_FIRST_DAY_OF_WEEK');
     }
 
     /**

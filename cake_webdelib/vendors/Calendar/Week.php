@@ -29,8 +29,8 @@
  * Allows Calendar include path to be redefined
  * @ignore
  */
-if (!defined('CALENDAR_ROOT')) {
-    define('CALENDAR_ROOT', 'Calendar'.DIRECTORY_SEPARATOR);
+if (!Configure::read('CALENDAR_ROOT')) {
+    Configure::write('CALENDAR_ROOT', 'Calendar'.DS);
 }
 
 /**
@@ -117,7 +117,7 @@ class Calendar_Week extends Calendar
      */
     function Calendar_Week($y, $m, $d, $firstDay=null)
     {
-        require_once CALENDAR_ROOT.'Table/Helper.php';
+        require_once Configure::read('CALENDAR_ROOT').'Table/Helper.php';
         Calendar::Calendar($y, $m, $d);
         $this->firstDay = $this->defineFirstDayOfWeek($firstDay);
         $this->tableHelper = & new Calendar_Table_Helper($this, $this->firstDay);
@@ -167,7 +167,7 @@ class Calendar_Week extends Calendar
      */
     function build($sDates = array())
     {
-        require_once CALENDAR_ROOT.'Day.php';
+        require_once Configure::read('CALENDAR_ROOT').'Day.php';
         $year  = $this->cE->stampToYear($this->thisWeek);
         $month = $this->cE->stampToMonth($this->thisWeek);
         $day   = $this->cE->stampToDay($this->thisWeek);
@@ -271,7 +271,7 @@ class Calendar_Week extends Calendar
                 return $this->toArray($this->prevWeek);
                 break;
             case 'object':
-                require_once CALENDAR_ROOT.'Factory.php';
+                require_once Configure::read('CALENDAR_ROOT').'Factory.php';
                 return Calendar_Factory::createByTimestamp('Week', $this->prevWeek);
                 break;
             case 'timestamp':
@@ -318,7 +318,7 @@ class Calendar_Week extends Calendar
                 return $this->toArray($this->thisWeek);
                 break;
             case 'object':
-                require_once CALENDAR_ROOT.'Factory.php';
+                require_once Configure::read('CALENDAR_ROOT').'Factory.php';
                 return Calendar_Factory::createByTimestamp('Week', $this->thisWeek);
                 break;
             case 'timestamp':
@@ -352,7 +352,7 @@ class Calendar_Week extends Calendar
                 return $this->toArray($this->nextWeek);
                 break;
             case 'object':
-                require_once CALENDAR_ROOT.'Factory.php';
+                require_once Configure::read('CALENDAR_ROOT').'Factory.php';
                 return Calendar_Factory::createByTimestamp('Week', $this->nextWeek);
                 break;
             case 'timestamp':

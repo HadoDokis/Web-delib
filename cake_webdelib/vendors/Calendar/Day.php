@@ -28,8 +28,8 @@
  * Allows Calendar include path to be redefined
  * @ignore
  */
-if (!defined('CALENDAR_ROOT')) {
-    define('CALENDAR_ROOT', 'Calendar'.DIRECTORY_SEPARATOR);
+if (!Configure::read('CALENDAR_ROOT')) {
+    Configure::write('CALENDAR_ROOT', 'Calendar'.DS);
 }
 
 /**
@@ -93,7 +93,7 @@ class Calendar_Day extends Calendar
      */
     function build($sDates = array())
     {
-        require_once CALENDAR_ROOT.'Hour.php';
+        require_once Configure::read('CALENDAR_ROOT').'Hour.php';
 
         $hID = $this->cE->getHoursInDay($this->year, $this->month, $this->day);
         for ($i=0; $i < $hID; $i++) {

@@ -20,7 +20,7 @@ $url = 'http://'.$_SERVER['SERVER_NAME'].$basePath.'/7.php?wsdl';
 if (!isset($_GET['y'])) $_GET['y'] = date('Y');
 if (!isset($_GET['m'])) $_GET['m'] = date('n');
 
-$wsdl = new SOAP_WSDL ($url);
+$wsdl = new SOAP_Configure::read('WSDL') ($url);
 
 echo ( '<pre>'.$wsdl->generateProxyCode().'</pre>' );
 

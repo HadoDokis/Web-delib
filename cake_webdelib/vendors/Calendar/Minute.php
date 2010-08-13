@@ -28,14 +28,14 @@
  * Allows Calendar include path to be redefined
  * @ignore
  */
-if (!defined('CALENDAR_ROOT')) {
-    define('CALENDAR_ROOT', 'Calendar'.DIRECTORY_SEPARATOR);
+if (!Configure::read('CALENDAR_ROOT')) {
+    Configure::write('CALENDAR_ROOT', 'Calendar'.DS);
 }
 
 /**
  * Load Calendar base class
  */
-require_once CALENDAR_ROOT.'Calendar.php';
+require_once Configure::read('CALENDAR_ROOT').'Calendar.php';
 
 /**
  * Represents a Minute and builds Seconds
@@ -74,7 +74,7 @@ class Calendar_Minute extends Calendar
      */
     function build($sDates=array())
     {
-        require_once CALENDAR_ROOT.'Second.php';
+        require_once Configure::read('CALENDAR_ROOT').'Second.php';
         $sIM = $this->cE->getSecondsInMinute($this->year, $this->month,
                 $this->day, $this->hour, $this->minute);
         for ($i=0; $i < $sIM; $i++) {

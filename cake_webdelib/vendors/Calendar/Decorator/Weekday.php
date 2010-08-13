@@ -29,19 +29,19 @@
  * Allows Calendar include path to be redefined
  * @ignore
  */
-if (!defined('CALENDAR_ROOT')) {
-    define('CALENDAR_ROOT', 'Calendar'.DIRECTORY_SEPARATOR);
+if (!Configure::read('CALENDAR_ROOT')) {
+    Configure::write('CALENDAR_ROOT', 'Calendar'.DS);
 }
 
 /**
  * Load Calendar decorator base class
  */
-require_once CALENDAR_ROOT.'Decorator.php';
+require_once Configure::read('CALENDAR_ROOT').'Decorator.php';
 
 /**
  * Load a Calendar_Day
  */
-require_once CALENDAR_ROOT.'Day.php';
+require_once Configure::read('CALENDAR_ROOT').'Day.php';
 /**
  * Decorator for fetching the day of the week
  * <code>

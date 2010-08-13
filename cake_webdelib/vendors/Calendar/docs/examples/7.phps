@@ -82,10 +82,10 @@ if (strtoupper($_SERVER['REQUEST_METHOD'])=='POST') {
     if (isset($_SERVER['QUERY_STRING']) &&
         strcasecmp($_SERVER['QUERY_STRING'], 'wsdl')==0) {
         header("Content-type: text/xml");
-        echo $disco->getWSDL();
+        echo $disco->getConfigure::read('WSDL')();
     } else {
         echo 'This is a PEAR::SOAP Calendar Server. For client try <a href="8.php">here</a><br />';
-        echo 'For WSDL try <a href="?wsdl">here</a>';
+        echo 'For Configure::read('WSDL') try <a href="?wsdl">here</a>';
     }
     exit;
 }
