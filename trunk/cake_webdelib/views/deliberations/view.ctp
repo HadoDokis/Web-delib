@@ -44,21 +44,7 @@
 
 	<div class="imbrique">
 		<dt>Circuit : <?php echo $this->data['Circuit']['libelle']?></dt>
-		<dd><?php foreach ($user_circuit as $user) { ?>
-			<div class="graphique">
-				<?php
-				if ($this->data['positionDelib'] == $user['UsersCircuit']['position'] && ($this->data['Deliberation']['etat']!= 2)){
-					echo $html->image('../img/icons/edit.png');
-				} elseif ($this->data['positionDelib'] < $user['UsersCircuit']['position'] && ($this->data['Deliberation']['etat']!= 2)) {
-					echo $html->image('../img/icons/editcreate.png');
-				} else {
-					echo $html->image('../img/icons/editcreate.png');
-				} ?>
-				<br/><?php echo $user['User']['prenom']. ' ' .$user['User']['nom']; ?>
-				<br/><?php echo $user['Service']['libelle'];?>
-			</div>
-		<?php } ?>
-		</dd>
+		<dd><?php echo $visu; ?></dd>
 	</div>
 	<br/>
 	<br/>

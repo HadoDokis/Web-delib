@@ -2,7 +2,6 @@
 class User extends AppModel {
 
 	var $name = 'User';
-
 	var $validate = array(
 		'login' => array(
 			array(
@@ -83,27 +82,14 @@ class User extends AppModel {
 			'limit'=>'',
 			'unique'=>true,
 			'finderQuery'=>'',
-			'deleteQuery'=>''),
-		'Circuit' => array(
-			'className' => 'Circuit',
-			'joinTable' => 'users_circuits',
-			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'circuit_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'unique' => '',
-			'finderQuery' => '',
-			'deleteQuery' => '',
-			'insertQuery' => '')
+			'deleteQuery'=>'')
 		);
 
          var $hasMany = array(
                 'Historique' =>array(
                         'className'    => 'Historique',
-                        'foreignKey'   => 'delib_id'));
+                        'foreignKey'   => 'delib_id')
+                 );
 
 	function samePassword() {
 		return ((!empty($this->data['User']['password'])) && ($this->data['User']['password']==$this->data['User']['password2']));

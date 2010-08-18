@@ -15,7 +15,7 @@ class DeliberationsController extends AppController {
  */
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
-	var $uses = array('Acteur', 'Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique');
+	var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit',  'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa');
 	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Parafwebservice');
 
 	// Gestion des droits
@@ -64,7 +64,6 @@ class DeliberationsController extends AppController {
 			$this->Session->setFlash('Invalide id pour la d&eacute;lib&eacute;ration : affichage de la vue impossible.', 'growl');
 			$this->redirect('/deliberations/mesProjetsRedaction');
 		}
-
 		// Compactage des informations supplémentaires
 		$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup'], false);
 
@@ -75,15 +74,13 @@ class DeliberationsController extends AppController {
 
 		// Lecture des droits en modification
 		$user_id = $this->Session->read('user.User.id');
-		if ($this->Droits->check($user_id, "Deliberations:add") &&
-			$this->Deliberation->estModifiable($id, $user_id)
-		)
-			$this->set('userCanEdit', true);
+		if ($this->Droits->check($user_id, "Deliberations:add") && $this->Deliberation->estModifiable($id, $user_id))
+	            $this->set('userCanEdit', true);
 		else
-			$this->set('userCanEdit', false);
+		    $this->set('userCanEdit', false);
 
 		// Lecture et initialisation des commentaires
-		$commentaires = $this->Commentaire->findAll("delib_id =  $id");
+       		$commentaires = $this->Commentaire->findAll("delib_id =  $id");
 		for($i=0; $i< count($commentaires) ; $i++) {
 		        if($commentaires[$i]['Commentaire']['agent_id'] == -1) {
 			    $nomAgent = 'i-parapheur';
@@ -104,30 +101,13 @@ class DeliberationsController extends AppController {
 		$this->data['Deliberation']['libelleEtat'] = $this->Deliberation->libelleEtat($this->data['Deliberation']['etat']);
 		if(!empty($this->data['Seance']['date']))
 			$this->data['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data['Seance']['date']));
+   
+		$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Service']['id']);
+		$this->data['Circuit']['libelle'] = $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
 
-		$id_service = $this->data['Service']['id'];
-		$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-
-		$tab_circuit=$this->data['Deliberation']['circuit_id'];
-		$delib=array();
-                //on recupere la position courante de la deliberation
-                $this->data['positionDelib']=count($this->data['Traitement']);
-
-		//on recupere la position de l'user dans le circuit
-		$userscircuit = $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC');
-		if (Configure::read('USE_PARAPH'))
-	            $soustypes    = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
-		for ($i = 0; $i <count ($userscircuit); $i++){
-                    if($userscircuit[$i]['UsersCircuit']['service_id']== -1){
-		        $userscircuit[$i]['User']['prenom']= Configure::read('TYPETECH');
-		        $userscircuit[$i]['User']['nom']= $soustypes['soustype'][$userscircuit[$i]['UsersCircuit']['user_id']];
-		        $userscircuit[$i]['Service']['libelle']= 'i-parapheur';
-                    }
-		}
-		$this->set('user_circuit', $userscircuit);
 		// Définitions des infosup
 		$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
-
+                $this->set('visu', $this->requestAction('/cakeflow/circuits/visuCircuit/'.$this->data['Deliberation']['circuit_id']."/$id", array('return')));
 	}
 
 	function _getFileData($fileName, $fileSize) {
@@ -442,9 +422,7 @@ class DeliberationsController extends AppController {
 					}
 				}
 			}
-			//debug($this->params['form']['date_limite']);
 			$this->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
-			//debug($this->data['Deliberation']['date_limite']);
 			if ($this->Deliberation->save($this->data)) {
 
 				// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
@@ -512,43 +490,27 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-	function recapitulatif($id = null) {
-		$user=$this->Session->read('user');
-		if (empty($this->data)) {
-			if (!$id) {
-				$this->Session->setFlash('Invalide id pour la deliberation', 'growl', array('type'=>'erreur'));
-				$this->redirect('/deliberations/mesProjetsRedaction');
-			}
-			$deliberation = $this->Deliberation->read(null, $id);
-			if(!empty($deliberation['Seance']['date']))
-				$deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
-			if(!empty($deliberation['Deliberation']['date_limite']))
-				$deliberation['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($deliberation['Deliberation']['date_limite']));
-			$deliberation['Deliberation']['created'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Deliberation']['created']));
-			$deliberation['Deliberation']['modified'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Deliberation']['modified']));
-			$id_service = $deliberation['Service']['id'];
-			$deliberation['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-
-			$tab_circuit=$deliberation['Deliberation']['circuit_id'];
-			$delib=array();
-			//on recupere la position courante de la deliberation
-			$lastTraitement=array_pop($deliberation['Traitement']);
-			$deliberation['positionDelib']=$lastTraitement['position'];
-			//on recupere la position de l'user dans le circuit
-			array_push($delib, $deliberation);
-			$this->set('deliberation', $delib);
-                        $userscircuit = $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC');
-                        if (Configure::read('USE_PARAPH'))
-                             $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
-                        for ($i = 0; $i <count ($userscircuit); $i++){
-                            if($userscircuit[$i]['UsersCircuit']['service_id']== -1){
-                                $userscircuit[$i]['User']['prenom']= Configure::read('TYPETECH');
-                                $userscircuit[$i]['User']['nom']= $soustypes['soustype'][$userscircuit[$i]['UsersCircuit']['user_id']];
-                                $userscircuit[$i]['Service']['libelle']= 'i-parapheur';
-                            }
-                        }
-			$this->set('user_circuit', $userscircuit);
-
+    function recapitulatif($id = null) {
+        $user=$this->Session->read('user');
+        if (empty($this->data)) {
+            if (!$id) {
+                $this->Session->setFlash('Invalide id pour la deliberation', 'growl', array('type'=>'erreur'));
+                $this->redirect('/deliberations/mesProjetsRedaction');
+            }
+            $delib = $this->Deliberation->read(null, $id);
+            if(!empty($delib['Seance']['date']))
+                $delib['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($delib['Seance']['date']));
+                if(!empty($delib['Deliberation']['date_limite']))
+                    $delib['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($delib['Deliberation']['date_limite']));
+                    $delib['Deliberation']['created'] = $this->Date->frenchDateConvocation(strtotime($delib['Deliberation']['created']));
+                    $delib['Deliberation']['modified'] = $this->Date->frenchDateConvocation(strtotime($delib['Deliberation']['modified']));
+                    $id_service = $delib['Service']['id'];
+                    $delib['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+                    $tab_circuit=$delib['Deliberation']['circuit_id'];
+                    $delib['Circuit']['libelle']=$this->Circuit->getLibelle($tab_circuit);
+                    //on recupere la position de l'user dans le circuit
+                    $this->set('deliberation', $delib);
+                    $this->set('visu', $this->requestAction('/cakeflow/circuits/visuCircuit/'.$tab_circuit, array('return')));
 		}
 	}
 
@@ -566,78 +528,83 @@ class DeliberationsController extends AppController {
 		$this->redirect('/deliberations/mesProjetsRedaction');
 	}
 
-		function addIntoCircuit($id = null){
-			$this->data = $this->Deliberation->read(null,$id);
-			if ($this->data['Deliberation']['circuit_id']!= 0){
-			    $circuit = $this->Circuit->read(null, $this->data['Deliberation']['circuit_id']);
-			    $message = "Projet injecté au circuit : ".$circuit['Circuit']['libelle'];
-			    $this->Historique->enregistre($id, $this->Session->read('user.User.id'), $message);
-				$this->data['Deliberation']['id'] = $id;
-				$this->data['Deliberation']['date_envoi']=date('Y-m-d H:i:s', time());
-				$this->data['Deliberation']['etat']='1';
-				if ($this->Deliberation->save($this->data)) {
-					//on doit tester si la delib a une version anterieure, si c le cas il faut mettre a jour l'action dans la table traitement
-					$delib=$this->Deliberation->find("Deliberation.id = $id");
-					if ($delib['Deliberation']['anterieure_id']!=0) {
-						//il existe une version anterieure de la delib
-						//on met a jour le traitement anterieure
-						$anterieure=$delib['Deliberation']['anterieure_id'];
-						$condition="delib_id = $anterieure AND Traitement.position = '0'";
-						$traite=$this->Traitement->find($condition);
-						$traite['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
-						$this->Traitement->save($traite);
-					}
-					//enregistrement dans la table traitements
-					// TODO Voir comment ameliorer ce point (associations cakephp).
-					$circuit_id = $delib['Deliberation']['circuit_id'];
-					$this->data['Traitement']['id']='';
-					$this->data['Traitement']['delib_id']=$id;
-					$this->data['Traitement']['circuit_id']=$circuit_id;
-					$this->data['Traitement']['position']='1';
-					$this->Traitement->save($this->data['Traitement']);
+    function addIntoCircuit($id = null){
+        $this->data = $this->Deliberation->read(null,$id);
+        if ($this->data['Deliberation']['circuit_id']!= 0){
+            // enregistrement de l'historique
+            $message = "Projet injecté au circuit : ".$this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
+            $this->Historique->enregistre($id, $this->Session->read('user.User.id'), $message);
+            $this->data['Deliberation']['date_envoi']=date('Y-m-d H:i:s', time());
+            $this->data['Deliberation']['etat']='1';
+            if ($this->Deliberation->save($this->data)) {
+                // On doit tester si la delib a une version anterieure, 
+                // si c le cas il faut mettre a jour l'action dans la table traitement
+                $delib=$this->Deliberation->find("Deliberation.id = $id");
+                if ($delib['Deliberation']['anterieure_id']!=0) {
+                    // Il existe une version anterieure de la delib
+                    // On met a jour le traitement anterieur
+                    $anterieure=$delib['Deliberation']['anterieure_id'];
+                    $condition="delib_id = $anterieure AND Traitement.position = '0'";
+                    $traite=$this->Traitement->find($condition);
+                    $traite['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
+                    $this->Traitement->save($traite);
+                }
+                //enregistrement dans la table traitements
+		// TODO Voir comment ameliorer ce point (associations cakephp). 
+                $circuit_id = $delib['Deliberation']['circuit_id'];
+                $this->Traitement->initialisation($circuit_id, $id);
 
-					//Envoi un mail a tous les membres du circuit
-					$condition = "circuit_id = $circuit_id";
-					$listeUsers = $this->UsersCircuit->findAll($condition);
-					foreach($listeUsers as $user){
-						if ($user['UsersCircuit']['service_id']!= -1) {
-							if ($user['UsersCircuit']['position']==1)
-								$this->_notifierDossierAtraiter($circuit_id, 1, $id);
-							else
-								$this->_notifierInsertionCircuit($id, $user['User']['id']);
-						}
-						else {
-							if (($user['UsersCircuit']['service_id']== -1)&&($user['UsersCircuit']['position']==1)) {
-								$model_id = $this->_getModelId($id);
-								$err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
-								$file =  WEBROOT_PATH."/files/generee/fd/null/$id/P_$id.pdf";
+		//Envoi un mail a tous les membres du circuit
+                $listeUsers = $this->Circuit->getAllMembers($circuit_id);
+                                         
+/*              foreach($listeUsers as $user){
+                    if ($user['service_id']!= -1) {
+                        if ($user['position']==1)
+                            $this->_notifierDossierAtraiter($circuit_id, 1, $id, $user);
+		        else
+                            $this->_notifierInsertionCircuit($id, $user);
+                    }
+		    else {
+                        if (($user['UsersCircuit']['service_id']== -1)&&($user['UsersCircuit']['position']==1)) {
+                            $model_id = $this->_getModelId($id);
+                            $err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
+                            $file =  WEBROOT_PATH."/files/generee/fd/null/$id/P_$id.pdf";
+                            $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+                            $soustype = $soustypes ['soustype'][$user['UsersCircuit']['user_id']];
+                            $nomfichierpdf = "P_$id.pdf";
+                            $pdf = file_get_contents($file);
+                            $objetDossier = "$id ".utf8_encode($this->_objetParaph($delib['Deliberation']['objet']));
+                            $creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), 
+                                                                                       $soustype, 
+                                                                                       EMAILEMETTEUR, 
+                                                                                       $objetDossier, 
+                                                                                       '', 
+                                                                                       '', 
+                                                                                       VISIBILITY, 
+                                                                                       '', 
+                                                                                       $pdf);
+                        }
+                    }
+                }
+*/
+                $this->Session->setFlash('Projet ins&eacute;r&eacute; dans le circuit', 'growl');
+                $this->redirect('/deliberations/mesProjetsRedaction');
+            } 
+            else {
+                $this->Session->setFlash('Probl&egrave;me de sauvegarde.', 'growl', array('type'=>'erreur'));
+                $this->redirect('/deliberations/attribuercircuit/'.$id);
+            }
+        }
+        else{
+            $this->Session->setFlash('Vous devez assigner un circuit au projet de délibération.', 'growl', array('type'=>'erreur'));
+            $this->redirect('/deliberations/recapitulatif/'.$id);
+        }
+    }
 
-								$soustypes = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
-								$soustype = $soustypes ['soustype'][$user['UsersCircuit']['user_id']];
-								$nomfichierpdf = "P_$id.pdf";
-								$pdf = file_get_contents($file);
-								$objetDossier = "$id ".utf8_encode($this->_objetParaph($delib['Deliberation']['objet']));
-								$creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $pdf);
-							}
-						}
-					}
-					$this->Session->setFlash('Projet ins&eacute;r&eacute; dans le circuit', 'growl');
-					$this->redirect('/deliberations/mesProjetsRedaction');
-				} else {
-					$this->Session->setFlash('Probl&egrave;me de sauvegarde.', 'growl', array('type'=>'erreur'));
-					$this->redirect('/deliberations/attribuercircuit/'.$id);
-				}
-			}else{
-				$this->Session->setFlash('Vous devez assigner un circuit &agrave; la d&eacute;lib&eacute;ration.', 'growl', array('type'=>'erreur'));
-				$this->redirect('/deliberations/recapitulatif/'.$id);
-			}
-		}
-
-	function _changeCircuit ($delib_id, $circuit_id) {
-	    $traitements = $this->Traitement->findAll("delib_id =$delib_id ");
-	    foreach($traitements as $traitement ){
-	        $this->Traitement->delete($traitement['Traitement']['id']);
-	    }
+    function _changeCircuit ($delib_id, $circuit_id) {
+        $traitements = $this->Traitement->find('all', array('conditions'=>array('archive_id'=>$delib_id)));
+        foreach($traitements as $traitement )
+            $this->Traitement->del($traitement['Traitement']['archive_id'], true);
     }
 
 	function attribuercircuit ($id = null, $circuit_id=null) {
@@ -652,7 +619,8 @@ class DeliberationsController extends AppController {
 		}else
 			$this->set('circuit_id','0');*/
 		
-		$circuits=$this->Deliberation->Circuit->find('list',array('order'=>array("libelle ASC")));
+		//$circuits=$this->Deliberation->Circuit->find('list',array('order'=>array("libelle ASC")));
+                $circuits = $this->Circuit->getList();
 		$this->set('circuits', $circuits);
 
 		if (empty($this->data)) {
@@ -670,18 +638,19 @@ class DeliberationsController extends AppController {
 				
 			if (isset($circuit_id)){
 				$this->set('circuit_id', $circuit_id);
-				$listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
-				$this->set('listeUserCircuit', $listeUserCircuit);
+			//	$listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
+			//	$this->set('listeUserCircuit', $listeUserCircuit);
+                                $this->set('visu', $this->requestAction('/cakeflow/circuits/visuCircuit/'.$circuit_id, array('return')));
 			}else
 				$this->set('circuit_id','0');
 				
 		} else {
-			$this->data['Deliberation']['id']=$id;
+		        $this->Deliberation->id = $id;
 			$this->data = $this->Deliberation->find('first',array('conditions'=>array("Deliberation.id"=>$id),'recursive'=>-1));
 
 			if($this->data['Deliberation']['circuit_id'] != $circuit_id )
 				$this->_changeCircuit($id, $circuit_id);
-		        $this->Deliberation->id = $id;
+
 			if ($this->Deliberation->saveField('circuit_id', $circuit_id)) {
 				$this->redirect('/deliberations/recapitulatif/'.$id);
 			} else
@@ -773,23 +742,18 @@ class DeliberationsController extends AppController {
 			            $commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
 				}
 				$this->set('commentaires', $commentaires);
-				$deliberation= $this->Deliberation->read(null, $id);
+				$deliberation= $check_delib;
 				if (!empty($deliberation['Seance']['date']))
 				    $deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
 				$id_service = $deliberation['Service']['id'];
 				$deliberation['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-
+				$deliberation['Circuit']['libelle'] = $this->Circuit->getLibelle($deliberation['Deliberation']['circuit_id']);
 				$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
-				$delib=array();
-				//on recupere la position courante de la deliberation
-				$deliberation['positionDelib']=count($deliberation['Traitement']);
-				$lastTraitement=array_pop($deliberation['Traitement']);
+                                $this->set('visu', $this->requestAction('/cakeflow/circuits/visuCircuit/'.$tab_circuit."/$id", array('return')));
+                                $this->set('deliberation', $deliberation);
 
-
-				//on recupere la position de l'user dans le circuit
-				array_push($delib, $deliberation);
-				$this->set('deliberation', $delib);
-                        $userscircuit = $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC');
+                      /*
+                       $userscircuit = $this->UsersCircuit->findAll("UsersCircuit.circuit_id = $tab_circuit", null, 'UsersCircuit.position ASC');
                         if (Configure::read('USE_PARAPH'))
                             $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
                         for ($i = 0; $i <count ($userscircuit); $i++){
@@ -799,24 +763,26 @@ class DeliberationsController extends AppController {
                                 $userscircuit[$i]['Service']['libelle']= 'i-parapheur';
                             }
                         }
-
+                 */
                 $this->set('historiques',$this->Historique->findAll("Historique.delib_id = $id"));
                 
                 // Compactage des informations supplémentaires
              	$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($deliberation['Infosup'], false);
                 $this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 
-                $this->set('user_circuit', $userscircuit);
 			}
 			else
 			{
 	            if ($valid=='1') {
-			        $this->Historique->enregistre($id, $this->Session->read('user.User.id'), 'Projet vis&eacute;' );
-					$this->accepteDossier($id);
+                        $user_id = $this->Session->read('user.User.id'); 
+                        $circuit_id = $check_delib['Deliberation']['circuit_id'];
+                        $this->Traitement->next($circuit_id, $id, $user_id, '', date('Y-m-d'));
+                        $this->Historique->enregistre($id, $user_id, 'Projet vis&eacute;' );
+	       	        $this->redirect('/deliberations/mesProjetsATraiter');
 	            }
-			    else {
-                    $this->Deliberation->refusDossier($id);
-                    $delibTmp = $this->Deliberation->read(null, $id);
+		    else {
+                        $this->Deliberation->refusDossier($id);
+                        $delibTmp = $this->Deliberation->read(null, $id);
 
                     // TODO notifier par mail toutes les personnes qui ont deja vise le projet
                     $this->_notifierDossierRefuse($id, $delibTmp['Deliberation']['redacteur_id']);
@@ -829,12 +795,12 @@ class DeliberationsController extends AppController {
                     foreach($listeUsers as $user) {
                        if ($user['UsersCircuit']['service_id'] != -1)
                            $this->_notifierDossierRefuse($id, $user['User']['id']);
-		            }
-				    $this->Historique->enregistre($id, $this->Session->read('user.User.id'),  'Projet refus&eacute;' );
-					$this->Session->setFlash('Vous venez de refuser le projet : '.$id, 'growl');
-	       			$this->redirect('/deliberations/mesProjetsATraiter');
-			    }
-			}
+		    }
+		    $this->Historique->enregistre($id, $this->Session->read('user.User.id'),  'Projet refus&eacute;' );
+                    $this->Session->setFlash('Vous venez de refuser le projet : '.$id, 'growl');
+                    $this->redirect('/deliberations/mesProjetsATraiter');
+	    }
+	}
 		}
 	}
 
@@ -1364,12 +1330,10 @@ class DeliberationsController extends AppController {
 		$this->set('delib_id', $id);
 	}
 
-        function _notifierDossierAtraiter($circuit_id, $pos, $delib_id){
-            $conditions = "UsersCircuit.circuit_id=$circuit_id and UsersCircuit.position=$pos";
-            $data = $this->UsersCircuit->findAll($conditions);
+        function _notifierDossierAtraiter($circuit_id, $pos, $delib_id, $user){
             // Si l'utilisateur accepte les mails
-            if ($data['0']['User']['accept_notif']){
-                $to_mail = $data['0']['User']['email'];
+            if ($user['accept_notif']){
+                $to_mail = $user['email'];
                 
                 if (Configure::read("SMTP_USE")) {
 					$this->Email->smtpOptions = array(
@@ -1392,7 +1356,7 @@ class DeliberationsController extends AppController {
 
 				$this->Email->sendAs = 'text';
 				$this->Email->template = 'traiter';
-				$this->set('data',  $this->_paramMails('traiter', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
+				$this->set('data',  $this->_paramMails('traiter', $this->Deliberation->read(null, $delib_id),  $user));
 				$this->Email->attachments = null;
 
 				$this->Email->send();
@@ -1673,7 +1637,7 @@ class DeliberationsController extends AppController {
 		$projets = array();
 		$userId = $this->Session->read('user.User.id');
 
-		$listeCircuits = $this->UsersCircuit->listeCircuitsParUtilisateur($userId);
+		$listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($userId);
 
 		if (!empty($listeCircuits)) {
 			$conditions = 'Deliberation.etat = 1 AND Deliberation.circuit_id IN ('.$listeCircuits.')';
@@ -1681,7 +1645,7 @@ class DeliberationsController extends AppController {
 			$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
 			// suppression des projets non concernés
     	                foreach($projets as $i=>$delib)
-		            if (!($this->Traitement->tourUserDansCircuit($userId, $projets[$i]['Deliberation']['id']) === 0))
+		            if (!($this->Traitement->tourUserDansCircuit($userId, $projets[$i]['Deliberation']['id'],  $projets[$i]['Deliberation']['circuit_id']) === 0))
 			        unset($projets[$i]); 
 		}
 
@@ -1699,7 +1663,7 @@ class DeliberationsController extends AppController {
 	function mesProjetsValidation() {
 		$userId=$this->Session->read('user.User.id');
 
-		$listeCircuits = $this->UsersCircuit->listeCircuitsParUtilisateur($userId);
+		$listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($userId);
 		$conditions = 'Deliberation.etat = 1 AND ';
 		$conditions .= empty($listeCircuits) ? '' : '(Deliberation.circuit_id IN ('.$listeCircuits.') OR ';
 		$conditions .= 'Deliberation.redacteur_id = ' . $userId;
@@ -1714,7 +1678,7 @@ class DeliberationsController extends AppController {
 			if ($estRedacteurHorsCircuits)
 				$tourDansCircuit = 0;
 			else
-				$tourDansCircuit = $this->Traitement->tourUserDansCircuit($userId, $projets[$i]['Deliberation']['id']);
+				$tourDansCircuit = $this->Traitement->tourUserDansCircuit($userId, $projets[$i]['Deliberation']['id'], $projets[$i]['Deliberation']['circuit_id']);
 
 			if (!$estRedacteurHorsCircuits && $tourDansCircuit == 0)
 				unset($projets[$i]);
@@ -1759,19 +1723,21 @@ class DeliberationsController extends AppController {
 		$this->data = $projets;
 
 		/* initialisation pour chaque projet ou délibération */
-        foreach($this->data as $i=>$projet) {
+                foreach($this->data as $i=>$projet) {
 			// initialisation des icônes
         	if ($this->data[$i]['Deliberation']['etat'] == 0 && $this->data[$i]['Deliberation']['anterieure_id']!=0)
 	            $this->data[$i]['iconeEtat'] = $this->_iconeEtat(-1);
         	elseif ($this->data[$i]['Deliberation']['etat'] == 1) {
-				$estDansCircuit = $this->UsersCircuit->estDansCircuit($userId, $this->data[$i]['Deliberation']['circuit_id']);
-				$tourDansCircuit = $estDansCircuit ? $this->Traitement->tourUserDansCircuit($userId, $this->data[$i]['Deliberation']['id']) : 0;
-				$estRedacteur = $userId == $this->data[$i]['Deliberation']['redacteur_id'];
-				$this->data[$i]['iconeEtat'] = $this->_iconeEtat(1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
+                    $estDansCircuit = $this->Circuit->userInCircuit($userId, $this->data[$i]['Deliberation']['circuit_id']);
+		    $tourDansCircuit = $estDansCircuit ? $this->Traitement->tourUserDansCircuit($userId, $this->data[$i]['Deliberation']['id'], $this->data[$i]['Deliberation']['circuit_id']) : 0;
+	            $estRedacteur = $userId == $this->data[$i]['Deliberation']['redacteur_id'];
+	            $this->data[$i]['iconeEtat'] = $this->_iconeEtat(1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
+                    $this->data[$i]['Circuit']['libelle'] = $this->Circuit->getLibelle($this->data[$i]['Deliberation']['circuit_id']);
         	}
-        	else
-				$this->data[$i]['iconeEtat'] = $this->_iconeEtat($this->data[$i]['Deliberation']['etat'], $editerProjetValide);
-				
+        	else{
+                     $this->data[$i]['Circuit']['libelle'] = $this->Circuit->getLibelle($this->data[$i]['Deliberation']['circuit_id']);
+                     $this->data[$i]['iconeEtat'] = $this->_iconeEtat($this->data[$i]['Deliberation']['etat'], $editerProjetValide);
+		}		
 			// initialisation des actions
 			$this->data[$i]['Actions'] = $listeActions;
 			if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {

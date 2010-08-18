@@ -3,7 +3,7 @@ class UsersController extends AppController {
 
 	var $name = 'Users';
 	var $helpers = array('Form', 'Html', 'Html2', 'Session');
-	var $uses = array('Circuit', 'User', 'Service', 'UsersService', 'Profil', 'Deliberation');
+	var $uses = array( 'User', 'Service', 'Cakeflow.Circuit', 'Profil', 'Deliberation');
 	var $components = array('Utils', 'Acl', 'Menu', 'Dbdroits');
 	
 	var $paginate = array(
@@ -112,7 +112,7 @@ class UsersController extends AppController {
 			$this->set('selectedServices', null);
 			$this->set('profils', $this->User->Profil->find('list'));
 			$this->set('notif', array('1'=>'oui','0'=>'non'));
-			$this->set('circuits', $this->Circuit->find('list'));
+			$this->set('circuits', $this->Circuit->getList());
 			$this->render('edit');
 		}
 	}
@@ -155,7 +155,7 @@ class UsersController extends AppController {
 			$this->set('services', $this->User->Service->generatetreelist(array('Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
 			$this->set('profils', $this->User->Profil->find('list'));
 			$this->set('notif',array('1'=>'oui','0'=>'non'));
-			$this->set('circuits', $this->Circuit->find('list'));
+		//	$this->set('circuits', $this->Circuit->find('list'));
 			$this->set('listeCtrlAction', $this->Menu->menuCtrlActionAffichage());
 		}
 	}

@@ -1,10 +1,8 @@
 <div id='loading' style="display:none;">&nbsp;</div>
 <div id="buttons">
 <?php 
-    $deliberation=$deliberation['0']; 
     echo $javascript->link('utils.js');     
     echo $javascript->link('noback.js');     
-	
 ?>
 <?php // Initialisation des boutons action de la vue
 	$defBarre = array();
@@ -62,21 +60,8 @@
 
 <div class="imbrique">
 	<dt>Circuit : <?php echo $deliberation['Circuit']['libelle']?></dt>
-	<dd><?php foreach ($user_circuit as $user) { ?>
-	<div class="graphique">
-		<?php
-		if ($deliberation['positionDelib'] == $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)){
-			echo $html->image('/img/icons/edit.png');
-		} elseif ($deliberation['positionDelib'] < $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)) {
-			echo $html->image('/img/icons/editcreate.png');
-		} else {
-			echo $html->image('/img/icons/editcreate.png');
-		} ?>
-		<br/><?php echo $user['User']['prenom']. ' ' .$user['User']['nom']; ?>
-		<br/><?php echo $user['Service']['libelle'];?>
-	</div>
+		<?php echo $visu;?>
 
-	<?php } ?>
 </dd>
 </div>
 <br/>
