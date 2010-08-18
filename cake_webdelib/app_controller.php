@@ -76,6 +76,7 @@ class AppController extends Controller {
           		    //return;
         		}
                 else {
+                    $this->log("Tentative d'accès ".$user_id ." à ".$controllerAction);
                    $this->redirect('/users/logout');
                 }
             }

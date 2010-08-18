@@ -4,37 +4,12 @@
 
 <?php
 	$loc=$html->url("/deliberations/attribuercircuit/".$html->value('Deliberation.id')."/");
-
 	echo $form->input('Deliberation.circuit_id', array('options'=>$circuits, "onChange"=>"lister_circuits(this, '$loc');", 'empty'=>true, 'default'=>$circuit_id));
 
+ // données concernant le circuit selectionné
+    if (isset($visu)) 
+        echo ($visu); 
 ?>
-<br /><br />
-<!-- données concernant le circuit selectionné -->
-<table>
-	<tr>
-		<th>service libellé</th>
-		<th>prénom</th>
-		<th>nom </th>
-		<th>position</th>
-	</tr>
-	<tr>
-	<?php 
-    
-	if (isset($listeUserCircuit)) {
-		for ($i=0; $i<count($listeUserCircuit['id']); $i++){
-	    	echo("<tr>");   
-	        echo("<td>".$listeUserCircuit['service_libelle'][$i]."</td>");
-	        echo("<td>".$listeUserCircuit['prenom'][$i]."</td>");
-	        echo("<td>".$listeUserCircuit['nom'][$i]."</td>");
-	        echo("<td>".$listeUserCircuit['position'][$i]."</td>");
-	        echo("</tr>");
-	    }
-	}
-	?>
-</table>
-
-	
-
 <br />
 <div class="submit">
 	<?php echo $form->submit('Attribuer', array('div'=>false, 'class'=>'bt_add', 'name'=>'ajouter'));?>

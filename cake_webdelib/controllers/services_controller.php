@@ -3,7 +3,7 @@ class ServicesController extends AppController {
 
 	var $name = 'Services';
 	var $helpers = array('Session', 'Tree');
-	var $uses = array('Service', 'Circuit');
+	var $uses = array('Service', /*'Circuit'*/);
 
 	// Gestion des droits
 	var $aucunDroit = array(

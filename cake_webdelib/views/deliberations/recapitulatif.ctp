@@ -1,6 +1,5 @@
 <?php echo $javascript->link('calendrier.js'); ?>
 <?php echo $javascript->link('utils.js'); ?>
-<?php $deliberation=$deliberation[0];?>
 <h2>R&eacute;capitulatif du projet de d&eacute;liberation</h2>
 <br/>
 
@@ -71,8 +70,9 @@
 	</tr>
 	<tr>
 		<td><?php echo $form->label('Deliberation.circuit_id', 'Circuit');?></td>
-		<td><?php echo $deliberation['Circuit']['libelle'];?><br/><?php foreach ($user_circuit as $user) { ?>
-			<div class="graphique">
+		<td width='100%'><?php echo $deliberation['Circuit']['libelle'];?><br/>
+                   <?php echo $visu; ?> 
+                    <?php /*foreach ($user_circuit as $user) { ?>
 			<?php
 			if ($deliberation['positionDelib'] == $user['UsersCircuit']['position'] && ($deliberation['Deliberation']['etat']!= 2)){
 				echo $html->image('/img/icons/edit.png');
@@ -83,8 +83,7 @@
 			} ?>
 			<br/><?php echo $user['User']['prenom']. ' ' .$user['User']['nom']; ?>
 			<br/><?php echo $user['Service']['libelle'];?>
-			</div>
-			<?php } ?>
+			<?php } */ ?>
 		</td>
 	</tr>
 </table>

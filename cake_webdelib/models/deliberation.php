@@ -3,7 +3,7 @@ class Deliberation extends AppModel {
 
 	var $name = 'Deliberation';
 
-	var	$cacheQueries = false;
+	var $cacheQueries = false;
 	
 	var $validate = array(
 		'objet' => array(
@@ -28,12 +28,14 @@ class Deliberation extends AppModel {
 			'order'        => '',
 			'dependent'    => false,
 			'foreignKey'   => 'theme_id'),
+
 		'Circuit'=>array(
-			'className'    => 'Circuit',
+			'className'    => 'Cakeflow.Circuit',
 			'conditions'   => '',
 			'order'        => '',
 			'dependent'    => false,
-			'foreignKey'   => 'circuit_id'),
+			'foreignKey'   => 'circuit_id'), 
+
 		'Redacteur' =>array(
 			'className'    => 'User',
 			'conditions'   => '',
@@ -55,12 +57,14 @@ class Deliberation extends AppModel {
 		);
 		
 	var $hasMany = array(
-        'Historique' =>array(
-            'className'    => 'Historique',
-            'foreignKey'   => 'delib_id'),
+                 'Historique' =>array(
+                        'className'    => 'Historique',
+                        'foreignKey'   => 'delib_id'),
+
 		'Traitement'=>array(
-			'className'    => 'Traitement',
-			'foreignKey'   => 'delib_id'),
+			'className'    => 'Cakeflow.Traitement',
+			'foreignKey'   => 'archive_id'), 
+
 		'Annex'=>array(
 			'className'    => 'Annex',
 			'foreignKey'   => 'deliberation_id',
@@ -109,10 +113,7 @@ class Deliberation extends AppModel {
 			$ret = ($delib['Deliberation']['redacteur_id'] == $userId);
 			break;
 		case 1 :
-			if ($this->Circuit->UsersCircuit->findCount("user_id = $userId AND circuit_id = ".$delib['Deliberation']['circuit_id']) == 0 )
-				$ret = false;
-			else
-				$ret = ($this->Traitement->tourUserDansCircuit($userId, $delibId) > -1);
+				$ret = ($this->Traitement->tourUserDansCircuit($userId, $delibId, $delib['Deliberation']['circuit_id']) > -1);
 			break;
 		}
 
