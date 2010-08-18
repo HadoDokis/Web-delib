@@ -1,0 +1,89 @@
+<?php
+
+    Configure::write ('AFFICHE_HIERARCHIE_SERVICE', true);
+    Configure::write ('AFFICHE_CONVOCS_ANONYME',    true);
+    Configure::write ('CONVOCS_MODIFIABLES',        false);
+    Configure::write ('NOT_UNIQUE_CIRCUIT',         true);
+
+
+    ////////////////////////
+    // Configuration GEDOOo
+    ////////////////////////
+    Configure::write ('PROTOCOLE_DL', 'vnd.sun.star.webdav');
+    Configure::write ('GENERER_DOC_SIMPLE', false);
+    Configure::write ('USE_GEDOOO', true);
+    Configure::write ("GEDOOO_WSDL",  "http://gedooo.services.adullact.org:8080/axis2/services/OfficeService?wsdl");
+//    Configure::write ("GEDOOO_WSDL",  "http://gedooo.services.adullact.org:8880/ODFgedooo/OfficeService?wsdl");
+
+
+    ////////////////////////
+    // Configuration S2LOW
+    ////////////////////////
+    Configure::write('WEBDELIB_PATH', '/var/www/webdelib/app/');
+    Configure::write('PEM',        Configure::read('WEBDELIB_PATH').'config/cert_s2low/client.pem');
+    Configure::write('SSLKEY',     Configure::read('WEBDELIB_PATH').'config/cert_s2low/key.pem');
+    Configure::write('CA_PATH',    Configure::read('WEBDELIB_PATH').'config/cert_s2low/');
+    Configure::write('FILE_CLASS', Configure::read('WEBDELIB_PATH').'webroot/files/actes/classification.xml');
+    Configure::write('PASSWORD', 'pierre');
+    Configure::write('HOST', 'test.s2low.fr');
+
+    ////////////////////////
+    // Configuration du LDAP
+    ////////////////////////
+    Configure::write ('USE_OPENLDAP', false);
+    Configure::write ('USE_AD', false);
+    Configure::write ('LDAP_HOST',       'x.x.x.x');
+    Configure::write ('LDAP_PORT',       '389');
+    Configure::write ('LDAP_LOGIN',       NULL);
+    Configure::write ('LDAP_PASSWD',      NULL);
+    Configure::write ('UNIQUE_ID',       'UID');
+    Configure::write ('BASE_DN',         'OU=Utilisateurs,dc=mairie-xxx,dc=xxx');
+    Configure::write ('ACCOUNT_SUFFIX',  '@mairie-xxx.xxx');
+    Configure::write ('DN',              'dn');
+
+    ////////////////////////
+    // Configuration Webservice du parapheur électronique
+    ////////////////////////
+    Configure::write('USE_PARAPH', false);
+    Configure::write('WSACTION', 'https://x.x.x.x/alfresco');
+    Configure::write('WSTO', 'https://x.x.x.x/ws-iparapheur');
+    Configure::write('CACERT',     Configure::read('WEBDELIB_PATH').'config/cert_paraf/AC.pem');
+    Configure::write('CLIENTCERT', Configure::read('WEBDELIB_PATH').'config/cert_paraf/iparapheur-client_AC.pem');
+    Configure::write('PASSPHRASE', 'iparapheur-client');
+    Configure::write('HTTPAUTH',   'webservice@webdelib');
+    Configure::write('HTTPPASSWD', 'webservice123');
+    Configure::write('HTTPTYPE',   'Basic');
+    Configure::write('VERSSOAP', '1.1');
+    Configure::write('USEMTOM', TRUE);
+    Configure::write ('WSDL', 'ws-iparapheur.wsdl');
+    Configure::write('TYPETECH', 'ACTES');
+    Configure::write ('VISIBILITY', 'PUBLIC');
+    Configure::write ('PREFIX_WEBDELIB', 'WD_');
+
+   ////////////////////////
+    // Configuration ASAL@AE
+    ////////////////////////
+    Configure::write("ASALAE_WSDL",  "http://asalae.services.adullact.org/webservices/wsdl");
+    Configure::write('SIREN_VERSANT', '491011698');
+    Configure::write('SIREN_ARCHIVE', '227806460');
+    Configure::write('NUMERO_AGREMENT', 'ACCORDWD01');
+
+   ////////////////////////
+    // Configuration d'envoie de mail
+    ////////////////////////
+    Configure::write("MAIL_FROM", 'Webdelib <webdelib@adullact.org>');
+    
+	Configure::write("SMTP_USE", false);
+	Configure::write("SMTP_PORT", '25');
+	Configure::write("SMTP_TIMEOUT", '30');
+	Configure::write("SMTP_HOST", 'your.smtp.server');
+	Configure::write("SMTP_USERNAME", 'your_smtp_username');
+	Configure::write("SMTP_PASSWORD", 'your_smtp_password');
+	Configure::write("SMTP_CLIENT", 'smtp_helo_hostname');
+
+   ////////////////////////
+    // Initialiser le numéro de séquence
+    ////////////////////////
+    Configure::write("INIT_SEQ", false);
+
+?>
