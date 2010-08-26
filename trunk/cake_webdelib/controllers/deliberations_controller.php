@@ -701,6 +701,7 @@ class DeliberationsController extends AppController {
                         $this->Traitement->next($circuit_id, $id, $user_id, '', date('Y-m-d'));
                         $this->Historique->enregistre($id, $user_id, 'Projet vis&eacute;' );
                         $infos = $this->Traitement->getLocalisation($circuit_id, $id);
+                        
                         if ($infos['etape_id']==0) {
                             $this->Deliberation->id = $id;
                             $this->Deliberation->saveField('etat', 2);
@@ -709,10 +710,8 @@ class DeliberationsController extends AppController {
 	            }
 		    else {
                         $this->Deliberation->refusDossier($id);
-                        $delibTmp = $this->Deliberation->read(null, $id);
                         // TODO notifier par mail toutes les personnes qui ont deja vise le projet
-                       // $this->_notifierDossierRefuse($id, $delibTmp['Deliberation']['redacteur_id']);
-                        $circuit_id=$delibTmp['Deliberation']['circuit_id'];
+                        $circuit_id=$check_delib['Deliberation']['circuit_id'];
 		        $this->Historique->enregistre($id, $this->Session->read('user.User.id'),  'Projet refusé' );
                         $this->Session->setFlash('Vous venez de refuser le projet : '.$id, 'growl');
                         $this->redirect('/deliberations/mesProjetsATraiter');
