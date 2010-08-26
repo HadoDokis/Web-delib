@@ -68,8 +68,7 @@ class User extends AppModel {
 			'conditions' => '',
 			'order'      => '',
 			'dependent'  => false,
-			'foreignKey' => 'profil_id')
-		 );
+			'foreignKey' => 'profil_id'));
 
 	var $hasAndBelongsToMany = array(
 		'Service' => array(
@@ -88,7 +87,10 @@ class User extends AppModel {
          var $hasMany = array(
                 'Historique' =>array(
                         'className'    => 'Historique',
-                        'foreignKey'   => 'delib_id')
+                        'foreignKey'   => 'delib_id'),
+                'Composition' => array(
+                        'className' => 'Cakeflow.Composition'
+                )
                  );
 
 	function samePassword() {
@@ -142,7 +144,7 @@ class User extends AppModel {
 		}
 		if ($circuitDefautId > 0) {
 			$this->Circuit->recursive = -1;
-			$circuit = $this->Circuit->findById($circuitDefautId);
+			$circuit = $this->Composition->Etape->Circuit->findById($circuitDefautId);
 			if (empty($field))
 				return $circuit;
 			else
