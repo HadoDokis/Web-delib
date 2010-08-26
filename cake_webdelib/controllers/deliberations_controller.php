@@ -1613,7 +1613,7 @@ class DeliberationsController extends AppController {
 	function mesProjetsValides() {
 		$userId=$this->Session->read('user.User.id');
                 $editerProjetValide = $this->Xacl->check($userId, "Deliberations:editerProjetValide");
-		$listeCircuits = $this->UsersCircuit->listeCircuitsParUtilisateur($userId);
+		$listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($userId);
 		$conditions = 'Deliberation.etat = 2 AND ';
 		$conditions .= empty($listeCircuits) ? '' : '(Deliberation.circuit_id IN ('.$listeCircuits.') OR ';
 		$conditions .= 'Deliberation.redacteur_id = ' . $userId;
