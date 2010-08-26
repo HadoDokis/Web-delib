@@ -226,32 +226,17 @@ class Deliberation extends AppModel {
         }
 
 	function refusDossier($id) {
-            $tab=$this->Traitement->find('all', array('conditions'=>array("delib_id" => $id), 'order' => array("id ASC")));
-            $lastpos=count($tab)-1;
-
-            //MAJ de la date de traitement de la derniere position courante $lastpos
-            $tab[$lastpos]['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
-            $this->Traitement->save($tab[$lastpos]['Traitement']);
-
-            $this->data['Traitement']['id']='';
-            //maj de la table traitements
-            $this->data['Traitement']['position']=0;
-            $circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
-            $this->data['Traitement']['delib_id']=$id;
-            $this->data['Traitement']['circuit_id']=$circuit_id;
-            $this->Traitement->save($this->data['Traitement']);
-
              // maj de l'etat de la delib dans la table deliberations
-             $tab=$this->findAll("Deliberation.id = $id");
-             $this->data['Deliberation']['etat']=-1; //etat -1 : refuse
+             $delib=$this->read(null, $id);
+             $delib['Deliberation']['etat']=-1; //etat -1 : refuse
 
              // Retour de la position a 0 pour ne pas qu'il y ait de confusion
-             $this->data['Deliberation']['position']=0;
-             $this->data['Deliberation']['id']=$id;
-             $this->save($this->data['Deliberation']);
+             $delib['Deliberation']['position']=0;
+             $delib['Deliberation']['id']=$id;
+             $this->save($delib['Deliberation']);
 
              //enregistrement d'une nouvelle delib
-             $delib['Deliberation']=$tab[0]['Deliberation'];
+             $this->create();
              $delib['Deliberation']['id']='';
              $delib['Deliberation']['etat']=0;
              $delib['Deliberation']['anterieure_id']=$id;
@@ -263,23 +248,22 @@ class Deliberation extends AppModel {
  
              $delib_id = $this->getLastInsertId();
              // Copie des annexes du projet refusé vers le nouveau projet
-             $annexes = $tab[0]['Annex'];
+             $annexes = $delib['Annex'];
              foreach($annexes as $annexe) {
 		 $tmp['Annex']= $annexe;
 		 $tmp['Annex']['id']=null;
 		 $tmp['Annex']['deliberation_id']= $delib_id ;
 		 $this->Annex->save( $tmp, false);
              }
-
              // Copie des infos supplémentaires du projet refusé vers le nouveau projet
-             $infoSups = $tab[0]['Infosup'];
+             $infoSups = $delib['Infosup'];
              foreach($infoSups as $infoSup) {
                  $infoSup['id'] = null;
                  $infoSup['deliberation_id'] = $delib_id;
                  $this->Infosup->save($infoSup, false);
              }
              // Copie des commentaires du projet refusé vers le nouveau projet
-             $commentaires = $tab[0]['Commentaire'];
+             $commentaires = $delib['Commentaire'];
              foreach($commentaires as $commentaire) {
                  $commentaire['id'] = null;
                  $commentaire['created'] = null;
