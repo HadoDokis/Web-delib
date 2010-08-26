@@ -1,11 +1,11 @@
 <div id="vue_cadre">
 
 <dl>
-     <?php
-		if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
-			echo '<h3>D&eacute;lib&eacute;ration n&deg; '.$this->data['Deliberation']['num_delib'].'</h3>';
-		else
-			echo '<h3>Identifiant projet '.$this->data['Deliberation']['id'].'</h3>';
+    <?php
+        if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
+	    echo '<h3>D&eacute;lib&eacute;ration n&deg; '.$this->data['Deliberation']['num_delib'].'</h3>';
+	else
+	    echo '<h3>Identifiant projet '.$this->data['Deliberation']['id'].'</h3>';
 	?>
 
 	<div class="imbrique">

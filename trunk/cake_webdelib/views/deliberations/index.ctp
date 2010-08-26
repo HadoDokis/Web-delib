@@ -46,7 +46,7 @@
 			if (in_array('traiter', $deliberation['Actions']))
 				echo $html->link(SHY,"/deliberations/traiter/" . $deliberation['Deliberation']['id'], array('class'=>"link_traiter", 'title'=>'Traiter le projet de délibération'),false, false);
 			if (in_array('validerEnUrgence', $deliberation['Actions']))
-				echo $html->link(SHY,"/deliberations/validerEnUrgence/" . $deliberation['Deliberation']['id'], array('class'=>"link_traiter", 'title'=>'Valider en urgence'), 'Confirmez-vous la validation en urgence du projet \''.$deliberation['Deliberation']['id'].'\'', false);
+				echo $html->link(SHY,"/deliberations/validerEnUrgence/" . $deliberation['Deliberation']['id'], array('class'=>"link_validerenurgence", 'title'=>'Valider en urgence'), 'Confirmez-vous la validation en urgence du projet \''.$deliberation['Deliberation']['id'].'\'', false);
 			
 			 if (in_array('goNext', $deliberation['Actions']))
 			     echo $html->link(SHY,"/deliberations/goNext/" . $deliberation['Deliberation']['id'], array('class'=>"link_jump", 'title'=>'Sauter une étape'), 'Voulez-vous vraiment sauter une étape ?', false);
