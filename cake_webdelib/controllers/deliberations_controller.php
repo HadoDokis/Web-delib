@@ -32,7 +32,8 @@ class DeliberationsController extends AppController {
 		'tousLesProjetsAFaireVoter',
 		'tousLesProjetsRecherche',
 		'editerProjetValide', 
-		'goNext'
+		'goNext', 
+                'validerEnUrgence'
 	);
 
     var $aucunDroit = array('accepteDossier');
@@ -44,19 +45,20 @@ class DeliberationsController extends AppController {
 		'addIntoCircuit'=>'Deliberations:mesProjetsRedaction',
 		'traiter'=>'Deliberations:mesProjetsATraiter',
 		'retour'=>'Deliberations:mesProjetsATraiter',
-		'attribuerSeance'=>'Deliberations:tousLesProjetsSansSeance',
-		'validerEnUrgence'=>'Deliberations:tousLesProjetsValidation'
+		'attribuerSeance'=>'Deliberations:tousLesProjetsSansSeance'
 	);
 	var $libelleControleurDroit = 'Projets';
 	var $ajouteDroit = array(
                 'edit',
 		'editerProjetValide',
-		'goNext'
+		'goNext',
+                'validerEnUrgence'
 	);
 	var $libellesActionsDroit = array(
 		'edit' => "Modification d'un projet",
 		'editerProjetValide' => 'Editer projets valid&eacute;s',
-		'goNext'=> 'Sauter une &eacute;tape'
+		'goNext'=> 'Sauter une &eacute;tape',
+                'validerEnUrgence'=> 'Valider un projet en urgence'
 	);
 
 
@@ -76,7 +78,7 @@ class DeliberationsController extends AppController {
 
 		// Lecture des droits en modification
 		$user_id = $this->Session->read('user.User.id');
-		if ($this->Droits->check($user_id, "Deliberations:add") && $this->Deliberation->estModifiable($id, $user_id))
+		if ($this->Droits->check($user_id, "Deliberations:edit") && $this->Deliberation->estModifiable($id, $user_id))
 	            $this->set('userCanEdit', true);
 		else
 		    $this->set('userCanEdit', false);
@@ -1692,11 +1694,12 @@ class DeliberationsController extends AppController {
 		$ordre = 'Deliberation.created DESC';
 		$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
 
-                $actions = array('view', 'validerEnUrgence', 'generer');
+                $actions = array('view', 'generer');
 
+                if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"))
+		    array_push($actions, 'validerEnUrgence');
                 if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:goNext"))
 		    array_push($actions, 'goNext');
-
 		$this->_afficheProjets(
 			$projets,
 			'Projets en cours d\'&eacute;laboration et de validation',
