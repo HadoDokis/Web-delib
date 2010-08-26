@@ -21,6 +21,7 @@ class DeliberationsController extends AppController {
 	// Gestion des droits
 	var $demandeDroit = array(
 		'add',
+                'edit',
 		'mesProjetsRedaction',
 		'mesProjetsValidation',
 		'mesProjetsValides',
@@ -36,9 +37,8 @@ class DeliberationsController extends AppController {
 
     var $aucunDroit = array('accepteDossier');
 
-	var $commeDroit = array(
+    var $commeDroit = array(
 		'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
-		'edit'=>array('Deliberations:add', 'Deliberations:mesProjetsRedaction', 'Deliberations:editerProjetValide'),
 		'delete'=>'Deliberations:mesProjetsRedaction',
 		'attribuercircuit'=>'Deliberations:mesProjetsRedaction',
 		'addIntoCircuit'=>'Deliberations:mesProjetsRedaction',
@@ -49,10 +49,12 @@ class DeliberationsController extends AppController {
 	);
 	var $libelleControleurDroit = 'Projets';
 	var $ajouteDroit = array(
+                'edit',
 		'editerProjetValide',
 		'goNext'
 	);
 	var $libellesActionsDroit = array(
+		'edit' => "Modification d'un projet",
 		'editerProjetValide' => 'Editer projets valid&eacute;s',
 		'goNext'=> 'Sauter une &eacute;tape'
 	);
@@ -646,77 +648,73 @@ class DeliberationsController extends AppController {
 	}
 
 	function traiter($id = null, $valid=null) {
-	        $check_delib = $this->Deliberation->read(null, $id);
+            $check_delib = $this->Deliberation->read(null, $id);
 
-		if (!$id ||  empty( $check_delib)) {
-			$this->Session->setFlash('identifiant invalide pour le projet : '.$id, 'growl', array('type'=>'erreur'));
-			$this->redirect('/deliberations/mesProjetsATraiter');
-		}
-		else
-		{
-			if ($valid==null)
-			{
-				$nb_recursion=0;
-				$action='view';
-				$listeAnterieure=array();
-				$tab_delib=$this->Deliberation->find("Deliberation.id = $id");
-				$tab_anterieure=$this->_chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
-				$this->set('tab_anterieure',$tab_anterieure);
-				$commentaires = $this->Commentaire->findAll("delib_id = $id and pris_en_compte = 0", null, "created ASC");
-				for($i=0; $i< count($commentaires) ; $i++) {
-                                    if($commentaires[$i]['Commentaire']['agent_id'] == -1) {
-                                        $nomAgent = 'i-parapheur';
-                                        $prenomAgent = '';
-                                    }
-                                    else {
-                                        $nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
-                                        $prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
-                                    }
-				    $commentaires[$i]['Commentaire']['nomAgent'] = $nomAgent;
-			            $commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
-				}
-				$this->set('commentaires', $commentaires);
-				$deliberation= $check_delib;
-				if (!empty($deliberation['Seance']['date']))
-				    $deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
-				$id_service = $deliberation['Service']['id'];
-				$deliberation['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-				$deliberation['Circuit']['libelle'] = $this->Circuit->getLibelle($deliberation['Deliberation']['circuit_id']);
-				$tab_circuit=$tab_delib['Deliberation']['circuit_id'];
-                                $this->set('visu', $this->requestAction('/cakeflow/circuits/visuCircuit/'.$tab_circuit."/$id", array('return')));
-                                $this->set('deliberation', $deliberation);
-
-                $this->set('historiques',$this->Historique->findAll("Historique.delib_id = $id"));
-                
-                // Compactage des informations supplémentaires
-             	$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($deliberation['Infosup'], false);
-                $this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
-
-			}
-			else
-			{
-	            if ($valid=='1') {
-                        $user_id = $this->Session->read('user.User.id'); 
-                        $circuit_id = $check_delib['Deliberation']['circuit_id'];
-                        $this->Traitement->next($circuit_id, $id, $user_id, '', date('Y-m-d'));
-                        $this->Historique->enregistre($id, $user_id, 'Projet vis&eacute;' );
-                        $infos = $this->Traitement->getLocalisation($circuit_id, $id);
-                        
-                        if ($infos['etape_id']==0) {
-                            $this->Deliberation->id = $id;
-                            $this->Deliberation->saveField('etat', 2);
-                        }
-	       	        $this->redirect('/deliberations/mesProjetsATraiter');
-	            }
-		    else {
-                        $this->Deliberation->refusDossier($id);
-                        // TODO notifier par mail toutes les personnes qui ont deja vise le projet
-                        $circuit_id=$check_delib['Deliberation']['circuit_id'];
-		        $this->Historique->enregistre($id, $this->Session->read('user.User.id'),  'Projet refusé' );
-                        $this->Session->setFlash('Vous venez de refuser le projet : '.$id, 'growl');
-                        $this->redirect('/deliberations/mesProjetsATraiter');
+	    if (!$id ||  empty( $check_delib)) {
+		$this->Session->setFlash('identifiant invalide pour le projet : '.$id, 'growl', array('type'=>'erreur'));
+		$this->redirect('/deliberations/mesProjetsATraiter');
 	    }
-	}
+	    else {
+                if ($valid==null) {
+                    $nb_recursion=0;
+		    $action='view';
+                    $listeAnterieure=array();
+	            $tab_delib=$this->Deliberation->find("Deliberation.id = $id");
+                    $tab_anterieure=$this->_chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
+                    $this->set('tab_anterieure',$tab_anterieure);
+                    $commentaires = $this->Commentaire->findAll("delib_id = $id and pris_en_compte = 0", null, "created ASC");
+                    for($i=0; $i< count($commentaires) ; $i++) {
+                        if($commentaires[$i]['Commentaire']['agent_id'] == -1) {
+                            $nomAgent = 'i-parapheur';
+                            $prenomAgent = '';
+                        }
+                        else {
+                            $nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
+                            $prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
+                        }
+                        $commentaires[$i]['Commentaire']['nomAgent'] = $nomAgent;
+			$commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
+                    }
+		    $this->set('commentaires', $commentaires);
+                    $deliberation= $check_delib;
+                    if (!empty($deliberation['Seance']['date']))
+                        $deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
+                        $id_service = $deliberation['Service']['id'];
+                        $deliberation['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+	                $deliberation['Circuit']['libelle'] = $this->Circuit->getLibelle($deliberation['Deliberation']['circuit_id']);
+                        $tab_circuit=$tab_delib['Deliberation']['circuit_id'];
+                        $this->set('visu', $this->requestAction('/cakeflow/circuits/visuCircuit/'.$tab_circuit."/$id", array('return')));
+                        $this->set('deliberation', $deliberation);
+                        $this->set('historiques',$this->Historique->findAll("Historique.delib_id = $id"));
+                
+                        // Compactage des informations supplémentaires
+                        $this->data['Infosup'] = $this->Deliberation->Infosup->compacte($deliberation['Infosup'], false);
+                        $this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
+
+		    }
+                    else {
+	                if ($valid=='1') {
+                            $user_id = $this->Session->read('user.User.id'); 
+                            $circuit_id = $check_delib['Deliberation']['circuit_id'];
+                            $this->Traitement->next($circuit_id, $id, $user_id, '', date('Y-m-d'));
+                            $this->Historique->enregistre($id, $user_id, 'Projet vis&eacute;' );
+                            $infos = $this->Traitement->getLocalisation($circuit_id, $id);
+                        
+                            if ($infos['etape_id']==0) {
+                                $this->Deliberation->id = $id;
+                                $this->Deliberation->saveField('etat', 2);
+                            }
+	       	            $this->redirect('/deliberations/mesProjetsATraiter');
+	                }
+		        else {
+                            $this->Deliberation->refusDossier($id);
+                            // TODO notifier par mail toutes les personnes qui ont deja vise le projet
+                            $circuit_id=$check_delib['Deliberation']['circuit_id'];
+		            $this->Historique->enregistre($id, $this->Session->read('user.User.id'),  'Projet refusé' );
+                            $this->Session->setFlash('Vous venez de refuser le projet : '.$id, 'growl');
+                            $this->redirect('/deliberations/mesProjetsATraiter');
+	                }
+	            }
 		}
 	}
 
