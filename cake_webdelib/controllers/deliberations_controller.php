@@ -1774,7 +1774,6 @@ class DeliberationsController extends AppController {
                 if (Configure::read('USE_PARAPH')) {
 		   $circuit_id   = $this->data['Deliberation']['circuit_id'];
 		   $position     = $this->Traitement->find("Traitement.delib_id = $delibId AND Traitement.circuit_id= $circuit_id", 'Max(position)');
-		   $UsersCircuit = $this->UsersCircuit->find("UsersCircuit.circuit_id = $circuit_id AND UsersCircuit.position = ".$position[0]['Max(position)']);
 		   if ($UsersCircuit['UsersCircuit']['service_id'] == -1){
 		       $this->Session->setFlash('Le projet ne peux &ecirc;tre valid&eacute; en urgence : il est actuellement bloqu&eacute; dans un parapheur...', 'growl', array('type'=>'erreur'));
 		       $this->redirect('/deliberations/tousLesProjetsValidation');
@@ -1787,6 +1786,7 @@ class DeliberationsController extends AppController {
 			if ($this->data['Deliberation']['etat']!=1)
 				$this->Session->setFlash('Le projet de d&eacute;lib&eacute;ration doit &ecirc;tre en cours d\'&eacute;laboration', 'growl', array('type'=>'erreur'));
 			else {
+                            $this->Traitement->validerEnUrgence($this->data['Deliberation']['circuit_id'], $delibId);
                             $this->data['Deliberation']['etat'] = 2;
                             if ($this->Deliberation->save($this->data)) {
                                 $this->Historique->enregistre($delibId, $this->Session->read('user.User.id'), 'Projet validé en urgence' );
