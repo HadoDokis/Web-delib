@@ -2,7 +2,7 @@
 	class ModelsController extends AppController {
 
 		var $name = 'Models';
-		var $uses = array('Deliberation', 'UsersCircuit', 'Traitement', 'User', 'Circuit', 'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique');
+		var $uses = array('Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique');
 		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
 		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
 
