@@ -34,7 +34,6 @@
  * In development mode, you need to click the flash message to continue.
  */
 	Configure::write('debug', 0);
-
 /**
  * CakePHP Log Level:
  *
@@ -315,6 +314,7 @@
     define('CONFIG_PATH', $path2."config/");
 
     require_once ('webdelib.inc');
-    define('VERSION', '<b> 2.2  - alpha </b>');
-//    include_once(APP_DIR.DS.'plugins'.DS.'cakeflow'.DS.'config'.DS.'cakeflow.ini.php');
+    define('VERSION', '<b> 3.0.0  - alpha </b>');
+
+    include_once(APP_DIR.DS.'plugins'.DS.'cakeflow'.DS.'config'.DS.'cakeflow.ini.php');
 
