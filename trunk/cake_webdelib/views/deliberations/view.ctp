@@ -129,7 +129,7 @@
       if (!empty($historiques)) {
           echo"<dt>Historique</dt><br />";
           foreach ($historiques as $historique){
-              echo '<dd>'.$historique['Historique']['created'].' '.$historique['Historique']['commentaire'];
+              echo '<dd>'.$html2->ukToFrenchDateWithHour($historique['Historique']['created']).' '.$historique['Historique']['commentaire'];
               echo '</dd>';
           }
       }
