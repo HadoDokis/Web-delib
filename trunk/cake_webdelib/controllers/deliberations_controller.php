@@ -33,7 +33,8 @@ class DeliberationsController extends AppController {
 		'tousLesProjetsRecherche',
 		'editerProjetValide', 
 		'goNext', 
-                'validerEnUrgence'
+                'validerEnUrgence',
+                'rebond'
 	);
 
     var $aucunDroit = array('accepteDossier');
@@ -52,13 +53,15 @@ class DeliberationsController extends AppController {
                 'edit',
 		'editerProjetValide',
 		'goNext',
-                'validerEnUrgence'
+                'validerEnUrgence',
+                'rebond'
 	);
 	var $libellesActionsDroit = array(
 		'edit' => "Modification d'un projet",
 		'editerProjetValide' => 'Editer projets valid&eacute;s',
 		'goNext'=> 'Sauter une &eacute;tape',
-                'validerEnUrgence'=> 'Valider un projet en urgence'
+                'validerEnUrgence'=> 'Valider un projet en urgence',
+                'rebond'=> 'Effectuer un rebond'
 	);
 
 
@@ -1549,26 +1552,29 @@ class DeliberationsController extends AppController {
  * Affiche la liste des projets en cours de validation (etat = 1) qui sont dans les circuits
  * de validation de l'utilisateur connecté et dont le tour de validation est venu.
  */
-	function mesProjetsATraiter() {
-		$projets = array();
-		$userId = $this->Session->read('user.User.id');
+    function mesProjetsATraiter() {
+        $projets = array();
+        $userId = $this->Session->read('user.User.id');
+        $listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($userId);
+        $listeProjets  = $this->Traitement->rebondATraiter($userId); 
 
-		$listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($userId);
+        if (!empty($listeCircuits)) {
+            $conditions = 'Deliberation.etat = 1 AND Deliberation.circuit_id IN ('.$listeCircuits.')';
+            $ordre = 'Deliberation.created DESC';
+            $projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
+            // suppression des projets non concernés
+            foreach($projets as $i=>$delib)
+                if (!($this->Traitement->tourUserDansCircuit($userId, $projets[$i]['Deliberation']['id'],  $projets[$i]['Deliberation']['circuit_id']) === 0))
+                    unset($projets[$i]); 
+        }
+        if (!empty($listeProjets)){
+            $projetsRebond =  $this->Deliberation->findAll('Deliberation.id IN ('.implode(',',$listeProjets).')');
+            $projets = array_merge( $projets, $projetsRebond);
+        }
 
-		if (!empty($listeCircuits)) {
-			$conditions = 'Deliberation.etat = 1 AND Deliberation.circuit_id IN ('.$listeCircuits.')';
-			$ordre = 'Deliberation.created DESC';
-			$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
-			// suppression des projets non concernés
-    	                foreach($projets as $i=>$delib)
-		            if (!($this->Traitement->tourUserDansCircuit($userId, $projets[$i]['Deliberation']['id'],  $projets[$i]['Deliberation']['circuit_id']) === 0))
-			        unset($projets[$i]); 
-		}
-
-		$this->_afficheProjets(
-			$projets,
-			'Mes projets &agrave; traiter',
-			array('traiter', 'generer'));
+        $this->_afficheProjets($projets,
+                               'Mes projets &agrave; traiter',
+                               array('traiter', 'generer'));
 	}
 
 /*
@@ -2240,7 +2246,23 @@ class DeliberationsController extends AppController {
 	    $this->redirect('/deliberations/tousLesProjetsValidation');
 	    exit;
 	}
+    }
+   
+    function rebond($delib_id) {
+        $this->set('delib_id', $delib_id);
 
+        if (empty($this->data))
+            $this->set('users', $this->User->find('list'));
+        else {
+            $user_connecte = $this->Session->read('user.User.id');
+            $delib = $this->Deliberation->read(null, $delib_id);
+            $user = $this->User->read(null, $this->data['Deliberation']['user']);
+            $destinataire = $user['User']['prenom'].' '.$user['User']['nom'].' ('.$user['User']['login'].')';
+            $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a  été envoyé à $destinataire");
+
+            if ($this->Traitement->enregistrerRebond($this->data['Deliberation']['user'], $delib['Deliberation']['circuit_id'], $delib_id))
+                $this->redirect('/');
+        }
     }
 
 }

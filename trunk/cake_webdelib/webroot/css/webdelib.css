@@ -673,6 +673,20 @@ a.link_modifier_avec_border {
 	padding: 4px 4px 4px 25px;
 }
 
+a.link_rebond_avec_border {
+        color: black;
+        text-decoration: none;
+        font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+        border-top: 1px solid #e0ef90;
+        border-right: 1px solid #e0ef90;
+        border-left: none;
+        border-bottom: none;
+        background-image: url(../img/icons/rebond.png);
+        background-repeat: no-repeat;
+        background-position: top left;
+        padding: 4px 4px 4px 25px;
+}
+
 .bt_save {
 	background-image: url(../img/icons/filesave.png);
 	background-repeat: no-repeat;
