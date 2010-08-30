@@ -29,18 +29,15 @@
 		    foreach ($models as $model) {
 		    	$id=$model['Model']['id'];
 		    	if ($this->Typeseance->find('first',array('conditions'=>array(
-															'OR'=>array(
-																'Typeseance.modelprojet_id'=>$id,
-																'Typeseance.modeldeliberation_id'=>$id,
-																'Typeseance.modelconvocation_id'=>$id,
-																'Typeseance.modelordredujour_id'=>$id,
-																'Typeseance.modelpvsommaire_id'=>$id,
-																'Typeseance.modelpvdetaille_id'=>$id
-															)
-														)
-				)))
-					$deletable[$id]=false;
-				else $deletable[$id]=true;
+					                          'OR'=>array(
+                                                                  'Typeseance.modelprojet_id'=>$id,
+                                                                  'Typeseance.modeldeliberation_id'=>$id,
+                                                                  'Typeseance.modelconvocation_id'=>$id,
+                                                                  'Typeseance.modelordredujour_id'=>$id,
+                                                                  'Typeseance.modelpvsommaire_id'=>$id,
+                                                                  'Typeseance.modelpvdetaille_id'=>$id)))))
+			    $deletable[$id]=false;
+                        else $deletable[$id]=true;
 		    }
 		    $this->set('deletable',$deletable);
 		    $this->set('models', $this->Model->find('all', array('order'=>array('type ASC '))));
@@ -73,7 +70,7 @@
 
 		function delete($id = null) {
 			if (!$id) {
-				$this->Session->setFlash('Invalide id pour la d&eacute;lib&eacute;ration');
+				$this->Session->setFlash('id invalide pour le modèle de  délibération');
 				$this->redirect('/models/index');
 			}
 			$data = $this->Model->read(null, $id);
@@ -89,7 +86,7 @@
 																								)
 			)))) {
 				if ($this->Model->delete($id)) {
-						$this->Session->setFlash('Le model a &eacute;t&eacute; supprim&eacute;e.');
+						$this->Session->setFlash('Le modèle a été supprimé.');
 						$this->redirect('/models/index');
 					}
 				else{
