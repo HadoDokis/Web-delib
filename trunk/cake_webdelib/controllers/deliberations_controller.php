@@ -2230,22 +2230,16 @@ class DeliberationsController extends AppController {
     function goNext($delib_id) {
         $user_connecte = $this->Session->read('user.User.id');
         $delib = $this->Deliberation->read(null, $delib_id);
-	$circuit_id = $delib['Deliberation']['circuit_id'];
-	$pos = $this->Traitement->find("Traitement.delib_id = $delib_id AND Traitement.circuit_id = $circuit_id AND Traitement.date_traitement=0");
-        $new_pos = $pos['Traitement']['position']+1;
-	if (!$this->UsersCircuit->positionExists($circuit_id, $new_pos)){
+        $retour = $this->Traitement->jump($delib['Deliberation']['circuit_id'], $delib_id, $user_connecte);
+        if ($retour == -1){
             $this->Session->setFlash('La personne suivante est le dernier valideur du circuit, vous devez valider le projet.', 'growl', array('type'=>'erreur'));
 	    $this->redirect('/deliberations/tousLesProjetsValidation');
 	    exit;
         }
-	else {
-            $this->accepteDossier($delib_id, true);
-	    $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a sauté l'étape : ".$pos['Traitement']['position']);
-
-            $this->Session->setFlash('Le projet est maintenant &agrave; la position : '.$new_pos, 'growl');
-	    $this->redirect('/deliberations/tousLesProjetsValidation');
-	    exit;
-	}
+        $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a sauté l'étape  ");
+        $this->Session->setFlash("Le projet est maintenant à l'étape suivante ", 'growl');
+        $this->redirect('/deliberations/tousLesProjetsValidation');
+        exit;
     }
    
     function rebond($delib_id) {
