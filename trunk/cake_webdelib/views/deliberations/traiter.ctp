@@ -9,11 +9,16 @@
 	$defBarre[] = array('title'=>'Valider', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/1', 'htmlAttributes'=>array('class'=>'link_valider_avec_border', 'title'=>'Valider le projet', 'onclick'=>"disableDiv('buttons');"));
 	$defBarre[] = array('title'=>'Refuser', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/0', 'htmlAttributes'=>array('class'=>'link_refuser_avec_border', 'title'=>'Refuser le projet', 'onclick'=>"disableDiv('buttons');"));
 	 $defBarre[] = array('title'=>"Renvoyer à", 'url'=>'/deliberations/retour/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_retour_avec_border', 'title'=>'Renvoi du projet'));
+	if ($Droits->check($session->read('user.User.id'), 'Deliberations:rebond'))
+		$defBarre[] = array('title'=>'Envoyer à', 'url'=>'/deliberations/rebond/' . $deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_rebond_avec_border','title'=>'Envoyer à'));
 	$defBarre[] = array();
 	$defBarre[] = array('title'=>'Ajouter un commentaire', 'url'=>'/commentaires/add/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_commentaire_avec_border', 'title'=>'Ajouter un commentaire (affichés plus bas)'));
 	$defBarre[] = array();
+
 	if ($Droits->check($session->read('user.User.id'), 'Deliberations:edit'))
 		$defBarre[] = array('title'=>'Modifier', 'url'=>'/deliberations/edit/' . $deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_modifier_avec_border','title'=>'Modifier'));
+
+
 	$defBarre[] = array('title'=>'Annuler', 'url'=>'/deliberations/mesProjetsATraiter', 'htmlAttributes'=>array('class'=>'link_annuler', 'title'=>'Annuler'));
 
 	$linkBarre  = "<table class='table_action' cellspacing='0' cellpadding='0'><tr>";
