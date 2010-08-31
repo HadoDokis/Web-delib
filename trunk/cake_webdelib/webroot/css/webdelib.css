@@ -1038,3 +1038,25 @@ div.fckEditorProjet {
 .paginate {
 	margin-top: 20px;
 }
+/* Filtre */
+#filtreForm div {
+        margin-bottom: 0;
+}
+
+div.filtre {
+        margin: 0;
+}
+div.filtreFonc {
+        float: left;
+        width: 10%;
+        margin: 0;
+        margin-bottom: 10px;
+}
+div.filtreCriteres {
+        float: left;
+        width: 89%;
+        margin: 0;
+/*        border-top: 1px solid grey;   */
+/*      border-bottom: 1px solid grey;*/
+}
+            

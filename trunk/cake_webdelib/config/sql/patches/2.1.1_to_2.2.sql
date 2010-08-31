@@ -84,3 +84,5 @@ ALTER TABLE `users_services` DROP PRIMARY KEY;
 ALTER TABLE `users_services` ADD `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST ;
 
 ALTER TABLE `themes` CHANGE `parent_id` `parent_id` INT( 11 ) NOT NULL DEFAULT '0';
+
+ALTER TABLE `typeseances` CHANGE `action` `action` TINYINT(2) NOT NULL;

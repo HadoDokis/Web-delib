@@ -131,5 +131,41 @@ class UtilsComponent extends Object
         return(str_replace($recherche, $substi, $str)); 
     }
 
+
+    /**
+ * Equivalent du find('list') mais extrait les informations d'un tableau d'éléments et non en base
+ * @param array $elements tableau des données à utiliser pour constituer la liste
+ * @param string $key nom de la clé de la liste
+ * @param array $values nom des champs a utiliser comme valeur de la liste
+ * @param string $format format pour la mise en forme des valeurs de la liste
+ */
+function listFromArray($elements, $keyPath, $valuePaths, $format, $ordre='ASC') {
+        // Initialisation
+        $ret = array();
+
+        foreach($elements as $element) {
+                // Extraction de la clé
+                $key = set::extract($element, $keyPath);
+                // Si la clé existe déjà on passe au suivant
+                if (!array_key_exists($key[0], $ret)) {
+                        // Extraction de la ou des valeurs
+                        $values = array();
+                        foreach($valuePaths as $valuePath) {
+                                $value = set::extract($element, $valuePath);
+                                @$values[] = $value[0];
+                        }
+                        // Mise en forme
+                        $ret[$key[0]] = vsprintf($format, $values);
+                }
+        }
+        // trie du tableau
+        if ($ordre === 'ASC') asort($ret);
+        elseif ($ordre === 'DESC') arsort($ret);
+        elseif ($ordre === 'KEY_ASC') ksort($ret);
+        elseif ($ordre === 'KEY_DESC') krsort($ret);
+
+        return $ret;
+}
+
 }
 ?>
