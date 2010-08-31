@@ -40,7 +40,7 @@
 class AppController extends Controller {
 
 	var $components = array( 'Utils', 'Acl', 'Xacl', 'Droits');
-	var $helpers = array('Html', 'Form', 'Javascript', 'Session', 'Menu');
+	var $helpers = array('Html', 'Form', 'Javascript', 'Session', 'Menu', 'DatePicker');
 	//var $beforeFilter = array('requireLogin'=>array('except'=>array('index')));
 
 	function beforeFilter() {
@@ -76,7 +76,7 @@ class AppController extends Controller {
           		    //return;
         		}
                 else {
-                    $this->log("Tentative d'accès ".$user_id ." à ".$controllerAction);
+                   $this->log("Tentative d'accès ".$user_id ." à ".$controllerAction);
                    $this->redirect('/users/logout');
                 }
             }

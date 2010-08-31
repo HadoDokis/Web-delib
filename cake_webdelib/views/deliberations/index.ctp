@@ -1,5 +1,11 @@
 <div class="deliberations">
-<?php echo '<h2>'.$titreVue.'</h2>';?>
+
+<?php 
+    if (@$this->params['filtre'] != 'hide')
+        echo $this->element('filtre'); 
+    echo '<h2>'.$titreVue.'</h2>';
+?>
+
 <table width="100%" cellspacing="0" cellpadding="0">
 	<tr>
 		<th width='5%' align="right">Vue </th>

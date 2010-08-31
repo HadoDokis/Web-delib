@@ -40,8 +40,11 @@ class TypeseancesController extends AppController {
 			$this->redirect('/typeseances/index');
 		else {
 			$this->set('compteurs', $this->Typeseance->Compteur->find('list'));
-			$this->set('models', $this->Model->find('list',array('conditions'=>array('type'=>'Document'),'fields' => array('Model.id','Model.modele'))));
-			$this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true), 1 => $this->Typeseance->libelleAction(1, true)));
+			$this->set('models', $this->Model->find('list',array('conditions'=>array('type'=>'Document'),
+                                                                'fields' => array('Model.id','Model.modele'))));
+			$this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true), 
+                                                    1 => $this->Typeseance->libelleAction(1, true),
+                                                    2 => $this->Typeseance->libelleAction(2, true)));
 			$this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
 			$this->set('selectedTypeacteurs', null);
 			$this->set('acteurs', $this->Typeseance->Acteur->generateList('nom'));
@@ -81,7 +84,9 @@ class TypeseancesController extends AppController {
 		else {
 			$this->set('compteurs', $this->Typeseance->Compteur->find('list'));
 			$this->set('models', $this->Model->find('list',array('conditions'=>array('type'=>'Document'), 'fields' => array('Model.id','Model.modele'))));
-			$this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true), 1 => $this->Typeseance->libelleAction(1, true)));
+			$this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true), 
+                                                    1 => $this->Typeseance->libelleAction(1, true),
+                                                    2 => $this->Typeseance->libelleAction(2, true)));
 			$this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
 			$this->set('acteurs', $this->Typeseance->Acteur->generateList('nom'));
 		}

@@ -16,7 +16,7 @@ class DeliberationsController extends AppController {
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
 	var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit',  'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa');
-	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Parafwebservice');
+	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Parafwebservice', 'Filtre');
 
 	// Gestion des droits
 	var $demandeDroit = array(
@@ -63,7 +63,6 @@ class DeliberationsController extends AppController {
                 'validerEnUrgence'=> 'Valider un projet en urgence',
                 'rebond'=> 'Effectuer un rebond'
 	);
-
 
 	function view($id = null) {
 		$this->data = $this->Deliberation->findById($id);
@@ -1533,14 +1532,22 @@ class DeliberationsController extends AppController {
  * est le rédacteur.
  */
 	function mesProjetsRedaction() {
+                $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
+                $this->Deliberation->Behaviors->attach('Containable');
+
 		$userId=$this->Session->read('user.User.id');
 		$listeLiens = $this->Xacl->check($userId, "Deliberations:add") ? array('add') : array();
 
-		$conditions = array('Deliberation.etat' => 0, 'Deliberation.redacteur_id' => $userId);
+                $conditions =  $this->Filtre->conditions();
+		$conditions['Deliberation.etat'] = 0;
+                $conditions['Deliberation.redacteur_id'] = $userId;
+
 		$ordre = array('Deliberation.created DESC');
 
-		$projets = $this->Deliberation->find('all', array('conditions' => $conditions, 'ordre' => $ordre, 'recursive' => 0));
-
+		$projets = $this->Deliberation->find('all', array('conditions' => $conditions, 
+                                                                  'ordre' => $ordre, 
+                                                                  'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle')));
+                $this->_ajouterFiltre($projets);
 		$this->_afficheProjets(
 			$projets,
 			'Mes projets en cours de r&eacute;daction',
@@ -1553,25 +1560,36 @@ class DeliberationsController extends AppController {
  * de validation de l'utilisateur connecté et dont le tour de validation est venu.
  */
     function mesProjetsATraiter() {
+        $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
+        $this->Deliberation->Behaviors->attach('Containable');
+        $conditions =  $this->Filtre->conditions();
+
         $projets = array();
         $userId = $this->Session->read('user.User.id');
         $listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($userId);
         $listeProjets  = $this->Traitement->rebondATraiter($userId); 
 
         if (!empty($listeCircuits)) {
-            $conditions = 'Deliberation.etat = 1 AND Deliberation.circuit_id IN ('.$listeCircuits.')';
-            $ordre = 'Deliberation.created DESC';
-            $projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
+            $conditions['Deliberation.etat'] =  1;
+            if (!empty($listeCircuits)) {
+                $conditions['Deliberation.circuit_id'] = explode(',', $listeCircuits);
+            }
+            $ordre = 'Deliberation.created DESC'; 
+            $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
+                                                              'order'      =>  $ordre, 
+                                                              'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle')));
             // suppression des projets non concernés
             foreach($projets as $i=>$delib)
                 if (!($this->Traitement->tourUserDansCircuit($userId, $projets[$i]['Deliberation']['id'],  $projets[$i]['Deliberation']['circuit_id']) === 0))
                     unset($projets[$i]); 
         }
         if (!empty($listeProjets)){
-            $projetsRebond =  $this->Deliberation->findAll('Deliberation.id IN ('.implode(',',$listeProjets).')');
+            $conditions['Deliberation.id'] = $listeProjets;
+            $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
+                                                              'order'      =>  $ordre));
             $projets = array_merge( $projets, $projetsRebond);
         }
-
+        $this->_ajouterFiltre($projets);
         $this->_afficheProjets($projets,
                                'Mes projets &agrave; traiter',
                                array('traiter', 'generer'));
@@ -1584,15 +1602,22 @@ class DeliberationsController extends AppController {
  */
 	function mesProjetsValidation() {
 		$userId=$this->Session->read('user.User.id');
-
 		$listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($userId);
-		$conditions = 'Deliberation.etat = 1 AND ';
-		$conditions .= empty($listeCircuits) ? '' : '(Deliberation.circuit_id IN ('.$listeCircuits.') OR ';
-		$conditions .= 'Deliberation.redacteur_id = ' . $userId;
-		$conditions .= empty($listeCircuits) ? '' : ')';
+
+                $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
+                $this->Deliberation->Behaviors->attach('Containable');
+                $conditions =  $this->Filtre->conditions();
+
+                $conditions['Deliberation.etat'] =  1;
+                if (!empty($listeCircuits)) {
+                    $conditions['Deliberation.circuit_id'] = explode(',', $listeCircuits);
+                }
+                $conditions['OR']['Deliberation.redacteur_id'] = $userId;
 
 		$ordre = 'Deliberation.created DESC';
-		$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
+		$projets = $this->Deliberation->find('all', array('conditions' => $conditions,
+                                                                  'order'      =>  $ordre, 
+                                                                  'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle')));
 
 		/* initialisation pour chaque projet et suppression des projets non concernés */
    	    foreach($projets as $i=>$delib) {
@@ -1605,6 +1630,7 @@ class DeliberationsController extends AppController {
 			if (!$estRedacteurHorsCircuits && $tourDansCircuit == 0)
 				unset($projets[$i]);
 		}
+                $this->_ajouterFiltre($projets);
 
 		$this->_afficheProjets(
 			$projets,
@@ -1617,17 +1643,26 @@ class DeliberationsController extends AppController {
  * ou qu'il est dans les circuits de validation des projets
  */
 	function mesProjetsValides() {
+                $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
+                $this->Deliberation->Behaviors->attach('Containable');
+                $conditions =  $this->Filtre->conditions();
+
 		$userId=$this->Session->read('user.User.id');
                 $editerProjetValide = $this->Xacl->check($userId, "Deliberations:editerProjetValide");
 		$listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($userId);
-		$conditions = 'Deliberation.etat = 2 AND ';
-		$conditions .= empty($listeCircuits) ? '' : '(Deliberation.circuit_id IN ('.$listeCircuits.') OR ';
-		$conditions .= 'Deliberation.redacteur_id = ' . $userId;
-		$conditions .= empty($listeCircuits) ? '' : ')';
+
+		$conditions['Deliberation.etat'] =  2;
+                if (!empty($listeCircuits)) {
+                    $conditions['Deliberation.circuit_id'] = explode(',', $listeCircuits);
+                }
+		$conditions['OR']['Deliberation.redacteur_id'] = $userId;
 		$ordre = 'Deliberation.created DESC';
+		$projets = $this->Deliberation->find('all', array('conditions' => $conditions,
+                                                                  'order'      =>  $ordre,
+                                                                  'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle')));
 
-		$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
 
+                $this->_ajouterFiltre($projets);
 		$this->_afficheProjets(
 			    $projets,
 			    'Mes projets valid&eacute;s',
@@ -1695,17 +1730,25 @@ class DeliberationsController extends AppController {
  * Permet de valider en urgence un projet
  */
 	function tousLesProjetsValidation() {
+                $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
+                $this->Deliberation->Behaviors->attach('Containable');
+                $conditions =  $this->Filtre->conditions();
+
 		// lecture en base
-		$conditions = "Deliberation.etat = 1";
+		$conditions['Deliberation.etat'] = 1;
 		$ordre = 'Deliberation.created DESC';
-		$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
+		$projets = $this->Deliberation->find('all', array('conditions' => $conditions,
+                                                                  'order'      =>  $ordre,
+                                                                  'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle')));
+
 
                 $actions = array('view', 'generer');
-
                 if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"))
 		    array_push($actions, 'validerEnUrgence');
                 if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:goNext"))
 		    array_push($actions, 'goNext');
+
+                $this->_ajouterFiltre($projets);
 		$this->_afficheProjets(
 			$projets,
 			'Projets en cours d\'&eacute;laboration et de validation',
@@ -1717,8 +1760,12 @@ class DeliberationsController extends AppController {
  * Permet de modifier un projet validé si l'utilisateur à les droits editerProjetValide
  */
 	function tousLesProjetsSansSeance() {
+                $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
+                $this->Deliberation->Behaviors->attach('Containable');
+                $conditions =  $this->Filtre->conditions();
+
 		// lecture en base
-		$projets = $this->Deliberation->find('all',array('conditions'=>array(
+		$projets = $this->Deliberation->find('all',array('conditions'=>array($conditions,
 								'OR'=>array(
 									array('Deliberation.seance_id'=>null),
 									array('Deliberation.seance_id'=>0)
@@ -1730,10 +1777,14 @@ class DeliberationsController extends AppController {
 											array('Deliberation.etat'=>1),
 											array('Deliberation.etat'=>2)
 								)))),
-								'order'=>array('Deliberation.created DESC'), 'recursive'=>0));
+								'order'=>array('Deliberation.created DESC'), 
+                                                                   'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle')));
+
         $afficherTtesLesSeances = $this->Xacl->check($this->Session->read('user.User.id'), "Deliberations:editerProjetValide");
         $this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances));
-		$this->_afficheProjets(
+        $this->_ajouterFiltre($projets);
+
+        $this->_afficheProjets(
 			$projets,
 			'Projets non associ&eacute;s &agrave; une s&eacute;ance',
 			 array('view', 'generer', 'attribuerSeance'));
@@ -1743,16 +1794,61 @@ class DeliberationsController extends AppController {
  * Affiche la liste de tous les projets validés liés à une séance
  */
 	function tousLesProjetsAFaireVoter() {
-		// lecture en base
-		$conditions = "Deliberation.seance_id!=0 AND Deliberation.etat=2";
-		$ordre = 'Deliberation.created DESC';
-		$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
+                $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
+                $this->Deliberation->Behaviors->attach('Containable');
+                $conditions =  $this->Filtre->conditions();
 
+		$conditions['Deliberation.etat'] = 2;
+		$conditions['Deliberation.seance_id !='] = 0;
+
+		$projets = $this->Deliberation->find('all',array('conditions' => $conditions, 
+                                                                 'order'      => 'Deliberation.created DESC',
+                                                                 'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle')));
+
+                $this->_ajouterFiltre($projets);
 		$this->_afficheProjets(
 			$projets,
 			'Projets valid&eacute;s associ&eacute;s &agrave; une s&eacute;ance',
 			array('view', 'generer'));
 	}
+
+    function _ajouterFiltre(&$projets) {
+        if (!$this->Filtre->critereExists()){
+            $this->Filtre->addCritere('SeanceId', array(
+                                          'field' => 'Deliberation.seance_id',
+                                          'inputOptions' => array(
+                                              'label'=>__('Séances', true),
+                                              'retourLigne' => true,
+                                              'empty' =>'Toutes',
+                                              'options' => $this->Utils->listFromArray($projets, 
+                                                                                        '/Seance/id', 
+                                                                                        array('/Seance/date', 
+                                                                                        '/Seance/Typeseance/libelle'), 
+                                                                                        '%s : %s'))));
+            $this->Filtre->addCritere('ThemeId', array(
+                                          'field' => 'Deliberation.theme_id',
+                                          'inputOptions' => array(
+                                              'label'=>__('Thème', true),
+                                              'classeDiv' => 'tiers',
+                                              'options' => $this->Utils->listFromArray($projets, 
+                                                                                       '/Deliberation/theme_id', 
+                                                                                       array('/Theme/libelle'), 
+                                                                                       '%s'))));
+            $this->Filtre->addCritere('ServiceId', array(
+                                          'field' => 'Deliberation.Service_id',
+                                          'inputOptions' => array(
+                                              'label'=>__('Service émetteur', true),
+                                              'options' => $this->Utils->listFromArray($projets, '/Deliberation/service_id', array('/Service/libelle'), '%s')),
+                                          'classeDiv' => 'tiers'));
+            $this->Filtre->addCritere('Typeseance', array(
+                                          'field' => 'Seance.type_id',
+                                          'inputOptions' => array(
+                                              'label'=>__('Type de séance', true),
+                                              'options' => $this->Utils->listFromArray($projets, '/Seance/type_id', array('/Seance/Typeseance/libelle'), '%s')),
+                                          'classeDiv' => 'tiers'));
+
+        }
+    }
 
 /*
  * Attribue une séance à un projet
