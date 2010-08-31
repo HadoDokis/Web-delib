@@ -305,8 +305,7 @@ class UsersController extends AppController {
  
 	function logout() {
 		//on supprime les infos utilisateur de la session
-		$this->Session->delete('user');
-        $this->Session->delete('menuPrincipal');
+                $this->Session->destroy();
 		$this->redirect('/users/login');
 	}
 
