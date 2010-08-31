@@ -137,6 +137,10 @@ class Typeseance extends AppModel {
 		case 1:
     		return ($majuscule ? 'D':'d') . 'onner un avis';
     		break;
+		case 2:
+    		return ($majuscule ? 'S':'s') . 'ans action';
+    		break;
+              
 		}
 	}
 
