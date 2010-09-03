@@ -97,10 +97,9 @@ class DroitsComponent extends Object
                         require_once($file);
                     }
                 }
-
 		$subClassVars = get_class_vars($controllerName.'Controller');
-
 		// Si $demandeDroit est définie et non vide alors retourne cette liste
+                 
 		if(array_key_exists('demandeDroit', $subClassVars) and !empty($subClassVars['demandeDroit']))
 		{
 			return $subClassVars['demandeDroit'];
