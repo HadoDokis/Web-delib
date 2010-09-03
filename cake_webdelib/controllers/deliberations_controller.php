@@ -1056,14 +1056,14 @@ class DeliberationsController extends AppController {
         	    // Checker le code classification
         	    $data = array(
       	                 'api'           => '1',
-     	                 'nature_code'   => '1',
+     	                 'nature_code'   => $delib[0]['Nature']['id'],
      	                 'classif1'      => $class1 ,
      	                 'classif2'      => $class2,
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-			// 'number'        => $delib[0]['Deliberation']['num_delib'],
-			 'number'        => time(),
+			 'number'        => $delib[0]['Deliberation']['num_delib'],
+			// 'number'        => time(),
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
