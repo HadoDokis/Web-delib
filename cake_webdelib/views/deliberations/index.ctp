@@ -1,7 +1,9 @@
 <div class="deliberations">
 
 <?php 
-    if (@$this->params['filtre'] != 'hide')
+    if ((@$this->params['filtre'] != 'hide' ) &&
+        ($this->params['action'] !='mesProjetsRecherche') && 
+        ($this->params['action'] !='tousLesProjetsRecherche') )
         echo $this->element('filtre'); 
     echo '<h2>'.$titreVue.'</h2>';
 ?>
@@ -9,7 +11,7 @@
 <table width="100%" cellspacing="0" cellpadding="0">
 	<tr>
 		<th width='5%' align="right">Vue </th>
-		<th width='10%' align="left">synth&eacute;tique</th>
+		<th width='15%' align="left">synth&eacute;tique</th>
 		<th width='50%'> &nbsp;</th>
 		<th width='18%' >&nbsp;</th>
 		<th width='10%'>Actions</th>
@@ -78,8 +80,9 @@
 		<td>A traiter avant le :<br /><?php echo $deliberation['Deliberation']['date_limite']; ?></td>
 	</tr>
 	<tr>
-		<td>projet : <?php echo $deliberation['Deliberation']['id']; ?></td>
-		<td class='corps' rowspan=1 >Th&egrave;me : <?php echo $deliberation['Theme']['libelle']; ?></td>
+		<td>projet <?php echo strtolower($deliberation['Nature']['libelle']) .' : '.$deliberation['Deliberation']['id']; ?></td>
+		<td class='corps' rowspan=1 >Th&egrave;me : 
+                <?php echo $deliberation['Theme']['libelle'] ?></td>
 		<td>Classification : <?php echo $deliberation['Deliberation']['num_pref'];  ?></td>
 	</tr>
 	<tr>
