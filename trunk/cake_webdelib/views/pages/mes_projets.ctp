@@ -2,7 +2,7 @@
 <?php
     $userId = $session->read('user.User.id');
     if ($Xacl->check($userId, 'Deliberations:mesProjetsRedaction')) {
-        echo $this->requestAction('/deliberations/mesProjetsRedaction', array('return', 'filtre'=>'hide'));
+        echo $this->requestAction('/deliberations/mesProjetsRedaction', array('return'));
         echo('<br/>');
     }
 ?>
