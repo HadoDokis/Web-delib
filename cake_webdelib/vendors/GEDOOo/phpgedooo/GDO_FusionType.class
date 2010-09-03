@@ -93,10 +93,7 @@ function classMap() {
 // mais ce n'est pas sa place.
 //
 function wsdl() {
-
-//return "http://arrigo-test/phpgedooo/OfficeService3.wsdl";
-return GEDOOO_WSDL;
-
+    return Configure::read('GEDOOO_WSDL');
 }
 
 	
