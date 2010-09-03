@@ -34,6 +34,11 @@
 </div>
 
 <div id="tab1">
+        <?php echo $form->input('Deliberation.nature_id', array('label'   =>'Nature <acronym title="obligatoire">(*)</acronym>', 
+                                                                 'options' =>$session->read('user.Nature'), 
+                                                                 'empty'   =>false, 
+                                                                 'escape'  =>false)); ?>
+	<div class='spacer'></div>
  	<?php echo $form->input('Deliberation.objet', array('type'=>'textarea','label'=>'Libellé <acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));?>
 	<div class='spacer'></div>
 
