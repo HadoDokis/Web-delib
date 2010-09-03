@@ -3,7 +3,7 @@ class UsersController extends AppController {
 
 	var $name = 'Users';
 	var $helpers = array('Form', 'Html', 'Html2', 'Session');
-	var $uses = array( 'User', 'Service', 'Cakeflow.Circuit', 'Profil', 'Deliberation');
+	var $uses = array( 'User', 'Service', 'Cakeflow.Circuit', 'Profil', 'Deliberation', 'Nature', 'ArosAdo');
 	var $components = array('Utils', 'Acl', 'Menu', 'Dbdroits');
 	
 	var $paginate = array(
@@ -85,13 +85,23 @@ class UsersController extends AppController {
 		// Initialisation
 		$sortie = false;
 
-		if (empty($this->data))
-			// Initialisation des données
-			$this->data['User']['accept_notif'] = 0;
+		if (empty($this->data)){
+                    // Initialisation des données
+                    $this->data['User']['accept_notif'] = 0;
+                    $this->set('natures', $this->Nature->find('all'));
+                }
 		else {
 			if ($this->User->save($this->data)) {
 				// Ajout de l'utilisateur dans la table aros
 				$user_id = $this->User->id;
+                                foreach ($this->data['Nature'] as $nature_id => $can) {
+                                    $nature_id = substr($nature_id, 3, strlen($nature_id));
+                                    if ($can)
+                                        $this->ArosAdo->allow($user_id, $nature_id);
+                                    else
+                                        $this->ArosAdo->deny($user_id, $nature_id);
+                                }
+
 				$Profil=$this->Profil->find('first',array('conditions'=>array('id'=>$this->data['User']['profil_id']),'recursive'=>-1));
 				$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']));
             	$this->Dbdroits->MajCruDroits(
@@ -113,6 +123,8 @@ class UsersController extends AppController {
 			$this->set('profils', $this->User->Profil->find('list'));
 			$this->set('notif', array('1'=>'oui','0'=>'non'));
 			$this->set('circuits', $this->Circuit->getList());
+                        $this->set('natures', $this->Nature->find('all'));
+
 			$this->render('edit');
 		}
 	}
@@ -122,16 +134,26 @@ class UsersController extends AppController {
 		if (empty($this->data)) {
 			$this->data = $this->User->read(null, $id);
 			if (empty($this->data)) {
-				$this->Session->setFlash('Invalide id pour l\'utilisateur');
-				$sortie = true;
+			    $this->Session->setFlash('Invalide id pour l\'utilisateur');
+			    $sortie = true;
 			} else {
-				$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
-				$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Utilisateur','foreign_key'=>$id));
+			    $this->set('selectedServices', $this->_selectedArray($this->data['Service']));
+			    $this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Utilisateur','foreign_key'=>$id));
+                            $natures = $this->Nature->find('all');
+                            foreach ($natures as &$nature)
+                                $nature['Nature']['check'] = $this->ArosAdo->check($id, $nature['Nature']['id']);
+                            $this->set('natures', $natures); 
 			}
 		} else {
 			$userDb = $this->User->find('first', array('conditions'=>array('id'=>$id), 'recursive'=>-1));
 			if ($this->User->save($this->data)) {
-			
+		                foreach ($this->data['Nature'] as $nature_id => $can) {
+                                    $nature_id = substr($nature_id, 3, strlen($nature_id));
+                                    if ($can)
+                                        $this->ArosAdo->allow($id, $nature_id);
+                                    else
+                                        $this->ArosAdo->deny($id, $nature_id);
+                                }
 				if ($userDb['User']['profil_id']!=$this->data['User']['profil_id']) {
 					$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']));
 				}
@@ -155,8 +177,13 @@ class UsersController extends AppController {
 			$this->set('services', $this->User->Service->generatetreelist(array('Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
 			$this->set('profils', $this->User->Profil->find('list'));
 			$this->set('notif',array('1'=>'oui','0'=>'non'));
-		//	$this->set('circuits', $this->Circuit->find('list'));
+			$this->set('circuits', $this->Circuit->getList());
 			$this->set('listeCtrlAction', $this->Menu->menuCtrlActionAffichage());
+                        $natures = $this->Nature->find('all');
+                        foreach ($natures as &$nature)
+                            $nature['Nature']['check'] = $this->ArosAdo->check($id, $nature['Nature']['id']);
+                        $this->set('natures', $natures);
+
 		}
 	}
 
@@ -276,8 +303,17 @@ class UsersController extends AppController {
                 }
 
                 if ($isAuthentif) {
+ 
                     //on stocke l'utilisateur en session
-		    		$this->Session->write('user',$user);
+		    $this->Session->write('user',$user);
+                    // On stock les natures qu'il peut traiter
+                    $natures = array();
+                    $droits = $this->ArosAdo->find('all', array('conditions'=> array('aro_id'=>$user['User']['id'], '_read'=>1)));
+                    foreach ($droits as $droit){
+                        $natures[$droit['Ado']['foreign_key']] = substr($droit['Ado']['alias'], 7, strlen($droit['Ado']['alias']));
+                    }
+                    $this->Session->write('user.Nature', $natures);
+
                     //services auquels appartient l'agent
                     $services = array();
                     foreach ($user['Service'] as $service)
