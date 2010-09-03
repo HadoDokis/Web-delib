@@ -193,6 +193,7 @@
 
 	       $oMainPart->addElement(new GDO_FieldType('objet_projet',                $objet,     'text'));
                $oMainPart->addElement(new GDO_FieldType('libelle_projet',              $objet,    'text'));
+	       $oMainPart->addElement(new GDO_FieldType('nature_projet', utf8_encode($delib['Nature']['libelle']),     'text'));
 
                $oMainPart->addElement(new GDO_FieldType('position_projet',             utf8_encode($delib['Deliberation']['position']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('identifiant_projet',          utf8_encode($delib['Deliberation']['id']),       'text'));
