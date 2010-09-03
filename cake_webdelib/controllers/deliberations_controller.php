@@ -297,17 +297,9 @@ class DeliberationsController extends AppController {
 
         function edit($id=null) {
 	         $user=$this->Session->read('user');
-              
 	        /* initialisation du lien de redirection   */
-	/*	
-                if ($this->Xacl->check($user['User']['id'], "Pages:mes_projets"))
-			$redirect = '/pages/mes_projets';
-		elseif ($this->Xacl->check($user['User']['id'], "Pages:tous_les_projets"))
-			$redirect = '/pages/tous_les_projets';
-		else
-			$redirect = '/';
-        */
                 $redirect = $this->Session->read('user.User.lasturl');
+
                 if ($this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))
 	           $afficherTtesLesSeances = true;
                 else
