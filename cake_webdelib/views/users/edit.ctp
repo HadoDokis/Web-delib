@@ -1,6 +1,7 @@
 <?php echo $this->element('onglets', array('listeOnglets' => array(
 	'Informations principales',
-	'Droits'))); ?>
+	'Droits', 
+        'Données'))); ?>
 
 <?php
 	if($html->value('User.id')) {
@@ -79,6 +80,15 @@
 			}
 		?>
 	</div>
+
+<div id='tab3' style="display: none;">
+    <?php 
+        foreach ($natures as $nature){
+            echo $form->checkbox('Nature.id_'.$nature['Nature']['id'], array('checked'=> $nature['Nature']['check']));
+            echo $nature['Nature']['libelle'].'<br>';
+        } 
+    ?>
+</div>
 
 <br/>
 
