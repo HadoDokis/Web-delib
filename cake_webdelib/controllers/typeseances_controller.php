@@ -38,7 +38,7 @@ class TypeseancesController extends AppController {
 		}
 		if ($sortie)
 			$this->redirect('/typeseances/index');
-		else {
+		else {   
 			$this->set('compteurs', $this->Typeseance->Compteur->find('list'));
 			$this->set('models', $this->Model->find('list',array('conditions'=>array('type'=>'Document'),
                                                                 'fields' => array('Model.id','Model.modele'))));
@@ -49,6 +49,8 @@ class TypeseancesController extends AppController {
 			$this->set('selectedTypeacteurs', null);
 			$this->set('acteurs', $this->Typeseance->Acteur->generateList('nom'));
 			$this->set('selectedActeurs', null);
+                        $this->set('natures', $this->Typeseance->Nature->generateList('libelle'));
+                        $this->set('selectedNatures', null);
 			$this->render('edit');
 		}
 	}
