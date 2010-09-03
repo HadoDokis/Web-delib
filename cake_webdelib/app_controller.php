@@ -70,17 +70,17 @@ class AppController extends Controller {
 		 		$controllerAction = $this->name . ':' . ($this->name == 'Pages' ? $this->params['pass'][0] : $this->action);
 				$user_id = $this->Session->read('user.User.id');
 				if ($this->Droits->check($user_id, $controllerAction)) {
-        			if ($controllerAction != 'Services:doList') {
-        		   	    $this->log($_SERVER["REMOTE_ADDR"]." : ($user_id)->".substr($this->here, 0, strlen($this->here)));
-        			}
-          		    //return;
-        		}
-                else {
-                   $this->log("Tentative d'accès ".$user_id ." à ".$controllerAction);
-                   $this->redirect('/users/logout');
-                }
-            }
-		}
+        			    if ($controllerAction != 'Services:doList') {
+        		   	        $this->log($_SERVER["REMOTE_ADDR"]." : ($user_id)->".substr($this->here, 0, strlen($this->here)));
+        			    }
+        		        }
+                                else {
+                                    $this->log("Tentative d'accès $user_id à $controllerAction");
+                                    $this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : ", 'growl');
+                                    $this->redirect('/users/logout');
+                               }
+                           }
+                 }
 	}
 
 	function externLogin($login = null, $password = null) {
@@ -109,7 +109,8 @@ class AppController extends Controller {
 
 	function afterFilter() {
 		if( $this->Session->check( 'user.User' ) ) {
-			$this->Session->write( 'user.User.lasturl', $this->Session->read( 'user.User.oldurl' ) );
+                   // Attention au cas de elements $this->log( $this->Session->read( 'user.User.oldurl' )); 
+		    $this->Session->write( 'user.User.lasturl', $this->referer() );
 		}
 	}
 
