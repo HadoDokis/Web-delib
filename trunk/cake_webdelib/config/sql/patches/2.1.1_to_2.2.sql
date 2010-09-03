@@ -134,6 +134,10 @@ INSERT INTO `natures` (`id`, `libelle`, `code`) VALUES
 (3, 'Arrêtés Individuels', 'AI'),
 (4, 'Contrats et conventions', 'CC');
 
-
 ALTER TABLE `deliberations` ADD `nature_id` INT( 11 ) NOT NULL DEFAULT '1' AFTER `id` ;
 
+CREATE TABLE `typeseances_natures` (
+`id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`typeseance_id` INT( 11 ) NOT NULL ,
+`nature_id` INT( 11 ) NOT NULL
+) ENGINE = MYISAM 
