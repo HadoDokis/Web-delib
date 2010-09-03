@@ -75,7 +75,13 @@ class Typeseance extends AppModel {
 				'rule' => 'notEmpty',
 				'message' => 'Selectionnez au moins un type d\'acteur ou au moins un acteur'
 			)
-		)
+		),
+               'nature' => array(
+                        array(
+                                'rule' => 'notEmpty',
+                                'message' => 'Selectionnez au moins une nature'
+                        )
+                )
 	);
 
   var $belongsTo = array(
@@ -124,7 +130,18 @@ class Typeseance extends AppModel {
       'limit'=>'',
       'unique'=>true,
       'finderQuery'=>'',
-      'deleteQuery'=>'')
+      'deleteQuery'=>''),
+    'Nature' => array(
+        'classname'=>'Nature',
+        'joinTable'=>'typeseances_natures',
+        'foreignKey'=>'typeseance_id',
+        'associationForeignKey'=>'nature_id',
+        'conditions'=>'',
+        'order'=>'',
+        'limit'=>'',
+        'unique'=>true,
+        'finderQuery'=>'',
+        'deleteQuery'=>'')
     );
 
 

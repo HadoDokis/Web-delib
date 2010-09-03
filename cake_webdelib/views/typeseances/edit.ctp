@@ -22,6 +22,10 @@
 		<br/>
 		<br/>
 	 	<?php echo $form->input('Typeseance.compteur_id', array('label'=>'Compteur <acronym title="obligatoire">*</acronym>', 'options'=>$compteurs, 'default'=>$html->value('Typeseance.compteur_id'), 'empty'=>(count($compteurs)>1) && (!$html->value('Typeseance.id'))));?>
+                <br/>
+                <br />
+                <?php echo $form->input('Nature', array('label'=>'Nature <acronym title="obligatoire">*</acronym>', 'options'=>$natures, 'default'=>$selectedNatures, 'multiple' => 'multiple', 'class' => 'selectMultiple', 'empty'=>false));?>
+
 	</fieldset>
 </div>
 

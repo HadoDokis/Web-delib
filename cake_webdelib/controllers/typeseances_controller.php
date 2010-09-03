@@ -63,6 +63,7 @@ class TypeseancesController extends AppController {
 			} else {
 				$this->set('selectedTypeacteurs', $this->_selectedArray($this->data['Typeacteur']));
 				$this->set('selectedActeurs', $this->_selectedArray($this->data['Acteur']));
+				$this->set('selectedNatures', $this->_selectedArray($this->data['Nature']));
 			}
 		} else {
 			if ($this->Typeseance->save($this->data)) {
@@ -89,6 +90,7 @@ class TypeseancesController extends AppController {
                                                     2 => $this->Typeseance->libelleAction(2, true)));
 			$this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
 			$this->set('acteurs', $this->Typeseance->Acteur->generateList('nom'));
+			$this->set('natures', $this->Typeseance->Nature->generateList('libelle'));
 		}
 	}
 
