@@ -134,6 +134,12 @@ function delCritere($nomCritere) {
 }
 
 /**
+ * Supprime tous les criteres du filtre (en session)
+ */
+function supprimer() {
+	$this->Session->delete('Filtre');
+}
+/**
  * Retourne un tableau de conditions en fonction de la valeur des filtres de la vue
  */
 function conditions() {
