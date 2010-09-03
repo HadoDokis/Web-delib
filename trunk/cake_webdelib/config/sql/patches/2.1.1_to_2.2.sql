@@ -86,3 +86,54 @@ ALTER TABLE `users_services` ADD `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY 
 ALTER TABLE `themes` CHANGE `parent_id` `parent_id` INT( 11 ) NOT NULL DEFAULT '0';
 
 ALTER TABLE `typeseances` CHANGE `action` `action` TINYINT(2) NOT NULL;
+
+CREATE TABLE IF NOT EXISTS `ados` (
+`id` int( 10 ) unsigned NOT NULL AUTO_INCREMENT ,
+`alias` varchar( 255 ) NOT NULL default '',
+`lft` int( 10 ) default NULL ,
+`rght` int( 10 ) default NULL ,
+`parent_id` int( 10 ) NOT NULL default '0',
+`model` varchar( 255 ) default NULL ,
+`foreign_key` int( 10 ) NOT NULL default '0',
+PRIMARY KEY ( `id` )
+) ENGINE = MYISAM DEFAULT CHARSET = latin1;
+
+--
+
+INSERT INTO `ados` (`id`, `alias`, `lft`, `rght`, `parent_id`, `model`, `foreign_key`) VALUES
+(1, 'Nature:Délibérations', 1, 2, 0, 'Nature', 1),
+(2, 'Nature:Arrêtés Réglementaires', 3, 4, 0, 'Nature', 2),
+(3, 'Nature:Arrêtés Individuels', 5, 6, 0, 'Nature', 3),
+(4, 'Nature:Contrats et conventions', 7, 8, 0, 'Nature', 4);
+
+CREATE TABLE IF NOT EXISTS `aros_ados` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `aro_id` int(10) unsigned NOT NULL,
+  `ado_id` int(10) unsigned NOT NULL,
+  `_create` char(2) NOT NULL default '0',
+  `_read` char(2) NOT NULL default '0',
+  `_update` char(2) NOT NULL default '0',
+  `_delete` char(2) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `natures` (
+  `id` int(11) NOT NULL auto_increment,
+  `libelle` varchar(100) NOT NULL,
+  `code` varchar(3) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Contenu de la table `natures`
+--
+
+INSERT INTO `natures` (`id`, `libelle`, `code`) VALUES
+(1, 'Délibérations', 'DE'),
+(2, 'Arrêtés Réglementaires', 'AR'),
+(3, 'Arrêtés Individuels', 'AI'),
+(4, 'Contrats et conventions', 'CC');
+
+
+ALTER TABLE `deliberations` ADD `nature_id` INT( 11 ) NOT NULL DEFAULT '1' AFTER `id` ;
+
