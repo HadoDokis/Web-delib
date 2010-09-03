@@ -8,7 +8,7 @@ class Seance extends AppModel {
 
     var	$cacheQueries = false;
 	
-	var $validate = array(
+    var $validate = array(
 		'type_id' => array(
 			array(
 				'rule' => 'notEmpty',
@@ -58,12 +58,14 @@ class Seance extends AppModel {
     );
 
 	/* retourne la liste des séances futures avec le nom du type de séance  */
-	function generateList($conditionSup=null, $afficherTtesLesSeances = false) {
+	function generateList($conditionSup=null, $afficherTtesLesSeances = false, $natures = array()) {
 		$generateList = array();
 		$conditions = array('Seance.traitee' => '0');
 		if (!empty($conditionSup))
 			$conditions = Set::pushDiff($conditions,$conditionSup);
-		$seances = $this->find('all',array('conditions'=>$conditions, 'order'=>'date ASC'));
+		$seances = $this->find('all',array(
+                                       'conditions'=>$conditions, 
+                                       'order'=>'date ASC'));
 		foreach ($seances as $seance) {
 			if ($afficherTtesLesSeances) {
 				$dateTimeStamp = strtotime($seance['Seance']['date']);
