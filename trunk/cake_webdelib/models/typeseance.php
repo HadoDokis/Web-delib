@@ -128,7 +128,7 @@ class Typeseance extends AppModel {
     );
 
 
-	/* retourne le libellé correspondant au champ action 0 : voter, 1 donner un avis */
+	/* retourne le libellé correspondant au champ action 0 : voter, 1 donner un avis , 2 sans action*/
 	function libelleAction($action = null, $majuscule = false) {
 		switch ($action) {
 		case 0:
