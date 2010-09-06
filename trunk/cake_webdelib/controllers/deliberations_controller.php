@@ -1834,10 +1834,10 @@ class DeliberationsController extends AppController {
         if (!$this->Filtre->critereExists()){
             $this->Filtre->addCritere('SeanceId', array(
                                           'field' => 'Deliberation.seance_id',
+                                          'classeDiv' => 'demi',
                                           'inputOptions' => array(
                                               'label'=>__('Séances', true),
                                               'empty' =>'Toutes',
-                                             'classeDiv' => 'demi',
                                               'options' => $this->Utils->listFromArray($projets, 
                                                                                         '/Seance/id', 
                                                                                         array('/Seance/date', 
@@ -1845,33 +1845,41 @@ class DeliberationsController extends AppController {
                                                                                         '%s : %s'))));
             $this->Filtre->addCritere('Typeseance', array(
                                           'field' => 'Seance.type_id',
+                                          'classeDiv'  => 'demi',
+                                          'retourLigne' => true,
                                           'inputOptions' => array(
                                               'label'=>__('Type de séance', true),
-                                              'options' => $this->Utils->listFromArray($projets, '/Seance/type_id', array('/Seance/Typeseance/libelle'), '%s')),
-                                          'classeDiv' => 'demi'));
+                                              'options' => $this->Utils->listFromArray($projets, 
+                                                                                       '/Seance/type_id', 
+                                                                                       array('/Seance/Typeseance/libelle'), 
+                                                                                       '%s'))));
+            $this->Filtre->addCritere('Nature', array(
+                                          'field' => 'Deliberation.nature_id',
+                                          'classeDiv' => 'tiers',
+                                          'inputOptions' => array(
+                                              'label'=>__('Nature', true),
+                                              'options' => $this->Utils->listFromArray($projets, 
+                                                                                       '/Deliberation/nature_id', 
+                                                                                       array('/Nature/libelle'), 
+                                                                                       '%s'))));
             $this->Filtre->addCritere('ServiceId', array(
                                           'field' => 'Deliberation.Service_id',
+                                          'classeDiv'  => 'tiers',
                                           'inputOptions' => array(
                                               'label'=>__('Service émetteur', true),
-                                              'options' => $this->Utils->listFromArray($projets, '/Deliberation/service_id', array('/Service/libelle'), '%s')),
-                                          'classeDiv' => 'tiers'));
+                                              'options' => $this->Utils->listFromArray($projets, 
+                                                                                       '/Deliberation/service_id', 
+                                                                                       array('/Service/libelle'), 
+                                                                                       '%s'))));
             $this->Filtre->addCritere('ThemeId', array(
                                           'field' => 'Deliberation.theme_id',
+                                          'classeDiv' => 'tiers',
                                           'inputOptions' => array(
                                               'label'=>__('Thème', true),
-                                              'classeDiv' => 'tiers',
                                               'options' => $this->Utils->listFromArray($projets, 
                                                                                        '/Deliberation/theme_id', 
                                                                                        array('/Theme/libelle'), 
                                                                                        '%s'))));
-            $this->Filtre->addCritere('Nature', array(
-                                          'field' => 'Deliberation.nature_id',
-                                          'inputOptions' => array(
-                                              'label'=>__('Nature', true),
-                                              'options' => $this->Utils->listFromArray($projets, '/Deliberation/nature_id', array('/Nature/libelle'), '%s')),
-                                          'classeDiv' => 'tiers'));
-
-
         }
     }
 
