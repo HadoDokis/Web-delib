@@ -213,7 +213,9 @@ class DeliberationsController extends AppController {
 			$this->set('themes', $this->Deliberation->Theme->generatetreelist(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
 			$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
-			$this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances));
+			$this->set('date_seances',$this->Seance->generateList(null, 
+                                                                             $afficherTtesLesSeances, 
+                                                                             array_keys($this->Session->read('user.Nature'))));
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
 			$this->set('redirect', $redirect);
@@ -334,7 +336,9 @@ class DeliberationsController extends AppController {
 			$this->set('themes', $this->Deliberation->Theme->generatetreelist(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
 			$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
-			$this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances));
+			$this->set('date_seances',$this->Seance->generateList(null, 
+                                                                              $afficherTtesLesSeances,  
+                                                                              array_keys($this->Session->read('user.Nature'))));
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
 			$this->set('redirect', $redirect);
@@ -427,6 +431,7 @@ class DeliberationsController extends AppController {
 				}
 			}
 			$this->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
+
 			if ($this->Deliberation->save($this->data)) {
                                 $this->Filtre->supprimer();
 				// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
@@ -486,7 +491,9 @@ class DeliberationsController extends AppController {
 					$retard=$seance['Typeseance']['retard'];
 					if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
 						$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-					else $tab[$seance['Seance']['id']]=$this->Seance->generateList(null, $afficherTtesLesSeances);
+					else $tab[$seance['Seance']['id']]=$this->Seance->generateList(null,
+                                                                                                       $afficherTtesLesSeances,
+                                                                                                       array_keys($this->Session->read('user.Nature')));
 				}
 				$this->set('date_seances',$tab);
 				$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
@@ -1531,6 +1538,11 @@ class DeliberationsController extends AppController {
  * est le rédacteur.
  */
 	function mesProjetsRedaction() {
+                if (isset($this->params['filtre']) && ($this->params['filtre']=='hide'))
+                    $limit = Configure::read('LIMIT');
+                else
+                    $limit = null; 
+
                 $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
                 $this->Deliberation->Behaviors->attach('Containable');
 
@@ -1546,6 +1558,7 @@ class DeliberationsController extends AppController {
 		$ordre = array('Deliberation.created DESC');
 
 		$projets = $this->Deliberation->find('all', array('conditions' => $conditions, 
+                                                                  'limit'     => $limit,
                                                                   'ordre' => $ordre, 
                                                                   'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
                 $this->_ajouterFiltre($projets);
@@ -1561,6 +1574,11 @@ class DeliberationsController extends AppController {
  * de validation de l'utilisateur connecté et dont le tour de validation est venu.
  */
     function mesProjetsATraiter() {
+        if (isset($this->params['filtre']) && ($this->params['filtre']=='hide'))
+            $limit = Configure::read('LIMIT');
+        else
+            $limit = null;
+
         $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
         $this->Deliberation->Behaviors->attach('Containable');
         $conditions =  $this->Filtre->conditions();
@@ -1579,6 +1597,7 @@ class DeliberationsController extends AppController {
             $ordre = 'Deliberation.created DESC'; 
             $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
                                                               'order'      =>  $ordre, 
+                                                              'limit'      => $limit,
                                                               'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
             // suppression des projets non concernés
             foreach($projets as $i=>$delib)
@@ -1603,6 +1622,12 @@ class DeliberationsController extends AppController {
  * dont il est le rédacteur
  */
 	function mesProjetsValidation() {
+                if (isset($this->params['filtre']) && ($this->params['filtre']=='hide'))
+                    $limit = Configure::read('LIMIT');
+                else
+                    $limit = null;
+
+
 		$userId=$this->Session->read('user.User.id');
 		$listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($userId);
 
@@ -1621,7 +1646,8 @@ class DeliberationsController extends AppController {
 
 		$ordre = 'Deliberation.created DESC';
 		$projets = $this->Deliberation->find('all', array('conditions' => $conditions,
-                                                                  'order'      =>  $ordre, 
+                                                                  'order'      => $ordre, 
+                                                                  'limit'      => $limit, 
                                                                   'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
 
 		/* initialisation pour chaque projet et suppression des projets non concernés */
@@ -1648,6 +1674,12 @@ class DeliberationsController extends AppController {
  * ou qu'il est dans les circuits de validation des projets
  */
 	function mesProjetsValides() {
+                if (isset($this->params['filtre']) && ($this->params['filtre']=='hide'))
+                    $limit = Configure::read('LIMIT');
+                else
+                    $limit = null;
+
+
                 $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
                 $this->Deliberation->Behaviors->attach('Containable');
 
@@ -1667,6 +1699,7 @@ class DeliberationsController extends AppController {
 		$ordre = 'Deliberation.created DESC';
 		$projets = $this->Deliberation->find('all', array('conditions' => $conditions,
                                                                   'order'      =>  $ordre,
+                                                                  'limit'      => $limit,
                                                                   'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
 
 
@@ -1797,7 +1830,9 @@ class DeliberationsController extends AppController {
                                                                                        'Nature.libelle')));
 
         $afficherTtesLesSeances = $this->Xacl->check($this->Session->read('user.User.id'), "Deliberations:editerProjetValide");
-        $this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances));
+        $this->set('date_seances',$this->Seance->generateList(null, 
+                                                              $afficherTtesLesSeances,  
+                                                              array_keys($this->Session->read('user.Nature'))));
         $this->_ajouterFiltre($projets);
 
         $this->_afficheProjets(
