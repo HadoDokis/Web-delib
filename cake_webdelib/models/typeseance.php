@@ -83,6 +83,7 @@ class Typeseance extends AppModel {
                         )
                 )
 	);
+  var $hasMany = array('TypeseancesNature');
 
   var $belongsTo = array(
     'Compteur' => array(
