@@ -46,8 +46,10 @@
 			<?php
 				if ($seance['Typeseance']['action']==0)
 					echo $html->link(SHY,'/seances/details/' . $seance['Seance']['id'],array('class'=>'link_voter', 'title'=>'Afficher les projets et voter'), false, false);
-				else
+				elseif ($seance['Typeseance']['action']==1)
 					echo $html->link(SHY,'/seances/detailsAvis/' . $seance['Seance']['id'],array('class'=>'link_donnerAvis', 'title'=>'Afficher les projets et donner un avis'), false, false);
+				elseif ($seance['Typeseance']['action']==2)
+					echo $html->link(SHY,'/seances/details/' . $seance['Seance']['id'],array('class'=>'link_actes', 'title'=>'Afficher les projets'), false, false);
 
 			echo $html->link(SHY,'/seances/saisirCommentaire/' . $seance['Seance']['id'], array('class'=>'link_commentaire_seance', 'title'=>'Saisir un commentaire pour la séance'), false, false);
                       echo ('</td>');
