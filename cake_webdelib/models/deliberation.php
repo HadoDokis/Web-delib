@@ -11,7 +11,13 @@ class Deliberation extends AppModel {
 				'rule' => 'notEmpty',
 				'message' => 'L\'objet est obligatoire'
 			)
-		)
+		),
+                'nature_id' => array(
+                         array(
+                          'rule'=>array('canSave'),
+                          'message' => "Cette séance ne peux pas enregistrer cette nature d'acte"
+                        )
+                )
 	);
 
 	//dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
@@ -278,6 +284,10 @@ class Deliberation extends AppModel {
                  $this->Commentaire->save($commentaire, false);
 	     }
         }
+
+       function canSave(){
+           return $this->Seance->NaturecanSave($this->data['Deliberation']['seance_id'], $this->data['Deliberation']['nature_id']);
+       }
 
 }
 ?>
