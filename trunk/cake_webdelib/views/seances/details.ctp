@@ -44,7 +44,9 @@
 		else
 		    echo $html->link(SHY,'/models/generer/' .$deliberation['Deliberation']['id'].'/null/'.$deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
 		    ?>
-		<?php echo $html->link(SHY,'/seances/voter/' .$deliberation['Deliberation']['id'], array('class'=>'link_voter', 'title'=>'Voter les projets'), false, false)?>
+	    <?php
+            if ($deliberation['Deliberation']['nature_id'] ==1) 
+            echo $html->link(SHY,'/seances/voter/' .$deliberation['Deliberation']['id'], array('class'=>'link_voter', 'title'=>'Voter les projets'), false, false)?>
 	</td>
 </tr>
 <?php endforeach; ?>
