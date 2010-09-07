@@ -60,12 +60,18 @@ class Seance extends AppModel {
 	/* retourne la liste des séances futures avec le nom du type de séance  */
 	function generateList($conditionSup=null, $afficherTtesLesSeances = false, $natures = array()) {
 		$generateList = array();
-		$conditions = array('Seance.traitee' => '0');
+                $typeseances = $this->Typeseance->TypeseancesNature->getTypeseanceParNature($natures);
+                $conditions  = array();
+                $conditions['Seance.type_id'] = $typeseances;
+		$conditions['Seance.traitee'] = '0';
+                
 		if (!empty($conditionSup))
 			$conditions = Set::pushDiff($conditions,$conditionSup);
+
 		$seances = $this->find('all',array(
                                        'conditions'=>$conditions, 
                                        'order'=>'date ASC'));
+
 		foreach ($seances as $seance) {
 			if ($afficherTtesLesSeances) {
 				$dateTimeStamp = strtotime($seance['Seance']['date']);
@@ -95,6 +101,14 @@ class Seance extends AppModel {
                  $generateList[$seance['Seance']['id']]= $seance['Typeseance']['libelle']. " du ".$dateFr;
         }
         return $generateList;
+    }
+  
+    function NaturecanSave($seance_id, $nature_id) {
+        if (empty($seance_id))
+            return true;
+        $seance = $this->read('type_id', $seance_id);
+        $natures = $this->Typeseance->TypeseancesNature->getNaturesParTypeseance($seance['Seance']['type_id']);
+        return in_array($nature_id, $natures); 
     }
 
 }
