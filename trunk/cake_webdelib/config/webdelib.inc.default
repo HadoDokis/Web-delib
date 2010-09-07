@@ -5,7 +5,6 @@
     Configure::write ('CONVOCS_MODIFIABLES',        false);
     Configure::write ('NOT_UNIQUE_CIRCUIT',         true);
 
-
     ////////////////////////
     // Configuration GEDOOo
     ////////////////////////
@@ -13,8 +12,6 @@
     Configure::write ('GENERER_DOC_SIMPLE', false);
     Configure::write ('USE_GEDOOO', true);
     Configure::write ("GEDOOO_WSDL",  "http://gedooo.services.adullact.org:8080/axis2/services/OfficeService?wsdl");
-//    Configure::write ("GEDOOO_WSDL",  "http://gedooo.services.adullact.org:8880/ODFgedooo/OfficeService?wsdl");
-
 
     ////////////////////////
     // Configuration S2LOW
@@ -60,7 +57,7 @@
     Configure::write ('VISIBILITY', 'PUBLIC');
     Configure::write ('PREFIX_WEBDELIB', 'WD_');
 
-   ////////////////////////
+    ////////////////////////
     // Configuration ASAL@AE
     ////////////////////////
     Configure::write("ASALAE_WSDL",  "http://asalae.services.adullact.org/webservices/wsdl");
@@ -68,22 +65,25 @@
     Configure::write('SIREN_ARCHIVE', '227806460');
     Configure::write('NUMERO_AGREMENT', 'ACCORDWD01');
 
-   ////////////////////////
+    ////////////////////////
     // Configuration d'envoie de mail
     ////////////////////////
     Configure::write("MAIL_FROM", 'Webdelib <webdelib@adullact.org>');
-    
-	Configure::write("SMTP_USE", false);
-	Configure::write("SMTP_PORT", '25');
-	Configure::write("SMTP_TIMEOUT", '30');
-	Configure::write("SMTP_HOST", 'your.smtp.server');
-	Configure::write("SMTP_USERNAME", 'your_smtp_username');
-	Configure::write("SMTP_PASSWORD", 'your_smtp_password');
-	Configure::write("SMTP_CLIENT", 'smtp_helo_hostname');
+    Configure::write("SMTP_USE", false);
+    Configure::write("SMTP_PORT", '25');
+    Configure::write("SMTP_TIMEOUT", '30');
+    Configure::write("SMTP_HOST", 'your.smtp.server');
+    Configure::write("SMTP_USERNAME", 'your_smtp_username');
+    Configure::write("SMTP_PASSWORD", 'your_smtp_password');
+    Configure::write("SMTP_CLIENT", 'smtp_helo_hostname');
 
-   ////////////////////////
+    ////////////////////////
     // Initialiser le numéro de séquence
     ////////////////////////
     Configure::write("INIT_SEQ", false);
 
+    ////////////////////////
+    //limitation du nombre de projets par banette
+    ////////////////////////
+    Configure::write("LIMIT", 50);
 ?>
