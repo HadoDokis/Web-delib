@@ -76,8 +76,8 @@ class AppController extends Controller {
         		        }
                                 else {
                                     $this->log("Tentative d'accès $user_id à $controllerAction");
-                                    $this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : ", 'growl');
-                                    $this->redirect('/users/logout');
+                                    $this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : $controllerAction", 'growl');
+                                    $this->redirect('/');
                                }
                            }
                  }
@@ -110,7 +110,8 @@ class AppController extends Controller {
 	function afterFilter() {
 		if( $this->Session->check( 'user.User' ) ) {
                    // Attention au cas de elements $this->log( $this->Session->read( 'user.User.oldurl' )); 
-		    $this->Session->write( 'user.User.lasturl', $this->referer() );
+                    if ($this->here != $this->referer())
+		        $this->Session->write( 'user.User.lasturl', $this->referer() );
 		}
 	}
 
