@@ -76,7 +76,7 @@ class AppController extends Controller {
         		        }
                                 else {
                                     $this->log("Tentative d'accès $user_id à $controllerAction");
-                                    $this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : $controllerAction", 'growl');
+                                    $this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : $controllerAction", 'growl', array('type'=>'erreur'));
                                     $this->redirect('/');
                                }
                            }
