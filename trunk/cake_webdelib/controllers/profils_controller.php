@@ -28,7 +28,7 @@ class ProfilsController extends AppController {
 			else
 				$profil['Profil']['deletable'] = true;
 			if ($profil['children'] != array())
-				$this->_isDeletable(&$profil['children']);
+				$this->_isDeletable($profil['children']);
 		}
 	}
 
