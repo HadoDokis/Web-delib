@@ -602,7 +602,12 @@ a.link_donnerAvis {
 	background-position: top left;
 	padding: 0 0 10px 22px;
 }
-
+a.link_actes {
+        background-image: url(../img/icons/actes.png);
+        background-repeat: no-repeat;
+        background-position: top left;
+        padding: 0 0 10px 22px;
+}
 a.link_valider_avec_border {
 	color: black;
 	text-decoration: none;
