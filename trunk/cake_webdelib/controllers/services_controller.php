@@ -49,7 +49,7 @@ class ServicesController extends AppController {
 			else
 				$service['Service']['deletable'] = true;
 			if ($service['children'] != array())
-				$this->_isDeletable(&$service['children']);
+				$this->_isDeletable($service['children']);
 		}
 	}
 
