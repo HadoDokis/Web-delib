@@ -134,6 +134,10 @@ INSERT INTO `natures` (`id`, `libelle`, `code`) VALUES
 (3, 'Arrêtés Individuels', 'AI'),
 (4, 'Contrats et conventions', 'CC');
 
+ALTER TABLE `natures` ADD `dua` VARCHAR( 50 ) NULL ,
+ADD `sortfinal` VARCHAR( 50 ) NULL ,
+ADD `communicabilite` VARCHAR( 50 ) NULL ;
+
 ALTER TABLE `deliberations` ADD `nature_id` INT( 11 ) NOT NULL DEFAULT '1' AFTER `id` ;
 
 CREATE TABLE `typeseances_natures` (
