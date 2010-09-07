@@ -339,8 +339,9 @@ class SeancesController extends AppController {
                     $id_service = $deliberations[$i]['Service']['id'];
 		    $deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 			$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
-                    if (($deliberations[$i]['Deliberation']['etat']!=3)AND($deliberations[$i]['Deliberation']['etat']!=4))
-                        $ToutesVotees = false;
+                    if ($deliberations[$i]['Deliberation']['nature_id']==1)
+                        if (($deliberations[$i]['Deliberation']['etat']!=3)AND($deliberations[$i]['Deliberation']['etat']!=4) )
+                            $ToutesVotees = false;
 		}
 		$this->set('deliberations',$deliberations);
 		$date_tmpstp = strtotime($this->GetDate($seance_id));
@@ -442,9 +443,8 @@ class SeancesController extends AppController {
 			if ( ($this->data['Deliberation']['etat'] == 3)
 				&& empty($deliberation['Deliberation']['num_delib']) )
 				$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id']);
-
-			$this->Deliberation->save($this->data);
-			$this->redirect('/seances/details/'.$deliberation['Deliberation']['seance_id']);
+			if ($this->Deliberation->save($this->data['Deliberation']))
+			    $this->redirect('/seances/details/'.$deliberation['Deliberation']['seance_id']);
 		}
 	}
 
