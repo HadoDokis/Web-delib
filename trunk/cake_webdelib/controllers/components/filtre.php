@@ -114,9 +114,12 @@ function addCritere($nomCritere, $params) {
 		'classeDiv' => 'demi',
 		'retourLigne' => false);
 	$params = array_merge($defaut, $params);
-	$defaut = array(
-		'empty' => __('tous', true));
-	$params['inputOptions'] = array_merge($defaut, $params['inputOptions']);
+	// Initialisation des valeurs par défaut des options du select
+	$inputOptionsDefaut = array();
+	if (!array_key_exists('multiple', $params['inputOptions']) || !$params['inputOptions']['multiple'])
+		$inputOptionsDefaut = array(
+			'empty' => __('tous', true));
+	$params['inputOptions'] = array_merge($inputOptionsDefaut, $params['inputOptions']);
 
 	$this->Session->write('Filtre.Criteres.'.$nomCritere, $params);
 
@@ -166,7 +169,13 @@ function conditions() {
 			}
 		} else {
 			// select
-			if (array_key_exists('selected', $critere['inputOptions']) && strlen($critere['inputOptions']['selected'])>0)
+			if (	array_key_exists('selected', $critere['inputOptions'])
+				&&	(
+						(is_array($critere['inputOptions']['selected']) && !empty($critere['inputOptions']['selected']))
+						||
+						(!is_array($critere['inputOptions']['selected']) && strlen($critere['inputOptions']['selected'])>0)
+					)
+				)
 				$conditions[$critere['field']] = $critere['inputOptions']['selected'];
 		}
 	}
