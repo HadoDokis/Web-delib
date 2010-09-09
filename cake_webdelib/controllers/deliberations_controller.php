@@ -623,10 +623,15 @@ class DeliberationsController extends AppController {
 				$this->_changeCircuit($id, $circuit_id);
 
 			if ($this->Deliberation->saveField('circuit_id', $circuit_id)) {
-                            if (strlen($this->data['Deliberation']['texte_projet'])==0){
+                          // cas pour l'editeur en ligne
+                           if ((Configure::read('GENERER_DOC_SIMPLE'))&& ($this->data['Deliberation']['texte_projet']=='<br />'))
 		 	        $this->Session->setFlash('Attention, le texte projet est vide', 
                                                          'growl', array('type'=>'erreur'));
-                            }
+                           // Cas pour le mode OpenOffice
+                            if ((!Configure::read('GENERER_DOC_SIMPLE')) && ($this->data['Deliberation']['texte_projet']==''))
+                               $this->Session->setFlash('Attention, le texte projet est vide', 
+                                                         'growl', array('type'=>'erreur'));
+
 			    $this->redirect('/deliberations/recapitulatif/'.$id);
 			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.',  'growl', array('type'=>'erreur'));
