@@ -1870,7 +1870,7 @@ class DeliberationsController extends AppController {
                                           'classeDiv' => 'demi',
                                           'inputOptions' => array(
                                               'label'=>__('Séances', true),
-                                              'empty' =>'Toutes',
+                                              'empty' =>'toutes',
                                               'options' => $this->Utils->listFromArray($projets, 
                                                                                         '/Seance/id', 
                                                                                         array('/Seance/date', 
@@ -1900,7 +1900,7 @@ class DeliberationsController extends AppController {
                                           'classeDiv'  => 'tiers',
                                           'inputOptions' => array(
                                               'label'=>__('Service émetteur', true),
-                                              'multiple' =>true,
+                                              'multiple' => true,
                                               'options' => $this->Utils->listFromArray($projets, 
                                                                                        '/Deliberation/service_id', 
                                                                                        array('/Service/libelle'), 
