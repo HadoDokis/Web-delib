@@ -333,7 +333,7 @@ class DeliberationsController extends AppController {
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
 			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Service']['id']);
 
-			$this->set('themes', $this->Deliberation->Theme->generatetreelist(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+			$this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
 			$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 			$this->set('date_seances',$this->Seance->generateList(null, 
@@ -593,15 +593,6 @@ class DeliberationsController extends AppController {
 		$listCircuitsParaph = null;
 		if (Configure::read('USE_PARAPH'))
 			$listCircuitsParaph = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
-			
-		/*if (isset($circuit_id)){
-			$this->set('circuit_id', $circuit_id);
-			$listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
-			$this->set('listeUserCircuit', $listeUserCircuit);
-		}else
-			$this->set('circuit_id','0');*/
-		
-		//$circuits=$this->Deliberation->Circuit->find('list',array('order'=>array("libelle ASC")));
                 $circuits = $this->Circuit->getList();
 		$this->set('circuits', $circuits);
 
@@ -620,8 +611,6 @@ class DeliberationsController extends AppController {
 				
 			if (isset($circuit_id)){
 				$this->set('circuit_id', $circuit_id);
-			//	$listeUserCircuit = $this->UsersCircuit->afficheListeCircuit($circuit_id, $listCircuitsParaph);
-			//	$this->set('listeUserCircuit', $listeUserCircuit);
                                 $this->set('visu', $this->requestAction('/cakeflow/circuits/visuCircuit/'.$circuit_id, array('return')));
 			}else
 				$this->set('circuit_id','0');
@@ -634,7 +623,11 @@ class DeliberationsController extends AppController {
 				$this->_changeCircuit($id, $circuit_id);
 
 			if ($this->Deliberation->saveField('circuit_id', $circuit_id)) {
-				$this->redirect('/deliberations/recapitulatif/'.$id);
+                            if (strlen($this->data['Deliberation']['texte_projet'])==0){
+		 	        $this->Session->setFlash('Attention, le texte projet est vide', 
+                                                         'growl', array('type'=>'erreur'));
+                            }
+			    $this->redirect('/deliberations/recapitulatif/'.$id);
 			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.',  'growl', array('type'=>'erreur'));
 		}
@@ -1902,6 +1895,7 @@ class DeliberationsController extends AppController {
                                           'classeDiv'  => 'tiers',
                                           'inputOptions' => array(
                                               'label'=>__('Service émetteur', true),
+                                              'multiple' =>true,
                                               'options' => $this->Utils->listFromArray($projets, 
                                                                                        '/Deliberation/service_id', 
                                                                                        array('/Service/libelle'), 
