@@ -961,7 +961,9 @@ class DeliberationsController extends AppController {
     function _getMatiereListe(){
 
  		$tab = array();
-		$xml = simplexml_load_file(Configure::read('FILE_CLASS'));
+		$xml = @simplexml_load_file(Configure::read('FILE_CLASS'));
+                if ($xml===false)
+                    die ("aucune classification enregistrée");
 		$namespaces = $xml->getDocNamespaces();
 		$xml=$xml->children($namespaces["actes"]);
 
