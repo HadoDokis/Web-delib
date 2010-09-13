@@ -927,7 +927,7 @@ class DeliberationsController extends AppController {
 		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$this->set('host', Configure::read('HOST') );
                 $date_classification = $this->_getDateClassification();
-                if ($date_classification == false){  
+                if ($date_classification != false){  
 		    $this->set('dateClassification', $date_classification);
 		    $this->set('tabNature',          $this->_getNatureListe());
 	            $this->set('tabMatiere',         $this->_getMatiereListe());
@@ -1137,7 +1137,7 @@ class DeliberationsController extends AppController {
        function _getDateClassification(){
            $doc = new DOMDocument();
 	   if(!@$doc->load(Configure::read('FILE_CLASS')))
-	       return 'false';
+	       return false;
 	   $date = $doc->getElementsByTagName('DateClassification')->item(0)->nodeValue;
 	   return ($this->Date->frenchDate(strtotime($date )));
            //return true;
@@ -1154,13 +1154,12 @@ class DeliberationsController extends AppController {
 		    $url .= '?'.http_build_query($data);
 		    $ch = curl_init();
 		    curl_setopt($ch, CURLOPT_URL, $url);
-			//	curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
-
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+		//  curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+		    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		    curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
 		    curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
 		    curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-			curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+                    curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
 		    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		    $reponse = curl_exec($ch);
@@ -1170,8 +1169,7 @@ class DeliberationsController extends AppController {
 		    curl_close($ch);
 
 		    // Assurons nous que le fichier est accessible en ecriture
-			if (is_writable(Configure::read('FILE_CLASS'))) {
-				if (!$handle = fopen(Configure::read('FILE_CLASS'), 'w')) {
+             		if (!$handle = fopen(Configure::read('FILE_CLASS'), 'w')) {
 					echo "Impossible d'ouvrir le fichier (".Configure::read('FILE_CLASS').")";
 					exit;
 		    	}
@@ -1181,11 +1179,8 @@ class DeliberationsController extends AppController {
 		        	exit;
 		   	 	}
 		    	else
-		        	$this->redirect('/deliberations/transmit');
+		        	$this->redirect('/deliberations/toSend');
 		    	fclose($handle);
-		    }
-		    else
-		        echo "Le fichier ".Configure::read('FILE_CLASS')." n'est pas accessible en ecriture.";
 		}
 
         function positionner($id=null, $sens, $seance_id) {
