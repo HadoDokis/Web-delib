@@ -25,7 +25,7 @@ class ThemesController extends AppController {
 	}
 
 	function index() {
-        $this->set('data', $this->Theme->findAllThreaded(null, null, 'Theme.id ASC'));
+        $this->set('data', $this->Theme->findAllThreaded(null, null, 'Theme.libelle ASC'));
 	}
 
 	function view($id = null) {
@@ -76,9 +76,9 @@ class ThemesController extends AppController {
 
 	function delete($id = null) {
 	    if (!$id) {
-            $this->Session->setFlash('Invalide id pour le Th&egrave;me');
-            $this->redirect('/themes/index');
-        }
+                $this->Session->setFlash('Invalide id pour le Th&egrave;me');
+                $this->redirect('/themes/index');
+            }
         $theme = $this->Theme->read(null, $id);
         $theme['Theme']['actif'] = 0;
         if ( $this->Theme->save( $theme)) {
