@@ -54,7 +54,9 @@ class SeancesController extends AppController {
 	}
 
 	function add($timestamp=null) {
-		$this->set('typeseances', $this->Seance->Typeseance->find('list'));
+                $natures = array_keys($this->Session->read('user.Nature'));        
+                $types = $this->Typeseance->TypeseancesNature->getTypeseanceParNature($natures);
+		$this->set('typeseances', $this->Seance->Typeseance->find('list', array('conditions'=>array('Typeseance.id'=> $types) )));
 		$this->set('selectedTypeseances', null);
 		
 		if (empty($this->data)) {
@@ -102,7 +104,9 @@ class SeancesController extends AppController {
 					$this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
 			}
 		}
-		$this->set('typeseances', $this->Seance->Typeseance->find('list'));
+                $natures = array_keys($this->Session->read('user.Nature'));
+                $types = $this->Typeseance->TypeseancesNature->getTypeseanceParNature($natures);
+                $this->set('typeseances', $this->Seance->Typeseance->find('list', array('conditions'=>array('Typeseance.id'=> $types) )));
 	}
 
 	function delete($id = null) {
@@ -597,7 +601,7 @@ class SeancesController extends AppController {
 			    $afficherTtesLesSeances = true;
 		    else
 		        $afficherTtesLesSeances = false;
-			$this->set('seances', $this->Seance->generateList(array('Seance.id <>'=> $seanceIdCourante), $afficherTtesLesSeances));
+			$this->set('seances', $this->Seance->generateList(array('Seance.id <>'=> $seanceIdCourante), $afficherTtesLesSeances,  array_keys($this->Session->read('user.Nature'))));
 		}
 	}
 
