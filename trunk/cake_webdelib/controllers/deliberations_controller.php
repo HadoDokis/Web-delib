@@ -926,9 +926,15 @@ class DeliberationsController extends AppController {
 
 		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$this->set('host', Configure::read('HOST') );
-		$this->set('dateClassification', $this->_getDateClassification());
-		$this->set('tabNature',          $this->_getNatureListe());
-		$this->set('tabMatiere',         $this->_getMatiereListe());
+                $date_classification = $this->_getDateClassification();
+                if ($date_classification == false){  
+		    $this->set('dateClassification', $date_classification);
+		    $this->set('tabNature',          $this->_getNatureListe());
+	            $this->set('tabMatiere',         $this->_getMatiereListe());
+                } 
+                else 
+                    $this->set('dateClassification', "Récupérer la classification");
+
 		// On affiche que les delibs vote pour.
 		$deliberations = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.etat"=>3, "Deliberation.delib_pdf <>"=>'')));
 
@@ -944,8 +950,8 @@ class DeliberationsController extends AppController {
     function _getNatureListe(){
         $tab = array();
     	$doc = new DOMDocument('1.0', 'UTF-8');
-        if(!$doc->load(Configure::read('FILE_CLASS')))
-            die("Error opening xml file");
+        if(!@$doc->load(Configure::read('FILE_CLASS')))
+            return false;
         $NaturesActes = $doc->getElementsByTagName('NatureActe');
 		foreach ($NaturesActes as $NatureActe)
    		    $tab[$NatureActe->getAttribute('actes:CodeNatureActe')]= utf8_decode($NatureActe->getAttribute('actes:Libelle'));
@@ -963,7 +969,7 @@ class DeliberationsController extends AppController {
  		$tab = array();
 		$xml = @simplexml_load_file(Configure::read('FILE_CLASS'));
                 if ($xml===false)
-                    die ("aucune classification enregistrée");
+                    return false;
 		$namespaces = $xml->getDocNamespaces();
 		$xml=$xml->children($namespaces["actes"]);
 
@@ -1129,11 +1135,11 @@ class DeliberationsController extends AppController {
 
 
        function _getDateClassification(){
-		   $doc = new DOMDocument();
-	       if(!$doc->load(Configure::read('FILE_CLASS')))
-	           die("Error opening xml file");
-		   $date = $doc->getElementsByTagName('DateClassification')->item(0)->nodeValue;
-		   return ($this->Date->frenchDate(strtotime($date )));
+           $doc = new DOMDocument();
+	   if(!@$doc->load(Configure::read('FILE_CLASS')))
+	       return 'false';
+	   $date = $doc->getElementsByTagName('DateClassification')->item(0)->nodeValue;
+	   return ($this->Date->frenchDate(strtotime($date )));
            //return true;
         }
 
@@ -1170,7 +1176,7 @@ class DeliberationsController extends AppController {
 					exit;
 		    	}
 		    	// Ecrivons quelque chose dans notre fichier.
-		    	elseif (fwrite($handle, utf8_encode($reponse)) === FALSE) {
+		    	elseif (fwrite($handle, $reponse) === FALSE) {
 		        	echo "Impossible d'ecrire dans le fichier ($filename)";
 		        	exit;
 		   	 	}
