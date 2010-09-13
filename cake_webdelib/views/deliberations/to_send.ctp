@@ -9,7 +9,7 @@
 <div class="deliberations">
 
 <?php if (isset($message))  echo ($message); ?>
-<h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>>
+<h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
 <?php echo $form->create('Deliberation',array('type'=>'file','url'=>'/deliberations/sendActe')); ?>
     La Classification enregistrée date du <?php echo $html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
 	<table style='width:auto;'>
