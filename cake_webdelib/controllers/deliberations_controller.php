@@ -2253,7 +2253,6 @@ class DeliberationsController extends AppController {
 
 	function sendToParapheur() {
 		$circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
-
 		if (empty($this->data)) {
 			$delibs = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.etat" => 3,'Deliberation.delib_pdf <>'=> '')));
 			$this->set('deliberations', $delibs);
@@ -2282,7 +2281,7 @@ class DeliberationsController extends AppController {
 						$annexes[$tmp1][0] = $annex['data'];
 						$tmp1++;
 					}
-					$creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $delib['Deliberation']['delib_pdf'], $annexes);
+					$creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, Configure::read('EMAILEMETTEUR'), $objetDossier, '', '', Configure::read('VISIBILITY'), '', $delib['Deliberation']['delib_pdf'], $annexes);
 					$delib['Deliberation']['etat_parapheur']= 1;
 					$this->Deliberation->save($delib);
 				}

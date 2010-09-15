@@ -9,40 +9,39 @@ class ParafwebserviceComponent extends Object {
 	}	
 	
 	function lancerRequete($attachment=false){
-		
+                $WSTO             = Configure::read('WSTO');
+                $useSOAP          = Configure::read('VERSSOAP');
+                $useMTOM          = Configure::read('USEMTOM');
+                $action           = Configure::read('WSACTION');
+                $CACert           = Configure::read('CACERT');       
+                $clientCert       = Configure::read('CLIENTCERT');             
+                $passphrase       = Configure::read('PASSPHRASE');             
+                $httpAuthUsername = Configure::read('HTTPAUTH');             
+                $httpAuthPassword = Configure::read('HTTPPASSWD');
+                $httpAuthType     = Configure::read('HTTPTYPE');
+              
 		try {
 		    if(!$attachment){
-				$requestMessage = new WSMessage($this->requestPayloadString, 
-			        array(
-			        		"to"=>Configure::read('WSTO')
-			        	));
+                        $option = array("to"=>$WSTO);
+		        $requestMessage = new WSMessage($this->requestPayloadString, $option);
 		    }
 		    else {
-		    	$requestMessage = new WSMessage($this->requestPayloadString, 
-										        array(
-										        	"to" => Configure::read('WSTO'),
-										        	"attachments" => $attachment
+		    	$requestMessage = new WSMessage($this->requestPayloadString, array( "to" => $WSTO,
+										            "attachments" => $attachment
 										       	));
 		    }
+                    $options = array ("useSOAP"          => $useSOAP,
+                                      "useMTOM"          => $useMTOM ,
+                                      "action"           => $action,
+                                      "CACert"           => $CACert,         
+                                      "clientCert"       => $clientCert,     
+                                      "passphrase"       => $passphrase,     
+                                      "httpAuthUsername" => $httpAuthUsername,    
+                                      "httpAuthPassword" => $httpAuthPassword,
+                                      "httpAuthType"     => $httpAuthType); 
 
-		    $client = new WSClient(array (     								
-		     								"useSOAP"   => Configure::read('VERSSOAP'),
-			              					"useMTOM"   => Configure::read('USEMTOM'),
-			      							"action"    => Configure::read('WSACTION'),
-			      							
-		      							   	"CACert"    => Configure::read('CACERT'),         
-					                        "clientCert"=> Configure::read('CLIENTCERT'),     
-					                        "passphrase"=> Configure::read('PASSPHRASE'),     
-		     								
-		     								"httpAuthUsername" => Configure::read('HTTPAUTH'),    
-					                       	"httpAuthPassword" => Configure::read('HTTPPASSWD'),
-					                       	"httpAuthType"     => Configure::read('HTTPTYPE'),     
-		     
-			      							));
-
+		    $client = new WSClient($options);
 		    $this->responseMessage = $client->request($requestMessage);		    
-		    //echo $this->responseMessage->str;
-	
 		} catch (Exception $e) {
 		    if ($e instanceof WSFault) {
 		        printf("Soap Fault: %s\n", $e->Reason);
@@ -68,7 +67,6 @@ class ParafwebserviceComponent extends Object {
 	function getListeSousTypesWebservice($type){
 		$this->requestPayloadString = '<ns:GetListeSousTypesRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">'.$type.'</ns:GetListeSousTypesRequest>';
 		$this->lancerRequete();
-		//return $this->responseMessage->str;
 		return $this->traiteXMLSousType();	
 	}
 	
