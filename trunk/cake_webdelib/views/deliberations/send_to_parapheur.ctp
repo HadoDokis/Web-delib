@@ -2,7 +2,7 @@
 <div class="deliberations">
 <?php if (isset($message))  echo ($message); ?>
 <h2>D&eacute;lib&eacute;rations envoy&eacute;es &agrave; la signature</h2>
-<?php $form->create('Deliberation',array('url'=>'/deliberations/sendToParapheur','type'=>'file')); ?>
+<?php echo $form->create('Deliberation',array('url'=>'/deliberations/sendToParapheur','type'=>'file')); ?>
 <table>
 	<th></th>
  	<th>Numéro D&eacute;lib&eacute;ration</th>
