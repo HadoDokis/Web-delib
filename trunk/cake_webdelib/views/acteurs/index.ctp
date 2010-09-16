@@ -16,7 +16,6 @@
 	<th><?php echo $paginator->sort('Délégation(s)', 'Service.libelle'); ?></th>
 	<th width='90px'>Actions</th>
 </tr>
-
 <?php foreach ($acteurs as $acteur): ?>
 <tr>
 	<td><?php echo $acteur['Acteur']['salutation']; ?></td>
@@ -28,7 +27,9 @@
 	<td><?php echo $Acteur->libelleOrdre($acteur['Acteur']['position']); ?></td>
 	<td><?php echo $acteur['Acteur']['telfixe']; ?></td>
 	<td><?php echo $acteur['Acteur']['telmobile']; ?></td>
-	<td><?php foreach ($acteur['Service'] as $service) echo $service['libelle'].'<br/>';?></td>
+	<td><?php foreach ($acteur['Service'] as $service) 
+              echo ($service['libelle']).'<br/>';
+             ?></td>
 	<td class="actions">
 		<?php echo $html->link(SHY,'/acteurs/view/' . $acteur['Acteur']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false); ?>
 		<?php echo $html->link(SHY,'/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false); ?>
