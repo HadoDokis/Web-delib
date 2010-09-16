@@ -17,29 +17,23 @@ class ActeursController extends AppController
 		
 	var $paginate = array(
 		'Acteur' => array(
+                       'fields' => array('DISTINCT Acteur.id', 'Acteur.nom', 'Acteur.prenom', 'Acteur.salutation', 'Acteur.telfixe', 'Acteur.telmobile',  'Acteur.titre', 'Acteur.position', 'Typeacteur.nom',  'Typeacteur.elu', ),
 			'limit' => 20,
 			'joins' => array(
 				array(
 					'table' => 'acteurs_services',
 					'alias' => 'ActeursServices',
-					'type' => 'left',
-					'conditions'=> array(
-						'ActeursServices.acteur_id = Acteur.id'
-					)
+					'type' => 'LEFT',
+					'conditions'=> array('ActeursServices.acteur_id = Acteur.id')
 				),
 				array(
 					'table' => 'services',
 					'alias' => 'Service',
-					'type' => 'left',
-					'conditions'=> array(
-						'Service.id = ActeursServices.service_id',
-						'Service.id' => 1
-					)
+					'type' => 'LEFT',
+					'conditions'=> array('Service.id = ActeursServices.service_id')
 				)
 			),
-			'order' => array(
-				'Acteur.nom' => 'asc'
-			)
+			'order' => array('Acteur.position' => 'asc')
 		)
 	);
 
