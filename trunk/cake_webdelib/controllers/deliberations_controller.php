@@ -1583,8 +1583,8 @@ class DeliberationsController extends AppController {
         $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
         $this->Deliberation->Behaviors->attach('Containable');
         $conditions =  $this->Filtre->conditions();
-        if (!isset($conditions['Deliberation.nature_id']))
-            $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
+    //    if (!isset($conditions['Deliberation.nature_id']))
+    //        $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
         $projets = array();
         $userId = $this->Session->read('user.User.id');
         $listeCircuits = $this->Circuit->listeCircuitsParUtilisateur($userId);
@@ -1636,8 +1636,8 @@ class DeliberationsController extends AppController {
                 $this->Deliberation->Behaviors->attach('Containable');
 
                 $conditions =  $this->Filtre->conditions();
-                if (!isset($conditions['Deliberation.nature_id']))
-                    $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
+     //           if (!isset($conditions['Deliberation.nature_id']))
+     //               $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
                 $conditions['Deliberation.etat'] =  1;
 
                 if (!empty($listeCircuits)) {
@@ -1685,8 +1685,8 @@ class DeliberationsController extends AppController {
                 $this->Deliberation->Behaviors->attach('Containable');
 
                 $conditions =  $this->Filtre->conditions();
-                if (!isset($conditions['Deliberation.nature_id']))
-                    $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
+       //         if (!isset($conditions['Deliberation.nature_id']))
+       //             $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
 
 		$userId=$this->Session->read('user.User.id');
                 $editerProjetValide = $this->Xacl->check($userId, "Deliberations:editerProjetValide");
@@ -1775,8 +1775,8 @@ class DeliberationsController extends AppController {
                 $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
                 $this->Deliberation->Behaviors->attach('Containable');
                 $conditions =  $this->Filtre->conditions();
-                if (!isset( $conditions['Deliberation.nature_id']))
-                    $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
+         //       if (!isset( $conditions['Deliberation.nature_id']))
+         //           $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
 		// lecture en base
 		$conditions['Deliberation.etat'] = 1;
 		$ordre = 'Deliberation.created DESC';
