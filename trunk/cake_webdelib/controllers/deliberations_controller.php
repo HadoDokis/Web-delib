@@ -2008,7 +2008,11 @@ class DeliberationsController extends AppController {
 			        $conditions .= " AND ";
 			    $conditions .= " Deliberation.id = ".$this->data['Deliberation']['id'];
 			}
-
+                        if (!empty($this->data['Deliberation']['nature_id'])){
+                            if ($conditions != "")
+                                        $conditions .= " AND ";
+                                $conditions .= " Deliberation.nature_id = ".$this->data['Deliberation']['nature_id'];
+                        }
 			if (!empty($this->data['Deliberation']['theme_id'])){
 				if ($conditions != "")
 					$conditions .= " AND ";
@@ -2127,6 +2131,11 @@ class DeliberationsController extends AppController {
                                 if ($conditions != "")
                                         $conditions .= " AND ";
                                 $conditions .= " Deliberation.circuit_id = ".$this->data['Deliberation']['circuit_id'];
+                        }
+                        if (!empty($this->data['Deliberation']['nature_id'])){
+                            if ($conditions != "")
+                                        $conditions .= " AND ";
+                                $conditions .= " Deliberation.nature_id = ".$this->data['Deliberation']['nature_id'];
                         }
 
 			if (!empty($this->data['Deliberation']['texte'])) {

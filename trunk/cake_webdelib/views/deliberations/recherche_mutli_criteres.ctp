@@ -10,6 +10,13 @@
             <td><?php echo $form->input('Deliberation.id', array('type'=>'text', 'between'=>'</td><td>','label'=>'Identifiant du projet','size' => '20'));?></td>
     </tr>
     <tr>
+         <td><?php echo $form->input('Deliberation.nature_id', array('label'   =>'Nature',
+                                                                 'options' =>$session->read('user.Nature'),
+                                                                 'empty'   =>true,
+                                                                 'between'=>'</td><td>',
+                                                                 'escape'  =>false)); ?></td>
+    </tr>
+    <tr>
             <td><?php echo $form->input('Deliberation.rapporteur_id', array('between'=>'</td><td>','label'=>'Rapporteur', 'options'=>$rapporteurs, 'empty'=>true));?></td>
     </tr>
     <tr>
