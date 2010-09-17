@@ -87,7 +87,7 @@ class User extends AppModel {
          var $hasMany = array(
                 'Historique' =>array(
                         'className'    => 'Historique',
-                        'foreignKey'   => 'delib_id'),
+                        'foreignKey'   => 'user_id'),
                 'Composition' => array(
                         'className' => 'Cakeflow.Composition'
                 )
