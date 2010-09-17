@@ -38,9 +38,11 @@
 					echo $form->submit(' ', array('div'=>false, 'class'=>'bt_save', 'name'=>'sauvegarder'));
 				echo $form->end();
 			} else {
-                echo $deliberation['Seance']['libelle'].'<br />';	
-				echo $deliberation['Seance']['date'];
-			}
+                            if($deliberation['Seance']['date'] != ''){
+                                echo $deliberation['Seance']['libelle'].'<br />';
+                                echo $deliberation['Seance']['date'];
+                            }
+                        }
 		?>
 		</td>
 		<td rowspan=3 class="actions">
