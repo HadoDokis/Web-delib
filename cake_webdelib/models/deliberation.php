@@ -75,7 +75,7 @@ class Deliberation extends AppModel {
 
 		'Traitement'=>array(
 			'className'    => 'Cakeflow.Traitement',
-			'foreignKey'   => 'archive_id'), 
+			'foreignKey'   => 'target_id'), 
 
 		'Annex'=>array(
 			'className'    => 'Annex',
@@ -125,7 +125,7 @@ class Deliberation extends AppModel {
 			$ret = ($delib['Deliberation']['redacteur_id'] == $userId);
 			break;
 		case 1 :
-				$ret = ($this->Traitement->tourUserDansCircuit($userId, $delibId, $delib['Deliberation']['circuit_id']) > -1);
+				$ret = ($this->Traitement->positionTrigger($userId, $delibId) > -1);
 			break;
 		}
 
@@ -253,7 +253,7 @@ class Deliberation extends AppModel {
              $delib['Deliberation']['etat']=0;
              $delib['Deliberation']['anterieure_id']=$id;
              $delib['Deliberation']['date_envoi']=0;
-             //$delib['Deliberation']['circuit_id']=0;
+             $delib['Deliberation']['circuit_id']=0;
              $delib['Deliberation']['created']=date('Y-m-d H:i:s', time());
              $delib['Deliberation']['modified']=date('Y-m-d H:i:s', time());
              $this->save($delib['Deliberation']);
