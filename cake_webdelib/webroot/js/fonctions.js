@@ -6,7 +6,7 @@ function lister_services(params, url)
 
 function lister_circuits(params, url)
 {
-	var urlb=url+params.value;
+	var urlb=url+params.value+'/1';
 	document.location=urlb;
 }
 
