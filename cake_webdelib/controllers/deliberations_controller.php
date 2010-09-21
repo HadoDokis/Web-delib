@@ -573,12 +573,6 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function _changeCircuit ($delib_id, $circuit_id) {
-        $traitements = $this->Traitement->find('all', array('conditions'=>array('archive_id'=>$delib_id)));
-        foreach($traitements as $traitement )
-            $this->Traitement->del($traitement['Traitement']['archive_id'], true);
-    }
-
 	function attribuercircuit ($id = null, $circuit_id=null, $autoAppel=false) {
 		$listCircuitsParaph = null;
 		if (Configure::read('USE_PARAPH'))
@@ -614,9 +608,6 @@ class DeliberationsController extends AppController {
 		} else {
 		        $this->Deliberation->id = $id;
 			$this->data = $this->Deliberation->find('first',array('conditions'=>array("Deliberation.id"=>$id),'recursive'=>-1));
-
-			if($this->data['Deliberation']['circuit_id'] != $circuit_id )
-				$this->_changeCircuit($id, $circuit_id);
 
 			if ($this->Deliberation->saveField('circuit_id', $circuit_id)) {
                           // cas pour l'editeur en ligne
