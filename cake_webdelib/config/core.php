@@ -316,5 +316,4 @@ ini_set("memory_limit","256M");
     require_once ('webdelib.inc');
     define('VERSION', '<b> 3.0.0  - alpha </b>');
 
-    include_once(APP_DIR.DS.'plugins'.DS.'cakeflow'.DS.'config'.DS.'cakeflow.ini.php');
-
+    include_once(APP_DIR.DS.'plugins'.DS.'cakeflow'.DS.'config'.DS.'cakeflow.conf.php');
