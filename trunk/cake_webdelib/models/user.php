@@ -89,7 +89,8 @@ class User extends AppModel {
                         'className'    => 'Historique',
                         'foreignKey'   => 'user_id'),
                 'Composition' => array(
-                        'className' => 'Cakeflow.Composition'
+                        'className' => 'Cakeflow.Composition',
+						'foreignKey'=>'trigger_id'
                 )
                  );
 
