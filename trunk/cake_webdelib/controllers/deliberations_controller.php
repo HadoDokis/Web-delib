@@ -2384,17 +2384,31 @@ class DeliberationsController extends AppController {
     function rebond($delib_id) {
         $this->set('delib_id', $delib_id);
 
-        if (empty($this->data))
-            $this->set('users', $this->User->find('list'));
-        else {
+        if (empty($this->data)) {
+        	$this->data['Insert']['retour'] = true;
+            $this->set('users', $this->User->listFields());
+        } else {
             $user_connecte = $this->Session->read('user.User.id');
-            $delib = $this->Deliberation->read(null, $delib_id);
             $user = $this->User->read(null, $this->data['Deliberation']['user']);
             $destinataire = $user['User']['prenom'].' '.$user['User']['nom'].' ('.$user['User']['login'].')';
             $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a  été envoyé à $destinataire");
 
-            if ($this->Traitement->enregistrerRebond($this->data['Deliberation']['user'], $delib['Deliberation']['circuit_id'], $delib_id))
-                $this->redirect('/');
+			// initialisation des visas a ajouter au traitement
+			$options = array(
+				'insertion' => array(
+					'0' => array(
+						'Etape' => array(
+							'etape_nom'=>$user['User']['prenom'].' '.$user['User']['nom'],
+							'etape_type'=>1
+							),
+						'Visa' => array(
+							'0'=>array(
+								'trigger_id'=>$this->data['Insert']['user_id'],
+								'type_validation'=>'V'
+								)))));
+			$action = $this->data['Insert']['retour'] ? 'L': 'P';
+			$this->Traitement->execute($action, $user_connecte, $delib_id, $options);
+			$this->redirect('/');
         }
     }
 
