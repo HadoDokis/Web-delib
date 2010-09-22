@@ -253,7 +253,7 @@ class Deliberation extends AppModel {
              $delib['Deliberation']['etat']=0;
              $delib['Deliberation']['anterieure_id']=$id;
              $delib['Deliberation']['date_envoi']=0;
-             $delib['Deliberation']['circuit_id']=0;
+//             $delib['Deliberation']['circuit_id']=0;
              $delib['Deliberation']['created']=date('Y-m-d H:i:s', time());
              $delib['Deliberation']['modified']=date('Y-m-d H:i:s', time());
              $this->save($delib['Deliberation']);
