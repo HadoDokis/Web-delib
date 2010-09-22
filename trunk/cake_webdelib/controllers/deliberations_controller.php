@@ -116,7 +116,7 @@ class DeliberationsController extends AppController {
 
 		// Définitions des infosup
 		$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
-        $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/'.$id, array('return')));
+                $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/'.$id, array('return')));
 	}
 
 	function _getFileData($fileName, $fileSize) {
@@ -2389,7 +2389,8 @@ class DeliberationsController extends AppController {
             $this->set('users', $this->User->listFields());
         } else {
             $user_connecte = $this->Session->read('user.User.id');
-            $user = $this->User->read(null, $this->data['Deliberation']['user']);
+            
+            $user = $this->User->read(null, $this->data['Insert']['user_id']);
             $destinataire = $user['User']['prenom'].' '.$user['User']['nom'].' ('.$user['User']['login'].')';
             $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a  été envoyé à $destinataire");
 
