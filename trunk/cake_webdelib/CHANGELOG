@@ -97,4 +97,6 @@
   *) Patch pour les navigateurs IE 6 : le message jgrowl empeche l'ouverture de la page avec ce navigateur. 
 2.2
 ===
-  *) Upgrade du framework CakePHP 1.2.7 
+  *) Upgrade du framework CakePHP 1.2.8 
+  *) Intégration du plugin CakeFlow : moteur de workflow intégrant des fonctions dynamiques d'exécution  
+  
