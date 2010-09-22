@@ -62,6 +62,10 @@ class User extends AppModel {
 
 	var $displayField = "nom";
 
+var $displayFields = array(
+	'fields' => array('prenom', 'nom', 'login'),
+	'format' => '%s %s (%s)');
+
 	var $belongsTo = array(
 		'Profil'=>array(
 			'className'  => 'Profil',
