@@ -6,7 +6,7 @@
     echo '<br/>';
 	echo $form->input('retour', array('label'=>'Aller-retour :', 'type'=>'checkbox'));
 ?>
-<br/><br/>
+<br/> <br/> <br/>
 <?php
 	echo '<div class="submit">';
 		echo $form->submit('Valider', array('div'=>false, 'class'=>'bt_add', 'name'=>'Valider'));
