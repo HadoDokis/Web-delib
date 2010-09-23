@@ -1,24 +1,15 @@
-<div id="vue_cadre">
-    <h3>Renvoyer le projet &agrave;</h3>
+<h2>Renvoyer le projet à une étape précédente</h2>
 
-    <?php echo $form->create('Deliberation',array('url'=>'/deliberations/retour/'.$delib_id,'type'=>'post')); ?>
-    <table id='retour' >
-    <tr>
-    <?php
-        for ($i = 0; $i< $nbTraitements; $i++)
-	    echo '<td align="center">'. $html->image('/img/icons/user.png') .'</td>';
-
-        echo ('</tr><tr>');
-        foreach ($liste as $i => $nom)
-            echo "<td><input type='radio' name='data[Deliberation][radio]' id='radio_$i' value='$i'  />".$nom."</td>";
-       
-        
-    ?>
-    </tr>
-    </table>
-   <br> <br> <br> 
-    
-    <?php echo $form->submit('Envoyer',array('div'=>false)); ?>
-    
-	<?php echo $form->end(); ?>
-</div>
+<?php
+//	echo $form->create('Deliberation',array('url'=>'/deliberations/retour/'.$delib_id,'type'=>'post'));
+	echo $form->create('Traitement', array('url'=>array('controller'=>'deliberations', 'action'=>'retour', $delib_id)));
+		echo $form->input('etape', array('label'=>'Destinataire', 'title'=>"A qui voulez vous envoyer le projet ? : "));
+?>
+<br> <br> <br> 
+<?php
+	echo '<div class="submit">';
+		echo $form->submit('Valider', array('div'=>false, 'class'=>'bt_add', 'name'=>'Valider'));
+		echo $html->link('Annuler', array('action'=>'traiter', $delib_id), array('class'=>'link_annuler', 'name'=>'Annuler'));
+	echo '</div>';
+echo $form->end();
+?>
