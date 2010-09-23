@@ -2386,9 +2386,10 @@ class DeliberationsController extends AppController {
     function rebond($delib_id) {
         $this->set('delib_id', $delib_id);
 
-        if (empty($this->data)) {
-        	$this->data['Insert']['retour'] = true;
-            $this->set('users', $this->User->listFields());
+		if (empty($this->data)) {
+			$this->data['Insert']['retour'] = true;
+			$this->set('users', $this->User->listFields(array('order'=>'User.nom')));
+			$this->set('typeEtape', $this->Traitement->typeEtape($delib_id));
         } else {
             $user_connecte = $this->Session->read('user.User.id');
             
