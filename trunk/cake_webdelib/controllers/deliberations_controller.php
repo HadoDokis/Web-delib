@@ -625,21 +625,23 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-        function retour($delib_id) {
-            $this->set('delib_id', $delib_id);
-	    $delib = $this->Deliberation->read(null, $delib_id);
-	    $circuit_id = $delib['Deliberation']['circuit_id'];
-            if (empty($this->data)) {
-                $etapes = $this->Traitement->getEtapesPrecedents($circuit_id,  $delib['Deliberation']['id']);
-                $this->set('nbTraitements', count($etapes));
-                $this->set('liste', $etapes);
-	    }
-	    else {
-                $etape_id = $this->data['Deliberation']['radio'];
-                $this->Traitement->retour($circuit_id, $delib_id, $etape_id);
-                $this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Projet retourné");
-		$this->redirect('/');
-	    }
+	function retour($delib_id) {
+		$delib = $this->Deliberation->read(null, $delib_id);
+		if (empty($delib))
+			$this->redirect($this->referer());
+
+		if (empty($this->data)) {
+			$etapes = $this->Traitement->listeEtapes($delib['Deliberation']['id']);
+			if (empty($etapes))
+				$this->redirect($this->referer());
+			$this->set('delib_id', $delib_id);
+			$this->set('etapes', $etapes);
+		} else {
+			$etape_id = $this->data['Deliberation']['radio'];
+			$this->Traitement->execute('JP', $this->Session->read('user.User.id'), $delib_id, array('numero_traitement'=>$this->data['Traitement']['etape']));
+			$this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Projet retourné");
+			$this->redirect('/');
+		}
 	}
 
 	function traiter($id = null, $valid=null) {
@@ -691,7 +693,7 @@ class DeliberationsController extends AppController {
 	                if ($valid=='1') {
                             $user_id = $this->Session->read('user.User.id'); 
                             $circuit_id = $check_delib['Deliberation']['circuit_id'];
-                            $traitementTermine = $this->Traitement->execute('A', $user_id, $id);
+                            $traitementTermine = $this->Traitement->execute('OK', $user_id, $id);
                             $this->Historique->enregistre($id, $user_id, 'Projet vis&eacute;' );
                         
                             if ($traitementTermine) {
@@ -702,7 +704,7 @@ class DeliberationsController extends AppController {
 	                }
 		        else {
                             $this->Deliberation->refusDossier($id);
-                            $this->Traitement->execute('R', $this->Session->read('user.User.id'), $id);
+                            $this->Traitement->execute('KO', $this->Session->read('user.User.id'), $id);
                             // TODO notifier par mail toutes les personnes qui ont deja vise le projet
                             $circuit_id=$check_delib['Deliberation']['circuit_id'];
 		            $this->Historique->enregistre($id, $this->Session->read('user.User.id'),  'Projet refusé' );
@@ -2407,7 +2409,7 @@ class DeliberationsController extends AppController {
 								'trigger_id'=>$this->data['Insert']['user_id'],
 								'type_validation'=>'V'
 								)))));
-			$action = $this->data['Insert']['retour'] ? 'L': 'P';
+			$action = $this->data['Insert']['retour'] ? 'IL': 'IP';
 			$this->Traitement->execute($action, $user_connecte, $delib_id, $options);
 			$this->redirect('/');
         }
