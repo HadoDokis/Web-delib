@@ -1,7 +1,7 @@
 <?php echo $this->element('onglets', array('listeOnglets' => array(
 	'Informations principales',
 	'Droits', 
-        'Données'))); ?>
+        'Natures'))); ?>
 
 <?php
 	if($html->value('User.id')) {
