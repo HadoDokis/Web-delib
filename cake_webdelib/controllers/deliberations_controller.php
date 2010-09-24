@@ -548,20 +548,22 @@ class DeliberationsController extends AppController {
 
     function addIntoCircuit($id = null){
         $this->data = $this->Deliberation->read(null,$id);
+        $user_connecte = $this->Session->read('user.User.id');
         if ($this->data['Deliberation']['circuit_id']!= 0){
+
             // enregistrement de l'historique
             $message = "Projet injecté au circuit : ".$this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
-            $this->Historique->enregistre($id, $this->Session->read('user.User.id'), $message);
+            $this->Historique->enregistre($id, $user_connecte, $message);
             $this->data['Deliberation']['date_envoi']=date('Y-m-d H:i:s', time());
             $this->data['Deliberation']['etat']='1';
             if ($this->Deliberation->save($this->data)) {
-				// insertion dans le circuit de traitement
-				if ($this->Traitement->targetExists($id))
-					$this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $this->Session->read('user.User.id'));
-				else
-					$this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $this->Session->read('user.User.id'));
-
-				// envoi un mail a tous les membres du circuit
+		// insertion dans le circuit de traitement
+		if ($this->Traitement->targetExists($id))
+		     $this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
+		else 
+	            $this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
+            
+		// envoi un mail a tous les membres du circuit
                 $listeUsers = $this->Circuit->getAllMembers($this->data['Deliberation']['circuit_id']);
 
                 $this->Session->setFlash('Projet ins&eacute;r&eacute; dans le circuit', 'growl');
@@ -2378,11 +2380,10 @@ class DeliberationsController extends AppController {
    
     function rebond($delib_id) {
         $this->set('delib_id', $delib_id);
-
-		if (empty($this->data)) {
-			$this->data['Insert']['retour'] = true;
-			$this->set('users', $this->User->listFields(array('order'=>'User.nom')));
-			$this->set('typeEtape', $this->Traitement->typeEtape($delib_id));
+	if (empty($this->data)) {
+            $this->data['Insert']['retour'] = true;
+	    $this->set('users', $this->User->listFields(array('order'=>'User.nom')));
+	    $this->set('typeEtape', $this->Traitement->typeEtape($delib_id));
         } else {
             $user_connecte = $this->Session->read('user.User.id');
             
