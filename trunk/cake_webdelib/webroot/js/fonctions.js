@@ -6,6 +6,7 @@ function lister_services(params, url)
 
 function lister_circuits(params, url)
 {
+	$('.submit').hide();
 	var urlb=url+params.value+'/1';
 	document.location=urlb;
 }
