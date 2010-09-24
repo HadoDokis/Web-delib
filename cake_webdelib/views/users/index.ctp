@@ -9,13 +9,13 @@
 	<th><?php echo $paginator->sort('Profil', 'Profil.libelle'); ?></th>
 	<th>Téléphone</th>
 	<th>Mobile</th>
-	<th><?php echo $paginator->sort('Service', 'Service.libelle'); ?></th>
+	<th><?php echo $paginator->sort('Services', 'Service.libelle'); ?></th>
+	<th>Natures</th>
 	<th>Actions</th>
 </tr>
 <?php
 
-foreach ($users as $user):
-?>
+foreach ($users as $user):?>
 <tr>
 	<td><?php echo $user['User']['login']; ?></td>
 	<td><?php echo $user['User']['nom']; ?></td>
@@ -28,6 +28,13 @@ foreach ($users as $user):
 			echo $service['libelle'].'<br/>';
 		endforeach;
 	?></td>
+       <td><?php
+                foreach ($user['Natures'] as $nature){
+                    if($nature['Nature']['check'])
+                        echo($nature['Nature']['libelle']).'<br/>';
+                }
+        ?></td>
+
 
 	<td class="actions">
 		<?php echo $html->link(SHY,'/users/view/' . $user['User']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
