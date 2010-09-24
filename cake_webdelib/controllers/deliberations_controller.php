@@ -313,7 +313,12 @@ class DeliberationsController extends AppController {
                 $path_projet = $path."webroot/files/generee/projet/$id/";
 
 		if (empty($this->data)) {
-			$this->data = $this->Deliberation->read(null, $id);
+		    $this->data = $this->Deliberation->read(null, $id);
+                    $natures =  array_keys($this->Session->read('user.Nature'));
+                    if (!in_array($this->data['Deliberation']['nature_id'], $natures)){
+                        $this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
+                        $this->redirect($redirect);
+                    }
 			/* teste si le projet est modifiable par l'utilisateur connecté */
 			if (!$this->Deliberation->estModifiable($id, $user['User']['id']) &&
 				!($this->data['Deliberation']['etat'] == 2 && $this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))
@@ -718,30 +723,7 @@ class DeliberationsController extends AppController {
             //verification du projet, s'il n'est pas pret ->reporte a la seance suivante
             $delib = $this->Deliberation->findAll("Deliberation.id = $id");
             $type_id =$delib[0]['Seance']['type_id'];
-            /* //
-	        On désactive cette fonctionnalité de repot automatique car avec les type de séance, cela n'a plus de sens!
-	    if(isset($type_id)){
-                $type = $this->Typeseance->findAll("Typeseance.id = $type_id");
-                $date_seance = $delib[0]['Seance']['date'];;
-                $retard = $type[0]['Typeseance']['retard'];
 
-                $condition= 'date > "'.date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))).'"';
-                $seances = $this->Seance->findAll(($condition),null,'date asc');
-                if (!empty($date_seance)){
-                    if (mktime(date("H") , date("i") ,date("s") , date("m") , date("d")+$retard , date("Y"))>= strtotime($date_seance)){
-                        $this->data['Deliberation']['seance_id']=$seances[0]['Seance']['id'];
-                        $this->data['Deliberation']['reporte']=1;
-                        $this->data['Deliberation']['id']=$id;
-                        if (isset($this->data['Deliberation']['seance_id']))
-                            $position = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
-                        else
-                            $position = 0;
-                        $this->data['Deliberation']['position']=$position;
-                        $this->Deliberation->save($this->data);
-                    }
-                }
-            }
-	    */
             //on a valide le projet, il passe a la personne suivante
             $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
             $lastpos=count($tab)-1;
@@ -1573,8 +1555,6 @@ class DeliberationsController extends AppController {
 		$conditions =  $this->Filtre->conditions();
 		$conditions['Deliberation.etat'] =  1;
 		$conditions['Deliberation.id'] = $this->Traitement->listeTargetId($this->Session->read('user.User.id'), array('etat'=>'NONTRAITE', 'traitement'=>'AFAIRE')); 
-    //    if (!isset($conditions['Deliberation.nature_id']))
-    //        $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
 
 		$ordre = 'Deliberation.created DESC'; 
 		$projets = $this->Deliberation->find('all', array(
@@ -1586,10 +1566,9 @@ class DeliberationsController extends AppController {
 				'Service.libelle',
 				'Theme.libelle',
 				'Nature.libelle')));
-
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets($projets, 'Mes projets &agrave; traiter', array('traiter', 'generer'));
-	}
+    }
 
 /*
  * Affiche la liste des projets en cours de validation (etat = 1) qui sont dans les circuits
@@ -1608,8 +1587,6 @@ class DeliberationsController extends AppController {
 		$this->Deliberation->Behaviors->attach('Containable');
 
 		$conditions =  $this->Filtre->conditions();
-//		if (!isset($conditions['Deliberation.nature_id']))
-//			$conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
 		$conditions['Deliberation.etat'] =  1;
 		$conditions['OR']['Deliberation.id'] = $this->Traitement->listeTargetId($this->Session->read('user.User.id'), array('etat'=>'NONTRAITE', 'traitement'=>'NONAFAIRE')); 
 		$conditions['OR']['Deliberation.redacteur_id'] = $userId;
@@ -1624,9 +1601,7 @@ class DeliberationsController extends AppController {
 				'Service.libelle',
 				'Theme.libelle',
 				'Nature.libelle')));
-
 		$this->_ajouterFiltre($projets);
-
 		$this->_afficheProjets(
 			$projets,
 			'Mes projets en cours d\'&eacute;laboration et de validation',
@@ -1647,8 +1622,6 @@ class DeliberationsController extends AppController {
 		$this->Deliberation->Behaviors->attach('Containable');
 
 		$conditions =  $this->Filtre->conditions();
-       //         if (!isset($conditions['Deliberation.nature_id']))
-       //             $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
 
 		$userId=$this->Session->read('user.User.id');
 		$editerProjetValide = $this->Xacl->check($userId, "Deliberations:editerProjetValide");
@@ -1689,6 +1662,7 @@ class DeliberationsController extends AppController {
 		/* initialisation pour chaque projet ou délibération */
                 foreach($this->data as $i=>$projet) {
 			// initialisation des icônes
+                     $this->data[$i]['last_viseur'] = $this->Traitement->dernierVisaTrigger($projet['Deliberation']['id']);
                      $this->data[$i]['Circuit']['libelle'] = $this->Circuit->getLibelle($this->data[$i]['Deliberation']['circuit_id']);
         	if ($this->data[$i]['Deliberation']['etat'] == 0 && $this->data[$i]['Deliberation']['anterieure_id']!=0)
 	            $this->data[$i]['iconeEtat'] = $this->_iconeEtat(-1);
@@ -1740,8 +1714,6 @@ class DeliberationsController extends AppController {
                 $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
                 $this->Deliberation->Behaviors->attach('Containable');
                 $conditions =  $this->Filtre->conditions();
-         //       if (!isset( $conditions['Deliberation.nature_id']))
-         //           $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
 		// lecture en base
 		$conditions['Deliberation.etat'] = 1;
 		$ordre = 'Deliberation.created DESC';
@@ -1819,7 +1791,6 @@ class DeliberationsController extends AppController {
                     $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
 		$conditions['Deliberation.etat'] = 2;
 		$conditions['Deliberation.seance_id !='] = 0;
-
 		$projets = $this->Deliberation->find('all',array('conditions' => $conditions, 
                                                                  'order'      => 'Deliberation.created DESC',
                                                                  'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
@@ -1909,17 +1880,10 @@ class DeliberationsController extends AppController {
 		// Lecture de la délibération
 		$this->Deliberation->recursive = -1;
 		$this->data = $this->Deliberation->read(null, $delibId);
-                if (Configure::read('USE_PARAPH')) {
-		   $circuit_id   = $this->data['Deliberation']['circuit_id'];
-		   $position     = $this->Traitement->find("Traitement.delib_id = $delibId AND Traitement.circuit_id= $circuit_id", 'Max(position)');
-		   if ($UsersCircuit['UsersCircuit']['service_id'] == -1){
-		       $this->Session->setFlash('Le projet ne peux &ecirc;tre valid&eacute; en urgence : il est actuellement bloqu&eacute; dans un parapheur...', 'growl', array('type'=>'erreur'));
-		       $this->redirect('/deliberations/tousLesProjetsValidation');
-		       exit;
-		   }
-                }
 		if (empty($this->data))
-			$this->Session->setFlash('Invalide id pour le projet de d&eacute;lib&eacute;ration', 'growl', array('type'=>'erreur'));
+			$this->Session->setFlash('Invalide id pour le projet de d&eacute;lib&eacute;ration', 
+                                                 'growl', 
+                                                 array('type'=>'erreur'));
 		else {
 			if ($this->data['Deliberation']['etat']!=1)
 				$this->Session->setFlash('Le projet de d&eacute;lib&eacute;ration doit &ecirc;tre en cours d\'&eacute;laboration', 'growl', array('type'=>'erreur'));
