@@ -637,7 +637,6 @@ class DeliberationsController extends AppController {
 			$this->set('delib_id', $delib_id);
 			$this->set('etapes', $etapes);
 		} else {
-			$etape_id = $this->data['Deliberation']['radio'];
 			$this->Traitement->execute('JP', $this->Session->read('user.User.id'), $delib_id, array('numero_traitement'=>$this->data['Traitement']['etape']));
 			$this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Projet retourné");
 			$this->redirect('/');
@@ -1925,10 +1924,23 @@ class DeliberationsController extends AppController {
 			if ($this->data['Deliberation']['etat']!=1)
 				$this->Session->setFlash('Le projet de d&eacute;lib&eacute;ration doit &ecirc;tre en cours d\'&eacute;laboration', 'growl', array('type'=>'erreur'));
 			else {
-                            $this->Traitement->validerEnUrgence($this->data['Deliberation']['circuit_id'], $delibId);
-                            $this->data['Deliberation']['etat'] = 2;
-                            if ($this->Deliberation->save($this->data)) {
-                                $this->Historique->enregistre($delibId, $this->Session->read('user.User.id'), 'Projet validé en urgence' );
+				// initialisation du visa si utilisateur connecté est hors traitement
+				$options = array(
+					'insertion' => array(
+						'0' => array(
+							'Etape' => array(
+								'etape_nom'=>'Validation en urgence',
+								'etape_type'=>1
+								),
+							'Visa' => array(
+								'0'=>array(
+									'trigger_id'=>$this->Session->read('user.User.id'),
+									'type_validation'=>'V'
+									)))));
+				$this->Traitement->execute('ST', $this->Session->read('user.User.id'), $delibId, $options);
+				$this->data['Deliberation']['etat'] = 2;
+				if ($this->Deliberation->save($this->data)) {
+					$this->Historique->enregistre($delibId, $this->Session->read('user.User.id'), 'Projet validé en urgence' );
 			    }
 			}
 		}
@@ -2369,18 +2381,35 @@ class DeliberationsController extends AppController {
     } 
 
     function goNext($delib_id) {
-        $user_connecte = $this->Session->read('user.User.id');
-        $delib = $this->Deliberation->read(null, $delib_id);
-        $retour = $this->Traitement->jump($delib['Deliberation']['circuit_id'], $delib_id, $user_connecte);
-        if ($retour == -1){
-            $this->Session->setFlash('La personne suivante est le dernier valideur du circuit, vous devez valider le projet.', 'growl', array('type'=>'erreur'));
-	    $this->redirect('/deliberations/tousLesProjetsValidation');
-	    exit;
-        }
-        $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a sauté l'étape  ");
-        $this->Session->setFlash("Le projet est maintenant à l'étape suivante ", 'growl');
-        $this->redirect('/deliberations/tousLesProjetsValidation');
-        exit;
+		$delib = $this->Deliberation->read(null, $delib_id);
+		if (empty($delib))
+			$this->redirect($this->referer());
+
+		if (empty($this->data)) {
+			$etapes = $this->Traitement->listeEtapes($delib['Deliberation']['id'], array('selection'=>'APRES'));
+			if (empty($etapes))
+				$this->redirect($this->referer());
+			$this->set('delib_id', $delib_id);
+			$this->set('etapes', $etapes);
+		} else {
+			$insertion = array(
+					'0' => array(
+						'Etape' => array(
+							'etape_nom'=>'Aller à une étape suivante',
+							'etape_type'=>1
+							),
+						'Visa' => array(
+							'0'=>array(
+								'trigger_id'=>$this->Session->read('user.User.id'),
+								'type_validation'=>'V'
+								))));
+			$this->Traitement->execute('JS', $this->Session->read('user.User.id'), $delib_id, array('insertion'=> $insertion, 'numero_traitement'=>$this->data['Traitement']['etape']));
+			$this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Le projet a sauté l'étape  ");
+			$this->Session->setFlash("Le projet est maintenant à l'étape suivante ", 'growl');
+			$this->redirect('/deliberations/tousLesProjetsValidation');
+		}
+
+
     }
    
     function rebond($delib_id) {
