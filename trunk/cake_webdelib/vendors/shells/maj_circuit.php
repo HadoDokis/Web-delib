@@ -80,7 +80,7 @@
                                                FROM users_circuits
                                                WHERE circuit_id = $oldCircuit_id
                                                AND   users_circuits.position   = ". $traitement['traitements']['position']);
-                $this->Traitement->execute('OK', $user[0]['users_circuits']['user_id'], $delib_id);
+                $this->Traitement->execute('OK', $user[0]['users_circuits']['user_id'], $delib_id, array(), $traitement['traitements']['date_traitement']);
             }
         }
         
