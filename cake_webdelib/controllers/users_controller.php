@@ -55,19 +55,17 @@ class UsersController extends AppController {
 		'changeMdp'=>'Users:index'
 	);
 
-	function index() {
-		/*$users = $this->paginate('User');
-		for ($i=0;$i<count($users);$i++) {
-			if (isset($users[$i])) {
-				for ($j=$i+1;$j<count($users);$j++) {
-					if ((isset($users[$j])) && ($users[$i]['User']['id']==$users[$j]['User']['id']))
-						$users=Set::remove($users,$j);
-				}
-			}
-		}*/
-		//$this->set('users', $users);
-		$this->set('users', $this->paginate('User'));
-		$this->set('Users', $this);
+        function index() {
+            $users = $this->paginate('User');
+            foreach ($users as &$user) {
+                $natures = $this->Nature->find('all');
+                foreach ($natures as &$nature){
+                    $nature['Nature']['check'] = $this->ArosAdo->check($user['User']['id'], $nature['Nature']['id']);
+                }
+                $user['Natures'] = $natures;
+            }
+	    $this->set('users', $users);
+	    $this->set('Users', $this);
 	}
 
 	function view($id = null) {
@@ -104,7 +102,7 @@ class UsersController extends AppController {
 
 				$Profil=$this->Profil->find('first',array('conditions'=>array('id'=>$this->data['User']['profil_id']),'recursive'=>-1));
 				$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']));
-            	$this->Dbdroits->MajCruDroits(
+                            	$this->Dbdroits->MajCruDroits(
 					array('model'=>'Utilisateur','foreign_key'=>$user_id,'alias'=>$this->data['User']['login']),
 					array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']),
 					$this->data['Droits']
