@@ -5,12 +5,12 @@
 <?php
 	$loc=$html->url("/deliberations/attribuercircuit/".$html->value('Deliberation.id')."/");
 	echo $form->input('Deliberation.circuit_id', array('options'=>$circuits, "onChange"=>"lister_circuits(this, '$loc');", 'empty'=>true, 'selected'=>$circuit_id));
-
+	echo '<br />';
  // données concernant le circuit selectionné
     if (isset($visu)) 
         echo ($visu); 
 ?>
-<br />
+<div class="spacer"></div>
 <div class="submit">
 	<?php echo $form->submit('Attribuer', array('div'=>false, 'class'=>'bt_add', 'name'=>'ajouter'));?>
 	<?php echo $html->link('Annuler', $lien_retour, array('class'=>'link_annuler', 'name'=>'Annuler'))?>
