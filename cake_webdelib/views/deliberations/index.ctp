@@ -59,7 +59,7 @@
 				echo $html->link(SHY,"/deliberations/validerEnUrgence/" . $deliberation['Deliberation']['id'], array('class'=>"link_validerenurgence", 'title'=>'Valider en urgence'), 'Confirmez-vous la validation en urgence du projet \''.$deliberation['Deliberation']['id'].'\'', false);
 			
 			 if (in_array('goNext', $deliberation['Actions']))
-			     echo $html->link(SHY,"/deliberations/goNext/" . $deliberation['Deliberation']['id'], array('class'=>"link_jump", 'title'=>'Sauter une étape'), 'Voulez-vous vraiment sauter une étape ?', false);
+			     echo $html->link(SHY,"/deliberations/goNext/" . $deliberation['Deliberation']['id'], array('class'=>"link_jump", 'title'=>'Sauter une ou des étapes'), false, false);
 			
 			echo '<br/><br/>';
 			if (in_array('attribuerCircuit', $deliberation['Actions'])) {
