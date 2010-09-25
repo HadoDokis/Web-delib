@@ -550,7 +550,6 @@ class DeliberationsController extends AppController {
         $this->data = $this->Deliberation->read(null,$id);
         $user_connecte = $this->Session->read('user.User.id');
         if ($this->data['Deliberation']['circuit_id']!= 0){
-
             // enregistrement de l'historique
             $message = "Projet injecté au circuit : ".$this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
             $this->Historique->enregistre($id, $user_connecte, $message);
@@ -559,9 +558,23 @@ class DeliberationsController extends AppController {
             if ($this->Deliberation->save($this->data)) {
 		// insertion dans le circuit de traitement
 		if ($this->Traitement->targetExists($id))
-		     $this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
-		else 
-	            $this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
+			$this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
+		else {
+			$this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
+			$options = array(
+				'insertion' => array(
+					'0' => array(
+						'Etape' => array(
+							'etape_nom'=>'Rédacteur',
+							'etape_type'=>1
+							),
+						'Visa' => array(
+							'0'=>array(
+								'trigger_id'=>$user_connecte,
+								'type_validation'=>'V'
+								)))));
+			$this->Traitement->execute('IN', $user_connecte, $id, $options);
+		}
             
 		// envoi un mail a tous les membres du circuit
                 $listeUsers = $this->Circuit->getAllMembers($this->data['Deliberation']['circuit_id']);
@@ -638,7 +651,7 @@ class DeliberationsController extends AppController {
 			$this->redirect($this->referer());
 
 		if (empty($this->data)) {
-			$etapes = $this->Traitement->listeEtapes($delib['Deliberation']['id']);
+			$etapes = $this->Traitement->listeEtapes($delib['Deliberation']['id'], array('debut'=>2));
 			if (empty($etapes))
 				$this->redirect($this->referer());
 			$this->set('delib_id', $delib_id);
