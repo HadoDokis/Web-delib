@@ -11,7 +11,7 @@
 	    echo '<br/>';
 	    echo $html->div('profil', 'Note : pour les étapes collaboratives (ET), l\'aller-retour est obligatoire.');
     } else
-		echo $form->input('retour', array('label'=>'Aller-retour :', 'type'=>'checkbox', 'disabled'=>'disabled'));
+		echo $form->input('retour', array('label'=>'Aller-retour :', 'type'=>'checkbox', 'disabled'=>''));
 ?>
 <br/> <br/> <br/>
 <?php
