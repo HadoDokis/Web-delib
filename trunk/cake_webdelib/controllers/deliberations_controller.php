@@ -37,9 +37,7 @@ class DeliberationsController extends AppController {
 		'rebond'
 	);
 
-    var $aucunDroit = array('accepteDossier');
-
-    var $commeDroit = array(
+        var $commeDroit = array(
 		'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
 		'delete'=>'Deliberations:mesProjetsRedaction',
 		'attribuercircuit'=>'Deliberations:mesProjetsRedaction',
@@ -578,7 +576,17 @@ class DeliberationsController extends AppController {
             
 		// envoi un mail a tous les membres du circuit
                 $listeUsers = $this->Circuit->getAllMembers($this->data['Deliberation']['circuit_id']);
-
+                
+                for($i = 1; $i <= count($listeUsers); $i++){
+                    if ($i ==1){
+                        foreach( $listeUsers[$i] as $user_id)
+                            $this->_notifier($id, $user_id, 'traiter');
+                    }
+                    else {
+                        foreach( $listeUsers[$i] as $user_id)
+                            $this->_notifier($id, $user_id, 'insertion');
+                    }
+                }
                 $this->Session->setFlash('Projet ins&eacute;r&eacute; dans le circuit', 'growl');
                 $this->redirect('/deliberations/mesProjetsRedaction');
             } 
@@ -658,15 +666,18 @@ class DeliberationsController extends AppController {
 			$this->set('etapes', $etapes);
 		} else {
 			$this->Traitement->execute('JP', $this->Session->read('user.User.id'), $delib_id, array('numero_traitement'=>$this->data['Traitement']['etape']));
+                        $destinataires = $this->Traitement->whoIsNext($delib_id);
+                        foreach($destinataires as $destinataire_id)
+                            $this->_notifier($delib_id, $destinataire_id, 'traiter');
+
 			$this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Projet retourné");
 			$this->redirect('/');
 		}
 	}
 
 	function traiter($id = null, $valid=null) {
-            $check_delib = $this->Deliberation->read(null, $id);
-
-	    if (!$id ||  empty( $check_delib)) {
+            $projet = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
+	    if (empty($projet)) {
 		$this->Session->setFlash('identifiant invalide pour le projet : '.$id, 'growl', array('type'=>'erreur'));
 		$this->redirect('/deliberations/mesProjetsATraiter');
 	    }
@@ -675,49 +686,47 @@ class DeliberationsController extends AppController {
                     $nb_recursion=0;
 		    $action='view';
                     $listeAnterieure=array();
-	            $tab_delib=$this->Deliberation->find("Deliberation.id = $id");
-                    $tab_anterieure=$this->_chercherVersionAnterieure($id, $tab_delib, $nb_recursion, $listeAnterieure, $action);
+                    $tab_anterieure=$this->_chercherVersionAnterieure($id, $projet, $nb_recursion, $listeAnterieure, $action);
                     $this->set('tab_anterieure',$tab_anterieure);
                     $commentaires = $this->Commentaire->findAll("delib_id = $id and pris_en_compte = 0", null, "created ASC");
                     for($i=0; $i< count($commentaires) ; $i++) {
-                        if($commentaires[$i]['Commentaire']['agent_id'] == -1) {
-                            $nomAgent = 'i-parapheur';
-                            $prenomAgent = '';
-                        }
-                        else {
-                            $nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
-                            $prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
-                        }
-                        $commentaires[$i]['Commentaire']['nomAgent'] = $nomAgent;
-			$commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
+                        $agent = $this->User->find('first', array('conditions' => array(
+                                                       'User.id' => $commentaires[$i]['Commentaire']['agent_id']) ,
+                                                       'recursive' => -1,
+                                                       'fields'    => array('nom', 'prenom') ));
+                        $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
+			$commentaires[$i]['Commentaire']['prenomAgent'] =  $agent['User']['prenom'];
                     }
 		    $this->set('commentaires', $commentaires);
-                    $deliberation= $check_delib;
-                    if (!empty($deliberation['Seance']['date']))
-                        $deliberation['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($deliberation['Seance']['date']));
-                        $id_service = $deliberation['Service']['id'];
-                        $deliberation['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-	                $deliberation['Circuit']['libelle'] = $this->Circuit->getLibelle($deliberation['Deliberation']['circuit_id']);
-                        $tab_circuit=$tab_delib['Deliberation']['circuit_id'];
+                    if (!empty($projet['Seance']['date']))
+                        $projet['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($projet['Seance']['date']));
+                        $id_service = $projet['Service']['id'];
+                        $projet['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+	                $projet['Circuit']['libelle'] = $this->Circuit->getLibelle($projet['Deliberation']['circuit_id']);
                         $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/'.$id, array('return')));
-                        $this->set('deliberation', $deliberation);
-                        $this->set('historiques',$this->Historique->findAll("Historique.delib_id = $id"));
+                        $this->set('deliberation', $projet);
+                        $this->set('historiques',$this->Historique->find('all', array('conditions'=>array("Historique.delib_id" => $id))));
                 
                         // Compactage des informations supplémentaires
-                        $this->data['Infosup'] = $this->Deliberation->Infosup->compacte($deliberation['Infosup'], false);
-                        $this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
+                        $this->data['Infosup'] = $this->Deliberation->Infosup->compacte($projet['Infosup'], false);
+                        $this->set('infosupdefs', $this->Infosupdef->find('all', array(
+                                                                          'recursive'=> -1,
+                                                                          'order'    => 'ordre')));
 
 		    }
                     else {
 	                if ($valid=='1') {
                             $user_id = $this->Session->read('user.User.id'); 
-                            $circuit_id = $check_delib['Deliberation']['circuit_id'];
                             $traitementTermine = $this->Traitement->execute('OK', $user_id, $id);
                             $this->Historique->enregistre($id, $user_id, 'Projet vis&eacute;' );
-                        
                             if ($traitementTermine) {
                                 $this->Deliberation->id = $id;
                                 $this->Deliberation->saveField('etat', 2);
+                            }
+                            else {
+                                $destinataires = $this->Traitement->whoIsNext($id);
+                                foreach( $destinataires as $destinataire_id)
+                                    $this->_notifier($id, $destinataire_id, 'traiter');
                             }
 	       	            $this->redirect('/deliberations/mesProjetsATraiter');
 	                }
@@ -725,7 +734,10 @@ class DeliberationsController extends AppController {
                             $this->Deliberation->refusDossier($id);
                             $this->Traitement->execute('KO', $this->Session->read('user.User.id'), $id);
                             // TODO notifier par mail toutes les personnes qui ont deja vise le projet
-                            $circuit_id=$check_delib['Deliberation']['circuit_id'];
+                            $destinataires = $this->Traitement->whoIsPrevious($id);
+                            foreach( $destinataires as $destinataire_id)
+                                $this->_notifier($id, $destinataire_id, 'refus');
+
 		            $this->Historique->enregistre($id, $this->Session->read('user.User.id'),  'Projet refusé' );
                             $this->Session->setFlash('Vous venez de refuser le projet : '.$id, 'growl');
                             $this->redirect('/deliberations/mesProjetsATraiter');
@@ -734,75 +746,15 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-        function accepteDossier($id, $isGoNext=false) {
-            //verification du projet, s'il n'est pas pret ->reporte a la seance suivante
-            $delib = $this->Deliberation->findAll("Deliberation.id = $id");
-            $type_id =$delib[0]['Seance']['type_id'];
-
-            //on a valide le projet, il passe a la personne suivante
-            $tab=$this->Traitement->findAll("delib_id = $id", null, "id ASC");
-            $lastpos=count($tab)-1;
-            $circuit_id=$tab[$lastpos]['Traitement']['circuit_id'];
-
-            //MAJ de la date de traitement de la derniere position courante $lastpos
-            $tab[$lastpos]['Traitement']['date_traitement']=date('Y-m-d H:i:s', time());
-            $this->Traitement->save($tab[$lastpos]['Traitement']);
-
-            //il faut verifier que le projet n'est pas arrive en fin de circuit
-            //position courante du projet : lastposprojet : $tab[$lastpos]['Traitement']['position'];
-            //derniere position theorique : lastposcircuit
-            $lastposprojet=$tab[$lastpos]['Traitement']['position'];
-           //$lastposcircuit=$this->Circuit->getLastPosition($circuit_id);
-            $usersCircuit = $this->UsersCircuit->findAll("circuit_id = $circuit_id", null, "UsersCircuit.position ASC");
-            $lastposcircuit=count($usersCircuit);
-
-            if ($lastposcircuit==$lastposprojet) { //on est sur la derniere personne, on va faire sortir le projet du workflow et le passer au service des assemblees
-                                                // passage au service des assemblee : etat dans la table deliberations passea2
-                $tab=$this->Deliberation->findAll("Deliberation.id = $id");
-                $this->data['Deliberation']['etat']=2;
-                $this->data['Deliberation']['id']=$id;
-                $this->Deliberation->save($this->data['Deliberation']);
-                $this->redirect('/deliberations/mesProjetsATraiter');
-            }
-            else { // l'étape suivante est la création d'un dossier
-                if($usersCircuit[$lastposprojet]['UsersCircuit']['service_id'] == -1) {
-                    $model_id = $this->_getModelId($id);
-                    $err = $this->requestAction("/models/generer/$id/null/$model_id/0/1/P_$id.pdf");
-                    $file =  WEBROOT_PATH."/files/generee/fd/null/$id/P_$id.pdf";
-
-                    $soustypes = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
-                    $soustype = $soustypes ['soustype'][$usersCircuit[$lastposprojet]['UsersCircuit']['user_id']];
-                    $nomfichierpdf = "P_$id.pdf";
-                    $objet = utf8_encode($this->_objetParaph($delib ['0']['Deliberation']['objet']));
-                    $pdf = file_get_contents($file);
-		    $objetDossier = "$id $objet";
-                    $creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, EMAILEMETTEUR, $objetDossier, '', '', VISIBILITY, '', $pdf);
-                }
-                else {
-                    //sinon on fait passerala personne suivante
-                    $this->_notifierDossierAtraiter($circuit_id, $tab[$lastpos]['Traitement']['position']+1, $id);
-                }
-                $this->data['Traitement']['id']='';
-                $this->data['Traitement']['position']=$tab[$lastpos]['Traitement']['position']+1;
-                $this->data['Traitement']['delib_id']=$id;
-                $this->data['Traitement']['circuit_id']=$circuit_id;
-                $this->Traitement->save($this->data['Traitement']);
-                if ($isGoNext)
-                    return true;
-                else {
-		    $this->Session->setFlash("Le projet ($id) a avanc&eacute; d'une position", 'growl');
-                    $this->redirect('/deliberations/mesProjetsATraiter');
-                }
-            }
-        }
-
 	function _chercherVersionAnterieure($delib_id, $tab_delib, $nb_recursion, $listeAnterieure, $action)
 	{
 		$anterieure_id=$tab_delib['Deliberation']['anterieure_id'];
 
 		if ($anterieure_id!=0) {
 
-			$ant=$this->Deliberation->find("Deliberation.id=$anterieure_id");
+			$ant=$this->Deliberation->find('first', array('conditions' =>array( "Deliberation.id"=> $anterieure_id),
+                                                                      'recursive'  => -1,
+                                                                      'fields'     => array('created', 'anterieure_id')));
 			$lien=$this->base.'/deliberations/'.$action.'/'.$anterieure_id;
 			$date_version=$ant['Deliberation']['created'];
 
@@ -1240,109 +1192,43 @@ class DeliberationsController extends AppController {
 		$this->set('delib_id', $id);
 	}
 
-        function _notifierDossierAtraiter($circuit_id, $pos, $delib_id, $user){
-            // Si l'utilisateur accepte les mails
-            if ($user['accept_notif']){
-                $to_mail = $user['email'];
-                
-                if (Configure::read("SMTP_USE")) {
-					$this->Email->smtpOptions = array(
-						'port'=>Configure::read("SMTP_PORT"), 
-						'timeout'=>Configure::read("SMTP_TIMEOUT"),
-						'host' => Configure::read("SMTP_HOST"),
-						'username'=>Configure::read("SMTP_USERNAME"),
-						'password'=>Configure::read("SMTP_PASSWORD"),
-						'client' =>Configure::read("SMTP_CLIENT")
-						);
-					$this->Email->delivery = 'smtp';
-				}
-				else
-					$this->Email->delivery = 'mail';
-
-				$this->Email->from = Configure::write("MAIL_FROM");
-				$this->Email->to = $to_mail;
-				
-				$this->Email->subject = "DELIB $delib_id";
-
-				$this->Email->sendAs = 'text';
-				$this->Email->template = 'traiter';
-				$this->set('data',  $this->_paramMails('traiter', $this->Deliberation->read(null, $delib_id),  $user));
-				$this->Email->attachments = null;
-
-				$this->Email->send();
-            }
-	}
-
-        function _notifierDossierRefuse($delib_id,$user_id){
-            $condition = "Deliberation.id = $delib_id";
-            $data = $this->Deliberation->findAll($condition);
-            $redacteur_id = $data['0']['Deliberation']['redacteur_id'];
-            $data_comm = $this->Commentaire->findAll("delib_id = $delib_id");
-
-            $condition = "User.id = $user_id";
-            $data = $this->User->findAll($condition);
+        function _notifier($delib_id, $user_id, $type) {
+            $user = $this->User->read(null, $user_id);
 
             // Si l'utilisateur accepte les mails
-            if ($data['0']['User']['accept_notif']){
-            	
+            if ($user['User']['accept_notif']){
                 if (Configure::read("SMTP_USE")) {
-					$this->Email->smtpOptions = array(
-						'port'=>Configure::read("SMTP_PORT"), 
-						'timeout'=>Configure::read("SMTP_TIMEOUT"),
-						'host' => Configure::read("SMTP_HOST"),
-						'username'=>Configure::read("SMTP_USERNAME"),
-						'password'=>Configure::read("SMTP_PASSWORD"),
-						'client' =>Configure::read("SMTP_CLIENT")
-						);
-					$this->Email->delivery = 'smtp';
-				}
-				else
-					$this->Email->delivery = 'mail';
-
-				$this->Email->from = Configure::write("MAIL_FROM");
-				$this->Email->to =  $data['0']['User']['email'];
-				
-				$this->Email->subject = "DELIB $delib_id Refusee !";
-
-				$this->Email->sendAs = 'text';
-				$this->Email->template = 'refus';
-				$this->set('data', $this->_paramMails('refus', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
-				$this->Email->attachments = null;
-
-				$this->Email->send();
-            }
-        }
-
-        function _notifierInsertionCircuit ($delib_id, $user_id) {
-            $condition = "User.id = $user_id";
-            $data = $this->User->findAll($condition);
-
-            // Si l'utilisateur accepte les mails
-            if ($data['0']['User']['accept_notif']){
-            
-                if (Configure::read("SMTP_USE")) {
-					$this->Email->smtpOptions = array(
-						'port'=>Configure::read("SMTP_PORT"), 
-						'timeout'=>Configure::read("SMTP_TIMEOUT"),
-						'host' => Configure::read("SMTP_HOST"),
-						'username'=>Configure::read("SMTP_USERNAME"),
-						'password'=>Configure::read("SMTP_PASSWORD"),
-						'client' =>Configure::read("SMTP_CLIENT")
-						);
-					$this->Email->delivery = 'smtp';
-				}
-				else
-					$this->Email->delivery = 'mail';
-
-				$this->Email->from = Configure::write("MAIL_FROM");
-				$this->Email->to =  $data['0']['User']['email'];
-				$this->Email->subject = "vous allez recevoir la delib : $delib_id";
-				$this->Email->sendAs = 'text';
-				$this->Email->template = 'insertion';
-				$this->set('data',  $this->_paramMails('insertion', $this->Deliberation->read(null, $delib_id),  $data['0']['User']));
-				$this->Email->attachments = null;
-
-				$this->Email->send();
+                    $this->Email->smtpOptions = array( 'port'    => Configure::read("SMTP_PORT"),
+                                                       'timeout' => Configure::read("SMTP_TIMEOUT"),
+                                                       'host'    => Configure::read("SMTP_HOST"),
+                                                       'username'=> Configure::read("SMTP_USERNAME"),
+                                                       'password'=> Configure::read("SMTP_PASSWORD"),
+                                                       'client'  => Configure::read("SMTP_CLIENT"));
+                    $this->Email->delivery = 'smtp';
+                }
+		else
+                    $this->Email->delivery = 'mail';
+                    $this->Email->from = Configure::write("MAIL_FROM");
+                    $this->Email->to =  $user['User']['email'];
+                    $this->Email->sendAs = 'text';
+                    $delib = $this->Deliberation->read(null, $delib_id);
+                    if ($type == 'insertion'){
+                        $this->set('data',  $this->_paramMails('insertion', $delib,  $user['User']));
+                        $this->Email->subject = "vous allez recevoir la delib : $delib_id";
+                      	$this->Email->template = 'insertion';
+                    }
+                    if ($type == 'traiter'){
+                        $this->Email->subject = "vous avez le projet (id : $delib_id) à traiter";
+                        $this->set('data',  $this->_paramMails('traiter', $delib,  $user['User']));
+                        $this->Email->template = 'traiter';
+                    }
+                    if ($type == 'refus'){
+                        $this->Email->subject = "Le projet (id : $delib_id) a été refusé";
+                        $this->set('data', $this->_paramMails('refus', $delib,  $user['User']));
+                        $this->Email->template = 'refus';
+                    }
+                    $this->Email->attachments = null;
+                    $this->Email->send();
             }
 	}
 
@@ -2383,6 +2269,10 @@ class DeliberationsController extends AppController {
 								'type_validation'=>'V'
 								))));
 			$this->Traitement->execute('JS', $this->Session->read('user.User.id'), $delib_id, array('insertion'=> $insertion, 'numero_traitement'=>$this->data['Traitement']['etape']));
+                        $destinataires = $this->Traitement->whoIsNext($delib_id);
+                        foreach($destinataires as $destinataire_id)
+                            $this->_notifier($delib_id, $destinataire_id, 'traiter');
+
 			$this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Le projet a sauté l'étape  ");
 			$this->Session->setFlash("Le projet est maintenant à l'étape suivante ", 'growl');
 			$this->redirect('/deliberations/tousLesProjetsValidation');
@@ -2418,6 +2308,7 @@ class DeliberationsController extends AppController {
 								'type_validation'=>'V'
 								)))));
 			$action = $this->data['Insert']['retour'] ? 'IL': 'IP';
+                        $this->_notifier($delib_id, $this->data['Insert']['user_id'], 'traiter'); 
 			$this->Traitement->execute($action, $user_connecte, $delib_id, $options);
 			$this->redirect('/');
         }
