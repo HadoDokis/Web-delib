@@ -16,7 +16,7 @@
 <tr>
 	<?php
 	    if ($deliberation['Deliberation']['etat']==2){
-	       echo '<td>'.$html->image('/img/icons/non_votee.png',  array('title'=> 'Projet &agrave; voter')).'</td>';
+	       echo '<td>'.$html->image('/img/icons/non_votee.png',  array('title'=> 'Projet validé')).'</td>';
 	  		echo '<td>&nbsp;</td>';
 	    }
 		elseif (($deliberation['Deliberation']['etat']==0) || ($deliberation['Deliberation']['etat']==1)){
@@ -26,9 +26,9 @@
 	    elseif (($deliberation['Deliberation']['etat']==3) || ($deliberation['Deliberation']['etat']==4)  || ($deliberation['Deliberation']['etat']==5)    ){
 	        echo '<td>'.$html->image('/img/icons/votee.png', array('title'=>'Deliberation votée')).'</td>';
 	        if (($deliberation['Deliberation']['etat']==3) || ($deliberation['Deliberation']['etat']==5))
-	            echo '<td>'.$html->image('/img/icons/thumbs_up.png', array('title'=>'Votée Pour')).'</td>';
+	            echo '<td>'.$html->image('/img/icons/thumbs_up.png', array('title'=>'Adopté')).'</td>';
 	  	    else
-	    	    echo '<td>'.$html->image('/img/icons/thumbs_down.png', array('title'=>'Votée Contre')).'</td>';
+	    	    echo '<td>'.$html->image('/img/icons/thumbs_down.png', array('title'=>'Non adopté')).'</td>';
 	    }
 	?>
 	<td><?php echo $deliberation['Theme']['libelle']; ?></td>
