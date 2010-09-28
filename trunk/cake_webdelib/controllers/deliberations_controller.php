@@ -1208,27 +1208,30 @@ class DeliberationsController extends AppController {
                 }
 		else
                     $this->Email->delivery = 'mail';
-                    $this->Email->from = Configure::write("MAIL_FROM");
-                    $this->Email->to =  $user['User']['email'];
-                    $this->Email->sendAs = 'text';
-                    $delib = $this->Deliberation->read(null, $delib_id);
-                    if ($type == 'insertion'){
-                        $this->set('data',  $this->_paramMails('insertion', $delib,  $user['User']));
-                        $this->Email->subject = "vous allez recevoir la delib : $delib_id";
-                      	$this->Email->template = 'insertion';
-                    }
-                    if ($type == 'traiter'){
-                        $this->Email->subject = "vous avez le projet (id : $delib_id) à traiter";
-                        $this->set('data',  $this->_paramMails('traiter', $delib,  $user['User']));
-                        $this->Email->template = 'traiter';
-                    }
-                    if ($type == 'refus'){
-                        $this->Email->subject = "Le projet (id : $delib_id) a été refusé";
-                        $this->set('data', $this->_paramMails('refus', $delib,  $user['User']));
-                        $this->Email->template = 'refus';
-                    }
-                    $this->Email->attachments = null;
-                    $this->Email->send();
+
+                $this->Email->from = Configure::read("MAIL_FROM");
+                $this->Email->to =  $user['User']['email'];
+                $this->Email->sendAs = 'text';
+                $this->Email->charset = 'UTF-8';
+
+                $delib = $this->Deliberation->read(null, $delib_id);
+                if ($type == 'insertion'){
+                    $this->set('data',  $this->_paramMails('insertion', $delib,  $user['User']));
+                    $this->Email->subject = "vous allez recevoir la delib : $delib_id";
+                    $this->Email->template = 'insertion';
+                }
+                if ($type == 'traiter'){
+                    $this->Email->subject = "vous avez le projet (id : $delib_id) à traiter";
+                    $this->set('data',  $this->_paramMails('traiter', $delib,  $user['User']));
+                    $this->Email->template = 'traiter';
+                }
+                if ($type == 'refus'){
+                    $this->Email->subject = "Le projet (id : $delib_id) a été refusé";
+                    $this->set('data', $this->_paramMails('refus', $delib,  $user['User']));
+                    $this->Email->template = 'refus';
+                }
+                $this->Email->attachments = null;
+                $this->Email->send();
             }
 	}
 
@@ -1397,7 +1400,7 @@ class DeliberationsController extends AppController {
 			"#IDENTIFIANT_PROJET#"=> $delib['Deliberation']['id'],
 			"#OBJET_PROJET#"=> $delib['Deliberation']['objet'],
 			"#TITRE_PROJET#"=> $delib['Deliberation']['titre'],
-			"#LIBELLE_CIRCUIT#"=> $delib['Circuit']['libelle'],
+			"#LIBELLE_CIRCUIT#"=>  $this->Circuit->getLibelle($delib['Circuit']['id']),
 			"#ADRESSE_A_TRAITER#" =>  $addr1,
 			"#ADRESSE_A_VISUALISER#" =>  $addr2
 		);
