@@ -1,6 +1,6 @@
 <?php
 
-	App::import(array('Model', 'AppModel', 'File'));
+	App::import('Model', 'AppModel');
 	
 	class MajArosAcosShell extends Shell{
 	
@@ -18,6 +18,9 @@
 			
 			$aros = $this->Aro->find('all', array('recursive'=>-1));
 			foreach($aros as $aro) {
+                            $this->Aro->query("INSERT INTO aros_ados (aro_id, ado_id, _create, _read, _update, _delete) 
+                                               VALUES (".$aro['Aro']['foreign_key'].", 1, 1, 1 ,1 ,1 );");
+
 				$parent = $this->getParentFromTree($this->Aro, $aro['Aro']['id'], 'Aro');
 				if (empty($parent)) $parent['Aro']['id']=0;
 					$this->Aro->read(null, $aro['Aro']['id']);
