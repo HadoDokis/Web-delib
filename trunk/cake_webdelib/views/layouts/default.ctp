@@ -41,7 +41,9 @@
 		<?php echo $content_for_layout; ?>
 	</div>
 
-	<div id="pied"><?php echo "(CakePHP : " .Configure::version().") Web-delib v".VERSION; ?> &copy; 2010 ADULLACT</div>
-</div>
+	<div id="pied"><?php echo " Web-delib v".VERSION; ?> &copy; 2010 ADULLACT</div>
+             <?php //echo (memory_get_peak_usage(true)/1024/1024) ; ?>
+
+ </div>
 </body>
 </html>
