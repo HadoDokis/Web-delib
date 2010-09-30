@@ -792,7 +792,8 @@ class DeliberationsController extends AppController {
 
                     if($codeRetour==4) {
                         $dateAR = $this->_getDateAR($res = mb_substr( $flux, strpos($flux, '<actes:ARActe'), strlen($flux)));
-                        $this->Deliberation->changeDateAR($deliberations[$i]['Deliberation']['id'], $dateAR);
+                        $this->Deliberation->id = $deliberations[$i]['Deliberation']['id'];
+                        $this->Deliberation->saveField('dateAR', $dateAR);
 		        $deliberations[$i]['Deliberation']['DateAR'] =  $dateAR;
                     }
 		}
