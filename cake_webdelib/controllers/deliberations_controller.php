@@ -779,7 +779,8 @@ class DeliberationsController extends AppController {
         $this->set('dateClassification', $this->_getDateClassification());
 
         // On affiche que les delibs vote pour.
-	$deliberations = $this->Deliberation->findAll("Deliberation.etat=5", null, "num_delib ASC",  $nbDelibParPage,  $page);        $tmp_delibs = $this->Deliberation->findAll("Deliberation.etat=5");
+	$deliberations = $this->Deliberation->findAll("Deliberation.etat=5", null, "num_delib ASC",  $nbDelibParPage,  $page);        
+        $tmp_delibs = $this->Deliberation->findAll("Deliberation.etat=5");
         $nbDelibs = count($tmp_delibs);
 
 	for($i = 0; $i < $nbDelibs; $i++) {
@@ -998,14 +999,14 @@ class DeliberationsController extends AppController {
         	    // Checker le code classification
         	    $data = array(
       	                 'api'           => '1',
-     	                 'nature_code'   => $delib[0]['Nature']['id'],
+     	                 'nature_code'   => $delib[0]['Deliberation']['nature_id'],
      	                 'classif1'      => $class1 ,
      	                 'classif2'      => $class2,
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-			 'number'        => $delib[0]['Deliberation']['num_delib'],
-			// 'number'        => time(),
+		//	 'number'        => $delib[0]['Deliberation']['num_delib'],
+			 'number'        => time(),
      	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
       	                 'subject'       => $delib[0]['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
@@ -1048,15 +1049,17 @@ class DeliberationsController extends AppController {
                               echo ('</script>');
 			      echo ("Tentative d'envoi à : $url<br />");
 			      echo 'Erreur Curl : ' . curl_error($ch);
-			      die ('<br /><a href ="/deliberations/transmit"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
+			      die ('<br /><a href ="/deliberations/toSend"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
                          }
 			 else {
                               ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Delib&eacute;ration '.$delib[0]['Deliberation']['num_delib'].' envoy&eacute;e ');
                               $nbEnvoyee ++;
-			      $this->Deliberation->changeEtat($delib_id, '5');
-			      $this->Deliberation->changeIdTdt($delib_id, $tdt_id);
+                              $this->Deliberation->saveField('etat', 5);
+                              $this->Deliberation->saveField('tdt_id', $tdt_id);
+
 			      curl_close($ch);
 		              unlink ($file);
+                              $this->log( $curl_return);
 			    }
 			}
 		    }
@@ -2151,102 +2154,123 @@ class DeliberationsController extends AppController {
         return str_replace("&", "&amp;", $objet);
     }
 
-    function verserAsalae() {
-        App::import('Vendor','pcltar'.DS.'pcltar.lib');
+function verserAsalae() {
+        require_once(APP_DIR.'/vendors/pcltar/pcltar.lib.php');
         if (empty($this->data)) {
             $delibs = $this->Deliberation->findAll("Deliberation.etat = 5");
             $this->set ('deliberations', $delibs);
         }
         else {
-            $client = new SoapClient(Configure::read('ASALAE_WSDL'));
+            $client = new SoapClient(ASALAE_WSDL);
+
             foreach ($this->data['Deliberation'] as $id => $bool ){
                 if ($bool == 1){
                     $delib_id = substr($id, 3, strlen($id));
                     $delib = $this->Deliberation->read(null, $delib_id);
                     $path = WEBROOT_PATH."/files/generee/delibs/$delib_id/";
-		    // Création de l'archive
-                    @PclTarCreate($path."versement.tgz") ; 
-
                     $pathDelib = $this->Gedooo->createFile($path, "delib.pdf",  $delib['Deliberation']['delib_pdf']);
-		    // Ajout du fichier de délibération
-	            @PclTarAddList($path."versement.tgz", $path."delib.pdf", '.', $path) ;
+                    // Création de l'archive
+                    @PclTarCreate($path."versement.tgz");
+
+                    // Ajout du fichier de délibération
+                    @PclTarAddList($path."versement.tgz", $path."delib.pdf", '.', $path) ;
                     $Docs =  array('Attachment' =>
                                         array('@attributes'=>
-                                              array('format'=>'pdf',
+                                              array('format'=>'fmt/18',
                                                     'mimeCode'=>'application/pdf',
                                                     'filename'=>'delib.pdf'),
                                                      '@value'=>''
                                                    ),
                                              'Description'=>'Acte',
-                                             'Type'  => 'CDO'
+                                             'Type'  => array(
+                                '@attributes' => array(
+                                'listVersionID' => 'edition 2009'),
+                                '@value' => 'CDO')
                                       ) ;
 
-
-
-                    if ( $delib['Deliberation']['tdt_id'] != null) {
+             if ( $delib['Deliberation']['tdt_id'] != null) {
                         $AR = $this->getAR($delib['Deliberation']['tdt_id'], true);
                         $path_AR =  $this->Gedooo->createFile($path, "bordereau.pdf", $AR, '.', $path);
-		        // Ajout du fichier de bordereau
-	                @PclTarAddList($path."versement.tgz", $path."bordereau.pdf", '.', $path) ;
-		        array_push ($Docs,  array('Attachment' => 
-				        array('@attributes'=>
-				               array('format'=>'pdf', 
-					             'mimeCode'=>'application/pdf', 
-						     'filename'=>'bordereau.pdf'), 
-						     '@value'=>'' 
-					            ), 
-				              'Description'=>'Bordereau', 
-				              'Type'  => 'CDO'
-				        )
+                        // Ajout du fichier de bordereau
+                        @PclTarAddList($path."versement.tgz", $path."bordereau.pdf", '.', $path) ;
+                        array_push ($Docs,  array('Attachment' =>
+                                        array('@attributes'=>
+                                               array('format'=>'fmt/18',
+                                                     'mimeCode'=>'application/pdf',
+                                                     'filename'=>'bordereau.pdf'),
+                                                     '@value'=>''
+                                                    ),
+                                              'Description'=>'Bordereau',
+                                              'Type'  => array(
+                                '@attributes' => array('listVersionID' => 'edition 2009'),
+                                '@value' => 'CDO')
+                                        )
                                     );
-				
+
                     }
-        	    $document  = file_get_contents($path."versement.tgz");
-											    
-                    $options = array(
-		                     'TransferIdentifier' => Configure::read('SIREN_VERSANT').'_'.$delib['Deliberation']['num_delib'],
-		                     'Comment'            =>  utf8_encode($delib['Deliberation']['objet']),
-                                     'TransferringAgency' => array('Identification'=>Configure::read('SIREN_VERSANT')),
-                                     'ArchivalAgency'     => array('Identification'=>Configure::read('SIREN_ARCHIVE')),
-				     'Contains'           => array( 
-				                                    'ArchivalAgreement'    => Configure::read('NUMERO_AGREMENT'),  
-								    'DescriptionLanguage' => 'fr',
-								    'DescriptionLevel'     => 'file',
-								    'Name'=> utf8_encode('Déliberation envoyee depuis WebDelib'),
+                    $document  = file_get_contents($path."versement.tgz");
 
-				                                    'ContentDescription' => array(
-				                                        'CustodialHistory' => utf8_encode("Délibération en provenance de Webdelib"),
-				                                        'Description' => utf8_encode($delib['Deliberation']['objet']),
-								        'DescriptionAudience'  => 'external',
-									'Language'             => 'fr', 
-									'OriginatingAgency' => array('Identification'=>Configure::read('SIREN_VERSANT')),
-									'ContentDescriptive' => array('KeywordAudience'=>'external',
-									                              'KeywordContent' =>'Deliberation',
-												      'KeywordReference' =>'1',
-												      'KeywordType' => 'genreform'
-												      ),
+ $options = array(
+                                     'TransferIdentifier' => IDENTIFIANT_VERSANT.'_'.$delib['Deliberation']['num_delib'],
+                                     'Comment'            =>  utf8_encode($delib['Deliberation']['objet']),
+                                     'TransferringAgency' => array('Identification'=>IDENTIFIANT_VERSANT),
+                                     'ArchivalAgency'     => array('Identification'=>SIREN_ARCHIVE),
+                                     'Contains'           => array(
+                                                                    'ArchivalAgreement'    => NUMERO_AGREMENT,
+                                                                    'DescriptionLanguage' =>  array(
+                                                        '@attributes' => array('listVersionID' => 'edition 2009'),
+                                                        '@value' => 'fr'),
+                                                                    'DescriptionLevel'     => array(
+                                                        '@attributes' => array('listVersionID' => 'edition 2009'),
+                                                        '@value' => 'file'),
+                                                                    'Name'=> utf8_encode('Déliberation envoyee depuis WebDelib'),
 
-								        'Appraisal'=>array('Code'=>'001C',
-								                           'StartDate'=>date('c'))
-								         ),
-								        'Document' => $Docs 
-									) 
+                                                                    'ContentDescription' => array(
+                                                                        'CustodialHistory' => utf8_encode("Délibération en provenance de Webdelib"),
+                                                                        'Description' => utf8_encode($delib['Deliberation']['objet']),
+                                                                        'Language'             =>  array(
+                                                                                      '@attributes' => array('listVersionID' => 'edition 2009'),
+                                                                                      '@value' => 'fr'),
+                                                          'OriginatingAgency' => array('Identification'=>IDENTIFIANT_VERSANT),
+                                                                        'ContentDescriptive' => array('KeywordContent' =>'Deliberation',
+                                                                                                      'KeywordReference' =>'1',
+                                                                                                      'KeywordType' =>array(
+                                                                                                                '@attributes' => array('listVersionID' => 'edition 2009'),
+
+
+
+                 '@value' => 'genreform')
+                                                                                                      ),
+
+                                                                         ),
+                               'Appraisal' => array(
+                                                                               'Code' => array(
+                                                                               '@attributes' => array('listVersionID' => 'edition 2009'),
+                                                                               '@value' => 'conserver'),
+                                                                               'Duration' => 'P1Y',
+                                                                               'StartDate' => date('Y-m-d')),
+                                                                          'AccessRestriction' => array(
+                                                                              'Code' => array(
+                                                                              '@attributes' => array('listVersionID' => 'edition 2009'),
+                                                                               '@value' => 'AR038'),
+                                                              'StartDate' => date('Y-m-d')),
+                                                                        'Document' => $Docs
+                                                                        )
                                     );
 
-                    $seda = @$client->__soapCall("wsGSeda", array($options));
-		    $ret  = @$client->__soapCall("wsDepot", array("bordereau.xml", $seda, "versement.tgz", $document));
-
-		    // Changement d'état de la délibération
-		    $delib['Deliberation']['etat_asalae']= $ret;
-		    $this->Deliberation->save($delib);
+                    $seda = $client->__soapCall("wsGSeda", array($options, IDENTIFIANT_VERSANT, MOT_DE_PASSE));
+                    $ret  = $client->__soapCall("wsDepot", array("bordereau.xml", $seda, "versement.tgz", $document, IDENTIFIANT_VERSANT, MOT_DE_PASSE));
+                    // Changement d'état de la délibération
+                    $delib['Deliberation']['etat_asalae']= $ret;
+                    $this->Deliberation->save($delib);
                 }
             }
-	    $this->Session->setFlash( "Les documents ont &eacute;t&eacute; transf&eacute;r&eacute;s à AS@LAE", 'growl', array('type'=>'erreur'));
-	    $this->redirect('/deliberations/verserAsalae');
+            $this->Session->setFlash( "Les documents ont été transférés à AS@LAE", 'growl', array('type'=>'erreur'));
+            $this->redirect('/deliberations/verserAsalae');
             exit;
 
         }
-    } 
+    }
 
     function goNext($delib_id) {
 		$delib = $this->Deliberation->read(null, $delib_id);
