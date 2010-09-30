@@ -188,27 +188,6 @@ class Deliberation extends AppModel {
 		return  ($position == 1);
 	}
 
-	function changeEtat($delib_id, $etat){
-		$this->data = $this->read(null, $delib_id);
-		$this->data['Deliberation']['id']=$delib_id;
-		$this->data['Deliberation']['etat'] = $etat;
-		$this->save($this->data);
-	}
-
-        function changeIdTdt ($delib_id, $tdt_id){
-            $this->data = $this->read(null, $delib_id);
-            $this->data['Deliberation']['id']=$delib_id;
-            $this->data['Deliberation']['tdt_id'] = $tdt_id;
-            $this->save($this->data);
-        }
-
-        function changeDateAR ($delib_id, $dateAR){
-            $this->data = $this->read(null, $delib_id);
-            $this->data['Deliberation']['id']=$delib_id;
-            $this->data['Deliberation']['dateAR'] = $dateAR;
-            $this->save($this->data);
-        }
-
 	function changeSeance($delib_id, $seance_id){
 		$this->data = $this->read(null, $delib_id);
 		$this->data['Deliberation']['id']=$delib_1id;
