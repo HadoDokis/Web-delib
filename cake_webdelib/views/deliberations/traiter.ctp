@@ -8,7 +8,7 @@
 	$defBarre = array();
 	$defBarre[] = array('title'=>'Valider', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/1', 'htmlAttributes'=>array('class'=>'link_valider_avec_border', 'title'=>'Valider le projet', 'onclick'=>"disableDiv('buttons');"));
 	$defBarre[] = array('title'=>'Refuser', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/0', 'htmlAttributes'=>array('class'=>'link_refuser_avec_border', 'title'=>'Refuser le projet', 'onclick'=>"disableDiv('buttons');"));
-	 $defBarre[] = array('title'=>"Renvoyer à", 'url'=>'/deliberations/retour/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_retour_avec_border', 'title'=>'Renvoi du projet'));
+	 $defBarre[] = array('title'=>"Retourner à", 'url'=>'/deliberations/retour/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_retour_avec_border', 'title'=>'Renvoi du projet'));
 	if ($Droits->check($session->read('user.User.id'), 'Deliberations:rebond'))
 		$defBarre[] = array('title'=>'Envoyer à', 'url'=>'/deliberations/rebond/' . $deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_rebond_avec_border','title'=>'Envoyer à'));
 	$defBarre[] = array();
