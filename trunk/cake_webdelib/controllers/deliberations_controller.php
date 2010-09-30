@@ -2155,7 +2155,7 @@ class DeliberationsController extends AppController {
         return str_replace("&", "&amp;", $objet);
     }
 
-function verserAsalae() {
+    function verserAsalae() {
         require_once(APP_DIR.'/vendors/pcltar/pcltar.lib.php');
         if (empty($this->data)) {
             $delibs = $this->Deliberation->findAll("Deliberation.etat = 5");
@@ -2211,7 +2211,7 @@ function verserAsalae() {
                     }
                     $document  = file_get_contents($path."versement.tgz");
 
- $options = array(
+                    $options = array(
                                      'TransferIdentifier' => IDENTIFIANT_VERSANT.'_'.$delib['Deliberation']['num_delib'],
                                      'Comment'            =>  utf8_encode($delib['Deliberation']['objet']),
                                      'TransferringAgency' => array('Identification'=>IDENTIFIANT_VERSANT),
@@ -2261,12 +2261,14 @@ function verserAsalae() {
 
                     $seda = $client->__soapCall("wsGSeda", array($options, IDENTIFIANT_VERSANT, MOT_DE_PASSE));
                     $ret  = $client->__soapCall("wsDepot", array("bordereau.xml", $seda, "versement.tgz", $document, IDENTIFIANT_VERSANT, MOT_DE_PASSE));
-                    // Changement d'état de la délibération
-                    $delib['Deliberation']['etat_asalae']= $ret;
-                    $this->Deliberation->save($delib);
+                   // Changement d'état de la délibération
+                    if ($ret == 0){
+                        $this->Deliberation->id = $delib_id; 
+                        $this->Deliberation->saveField('etat_asalae', 1);
+                    }
                 }
             }
-            $this->Session->setFlash( "Les documents ont été transférés à AS@LAE", 'growl', array('type'=>'erreur'));
+            $this->Session->setFlash( "Les documents ont été transférés à AS@LAE", 'growl');
             $this->redirect('/deliberations/verserAsalae');
             exit;
 
