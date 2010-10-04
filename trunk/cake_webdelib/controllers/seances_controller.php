@@ -289,11 +289,9 @@ class SeancesController extends AppController {
 	}
 
     function changeRapporteur($newRapporteur,$delib_id) {
-    	$this->data = $this->Deliberation->read(null, $delib_id);
-    	$this->data['Deliberation']['rapporteur_id']= $newRapporteur;
-		if ($this->Deliberation->save($this->data)){
-    		//redirection sur la page où on était avant de changer de service
-       		$this->Redirect($this->Session->read('user.User.lasturl'));
+        $this->Deliberation->id = $delib_id;
+        if ($this->Deliberation->saveField('rapporteur_id', $newRapporteur)) {
+       	    $this->Redirect($this->Session->read('user.User.lasturl'));
        	}
     }
 
