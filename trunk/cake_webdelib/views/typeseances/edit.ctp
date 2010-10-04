@@ -34,7 +34,7 @@
 	<legend>Mod&egrave;les pour les &eacute;ditions</legend>
         <?php echo $form->input('Typeseance.modelprojet_id', array('label'=>'projet <acronym title="obligatoire">*</acronym>', 'options'=>$models, 'default'=>$html->value('Typeseance.modelprojet_id'), 'empty'=>!$html->value('Typeseance.id')));?>
         <br/>
-        <?php echo $form->input('Typeseance.modeldeliberation_id', array('label'=>'d&eacute;lib&eacute;ration <acronym title="obligatoire">*</acronym>', 'options'=>$models, 'default'=>$html->value('Typeseance.modeldeliberation_id'), 'empty'=>!$html->value('Typeseance.id')));?>
+        <?php echo $form->input('Typeseance.modeldeliberation_id', array('label'=>'document final<acronym title="obligatoire">*</acronym>', 'options'=>$models, 'default'=>$html->value('Typeseance.modeldeliberation_id'), 'empty'=>!$html->value('Typeseance.id')));?>
         <br/>
 	 	<?php echo $form->input('Typeseance.modelconvocation_id', array('label'=>'convocation <acronym title="obligatoire">*</acronym>', 'options'=>$models, 'default'=>$html->value('Typeseance.modelconvocation_id'), 'empty'=>!$html->value('Typeseance.id')));?>
 		<br/>
