@@ -154,14 +154,20 @@ class SeancesController extends AppController {
 
 	function changeStatus ($seance_id) {
 	    $result = false;
+            $isArrete = false;
+            $compteur_id = null;
+
             $this->data=$this->Seance->read(null,$seance_id);
-	     
 	    $this->Session->setFlash("Enregistrement des délibérations en base de données", 'growl', array('type'=>'important'));
 	    // Avant de cloturer la séance, on stock les délibérations en base de données au format pdf
-            if ($this->data['Typeseance']['action'] == 0)
-	        $result = $this->_stockDelibs($seance_id);
-
-	    if ($result || $this->data['Typeseance']['action']== 1) {
+            if (($this->data['Typeseance']['action'] == 0) || ($this->data['Typeseance']['action'] == 2)) {
+	        if($this->data['Typeseance']['action'] == 2) {
+                    $isArrete =true;
+                    $compteur_id = $this->data['Typeseance']['compteur_id'];
+                }
+	        $result = $this->_stockDelibs($seance_id,  $isArrete, $compteur_id);
+            }
+	    if ($result || $this->data['Typeseance']['action']== 1) { 
                 if ($this->Seance->saveField('traitee', 1))
                 	$this->redirect('/seances/listerFuturesSeances');
 	    }
@@ -171,17 +177,23 @@ class SeancesController extends AppController {
 	    $this->redirect('/seances/details/'.$seance_id);
 	}
 
-        function _stockDelibs($seance_id) {
+        function _stockDelibs($seance_id, $isArrete=false, $compteur_id=null) {
 	    $result = true;
             $delibs = $this->Deliberation->findAll("Deliberation.seance_id=$seance_id", null, "Deliberation.position ASC");
             foreach ($delibs as $delib) {
-	         $delib_id = $delib['Deliberation']['id'];
-
-		 // On génère la délibération au format PDF
-                 $model_id = $this->Deliberation->getModelId($delib_id);
-                 $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.pdf");
-	         $filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.pdf";
-                 $tmp_delib = $this->Deliberation->read(null, $delib_id);
+	        $delib_id = $delib['Deliberation']['id'];
+                if ($isArrete){
+                    $this->Deliberation->id =  $delib_id;
+                    $this->Deliberation->saveField('etat', 3);
+                    $num =  $this->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
+                    $this->Deliberation->saveField('num_delib', $num);
+                }
+                 
+		// On génère la délibération au format PDF
+                $model_id = $this->Deliberation->getModelId($delib_id);
+                $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.pdf");
+	        $filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.pdf";
+                $tmp_delib = $this->Deliberation->read(null, $delib_id);
 
                  //On récupère le contenu du fichier
                  $handle = fopen($filename, "r");
