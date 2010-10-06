@@ -86,14 +86,10 @@ class PostseancesController extends AppController {
     function changeStatus ($seance_id) {
         $result = false;
         $this->data=$this->Seance->read(null,$seance_id);
-
         // Avant de cloturer la séance, on stock les délibérations en base de données au format pdf
         $result = $this->_stockPvs($seance_id);
-//exit;
-        if ($result || $this->data['Typeseance']['action']== 1) {
-	        $this->Seance->id = $seance_id;
-            if ($this->Seance->saveField('pv_figes',1))
-	            $this->redirect('/postseances/afficherProjets/'.$seance_id);
+        if ($result){
+            $this->redirect('/postseances/afficherProjets/'.$seance_id);
         }
         else
             $this->Session->setFlash("Au moins un PV n'a pas &eacute;t&eacute; g&eacute;n&eacute;r&eacute; correctement...");
@@ -108,7 +104,7 @@ class PostseancesController extends AppController {
 		$this->Gedooo->createFile("$path/", 'empty', '');
 
 		$seance = $this->Seance->read(null, $seance_id);
-		ProgressBar(1, 'Préparation PV Sommaire : '.$seance['Typeseance']['libelle']);
+		ProgressBar(0, 'Préparation PV Sommaire : '.$seance['Typeseance']['libelle']);
 		$model_pv_sommaire = $seance['Typeseance']['modelpvsommaire_id'];
 		$model_pv_complet  = $seance['Typeseance']['modelpvdetaille_id'];
 		$retour1 = $this->requestAction("/models/generer/null/$seance_id/$model_pv_sommaire/0/1/pv_sommaire.pdf/1/false");
@@ -126,11 +122,11 @@ class PostseancesController extends AppController {
 		$pv_complet = file_get_contents("$path/pv_complet.pdf");
 
 		if (!empty($pv_sommaire) && !empty($pv_complet)) {
-			$seance['Seance']['pv_figes'] = 1 ;
-			$seance['Seance']['pv_sommaire'] = $pv_sommaire ;
-			$seance['Seance']['pv_complet'] = $pv_complet;
-			if ($this->Seance->save($seance))
-				die ("Enregistrement des pvs effectués<br> <a href='/postseances/index'>Retour en Post-Séances</a>");
+	               $this->Seance->id = $seance_id;
+                       $this->Seance->saveField('pv_sommaire', $pv_sommaire );
+                       $this->Seance->saveField('pv_complet', $pv_complet);
+                       $this->Seance->saveField('pv_figes',1);
+                       return true;
 		}
 		else {
 			echo('Au moins une génération a échouée, les pvs ne peuvent être figés');
