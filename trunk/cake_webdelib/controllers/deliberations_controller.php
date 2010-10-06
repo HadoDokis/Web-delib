@@ -1738,6 +1738,7 @@ class DeliberationsController extends AppController {
                                           'classeDiv' => 'tiers',
                                           'inputOptions' => array(
                                               'label'=>__('Nature', true),
+                                              'empty' =>'toutes',
                                               'options' => $this->Utils->listFromArray($projets, 
                                                                                        '/Deliberation/nature_id', 
                                                                                        array('/Nature/libelle'), 
