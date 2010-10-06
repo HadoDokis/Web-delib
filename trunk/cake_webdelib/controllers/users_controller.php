@@ -322,7 +322,7 @@ class UsersController extends AppController {
 
                     // Chargement du menu dans la session
                     $this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
-		    		$this->Session->setFlash('Bienvenue '.$user['User']['prenom'], 'growl');
+                    $this->Session->setFlash('Bienvenue sur Webdelib', 'growl');
                     $this->redirect('/');
                 }
                 else{
