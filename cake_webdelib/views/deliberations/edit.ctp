@@ -144,7 +144,7 @@
 					echo '</span>';
 				}
 			} elseif ($infosupdef['Infosupdef']['type'] == 'list') {
-				echo $form->input($fieldName, array('label'=>'', 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true));
+				echo $form->input($fieldName, array('label'=>'', 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true, 'title'=>$infosupdef['Infosupdef']['commentaire']));
 			}
 		echo '</div>';
 		echo '<br>';
