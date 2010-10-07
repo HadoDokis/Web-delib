@@ -1811,13 +1811,12 @@ class DeliberationsController extends AppController {
 									'type_validation'=>'V'
 									)))));
 				$this->Traitement->execute('ST', $this->Session->read('user.User.id'), $delibId, $options);
-				$this->data['Deliberation']['etat'] = 2;
-				if ($this->Deliberation->save($this->data)) {
-					$this->Historique->enregistre($delibId, $this->Session->read('user.User.id'), 'Projet validé en urgence' );
-			    }
+                                $this->Deliberation->id = $delibId;
+				$this->Deliberation->saveField('etat', 2);
+			        $this->Historique->enregistre($delibId, $this->Session->read('user.User.id'), 'Projet validé en urgence' );
 			}
 		}
-        $this->Session->setFlash('Le projet '.$this->data['Deliberation']['id'].' a &eacute;t&eacute; valid&eacute; en urgence', 'growl');
+                 $this->Session->setFlash('Le projet '.$this->data['Deliberation']['id'].' a &eacute;t&eacute; valid&eacute; en urgence', 'growl');
 		$this->redirect('/deliberations/tousLesProjetsValidation');
 	}
 
