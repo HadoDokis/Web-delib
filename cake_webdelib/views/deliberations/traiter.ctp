@@ -26,7 +26,7 @@
 	$linkBarre .= "</tr></table>";
 ?>
 <div id="vue_cadre">
-	<h3>Valider ou refuser les projets de d&eacute;lib&eacute;ration (id : <?php echo $deliberation['Deliberation']['id']?>)</h3>
+	<h3>Valider ou refuser les projets <?php  echo $deliberation['Nature']['libelle']; ?> (id : <?php echo $deliberation['Deliberation']['id']?>)</h3>
 
 <?php echo $linkBarre; ?>
 </br>

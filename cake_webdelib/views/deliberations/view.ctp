@@ -5,7 +5,7 @@
         if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
 	    echo '<h3>D&eacute;lib&eacute;ration n&deg; '.$this->data['Deliberation']['num_delib'].'</h3>';
 	else
-	    echo '<h3>Identifiant projet '.$this->data['Deliberation']['id'].'</h3>';
+	    echo '<h3>Identifiant projet '.$this->data['Nature']['libelle'].' : '.$this->data['Deliberation']['id'].'</h3>';
 	?>
 
 	<div class="imbrique">
