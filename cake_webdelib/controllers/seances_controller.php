@@ -168,19 +168,42 @@ class SeancesController extends AppController {
 	        $result = $this->_stockDelibs($seance_id,  $isArrete, $compteur_id);
             }
 	    if ($result || $this->data['Typeseance']['action']== 1) { 
-                if ($this->Seance->saveField('traitee', 1))
-                	$this->redirect('/seances/listerFuturesSeances');
+                if ($this->Seance->saveField('traitee', 1)){
+                //	$this->redirect('/seances/listerFuturesSeances');
+                        echo ('<script>');
+                        echo ('    document.getElementById("pourcentage").style.display="none"; ');
+                        echo ('    document.getElementById("progrbar").style.display="none";');
+                        echo ('    document.getElementById("affiche").style.display="none";');
+                        echo ('    document.getElementById("contTemp").style.display="none";');
+                        echo ('</script>');
+                        echo ('<br />Sauvegarde des actes administratifs réussies');
+                        die ('<br /><a href ="/postseances/index" id="retour"> Aller en post-séance </a>');
+                }
 	    }
 	    else 
 	        $this->Session->setFlash("Au moins une délibération n'a pas été générée correctement : La séance ne peut pas être cloturée.");
 	        
-	    $this->redirect('/seances/details/'.$seance_id);
+	    //$this->redirect('/seances/details/'.$seance_id);
+            echo ('<script>');
+            echo ('    document.getElementById("pourcentage").style.display="none"; ');
+            echo ('    document.getElementById("progrbar").style.display="none";');
+            echo ('    document.getElementById("affiche").style.display="none";');
+            echo ('    document.getElementById("contTemp").style.display="none";');
+            echo ('</script>');
+            echo ("<br />Au moins un acte administratif n'a pu etre enregistré");
+            die ("<br /><a href ='/seances/details/'.$seance_id id='retour'> Aller en post-séance </a>");
+
 	}
 
         function _stockDelibs($seance_id, $isArrete=false, $compteur_id=null) {
+            require_once ('vendors/progressbar.php');
+            Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
+            $cpt=0;
 	    $result = true;
             $delibs = $this->Deliberation->findAll("Deliberation.seance_id=$seance_id", null, "Deliberation.position ASC");
+            $nbDelibs = count($delibs );
             foreach ($delibs as $delib) {
+
 	        $delib_id = $delib['Deliberation']['id'];
                 if ($isArrete){
                     $this->Deliberation->id =  $delib_id;
@@ -188,6 +211,8 @@ class SeancesController extends AppController {
                     $num =  $this->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
                     $this->Deliberation->saveField('num_delib', $num);
                 }
+
+                ProgressBar($cpt*(100/$nbDelibs), "Sauvegarde de la délibération :  $delib_id");
                  
 		// On génère la délibération au format PDF
                 $model_id = $this->Deliberation->getModelId($delib_id);
@@ -204,6 +229,7 @@ class SeancesController extends AppController {
                  // On stock le fichier en base de données.
 		 $tmp_delib['Deliberation']['delib_pdf'] = $content;
 		 $this->Deliberation->save($tmp_delib);
+                 $cpt ++;
 	    }
 	    return  $result;
 	}
