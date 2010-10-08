@@ -26,7 +26,8 @@ class ServicesController extends AppController {
     }
 
 	function index() {
-		$services = $this->Service->find('threaded',array('order'=>'Service.id ASC','recursive'=>-1));
+                $services = $this->Service->find('threaded',array('conditions'=>array('actif'=>1), 'order'=>'Service.id ASC','recursive'=>-1));
+
 		$this->_isDeletable($services);
 		$this->set('data', $services);
 	}

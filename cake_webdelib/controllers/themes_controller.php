@@ -25,7 +25,8 @@ class ThemesController extends AppController {
 	}
 
 	function index() {
-        $this->set('data', $this->Theme->findAllThreaded(null, null, 'Theme.libelle ASC'));
+            $themes =  $this->Theme->find('threaded',array('conditions'=>array('actif'=>1), 'order'=>'Theme.libelle ASC','recursive'=>-1));
+            $this->set('data', $themes);
 	}
 
 	function view($id = null) {
@@ -43,6 +44,8 @@ class ThemesController extends AppController {
 		$this->set('themes', $themes);
 		if (!empty($this->data)) {
 			if (empty($this->data['Theme']['parent_id'])) $this->data['Theme']['parent_id']=0;
+                        $this->data['Theme']['actif'] =1;
+
 			if ($this->Theme->save($this->data)) {
 				$this->Session->setFlash('Le th&egrave;me a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/themes/index');
