@@ -977,7 +977,7 @@ table#retour {
 
 #arbre {
 	border: 1px solid #bbb;
-	width: 750px;
+	width: auto;
 	padding: 10px;
 	margin-bottom: 20px;
 }
