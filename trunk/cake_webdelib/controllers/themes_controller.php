@@ -25,7 +25,9 @@ class ThemesController extends AppController {
 	}
 
 	function index() {
-            $themes =  $this->Theme->find('threaded',array('conditions'=>array('actif'=>1), 'order'=>'Theme.libelle ASC','recursive'=>-1));
+            $themes =  $this->Theme->find('threaded',array('conditions'=>array('actif'=>1), 
+                                                           'order'=>'Theme.order ASC',
+                                                           'recursive'=>-1));
             $this->set('data', $themes);
 	}
 
