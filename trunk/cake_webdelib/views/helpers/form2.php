@@ -104,8 +104,10 @@ class Form2Helper extends FormHelper
 
 // pour la variable $tagname, penser à l'envoyer via $html->value car c'est impossible de le faire ici
 	function monthOptionTagFr($tagName, $value = null, $selected = null, $selectAttr = null, $optionAttr = null, $showEmpty = true) {
-		$expl_date=explode('-',$selected);
-		$selected=$expl_date[1];
+		if (!empty($selected)){
+                    $expl_date=explode('-',$selected);
+		    $selected=$expl_date[1];
+                }
 		if (empty($selected) && ($tagName)) {
 			$selected = date('m', strtotime($tagName));
 		}
