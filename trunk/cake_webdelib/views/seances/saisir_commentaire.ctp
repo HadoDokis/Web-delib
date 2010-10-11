@@ -9,6 +9,6 @@
 
 <div class="submit">
 	<?php echo $form->submit('Ajouter', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-	<?php echo $html->link('Annuler', $session->read('user.User.lasturl'), array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php echo $html->link('Annuler', '/seances/listerFuturesSeances', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 <?php echo $form->end(); ?>
