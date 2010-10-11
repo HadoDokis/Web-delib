@@ -254,6 +254,7 @@ class Deliberation extends AppModel {
                  $this->Infosup->save($infoSup, false);
              }
              // Copie des commentaires du projet refusé vers le nouveau projet
+            /*
              $commentaires = $delib['Commentaire'];
              foreach($commentaires as $commentaire) {
                  $commentaire['id'] = null;
@@ -262,6 +263,7 @@ class Deliberation extends AppModel {
                  $commentaire['delib_id'] = $delib_id;
                  $this->Commentaire->save($commentaire, false);
 	     }
+             */
         }
 
        function canSave(){
