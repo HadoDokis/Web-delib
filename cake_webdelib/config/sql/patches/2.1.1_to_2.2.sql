@@ -145,3 +145,5 @@ CREATE TABLE `typeseances_natures` (
 `typeseance_id` INT( 11 ) NOT NULL ,
 `nature_id` INT( 11 ) NOT NULL
 ) ENGINE = MYISAM ;
+
+ALTER TABLE `themes` CHANGE `libelle` `libelle` VARCHAR( 500 ) ;
