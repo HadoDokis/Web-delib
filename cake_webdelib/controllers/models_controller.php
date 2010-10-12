@@ -812,15 +812,16 @@
 				else
 					$this->Email->delivery = 'mail';
 
-				$this->Email->from = Configure::write("MAIL_FROM");
+				$this->Email->from = Configure::read("MAIL_FROM");
 				$this->Email->to = $acteur['email'];
+                                $this->Email->charset = 'UTF-8';
 				
 				$this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ");
 
 				$this->Email->sendAs = 'text';
 				$this->Email->template = 'convocation';
 				$this->set('data',   $this->paramMails('convocation',  $acteur ));
-				$this->Email->attachments = null;
+				$this->Email->attachments = array($path.$fichier);
 
 				$this->Email->send();
 			}
