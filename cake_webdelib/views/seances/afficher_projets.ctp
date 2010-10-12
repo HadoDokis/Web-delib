@@ -19,22 +19,22 @@
     	<tr>
     	    <td><?php 
 	            //echo $projet['Deliberation']['position']; 
-		    echo $form->input('Deliberation.position', array('options'=>$lst_pos, 'default'=>$projet['Deliberation']['position'], 'id'=>"$urlPage", 'onChange'=>"changePosition(this,$id_delib)", 'empty'=>false, 'label'=>false, 'div'=>false));
+		    echo $form->input('Deliberation.position', array('options'=>$lst_pos, 'selected'=>$projet['Deliberation']['position'], 'id'=>"$urlPage", 'onChange'=>"changePosition(this,$id_delib)", 'empty'=>false, 'label'=>false, 'div'=>false));
 		 ?>
             </td>
             <td><?php echo '['.$projet['Theme']['order'].'] '.$projet['Theme']['libelle']; ?></td>
 	    <td><?php echo $projet['Service']['libelle']; ?></td>
 	    <td><?php echo $form->input('Deliberation.rapporteur_id', array('label'=>false, 'options'=>$rapporteurs, 'default'=>$projet['Deliberation']['rapporteur_id'], 'id'=>"$urlPage",'onChange'=>"changeRapporteur(this,$id_delib)", 'empty'=>empty($projet['Deliberation']['rapporteur_id'])));?></td>
-	    <td><?php echo $projet['Deliberation']['objet']; ?></td>
+	    <td><?php echo $projet['Deliberation']['objet']; ?></td
 	    <td><?php echo $projet['Deliberation']['titre']; ?></td>
 	    <td><?php echo $projet['Deliberation']['id']; ?></td>
 	    <?php
 	        if($projet['Deliberation']['position']!= 1)
-	            echo ('<td>'.$html->link(SHY, '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1/'.$seance_id, array('class'=>'link_monter', 'title'=>'Monter'), false, false).'</td>');
+	            echo ('<td>'.$html->link(SHY, '/deliberations/positionner/'.$projet['Deliberation']['id'].'/-1', array('class'=>'link_monter', 'title'=>'Monter'), false, false).'</td>');
 	        else
 	           echo("<td>&nbsp;</td>");
 			if($projet['Deliberation']['position']!= $lastPosition)
-	                    echo ('<td>'.$html->link(SHY, '/deliberations/positionner/'.$projet['Deliberation']['id'].'/0/'.$seance_id, array('class'=>'link_descendre', 'title'=>'Descendre'), false, false).'</td>');
+	                    echo ('<td>'.$html->link(SHY, '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1', array('class'=>'link_descendre', 'title'=>'Descendre'), false, false).'</td>');
 		        else
 		            echo("<td>&nbsp;</td>");
              ?>
