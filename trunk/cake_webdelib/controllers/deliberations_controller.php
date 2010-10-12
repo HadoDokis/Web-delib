@@ -1124,38 +1124,28 @@ class DeliberationsController extends AppController {
 		    	fclose($handle);
 		}
 
-        function positionner($id=null, $sens, $seance_id) {
-			$positionCourante = $this->Deliberation->getCurrentPosition($id);
-			$lastPosition = $this->Deliberation->getLastPosition($seance_id);
-        	if ($sens != 0)
-            	$conditions = "Deliberation.seance_id = $seance_id  AND Deliberation.position = $positionCourante-1 AND etat!=-1";
-       		else
-   		    	$conditions = "Deliberation.seance_id = $seance_id  AND Deliberation.position = $positionCourante+1 AND etat!=-1";
+        function positionner($id=null, $delta) {
+            $projet_courant =  $this->Deliberation->find('first', array(
+                                                         'conditions'=>array('Deliberation.id'=> $id, 
+                                                                             'Deliberation.etat <>'=>  '-1'),
+                                                         'fields' => array('id', 'position', 'seance_id'), 
+                                                         'recursive' => '-1'));
 
-   		    $obj = $this->Deliberation->findAll($conditions);
-			//position du suivant ou du precedent
-       		$id_obj = $obj['0']['Deliberation']['id'];
-			$newPosition = $obj['0']['Deliberation']['position'];
+            $projet_interve =  $this->Deliberation->find('first', array(
+                                                         'conditions'=>array(
+                                                           'position'=> $projet_courant['Deliberation']['position']+$delta, 
+                                                           'seance_id'=> $projet_courant['Deliberation']['seance_id'],
+                                                           'etat <>'   =>  '-1'),
+                                                         'recursive' => '-1',
+                                                         'fields'    => array('id', 'position')));
 
-   		    $this->data = $this->Deliberation->read(null, $id);
-			$this->data['Deliberation']['position'] = $newPosition;
-
-   		    //enregistrement de l'objet courant avec la nouvelle position
-			if (!$this->Deliberation->save($this->data)) {
-			   die('Erreur durant l\'enregistrement');
-			}
-			// On recupere les informations de l'objet a deplacer
-			$this->data = $this->Deliberation->read(null, $id_obj);
-			$this->data['Deliberation']['position']= $positionCourante;
-
-			//enregistrement de l'objet a deplacer avec la position courante
-			if ($this->Deliberation->save($this->data)) {
-
-			$this->redirect("/seances/afficherProjets/$seance_id/");
-			}
-			else {
-		 	   $this->Session->setFlash('Erreur durant l\'enregistrement', 'growl', array('type'=>'erreur'));
-			}
+            if (!empty($projet_interve)){
+                $projet_courant['Deliberation']['position'] += $delta;
+                $projet_interve['Deliberation']['position'] -= $delta;
+                $this->Deliberation->save($projet_courant);
+                $this->Deliberation->save($projet_interve);
+            }
+            $this->redirect("/seances/afficherProjets/".$projet_courant['Deliberation']['seance_id']);
         }
 
         function sortby($seance_id, $sortby) {
