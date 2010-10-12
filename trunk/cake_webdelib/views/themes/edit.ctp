@@ -1,7 +1,7 @@
 <h2>Modification d'un th&egrave;me</h2>
 <?php echo $form->create('Theme', array('url' => '/themes/edit/'.$html->value('Service.id'),'type'=>'post')); ?>
 <div class="optional">
- 	<?php echo $form->input('Theme.libelle', array('label'=>'Libellé','size' => '60'));?>
+ 	<?php echo $form->input('Theme.libelle', array('label'=>'Libellé','size' => '60', 'maxlength' => '500'));?>
 </div>
 <div class="optional">
  	<?php echo $form->input('Theme.order', array('label'=>'Crit&egrave;re de tri','size' => '10'));?>
