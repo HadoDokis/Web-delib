@@ -309,7 +309,7 @@ class SeancesController extends AppController {
 		$condition= array ("seance_id"=>$id, "etat <>"=>"-1");
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->Deliberation->getLastPosition($id) - 1 );
-			$deliberations = $this->Deliberation->find('all', array ('conditions'=>$condition,'order'=>array('Deliberation.position ASC')));
+			$deliberations = $this->Deliberation->find('all', array ('conditions'=>$condition,'order'=>'Deliberation.position ASC'));
 			$lst_pos=array();
 			for ($i=0; $i<count($deliberations); $i++) {
 				$id_service = $deliberations[$i]['Service']['id'];
@@ -323,7 +323,7 @@ class SeancesController extends AppController {
 			$this->set('lst_pos', $lst_pos);
 		}
 		else
-		    return ($this->Deliberation->find('all',array('conditions'=>$condition,'order'=>array('Deliberation.position ASC'))));
+		    return ($this->Deliberation->find('all',array('conditions'=>$condition,'order'=>'Deliberation.position ASC')));
 	}
 
     function changeRapporteur($newRapporteur,$delib_id) {
@@ -712,108 +712,6 @@ class SeancesController extends AppController {
 	       return(array_unique($mouvements));
 	}
 
-       	function listeActeursPresents($seance_id) {
-	    // Lecture du modele
-	    $texte = $this->Model->field('content', 'id=8');
-	    $listeActeurs = "";
-            $acteurs = $this->getListActeurs($seance_id, 1);
-            foreach($acteurs as $key => $acteur_id) {
-                $acteur = $this->Acteur->findById($acteur_id );
-	        $searchReplace = array(
-		    "#NOUVELLE_PAGE#" => "<newpage>",
-		    "#NOM_PRESENT#" => $acteur['Acteur']['nom'],
-		    "#PRENOM_PRESENT#" => $acteur['Acteur']['prenom'],
-		    "#SALUTATION_PRESENT#" => $acteur['Acteur']['salutation'],
-		    "#TITRE_PRESENT#" => $acteur['Acteur']['titre'],
-		    "#ADRESSE1_PRESENT#" => $acteur['Acteur']['adresse1'],
-		    "#ADRESSE2_PRESENT#" => $acteur['Acteur']['adresse2'],
-		    "#CP_PRESENT#" => $acteur['Acteur']['cp'],
-		    "#VILLE_PRESENT#" => $acteur['Acteur']['ville']
-		 );
-		$listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-	    return($listeActeurs);
-	}
-
-        function listeActeursAbsents($seance_id) {
-	     // Lecture du modele
-	    $texte = $this->Model->field('content', 'id=9');
-	    $listeActeurs = "";
-            $acteurs = $this->getListActeurs($seance_id, 2);
-            foreach($acteurs as $id =>$acteur_id ) {
-                $acteur = $this->Acteur->findById($acteur_id);
-	        $searchReplace = array(
-		    "#NOUVELLE_PAGE#" => "<newpage>",
-		    "#NOM_ABSENT#" => $acteur['Acteur']['nom'],
-		    "#PRENOM_ABSENT#" => $acteur['Acteur']['prenom'],
-		    "#SALUTATION_ABSENT#" => $acteur['Acteur']['salutation'],
-		    "#TITRE_ABSENT#" => $acteur['Acteur']['titre'],
-		    "#ADRESSE1_ABSENT#" => $acteur['Acteur']['adresse1'],
-		    "#ADRESSE2_ABSENT#" => $acteur['Acteur']['adresse2'],
-		    "#CP_ABSENT#" => $acteur['Acteur']['cp'],
-		    "#VILLE_ABSENT#" => $acteur['Acteur']['ville']
-		 );
-		 $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-	    return( $listeActeurs);
-	}
-
-        function listeActeursMandates($seance_id) {
-            // Lecture du modele
-            $texte = $this->Model->field('content', 'id=10');
-            $listeActeurs = "";
-            $acteurs = $this->getListActeurs($seance_id, 3);
-            foreach($acteurs as $mandate_id => $mandataire_id) {
-                $mandataire = $this->Acteur->findById($mandataire_id);
-                $mandate = $this->Acteur->findById($mandate_id);
-                $searchReplace = array(
-                    "#NOUVELLE_PAGE#" => "<newpage>",
-                    "#NOM_MANDATE#" => $mandate['Acteur']['nom'],
-                    "#PRENOM_MANDATE#" => $mandate['Acteur']['prenom'],
-                    "#SALUTATION_MANDATE#" => $mandate['Acteur']['salutation'],
-                    "#TITRE_MANDATE#" => $mandate['Acteur']['titre'],
-                    "#NOM_MANDATAIRE#" => $mandataire['Acteur']['nom'],
-                    "#PRENOM_MANDATAIRE#" => $mandataire['Acteur']['prenom'],
-                    "#SALUTATION_MANDATAIRE#" => $mandataire['Acteur']['salutation'],
-                    "#TITRE_MANDATAIRE#" => $mandataire['Acteur']['titre'],
-                    "#ADRESSE1_MANDATAIRE#" => $mandataire['Acteur']['adresse1'],
-                    "#ADRESSE2_MANDATAIRE#" => $mandataire['Acteur']['adresse2'],
-                    "#CP_MANDATAIRE#" => $mandataire['Acteur']['cp'],
-                    "#VILLE_MANDATAIRE#" => $mandataire['Acteur']['ville']
-                );
-                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-            return($listeActeurs);
-        }
-
-        function listeActeursMouvements($seance_id) {
-            // Lecture du modele
-            $texte = $this->Model->field('content', 'id=7');
-            $listeActeurs = "";
-            $acteurs = $this->getListActeurs($seance_id, 4);
-            foreach($acteurs as $acteur_id => $delib_id) {
-                $mandate = $this->Acteur->findById($acteur_id);
-		$delib = $this->Deliberation->findById($delib_id);
-                $searchReplace = array(
-                    "#NOUVELLE_PAGE#" => "<newpage>",
-                    "#NOM_ACTEUR#" => $mandate['Acteur']['nom'],
-                    "#PRENOM_ACTEUR#" => $mandate['Acteur']['prenom'],
-                    "#SALUTATION_ACTEUR#" => $mandate['Acteur']['salutation'],
-                    "#TITRE_ACTEUR#" => $mandate['Acteur']['titre'],
-                    "#ADRESSE1_ACTEUR#" => $mandate['Acteur']['adresse1'],
-                    "#ADRESSE2_ACTEUR#" => $mandate['Acteur']['adresse2'],
-                    "#CP_ACTEUR#" => $mandate['Acteur']['cp'],
-                    "#VILLE_ACTEUR#" => $mandate['Acteur']['ville'],
-                    "#IDENTIFIANT_DELIB#" => $delib['Deliberation']['id'],
-                    "#TITRE_DELIB#" => $delib['Deliberation']['titre'],
-                    "#OBJET_DELIB#" => $delib['Deliberation']['objet'],
-                    "#NUMERO_DELIB#" => $delib['Deliberation']['num_delib']
-                );
-                $listeActeurs .= str_replace(array_keys($searchReplace), array_values($searchReplace), $texte);
-            }
-            return($listeActeurs);
-        }
-
         function download($id=null, $file){
             header('Content-type: '.$this->getFileType($id, $file));
             header('Content-Length: '.$this->getSize($id, $file));
@@ -860,40 +758,33 @@ class SeancesController extends AppController {
 	}
 
 	function changePosition ($new_position, $delib_id) {
-	    $delib = $this->Deliberation->read(null, $delib_id);
-	    $seance_id = $delib['Deliberation']['seance_id'];
+            $delib =  $this->Deliberation->find('first', array(
+                                                'conditions'=>array('Deliberation.id'=> $delib_id),
+                                                'fields' => array('id', 'position', 'seance_id'),
+                                                'recursive' => '-1'));
+ 
 	    $old_position = $delib['Deliberation']['position'];
-            
-	    // Normalement, ce cas n'arrive jamais, le select ne redirige pas si le nouveau est identique
-	    // à l'ancien
-	    if ($new_position == $old_position) {
-                $this->Session->setFlash("Positions identiques, aucun changement dans l'ordre du jour", 'growl', array('type'=>'erreur'));
-                $this->redirect("/seances/afficherProjets/$seance_id");
-	    }
+            if ($new_position < $old_position) {
+                $delta = 1;
+                $start = $new_position; 
+                $end   = $old_position -1;
+            }
+            else {
+                $delta = -1;
+                $start = $old_position+1; 
+                $end   = $new_position;
+            }
+            $this->Deliberation->updateAll(array('Deliberation.position' => "Deliberation.position+$delta"), 
+                                           array("Deliberation.position >= " => $start, 
+                                                 "Deliberation.position <= " => $end,
+                                                 "Deliberation.seance_id"    => $delib['Deliberation']['seance_id'], 
+                                                 "Deliberation.etat <> "     => -1));
 
-            if ($new_position > $old_position) 
-	        $condition = "Deliberation.position > $old_position AND Deliberation.position <= $new_position";
-            else 
-	        $condition = "Deliberation.position < $old_position AND Deliberation.position >= $new_position";
-
-            $conditions    = "seance_id=".$delib['Deliberation']['seance_id']." AND (etat != -1 ) AND $condition";
-            $deliberations = $this->Deliberation->findAll($conditions,null,'Deliberation.position ASC');
-	    
 	    $delib['Deliberation']['position'] = $new_position; 
 	    $this->Deliberation->save($delib); 
 
-	    $nb_delibs     = count($deliberations);
-            foreach ($deliberations as $deliberation) {
-                if ($new_position > $old_position) 
-                    $deliberation['Deliberation']['position']= $deliberation['Deliberation']['position']-1;
-                else
-                    $deliberation['Deliberation']['position']= $deliberation['Deliberation']['position']+1;
-
-		$this->Deliberation->save($deliberation);
-	    }
-
             $this->Session->setFlash("Projet [id:$delib_id] déplacée en position : $new_position, ancienne position : $old_position ",  'growl');
-            $this->redirect("/seances/afficherProjets/$seance_id");
+            $this->redirect("/seances/afficherProjets/".$delib['Deliberation']['seance_id']);
 	}
 
 }
