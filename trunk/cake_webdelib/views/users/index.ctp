@@ -11,7 +11,7 @@
 	<th>Mobile</th>
 	<th><?php echo $paginator->sort('Services', 'Service.libelle'); ?></th>
 	<th>Natures</th>
-	<th>Actions</th>
+	<th width='13%'>Actions</th>
 </tr>
 <?php
 
