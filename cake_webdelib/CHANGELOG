@@ -95,8 +95,17 @@
   *) Correction de problème d'encodage lorsque l'on utilise l'éditeur en ligne en mode 'source' 
   *) Désactivation du bouton précédent du navigateur pour eviter les effets de bords (exemple, je clique sur précédent apres avoir validé un projet...) 
   *) Patch pour les navigateurs IE 6 : le message jgrowl empeche l'ouverture de la page avec ce navigateur. 
-2.2
+3.0
 ===
   *) Upgrade du framework CakePHP 1.2.8 
   *) Intégration du plugin CakeFlow : moteur de workflow intégrant des fonctions dynamiques d'exécution  
-  
+  *) Attribution des droits par profil et par utilisateur	
+  *) Affinage des droits  (modification d'un projet, saut d'étape, envoyer à, ...
+  *) Gestion de différentes natures d'acte
+  *) Pagination des listes d'utilisateurs et acteurs 
+  *) Tri de ces listes en fonction de différents critères
+  *) Changement d'un mot de passe par l'utilisateur lui-même
+  *) Gestion des circuits via le plugin CakeFlow
+  *) Affichage des thèmes et services avec la forme hiéraérchique
+  *) Ajout des critères de filtre par banette
+  *) Enrichissement de l'historique
