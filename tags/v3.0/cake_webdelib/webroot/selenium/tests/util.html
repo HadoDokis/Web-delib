@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<link rel="selenium.base" />
+<title>webdelib</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">webdelib</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/users/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][login]']</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/pages/gestion_utilisateurs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/users/index']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@class='link_add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][login]']</td>
+	<td>zzzutil</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>util</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password2]']</td>
+	<td>util</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][nom]']</td>
+	<td>util</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][prenom]']</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>xpath=//select[@name='data[User][profil_id]']</td>
+	<td>label=Valideur</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>xpath=//select[@name='data[Service][Service][]']</td>
+	<td>label=TEST</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//a[@class='link_supprimer'])[last()]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>glob:*</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@class='link_add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][login]']</td>
+	<td>zzzutil</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>util</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password2]']</td>
+	<td>util</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][nom]']</td>
+	<td>util</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][prenom]']</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>xpath=//select[@name='data[User][profil_id]']</td>
+	<td>label=Rédacteur</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=//input[@id='UserAcceptNotif1']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>xpath=//select[@name='data[Service][Service][]']</td>
+	<td>label=TEST</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][email]']</td>
+	<td>webdelib@adullact.org</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//a[@class='link_mdp'])[last()]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password2]']</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/users/logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][login]']</td>
+	<td>zzzutil</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@class='link_add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//textarea[@name='data[Deliberation][objet]']</td>
+	<td>Mon nouveau projet</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//a[@class='link_circuit'])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectAndWait</td>
+	<td>xpath=//select[@name='data[Deliberation][circuit_id]']</td>
+	<td>label=Circuit de test</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//a[@class='link_add'])[last()]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/users/logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][login]']</td>
+	<td>redac</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>redac</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//a[@class='link_traiter'])[last()]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@class='link_valider_avec_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/users/logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][login]']</td>
+	<td>valideur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>valideur</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//a[@class='link_traiter'])[last()]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@class='link_refuser_avec_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/users/logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][login]']</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/pages/gestion_utilisateurs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/users/index']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//a[@class='link_modifier'])[last()]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=//a[@id='lienTab2']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>chkBoxDroits23</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/users/logout']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][login]']</td>
+	<td>zzzutil</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/pages/gestion_utilisateurs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/users/index']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/users/logout']</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
