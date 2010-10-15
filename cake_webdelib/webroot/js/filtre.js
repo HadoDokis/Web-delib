@@ -1,5 +1,5 @@
 /******************************************************************************/
-/* Masque/affiche les critÃ¨res du filtre                                      */
+/* Masque/affiche les critères du filtre                                      */
 /******************************************************************************/
 function basculeCriteres() {
 	$cheminIcone = $('#boutonBasculeCriteres').attr('src');
@@ -18,7 +18,7 @@ function basculeCriteres() {
 }
 
 /******************************************************************************/
-/* Modifie l'image de l'icone du filtre si un critÃ¨re du filtre change        */
+/* Modifie l'image de l'icone du filtre si un critère du filtre change        */
 /******************************************************************************/
 function critereChange() {
 	$cheminIcone = $('#filtreButton').attr('src');
@@ -26,7 +26,7 @@ function critereChange() {
 	if ($icone == 'filtre.png') {
 		$racine = $cheminIcone.substring(0, $cheminIcone.lastIndexOf('/')+1);
 		$icone = 'filtreUpdate.png'
-		$('#filtreButton').attr('title', 'Cliquer ici pour appliquer les critÃ¨res du filtre');
+		$('#filtreButton').attr('title', 'Cliquer ici pour appliquer les critères du filtre');
 		$('#filtreButton').attr('src', $racine+$icone);
 		$('#filtreButton').attr('onClick', "$('#filtreForm').submit();");
 		$('#filtreButton').attr('onMouseOver', "this.style.cursor='pointer'");
@@ -37,7 +37,7 @@ function critereChange() {
 /* Annulation du filtre                                                       */
 /******************************************************************************/
 function razFiltre() {
-	// initialise la valeur des critÃ¨res Ã  0
+	// initialise la valeur des critères à 0
 	$('#filtreCriteres select').val('');
 
 	$('#filtreForm').submit();
