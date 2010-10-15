@@ -1,5 +1,5 @@
 /* 
- * cake.datePicker modifiÃ© pour les besoins de as@lae
+ * cake.datePicker modifié pour les besoins de as@lae
  * 
  * */
 function datepick(field_id,date_start,date_end){

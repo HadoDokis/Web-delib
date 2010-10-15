@@ -1,10 +1,10 @@
 <?php
 /*
 	Affiche les liens pour la gestion des onglets
-	ParamÃ¨tres :
+	Paramètres :
 		$listeOnglets=array() : liste des noms des onglets (obligatoire)
-		$nOngletCourant : numÃ©ro de l'onglet courant (1 par dÃ©faut)
-		$classeOngletCourant : nom de la classe de l'onglet courant ('ongletCourant' par dÃ©faut)
+		$nOngletCourant : numéro de l'onglet courant (1 par défaut)
+		$classeOngletCourant : nom de la classe de l'onglet courant ('ongletCourant' par défaut)
 */
 // Initialisations
 if (!isset($listeOnglets)) return;

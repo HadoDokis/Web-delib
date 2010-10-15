@@ -1,7 +1,7 @@
 <?php
 /*
 	Affiche les menus-controlleurs pour la saisie des droits
-	ParamÃ¨tres :
+	Paramètres :
 */
 echo $javascript->link('droits', true);
 
