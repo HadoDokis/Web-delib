@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Serveur: localhost
--- Généré le : Ven 15 Octobre 2010 à 18:01
+-- Généré le : Ven 15 Octobre 2010 à 18:05
 -- Version du serveur: 5.0.51
 -- Version de PHP: 5.2.6-1+lenny9
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `acos` (
   `model` varchar(255) default NULL,
   `foreign_key` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=41 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=61 ;
 
 --
 -- Contenu de la table `acos`
@@ -58,29 +58,43 @@ INSERT INTO `acos` (`id`, `alias`, `lft`, `rght`, `parent_id`, `model`, `foreign
 (15, 'Seances:add', 32, 33, 14, NULL, 0),
 (16, 'Seances:listerAnciennesSeances', 30, 31, 14, NULL, 0),
 (17, 'Seances:afficherCalendrier', 28, 29, 14, NULL, 0),
-(18, 'Pages:postseances', 35, 42, 0, NULL, 0),
-(19, 'Postseances:index', 40, 41, 18, NULL, 0),
-(20, 'Deliberations:transmit', 38, 39, 18, NULL, 0),
-(21, 'Pages:exportged', 36, 37, 18, NULL, 0),
-(22, 'Pages:gestion_utilisateurs', 43, 54, 0, NULL, 0),
-(23, 'Profils:index', 52, 53, 22, NULL, 0),
-(24, 'Droits:edit', 50, 51, 22, NULL, 0),
-(25, 'Services:index', 48, 49, 22, NULL, 0),
-(26, 'Users:index', 46, 47, 22, NULL, 0),
-(27, 'Circuits:index', 44, 45, 22, NULL, 0),
-(28, 'Pages:gestion_acteurs', 55, 60, 0, NULL, 0),
-(29, 'Typeacteurs:index', 58, 59, 28, NULL, 0),
-(30, 'Acteurs:index', 56, 57, 28, NULL, 0),
-(31, 'Pages:administration', 61, 76, 0, NULL, 0),
-(32, 'Collectivites:index', 74, 75, 31, NULL, 0),
-(33, 'Themes:index', 72, 73, 31, NULL, 0),
-(34, 'Models:index', 70, 71, 31, NULL, 0),
-(35, 'Sequences:index', 68, 69, 31, NULL, 0),
-(36, 'Compteurs:index', 66, 67, 31, NULL, 0),
-(37, 'Typeseances:index', 64, 65, 31, NULL, 0),
-(38, 'Infosupdefs:index', 62, 63, 31, NULL, 0),
-(39, 'Module:Deliberations', 77, 80, 0, NULL, 0),
-(40, 'Deliberations:editerProjetValide', 78, 79, 39, NULL, 0);
+(43, 'Deliberations:sendToParapheur', 81, 82, 42, NULL, 0),
+(22, 'Pages:gestion_utilisateurs', 35, 44, 0, NULL, 0),
+(23, 'Profils:index', 40, 41, 22, NULL, 0),
+(25, 'Services:index', 38, 39, 22, NULL, 0),
+(26, 'Users:index', 36, 37, 22, NULL, 0),
+(28, 'Pages:gestion_acteurs', 45, 50, 0, NULL, 0),
+(29, 'Typeacteurs:index', 48, 49, 28, NULL, 0),
+(30, 'Acteurs:index', 46, 47, 28, NULL, 0),
+(31, 'Pages:administration', 51, 66, 0, NULL, 0),
+(32, 'Collectivites:index', 64, 65, 31, NULL, 0),
+(33, 'Themes:index', 62, 63, 31, NULL, 0),
+(34, 'Models:index', 60, 61, 31, NULL, 0),
+(35, 'Sequences:index', 58, 59, 31, NULL, 0),
+(36, 'Compteurs:index', 56, 57, 31, NULL, 0),
+(37, 'Typeseances:index', 54, 55, 31, NULL, 0),
+(38, 'Infosupdefs:index', 52, 53, 31, NULL, 0),
+(39, 'Module:Deliberations', 67, 78, 0, NULL, 0),
+(40, 'Deliberations:editerProjetValide', 68, 69, 39, NULL, 0),
+(46, 'Deliberations:verserAsalae', 87, 88, 42, NULL, 0),
+(45, 'Deliberations:transmit', 85, 86, 42, NULL, 0),
+(44, 'Deliberations:toSend', 83, 84, 42, NULL, 0),
+(42, 'Postseances:index', 80, 89, 41, NULL, 0),
+(41, 'Postseances:index', 79, 90, 0, NULL, 0),
+(47, 'Cakeflow:circuits', 42, 43, 22, NULL, 0),
+(48, 'Deliberations:edit', 70, 71, 39, NULL, 0),
+(49, 'Deliberations:goNext', 72, 73, 39, NULL, 0),
+(50, 'Deliberations:validerEnUrgence', 74, 75, 39, NULL, 0),
+(51, 'Deliberations:rebond', 76, 77, 39, NULL, 0),
+(52, 'Module:Circuits', 91, 94, 0, NULL, 0),
+(53, 'Circuits:index', 92, 93, 52, NULL, 0),
+(54, 'Module:Etapes', 95, 98, 0, NULL, 0),
+(55, 'Etapes:index', 96, 97, 54, NULL, 0),
+(56, 'Module:Compositions', 99, 108, 0, NULL, 0),
+(57, 'Compositions:setCreatedModifiedUser', 100, 101, 56, NULL, 0),
+(58, 'Compositions:formatUser', 102, 103, 56, NULL, 0),
+(59, 'Compositions:formatLinkedModel', 104, 105, 56, NULL, 0),
+(60, 'Compositions:listLinkedModel', 106, 107, 56, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -230,7 +244,7 @@ CREATE TABLE IF NOT EXISTS `aros_acos` (
   `_update` char(2) NOT NULL default '0',
   `_delete` char(2) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=49 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=102 ;
 
 --
 -- Contenu de la table `aros_acos`
@@ -241,7 +255,7 @@ INSERT INTO `aros_acos` (`id`, `aro_id`, `aco_id`, `_create`, `_read`, `_update`
 (2, 1, 2, '-1', '-1', '-1', '-1'),
 (3, 1, 9, '-1', '-1', '-1', '-1'),
 (4, 1, 14, '-1', '-1', '-1', '-1'),
-(5, 1, 18, '-1', '-1', '-1', '-1'),
+(53, 2, 5, '-1', '-1', '-1', '-1'),
 (6, 1, 22, '1', '1', '1', '1'),
 (7, 1, 28, '1', '1', '1', '1'),
 (8, 1, 31, '1', '1', '1', '1'),
@@ -250,7 +264,7 @@ INSERT INTO `aros_acos` (`id`, `aro_id`, `aco_id`, `_create`, `_read`, `_update`
 (11, 3, 2, '-1', '-1', '-1', '-1'),
 (12, 3, 9, '-1', '-1', '-1', '-1'),
 (13, 3, 14, '-1', '-1', '-1', '-1'),
-(14, 3, 18, '-1', '-1', '-1', '-1'),
+(52, 2, 4, '-1', '-1', '-1', '-1'),
 (15, 3, 22, '-1', '-1', '-1', '-1'),
 (16, 3, 28, '-1', '-1', '-1', '-1'),
 (17, 3, 31, '-1', '-1', '-1', '-1'),
@@ -259,7 +273,7 @@ INSERT INTO `aros_acos` (`id`, `aro_id`, `aco_id`, `_create`, `_read`, `_update`
 (20, 4, 2, '1', '1', '1', '1'),
 (21, 4, 9, '-1', '-1', '-1', '-1'),
 (22, 4, 14, '-1', '-1', '-1', '-1'),
-(23, 4, 18, '-1', '-1', '-1', '-1'),
+(51, 2, 3, '-1', '-1', '-1', '-1'),
 (24, 4, 22, '-1', '-1', '-1', '-1'),
 (25, 4, 28, '-1', '-1', '-1', '-1'),
 (26, 4, 31, '-1', '-1', '-1', '-1'),
@@ -268,7 +282,7 @@ INSERT INTO `aros_acos` (`id`, `aro_id`, `aco_id`, `_create`, `_read`, `_update`
 (29, 5, 2, '1', '1', '1', '1'),
 (30, 5, 9, '1', '1', '1', '1'),
 (31, 5, 14, '1', '1', '1', '1'),
-(32, 5, 18, '1', '1', '1', '1'),
+(50, 2, 2, '-1', '-1', '-1', '-1'),
 (33, 5, 22, '-1', '-1', '-1', '-1'),
 (34, 5, 28, '1', '1', '1', '1'),
 (35, 5, 31, '-1', '-1', '-1', '-1'),
@@ -280,11 +294,59 @@ INSERT INTO `aros_acos` (`id`, `aro_id`, `aco_id`, `_create`, `_read`, `_update`
 (41, 6, 7, '-1', '-1', '-1', '-1'),
 (42, 6, 9, '-1', '-1', '-1', '-1'),
 (43, 6, 14, '-1', '-1', '-1', '-1'),
-(44, 6, 18, '-1', '-1', '-1', '-1'),
+(49, 2, 1, '1', '1', '1', '1'),
 (45, 6, 22, '-1', '-1', '-1', '-1'),
 (46, 6, 28, '-1', '-1', '-1', '-1'),
 (47, 6, 31, '-1', '-1', '-1', '-1'),
-(48, 6, 39, '-1', '-1', '-1', '-1');
+(48, 6, 39, '-1', '-1', '-1', '-1'),
+(54, 2, 6, '-1', '-1', '-1', '-1'),
+(55, 2, 7, '-1', '-1', '-1', '-1'),
+(56, 2, 8, '-1', '-1', '-1', '-1'),
+(57, 2, 9, '-1', '-1', '-1', '-1'),
+(58, 2, 10, '-1', '-1', '-1', '-1'),
+(59, 2, 11, '-1', '-1', '-1', '-1'),
+(60, 2, 12, '-1', '-1', '-1', '-1'),
+(61, 2, 13, '-1', '-1', '-1', '-1'),
+(62, 2, 14, '-1', '-1', '-1', '-1'),
+(63, 2, 15, '-1', '-1', '-1', '-1'),
+(64, 2, 16, '-1', '-1', '-1', '-1'),
+(65, 2, 17, '-1', '-1', '-1', '-1'),
+(66, 2, 42, '-1', '-1', '-1', '-1'),
+(67, 2, 43, '-1', '-1', '-1', '-1'),
+(68, 2, 44, '-1', '-1', '-1', '-1'),
+(69, 2, 45, '-1', '-1', '-1', '-1'),
+(70, 2, 46, '-1', '-1', '-1', '-1'),
+(71, 2, 22, '1', '1', '1', '1'),
+(72, 2, 23, '1', '1', '1', '1'),
+(73, 2, 25, '1', '1', '1', '1'),
+(74, 2, 26, '1', '1', '1', '1'),
+(75, 2, 47, '1', '1', '1', '1'),
+(76, 2, 28, '1', '1', '1', '1'),
+(77, 2, 29, '1', '1', '1', '1'),
+(78, 2, 30, '1', '1', '1', '1'),
+(79, 2, 31, '1', '1', '1', '1'),
+(80, 2, 32, '1', '1', '1', '1'),
+(81, 2, 33, '1', '1', '1', '1'),
+(82, 2, 34, '1', '1', '1', '1'),
+(83, 2, 35, '1', '1', '1', '1'),
+(84, 2, 36, '1', '1', '1', '1'),
+(85, 2, 37, '1', '1', '1', '1'),
+(86, 2, 38, '1', '1', '1', '1'),
+(87, 2, 39, '-1', '-1', '-1', '-1'),
+(88, 2, 48, '-1', '-1', '-1', '-1'),
+(89, 2, 40, '-1', '-1', '-1', '-1'),
+(90, 2, 49, '-1', '-1', '-1', '-1'),
+(91, 2, 50, '-1', '-1', '-1', '-1'),
+(92, 2, 51, '-1', '-1', '-1', '-1'),
+(93, 2, 52, '1', '1', '1', '1'),
+(94, 2, 53, '1', '1', '1', '1'),
+(95, 2, 54, '-1', '-1', '-1', '-1'),
+(96, 2, 55, '-1', '-1', '-1', '-1'),
+(97, 2, 56, '-1', '-1', '-1', '-1'),
+(98, 2, 57, '-1', '-1', '-1', '-1'),
+(99, 2, 58, '-1', '-1', '-1', '-1'),
+(100, 2, 59, '-1', '-1', '-1', '-1'),
+(101, 2, 60, '-1', '-1', '-1', '-1');
 
 -- --------------------------------------------------------
 
@@ -301,7 +363,7 @@ CREATE TABLE IF NOT EXISTS `aros_ados` (
   `_update` char(2) NOT NULL default '0',
   `_delete` char(2) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
 
 --
 -- Contenu de la table `aros_ados`
@@ -313,7 +375,10 @@ INSERT INTO `aros_ados` (`id`, `aro_id`, `ado_id`, `_create`, `_read`, `_update`
 (3, 1, 1, '1', '1', '1', '1'),
 (4, 3, 1, '1', '1', '1', '1'),
 (5, 5, 1, '1', '1', '1', '1'),
-(6, 4, 1, '1', '1', '1', '1');
+(6, 4, 1, '1', '1', '1', '1'),
+(7, 1, 2, '-1', '-1', '-1', '-1'),
+(8, 1, 3, '-1', '-1', '-1', '-1'),
+(9, 1, 4, '-1', '-1', '-1', '-1');
 
 -- --------------------------------------------------------
 
@@ -888,7 +953,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`id`, `profil_id`, `statut`, `login`, `note`, `circuit_defaut_id`, `password`, `nom`, `prenom`, `email`, `telfixe`, `telmobile`, `date_naissance`, `accept_notif`, `position`, `created`, `modified`) VALUES
-(1, 2, 0, 'admin', '', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin', 'admin', 'francois.desmaretz@adullact.org', '0000000000', '0000000000', '1999-11-30', 0, 0, '0000-00-00 00:00:00', '2009-04-06 11:07:38');
+(1, 2, 0, 'admin', '', NULL, '21232f297a57a5a743894a0e4a801fc3', 'admin', 'admin', 'francois.desmaretz@adullact.org', '0000000000', '0000000000', '1999-11-30', 0, 0, '0000-00-00 00:00:00', '2010-10-15 18:05:03');
 
 -- --------------------------------------------------------
 
@@ -901,14 +966,14 @@ CREATE TABLE IF NOT EXISTS `users_services` (
   `user_id` int(11) NOT NULL default '0',
   `service_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 --
 -- Contenu de la table `users_services`
 --
 
 INSERT INTO `users_services` (`id`, `user_id`, `service_id`) VALUES
-(1, 1, 1);
+(2, 1, 1);
 
 -- --------------------------------------------------------
 
