@@ -1,8 +1,8 @@
 <?php
 /*
- * Gestion dynamique des droits des utilisateurs sur les actions (mÃ©thodes) des controleurs
+ * Gestion dynamique des droits des utilisateurs sur les actions (méthodes) des controleurs
  * Interface des tables acos, aros, aros_acos
- * cru : CollectivitÃ©, RÃ´le, Utilisateur
+ * cru : Collectivité, Rôle, Utilisateur
  * ca  : Controller-Action
  *
 */
@@ -53,7 +53,7 @@ function deleteCa($ca) {
 }
 
 /*
- * Ajoute la collectivitÃ©, le rÃ´le ou l'utilisateur $cru Ã  la table Aro ayant comme parent $cruParent
+ * Ajoute la collectivité, le rôle ou l'utilisateur $cru à la table Aro ayant comme parent $cruParent
  * $cru : array('model'=> string, 'foreign_key' => integer, 'alias' => string)
  * $cruParent : array('model' => string, 'foreign_key' => integer)
  */
@@ -73,7 +73,7 @@ function addCru($cru, $cruParent=0) {
 }
 
 /*
- * Supprime la collectivitÃ©, role, utilisateur $cru de la table aros
+ * Supprime la collectivité, role, utilisateur $cru de la table aros
  * $cru : array('model' => string,	'foreign_key' => integer)
  */
 function deleteCru($cru) {
@@ -85,8 +85,8 @@ function deleteCru($cru) {
 }
 
 /*
- * Mise Ã  jour de la collectivitÃ©, du rÃ´le ou de l'utilisateur $cru de la table aros
- * La mise Ã  jour porte sur l'alias et le parent
+ * Mise à jour de la collectivité, du rôle ou de l'utilisateur $cru de la table aros
+ * La mise à jour porte sur l'alias et le parent
  * $cru : array('model'=> string, 'foreign_key' => integer, 'alias' => string)
  * $cruParent : array('model' => string, 'foreign_key' => integer)
  */
@@ -94,7 +94,7 @@ function majCru($cru, $cruParent=0) {
 	// lecture en base de l'occurence
 	$aro = $this->findCru($cru);
 
-	// Mise Ã  jour de l'occurence
+	// Mise à jour de l'occurence
 	if (!empty($aro)) {
 		$aro['Aro']['alias'] = $cru['alias'];
 		if (!empty($cruParent) && !empty($cruParent['foreign_key']))
@@ -107,7 +107,7 @@ function majCru($cru, $cruParent=0) {
 }
 
 /*
- * Retourne l'Ã©lÃ©ment de la table aros correspondant Ã  $cru
+ * Retourne l'élément de la table aros correspondant à $cru
  * $cru peut avoir les formes suivantes :
  *  - array : ('model' => string, 'foreign_key' => integer)
  *  - integer : id
@@ -130,7 +130,7 @@ function findCru($cru) {
 
 
 /*
- * Mise Ã  jour de la table acos avec les entrÃ©es du menu principal et les actions des controlleurs
+ * Mise à jour de la table acos avec les entrées du menu principal et les actions des controlleurs
  */
 function majActions() {
 	// initialisation
@@ -151,7 +151,7 @@ function majActions() {
 	// Liste des alias 'controller:action' du menu principal et des controlleurs
 	$acosMaj = $this->Menu->listeAliasMenuControlleur();
 
-	// Suppression des acos en base qui ne sont pas dans les acos de la mise Ã  jour
+	// Suppression des acos en base qui ne sont pas dans les acos de la mise à jour
 	$acosASupprimer = array();
 	foreach($acosEnBase as $i=>$acoEnBase) {
 		$trouve = false;
@@ -168,7 +168,7 @@ function majActions() {
 			unset($acosEnBase[$acoASupprimer['iTab']]);
 	}
 
-	// Ajout en base des controlleur-action si ils n'y sont pas dÃ©jÃ 
+	// Ajout en base des controlleur-action si ils n'y sont pas déjà
 	foreach($acosMaj as $acoMaj) {
 		$trouve = false;
 		foreach($acosEnBase as $acoEnBase)
@@ -181,7 +181,7 @@ function majActions() {
 }
 
 /**
- * Retourne un tableau des droits sur les actions (table acos) pour la collectivitÃ©, rÃ´le, utilisateur $cru
+ * Retourne un tableau des droits sur les actions (table acos) pour la collectivité, rôle, utilisateur $cru
  *
  * @param $cru : array : ('model' => string, 'foreign_key' => integer)
  * @return array('acosAlias'=>1:0)
@@ -199,26 +199,26 @@ function litCruDroits($cru=null) {
 }
 
 /*
- * Mise Ã  jour des droits pour une collectivitÃ©, rÃ´le, utilisateur sur les entrÃ©es du menu, controlleurs-action
- * mise Ã  jour de la table acos avec les entrÃ©es du menu principal, et des controlleurs-actions
- * mise Ã  jour de la table aros avec la collectivitÃ©s-rÃ´les-users $cru ayant comme parent $cruParent puis,
- * mise Ã  jour de la table aros_acos avec le contenu de $tabDroits
- * suppression des droits des collectivitÃ©s-rÃ´les-utilisateurs enfants
+ * Mise à jour des droits pour une collectivité, rôle, utilisateur sur les entrées du menu, controlleurs-action
+ * mise à jour de la table acos avec les entrées du menu principal, et des controlleurs-actions
+ * mise à jour de la table aros avec la collectivités-rôles-users $cru ayant comme parent $cruParent puis,
+ * mise à jour de la table aros_acos avec le contenu de $tabDroits
+ * suppression des droits des collectivités-rôles-utilisateurs enfants
  * $cru : array('model'=> string, 'foreign_key' => integer, 'alias' => string)
  * $cruParent : array('model' => string, 'foreign_key' => integer)
  * $tabDroits : array([acoAlias]=>1:0)
  */
 function majCruDroits($cru, $cruParent, $tabDroits) {
-	/* mise Ã  jour de la table acos */
+	/* mise à jour de la table acos */
 	$this->majActions();
 
-	/* mise Ã  jour de la table aros */
+	/* mise à jour de la table aros */
 	if ($this->findCru($cru))
 		$this->majCru($cru, $cruParent);
 	else
 		$this->addCru($cru, $cruParent);
 
-	/* mise Ã  jour de la table aros_acos */
+	/* mise à jour de la table aros_acos */
 	foreach($tabDroits as $acoAlias => $droit) {
 		if ($droit)
 			$this->Acl->allow($cru['alias'], $acoAlias);
@@ -228,7 +228,7 @@ function majCruDroits($cru, $cruParent, $tabDroits) {
 }
 
 /**
- * Restreint les droits des 'enfants' de la collectivitÃ©s-rÃ´les-utilisateurs $cru Ã  ses propres droits
+ * Restreint les droits des 'enfants' de la collectivités-rôles-utilisateurs $cru à ses propres droits
  * @param $cru : array('model'=> string, 'foreign_key' => integer)
  */
 function restreintCruEnfantsDroits($cru, $tabDroits) {
@@ -236,7 +236,7 @@ function restreintCruEnfantsDroits($cru, $tabDroits) {
 	$aroCru = $this->findCru($cru);
 	$aroEnfants = $this->Acl->Aro->children($aroCru['Aro']['id']);
 	foreach($aroEnfants as $aroEnfant) {
-		/* on resteint les droits si ils sont spÃ©cifiques Ã  l'enfant (sinon hÃ©ritage)*/
+		/* on resteint les droits si ils sont spécifiques à l'enfant (sinon héritage)*/
 		$droitsSpecif = $this->Acl->Aro->query('select count(*) from aros_acos where aro_id = '.$aroEnfant['Aro']['id']);
 		if (array_key_exists('count(*)', $droitsSpecif[0][0]))
 			$nbDroitsSpecif = $droitsSpecif[0][0]['count(*)'];
@@ -253,7 +253,7 @@ function restreintCruEnfantsDroits($cru, $tabDroits) {
 }
 
 /*
- * Suppression des droits en base (aros_acos) pour une collectivitÃ©, rÃ´le, utilisateur sur les entrÃ©es du menu, controlleurs-action
+ * Suppression des droits en base (aros_acos) pour une collectivité, rôle, utilisateur sur les entrées du menu, controlleurs-action
  * suppression des occurences de la table aros_acos
  * $cru : array('model'=> string, 'foreign_key' => integer)
  */
