@@ -8,7 +8,6 @@
 
 		// Gestion des droits
 		var $aucunDroit = array(
-			'getModel',
 			'makeBalisesProjet',
 			'generer',
 			'paramMails'
@@ -107,7 +106,7 @@
 				header('Content-type: '.$this->_getFileType($id));
 				header('Content-Length: '.$this->_getSize($id));
 				header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
-				echo $this->_getData($id);
+				echo $this->_getModel($id);
 				exit();
 			}
 			else {
@@ -118,25 +117,25 @@
 
 
 	function import($model_id) {
-		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
-		$this->set('model_id', $model_id);
-        $Model = $this->Model->read(null, $model_id);
-		$this->set('libelle', $Model['Model']['modele']);
-		if (! empty($this->data)){
-			if (isset($this->data['Model']['template'])){
-				if ($this->data['Model']['template']['size']!=0){
-					$this->data['Model']['id']        = $model_id;
-					$this->data['Model']['name']      = $this->data['Model']['template']['name'];
-					$this->data['Model']['size']      = $this->data['Model']['template']['size'];
-					$this->data['Model']['extension'] = $this->data['Model']['template']['type'];
-					$this->data['Model']['content']   = $this->getFileData($this->data['Model']['template']['tmp_name'], $this->data['Model']['template']['size']);
-					if ($this->Model->save($this->data))
-						$this->redirect('/models/index');
-				}
-			}
-		} else {
-                $this->data = $this->Model->read(null, $model_id);
-	    }
+            $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+	    $this->set('model_id', $model_id);
+            $Model = $this->Model->read(null, $model_id);
+	    $this->set('libelle', $Model['Model']['modele']);
+	    if (! empty($this->data)){
+	        if (isset($this->data['Model']['template'])){
+		    if ($this->data['Model']['template']['size']!=0){
+                        $this->data['Model']['id']        = $model_id;
+                        $this->data['Model']['name']      = $this->data['Model']['template']['name'];
+                        $this->data['Model']['size']      = $this->data['Model']['template']['size'];
+                        $this->data['Model']['extension'] = $this->data['Model']['template']['type'];
+                        $this->data['Model']['content']   = $this->getFileData($this->data['Model']['template']['tmp_name'], $this->data['Model']['template']['size']);
+                        if ($this->Model->save($this->data))
+                            $this->redirect('/models/index');
+                    }
+                }
+            } else 
+                $this->data = $Model;
+	    
 	}
 
 	function getFileData($fileName, $fileSize) {
@@ -161,17 +160,14 @@
 		return $objCourant['0']['Model']["size"];
 	}
 
-	function _getData($id=null) {
-		$condition = "Model.id = $id";
-		$objCourant = $this->Model->findAll($condition);
-		return $objCourant['0']['Model']['content'];
-	}
+        function _getModel($id=null) {
+                $objCourant = $this->Model->find('first', array(
+                                                 'conditions'=> array('Model.id'=> $id),
+                                                 'recursive' => '-1',
+                                                 'fields'    => 'content'));
+                return $objCourant['Model']['content'];
+        }
 
-	function getModel($id=null) {
-		$condition = "Model.id = $id";
-		$objCourant = $this->Model->findAll($condition);
-		return $objCourant['0']['Model']['content'];
-	}
 
 	function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null, $isPV=false)  {
 	       if (($delib['Deliberation']['seance_id'] != 0 )&& ($isPV==false)) {
@@ -179,7 +175,9 @@
 	           $date_lettres =  $this->Date->dateLettres(strtotime($delib['Seance']['date']));
 	           $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text'));
                    $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
-	           $seance = $this->Seance->read(null, ($delib['Seance']['id']));
+	           $seance = $this->Seance->find('first', array(
+                                                 'conditions' => array(
+                                                 'Seance.id' =>$delib['Seance']['id'])));
                    $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),    'text'));
 		   $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
 
@@ -222,7 +220,9 @@
                $oMainPart->addElement(new GDO_FieldType('note_rapporteur',             utf8_encode($delib['Rapporteur']['note']),       'text'));
 
                // Information sur le secretaire
-               $secretaire = $this->Acteur->read(null, $delib['Seance']['secretaire_id'] );
+               $secretaire = $this->Acteur->find('first', array(
+                                                 'conditions'=> array(
+                                                 'Acteur.id'=> $delib['Seance']['secretaire_id'])));
                $oMainPart->addElement(new GDO_FieldType('nom_secretaire', utf8_encode($secretaire['Acteur']['nom']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('prenom_secretaire', utf8_encode($secretaire['Acteur']['prenom']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('salutation_secretaire', utf8_encode($secretaire['Acteur']['salutation']), 'text'));
@@ -609,7 +609,7 @@
 	    //Création du model ott
             //*****************************************
 	    $u = new GDO_Utility();
-            $content = $this->requestAction("/models/getModel/$model_id");
+            $content = $this->_getModel($model_id);
             $sModele = $this->Gedooo->createFile($path,'model_'.$model_id.'.odt', $content);
 	    $path_model = $path.'model_'.$model_id.'.odt';
 
@@ -626,7 +626,10 @@
 	    $oMainPart = new GDO_PartType();
 
 	    // Informations sur la collectivité
-        $data = $this->Collectivite->read(null, 1);
+        $data = $this->Collectivite->find('first', array(
+                                          'conditions'=>array(
+                                          'Collectivite.id'=>1)));
+
         $oMainPart->addElement(new GDO_FieldType('nom_collectivite',utf8_encode($data['Collectivite']['nom']) , "text"));
 	    $oMainPart->addElement(new GDO_FieldType('adresse_collectivite',utf8_encode($data['Collectivite']['adresse']) , "text"));
 	    $oMainPart->addElement(new GDO_FieldType('cp_collectivite',utf8_encode($data['Collectivite']['CP']) , "text"));
@@ -639,7 +642,9 @@
 	    // Génération d'une délibération ou d'un texte de projet
             //*****************************************
             if ($delib_id != "null") {
-	        $delib = $this->Deliberation->read(null, $delib_id);
+	        $delib = $this->Deliberation->find('first', array(
+                                                   'conditions'=>array(
+                                                   'Deliberation.id'=>$delib_id)));
                 $oMainPart = $this->makeBalisesProjet($delib, $oMainPart, true, $u);
             }
 
@@ -647,7 +652,11 @@
 	    // Génération d'une convocation, ordre du jour ou PV
             //*****************************************
              if ($seance_id != "null") {
-                 $projets  = $this->Deliberation->find('all',array('conditions'=>array("seance_id"=>$seance_id, "etat >="=>0), 'order' => array ('Deliberation.position ASC')));
+                 $projets  = $this->Deliberation->find('all',array(
+                                                       'conditions'=>array(
+                                                           "seance_id"=>$seance_id, 
+                                                           "etat >="=>0), 
+                                                       'order' =>'Deliberation.position ASC'));
                  $blocProjets = new GDO_IterationType("Projets");
 		 foreach ($projets as $projet) {
 		 //$projet =  $projets['0'];
