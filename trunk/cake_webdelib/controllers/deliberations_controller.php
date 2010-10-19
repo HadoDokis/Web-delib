@@ -1162,8 +1162,8 @@ class DeliberationsController extends AppController {
 
   		    $deliberations = $this->Deliberation->find('all', array('conditions' => $condition, 'order' => array ("$sortby ASC")));
 		    for($i=0; $i<count($deliberations); $i++){
-			    $deliberations[$i]['Deliberation']['position']=$i+1;
-		    	$this->Deliberation->save($deliberations[$i]['Deliberation']);
+                       $this->Deliberation->id = $deliberations[$i]['Deliberation']['id'];   
+                       $this->Deliberation->saveField('position', $i+1);
 		    }
 		    $this->redirect("/seances/afficherProjets/$seance_id");
 	    }
