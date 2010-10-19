@@ -112,14 +112,8 @@ class DroitsComponent extends Object
 		}
 
 		// Création de la liste des actions du controleur
-                if ( $pluginName = ""){
-		    $parentClassMethods = get_class_methods('AppController');
-		    $subClassMethods = get_class_methods($controllerName.'Controller');
-                }
-                else{
-                    $parentClassMethods = get_class_methods($pluginName.'AppController');
-		    $subClassMethods = get_class_methods($pluginName.$controllerName.'Controller');
-                }
+                $parentClassMethods = get_class_methods($pluginName.'AppController');
+		$subClassMethods = get_class_methods($controllerName.'Controller');
 		$classMethods = array_diff($subClassMethods, $parentClassMethods);
 
 		// Suppression des actions privées et protégées (commencent par '_')
