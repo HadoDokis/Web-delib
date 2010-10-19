@@ -77,7 +77,7 @@ class Acteur extends AppModel
 		if ($order_by==null)
 			$acteurs = $this->findAll('Typeacteur.elu=1', 'id, nom, prenom', 'position ASC');
 		else
-			$acteurs = $this->findAll(null, 'id, nom, prenom', $order_by.' ASC');
+			$acteurs = $this->findAll('Typeacteur.elu=1', 'id, nom, prenom', $order_by.' ASC');
 		foreach($acteurs as $acteur) {
 				$generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
 		}
