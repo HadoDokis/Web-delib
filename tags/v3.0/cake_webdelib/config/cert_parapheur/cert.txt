@@ -1,3 +1,0 @@
-openssl pkcs12 -clcerts -nokeys -out apsdi.pem -in apsdi.p12
-openssl pkcs12 -nocerts -out key.pem -in key.p12
-cat apsdi.pem key.pem > cert.pem
