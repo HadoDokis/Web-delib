@@ -1,2 +1,0 @@
-#On vérifie toutes les 5 minutes l'avancé d'un acte dans le parapheur
-*/5 * * * * /var/www/webdelib/cake/console/cake -app /var/www/webdelib/app parapheur > /dev/null 2>&1

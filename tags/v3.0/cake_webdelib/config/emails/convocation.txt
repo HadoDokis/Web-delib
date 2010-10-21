@@ -1,7 +1,0 @@
-Bonjour #PRENOM# #NOM#,
-
-Vous venez de recevoir une convocation.
-
-Très cordialement.
-
-Webdelib
