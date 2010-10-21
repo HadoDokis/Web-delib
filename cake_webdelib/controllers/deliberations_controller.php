@@ -2159,7 +2159,7 @@ class DeliberationsController extends AppController {
                     $delib_id = substr($id, 3, strlen($id));
                     $delib = $this->Deliberation->read(null, $delib_id);
                     $path = WEBROOT_PATH."/files/generee/delibs/$delib_id/";
-                    $pathDelib = $this->Gedooo->createFile($path, "delib.pdf",  $delib['Deliberation']['delib_pdf']);
+                    $pathDelib = $this->Gedooo->createFile($path, "delib.pdf",  base64_encode($delib['Deliberation']['delib_pdf']));
                     // Création de l'archive
                     @PclTarCreate($path."versement.tgz");
 
@@ -2181,7 +2181,7 @@ class DeliberationsController extends AppController {
 
              if ( $delib['Deliberation']['tdt_id'] != null) {
                         $AR = $this->getAR($delib['Deliberation']['tdt_id'], true);
-                        $path_AR =  $this->Gedooo->createFile($path, "bordereau.pdf", $AR, '.', $path);
+                        $path_AR =  $this->Gedooo->createFile($path, "bordereau.pdf", base64_encode($AR), '.', $path);
                         // Ajout du fichier de bordereau
                         @PclTarAddList($path."versement.tgz", $path."bordereau.pdf", '.', $path) ;
                         array_push ($Docs,  array('Attachment' =>
@@ -2250,7 +2250,7 @@ class DeliberationsController extends AppController {
                                     );
 
                     $seda = $client->__soapCall("wsGSeda", array($options, IDENTIFIANT_VERSANT, MOT_DE_PASSE));
-                    $ret  = $client->__soapCall("wsDepot", array("bordereau.xml", $seda, "versement.tgz", $document, IDENTIFIANT_VERSANT, MOT_DE_PASSE));
+                    $ret  = $client->__soapCall("wsDepot", array("bordereau.xml", base64_encode($seda), "versement.tgz", $document, IDENTIFIANT_VERSANT, MOT_DE_PASSE));
                    // Changement d'état de la délibération
                     if ($ret == 0){
                         $this->Deliberation->id = $delib_id; 
