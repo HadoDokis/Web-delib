@@ -602,9 +602,6 @@ class DeliberationsController extends AppController {
     }
 
 	function attribuercircuit ($id = null, $circuit_id=null, $autoAppel=false) {
-		$listCircuitsParaph = null;
-		if (Configure::read('USE_PARAPH'))
-			$listCircuitsParaph = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
                 $circuits = $this->Circuit->getList();
 		$this->set('circuits', $circuits);
 
