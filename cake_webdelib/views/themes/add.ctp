@@ -1,7 +1,7 @@
 <h2>Ajout d'un th&egrave;me</h2>
 <?php echo $form->create('Theme', array('url' => '/themes/add/','type'=>'post')); ?>
 <div class="optional">
- 	<?php echo $form->input('Theme.libelle', array('label'=>'Libellé <acronym title="obligatoire">(*)</acronym>','size' => '50', , 'maxlength' => '500'));?>
+ 	<?php echo $form->input('Theme.libelle', array('label'=>'Libellé <acronym title="obligatoire">(*)</acronym>','size' => '50', 'maxlength' => '500'));?>
 </div>
 <div class="optional">
         <?php echo $form->input('Theme.order', array('label'=>'Crit&egrave;re de tri','size' => '10'));?>
