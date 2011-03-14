@@ -2142,7 +2142,7 @@ class DeliberationsController extends AppController {
 				}
 			}
                         if ($erreur)
-                            $this->Session->setFlash($message, 'growl',  array('type'=>'erreur'));
+                            $this->Session->setFlash(utf8_decode($message), 'growl',  array('type'=>'erreur'));
                         else {
 			    $this->Session->setFlash( "Les documents ont &eacute;t&eacute; envoy&eacute;s au parapheur &eacute;lectronique.", 'growl');
                         }
