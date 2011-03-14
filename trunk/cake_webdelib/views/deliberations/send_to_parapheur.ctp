@@ -44,7 +44,7 @@
 	</table>
 	<br />
         <?php  echo ('Circuit : '); ?>
-        <?php  echo ($form->input('Deliberation.circuit_id', array('options'=>$circuits)).'<br /><br />'); ?>
+        <?php  echo ($form->input('Deliberation.circuit_id', array('options'=>$circuits, 'label'=>false, 'div'=> false)).'<br /><br />'); ?>
 	<div class="submit">
 		<?php echo $form->submit('Envoyer',array('div'=>false));?>
 	</div>
