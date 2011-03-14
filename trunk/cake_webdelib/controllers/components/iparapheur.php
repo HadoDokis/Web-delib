@@ -1,7 +1,7 @@
 <?php
 
 class IparapheurComponent extends Object {
-
+        
 	var $requestPayloadString;
 	var $responseMessage;
 	var $responseMessageStr;
@@ -11,11 +11,11 @@ class IparapheurComponent extends Object {
 	var $userpwd;
 
 	function IparapheurComponent() {
-		$this->wsto       = configure::read('parapheur.wsto');
-		$this->clientcert = configure::read('parapheur.clientcert');
-		$this->passphrase = configure::read('parapheur.passphrase');
-		$this->userpwd    = configure::read('parapheur.httpauth') .":". configure::read('parapheur.httppasswd');
-	}
+		$this->wsto       = configure::read('WSTO');
+		$this->clientcert = configure::read('CLIENTCERT');
+		$this->passphrase = configure::read('PASSPHRASE');
+		$this->userpwd    = configure::read('HTTPAUTH') .":". configure::read('HTTPPASSWD');
+	}    
 
 	function setWsto($wsto) {
 		$this->wsto = $wsto;
@@ -76,7 +76,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
 	function LancerRequeteCurl($attachments=null) {
 		$errors = fopen("/tmp/parafError.log", "w");
-		$ch = curl_init(configure::read('parapheur.wsto'));
+		$ch = curl_init(configure::read('WSTO'));
 
 		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -90,9 +90,9 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
 		if ($attachments != null) {
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type:  Multipart/Related; boundary=MIMEBoundary5eca3d4a-35d8-1e01-32da-005056b32ce6; type=\"application/xop+xml\"; charset=utf-8; start=\"<i-Parapheur-query@adullact.org>\"",'SOAPAction: ""'));
-			$params = array ("to"=>configure::read('parapheur.wsto'), "attachments"=>$attachments);
+			$params = array ("to"=>configure::read('WSTO'), "attachments"=>$attachments);
 		} else {
-			$params = array ("to"=>configure::read('parapheur.wsto'));
+			$params = array ("to"=>configure::read('WSTO'));
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type:text/xml; charset=utf-8",'SOAPAction: ""'));
 		}
 		$soap = $this->SOAPMessage($this->requestPayloadString, $params);
@@ -278,11 +278,11 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 		$dom = new DomDocument();
 		$dom->loadXML($this->responseMessageStr);
 		$codesretour = $dom->documentElement->getElementsByTagName('codeRetour');
-		$coderetour = $codesretour->item(0)->nodeValue;
+		$coderetour = @$codesretour->item(0)->nodeValue;
 		$messages = $dom->documentElement->getElementsByTagName('message');
-		$message = $messages->item(0)->nodeValue;
+		$message = @$messages->item(0)->nodeValue;
 		$severites = $dom->documentElement->getElementsByTagName('severite');
-		$severite = $severites->item(0)->nodeValue;
+		$severite = @$severites->item(0)->nodeValue;
 		$response['messageretour'] = array("coderetour"=>$coderetour,"message"=>$message, "severite"=>$severite);
 		return $response;
 	}
