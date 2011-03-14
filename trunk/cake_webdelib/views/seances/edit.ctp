@@ -2,7 +2,7 @@
 <?php echo $form->create('Seance',array('url'=>'/seances/edit/'.$html->value('Seance.id'),'type'=>'post')); ?>
 
 <div class="required"><?php echo $form->label('Seance.date', 'Date');?>
-<?php echo $form->day('Seance.date',null,null,false); ?>-<?php echo $form2->monthOptionTagFr('Seance.date',null,$html->value('Seance.date'),null,null,false); ?>-<?php echo $form->year('Seance.date',2009,date('Y')+10); ?>&agrave; <?php echo $form->hour('Seance.date',null,true,null); ?>h<?php echo $form->minute('Seance.date',null,null,false); ?>min
+<?php echo $form->day('Seance.date',null,null,false); ?>-<?php echo $form2->monthOptionTagFr('Seance.date',null,$html->value('Seance.date'),null,null,false); ?>-<?php echo $form->year('Seance.date',2009,date('Y')+10); ?>&agrave; <?php echo $form->hour('Seance.date',true, null, null); ?>h<?php echo $form->minute('Seance.date',null,null,false); ?>min
 </div>
 <br />
 <div class="required">
