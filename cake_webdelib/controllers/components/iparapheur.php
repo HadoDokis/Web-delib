@@ -11,6 +11,8 @@ class IparapheurComponent extends Object {
 	var $userpwd;
 
 	function IparapheurComponent() {
+                ini_set('memory_limit','512M');
+
 		$this->wsto       = configure::read('WSTO');
 		$this->clientcert = configure::read('CLIENTCERT');
 		$this->passphrase = configure::read('PASSPHRASE');
