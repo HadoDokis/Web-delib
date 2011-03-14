@@ -9,7 +9,8 @@
                           'Cakeflow.Composition', 
                           'Cakeflow.Visa', 
                           'Deliberation', 'Commentaire');
-        var $components = array('Parafwebservice');		
+
+        var $components = array('Iparapheur');		
 
         function main() {
             // Controle de l'avancement des délibérations dans le parapheur
@@ -17,16 +18,17 @@
                                                 array('conditions' => array('Deliberation.etat' => 3,
                                                                             'Deliberation.etat_parapheur' => 1 )));
             foreach ($delibs as $delib) {
-                 $this->_checkEtatParapheur($delib['Deliberation']['id'], false, $delib['Deliberation']['objet']);
+                 $this->_checkEtatParapheur($delib['Deliberation']['id'], false, utf8_encode($delib['Deliberation']['objet']));
             }
       
         }
         
          function _checkEtatParapheur($delib_id, $tdt=false, $objet) {
-            App::import('Component','Parafwebservice');
-            $this->Parafwebservice = new ParafwebserviceComponent(null); 
+            App::import('Component','Iparapheur');
+            $this->Parafwebservice = new IparapheurComponent(); 
 
             $histo = $this->Parafwebservice->getHistoDossierWebservice("$delib_id $objet");
+            debug($histo);
             for ($i =0; $i < count($histo['logdossier']); $i++){
                 if(!$tdt){
                    if (($histo['logdossier'][$i]['status']  ==  'Signe')    ||

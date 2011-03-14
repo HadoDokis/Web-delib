@@ -16,7 +16,7 @@ class DeliberationsController extends AppController {
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
 	var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit',  'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa');
-	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Parafwebservice', 'Filtre');
+	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Iparapheur', 'Filtre');
 
 	// Gestion des droits
 	var $demandeDroit = array(
@@ -2098,6 +2098,8 @@ class DeliberationsController extends AppController {
  	}
 
 	function sendToParapheur() {
+                $erreur = false;
+                $this->Parafwebservice = new IparapheurComponent();
 		$circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
 		if (empty($this->data)) {
 			$delibs = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.etat" => 3,'Deliberation.delib_pdf <>'=> '')));
@@ -2129,10 +2131,21 @@ class DeliberationsController extends AppController {
 					}
 					$creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, Configure::read('EMAILEMETTEUR'), $objetDossier, '', '', Configure::read('VISIBILITY'), '', $delib['Deliberation']['delib_pdf'], $annexes);
 					$delib['Deliberation']['etat_parapheur']= 1;
-					$this->Deliberation->save($delib);
+                                        if ($creerdos['messageretour']['coderetour']== 'OK') {
+                                            $this->Deliberation->id = $delib_id;
+                                            $this->Deliberation->saveField('etat_parapheur',  1);
+                                        }
+                                        else {
+                                            $erreur = true;
+                                            $message = $creerdos['messageretour']['message'];
+                                        }
 				}
 			}
-			$this->Session->setFlash( "Les documents ont &eacute;t&eacute; envoy&eacute;s au parapheur &eacute;lectronique.", 'growl');
+                        if ($erreur)
+                            $this->Session->setFlash($message, 'growl',  array('type'=>'erreur'));
+                        else {
+			    $this->Session->setFlash( "Les documents ont &eacute;t&eacute; envoy&eacute;s au parapheur &eacute;lectronique.", 'growl');
+                        }
 			$this->redirect('/deliberations/sendToParapheur');
 			exit;
 		}
