@@ -16,7 +16,7 @@ class DeliberationsController extends AppController {
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
 	var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit',  'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa');
-	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Iparapheur', 'Filtre');
+	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Iparapheur', 'Filtre', 'Cmis');
 
 	// Gestion des droits
 	var $demandeDroit = array(
@@ -34,7 +34,8 @@ class DeliberationsController extends AppController {
 		'editerProjetValide', 
 		'goNext', 
 		'validerEnUrgence',
-		'rebond'
+		'rebond',
+                'sendToGed'
 	);
 
         var $commeDroit = array(
@@ -59,7 +60,8 @@ class DeliberationsController extends AppController {
 		'editerProjetValide' => 'Editer projets valid&eacute;s',
 		'goNext'=> 'Sauter une &eacute;tape',
                 'validerEnUrgence'=> 'Valider un projet en urgence',
-                'rebond'=> 'Effectuer un rebond'
+                'rebond'=> 'Effectuer un rebond',
+                'sendToGed' => 'Envoie &agrave; une GED'
 	);
 
 	function view($id = null) {
@@ -2342,6 +2344,21 @@ class DeliberationsController extends AppController {
 			$this->Traitement->execute($action, $user_connecte, $delib_id, $options);
 			$this->redirect('/');
         }
+    }
+
+    function sendToGed($delib_id) {  
+        $delib = $this->Deliberation->find( 'first', array(
+                                            'conditions' => array('Deliberation.id' => $delib_id),
+                                            'recursive'  => -1));
+
+        $cmis = new CmisComponent();
+        // Création du répertoire
+        $my_new_folder = $cmis->client->createFolder($cmis->folder->id, $delib_id);
+        // Dépôt de la délibération
+        $obj_doc = $cmis->client->createDocument($my_new_folder->id, "deliberation.pdf", array (), $delib['Deliberation']['delib_pdf'], "application/pdf");
+        // Dépôt du rapport de projet
+        //$obj_doc = $cmis->client->createDocument($my_new_folder->id, "rapport.pdf", array (), $delib['Deliberation']['delib_pdf'], "application/pdf");
+
     }
 
 }
