@@ -89,7 +89,7 @@ class DeliberationsController extends AppController {
 		    $this->set('userCanEdit', false);
 
 		// Lecture et initialisation des commentaires
-       		$commentaires = $this->Commentaire->findAll("delib_id =  $id");
+       		$commentaires = $this->Commentaire->find('all', array('conditions'=>array("delib_id =  $id")));
 		for($i=0; $i< count($commentaires) ; $i++) {
 		        if($commentaires[$i]['Commentaire']['agent_id'] == -1) {
 			    $nomAgent = 'i-parapheur';
@@ -115,7 +115,9 @@ class DeliberationsController extends AppController {
 		$this->data['Circuit']['libelle'] = $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
 
 		// Définitions des infosup
-		$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
+		//$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
+		$this->set('infosupdefs', $this->Infosupdef->find('all', array('order'=> 'ordre', 
+                                                                               'recursive'=> -1)));
                 $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/'.$id, array('return')));
 	}
 
@@ -217,7 +219,7 @@ class DeliberationsController extends AppController {
 			$this->set('date_seances',$this->Seance->generateList(null, 
                                                                              $afficherTtesLesSeances, 
                                                                              array_keys($this->Session->read('user.Nature'))));
-			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
+			$this->set('infosupdefs', $this->Infosupdef->find('all', array('order' => 'ordre', 'recursive'=> -1)));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
 			$this->set('redirect', $redirect);
 
@@ -226,15 +228,6 @@ class DeliberationsController extends AppController {
 
 			$this->render('edit');
 		}
-	}
-
-	/* Supprime les projets de délibération de l'utilisateur connecté pour lesquels le titre et l'bjet sont vides */
-	function _checkEmptyDelib () {
-	    $userId = $this->Session->read('user.User.id');
-		$conditions = "Deliberation.objet = '' AND Deliberation.titre = '' AND Deliberation.redacteur_id = ".$userId;
-		$delibs_vides = $this->Deliberation->findAll($conditions);
-		foreach ($delibs_vides as $delib)
-			$this->Deliberation->del($delib['Deliberation']['id']);
 	}
 
 	function download($id=null, $file){
@@ -290,7 +283,7 @@ class DeliberationsController extends AppController {
 
 	function _PositionneDelibsSeance($seance_id, $position) {
 		$conditions= "Deliberation.seance_id = $seance_id AND Deliberation.position > $position ";
-		$delibs = $this->Deliberation->findAll($conditions);
+		$delibs = $this->Deliberation->find('all', array ('conditions'=> $conditions));
 		foreach ($delibs as $delib) {
 			// on enleve pour 1 la delib qui a change de seance..
 			$delib['Deliberation']['position']= $delib['Deliberation']['position'] -1;
@@ -2348,16 +2341,43 @@ class DeliberationsController extends AppController {
 
     function sendToGed($delib_id) {  
         $delib = $this->Deliberation->find( 'first', array(
-                                            'conditions' => array('Deliberation.id' => $delib_id),
-                                            'recursive'  => -1));
-
+                                            'conditions' => array('Deliberation.id' => $delib_id)));
         $cmis = new CmisComponent();
         // Création du répertoire
-        $my_new_folder = $cmis->client->createFolder($cmis->folder->id, $delib_id);
-        // Dépôt de la délibération
-        $obj_doc = $cmis->client->createDocument($my_new_folder->id, "deliberation.pdf", array (), $delib['Deliberation']['delib_pdf'], "application/pdf");
-        // Dépôt du rapport de projet
-        //$obj_doc = $cmis->client->createDocument($my_new_folder->id, "rapport.pdf", array (), $delib['Deliberation']['delib_pdf'], "application/pdf");
+        $my_new_folder = $cmis->client->createFolder($cmis->folder->id, 
+                                                     $delib_id);
+        // Dépôt de la délibération et du rapport dans le répertoire que l'on vient de créer
+        $obj_delib = $cmis->client->createDocument($my_new_folder->id, 
+                                                   "deliberation.pdf", 
+                                                   array (), 
+                                                   $delib['Deliberation']['delib_pdf'], 
+                                                   "application/pdf");
+
+        // Dépôt du rapport de projet (on fixe l'etat à 2 pour etre sur d'avoir le rapport et non la délibération
+        if (isset($delib['Seance']['date']))
+            $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delib['Seance']['type_id'], '2');
+        else
+            $model_id = 1;
+
+        $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport.pdf/1/false");
+        $rapport = file_get_contents(WEBROOT_PATH."/files/generee/fd/null/$delib_id/rapport.pdf");
+        $obj_rapport = $cmis->client->createDocument($my_new_folder->id, 
+                                                     "rapport.pdf", 
+                                                     array (), 
+                                                     $rapport, 
+                                                     "application/pdf");
+        if (count($delib['Annex'])> 0) {
+            $annex_folder = $cmis->client->createFolder($my_new_folder->id, 'Annexes');
+            foreach ($delib['Annex'] as $annex) {
+                $obj_annexe = $cmis->client->createDocument($annex_folder->id,
+                                                            $annex['filename'],
+                                                            array (),
+                                                            $annex['data'],
+                                                            $annex['filetype']);
+                }
+            }
+        }
+
 
     }
 
