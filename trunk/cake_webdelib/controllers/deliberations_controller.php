@@ -1202,19 +1202,25 @@ class DeliberationsController extends AppController {
 
                 $delib = $this->Deliberation->read(null, $delib_id);
                 if ($type == 'insertion'){
-                    $this->set('data',  $this->_paramMails('insertion', $delib,  $user['User']));
-                    $this->Email->subject = "vous allez recevoir la delib : $delib_id";
-                    $this->Email->template = 'insertion';
+                    if ($user['User']['mail_insertion']) {
+                        $this->set('data',  $this->_paramMails('insertion', $delib,  $user['User']));
+                        $this->Email->subject = "vous allez recevoir la delib : $delib_id";
+                        $this->Email->template = 'insertion';
+                    }
                 }
                 if ($type == 'traiter'){
-                    $this->Email->subject = "vous avez le projet (id : $delib_id) à traiter";
-                    $this->set('data',  $this->_paramMails('traiter', $delib,  $user['User']));
-                    $this->Email->template = 'traiter';
+                    if ($user['User']['mail_traitement']) {
+                        $this->Email->subject = "vous avez le projet (id : $delib_id) à traiter";
+                        $this->set('data',  $this->_paramMails('traiter', $delib,  $user['User']));
+                        $this->Email->template = 'traiter';
+                    }
                 }
                 if ($type == 'refus'){
-                    $this->Email->subject = "Le projet (id : $delib_id) a été refusé";
-                    $this->set('data', $this->_paramMails('refus', $delib,  $user['User']));
-                    $this->Email->template = 'refus';
+                    if ($user['User']['mail_refus']) {
+                        $this->Email->subject = "Le projet (id : $delib_id) a été refusé";
+                        $this->set('data', $this->_paramMails('refus', $delib,  $user['User']));
+                        $this->Email->template = 'refus';
+                    }
                 }
                 $this->Email->attachments = null;
                 $this->Email->send();
@@ -2374,7 +2380,6 @@ class DeliberationsController extends AppController {
                                                             array (),
                                                             $annex['data'],
                                                             $annex['filetype']);
-                }
             }
         }
 
