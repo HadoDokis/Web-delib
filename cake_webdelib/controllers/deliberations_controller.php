@@ -551,7 +551,12 @@ class DeliberationsController extends AppController {
             if ($this->Deliberation->save($this->data)) {
 		// insertion dans le circuit de traitement
 		if ($this->Traitement->targetExists($id))
-			$this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
+	 	    $this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
+                    if ($this->Traitement->dernierVisaTrigger($id) ) {
+                        $this->Historique->enregistre($id, $user_id, 'Projet valide' );
+                        $this->Deliberation->id = $id;
+                        $this->Deliberation->saveField('etat', 2);
+                    }
 		else {
 			$this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
 			$options = array(
@@ -566,7 +571,12 @@ class DeliberationsController extends AppController {
 								'trigger_id'=>$user_connecte,
 								'type_validation'=>'V'
 								)))));
-			$this->Traitement->execute('IN', $user_connecte, $id, $options);
+			  $traitementTermine =  $this->Traitement->execute('IN', $user_connecte, $id, $options);
+                          if ($traitementTermine) {
+                              $this->Historique->enregistre($id, $user_id, 'Projet valide' );
+                              $this->Deliberation->id = $id;
+                              $this->Deliberation->saveField('etat', 2);
+                          }
 		}
             
 		// envoi un mail a tous les membres du circuit
