@@ -56,6 +56,12 @@
 				<br /><br />
 				<?php echo $form->input('User.accept_notif', array('before'=>'<label for="UserAcceptNotif">Notification email</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
 				<br /><br />
+				<?php echo $form->input('User.mail_insertion', array('before'=>'<label for="UserAcceptInsertion">Insertion de projet</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
+				<br /><br />
+				<?php echo $form->input('User.mail_traitement', array('before'=>'<label for="UserAcceptTraitement">Traitement d\'un projet</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
+				<br /><br />
+				<?php echo $form->input('User.mail_refus', array('before'=>'<label for="UserAcceptRefus">Refus d\'un projet</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
+				<br /><br />
 				<?php echo $form->input('User.circuit_defaut_id', array('label'=>'Circuit par d&eacute;faut','options'=>$circuits, 'empty'=>true));?>
 				<br /><br />
 	 			<?php echo $form->input('User.note', array('type'=>'textarea', 'cols' => '30', 'rows' => '2'));?>
