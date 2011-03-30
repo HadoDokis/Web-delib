@@ -54,6 +54,11 @@
 			echo $html->link(SHY,'/seances/saisirCommentaire/' . $seance['Seance']['id'], array('class'=>'link_commentaire_seance', 'title'=>'Saisir un commentaire pour la séance'), false, false);
                       echo ('</td>');
                       echo ('<td>');
+                      if ($canSign) 
+	                  echo $html->link(SHY,'/deliberations/sendToParapheur/' . $seance['Seance']['id'].'/', 
+                                           array('class'=>'link_signer', 
+                                                 'title'=>'Envoie au parapheur électronique'), null, false);
+
 	               echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'].'/null/0/retour/1/', array('class'=>'link_pvsommaire', 'title'=>'Generation du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
                       echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'].'/null/0/retour/1/', array('class'=>'link_pvcomplet', 'title'=>'Generation du pv complet'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
 			?>
