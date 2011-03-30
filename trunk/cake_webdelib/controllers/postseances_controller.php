@@ -4,14 +4,15 @@ class PostseancesController extends AppController {
 
 	var $name = 'Postseances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2' );
-	var $components = array('Date', 'Gedooo');
-	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance');
+	var $components = array('Date', 'Gedooo', 'Cmis');
+	var $uses = array('Deliberation', 'Seance', 'User',  'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance');
 
 	// Gestion des droits
 	var $aucunDroit = array(
 		'getNom',
 		'getPresence',
-		'getVote'
+		'getVote',
+                'sendToGed'
 	);
 	var $commeDroit = array(
 		'changeObjet'=>'Postseances:index',
@@ -149,6 +150,48 @@ class PostseancesController extends AppController {
             }
         }
 
+        function sendToGed($seance_id) {
+            $cmis = new CmisComponent();
+            // Création du répertoire de séance
+            $result = $cmis->client->getFolderTree($cmis->folder->id, 1); 
+            $seance = $this->Seance->find('first', array('conditions'=>array('Seance.id' =>$seance_id )));
+            $my_seance_folder = $cmis->client->createFolder($cmis->folder->id, $seance['Typeseance']['libelle']." ".utf8_encode($this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']))));
+
+            $condition = array("seance_id"=> $seance_id, 
+                               "etat >="  => 2 );
+            $deliberations = $this->Deliberation->find('all', array('conditions'=>$condition, 
+                                                                    'order'     =>'Deliberation.position ASC'));
+            foreach ($deliberations as $delib) {
+                // Dépôt de la délibération et du rapport dans le répertoire que l'on vient de créer
+                $my_new_folder = $cmis->client->createFolder($my_seance_folder->id, $delib['Deliberation']['id']);
+                $obj_delib = $cmis->client->createDocument($my_new_folder->id,
+                                                           "deliberation.pdf",
+                                                           array (),
+                                                           $delib['Deliberation']['delib_pdf'],
+                                                           "application/pdf");
+
+                // Dépôt du rapport de projet (on fixe l'etat à 2 pour etre sur d'avoir le rapport et non la délibération
+                $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'], '2');
+
+                $this->requestAction("/models/generer/".$delib['Deliberation']['id']."/null/$model_id/0/1/rapport.pdf/1/false");
+                $rapport = file_get_contents(WEBROOT_PATH."/files/generee/fd/null/".$delib['Deliberation']['id']."/rapport.pdf");
+                $obj_rapport = $cmis->client->createDocument($my_new_folder->id,
+                                                             "rapport.pdf",
+                                                             array (),
+                                                             $rapport,
+                                                             "application/pdf");
+                if (count($delib['Annex'])> 0) {
+                    $annex_folder = $cmis->client->createFolder($my_new_folder->id, 'Annexes');
+                    foreach ($delib['Annex'] as $annex) {
+                        $obj_annexe = $cmis->client->createDocument($annex_folder->id,
+                                                                    $annex['filename'],
+                                                                    array (),
+                                                                    $annex['data'],
+                                                                    $annex['filetype']);
+                    }
+                }
+            }
+        }
 
 }
 ?>
