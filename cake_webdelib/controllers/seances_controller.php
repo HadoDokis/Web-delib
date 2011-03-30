@@ -127,6 +127,7 @@ class SeancesController extends AppController {
 	function listerFuturesSeances() {
             $this->set('AFFICHE_CONVOCS_ANONYME', Configure::read('AFFICHE_CONVOCS_ANONYME'));
             $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+            $this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
             if (empty ($this->data)) {
                 $condition= 'Seance.traitee = 0';
 	        $seances = $this->Seance->findAll(($condition),null,'date asc');
