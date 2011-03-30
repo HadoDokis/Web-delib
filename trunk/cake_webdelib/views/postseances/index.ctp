@@ -32,6 +32,9 @@
                        echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'].'/null/0/retour/1/', array('class'=>'link_pvsommaire', 'title'=>'Génération du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
                        echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'].'/null/0/retour/1/', array('class'=>'link_pvcomplet', 'title'=>'Génération du pv détaillé'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
 		   }
+                   echo $html->link(SHY,'/postseances/sendToGed/' . $seance['Seance']['id'], array('class'=>'link_sendtoged', 
+                                                                                                   'title'=>'Envoie la seance a la GED'),  
+                                                                                                   'Envoie les documents à la GED',  false);
 		?>
 		</td>
 	</tr>
