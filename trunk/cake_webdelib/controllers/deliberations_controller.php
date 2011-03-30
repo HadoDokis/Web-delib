@@ -27,6 +27,7 @@ class DeliberationsController extends AppController {
 		'mesProjetsValides',
 		'mesProjetsATraiter',
 		'mesProjetsRecherche',
+                'projetsMonService',
 		'tousLesProjetsSansSeance',
 		'tousLesProjetsValidation',
 		'tousLesProjetsAFaireVoter',
@@ -106,7 +107,7 @@ class DeliberationsController extends AppController {
 		}
 		$this->set('commentaires',$commentaires);
 
-		$this->set('historiques',$this->Historique->findAll("Historique.delib_id = $id"));
+		$this->set('historiques',$this->Historique->find('all', array('conditions' => array("Historique.delib_id" => $id))));
 
 		// Mise en forme des données du projet ou de la délibération
 		$this->data['Deliberation']['libelleEtat'] = $this->Deliberation->libelleEtat($this->data['Deliberation']['etat']);
@@ -297,27 +298,23 @@ class DeliberationsController extends AppController {
 	         $user=$this->Session->read('user');
 	        /* initialisation du lien de redirection   */
                 $redirect = $this->Session->read('user.User.lasturl');
-
-                if ($this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))
-	           $afficherTtesLesSeances = true;
-                else
-	           $afficherTtesLesSeances = false;
+                $afficherTtesLesSeances = $this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide");
 
                 $pos  =  strrpos ( getcwd(), 'webroot');
 		$path = substr(getcwd(), 0, $pos);
                 $path_projet = $path."webroot/files/generee/projet/$id/";
 
 		if (empty($this->data)) {
-		    $this->data = $this->Deliberation->read(null, $id);
+		    $this->data = $this->Deliberation->find('first',array('conditions'=>array('Deliberation.id'=> $id)));
                     $natures =  array_keys($this->Session->read('user.Nature'));
                     if (!in_array($this->data['Deliberation']['nature_id'], $natures)){
                         $this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
                         $this->redirect($redirect);
                     }
 			/* teste si le projet est modifiable par l'utilisateur connecté */
-			if (!$this->Deliberation->estModifiable($id, $user['User']['id']) &&
-				!($this->data['Deliberation']['etat'] == 2 && $this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))
-			) {
+			if (!$this->Deliberation->estModifiable($id, 
+                                                                $user['User']['id'], 
+                                                                $this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))) {
 				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
 				$this->redirect($redirect);
 			}
@@ -346,8 +343,8 @@ class DeliberationsController extends AppController {
 			$this->render();
 
 		} else {
-                        
-			$oldDelib =  $this->Deliberation->find('Deliberation.id = '.$id, 'seance_id, position', '');
+                        $oldDelib = $this->Deliberation->find('first',array('conditions' =>array('Deliberation.id'=> $id),
+                                                                             'fields'    => array('seance_id', 'position'))); 
 			// Si on definit une seance a une delib, on la position en derniere position de la seance...
 			if (!($this->data['Deliberation']['seance_id'] === $oldDelib['Deliberation']['seance_id'])) {
                             if ($this->data['Deliberation']['seance_id'])
@@ -481,7 +478,7 @@ class DeliberationsController extends AppController {
 				$this->set('themes', $this->Deliberation->Theme->find('list',array('conditions'=>array('Theme.actif'=>'1'))));
 				$this->set('circuits', $this->Deliberation->Circuit->find('list'));
 				$this->set('datelim',$this->data['Deliberation']['date_limite']);
-				$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id));
+				$this->set('annexes',$this->Annex->find('all', array('conditions'=> array('deliberation_id'=>$id))));
 				$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
 				$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 				$this->set('redirect', $redirect);
@@ -1613,6 +1610,46 @@ class DeliberationsController extends AppController {
 		// on affiche la vue index
 		$this->render('index');
 	}
+
+
+/*
+ * Affiche la liste de tous les projets dont le rédacteur fait parti de mon/mes services
+ * Permet de valider en urgence un projet
+ */
+
+    function projetsMonService() {
+        $services_id = array();
+        $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
+        $this->Deliberation->Behaviors->attach('Containable');
+        $conditions =  $this->Filtre->conditions();
+        // lecture en base
+        foreach ($this->Session->read('user.Service') as $service_id => $service)
+            $services_id[] = $service_id;
+        $conditions['Deliberation.service_id'] = $services_id;
+        $conditions['OR']['Deliberation.etat'] = 0;
+        $conditions['OR']['Deliberation.etat'] = 1;
+        $conditions['OR']['Deliberation.etat'] = 2;
+        $ordre = 'Deliberation.created DESC';
+        $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
+                                                           'order'      =>  $ordre,
+                                                           'contain'    => array( 'Seance.id','Seance.traitee',
+                                                                                  'Seance.date', 'Seance.Typeseance.libelle',
+                                                                                  'Service.libelle', 'Theme.libelle',
+                                                                                  'Nature.libelle')));
+
+
+        $actions = array('view', 'generer');
+        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"))
+            array_push($actions, 'validerEnUrgence');
+        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:goNext"))
+            array_push($actions, 'goNext');
+
+            $this->_ajouterFiltre($projets);
+            $this->_afficheProjets($projets,
+                                   'Projets dont le rédacteur fait partie de mon service',
+                                   $actions);
+
+}
 
 /*
  * Affiche la liste de tous les projets en cours de validation

@@ -107,17 +107,25 @@ class Deliberation extends AppModel {
  *  - le projet a été envoyé (etat = 5) : non modifiable
  *  - le projet a recu un avis (avis = 1 ou 2) : non modifiable
  */
-	function estModifiable($delibId, $userId) {
+	function estModifiable($delibId, $userId, $canEdit=false) {
 		/* lecture en base */
-		$delib = $this->find('id = '.$delibId, 'etat, avis, redacteur_id, circuit_id', null, -1);
+		$delib = $this->find('first', array('conditions' => array('Deliberation.id' => $delibId),
+                                                    'recursive'  => '-1',
+                                                    'fields'     => array('etat', 'redacteur_id')));
 		if (empty($delib)) return false;
 
 		/* traitement en fonction de l'état */
 		switch($delib['Deliberation']['etat']) {
 		case -1 :
-		case 2 :
+		case 2 : 
+                        $ret =  $canEdit;
+                        break;
 		case 3 :
+                        $ret =  $canEdit;
+                        break;
 		case 4 :
+                        $ret =  $canEdit;
+                        break;
 		case 5 :
 			$ret = false;
 			break;

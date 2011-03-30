@@ -46,6 +46,14 @@ $webDelib = array(
 					)
 				)
 			),
+                'Projets de mon service' => array(
+                        'link' => '/pages/projets_mon_service',
+                        'title' => 'Projets rédigés par mon service',
+                        'subMenu' => array(
+                                'items' => array(
+                                        'Projets de mon service' => array('link'  => '/deliberations/projetsMonService',
+                                                                          'title' => 'Projets de mon service' )))
+                ),
 		'Tous les projets' => array(
 			'link' => '/pages/tous_les_projets',
 			'title' => 'Projets de tous les rédacteurs',
