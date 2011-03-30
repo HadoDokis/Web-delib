@@ -1626,18 +1626,15 @@ class DeliberationsController extends AppController {
         foreach ($this->Session->read('user.Service') as $service_id => $service)
             $services_id[] = $service_id;
         $conditions['Deliberation.service_id'] = $services_id;
-        $conditions['OR']['Deliberation.etat'] = 0;
-        $conditions['OR']['Deliberation.etat'] = 1;
-        $conditions['OR']['Deliberation.etat'] = 2;
+        $conditions['Deliberation.etat !=']    = -1;
+        $conditions['Deliberation.etat <']     = 3;
         $ordre = 'Deliberation.created DESC';
         $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
-                                                           'order'      =>  $ordre,
-                                                           'contain'    => array( 'Seance.id','Seance.traitee',
-                                                                                  'Seance.date', 'Seance.Typeseance.libelle',
-                                                                                  'Service.libelle', 'Theme.libelle',
-                                                                                  'Nature.libelle')));
-
-
+                                                           'order'     => $ordre,
+                                                           'contain'   => array( 'Seance.id','Seance.traitee',
+                                                                                 'Seance.date', 'Seance.Typeseance.libelle',
+                                                                                 'Service.libelle', 'Theme.libelle',
+                                                                                 'Nature.libelle')));
         $actions = array('view', 'generer');
         if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"))
             array_push($actions, 'validerEnUrgence');
