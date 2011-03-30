@@ -35,6 +35,7 @@ class DeliberationsController extends AppController {
 		'goNext', 
 		'validerEnUrgence',
 		'rebond',
+                'sendToParapheur',
                 'sendToGed'
 	);
 
@@ -61,6 +62,7 @@ class DeliberationsController extends AppController {
 		'goNext'=> 'Sauter une &eacute;tape',
                 'validerEnUrgence'=> 'Valider un projet en urgence',
                 'rebond'=> 'Effectuer un rebond',
+                'sendToParapheur' => 'Envoie à la signature',
                 'sendToGed' => 'Envoie &agrave; une GED'
 	);
 
@@ -2108,12 +2110,16 @@ class DeliberationsController extends AppController {
 		}
  	}
 
-	function sendToParapheur() {
+	function sendToParapheur($seance_id) {
                 $erreur = false;
+                $this->set('seance_id', $seance_id);
                 $this->Parafwebservice = new IparapheurComponent();
 		$circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
 		if (empty($this->data)) {
-			$delibs = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.etat" => 3,'Deliberation.delib_pdf <>'=> '')));
+			$delibs = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.seance_id"=>$seance_id ,
+                                                                                            "Deliberation.etat !="  => -1,
+                                                                                            "Deliberation.etat >="   =>1),
+                                                                        'order'      => 'Deliberation.position'));
 			$this->set('deliberations', $delibs);
 			$this->set('circuits', $circuits['soustype']);
 		}
@@ -2126,7 +2132,7 @@ class DeliberationsController extends AppController {
 			foreach ($this->data['Deliberation'] as $id => $bool ) {
 				if ($bool == 1) {
 					$delib_id = substr($id, 3, strlen($id));
-					$delib = $this->Deliberation->read(null, $delib_id);
+					$delib = $this->Deliberation->find('first', array('conditions'=>array('Deliberation.id' => $delib_id)));
 					$soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
 					$nomfichierpdf = "D_$id.pdf";
 					$objetDossier = utf8_encode($this->_objetParaph("$delib_id ".$delib['Deliberation']['objet']));
@@ -2140,7 +2146,21 @@ class DeliberationsController extends AppController {
 						$annexes[$tmp1][0] = $annex['data'];
 						$tmp1++;
 					}
-					$creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, Configure::read('EMAILEMETTEUR'), $objetDossier, '', '', Configure::read('VISIBILITY'), '', $delib['Deliberation']['delib_pdf'], $annexes);
+                                        $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delib['Seance']['type_id'], $delib['Deliberation']['etat']);
+                                        $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport.pdf/1/false");
+                                        $content = file_get_contents(WEBROOT_PATH."/files/generee/fd/null/$delib_id/rapport.pdf");
+ 
+					$creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), 
+                                                                                                   $soustype, 
+                                                                                                   Configure::read('EMAILEMETTEUR'), 
+                                                                                                   $objetDossier, 
+                                                                                                   '', 
+                                                                                                   '', 
+                                                                                                   Configure::read('VISIBILITY'), 
+                                                                                                   '', 
+                                                                                                   $content, 
+                                                                                                   $annexes);
+                                        
 					$delib['Deliberation']['etat_parapheur']= 1;
                                         if ($creerdos['messageretour']['coderetour']== 'OK') {
                                             $this->Deliberation->id = $delib_id;
@@ -2157,7 +2177,7 @@ class DeliberationsController extends AppController {
                         else {
 			    $this->Session->setFlash( "Les documents ont &eacute;t&eacute; envoy&eacute;s au parapheur &eacute;lectronique.", 'growl');
                         }
-			$this->redirect('/deliberations/sendToParapheur');
+			$this->redirect('/deliberations/sendToParapheur/'.$seance_id);
 			exit;
 		}
 	}
@@ -2395,6 +2415,5 @@ class DeliberationsController extends AppController {
 
 
     }
-
 }
 ?>
