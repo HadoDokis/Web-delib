@@ -17,6 +17,7 @@ class ActeursController extends AppController
 		
 	var $paginate = array(
 		'Acteur' => array(
+                       'conditions' => array ('Acteur.actif'=> 1),
                        'fields' => array('DISTINCT Acteur.id', 'Acteur.nom', 'Acteur.prenom', 'Acteur.salutation', 'Acteur.telfixe', 'Acteur.telmobile',  'Acteur.titre', 'Acteur.position', 'Typeacteur.nom',  'Typeacteur.elu', ),
 			'limit' => 20,
 			'joins' => array(
@@ -149,11 +150,10 @@ function _controleEtSauve() {
 		$acteur = $this->Acteur->read('id, nom, prenom', $id);
 		if (empty($acteur))
 			$this->Session->setFlash('Invalide id pour l\'acteur');
-		elseif (!$this->_isDeletable($acteur, $messageErreur))
-			$this->Session->setFlash($messageErreur);
-		elseif ($this->Acteur->del($id))
-			$this->Session->setFlash('L\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' a &eacute;t&eacute; supprim&eacute;');
-
+		else {
+                     $this->Acteur->id = $id ;
+                     $this->Acteur->saveField('actif', 0);
+                }
 		$this->redirect('/acteurs/index');
 	}
 

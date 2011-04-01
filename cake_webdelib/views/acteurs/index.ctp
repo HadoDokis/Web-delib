@@ -35,8 +35,7 @@
 		<?php echo $html->link(SHY,'/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false); ?>
 		<?php
 			$message='';
-		    if ($Acteurs->_isDeletable($acteur, $message))
-				echo $html->link(SHY,'/acteurs/delete/' . $acteur['Acteur']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Voulez-vous supprimer l\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' ?', false); ?>
+                        echo $html->link(SHY,'/acteurs/delete/' . $acteur['Acteur']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Voulez-vous supprimer l\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' ?', false); ?>
 	</td>
 </tr>
 <?php endforeach; ?>

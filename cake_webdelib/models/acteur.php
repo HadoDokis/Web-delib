@@ -75,9 +75,13 @@ class Acteur extends AppModel
 	function generateListElus($order_by=null) {
 		$generateListElus = array();
 		if ($order_by==null)
-			$acteurs = $this->findAll('Typeacteur.elu=1', 'id, nom, prenom', 'position ASC');
+			$acteurs = $this->find('all', array('conditions' => array('Typeacteur.elu'=> 1, 'Acteur.actif' => 1), 
+                                                             'fields'    => array('id', 'nom', 'prenom'),
+                                                             'order'     => 'position ASC'));
 		else
-			$acteurs = $this->findAll('Typeacteur.elu=1', 'id, nom, prenom', $order_by.' ASC');
+			$acteurs = $this->find('all', array('conditions' => array('Typeacteur.elu'=> 1,  'Acteur.actif' => 1), 
+                                                             'fields'    => array('id', 'nom', 'prenom'),
+                                                             'order'     => "$order_by ASC"));
 		foreach($acteurs as $acteur) {
 				$generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
 		}
@@ -87,11 +91,16 @@ class Acteur extends AppModel
 	/* retourne la liste des acteurs [id]=>[prenom et nom] pour utilisation html->selectTag */
 	function generateList($order_by=null) {
 		$generateList = array();
+                if ($order_by==null)
+                        $acteurs = $this->find('all', array('conditions' => array('Acteur.actif' => 1),
+                                                             'fields'    => array('id', 'nom', 'prenom'),
+                                                             'order'     => 'position ASC'));
+                else    
+                        $acteurs = $this->find('all', array('conditions' => array('Acteur.actif' => 1), 
+                                                             'fields'    => array('id', 'nom', 'prenom'),
+                                                             'order'     => "$order_by ASC"));
 
-		if ($order_by==null)
-                    $acteurs = $this->findAll(null, 'id, nom, prenom', 'position ASC');
-                else
-                    $acteurs = $this->findAll(null, 'id, nom, prenom', $order_by.' ASC');
+
 		foreach($acteurs as $acteur) {
 			$generateList[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
 		}
@@ -102,7 +111,10 @@ class Acteur extends AppModel
 	/* retourne l'id du premier acteur élu associé à la délégation $serviceId */
 	/* retourne null si non trouvé                                            */
 	function selectActeurEluIdParDelegationId($delegationId) {
-		$users = $this->findAll('Typeacteur.elu=1', 'id', 'position ASC');
+		$users = $this->find('all', array('conditions' => array('Typeacteur.elu'=>1, 'Acteur.actif'=>1 ),
+                                                  'fields'     => array ('id'),
+                                                  'order' => 'position ASC'));
+             
 		foreach($users as $user) {
 			foreach($user['Service'] as $service) {
 				if ($service['id'] == $delegationId) return $user['Acteur']['id'];
@@ -111,19 +123,14 @@ class Acteur extends AppModel
 		return null;
 	}
 
-	/* retourne le numéro de position max pour un Typeacteur donnée */
-	/* pour rester compatible avec le plus grand nombre de bd, on ne passe pas de requête */
-	/* mais on fait le calcul en php */
-	function getPostionMaxParTypeActeurId($typeActeurId) {
-		$acteur = $this->findAll("Typeacteur.id=$typeActeurId", 'position', 'position DESC', 1);
-		return empty($acteur) ? 0 : $acteur[0]['Acteur']['position'];
-	}
 
 	/* retourne le numéro de position max pour tous les acteurs élus */
 	/* pour rester compatible avec le plus grand nombre de bd, on ne passe pas de requête */
 	/* mais on fait le calcul en php */
 	function getPostionMaxParActeursElus() {
-		$acteur = $this->findAll('Typeacteur.elu=1', 'position', 'position DESC', 1);
+		$acteur = $this->find('all', array ('conditions'=> array('Typeacteur.elu'=>1, 'Acteur.actif'=>1), 
+                                                    'fields'    => array('position'),
+                                                    'order'     => 'position DESC'));
 		return empty($acteur) ? 0 : $acteur[0]['Acteur']['position'];
 	}
 
