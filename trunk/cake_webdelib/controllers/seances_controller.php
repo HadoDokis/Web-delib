@@ -644,7 +644,7 @@ class SeancesController extends AppController {
 
         function saisirSecretaire($seance_id) {
             $this->set('seance_id', $seance_id);
-            $seance = $this->Seance->read(null, $seance_id);
+            $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id)));
             $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
             foreach( $acteursConvoques as  $acteurConvoque)
 	        $tab[$acteurConvoque['Acteur']['id']] =  $acteurConvoque['Acteur']['prenom'].' '. $acteurConvoque['Acteur']['nom'];
