@@ -169,11 +169,13 @@ class Typeseance extends AppModel {
 	/* - true : les acteurs élus                                               */
 	/* - false : les acteurs non élus                                          */
 	function acteursConvoquesParTypeSeanceId($typeseance_id = null, $elu = null) {
-		$typeseance = $this->read('id', $typeseance_id);
+		$typeseance = $this->find('first', array('conditions' => array('Typeseance.id'=> $typeseance_id),
+                                                          'fields'    => array ('id'))) ;
 		if (empty($typeseance)) return null;
 
 		/* Par type d'acteur */
 		$inTypeacteur = '';
+                $preCond = "Acteur.actif = 1";
 		foreach($typeseance['Typeacteur'] as $typeacteur)
 			$inTypeacteur .= ($inTypeacteur ? ', ' : '') . $typeacteur['id'];
 		/* Par acteur */
@@ -186,8 +188,14 @@ class Typeseance extends AppModel {
 				($inId ? 'Acteur.id in ('.$inId.')' : '');
 		$condElu = isset($elu) ? ('Typeacteur.elu=' . ($elu ? '1':'0')) : '';
 		$condition = ($condElu ? '(':'') . $condIn . ($condElu ? ') and ':'') . $condElu;
+                if (empty($condition))
+                    $condition =  $preCond;
+                else
+                     $condition =  $preCond ." AND ( ". $condition." )";
 
-		return $this->Acteur->findAll($condition, null, 'Acteur.position, Acteur.nom ASC', null, 1, 0);
+		return ($this->Acteur->find('all', array ('conditions' => $condition,
+                                                         'order' => 'Acteur.position, Acteur.nom ASC')));
+                  
 	}
 
 	/* retourne d'id du modèle d 'édition du type de séance $typeseance_id en sonction de l'état du projet de délibération */
