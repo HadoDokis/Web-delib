@@ -780,14 +780,18 @@ class DeliberationsController extends AppController {
         $this->set('dateClassification', $this->_getDateClassification());
 
         // On affiche que les delibs vote pour.
-	$deliberations = $this->Deliberation->findAll("Deliberation.etat=5", null, "num_delib ASC",  $nbDelibParPage,  $page);        
-        $tmp_delibs = $this->Deliberation->findAll("Deliberation.etat=5");
+	$deliberations = $this->Deliberation->find('all', array('conditions' => array("Deliberation.etat"=>5), 
+                                                                 'order'     => "num_delib ASC",  
+                                                                 'limit'     => $nbDelibParPage,
+                                                                 'page'      => $page));        
+        $tmp_delibs = $this->Deliberation->find('all', array('conditions' => array("Deliberation.etat"=>5)));
         $nbDelibs = count($tmp_delibs);
 
 	for($i = 0; $i < $nbDelibs; $i++) {
 	    if (empty($deliberations[$i]['Deliberation']['DateAR'])) {
 	        if (isset($deliberations[$i]['Deliberation']['tdt_id'])){
                     $flux   = $this->_getFluxRetour($deliberations[$i]['Deliberation']['tdt_id']);
+                    debug($flux);
                     $codeRetour = substr($flux, 3, 1);
 		    $deliberations[$i]['Deliberation']['code_retour'] = $codeRetour;
 
@@ -817,11 +821,10 @@ class DeliberationsController extends AppController {
 
     function _getFluxRetour ($tdt_id) {
         $url = 'https://'.Configure::read('HOST')."/modules/actes/actes_transac_get_status.php?transaction=$tdt_id";
-
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
-        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_POST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
         curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
