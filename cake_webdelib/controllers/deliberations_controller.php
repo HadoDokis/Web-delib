@@ -217,7 +217,7 @@ class DeliberationsController extends AppController {
 			$this->data['Deliberation']['modified'] = date('Y-m-d H:i:s');
 
 			$this->set('themes', $this->Deliberation->Theme->generatetreelist(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
-			$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
+			$this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
 			$this->set('selectedRapporteur', $this->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
 			$this->set('date_seances',$this->Seance->generateList(null, 
                                                                              $afficherTtesLesSeances, 
