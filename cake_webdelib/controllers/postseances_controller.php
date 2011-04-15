@@ -170,6 +170,14 @@ class PostseancesController extends AppController {
                                                            $delib['Deliberation']['delib_pdf'],
                                                            "application/pdf");
 
+                if (!empty($deliberation['Deliberation']['signature'])) {
+                    $obj_delib = $cmis->client->createDocument($my_new_folder->id,
+                                                               "signature.zip",
+                                                                array (),
+                                                                $delib['Deliberation']['signature'],
+                                                                "application/zip");
+                } 
+
                 // Dépôt du rapport de projet (on fixe l'etat à 2 pour etre sur d'avoir le rapport et non la délibération
                 $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'], '2');
 
@@ -180,7 +188,7 @@ class PostseancesController extends AppController {
                                                              array (),
                                                              $rapport,
                                                              "application/pdf");
-                if (count($delib['Annex'])> 0) {
+                if (count($delib['Annex']) > 0) {
                     $annex_folder = $cmis->client->createFolder($my_new_folder->id, 'Annexes');
                     foreach ($delib['Annex'] as $annex) {
                         $obj_annexe = $cmis->client->createDocument($annex_folder->id,
