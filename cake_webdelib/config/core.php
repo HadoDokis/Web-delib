@@ -19,7 +19,6 @@
  * @since         CakePHP(tm) v 0.2.9
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-ini_set("memory_limit","256M");
 /**
  * CakePHP Debug Level:
  *
@@ -47,7 +46,7 @@ ini_set("memory_limit","256M");
  *    Configure::write('log', E_ERROR | E_WARNING);
  *    Configure::write('log', E_ALL ^ E_NOTICE);
  */
-	Configure::write('log', true);
+	Configure::write('log', false);
 
 /**
  * Application wide charset encoding
@@ -90,7 +89,7 @@ ini_set("memory_limit","256M");
  * Turn off all caching application-wide.
  *
  */
-	//Configure::write('Cache.disable', true);
+#	Configure::write('Cache.disable', true);
 
 /**
  * Enable cache checking.
@@ -314,5 +313,5 @@ ini_set("memory_limit","256M");
     define('CONFIG_PATH', $path2."config/");
 
     require_once ('webdelib.inc');
-    define('VERSION', '<b> 3.0.0 </b>');
+    define('VERSION', '<b> 3.5.0 - Beta </b>');
     include_once(APP_DIR.DS.'plugins'.DS.'cakeflow'.DS.'config'.DS.'cakeflow.conf.php');
