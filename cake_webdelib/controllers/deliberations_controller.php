@@ -1961,11 +1961,12 @@ class DeliberationsController extends AppController {
 
 				$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
 
-				$this->_afficheProjets(
+           			$this->_afficheProjets(
 					$projets,
 					'R&eacute;sultat de la recherche parmi mes projets',
 					array('view', 'generer'),
 					array('mesProjetsRecherche'));
+                              //  $this->Deliberation->genererRecherche($projets);
 			}
 		}
 	}
@@ -2072,6 +2073,7 @@ class DeliberationsController extends AppController {
 					'R&eacute;sultat de la recherche parmi tous les projets',
 					array('view', 'generer'),
 					array('tousLesProjetsRecherche'));
+                                // $this->Deliberation->genererRecherche($projets);
 			}
 		}
 	}
