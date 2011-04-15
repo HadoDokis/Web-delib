@@ -15,7 +15,7 @@
         function main() {
             // Controle de l'avancement des délibérations dans le parapheur
             $delibs = $this->Deliberation->find('all',
-                                                array('conditions' => array('Deliberation.etat' => 3,
+                                                array('conditions' => array('Deliberation.etat' >0,
                                                                             'Deliberation.etat_parapheur' => 1 )));
             foreach ($delibs as $delib) {
                  $this->_checkEtatParapheur($delib['Deliberation']['id'], false, utf8_encode($delib['Deliberation']['objet']));
@@ -28,7 +28,7 @@
             $this->Parafwebservice = new IparapheurComponent(); 
 
             $histo = $this->Parafwebservice->getHistoDossierWebservice("$delib_id $objet");
-            debug($histo);
+         
             for ($i =0; $i < count($histo['logdossier']); $i++){
                 if(!$tdt){
                    if (($histo['logdossier'][$i]['status']  ==  'Signe')    ||
@@ -42,17 +42,16 @@
                            $comm ['Commentaire']['commentaire_auto'] = 0;
                            $this->Commentaire->save($comm['Commentaire']);
 
-                           $delib=$this->Deliberation->read(null, $delib_id);
+                           $delib=$this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $delib_id)));
+                           $this->Deliberation->id = $delib_id;
                            if ($delib['Deliberation']['etat_parapheur']==1){
                                if ($histo['logdossier'][$i]['status']  ==  'Signe') {
                                    $dossier = $this->Parafwebservice->GetDossierWebservice("$delib_id $objet");
                                    if (!empty($dossier['getdossier'][10]))
-                                       $delib['Deliberation']['signature'] = base64_decode($dossier['getdossier'][10]);
+                                       $this->Deliberation->saveField('signature',  base64_decode($dossier['getdossier'][10]));
                                }
                                // etat_paraph à 1, donc, nous sommes en post_seance, on ne supprime pas le projet
-                               $this->Deliberation->id = $delib_id;
-                               $delib['Deliberation']['etat_parapheur']=2;
-                               $this->Deliberation->save($delib);
+                               $this->Deliberation->saveField('etat_parapheur', 2);
                            }
                        }
                        elseif(($histo['logdossier'][$i]['status']=='RejetSignataire')||
