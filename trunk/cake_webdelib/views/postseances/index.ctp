@@ -14,7 +14,7 @@
 		<!-- <th>ID</th> -->
 		<th>Type</th>
 		<th>Date S&eacute;ance</th>
-		<th>Action</th>
+		<th width='150px'>Action</th>
 	</tr>
 	<?php foreach ($seances as $seance): ?>
 	<tr>
