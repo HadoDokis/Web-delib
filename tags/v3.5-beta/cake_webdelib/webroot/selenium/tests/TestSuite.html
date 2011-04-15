@@ -1,0 +1,108 @@
+<!--
+Copyright 2004 ThoughtWorks, Inc
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<html>
+<head>
+<meta content="text/html; charset=ISO-8859-1"
+http-equiv="content-type">
+<title>Test Suite</title>
+<script language="JavaScript" type="text/javascript" src="../core/scripts/selenium-browserdetect.js"></script>
+<script language="JavaScript" type="text/javascript">
+    var DISABLED = true; // used to flag failing tests
+
+    function filterTestsForBrowser() {
+        var suiteTable = document.getElementById("suiteTable");
+        var skippedTests = document.getElementById("skippedTests");
+
+        for(rowNum = suiteTable.rows.length - 1; rowNum >= 0; rowNum--)
+        {
+            var row = suiteTable.rows[rowNum];
+            var filterString = row.getAttribute("unless");
+            if (filterString && eval(filterString))
+            {
+              var cellHTML = row.cells[0].innerHTML;
+              suiteTable.deleteRow(rowNum);
+
+              var newRow = skippedTests.insertRow(1);
+              var newCell = newRow.insertCell(0)
+              newCell.innerHTML = cellHTML;
+            }
+        }
+    }
+    
+    function isFileURL() {
+        var p = window.location.protocol;
+        var result = ("file:" == p);
+        return result;
+    }
+</script>
+</head>
+
+<body onload="filterTestsForBrowser()">
+
+    <table id="suiteTable"    cellpadding="1"
+           cellspacing="1"
+           border="1"
+           class="selenium">
+        <tbody>
+		<tr><td><b>Test Suite</b></td></tr>
+			<tr><td><a href="./admin.html">Administration</a></td></tr>
+			<tr><td><a href="./projets.html">Cr&eacute;ation de Projets</a></td></tr>
+			<tr><td><a href="./seance.html">Cr&eacute;ation d'une s&eacute;ance</a></td></tr>
+			<tr><td><a href="./edition.html">Modification de projet</a></td></tr>
+			<tr><td><a href="./circuit.html">Circuit d'&eacute;laboration</a></td></tr>
+			<tr><td><a href="./odj.html">Etablissement de l'ordre du jour</a></td></tr>
+			<tr><td><a href="./vote.html">Vote des projets</a></td></tr>
+			<tr><td><a href="./clore.html">Modification et cloture d'une s&eacute;ance</a></td></tr>
+			<tr><td><a href="./droits.html">Droit</a></td></tr>
+			<tr><td><a href="./postseance.html">Envoi au controle de l&eacute;galit&eacute;</a></td></tr>
+			<tr><td><a href="./circuit_avec_paraf.html">Cr&eacute;ation d'un circuit avec &eacute;tape parapheur</a></td></tr>
+			<tr><td><a href="./test_circuit_paraf_1.html">Test circuit avec parapheur : &eacute;tape 1</a></td></tr>
+			<tr><td><a href="./test_circuit_paraf_2.html">Test circuit avec parapheur : &eacute;tape 2</a></td></tr>
+			<tr><td><a href="./test_circuit_paraf_3.html">Test circuit avec parapheur : &eacute;tape 3</a></td></tr>
+			
+			<tr><td><a href="./profil.html">Administration des profils</a></td></tr>
+			<tr><td><a href="./service.html">Administration des services</a></td></tr>
+			<tr><td><a href="./util.html">Administration des utilisateurs</a></td></tr>
+			<tr><td><a href="./circuit_admin.html">Administration des circuits</a></td></tr>
+			<tr><td><a href="./acteur.html">Administration des acteurs</a></td></tr>
+			<tr><td><a href="./collectivite.html">Administration des collectivit&eacute;s</a></td></tr>
+			<tr><td><a href="./theme.html">Administration des th&egrave;mes</a></td></tr>
+			<tr><td><a href="./modele.html">Administration des mod&egrave;les d'&eacute;dition</a></td></tr>
+			<tr><td><a href="./sequence.html">Administration des s&eacute;quences</a></td></tr>
+			<tr><td><a href="./compteur.html">Administration des compteurs</a></td></tr>
+			<tr><td><a href="./type_seance.html">Administration des types des s&eacute;ance</a></td></tr>
+			<tr><td><a href="./infosup.html">Administration des types des informations suppl&eacute;mentaires</a></td></tr>
+			
+			<tr><td><a href="./projet.html">Cr&eacute;ation/Modification d'un projet</a></td></tr>
+			<tr><td><a href="./circuit_valid.html">Gestion des projets dans un circuit de validation</a></td></tr>
+			<tr><td><a href="./seance_avis_file.html">Gestion d'une s&eacute;ance avis en mode fichier</a></td></tr>
+			<tr><td><a href="./seance_vote_file.html">Gestion d'une s&eacute;ance vote en mode fichier</a></td></tr>
+        </tbody>
+    </table>
+
+    <br />
+    <em>Not supported in this browser</em>
+    <table id="skippedTests" cellpadding="1"
+           cellspacing="1"
+           border="1"
+           class="selenium">
+        <tbody>
+            <tr><td><b>Skipped Tests</b></td></tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
