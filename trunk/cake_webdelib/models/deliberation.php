@@ -278,5 +278,170 @@ class Deliberation extends AppModel {
            return $this->Seance->NaturecanSave($this->data['Deliberation']['seance_id'], $this->data['Deliberation']['nature_id']);
        }
 
+       function genererRecherche($projets, $model_id=10023){
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_IterationType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_PartType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_FusionType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
+            include_once ('vendors/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+            
+            $sMimeType = "application/pdf";
+            $content = $this->Seance->Typeseance->Modelprojet->find('first', array('conditions'=> array('id' => $model_id),
+                                                                                   'fields'    => array('content')));
+            $oTemplate = new GDO_ContentType("",
+                                "modele.odt",
+                                "application/vnd.oasis.opendocument.text",
+                                "binary",
+                                $content['Modelprojet']['content']);
+
+            $oMainPart = new GDO_PartType();
+
+            $blocProjets = new GDO_IterationType("Projets");
+            foreach ($projets as $projet) {
+                $isDelib = false;
+                $oDevPart = new GDO_PartType();
+                if ($projet['Deliberation']['etat'] >= 3)
+                    $isDelib = true;
+                $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, $isDelib);
+                $blocProjets->addPart($oDevPart);
+            }
+            $oMainPart->addElement($blocProjets);
+
+            $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+            $oFusion->process();
+            $oFusion->SendContentToClient();
+        }
+
+        function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null, $isPV=false)  {
+               if (($delib['Deliberation']['seance_id'] != 0 )&& ($isPV==false)) {
+  //                 $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($delib['Seance']['date']),   'date'));
+ //                  $date_lettres =  $this->Date->dateLettres(strtotime($delib['Seance']['date']));
+ //                  $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text'));
+//                   $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
+                   $seance = $this->Seance->find('first', array(
+                                                 'conditions' => array(
+                                                 'Seance.id' =>$delib['Seance']['id'])));
+                   $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),    'text'));
+                   $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
+
+               }
+               $titre = utf8_encode($delib['Deliberation']['titre']);
+               $titre =  str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $titre);
+               $oMainPart->addElement(new GDO_FieldType('titre_projet',                $titre,    'text'));
+
+               $objet = utf8_encode($delib['Deliberation']['objet']);
+               $objet = str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $objet);
+
+               $oMainPart->addElement(new GDO_FieldType('objet_projet',                $objet,     'text'));
+               $oMainPart->addElement(new GDO_FieldType('libelle_projet',              $objet,    'text'));
+               $oMainPart->addElement(new GDO_FieldType('nature_projet', utf8_encode($delib['Nature']['libelle']),     'text'));
+
+               $oMainPart->addElement(new GDO_FieldType('position_projet',             utf8_encode($delib['Deliberation']['position']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('identifiant_projet',          utf8_encode($delib['Deliberation']['id']),       'text'));
+               $oMainPart->addElement(new GDO_FieldType('identifiant_seance',          utf8_encode($delib['Deliberation']['seance_id']),'text'));
+               $oMainPart->addElement(new GDO_FieldType('numero_deliberation',         utf8_encode($delib['Deliberation']['num_delib']),'text'));
+               $oMainPart->addElement(new GDO_FieldType('classification_deliberation', utf8_encode($delib['Deliberation']['num_pref']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('service_emetteur',            utf8_encode($delib['Service']['libelle']) ,      'text'));
+               $oMainPart->addElement(new GDO_FieldType('theme_projet',                utf8_encode($delib['Theme']['libelle']),         'text'));
+               $oMainPart->addElement(new GDO_FieldType('T1_theme',                    utf8_encode($delib['Theme']['libelle']),         'text'));
+               $oMainPart->addElement(new GDO_FieldType('critere-trie_theme',          utf8_encode($delib['Theme']['order']),         'text'));
+
+
+                    // Information sur le rapporteur
+               $oMainPart->addElement(new GDO_FieldType('salutation_rapporteur',       utf8_encode($delib['Rapporteur']['salutation']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('prenom_rapporteur',           utf8_encode($delib['Rapporteur']['prenom']),     'text'));
+               $oMainPart->addElement(new GDO_FieldType('nom_rapporteur',              utf8_encode($delib['Rapporteur']['nom']),        'text'));
+               $oMainPart->addElement(new GDO_FieldType('titre_rapporteur',            utf8_encode($delib['Rapporteur']['titre']),      'text'));
+               $oMainPart->addElement(new GDO_FieldType('position_rapporteur',         utf8_encode($delib['Rapporteur']['position']),   'text'));
+               $oMainPart->addElement(new GDO_FieldType('email_rapporteur',            utf8_encode($delib['Rapporteur']['email']),      'text'));
+               $oMainPart->addElement(new GDO_FieldType('telmobile_rapporteur',        utf8_encode($delib['Rapporteur']['telmobile']),  'text'));
+               $oMainPart->addElement(new GDO_FieldType('telfixe_rapporteur',          utf8_encode($delib['Rapporteur']['telfixe']),    'text'));
+               $oMainPart->addElement(new GDO_FieldType('date_naissance_rapporteur',   utf8_encode($delib['Rapporteur']['date_naissance']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('adresse1_rapporteur',         utf8_encode($delib['Rapporteur']['adresse1']),   'text'));
+               $oMainPart->addElement(new GDO_FieldType('adresse2_rapporteur',         utf8_encode($delib['Rapporteur']['adresse2']),   'text'));
+               $oMainPart->addElement(new GDO_FieldType('cp_rapporteur',               utf8_encode($delib['Rapporteur']['cp']),         'text'));
+               $oMainPart->addElement(new GDO_FieldType('ville_rapporteur',            utf8_encode($delib['Rapporteur']['ville']),      'text'));
+               $oMainPart->addElement(new GDO_FieldType('note_rapporteur',             utf8_encode($delib['Rapporteur']['note']),       'text'));
+
+               if (Configure::read('GENERER_DOC_SIMPLE')) {
+                   if (isset($delib['Deliberation']['texte_projet']))
+                       $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',       '<small></small>'.$delib['Deliberation']['texte_projet']));
+                   if (isset($delib['Deliberation']['texte_synthese']))
+                       $oMainPart->addElement(new GDO_ContentType('note_synthese', '', 'text/html', 'text',      '<small></small>'.$delib['Deliberation']['texte_synthese']));
+                   if (isset($delib['Deliberation']['deliberation']))
+                       $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '', 'text/html', 'text', '<small></small>'.$delib['Deliberation']['deliberation']));
+                   if (isset($delib['Deliberation']['debat']))
+                       $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '', 'text/html', 'text', '<small></small>'.$delib['Deliberation']['debat']));
+                   if (isset($delib['Deliberation']['commission']))
+                       $oMainPart->addElement(new GDO_ContentType('debat_commission', '', 'text/html', 'text',   '<small></small>'.$delib['Deliberation']['commission']));
+               }
+               else {
+                   $dyn_path = "/files/generee/deliberations/".$delib['Deliberation']['id']."/";
+                   $path = WEBROOT_PATH.$dyn_path;
+
+                   if (!$this->Gedooo->checkPath($path))
+                       die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+
+                   $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+
+                   if ($delib['Deliberation']['texte_projet_name']== "") {
+                       $nameTP = "vide";
+                       $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',''));
+                   }
+                   else {
+                                   $infos = (pathinfo($delib['Deliberation']['texte_projet_name']));
+                       $nameTP = 'tp.'.$infos['extension'];
+                       $this->Gedooo->createFile($path, $nameTP, $delib['Deliberation']['texte_projet']);
+                       $extTP = $u->getMimeType($path.$nameTP);
+                       $oMainPart->addElement(new GDO_ContentType('texte_projet',       '',  $extTP,    'url', $urlWebroot.$nameTP ));
+                   }
+
+                  if ($delib['Deliberation']['deliberation_name']=="")
+                       $nameTD = "vide";
+                   else{
+                       $infos = (pathinfo($delib['Deliberation']['deliberation_name']));
+                       $nameTD = 'td.'.$infos['extension'];
+                       $this->Gedooo->createFile($path, $nameTD, $delib['Deliberation']['deliberation']);
+                       $extTD  = $u->getMimeType($path.$nameTD);
+                       $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '',  $extTD ,   'url', $urlWebroot.$nameTD));
+                   }
+
+                   if ($delib['Deliberation']['texte_synthese_name']=="")
+                       $nameNS = "vide";
+                   else {
+                       $infos = (pathinfo($delib['Deliberation']['texte_synthese_name']));
+                       $nameNS = 'ns.'.$infos['extension'];
+                       $this->Gedooo->createFile($path, $nameNS,  $delib['Deliberation']['texte_synthese']);
+                       $extNS   = $u->getMimeType($path.$nameNS);
+                       $oMainPart->addElement(new GDO_ContentType('note_synthese',      '',  $extNS ,   'url', $urlWebroot.$nameNS));
+                   }
+
+                   if ($delib['Deliberation']['debat_name']=="")
+                       $nameDebat = "debat";
+                   else {
+                       $infos = (pathinfo($delib['Deliberation']['debat_name']));
+                       $nameDebat = 'debat.'.$infos['extension'];
+                       $this->Gedooo->createFile($path,  $nameDebat,  $delib['Deliberation']['debat']);
+                       $extDebat =  $u->getMimeType($path.$nameDebat);
+                       $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '',  $extDebat, 'url', $urlWebroot.$nameDebat));
+                   }
+
+                   if ($delib['Deliberation']['commission_name']=="")
+                       $nameCommission = "commission";
+                   else {
+                       $infos = (pathinfo($delib['Deliberation']['commission_name']));
+                       $nameCommission = 'commission.'.$infos['extension'];
+                       $this->Gedooo->createFile($path,  $nameCommission,  $delib['Deliberation']['commission']);
+                       $extCommi =  $u->getMimeType($path.$nameCommission);
+                       $oMainPart->addElement(new GDO_ContentType('debat_commission', '',  $extCommi, 'url', $urlWebroot.$nameCommission));
+                   }
+              }
+          return $oMainPart;
+      }
+
 }
 ?>
