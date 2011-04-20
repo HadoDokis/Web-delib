@@ -155,7 +155,7 @@ class PostseancesController extends AppController {
             // Création du répertoire de séance
             $result = $cmis->client->getFolderTree($cmis->folder->id, 1); 
             $seance = $this->Seance->find('first', array('conditions'=>array('Seance.id' =>$seance_id )));
-            $my_seance_folder = $cmis->client->createFolder($cmis->folder->id, $seance['Typeseance']['libelle']." ".utf8_encode($this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']))));
+            $my_seance_folder = $cmis->client->createFolder($cmis->folder->id, utf8_encode($seance['Typeseance']['libelle'])." ".utf8_encode($this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']))));
 
             $condition = array("seance_id"=> $seance_id, 
                                "etat >="  => 2 );
@@ -200,6 +200,100 @@ class PostseancesController extends AppController {
                 }
             }
         }
+ 
+       /* 
+            Lorsque la GED est archiland
+ 
+        function sendToGed($seance_id) {
+            $paramsAuth  = array('username'     => 'adullact',
+                                 'password'     => 'adullact');
+            $clientAuth  = new SoapClient('http://ged-test.archiland.org:8080/alfresco/wsdl/authentication-service.wsdl');
+            $reponseAuth = $clientAuth->__soapCall("startSession", array('parameters' => $paramsAuth));
+            // Création du répertoire de séance
+            $seance = $this->Seance->find('first', array('conditions'=>array('Seance.id' =>$seance_id )));
+
+            $condition = array("Deliberation.seance_id"=> $seance_id,
+                               "Deliberation.etat >="  => 2 );
+            $deliberations = $this->Deliberation->find('all', array('conditions'=>$condition,
+                                                                    'order'     =>'Deliberation.position ASC'));
+            foreach ($deliberations as $delib) {
+                  $requete = $this->_createActeRequestArchiland($reponseAuth, $delib);
+                  $clientArchi = new SoapClient('http://ged-test.archiland.org:8080/alfresco/wsdl/archiland-service.wsdl');
+                  $reponseArchi   = $clientArchi->__doRequest( $requete,
+                                                               'http://ged-test.archiland.org:8080/alfresco/api/ArchilandService',
+                                                               'createActe',
+                                                               $clientArchi->_soap_version);
+            }
+            $this->redirect('/postseances/index');
+        }
+       function _createActeRequestArchiland($reponseAuth, $delib) {
+            $requete  = '<?xml version="1.0" encoding="UTF-8" ?'.'>';
+            $requete .= '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                                           xmlns:ns="http://www.atolcd.com/alpi/ws/1.0"
+                                           xmlns:ns1="http://www.atolcd.com/alpi/wsmodel/1.0">';
+            $requete .= '<soapenv:Header>';
+            $requete .= '<wsse:Security soapenv:mustUnderstand="1"
+                                    xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">';
+            $requete .= '<wsu:Timestamp wsu:Id="Timestamp-14"
+                                    xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">';
+            $requete .= '<wsu:Created>'.gmdate("Y-m-d\TH:i:s\Z", time()-100).'</wsu:Created>';
+            $requete .= '<wsu:Expires>'.gmdate("Y-m-d\TH:i:s\Z", time()+7200).'</wsu:Expires>';
+            $requete .= '</wsu:Timestamp>';
+            $requete .= '<wsse:UsernameToken wsu:Id="UsernameToken-666"
+                                             xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">';
+            $requete .= '<wsse:Username>'.$reponseAuth->startSessionReturn->username.'</wsse:Username>';
+            $requete .= '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">';
+            $requete .= $reponseAuth->startSessionReturn->ticket;
+            $requete .= '</wsse:Password>';
+            $requete .= '</wsse:UsernameToken>';
+            $requete .= '</wsse:Security>';
+            $requete .= '</soapenv:Header>';
+            $requete .= '<soapenv:Body>';
+            $requete .= '<ns:createActe>';
+            $requete .= '       <ns:requete>';
+            $requete .= '<ns1:collectivite>491011698</ns1:collectivite>';
+        //    $requete .= '<ns1:service>test_01</ns1:service>';
+            $requete .= '<ns1:nom>'.utf8_encode($delib['Deliberation']['objet']).'</ns1:nom>';
+            $requete .= '<ns1:type>deliberation</ns1:type>';
+            $requete .= '<ns1:dateDebutDUA>'.gmdate("Y-m-d\TH:i:s\Z", time()).'</ns1:dateDebutDUA>';
+            $requete .= '<ns1:dateSeance>'.str_replace(' ', 'T', $delib['Seance']['date']).'</ns1:dateSeance>';
+
+            $requete .= '<ns1:fichiers>';
+            $requete .= '<ns1:nom>deliberation.pdf</ns1:nom>';
+            $requete .= '<ns1:type>deliberation</ns1:type>';
+            $requete .= '<ns1:fichier>'.base64_encode($delib['Deliberation']['delib_pdf']).'</ns1:fichier>';
+            $requete .= '</ns1:fichiers>';
+
+             // Envoie du bordereau de s2low
+            if (!empty($delib["Deliberation"]['tdt_id'])) {
+                $ar =   $this->requestAction("/deliberations/getAR/".$delib["Deliberation"]['tdt_id']."/true");
+                $requete .=  $this->_addFichier('bordereau.pdf', $ar, 'annexeDeliberation');
+            }
+            if (count($delib['Annex']) > 0)
+                foreach ($delib['Annex'] as $annex)
+                    $requete .=  $this->_addFichier($annex['filename'], $annex['data'], 'annexeDeliberation');
+
+            if (!empty($deliberation['Deliberation']['signature']))
+                $requete .=  $this->_addFichier('signature.zip', $delib['Deliberation']['signature'], 'signatureDeliberation');
+
+            $requete .= '</ns:requete>';
+            $requete .= '</ns:createActe>';
+            $requete .= '</soapenv:Body>';
+            $requete .= '</soapenv:Envelope>';
+            return $requete;
+        }
+
+        function _addFichier ($filename, $filecontent, $type) {
+            $requete  = '<ns1:fichiers>';
+            $requete .= '<ns1:nom>'.$filename.'</ns1:nom>';
+            $requete .= "<ns1:type>$type</ns1:type>";
+            $requete .= '<ns1:fichier>'.base64_encode($filecontent).'</ns1:fichier>';
+            $requete .= '</ns1:fichiers>';
+            return $requete;
+        }
+
+
+       */
 
 }
 ?>
