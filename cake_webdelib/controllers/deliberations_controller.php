@@ -791,7 +791,6 @@ class DeliberationsController extends AppController {
 	    if (empty($deliberations[$i]['Deliberation']['DateAR'])) {
 	        if (isset($deliberations[$i]['Deliberation']['tdt_id'])){
                     $flux   = $this->_getFluxRetour($deliberations[$i]['Deliberation']['tdt_id']);
-                    debug($flux);
                     $codeRetour = substr($flux, 3, 1);
 		    $deliberations[$i]['Deliberation']['code_retour'] = $codeRetour;
 
@@ -838,6 +837,7 @@ class DeliberationsController extends AppController {
     }
 
     function getAR($tdt_id, $toFile = false) {
+        $toFile = (boolean)$toFile;
         $url = 'https://'.Configure::read('HOST')."/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -859,8 +859,9 @@ class DeliberationsController extends AppController {
 	    echo $curl_return;
 	    exit();
 	}
-	else
+	else {
 	    return $curl_return;
+        }
     }
 
 	function toSend ($id=null, $message= null){
@@ -2156,9 +2157,11 @@ class DeliberationsController extends AppController {
 		$circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
 		if (empty($this->data)) {
 			$delibs = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.seance_id"=>$seance_id ,
-                                                                                            "Deliberation.etat !="  => -1,
-                                                                                            "Deliberation.etat >="   =>1),
+                                                                                            "Deliberation.etat >="   =>3),
                                                                         'order'      => 'Deliberation.position'));
+                        for ($i=0; $i<count($delibs); $i++){
+                            $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delibs[$i]['Seance']['type_id'], $delibs[$i]['Deliberation']['etat']);
+                        }
 			$this->set('deliberations', $delibs);
 			$this->set('circuits', $circuits['soustype']);
 		}
