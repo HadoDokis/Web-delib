@@ -1,16 +1,15 @@
 <?php
     App::import(array('Model', 'AppModel', 'File'));
+    App::import(array('Model', 'Deliberation', 'File'));
+    App::import(array('Model', 'Commentaire', 'File'));
 
     class ParapheurShell extends Shell{
 	
-        var $uses = array('Cakeflow.Circuit', 
-                          'Cakeflow.Etape', 
-                          'Cakeflow.Traitement', 
-                          'Cakeflow.Composition', 
-                          'Cakeflow.Visa', 
-                          'Deliberation', 'Commentaire');
+        var $uses = array( 'Deliberation', 'Commentaire');
 
-        var $components = array('Iparapheur');		
+       // var $components = array('Iparapheur');		
+function startup() {
+}
 
         function main() {
             // Controle de l'avancement des délibérations dans le parapheur
@@ -26,9 +25,7 @@
          function _checkEtatParapheur($delib_id, $tdt=false, $objet) {
             App::import('Component','Iparapheur');
             $this->Parafwebservice = new IparapheurComponent(); 
-
             $histo = $this->Parafwebservice->getHistoDossierWebservice("$delib_id $objet");
-         
             for ($i =0; $i < count($histo['logdossier']); $i++){
                 if(!$tdt){
                    if (($histo['logdossier'][$i]['status']  ==  'Signe')    ||
