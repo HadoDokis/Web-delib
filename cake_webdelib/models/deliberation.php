@@ -69,6 +69,9 @@ class Deliberation extends AppModel {
 		);
 		
 	var $hasMany = array(
+                 'TdtMessage' => array (
+                      'className'    => 'TdtMessage',
+                      'foreignKey'   => 'delib_id'),
                  'Historique' =>array(
                         'className'    => 'Historique',
                         'foreignKey'   => 'delib_id'),
