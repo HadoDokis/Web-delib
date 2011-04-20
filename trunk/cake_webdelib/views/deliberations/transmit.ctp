@@ -18,6 +18,7 @@
  	<th>Titre</th>
  	<th>Classification</th>
  	<th>statut</th>
+ 	<th>Courrier Ministériel</th>
 <tr>
 <?php
 	foreach ($deliberations as $delib) {
@@ -43,7 +44,24 @@
 		       elseif ($delib['Deliberation']['code_retour']==1)
 		           echo 'Posté';
 	           ?>
-		</td>
+		</td> 
+                <td>
+                    <?php
+                        if (!empty($delib['TdtMessage'])) {
+                            foreach ($delib['TdtMessage'] as $message){
+                                $url_newMessage = "https://".Configure::read("HOST")."/modules/actes/actes_transac_show.php?id=".$message['message_id'];
+                                if ($message['type_message'] ==2 )
+                                    echo $html->link("Courrier simple", $url_newMessage)."<br />";
+                                if ($message['type_message'] ==3 )
+                                    echo $html->link("Demande de pièces complémentaires", $url_newMessage)."<br />";
+                                if ($message['type_message'] == 4 )
+                                    echo $html->link("Lettre d'observation", $url_newMessage)."<br />";
+                                if ($message['type_message'] == 5 )
+                                    echo $html->link("Déféré au tribunal administratif", $url_newMessage)."<br />";
+                            }
+                        }
+                    ?>
+                </td>
 	</tr>
 <?php	 } ?>
 
