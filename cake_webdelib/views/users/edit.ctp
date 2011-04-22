@@ -56,7 +56,14 @@
 				<br /><br />
 				    <?php echo $form->input('User.accept_notif', array('before'=>'<label for="UserAcceptNotif">Notification email</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false,  'onClick'=>"if(this.value==1) $('#mails').show(); else $('#mails').hide(); " ));?>
 				<br /><br />
-                                 <fieldset id='mails' style="display:none;">
+                                 
+                                <?php   
+                                     if($this->data['User']['accept_notif']==0)
+                                         echo ("<fieldset id='mails' style='display:none;'>"); 
+                                     else 
+                                         echo ("<fieldset id='mails'>"); 
+                                ?>
+ 
 			             <legend>Réception des mails</legend>
 				    <?php echo $form->input('User.mail_insertion', array('before'=>'<label for="UserAcceptInsertion">Insertion</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
 				<br /><br />
