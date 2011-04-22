@@ -54,13 +54,16 @@
 			<div class="demi">
 			 	<?php echo $form->input('User.profil_id', array('label'=>'Profil utilisateur <acronym title="obligatoire">*</acronym>','options'=>$profils, 'empty'=>''));?>
 				<br /><br />
-				<?php echo $form->input('User.accept_notif', array('before'=>'<label for="UserAcceptNotif">Notification email</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
+				    <?php echo $form->input('User.accept_notif', array('before'=>'<label for="UserAcceptNotif">Notification email</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false,  'onClick'=>"if(this.value==1) $('#mails').show(); else $('#mails').hide(); " ));?>
 				<br /><br />
-				<?php echo $form->input('User.mail_insertion', array('before'=>'<label for="UserAcceptInsertion">Insertion de projet</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
+                                 <fieldset id='mails' style="display:none;">
+			             <legend>Réception des mails</legend>
+				    <?php echo $form->input('User.mail_insertion', array('before'=>'<label for="UserAcceptInsertion">Insertion</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
 				<br /><br />
-				<?php echo $form->input('User.mail_traitement', array('before'=>'<label for="UserAcceptTraitement">Traitement d\'un projet</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
+				    <?php echo $form->input('User.mail_traitement', array('before'=>'<label for="UserAcceptTraitement">Traitement</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
 				<br /><br />
-				<?php echo $form->input('User.mail_refus', array('before'=>'<label for="UserAcceptRefus">Refus d\'un projet</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
+				    <?php echo $form->input('User.mail_refus', array('before'=>'<label for="UserAcceptRefus">Refus</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
+                                </fieldset>
 				<br /><br />
 				<?php echo $form->input('User.circuit_defaut_id', array('label'=>'Circuit par d&eacute;faut','options'=>$circuits, 'empty'=>true));?>
 				<br /><br />
