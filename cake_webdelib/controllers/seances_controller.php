@@ -653,7 +653,9 @@ class SeancesController extends AppController {
 			if (empty($this->data)) {
 			    $this->set('selectedActeurs', $seance['Seance']['secretaire_id']);
 		    }
-			else {
+ 			else {
+                            $this->Seance->id = $seance_id;
+
 				if ($this->Seance->saveField('secretaire_id',$this->data['Acteur']['secretaire_id']))
 					$this->redirect('/seances/listerFuturesSeances');
 			}
