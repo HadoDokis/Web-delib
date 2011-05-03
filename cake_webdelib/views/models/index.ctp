@@ -5,6 +5,8 @@
 	<th>Mod&egrave;le</th>
 	<th>Type</th>
 	<th>Nom du mod&egrave;le</th>
+	<th>Recherche</th>
+	<th>Dernière modification</th>
 	<th>Actions</th>
 </tr>
 <?php foreach ($models as $model): ?>
@@ -12,6 +14,14 @@
 	<td><?php echo $model['Model']['modele']; ?></td>
 	<td><?php echo $model['Model']['type']; ?></td>
 	<td><?php echo $model['Model']['name']; ?></td>
+	<td><?php  if ($model['Model']['recherche']) 
+                       echo 'Oui';
+                   else
+                       echo 'Non';
+         ?></td>
+	<td><?php if ($model['Model']['modified']!= 0)
+                   echo $model['Model']['modified']; 
+         ?></td>
 	<td class="actions">
             <?php echo $html->link(SHY,'/models/view/' . $model['Model']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false)?>
 	    <?php
