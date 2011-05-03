@@ -1,3 +1,4 @@
+php_value output_buffering "0"
 <IfModule mod_rewrite.c>
     RewriteEngine on
     RewriteRule    ^$    webroot/    [L]
