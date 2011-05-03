@@ -75,11 +75,9 @@ class Deliberation extends AppModel {
                  'Historique' =>array(
                         'className'    => 'Historique',
                         'foreignKey'   => 'delib_id'),
-
 		'Traitement'=>array(
 			'className'    => 'Cakeflow.Traitement',
 			'foreignKey'   => 'target_id'), 
-
 		'Annex'=>array(
 			'className'    => 'Annex',
 			'foreignKey'   => 'deliberation_id',
@@ -87,10 +85,15 @@ class Deliberation extends AppModel {
 		'Commentaire'=>array(
 			'className'    => 'Commentaire',
 			'foreignKey'   => 'delib_id'),
+                'Listepresence'=>array(
+                        'className'    => 'Listepresence',
+                        'foreignKey'   => 'delib_id'),
+                'Vote'=>array(
+                        'className'    => 'Vote',
+                        'foreignKey'   => 'delib_id'),
 		'Infosup'=>array(
 			'dependent' => true)
 		);
-
 /*
  * Indique si le projet de délibération $delibId est modifiable pour $userId.
  * Attention : ne tient pas compte des droits qui sont fait dans le controller
@@ -281,7 +284,7 @@ class Deliberation extends AppModel {
            return $this->Seance->NaturecanSave($this->data['Deliberation']['seance_id'], $this->data['Deliberation']['nature_id']);
        }
 
-       function genererRecherche($projets, $model_id=10023){
+       function genererRecherche($projets, $model_id=1){
             include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
@@ -291,6 +294,14 @@ class Deliberation extends AppModel {
             include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+            App::import(array('Component', 'Progress', 'File'));
+
+            $dyn_path = "/files/generee/deliberations/recherche.pdf";
+            $path = WEBROOT_PATH.$dyn_path;
+            $urlpath =  'http://'.$_SERVER['HTTP_HOST'].$dyn_path;
+
+
+            $this->Progress = new ProgressComponent;
             
             $sMimeType = "application/pdf";
             $content = $this->Seance->Typeseance->Modelprojet->find('first', array('conditions'=> array('id' => $model_id),
@@ -302,35 +313,50 @@ class Deliberation extends AppModel {
                                 $content['Modelprojet']['content']);
 
             $oMainPart = new GDO_PartType();
-
-            $blocProjets = new GDO_IterationType("Projets");
+            $nbProjets = count($projets);
+            if ($nbProjets > 1) {
+                $i =0;
+                $blocProjets = new GDO_IterationType("Projets");
+                $this->Progress->start(200, 100,200, '#000000','#000000','#006699');
+            }
             foreach ($projets as $projet) {
                 $isDelib = false;
                 $oDevPart = new GDO_PartType();
-                if ($projet['Deliberation']['etat'] >= 3)
-                    $isDelib = true;
                 $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, $isDelib);
-                $blocProjets->addPart($oDevPart);
+                if ($nbProjets > 1)
+                    $blocProjets->addPart($oDevPart);
             }
-            $oMainPart->addElement($blocProjets);
+            if ( $nbProjets > 1)
+                $oMainPart->addElement($blocProjets);
+            else
+                $oMainPart =  $oDevPart;
+
+            $this->Progress->at(100,"Génération en cours...");
 
             $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
             $oFusion->process();
-            $oFusion->SendContentToClient();
+
+            $oFusion->SendContentToFile($path);
+            $this->Progress->endPopup($urlpath);
+            $this->Progress->end($_SERVER['HTTP_REFERER']);
         }
 
         function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null, $isPV=false)  {
-               if (($delib['Deliberation']['seance_id'] != 0 )&& ($isPV==false)) {
-  //                 $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($delib['Seance']['date']),   'date'));
- //                  $date_lettres =  $this->Date->dateLettres(strtotime($delib['Seance']['date']));
- //                  $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text'));
-//                   $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
+               App::import(array('Component', 'Gedooo', 'File'));
+               App::import(array('Component', 'Date',   'File'));
+               $this->Date = new DateComponent;
+               $this->Gedooo = new GedoooComponent;
+                 
+               if ($delib['Deliberation']['seance_id'] != 0 ) {
+                   $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
                    $seance = $this->Seance->find('first', array(
                                                  'conditions' => array(
                                                  'Seance.id' =>$delib['Seance']['id'])));
                    $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),    'text'));
                    $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
-
+                   $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($seance['Seance']['date']),   'date'));
+                   $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
+                   $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text'));
                }
                $titre = utf8_encode($delib['Deliberation']['titre']);
                $titre =  str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $titre);
@@ -353,8 +379,7 @@ class Deliberation extends AppModel {
                $oMainPart->addElement(new GDO_FieldType('T1_theme',                    utf8_encode($delib['Theme']['libelle']),         'text'));
                $oMainPart->addElement(new GDO_FieldType('critere-trie_theme',          utf8_encode($delib['Theme']['order']),         'text'));
 
-
-                    // Information sur le rapporteur
+                // Information sur le rapporteur
                $oMainPart->addElement(new GDO_FieldType('salutation_rapporteur',       utf8_encode($delib['Rapporteur']['salutation']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('prenom_rapporteur',           utf8_encode($delib['Rapporteur']['prenom']),     'text'));
                $oMainPart->addElement(new GDO_FieldType('nom_rapporteur',              utf8_encode($delib['Rapporteur']['nom']),        'text'));
@@ -383,20 +408,23 @@ class Deliberation extends AppModel {
                        $oMainPart->addElement(new GDO_ContentType('debat_commission', '', 'text/html', 'text',   '<small></small>'.$delib['Deliberation']['commission']));
                }
                else {
+                   include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
+                   $u = new GDO_Utility();
+
                    $dyn_path = "/files/generee/deliberations/".$delib['Deliberation']['id']."/";
                    $path = WEBROOT_PATH.$dyn_path;
 
                    if (!$this->Gedooo->checkPath($path))
                        die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-
-                   $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+                        
+                   $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$dyn_path;
 
                    if ($delib['Deliberation']['texte_projet_name']== "") {
                        $nameTP = "vide";
                        $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',''));
                    }
                    else {
-                                   $infos = (pathinfo($delib['Deliberation']['texte_projet_name']));
+                       $infos = (pathinfo($delib['Deliberation']['texte_projet_name']));
                        $nameTP = 'tp.'.$infos['extension'];
                        $this->Gedooo->createFile($path, $nameTP, $delib['Deliberation']['texte_projet']);
                        $extTP = $u->getMimeType($path.$nameTP);
@@ -442,9 +470,13 @@ class Deliberation extends AppModel {
                        $extCommi =  $u->getMimeType($path.$nameCommission);
                        $oMainPart->addElement(new GDO_ContentType('debat_commission', '',  $extCommi, 'url', $urlWebroot.$nameCommission));
                    }
-              }
-          return $oMainPart;
-      }
+
+            }
+            
+            return $oMainPart;
+        }
+
+
 
 }
 ?>
