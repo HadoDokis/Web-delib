@@ -104,3 +104,7 @@ CREATE TABLE `tdt_messages` (
 `modified` DATETIME NOT NULL
 ) ENGINE = InnoDB;
 ALTER TABLE `tdt_messages` ADD `reponse` INT( 3 ) NOT NULL AFTER `type_message` ;
+
+ALTER TABLE `models` ADD `recherche` TINYINT( 1 ) NULL ,
+ADD `created` DATETIME NOT NULL ,
+ADD `modified` DATETIME NOT NULL 
