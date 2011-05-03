@@ -16,7 +16,7 @@ class DeliberationsController extends AppController {
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
 	var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit',  'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa');
-	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Iparapheur', 'Filtre', 'Cmis');
+	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Iparapheur', 'Filtre', 'Cmis', 'Progress');
 
 	// Gestion des droits
 	var $demandeDroit = array(
@@ -66,6 +66,16 @@ class DeliberationsController extends AppController {
                 'sendToParapheur' => 'Envoie à la signature',
                 'sendToGed' => 'Envoie &agrave; une GED'
 	);
+        var $aucunDroit= array('test');
+
+        function test () {
+            $this->Progress->start(200, 100,200, '#000000','#000000','#006699');
+            for ($i=0; $i<=100; $i++) {
+                $this->Progress->at($i, "");
+                usleep(20000); 
+            }
+            $this->Progress->endPopup("/seances/");
+        }
 
 	function view($id = null) {
 		$this->set('previous', $this->referer());
@@ -880,7 +890,8 @@ class DeliberationsController extends AppController {
                     $this->set('dateClassification', "Récupérer la classification");
 
 		// On affiche que les delibs vote pour.
-		$deliberations = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.etat"=>3, "Deliberation.delib_pdf <>"=>'')));
+		$deliberations = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.etat"=>3, "Deliberation.delib_pdf <>"=>''),
+                                                                       'limit' => 10));
 
 		for($i = 0; $i < count($deliberations); $i++) {
 			$deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
@@ -959,6 +970,9 @@ class DeliberationsController extends AppController {
     	}
 		return $return;
 	}
+
+
+
 
         function sendActe ($delib_id = null) {
 	    $Tabclassification = array();
@@ -1060,7 +1074,7 @@ class DeliberationsController extends AppController {
 			 else {
                               ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Delib&eacute;ration '.$delib[0]['Deliberation']['num_delib'].' envoy&eacute;e ');
                               $nbEnvoyee ++;
-                              $this->Deliberation->saveField('etat', 5);
+                            //  $this->Deliberation->saveField('etat', 5);
                               $this->Deliberation->saveField('tdt_id', $tdt_id);
 
 			      curl_close($ch);
@@ -1633,11 +1647,14 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.etat !=']    = -1;
         $conditions['Deliberation.etat <']     = 3;
         $ordre = 'Deliberation.created DESC';
-        $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
-                                                           'order'     => $ordre,
-                                                           'contain'   => array( 'Seance.id','Seance.traitee',
-                                                                                 'Seance.date', 'Seance.Typeseance.libelle',
-                                                                                 'Service.libelle', 'Theme.libelle',
+        $projets = $this->Deliberation->find('all', array( 'conditions' => $conditions,
+                                                           'order'      => $ordre,
+                                                           'contain'    => array( 'Seance.id',
+                                                                                 'Seance.traitee',
+                                                                                 'Seance.date', 
+                                                                                 'Seance.Typeseance.libelle',
+                                                                                 'Service.libelle', 
+                                                                                 'Theme.libelle',
                                                                                  'Nature.libelle')));
         $actions = array('view', 'generer');
         if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"))
@@ -1873,6 +1890,9 @@ class DeliberationsController extends AppController {
 			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, code, nom, commentaire, type, taille', 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
 			$this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
+			$this->set('models', $this->Model->find('list',array('conditions'=>array('type'=>'Document', 'Model.recherche' => 1),
+                                                                             'fields' => array('Model.id','Model.modele'))));
+
 
 			$this->render('rechercheMutliCriteres');
 		} else {
@@ -1960,14 +1980,17 @@ class DeliberationsController extends AppController {
 				$conditions .= empty($listeCircuits) ? '' : ')';
 				$ordre = 'Deliberation.created DESC';
 
-				$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
-
-           			$this->_afficheProjets(
-					$projets,
-					'R&eacute;sultat de la recherche parmi mes projets',
-					array('view', 'generer'),
-					array('mesProjetsRecherche'));
-                              //  $this->Deliberation->genererRecherche($projets);
+				//$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
+                                 $projets = $this->Deliberation->find('all', array ('conditions' => $conditions));
+                                if ($this->data['Deliberation']['generer'] == 0) {
+           			    $this->_afficheProjets( $projets,
+				                            'R&eacute;sultat de la recherche parmi mes projets',
+					                    array('view', 'generer'),
+					                    array('mesProjetsRecherche'));
+                                }
+                                else {
+                                    $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model']);
+                                }
 			}
 		}
 	}
@@ -1986,6 +2009,10 @@ class DeliberationsController extends AppController {
 			$this->set('etats', $this->Deliberation->generateListEtat());
 			$this->set('infosupdefs', $this->Infosupdef->findAll('recherche = 1', 'id, code, nom, commentaire, type, taille', 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
+                        $this->set('models', $this->Model->find('list',array('conditions'=>array('type'=>'Document', 'Model.recherche' => 1),
+                                                                             'fields' => array('Model.id','Model.modele'))));
+
+
 			$this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
 
 			$this->render('rechercheMutliCriteres');
@@ -2067,14 +2094,18 @@ class DeliberationsController extends AppController {
 				$this->redirect('/deliberations/tousLesProjetsRecherche');
 			} else {
 				// lecture en base
-				$projets = $this->Deliberation->findAll($conditions, null, 'Deliberation.created DESC', null, null, 0);
+                                $projets = $this->Deliberation->find('all', array ('conditions' => $conditions,
+                                                                                   'oder'       => 'Deliberation.seance_id'));
+                                if ($this->data['Deliberation']['generer'] == 0) {
+                                    $this->_afficheProjets( $projets,
+                                                            'R&eacute;sultat de la recherche parmi mes projets',
+                                                            array('view', 'generer'),
+                                                            array('mesProjetsRecherche'));
+                                }
+                                else {
+                                    $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model']);
+                                }
 
-				$this->_afficheProjets(
-					$projets,
-					'R&eacute;sultat de la recherche parmi tous les projets',
-					array('view', 'generer'),
-					array('tousLesProjetsRecherche'));
-                                // $this->Deliberation->genererRecherche($projets);
 			}
 		}
 	}
@@ -2424,6 +2455,7 @@ class DeliberationsController extends AppController {
         // Création du répertoire
         $my_new_folder = $cmis->client->createFolder($cmis->folder->id, 
                                                      $delib_id);
+
         // Dépôt de la délibération et du rapport dans le répertoire que l'on vient de créer
         $obj_delib = $cmis->client->createDocument($my_new_folder->id, 
                                                    "deliberation.pdf", 
@@ -2437,13 +2469,14 @@ class DeliberationsController extends AppController {
         else
             $model_id = 1;
 
-        $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport.pdf/1/false");
-        $rapport = file_get_contents(WEBROOT_PATH."/files/generee/fd/null/$delib_id/rapport.pdf");
-        $obj_rapport = $cmis->client->createDocument($my_new_folder->id, 
-                                                     "rapport.pdf", 
-                                                     array (), 
-                                                     $rapport, 
-                                                     "application/pdf");
+//        $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport.pdf/1/false");
+//        $rapport = file_get_contents(WEBROOT_PATH."/files/generee/fd/null/$delib_id/rapport.pdf");
+//        $obj_rapport = $cmis->client->createDocument($my_new_folder->id, 
+//                                                     "rapport.pdf", 
+//                                                     array (), 
+//                                                     $rapport, 
+//                                                     "application/pdf");
+
         if (count($delib['Annex'])> 0) {
             $annex_folder = $cmis->client->createFolder($my_new_folder->id, 'Annexes');
             foreach ($delib['Annex'] as $annex) {
