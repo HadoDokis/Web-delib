@@ -74,7 +74,7 @@ class DeliberationsController extends AppController {
                 $this->Progress->at($i, "");
                 usleep(20000); 
             }
-            $this->Progress->endPopup("/seances/");
+            $this->Progress->end("/seances/");
         }
 
 	function view($id = null) {
@@ -1982,14 +1982,21 @@ class DeliberationsController extends AppController {
 
 				//$projets = $this->Deliberation->findAll($conditions, null, $ordre, null, null, 0);
                                  $projets = $this->Deliberation->find('all', array ('conditions' => $conditions));
-                                if ($this->data['Deliberation']['generer'] == 0) {
+                         
+                                if ($this->data['Deliberation']['generer'] == 0 ) {
            			    $this->_afficheProjets( $projets,
 				                            'R&eacute;sultat de la recherche parmi mes projets',
 					                    array('view', 'generer'),
 					                    array('mesProjetsRecherche'));
                                 }
                                 else {
-                                    $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model']);
+                                    if(count($projets)>0){
+                                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model']);
+                                    }
+                                    else {
+				        $this->Session->setFlash('Aucun résultat à la recherche effectuée.', 'growl', array('type'=>'erreur'));
+				        $this->redirect('/deliberations/mesProjetsRecherche');
+                                    }
                                 }
 			}
 		}
