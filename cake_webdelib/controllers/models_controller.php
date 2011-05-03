@@ -119,23 +119,27 @@
 	function import($model_id) {
             $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 	    $this->set('model_id', $model_id);
-            $Model = $this->Model->read(null, $model_id);
+            $this->Model->id = $model_id;
+            $Model = $this->Model->find('first', array('conditions'=> array('Model.id'=> $model_id),
+                                                       'recursive' => -1,
+                                                       'fields'    => array('modele', 'recherche')));
 	    $this->set('libelle', $Model['Model']['modele']);
 	    if (! empty($this->data)){
 	        if (isset($this->data['Model']['template'])){
+                
 		    if ($this->data['Model']['template']['size']!=0){
                         $this->data['Model']['id']        = $model_id;
                         $this->data['Model']['name']      = $this->data['Model']['template']['name'];
                         $this->data['Model']['size']      = $this->data['Model']['template']['size'];
                         $this->data['Model']['extension'] = $this->data['Model']['template']['type'];
                         $this->data['Model']['content']   = $this->getFileData($this->data['Model']['template']['tmp_name'], $this->data['Model']['template']['size']);
-                        if ($this->Model->save($this->data))
-                            $this->redirect('/models/index');
                     }
                 }
-            } else 
+                if ($this->Model->save($this->data))
+                    $this->redirect('/models/index');
+            } else {
                 $this->data = $Model;
-	    
+	    }
 	}
 
 	function getFileData($fileName, $fileSize) {

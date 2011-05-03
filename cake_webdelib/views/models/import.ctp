@@ -13,6 +13,11 @@
         echo $form->input('Model.content', array('type'=>'textarea', 'cols' => '10', 'rows' => '20'));
         echo $fck->load('data[Model][content]');
    }
+   echo  $form->input("Model.recherche");
+?>
+</div>
+<div class="submit">
+<?php 
     echo $form->submit('Importer', array('div'=>false, 'class'=>'bt_add', 'name'=>'importer'));
     echo '<br><br>';
 ?>
