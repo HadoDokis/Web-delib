@@ -61,6 +61,12 @@
 			echo '</td>';
 		echo '</tr>';
 	} ?>
+        <tr>
+           <td><?php echo $form->label('Deliberation.generer','Générer le document'); ?> </td>
+           <td><?php echo $form->input('Deliberation.generer', array('type'=>'checkbox', 'label'=>false, 'div'=> false, 'onClick'=>"if(this.checked) $('#DeliberationModel').show(); else $('#DeliberationModel').hide(); "));?>
+               <?php echo $form->input('Deliberation.model', array('label'=>false, 'options'=>$models, 'div' => false, 'style'=> 'display:none;'));?>
+           </td>
+    </tr>
 </table>
 <br />
 <?php  echo $form->submit('Rechercher', array('div'=>false, 'class'=>'bt_add', 'name'=>'Rechercher')); ?>
