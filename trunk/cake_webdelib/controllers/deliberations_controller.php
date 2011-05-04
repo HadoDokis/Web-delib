@@ -102,20 +102,18 @@ class DeliberationsController extends AppController {
 		    $this->set('userCanEdit', false);
 
 		// Lecture et initialisation des commentaires
-       		$commentaires = $this->Commentaire->find('all', array('conditions'=>array("delib_id =  $id")));
-		for($i=0; $i< count($commentaires) ; $i++) {
-		        if($commentaires[$i]['Commentaire']['agent_id'] == -1) {
-			    $nomAgent = 'i-parapheur';
-			    $prenomAgent = '';
-			}
-			else {
-			    $nomAgent = $this->requestAction("users/getNom/".$commentaires[$i]['Commentaire']['agent_id']);
-			    $prenomAgent = $this->requestAction("users/getPrenom/".$commentaires[$i]['Commentaire']['agent_id']);
-			}
-			$commentaires[$i]['Commentaire']['nomAgent'] = $nomAgent;
-			$commentaires[$i]['Commentaire']['prenomAgent'] = $prenomAgent;
-		}
-		$this->set('commentaires',$commentaires);
+                $commentaires = $this->Commentaire->find('all', array('conditions' => array ('Commentaire.delib_id' => $id ,
+                                                                                                 'Commentaire.pris_en_compte' => 0),
+                                                                           'order' =>  'created ASC'));
+                for($i=0; $i< count($commentaires) ; $i++) {
+                    $agent = $this->User->find('first', array('conditions' => array(
+                                                   'User.id' => $commentaires[$i]['Commentaire']['agent_id']) ,
+                                                   'recursive' => -1,
+                                                   'fields'    => array('nom', 'prenom') ));
+                    $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
+                    $commentaires[$i]['Commentaire']['prenomAgent'] =  $agent['User']['prenom'];
+                }
+                $this->set ('commentaires', $commentaires );
 
 		$this->set('historiques',$this->Historique->find('all', array('conditions' => array("Historique.delib_id" => $id))));
 
@@ -699,7 +697,9 @@ class DeliberationsController extends AppController {
                     $listeAnterieure=array();
                     $tab_anterieure=$this->_chercherVersionAnterieure($id, $projet, $nb_recursion, $listeAnterieure, $action);
                     $this->set('tab_anterieure',$tab_anterieure);
-                    $commentaires = $this->Commentaire->findAll("delib_id = $id and pris_en_compte = 0", null, "created ASC");
+                    $commentaires = $this->Commentaire->find('all', array('conditions' => array ('Commentaire.delib_id' => $id ,
+                                                                                                 'Commentaire.pris_en_compte' => 0),
+                                                                           'order' =>  'created ASC'));
                     for($i=0; $i< count($commentaires) ; $i++) {
                         $agent = $this->User->find('first', array('conditions' => array(
                                                        'User.id' => $commentaires[$i]['Commentaire']['agent_id']) ,
