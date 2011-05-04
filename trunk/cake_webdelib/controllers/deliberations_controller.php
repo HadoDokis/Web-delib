@@ -742,8 +742,8 @@ class DeliberationsController extends AppController {
 	       	            $this->redirect('/deliberations/mesProjetsATraiter');
 	                }
 		        else {
-                            $this->Deliberation->refusDossier($id);
-                            $this->Traitement->execute('KO', $this->Session->read('user.User.id'), $id);
+          //                  $this->Deliberation->refusDossier($id);
+          //                  $this->Traitement->execute('KO', $this->Session->read('user.User.id'), $id);
                             // TODO notifier par mail toutes les personnes qui ont deja vise le projet
                             $destinataires = $this->Traitement->whoIsPrevious($id);
                             foreach( $destinataires as $destinataire_id)
@@ -1074,7 +1074,7 @@ class DeliberationsController extends AppController {
 			 else {
                               ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Delib&eacute;ration '.$delib[0]['Deliberation']['num_delib'].' envoy&eacute;e ');
                               $nbEnvoyee ++;
-                            //  $this->Deliberation->saveField('etat', 5);
+                              $this->Deliberation->saveField('etat', 5);
                               $this->Deliberation->saveField('tdt_id', $tdt_id);
 
 			      curl_close($ch);
