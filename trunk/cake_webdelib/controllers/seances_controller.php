@@ -177,7 +177,7 @@ class SeancesController extends AppController {
                         echo ('    document.getElementById("affiche").style.display="none";');
                         echo ('    document.getElementById("contTemp").style.display="none";');
                         echo ('</script>');
-                        echo ('<br />Sauvegarde des actes administratifs réussies');
+                        echo ('<br />Sauvegarde des actes administratifs réussie');
                         die ('<br /><a href ="/postseances/index" id="retour"> Aller en post-séance </a>');
                 }
 	    }
