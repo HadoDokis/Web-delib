@@ -14,7 +14,6 @@
                 $result_array = explode("\n", $result);
                 foreach (  $result_array  as  $result ) {
                     if (!empty($result)) {
-                        $this->log(  $result );
                         $type = substr($result, 0,1);
                         $reponse = substr($result, 2,1);
                         $message_id = substr($result, 4, strlen($result));
