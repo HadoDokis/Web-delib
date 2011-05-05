@@ -210,11 +210,14 @@ class Deliberation extends AppModel {
 	}
 
 	function changeClassification($delib_id, $classification){
-		$this->data = $this->read(null, $delib_id);
-		$this->data['Deliberation']['id']=$delib_id;
-		$this->data['Deliberation']['num_pref'] = $classification;
-		$this->save($this->data);
+            $this->id = $delib_id;
+            $this->saveField('num_pref', $classification);
 	}
+
+        function changeDateAR($delib_id, $dateAR){
+            $this->id = $delib_id;
+            $this->saveField('dateAR', $dateAR);
+        }
 
         function getModelId($delib_id) {
              $data = $this->read(null, $delib_id);
