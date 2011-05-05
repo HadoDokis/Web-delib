@@ -321,6 +321,8 @@ class Deliberation extends AppModel {
             }
             foreach ($projets as $projet) {
                 $isDelib = false;
+                if ($projet['Deliberation']['etat']>=3)
+                     $isDelib = true;
                 $oDevPart = new GDO_PartType();
                 $oDevPart = $this->makeBalisesProjet($projet,  $oDevPart, $isDelib);
                 if ($nbProjets > 1)
@@ -472,11 +474,257 @@ class Deliberation extends AppModel {
                    }
 
             }
-            
-            return $oMainPart;
+               if (!$isDelib)
+                  return $oMainPart;
+               //LISTE DES PRESENCES...
+               $this->Listepresence->Behaviors->attach('Containable');
+               $this->Vote->Behaviors->attach('Containable');
+               $acteurs_presents = array();
+               $acteurs_absents = array();
+               $acteurs_remplaces = array();
+               $acteurs_contre = array();
+               $acteurs_pour = array();
+               $acteurs_abstention = array();
+               $acteurs_sans_participation = array();
+
+               $acteurs = $this->Listepresence->find('all', 
+                                                     array ('conditions' => array("delib_id" => $delib['Deliberation']['id']),
+                                                            'contain'   => array('Acteur', 'Listepresence'),           
+                                                            'order' => 'Acteur.position ASC'));
+               if (!empty($acteurs)) {
+                     foreach($acteurs as $acteur) {
+                         if ( $acteur['Listepresence']['present'] == 1 ){
+                             $acteurs_presents[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                                     'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                                     'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                                     'titre_acteur'=> $acteur['Acteur']['titre'],
+                                                     'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                                     'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                                     'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                                     'cp_acteur' => $acteur['Acteur']['cp'],
+                                                     'ville_acteur' => $acteur['Acteur']['ville'],
+                                                     'email_acteur' => $acteur['Acteur']['email'],
+                                                     'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                                     'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                                     'note_acteur' => $acteur['Acteur']['note']);
+                         }
+                         elseif(($acteur['Listepresence']['present'] == 0) AND ($acteur['Listepresence']['mandataire']==0)) {
+                             $acteurs_absents[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                                     'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                                     'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                                     'titre_acteur'=> $acteur['Acteur']['titre'],
+                                                     'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                                     'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                                     'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                                     'cp_acteur' => $acteur['Acteur']['cp'],
+                                                     'ville_acteur' => $acteur['Acteur']['ville'],
+                                                     'email_acteur' => $acteur['Acteur']['email'],
+                                                     'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                                     'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                                     'note_acteur' => $acteur['Acteur']['note']);
+
+                         }
+                        elseif(($acteur['Listepresence']['present'] == 0) AND ($acteur['Listepresence']['mandataire']!=0)) {
+                             $acteurs_remplaces[] = array(
+                                                     'nom_acteur' => $acteur['Acteur']['nom'],
+                                                     'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                                     'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                                     'titre_acteur'=> $acteur['Acteur']['titre'],
+                                                     'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                                     'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                                     'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                                     'cp_acteur' => $acteur['Acteur']['cp'],
+                                                     'ville_acteur' => $acteur['Acteur']['ville'],
+                                                     'email_acteur' => $acteur['Acteur']['email'],
+                                                     'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                                     'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                                     'note_acteur' => $acteur['Acteur']['note'],
+
+                                                     'nom_mandate' => $acteur['Mandataire']['nom'],
+                                                     'prenom_mandate' => $acteur['Mandataire']['prenom'],
+                                                     'salutation_mandate'=> $acteur['Mandataire']['salutation'],
+                                                     'titre_mandate'=> $acteur['Mandataire']['titre'],
+                                                     'date_naissance_mandate' => $acteur['Mandataire']['date_naissance'],
+                                                     'adresse1_mandate' => $acteur['Mandataire']['adresse1'],
+                                                     'adresse2_mandate' => $acteur['Mandataire']['adresse2'],
+                                                     'cp_mandate' => $acteur['Mandataire']['cp'],
+                                                     'ville_mandate' => $acteur['Mandataire']['ville'],
+                                                     'email_mandate' => $acteur['Mandataire']['email'],
+                                                     'telfixe_mandate' => $acteur['Mandataire']['telfixe'],
+                                                     'telmobile_mandate' => $acteur['Mandataire']['telmobile'],
+                                                     'note_mandate' => $acteur['Mandataire']['note']);
+                         }
+                    }
+                }
+
+               $acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
+                                                                               "Vote.resultat"=> 2),
+                                                          'contain'   => array('Acteur', 'Vote'),
+                                                          'order' => 'Acteur.position ASC'));
+
+                foreach ($acteurs as $acteur) {
+                     $acteurs_contre[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                               'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                               'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                               'titre_acteur'=> $acteur['Acteur']['titre'],
+                                               'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                               'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                               'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                               'cp_acteur' => $acteur['Acteur']['cp'],
+                                               'ville_acteur' => $acteur['Acteur']['ville'],
+                                               'email_acteur' => $acteur['Acteur']['email'],
+                                               'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                               'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                               'note_acteur' => $acteur['Acteur']['note']);
+                }
+             
+               $acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
+                                                                               "Vote.resultat"=> 3),
+                                                          'contain'   => array('Acteur', 'Vote'),
+                                                          'order' => 'Acteur.position ASC'));
+
+                foreach ($acteurs as $acteur) {
+                       $acteurs_pour[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                               'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                               'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                               'titre_acteur'=> $acteur['Acteur']['titre'],
+                                               'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                               'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                               'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                               'cp_acteur' => $acteur['Acteur']['cp'],
+                                               'ville_acteur' => $acteur['Acteur']['ville'],
+                                               'email_acteur' => $acteur['Acteur']['email'],
+                                               'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                               'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                               'note_acteur' => $acteur['Acteur']['note']);
+               }
+             
+               $acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
+                                                                               "Vote.resultat"=> 4),
+                                                          'contain'   => array('Acteur', 'Vote'),
+                                                          'order' => 'Acteur.position ASC'));
+
+               foreach ($acteurs as $acteur) {
+                 $acteurs_abstention[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                               'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                               'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                               'titre_acteur'=> $acteur['Acteur']['titre'],
+                                               'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                               'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                               'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                               'cp_acteur' => $acteur['Acteur']['cp'],
+                                               'ville_acteur' => $acteur['Acteur']['ville'],
+                                               'email_acteur' => $acteur['Acteur']['email'],
+                                               'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                               'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                               'note_acteur' => $acteur['Acteur']['note']);
+               }
+               $acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
+                                                                               "Vote.resultat"=> 5),
+                                                          'contain'   => array('Acteur', 'Vote'),
+                                                          'order' => 'Acteur.position ASC'));
+
+               foreach ($acteurs as $acteur) {
+                 $acteurs_sans_participation[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                               'prenom_acteur' => $acteur['Acteur']['prenom'],
+                                               'salutation_acteur'=> $acteur['Acteur']['salutation'],
+                                               'titre_acteur'=> $acteur['Acteur']['titre'],
+                                               'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                                               'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                                               'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                                               'cp_acteur' => $acteur['Acteur']['cp'],
+                                               'ville_acteur' => $acteur['Acteur']['ville'],
+                                               'email_acteur' => $acteur['Acteur']['email'],
+                                               'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                                               'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                                               'note_acteur' => $acteur['Acteur']['note']);
+               }
+
+               $oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents",   $acteurs_presents, false, '_present'));
+               $oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbsents",    $acteurs_absents, false, '_absent'));
+               $oMainPart->addElement($this->_makeBlocsActeurs("ActeursMandates",   $acteurs_remplaces, true, '_mandataire'));
+               $oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre",     $acteurs_contre, false, '_contre'));
+               $oMainPart->addElement($this->_makeBlocsActeurs("ActeursPour",       $acteurs_pour, false, '_pour'));
+               $oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbstention", $acteurs_abstention, false, '_abstention'));
+               $oMainPart->addElement($this->_makeBlocsActeurs("ActeursSansParticipation", $acteurs_sans_participation, false, '_sans_participation'));
+               return $oMainPart;
+
         }
 
+        function _makeBlocsActeurs ($nomBloc, $listActeur, $isMandate, $type) {
+            $acteurs = new GDO_IterationType("$nomBloc");
+            if ( count($listActeur) == 0 ) {
+              $oDevPart = new GDO_PartType();
+              $oDevPart->addElement(new GDO_FieldType("nom_acteur".$type,            ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type,         ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,     ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("titre_acteur".$type,          ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("date_naissance_acteur".$type, ' ', "date"));
+              $oDevPart->addElement(new GDO_FieldType("adresse1_acteur".$type,       ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("adresse2_acteur".$type,       ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("cp_acteur".$type,             ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("ville_acteur".$type,          ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("email_acteur".$type,          ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("telfixe_acteur".$type,        ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("telmobile_acteur".$type,      ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType("note_acteur".$type,           ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('nom_acteur_mandate',                 ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('prenom_acteur_mandate',              ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('salutation_acteur_mandate',          ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('titre_acteur_mandate',               ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('date_naissance_acteur_mandate',      ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('adresse1_acteur_mandate',            ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('adresse2_acteur_mandate',            ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('cp_acteur_mandate',                  ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('ville_acteur_mandate',               ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('email_acteur_mandate',               ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('telfixe_acteur_mandate',             ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('telmobile_acteur_mandate',           ' ', "text"));
+              $oDevPart->addElement(new GDO_FieldType('note_acteur_mandate',                ' ', "text"));
+              $acteurs->addPart($oDevPart);
+              return $acteurs;
+            }
+            else {
+             foreach($listActeur as $acteur) {
+                $oDevPart = new GDO_PartType();
+                $oDevPart->addElement(new GDO_FieldType("nom_acteur".$type, utf8_encode($acteur['nom_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type, utf8_encode($acteur['prenom_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,utf8_encode($acteur['salutation_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("titre_acteur".$type, utf8_encode($acteur['titre_acteur']), "text"));
+                if ($acteur['date_naissance_acteur'] != null)
+                    $oDevPart->addElement(new GDO_FieldType("date_naissance_acteur".$type,  $this->Date->frDate($acteur['date_naissance_acteur']), "date"));
+                else
+                      $oDevPart->addElement(new GDO_FieldType("date_naissance_acteur".$type, '', "date"));
 
+                $oDevPart->addElement(new GDO_FieldType("adresse1_acteur".$type, utf8_encode($acteur['adresse1_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("adresse2_acteur".$type, utf8_encode($acteur['adresse2_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("cp_acteur".$type, utf8_encode($acteur['cp_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("ville_acteur".$type, utf8_encode($acteur['ville_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("email_acteur".$type, utf8_encode($acteur['email_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("telfixe_acteur".$type,utf8_encode($acteur['telfixe_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("telmobile_acteur".$type,  utf8_encode($acteur['prenom_acteur']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("note_acteur".$type, utf8_encode($acteur['note_acteur']), "text"));
+                if (isset($acteur['nom_mandate'])) {
+                    $oDevPart->addElement(new GDO_FieldType('nom_acteur_mandate', utf8_encode($acteur['nom_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('prenom_acteur_mandate', utf8_encode($acteur['prenom_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('salutation_acteur_mandate', utf8_encode($acteur['salutation_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('titre_acteur_mandate', utf8_encode($acteur['titre_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('date_naissance_acteur_mandate', utf8_encode($acteur['date_naissance_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('adresse1_acteur_mandate', utf8_encode($acteur['adresse1_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('adresse2_acteur_mandate', utf8_encode($acteur['adresse2_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('cp_acteur_mandate', utf8_encode($acteur['cp_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('ville_acteur_mandate', utf8_encode($acteur['ville_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('email_acteur_mandate', utf8_encode($acteur['email_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('telfixe_acteur_mandate', utf8_encode($acteur['telfixe_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('telmobile_acteur_mandate', utf8_encode($acteur['telmobile_mandate']), "text"));
+                    $oDevPart->addElement(new GDO_FieldType('note_acteur_mandate', utf8_encode($acteur['note_mandate']), "text"));
+                }
+                $acteurs->addPart($oDevPart);
+            }
+            return $acteurs;
+
+            }
+        }
 
 }
 ?>
