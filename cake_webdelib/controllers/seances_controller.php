@@ -329,8 +329,11 @@ class SeancesController extends AppController {
 
     function changeRapporteur($newRapporteur,$delib_id) {
         $this->Deliberation->id = $delib_id;
+        $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id ),
+                                                          'fields'     => array('seance_id'),
+                                                          'recursive'  => -1 ) );
         if ($this->Deliberation->saveField('rapporteur_id', $newRapporteur)) {
-       	    $this->Redirect($this->Session->read('user.User.lasturl'));
+       	    $this->Redirect('/seances/afficherProjets/'.$delib['Deliberation']['seance_id']);
        	}
     }
 
