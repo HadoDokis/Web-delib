@@ -806,8 +806,7 @@ class DeliberationsController extends AppController {
 
                     if($codeRetour==4) {
                         $dateAR = $this->_getDateAR($res = mb_substr( $flux, strpos($flux, '<actes:ARActe'), strlen($flux)));
-                        $this->Deliberation->id = $deliberations[$i]['Deliberation']['id'];
-                        $this->Deliberation->saveField('dateAR', $dateAR);
+                        $this->Deliberation->changeDateAR($deliberations[$i]['Deliberation']['id'], $dateAR);
 		        $deliberations[$i]['Deliberation']['DateAR'] =  $dateAR;
                     }
 		}
@@ -959,7 +958,7 @@ class DeliberationsController extends AppController {
            		$return[$key] = $this->_object2array($value);
     	}
     	else{
-        	$var = get_object_vars($object);
+        	$var = @get_object_vars($object);
         	if($var)
         	{
             	foreach($var as $key => $value)
@@ -971,15 +970,11 @@ class DeliberationsController extends AppController {
 		return $return;
 	}
 
-
-
-
         function sendActe ($delib_id = null) {
 	    $Tabclassification = array();
 	    if (!is_file(Configure::read('FILE_CLASS')))
 	     $this->getClassification();
 	    include ('vendors/progressbar.php');
-            Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
 	    $url = 'https://'.Configure::read('HOST').'/modules/actes/actes_transac_create.php';
             $pos =  strrpos ( getcwd(), 'webroot');
 	    $path = substr(getcwd(), 0, $pos);
@@ -995,45 +990,46 @@ class DeliberationsController extends AppController {
             $nbEnvoyee = 1;
 	    foreach ($this->data['Deliberation'] as $id => $bool ){
 	        if ($bool == 1){
-                    ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'G&eacute;n&eacute;ration du document ');
 		    $delib_id = substr($id, 3, strlen($id));
 		    $classification =   $Tabclassification[$delib_id];
-		    $this->Deliberation->changeClassification($delib_id, $classification);
-		    $class1 = substr($classification , 0, strpos ($classification , '.' ));
-		    $rest = substr($classification , strpos ($classification , '.' )+1, strlen($classification));
-		    $class2=substr($rest , 0, strpos ($classification , '.' ));
-		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
-		    $class3=substr($rest , 0, strpos ($classification , '.' ));
-		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
-		    $class4=substr($rest , 0, strpos ($classification , '.' ));
-		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
-		    $class5=substr($rest , 0, strpos ($classification , '.' ));
+                    if (!empty( $classification))
+		        $this->Deliberation->changeClassification($delib_id, $classification);
+ 
+  		    $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id)));
+                    $classification = $delib['Deliberation']['num_pref'];
 
-                    ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Document G&eacute;n&eacute;r&eacute; ');
-		    $delib = $this->Deliberation->findAll("Deliberation.id = $delib_id");
+		    $class1 = substr($classification , 0, strpos ($classification , '-' ));
+		    $rest = substr($classification , strpos ($classification , '-' )+1, strlen($classification));
+		    $class2=substr($rest , 0, strpos ($classification , '-' ));
+		    $rest = substr($rest , strpos ($classification , '-' )+1, strlen($rest));
+		    $class3=substr($rest , 0, strpos ($classification , '.' ));
+		    $rest = substr($rest , strpos ($classification , '-' )+1, strlen($rest));
+		    $class4=substr($rest , 0, strpos ($classification , '-' ));
+		    $rest = substr($rest , strpos ($classification , '-' )+1, strlen($rest));
+		    $class5=substr($rest , 0, strpos ($classification , '-' ));
+
 
 		    //Création du fichier de délibération au format pdf (on ne passe plus par la génération)
-                    $file =  $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/fd/null/$delib_id/", "D_$delib_id.pdf",  $delib[0]['Deliberation']['delib_pdf']);
+                    $file =  $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/fd/null/$delib_id/", "D_$delib_id.pdf",  $delib['Deliberation']['delib_pdf']);
                     if (!file_exists( $file ))
 		        die ("Problème lors de la récupération du fichier");
         	    // Checker le code classification
-        	    $data = array(
+        	    $acte = array(
       	                 'api'           => '1',
-     	                 'nature_code'   => $delib[0]['Deliberation']['nature_id'],
+     	                 'nature_code'   => $delib['Deliberation']['nature_id'],
      	                 'classif1'      => $class1 ,
      	                 'classif2'      => $class2,
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-		//	 'number'        => $delib[0]['Deliberation']['num_delib'],
-			 'number'        => time(),
-     	                 'decision_date' => date("Y-m-d", strtotime($delib[0]['Seance']['date'])),
-      	                 'subject'       => $delib[0]['Deliberation']['objet'],
+			 'number'        => $delib['Deliberation']['num_delib'],
+     	                 'decision_date' => date("Y-m-d", strtotime($delib['Seance']['date'])),
+      	                 'subject'       => $delib['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
      	                 'acte_pdf_file_sign' => "",
    	                 );
 		    $nb_pj=0;
-		    foreach ($delib['0']['Annex'] as $annexe) {
+		    foreach ($delib['Annex'] as $annexe) {
                         if ($annexe['type'] == 'G') {
 			    $pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/", $annexe['filename'], $annexe['data']);
 			    $data["acte_attachments[$nb_pj]"] = "@$pj_file";
@@ -1041,13 +1037,12 @@ class DeliberationsController extends AppController {
 		         }
 			 $nb_pj++;
                     }
-                    ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Pr&eacute;paration de l\'envoi ');
 
 	                 $ch = curl_init();
                          curl_setopt($ch, CURLOPT_URL, $url);
 			// curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
                          curl_setopt($ch, CURLOPT_POST, TRUE);
-                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data );
+                         curl_setopt($ch, CURLOPT_POSTFIELDS, $acte );
 			 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
                          curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
                          curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
@@ -1072,7 +1067,6 @@ class DeliberationsController extends AppController {
 			      die ('<br /><a href ="/deliberations/toSend"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
                          }
 			 else {
-                              ProgressBar($nbEnvoyee*(100/$nbDelibAEnvoyer), 'Delib&eacute;ration '.$delib[0]['Deliberation']['num_delib'].' envoy&eacute;e ');
                               $nbEnvoyee ++;
                               $this->Deliberation->saveField('etat', 5);
                               $this->Deliberation->saveField('tdt_id', $tdt_id);
@@ -1083,12 +1077,6 @@ class DeliberationsController extends AppController {
 			    }
 			}
 		    }
-                              echo ('<script>');
-                              echo ('    document.getElementById("pourcentage").style.display="none"; ');
-                              echo ('    document.getElementById("progrbar").style.display="none";');
-                              echo ('    document.getElementById("affiche").style.display="none";');
-                              echo ('    document.getElementById("contTemp").style.display="none";');
-                              echo ('</script>');
 			      echo ('<br />Les d&eacute;lib&eacute;rations ont &eacute;t&eacute; correctement envoy&eacute;es.');
 			      die ('<br /><a href ="/deliberations/transmit" id="retour"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
 		}
