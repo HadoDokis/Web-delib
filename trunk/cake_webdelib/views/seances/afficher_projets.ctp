@@ -25,7 +25,7 @@
             <td><?php echo '['.$projet['Theme']['order'].'] '.$projet['Theme']['libelle']; ?></td>
 	    <td><?php echo $projet['Service']['libelle']; ?></td>
 	    <td><?php echo $form->input('Deliberation.rapporteur_id', array('label'=>false, 'options'=>$rapporteurs, 'default'=>$projet['Deliberation']['rapporteur_id'], 'id'=>"$urlPage",'onChange'=>"changeRapporteur(this,$id_delib)", 'empty'=>empty($projet['Deliberation']['rapporteur_id'])));?></td>
-	    <td><?php echo $projet['Deliberation']['objet']; ?></td
+	    <td><?php echo $projet['Deliberation']['objet']; ?></td>
 	    <td><?php echo $projet['Deliberation']['titre']; ?></td>
 	    <td><?php echo $projet['Deliberation']['id']; ?></td>
 	    <?php
