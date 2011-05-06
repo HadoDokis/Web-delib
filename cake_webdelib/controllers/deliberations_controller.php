@@ -69,8 +69,10 @@ class DeliberationsController extends AppController {
         var $aucunDroit= array('test');
         var $paginate = array(
                 'Deliberation' => array(
+                        'fields' => array('Deliberation.id', 'Deliberation.objet',  'Deliberation.num_delib', 
+                                          'Deliberation.num_pref', 'Deliberation.etat', 'Deliberation.titre', 'Deliberation.tdt_id'),
                         'conditions' => array('Deliberation.etat'=>5),
-                        'limit' => 20
+                        'limit' => 10
                 )
         );
 
@@ -797,11 +799,8 @@ class DeliberationsController extends AppController {
         $this->set('dateClassification', $this->_getDateClassification());
 
         // On affiche que les delibs vote pour.
-	$deliberations = $this->Deliberation->find('all', array('conditions' => array("Deliberation.etat"=>5), 
-                                                                 'order'     => "num_delib ASC",  
-                                                                 'limit'     => $nbDelibParPage,
-                                                                 'page'      => $page));        
         $tmp_delibs = $this->Deliberation->find('all', array('conditions' => array("Deliberation.etat"=>5)));
+        $deliberations = $this->paginate('Deliberation');
         $nbDelibs = count($tmp_delibs);
 
 	for($i = 0; $i < $nbDelibs; $i++) {
@@ -819,13 +818,7 @@ class DeliberationsController extends AppController {
 		}
 	    }
         }
-//	$this->set('nbDelibs',  $nbDelibs );
-      //  $this->set('deliberations', $deliberations);
-        $this->paginate('Deliberation');
-//	if ($page>1)
-//	    $this->set('previous', $page-1);
-//        if  ($nbDelibs >= $nbDelibParPage*$page )
-//	    $this->set('next', $page+1);
+        $this->set('deliberations', $deliberations);
 
     }
 
