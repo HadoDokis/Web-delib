@@ -69,7 +69,7 @@ class DeliberationsController extends AppController {
         var $aucunDroit= array('test');
         var $paginate = array(
                 'Deliberation' => array(
-                        'fields' => array('Deliberation.id', 'Deliberation.objet',  'Deliberation.num_delib', 
+                        'fields' => array('Deliberation.id', 'Deliberation.objet',  'Deliberation.num_delib', 'Deliberation.dateAR' ,
                                           'Deliberation.num_pref', 'Deliberation.etat', 'Deliberation.titre', 'Deliberation.tdt_id'),
                         'conditions' => array('Deliberation.etat'=>5),
                         'limit' => 10
@@ -789,8 +789,6 @@ class DeliberationsController extends AppController {
 	}
 
     function transmit( $message=null, $page=1){
-       $nbDelibParPage = 5;
-       $nbDelibs = 0;
        if ($message!='null')
              $this->set('message', $message);
 
@@ -799,11 +797,9 @@ class DeliberationsController extends AppController {
         $this->set('dateClassification', $this->_getDateClassification());
 
         // On affiche que les delibs vote pour.
-        $tmp_delibs = $this->Deliberation->find('all', array('conditions' => array("Deliberation.etat"=>5)));
         $deliberations = $this->paginate('Deliberation');
-        $nbDelibs = count($tmp_delibs);
 
-	for($i = 0; $i < $nbDelibs; $i++) {
+	for($i = 0; $i < count( $deliberations); $i++) {
 	    if (empty($deliberations[$i]['Deliberation']['DateAR'])) {
 	        if (isset($deliberations[$i]['Deliberation']['tdt_id'])){
                     $flux   = $this->_getFluxRetour($deliberations[$i]['Deliberation']['tdt_id']);
