@@ -67,6 +67,13 @@ class DeliberationsController extends AppController {
                 'sendToGed' => 'Envoie &agrave; une GED'
 	);
         var $aucunDroit= array('test');
+        var $paginate = array(
+                'Deliberation' => array(
+                        'conditions' => array('Deliberation.etat'=>5),
+                        'limit' => 20
+                )
+        );
+
 
         function test () {
             $this->Progress->start(200, 100,200, '#000000','#000000','#006699');
@@ -742,8 +749,8 @@ class DeliberationsController extends AppController {
 	       	            $this->redirect('/deliberations/mesProjetsATraiter');
 	                }
 		        else {
-          //                  $this->Deliberation->refusDossier($id);
-          //                  $this->Traitement->execute('KO', $this->Session->read('user.User.id'), $id);
+                            $this->Deliberation->refusDossier($id);
+                            $this->Traitement->execute('KO', $this->Session->read('user.User.id'), $id);
                             // TODO notifier par mail toutes les personnes qui ont deja vise le projet
                             $destinataires = $this->Traitement->whoIsPrevious($id);
                             foreach( $destinataires as $destinataire_id)
@@ -812,12 +819,13 @@ class DeliberationsController extends AppController {
 		}
 	    }
         }
-	$this->set('nbDelibs',  $nbDelibs );
-        $this->set('deliberations', $deliberations);
-	if ($page>1)
-	    $this->set('previous', $page-1);
-        if  ($nbDelibs >= $nbDelibParPage*$page )
-	    $this->set('next', $page+1);
+//	$this->set('nbDelibs',  $nbDelibs );
+      //  $this->set('deliberations', $deliberations);
+        $this->paginate('Deliberation');
+//	if ($page>1)
+//	    $this->set('previous', $page-1);
+//        if  ($nbDelibs >= $nbDelibParPage*$page )
+//	    $this->set('next', $page+1);
 
     }
 
