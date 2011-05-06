@@ -11,13 +11,12 @@
 <?php if (isset($message))  echo ($message); ?>
 <h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
     La Classification enregistrée date du <?php echo $dateClassification ?> <br /><br />
-    <?php echo  $nbDelibs ?> d&eacute;lib&eacute;rations t&eacute;l&eacute;transmises <br /><br />
-	<table>
- 	<th>N° délibération</th>
- 	<th>Objet</th>
- 	<th>Titre</th>
- 	<th>Classification</th>
- 	<th>statut</th>
+    <table>
+ 	<th><?php echo  $paginator->sort('N° délibération', 'num_delib'); ?></th>
+ 	<th><?php echo  $paginator->sort('Objet', 'objet'); ?></th>
+ 	<th><?php echo  $paginator->sort('Titre', 'titre'); ?></th>
+ 	<th><?php echo  $paginator->sort('Classification', 'num_pref'); ?></th>
+ 	<th>Statut</th>
  	<th>Courrier Ministériel</th>
 <tr>
 <?php
@@ -66,6 +65,19 @@
 <?php	 } ?>
 
 	</table>
+<div class='paginate'>
+        <!-- Affiche les numéros de pages -->
+        <?php echo $paginator->numbers(); ?>
+        <!-- Affiche les liens des pages précédentes et suivantes -->
+        <?php
+                echo $paginator->prev('« Précédent ', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
+                echo $paginator->next(' Suivant »', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
+        ?>
+        <!-- Affiche X de Y, où X est la page courante et Y le nombre de pages -->
+        <?php echo $paginator->counter(array('format'=>'Page %page% sur %pages%')); ?>
+</div>
+
+
 	<br />
          <?php 
 	     if (isset($previous))
