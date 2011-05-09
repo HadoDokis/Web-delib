@@ -1586,6 +1586,12 @@ class DeliberationsController extends AppController {
 		}		
 			// initialisation des actions
 			$this->data[$i]['Actions'] = $listeActions;
+                        if ($this->data[$i]['Deliberation']['etat'] != 1){
+                            $this->data[$i]['Actions'] = array_flip ($this->data[$i]['Actions']);
+                            unset($this->data[$i]['Actions']['goNext']);
+                            unset($this->data[$i]['Actions']['validerEnUrgence']);
+                            $this->data[$i]['Actions'] = array_flip ($this->data[$i]['Actions']);
+                        }
 			if ($this->data[$i]['Deliberation']['etat'] == 2 && $editerProjetValide) {
 				$this->data[$i]['Actions'][] = 'edit';
 				$this->data[$i]['Actions'][] = 'attribuerCircuit';
