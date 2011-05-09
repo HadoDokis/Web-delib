@@ -7,9 +7,10 @@
 
         function CmisComponent() {
             require_once(APP_DIR.'/vendors/cmis_repository_wrapper.php');
-
-            $this->client = new CMISService(Configure::read('GED_URL'), Configure::read('GED_LOGIN'), Configure::read('GED_PASSWD'));
-            $this->folder = $this->client->getObjectByPath(Configure::read('GED_REPO'));
+            if (Configure::read('USE_GED')) {
+                $this->client = new CMISService(Configure::read('GED_URL'), Configure::read('GED_LOGIN'), Configure::read('GED_PASSWD'));
+                $this->folder = $this->client->getObjectByPath(Configure::read('GED_REPO'));
+            }
         }
  
         function list_objs($objs) {
