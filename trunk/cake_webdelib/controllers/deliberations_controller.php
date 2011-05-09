@@ -556,7 +556,7 @@ class DeliberationsController extends AppController {
 	}
 
     function addIntoCircuit($id = null){
-        $this->data = $this->Deliberation->read(null,$id);
+        $this->data = $this->Deliberation->find('first',array('conditions' => array('Deliberation.id' => $id)));
         $user_connecte = $this->Session->read('user.User.id');
         if ($this->data['Deliberation']['circuit_id']!= 0){
             // enregistrement de l'historique
@@ -566,13 +566,15 @@ class DeliberationsController extends AppController {
             $this->data['Deliberation']['etat']='1';
             if ($this->Deliberation->save($this->data)) {
 		// insertion dans le circuit de traitement
-		if ($this->Traitement->targetExists($id))
+                $this->Deliberation->id = $id;
+		if ($this->Traitement->targetExists($id)) {
 	 	    $this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
-                    if ($this->Traitement->dernierVisaTrigger($id) ) {
-                        $this->Historique->enregistre($id, $user_id, 'Projet valide' );
-                        $this->Deliberation->id = $id;
+                    $members = $this->Traitement->whoIsNext($id);
+                    if (empty($members)) {
+                        $this->Historique->enregistre($id, $user_connecte, 'Projet valide' );
                         $this->Deliberation->saveField('etat', 2);
                     }
+                }
 		else {
 			$this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
 			$options = array(
@@ -589,7 +591,7 @@ class DeliberationsController extends AppController {
 								)))));
 			  $traitementTermine =  $this->Traitement->execute('IN', $user_connecte, $id, $options);
                           if ($traitementTermine) {
-                              $this->Historique->enregistre($id, $user_id, 'Projet valide' );
+                              $this->Historique->enregistre($id, $user_connecte, 'Projet valide' );
                               $this->Deliberation->id = $id;
                               $this->Deliberation->saveField('etat', 2);
                           }
