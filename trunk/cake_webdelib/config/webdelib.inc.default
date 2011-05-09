@@ -86,4 +86,15 @@
     //limitation du nombre de projets par banette
     ////////////////////////
     Configure::write("LIMIT", 50);
+
+    ////////////////////////
+    // Configuration Webservice Stela
+    ////////////////////////
+    Configure::write('USE_GED', false);
+    Configure::write('GED_URL', 'http://ged.extranet.adullact.org/alfresco/service/api/cmis');
+    Configure::write('GED_LOGIN', 'webdelib');
+    Configure::write('GED_PASSWD', 'webdelib');
+    Configure::write('GED_REPO', '/Sites/Web-delib');
+
+
 ?>
