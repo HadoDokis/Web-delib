@@ -107,7 +107,8 @@ class Infosup extends AppModel
 				case 'odtFile' :
 					$repDest = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delib_id.DS;
 					if (empty($valeur['tmp_name'])) {
-						if (is_file($repDest.$infosup['Infosup']['file_name'])) @unlink($repDest.$infosup['Infosup']['file_name']);
+						if (isset($infosup['Infosup']['file_name']) && is_file($repDest.$infosup['Infosup']['file_name']))
+							@unlink($repDest.$infosup['Infosup']['file_name']);
 						$infosup['Infosup']['file_name'] = '';
 						$infosup['Infosup']['file_size'] = 0;
 						$infosup['Infosup']['file_type'] = '';
