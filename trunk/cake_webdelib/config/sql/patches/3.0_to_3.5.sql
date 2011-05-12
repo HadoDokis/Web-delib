@@ -107,4 +107,6 @@ ALTER TABLE `tdt_messages` ADD `reponse` INT( 3 ) NOT NULL AFTER `type_message` 
 
 ALTER TABLE `models` ADD `recherche` TINYINT( 1 ) NULL ,
 ADD `created` DATETIME NOT NULL ,
-ADD `modified` DATETIME NOT NULL 
+ADD `modified` DATETIME NOT NULL ;
+
+ALTER TABLE `deliberations` ADD `signee` TINYINT( 1 ) NULL AFTER `signature`;

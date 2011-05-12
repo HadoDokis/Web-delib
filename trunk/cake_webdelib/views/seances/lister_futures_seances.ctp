@@ -61,6 +61,9 @@
 
 	               echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'].'/null/0/retour/1/', array('class'=>'link_pvsommaire', 'title'=>'Generation du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
                       echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'].'/null/0/retour/1/', array('class'=>'link_pvcomplet', 'title'=>'Generation du pv complet'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
+
+                      echo $html->link(SHY,'/seances/clore/' . $seance['Seance']['id'],  array('class'=>'link_clore_seance', 'title'=>'Clôture de la séance'),  'Etes-vous sur de vouloir clôturer la séance ?', false);
+
 			?>
 		</td>
 	</tr>

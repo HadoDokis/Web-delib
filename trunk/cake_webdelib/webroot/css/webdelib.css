@@ -309,6 +309,12 @@ a.link_liste {
 	background-position: top;
 	padding: 0 0 10px 22px;
 }
+a.link_clore_seance {
+        background-image: url(../img/icons/close_seance.png);
+        background-repeat: no-repeat;
+        background-position: top;
+        padding: 0 0 10px 22px;
+}
 
 a.link_delib {
 	background-image: url(../img/icons/delib.png);
