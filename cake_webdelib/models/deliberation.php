@@ -303,7 +303,6 @@ class Deliberation extends AppModel {
             $path = WEBROOT_PATH.$dyn_path;
             $urlpath =  'http://'.$_SERVER['HTTP_HOST'].$dyn_path;
 
-
             $this->Progress = new ProgressComponent;
             
             $sMimeType = "application/pdf";
@@ -351,7 +350,7 @@ class Deliberation extends AppModel {
                App::import(array('Component', 'Date',   'File'));
                $this->Date = new DateComponent;
                $this->Gedooo = new GedoooComponent;
-                 
+               
                if ($delib['Deliberation']['seance_id'] != 0 ) {
                    $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
                    $seance = $this->Seance->find('first', array(
@@ -361,8 +360,9 @@ class Deliberation extends AppModel {
                    $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
                    $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($seance['Seance']['date']),   'date'));
                    $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
-                   $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text'));
+                   $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text')); 
                }
+          
                $titre = utf8_encode($delib['Deliberation']['titre']);
                $titre =  str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $titre);
                $oMainPart->addElement(new GDO_FieldType('titre_projet',                $titre,    'text'));
@@ -423,65 +423,70 @@ class Deliberation extends AppModel {
                        die("Webdelib ne peut pas ecrire dans le repertoire : $path");
                         
                    $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$dyn_path;
-
-                   if ($delib['Deliberation']['texte_projet_name']== "") {
-                       $nameTP = "vide";
-                       $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',''));
+                   if (!empty($delib['Deliberation']['texte_projet'])) {
+                       if ($delib['Deliberation']['texte_projet_name']== "") {
+                           $nameTP = "vide";
+                           $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',''));
+                       }
+                       else {
+                           $infos = (pathinfo($delib['Deliberation']['texte_projet_name']));
+                           $nameTP = 'tp.'.$infos['extension'];
+                           $this->Gedooo->createFile($path, $nameTP, $delib['Deliberation']['texte_projet']);
+                           $extTP = $u->getMimeType($path.$nameTP);
+                           $oMainPart->addElement(new GDO_ContentType('texte_projet',       '',  $extTP,    'url', $urlWebroot.$nameTP ));
+                       } 
+                  }
+                  if (!empty($delib['Deliberation']['deliberation'])) {
+                      if ($delib['Deliberation']['deliberation_name']=="")
+                          $nameTD = "vide";
+                       else{
+                           $infos = (pathinfo($delib['Deliberation']['deliberation_name']));
+                           $nameTD = 'td.'.$infos['extension'];
+                           $this->Gedooo->createFile($path, $nameTD, $delib['Deliberation']['deliberation']);
+                           $extTD  = $u->getMimeType($path.$nameTD);
+                           $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '',  $extTD ,   'url', $urlWebroot.$nameTD));
+                       }
+                  } 
+                  if (!empty($delib['Deliberation']['texte_synthese'])) {
+                      if ($delib['Deliberation']['texte_synthese_name']=="")
+                          $nameNS = "vide";
+                       else {
+                           $infos = (pathinfo($delib['Deliberation']['texte_synthese_name']));
+                           $nameNS = 'ns.'.$infos['extension'];
+                           $this->Gedooo->createFile($path, $nameNS,  $delib['Deliberation']['texte_synthese']);
+                           $extNS   = $u->getMimeType($path.$nameNS);
+                           $oMainPart->addElement(new GDO_ContentType('note_synthese',      '',  $extNS ,   'url', $urlWebroot.$nameNS));
+                       }
                    }
-                   else {
-                       $infos = (pathinfo($delib['Deliberation']['texte_projet_name']));
-                       $nameTP = 'tp.'.$infos['extension'];
-                       $this->Gedooo->createFile($path, $nameTP, $delib['Deliberation']['texte_projet']);
-                       $extTP = $u->getMimeType($path.$nameTP);
-                       $oMainPart->addElement(new GDO_ContentType('texte_projet',       '',  $extTP,    'url', $urlWebroot.$nameTP ));
+                   if (!empty($delib['Deliberation']['debat'])) {
+                       if ($delib['Deliberation']['debat_name']=="")
+                           $nameDebat = "debat";
+                       else {
+                           $infos = (pathinfo($delib['Deliberation']['debat_name']));
+                           $nameDebat = 'debat.'.$infos['extension'];
+                           $this->Gedooo->createFile($path,  $nameDebat,  $delib['Deliberation']['debat']);
+                           $extDebat =  $u->getMimeType($path.$nameDebat);
+                           $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '',  $extDebat, 'url', $urlWebroot.$nameDebat));
+                       }
+                   }
+                   if (!empty($delib['Deliberation']['commission'])) {
+                       if ($delib['Deliberation']['commission_name']=="")
+                           $nameCommission = "commission";
+                       else {
+                           $infos = (pathinfo($delib['Deliberation']['commission_name']));
+                           $nameCommission = 'commission.'.$infos['extension'];
+                           $this->Gedooo->createFile($path,  $nameCommission,  $delib['Deliberation']['commission']);
+                           $extCommi =  $u->getMimeType($path.$nameCommission);
+                           $oMainPart->addElement(new GDO_ContentType('debat_commission', '',  $extCommi, 'url', $urlWebroot.$nameCommission));
+                       }
                    }
 
-                  if ($delib['Deliberation']['deliberation_name']=="")
-                       $nameTD = "vide";
-                   else{
-                       $infos = (pathinfo($delib['Deliberation']['deliberation_name']));
-                       $nameTD = 'td.'.$infos['extension'];
-                       $this->Gedooo->createFile($path, $nameTD, $delib['Deliberation']['deliberation']);
-                       $extTD  = $u->getMimeType($path.$nameTD);
-                       $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '',  $extTD ,   'url', $urlWebroot.$nameTD));
-                   }
-
-                   if ($delib['Deliberation']['texte_synthese_name']=="")
-                       $nameNS = "vide";
-                   else {
-                       $infos = (pathinfo($delib['Deliberation']['texte_synthese_name']));
-                       $nameNS = 'ns.'.$infos['extension'];
-                       $this->Gedooo->createFile($path, $nameNS,  $delib['Deliberation']['texte_synthese']);
-                       $extNS   = $u->getMimeType($path.$nameNS);
-                       $oMainPart->addElement(new GDO_ContentType('note_synthese',      '',  $extNS ,   'url', $urlWebroot.$nameNS));
-                   }
-
-                   if ($delib['Deliberation']['debat_name']=="")
-                       $nameDebat = "debat";
-                   else {
-                       $infos = (pathinfo($delib['Deliberation']['debat_name']));
-                       $nameDebat = 'debat.'.$infos['extension'];
-                       $this->Gedooo->createFile($path,  $nameDebat,  $delib['Deliberation']['debat']);
-                       $extDebat =  $u->getMimeType($path.$nameDebat);
-                       $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '',  $extDebat, 'url', $urlWebroot.$nameDebat));
-                   }
-
-                   if ($delib['Deliberation']['commission_name']=="")
-                       $nameCommission = "commission";
-                   else {
-                       $infos = (pathinfo($delib['Deliberation']['commission_name']));
-                       $nameCommission = 'commission.'.$infos['extension'];
-                       $this->Gedooo->createFile($path,  $nameCommission,  $delib['Deliberation']['commission']);
-                       $extCommi =  $u->getMimeType($path.$nameCommission);
-                       $oMainPart->addElement(new GDO_ContentType('debat_commission', '',  $extCommi, 'url', $urlWebroot.$nameCommission));
-                   }
-
-            }
+               }
                if (!$isDelib)
                   return $oMainPart;
                //LISTE DES PRESENCES...
-               $this->Listepresence->Behaviors->attach('Containable');
-               $this->Vote->Behaviors->attach('Containable');
+               @$this->Listepresence->Behaviors->attach('Containable');
+               @$this->Vote->Behaviors->attach('Containable');
                $acteurs_presents = array();
                $acteurs_absents = array();
                $acteurs_remplaces = array();
@@ -542,7 +547,6 @@ class Deliberation extends AppModel {
                                                      'telfixe_acteur' => $acteur['Acteur']['telfixe'],
                                                      'telmobile_acteur' => $acteur['Acteur']['telmobile'],
                                                      'note_acteur' => $acteur['Acteur']['note'],
-
                                                      'nom_mandate' => $acteur['Mandataire']['nom'],
                                                      'prenom_mandate' => $acteur['Mandataire']['prenom'],
                                                      'salutation_mandate'=> $acteur['Mandataire']['salutation'],
