@@ -146,16 +146,16 @@ class DeliberationsController extends AppController {
 	}
 
 	function add() {
-            // initialisations
+		// initialisations
 		$sortie = false;
-	    /* initialisation du lien de redirection */
+		/* initialisation du lien de redirection */
 		$redirect = '/pages/mes_projets';
-	    /* initialisation du rédateur et du service emetteur */
-	    $user = $this->Session->read('user');
-	    if ($this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))
-	        $afficherTtesLesSeances = true;
-        else
-            $afficherTtesLesSeances = false;
+		/* initialisation du rédateur et du service emetteur */
+		$user = $this->Session->read('user');
+		if ($this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))
+			$afficherTtesLesSeances = true;
+		else
+			$afficherTtesLesSeances = false;
 
 		if (!empty($this->data)) {
 			$this->data['Deliberation']['redacteur_id'] = $user['User']['id'];
@@ -204,8 +204,16 @@ class DeliberationsController extends AppController {
 			}
 
 			if ($this->Deliberation->save($this->data)) {
-                                $this->Filtre->Supprimer();
+				$this->Filtre->Supprimer();
 				$delibId = $this->Deliberation->getLastInsertId();
+				// création des fichiers des textes
+				if (!Configure::read('GENERER_DOC_SIMPLE')){
+					$repDest = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
+					mkdir($repDest, 0770, true);
+					$this->Gedooo->createFile($repDest, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
+					$this->Gedooo->createFile($repDest, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
+					$this->Gedooo->createFile($repDest, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
+				}
 				/* sauvegarde des informations supplémentaires */
 				if (array_key_exists('Infosup', $this->data))
 					$this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $delibId);
@@ -224,7 +232,8 @@ class DeliberationsController extends AppController {
 			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
 		}
-		if ($sortie) $this->redirect($redirect);
+		if ($sortie)
+			$this->redirect($redirect);
 		else {
 			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($user['User']['service']);
 			$this->data['Redacteur']['nom'] = $this->User->field('nom', array('User.id' => $user['User']['id']));
@@ -311,39 +320,42 @@ class DeliberationsController extends AppController {
 		}
 	}
 
-        function edit($id=null) {
-	         $user=$this->Session->read('user');
-	        /* initialisation du lien de redirection   */
-                $redirect = $this->Session->read('user.User.lasturl');
-                $afficherTtesLesSeances = $this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide");
-
-                $pos  =  strrpos ( getcwd(), 'webroot');
+	function edit($id=null) {
+		$user=$this->Session->read('user');
+		/* initialisation du lien de redirection   */
+		$redirect = $this->Session->read('user.User.lasturl');
+		$afficherTtesLesSeances = $this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide");
+		
+		$pos  =  strrpos ( getcwd(), 'webroot');
 		$path = substr(getcwd(), 0, $pos);
-                $path_projet = $path."webroot/files/generee/projet/$id/";
+		$path_projet = $path."webroot/files/generee/projet/$id/";
 
 		if (empty($this->data)) {
-		    $this->data = $this->Deliberation->find('first',array('conditions'=>array('Deliberation.id'=> $id)));
-                    $natures =  array_keys($this->Session->read('user.Nature'));
-                    if (!in_array($this->data['Deliberation']['nature_id'], $natures)){
-                        $this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
-                        $this->redirect($redirect);
-                    }
+			$this->data = $this->Deliberation->find('first',array('conditions'=>array('Deliberation.id'=> $id)));
+			$natures =  array_keys($this->Session->read('user.Nature'));
+			if (!in_array($this->data['Deliberation']['nature_id'], $natures)){
+				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
+				$this->redirect($redirect);
+			}
 			/* teste si le projet est modifiable par l'utilisateur connecté */
-			if (!$this->Deliberation->estModifiable($id, 
-                                                                $user['User']['id'], 
-                                                                $this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))) {
+			if (!$this->Deliberation->estModifiable($id, $user['User']['id'], $this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))) {
 				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
 				$this->redirect($redirect);
 			}
 
+			// initialisation des fichiers des textes
 			if (!Configure::read('GENERER_DOC_SIMPLE')) {
-			    $this->Gedooo->createFile($path_projet, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
-			    $this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
-			    $this->Gedooo->createFile($path_projet, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
-			    foreach ($this->data['Infosup']  as $infosup)
-                                if(($infosup['file_name']!="") && (!empty($infosup['content'])))
-                                    $this->Gedooo->createFile($path_projet, $infosup['file_name'] , $infosup['content']);
+				$this->Gedooo->createFile($path_projet, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
+				$this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
+				$this->Gedooo->createFile($path_projet, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
 			}
+			// initialisation des fichiers des infosup de type odtFile
+			foreach ($this->data['Infosup']  as $infosup) {
+				$infoSupDef = $this->Infosupdef->find('first', array('recursive'=>-1, 'fields'=>array('type'), 'conditions'=>array('id'=>$infosup['infosupdef_id'])));
+				if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
+					$this->Gedooo->createFile($path_projet, $infosup['file_name'] , $infosup['content']);
+			}
+
 			$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
 			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Service']['id']);
@@ -351,125 +363,99 @@ class DeliberationsController extends AppController {
 			$this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
 			$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
 			$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
-			$this->set('date_seances',$this->Seance->generateList(null, 
-                                                                              $afficherTtesLesSeances,  
-                                                                              array_keys($this->Session->read('user.Nature'))));
+			$this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
 			$this->set('redirect', $redirect);
 			$this->render();
-
+	
 		} else {
-                        $oldDelib = $this->Deliberation->find('first',array('conditions' =>array('Deliberation.id'=> $id),
-                                                                             'fields'    => array('seance_id', 'position'))); 
+			$oldDelib = $this->Deliberation->find('first', array(
+				'conditions' =>array('Deliberation.id'=> $id),
+				'fields'    => array('seance_id', 'position'))); 
 			// Si on definit une seance a une delib, on la position en derniere position de la seance...
 			if (!($this->data['Deliberation']['seance_id'] === $oldDelib['Deliberation']['seance_id'])) {
-                            if ($this->data['Deliberation']['seance_id'])
-                                $this->data['Deliberation']['position'] = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
+				if ($this->data['Deliberation']['seance_id'])
+					$this->data['Deliberation']['position'] = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
 			    else
-				$this->data['Deliberation']['position'] = 0;
+					$this->data['Deliberation']['position'] = 0;
 			}
-
+	
 			if (!Configure::read('GENERER_DOC_SIMPLE')) {
-                            if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
-				$this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
-				$this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
-				$this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'] ;
-				if (empty($this->data['Deliberation']['texte_projet']['tmp_name'])) {
-		                    $this->data['Deliberation']['texte_projet'] = '';
-                                }
-				else {
-				    $tp = $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
-				    $this->data['Deliberation']['texte_projet'] = $tp;
+				if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
+					$this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
+					$this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
+					$this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'] ;
+					if (empty($this->data['Deliberation']['texte_projet']['tmp_name'])) {
+						$this->data['Deliberation']['texte_projet'] = '';
+					} else {
+						$tp = $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
+						$this->data['Deliberation']['texte_projet'] = $tp;
+					}
+				} else {
+					$stat = stat($path_projet.'texte_projet.odt');
+					$td = $this->_getFileData($path_projet.'texte_projet.odt', $stat['size'] );
+					$this->data['Deliberation']['texte_projet'] = $td;
 				}
-			    }
-			    else {
-                                $stat = stat($path_projet.'texte_projet.odt');
-			        $td = $this->_getFileData($path_projet.'texte_projet.odt', $stat['size'] );
-			        $this->data['Deliberation']['texte_projet'] = $td;
-			    }
-			    // Initialisation de la note de synth¿se
-			    if (array_key_exists('texte_synthese', $this->data['Deliberation'])) {
-			        $this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
-				$this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
-				$this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'] ;
-				if (empty($this->data['Deliberation']['texte_synthese']['tmp_name']))
-				    $this->data['Deliberation']['texte_synthese'] = '';
-				else {
-				    $ts = $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
-				    $this->data['Deliberation']['texte_synthese'] = $ts;
+				// Initialisation de la note de synthèse
+				if (array_key_exists('texte_synthese', $this->data['Deliberation'])) {
+					$this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
+					$this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
+					$this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'] ;
+					if (empty($this->data['Deliberation']['texte_synthese']['tmp_name']))
+						$this->data['Deliberation']['texte_synthese'] = '';
+					else {
+						$ts = $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
+						$this->data['Deliberation']['texte_synthese'] = $ts;
+					}
+			    } else {
+					$stat = stat($path_projet.'texte_synthese.odt');
+					$ts = $this->_getFileData($path_projet.'texte_synthese.odt', $stat['size'] );
+					$this->data['Deliberation']['texte_synthese'] = $ts;
 				}
-			    }
-                            else {
-                                $stat = stat($path_projet.'texte_synthese.odt');
-                                $ts = $this->_getFileData($path_projet.'texte_synthese.odt', $stat['size'] );
-                                $this->data['Deliberation']['texte_synthese'] = $ts;
-                            }
-
-			    // Initialisation du texte de d¿lib¿ration
-			    if (array_key_exists('deliberation', $this->data['Deliberation'])) {
-				$this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
-				$this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
-				$this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'] ;
-				if (empty($this->data['Deliberation']['deliberation']['tmp_name']))
-			            $this->data['Deliberation']['deliberation'] = '';
-				else {
-				    $td = $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
-				    $this->data['Deliberation']['deliberation'] = $td;
-			        }
-                            }
-                            else {
-                                $stat = stat($path_projet.'deliberation.odt');
-                                $ts = $this->_getFileData($path_projet.'deliberation.odt', $stat['size'] );
-                                $this->data['Deliberation']['deliberation'] = $ts;
-                            }
+	
+				// Initialisation du texte de délibération
+				if (array_key_exists('deliberation', $this->data['Deliberation'])) {
+					$this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
+					$this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
+					$this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'] ;
+					if (empty($this->data['Deliberation']['deliberation']['tmp_name']))
+						$this->data['Deliberation']['deliberation'] = '';
+					else {
+						$td = $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
+						$this->data['Deliberation']['deliberation'] = $td;
+					}
+				} else {
+					$stat = stat($path_projet.'deliberation.odt');
+					$ts = $this->_getFileData($path_projet.'deliberation.odt', $stat['size'] );
+					$this->data['Deliberation']['deliberation'] = $ts;
+				}
 			}
-
-			if (!Configure::read('GENERER_DOC_SIMPLE')&&(isset($this->data['Infosup']))) { 
-                        // pour pouvoir supprimer les annexes...
-				foreach( $this->data['Infosup'] as $code => $val ) {
-					$infodef = $this->Infosupdef->find("Infosupdef.code='$code' AND Infosupdef.type='file' ", "Infosupdef.id");
-					if (!empty($infodef['Infosupdef']['id'])){
-						$infodef_id= $infodef['Infosupdef']['id'];
-							if ($this->data['Infosup'][$code]['tmp_name'] == "") {
-								$infoSup = $this->Infosup->find("deliberation_id=$id AND infosupdef_id= $infodef_id");
-								$infoSup['Infosup']['file_name'] = '';
-								$infoSup['Infosup']['file_size'] = 0;
-								$infoSup['Infosup']['file_type'] = '';
-								$infoSup['Infosup']['content'] = '';
-								if ($this->Infosup->save($infoSup)) {
-								unset($this->data['Infosup'][$code]);
-								@unlink($path_projet.'infosup'.$infodef_id.'.odt');
+	
+			$this->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
+	
+			if ($this->Deliberation->save($this->data)) {
+				$this->Filtre->supprimer();
+				// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
+				if (!empty($oldDelib['Deliberation']['seance_id']) AND ($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']))
+					$this->_PositionneDelibsSeance($oldDelib['Deliberation']['seance_id'], $oldDelib['Deliberation']['position'] );
+				// sauvegarde des informations supplémentaires
+				$infossupDefs = $this->Infosupdef->findAll("type='odtFile'", '', '', 0);
+				foreach ( $infossupDefs as $infodef) {
+					$infodef_id = $infodef['Infosupdef']['id'];
+					$infosups = $this->Infosup->findAll("Infosup.infosupdef_id = $infodef_id AND Infosup.deliberation_id = $id");
+					foreach ( $infosups  as $infosup) {
+						$name = $infosup['Infosup']['file_name'] ;
+						if (file_exists($path_projet.$name)){
+							$code = $infosup['Infosupdef']['code'];
+							$stat = stat($path_projet.$name);
+							if ($stat > 0) {
+								$infosup['Infosup']['content'] = $this->_getFileData($path_projet.$name, $stat['size'] );
+								$this->Infosup->save($infosup);
 							}
 						}
 					}
 				}
-			}
-			$this->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
-
-			if ($this->Deliberation->save($this->data)) {
-                                $this->Filtre->supprimer();
-				// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
-				if (!empty($oldDelib['Deliberation']['seance_id']) AND 
-                                          ($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']))
-					$this->_PositionneDelibsSeance($oldDelib['Deliberation']['seance_id'], $oldDelib['Deliberation']['position'] );
-				// sauvegarde des informations supplémentaires
-			        $infossupDefs = $this->Infosupdef->findAll("type='odtFile'", '', '', 0);
-                                foreach ( $infossupDefs as $infodef) {
-                                    $infodef_id = $infodef['Infosupdef']['id'];
-                                    $infosups = $this->Infosup->findAll("Infosup.infosupdef_id = $infodef_id AND Infosup.deliberation_id = $id");
-				    foreach ( $infosups  as $infosup) {
-				        $name = $infosup['Infosup']['file_name'] ;
-				        if (file_exists($path_projet.$name)){
-				            $code = $infosup['Infosupdef']['code'];
-				            $stat = stat($path_projet.$name);
-				            if ($stat > 0) {
-				                $infosup['Infosup']['content'] = $this->_getFileData($path_projet.$name, $stat['size'] );
-						$this->Infosup->save($infosup);
-				            }
-				        }
-				    }
-                               }
 
 				if (array_key_exists('Infosup', $this->data)) {
 				    $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
@@ -486,7 +472,7 @@ class DeliberationsController extends AppController {
 					foreach($this->data['AnnexesS'] as $annexe) $this->_saveAnnexe($id, $annexe, 'S');
 				if (array_key_exists('AnnexesD', $this->data))
 					foreach($this->data['AnnexesD'] as $annexe) $this->_saveAnnexe($id, $annexe, 'D');
-                        
+
 			        $this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
 				$this->redirect($redirect);
 			} else {
@@ -506,9 +492,8 @@ class DeliberationsController extends AppController {
 					$retard=$seance['Typeseance']['retard'];
 					if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
 						$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-					else $tab[$seance['Seance']['id']]=$this->Seance->generateList(null,
-                                                                                                       $afficherTtesLesSeances,
-                                                                                                       array_keys($this->Session->read('user.Nature')));
+					else
+						$tab[$seance['Seance']['id']]=$this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature')));
 				}
 				$this->set('date_seances',$tab);
 				$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
@@ -546,6 +531,9 @@ class DeliberationsController extends AppController {
 		if (empty($delib)) {
 			$this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible', 'growl', array('type'=>'erreur'));
 		} else if ($this->Deliberation->del($id)) {
+			// suppression du répertoire des fichiers si il existe
+			$repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$id.DS;
+			if (is_dir($repFichier)) $this->_rmDir($repFichier);
 			// Il faut reclasser toutes les delibs de la seance
 			if (!empty($delib['Deliberation']['seance_id']))
 				$this->_PositionneDelibsSeance($delib['Deliberation']['seance_id'], $delib['Deliberation']['position'] );
@@ -2490,5 +2478,29 @@ class DeliberationsController extends AppController {
 
 
     }
+
+/**
+ * Supprime un répertoire et son contenu
+ * @param string $dossier chemin du répertoire à supprimer
+ */
+ function _rmDir($dossier) {
+	$ouverture=@opendir($dossier);
+	if (!$ouverture) return;
+	while($fichier=readdir($ouverture)) {
+		if ($fichier == '.' || $fichier == '..') continue;
+		if (is_dir($dossier."/".$fichier)) {
+			$r = $this->_rmDir($dossier."/".$fichier);
+			if (!$r) return false;
+		} else {
+			$r=@unlink($dossier."/".$fichier);
+			if (!$r) return false;
+		}
+	}
+	closedir($ouverture);
+	$r=@rmdir($dossier);
+	if (!$r) return false;
+	return true;
+}
+
 }
 ?>
