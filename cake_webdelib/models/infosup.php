@@ -65,49 +65,73 @@ class Infosup extends AppModel
 	/* sauvegarde les info sup. recues sous la forme ['code_infosup']=>valeur, ... */
 	function saveCompacted($infosups, $delib_id) {
 		foreach($infosups as $code=>$valeur) {
-			/* lecture de la définition de l'info sup */
-			$infosupdef = $this->Infosupdef->find('code = \''.$code.'\'', 'id, type', null, -1);
+			// lecture de la définition de l'info sup
+			$infosupdef = $this->Infosupdef->find('first', array(
+				'recursive' => -1,
+				'fields' => array('id', 'type'),
+				'conditions' => array('code' => $code)));
 
-			/* lecture de l'infosup en base */
-			$infosup = $this->find('deliberation_id = '.$delib_id.' AND infosupdef_id = '.$infosupdef['Infosupdef']['id'], null, null,-1);
-			/* si elle n'existe pas : création d'un nouveau et initialisation */
+			// lecture de l'infosup en base
+			$infosup = $this->find('first', array(
+				'recursive' => -1,
+				'fields' => array('id', 'deliberation_id', 'infosupdef_id', 'file_name'),
+				'conditions' => array(
+					'deliberation_id' => $delib_id,
+					'infosupdef_id' => $infosupdef['Infosupdef']['id'])));
+
+			// si elle n'existe pas : création d'un nouveau et initialisation
 			if (empty($infosup)) {
 				$this->create();
 				$infosup['Infosup']['deliberation_id'] = $delib_id;
 				$infosup['Infosup']['infosupdef_id'] = $infosupdef['Infosupdef']['id'];
 			}
 
-			/* affectation de la valeur en fonction du type */
-			if ($infosupdef['Infosupdef']['type'] == 'text') {
-				$infosup['Infosup']['text'] = $valeur;
-			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
-				$infosup['Infosup']['content'] = $valeur;
-			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
-				$date = explode('/', $valeur);
-				if (count($date) == 3)
-					$infosup['Infosup']['date'] = $date[2].'-'.$date[1].'-'.$date[0];
-				else
-					$infosup['Infosup']['date'] = '';
-			} elseif ($infosupdef['Infosupdef']['type'] == 'file' || $infosupdef['Infosupdef']['type'] == 'odtFile') {
-				$infosup['Infosup']['file_name'] = $valeur['name'];
-				$infosup['Infosup']['file_size'] = $valeur['size'];
-				$infosup['Infosup']['file_type'] = $valeur['type'];
-				if (empty($valeur['tmp_name']))
-					$infosup['Infosup']['content'] = '';
-				elseif (file_exists($valeur['tmp_name']))
-					$infosup['Infosup']['content'] = fread(fopen($valeur['tmp_name'], "r"), $valeur['size']);
-				elseif (!empty($valeur)) {
-					$infosup['Infosup']['file_name'] = $code;
-					$infosup['Infosup']['file_size'] = strlen($valeur);
-					$infosup['Infosup']['content']= $valeur;
-				}
-			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
-				$infosup['Infosup']['text'] = $valeur;
-			} elseif ($infosupdef['Infosupdef']['type'] == 'list') {
-				$infosup['Infosup']['text'] = $valeur;
+			// affectation de la valeur en fonction du type
+			switch($infosupdef['Infosupdef']['type']) {
+				case 'text' :
+				case 'boolean' :
+				case 'list' :
+					$infosup['Infosup']['text'] = $valeur;
+					break;
+				case 'richText' :
+					$infosup['Infosup']['content'] = $valeur;
+					break;
+				case 'date' :
+					$date = explode('/', $valeur);
+					if (count($date) == 3)
+						$infosup['Infosup']['date'] = $date[2].'-'.$date[1].'-'.$date[0];
+					else
+						$infosup['Infosup']['date'] = '';
+					break;
+				case 'file' :
+				case 'odtFile' :
+					$repDest = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delib_id.DS;
+					if (empty($valeur['tmp_name'])) {
+						if (is_file($repDest.$infosup['Infosup']['file_name'])) @unlink($repDest.$infosup['Infosup']['file_name']);
+						$infosup['Infosup']['file_name'] = '';
+						$infosup['Infosup']['file_size'] = 0;
+						$infosup['Infosup']['file_type'] = '';
+						$infosup['Infosup']['content'] = '';
+					} elseif (file_exists($valeur['tmp_name'])) {
+						if (isset($infosup['Infosup']['file_name']) && ($infosup['Infosup']['file_name'] != $valeur['name']) && is_file($repDest.$infosup['Infosup']['file_name']))
+							@unlink($repDest.$infosup['Infosup']['file_name']);
+						$infosup['Infosup']['file_name'] = $valeur['name'];
+						$infosup['Infosup']['file_size'] = $valeur['size'];
+						$infosup['Infosup']['file_type'] = $valeur['type'];
+						$infosup['Infosup']['content'] = fread(fopen($valeur['tmp_name'], "r"), $valeur['size']);
+						if ($infosupdef['Infosupdef']['type'] == 'odtFile') {
+							if (!is_dir($repDest)) mkdir($repDest, 0770, true);
+							move_uploaded_file($valeur['tmp_name'], $repDest.$valeur['name']);
+						}
+					} elseif (!empty($valeur)) {
+						$infosup['Infosup']['file_name'] = $code;
+						$infosup['Infosup']['file_size'] = strlen($valeur);
+						$infosup['Infosup']['content']= $valeur;
+					}
+					break;
 			}
 
-			/* Sauvegarde de l'info sup */
+			// Sauvegarde de l'info sup
 			$this->save($infosup);
 		}
 	}
