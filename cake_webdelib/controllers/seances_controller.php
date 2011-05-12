@@ -158,8 +158,7 @@ class SeancesController extends AppController {
             $isArrete = false;
             $compteur_id = null;
 
-            $this->data=$this->Seance->read(null,$seance_id);
-	    $this->Session->setFlash("Enregistrement des délibérations en base de données", 'growl', array('type'=>'important'));
+            $this->data=$this->Seance->find('first', array('conditions'=> array('Seance.id' => $seance_id)));
 	    // Avant de cloturer la séance, on stock les délibérations en base de données au format pdf
             if (($this->data['Typeseance']['action'] == 0) || ($this->data['Typeseance']['action'] == 2)) {
 	        if($this->data['Typeseance']['action'] == 2) {
@@ -170,38 +169,18 @@ class SeancesController extends AppController {
             }
 	    if ($result || $this->data['Typeseance']['action']== 1) { 
                 if ($this->Seance->saveField('traitee', 1)){
-                //	$this->redirect('/seances/listerFuturesSeances');
-                        echo ('<script>');
-                        echo ('    document.getElementById("pourcentage").style.display="none"; ');
-                        echo ('    document.getElementById("progrbar").style.display="none";');
-                        echo ('    document.getElementById("affiche").style.display="none";');
-                        echo ('    document.getElementById("contTemp").style.display="none";');
-                        echo ('</script>');
-                        echo ('<br />Sauvegarde des actes administratifs réussie');
-                        die ('<br /><a href ="/postseances/index" id="retour"> Aller en post-séance </a>');
+                    return true;
                 }
 	    }
 	    else 
-	        $this->Session->setFlash("Au moins une délibération n'a pas été générée correctement : La séance ne peut pas être cloturée.");
-	        
-	    //$this->redirect('/seances/details/'.$seance_id);
-            echo ('<script>');
-            echo ('    document.getElementById("pourcentage").style.display="none"; ');
-            echo ('    document.getElementById("progrbar").style.display="none";');
-            echo ('    document.getElementById("affiche").style.display="none";');
-            echo ('    document.getElementById("contTemp").style.display="none";');
-            echo ('</script>');
-            echo ("<br />Au moins un acte administratif n'a pu etre enregistré");
-            die ("<br /><a href ='/seances/details/'.$seance_id id='retour'> Aller en post-séance </a>");
-
+                return false;
 	}
 
         function _stockDelibs($seance_id, $isArrete=false, $compteur_id=null) {
-            require_once ('vendors/progressbar.php');
-            Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
             $cpt=0;
 	    $result = true;
-            $delibs = $this->Deliberation->findAll("Deliberation.seance_id=$seance_id", null, "Deliberation.position ASC");
+            $delibs = $this->Deliberation->find("all", array('conditions' => array("Deliberation.seance_id"=>$seance_id),
+                                                             'order'      => "Deliberation.position ASC"));
             $nbDelibs = count($delibs );
             foreach ($delibs as $delib) {
 
@@ -212,8 +191,6 @@ class SeancesController extends AppController {
                     $num =  $this->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
                     $this->Deliberation->saveField('num_delib', $num);
                 }
-
-                ProgressBar($cpt*(100/$nbDelibs), "Sauvegarde de la délibération :  $delib_id");
                  
 		// On génère la délibération au format PDF
                 $model_id = $this->Deliberation->getModelId($delib_id);
@@ -792,6 +769,27 @@ class SeancesController extends AppController {
             $this->Session->setFlash("Projet [id:$delib_id] déplacée en position : $new_position, ancienne position : $old_position ",  'growl');
             $this->redirect("/seances/afficherProjets/".$delib['Deliberation']['seance_id']);
 	}
+
+       function clore($seance_id) {
+           $actes = $this->Deliberation->find('all', array('conditions' => array('Deliberation.seance_id' => $seance_id,
+                                                                                 'Deliberation.etat != '   => '-1', 
+                                                                                 'Deliberation.signee'   => null),
+                                                           'fields' => 'id',
+                                                           'recursive' => -1));
+           if (count($actes) > 0) {
+               $this->Session->setFlash('Tous les actes ne sont pas signés.', 'growl', array('type'=>'erreur')); 
+               $this->redirect('/seances/listerFuturesSeances');
+           }
+           else {
+               if ($this->changeStatus($seance_id)) 
+                   $this->redirect('/postseances/index');
+               else {
+                   $this->Session->setFlash("Tous les actes n'ont pas été stockés", 'growl', array('type'=>'erreur')); 
+                   $this->redirect('/seances/listerFuturesSeances');
+               }
+           }
+
+       }
 
 }
 ?>
