@@ -2174,6 +2174,11 @@ class DeliberationsController extends AppController {
                 $this->set('seance_id', $seance_id);
                 $this->Parafwebservice = new IparapheurComponent();
 		$circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+                foreach ($circuits['soustype'] as &$libelle) 
+                    $libelle = 'IParapheur : '.$libelle; 
+                 
+                $circuits['soustype']['-1'] = 'Webdelib : Signature manuscrite';
+                ksort($circuits['soustype']);
 		if (empty($this->data)) {
 			$delibs = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.seance_id"=>$seance_id ,
                                                                                             "Deliberation.etat >="   =>3),
@@ -2193,6 +2198,11 @@ class DeliberationsController extends AppController {
 			foreach ($this->data['Deliberation'] as $id => $bool ) {
 				if ($bool == 1) {
 					$delib_id = substr($id, 3, strlen($id));
+                                        if ($this->data['Deliberation']['circuit_id'] == -1) {
+                                            $this->Deliberation->id =   $delib_id ;
+                                            $this->Deliberation->saveField('signee', true); 
+                                            continue;
+                                        }
 					$delib = $this->Deliberation->find('first', array('conditions'=>array('Deliberation.id' => $delib_id)));
 					$soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
 					$nomfichierpdf = "D_$id.pdf";

@@ -12,7 +12,7 @@
 <tr>
 <?php
 	foreach ($deliberations as $delib) {
-		if ($delib['Deliberation']['etat_parapheur']==null)
+		if (($delib['Deliberation']['etat_parapheur']==null) && ($delib['Deliberation']['signee']!=1) )
 		    echo("<td>".$form->checkbox('Deliberation.id_'.$delib['Deliberation']['id'])."</td>");
 		else
 		    echo("<td></td>");
@@ -35,6 +35,9 @@
 			   $delib_id = $delib['Deliberation']['id'];
 			   echo  ("<td><a href='/deliberations/downloadSignature/$delib_id'>Délibération signée</a></td>");
 		        }
+                        elseif(($delib['Deliberation']['signee'] == 1) && ($delib['Deliberation']['etat_parapheur']==null)){
+			   echo  ("<td>Acte déclaré signé</td>");
+                        } 
 			else{
  		            echo("<td>&nbsp;</td>");
 			}
