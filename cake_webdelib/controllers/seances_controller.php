@@ -355,21 +355,16 @@ class SeancesController extends AppController {
 	function details ($seance_id=null) {
 		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$deliberations=$this->afficherProjets($seance_id, 0);
-		$ToutesVotees = true;
 		for ($i=0; $i<count($deliberations); $i++){
                     $id_service = $deliberations[$i]['Service']['id'];
 		    $deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 			$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
-                    if ($deliberations[$i]['Deliberation']['nature_id']==1)
-                        if (($deliberations[$i]['Deliberation']['etat']!=3)AND($deliberations[$i]['Deliberation']['etat']!=4) )
-                            $ToutesVotees = false;
 		}
 		$this->set('deliberations',$deliberations);
 		$date_tmpstp = strtotime($this->GetDate($seance_id));
 		$this->set('date_tmpstp', $date_tmpstp);
 		$this->set('date_seance', $this->Date->frenchDateConvocation($date_tmpstp));
 		$this->set('seance_id', $seance_id);
-		$this->set('canClose', $ToutesVotees);
 	}
 
 	function effacerVote($deliberation_id=null) {

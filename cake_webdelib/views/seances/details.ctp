@@ -57,9 +57,3 @@
 <div class="submit">
 <?php echo $html->link('Retour', '/seances/listerFuturesSeances', array('class'=>'link_annuler', 'name'=>'Retour'))?>
 </div>
-<div class="close">
-<?php
-	 if ($date_tmpstp <= strtotime(date('Y-m-d H:i:s')) AND $canClose)
-	       echo $html->link('Clore la séance','/seances/changeStatus/' . $seance_id, array('class'=>'link_clore', 'name'=>'Clore', 'title'=>'Clore la séance'), 'Etes-vous sur de vouloir clore cette séance ?', false);
-?>
-</div>
