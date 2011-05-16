@@ -2,7 +2,7 @@
 <?php $afficheNote = false; ?>
 
 <h2><?php echo $titreVue;?></h2>
-<?php echo $form->create('Deliberation',array('type'=>'file','url'=>$action)); ?>
+<?php echo $form->create('Deliberation',array('type'=>'file','url'=>$action,  'name'=>'Deliberation')); ?>
 
 <div id="add_form">
 <table class="sample">
@@ -49,10 +49,10 @@
 				echo $form->input($fieldName, array('label'=>false, 'size'=>$infosupdef['Infosupdef']['taille'], 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				$afficheNote = true;
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
-				echo $form->input($fieldName, array('label'=>false, 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+				echo $form->input($fieldName, array('label'=>false, 'size'=>'9', 'div'=>false, 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				echo '&nbsp;';
 				$fieldId = "'Deliberation.Infosup".Inflector::camelize($infosupdef['Infosupdef']['id'])."'";
-				echo $html->link($html->image("calendar.png", "border='0'"), "javascript:show_calendar($fieldId, 'f');", array(), false, false);
+				echo $html->link($html->image("calendar.png", array('style' => "border='0'")), "javascript:show_calendar($fieldId, 'f');", array(), false, false);
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
 				echo $form->input($fieldName, array('label'=>false, 'options'=>$listeBoolean, 'empty'=>true));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'list') {
