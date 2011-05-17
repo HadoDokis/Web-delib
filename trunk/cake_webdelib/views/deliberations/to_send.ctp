@@ -1,12 +1,12 @@
-<script>
-    document.getElementById("pourcentage").style.display='none';
-    document.getElementById("progrbar").style.display='none';
-    document.getElementById("affiche").style.display='none';
-    document.getElementById("contTemp").style.display='none';
-</script>
-
-<?php echo $javascript->link('utils.js'); ?>
 <div class="deliberations">
+<?php echo $javascript->link('utils.js'); ?>
+<?php
+    if ((@$this->params['filtre'] != 'hide' ) &&
+        ($this->params['action'] !='mesProjetsRecherche') &&
+        ($this->params['action'] !='tousLesProjetsRecherche') )
+        echo $this->element('filtre');
+?>
+
 
 <?php if (isset($message))  echo ($message); ?>
 <h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
