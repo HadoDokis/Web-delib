@@ -8,6 +8,8 @@
 			jQuery.jGrowl("<?php echo '<div class=\'important\'>'.$content_for_layout.'</div>'; ?>", { header:'Important :', glue:'before' });
 		<?php elseif (isset($type) && $type == 'erreur') : ?>
 			jQuery.jGrowl("<?php echo '<div class=\'error_message\'>'.$content_for_layout.'</div>'; ?>", { header:'Erreur :', sticky:true });
+		<?php elseif (isset($type) && $type == 'erreurTDT') : ?>
+			jQuery.jGrowl("<?php echo '<div class=\'error_message\'>'.$content_for_layout.'</div>'; ?>", { header:'Rapport :', theme: 'tdt',  sticky:true  });
 		<?php else : ?>
 			jQuery.jGrowl("<?php echo '<div class=\'info\'>'.$content_for_layout.'</div>'; ?>", {});
 		<?php endif; ?>

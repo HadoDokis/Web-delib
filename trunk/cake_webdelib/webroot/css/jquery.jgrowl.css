@@ -1,3 +1,8 @@
+.tdt {
+     width:     850px !important; 
+     height:    400px !important;
+     font-size:	9px   !important;
+}
 
 div.jGrowl {
 	padding: 			10px;
@@ -78,7 +83,7 @@ div.center div.jGrowl-notification, div.center div.jGrowl-closer {
 
 div.jGrowl div.jGrowl-notification, div.jGrowl div.jGrowl-closer {
 	background-color: 		black;
-	opacity: 				.85;
+	opacity: 			.85;
     -ms-filter: 			"progid:DXImageTransform.Microsoft.Alpha(Opacity=85)"; 
     filter: 				progid:DXImageTransform.Microsoft.Alpha(Opacity=85); 
 	zoom: 					1;
