@@ -12,12 +12,13 @@
 <tr>
 <?php
 	foreach ($deliberations as $delib) {
-		if (($delib['Deliberation']['etat_parapheur']==null) && ($delib['Deliberation']['signee']!=1) )
+		if (($delib['Deliberation']['etat_parapheur']==null) && ($delib['Deliberation']['signee']!=1) &&  ($delib['Deliberation']['etat']>=3))
 		    echo("<td>".$form->checkbox('Deliberation.id_'.$delib['Deliberation']['id'])."</td>");
 		else
 		    echo("<td></td>");
                     echo "<td>";
                     echo $html->link($delib['Deliberation']['num_delib'],'/models/generer/' .$delib['Deliberation']['id'].'/null/'.$delib['Model']['id']);
+                    
 		?>
 		</td>
 		<td>
@@ -26,22 +27,24 @@
 		<td>
 		<?php echo ($delib['Deliberation']['titre']); ?>
 		</td>
-
-		   <?php
-		        if ($delib['Deliberation']['etat_parapheur']==1) {
-			   echo  ("<td>En cours de signature</td>");
-			}
-		        elseif($delib['Deliberation']['etat_parapheur']==2) {
+	   <?php
+		   if ($delib['Deliberation']['etat_parapheur']==1) {
+		       echo  ("<td>En cours de signature</td>");
+		   }
+		   elseif($delib['Deliberation']['etat_parapheur']==2) {
 			   $delib_id = $delib['Deliberation']['id'];
 			   echo  ("<td><a href='/deliberations/downloadSignature/$delib_id'>Délibération signée</a></td>");
-		        }
-                        elseif(($delib['Deliberation']['signee'] == 1) && ($delib['Deliberation']['etat_parapheur']==null)){
-			   echo  ("<td>Acte déclaré signé</td>");
-                        } 
-			else{
- 		            echo("<td>&nbsp;</td>");
-			}
-		   ?>
+		    }
+                   elseif(($delib['Deliberation']['signee'] == 1) && ($delib['Deliberation']['etat_parapheur']==null)){
+                       echo  ("<td>Acte déclaré signé</td>");
+                    } 
+                   elseif (($delib['Deliberation']['etat']>=1) && ($delib['Deliberation']['etat']<3)) {
+                       echo '<td>'.$html->link('A faire voter', "/seances/voter/".$delib['Deliberation']['id']).'</td>';
+                   }
+		    else{
+ 		        echo("<td>&nbsp;</td>");
+		    }
+		  ?>
 		</tr>
 <?php	 } ?>
 
