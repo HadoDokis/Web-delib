@@ -485,8 +485,8 @@ class Deliberation extends AppModel {
                if (!$isDelib)
                   return $oMainPart;
                //LISTE DES PRESENCES...
-               @$this->Listepresence->Behaviors->attach('Containable');
-               @$this->Vote->Behaviors->attach('Containable');
+               $this->Listepresence->Behaviors->attach('Containable');
+               $this->Vote->Behaviors->attach('Containable');
                $acteurs_presents = array();
                $acteurs_absents = array();
                $acteurs_remplaces = array();
@@ -497,7 +497,7 @@ class Deliberation extends AppModel {
 
                $acteurs = $this->Listepresence->find('all', 
                                                      array ('conditions' => array("delib_id" => $delib['Deliberation']['id']),
-                                                            'contain'   => array('Acteur', 'Listepresence'),           
+                                                            'contain'   => array('Acteur'),           
                                                             'order' => 'Acteur.position ASC'));
                if (!empty($acteurs)) {
                      foreach($acteurs as $acteur) {
@@ -566,7 +566,7 @@ class Deliberation extends AppModel {
 
                $acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
                                                                                "Vote.resultat"=> 2),
-                                                          'contain'   => array('Acteur', 'Vote'),
+                                                          'contain'   => array('Acteur'),
                                                           'order' => 'Acteur.position ASC'));
 
                 foreach ($acteurs as $acteur) {
@@ -587,7 +587,7 @@ class Deliberation extends AppModel {
              
                $acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
                                                                                "Vote.resultat"=> 3),
-                                                          'contain'   => array('Acteur', 'Vote'),
+                                                          'contain'   => array('Acteur'),
                                                           'order' => 'Acteur.position ASC'));
 
                 foreach ($acteurs as $acteur) {
@@ -608,7 +608,7 @@ class Deliberation extends AppModel {
              
                $acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
                                                                                "Vote.resultat"=> 4),
-                                                          'contain'   => array('Acteur', 'Vote'),
+                                                          'contain'   => array('Acteur'),
                                                           'order' => 'Acteur.position ASC'));
 
                foreach ($acteurs as $acteur) {
@@ -628,7 +628,7 @@ class Deliberation extends AppModel {
                }
                $acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
                                                                                "Vote.resultat"=> 5),
-                                                          'contain'   => array('Acteur', 'Vote'),
+                                                          'contain'   => array('Acteur'),
                                                           'order' => 'Acteur.position ASC'));
 
                foreach ($acteurs as $acteur) {
