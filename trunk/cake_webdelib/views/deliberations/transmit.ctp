@@ -14,6 +14,7 @@
     <table>
  	<th><?php echo  $paginator->sort('N° délibération', 'num_delib'); ?></th>
  	<th><?php echo  $paginator->sort('Objet', 'objet'); ?></th>
+ 	<th><?php echo  $paginator->sort('Date de séance', 'Seance.date'); ?></th>
  	<th><?php echo  $paginator->sort('Titre', 'titre'); ?></th>
  	<th><?php echo  $paginator->sort('Classification', 'num_pref'); ?></th>
  	<th>Statut</th>
@@ -24,13 +25,9 @@
 	     echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/'.$delib['Deliberation']['id']);
 		?>
 		</td>
-		<td>
-		<?php echo $delib['Deliberation']['objet']; ?>
-		</td>
-		<td>
-		<?php echo ($delib['Deliberation']['titre']); ?>
-		</td>
-
+		<td><?php echo $delib['Deliberation']['objet']; ?></td>
+		<td><?php echo $delib['Seance']['date']; ?></td>
+		<td><?php echo $delib['Deliberation']['titre']; ?></td>
 		<td><?php echo $delib['Deliberation']['num_pref']; ?></td>
 		<td>
 		   <?php 
