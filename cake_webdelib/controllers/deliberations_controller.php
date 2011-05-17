@@ -85,7 +85,6 @@ class DeliberationsController extends AppController {
                 unset($delib['Deliberation']['id']);
                 $delib['Deliberation']['objet'] = $delib['Deliberation']['objet']." : $i";
                 $this->Deliberation->save($delib); 
-                debug($this->Deliberation->getLastInsertID());
             }
             exit;
         }
@@ -982,10 +981,10 @@ class DeliberationsController extends AppController {
 	}
 
         function sendActe ($delib_id = null) {
+            $erreur = '';
 	    $Tabclassification = array();
 	    if (!is_file(Configure::read('FILE_CLASS')))
 	     $this->getClassification();
-	    include ('vendors/progressbar.php');
 	    $url = 'https://'.Configure::read('HOST').'/modules/actes/actes_transac_create.php';
             $pos =  strrpos ( getcwd(), 'webroot');
 	    $path = substr(getcwd(), 0, $pos);
@@ -1007,18 +1006,19 @@ class DeliberationsController extends AppController {
 		        $this->Deliberation->changeClassification($delib_id, $classification);
  
   		    $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id)));
-                    $classification = $delib['Deliberation']['num_pref'];
+                    $classification = $delib['Deliberation']['num_pref'];          
+                    if (strpos($classification, ' -') != false)
+                        $classification = (substr($classification, 0, strpos($classification, ' -')));
 
-		    $class1 = substr($classification , 0, strpos ($classification , '-' ));
-		    $rest = substr($classification , strpos ($classification , '-' )+1, strlen($classification));
-		    $class2=substr($rest , 0, strpos ($classification , '-' ));
-		    $rest = substr($rest , strpos ($classification , '-' )+1, strlen($rest));
+		    $class1 = substr($classification , 0, strpos ($classification , '.' ));
+		    $rest = substr($classification , strpos ($classification , '.' )+1, strlen($classification));
+		    $class2=substr($rest , 0, strpos ($classification , '.' ));
+		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
 		    $class3=substr($rest , 0, strpos ($classification , '.' ));
-		    $rest = substr($rest , strpos ($classification , '-' )+1, strlen($rest));
-		    $class4=substr($rest , 0, strpos ($classification , '-' ));
-		    $rest = substr($rest , strpos ($classification , '-' )+1, strlen($rest));
-		    $class5=substr($rest , 0, strpos ($classification , '-' ));
-
+		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
+		    $class4=substr($rest , 0, strpos ($classification , '.' ));
+		    $rest = substr($rest , strpos ($classification , '.' )+1, strlen($rest));
+		    $class5=substr($rest , 0, strpos ($classification , '.' ));
 
 		    //Création du fichier de délibération au format pdf (on ne passe plus par la génération)
                     $file =  $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/fd/null/$delib_id/", "D_$delib_id.pdf",  $delib['Deliberation']['delib_pdf']);
@@ -1033,7 +1033,8 @@ class DeliberationsController extends AppController {
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-			 'number'        => $delib['Deliberation']['num_delib'],
+			 //'number'        => $delib['Deliberation']['num_delib'],
+			 'number'        => time(),
      	                 'decision_date' => date("Y-m-d", strtotime($delib['Seance']['date'])),
       	                 'subject'       => $delib['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
@@ -1067,29 +1068,30 @@ class DeliberationsController extends AppController {
 			 $pos    = strpos($curl_return, 'OK');
 			 $tdt_id = substr  ($curl_return , 3 , strlen($curl_return) );
 			 if ($pos === false) {
-                              echo ('<script>');
-                              echo ('    document.getElementById("pourcentage").style.display="none"; ');
-                              echo ('    document.getElementById("progrbar").style.display="none";');
-                              echo ('    document.getElementById("affiche").style.display="none";');
-                              echo ('    document.getElementById("contTemp").style.display="none";');
-                              echo ('</script>');
-			      echo ("Tentative d'envoi à : $url<br />");
-			      echo 'Erreur Curl : ' . curl_error($ch);
-			      die ('<br /><a href ="/deliberations/toSend"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
+                             $order   = array("\r\n", "\n", "\r");
+                             $replace = '<br />';
+                             $curl_return = str_replace($order, $replace, $curl_return);
+                             $erreur .= $delib['Deliberation']['objet'].'(' . $delib['Deliberation']['num_delib'].') : '.$curl_return.'<br />';
                          }
 			 else {
                               $nbEnvoyee ++;
+                              $this->Deliberation->id = $delib_id;
                               $this->Deliberation->saveField('etat', 5);
                               $this->Deliberation->saveField('tdt_id', $tdt_id);
 
 			      curl_close($ch);
 		              unlink ($file);
-                              $this->log( $curl_return);
 			    }
 			}
 		    }
-			      echo ('<br />Les d&eacute;lib&eacute;rations ont &eacute;t&eacute; correctement envoy&eacute;es.');
-			      die ('<br /><a href ="/deliberations/transmit" id="retour"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
+                    if ($erreur == '') {
+                        $this->Session->setFlash('Actes envoyés correctement au TdT', 'growl');
+                        $this->redirect(array('controllers'=>'deliberations', 'action'=>'transmit'));
+                    }
+                    else {
+                        $this->Session->setFlash('Erreur : '. $erreur, 'growl', array('type'=>'erreurTDT'));
+                        $this->redirect(array('controllers'=>'deliberations', 'action'=>'toSend'));
+                    }
 		}
 
 
@@ -2104,7 +2106,6 @@ class DeliberationsController extends AppController {
 				$this->Session->setFlash('Vous devez saisir au moins un crit&egrave;re.', 'growl', array('type'=>'erreur'));
 				$this->redirect('/deliberations/tousLesProjetsRecherche');
 			} else {
-                               debug($conditions);
 				// lecture en base
                                 $projets = $this->Deliberation->find('all', array ('conditions' => $conditions,
                                                                                    'oder'       => 'Deliberation.seance_id'));
