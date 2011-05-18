@@ -110,3 +110,4 @@ ADD `created` DATETIME NOT NULL ,
 ADD `modified` DATETIME NOT NULL ;
 
 ALTER TABLE `deliberations` ADD `signee` TINYINT( 1 ) NULL AFTER `signature`;
+ALTER TABLE `acteurs` CHANGE `titre` `titre` VARCHAR( 250 );
