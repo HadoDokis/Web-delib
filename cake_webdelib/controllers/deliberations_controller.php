@@ -533,18 +533,34 @@ class DeliberationsController extends AppController {
 		$delib = $this->Deliberation->read(null, $id);
 		if (empty($delib)) {
 			$this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible', 'growl', array('type'=>'erreur'));
-		} else if ($this->Deliberation->del($id)) {
-			// suppression du répertoire des fichiers si il existe
-			$repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$id.DS;
-			if (is_dir($repFichier)) $this->_rmDir($repFichier);
-			// Il faut reclasser toutes les delibs de la seance
-			if (!empty($delib['Deliberation']['seance_id']))
-				$this->_PositionneDelibsSeance($delib['Deliberation']['seance_id'], $delib['Deliberation']['position'] );
+		} else {
+                    // Suppression des projets antérieurs potentiels
+                    $this->_delAnteProjet($id);
+                    
+                    $repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$id.DS;
+                    if (is_dir($repFichier)) 
+                        $this->_rmDir($repFichier);
+                    // Il faut reclasser toutes les delibs de la seance
+                    if (!empty($delib['Deliberation']['seance_id']))
+                        $this->_PositionneDelibsSeance($delib['Deliberation']['seance_id'], $delib['Deliberation']['position'] );
 
-			$this->Session->setFlash('Le projet \''.$id.'\' a &eacute;t&eacute; supprim&eacute;.', 'growl');
+                    $this->Session->setFlash('Le projet \''.$id.'\' a &eacute;t&eacute; supprim&eacute;.', 'growl');
 		}
 		$this->redirect('/deliberations/mesProjetsRedaction');
 	}
+
+    function _delAnteProjet($delib_id) { 
+        $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
+                                                          'fields'     => array('id', 'anterieure_id'),
+                                                          'recursive'  => -1    ));
+        if ($this->Deliberation->del($delib_id)) {
+            if ( $delib['Deliberation']['anterieure_id'] != 0){
+                $this->_delAnteProjet($delib['Deliberation']['anterieure_id']);
+            }
+            else
+                return true;
+        }
+    }
 
     function addIntoCircuit($id = null){
         $this->data = $this->Deliberation->find('first',array('conditions' => array('Deliberation.id' => $id)));
