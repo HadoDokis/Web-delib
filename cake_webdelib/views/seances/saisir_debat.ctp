@@ -8,7 +8,11 @@
         if ($isCommission) {
             echo '<br>Nom fichier : '.$delib['Deliberation']['commission_name'];
             echo '<br>Taille : '.$delib['Deliberation']['commission_size'];
-            echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$delib['Deliberation']['id'].'/commission').'<br><br><br>';
+            if ($delib['Deliberation']['commission_size'] >0){
+                echo '<br>'.$html->link('Telecharger le débat','/deliberations/download/'.$delib['Deliberation']['id'].'/commission');
+                echo ' '.$html->link('Supprimer le débat','/deliberations/deleteDebat/'.$delib['Deliberation']['id']."/$isCommission");
+            }
+            echo '<br><br><br>';
             echo  $form->input("Deliberation.texte_doc",array('label'=>'', 'type'=>'file'));
            // echo $form->submit('Importer', array('class'=>'bt_add', 'name'=>'importer', 'div'=>false));
             echo '<br><br>';
@@ -16,7 +20,11 @@
         else {
             echo '<br>Nom fichier : '.$delib['Deliberation']['debat_name'];
             echo '<br>Taille : '.$delib['Deliberation']['debat_size'];
-            echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$delib['Deliberation']['id'].'/debat').'<br><br><br>';
+            if ($delib['Deliberation']['debat_size'] >0) {
+                echo '<br>'.$html->link('Télécharger le débat','/deliberations/download/'.$delib['Deliberation']['id'].'/debat');
+                echo ' '.$html->link('Supprimer le débat','/deliberations/deleteDebat/'.$delib['Deliberation']['id']."/$isCommission");
+            }
+            echo '<br><br><br>';
             echo  $form->input("Deliberation.texte_doc",array('label'=>'', 'type'=>'file'));
           //  echo $form->submit('Importer', array('class'=>'bt_add', 'name'=>'importer', 'div'=>false));
             echo '<br><br>';
