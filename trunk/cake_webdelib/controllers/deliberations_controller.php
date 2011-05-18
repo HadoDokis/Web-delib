@@ -276,6 +276,27 @@ class DeliberationsController extends AppController {
 		exit();
 	}
 
+
+         function deleteDebat($id, $isCommission){
+              $this->Deliberation->id = $id;
+              if (! $isCommission)
+                  $data = array( 'id'      => $id,
+                                 'debat'      => '',
+                                 'debat_name' => '',
+                                 'debat_size' => 0,
+                                 'debat_type' => '' );
+              else
+                  $data = array( 'id'      => $id,
+                                 'commission'      => '',
+                                 'commission_name' => '',
+                                 'commission_size' => 0,
+                                 'commission_type' => '' );
+                 
+               if ($this->Deliberation->save($data) )
+                   $this->redirect("/seances/SaisirDebat/$id");
+               
+         }
+
         function downloadDelib($delib_id) {
             $delib = $this->Deliberation->read(null, $delib_id);
             header('Content-type: application/pdf');
