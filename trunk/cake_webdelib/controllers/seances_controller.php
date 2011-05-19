@@ -520,7 +520,6 @@ class SeancesController extends AppController {
 	}
 
 	function saisirDebatGlobal ($id = null) {
-
 		if (empty($this->data)) {
 			$this->data = $this->Seance->read(null, $id);
 			$this->set('annexes',$this->Annex->findAll('Annex.seance_id='.$id.' AND type="A"'));
@@ -529,7 +528,7 @@ class SeancesController extends AppController {
              if (isset($this->data['Seance']['texte_doc'])){
 				if ($this->data['Seance']['texte_doc']['size']!=0){
                      $this->data['Seance']['id'] = $id;
-			    	 $this->data['Seance']['debat_global_name'] = $this->data['Seance']['texte_doc']['name'];
+                     $this->data['Seance']['debat_global_name'] = $this->data['Seance']['texte_doc']['name'];
                      $this->data['Seance']['debat_global_size'] = $this->data['Seance']['texte_doc']['size'];
                      $this->data['Seance']['debat_global_type'] = $this->data['Seance']['texte_doc']['type'];
                      $this->data['Seance']['debat_global']      = $this->getFileData($this->data['Seance']['texte_doc']['tmp_name'], $this->data['Seance']['texte_doc']['size']);
@@ -785,6 +784,23 @@ class SeancesController extends AppController {
            }
 
        }
+
+        function deleteDebatGlobal($id ){
+            $this->Seance->id = $id;
+            $data = array( 'id'      => $id,
+                           'debat_global'      => '',
+                           'debat_global_name' => '',
+                           'debat_global_size' => 0,
+                           'debat_global_type' => '' );
+
+             if ($this->Seance->save($data, false))
+                   $this->redirect("/seances/SaisirDebatGlobal/$id");
+             else
+                   die ("Suppression impossible!");
+
+         }
+
+
 
 }
 ?>
