@@ -86,15 +86,20 @@ class ActeursController extends AppController
 			} else
 				$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
 		} else {
-			if ($this->_controleEtSauve()) {
-				$this->Session->setFlash('L\'acteur \''.$this->data['Acteur']['prenom'].' '.$this->data['Acteur']['nom'].'\' a &eacute;t&eacute; modifi&eacute;');
-				$sortie = true;
-			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				if (array_key_exists('Service', $this->data))
-					$this->set('selectedServices', $this->data['Service']['Service']);
-				else
-					$this->set('selectedServices', null);			}
+                    if (isset( $this->data['Acteur']['_month'])) {
+                        $this->data['Acteur']['date_naissance_day']   = $this->data['Acteur']['date_naissance']['day'];
+                        $this->data['Acteur']['date_naissance_month'] = $this->data['Acteur']['_month'];
+                        $this->data['Acteur']['date_naissance_year']  = $this->data['Acteur']['_year'];
+                    }
+                    if ($this->_controleEtSauve()) {
+                        $this->Session->setFlash('L\'acteur \''.$this->data['Acteur']['prenom'].' '.$this->data['Acteur']['nom'].'\' a &eacute;t&eacute; modifi&eacute;');
+			$sortie = true;
+	            } else {
+		        $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+			if (array_key_exists('Service', $this->data))
+			    $this->set('selectedServices', $this->data['Service']['Service']);
+			else
+			    $this->set('selectedServices', null);			}
 		}
 		if ($sortie)
 			$this->redirect('/acteurs/index');
@@ -108,6 +113,7 @@ class ActeursController extends AppController
 function _controleEtSauve() {
 
 	if (!empty($this->data['Acteur']['typeacteur_id'])) {
+
 		if ($this->Acteur->Typeacteur->field('elu', 'id = '. $this->data['Acteur']['typeacteur_id'])) {
 			// pour un élu : initialisation de 'position' si non définie
 			if (!$this->data['Acteur']['position'])
@@ -116,7 +122,7 @@ function _controleEtSauve() {
 			// pour un non élu : suppression des informations éventuellement saisies (service, position, date naissance)
 			if (array_key_exists('Service', $this->data))
 				$this->data['Service']['Service'] = array();
-				$this->data['Acteur']['position'] = 999;
+                      $this->data['Acteur']['position'] = 999;
 	              $this->data['Acteur']['date_naissance_day'] = 0;
 	              $this->data['Acteur']['date_naissance_month'] = 0;
 	              $this->data['Acteur']['date_naissance_year'] = 0;
