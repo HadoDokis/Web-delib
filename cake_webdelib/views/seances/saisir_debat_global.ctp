@@ -6,7 +6,11 @@ echo $form->create('Seances',array('url'=>'/seances/saisirDebatGlobal/'.$seance[
 if (!Configure::read('GENERER_DOC_SIMPLE')){
     echo '<br>Nom fichier : '.$seance['Seance']['debat_global_name'];
     echo '<br>Taille : '.$seance['Seance']['debat_global_size'];
-    echo '<br>'.$html->link('Telecharger','/seances/download/'.$html->value('Seance.id').'/debat_global').'<br><br><br>';
+    if ($seance['Seance']['debat_global_size']>0) { 
+        echo '<br>'.$html->link('Telecharger','/seances/download/'.$html->value('Seance.id').'/debat_global');
+        echo ' '.$html->link('Supprimer','/seances/deleteDebatGlobal/'.$html->value('Seance.id').'/');
+    }
+    echo '<br><br><br>';
     echo $form->input("Seance.texte_doc", array('label'=>'', 'type'=>'file'));
 //    echo $form->submit('Importer', array('class'=>'bt_add', 'name'=>'importer', 'div'=>false));
     echo '<br><br>';
@@ -36,7 +40,7 @@ else {          ?>
 </div>
 <br>
 <div class="submit">
-    <?php echo $form->submit('Enregistrer', array('class'=>'bt_add', 'div'=>false, 'name'=>'saisir', 'onclick'=>"javascript:FermerFenetre()"));?>
+    <?php echo $form->submit('Enregistrer', array('class'=>'bt_add', 'div'=>false, 'name'=>'saisir'));?>
     <?php echo $form->submit('Annuler',     array('class'=>'bt_annuler', 'div'=>false, 'name'=>'annuler', 'onclick'=>"javascript:FermerFenetre2()"));?>
 </div>
 <?php echo $form->end(); ?>
