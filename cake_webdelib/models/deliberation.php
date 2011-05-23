@@ -400,6 +400,22 @@ class Deliberation extends AppModel {
                $oMainPart->addElement(new GDO_FieldType('ville_rapporteur',            utf8_encode($delib['Rapporteur']['ville']),      'text'));
                $oMainPart->addElement(new GDO_FieldType('note_rapporteur',             utf8_encode($delib['Rapporteur']['note']),       'text'));
 
+               // Information sur le president
+               $president = $this->Rapporteur->read(null, $delib['Seance']['president_id'] );
+               $oMainPart->addElement(new GDO_FieldType('nom_president', utf8_encode($president['Rapporteur']['nom']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('prenom_president', utf8_encode($president['Rapporteur']['prenom']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('salutation_president', utf8_encode($president['Rapporteur']['salutation']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('titre_president', utf8_encode($president['Rapporteur']['titre']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('note_president', utf8_encode($president['Rapporteur']['note']), 'text'));
+ 
+               // Information sur le secretaire
+               $secretaire = $this->Rapporteur->read(null, $delib['Seance']['secretaire_id'] );
+               $oMainPart->addElement(new GDO_FieldType('nom_secretaire', utf8_encode($secretaire['Rapporteur']['nom']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('prenom_secretaire', utf8_encode($secretaire['Rapporteur']['prenom']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('salutation_secretaire', utf8_encode($secretaire['Rapporteur']['salutation']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('titre_secretaire', utf8_encode($secretaire['Rapporteur']['titre']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('note_secretaire', utf8_encode($secretaire['Rapporteur']['note']), 'text'));
+
                if (Configure::read('GENERER_DOC_SIMPLE')) {
                    if (isset($delib['Deliberation']['texte_projet']))
                        $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',       '<small></small>'.$delib['Deliberation']['texte_projet']));
