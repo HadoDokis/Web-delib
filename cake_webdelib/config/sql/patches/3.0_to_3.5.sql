@@ -111,3 +111,6 @@ ADD `modified` DATETIME NOT NULL ;
 
 ALTER TABLE `deliberations` ADD `signee` TINYINT( 1 ) NULL AFTER `signature`;
 ALTER TABLE `acteurs` CHANGE `titre` `titre` VARCHAR( 250 );
+
+
+ALTER TABLE `seances` ADD `president_id` INT( 10 ) NULL AFTER `secretaire_id`;
