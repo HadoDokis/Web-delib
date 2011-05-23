@@ -109,6 +109,8 @@ class AppController extends Controller {
 
 	function afterFilter() {
 		if( $this->Session->check( 'user.User' ) ) {
+		    $this->Session->write( 'user.User.myUrl', $this->here );
+
                    // Attention au cas de elements $this->log( $this->Session->read( 'user.User.oldurl' )); 
                     if (($this->here != $this->referer()) && ($this->here != '/deliberations/classification'))
 		        $this->Session->write( 'user.User.lasturl', $this->referer() );
