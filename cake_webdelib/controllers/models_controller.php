@@ -274,6 +274,7 @@
                  $oMainPart->addElement(new GDO_FieldType('heure_seance', $this->Date->Hour  ($seance['Seance']['date']),   'date'));
                  $oMainPart->addElement(new GDO_FieldType('type_seance',utf8_encode($seance['Typeseance']['libelle']) , "text"));
                  $oMainPart->addElement(new GDO_FieldType('identifiant_seance',  utf8_encode($seance['Seance']['id']),'text'));
+
                  $oMainPart->addElement(new GDO_FieldType("nom_secretaire", utf8_encode($seance['Secretaire']['nom']), "text"));
                  $oMainPart->addElement(new GDO_FieldType("prenom_secretaire", utf8_encode($seance['Secretaire']['prenom']), "text"));
                  $oMainPart->addElement(new GDO_FieldType("salutation_secretaire",utf8_encode($seance['Secretaire']['salutation']), "text"));
@@ -286,6 +287,20 @@
                  $oMainPart->addElement(new GDO_FieldType("email_secretaire", utf8_encode($seance['Secretaire']['email']), "text"));
                  $oMainPart->addElement(new GDO_FieldType("telfixe_secretaire",utf8_encode($seance['Secretaire']['telfixe']), "text"));
                  $oMainPart->addElement(new GDO_FieldType("note_secretaire", utf8_encode($seance['Secretaire']['note']), "text"));
+
+                 $oMainPart->addElement(new GDO_FieldType("nom_president", utf8_encode($seance['President']['nom']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("prenom_president", utf8_encode($seance['President']['prenom']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("salutation_president",utf8_encode($seance['President']['salutation']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("titre_president", utf8_encode($seance['President']['titre']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("date_naissance_president", utf8_encode($seance['President']['date_naissance']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("adresse1_president", utf8_encode($seance['President']['adresse1']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("adresse2_president", utf8_encode($seance['President']['adresse2']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("cp_president", utf8_encode($seance['President']['cp']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("ville_president", utf8_encode($seance['President']['ville']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("email_president", utf8_encode($seance['President']['email']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("telfixe_president",utf8_encode($seance['President']['telfixe']), "text"));
+                 $oMainPart->addElement(new GDO_FieldType("note_president", utf8_encode($seance['President']['note']), "text"));
+
 
                  if (!$isPV) { // une convocation ou un ordre du jour
                      require_once ('vendors/progressbar.php');
@@ -388,6 +403,8 @@
                 // Lancement de la fusion
                 //*****************************************
                 try {
+                    Configure::write('debug', 1);
+                    error_reporting(0);
                     $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
                     $oFusion->process();
                     if ($dl ==1)
