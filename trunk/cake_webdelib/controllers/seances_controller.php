@@ -624,15 +624,16 @@ class SeancesController extends AppController {
 	        $tab[$acteurConvoque['Acteur']['id']] =  $acteurConvoque['Acteur']['prenom'].' '. $acteurConvoque['Acteur']['nom'];
             $this->set('acteurs', $tab);
 
-			if (empty($this->data)) {
-			    $this->set('selectedActeurs', $seance['Seance']['secretaire_id']);
-		    }
- 			else {
-                            $this->Seance->id = $seance_id;
-
-				if ($this->Seance->saveField('secretaire_id',$this->data['Acteur']['secretaire_id']))
-					$this->redirect('/seances/listerFuturesSeances');
-			}
+            if (empty($this->data)) {
+                $this->set('selectedPresident', $seance['Seance']['president_id']);
+                $this->set('selectedActeurs', $seance['Seance']['secretaire_id']);
+            }
+            else {
+                $this->Seance->id = $seance_id;
+                $this->Seance->saveField('president_id',$this->data['Acteur']['president_id']);
+                if ($this->Seance->saveField('secretaire_id',$this->data['Acteur']['secretaire_id']))
+		    $this->redirect('/seances/listerFuturesSeances');
+            }
         }
 
         function getListActeurs($seance_id, $choixListe=1) {
