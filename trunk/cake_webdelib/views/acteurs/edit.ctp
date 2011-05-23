@@ -96,6 +96,7 @@ function initAffichageInfosElus()
 			</div>
 		</fieldset>
 		<div class="spacer"></div>
+
 		<fieldset>
 		<legend>Autres informations</legend>
  			<?php echo $form->input('Acteur.note', array('type'=>'textarea', 'label'=>'Note', 'cols' => '30'));?>
