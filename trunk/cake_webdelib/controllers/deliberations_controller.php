@@ -212,7 +212,9 @@ class DeliberationsController extends AppController {
 				// création des fichiers des textes
 				if (!Configure::read('GENERER_DOC_SIMPLE')){
 					$repDest = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
-					mkdir($repDest, 0770, true);
+                                        if (!file_exists($repDest)){
+					    mkdir($repDest, 0770, true);
+                                        }
 					$this->Gedooo->createFile($repDest, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
 					$this->Gedooo->createFile($repDest, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
 					$this->Gedooo->createFile($repDest, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
