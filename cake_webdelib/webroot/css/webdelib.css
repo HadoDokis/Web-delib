@@ -1035,8 +1035,9 @@ div.fckEditorProjet {
 
 /* Mise en forme des onglets */
 .onglet {
-	font: normal normal 16px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	border-bottom:  1px solid #e0ef90;
+	font: normal normal 14px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+        background : #f8fddd;
+	border-bottom:  3px solid #e0ef90;
 	margin-top: 5px;
 	margin-bottom: 20px;
 }
@@ -1046,13 +1047,20 @@ div.fckEditorProjet {
 	text-decoration: none;
 }
 .onglet a.ongletCourant{
-/*	font-weight: bold;*/
+        font: 16px  "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
 	background: #fff;
-	padding-bottom: 1px;
-	border-left:  1px solid #e0ef90;
-	border-top:  1px solid #e0ef90;
-	border-right:  1px solid #e0ef90;
+	padding-bottom: 4px;
+	border-left:  1px solid #c3d078;
+	border-top:  2px solid #c3d078;
+	border-right:  6px solid #c3d078;
 }
+
+fieldset#info {
+    padding: 10px;
+    background : #f8fddd;
+}
+
 #buttons {
    text-decoration: none;
 }
