@@ -1,7 +1,7 @@
 <div class="deliberations">
 <h2>Détails des projets de la séance du <?php echo $date_seance?></h2>
 
-<table  cellpadding="0" cellspacing="0">
+<table width="100%" cellpadding="0" cellspacing="0">
 <tr>
     <th>Etat</th>
     <th>Résultat</th>
