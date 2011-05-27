@@ -53,7 +53,7 @@
 
 			echo $html->link(SHY,'/seances/saisirCommentaire/' . $seance['Seance']['id'], array('class'=>'link_commentaire_seance', 'title'=>'Saisir un commentaire pour la séance'), false, false);
                       echo ('</td>');
-                      echo ('<td>');
+                      echo ('<td class="actions">');
                       if ($canSign) 
 	                  echo $html->link(SHY,'/deliberations/sendToParapheur/' . $seance['Seance']['id'].'/', 
                                            array('class'=>'link_signer', 
