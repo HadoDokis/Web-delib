@@ -54,7 +54,12 @@ class Seance extends AppModel {
         'conditions' => '',
         'order' => '',
         'dependent' => false,
-        'foreignKey' => 'secretaire_id')
+        'foreignKey' => 'secretaire_id'),
+      'President' => array('className' => 'Acteur',
+        'conditions' => '',
+        'order' => '',
+        'dependent' => false,
+        'foreignKey' => 'president_id')
     );
 
 	/* retourne la liste des séances futures avec le nom du type de séance  */
