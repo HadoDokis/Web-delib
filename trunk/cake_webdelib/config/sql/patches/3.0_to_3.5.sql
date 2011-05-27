@@ -114,3 +114,4 @@ ALTER TABLE `acteurs` CHANGE `titre` `titre` VARCHAR( 250 );
 
 
 ALTER TABLE `seances` ADD `president_id` INT( 10 ) NULL AFTER `secretaire_id`;
+ALTER TABLE `seances` ADD `date_convocation` DATETIME NULL AFTER `modified` ;
