@@ -3,15 +3,17 @@
 <?php if (isset($message))  echo ($message); ?>
 <h2>Actes envoy&eacute;s &agrave; la signature</h2>
 <?php echo $form->create('Deliberation',array('url'=>'/deliberations/sendToParapheur/'.$seance_id,'type'=>'file')); ?>
-<table>
+<table width='100%'>
+    <tr>
 	<th></th>
  	<th>Numéro D&eacute;lib&eacute;ration</th>
  	<th>Objet</th>
  	<th>Titre</th>
  	<th>statut</th>
-<tr>
+    </tr>
 <?php
 	foreach ($deliberations as $delib) {
+               echo ("<tr height='36px'>");
 		if (($delib['Deliberation']['etat_parapheur']==null) && 
                     ($delib['Deliberation']['signee']!=1) &&  
                      (($delib['Deliberation']['etat']>=3) || ($delib['Deliberation']['nature_id']>1 && $delib['Deliberation']['etat']>=2) )) 

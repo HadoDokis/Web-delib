@@ -1,7 +1,7 @@
 <div class="deliberations">
 <h2>Détails des projets de la séance du <?php echo $date_seance?></h2>
 
-<table cellpadding="0" cellspacing="0">
+<table  cellpadding="0" cellspacing="0">
 <tr>
     <th>Etat</th>
     <th>Résultat</th>
@@ -13,7 +13,7 @@
     <th width='20%'>Actions</th>
 </tr>
 <?php foreach ($deliberations as $deliberation): ?>
-<tr>
+<tr height="36px">
 	<?php
 	    if ($deliberation['Deliberation']['etat']==2){
 	       echo '<td>'.$html->image('/img/icons/non_votee.png',  array('title'=> 'Projet validé')).'</td>';

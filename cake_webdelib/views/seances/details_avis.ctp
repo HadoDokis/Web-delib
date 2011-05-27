@@ -1,7 +1,7 @@
 <div class="deliberations">
 <h2>Détails des projets de la séance du <?php echo $date_seance?></h2>
 
-<table cellpadding="0" cellspacing="0">
+<table width='100%' cellpadding="0" cellspacing="0">
 <tr>
     <th>Résultat</th>
 	<th>Theme</th>
@@ -9,10 +9,10 @@
 	<th>Rapporteur</th>
 	<th>Libelle</th>
 	<th>Titre</th>
-	<th>Actions</th>
+	<th width='20%'>Actions</th>
 </tr>
 <?php foreach ($deliberations as $deliberation): ?>
-<tr>
+<tr height='36px'>
 	<td>
 	<?php
         if ($deliberation['Deliberation']['avis']==1)
