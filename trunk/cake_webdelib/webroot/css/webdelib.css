@@ -295,6 +295,7 @@ table.table_action tr td {
 }
 
 td.actions {
+        background-color: #f3f3f3;
 	padding: 0 4px 0 4px ;
 	height: 25px;
 }
@@ -313,7 +314,7 @@ a.link_clore_seance {
         background-image: url(../img/icons/close_seance.png);
         background-repeat: no-repeat;
         background-position: top;
-        padding: 0 0 10px 22px;
+        padding: 0 0 32px 32px;
 }
 
 a.link_delib {
@@ -327,20 +328,20 @@ a.link_pvcomplet {
 	background-image: url(../img/icons/pvcomplet.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
 
 a.link_pvsommaire {
 	background-image: url(../img/icons/message.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
 a.link_signer {
         background-image: url(../img/icons/signer.png);
         background-repeat: no-repeat;
         background-position: top;
-        padding: 0 0 10px 22px;
+        padding: 0 0 32px 32px;
 }
 
 a.link_sendtoged {
@@ -359,20 +360,20 @@ a.link_pdf {
 	background-image: url(../img/icons/acroread.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 38px 38px;
 }
 
 a.link_ordre_jour {
 	background-image: url(../img/icons/ordre_jour.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
 a.link_ordre_jour_unique {
         background-image: url(../img/icons/ordre_jour2.png);
         background-repeat: no-repeat;
         background-position: top;
-        padding: 0 0 10px 22px;
+        padding: 0 0 32px 32px;
 }
 
 a.link_lister_presents {
@@ -386,42 +387,47 @@ a.link_voter {
 	background-image: url(../img/icons/vote.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
-
+a.link_classer_odj {
+        background-image: url(../img/icons/odj.png);
+        background-repeat: no-repeat;
+        background-position: top;
+        padding: 0 0 32px 32px;
+}
 a.link_debat {
 	background-image: url(../img/icons/saisir.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
 
 a.link_commentaire_seance {
 	background-image: url(../img/icons/paper.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
 
 a.link_secretaire {
 	background-image: url(../img/icons/secretaire.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
 
 a.link_voir {
 	background-image: url(../img/icons/find.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0px 0px 38px 38px;
 }
 
 a.link_modifier {
 	background-image: url(../img/icons/klpq.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 38px 38px;
 }
 
 a.link_modifier_left {
@@ -435,14 +441,14 @@ a.link_supprimer {
 	background-image: url(../img/icons/edittrash.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 38px 38px;
 }
 
 a.link_circuit {
 	background-image: url(../img/icons/reload.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 10px 22px;
+	padding: 0 0 38px 38px;
 }
 
 a.link_projet {
@@ -477,13 +483,14 @@ a.link_traiter {
 	background-image: url(../img/icons/traiter.png);
 	background-repeat: no-repeat;
 	background-position: top left;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
 a.link_validerenurgence {
-        background-image: url(../img/icons/valider.png);
+/*      background-image: url(../img/icons/valider.png); */
+        background-image: url(../img/icons/apply.png); 
         background-repeat: no-repeat;
         background-position: top left;
-        padding: 0 0 10px 22px;
+        padding: 0 0 32px 32px;
 }
 a.link_addUsers {
 	background-image: url(../img/icons/identity.png);
@@ -496,13 +503,13 @@ a.link_convocation {
 	background-image: url(../img/icons/mail.png);
 	background-repeat: no-repeat;
 	background-position: top left;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
 a.link_convocation_unique {
         background-image: url(../img/icons/mail2.png);
         background-repeat: no-repeat;
         background-position: top left;
-        padding: 0 0 10px 22px;
+        padding: 0 0 32px 32px;
 }
 
 a.link_convocation_anonyme {
@@ -516,7 +523,7 @@ a.link_jump {
         background-image: url(../img/icons/jump.png);
         background-repeat: no-repeat;
         background-position: top left;
-        padding: 0 0 10px 22px;
+        padding: 0 0 32px 32px;
 }
 
 a.link_monter {
@@ -586,7 +593,7 @@ a.link_mdp {
 	background-image: url(../img/icons/mdp.png);
 	background-repeat: no-repeat;
 	background-position: top left;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
 
 a.link_annuler_sans_border {
@@ -624,7 +631,7 @@ a.link_donnerAvis {
 	background-image: url(../img/icons/apply.png);
 	background-repeat: no-repeat;
 	background-position: top left;
-	padding: 0 0 10px 22px;
+	padding: 0 0 32px 32px;
 }
 a.link_actes {
         background-image: url(../img/icons/actes.png);
@@ -1059,6 +1066,10 @@ div.fckEditorProjet {
 fieldset#info {
     padding: 10px;
     background : #f8fddd;
+    border-top:    2px solid #c3d078;
+    border-right:  2px solid #c3d078;
+    border-bottom: 1px solid #c3d078;
+    border-left: 1px solid #c3d078;
 }
 
 #buttons {
