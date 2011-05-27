@@ -580,10 +580,10 @@ class SeancesController extends AppController {
 				if (empty($this->data['Deliberation']['seance_id'])) {
 					unset($this->data['Deliberation']['seance_id']);
 					// Calcul du numéro de la délibération car il n'y a pas de séance suivante attribuée
-					if (empty($deliberation['Deliberation']['num_delib'])) {
-						$compteurId = $this->Seance->Typeseance->field('compteur_id', 'Typeseance.id = '.$deliberation['Seance']['type_id']);
-						$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($compteurId);
-					}
+				//	if (empty($deliberation['Deliberation']['num_delib'])) {
+				//		$compteurId = $this->Seance->Typeseance->field('compteur_id', 'Typeseance.id = '.$deliberation['Seance']['type_id']);
+				//		$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($compteurId);
+			        //      }
 				} else
 					$this->data['Deliberation']['position'] = $this->Deliberation->findCount("seance_id =".$this->data['Deliberation']['seance_id']." AND (etat != -1 )")+1;
 
@@ -767,10 +767,16 @@ class SeancesController extends AppController {
 
        function clore($seance_id) {
            $actes = $this->Deliberation->find('all', array('conditions' => array('Deliberation.seance_id' => $seance_id,
-                                                                                 'Deliberation.etat != '   => '-1', 
+                                                                                 'Deliberation.etat > '   => '1', 
                                                                                  'Deliberation.signee'   => null),
-                                                           'fields' => 'id',
+                                                           'fields' => 'id, seance_id',
                                                            'recursive' => -1));
+           
+           if (count($actes) == 0) {
+               $this->Session->setFlash('La séance est vide : vous ne pouvez pas la clôturer.', 'growl', array('type'=>'erreur')); 
+               $this->redirect('/seances/listerFuturesSeances');
+           }
+
            if (count($actes) > 0) {
                $this->Session->setFlash('Tous les actes ne sont pas signés.', 'growl', array('type'=>'erreur')); 
                $this->redirect('/seances/listerFuturesSeances');
@@ -800,8 +806,6 @@ class SeancesController extends AppController {
                    die ("Suppression impossible!");
 
          }
-
-
 
 }
 ?>
