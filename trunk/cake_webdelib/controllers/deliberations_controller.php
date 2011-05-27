@@ -301,9 +301,13 @@ class DeliberationsController extends AppController {
 
         function downloadDelib($delib_id) {
             $delib = $this->Deliberation->read(null, $delib_id);
+            if ($delib['Deliberation']['nature_id'] > 1)
+                $name = "Acte_$delib_id.pdf";
+            else
+                $name = $delib['Deliberation']['num_delib'].'.pdf';
             header('Content-type: application/pdf');
             header('Content-Length: '.strlen($delib['Deliberation']['delib_pdf']));
-            header('Content-Disposition: attachment; filename='.$delib['Deliberation']['num_delib'].'.pdf');
+            header('Content-Disposition: attachment; filename='.$name);
             echo $delib['Deliberation']['delib_pdf'];
             exit();
 	}
@@ -1060,6 +1064,34 @@ class DeliberationsController extends AppController {
 
 		    //Création du fichier de délibération au format pdf (on ne passe plus par la génération)
                     $file =  $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/fd/null/$delib_id/", "D_$delib_id.pdf",  $delib['Deliberation']['delib_pdf']);
+                    if (isset($delib['Deliberation']['signature'])) {
+                        $signature =  $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/fd/null/$delib_id/", 
+                                                                "signature_$delib_id.zip", 
+                                                                $delib['Deliberation']['signature']);
+                        $zip = zip_open($signature);
+                        if (is_resource($zip)) { 
+                            while ($zip_entry = zip_read($zip)) {
+                                $fichier = basename(zip_entry_name($zip_entry));
+                                $tmp = substr($fichier, 0, 3);
+                                if ($tmp == '1- '){
+                                     
+                                    $sigFileName = WEBROOT_PATH."/files/generee/fd/null/$delib_id/signature.pkcs7";
+                                    $fp = fopen( $sigFileName, "w+");
+                              
+                                    if (zip_entry_open($zip, $zip_entry, "r")) {
+                                        $buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
+                                        zip_entry_close($zip_entry);
+                                    }
+                                    
+                                    fwrite($fp, $buf);
+                                    fclose($fp); 
+                                    zip_close($zip); 
+                                    break;
+                                }
+                            }
+                            @zip_close($zip); 
+                        }
+                    }
                     if (!file_exists( $file ))
 		        die ("Problème lors de la récupération du fichier");
         	    // Checker le code classification
@@ -1071,13 +1103,14 @@ class DeliberationsController extends AppController {
      	                 'classif3'      => $class3,
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
-			 //'number'        => $delib['Deliberation']['num_delib'],
+		//	 'number'        => $delib['Deliberation']['num_delib'],
 			 'number'        => time(),
      	                 'decision_date' => date("Y-m-d", strtotime($delib['Seance']['date'])),
       	                 'subject'       => $delib['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
-     	                 'acte_pdf_file_sign' => "",
+     	                 'acte_pdf_file_sign' => "@$sigFileName",
    	                 );
+ 
 		    $nb_pj=0;
 		    foreach ($delib['Annex'] as $annexe) {
                         if ($annexe['type'] == 'G') {
@@ -2063,8 +2096,6 @@ class DeliberationsController extends AppController {
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
                         $this->set('models', $this->Model->find('list',array('conditions'=>array('type'=>'Document', 'Model.recherche' => 1),
                                                                              'fields' => array('Model.id','Model.modele'))));
-
-
 			$this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
 
 			$this->render('rechercheMutliCriteres');
@@ -2148,9 +2179,13 @@ class DeliberationsController extends AppController {
                                 $projets = $this->Deliberation->find('all', array ('conditions' => $conditions,
                                                                                    'oder'       => 'Deliberation.seance_id'));
                                 if ($this->data['Deliberation']['generer'] == 0) {
+		                    $userId=$this->Session->read('user.User.id');
+                                    $actions =  array('view', 'generer');
+                                    if ($this->Xacl->check($userId, "Deliberations:editerProjetValide") )
+                                        $actions[]='edit';
                                     $this->_afficheProjets( $projets,
                                                             'R&eacute;sultat de la recherche parmi mes projets',
-                                                            array('view', 'generer'),
+                                                            $actions,
                                                             array('mesProjetsRecherche'));
                                 }
                                 else {
@@ -2232,19 +2267,23 @@ class DeliberationsController extends AppController {
 		}
  	}
 
-	function sendToParapheur($seance_id) {
+	function sendToParapheur($seance_id = null) {
                 $erreur = false;
                 $this->set('seance_id', $seance_id);
-                $this->Parafwebservice = new IparapheurComponent();
-		$circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
-                foreach ($circuits['soustype'] as &$libelle) 
-                    $libelle = 'IParapheur : '.$libelle; 
-                 
-                $circuits['soustype']['-1'] = 'Webdelib : Signature manuscrite';
-                ksort($circuits['soustype']);
+                if (Configure::read('USE_PARAPH')) {
+                    $this->Parafwebservice = new IparapheurComponent();
+		    $circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+                }
+                else {
+                    $circuits['soustype']['-1'] = 'Signature manuscrite';
+                }
 		if (empty($this->data)) {
-			$delibs = $this->Deliberation->find('all',array('conditions'=>array("Deliberation.seance_id"=>$seance_id ,
-                                                                                            "Deliberation.etat <>"   =>-1),
+                        $conditions["Deliberation.etat >"] = 1; 
+                        if ($seance_id != null)
+                             $conditions["Deliberation.seance_id"] = $seance_id;
+                        else
+                             $conditions["Deliberation.etat_parapheur != "] = null ;
+			$delibs = $this->Deliberation->find('all',array('conditions' => $conditions, 
                                                                         'order'      => 'Deliberation.position'));
                         for ($i=0; $i<count($delibs); $i++){
                             $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delibs[$i]['Seance']['type_id'], $delibs[$i]['Deliberation']['etat']);
@@ -2283,7 +2322,6 @@ class DeliberationsController extends AppController {
                                         $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delib['Seance']['type_id'], $delib['Deliberation']['etat']);
                                         $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport.pdf/1/false");
                                         $content = file_get_contents(WEBROOT_PATH."/files/generee/fd/null/$delib_id/rapport.pdf");
- 
 					$creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), 
                                                                                                    $soustype, 
                                                                                                    Configure::read('EMAILEMETTEUR'), 
