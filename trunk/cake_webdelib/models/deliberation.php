@@ -117,8 +117,10 @@ class Deliberation extends AppModel {
 		/* lecture en base */
 		$delib = $this->find('first', array('conditions' => array('Deliberation.id' => $delibId),
                                                     'recursive'  => '-1',
-                                                    'fields'     => array('etat', 'redacteur_id')));
+                                                    'fields'     => array('etat', 'redacteur_id', 'signee')));
 		if (empty($delib)) return false;
+                if ($delib['Deliberation']['signee'] == 1)
+                    return false;
 
 		/* traitement en fonction de l'état */
 		switch($delib['Deliberation']['etat']) {
@@ -359,6 +361,7 @@ class Deliberation extends AppModel {
                    $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),    'text'));
                    $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
                    $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($seance['Seance']['date']),   'date'));
+                   $oMainPart->addElement(new GDO_FieldType('date_convocation',                 $this->Date->frDate($seance['Seance']['date_convocation']),   'date'));
                    $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
                    $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text')); 
                }
