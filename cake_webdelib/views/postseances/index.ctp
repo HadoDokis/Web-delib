@@ -9,15 +9,15 @@
 <br /><br />
 <div class="seances">
 
-<table cellpadding="0" cellspacing="0" border="0">
+<table width='100%' cellpadding="0" cellspacing="0" border="0">
 	<tr>
 		<!-- <th>ID</th> -->
-		<th>Type</th>
-		<th>Date S&eacute;ance</th>
-		<th width='150px'>Action</th>
+		<th width='40%'>Type</th>
+		<th width='40%'>Date S&eacute;ance</th>
+		<th width='20%'>Action</th>
 	</tr>
 	<?php foreach ($seances as $seance): ?>
-	<tr>
+	<tr height='36px'>
 		<!-- <td><?php echo $seance['Seance']['id']; ?></td> -->
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>

@@ -11,20 +11,20 @@
 <h2>S&eacute;ances &agrave; traiter</h2>
 
 
-<table cellpadding="0" cellspacing="0" border="0">
+<table width='100%' cellpadding="0" cellspacing="0" border="0">
 	<tr>
-		<th>Type</th>
-		<th>Date S&eacute;ance</th>
-		<th>Préparation</th>
-		<th>En cours</th>
-		<th>Finition</th>
+		<th width='150px'>Type</th>
+		<th width='190px'>Date S&eacute;ance</th>
+		<th width='20%'>Préparation'</th>
+		<th width='20%'>En cours</th>
+		<th width='20%'>Finition</th>
 	</tr>
 	<?php foreach ($seances as $seance): ?>
-	<tr>
+	<tr height='35px'>
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo ($html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id'])); ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
-		 	<?php echo $html->link(SHY,'/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir l\'ordre des projets', 'alt'=>'odj'), false, false)?>
+		 	<?php echo $html->link(SHY,'/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_classer_odj', 'title'=>'Voir l\'ordre des projets', 'alt'=>'odj'), false, false)?>
 		<?php
                        $urlConvoc = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'].'/null/';
 		       $urlOdj = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/';

@@ -11,12 +11,12 @@
 	<th>Mobile</th>
 	<th><?php echo $paginator->sort('Services', 'Service.libelle'); ?></th>
 	<th>Natures</th>
-	<th width='13%'>Actions</th>
+	<th width='20%'>Actions</th>
 </tr>
 <?php
 
 foreach ($users as $user):?>
-<tr>
+<tr height="36px">
 	<td><?php echo $user['User']['login']; ?></td>
 	<td><?php echo $user['User']['nom']; ?></td>
 	<td><?php echo $user['User']['prenom']; ?></td>

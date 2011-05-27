@@ -102,6 +102,7 @@ class Form2Helper extends FormHelper
 //        return $option;
 //    }
 
+
 // pour la variable $tagname, penser à l'envoyer via $html->value car c'est impossible de le faire ici
 	function monthOptionTagFr($tagName, $value = null, $selected = null, $selectAttr = null, $optionAttr = null, $showEmpty = true) {
 		if (!empty($selected)){
