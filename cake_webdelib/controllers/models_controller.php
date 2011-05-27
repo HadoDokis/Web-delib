@@ -268,6 +268,7 @@
 		 $seance = $this->Seance->read(null, $seance_id);
 
                  $oMainPart->addElement(new GDO_FieldType('date_seance',  $this->Date->frDate($seance['Seance']['date']),   'date'));
+                 $oMainPart->addElement(new GDO_FieldType('date_convocation',  $this->Date->frDate($seance['Seance']['date_convocation']),   'date'));
 		 $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
 	         $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
 	         $oMainPart->addElement(new GDO_FieldType('date_seance_lettres', utf8_encode($date_lettres),                     'text'));
@@ -301,10 +302,9 @@
                  $oMainPart->addElement(new GDO_FieldType("telfixe_president",utf8_encode($seance['President']['telfixe']), "text"));
                  $oMainPart->addElement(new GDO_FieldType("note_president", utf8_encode($seance['President']['note']), "text"));
 
-
                  if (!$isPV) { // une convocation ou un ordre du jour
-                     require_once ('vendors/progressbar.php');
-                   //  Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
+                   $this->Seance->id = $seance_id;
+                   $this->Seance->saveField('date_convocation',  date("Y-m-d H:i:s", strtotime("now")));
                      $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
 		     if (file_exists($path.'documents.zip'))
 		         unlink($path.'documents.zip');
@@ -326,7 +326,6 @@
                          $this->set('unique', $unique);
 
                          if ($unique== false) {
-                             ProgressBar($cpt*(100/$nbActeurs), 'Lecture des données pour : <b>'. $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'].'</b>');
                              $oMainPart->addElement(new GDO_FieldType("nom_acteur", utf8_encode($acteur['Acteur']['nom']), "text"));
                              $oMainPart->addElement(new GDO_FieldType("prenom_acteur", utf8_encode($acteur['Acteur']['prenom']), "text"));
                              $oMainPart->addElement(new GDO_FieldType("salutation_acteur",utf8_encode($acteur['Acteur']['salutation']), "text"));
@@ -343,7 +342,6 @@
                              $listFiles[$urlWebroot.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
                          }
                          else {
-                             ProgressBar(100, "Génération de l'apercu ". $model_tmp['Model']['modele']);
                              $nomFichier ='Apercu.'.$extension;
                              $listFiles[$urlWebroot.$nomFichier] = 'Apercu';
                          }
