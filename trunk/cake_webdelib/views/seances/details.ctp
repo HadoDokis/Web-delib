@@ -10,7 +10,7 @@
     <th>Rapporteur</th>
     <th>Libellé</th>
     <th>Titre</th>
-    <th>Actions</th>
+    <th width='20%'>Actions</th>
 </tr>
 <?php foreach ($deliberations as $deliberation): ?>
 <tr>

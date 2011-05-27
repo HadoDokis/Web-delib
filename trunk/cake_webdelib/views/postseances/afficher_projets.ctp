@@ -17,7 +17,7 @@
 		<th>Action</th>
 	</tr>
 	<?php foreach($projets as $projet): ?>
-    	<tr>
+    	<tr height='36px'>
     	    <td><?php echo $projet['Theme']['libelle']; ?></td>
 		    <td><?php echo $projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom']; ?></td>
 		    <td><?php echo $projet['Deliberation']['objet']; ?></td>

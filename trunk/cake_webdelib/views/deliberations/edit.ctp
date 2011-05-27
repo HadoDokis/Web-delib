@@ -10,17 +10,6 @@
 		echo $form->create('Deliberation', array('url'=>'/deliberations/add','type'=>'file', 'name'=>'Deliberation'));
 	}
 ?>
-	<div class='demi'>
-		<?php echo $form->input('Redacteur.nom', array('label'=>'Redacteur','size'=>'30','default'=>$html->value('Redacteur.nom').' '.$html->value('Redacteur.prenom'), 'readonly'=> 'readonly'));?>
-		<br/>
-		<?php echo $form->input('Service.libelle',array('label'=>'Service émetteur','size' => '40','default'=>$html->value('Service.libelle'), 'readonly'=> 'readonly'));?>
-	</div>
-	<div class='demi'>
-		<?php echo $form->input('Deliberation.created', array('type'=>'text', 'label'=>'Date cr&eacute;ation','size'=>'20', 'readonly'=> 'readonly'));?>
-		<br/>
-		<?php echo $form->input('Deliberation.modified', array('type'=>'text', 'label'=>'Date modification','size'=>'20', 'readonly'=> 'readonly'));?>
-	</div>
-<div class="spacer"></div>
 
 <div class='onglet'>
 	<a></a>
@@ -34,6 +23,19 @@
 </div>
 
 <div id="tab1">
+        <fieldset id='info'>
+	<div class='demi'>
+		<?php echo '<b><u>Rédacteur</u></b> : <i>'.$html->value('Redacteur.prenom').'</i>';?>
+		<br/>
+		<?php echo '<b><u>Service émetteur</u></b> : <i>'.$html->value('Service.libelle').'</i>'; ?>
+	</div>
+	<div class='demi'>
+		<?php echo '<b><u>Date cr&eacute;ation</u></b> : <i>'. $html->value('Deliberation.created').'</i>';?>
+		<br/>
+		<?php echo '<b><u>Date de modification</u></b> : <i>'. $html->value('Deliberation.modified').'</i>';?>
+	</div>
+        </fieldset>
+	<div class='spacer'></div>
         <?php echo $form->input('Deliberation.nature_id', array('label'   =>'Nature <acronym title="obligatoire">(*)</acronym>', 
                                                                  'options' =>$session->read('user.Nature'), 
                                                                  'empty'   =>false, 

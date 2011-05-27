@@ -46,10 +46,13 @@
 		?>
 		</td>
 		<td rowspan=3 class="actions">
+                <br />
 		<?php
+                       
 			if (in_array('view', $deliberation['Actions']))
 				echo $html->link(SHY, '/deliberations/view/' . $deliberation['Deliberation']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false);
-			if (in_array('edit', $deliberation['Actions']))
+                         
+			if (in_array('edit', $deliberation['Actions']) && ($deliberation['Deliberation']['signee'] != 1 ))
 				echo $html->link(SHY,'/deliberations/edit/' . $deliberation['Deliberation']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
 			if (in_array('delete', $deliberation['Actions']))
 				echo $html->link(SHY,'/deliberations/delete/' . $deliberation['Deliberation']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer le projet "' . $deliberation['Deliberation']['objet']. '" ?', false);
@@ -61,8 +64,8 @@
 			 if (in_array('goNext', $deliberation['Actions']))
 			     echo $html->link(SHY,"/deliberations/goNext/" . $deliberation['Deliberation']['id'], array('class'=>"link_jump", 'title'=>'Sauter une ou des étapes'), false, false);
 			
-			echo '<br/><br/>';
-			if (in_array('attribuerCircuit', $deliberation['Actions'])) {
+			echo '<br /><br/><br/><br/>';
+			if (in_array('attribuerCircuit', $deliberation['Actions'])  && ($deliberation['Deliberation']['signee'] != 1 )) {
 				$actionAttribuer = '/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'];
 				$actionAttribuer .= $deliberation['Deliberation']['circuit_id'] ? '/'.$deliberation['Deliberation']['circuit_id'] : '';
 				echo $html->link(SHY, $actionAttribuer, array('class'=>'link_circuit', 'title'=>'Attribuer un circuit'), false, false);

@@ -1,7 +1,7 @@
 <?php echo $javascript->link('utils.js'); ?>
 <div class="deliberations">
 <?php if (isset($message))  echo ($message); ?>
-<h2>D&eacute;lib&eacute;rations envoy&eacute;es &agrave; la signature</h2>
+<h2>Actes envoy&eacute;s &agrave; la signature</h2>
 <?php echo $form->create('Deliberation',array('url'=>'/deliberations/sendToParapheur/'.$seance_id,'type'=>'file')); ?>
 <table>
 	<th></th>
@@ -12,8 +12,10 @@
 <tr>
 <?php
 	foreach ($deliberations as $delib) {
-		if (($delib['Deliberation']['etat_parapheur']==null) && ($delib['Deliberation']['signee']!=1) &&  ($delib['Deliberation']['etat']>=3))
-		    echo("<td>".$form->checkbox('Deliberation.id_'.$delib['Deliberation']['id'])."</td>");
+		if (($delib['Deliberation']['etat_parapheur']==null) && 
+                    ($delib['Deliberation']['signee']!=1) &&  
+                     (($delib['Deliberation']['etat']>=3) || ($delib['Deliberation']['nature_id']>1 && $delib['Deliberation']['etat']>=2) )) 
+		    echo("<td>".$form->checkbox('Deliberation.id_'.$delib['Deliberation']['id'], array('checked'=> true))."</td>");
 		else
 		    echo("<td></td>");
                     echo "<td>";
@@ -33,12 +35,15 @@
 		   }
 		   elseif($delib['Deliberation']['etat_parapheur']==2) {
 			   $delib_id = $delib['Deliberation']['id'];
-			   echo  ("<td><a href='/deliberations/downloadSignature/$delib_id'>Délibération signée</a></td>");
+                           if ($delib['Deliberation']['signature'] != '')
+			       echo  ("<td><a href='/deliberations/downloadSignature/$delib_id'>Délibération signée</a></td>");
+                           else
+			       echo  ("<td>Délibération signée</td>");
 		    }
                    elseif(($delib['Deliberation']['signee'] == 1) && ($delib['Deliberation']['etat_parapheur']==null)){
                        echo  ("<td>Acte déclaré signé</td>");
                     } 
-                   elseif (($delib['Deliberation']['etat']>=1) && ($delib['Deliberation']['etat']<3)) {
+                   elseif (($delib['Deliberation']['etat']>=1) && ($delib['Deliberation']['etat']<3) && ($delib['Deliberation']['nature_id']==1) ) {
                        echo '<td>'.$html->link('A faire voter', "/seances/voter/".$delib['Deliberation']['id']).'</td>';
                    }
 		    else{
@@ -50,11 +55,16 @@
 
 	</table>
 	<br />
-        <?php  echo ('Circuit : '); ?>
-        <?php  echo ($form->input('Deliberation.circuit_id', array('options'=>$circuits, 'label'=>false, 'div'=> false)).'<br /><br />'); ?>
-	<div class="submit">
-		<?php echo $form->submit('Envoyer',array('div'=>false));?>
-	</div>
+            
+        <?php  
+            if ($seance_id != null) {
+                echo ('Circuit : ');
+                echo ($form->input('Deliberation.circuit_id', array('options'=>$circuits, 'label'=>false, 'div'=> false)).'<br /><br />'); 
+	        echo ('<div class="submit">');
+                echo $form->submit('Envoyer',array('div'=>false));
+        	echo ('</div>');
+            }
+        ?>
 
 <?php echo $form->end(); ?>
 </div>

@@ -91,8 +91,8 @@ function initAffichageInfosElus()
 				<div class="spacer"></div>
 				<?php echo $form->label('Acteur.date_naissance', 'Date de naissance');?>
 				<?php echo $form->day('Acteur.date_naissance',null,null,false); ?>-
-                <?php echo $form2->monthOptionTagFr($html->value('Acteur.date_naissance'));?>-
-                <?php echo $form2->yearOptionTag($html->value('Acteur.date_naissance'),null, 1920, 1990, null); ?>
+                <?php echo $form2->monthOptionTagFr('Acteur.date_naissance_month', $html->value('Acteur.date_naissance'));?>-
+                <?php echo $form2->yearOptionTag('Acteur.date_naissance_year', $html->value('Acteur.date_naissance'),null, 1920, 1990, null); ?>
 			</div>
 		</fieldset>
 		<div class="spacer"></div>
