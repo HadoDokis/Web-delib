@@ -89,7 +89,7 @@ $webDelib = array(
 			'subMenu' => array(
 				'items' => array(
 					'Editions' => array('link' => '/postseances/index'),
-			//		'Signature : i-Parapheur' => array('link' => '/deliberations/sendToParapheur'),
+					'Signature : i-Parapheur' => array('link' => '/deliberations/sendToParapheur'),
 					'Contrôle de légalité : à télétransmettre' => array('link' => '/deliberations/toSend'),
 					'Contrôle de légalité : télétransmises' => array('link' => '/deliberations/transmit'),
 					'Versement As@lae' => array('link' => '/deliberations/verserAsalae')
