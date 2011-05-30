@@ -23,7 +23,8 @@
                         echo $html->link($infoUser, '/users/changeUserMdp', array('escape'=>false));
                         $urlPage =  FULL_BASE_URL . $this->webroot;
                         echo $form->input('Service',array('label'=>'', 'options'=>$agentServices, 'default'=>$session_service_id, 'id' => $urlPage, 'onChange'=>"changeService(this)", 'empty'=>false,'div'=>false));
-                        echo $lienDeconnexion;
+                        if  ($lienDeconnexion)
+                           echo $html->link(" [D&eacute;connexion] ", '/users/logout/', array('title'=>'Voir'), false, false);
                     }
 		?>
 
