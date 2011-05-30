@@ -17,7 +17,7 @@
  	<th><?php echo  $paginator->sort('Date de séance', 'Seance.date'); ?></th>
  	<th><?php echo  $paginator->sort('Titre', 'titre'); ?></th>
  	<th><?php echo  $paginator->sort('Classification', 'num_pref'); ?></th>
- 	<th>Statut</th>
+ 	<th><?php echo  $paginator->sort('Statut', 'tdt_id'); ?></th>
  	<th>Courrier Ministériel</th>
 <tr>
 <?php
