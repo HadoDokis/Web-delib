@@ -1064,6 +1064,7 @@ class DeliberationsController extends AppController {
 
 		    //Création du fichier de délibération au format pdf (on ne passe plus par la génération)
                     $file =  $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/fd/null/$delib_id/", "D_$delib_id.pdf",  $delib['Deliberation']['delib_pdf']);
+                    $sigFileName = '';
                     if (isset($delib['Deliberation']['signature'])) {
                         $signature =  $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/fd/null/$delib_id/", 
                                                                 "signature_$delib_id.zip", 
@@ -1104,13 +1105,13 @@ class DeliberationsController extends AppController {
      	                 'classif4'      => $class4,
      	                 'classif5'      => $class5,
 			 'number'        => $delib['Deliberation']['num_delib'],
-		//	 'number'        => time(),
      	                 'decision_date' => date("Y-m-d", strtotime($delib['Seance']['date'])),
       	                 'subject'       => $delib['Deliberation']['objet'],
       	                 'acte_pdf_file' => "@$file",
-     	                 'acte_pdf_file_sign' => "@$sigFileName",
    	                 );
- 
+                    if ($sigFileName != '') {
+     	                $acte['acte_pdf_file_sign'] = "@$sigFileName";
+                    }
 		    $nb_pj=0;
 		    foreach ($delib['Annex'] as $annexe) {
                         if ($annexe['type'] == 'G') {
