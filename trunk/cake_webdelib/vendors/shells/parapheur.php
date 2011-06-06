@@ -45,6 +45,7 @@ function startup() {
                                if ($histo['logdossier'][$i]['status']  ==  'Signe') {
                                    $dossier = $this->Parafwebservice->GetDossierWebservice("$delib_id $objet");
                                    if (!empty($dossier['getdossier'][10])) {
+                                       $this->Deliberation->saveField('delib_pdf',  base64_decode($dossier['getdossier'][8]));
                                        $this->Deliberation->saveField('signature',  base64_decode($dossier['getdossier'][10]));
                                        $this->Deliberation->saveField('signee',  1);
                                    }
