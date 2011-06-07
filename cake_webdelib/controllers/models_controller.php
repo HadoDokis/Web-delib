@@ -347,6 +347,8 @@
                          }
                    
                          try {
+                             Configure::write('debug', 1);
+                             error_reporting(0);
                              $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
                              $oFusion->process();
                              $oFusion->SendContentToFile($path.$nomFichier);
