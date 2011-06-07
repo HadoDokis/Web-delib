@@ -177,19 +177,25 @@ class SeancesController extends AppController {
 	}
 
         function _stockDelibs($seance_id, $isArrete=false, $compteur_id=null) {
-            $cpt=0;
 	    $result = true;
             $delibs = $this->Deliberation->find("all", array('conditions' => array("Deliberation.seance_id"=>$seance_id),
                                                              'order'      => "Deliberation.position ASC"));
             $nbDelibs = count($delibs );
             foreach ($delibs as $delib) {
+	        $delib_id = $delib['Deliberation']['id']; 
+                $this->Deliberation->id =  $delib_id;
 
-	        $delib_id = $delib['Deliberation']['id'];
+                if ($delib['Deliberation']['nature_id']==1) 
+                    $isArrete = false;
+                else
+                    $isArrete = true;
+
                 if ($isArrete){
-                    $this->Deliberation->id =  $delib_id;
                     $this->Deliberation->saveField('etat', 3);
-                    $num =  $this->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
-                    $this->Deliberation->saveField('num_delib', $num);
+                    if ( $compteur_id != null) {  
+                        $num =  $this->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
+                        $this->Deliberation->saveField('num_delib', $num);
+                    }
                 }
                  
 		// On génère la délibération au format PDF
@@ -197,17 +203,13 @@ class SeancesController extends AppController {
                 $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.pdf");
 	        $filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.pdf";
                 $tmp_delib = $this->Deliberation->read(null, $delib_id);
-
+             
                  //On récupère le contenu du fichier
-                 $handle = fopen($filename, "r");
-                 $content = fread($handle, filesize($filename));
-                 fclose($handle);
-                 if (filesize($filename) ==0)
+                 $content = file_get_contents($filename);
+                 if (strlen($content) == 0)
 		     $result = false;
                  // On stock le fichier en base de données.
-		 $tmp_delib['Deliberation']['delib_pdf'] = $content;
-		 $this->Deliberation->save($tmp_delib);
-                 $cpt ++;
+		 $this->Deliberation->saveField('delib_pdf', $content);
 	    }
 	    return  $result;
 	}
@@ -284,14 +286,19 @@ class SeancesController extends AppController {
 	}
 
 	function afficherProjets ($id=null, $return=null) {
+               $this->Deliberation->Behaviors->attach('Containable');
 		$condition= array ("seance_id"=>$id, "etat <>"=>"-1");
 		if (!isset($return)) {
 		    $this->set('lastPosition', $this->Deliberation->getLastPosition($id) - 1 );
-			$deliberations = $this->Deliberation->find('all', array ('conditions'=>$condition,'order'=>'Deliberation.position ASC'));
+			$deliberations = $this->Deliberation->find('all', array ('conditions' =>$condition,
+                                                                                 'order'      =>'Deliberation.position ASC',
+                                                                                 'fields'     => array('position', 'objet', 'titre', 'id', 'theme_id', 'rapporteur_id'  ),
+                                                                                 'contain'    => array('Service.libelle', 'Rapporteur')));
 			$lst_pos=array();
 			for ($i=0; $i<count($deliberations); $i++) {
-				$id_service = $deliberations[$i]['Service']['id'];
-				$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+                                $theme = $this->Deliberation->Theme->find('first', array('conditions' => array('Theme.id' => $deliberations[$i]['Deliberation']['theme_id'] ),
+                                                                                         'recursive'  => -1)); 
+                                $deliberations[$i]['Theme'] = $theme['Theme'];
 				$lst_pos[$i+1] = $i+1;
 			}
 			$this->set('seance_id', $id);
@@ -772,11 +779,6 @@ class SeancesController extends AppController {
                                                            'fields' => 'id, seance_id',
                                                            'recursive' => -1));
            
-           if (count($actes) == 0) {
-               $this->Session->setFlash('La séance est vide : vous ne pouvez pas la clôturer.', 'growl', array('type'=>'erreur')); 
-               $this->redirect('/seances/listerFuturesSeances');
-           }
-
            if (count($actes) > 0) {
                $this->Session->setFlash('Tous les actes ne sont pas signés.', 'growl', array('type'=>'erreur')); 
                $this->redirect('/seances/listerFuturesSeances');
