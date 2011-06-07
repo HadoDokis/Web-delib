@@ -87,12 +87,11 @@ alter table wkf_etapes              type=INNODB;
 alter table wkf_signatures          type=INNODB;
 alter table wkf_traitements         type=INNODB;
 alter table wkf_visas               type=INNODB;
-
+/*
 ALTER TABLE `users` ADD `mail_insertion` tinyint(1) NOT NULL AFTER  accept_notif;
 ALTER TABLE `users` ADD `mail_traitement` tinyint(1) NOT NULL AFTER  accept_notif;
 ALTER TABLE `users` ADD `mail_refus` tinyint(1) NOT NULL AFTER  accept_notif;
 ALTER TABLE `acteurs` ADD  `actif` tinyint(1) NOT NULL DEFAULT 1  AFTER note; 
-
 ALTER TABLE `webdelib`.`users` ADD UNIQUE `login` ( `login` );
 
 CREATE TABLE `tdt_messages` (
@@ -108,6 +107,7 @@ ALTER TABLE `tdt_messages` ADD `reponse` INT( 3 ) NOT NULL AFTER `type_message` 
 ALTER TABLE `models` ADD `recherche` TINYINT( 1 ) NULL ,
 ADD `created` DATETIME NOT NULL ,
 ADD `modified` DATETIME NOT NULL ;
+*/
 
 ALTER TABLE `deliberations` ADD `signee` TINYINT( 1 ) NULL AFTER `signature`;
 ALTER TABLE `acteurs` CHANGE `titre` `titre` VARCHAR( 250 );
@@ -115,3 +115,13 @@ ALTER TABLE `acteurs` CHANGE `titre` `titre` VARCHAR( 250 );
 
 ALTER TABLE `seances` ADD `president_id` INT( 10 ) NULL AFTER `secretaire_id`;
 ALTER TABLE `seances` ADD `date_convocation` DATETIME NULL AFTER `modified` ;
+
+ALTER TABLE `themes` ADD INDEX `index` ( `id` ) ;
+ALTER TABLE `acteurs` ADD INDEX `index` ( `id` );
+ALTER TABLE `annexes` ADD INDEX `deliberation_id` ( `deliberation_id` );
+ALTER TABLE `commentaires` ADD INDEX `deliberation_id` ( `delib_id` );
+ALTER TABLE `historiques` ADD INDEX `deliberation_id` ( `delib_id` ); 
+ALTER TABLE `listepresences` ADD INDEX `deliberation_id` ( `delib_id` );
+ALTER TABLE `votes` ADD INDEX `deliberation_id` ( `delib_id` );
+ALTER TABLE `votes` ADD INDEX `acteur_id` ( `acteur_id` );
+ALTER TABLE `wkf_traitements` ADD INDEX `target` ( `target_id` ); 
