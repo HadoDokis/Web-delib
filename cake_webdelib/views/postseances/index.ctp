@@ -22,7 +22,7 @@
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
 		<td class="actions" width="80px"> <!-- largeur en fonction des icones -->
-	  	<?php echo $html->link(SHY,'/postseances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir les délibérations'), false, false); ?>
+	  	<?php echo $html->link(SHY,'/postseances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir les actes'), false, false); ?>
 		<?php 
 		   if ($seance['Seance']['pv_figes']==1) {
                        echo $html->link(SHY,'/postseances/downloadPV/'.$seance['Seance']['id'].'/sommaire',  array('class'=>'link_pvsommaire', 'title'=>'Génération du pv sommaire'), false, false);
