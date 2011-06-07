@@ -78,15 +78,24 @@ class DeliberationsController extends AppController {
 
 
         function test () {
-            $delib = $this->Deliberation->read(null, 59);
+            $delibs = $this->Deliberation->find('all', array('conditions'=> array('seance_id' => 8)));
             $this->Progress->start(200, 100,200, '#000000','#000000','#006699');
-            for ($i=0; $i<=2; $i++) {
-                $this->Deliberation->create();
-                unset($delib['Deliberation']['id']);
-                $delib['Deliberation']['objet'] = $delib['Deliberation']['objet']." : $i";
+            $i=1;
+            foreach ($delibs as $delib) {
+                $this->Progress->at($i, $delib['Deliberation']['objet']); 
+                //$this->Deliberation->create();
+                //unset($delib['Deliberation']['id']);
+                if (is_float($delib['Deliberation']['position'] / 2)) {
+                    $delib['Deliberation']['theme_id'] = 1;
+                }
+                else {
+                    $delib['Deliberation']['theme_id'] = 5;
+                }
+                 //$delib['Deliberation']['objet'] .=  "$i";
                 $this->Deliberation->save($delib); 
+                //$i++;
             }
-            exit;
+            $this->Progress->end("/");
         }
 
 	function view($id = null) {
@@ -316,7 +325,7 @@ class DeliberationsController extends AppController {
 	    $delib = $this->Deliberation->read(null, $delib_id);
             header('Content-type: application/zip');
             header('Content-Length: '.strlen($delib['Deliberation']['signature']));
-            header('Content-Disposition: attachment; filename='.$delib['Deliberation']['num_delib'].'.zip');
+            header('Content-Disposition: attachment; filename=signature_acte.zip');
             echo $delib['Deliberation']['signature'];
             exit();
 	}
@@ -379,6 +388,12 @@ class DeliberationsController extends AppController {
 				$this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
 				$this->Gedooo->createFile($path_projet, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
 			}
+                        else {
+                                $content = str_replace('\&quot;', '', $this->data['Deliberation']['texte_projet']);
+                                $content = str_replace('\\"', '"', $content);
+                                $content = str_replace('"\\', '"', $content);
+				$this->Gedooo->createFile($path_projet, 'texte_projet.html',  $content);
+                        }
 			// initialisation des fichiers des infosup de type odtFile
 			foreach ($this->data['Infosup']  as $infosup) {
 				$infoSupDef = $this->Infosupdef->find('first', array('recursive'=>-1, 'fields'=>array('type'), 'conditions'=>array('id'=>$infosup['infosupdef_id'])));
@@ -927,7 +942,7 @@ class DeliberationsController extends AppController {
 
 		// On affiche que les delibs vote pour.
                 $conditions =  $this->Filtre->conditions();
-                $conditions['Deliberation.etat'] = 3;
+                $conditions['Deliberation.etat >='] = 2;
                 $conditions['Deliberation.signee'] = 1;
                 $conditions['Deliberation.delib_pdf <>'] = '';
                 if ($seance_id != null)
@@ -935,7 +950,6 @@ class DeliberationsController extends AppController {
 		$deliberations = $this->Deliberation->find('all',array('conditions' => $conditions,
                                                                        'fields' => array( 'Deliberation.objet', 'Deliberation.titre', 'Deliberation.num_pref', 'Deliberation.etat', 'Deliberation.num_delib', 'Deliberation.id', 'Deliberation.seance_id'),
                                                                        'contain'    => array('Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
-
 		for($i = 0; $i < count($deliberations); $i++)
                     $deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
                 if (!$this->Filtre->critereExists()){
@@ -2287,7 +2301,7 @@ class DeliberationsController extends AppController {
 			$delibs = $this->Deliberation->find('all',array('conditions' => $conditions, 
                                                                         'order'      => 'Deliberation.position'));
                         for ($i=0; $i<count($delibs); $i++){
-                            $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delibs[$i]['Seance']['type_id'], $delibs[$i]['Deliberation']['etat']);
+                            $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delibs[$i]['Seance']['type_id'], 3);
                         }
 			$this->set('deliberations', $delibs);
 			$this->set('circuits', $circuits['soustype']);
