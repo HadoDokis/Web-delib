@@ -5,7 +5,7 @@
         ($this->params['action'] !='mesProjetsRecherche') && 
         ($this->params['action'] !='tousLesProjetsRecherche') )
         echo $this->element('filtre'); 
-    echo '<h2>'.$titreVue.'</h2>';
+    echo '<h2>'.$titreVue." (".count($this->data).' projets) </h2>';
 ?>
 
 <table width="100%" cellspacing="0" cellpadding="0">
