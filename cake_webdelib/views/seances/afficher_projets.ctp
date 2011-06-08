@@ -1,6 +1,4 @@
 <?php
-//echo $javascript->link('jquery.simplemodal', true);
-
 // select masqués utilisés par le javascript
 echo $form->input('Deliberation.position', array('options'=>$lst_pos, 'id'=>'selectOrdre', 'label'=>false, 'div'=>false, 'style'=>"display:none;", 'onChange'=>"onChangeSelectOrdre(this.value);"));
 echo $form->input('Deliberation.rapporteur_id', array('options'=>$rapporteurs, 'empty'=>true, 'id'=>'selectRapporteur', 'label'=>false, 'div'=>false, 'style'=>"display:none;", 'onChange'=>"onChangeSelectRapporteur(this.value);"));
