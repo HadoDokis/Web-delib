@@ -14,7 +14,7 @@
 <?php
 	foreach ($deliberations as $delib) {
                echo ("<tr height='36px'>");
-		if (($delib['Deliberation']['etat_parapheur']==null) && 
+		if ((($delib['Deliberation']['etat_parapheur']==null) || ($delib['Deliberation']['etat_parapheur']== -1) ) && 
                     ($delib['Deliberation']['signee']!=1) &&  
                      (($delib['Deliberation']['etat']>=3) || ($delib['Deliberation']['nature_id']>1 && $delib['Deliberation']['etat']>=2) )) 
 		    echo("<td>".$form->checkbox('Deliberation.id_'.$delib['Deliberation']['id'], array('checked'=> true))."</td>");
@@ -40,7 +40,7 @@
                            if ($delib['Deliberation']['signature'] != '')
 			       echo  ("<td><a href='/deliberations/downloadSignature/$delib_id'>Acte signé</a></td>");
                            else
-			       echo  ("<td>Délibération signée</td>");
+			       echo  ("<td>Acte signé</td>");
 		    }
                    elseif(($delib['Deliberation']['signee'] == 1) && ($delib['Deliberation']['etat_parapheur']==null)){
                        echo  ("<td>Acte déclaré signé</td>");
@@ -48,9 +48,12 @@
                    elseif (($delib['Deliberation']['etat']>=1) && ($delib['Deliberation']['etat']<3) && ($delib['Deliberation']['nature_id']==1) ) {
                        echo '<td>'.$html->link('A faire voter', "/seances/voter/".$delib['Deliberation']['id']).'</td>';
                    }
-		    else{
- 		        echo("<td>&nbsp;</td>");
+		    elseif ($delib['Deliberation']['etat_parapheur']== -1) {
+ 		        echo("<td>Acte refusé à la signature</td>");
 		    }
+                    else {
+ 		        echo("<td>&nbsp;</td>");
+                    }
 		  ?>
 		</tr>
 <?php	 } ?>
