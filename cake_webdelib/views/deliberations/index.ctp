@@ -5,7 +5,11 @@
         ($this->params['action'] !='mesProjetsRecherche') && 
         ($this->params['action'] !='tousLesProjetsRecherche') )
         echo $this->element('filtre'); 
-    echo '<h2>'.$titreVue." (".count($this->data).' projets) </h2>';
+    if ($nbProjets > 1) 
+        $nb = "($nbProjets projets)";
+    else
+        $nb = "($nbProjets projet)";
+    echo "<h2>$titreVue $nb </h2>";
 ?>
 
 <table width="100%" cellspacing="0" cellpadding="0">

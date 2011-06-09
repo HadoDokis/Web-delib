@@ -412,6 +412,9 @@ class DeliberationsController extends AppController {
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
 			$this->set('redirect', $redirect);
+                        if ($this->data['Deliberation']['etat_parapheur'] >= 1)
+                             $this->Session->setFlash("Attention, l'acte est en cours de signature!", 'growl', array('type'=>'erreur'));
+ 
 			$this->render();
 	
 		} else {
@@ -1537,7 +1540,7 @@ class DeliberationsController extends AppController {
                 $conditions['Deliberation.redacteur_id'] = $userId;
 
 		$ordre = array('Deliberation.created DESC');
-
+                $nbProjets =  $this->Deliberation->find('count', array('conditions' => $conditions));
 		$projets = $this->Deliberation->find('all', array('conditions' => $conditions, 
                                                                   'limit'     => $limit,
                                                                   'ordre' => $ordre, 
@@ -1547,7 +1550,8 @@ class DeliberationsController extends AppController {
 			$projets,
 			'Mes projets en cours de r&eacute;daction',
 			array('view', 'edit', 'delete', 'attribuerCircuit', 'generer'),
-			$listeLiens);
+			$listeLiens,
+                        $nbProjets);
 	}
 
 /*
@@ -1576,8 +1580,9 @@ class DeliberationsController extends AppController {
 				'Service.libelle',
 				'Theme.libelle',
 				'Nature.libelle')));
+        $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions));
         $this->_ajouterFiltre($projets);
-        $this->_afficheProjets($projets, 'Mes projets &agrave; traiter', array('traiter', 'generer'));
+        $this->_afficheProjets($projets, 'Mes projets &agrave; traiter', array('traiter', 'generer'), array(), $nbProjets);
     }
 
 /*
@@ -1612,10 +1617,14 @@ class DeliberationsController extends AppController {
 				'Theme.libelle',
 				'Nature.libelle')));
 		$this->_ajouterFiltre($projets);
+                $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions));
+               
 		$this->_afficheProjets(
 			$projets,
 			'Mes projets en cours d\'&eacute;laboration et de validation',
-			array('view', 'generer'));
+			array('view', 'generer'), 
+                        array(), 
+                        $nbProjets);
 	}
 
 /*
@@ -1662,7 +1671,7 @@ class DeliberationsController extends AppController {
 /*
  * fonction générique pour afficher les projets sour forme d'index
  */
-	function _afficheProjets(&$projets, $titreVue, $listeActions, $listeLiens=array()) {
+	function _afficheProjets(&$projets, $titreVue, $listeActions, $listeLiens=array(), $nbProjets=null) {
 		// initialisation de l'utilisateur connecté et des droits
 		$userId = $this->Session->read('user.User.id');
 		$editerProjetValide = $this->Xacl->check($userId, "Deliberations:editerProjetValide");
@@ -1717,6 +1726,7 @@ class DeliberationsController extends AppController {
 		$this->set('titreVue', $titreVue);
 		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$this->set('listeLiens', $listeLiens);
+		$this->set('nbProjets', $nbProjets);
 		
 		// on affiche la vue index
 		$this->render('index');
