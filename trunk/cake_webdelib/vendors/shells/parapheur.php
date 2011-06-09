@@ -25,7 +25,9 @@ function startup() {
          function _checkEtatParapheur($delib_id, $tdt=false, $objet) {
             App::import('Component','Iparapheur');
             $this->Parafwebservice = new IparapheurComponent(); 
+            $this->Deliberation->id = $delib_id;
             $histo = $this->Parafwebservice->getHistoDossierWebservice("$delib_id $objet");
+            debug($histo);
             for ($i =0; $i < count($histo['logdossier']); $i++){
                 if(!$tdt){
                    if (($histo['logdossier'][$i]['status']  ==  'Signe')    ||
@@ -40,7 +42,6 @@ function startup() {
                            $this->Commentaire->save($comm['Commentaire']);
 
                            $delib=$this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $delib_id)));
-                           $this->Deliberation->id = $delib_id;
                            if ($delib['Deliberation']['etat_parapheur']==1){
                                if ($histo['logdossier'][$i]['status']  ==  'Signe') {
                                    $dossier = $this->Parafwebservice->GetDossierWebservice("$delib_id $objet");
@@ -63,9 +64,11 @@ function startup() {
                            $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom']." : ".$histo['logdossier'][$i]['annotation']);
                            $comm ['Commentaire']['commentaire_auto'] = 0;
                            $this->Commentaire->save($comm['Commentaire']);
-                           $this->Deliberation->refusDossier($delib_id);
+                           $this->Deliberation->saveField('etat_parapheur', -1);
+                          // $this->Deliberation->refusDossier($delib_id);
                            // Supprimer le dossier du parapheur
-                           $effdos = $this->Parafwebservice->effacerDossierRejeteWebservice("$delib_id $objet");
+                           $effdos = $this->Parafwebservice->effacerDossierRejeteWebservice("$delib_id $objet"); 
+                           debug( $effdos);
                        }
             }
             else{
