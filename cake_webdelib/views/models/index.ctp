@@ -10,7 +10,7 @@
 	<th>Actions</th>
 </tr>
 <?php foreach ($models as $model): ?>
-<tr>
+<tr height="36px">
 	<td><?php echo $model['Model']['modele']; ?></td>
 	<td><?php echo $model['Model']['type']; ?></td>
 	<td><?php echo $model['Model']['name']; ?></td>
