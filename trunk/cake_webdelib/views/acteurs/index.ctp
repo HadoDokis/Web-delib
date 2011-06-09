@@ -17,7 +17,7 @@
 	<th width='90px'>Actions</th>
 </tr>
 <?php foreach ($acteurs as $acteur): ?>
-<tr>
+<tr height="36px">
 	<td><?php echo $acteur['Acteur']['salutation']; ?></td>
 	<td><?php echo $acteur['Acteur']['nom']; ?></td>
 	<td><?php echo $acteur['Acteur']['prenom']; ?></td>
