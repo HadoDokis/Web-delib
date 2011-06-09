@@ -4,11 +4,13 @@
             $userId = $session->read('user.User.id');
             if ($Xacl->check($userId, 'Deliberations:mesProjetsATraiter')) {
                 echo $this->requestAction('/deliberations/mesProjetsATraiter', array('return', 'filtre'=>'hide'));
-                echo('<br/>');
+                echo $html->link('Voir le contenu de la banette', '/deliberations/mesProjetsATraiter');
+                echo('<br/><br/>');
             }
             if ($Xacl->check($userId, 'Deliberations:mesProjetsValidation')) {
                 echo $this->requestAction('/deliberations/mesProjetsValidation', array('return', 'filtre'=>'hide'));
-                echo('<br/>');
+                echo $html->link('Voir le contenu de la banette', '/deliberations/mesProjetsValidation');
+                echo('<br/><br/>');
             }
             if ($Xacl->check($userId, 'Deliberations:mesProjetsRedaction')) {
                 echo $this->requestAction('/deliberations/mesProjetsRedaction', array('return', 'filtre'=>'hide'));
