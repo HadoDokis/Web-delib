@@ -96,7 +96,8 @@
 	<dt>Pi&egrave;ces jointes envoy&eacute;es au contr&ocirc;le de l&eacute;galit&eacute; </dt>
 	<dd>
  <?php foreach ($this->data['Annex'] as $annexe) {
-			if ($annexe['type'] == "G"){
+			if ($annexe['joindre_ctrl_legalite']){
+				if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
 				echo '<br>Nom fichier : '.$annexe['filename'];
 				echo '<br>Taille : '.$annexe['size'];
 				echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
