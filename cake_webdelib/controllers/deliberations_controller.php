@@ -232,14 +232,8 @@ class DeliberationsController extends AppController {
 				if (array_key_exists('Infosup', $this->data))
 					$this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $delibId);
 				/* sauvegarde des annexes */
-				if (array_key_exists('AnnexesG', $this->data))
-					foreach($this->data['AnnexesG'] as $annexe) $this->_saveAnnexe($delibId, $annexe, 'G');
-				if (array_key_exists('AnnexesP', $this->data))
-					foreach($this->data['AnnexesP'] as $annexe) $this->_saveAnnexe($delibId, $annexe, 'P');
-				if (array_key_exists('AnnexesS', $this->data))
-					foreach($this->data['AnnexesS'] as $annexe) $this->_saveAnnexe($delibId, $annexe, 'S');
-				if (array_key_exists('AnnexesD', $this->data))
-					foreach($this->data['AnnexesD'] as $annexe) $this->_saveAnnexe($delibId, $annexe, 'D');
+				if (array_key_exists('Annex', $this->data))
+					foreach($this->data['Annex'] as $annexe) $this->_saveAnnexe($delibId, $annexe);
 
 				$this->Session->setFlash('Le projet \''.$delibId.'\' a &eacute;t&eacute; ajout&eacute;',  'growl');
 				$sortie = true;
@@ -330,22 +324,21 @@ class DeliberationsController extends AppController {
             exit();
 	}
 
-	function _saveAnnexe ($id, $file, $type) {
-                if (is_array($file) && !empty($file['name'])){
-                    $this->Annex->create();
-                    $this->data['Annex']['deliberation_id'] = $id;
-                    $this->data['Annex']['seance_id'] = 0;
-                    $this->data['Annex']['titre'] = 'titre'; //$form['titre_'.$counter];
-                    $this->data['Annex']['type'] =  $type;
-                    $this->data['Annex']['filename'] = $file['name'];
-                    $this->data['Annex']['filetype'] = $file['type'];
-                    $this->data['Annex']['size'] = $file['size'];
-                    $this->data['Annex']['data'] = $this->_getFileData($file['tmp_name'], $file['size']);
-                    if(!$this->Annex->save($this->data['Annex'])){
-                        echo "pb de sauvegarde de l\'annexe ";
-                    }
-                }
-            return true;
+	function _saveAnnexe ($id, $annexe) {
+		if (is_array($annexe) && !empty($annexe['file']['name'])){
+			$newAnnexe = $this->Annex->create();
+			$newAnnexe['Annex']['model'] = 'Deliberation';
+			$newAnnexe['Annex']['foreign_key'] = $id;
+			$newAnnexe['Annex']['titre'] = $annexe['titre'];
+			$newAnnexe['Annex']['joindre_ctrl_legalite'] = $annexe['ctrl'];
+			$newAnnexe['Annex']['filename'] = $annexe['file']['name'];
+			$newAnnexe['Annex']['filetype'] = $annexe['file']['type'];
+			$newAnnexe['Annex']['size'] = $annexe['file']['size'];
+			$newAnnexe['Annex']['data'] = $this->_getFileData($annexe['file']['tmp_name'], $annexe['file']['size']);
+			if(!$this->Annex->save($newAnnexe['Annex']))
+				$this->Session->setFlash('Erreur lors de la sauvegarde des annexes.', 'growl', array('type'=>'erreur'));
+		}
+		return true;
 	}
 
 
@@ -512,16 +505,10 @@ class DeliberationsController extends AppController {
 				if (array_key_exists('AnnexesASupprimer', $this->data))
 					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
 				/* sauvegarde des annexes */
-				if (array_key_exists('AnnexesG', $this->data))
-					foreach($this->data['AnnexesG'] as $annexe) $this->_saveAnnexe($id, $annexe, 'G');
-				if (array_key_exists('AnnexesP', $this->data))
-					foreach($this->data['AnnexesP'] as $annexe) $this->_saveAnnexe($id, $annexe, 'P');
-				if (array_key_exists('AnnexesS', $this->data))
-					foreach($this->data['AnnexesS'] as $annexe) $this->_saveAnnexe($id, $annexe, 'S');
-				if (array_key_exists('AnnexesD', $this->data))
-					foreach($this->data['AnnexesD'] as $annexe) $this->_saveAnnexe($id, $annexe, 'D');
+				if (array_key_exists('Annex', $this->data))
+					foreach($this->data['Annex'] as $annexe) $this->_saveAnnexe($id, $annexe);
 
-			        $this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
+				$this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
 				$this->redirect($redirect);
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur') );
@@ -529,7 +516,7 @@ class DeliberationsController extends AppController {
 				$this->set('themes', $this->Deliberation->Theme->find('list',array('conditions'=>array('Theme.actif'=>'1'))));
 				$this->set('circuits', $this->Deliberation->Circuit->find('list'));
 				$this->set('datelim',$this->data['Deliberation']['date_limite']);
-				$this->set('annexes',$this->Annex->find('all', array('conditions'=> array('deliberation_id'=>$id))));
+				$this->set('annexes',$this->Annex->find('all', array('conditions'=> array('model'=>'Deliberation', 'foreign_key'=>$id))));
 				$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
 				$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 				$this->set('redirect', $redirect);
@@ -1131,7 +1118,7 @@ class DeliberationsController extends AppController {
                     }
 		    $nb_pj=0;
 		    foreach ($delib['Annex'] as $annexe) {
-                        if ($annexe['type'] == 'G') {
+                        if ($annexe['joindre_ctrl_legalite']) {
 			    $pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/", $annexe['filename'], $annexe['data']);
 			    $data["acte_attachments[$nb_pj]"] = "@$pj_file";
       	                    $data["acte_attachments_sign[$nb_pj]"] = "";
@@ -2337,7 +2324,7 @@ class DeliberationsController extends AppController {
 					$annexes = array();
 					$tmp1=0;
 					foreach ($delib['Annex'] as $annex) {
-						if ($annex['type'] == 'G')
+						if ($annex['joindre_ctrl_legalite'])
 						$annexes[$tmp1][3] = $annex['filename'];
 						$annexes[$tmp1][2] = 'UTF-8';
 						$annexes[$tmp1][1] = $annex['filetype'];
