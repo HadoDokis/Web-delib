@@ -19,9 +19,15 @@
 		<th width='20%'>En cours</th>
 		<th width='20%'>Finition</th>
 	</tr>
-	<?php foreach ($seances as $seance): ?>
-	<tr height='35px'>
-		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
+<?php 
+       $numLigne = 1;
+       foreach ($seances as $seance): 
+          $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
+       echo $html->tag('tr', null, $rowClass); 
+       $numLigne++;
+?>
+
+		<td><b><?php echo $seance['Typeseance']['libelle']; ?></b></td>
 		<td><?php echo ($html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id'])); ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
 		 	<?php echo $html->link(SHY,'/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_classer_odj', 'title'=>'Voir l\'ordre des projets', 'alt'=>'odj'), false, false)?>

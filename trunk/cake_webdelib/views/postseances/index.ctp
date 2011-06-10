@@ -16,10 +16,16 @@
 		<th width='40%'>Date S&eacute;ance</th>
 		<th width='20%'>Action</th>
 	</tr>
-	<?php foreach ($seances as $seance): ?>
-	<tr height='36px'>
+<?php
+       $numLigne = 1;
+       foreach ($seances as $seance):
+          $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
+       echo $html->tag('tr', null, $rowClass);
+       $numLigne++;
+?>
+
 		<!-- <td><?php echo $seance['Seance']['id']; ?></td> -->
-		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
+		<td><b><?php echo $seance['Typeseance']['libelle']; ?></b></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
 		<td class="actions" width="80px"> <!-- largeur en fonction des icones -->
 	  	<?php echo $html->link(SHY,'/postseances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir les actes'), false, false); ?>

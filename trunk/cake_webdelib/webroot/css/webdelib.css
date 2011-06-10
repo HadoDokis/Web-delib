@@ -295,7 +295,6 @@ table.table_action tr td {
 }
 
 td.actions {
-        background-color: #f3f3f3;
 	padding: 0 4px 0 4px ;
 	height: 25px;
 }
@@ -420,14 +419,14 @@ a.link_voir {
 	background-image: url(../img/icons/find.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0px 0px 38px 38px;
+	padding: 0px 0px 32px 32px;
 }
 
 a.link_modifier {
 	background-image: url(../img/icons/klpq.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0 0 38px 38px;
+	padding: 0 0 32px 32px;
 }
 
 a.link_modifier_left {
@@ -1217,5 +1216,8 @@ div.code-coverage-results span.result-ok {
 }
 div.code-coverage-results span.result-good {
         color: #0a0;
+}
+tr.altrow {
+        background: #d5d5d5;
 }
 
