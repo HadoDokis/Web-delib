@@ -80,7 +80,8 @@ class Deliberation extends AppModel {
 			'foreignKey'   => 'target_id'), 
 		'Annex'=>array(
 			'className'    => 'Annex',
-			'foreignKey'   => 'deliberation_id',
+			'foreignKey' => 'foreign_key',
+			'conditions' => array('Annex.model' => 'Deliberation'),
 			'dependent' => true),
 		'Commentaire'=>array(
 			'className'    => 'Commentaire',
