@@ -6,12 +6,10 @@ alter table annexes                 type=MyISAM;
 alter table aros                    type=MyISAM;
 alter table aros_acos               type=MyISAM;
 alter table aros_ados               type=MyISAM;           
-/* 
-    alter table circuits                type=MyISAM;            
-    alter table traitements             type=MyISAM;       
-    alter table users_circuits          type=MyISAM;       
-    alter table localisations           type=MyISAM;           
-*/     
+alter table circuits                type=MyISAM;            
+alter table traitements             type=MyISAM;       
+alter table users_circuits          type=MyISAM;       
+alter table localisations           type=MyISAM;           
 alter table collectivites           type=MyISAM;          
 alter table commentaires            type=MyISAM;             
 alter table compteurs               type=MyISAM;             
@@ -73,12 +71,10 @@ alter table typeseances_acteurs     type=INNODB;
 alter table typeseances_natures     type=INNODB;   
 alter table typeseances_typeacteurs type=INNODB;   
 alter table users                   type=INNODB;      
-/*
-    alter table localisations           type=INNODB;           
-    alter table circuits                type=INNODB;                 
-    alter table traitements             type=INNODB;              
-    alter table users_circuits          type=INNODB;       
-*/
+alter table localisations           type=INNODB;           
+alter table circuits                type=INNODB;                 
+alter table traitements             type=INNODB;              
+alter table users_circuits          type=INNODB;       
 alter table users_services          type=INNODB;           
 alter table votes                   type=INNODB;  
 alter table wkf_circuits            type=INNODB; 
@@ -87,7 +83,6 @@ alter table wkf_etapes              type=INNODB;
 alter table wkf_signatures          type=INNODB;
 alter table wkf_traitements         type=INNODB;
 alter table wkf_visas               type=INNODB;
-/*
 ALTER TABLE `users` ADD `mail_insertion` tinyint(1) NOT NULL AFTER  accept_notif;
 ALTER TABLE `users` ADD `mail_traitement` tinyint(1) NOT NULL AFTER  accept_notif;
 ALTER TABLE `users` ADD `mail_refus` tinyint(1) NOT NULL AFTER  accept_notif;
@@ -107,11 +102,9 @@ ALTER TABLE `tdt_messages` ADD `reponse` INT( 3 ) NOT NULL AFTER `type_message` 
 ALTER TABLE `models` ADD `recherche` TINYINT( 1 ) NULL ,
 ADD `created` DATETIME NOT NULL ,
 ADD `modified` DATETIME NOT NULL ;
-*/
 
 ALTER TABLE `deliberations` ADD `signee` TINYINT( 1 ) NULL AFTER `signature`;
 ALTER TABLE `acteurs` CHANGE `titre` `titre` VARCHAR( 250 );
-
 
 ALTER TABLE `seances` ADD `president_id` INT( 10 ) NULL AFTER `secretaire_id`;
 ALTER TABLE `seances` ADD `date_convocation` DATETIME NULL AFTER `modified` ;
