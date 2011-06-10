@@ -5,10 +5,12 @@
         ($this->params['action'] !='mesProjetsRecherche') && 
         ($this->params['action'] !='tousLesProjetsRecherche') )
         echo $this->element('filtre'); 
+
     if ($nbProjets > 1) 
         $nb = "($nbProjets projets)";
     else
         $nb = "($nbProjets projet)";
+
     echo "<h2>$titreVue $nb </h2>";
 ?>
 
@@ -107,14 +109,24 @@
 </table>
 
 <?php if (!empty($listeLiens)) {
-	echo '<ul class="actions">';
-		if (in_array('add', $listeLiens))
-			echo '<li>'.$html->link('Ajouter un projet', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un projet')).'</li>';
-		if (in_array('mesProjetsRecherche', $listeLiens))
-			echo '<li>'.$html->link('Nouvelle recherche', '/deliberations/mesProjetsRecherche', array('class'=>'link_add', 'title'=>'Nouvelle recherche parmi mes projets')).'</li>';
-		if (in_array('tousLesProjetsRecherche', $listeLiens))
-			echo '<li>'.$html->link('Nouvelle recherche', '/deliberations/tousLesProjetsRecherche', array('class'=>'link_add', 'title'=>'Nouvelle recherche parmi tous les projets')).'</li>';
-	echo '</ul>';
+	  if (in_array('add', $listeLiens)) {
+              if (@$this->params['filtre'] == 'hide' )
+                  echo $html->link('Voir le contenu de la banette', '/deliberations/mesProjetsRedaction', array('title'=>'Voir le contenu de la banette'));
+              echo '<ul class="actions">';
+              echo '<li>'.$html->link('Ajouter un projet', '/deliberations/add', array('class'=>'link_add', 'title'=>'ajouter un projet')).'</li>';
+	      echo '</ul>';
+              
+          }
+	  if (in_array('mesProjetsRecherche', $listeLiens)) {
+              echo '<ul class="actions">';
+              echo '<li>'.$html->link('Nouvelle recherche', '/deliberations/mesProjetsRecherche', array('class'=>'link_add', 'title'=>'Nouvelle recherche parmi mes projets')).'</li>'; 
+              echo '</ul>';
+          }
+	  if (in_array('tousLesProjetsRecherche', $listeLiens)) {
+              echo '<ul class="actions">';
+              echo '<li>'.$html->link('Nouvelle recherche', '/deliberations/tousLesProjetsRecherche', array('class'=>'link_add', 'title'=>'Nouvelle recherche parmi tous les projets')).'</li>';
+              echo '</ul>';
+          }
 } ?>
 
 </div>
