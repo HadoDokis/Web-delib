@@ -17,8 +17,9 @@
 	<a href="javascript:afficheOnglet(2)" id='lienTab2'>Texte projet</a>
 	<a href="javascript:afficheOnglet(3)" id='lienTab3'>Note synth&egrave;se</a>
 	<a href="javascript:afficheOnglet(4)" id='lienTab4'>Texte d&eacute;lib&eacute;ration</a>
+	<a href="javascript:afficheOnglet(5)" id='lienTab5'>Annexe(s)</a>
 <?php if (!empty($infosupdefs)): ?>
-	<a href="javascript:afficheOnglet(5)" id='lienTab5'>Informations suppl&eacute;mentaires</a>
+	<a href="javascript:afficheOnglet(6)" id='lienTab6'>Informations suppl&eacute;mentaires</a>
 <?php endif; ?>
 </div>
 
@@ -70,30 +71,29 @@
 	?>
 	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", array('style'=>"border='0'")); ?></a>
 	<div class='spacer'></div>
-
-    <?php echo $this->element('annexe', array('typeAnnexes'=>'G'));?>
 </div>
 
 <div id="tab2" style="display: none;">
     <?php echo $this->element('texte', array('key' => 'texte_projet'));?>
 	<div class='spacer'></div>
-    <?php echo $this->element('annexe', array('typeAnnexes'=>'P'));?>
 </div>
 
 <div id="tab3" style="display: none;">
     <?php echo $this->element('texte', array('key' => 'texte_synthese'));?>
 	<div class='spacer'></div>
-    <?php echo $this->element('annexe', array('typeAnnexes'=>'S'));?>
 </div>
 
 <div id="tab4" style="display: none;">
     <?php echo $this->element('texte', array('key' => 'deliberation'));?>
 	<div class='spacer'></div>
-    <?php echo $this->element('annexe', array('typeAnnexes'=>'D'));?>
+</div>
+
+<div id="tab5" style="display: none;">
+    <?php echo $this->element('annexe');?>
 </div>
 
 <?php if (!empty($infosupdefs)): ?>
-<div id="tab5" style="display: none;">
+<div id="tab6" style="display: none;">
 	<?php
 	foreach($infosupdefs as $infosupdef) {
 		$fieldName = 'Infosup.'.$infosupdef['Infosupdef']['code'];
@@ -155,9 +155,6 @@
 <?php endif; ?>
 
 <div class="spacer" style="border-top: solid 1px #e0ef90;"></div>
-
-<div id="AnnexeASupprimer">
-</div>
 
 <div class="submit">
 	<?php echo $form->hidden('Deliberation.id')?>
