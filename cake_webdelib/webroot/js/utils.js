@@ -80,20 +80,6 @@ function changeFormat(params)
     document.location=url;
 }
 
-
-function changeRapporteur(params,delib)
-{
-	var url = params.id+"seances/changeRapporteur/"+params.value+"/"+delib;
-	document.location=url;
-}
-
-function changePosition(params,delib)
-{
-        var url = params.id+"seances/changePosition/"+params.value+"/"+delib;
-        document.location=url;
-}
-
-
 function add_field(num) {
 
 	var a = document.getElementById('lien_annexe');
@@ -237,47 +223,6 @@ function supprimerFichierJoint(modele, champ, titre) {
 	sInput.appendChild(inputFichier);
 }
 
-/******************************************************************************/
-/* Fonction de suppression d'une annexe                                       */
-/******************************************************************************/
-function supprimerAnnexe(annexeId) {
-	/* Masque l'affichage de l'annexe */
-	document.getElementById('afficheAnnexe'+annexeId).style.display = 'none';
-	/* ajout de l'annexeId à la liste des suppression */
-	divAnnexeASupprimer = document.getElementById('AnnexeASupprimer');
-	i = divAnnexeASupprimer.getElementsByTagName('input').length + 1;
-	/* Creation de l'input hidden */
-	var supAnnexe = document.createElement('input');
-	supAnnexe.type = 'hidden';
-	supAnnexe.id = 'AnnexesASupprimer'+i;
-	supAnnexe.name = 'data[AnnexesASupprimer]['+i+']';
-	supAnnexe.value = annexeId;
-	/* Ajoute l'input hidden */
-	divAnnexeASupprimer.appendChild(supAnnexe);
-}
-
-/******************************************************************************/
-/* Fonction d'ajout d'un champs input pour une nouvelle annexe                */
-/******************************************************************************/
-function ajouterAnnexe(inputAnnexesDivId, dataSection) {
-	inputAnnexesDiv = document.getElementById(inputAnnexesDivId);
-	i = inputAnnexesDiv.getElementsByTagName('input').length + 1;
-
-	/* Creation du div */
-	var inputDiv = document.createElement('div');
-
-	/* Creation de l'input file */
-	var inputAnnexe = document.createElement('input');
-	inputAnnexe.type = 'file';
-	inputAnnexe.id = dataSection+i;
-	inputAnnexe.name = 'data['+dataSection+']['+i+']';
-	inputAnnexe.size = '60';
-	/* Ajoute l'input file au div */
-	inputDiv.appendChild(inputAnnexe);
-
-	/* Ajoute du div à la liste des input */
-	inputAnnexesDiv.appendChild(inputDiv);
-}
 /******************************************************************************/
 /* Fonction pour eviter les doubles click                                     */
 /******************************************************************************/
