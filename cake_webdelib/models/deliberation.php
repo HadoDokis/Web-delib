@@ -386,7 +386,7 @@ class Deliberation extends AppModel {
                $oMainPart->addElement(new GDO_FieldType('theme_projet',                utf8_encode($delib['Theme']['libelle']),         'text'));
                $oMainPart->addElement(new GDO_FieldType('T1_theme',                    utf8_encode($delib['Theme']['libelle']),         'text'));
                $oMainPart->addElement(new GDO_FieldType('critere-trie_theme',          utf8_encode($delib['Theme']['order']),         'text'));
-
+ 
                 // Information sur le rapporteur
                $oMainPart->addElement(new GDO_FieldType('salutation_rapporteur',       utf8_encode($delib['Rapporteur']['salutation']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('prenom_rapporteur',           utf8_encode($delib['Rapporteur']['prenom']),     'text'));
@@ -418,6 +418,47 @@ class Deliberation extends AppModel {
                $oMainPart->addElement(new GDO_FieldType('salutation_secretaire', utf8_encode($secretaire['Rapporteur']['salutation']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('titre_secretaire', utf8_encode($secretaire['Rapporteur']['titre']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('note_secretaire', utf8_encode($secretaire['Rapporteur']['note']), 'text'));
+
+               // Informations sur le rédacteur
+               $oMainPart->addElement(new GDO_FieldType('prenom_redacteur', utf8_encode($delib['Redacteur']['prenom']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('nom_redacteur', utf8_encode($delib['Redacteur']['nom']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('email_redacteur', utf8_encode($delib['Redacteur']['email']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('telmobile_redacteur', utf8_encode($delib['Redacteur']['telmobile']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('telfixe_redacteur', utf8_encode($delib['Redacteur']['telfixe']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('note_redacteur', utf8_encode($delib['Redacteur']['note']), 'text'));
+
+
+               $commentaires = new GDO_IterationType("Commentaires");
+               foreach($delib['Commentaire'] as $commentaire) {
+                   $oDevPart = new GDO_PartType();
+		   if ($commentaire['commentaire_auto']==0){
+                       $oDevPart->addElement(new GDO_FieldType("texte_commentaire", utf8_encode($commentaire['texte']), "text"));
+                       $commentaires->addPart($oDevPart);
+		   }
+                }
+               @$oMainPart->addElement($commentaires);
+
+               $avisCommission = new GDO_IterationType("AvisCommission");
+               foreach($delib['Commentaire'] as $commentaire) {
+                   $oDevPart = new GDO_PartType();
+		   if ($commentaire['commentaire_auto']==1) {
+                       $oDevPart->addElement(new GDO_FieldType("avis", utf8_encode($commentaire['texte']), "text"));
+                       $avisCommission->addPart($oDevPart);
+		   }
+               }
+               @$oMainPart->addElement($avisCommission);
+
+               @$historique =  new GDO_IterationType("Historique");
+	       foreach($delib['Historique'] as $histo) {
+                   $oDevPart = new GDO_PartType();
+                   $oDevPart->addElement(new GDO_FieldType("log", utf8_encode($histo['commentaire']), "text"));
+                   $historique->addPart($oDevPart);
+               }
+               @$oMainPart->addElement($historique);
+
+               foreach($delib['Infosup'] as $champs) {
+                   $oMainPart->addElement($this->_addField($champs, $u, $delib['Deliberation']['id']));
+               }
 
                if (Configure::read('GENERER_DOC_SIMPLE')) {
                    if (isset($delib['Deliberation']['texte_projet']))
@@ -751,6 +792,41 @@ class Deliberation extends AppModel {
 
             }
         }
+
+        function _addField($champs, $u, $delib_id) {
+            $champs_def = $this->Infosup->Infosupdef->read(null, $champs['infosupdef_id']);
+
+            if(($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']!= "")) {
+                $tmp= $this->Infosuplistedef->find('id = '.$champs['text'], 'nom', null, -1);
+                $champs['text'] = $tmp['Infosuplistedef']['nom'];
+            }
+            elseif (($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']== ""))
+                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
+
+            if ($champs['text'] != '')
+                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
+             elseif ($champs['date'] != '0000-00-00')
+                 return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
+             elseif ($champs['file_size'] != 0 ) {
+
+                 $dyn_path = "/files/generee/deliberations/".$delib_id."/";
+                 $path = WEBROOT_PATH.$dyn_path;
+                 $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+                 $infos = (pathinfo($champs['file_name']));
+                // $name = time().'.'.$infos['extension'];
+                 $name = $champs['file_name'];
+                 $name = utf8_decode(str_replace(" ", "_", $name));
+                 $this->Gedooo->createFile($path, $name, $champs['content']);
+                 $ext = $u->getMimeType($path.$name);
+                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', $ext , 'url', $urlWebroot.$name));
+             }
+             elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
+                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', 'text/html', 'text', '<small></small>'.$champs['content']));
+             }
+            elseif  ($champs['text'] == '' )
+                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
+        }
+
 
 }
 ?>
