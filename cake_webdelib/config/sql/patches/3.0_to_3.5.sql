@@ -125,3 +125,39 @@ ALTER TABLE `listepresences` ADD INDEX `deliberation_id` ( `delib_id` );
 ALTER TABLE `votes` ADD INDEX `deliberation_id` ( `delib_id` );
 ALTER TABLE `votes` ADD INDEX `acteur_id` ( `acteur_id` );
 ALTER TABLE `wkf_traitements` ADD INDEX `target` ( `target_id` ); 
+
+--
+-- modification de la table annexes
+--
+ALTER TABLE `annexes`
+ADD `model` varchar(255) NOT NULL AFTER `id`,
+ADD `foreign_key` int( 11 ) NOT NULL AFTER `model`,
+ADD `joindre_ctrl_legalite` tinyint(1) NOT NULL default '0' AFTER `foreign_key`;
+
+ALTER TABLE `annexes`
+ADD INDEX `model_foreign_key` ( `model` , `foreign_key` );
+
+UPDATE `annexes`
+SET
+	model = 'Seance',
+	foreign_key = seance_id
+WHERE
+	seance_id > 0;
+
+UPDATE `annexes`
+SET
+	model = 'Deliberation',
+	foreign_key = deliberation_id
+WHERE
+	deliberation_id > 0;
+
+UPDATE `annexes`
+SET
+	`joindre_ctrl_legalite` = 1
+WHERE
+	`type` = 'G';
+
+ALTER TABLE `annexes`
+DROP COLUMN `deliberation_id`,
+DROP COLUMN `seance_id`,
+DROP COLUMN `type`;
