@@ -449,40 +449,6 @@
 			}
 		}
 
-        function _addField($champs, $u, $delib_id) {
-            $champs_def = $this->Infosupdef->read(null, $champs['infosupdef_id']);
-
-            if(($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']!= "")) {
-                $tmp= $this->Infosuplistedef->find('id = '.$champs['text'], 'nom', null, -1);
-		$champs['text'] = $tmp['Infosuplistedef']['nom'];
-            }
-	    elseif (($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']== "")) 
-	         return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
-
-            if ($champs['text'] != '')
-                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
-             elseif ($champs['date'] != '0000-00-00')
-                 return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
-             elseif ($champs['file_size'] != 0 ) {
-	          
-                 $dyn_path = "/files/generee/deliberations/".$delib_id."/";
-                 $path = WEBROOT_PATH.$dyn_path;
-                 $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
-                 $infos = (pathinfo($champs['file_name']));
-	        // $name = time().'.'.$infos['extension'];
-	         $name = $champs['file_name'];
-		 $name = utf8_decode(str_replace(" ", "_", $name));
-                 $this->Gedooo->createFile($path, $name, $champs['content']);
-                 $ext = $u->getMimeType($path.$name);
-                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', $ext , 'url', $urlWebroot.$name));
-             }
-             elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
-                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', 'text/html', 'text', '<small></small>'.$champs['content']));
-             }
-	    elseif  ($champs['text'] == '' )
-                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
-        }
-
         function paramMails($type,  $acteur) {
             $handle  = fopen(CONFIG_PATH.'/emails/'.$type.'.txt', 'r');
             $content = fread($handle, filesize(CONFIG_PATH.'/emails/'.$type.'.txt'));
