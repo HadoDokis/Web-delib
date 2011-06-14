@@ -12,13 +12,13 @@
 
 
 <table width='100%' cellpadding="0" cellspacing="0" border="0">
-	<tr>
-		<th width='150px'>Type</th>
-		<th width='190px'>Date S&eacute;ance</th>
-		<th width='20%'>Préparation'</th>
-		<th width='20%'>En cours</th>
-		<th width='20%'>Finition</th>
-	</tr>
+    <tr>
+        <th width='150px'>Type</th>
+	<th width='190px'>Date S&eacute;ance</th>
+	<th width='20%'>Pr&eacute;paration</th>
+        <th width='20%'>En cours</th>
+        <th width='20%'>Finalisation</th>
+    </tr>
 <?php 
        $numLigne = 1;
        foreach ($seances as $seance): 
