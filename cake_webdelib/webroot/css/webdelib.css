@@ -1220,4 +1220,10 @@ div.code-coverage-results span.result-good {
 tr.altrow {
         background: #d5d5d5;
 }
+tr.aSupprimer {
+        background: red;
+}
+tr.aModifier {
+        background: orange;
+}
 
