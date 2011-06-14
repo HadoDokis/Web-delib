@@ -324,11 +324,11 @@ class DeliberationsController extends AppController {
             exit();
 	}
 
-	function _saveAnnexe ($id, $annexe) {
+	function _saveAnnexe ($delibId, $annexe) {
 		if (is_array($annexe) && !empty($annexe['file']['name'])){
 			$newAnnexe = $this->Annex->create();
 			$newAnnexe['Annex']['model'] = 'Deliberation';
-			$newAnnexe['Annex']['foreign_key'] = $id;
+			$newAnnexe['Annex']['foreign_key'] = $delibId;
 			$newAnnexe['Annex']['titre'] = $annexe['titre'];
 			$newAnnexe['Annex']['joindre_ctrl_legalite'] = $annexe['ctrl'];
 			$newAnnexe['Annex']['filename'] = $annexe['file']['name'];
@@ -340,7 +340,6 @@ class DeliberationsController extends AppController {
 		}
 		return true;
 	}
-
 
 	function _PositionneDelibsSeance($seance_id, $position) {
 		$conditions= "Deliberation.seance_id = $seance_id AND Deliberation.position > $position ";
@@ -501,13 +500,15 @@ class DeliberationsController extends AppController {
 				if (array_key_exists('Infosup', $this->data)) {
 				    $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
 				}
-				/* suppression des annexes */
-				if (array_key_exists('AnnexesASupprimer', $this->data))
-					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
-				/* sauvegarde des annexes */
+				// sauvegarde des annexes
 				if (array_key_exists('Annex', $this->data))
 					foreach($this->data['Annex'] as $annexe) $this->_saveAnnexe($id, $annexe);
-
+				// suppression des annexes
+				if (array_key_exists('AnnexesASupprimer', $this->data))
+					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
+				// modification des annexes
+				if (array_key_exists('AnnexesAModifier', $this->data))
+					foreach($this->data['AnnexesAModifier'] as $annexeId=>$annexeCtrl) $this->Annex->save(array('id'=>$annexeId, 'joindre_ctrl_legalite'=>$annexeCtrl));
 				$this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
 				$this->redirect($redirect);
 			} else {
