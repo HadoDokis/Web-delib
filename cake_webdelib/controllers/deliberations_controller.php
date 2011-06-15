@@ -508,7 +508,11 @@ class DeliberationsController extends AppController {
 					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
 				// modification des annexes
 				if (array_key_exists('AnnexesAModifier', $this->data))
-					foreach($this->data['AnnexesAModifier'] as $annexeId=>$annexeCtrl) $this->Annex->save(array('id'=>$annexeId, 'joindre_ctrl_legalite'=>$annexeCtrl));
+					foreach($this->data['AnnexesAModifier'] as $annexeId=>$annexe)
+						$this->Annex->save(array(
+							'id'=>$annexeId,
+							'titre'=>$annexe['titre'],
+							'joindre_ctrl_legalite'=>$annexe['joindre_ctrl_legalite']));
 				$this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
 				$this->redirect($redirect);
 			} else {
