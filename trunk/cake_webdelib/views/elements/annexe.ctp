@@ -7,8 +7,30 @@ echo $html->tag('table', null, array('id'=>'afficheAnnexes', 'cellpadding'=>'0',
 			echo $html->tag('tr', null, array('id'=>'afficheAnnexe'.$annexe['id']));
 				echo $html->tag('td', $rownum+1);
 				echo $html->tag('td', $html->link($annexe['filename'] ,'/annexes/download/'.$annexe['id']));
-				echo $html->tag('td', $annexe['titre'], array('id'=>'afficheAnnexeTitre'.$annexe['id'], 'valeur_init'=>$annexe['titre'], 'valeur'=>$annexe['titre']));
-				echo $html->tag('td', $annexe['joindre_ctrl_legalite']?'Oui':'Non', array('id'=>'afficheAnnexeCtrl'.$annexe['id'], 'valeur_init'=>$annexe['joindre_ctrl_legalite'], 'valeur'=>$annexe['joindre_ctrl_legalite']));
+				echo $html->tag('td');
+					echo $html->tag('span', $annexe['titre'], array(
+						'id'=>'afficheAnnexeTitre'.$annexe['id'],
+						'valeur_init'=>$annexe['titre']));
+					echo $form->input('AnnexesAModifier.'.$annexe['id'].'.titre', array(
+						'id'=>'modifieAnnexeTitre'.$annexe['id'],
+						'label'=>false,
+						'value'=>$annexe['titre'],
+						'size' => '40',
+						'disabled'=>'disabled',
+						'style'=>'display:none;'));
+				echo $html->tag('/td');
+				echo $html->tag('td');
+					echo $html->tag('span', $annexe['joindre_ctrl_legalite']?'Oui':'Non', array(
+						'id'=>'afficheAnnexeCtrl'.$annexe['id'],
+						'valeur_init'=>$annexe['joindre_ctrl_legalite']));
+					echo $form->input('AnnexesAModifier.'.$annexe['id'].'.joindre_ctrl_legalite', array(
+						'id'=>'modifieAnnexeCtrl'.$annexe['id'],
+						'label'=>false,
+						'type'=>'checkbox',
+						'checked'=>($annexe['joindre_ctrl_legalite']==1),
+						'disabled'=>'disabled',
+						'style'=>'display:none;'));
+				echo $html->tag('/td');
 				echo $html->tag('td');
 					echo $html->link('Supprimer', '#', array('onClick'=>'supprimerAnnexe(this, '.$annexe['id'].')'));
 					echo $html->link('Annuler la suppression', '#', array('onClick'=>"annulerSupprimerAnnexe(this, ".$annexe['id'].")", 'style'=>'display: none;'));
@@ -22,22 +44,21 @@ echo $html->tag('table', null, array('id'=>'afficheAnnexes', 'cellpadding'=>'0',
 echo $html->tag('/table');
 echo $html->tag('div', '', array('class'=>'spacer'));
 
-// div pour la modification des annexes
-echo $html->tag('div', '', array('id'=>'modifieAnnexes'));
-
 // div pour la suppression des annexes
 echo $html->tag('div', '', array('id'=>'supprimeAnnexes'));
 
 // template pour l'ajout des annexes
 echo $html->tag('div', null, array('id'=>'ajouteAnnexeTemplate', 'style'=>'width:800px; display:none;'));
-echo $html->tag('fieldset');
-echo $html->tag('legend', 'Nouvelle annexe');
-	echo $form->input('Annex.0.file', array('label'=>'Annexe<acronym title="obligatoire">(*)</acronym>', 'type'=>'file', 'size' => '80', 'disabled'=>'disabled'));
-	echo $form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '60', 'disabled'=>'disabled'));
-	echo $form->input('Annex.0.ctrl', array('label'=>'Joindre ctrl légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
-	echo $html->tag('div', '', array('class'=>'spacer'));
-	echo $html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
-echo $html->tag('/fieldset');
+	echo $html->tag('fieldset');
+	echo $html->tag('legend', 'Nouvelle annexe');
+		echo $form->input('Annex.0.file', array('label'=>'Annexe<acronym title="obligatoire">(*)</acronym>', 'type'=>'file', 'size' => '80', 'disabled'=>'disabled'));
+		echo $html->tag('div', '', array('class'=>'spacer'));
+		echo $form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '60', 'disabled'=>'disabled'));
+		echo $html->tag('div', '', array('class'=>'spacer'));
+		echo $form->input('Annex.0.ctrl', array('label'=>'Joindre ctrl légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
+		echo $html->tag('div', '', array('class'=>'spacer'));
+		echo $html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
+	echo $html->tag('/fieldset');
 echo $html->tag('/div');
 
 // div pour l'ajout des annexes
@@ -94,19 +115,17 @@ function annulerSupprimerAnnexe(obj, annexeId) {
 
 // Fonction de modification de l'annexe
 function modifierAnnexe(obj, annexeId) {
-	var ctrlObj = $('#afficheAnnexeCtrl'+annexeId);
-	var newValeur = (ctrlObj.attr('valeur')==0) ? 1 : 0;
-	ctrlObj.attr('valeur', newValeur);
-	if (newValeur == 1)
-		ctrlObj.html('Oui');
-	else
-		ctrlObj.html('Non');
+	var trObj = $('#afficheAnnexe'+annexeId);
+	trObj.find('span').each(function(){
+		$(this).hide();
+	});
+	trObj.find('input').each(function(){
+		$(this).removeAttr('disabled');
+		$(this).show();
+	});
+
 	$('#afficheAnnexe'+annexeId).addClass('aModifier');
-	var majAnnexe = $(document.createElement('input')).attr({
-		id: 'modifieAnnexe'+annexeId,
-		name: 'data[AnnexesAModifier]['+annexeId+']',
-		type: 'hidden', value: ctrlObj.attr('valeur')});
-	$('#modifieAnnexes').append(majAnnexe);
+
 	$(obj).hide();
 	$(obj).next().show();
 	$(obj).prev().hide();
@@ -115,17 +134,22 @@ function modifierAnnexe(obj, annexeId) {
 
 // Fonction d'annulation de la modification de l'annexe
 function annulermodifierAnnexe(obj, annexeId) {
-	var ctrlObj = $('#afficheAnnexeCtrl'+annexeId);
-	var newValeur = ctrlObj.attr('valeur_init');
-	ctrlObj.attr('valeur', newValeur);
-	if (newValeur == 1)
-		ctrlObj.html('Oui');
-	else
-		ctrlObj.html('Non');
-	$('#afficheAnnexe'+annexeId).removeClass('aModifier');
-	$('#modifieAnnexe'+annexeId).remove();
+	$('#modifieAnnexeTitre'+annexeId).val($('#afficheAnnexeTitre'+annexeId).attr('valeur_init'));
+	$('#modifieAnnexeCtrl'+annexeId).attr('checked', $('#afficheAnnexeCtrl'+annexeId).attr('valeur_init')==1);
+	var trObj = $('#afficheAnnexe'+annexeId);
+	trObj.find('span').each(function(){
+		$(this).show();
+	});
+	trObj.find('input').each(function(){
+		$(this).attr('disabled', 'disabled');
+		$(this).hide();
+	});
+
+	trObj.removeClass('aModifier');
+
 	$(obj).hide();
 	$(obj).prev().show();
 	$(obj).prev().prev().prev().show();
 }
+
 </script>
