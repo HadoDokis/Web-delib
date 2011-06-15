@@ -11,7 +11,7 @@
 </tr>
 
 <?php foreach ($sequences as $sequence): ?>
-<tr>
+<tr height="36px">
 	<td><?php echo $sequence['Sequence']['nom']; ?></td>
 	<td><?php echo $sequence['Sequence']['commentaire']; ?></td>
 	<td><?php echo $sequence['Sequence']['num_sequence']; ?></td>

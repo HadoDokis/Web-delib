@@ -14,7 +14,7 @@
 </tr>
 
 <?php foreach ($this->data as $rownum=>$rowElement): ?>
-<tr>
+<tr height='36px'>
 	<td class="ordre">
 		<?php echo $html->link('&#9650;', '/infosupdefs/changerOrdre/'.$rowElement['Infosupdef']['id'].'/0', array(), false, false); ?>
 		<?php echo $html->link('&#9660;', '/infosupdefs/changerOrdre/'.$rowElement['Infosupdef']['id'], array(), false, false); ?>

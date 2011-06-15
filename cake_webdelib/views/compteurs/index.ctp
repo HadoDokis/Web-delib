@@ -13,7 +13,7 @@
 </tr>
 
 <?php foreach ($compteurs as $compteur): ?>
-<tr>
+<tr height="36px">
 	<td><?php echo $compteur['Compteur']['nom']; ?></td>
 	<td><?php echo $compteur['Compteur']['commentaire']; ?></td>
 	<td><?php echo $compteur['Compteur']['def_compteur']; ?></td>
