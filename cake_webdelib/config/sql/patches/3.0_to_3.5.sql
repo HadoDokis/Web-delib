@@ -6,10 +6,6 @@ alter table annexes                 type=MyISAM;
 alter table aros                    type=MyISAM;
 alter table aros_acos               type=MyISAM;
 alter table aros_ados               type=MyISAM;           
-alter table circuits                type=MyISAM;            
-alter table traitements             type=MyISAM;       
-alter table users_circuits          type=MyISAM;       
-alter table localisations           type=MyISAM;           
 alter table collectivites           type=MyISAM;          
 alter table commentaires            type=MyISAM;             
 alter table compteurs               type=MyISAM;             
@@ -71,10 +67,6 @@ alter table typeseances_acteurs     type=INNODB;
 alter table typeseances_natures     type=INNODB;   
 alter table typeseances_typeacteurs type=INNODB;   
 alter table users                   type=INNODB;      
-alter table localisations           type=INNODB;           
-alter table circuits                type=INNODB;                 
-alter table traitements             type=INNODB;              
-alter table users_circuits          type=INNODB;       
 alter table users_services          type=INNODB;           
 alter table votes                   type=INNODB;  
 alter table wkf_circuits            type=INNODB; 
@@ -87,7 +79,7 @@ ALTER TABLE `users` ADD `mail_insertion` tinyint(1) NOT NULL AFTER  accept_notif
 ALTER TABLE `users` ADD `mail_traitement` tinyint(1) NOT NULL AFTER  accept_notif;
 ALTER TABLE `users` ADD `mail_refus` tinyint(1) NOT NULL AFTER  accept_notif;
 ALTER TABLE `acteurs` ADD  `actif` tinyint(1) NOT NULL DEFAULT 1  AFTER note; 
-ALTER TABLE `webdelib`.`users` ADD UNIQUE `login` ( `login` );
+ALTER TABLE `users` ADD UNIQUE `login` ( `login` );
 
 CREATE TABLE `tdt_messages` (
 `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
