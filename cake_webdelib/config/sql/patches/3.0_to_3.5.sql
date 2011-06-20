@@ -146,3 +146,5 @@ ALTER TABLE `annexes`
 DROP COLUMN `deliberation_id`,
 DROP COLUMN `seance_id`,
 DROP COLUMN `type`;
+ALTER TABLE `annexes` ADD `data_pdf` MEDIUMBLOB NOT NULL AFTER `data` ;
+
