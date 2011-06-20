@@ -1,5 +1,5 @@
 <h2>Saisie des débats :</h2>
-<?php echo $javascript->link('fckeditor/fckeditor'); ?>
+<?php echo $javascript->link('ckeditor/ckeditor'); ?>
 <?php echo $form->create('Seance',array('url'=>'/seances/saisirDebat/'.$delib['Deliberation']['id'],'type'=>'file')); ?>
 
 <?php
@@ -36,17 +36,17 @@
 ?>   
 
 <div class="optional">
-    <?php echo $form->input('Deliberation.debat', array('type'=>'textarea', 'cols' => '10', 'rows' => '20'));?>
+    <?php echo $form->input('Deliberation.debat', array('type'=>'textarea', 'label'=>''));?>
     <?php echo $form->error('Deliberation.debat', 'Entrer le texte de debat.');?>
-    <?php echo $fck->load('data[Deliberation][debat]'); ?>
+    <?php echo $fck->load('DeliberationDebat'); ?>
 </div>
 
 <?php   } 
         else {
 ?>
    <div class="optional">
-    <?php echo $form->input('Deliberation.commission', array('type'=>'textarea', 'cols' => '10', 'rows' => '20'));?>
-    <?php echo $fck->load('data[Deliberation][commission]'); ?>
+    <?php echo $form->input('Deliberation.commission', array('type'=>'textarea', 'label'=>''));?>
+    <?php echo $fck->load('DeliberationCommission'); ?>
 </div>
 
 
