@@ -530,7 +530,6 @@ class SeancesController extends AppController {
 	function saisirDebatGlobal ($id = null) {
 		if (empty($this->data)) {
 			$this->data = $this->Seance->read(null, $id);
-			$this->set('annexes',$this->Annex->findAll('Annex.seance_id='.$id.' AND type="A"'));
 		        $this->set('seance', $this->data);
 		} else{
              if (isset($this->data['Seance']['texte_doc'])){
