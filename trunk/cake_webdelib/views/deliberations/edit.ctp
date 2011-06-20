@@ -1,5 +1,6 @@
 <?php echo $javascript->link('calendrier.js'); ?>
 <?php echo $javascript->link('utils.js'); ?>
+<?php echo $javascript->link('ckeditor/ckeditor'); ?>
 
 <?php
 	if($html->value('Deliberation.id')) {
@@ -14,12 +15,13 @@
 <div class='onglet'>
 	<a></a>
 	<a href="javascript:afficheOnglet(1)" id='lienTab1' class="ongletCourant">Informations principales</a>
-	<a href="javascript:afficheOnglet(2)" id='lienTab2'>Texte projet</a>
-	<a href="javascript:afficheOnglet(3)" id='lienTab3'>Note synth&egrave;se</a>
-	<a href="javascript:afficheOnglet(4)" id='lienTab4'>Texte d&eacute;lib&eacute;ration</a>
-	<a href="javascript:afficheOnglet(5)" id='lienTab5'>Annexe(s)</a>
+	<a href="javascript:afficheOnglet(2)" id='lienTab2'>Textes</a>
+	<a href="javascript:afficheOnglet(3)" id='lienTab3'>Annexe(s)</a>
 <?php if (!empty($infosupdefs)): ?>
-	<a href="javascript:afficheOnglet(6)" id='lienTab6'>Informations suppl&eacute;mentaires</a>
+	<a href="javascript:afficheOnglet(4)" id='lienTab4'>Informations suppl&eacute;mentaires</a>
+<?php endif; ?>
+<?php if (Configure::read('DELIBERATIONS_MULTIPLES')): ?>
+	<a href="javascript:afficheOnglet(5)" id='lienTab5'>D&eacute;lib&eacute;rations rattach&eacute;es</a>
 <?php endif; ?>
 </div>
 
@@ -74,31 +76,31 @@
 </div>
 
 <div id="tab2" style="display: none;">
+	<h3>Texte de projet</h3>
     <?php echo $this->element('texte', array('key' => 'texte_projet'));?>
 	<div class='spacer'></div>
-</div>
 
-<div id="tab3" style="display: none;">
+	<h3>Note synth&egrave;se</h3>
     <?php echo $this->element('texte', array('key' => 'texte_synthese'));?>
 	<div class='spacer'></div>
-</div>
 
-<div id="tab4" style="display: none;">
+	<h3>Texte de d&eacute;lib&eacute;ration</h3>
     <?php echo $this->element('texte', array('key' => 'deliberation'));?>
 	<div class='spacer'></div>
 </div>
 
-<div id="tab5" style="display: none;">
+<div id="tab3" style="display: none;">
     <?php echo $this->element('annexe');?>
 </div>
 
 <?php if (!empty($infosupdefs)): ?>
-<div id="tab6" style="display: none;">
+<div id="tab4" style="display: none;">
 	<?php
 	foreach($infosupdefs as $infosupdef) {
 		$fieldName = 'Infosup.'.$infosupdef['Infosupdef']['code'];
+		$fieldId = 'Infosup'.Inflector::camelize($infosupdef['Infosupdef']['code']);
 		echo "<div class='required'>";
-			echo $form->label($fieldName, $infosupdef['Infosupdef']['nom']);
+			echo $form->label($fieldName, $infosupdef['Infosupdef']['nom'], array('name'=>'label'.$infosupdef['Infosupdef']['code']));
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
 				echo $form->input($fieldName, array('label'=>'', 'size'=>$infosupdef['Infosupdef']['taille'], 'title'=>$infosupdef['Infosupdef']['commentaire']));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
@@ -106,15 +108,12 @@
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
 				echo $form->input($fieldName, array('type'=>'text', 'div'=>false, 'label'=>'', 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				echo '&nbsp;';
-				$fieldId = "'Deliberation.Infosup".Inflector::camelize($infosupdef['Infosupdef']['code'])."'";
-				echo $html->link($html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar($fieldId, 'f');", array(), false, false);
+				echo $html->link($html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('Deliberation.$fieldId', 'f');", array(), false, false);
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
-				echo $javascript->link('fckeditor/fckeditor');
-				$tagName = 'data[Infosup]['.$infosupdef['Infosupdef']['code'].']';
 				echo '<div class="annexesGauche"></div>';
 				echo '<div class="fckEditorProjet">';
 					echo $form->input($fieldName, array('label'=>'', 'type'=>'textarea'));
-					echo $fck->load($tagName);
+					echo $fck->load($fieldId);
 				echo '</div>';
 				echo '<div class="spacer"></div>';
 			} elseif ($infosupdef['Infosupdef']['type'] == 'file') {
@@ -154,6 +153,12 @@
 </div>
 <?php endif; ?>
 
+<?php if (Configure::read('DELIBERATIONS_MULTIPLES')) :?> 
+<div id="tab5" style="display: none;">
+    <?php echo $this->element('multidelib');?>
+</div>
+<?php endif; ?>
+
 <div class="spacer" style="border-top: solid 1px #e0ef90;"></div>
 
 <div class="submit">
@@ -169,3 +174,13 @@
 </div>
 
 <?php echo $form->end(); ?>
+<script>
+// variables globales
+
+// affichage de l'éditeur de texte intégré ckEditor
+function editerTexte(obj, textId, afficheTextId) {
+	$('#'+textId).ckeditor();
+	$('#'+afficheTextId).hide();
+	$(obj).hide();
+}
+</script>
