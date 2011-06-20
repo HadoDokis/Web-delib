@@ -1,6 +1,4 @@
 <?php
-	echo $javascript->link('fckeditor/fckeditor');
-	echo $javascript->link('utils');
 	$delib = $this->data;
 	if (!empty($delib['Deliberation']['id']))
              $id = $delib['Deliberation']['id'] ;
@@ -30,8 +28,8 @@
 	if (Configure::read('GENERER_DOC_SIMPLE')){
 		echo '<div class="annexesGauche"></div>';
 		echo '<div class="fckEditorProjet">';
-			echo $form->input("Deliberation.".$key, array('label'=>'', 'type'=>'textarea'));
-			echo $fck->load('data[Deliberation]['.$key.']');
+			echo $form->input('Deliberation.'.$key, array('label'=>'', 'type'=>'textarea'));
+			echo $fck->load('Deliberation'.Inflector::camelize($key));
 		echo '</div>';
 	} else {
 	    if (empty($delib['Deliberation'][$key."_name"]))
