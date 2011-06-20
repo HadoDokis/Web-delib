@@ -69,12 +69,12 @@ class Deliberation extends AppModel {
 		);
 		
 	var $hasMany = array(
-                 'TdtMessage' => array (
-                      'className'    => 'TdtMessage',
-                      'foreignKey'   => 'delib_id'),
-                 'Historique' =>array(
-                        'className'    => 'Historique',
-                        'foreignKey'   => 'delib_id'),
+		'TdtMessage' => array (
+			'className'    => 'TdtMessage',
+			'foreignKey'   => 'delib_id'),
+		'Historique' =>array(
+			'className'    => 'Historique',
+			'foreignKey'   => 'delib_id'),
 		'Traitement'=>array(
 			'className'    => 'Cakeflow.Traitement',
 			'foreignKey'   => 'target_id'), 
@@ -86,15 +86,20 @@ class Deliberation extends AppModel {
 		'Commentaire'=>array(
 			'className'    => 'Commentaire',
 			'foreignKey'   => 'delib_id'),
-                'Listepresence'=>array(
-                        'className'    => 'Listepresence',
-                        'foreignKey'   => 'delib_id'),
-                'Vote'=>array(
-                        'className'    => 'Vote',
-                        'foreignKey'   => 'delib_id'),
+		'Listepresence'=>array(
+			'className'    => 'Listepresence',
+			'foreignKey'   => 'delib_id'),
+		'Vote'=>array(
+			'className'    => 'Vote',
+			'foreignKey'   => 'delib_id'),
 		'Infosup'=>array(
+			'dependent' => true),
+		'Multidelib'=>array(
+			'className'    => 'Deliberation',
+			'foreignKey'   => 'parent_id',
 			'dependent' => true)
 		);
+
 /*
  * Indique si le projet de délibération $delibId est modifiable pour $userId.
  * Attention : ne tient pas compte des droits qui sont fait dans le controller
