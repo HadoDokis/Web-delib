@@ -1,5 +1,5 @@
 <h2>Saisie des débats généraux :</h2>
-<?php echo $javascript->link('fckeditor/fckeditor'); ?>
+<?php echo $javascript->link('ckeditor/ckeditor'); ?>
 <?php echo ('<div class="optional">');
 
 echo $form->create('Seances',array('url'=>'/seances/saisirDebatGlobal/'.$seance['Seance']['id'],'type'=>'file'));
@@ -18,7 +18,7 @@ if (!Configure::read('GENERER_DOC_SIMPLE')){
 else {          ?>
     <div class="optional">
         <?php echo $form->input('Seance.debat_global', array('label'=>'', 'type'=>'textarea', 'cols' => '10', 'rows' => '20'));?>
-        <?php echo $fck->load('data[Seance][debat_global]'); ?>
+        <?php echo $fck->load('SeanceDebatGlobal'); ?>
     </div>
 <?php  } // fin du else ?>
 
