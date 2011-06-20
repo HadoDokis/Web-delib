@@ -540,6 +540,11 @@ class DeliberationsController extends AppController {
                                          }
                                          
                                 }
+
+				// traitement des délibérations rattachées (mode Multidélib)
+				if (array_key_exists('Multidelib', $this->data))
+					foreach($this->data['Multidelib'] as $multiDelib) $this->Deliberation->save($multiDelib);
+
 				$this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
 				$this->redirect($redirect);
 			} else {
