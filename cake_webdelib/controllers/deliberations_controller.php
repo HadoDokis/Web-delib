@@ -16,7 +16,7 @@ class DeliberationsController extends AppController {
 	var $name = 'Deliberations';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
 	var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit',  'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa');
-	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Iparapheur', 'Filtre', 'Cmis', 'Progress');
+	var $components = array('Gedooo','Date','Utils','Email','Acl','Xacl', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion');
 
 	// Gestion des droits
 	var $demandeDroit = array(
@@ -335,6 +335,11 @@ class DeliberationsController extends AppController {
 			$newAnnexe['Annex']['filetype'] = $annexe['file']['type'];
 			$newAnnexe['Annex']['size'] = $annexe['file']['size'];
 			$newAnnexe['Annex']['data'] = $this->_getFileData($annexe['file']['tmp_name'], $annexe['file']['size']);
+                        $pos = strpos($newAnnexe['Annex']['filetype'],  'vnd.oasis.opendocument'); 
+                        if ($pos !== false) {
+                            $newAnnexe['Annex']['data_pdf'] = $this->Conversion->convertirFichier($annexe['file']['tmp_name'], 'pdf');
+                        }
+                          
 			if(!$this->Annex->save($newAnnexe['Annex']))
 				$this->Session->setFlash('Erreur lors de la sauvegarde des annexes.', 'growl', array('type'=>'erreur'));
 		}
@@ -378,7 +383,11 @@ class DeliberationsController extends AppController {
 			if (!Configure::read('GENERER_DOC_SIMPLE')) {
 				$this->Gedooo->createFile($path_projet, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
 				$this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
-				$this->Gedooo->createFile($path_projet, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
+	 			$this->Gedooo->createFile($path_projet, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
+                                $annexes = $this->Annex->find('all', array('conditions' => array('Annex.Model'=> 'Deliberation', 
+                                                                                                 'Annex.foreign_key' => $id)));
+                                foreach ($annexes as $annexe) 
+				    $this->Gedooo->createFile($path_projet,  $annexe['Annex']['filename'], $annexe['Annex']['data']);
 			}
                         else {
                                 $content = str_replace('\&quot;', '', $this->data['Deliberation']['texte_projet']);
@@ -388,7 +397,9 @@ class DeliberationsController extends AppController {
                         }
 			// initialisation des fichiers des infosup de type odtFile
 			foreach ($this->data['Infosup']  as $infosup) {
-				$infoSupDef = $this->Infosupdef->find('first', array('recursive'=>-1, 'fields'=>array('type'), 'conditions'=>array('id'=>$infosup['infosupdef_id'])));
+				$infoSupDef = $this->Infosupdef->find('first', array('recursive'=>   -1, 
+                                                                                     'fields'     => array('type'), 
+                                                                                     'conditions' => array('id' =>$infosup['infosupdef_id'])));
 				if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
 					$this->Gedooo->createFile($path_projet, $infosup['file_name'] , $infosup['content']);
 			}
@@ -502,17 +513,33 @@ class DeliberationsController extends AppController {
 				}
 				// sauvegarde des annexes
 				if (array_key_exists('Annex', $this->data))
-					foreach($this->data['Annex'] as $annexe) $this->_saveAnnexe($id, $annexe);
+					foreach($this->data['Annex'] as $annexe) 
+                                            $this->_saveAnnexe($id, $annexe);
 				// suppression des annexes
 				if (array_key_exists('AnnexesASupprimer', $this->data))
 					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
 				// modification des annexes
-				if (array_key_exists('AnnexesAModifier', $this->data))
-					foreach($this->data['AnnexesAModifier'] as $annexeId=>$annexe)
-						$this->Annex->save(array(
-							'id'=>$annexeId,
-							'titre'=>$annexe['titre'],
-							'joindre_ctrl_legalite'=>$annexe['joindre_ctrl_legalite']));
+				if (array_key_exists('AnnexesAModifier', $this->data)) {
+                                    foreach($this->data['AnnexesAModifier'] as $annexeId=>$annexe) {
+                                      
+                                        $annex_filename = $this->Annex->find('first', array('conditions' => array('Annex.id' =>  $annexeId),
+                                                                                            'fields'     => array ('filename', 'filetype'),
+                                                                                            'recursive'  => -1));
+                                        $url  = WEBROOT_PATH."/files/generee/projet/".$this->data['Deliberation']['id']."/".$annex_filename['Annex']['filename'];
+                                        $pos = strpos($annex_filename['Annex']['filetype'],  'vnd.oasis.opendocument');
+                                        if ($pos !== false) 
+                                           $data_pdf = $this->Conversion->convertirFichier($url, 'pdf');
+
+                                        $data =  file_get_contents($url); 
+                                        $this->Annex->save(array( 'id'                    => $annexeId,
+							          'titre'                 => $annexe['titre'],
+							          'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
+                                                                  'data'                  => $data,
+                                                                  'data_pdf'              => $data_pdf
+                                                                  ));
+                                         }
+                                         
+                                }
 				$this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
 				$this->redirect($redirect);
 			} else {

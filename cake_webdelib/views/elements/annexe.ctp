@@ -1,74 +1,83 @@
 <?php
-// affichage des annexes
-echo $html->tag('table', null, array('id'=>'afficheAnnexes', 'cellpadding'=>'0', 'cellspacing'=>'0'));
-	echo $html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Action'));
-	if (isset($this->data['Annex'])) {
-		foreach ($this->data['Annex'] as $rownum => $annexe) {
-			echo $html->tag('tr', null, array('id'=>'afficheAnnexe'.$annexe['id']));
-				echo $html->tag('td', $rownum+1);
-				echo $html->tag('td', $html->link($annexe['filename'] ,'/annexes/download/'.$annexe['id']));
-				echo $html->tag('td');
-					echo $html->tag('span', $annexe['titre'], array(
-						'id'=>'afficheAnnexeTitre'.$annexe['id'],
-						'valeur_init'=>$annexe['titre']));
-					echo $form->input('AnnexesAModifier.'.$annexe['id'].'.titre', array(
-						'id'=>'modifieAnnexeTitre'.$annexe['id'],
-						'label'=>false,
-						'value'=>$annexe['titre'],
-						'size' => '40',
-						'disabled'=>'disabled',
-						'style'=>'display:none;'));
-				echo $html->tag('/td');
-				echo $html->tag('td');
-					echo $html->tag('span', $annexe['joindre_ctrl_legalite']?'Oui':'Non', array(
-						'id'=>'afficheAnnexeCtrl'.$annexe['id'],
-						'valeur_init'=>$annexe['joindre_ctrl_legalite']));
-					echo $form->input('AnnexesAModifier.'.$annexe['id'].'.joindre_ctrl_legalite', array(
-						'id'=>'modifieAnnexeCtrl'.$annexe['id'],
-						'label'=>false,
-						'type'=>'checkbox',
-						'checked'=>($annexe['joindre_ctrl_legalite']==1),
-						'disabled'=>'disabled',
-						'style'=>'display:none;'));
-				echo $html->tag('/td');
-				echo $html->tag('td');
-					echo $html->link('Supprimer', '#', array('onClick'=>'supprimerAnnexe(this, '.$annexe['id'].')'));
-					echo $html->link('Annuler la suppression', '#', array('onClick'=>"annulerSupprimerAnnexe(this, ".$annexe['id'].")", 'style'=>'display: none;'));
-					echo '&nbsp;&nbsp;';
-					echo $html->link('Modifier', '#', array('onClick'=>'modifierAnnexe(this, '.$annexe['id'].')'));
-					echo $html->link('Annuler la modification', '#', array('onClick'=>"annulermodifierAnnexe(this, ".$annexe['id'].")", 'style'=>'display: none;'));
-				echo $html->tag('/td');
-			echo $html->tag('/tr');
-		}
-	}
-echo $html->tag('/table');
-echo $html->tag('div', '', array('class'=>'spacer'));
+    // affichage des annexes
+    echo $html->tag('table', null, array('id'=>'afficheAnnexes', 'cellpadding'=>'0', 'cellspacing'=>'0', 'width'=> '100%'));
+    echo $html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Action'));
+    if (isset($this->data['Annex'])) {
+        foreach ($this->data['Annex'] as $rownum => $annexe) { 
+            $pos = strpos($annexe['filetype'],  'vnd.oasis.opendocument');
 
-// div pour la suppression des annexes
-echo $html->tag('div', '', array('id'=>'supprimeAnnexes'));
+            $rowClass = ($rownum+1 & 1) ? array( 'height' => '36px', 'id'=>'afficheAnnexe'.$annexe['id'])
+                                        : array( 'height' => '36px', 'class'=>'altrow', 'id'=>'afficheAnnexe'.$annexe['id']);
 
-// template pour l'ajout des annexes
-echo $html->tag('div', null, array('id'=>'ajouteAnnexeTemplate', 'style'=>'width:800px; display:none;'));
-	echo $html->tag('fieldset');
-	echo $html->tag('legend', 'Nouvelle annexe');
-		echo $form->input('Annex.0.file', array('label'=>'Annexe<acronym title="obligatoire">(*)</acronym>', 'type'=>'file', 'size' => '80', 'disabled'=>'disabled'));
-		echo $html->tag('div', '', array('class'=>'spacer'));
-		echo $form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '60', 'disabled'=>'disabled'));
-		echo $html->tag('div', '', array('class'=>'spacer'));
-		echo $form->input('Annex.0.ctrl', array('label'=>'Joindre ctrl légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
-		echo $html->tag('div', '', array('class'=>'spacer'));
-		echo $html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
-	echo $html->tag('/fieldset');
-echo $html->tag('/div');
+            echo $html->tag('tr', null,  $rowClass);
+            echo $html->tag('td', $rownum+1);
+            echo $html->tag('td');
+            if ($pos !== false)
+                $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
+            else
+                $url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
+            echo  $html->link($annexe['filename'] , $url, array('onClick'=>'modifierAnnexe(this, '.$annexe['id'].')'));
+            if (($pos !== false) && (strlen($annexe['data_pdf']) > 0)) 
+                echo ' '.$html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/1' );
+            echo $html->tag('/td');
+            echo $html->tag('td');
+            echo $html->tag('span', $annexe['titre'], array('id'          => 'afficheAnnexeTitre'.$annexe['id'],
+                                                            'valeur_init' => $annexe['titre']));
+            echo $form->input('AnnexesAModifier.'.$annexe['id'].'.titre', array('id'    => 'modifieAnnexeTitre'.$annexe['id'],
+                                                                                'label' => false,
+                                                                                'value' => $annexe['titre'],
+                                                                                'size' => '40',
+                                                                                'disabled'=>'disabled',
+                                                                                'style'=>'display:none;'));
+            echo $html->tag('/td');
+            echo $html->tag('td');
+            echo $html->tag('span', $annexe['joindre_ctrl_legalite']?'Oui':'Non', array('id'          => 'afficheAnnexeCtrl'.$annexe['id'],
+                                                                                        'valeur_init' => $annexe['joindre_ctrl_legalite']));
+            echo $form->input('AnnexesAModifier.'.$annexe['id'].'.joindre_ctrl_legalite', array('id'=>'modifieAnnexeCtrl'.$annexe['id'],
+                                                                                                'label'=>false,
+                                                                                                'type'=>'checkbox',
+                                                                                                'checked'=>($annexe['joindre_ctrl_legalite']==1),
+                                                                                                'disabled'=>'disabled',
+                                                                                                'style'=>'display:none;'));
+            echo $html->tag('/td');
+            echo $html->tag('td');
+            echo $html->link(SHY, '#', array("class"=>"link_supprimer",'onClick'=>'supprimerAnnexe(this, '.$annexe['id'].')'), false, false);
+            echo $html->link('Annuler la suppression', '#', array('onClick'=>"annulerSupprimerAnnexe(this, ".$annexe['id'].")", 'style'=>'display: none;'));
+            echo '&nbsp;&nbsp;';
+            echo $html->link(SHY, '#', array('class'=> 'link_modifier', 'onClick'=>'modifierAnnexe(this, '.$annexe['id'].')'), false, false);
+            echo $html->link('Annuler la modification', '#', array('onClick'=>"annulermodifierAnnexe(this, ".$annexe['id'].")", 'style'=>'display: none;'));
+            echo $html->tag('/td');
+            echo $html->tag('/tr');
+        }
+    }
+    echo $html->tag('/table');
+    echo $html->tag('div', '', array('class'=>'spacer'));
 
-// div pour l'ajout des annexes
-echo $html->tag('div', '', array('id'=>'ajouteAnnexes'));
+    // div pour la suppression des annexes
+    echo $html->tag('div', '', array('id'=>'supprimeAnnexes'));
 
-// lien pour ajouter une nouvelle annexes
-echo $html->tag('div', '', array('class'=>'spacer'));
-echo $html->link('Ajouter une annexe', 'javascript:ajouterAnnexe()', array('class'=>'link_annexe'));
-echo $html->tag('div', '', array('class'=>'spacer'));
-echo $html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
+    // template pour l'ajout des annexes
+    echo $html->tag('div', null, array('id'=>'ajouteAnnexeTemplate', 'style'=>'width:800px; display:none;'));
+    echo $html->tag('fieldset');
+    echo $html->tag('legend', 'Nouvelle annexe');
+    echo $form->input('Annex.0.file', array('label'=>'Annexe<acronym title="obligatoire">(*)</acronym>', 'type'=>'file', 'size' => '80', 'disabled'=>'disabled'));
+    echo $html->tag('div', '', array('class'=>'spacer'));
+    echo $form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '60', 'disabled'=>'disabled'));
+    echo $html->tag('div', '', array('class'=>'spacer'));
+    echo $form->input('Annex.0.ctrl', array('label'=>'Joindre ctrl légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
+    echo $html->tag('div', '', array('class'=>'spacer'));
+    echo $html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
+    echo $html->tag('/fieldset');
+    echo $html->tag('/div');
+
+    // div pour l'ajout des annexes
+    echo $html->tag('div', '', array('id'=>'ajouteAnnexes'));
+
+    // lien pour ajouter une nouvelle annexes
+    echo $html->tag('div', '', array('class'=>'spacer'));
+    echo $html->link('Ajouter une annexe', 'javascript:ajouterAnnexe()', array('class'=>'link_annexe'));
+    echo $html->tag('div', '', array('class'=>'spacer'));
+    echo $html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
 ?>
 <script>
 // variables globales

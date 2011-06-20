@@ -10,17 +10,28 @@ class AnnexesController extends AppController {
 		}
 	}
 
-	function download($id=null){
+	function download($id=null, $pdf=null){
 		// lecture en base
 		$annexe = $this->Annex->find('first', array(
 			'recursive' => -1,
 			'conditions' => array('id'=>$id)));
+
+                if ($pdf == null) {
+		    $content  = $annexe['Annex']['data'];
+                    $filename = $annexe['Annex']['filename'];
+                    $type     = $annexe['Annex']['filetype'];
+                }
+                else {
+		    $content  = $annexe['Annex']['data_pdf'];
+                    $filename = $annexe['Annex']['filename'].'.pdf';
+                    $type     = 'application/pdf';
+                }
+
 		if (empty($annexe)) return;
-		header('Content-type: '.$annexe['Annex']['filetype']);
-		header('Content-Length: '.$annexe['Annex']['size']);
-		header('Content-Disposition: attachment; filename='.$annexe['Annex']['filename']);
-		echo $annexe['Annex']['data'];
-		exit();
+		header('Content-type: '.$type);
+		header('Content-Length: '.strlen($content));
+		header('Content-Disposition: attachment; filename='.$filename);
+                die($content);
 	}
 
 }
