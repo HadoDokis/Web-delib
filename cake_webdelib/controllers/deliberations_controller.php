@@ -1151,7 +1151,7 @@ class DeliberationsController extends AppController {
 		    $nb_pj=0;
 		    foreach ($delib['Annex'] as $annexe) {
                         if ($annexe['joindre_ctrl_legalite']) {
-			    $pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/", $annexe['filename'], $annexe['data_pdf']);
+			    $pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/", $annexe['filename'].'.pdf', $annexe['data_pdf']);
 			    $data["acte_attachments[$nb_pj]"] = "@$pj_file";
       	                    $data["acte_attachments_sign[$nb_pj]"] = "";
 		         }
