@@ -1,5 +1,5 @@
 <?php
-    echo $javascript->link('fckeditor/fckeditor');
+    echo $javascript->link('ckeditor/ckeditor');
     echo $javascript->link('utils');
 ?>
 <h2>Import du mod&egrave;le : <?php echo $libelle; ?></h2>
@@ -10,8 +10,8 @@
         echo  $form->input("template",array('label'=>'', 'type'=>'file', 'div'=>false));
     }
     else {
-        echo $form->input('Model.content', array('type'=>'textarea', 'cols' => '10', 'rows' => '20'));
-        echo $fck->load('data[Model][content]');
+        echo $form->input('Model.content', array('type'=>'textarea', 'label'=>''));
+        echo $fck->load('ModelContent');
    }
    echo  $form->input("Model.recherche");
 ?>
