@@ -970,6 +970,7 @@ class DeliberationsController extends AppController {
 		// On affiche que les delibs vote pour.
                 $conditions =  $this->Filtre->conditions();
                 $conditions['Deliberation.etat >='] = 2;
+                $conditions['Deliberation.etat <'] = 5;
                 $conditions['Deliberation.signee'] = 1;
                 $conditions['Deliberation.delib_pdf <>'] = '';
                 if ($seance_id != null)
@@ -1572,7 +1573,7 @@ class DeliberationsController extends AppController {
                 $this->_ajouterFiltre($projets);
 		$this->_afficheProjets(
 			$projets,
-			'Mes projets en cours de r&eacute;daction',
+			'Mes projets en cours de rédaction', 
 			array('view', 'edit', 'delete', 'attribuerCircuit', 'generer'),
 			$listeLiens,
                         $nbProjets);
@@ -2268,11 +2269,11 @@ class DeliberationsController extends AppController {
 				if ($tourDansCircuit == -1)
 					return array(
 						'image' => '/img/icons/fini.png',
-						'titre' => $this->Deliberation->libelleEtat($etat) . ' : trait&eacute');
+						'titre' => $this->Deliberation->libelleEtat($etat) . ' : traité');
 				elseif ($tourDansCircuit == 0)
 					return array(
 						'image' => '/img/icons/atraiter.png',
-						'titre' => $this->Deliberation->libelleEtat($etat) . ' : &agrave; traiter');
+						'titre' => $this->Deliberation->libelleEtat($etat) . ' : à traiter');
 				else
 					return array(
 						'image' => '/img/icons/attente.png',
@@ -2281,7 +2282,7 @@ class DeliberationsController extends AppController {
 				if ($estRedacteur)
 					return array(
 						'image' => '/img/icons/fini.png',
-						'titre' => $this->Deliberation->libelleEtat($etat) . ' : projet dont je suis le r&eacute;dacteur');
+						'titre' => $this->Deliberation->libelleEtat($etat) . ' : projet dont je suis le rédacteur');
 				else
 					return array(
 						'image' => '/img/icons/fini.png',

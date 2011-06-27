@@ -159,7 +159,7 @@ class Deliberation extends AppModel {
  * si $codesSpeciaux = true, retourne les libellés avec les codes spéciaux des accents
  * si $codesSpeciaux = false, retourne les libellés sans les accents (listes)
  */
-	function libelleEtat($etat, $codesSpeciaux=true) {
+	function libelleEtat($etat, $codesSpeciaux=false) {
  		switch($etat) {
 		case -1 :
 			return $codesSpeciaux ? 'Refus&eacute;' : 'Refusé';
