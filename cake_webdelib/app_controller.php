@@ -112,8 +112,11 @@ class AppController extends Controller {
 		    $this->Session->write( 'user.User.myUrl', $this->here );
 
                    // Attention au cas de elements $this->log( $this->Session->read( 'user.User.oldurl' )); 
-                    if (($this->here != $this->referer()) && ($this->here != '/deliberations/classification'))
-		        $this->Session->write( 'user.User.lasturl', $this->referer() );
+                    if (($this->here != $this->referer())                && 
+                        ($this->here != '/deliberations/classification') && 
+                        ($this->here != '/seances/voter') && 
+                        ($this->here != '/deliberations/listerPresences'))
+		            $this->Session->write( 'user.User.lasturl', $this->referer() );
 		}
 	}
 
