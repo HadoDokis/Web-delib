@@ -765,8 +765,8 @@ class SeancesController extends AppController {
                                                  "Deliberation.seance_id"    => $delib['Deliberation']['seance_id'], 
                                                  "Deliberation.etat <> "     => -1));
 
-	    $delib['Deliberation']['position'] = $new_position; 
-	    $this->Deliberation->save($delib); 
+            $this->Deliberation->id = $delib_id;
+            $this->Deliberation->saveField('position', $new_position);
 
             $this->Session->setFlash("Projet [id:$delib_id] déplacée en position : $new_position, ancienne position : $old_position ",  'growl');
             $this->redirect("/seances/afficherProjets/".$delib['Deliberation']['seance_id']);
