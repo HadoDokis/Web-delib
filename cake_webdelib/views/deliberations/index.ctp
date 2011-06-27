@@ -18,9 +18,9 @@
 	<tr>
 		<th width='5%' align="right">Vue </th>
 		<th width='15%' align="left">synth&eacute;tique</th>
-		<th width='50%'> &nbsp;</th>
+		<th width='46%'> &nbsp;</th>
 		<th width='18%' >&nbsp;</th>
-		<th width='10%'>Actions</th>
+		<th width='250px'>Actions</th>
 	</tr>
 	<tr>
 		<td colspan='5' class='Border' height='1' >
