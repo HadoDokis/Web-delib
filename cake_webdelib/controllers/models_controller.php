@@ -152,9 +152,12 @@
 	}
 
 	function _getFileName($id=null) {
-		$condition = "Model.id = $id";
-		$objCourant = $this->Model->findAll($condition);
-		return $objCourant['0']['Model']["name"];
+                $objCourant = $this->Model->find('first', array(
+                                                 'conditions'=> array('Model.id'=> $id),
+                                                 'recursive' => '-1',
+                                                 'fields'    => 'name'));
+                return $objCourant['Model']['name'];
+
 	}
 
 	function _getSize($id=null) {
@@ -206,15 +209,12 @@
             //*****************************************
 	    $u = new GDO_Utility();
             $content = $this->_getModel($model_id);
-            $sModele = $this->Gedooo->createFile($path,'model_'.$model_id.'.odt', $content);
-	    $path_model = $path.'model_'.$model_id.'.odt';
 
-            $bTemplate = $u->ReadFile($path_model);
 	    $oTemplate = new GDO_ContentType("",
-                                "modele.odt",
-                                $u->getMimeType($path_model),
-                                "binary",
-                                $bTemplate);
+                                             $this->_getFileName($model_id),
+                                             "application/vnd.oasis.opendocument.text",
+                                             "binary",
+                                             $content);
 
             //*****************************************
 	    // Organisation des données
