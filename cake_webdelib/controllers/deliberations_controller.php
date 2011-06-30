@@ -1085,6 +1085,9 @@ class DeliberationsController extends AppController {
 	    foreach ($this->data['Deliberation'] as $id => $bool ){
 	        if ($bool == 1){
 		    $delib_id = substr($id, 3, strlen($id));
+
+                    unlink(WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.pdf");
+
 		    $classification =   $Tabclassification[$delib_id];
                     if (!empty( $classification))
 		        $this->Deliberation->changeClassification($delib_id, $classification);
