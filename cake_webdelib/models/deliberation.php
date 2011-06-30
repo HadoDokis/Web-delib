@@ -364,9 +364,12 @@ class Deliberation extends AppModel {
                    $seance = $this->Seance->find('first', array(
                                                  'conditions' => array(
                                                  'Seance.id' =>$delib['Seance']['id'])));
-                   $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),    'text'));
-                   $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
-                   $oMainPart->addElement(new GDO_FieldType('date_seance',                 $this->Date->frDate($seance['Seance']['date']),   'date'));
+                   $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),        'text'));
+                   $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),        'text'));
+                   $oMainPart->addElement(new GDO_FieldType('date_seance',                $this->Date->frDate($seance['Seance']['date']),       'date'));
+                   $oMainPart->addElement(new GDO_FieldType('hh_seance',           $this->Date->Hour($seance['Seance']['date'], 'hh'), 'string'));
+                   $oMainPart->addElement(new GDO_FieldType('mm_seance',           $this->Date->Hour($seance['Seance']['date'], 'mm'), 'string'));
+
                    $oMainPart->addElement(new GDO_FieldType('date_convocation',                 $this->Date->frDate($seance['Seance']['date_convocation']),   'date'));
                    $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
                    $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text')); 

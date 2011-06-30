@@ -1,11 +1,4 @@
 <?php
-/*
- * Création : 20 janv. 2006
- * Christophe Espiau
- * 
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
- */
  
 class DateComponent extends Object {
 	
@@ -27,27 +20,31 @@ class DateComponent extends Object {
 	}	
  
        function frDate ($mysqlDate) {
+           if (empty($mysqlDate))
+               return null;
+           else {
+               $tmp =  explode(' ', $mysqlDate);
+               $temp = explode('-', $tmp[0]);
+               return($temp[2].'/'.$temp[1].'/'.$temp[0]);
+           }
+       }
+
+       function Hour ($mysqlDate, $part=null) {
                 if (empty($mysqlDate))
 	            return null;
 		else {
 		    $tmp =  explode(' ', $mysqlDate);
-		    $temp = explode('-', $tmp[0]);
-		    return($temp[2].'/'.$temp[1].'/'.$temp[0]);
+                    if ($part == null) {
+		        return(substr($tmp[1], 0, 5));
+                    }
+                    elseif ($part=="hh") {
+                          return(substr($tmp[1], 0, 2));
+                    }
+                    elseif ($part=="mm") {
+                          return(substr($tmp[1], 3, 2));
+                    }
 		}
- 
        }
-
-       function Hour ($mysqlDate) {
-                if (empty($mysqlDate))
-	            return null;
-		else {
-		    $tmp =  explode(' ', $mysqlDate);
-		    return(substr($tmp[1], 0, 5));
-		}
- 
-       }
-
-
 
        function dateLettres ($timestamp)
        {
