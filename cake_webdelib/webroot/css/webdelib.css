@@ -1220,10 +1220,14 @@ div.code-coverage-results span.result-good {
 tr.altrow {
         background: #d5d5d5;
 }
-tr.aSupprimer {
+.aSupprimer {
         background: red;
 }
 tr.aModifier {
         background: orange;
 }
-
+div.action {
+	padding:5px;
+	border-top: 1px solid #e0ef90;
+	height: 25px;
+}
