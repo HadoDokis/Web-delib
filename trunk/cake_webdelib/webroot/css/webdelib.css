@@ -429,6 +429,13 @@ a.link_modifier {
 	padding: 0 0 32px 32px;
 }
 
+a.link_modifier_back {
+	background-image: url(../img/icons/klpq-back.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 32px 32px;
+}
+
 a.link_modifier_left {
 	background-image: url(../img/icons/klpq.png);
 	background-repeat: no-repeat;
@@ -438,6 +445,13 @@ a.link_modifier_left {
 
 a.link_supprimer {
 	background-image: url(../img/icons/edittrash.png);
+	background-repeat: no-repeat;
+	background-position: top;
+	padding: 0 0 38px 38px;
+}
+
+a.link_supprimer_back {
+	background-image: url(../img/icons/edittrash-back.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 38px 38px;
@@ -1220,7 +1234,7 @@ div.code-coverage-results span.result-good {
 tr.altrow {
         background: #d5d5d5;
 }
-.aSupprimer {
+tr.aSupprimer {
         background: red;
 }
 tr.aModifier {
@@ -1230,4 +1244,10 @@ div.action {
 	padding:5px;
 	border-top: 1px solid #e0ef90;
 	height: 25px;
+}
+div.aSupprimer {
+        background: red;
+}
+div.aModifier {
+        background: orange;
 }
