@@ -1,99 +1,147 @@
 <?php
-if (empty($this->data['Multidelib']))
-	return;
+// initialisation des boutons pour les délibération
+$links = array(
+	'modifier' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_modifier', 'title'=>'Modifier')),
+	'annulerModifier' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_modifier_back', 'title'=>'Annuler les modifications', 'style'=>'display: none;')),
+	'supprimer' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_supprimer', 'title'=>'Supprimer')),
+	'annulerSupprimer' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_supprimer_back', 'title'=>'Annuler la suppression', 'style'=>'display: none;')),
+	);
 
 // affichage des délibérations rattachées
-foreach($this->data['Multidelib'] as $i=>$delib) {
-	echo $html->tag('fieldset');
-	echo $html->tag('legend', 'Délibération rattachée #'.($i+1));
-		echo $html->tag('div', null, array('id'=>'delibRattacheeForm'.$delib['id']));
-			echo $form->hidden('Multidelib.'.$delib['id'].'.id', array('value'=>$delib['id'], 'disabled'=>true));
-			echo $form->input('Multidelib.'.$delib['id'].'.objet', array(
-				'type'=>'textarea',
-				'label'=>'Libellé <acronym title="obligatoire">(*)</acronym>',
-				'cols'=>'60','rows'=>'2',
-				'value'=>$delib['objet'],
-				'disabled'=>true));
+if (isset($this->data['Multidelib'])) {
+	foreach($this->data['Multidelib'] as $i=>$delib) {
+		echo $html->tag('fieldset', null, array('id'=>'delibRattachee'.$delib['id']));
+		echo $html->tag('legend', 'Délibération rattachée #'.($i+1));
+			// info pour la suppression
+			echo $form->hidden('MultidelibASupprimer.'.$delib['id'], array('value'=>$delib['id'], 'disabled'=>true));
+			// affichage de la délibération rattachée
+			echo $html->tag('div', null, array('id'=>'delibRattacheeDisplay'.$delib['id']));
+				// affichage libellé
+				echo $html->tag('label', 'Libellé <acronym title="obligatoire">(*)</acronym>');
+				echo $html->tag('span', $delib['objet']);
+				echo $html->tag('div', '', array('class'=>'spacer'));
+				// affichage texte de délibération
+				echo $html->tag('label', 'Texte délibération');
+				if (Configure::read('GENERER_DOC_SIMPLE')){
+					echo $html->tag('span', $delib['deliberation']);
+				} else {
+					echo $html->tag('span', $delib['deliberation_name']);
+				}
+			echo $html->tag('/div');
+			// modification de la délibération rattachée
+			echo $html->tag('div', null, array('id'=>'delibRattacheeForm'.$delib['id'], 'style'=>'display: none'));
+				echo $form->hidden('Multidelib.'.$delib['id'].'.id', array('value'=>$delib['id'], 'disabled'=>true));
+				// saisie libellé
+				echo $html->tag('label', 'Libellé <acronym title="obligatoire">(*)</acronym>');
+				echo $form->input('Multidelib.'.$delib['id'].'.objet', array(
+					'type'=>'textarea',
+					'label'=>'',
+					'cols'=>'60','rows'=>'1',
+					'value'=>$delib['objet'],
+					'disabled'=>true));
+				echo $html->tag('div', '', array('class'=>'spacer'));
+				// saisie texte de délibération
+				echo $html->tag('label', 'Texte délibération');
+				if (Configure::read('GENERER_DOC_SIMPLE')){
+					echo '<div class="fckEditorProjet">';
+						echo $form->input('Multidelib.'.$delib['id'].'.deliberation', array(
+							'label'=>'',
+							'type'=>'textarea',
+							'value'=>$delib['deliberation'],
+							'disabled'=>true));
+					echo '</div>';
+				} else {
+					if (empty($delib['deliberation_name']))
+						echo  $form->input("Multidelib.".$delib['id'].".deliberation", array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>'Texte d&eacute;lib&eacute;ration', 'disabled'=>true));
+					else {
+						$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$delib['id']."/deliberation.odt";
+						echo '<span id="DeliberationdeliberationInputFichierJoint" style="display: none;"></span>';
+						echo '<span id="DeliberationdeliberationAfficheFichierJoint">'; 
+							echo "<a href='$url'>".$delib['deliberation_name']."</a>";
+							echo '&nbsp;&nbsp;';
+							echo $html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', 'deliberation', 'Texte d&eacute;lib&eacute;ration')", null, 'Voulez-vous vraiment supprimer le fichier ?');
+						echo '</span>';
+					}
+				}
+			echo $html->tag('/div');
 			echo $html->tag('div', '', array('class'=>'spacer'));
-
-echo $html->tag('div', null, array('class'=>'required'));
-	echo $form->label('Multidelib'.$delib['id'].'Deliberation', 'Texte délibération');
-	if (Configure::read('GENERER_DOC_SIMPLE')){
-		echo '<div class="annexesGauche"></div>';
-		echo '<div class="fckEditorProjet">';
-			echo $form->input('Multidelib.'.$delib['id'].'.deliberation', array(
-				'label'=>'',
-				'type'=>'textarea',
-				'value'=>$delib['deliberation'],
-				'disabled'=>true,
-				'style'=>'display: none;'));
-		echo '</div>';
-	} else {
-		if (empty($delib['Deliberation']['deliberation_name']))
-			echo  $form->input("Multidelib.0.deliberation", array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>'Texte d&eacute;lib&eacute;ration'));
-		else {
-			$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/$id/deliberation.odt";
-			echo '<span id="DeliberationdeliberationInputFichierJoint" style="display: none;"></span>';
-			echo '<span id="DeliberationdeliberationAfficheFichierJoint">'; 
-				echo "<a href='$url'>$filename</a>";
-				echo '&nbsp;&nbsp;';
-				echo $html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', 'deliberation', 'Texte d&eacute;lib&eacute;ration')", null, 'Voulez-vous vraiment supprimer le fichier ?');
-			echo '</span>';
-		}
+			// affichage des boutons action
+			echo $html->tag('div', null, array('id'=>'delibRattacheeAction'.$delib['id'], 'class'=>'action'));
+				$links['modifier']['htmlAttributes']['onclick'] = 'modifierDelibRattachee(this, '.$delib['id'].')';
+				$links['annulerModifier']['htmlAttributes']['onclick'] = 'annulerModifierDelibRattachee(this, '.$delib['id'].')';
+				$links['supprimer']['htmlAttributes']['onclick'] = 'supprimerDelibRattachee(this, '.$delib['id'].')';
+				$links['annulerSupprimer']['htmlAttributes']['onclick'] = 'annulerSupprimerDelibRattachee(this, '.$delib['id'].')';
+				echo $menu->linkBarre($links);
+			echo $html->tag('/div');
+		echo $html->tag('/fieldset');
 	}
-echo $html->tag('/div');
-
-
-		echo $html->tag('/div');
-		// input techniques
-		echo $form->hidden('MultidelibASupprimer.'.$delib['id'], array('value'=>$delib['id'], 'disabled'=>true));
-		// boutons
-		echo $html->link('Modifier', '#', array(
-			'onClick'=>'modifierDelibRattachee(this, '.$delib['id'].')'));
-		echo $html->link('Annuler les modifications', '#', array(
-			'onClick'=>'annulerModifierDelibRattachee(this, '.$delib['id'].')',
-			'style'=>'display: none;'));
-		echo '&nbsp;&nbsp;';
-		echo $html->link('Supprimer', '#', array(
-			'onClick'=>'supprimerDelibRattachee(this, '.$delib['id'].')'));
-		echo $html->link('Annuler la suppression', '#', array(
-			'onClick'=>'annulerDelibRattachee(this, '.$delib['id'].')',
-			'style'=>'display: none;'));
-	echo $html->tag('/fieldset');
 }
 
+// Ajout des délibérations
+// template pour l'ajout
+echo $html->tag('div', null, array('id'=>'ajouteMultiDelibTemplate', 'style'=>'width:800px; display:none'));
+	echo $html->tag('fieldset', null, array('id'=>'delibRattachee0'));
+	echo $html->tag('legend', 'Nouvelle délibération rattachée ');
+		echo $html->tag('div', null, array('id'=>'delibRattacheeForm0'));
+			// saisie libellé
+			echo $html->tag('label', 'Libellé <acronym title="obligatoire">(*)</acronym>');
+			echo $form->input('Multidelib.0.objet', array(
+				'type'=>'textarea',
+				'label'=>'',
+				'value'=>'',
+				'cols'=>'60','rows'=>'1',
+				'disabled'=>true));
+			echo $html->tag('div', '', array('class'=>'spacer'));
+		echo $html->tag('/div');
+		echo $html->tag('div', '', array('class'=>'spacer'));
+		// affichage des boutons action
+		echo $html->tag('div', null, array('id'=>'delibRattacheeAction0', 'class'=>'action'));
+			echo $html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().parent().remove();'));
+		echo $html->tag('/div');
+	echo $html->tag('/fieldset');
+echo $html->tag('/div');
 
-//echo "<div class='required'>";
-//	echo $form->label('Multidelib0Deliberation', 'Texte délibération');
-//	if (Configure::read('GENERER_DOC_SIMPLE')){
-//		echo '<div class="annexesGauche"></div>';
-//		echo '<div class="fckEditorProjet">';
-//			echo $form->input("Multidelib.0.deliberation", array('label'=>'', 'type'=>'textarea'));
-//			echo $fck->load('data[Multidelib][0][deliberation]');
-//		echo '</div>';
-//	} else {
-//		if (empty($delib['Deliberation']['deliberation_name']))
-//			echo  $form->input("Multidelib.0.deliberation", array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>'Texte d&eacute;lib&eacute;ration'));
-//		else {
-//			$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/$id/deliberation.odt";
-//			echo '<span id="DeliberationdeliberationInputFichierJoint" style="display: none;"></span>';
-//			echo '<span id="DeliberationdeliberationAfficheFichierJoint">'; 
-//				echo "<a href='$url'>$filename</a>";
-//				echo '&nbsp;&nbsp;';
-//				echo $html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', 'deliberation', 'Texte d&eacute;lib&eacute;ration')", null, 'Voulez-vous vraiment supprimer le fichier ?');
-//			echo '</span>';
-//		}
-//	}
-//echo '</div>';
+// div pour l'ajout les délibérations rattachées
+echo $html->tag('div', '', array('id'=>'ajouteMultiDelib'));
+
+// lien pour ajouter une nouvelle délibération rattachée
+echo $html->tag('div', '', array('class'=>'spacer'));
+echo $html->link('Ajouter une nouvelle délibération rattachée', 'javascript:ajouterMultiDelib()', array('class'=>'link_annexe'));
+echo $html->tag('div', '', array('class'=>'spacer'));
+echo $html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
 ?>
 <script>
 // variables globales
+var iMultiDelibAAjouter = 1000;
+
+// Fonction d'ajout d'une nouvelle deliberation : duplique le div ajouteMultiDelibTemplate et incrémente l'indexe
+function ajouterMultiDelib() {
+	iMultiDelibAAjouter++; 
+	var addDiv = $('#ajouteMultiDelib');
+	var newTemplate = $('#ajouteMultiDelibTemplate').clone();
+	newTemplate.attr('id', newTemplate.attr('id').replace('Template', iMultiDelibAAjouter));
+	newTemplate.find('textarea').each(function(){
+		$(this).removeAttr('disabled');
+		$(this).attr('id', $(this).attr('id').replace('0', iMultiDelibAAjouter));
+		$(this).attr('name', $(this).attr('name').replace('0', iMultiDelibAAjouter));
+	});
+	newTemplate.find('input').each(function(){
+		$(this).removeAttr('disabled');
+		$(this).attr('id', $(this).attr('id').replace('0', iMultiDelibAAjouter));
+		$(this).attr('name', $(this).attr('name').replace('0', iMultiDelibAAjouter));
+	});
+	addDiv.append(newTemplate);
+	newTemplate.show();
+}
 
 // Fonction de modification d'une délibération rattachée
 function modifierDelibRattachee(obj, delibId) {
-	$('#delibRattacheeForm'+delibId+' :input').removeAttr('disabled');
+	$('#delibRattacheeDisplay'+delibId).hide();
+	$('#delibRattacheeForm'+delibId).show();
 	
-$('#Multidelib'+delibId+'Deliberation').ckeditor();
+	$('#delibRattacheeForm'+delibId+' :input').removeAttr('disabled').show();
+	if ($('#Multidelib'+delibId+'Deliberation').length)
+		$('#Multidelib'+delibId+'Deliberation').ckeditor();
 	
 	$(obj).hide();
 	$(obj).next().show();
@@ -102,21 +150,22 @@ $('#Multidelib'+delibId+'Deliberation').ckeditor();
 
 // Fonction d'annulation des modifications d'une délibération rattachée
 function annulerModifierDelibRattachee(obj, delibId) {
+	$('#delibRattacheeDisplay'+delibId).show();
+	$('#delibRattacheeForm'+delibId).hide();
+
 	$('#delibRattacheeForm'+delibId+' :input').attr('disabled', true);
+	if ($('#Multidelib'+delibId+'Deliberation').length)
+		$('#Multidelib'+delibId+'Deliberation').ckeditor(function(){this.destroy();});
+
 	$(obj).hide();
 	$(obj).prev().show();
 	$(obj).next().show();
-
-alert($('#Multidelib'+delibId+'Deliberation').val());
-// remove editor from the page
- $('#Multidelib'+delibId+'Deliberation').ckeditor(function(){
- this.destroy();
- });
-
 }
 
 // Fonction de suppression d'une délibération rattachée
 function supprimerDelibRattachee(obj, delibId) {
+	$('#delibRattacheeDisplay'+delibId).addClass('aSupprimer');
+
 	$('#MultidelibASupprimer'+delibId).removeAttr('disabled');
 	$(obj).hide();
 	$(obj).next().show();
@@ -124,7 +173,9 @@ function supprimerDelibRattachee(obj, delibId) {
 }
 
 // Fonction de d'annulation de suppression d'une annexe
-function annulerDelibRattachee(obj, delibId) {
+function annulerSupprimerDelibRattachee(obj, delibId) {
+	$('#delibRattacheeDisplay'+delibId).removeClass('aSupprimer');
+
 	$('#MultidelibASupprimer'+delibId).attr('disabled', true);
 	$(obj).hide();
 	$(obj).prev().show();
