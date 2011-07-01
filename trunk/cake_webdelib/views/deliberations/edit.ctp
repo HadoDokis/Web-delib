@@ -1,6 +1,7 @@
 <?php echo $javascript->link('calendrier.js'); ?>
 <?php echo $javascript->link('utils.js'); ?>
 <?php echo $javascript->link('ckeditor/ckeditor'); ?>
+<?php echo $javascript->link('ckeditor/adapters/jquery'); ?>
 
 <?php
 	if($html->value('Deliberation.id')) {
