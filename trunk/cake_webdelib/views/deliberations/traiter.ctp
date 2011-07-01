@@ -22,7 +22,7 @@
 	$defBarre[] = array('title'=>'Annuler', 'url'=>'/deliberations/mesProjetsATraiter', 'htmlAttributes'=>array('class'=>'link_annuler', 'title'=>'Annuler'));
 
 	$linkBarre  = "<table class='table_action' cellspacing='0' cellpadding='0'><tr>";
-	$linkBarre .= $menu->linkBarre($defBarre);
+	$linkBarre .= $menu->linkBarre($defBarre, 'td');
 	$linkBarre .= "</tr></table>";
 ?>
 <div id="vue_cadre">
