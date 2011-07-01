@@ -234,6 +234,9 @@ class DeliberationsController extends AppController {
 				/* sauvegarde des annexes */
 				if (array_key_exists('Annex', $this->data))
 					foreach($this->data['Annex'] as $annexe) $this->_saveAnnexe($delibId, $annexe);
+				// sauvegarde des délibérations rattachées
+				if (array_key_exists('Multidelib', $this->data))
+					foreach($this->data['Multidelib'] as $multidelib) $this->_saveDelibRattachees($delibId, $multidelib);
 
 				$this->Session->setFlash('Le projet \''.$delibId.'\' a &eacute;t&eacute; ajout&eacute;',  'growl');
 				$sortie = true;
@@ -324,7 +327,7 @@ class DeliberationsController extends AppController {
             exit();
 	}
 
-	function _saveAnnexe ($delibId, $annexe) {
+	function _saveAnnexe($delibId, $annexe) {
 		if (is_array($annexe) && !empty($annexe['file']['name'])){
 			$newAnnexe = $this->Annex->create();
 			$newAnnexe['Annex']['model'] = 'Deliberation';
@@ -342,6 +345,36 @@ class DeliberationsController extends AppController {
                           
 			if(!$this->Annex->save($newAnnexe['Annex']))
 				$this->Session->setFlash('Erreur lors de la sauvegarde des annexes.', 'growl', array('type'=>'erreur'));
+		}
+		return true;
+	}
+
+	/**
+	 * sauvergarde des délibérations attachées
+	 * @param integer $delibId id de la délibération principale
+	 * @param array $delib délibération rattachée retourné par le formulaire 'edit'
+	 */
+	function _saveDelibRattachees($delibId, $delib) {
+		if (!isset($delib['objet'])) {
+			$this->Session->setFlash('Libellé obligatoire.', 'growl', array('type'=>'erreur'));
+			return false;
+		}
+		
+		if (isset($delib['id'])) {
+			// modification
+			$newDelib = array();
+			$newDelib['Deliberation']['id'] = $delib['id'];
+		} else {
+			// ajout
+			$newDelib = $this->Deliberation->create();
+			$newDelib['Deliberation']['parent_id'] = $delibId;
+		}
+
+		$newDelib['Deliberation']['objet'] = $delib['objet'];
+
+		if(!$this->Deliberation->save($newDelib['Deliberation'], false)) {
+			$this->Session->setFlash('Erreur lors de la sauvegarde des délibérations rattachées.', 'growl', array('type'=>'erreur'));
+			return false;
 		}
 		return true;
 	}
@@ -541,9 +574,19 @@ class DeliberationsController extends AppController {
                                          
                                 }
 
-				// traitement des délibérations rattachées (mode Multidélib)
+				// sauvegarde des délibérations rattachées
 				if (array_key_exists('Multidelib', $this->data))
-					foreach($this->data['Multidelib'] as $multiDelib) $this->Deliberation->save($multiDelib);
+					foreach($this->data['Multidelib'] as $multidelib) $this->_saveDelibRattachees($id, $multidelib);
+				// suppression des délibérations rattachées
+				if (array_key_exists('MultidelibASupprimer', $this->data))
+					foreach($this->data['MultidelibASupprimer'] as $delibId) {
+	                    // Suppression des projets antérieurs potentiels
+	                    $this->_delAnteProjet($delibId);
+
+	                    $repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
+	                    if (is_dir($repFichier)) 
+	                        $this->_rmDir($repFichier);
+					};
 
 				$this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
 				$this->redirect($redirect);
