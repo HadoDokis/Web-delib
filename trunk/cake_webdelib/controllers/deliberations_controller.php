@@ -27,7 +27,7 @@ class DeliberationsController extends AppController {
 		'mesProjetsValides',
 		'mesProjetsATraiter',
 		'mesProjetsRecherche',
-                'projetsMonService',
+		'projetsMonService',
 		'tousLesProjetsSansSeance',
 		'tousLesProjetsValidation',
 		'tousLesProjetsAFaireVoter',
@@ -36,8 +36,8 @@ class DeliberationsController extends AppController {
 		'goNext', 
 		'validerEnUrgence',
 		'rebond',
-                'sendToParapheur',
-                'sendToGed'
+		'sendToParapheur',
+		'sendToGed'
 	);
 
         var $commeDroit = array(
@@ -51,30 +51,30 @@ class DeliberationsController extends AppController {
 	);
 	var $libelleControleurDroit = 'Projets';
 	var $ajouteDroit = array(
-                'edit',
+		'edit',
 		'editerProjetValide',
 		'goNext',
-                'validerEnUrgence',
-                'rebond'
+		'validerEnUrgence',
+		'rebond'
 	);
 	var $libellesActionsDroit = array(
 		'edit' => "Modification d'un projet",
 		'editerProjetValide' => 'Editer projets valid&eacute;s',
 		'goNext'=> 'Sauter une &eacute;tape',
-                'validerEnUrgence'=> 'Valider un projet en urgence',
-                'rebond'=> 'Effectuer un rebond',
-                'sendToParapheur' => 'Envoie à la signature',
-                'sendToGed' => 'Envoie &agrave; une GED'
+		'validerEnUrgence'=> 'Valider un projet en urgence',
+		'rebond'=> 'Effectuer un rebond',
+		'sendToParapheur' => 'Envoie à la signature',
+		'sendToGed' => 'Envoie &agrave; une GED'
 	);
-        var $aucunDroit= array('test');
-        var $paginate = array(
-                'Deliberation' => array(
-                        'fields' => array('Deliberation.id', 'Deliberation.objet',  'Deliberation.num_delib', 'Deliberation.dateAR' ,
-                                          'Deliberation.num_pref', 'Deliberation.etat', 'Deliberation.titre', 'Deliberation.tdt_id', 'Deliberation.seance_id', 'Seance.date'),
-                        'conditions' => array('Deliberation.etat'=>5),
-                        'limit' => 10
-                ),
-        );
+		var $aucunDroit= array('test');
+		var $paginate = array(
+			'Deliberation' => array(
+				'fields' => array('Deliberation.id', 'Deliberation.objet',  'Deliberation.num_delib', 'Deliberation.dateAR' ,
+					'Deliberation.num_pref', 'Deliberation.etat', 'Deliberation.titre', 'Deliberation.tdt_id', 'Deliberation.seance_id', 'Seance.date'),
+				'conditions' => array('Deliberation.etat'=>5),
+				'limit' => 10
+			),
+		);
 
 
         function test () {
@@ -355,6 +355,8 @@ class DeliberationsController extends AppController {
 	 * @param array $delib délibération rattachée retourné par le formulaire 'edit'
 	 */
 	function _saveDelibRattachees($delibId, $delib) {
+		// initialisations
+		$newDelib = array();
 		if (!isset($delib['objet'])) {
 			$this->Session->setFlash('Libellé obligatoire.', 'growl', array('type'=>'erreur'));
 			return false;
@@ -362,7 +364,6 @@ class DeliberationsController extends AppController {
 		
 		if (isset($delib['id'])) {
 			// modification
-			$newDelib = array();
 			$newDelib['Deliberation']['id'] = $delib['id'];
 		} else {
 			// ajout
@@ -371,6 +372,21 @@ class DeliberationsController extends AppController {
 		}
 
 		$newDelib['Deliberation']['objet'] = $delib['objet'];
+		if (Configure::read('GENERER_DOC_SIMPLE')){
+			$newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
+		} else {
+			if (isset($delib['deliberation'])) {
+				$newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
+				$newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
+				$newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'] ;
+				if (empty($delib['deliberation']['tmp_name']))
+					$newDelib['Deliberation']['deliberation'] = '';
+				else {
+					$td = $this->_getFileData($delib['deliberation']['tmp_name'], $delib['deliberation']['size']);
+					$newDelib['Deliberation']['deliberation'] = $td;
+				}
+			}
+		}
 
 		if(!$this->Deliberation->save($newDelib['Deliberation'], false)) {
 			$this->Session->setFlash('Erreur lors de la sauvegarde des délibérations rattachées.', 'growl', array('type'=>'erreur'));
