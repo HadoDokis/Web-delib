@@ -22,11 +22,11 @@ if (isset($this->data['Multidelib'])) {
 				echo $html->tag('div', '', array('class'=>'spacer'));
 				// affichage texte de délibération
 				echo $html->tag('label', 'Texte délibération');
-				if (Configure::read('GENERER_DOC_SIMPLE')){
+				if (Configure::read('GENERER_DOC_SIMPLE'))
 					echo $html->tag('span', $delib['deliberation']);
-				} else {
+				else
 					echo $html->tag('span', $delib['deliberation_name']);
-				}
+				echo $html->tag('div', '', array('class'=>'spacer'));
 			echo $html->tag('/div');
 			// modification de la délibération rattachée
 			echo $html->tag('div', null, array('id'=>'delibRattacheeForm'.$delib['id'], 'style'=>'display: none'));
@@ -55,12 +55,12 @@ if (isset($this->data['Multidelib'])) {
 						echo  $form->input("Multidelib.".$delib['id'].".deliberation", array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>'Texte d&eacute;lib&eacute;ration', 'disabled'=>true));
 					else {
 						$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$delib['id']."/deliberation.odt";
-						echo '<span id="DeliberationdeliberationInputFichierJoint" style="display: none;"></span>';
-						echo '<span id="DeliberationdeliberationAfficheFichierJoint">'; 
+						echo $html->tag('span', '', array('id'=>'MultidelibDeliberationAdd'.$delib['id'], 'style'=>'display: none;'));
+						echo $html->tag('span', null, array('id'=>'MultidelibDeliberationDisplay'.$delib['id']));
 							echo "<a href='$url'>".$delib['deliberation_name']."</a>";
 							echo '&nbsp;&nbsp;';
-							echo $html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', 'deliberation', 'Texte d&eacute;lib&eacute;ration')", null, 'Voulez-vous vraiment supprimer le fichier ?');
-						echo '</span>';
+							echo $html->link('Supprimer', 'javascript:supprimerTextDelibDelibRattachee('.$delib['id'].')', null, 'Voulez-vous vraiment supprimer le fichier ?');
+						echo $html->tag('/span');
 					}
 				}
 			echo $html->tag('/div');
@@ -92,6 +92,22 @@ echo $html->tag('div', null, array('id'=>'ajouteMultiDelibTemplate', 'style'=>'w
 				'cols'=>'60','rows'=>'1',
 				'disabled'=>true));
 			echo $html->tag('div', '', array('class'=>'spacer'));
+			// saisie texte de délibération
+			echo $html->tag('label', 'Texte délibération');
+			if (Configure::read('GENERER_DOC_SIMPLE')){
+				echo '<div class="fckEditorProjet">';
+					echo $form->input('Multidelib.0.deliberation', array(
+						'label'=>'',
+						'type'=>'textarea',
+						'value'=>'',
+						'disabled'=>true));
+				echo '</div>';
+			} else
+				echo  $form->input("Multidelib.0.deliberation", array(
+					'label'=>'',
+					'type'=>'file',
+					'size'=>'60',
+					'disabled'=>true));
 		echo $html->tag('/div');
 		echo $html->tag('div', '', array('class'=>'spacer'));
 		// affichage des boutons action
@@ -117,7 +133,6 @@ var iMultiDelibAAjouter = 1000;
 // Fonction d'ajout d'une nouvelle deliberation : duplique le div ajouteMultiDelibTemplate et incrémente l'indexe
 function ajouterMultiDelib() {
 	iMultiDelibAAjouter++; 
-	var addDiv = $('#ajouteMultiDelib');
 	var newTemplate = $('#ajouteMultiDelibTemplate').clone();
 	newTemplate.attr('id', newTemplate.attr('id').replace('Template', iMultiDelibAAjouter));
 	newTemplate.find('textarea').each(function(){
@@ -130,7 +145,12 @@ function ajouterMultiDelib() {
 		$(this).attr('id', $(this).attr('id').replace('0', iMultiDelibAAjouter));
 		$(this).attr('name', $(this).attr('name').replace('0', iMultiDelibAAjouter));
 	});
-	addDiv.append(newTemplate);
+	$('#ajouteMultiDelib').append(newTemplate);
+	<?php
+	if (Configure::read('GENERER_DOC_SIMPLE')){
+		echo "$('#Multidelib'+iMultiDelibAAjouter+'Deliberation').ckeditor();\n";
+	}
+	?>
 	newTemplate.show();
 }
 
@@ -182,4 +202,12 @@ function annulerSupprimerDelibRattachee(obj, delibId) {
 	$(obj).prev().prev().prev().show();
 }
 
+// Fonction de suppression du texte de délibération sous forme de fichier joint
+function supprimerTextDelibDelibRattachee(delibId) {
+	$('#MultidelibDeliberationDisplay'+delibId).hide();
+	$('#MultidelibDeliberationAdd'+delibId)
+		.html('<input type="file" id="Multidelib'+delibId+'Deliberation" value="" title="" size="60" name="data[Multidelib]['+delibId+'][deliberation]"></input>')
+		.show();
+	
+}
 </script>
