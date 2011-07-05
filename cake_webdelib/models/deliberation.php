@@ -469,6 +469,24 @@ class Deliberation extends AppModel {
                    $oMainPart->addElement($this->_addField($champs, $u, $delib['Deliberation']['id']));
                }
 
+               @$Multi =  new GDO_IterationType("Deliberations");
+               if (!empty($delib['Multidelib'])) {
+                   foreach($delib['Multidelib'] as $multidelib ){
+                       $oDevPart = new GDO_PartType();
+                       $oDevPart->addElement(new GDO_FieldType("libelle_multi_delib", utf8_encode($multidelib['objet']), "text"));
+                       $oDevPart->addElement(new GDO_FieldType("id_multi_delib",      utf8_encode($multidelib['id']),    "text"));
+                       $Multi->addPart($oDevPart);
+                   }
+               }
+               else {
+                       $oDevPart = new GDO_PartType();
+                       $oDevPart->addElement(new GDO_FieldType("libelle_multi_delib", utf8_encode(" "), "text"));
+                       $oDevPart->addElement(new GDO_FieldType("id_multi_delib",      utf8_encode(" "),    "text"));
+                       $Multi->addPart($oDevPart);
+               }
+               @$oMainPart->addElement($Multi);
+
+
                if (Configure::read('GENERER_DOC_SIMPLE')) {
                    if (isset($delib['Deliberation']['texte_projet']))
                        $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',       '<small></small>'.$delib['Deliberation']['texte_projet']));
