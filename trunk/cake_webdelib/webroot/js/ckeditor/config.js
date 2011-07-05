@@ -6,10 +6,21 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 CKEDITOR.editorConfig = function( config )
 {
 	// Define changes to default configuration here. For example:
-	// config.language = 'fr';
-	// config.uiColor = '#AADC6E';
-       config.toolbar = 'MyToolbar';
- 
+        config.language            = 'fr';
+	config.uiColor             = '#AADC6E';
+        config.toolbar             = 'MyToolbar';
+        config.entities            = false;
+        config.basicEntities       = false;
+        config.entities_additional = false;
+        config.entities_latin      = false;
+        config.entities_greek      = false;
+
+
+        config.filebrowserBrowseUrl      = '/js/ckfinder/ckfinder.html';
+	config.filebrowserImageBrowseUrl = '/js/ckfinder/ckfinder.html?type=Images';
+	config.filebrowserUploadUrl      = '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files';
+	config.filebrowserImageUploadUrl = '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images';
+
 	config.toolbar_MyToolbar =
 	[
 		{ name: 'document', items : [ 'Source','Save', '-', 'Preview' ] },
