@@ -9,9 +9,7 @@
 <br/>
 <div>
 	<?php
-		if ($isEditable){
-	 		echo $form->input('Theme.parent_id', array('label'=>'Appartient &agrave;', 'options'=>$themes, 'default'=>$selectedTheme, 'empty'=>'', 'escape'=>false));
-		}
+	     echo $form->input('Theme.parent_id', array('label'=>'Appartient &agrave;', 'options'=>$themes, 'default'=>$selectedTheme, 'empty'=>'', 'escape'=>false));
 	?>
 </div>
 <br/><br/><br/><br/><br/>
