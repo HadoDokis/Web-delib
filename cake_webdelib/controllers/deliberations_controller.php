@@ -1869,6 +1869,8 @@ class DeliberationsController extends AppController {
                 $conditions =  $this->Filtre->conditions();
 		// lecture en base
 		$conditions['Deliberation.etat'] = 1;
+                $conditions['Deliberation.parent_id'] = null;
+
 		$ordre = 'Deliberation.created DESC';
 		$projets = $this->Deliberation->find('all', array('conditions' => $conditions,
                                                                   'order'      =>  $ordre,
@@ -1908,6 +1910,7 @@ class DeliberationsController extends AppController {
 									array('Deliberation.seance_id'=>0)
 								),
 								'AND'=>array(
+									array('Deliberation.parent_id' => null),
 									array(
 										'OR'=>array(
 											array('Deliberation.etat'=>0),
@@ -1944,6 +1947,7 @@ class DeliberationsController extends AppController {
                     $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
 		$conditions['Deliberation.etat'] = 2;
 		$conditions['Deliberation.seance_id !='] = 0;
+                $conditions['Deliberation.parent_id'] = null;
 		$projets = $this->Deliberation->find('all',array('conditions' => $conditions, 
                                                                  'order'      => 'Deliberation.created DESC',
                                                                  'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
