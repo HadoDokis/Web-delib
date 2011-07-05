@@ -36,7 +36,7 @@ class Infosup extends AppModel
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
 				$ret[$infosupdef['Infosupdef']['code']] = $infosup['text'];
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
-				$ret[$infosupdef['Infosupdef']['code']] = $infosup['content'];
+				$ret[$infosupdef['Infosupdef']['code']] = stripslashes(html_entity_decode($infosup['content']));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
 				if (empty($infosup['date']) || $infosup['date'] == '0000-00-00')
 					$ret[$infosupdef['Infosupdef']['code']] = '';
