@@ -511,61 +511,19 @@ class Deliberation extends AppModel {
                         
                    $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$dyn_path;
                    if (!empty($delib['Deliberation']['texte_projet'])) {
-                       if ($delib['Deliberation']['texte_projet_name']== "") {
-                           $nameTP = "vide";
-                           $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',''));
-                       }
-                       else {
-                           $infos = (pathinfo($delib['Deliberation']['texte_projet_name']));
-                           $nameTP = 'tp.'.$infos['extension'];
-                           $this->Gedooo->createFile($path, $nameTP, $delib['Deliberation']['texte_projet']);
-                           $extTP = $u->getMimeType($path.$nameTP);
-                           $oMainPart->addElement(new GDO_ContentType('texte_projet',       '',  $extTP,    'url', $urlWebroot.$nameTP ));
-                       } 
+                       $oMainPart->addElement(new GDO_ContentType('texte_projet', 'text_projet.odt' ,'application/vnd.oasis.opendocument.text',  'binary', $delib['Deliberation']['texte_projet']));
                   }
                   if (!empty($delib['Deliberation']['deliberation'])) {
-                      if ($delib['Deliberation']['deliberation_name']=="")
-                          $nameTD = "vide";
-                       else{
-                           $infos = (pathinfo($delib['Deliberation']['deliberation_name']));
-                           $nameTD = 'td.'.$infos['extension'];
-                           $this->Gedooo->createFile($path, $nameTD, $delib['Deliberation']['deliberation']);
-                           $extTD  = $u->getMimeType($path.$nameTD);
-                           $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '',  $extTD ,   'url', $urlWebroot.$nameTD));
-                       }
+                      $oMainPart->addElement(new GDO_ContentType('texte_deliberation', 'td.odt', 'application/vnd.oasis.opendocument.text' ,   'binary', $delib['Deliberation']['deliberation']));
                   } 
                   if (!empty($delib['Deliberation']['texte_synthese'])) {
-                      if ($delib['Deliberation']['texte_synthese_name']=="")
-                          $nameNS = "vide";
-                       else {
-                           $infos = (pathinfo($delib['Deliberation']['texte_synthese_name']));
-                           $nameNS = 'ns.'.$infos['extension'];
-                           $this->Gedooo->createFile($path, $nameNS,  $delib['Deliberation']['texte_synthese']);
-                           $extNS   = $u->getMimeType($path.$nameNS);
-                           $oMainPart->addElement(new GDO_ContentType('note_synthese',      '',  $extNS ,   'url', $urlWebroot.$nameNS));
-                       }
+                      $oMainPart->addElement(new GDO_ContentType('note_synthese', 'ns.odt', 'application/vnd.oasis.opendocument.text' , 'binary', $delib['Deliberation']['texte_synthese']));
                    }
                    if (!empty($delib['Deliberation']['debat'])) {
-                       if ($delib['Deliberation']['debat_name']=="")
-                           $nameDebat = "debat";
-                       else {
-                           $infos = (pathinfo($delib['Deliberation']['debat_name']));
-                           $nameDebat = 'debat.'.$infos['extension'];
-                           $this->Gedooo->createFile($path,  $nameDebat,  $delib['Deliberation']['debat']);
-                           $extDebat =  $u->getMimeType($path.$nameDebat);
-                           $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '',  $extDebat, 'url', $urlWebroot.$nameDebat));
-                       }
+                       $oMainPart->addElement(new GDO_ContentType('debat_deliberation', 'debat.odt',  'application/vnd.oasis.opendocument.text' , 'binary' , $delib['Deliberation']['debat']));
                    }
                    if (!empty($delib['Deliberation']['commission'])) {
-                       if ($delib['Deliberation']['commission_name']=="")
-                           $nameCommission = "commission";
-                       else {
-                           $infos = (pathinfo($delib['Deliberation']['commission_name']));
-                           $nameCommission = 'commission.'.$infos['extension'];
-                           $this->Gedooo->createFile($path,  $nameCommission,  $delib['Deliberation']['commission']);
-                           $extCommi =  $u->getMimeType($path.$nameCommission);
-                           $oMainPart->addElement(new GDO_ContentType('debat_commission', '',  $extCommi, 'url', $urlWebroot.$nameCommission));
-                       }
+                       $oMainPart->addElement(new GDO_ContentType('debat_commission', 'debat_commission.odt',  'application/vnd.oasis.opendocument.text', 'binary', $delib['Deliberation']['commission']));
                    }
 
                }
@@ -835,17 +793,8 @@ class Deliberation extends AppModel {
              elseif ($champs['date'] != '0000-00-00')
                  return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
              elseif ($champs['file_size'] != 0 ) {
-
-                 $dyn_path = "/files/generee/deliberations/".$delib_id."/";
-                 $path = WEBROOT_PATH.$dyn_path;
-                 $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
-                 $infos = (pathinfo($champs['file_name']));
-                // $name = time().'.'.$infos['extension'];
-                 $name = $champs['file_name'];
-                 $name = utf8_decode(str_replace(" ", "_", $name));
-                 $this->Gedooo->createFile($path, $name, $champs['content']);
-                 $ext = $u->getMimeType($path.$name);
-                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', $ext , 'url', $urlWebroot.$name));
+                 $name = utf8_decode(str_replace(" ", "_", $champs['file_name']));
+                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', $champ['content']));
              }
              elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', 'text/html', 'text', '<small></small>'.$champs['content']));
