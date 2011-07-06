@@ -152,3 +152,9 @@ ALTER TABLE `annexes` ADD `data_pdf` MEDIUMBLOB NOT NULL AFTER `data` ;
 -- modification de la table deliberations
 --
 ALTER TABLE `deliberations` ADD `parent_id` INT( 11 ) NULL AFTER `anterieure_id`;
+
+
+--
+-- modification de la table 'annexes'
+--
+ALTER TABLE `annexes` ADD `filename_pdf` varchar(75) NOT NULL AFTER data;
