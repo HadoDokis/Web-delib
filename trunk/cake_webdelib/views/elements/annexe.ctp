@@ -4,21 +4,24 @@ echo $html->tag('table', null, array('id'=>'afficheAnnexes', 'cellpadding'=>'0',
 echo $html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Action'));
 if (isset($this->data['Annex'])) {
 	foreach ($this->data['Annex'] as $rownum => $annexe) { 
-		$pos = strpos($annexe['filetype'],  'vnd.oasis.opendocument');
-
 		$rowClass = ($rownum+1 & 1) ? array( 'height' => '36px', 'id'=>'afficheAnnexe'.$annexe['id'])
 									: array( 'height' => '36px', 'class'=>'altrow', 'id'=>'afficheAnnexe'.$annexe['id']);
 
 		echo $html->tag('tr', null,  $rowClass);
 		echo $html->tag('td', $rownum+1);
 		echo $html->tag('td');
-		if ($pos !== false)
-			$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
-		else
-			$url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
-		echo  $html->link($annexe['filename'] , $url, array('onClick'=>'modifierAnnexe(this, '.$annexe['id'].')'));
-		if (($pos !== false) && (strlen($annexe['filename_pdf']) > 0)) 
-			echo ' '.$html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/1' );
+			$pos = strpos($annexe['filetype'], 'vnd.oasis.opendocument');
+			// lien de téléchargement de l'annexe
+			echo $html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier'));
+			// lien de téléchargement de la version pdf de l'annexe
+			if (($pos !== false) && (strlen($annexe['filename_pdf']) > 0)) 
+				echo ' '.$html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/1' );
+
+//			if ($pos !== false)
+//				$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
+//			else
+//	//			$url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
+//	//		echo  $html->link($annexe['filename'] , $url, array('onClick'=>'modifierAnnexe(this, '.$annexe['id'].')'));
 		echo $html->tag('/td');
 		echo $html->tag('td');
 		echo $html->tag('span', $annexe['titre'], array(
