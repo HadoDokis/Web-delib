@@ -338,10 +338,11 @@ class DeliberationsController extends AppController {
 			$newAnnexe['Annex']['filetype'] = $annexe['file']['type'];
 			$newAnnexe['Annex']['size'] = $annexe['file']['size'];
 			$newAnnexe['Annex']['data'] = $this->_getFileData($annexe['file']['tmp_name'], $annexe['file']['size']);
-                        $pos = strpos($newAnnexe['Annex']['filetype'],  'vnd.oasis.opendocument'); 
-                        if ($pos !== false) {
-                            $newAnnexe['Annex']['data_pdf'] = $this->Conversion->convertirFichier($annexe['file']['tmp_name'], 'pdf');
-                        }
+			$pos = strpos($newAnnexe['Annex']['filetype'],  'vnd.oasis.opendocument'); 
+			if ($pos !== false) {
+				$newAnnexe['Annex']['data_pdf'] = $this->Conversion->convertirFichier($annexe['file']['tmp_name'], 'pdf');
+				$newAnnexe['Annex']['filename_pdf'] = $annexe['file']['name'].'.pdf';
+			}
                           
 			if(!$this->Annex->save($newAnnexe['Annex']))
 				$this->Session->setFlash('Erreur lors de la sauvegarde des annexes.', 'growl', array('type'=>'erreur'));
@@ -416,7 +417,24 @@ class DeliberationsController extends AppController {
 		$path_projet = $path."webroot/files/generee/projet/$id/";
 
 		if (empty($this->data)) {
-			$this->data = $this->Deliberation->find('first',array('conditions'=>array('Deliberation.id'=> $id)));
+			$this->Deliberation->Behaviors->attach('Containable');
+			$this->data = $this->Deliberation->find('first', array(
+				'contain'=>array(
+					'Annex.id', 'Annex.filetype', 'Annex.foreign_key', 'Annex.filename', 'Annex.filename_pdf', 'Annex.titre', 'Annex.joindre_ctrl_legalite',
+					'Infosup'),
+				'conditions'=>array('Deliberation.id'=> $id)));
+			if (Configure::read('DELIBERATIONS_MULTIPLES')) {
+				$this->Deliberation->Multidelib->Behaviors->attach('Containable');
+				$multiDelibs = $this->Deliberation->Multidelib->find('all', array(
+					'fields' => array('Multidelib.id', 'Multidelib.objet', /*'Multidelib.deliberation',*/ 'Multidelib.deliberation_name'),
+					'contain' => array('Annex.id', 'Annex.filename'),
+					'conditions' => array('Multidelib.parent_id'=>$id)));
+				foreach($multiDelibs as $imd => $multiDelib) {
+					$this->data['Multidelib'][$imd] = $multiDelib['Multidelib'];
+					$this->data['Multidelib'][$imd]['Annex'] = $multiDelib['Annex'];
+				}
+			}
+
 			$natures =  array_keys($this->Session->read('user.Nature'));
 			if (!in_array($this->data['Deliberation']['nature_id'], $natures)){
 				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
@@ -455,7 +473,7 @@ class DeliberationsController extends AppController {
 
 			$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
 			$this->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
-			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Service']['id']);
+			$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Deliberation']['service_id']);
 
 			$this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
 			$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
@@ -562,33 +580,17 @@ class DeliberationsController extends AppController {
 				}
 				// sauvegarde des annexes
 				if (array_key_exists('Annex', $this->data))
-					foreach($this->data['Annex'] as $annexe) 
-                                            $this->_saveAnnexe($id, $annexe);
+					foreach($this->data['Annex'] as $annexe) $this->_saveAnnexe($id, $annexe);
 				// suppression des annexes
 				if (array_key_exists('AnnexesASupprimer', $this->data))
 					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
 				// modification des annexes
-				if (array_key_exists('AnnexesAModifier', $this->data)) {
-                                    foreach($this->data['AnnexesAModifier'] as $annexeId=>$annexe) {
-                                      
-                                        $annex_filename = $this->Annex->find('first', array('conditions' => array('Annex.id' =>  $annexeId),
-                                                                                            'fields'     => array ('filename', 'filetype'),
-                                                                                            'recursive'  => -1));
-                                        $url  = WEBROOT_PATH."/files/generee/projet/".$this->data['Deliberation']['id']."/".$annex_filename['Annex']['filename'];
-                                        $pos = strpos($annex_filename['Annex']['filetype'],  'vnd.oasis.opendocument');
-                                        if ($pos !== false) 
-                                           $data_pdf = $this->Conversion->convertirFichier($url, 'pdf');
-
-                                        $data =  file_get_contents($url); 
-                                        $this->Annex->save(array( 'id'                    => $annexeId,
-							          'titre'                 => $annexe['titre'],
-							          'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
-                                                                  'data'                  => $data,
-                                                                  'data_pdf'              => $data_pdf
-                                                                  ));
-                                         }
-                                         
-                                }
+				if (array_key_exists('AnnexesAModifier', $this->data))
+					foreach($this->data['AnnexesAModifier'] as $annexeId=>$annexeCtrl)
+						$this->Annex->save(array(
+							'id'=>$annexeId,
+							'titre'=>$annexe['titre'],
+							'joindre_ctrl_legalite'=>$annexe['joindre_ctrl_legalite']));                                      
 
 				// sauvegarde des délibérations rattachées
 				if (array_key_exists('Multidelib', $this->data))
@@ -1075,8 +1077,8 @@ class DeliberationsController extends AppController {
 
  		$tab = array();
 		$xml = @simplexml_load_file(Configure::read('FILE_CLASS'));
-                if ($xml===false)
-                    return false;
+		if ($xml===false)
+			return false;
 		$namespaces = $xml->getDocNamespaces();
 		$xml=$xml->children($namespaces["actes"]);
 
