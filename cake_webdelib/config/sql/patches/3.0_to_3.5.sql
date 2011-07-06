@@ -158,3 +158,4 @@ ALTER TABLE `deliberations` ADD `parent_id` INT( 11 ) NULL AFTER `anterieure_id`
 -- modification de la table 'annexes'
 --
 ALTER TABLE `annexes` ADD `filename_pdf` varchar(75) NOT NULL AFTER data;
+UPDATE `annexes` SET filename_pdf = concat(filename,'.pdf') WHERE LENGTH(data_pdf) > 0;
