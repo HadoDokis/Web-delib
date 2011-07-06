@@ -585,12 +585,26 @@ class DeliberationsController extends AppController {
 				if (array_key_exists('AnnexesASupprimer', $this->data))
 					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
 				// modification des annexes
-				if (array_key_exists('AnnexesAModifier', $this->data))
-					foreach($this->data['AnnexesAModifier'] as $annexeId=>$annexe)
+				if (array_key_exists('AnnexesAModifier', $this->data)) {
+					foreach($this->data['AnnexesAModifier'] as $annexeId => $annexe) {
+						$annex_filename = $this->Annex->find('first', array(
+							'recursive' => -1,
+							'fields' => array ('filename', 'filetype'),
+							'conditions' => array('Annex.id' => $annexeId)));
+						$url = WEBROOT_PATH."/files/generee/projet/".$this->data['Deliberation']['id']."/".$annex_filename['Annex']['filename'];
+						$pos = strpos($annex_filename['Annex']['filetype'],  'vnd.oasis.opendocument');
+						if ($pos !== false)
+							$data_pdf = $this->Conversion->convertirFichier($url, 'pdf');
+
+						$data =  file_get_contents($url);
 						$this->Annex->save(array(
-							'id'=>$annexeId,
-							'titre'=>$annexe['titre'],
-							'joindre_ctrl_legalite'=>$annexe['joindre_ctrl_legalite']));                                      
+							'id' => $annexeId,
+							'titre' => $annexe['titre'],
+							'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
+							'data' => $data,
+							'data_pdf' => $data_pdf));
+					}
+				}
 
 				// sauvegarde des délibérations rattachées
 				if (array_key_exists('Multidelib', $this->data))
