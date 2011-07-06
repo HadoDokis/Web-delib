@@ -17,7 +17,7 @@ if (isset($this->data['Annex'])) {
 		else
 			$url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
 		echo  $html->link($annexe['filename'] , $url, array('onClick'=>'modifierAnnexe(this, '.$annexe['id'].')'));
-		if (($pos !== false) && (strlen($annexe['data_pdf']) > 0)) 
+		if (($pos !== false) && (strlen($annexe['filename_pdf']) > 0)) 
 			echo ' '.$html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/1' );
 		echo $html->tag('/td');
 		echo $html->tag('td');
