@@ -12,16 +12,18 @@ if (isset($this->data['Annex'])) {
 		echo $html->tag('td');
 			$pos = strpos($annexe['filetype'], 'vnd.oasis.opendocument');
 			// lien de téléchargement de l'annexe
-			echo $html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier'));
+			echo $html->tag('span', $html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
 			// lien de téléchargement de la version pdf de l'annexe
 			if (($pos !== false) && (strlen($annexe['filename_pdf']) > 0)) 
-				echo ' '.$html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/1' );
-
-//			if ($pos !== false)
-//				$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
-//			else
-//	//			$url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
-//	//		echo  $html->link($annexe['filename'] , $url, array('onClick'=>'modifierAnnexe(this, '.$annexe['id'].')'));
+				echo $html->tag('span', ' '.$html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/1', array('title'=>'Télécharger le fichier')));
+			// lien de modification de l'annexe en webdav si texte opendocument
+			if ($pos !== false) {
+				$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
+				echo  $html->link('modifier : '.$annexe['filename'] , $url, array(
+					'id'=>'urlWebdavAnnexe'.$annexe['id'],
+					'style'=>'display:none;',
+					'title'=>'Modifier le fichier'));
+			}
 		echo $html->tag('/td');
 		echo $html->tag('td');
 		echo $html->tag('span', $annexe['titre'], array(
@@ -139,6 +141,7 @@ function modifierAnnexe(obj, annexeId) {
 		$(this).removeAttr('disabled');
 		$(this).show();
 	});
+	$('#urlWebdavAnnexe'+annexeId).show();
 
 	$('#afficheAnnexe'+annexeId).addClass('aModifier');
 
@@ -160,6 +163,7 @@ function annulermodifierAnnexe(obj, annexeId) {
 		$(this).attr('disabled', 'disabled');
 		$(this).hide();
 	});
+	$('#urlWebdavAnnexe'+annexeId).hide();
 
 	trObj.removeClass('aModifier');
 
