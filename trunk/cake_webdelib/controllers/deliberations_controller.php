@@ -586,7 +586,7 @@ class DeliberationsController extends AppController {
 					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
 				// modification des annexes
 				if (array_key_exists('AnnexesAModifier', $this->data))
-					foreach($this->data['AnnexesAModifier'] as $annexeId=>$annexeCtrl)
+					foreach($this->data['AnnexesAModifier'] as $annexeId=>$annexe)
 						$this->Annex->save(array(
 							'id'=>$annexeId,
 							'titre'=>$annexe['titre'],
