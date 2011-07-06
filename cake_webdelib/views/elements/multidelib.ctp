@@ -27,6 +27,14 @@ if (isset($this->data['Multidelib'])) {
 				else
 					echo $html->tag('span', $delib['deliberation_name']);
 				echo $html->tag('div', '', array('class'=>'spacer'));
+				// affichage des annexes
+				echo $html->tag('label', 'Annexes');
+				if (isset($delib['Annex'])) {
+					foreach($delib['Annex'] as $annexe) {
+debug($annexe);
+					}
+				}
+				echo $html->tag('div', '', array('class'=>'spacer'));
 			echo $html->tag('/div');
 			// modification de la délibération rattachée
 			echo $html->tag('div', null, array('id'=>'delibRattacheeForm'.$delib['id'], 'style'=>'display: none'));
