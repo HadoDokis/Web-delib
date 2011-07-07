@@ -233,7 +233,9 @@ class DeliberationsController extends AppController {
 					$this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $delibId);
 				/* sauvegarde des annexes */
 				if (array_key_exists('Annex', $this->data))
-					foreach($this->data['Annex'] as $annexe) $this->_saveAnnexe($delibId, $annexe);
+					foreach($this->data['Annex'] as $annexe) {
+						if ($annexe['ref'] == 'delibPrincipale') $this->_saveAnnexe($delibId, $annexe);
+					}
 				// sauvegarde des délibérations rattachées
 				if (array_key_exists('Multidelib', $this->data))
 					foreach($this->data['Multidelib'] as $multidelib) $this->_saveDelibRattachees($delibId, $multidelib);
@@ -426,15 +428,14 @@ class DeliberationsController extends AppController {
 			if (Configure::read('DELIBERATIONS_MULTIPLES')) {
 				$this->Deliberation->Multidelib->Behaviors->attach('Containable');
 				$multiDelibs = $this->Deliberation->Multidelib->find('all', array(
-					'fields' => array('Multidelib.id', 'Multidelib.objet', /*'Multidelib.deliberation',*/ 'Multidelib.deliberation_name'),
-					'contain' => array('Annex.id', 'Annex.filename'),
+					'fields' => array('Multidelib.id', 'Multidelib.objet', 'Multidelib.deliberation', 'Multidelib.deliberation_name'),
+					'contain' => array('Annex.id', 'Annex.filetype', 'Annex.foreign_key', 'Annex.filename', 'Annex.filename_pdf', 'Annex.titre', 'Annex.joindre_ctrl_legalite'),
 					'conditions' => array('Multidelib.parent_id'=>$id)));
 				foreach($multiDelibs as $imd => $multiDelib) {
 					$this->data['Multidelib'][$imd] = $multiDelib['Multidelib'];
 					$this->data['Multidelib'][$imd]['Annex'] = $multiDelib['Annex'];
 				}
 			}
-
 			$natures =  array_keys($this->Session->read('user.Nature'));
 			if (!in_array($this->data['Deliberation']['nature_id'], $natures)){
 				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
@@ -574,13 +575,15 @@ class DeliberationsController extends AppController {
 						}
 					}
 				}
-
 				if (array_key_exists('Infosup', $this->data)) {
 				    $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
 				}
-				// sauvegarde des annexes
+
+				// sauvegarde des nouvelles annexes
 				if (array_key_exists('Annex', $this->data))
-					foreach($this->data['Annex'] as $annexe) $this->_saveAnnexe($id, $annexe);
+					foreach($this->data['Annex'] as $annexe) {
+						if ($annexe['ref'] == 'delibPrincipale') $this->_saveAnnexe($id, $annexe);
+					}
 				// suppression des annexes
 				if (array_key_exists('AnnexesASupprimer', $this->data))
 					foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
@@ -595,8 +598,9 @@ class DeliberationsController extends AppController {
 						$pos = strpos($annex_filename['Annex']['filetype'],  'vnd.oasis.opendocument');
 						if ($pos !== false)
 							$data_pdf = $this->Conversion->convertirFichier($url, 'pdf');
-
-						$data =  file_get_contents($url);
+						else
+							$data_pdf = null;
+						$data = file_get_contents($url);
 						$this->Annex->save(array(
 							'id' => $annexeId,
 							'titre' => $annexe['titre'],
