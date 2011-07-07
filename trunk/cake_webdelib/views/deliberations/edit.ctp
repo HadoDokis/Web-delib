@@ -91,7 +91,13 @@
 </div>
 
 <div id="tab3" style="display: none;">
-    <?php echo $this->element('annexe');?>
+	<?php
+	$annexeOptions = array('ref' => 'delibPrincipale');
+	if (isset($this->data['Annex'])) $annexeOptions['annexes'] = $this->data['Annex'];
+   	echo $this->element('annexe', $annexeOptions);
+	echo $html->tag('div', '', array('class'=>'spacer'));
+	echo $html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
+   	?>
 </div>
 
 <?php if (!empty($infosupdefs)): ?>
