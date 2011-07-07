@@ -11,7 +11,7 @@ $links = array(
 if (isset($this->data['Multidelib'])) {
 	foreach($this->data['Multidelib'] as $i=>$delib) {
 		echo $html->tag('fieldset', null, array('id'=>'delibRattachee'.$delib['id']));
-		echo $html->tag('legend', 'Délibération rattachée #'.($i+1));
+		echo $html->tag('legend', '&nbsp;Délibération rattachée : '.$delib['id'].'&nbsp;');
 			// info pour la suppression
 			echo $form->hidden('MultidelibASupprimer.'.$delib['id'], array('value'=>$delib['id'], 'disabled'=>true));
 			// affichage de la délibération rattachée
@@ -28,12 +28,13 @@ if (isset($this->data['Multidelib'])) {
 					echo $html->tag('span', $delib['deliberation_name']);
 				echo $html->tag('div', '', array('class'=>'spacer'));
 				// affichage des annexes
-				echo $html->tag('label', 'Annexes');
-				if (isset($delib['Annex'])) {
-					foreach($delib['Annex'] as $annexe) {
-debug($annexe);
-					}
-				}
+				echo $html->tag('label', 'Annexe(s)');
+				echo '<div class="fckEditorProjet">';
+					if (isset($delib['Annex']))
+						echo $this->element('annexe', array('annexes'=>$delib['Annex'], 'mode'=>'display'));
+					else
+						echo $this->element('annexe', array('mode'=>'display'));
+				echo '</div>';
 				echo $html->tag('div', '', array('class'=>'spacer'));
 			echo $html->tag('/div');
 			// modification de la délibération rattachée
@@ -71,6 +72,16 @@ debug($annexe);
 						echo $html->tag('/span');
 					}
 				}
+				echo $html->tag('div', '', array('class'=>'spacer'));
+				// saisie des annexes
+				echo $html->tag('label', 'Annexe(s)');
+				echo '<div class="fckEditorProjet">';
+					if (isset($delib['Annex']))
+						echo $this->element('annexe', array('annexes'=>$delib['Annex']));
+					else
+						echo $this->element('annexe', array());
+				echo '</div>';
+				
 			echo $html->tag('/div');
 			echo $html->tag('div', '', array('class'=>'spacer'));
 			// affichage des boutons action
@@ -82,6 +93,7 @@ debug($annexe);
 				echo $menu->linkBarre($links);
 			echo $html->tag('/div');
 		echo $html->tag('/fieldset');
+		echo $html->tag('div', '', array('class'=>'spacer'));
 	}
 }
 
@@ -130,7 +142,7 @@ echo $html->tag('div', '', array('id'=>'ajouteMultiDelib'));
 
 // lien pour ajouter une nouvelle délibération rattachée
 echo $html->tag('div', '', array('class'=>'spacer'));
-echo $html->link('Ajouter une nouvelle délibération rattachée', 'javascript:ajouterMultiDelib()', array('class'=>'link_annexe'));
+echo $html->link('Ajouter une délibération rattachée', 'javascript:ajouterMultiDelib()', array('class'=>'link_annexe'));
 echo $html->tag('div', '', array('class'=>'spacer'));
 echo $html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
 ?>
