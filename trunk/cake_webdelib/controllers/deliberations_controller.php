@@ -395,7 +395,7 @@ class DeliberationsController extends AppController {
 			$this->Session->setFlash('Erreur lors de la sauvegarde des délibérations rattachées.', 'growl', array('type'=>'erreur'));
 			return false;
 		}
-		return true;
+		return $this->Deliberation->id;
 	}
 
 	function _PositionneDelibsSeance($seance_id, $position) {
@@ -610,9 +610,15 @@ class DeliberationsController extends AppController {
 					}
 				}
 
-				// sauvegarde des délibérations rattachées
+				// sauvegarde des délibérations rattachées et des nouvelles annexes
 				if (array_key_exists('Multidelib', $this->data))
-					foreach($this->data['Multidelib'] as $multidelib) $this->_saveDelibRattachees($id, $multidelib);
+					foreach($this->data['Multidelib'] as $iref => $multidelib) {
+						$delibRattacheeId = $this->_saveDelibRattachees($id, $multidelib);
+						// sauvegarde des nouveaux annexes pour cette delib rattachée
+						foreach($this->data['Annex'] as $annexe)
+							if ($annexe['ref'] == 'delibRattachee'.$iref) $this->_saveAnnexe($delibRattacheeId, $annexe);
+					}
+
 				// suppression des délibérations rattachées
 				if (array_key_exists('MultidelibASupprimer', $this->data))
 					foreach($this->data['MultidelibASupprimer'] as $delibId) {
