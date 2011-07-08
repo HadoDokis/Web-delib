@@ -179,7 +179,6 @@ function modifierDelibRattachee(obj, delibId) {
 	$('#Multidelib'+delibId+'Id').removeAttr('disabled');
 	$('#Multidelib'+delibId+'Objet').removeAttr('disabled').show();
 	$('#Multidelib'+delibId+'Deliberation').removeAttr('disabled').show();
-//	$('#delibRattacheeForm'+delibId+' :input').removeAttr('disabled').show();
 	if ($('#Multidelib'+delibId+'Deliberation').length)
 		$('#Multidelib'+delibId+'Deliberation').ckeditor();
 	
@@ -191,11 +190,27 @@ function modifierDelibRattachee(obj, delibId) {
 // Fonction d'annulation des modifications d'une délibération rattachée
 function annulerModifierDelibRattachee(obj, delibId) {
 	$('#delibRattacheeDisplay'+delibId).show();
-	$('#delibRattacheeForm'+delibId).hide();
 
-	$('#delibRattacheeForm'+delibId+' :input').attr('disabled', true);
+	$('#delibRattacheeForm'+delibId).hide();
+	$('#Multidelib'+delibId+'Id').attr('disabled', true);
+	$('#Multidelib'+delibId+'Objet').attr('disabled', true);
+	$('#Multidelib'+delibId+'Deliberation').attr('disabled', true);
 	if ($('#Multidelib'+delibId+'Deliberation').length)
 		$('#Multidelib'+delibId+'Deliberation').ckeditor(function(){this.destroy();});
+
+	var tabAnnexe = $('#tableAnnexedelibRattachee'+delibId);
+	tabAnnexe.find('tr').each(function() {
+		if ($(this).hasClass('aSupprimer')) {
+			var annexeId = $(this).attr('annexe_id');
+			var boutonAnnulerSupprimer = $(this).find('.link_supprimer_back');
+			annulerSupprimerAnnexe(boutonAnnulerSupprimer, annexeId);
+		}
+		if($(this).hasClass('aModifier')) {
+			var annexeId = $(this).attr('annexe_id');
+			var boutonAnnulerModifier = $(this).find('.link_modifier_back');
+			annulerModifierAnnexe(boutonAnnulerModifier, annexeId);
+		}
+	})
 
 	$(obj).hide();
 	$(obj).prev().show();
