@@ -2,15 +2,17 @@
 /*
 	Gestion des annexes : affichage, modification, suppression
 	Paramètres :
+		string	$mode = 'edit' : mode édition ('edit') ou affichage ('display'), dans ce dernier cas, les autres paramètres ne sont pas ovligatoires
 		string	$ref : référence d'appartenance des annexes pour les nouvelles annexes (delibPrincipale, delibRattachee1, delibRattachee2, ...)
 		array	$annexes = array() : liste des annexes a afficher
-		string	$mode = 'edit' : mode édition ('edit') ou affichage ('display')
+		boolean	$affichage = 'complet' : 'complet', affiche tout, y compris le javascript, 'partiel' affiche uniquement le nécessaire pour ne pas répéter des élements du dom
 */
 
 // Initialisation des paramètres
-if (empty($ref)) return; 
-if (empty($annexes)) $annexes = array();
 if (empty($mode)) $mode = 'edit';
+if ($mode == 'edit' && empty($ref)) return; 
+if (empty($annexes)) $annexes = array();
+if (empty($affichage)) $affichage = 'complet';
 
 // affichage des annexes
 echo $html->tag('table', null, array('cellpadding'=>'0', 'cellspacing'=>'0', 'width'=> '100%'));
@@ -100,40 +102,46 @@ echo $html->tag('div', '', array('class'=>'spacer'));
 if ($mode != 'edit') return;
 
 // div pour la suppression des annexes
-echo $html->tag('div', '', array('id'=>'supprimeAnnexes'));
+if ($affichage == 'complet')
+	echo $html->tag('div', '', array('id'=>'supprimeAnnexes'));
 
 // template pour l'ajout des annexes
-echo $html->tag('div', null, array('id'=>'ajouteAnnexeTemplate', 'style'=>'width:800px; display:none;'));
-	echo $html->tag('fieldset');
-	echo $html->tag('legend', 'Nouvelle annexe');
-		echo $form->hidden('Annex.0.ref', array('disabled'=>'disabled', 'value'=>$ref));
-		echo $form->input('Annex.0.file', array('label'=>'Annexe<acronym title="obligatoire">(*)</acronym>', 'type'=>'file', 'size' => '80', 'disabled'=>'disabled'));
-		echo $html->tag('div', '', array('class'=>'spacer'));
-		echo $form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '60', 'disabled'=>'disabled'));
-		echo $html->tag('div', '', array('class'=>'spacer'));
-		echo $form->input('Annex.0.ctrl', array('label'=>'Joindre ctrl légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
-		echo $html->tag('div', '', array('class'=>'spacer'));
-		echo $html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
-	echo $html->tag('/fieldset');
-echo $html->tag('/div');
+if ($affichage == 'complet') {
+	echo $html->tag('div', null, array('id'=>'ajouteAnnexeTemplate', 'style'=>'width:800px; display:none;'));
+		echo $html->tag('fieldset');
+		echo $html->tag('legend', 'Nouvelle annexe');
+			echo $form->hidden('Annex.0.ref', array('disabled'=>'disabled'));
+			echo $form->input('Annex.0.file', array('label'=>'Annexe<acronym title="obligatoire">(*)</acronym>', 'type'=>'file', 'size' => '80', 'disabled'=>'disabled'));
+			echo $html->tag('div', '', array('class'=>'spacer'));
+			echo $form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '60', 'disabled'=>'disabled'));
+			echo $html->tag('div', '', array('class'=>'spacer'));
+			echo $form->input('Annex.0.ctrl', array('label'=>'Joindre ctrl légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
+			echo $html->tag('div', '', array('class'=>'spacer'));
+			echo $html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
+		echo $html->tag('/fieldset');
+	echo $html->tag('/div');
+}
 
 // div pour l'ajout des annexes
-echo $html->tag('div', '', array('id'=>'ajouteAnnexes'));
+echo $html->tag('div', '', array('id'=>'ajouteAnnexes'.$ref));
 
 // lien pour ajouter une nouvelle annexes
 echo $html->tag('div', '', array('class'=>'spacer'));
-echo $html->link('Ajouter une annexe', 'javascript:ajouterAnnexe()', array('class'=>'link_annexe'));
+echo $html->link('Ajouter une annexe', 'javascript:ajouterAnnexe(\''.$ref.'\')', array('class'=>'link_annexe'));
+
+if ($affichage != 'complet') return;
 ?>
 <script>
 // variables globales
 var nbAnnexeAAjouter = 0;
 
 // Fonction d'ajout d'une nouvelle annexe : duplique le div ajouteAnnexeTemplate et incrémente l'indexe
-function ajouterAnnexe() {
+function ajouterAnnexe(ref) {
 	nbAnnexeAAjouter++; 
-	var addDiv = $('#ajouteAnnexes');
+	var addDiv = $('#ajouteAnnexes'+ref);
 	var newTemplate = $('#ajouteAnnexeTemplate').clone();
 	newTemplate.attr('id', newTemplate.attr('id').replace('Template', nbAnnexeAAjouter));
+	newTemplate.find('#Annex0Ref').val(ref);
 	newTemplate.find('input').each(function(){
 		$(this).removeAttr('disabled');
 		$(this).attr('id', $(this).attr('id').replace('0', nbAnnexeAAjouter));
