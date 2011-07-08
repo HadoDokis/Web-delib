@@ -709,37 +709,54 @@ class DeliberationsController extends AppController {
 	}
 
 	function delete($id = null) {
-		$delib = $this->Deliberation->read(null, $id);
+		$delib = $this->Deliberation->find('first', array(
+			'recursive' => -1,
+			'fields' => array('id', 'seance_id'),
+			'conditions' => array('Deliberation.id' => $id)));
+
 		if (empty($delib)) {
 			$this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible', 'growl', array('type'=>'erreur'));
 		} else {
-                    // Suppression des projets antérieurs potentiels
-                    $this->_delAnteProjet($id);
-                    
-                    $repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$id.DS;
-                    if (is_dir($repFichier)) 
-                        $this->_rmDir($repFichier);
-                    // Il faut reclasser toutes les delibs de la seance
-                    if (!empty($delib['Deliberation']['seance_id']))
-                        $this->_PositionneDelibsSeance($delib['Deliberation']['seance_id'], $delib['Deliberation']['position'] );
+			$this->_delRecursive($id);
 
-                    $this->Session->setFlash('Le projet \''.$id.'\' a &eacute;t&eacute; supprim&eacute;.', 'growl');
+			// Il faut reclasser toutes les delibs de la seance
+			if (!empty($delib['Deliberation']['seance_id']))
+				$this->_PositionneDelibsSeance($delib['Deliberation']['seance_id'], $delib['Deliberation']['position'] );
+
+			$this->Session->setFlash('Le projet \''.$id.'\' a &eacute;t&eacute; supprim&eacute;.', 'growl');
 		}
 		$this->redirect('/deliberations/mesProjetsRedaction');
 	}
 
-    function _delAnteProjet($delib_id) { 
-        $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
-                                                          'fields'     => array('id', 'anterieure_id'),
-                                                          'recursive'  => -1    ));
-        if ($this->Deliberation->del($delib_id)) {
-            if ( $delib['Deliberation']['anterieure_id'] != 0){
-                $this->_delAnteProjet($delib['Deliberation']['anterieure_id']);
-            }
-            else
-                return true;
-        }
-    }
+/**
+ * fonction récursive de suppression de la délibération, de ses versions antérieures et de ses délibérations rattachées
+ * @param integer $delibId id de la délib à supprimer
+ */
+	function _delRecursive($delibId) {
+		$this->Deliberation->Behaviors->attach('Containable');
+        $delib = $this->Deliberation->find('first', array(
+        	'contain' => array('Multidelib.id'),
+			'fields' => array('id', 'anterieure_id'),
+			'conditions' => array('Deliberation.id' => $delibId)));
+		if (empty($delib)) return;
+
+		// suppression de la délib elle même
+		$this->Deliberation->del($delibId);
+		// suppression du répertoire des docs
+		$repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
+		$this->_rmDir($repFichier);
+
+		// suppression des délib rattachées
+		foreach($delib['Multidelib'] as $multiDelib) {
+			$this->Deliberation->del($multiDelib['id']);
+			// suppression du répertoire des docs
+			$repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$multiDelib['id'].DS;
+			$this->_rmDir($repFichier);
+		}
+		// suppression des délib antérieures
+		if ( $delib['Deliberation']['anterieure_id'] != 0)
+			$this->_delRecursive($delib['Deliberation']['anterieure_id']);
+	}
 
     function addIntoCircuit($id = null){
         $this->data = $this->Deliberation->find('first',array('conditions' => array('Deliberation.id' => $id)));
