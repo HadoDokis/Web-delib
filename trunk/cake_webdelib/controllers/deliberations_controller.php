@@ -218,16 +218,6 @@ class DeliberationsController extends AppController {
 			if ($this->Deliberation->save($this->data)) {
 				$this->Filtre->Supprimer();
 				$delibId = $this->Deliberation->getLastInsertId();
-				// création des fichiers des textes
-				if (!Configure::read('GENERER_DOC_SIMPLE')){
-					$repDest = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
-                                        if (!file_exists($repDest)){
-					    mkdir($repDest, 0770, true);
-                                        }
-					$this->Gedooo->createFile($repDest, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
-					$this->Gedooo->createFile($repDest, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
-					$this->Gedooo->createFile($repDest, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
-				}
 				/* sauvegarde des informations supplémentaires */
 				if (array_key_exists('Infosup', $this->data))
 					$this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $delibId);
@@ -238,7 +228,13 @@ class DeliberationsController extends AppController {
 					}
 				// sauvegarde des délibérations rattachées
 				if (array_key_exists('Multidelib', $this->data))
-					foreach($this->data['Multidelib'] as $multidelib) $this->_saveDelibRattachees($delibId, $multidelib);
+					foreach($this->data['Multidelib'] as $iref => $multidelib) {
+						$delibRattacheeId = $this->_saveDelibRattachees($delibId, $multidelib);
+						// sauvegarde des nouvelles annexes pour cette delib rattachée
+						if (array_key_exists('Annex', $this->data))
+							foreach($this->data['Annex'] as $annexe)
+								if ($annexe['ref'] == 'delibRattachee'.$iref) $this->_saveAnnexe($delibRattacheeId, $annexe);
+					}
 
 				$this->Session->setFlash('Le projet \''.$delibId.'\' a &eacute;t&eacute; ajout&eacute;',  'growl');
 				$sortie = true;
@@ -342,8 +338,11 @@ class DeliberationsController extends AppController {
 			$newAnnexe['Annex']['data'] = $this->_getFileData($annexe['file']['tmp_name'], $annexe['file']['size']);
 			$pos = strpos($newAnnexe['Annex']['filetype'],  'vnd.oasis.opendocument'); 
 			if ($pos !== false) {
-				$newAnnexe['Annex']['data_pdf'] = $this->Conversion->convertirFichier($annexe['file']['tmp_name'], 'pdf');
-				$newAnnexe['Annex']['filename_pdf'] = $annexe['file']['name'].'.pdf';
+				$data_pdf = $this->Conversion->convertirFichier($annexe['file']['tmp_name'], 'pdf');
+				if (!is_array($data_pdf)) {
+					$newAnnexe['Annex']['data_pdf'] = $data_pdf;
+					$newAnnexe['Annex']['filename_pdf'] = $annexe['file']['name'].'.pdf';
+				}
 			}
                           
 			if(!$this->Annex->save($newAnnexe['Annex']))
@@ -441,35 +440,60 @@ class DeliberationsController extends AppController {
 				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
 				$this->redirect($redirect);
 			}
-			/* teste si le projet est modifiable par l'utilisateur connecté */
+			// teste si le projet est modifiable par l'utilisateur connecté
 			if (!$this->Deliberation->estModifiable($id, $user['User']['id'], $this->Xacl->check($user['User']['id'], "Deliberations:editerProjetValide"))) {
 				$this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
 				$this->redirect($redirect);
 			}
-
 			// initialisation des fichiers des textes
 			if (!Configure::read('GENERER_DOC_SIMPLE')) {
 				$this->Gedooo->createFile($path_projet, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
 				$this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
 	 			$this->Gedooo->createFile($path_projet, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
-                                $annexes = $this->Annex->find('all', array('conditions' => array('Annex.Model'=> 'Deliberation', 
-                                                                                                 'Annex.foreign_key' => $id)));
-                                foreach ($annexes as $annexe) 
-				    $this->Gedooo->createFile($path_projet,  $annexe['Annex']['filename'], $annexe['Annex']['data']);
-			}
-                        else {
-                                $content = str_replace('\&quot;', '', $this->data['Deliberation']['texte_projet']);
-                                $content = str_replace('\\"', '"', $content);
-                                $content = str_replace('"\\', '"', $content);
+			} else {
+				$content = str_replace('\&quot;', '', $this->data['Deliberation']['texte_projet']);
+				$content = str_replace('\\"', '"', $content);
+				$content = str_replace('"\\', '"', $content);
 				$this->Gedooo->createFile($path_projet, 'texte_projet.html',  $content);
-                        }
-			// initialisation des fichiers des infosup de type odtFile
+ 			}
+			// création des fichiers des infosup de type odtFile
 			foreach ($this->data['Infosup']  as $infosup) {
-				$infoSupDef = $this->Infosupdef->find('first', array('recursive'=>   -1, 
-                                                                                     'fields'     => array('type'), 
-                                                                                     'conditions' => array('id' =>$infosup['infosupdef_id'])));
+				$infoSupDef = $this->Infosupdef->find('first', array(
+					'recursive' => -1,
+					'fields' => array('type'),
+					'conditions' => array('id' =>$infosup['infosupdef_id'])));
 				if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
 					$this->Gedooo->createFile($path_projet, $infosup['file_name'] , $infosup['content']);
+			}
+			// création des fichiers des annexes de type vnd.oasis.opendocument
+			$annexes = $this->Annex->find('all', array(
+				'recursive' => -1,
+				'fields' => array('filename', 'data'),
+				'conditions' => array(
+					'Annex.Model'=> 'Deliberation',
+					'Annex.foreign_key' => $id,
+					'Annex.filetype like' => '%vnd.oasis.opendocument%')));
+			foreach ($annexes as $annexe)
+				$this->Gedooo->createFile($path_projet,  $annexe['Annex']['filename'], $annexe['Annex']['data']);
+
+			// initialisation des délibérations rattachées
+			if (array_key_exists('Multidelib', $this->data)) {
+				foreach($this->data['Multidelib'] as $delibRattachee) {
+					$path_projet_delibRattachee = $path."webroot/files/generee/projet/".$delibRattachee['id']."/";
+					if (!Configure::read('GENERER_DOC_SIMPLE')) {
+			 			$this->Gedooo->createFile($path_projet_delibRattachee, 'deliberation.odt',  $delibRattachee['deliberation']);
+					}
+					// création des fichiers des annexes de type vnd.oasis.opendocument
+					$annexes = $this->Annex->find('all', array(
+						'recursive' => -1,
+						'fields' => array('filename', 'data'),
+						'conditions' => array(
+							'Annex.Model'=> 'Deliberation',
+							'Annex.foreign_key' => $delibRattachee['id'],
+							'Annex.filetype like' => '%vnd.oasis.opendocument%')));
+					foreach ($annexes as $annexe)
+						$this->Gedooo->createFile($path_projet_delibRattachee,  $annexe['Annex']['filename'], $annexe['Annex']['data']);
+				}
 			}
 
 			$this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
@@ -578,7 +602,6 @@ class DeliberationsController extends AppController {
 				if (array_key_exists('Infosup', $this->data)) {
 				    $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id']);
 				}
-
 				// sauvegarde des nouvelles annexes
 				if (array_key_exists('Annex', $this->data))
 					foreach($this->data['Annex'] as $annexe) {
@@ -598,6 +621,7 @@ class DeliberationsController extends AppController {
 						$pos = strpos($annex_filename['Annex']['filetype'],  'vnd.oasis.opendocument');
 						if ($pos !== false)
 							$data_pdf = $this->Conversion->convertirFichier($url, 'pdf');
+							if (is_array($data_pdf)) $data_pdf = null;
 						else
 							$data_pdf = null;
 						$data = file_get_contents($url);
@@ -614,9 +638,10 @@ class DeliberationsController extends AppController {
 				if (array_key_exists('Multidelib', $this->data))
 					foreach($this->data['Multidelib'] as $iref => $multidelib) {
 						$delibRattacheeId = $this->_saveDelibRattachees($id, $multidelib);
-						// sauvegarde des nouveaux annexes pour cette delib rattachée
-						foreach($this->data['Annex'] as $annexe)
-							if ($annexe['ref'] == 'delibRattachee'.$iref) $this->_saveAnnexe($delibRattacheeId, $annexe);
+						// sauvegarde des nouvelles annexes pour cette delib rattachée
+						if (array_key_exists('Annex', $this->data))
+							foreach($this->data['Annex'] as $annexe)
+								if ($annexe['ref'] == 'delibRattachee'.$iref) $this->_saveAnnexe($delibRattacheeId, $annexe);
 					}
 
 				// suppression des délibérations rattachées
