@@ -15,7 +15,9 @@ if (empty($annexes)) $annexes = array();
 if (empty($affichage)) $affichage = 'complet';
 
 // affichage des annexes
-echo $html->tag('table', null, array('cellpadding'=>'0', 'cellspacing'=>'0', 'width'=> '100%'));
+$tableOptions = array('cellpadding'=>'0', 'cellspacing'=>'0', 'width'=> '100%');
+if ($mode == 'edit') $tableOptions['id'] = 'tableAnnexe'.$ref;
+echo $html->tag('table', null, $tableOptions);
 if ($mode == 'edit')
 	echo $html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Action'));
 else
@@ -27,6 +29,7 @@ if (isset($annexes)) {
 		if ($mode == 'edit') {
 			$rowClass['height'] = '36px';
 			$rowClass['id'] = 'afficheAnnexe'.$annexe['id'];
+			$rowClass['annexe_id'] = $annexe['id'];
 		}
 		echo $html->tag('tr', null,  $rowClass);
 			echo $html->tag('td', $rownum+1);
@@ -90,7 +93,7 @@ if (isset($annexes)) {
 					echo $html->link(SHY, '#', array('title'=>'Annuler la suppression', 'class'=>'link_supprimer_back', 'onClick'=>"annulerSupprimerAnnexe(this, ".$annexe['id'].")", 'style'=>'display: none;'), false, false);
 					echo '&nbsp;&nbsp;';
 					echo $html->link(SHY, '#', array('title'=>'Modifier', 'class'=> 'link_modifier', 'onClick'=>'modifierAnnexe(this, '.$annexe['id'].')'), false, false);
-					echo $html->link(SHY, '#', array('title'=>'Annuler la modification', 'class'=> 'link_modifier_back', 'onClick'=>"annulermodifierAnnexe(this, ".$annexe['id'].")", 'style'=>'display: none;'), false, false);
+					echo $html->link(SHY, '#', array('title'=>'Annuler la modification', 'class'=> 'link_modifier_back', 'onClick'=>"annulerModifierAnnexe(this, ".$annexe['id'].")", 'style'=>'display: none;'), false, false);
 				echo $html->tag('/td');
 			}
 		echo $html->tag('/tr');
@@ -153,7 +156,6 @@ function ajouterAnnexe(ref) {
 
 // Fonction de suppression d'une annexe
 function supprimerAnnexe(obj, annexeId) {
-	$('#afficheAnnexe'+annexeId).removeClass();
 	$('#afficheAnnexe'+annexeId).addClass('aSupprimer');
 	var supAnnexe = $(document.createElement('input')).attr({
 		id: 'supprimeAnnexe'+annexeId,
@@ -196,7 +198,7 @@ function modifierAnnexe(obj, annexeId) {
 }
 
 // Fonction d'annulation de la modification de l'annexe
-function annulermodifierAnnexe(obj, annexeId) {
+function annulerModifierAnnexe(obj, annexeId) {
 	$('#modifieAnnexeTitre'+annexeId).val($('#afficheAnnexeTitre'+annexeId).attr('valeur_init'));
 	$('#modifieAnnexeCtrl'+annexeId).attr('checked', $('#afficheAnnexeCtrl'+annexeId).attr('valeur_init')==1);
 	var trObj = $('#afficheAnnexe'+annexeId);
