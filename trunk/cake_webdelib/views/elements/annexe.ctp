@@ -140,7 +140,7 @@ var nbAnnexeAAjouter = 0;
 
 // Fonction d'ajout d'une nouvelle annexe : duplique le div ajouteAnnexeTemplate et incrémente l'indexe
 function ajouterAnnexe(ref) {
-	nbAnnexeAAjouter++; 
+	nbAnnexeAAjouter++;
 	var addDiv = $('#ajouteAnnexes'+ref);
 	var newTemplate = $('#ajouteAnnexeTemplate').clone();
 	newTemplate.attr('id', newTemplate.attr('id').replace('Template', nbAnnexeAAjouter));
