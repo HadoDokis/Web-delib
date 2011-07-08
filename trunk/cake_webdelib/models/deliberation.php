@@ -97,7 +97,7 @@ class Deliberation extends AppModel {
 		'Multidelib'=>array(
 			'className'    => 'Deliberation',
 			'foreignKey'   => 'parent_id',
-			'dependent' => true)
+			'dependent' => false)
 		);
 
 /*
