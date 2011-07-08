@@ -30,10 +30,9 @@ if (isset($this->data['Multidelib'])) {
 				// affichage des annexes
 				echo $html->tag('label', 'Annexe(s)');
 				echo '<div class="fckEditorProjet">';
-					if (isset($delib['Annex']))
-						echo $this->element('annexe', array('annexes'=>$delib['Annex'], 'mode'=>'display'));
-					else
-						echo $this->element('annexe', array('mode'=>'display'));
+					$annexeOptions = array('mode'=>'display');
+					if (isset($delib['Annex'])) $annexeOptions['annexes'] = $delib['Annex'];
+					echo $this->element('annexe', $annexeOptions);
 				echo '</div>';
 				echo $html->tag('div', '', array('class'=>'spacer'));
 			echo $html->tag('/div');
@@ -76,12 +75,10 @@ if (isset($this->data['Multidelib'])) {
 				// saisie des annexes
 				echo $html->tag('label', 'Annexe(s)');
 				echo '<div class="fckEditorProjet">';
-					if (isset($delib['Annex']))
-						echo $this->element('annexe', array('annexes'=>$delib['Annex']));
-					else
-						echo $this->element('annexe', array());
+					$annexeOptions = array('ref'=>'delibRattachee'.$delib['id'], 'affichage'=>'partiel');
+					if (isset($delib['Annex'])) $annexeOptions['annexes'] = $delib['Annex'];
+					echo $this->element('annexe', $annexeOptions);
 				echo '</div>';
-				
 			echo $html->tag('/div');
 			echo $html->tag('div', '', array('class'=>'spacer'));
 			// affichage des boutons action
@@ -179,7 +176,10 @@ function modifierDelibRattachee(obj, delibId) {
 	$('#delibRattacheeDisplay'+delibId).hide();
 	$('#delibRattacheeForm'+delibId).show();
 	
-	$('#delibRattacheeForm'+delibId+' :input').removeAttr('disabled').show();
+	$('#Multidelib'+delibId+'Id').removeAttr('disabled');
+	$('#Multidelib'+delibId+'Objet').removeAttr('disabled').show();
+	$('#Multidelib'+delibId+'Deliberation').removeAttr('disabled').show();
+//	$('#delibRattacheeForm'+delibId+' :input').removeAttr('disabled').show();
 	if ($('#Multidelib'+delibId+'Deliberation').length)
 		$('#Multidelib'+delibId+'Deliberation').ckeditor();
 	
