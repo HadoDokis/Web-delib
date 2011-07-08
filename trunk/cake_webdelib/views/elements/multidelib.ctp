@@ -127,6 +127,18 @@ echo $html->tag('div', null, array('id'=>'ajouteMultiDelibTemplate', 'style'=>'w
 					'disabled'=>true));
 		echo $html->tag('/div');
 		echo $html->tag('div', '', array('class'=>'spacer'));
+
+		echo $html->tag('label', 'Annexe(s)');
+		echo '<div class="fckEditorProjet">';
+			// div pour l'ajout des annexes
+			echo $html->tag('div', '', array('id'=>'ajouteAnnexesRef'));
+			
+			// lien pour ajouter une nouvelle annexes
+			echo $html->tag('div', '', array('class'=>'spacer'));
+			echo $html->link('Ajouter une annexe', 'javascript:ajouterAnnexe(\'#ref#\')', array('class'=>'link_annexe', 'id'=>'lienAjouteAnnexesRef'));
+		echo '</div>';
+		echo $html->tag('div', '', array('class'=>'spacer'));
+
 		// affichage des boutons action
 		echo $html->tag('div', null, array('id'=>'delibRattacheeAction0', 'class'=>'action'));
 			echo $html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().parent().remove();'));
@@ -162,6 +174,13 @@ function ajouterMultiDelib() {
 		$(this).attr('id', $(this).attr('id').replace('0', iMultiDelibAAjouter));
 		$(this).attr('name', $(this).attr('name').replace('0', iMultiDelibAAjouter));
 	});
+
+	newTemplate.find('#ajouteAnnexesRef').attr('id', 'ajouteAnnexesdelibRattachee'+iMultiDelibAAjouter);
+	var lienAjouteAnnexe = newTemplate.find('#lienAjouteAnnexesRef');
+	lienAjouteAnnexe.attr('href', lienAjouteAnnexe.attr('href').replace('#ref#', 'delibRattachee'+iMultiDelibAAjouter));
+	lienAjouteAnnexe.removeAttr('id');
+
+
 	$('#ajouteMultiDelib').append(newTemplate);
 	<?php
 	if (Configure::read('GENERER_DOC_SIMPLE')){
