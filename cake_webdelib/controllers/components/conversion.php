@@ -16,22 +16,20 @@ function convertirFichier($fileName, $format) {
 
 	if (empty($convertorType)) {
 		$ret['resultat'] = false;
-		$ret['info'] = __('Type du programme de conversion non dÃ©clarÃ© dans le fichier de configuration de as@lae', true);
+		$ret['info'] = __('Type du programme de conversion non déclaré dans le fichier de configuration de as@lae', true);
 		return $ret;
 	}
 
 	switch($convertorType) {
 		case 'UNOCONV' :
-			// lecture fichier exÃ©cutable de unoconv
+			// lecture fichier exécutable de unoconv
 			$convertorExec = Configure::read('CONVERSION_EXEC');
 			if (empty($convertorExec)) {
 				return false;
 			}
-                        file_put_contents('/tmp/toto.odt', file_get_contents($fileName));
-			// exÃ©cution
+			// exécution
 			$cmd = "$convertorExec --stdout -f $format $fileName";
 			$result = shell_exec($cmd);
-                        $this->log( $result );
 	        // guess that if there is less than this characters probably an error
 	        if (strlen($result) < 10) {
                     return false;
