@@ -189,12 +189,13 @@
             //*****************************************
             // Choix du format de sortie
             //*****************************************
-	    $sMimeType = "application/pdf";
-	    if ($editable=='null')
-                if ($this->Session->read('user.format.sortie')==0)
-	            $sMimeType = "application/pdf";
-		else
-	            $sMimeType = "odt";
+	     $sMimeType = "application/pdf";
+	     if ($editable=='null')
+                 if ($this->Session->read('user.format.sortie')==0)
+	             $sMimeType = "application/pdf";
+                 else
+	              $sMimeType = "application/vnd.oasis.opendocument.text";
+
             //*****************************************
 	    // Préparation des répertoires pour la création des fichiers
             //*****************************************
@@ -380,7 +381,14 @@
                        die("Webdelib ne peut pas ecrire dans le repertoire : $path");
 
                    if (Configure::read('GENERER_DOC_SIMPLE')) {
-                       $oMainPart->addElement(new GDO_ContentType('debat_seance', '', 'text/html', 'text',       '<small></small>'.$seance['Seance']['debat_global']));
+                       include_once ('controllers/components/conversion.php');
+                       $this->Conversion = new ConversionComponent;
+
+                       $filename = $path."debat_seance.html";
+                       file_put_contents($filename,  $seance['Seance']['debat_global']);
+                       $content = $this->Conversion->convertirFichier($filename, "odt");
+
+                       $oMainPart->addElement(new GDO_ContentType('debat_seance',  $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
                    }
                    else {
                        $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
@@ -388,11 +396,7 @@
                        if ($seance['Seance']['debat_global_name']== "")
                            $nameDSeance = "vide";
                        else {
-                           $infos = (pathinfo($seance['Seance']['debat_global_name']));
-                           $nameDSeance = 'nameDSeance.'.$infos['extension'];
-                           $this->Gedooo->createFile($path, $nameDSeance, $seance['Seance']['debat_global']);
-                           $extTP = $u->getMimeType($path.$nameDSeance);
-                           $oMainPart->addElement(new GDO_ContentType('debat_seance', '',  $extTP,    'url', $urlWebroot.$nameDSeance ));
+                           $oMainPart->addElement(new GDO_ContentType('debat_seance', 'debat_seance.odt', "application/vnd.oasis.opendocument.text" , 'binary', $seance['Seance']['debat_global'] ));
                        }
 	            	}
                 }
