@@ -619,10 +619,10 @@ class DeliberationsController extends AppController {
 							'conditions' => array('Annex.id' => $annexeId)));
 						$url = WEBROOT_PATH."/files/generee/projet/".$this->data['Deliberation']['id']."/".$annex_filename['Annex']['filename'];
 						$pos = strpos($annex_filename['Annex']['filetype'],  'vnd.oasis.opendocument');
-						if ($pos !== false)
+						if ($pos !== false) {
 							$data_pdf = $this->Conversion->convertirFichier($url, 'pdf');
 							if (is_array($data_pdf)) $data_pdf = null;
-						else
+						} else
 							$data_pdf = null;
 						$data = file_get_contents($url);
 						$this->Annex->save(array(
