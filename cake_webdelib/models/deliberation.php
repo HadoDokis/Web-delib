@@ -305,7 +305,7 @@ class Deliberation extends AppModel {
             include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
-            App::import(array('Component', 'Progress', 'File'));
+            include_once ('controllers/components/progress.php');
 
             $dyn_path = "/files/generee/deliberations/recherche.pdf";
             $path = WEBROOT_PATH.$dyn_path;
@@ -354,8 +354,8 @@ class Deliberation extends AppModel {
         }
 
         function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null, $isPV=false)  {
-               App::import(array('Component', 'Gedooo', 'File'));
-               App::import(array('Component', 'Date',   'File'));
+               include_once ('controllers/components/gedooo.php');
+               include_once ('controllers/components/date.php');
                $this->Date = new DateComponent;
                $this->Gedooo = new GedoooComponent;
                
@@ -487,28 +487,51 @@ class Deliberation extends AppModel {
                @$oMainPart->addElement($Multi);
 
 
+               $dyn_path = "/files/generee/deliberations/".$delib['Deliberation']['id']."/";
+               $path = WEBROOT_PATH.$dyn_path;
+
                if (Configure::read('GENERER_DOC_SIMPLE')) {
-                   if (isset($delib['Deliberation']['texte_projet']))
-                       $oMainPart->addElement(new GDO_ContentType('texte_projet', '', 'text/html', 'text',       '<small></small>'.$delib['Deliberation']['texte_projet']));
-                   if (isset($delib['Deliberation']['texte_synthese']))
-                       $oMainPart->addElement(new GDO_ContentType('note_synthese', '', 'text/html', 'text',      '<small></small>'.$delib['Deliberation']['texte_synthese']));
-                   if (isset($delib['Deliberation']['deliberation']))
-                       $oMainPart->addElement(new GDO_ContentType('texte_deliberation', '', 'text/html', 'text', '<small></small>'.$delib['Deliberation']['deliberation']));
-                   if (isset($delib['Deliberation']['debat']))
-                       $oMainPart->addElement(new GDO_ContentType('debat_deliberation', '', 'text/html', 'text', '<small></small>'.$delib['Deliberation']['debat']));
-                   if (isset($delib['Deliberation']['commission']))
-                       $oMainPart->addElement(new GDO_ContentType('debat_commission', '', 'text/html', 'text',   '<small></small>'.$delib['Deliberation']['commission']));
+                   include_once ('controllers/components/conversion.php');
+                   $this->Conversion = new ConversionComponent;
+  
+                   if (isset($delib['Deliberation']['texte_projet'])) {
+                       $filename = $path."texte_projet.html";
+                       file_put_contents($filename,  $delib['Deliberation']['texte_projet']);
+                       $content = $this->Conversion->convertirFichier($filename, "odt");
+                       $oMainPart->addElement(new GDO_ContentType('texte_projet', 'texte_projet.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                   }
+                   if (isset($delib['Deliberation']['texte_synthese'])) {
+                       $filename = $path."texte_synthese.html";
+                       file_put_contents($filename,  $delib['Deliberation']['texte_synthese']);
+                       $content = $this->Conversion->convertirFichier($filename, "odt");
+                       $oMainPart->addElement(new GDO_ContentType('note_synthese', 'texte_synthese.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                   }
+                   if (isset($delib['Deliberation']['deliberation'])) { 
+                       $filename = $path."texte_deliberation.html";
+                       file_put_contents($filename,  $delib['Deliberation']['deliberation']);
+                       $content = $this->Conversion->convertirFichier($filename, "odt");
+                       $oMainPart->addElement(new GDO_ContentType('texte_deliberation', 'deliberation.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                   }
+                   if (isset($delib['Deliberation']['debat'])) { 
+                       $filename = $path."debat_deliberation.html";
+                       file_put_contents($filename,  $delib['Deliberation']['debat']);
+                       $content = $this->Conversion->convertirFichier($filename, "odt");
+                       $oMainPart->addElement(new GDO_ContentType('debat_deliberation', 'debat.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                   }
+                   if (isset($delib['Deliberation']['commission'])) {
+                       $filename = $path."commission.html";
+                       file_put_contents($filename,  $delib['Deliberation']['commission']);
+                       $content = $this->Conversion->convertirFichier($filename, "odt");
+                       $oMainPart->addElement(new GDO_ContentType('debat_commission', 'commission.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content)); 
+                   }
                }
                else {
                    include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
                    $u = new GDO_Utility();
 
-                   $dyn_path = "/files/generee/deliberations/".$delib['Deliberation']['id']."/";
-                   $path = WEBROOT_PATH.$dyn_path;
-
                    if (!$this->Gedooo->checkPath($path))
                        die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-                        
+
                    $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$dyn_path;
                    if (!empty($delib['Deliberation']['texte_projet'])) {
                        $oMainPart->addElement(new GDO_ContentType('texte_projet', 'text_projet.odt' ,'application/vnd.oasis.opendocument.text',  'binary', $delib['Deliberation']['texte_projet']));
@@ -797,7 +820,14 @@ class Deliberation extends AppModel {
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', $champ['content']));
              }
              elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
-                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], '', 'text/html', 'text', '<small></small>'.$champs['content']));
+                 include_once ('controllers/components/conversion.php');
+                 $this->Conversion = new ConversionComponent; 
+
+                 $filename = WEBROOT_PATH."/files/generee/projet/$delib_id/".$champs_def['Infosupdef']['code'].".html";
+                 file_put_contents($filename, utf8_encode($champs['content']));
+                 $content = $this->Conversion->convertirFichier($filename, "odt");
+
+                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
              }
             elseif  ($champs['text'] == '' )
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
