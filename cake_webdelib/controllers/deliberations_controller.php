@@ -617,8 +617,8 @@ class DeliberationsController extends AppController {
 							'recursive' => -1,
 							'fields' => array ('filename', 'filetype'),
 							'conditions' => array('Annex.id' => $annexeId)));
-						$url = WEBROOT_PATH."/files/generee/projet/".$this->data['Deliberation']['id']."/".$annex_filename['Annex']['filename'];
-						$pos = strpos($annex_filename['Annex']['filetype'],  'vnd.oasis.opendocument');
+						$url = WEBROOT_PATH."/files/generee/projet/".$annexeId."/".$annex_filename['Annex']['filename'];
+						$pos = strpos($annex_filename['Annex']['filetype'], 'vnd.oasis.opendocument');
 						if ($pos !== false) {
 							$data_pdf = $this->Conversion->convertirFichier($url, 'pdf');
 							if (is_array($data_pdf)) $data_pdf = null;
