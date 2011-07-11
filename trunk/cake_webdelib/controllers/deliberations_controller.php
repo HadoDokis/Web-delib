@@ -648,7 +648,7 @@ class DeliberationsController extends AppController {
 				if (array_key_exists('MultidelibASupprimer', $this->data))
 					foreach($this->data['MultidelibASupprimer'] as $delibId) {
 	                    // Suppression des projets antérieurs potentiels
-	                    $this->_delAnteProjet($delibId);
+	                    $this->delete($delibId);
 
 	                    $repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
 	                    if (is_dir($repFichier)) 
