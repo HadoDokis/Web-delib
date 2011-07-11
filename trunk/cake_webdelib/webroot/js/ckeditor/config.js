@@ -27,7 +27,7 @@ CKEDITOR.editorConfig = function( config )
 		{ name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
 		{ name: 'editing', items : [ 'Find','Replace','-','SelectAll','-','Scayt' ] },
                 '/',
-		{ name: 'basicstyles', items : [ 'Bold','Italic','Strike','-','RemoveFormat' ] },
+		{ name: 'basicstyles', items : [ 'Bold','Italic','Underline', 'Strike','-','RemoveFormat' ] },
 		{ name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','Blockquote' ] },
 		{ name: 'insert', items : [ 'Image','Table','SpecialChar'] },
             	{ name: 'colors', items : [ 'TextColor','BGColor' ] },
