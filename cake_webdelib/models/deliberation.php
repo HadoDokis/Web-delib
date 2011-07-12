@@ -817,7 +817,7 @@ class Deliberation extends AppModel {
                  return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
              elseif ($champs['file_size'] != 0 ) {
                  $name = utf8_decode(str_replace(" ", "_", $champs['file_name']));
-                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', $champ['content']));
+                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', $champs['content']));
              }
              elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
                  include_once ('controllers/components/conversion.php');
