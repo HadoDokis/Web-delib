@@ -212,7 +212,7 @@ class Deliberation extends AppModel {
 
 	function changeSeance($delib_id, $seance_id){
 		$this->data = $this->read(null, $delib_id);
-		$this->data['Deliberation']['id']=$delib_1id;
+		$this->data['Deliberation']['id']=$delib_id;
 		$this->data['Deliberation']['seance_id'] = $seance_id;
 		$this->save($this->data);
 	}
@@ -833,6 +833,187 @@ class Deliberation extends AppModel {
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
         }
 
+/**
+ * opérations post sauvegarde des délibérations :
+ * - gestion des séances et de l'ordre des projets
+ * - mise à jour des délibérations rattachées
+ * @param integer $delibId id du projet à traiter
+ * @param integer $oldSeanceId id de la séance précédente avant sauvegarde
+ */
+function majDelibRatt($delibId, $oldSeanceId) {
+	// initialisation
+	$position = 0;
+	$majPosition = false;
+	$majFields = array(
+		'nature_id', 'theme_id', 'service_id', 'redacteur_id', 'rapporteur_id',
+		'seance_id', 'position',
+		'num_pref', 'etat');
+	
+	// lecture en base
+	$this->Behaviors->attach('Containable');
+	$delib = $this->find('first', array(
+		'fields' => $majFields,
+		'contain' => array('Multidelib.id', 'Multidelib.position'),
+		'conditions' => array('Deliberation.id' => $delibId)));
+
+	if (empty($delib['Multidelib'])) return;
+
+	// faut-il mettre a jour la position dans la séance
+	if (!empty($delib['Deliberation']['seance_id']) && (empty($oldSeanceId)))
+		// attribution d'une séance
+		$majPosition = true;
+	elseif (!empty($delib['Deliberation']['seance_id']) && (!empty($oldSeanceId) && ($delib['Deliberation']['seance_id'] !== $oldSeanceId)))
+		// changement de séance
+		$majPosition = true;
+	elseif (empty($delib['Deliberation']['seance_id']) && !empty($oldSeanceId))
+		// suppression de la séance
+		$majPosition = true;
+
+	if (!empty($delib['Deliberation']['seance_id']))
+ 		$position = $this->getLastPosition($delib['Deliberation']['seance_id'])-1;
+
+	// mise à jour des délibérations rattachées
+	$majDelibRatt = array();
+	foreach ($majFields as $fieldName)
+		$majDelibRatt['Deliberation'][$fieldName] = $delib['Deliberation'][$fieldName];
+	foreach ($delib['Multidelib'] as $delibRattachee) {
+		$majDelibRatt['Deliberation']['id'] = $delibRattachee['id'];
+		if ($majPosition || (!empty($delib['Deliberation']['seance_id']) && empty($delibRattachee['position']))) {
+			if ($position > 0) $position++;
+			$majDelibRatt['Deliberation']['position'] = $position;
+		} else
+			unset($majDelibRatt['Deliberation']['position']);
+		$this->save($majDelibRatt['Deliberation'], array('validate' => false, 'callbacks' => false));
+	}
+}
+
+/**
+ * reordonne les posistions de la séance $seanceId
+ */
+function reOrdonnePositionSeance($seanceId) {
+	// initialisations
+	$position = 0;
+	// lecture des delibs de la séance
+	$delibs = $this->find('all', array(
+		'recursive' => -1,
+		'fields' => array('id', 'position'),
+		'conditions' => array(
+			'etat <>' => -1,
+			'seance_id' => $seanceId),
+		'order' => 'position ASC'));
+	// pour toutes les délibs
+	foreach($delibs as $delib) {
+		$position++;
+		if ($position != $delib['Deliberation']['position'])
+			$this->save(array('id'=>$delib['Deliberation']['id'], 'position'=>$position), array('validate' => false, 'callbacks' => false));
+	}
+}
+
+/**
+ * sauvergarde des délibérations attachées
+ * @param integer $parentId id de la délibération principale
+ * @param array $delib délibération rattachée retourné par le formulaire 'edit'
+ */
+function saveDelibRattachees($parentId, $delib) {
+	// initialisations
+	$newDelib = array();
+	if (!isset($delib['objet'])) {
+		$this->Session->setFlash('Libellé obligatoire.', 'growl', array('type'=>'erreur'));
+		return false;
+	}
+
+	if (isset($delib['id'])) {
+		// modification
+		$newDelib['Deliberation']['id'] = $delib['id'];
+	} else {
+		// ajout
+		$newDelib = $this->create();
+		$newDelib['Deliberation']['parent_id'] = $parentId;
+	}
+
+	$newDelib['Deliberation']['objet'] = $delib['objet'];
+	if (Configure::read('GENERER_DOC_SIMPLE')){
+		$newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
+	} else {
+		if (isset($delib['deliberation'])) {
+			$newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
+			$newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
+			$newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'] ;
+			if (empty($delib['deliberation']['tmp_name']))
+				$newDelib['Deliberation']['deliberation'] = '';
+			else
+				$newDelib['Deliberation']['deliberation'] = file_get_contents($delib['deliberation']['tmp_name']);
+		}
+	}
+
+	if(!$this->save($newDelib['Deliberation'], false)) {
+		$this->Session->setFlash('Erreur lors de la sauvegarde des délibérations rattachées.', 'growl', array('type'=>'erreur'));
+		return false;
+	}
+	return $this->id;
+}
+
+/**
+ * fonction récursive de suppression de la délibération $delib8d, de ses versions antérieures et de ses délibérations rattachées
+ * @param integer $delibId id de la délib à supprimer
+ */
+function supprimer($delibId) {
+	// lecture de la délib en base
+    $delib = $this->find('first', array(
+    	'recursive' => -1,
+		'fields' => array('anterieure_id', 'seance_id', 'parent_id'),
+		'conditions' => array('id' => $delibId)));
+	if (empty($delib)) return;
+
+	// suppression de la délib
+	$this->del($delibId);
+	// suppression du répertoire des docs
+	$repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
+	$this->rmDir($repFichier);
+	// gestion de la séance
+	if (!empty($delib['Deliberation']['seance_id'])) {
+		$this->reOrdonnePositionSeance($delib['Deliberation']['seance_id']);
+	}
+
+	// pour les délib rattachées, le traitement finit ici
+	if (!empty($delib['Deliberation']['parent_id'])) return;
+
+	// suppression des délib rattachées
+	$delibRattachees = $this->find('all', array(
+    	'recursive' => -1,
+		'fields' => array('id'),
+		'conditions' => array('parent_id' => $delibId)));
+	foreach($delibRattachees as $delibRattachee) {
+		$this->supprimer($delibRattachee['Deliberation']['id']);
+	}
+
+	// suppression des délib antérieures
+	if ( $delib['Deliberation']['anterieure_id'] != 0)
+		$this->supprimer($delib['Deliberation']['anterieure_id']);
+}
+
+/**
+ * Supprime un répertoire et son contenu
+ * @param string $dossier chemin du répertoire à supprimer
+ */
+ function rmDir($dossier) {
+	$ouverture=@opendir($dossier);
+	if (!$ouverture) return;
+	while($fichier=readdir($ouverture)) {
+		if ($fichier == '.' || $fichier == '..') continue;
+		if (is_dir($dossier."/".$fichier)) {
+			$r = $this->rmDir($dossier."/".$fichier);
+			if (!$r) return false;
+		} else {
+			$r=@unlink($dossier."/".$fichier);
+			if (!$r) return false;
+		}
+	}
+	closedir($ouverture);
+	$r=@rmdir($dossier);
+	if (!$r) return false;
+	return true;
+}
 
 }
 ?>
