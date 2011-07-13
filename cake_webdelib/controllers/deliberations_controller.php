@@ -218,23 +218,25 @@ class DeliberationsController extends AppController {
 			if ($this->Deliberation->save($this->data)) {
 				$this->Filtre->Supprimer();
 				$delibId = $this->Deliberation->getLastInsertId();
-				/* sauvegarde des informations supplémentaires */
+				// sauvegarde des informations supplémentaires
 				if (array_key_exists('Infosup', $this->data))
 					$this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $delibId);
-				/* sauvegarde des annexes */
+				// sauvegarde des annexes
 				if (array_key_exists('Annex', $this->data))
 					foreach($this->data['Annex'] as $annexe) {
 						if ($annexe['ref'] == 'delibPrincipale') $this->_saveAnnexe($delibId, $annexe);
 					}
 				// sauvegarde des délibérations rattachées
-				if (array_key_exists('Multidelib', $this->data))
+				if (array_key_exists('Multidelib', $this->data)) {
 					foreach($this->data['Multidelib'] as $iref => $multidelib) {
-						$delibRattacheeId = $this->_saveDelibRattachees($delibId, $multidelib);
+						$delibRattacheeId = $this->Deliberation->saveDelibRattachees($delibId, $multidelib);
 						// sauvegarde des nouvelles annexes pour cette delib rattachée
 						if (array_key_exists('Annex', $this->data))
 							foreach($this->data['Annex'] as $annexe)
 								if ($annexe['ref'] == 'delibRattachee'.$iref) $this->_saveAnnexe($delibRattacheeId, $annexe);
 					}
+					$this->Deliberation->majDelibRatt($delibId, null);
+				}
 
 				$this->Session->setFlash('Le projet \''.$delibId.'\' a &eacute;t&eacute; ajout&eacute;',  'growl');
 				$sortie = true;
@@ -351,62 +353,6 @@ class DeliberationsController extends AppController {
 		return true;
 	}
 
-	/**
-	 * sauvergarde des délibérations attachées
-	 * @param integer $delibId id de la délibération principale
-	 * @param array $delib délibération rattachée retourné par le formulaire 'edit'
-	 */
-	function _saveDelibRattachees($delibId, $delib) {
-		// initialisations
-		$newDelib = array();
-		if (!isset($delib['objet'])) {
-			$this->Session->setFlash('Libellé obligatoire.', 'growl', array('type'=>'erreur'));
-			return false;
-		}
-		
-		if (isset($delib['id'])) {
-			// modification
-			$newDelib['Deliberation']['id'] = $delib['id'];
-		} else {
-			// ajout
-			$newDelib = $this->Deliberation->create();
-			$newDelib['Deliberation']['parent_id'] = $delibId;
-		}
-
-		$newDelib['Deliberation']['objet'] = $delib['objet'];
-		if (Configure::read('GENERER_DOC_SIMPLE')){
-			$newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
-		} else {
-			if (isset($delib['deliberation'])) {
-				$newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
-				$newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
-				$newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'] ;
-				if (empty($delib['deliberation']['tmp_name']))
-					$newDelib['Deliberation']['deliberation'] = '';
-				else {
-					$td = $this->_getFileData($delib['deliberation']['tmp_name'], $delib['deliberation']['size']);
-					$newDelib['Deliberation']['deliberation'] = $td;
-				}
-			}
-		}
-
-		if(!$this->Deliberation->save($newDelib['Deliberation'], false)) {
-			$this->Session->setFlash('Erreur lors de la sauvegarde des délibérations rattachées.', 'growl', array('type'=>'erreur'));
-			return false;
-		}
-		return $this->Deliberation->id;
-	}
-
-	function _PositionneDelibsSeance($seance_id, $position) {
-		$conditions= "Deliberation.seance_id = $seance_id AND Deliberation.position > $position ";
-		$delibs = $this->Deliberation->find('all', array ('conditions'=> $conditions));
-		foreach ($delibs as $delib) {
-			// on enleve pour 1 la delib qui a change de seance..
-			$delib['Deliberation']['position']= $delib['Deliberation']['position'] -1;
-			$this->Deliberation->save($delib['Deliberation']);
-		}
-	}
-
 	function edit($id=null) {
 		$user=$this->Session->read('user');
 		/* initialisation du lien de redirection   */
@@ -516,7 +462,7 @@ class DeliberationsController extends AppController {
 			$oldDelib = $this->Deliberation->find('first', array(
 				'conditions' =>array('Deliberation.id'=> $id),
 				'fields'    => array('seance_id', 'position'))); 
-			// Si on definit une seance a une delib, on la position en derniere position de la seance...
+			// Si on definit une seance a une delib, on la place en derniere position de la seance
 			if (!($this->data['Deliberation']['seance_id'] === $oldDelib['Deliberation']['seance_id'])) {
 				if ($this->data['Deliberation']['seance_id'])
 					$this->data['Deliberation']['position'] = $this->Deliberation->getLastPosition($this->data['Deliberation']['seance_id']);
@@ -581,7 +527,7 @@ class DeliberationsController extends AppController {
 				$this->Filtre->supprimer();
 				// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
 				if (!empty($oldDelib['Deliberation']['seance_id']) AND ($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']))
-					$this->_PositionneDelibsSeance($oldDelib['Deliberation']['seance_id'], $oldDelib['Deliberation']['position'] );
+					$this->Deliberation->reOrdonnePositionSeance($oldDelib['Deliberation']['seance_id']);
 				// sauvegarde des informations supplémentaires
 				$infossupDefs = $this->Infosupdef->findAll("type='odtFile'", '', '', 0);
 				foreach ( $infossupDefs as $infodef) {
@@ -633,27 +579,22 @@ class DeliberationsController extends AppController {
 							'data_pdf' => $data_pdf));
 					}
 				}
-
-				// sauvegarde des délibérations rattachées et des nouvelles annexes
-				if (array_key_exists('Multidelib', $this->data))
+				// suppression des délibérations rattachées
+				if (array_key_exists('MultidelibASupprimer', $this->data)) {
+					foreach($this->data['MultidelibASupprimer'] as $delibId)
+	                    $this->Deliberation->supprimer($delibId);
+				}
+				// sauvegarde de délibérations rattachées
+				if (array_key_exists('Multidelib', $this->data)) {
 					foreach($this->data['Multidelib'] as $iref => $multidelib) {
-						$delibRattacheeId = $this->_saveDelibRattachees($id, $multidelib);
+						$delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib);
 						// sauvegarde des nouvelles annexes pour cette delib rattachée
 						if (array_key_exists('Annex', $this->data))
 							foreach($this->data['Annex'] as $annexe)
 								if ($annexe['ref'] == 'delibRattachee'.$iref) $this->_saveAnnexe($delibRattacheeId, $annexe);
 					}
-
-				// suppression des délibérations rattachées
-				if (array_key_exists('MultidelibASupprimer', $this->data))
-					foreach($this->data['MultidelibASupprimer'] as $delibId) {
-	                    // Suppression des projets antérieurs potentiels
-	                    $this->delete($delibId);
-
-	                    $repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
-	                    if (is_dir($repFichier)) 
-	                        $this->_rmDir($repFichier);
-					};
+				}
+				$this->Deliberation->majDelibRatt($this->data['Deliberation']['id'], $oldDelib['Deliberation']['seance_id']);
 
 				$this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
 				$this->redirect($redirect);
@@ -711,51 +652,16 @@ class DeliberationsController extends AppController {
 	function delete($id = null) {
 		$delib = $this->Deliberation->find('first', array(
 			'recursive' => -1,
-			'fields' => array('id', 'seance_id'),
-			'conditions' => array('Deliberation.id' => $id)));
+			'fields' => array('id'),
+			'conditions' => array('id' => $id)));
 
 		if (empty($delib)) {
 			$this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible', 'growl', array('type'=>'erreur'));
 		} else {
-			$this->_delRecursive($id);
-
-			// Il faut reclasser toutes les delibs de la seance
-			if (!empty($delib['Deliberation']['seance_id']))
-				$this->_PositionneDelibsSeance($delib['Deliberation']['seance_id'], $delib['Deliberation']['position'] );
-
+			$this->Deliberation->supprimer($id);
 			$this->Session->setFlash('Le projet \''.$id.'\' a &eacute;t&eacute; supprim&eacute;.', 'growl');
 		}
 		$this->redirect('/deliberations/mesProjetsRedaction');
-	}
-
-/**
- * fonction récursive de suppression de la délibération, de ses versions antérieures et de ses délibérations rattachées
- * @param integer $delibId id de la délib à supprimer
- */
-	function _delRecursive($delibId) {
-		$this->Deliberation->Behaviors->attach('Containable');
-        $delib = $this->Deliberation->find('first', array(
-        	'contain' => array('Multidelib.id'),
-			'fields' => array('id', 'anterieure_id'),
-			'conditions' => array('Deliberation.id' => $delibId)));
-		if (empty($delib)) return;
-
-		// suppression de la délib elle même
-		$this->Deliberation->del($delibId);
-		// suppression du répertoire des docs
-		$repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delibId.DS;
-		$this->_rmDir($repFichier);
-
-		// suppression des délib rattachées
-		foreach($delib['Multidelib'] as $multiDelib) {
-			$this->Deliberation->del($multiDelib['id']);
-			// suppression du répertoire des docs
-			$repFichier = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$multiDelib['id'].DS;
-			$this->_rmDir($repFichier);
-		}
-		// suppression des délib antérieures
-		if ( $delib['Deliberation']['anterieure_id'] != 0)
-			$this->_delRecursive($delib['Deliberation']['anterieure_id']);
 	}
 
     function addIntoCircuit($id = null){
@@ -1677,30 +1583,31 @@ class DeliberationsController extends AppController {
  * est le rédacteur.
  */
 	function mesProjetsRedaction() {
-                if (isset($this->params['filtre']) && ($this->params['filtre']=='hide'))
-                    $limit = Configure::read('LIMIT');
-                else
-                    $limit = null; 
+		if (isset($this->params['filtre']) && ($this->params['filtre']=='hide'))
+			$limit = Configure::read('LIMIT');
+		else
+			$limit = null; 
 
-                $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
-                $this->Deliberation->Behaviors->attach('Containable');
+		$this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
+		$this->Deliberation->Behaviors->attach('Containable');
 
 		$userId=$this->Session->read('user.User.id');
 		$listeLiens = $this->Xacl->check($userId, "Deliberations:add") ? array('add') : array();
 
-                $conditions =  $this->Filtre->conditions();
-                if (!isset($conditions['Deliberation.nature_id']))
-                    $conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
+		$conditions =  $this->Filtre->conditions();
+		if (!isset($conditions['Deliberation.nature_id']))
+			$conditions['Deliberation.nature_id'] = array_keys($this->Session->read('user.Nature'));
 		$conditions['Deliberation.etat'] = 0;
-                $conditions['Deliberation.redacteur_id'] = $userId;
+		$conditions['Deliberation.redacteur_id'] = $userId;
+		$conditions['Deliberation.parent_id'] = null;
 
 		$ordre = array('Deliberation.created DESC');
-                $nbProjets =  $this->Deliberation->find('count', array('conditions' => $conditions));
+		$nbProjets =  $this->Deliberation->find('count', array('conditions' => $conditions));
 		$projets = $this->Deliberation->find('all', array('conditions' => $conditions, 
                                                                   'limit'     => $limit,
                                                                   'ordre' => $ordre, 
                                                                   'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
-                $this->_ajouterFiltre($projets);
+		$this->_ajouterFiltre($projets);
 		$this->_afficheProjets(
 			$projets,
 			'Mes projets en cours de rédaction', 
@@ -2774,29 +2681,6 @@ class DeliberationsController extends AppController {
 
 
     }
-
-/**
- * Supprime un répertoire et son contenu
- * @param string $dossier chemin du répertoire à supprimer
- */
- function _rmDir($dossier) {
-	$ouverture=@opendir($dossier);
-	if (!$ouverture) return;
-	while($fichier=readdir($ouverture)) {
-		if ($fichier == '.' || $fichier == '..') continue;
-		if (is_dir($dossier."/".$fichier)) {
-			$r = $this->_rmDir($dossier."/".$fichier);
-			if (!$r) return false;
-		} else {
-			$r=@unlink($dossier."/".$fichier);
-			if (!$r) return false;
-		}
-	}
-	closedir($ouverture);
-	$r=@rmdir($dossier);
-	if (!$r) return false;
-	return true;
-}
 
 }
 ?>
