@@ -2,15 +2,46 @@
 
 <dl>
     <?php
-        if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
-	    echo '<h3>D&eacute;lib&eacute;ration n&deg; '.$this->data['Deliberation']['num_delib'].'</h3>';
-	else
-	    echo '<h3>Identifiant projet '.$this->data['Nature']['libelle'].' : '.$this->data['Deliberation']['id'].'</h3>';
+    if (empty($this->data['Multidelib'])) {
+		if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
+			echo '<h3>D&eacute;lib&eacute;ration n&deg; '.$this->data['Deliberation']['num_delib'].'</h3>';
+		else
+			echo '<h3>Identifiant projet '.$this->data['Nature']['libelle'].' : '.$this->data['Deliberation']['id'].'</h3>';
+    } else {
+		if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
+			echo '<h3>Multi-D&eacute;lib&eacute;rations</h3>';
+		else
+			echo '<h3>Projet Multi-D&eacute;lib&eacute;rations</h3>';
+    }
 	?>
 
 	<div class="imbrique">
-		<dt>Libellé</dt>
-		<dd>&nbsp;<?php echo $this->data['Deliberation']['objet']?></dd>
+	<?php
+	    if (empty($this->data['Multidelib'])) {
+	    	echo $html->tag('dt', 'Libellé');
+	    	echo $html->tag('dd', '&nbsp;'.$this->data['Deliberation']['objet']);
+	    } else {
+			if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
+		    	echo $html->tag('h2', 'D&eacute;lib&eacute;ration n&deg; '.$this->data['Deliberation']['num_delib']);
+			else
+		    	echo $html->tag('h2', 'Identifiant projet '.$this->data['Nature']['libelle'].' : '.$this->data['Deliberation']['id']);
+	    	echo $html->tag('dt', 'Libellé');
+	    	echo $html->tag('dd', '&nbsp;'.$this->data['Deliberation']['objet']);
+	    	echo $html->tag('dt', 'Texte de la délibération');
+			echo $html->tag('dd', $html->link('afficher le texte de délibération','/deliberations/deliberationvue/' . $this->data['Deliberation']['id']));
+	    	foreach($this->data['Multidelib'] as $delibRattachee) {
+				if ($delibRattachee['etat']==3 || $delibRattachee['etat']==5)
+			    	echo $html->tag('h2', 'D&eacute;lib&eacute;ration n&deg; '.$delibRattachee['num_delib']);
+				else
+			    	echo $html->tag('h2', 'Identifiant projet '.$this->data['Nature']['libelle'].' : '.$delibRattachee['id']);
+		    	echo $html->tag('dt', 'Libellé');
+		    	echo $html->tag('dd', '&nbsp;'.$delibRattachee['objet']);
+		    	echo $html->tag('dt', 'Texte de la délibération');
+				echo $html->tag('dd', $html->link('afficher le texte de délibération','/deliberations/deliberationvue/' . $delibRattachee['id']));
+	    	}
+	    	echo $html->tag('h2', 'Informations communes');
+	    }
+	?>
 
 		<dt>Titre</dt>
 		<dd>&nbsp;<?php echo $this->data['Deliberation']['titre']?></dd>
@@ -139,7 +170,6 @@
 
 </dl>
 <ul id="actions_fiche">
-        <php echo debug($previous); ?>
 	<li><?php echo $html->link(SHY, $previous, array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?></li>
 	<li><?php echo $html->link(SHY,'/deliberations/textprojetvue/' . $this->data['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
 	<li><?php echo $html->link(SHY,'/deliberations/textsynthesevue/' . $this->data['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
