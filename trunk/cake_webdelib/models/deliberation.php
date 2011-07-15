@@ -480,8 +480,8 @@ class Deliberation extends AppModel {
                }
                else {
                        $oDevPart = new GDO_PartType();
-                       $oDevPart->addElement(new GDO_FieldType("libelle_multi_delib", utf8_encode(" "), "text"));
-                       $oDevPart->addElement(new GDO_FieldType("id_multi_delib",      utf8_encode(" "),    "text"));
+                       $oDevPart->addElement(new GDO_FieldType("libelle_multi_delib", " ", "text"));
+                       $oDevPart->addElement(new GDO_FieldType("id_multi_delib",      " ",    "text"));
                        $Multi->addPart($oDevPart);
                }
                @$oMainPart->addElement($Multi);
@@ -828,7 +828,7 @@ class Deliberation extends AppModel {
                  $this->Conversion = new ConversionComponent; 
 
                  $filename = WEBROOT_PATH."/files/generee/projet/$delib_id/".$champs_def['Infosupdef']['code'].".html";
-                 $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$delib_id/", $champs_def['Infosupdef']['code'].".html", utf8_encode($champs['content']));
+                 $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$delib_id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
                  $content = $this->Conversion->convertirFichier($filename, "odt");
 
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
