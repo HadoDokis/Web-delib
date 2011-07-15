@@ -101,7 +101,23 @@ class DeliberationsController extends AppController {
 	function view($id = null) {
 		$this->set('previous', $this->referer());
 
-		$this->data = $this->Deliberation->findById($id);
+		$this->Deliberation->Behaviors->attach('Containable');
+		$this->data = $this->Deliberation->find('first', array(
+			'fields' => array(
+				'id', 'anterieure_id', 'service_id', 'circuit_id',
+				'etat', 'num_delib', 'titre', 'objet', 'num_pref',
+				'created', 'modified'),
+			'contain' => array(
+				'Nature.libelle',
+				'Theme.libelle',
+				'Service.libelle',
+				'Seance.date',
+				'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom',
+				'Rapporteur.nom', 'Rapporteur.prenom',
+				'Infosup',
+				'Multidelib.id', 'Multidelib.objet', 'Multidelib.num_delib', 'Multidelib.etat'),
+			'conditions' => array('Deliberation.id' => $id)
+			));
 		if (empty($this->data)) {
 			$this->Session->setFlash('Invalide id pour la d&eacute;lib&eacute;ration : affichage de la vue impossible.', 'growl');
 			$this->redirect('/deliberations/mesProjetsRedaction');
@@ -143,14 +159,12 @@ class DeliberationsController extends AppController {
 		if(!empty($this->data['Seance']['date']))
 			$this->data['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data['Seance']['date']));
    
-		$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Service']['id']);
+		$this->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Deliberation']['service_id']);
 		$this->data['Circuit']['libelle'] = $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
 
 		// Définitions des infosup
-		//$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
-		$this->set('infosupdefs', $this->Infosupdef->find('all', array('order'=> 'ordre', 
-                                                                               'recursive'=> -1)));
-                $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/'.$id, array('return')));
+		$this->set('infosupdefs', $this->Infosupdef->find('all', array('recursive'=> -1, 'order'=> 'ordre')));
+		$this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/'.$id, array('return')));
 	}
 
 	function _getFileData($fileName, $fileSize) {
@@ -608,17 +622,7 @@ class DeliberationsController extends AppController {
 				$this->set('rapporteurs', $this->Acteur->generateListElus('nom'));
 				$this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
 				$this->set('redirect', $redirect);
-
-				$condition= 'date >= "'.date('Y-m-d H:i:s').'"';
-				$seances = $this->Seance->findAll($condition);
-				foreach ($seances as $seance){
-					$retard=$seance['Typeseance']['retard'];
-					if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y"))))
-						$tab[$seance['Seance']['id']]=$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-					else
-						$tab[$seance['Seance']['id']]=$this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature')));
-				}
-				$this->set('date_seances',$tab);
+				$this->set('date_seances', $this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
 				$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 				$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
 			}
@@ -1339,19 +1343,16 @@ class DeliberationsController extends AppController {
 	    }
 
 	function textprojetvue ($id = null) {
-		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="P"'));
 		$this->set('deliberation', $this->Deliberation->read(null, $id));
 		$this->set('delib_id', $id);
 	}
 
 	function textsynthesevue ($id = null) {
-		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="S"'));
 		$this->set('deliberation', $this->Deliberation->read(null, $id));
 		$this->set('delib_id', $id);
 	}
 
 	function deliberationvue ($id = null) {
-		$this->set('annexes',$this->Annex->findAll('deliberation_id='.$id.' AND type="D"'));
 		$this->set('deliberation', $this->Deliberation->read(null, $id));
 		$this->set('delib_id', $id);
 	}
