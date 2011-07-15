@@ -7,6 +7,6 @@
 </script>
 <?php
     foreach ($listFiles as $path=> $name)
-        echo $html->link($name, $path)."<br>";
+        echo $html->link($name, $path.".$format")."<br>";
     echo ("<br /><br /><a href='/seances/listerFuturesSeances'> Retour &agrave; la liste des s&eacute;ances </a>");
 ?>
