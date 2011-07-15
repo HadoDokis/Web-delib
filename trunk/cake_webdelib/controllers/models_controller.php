@@ -4,7 +4,7 @@
 		var $name = 'Models';
 		var $uses = array('Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique');
 		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
-		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo');
+		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion');
 
 		// Gestion des droits
 		var $aucunDroit = array(
@@ -189,18 +189,21 @@
             //*****************************************
             // Choix du format de sortie
             //*****************************************
-	     $sMimeType = "application/pdf";
-	     if ($editable=='null')
-                 if ($this->Session->read('user.format.sortie')==0)
-	             $sMimeType = "application/pdf";
-                 else
-	              $sMimeType = "application/vnd.oasis.opendocument.text";
+            if ($this->Session->read('user.format.sortie')==0) {
+	        $sMimeType = "application/pdf";
+                $format    = "pdf";
+            }
+            else {
+	        $sMimeType = "application/vnd.oasis.opendocument.text";
+                $format    = "odt";
+            }
 
             //*****************************************
 	    // Préparation des répertoires pour la création des fichiers
             //*****************************************
             $dyn_path = "/files/generee/fd/$seance_id/$delib_id/";
             $path = WEBROOT_PATH.$dyn_path;
+
             if (!$this->Gedooo->checkPath($path))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $path");
             $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
@@ -319,10 +322,6 @@
                      foreach ($acteursConvoques as $acteur) {
                          $cpt++;
                          $zip = new ZipArchive;
-                         if ($sMimeType=='odt')
-                             $extension ='odt';
-                         else
-                             $extension='pdf';
 
                          $this->set('unique', $unique);
 
@@ -339,11 +338,11 @@
                              $oMainPart->addElement(new GDO_FieldType("email_acteur", utf8_encode($acteur['Acteur']['email']), "text"));
                              $oMainPart->addElement(new GDO_FieldType("telfixe_acteur",utf8_encode($acteur['Acteur']['telfixe']), "text"));
                              $oMainPart->addElement(new GDO_FieldType("note_acteur", utf8_encode($acteur['Acteur']['note']), "text"));
-                             $nomFichier = $acteur['Acteur']['id'].'-'.Inflector::camelize($this->Utils->strSansAccent($acteur['Acteur']['nom'])).".$extension";
+                             $nomFichier = $acteur['Acteur']['id'].'-'.Inflector::camelize($this->Utils->strSansAccent($acteur['Acteur']['nom']));
                              $listFiles[$urlWebroot.$nomFichier] = $acteur['Acteur']['prenom']." ".$acteur['Acteur']['nom'];
                          }
                          else {
-                             $nomFichier ='Apercu.'.$extension;
+                             $nomFichier ='Apercu';
                              $listFiles[$urlWebroot.$nomFichier] = 'Apercu';
                          }
                    
@@ -352,7 +351,10 @@
                              error_reporting(0);
                              $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
                              $oFusion->process();
-                             $oFusion->SendContentToFile($path.$nomFichier);
+                             $oFusion->SendContentToFile($path.$nomFichier.".odt");
+                             $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
+                             $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
+
                          }
                          catch (Exception $e){
                              $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
@@ -371,6 +373,7 @@
 		     if ($unique== false)
                          $listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
                      $this->set('listFiles', $listFiles);
+                     $this->set('format', $format);
                      $this->render('generer');
 		     $genereConvocation = true;
 		}
@@ -385,7 +388,7 @@
                        $this->Conversion = new ConversionComponent;
 
                        $filename = $path."debat_seance.html";
-                       file_put_contents($filename,  $seance['Seance']['debat_global']);
+                       $this->Gedooo->createFile($path, "debat_seance.html",  $seance['Seance']['debat_global']);
                        $content = $this->Conversion->convertirFichier($filename, "odt");
 
                        $oMainPart->addElement(new GDO_ContentType('debat_seance',  $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
@@ -411,10 +414,21 @@
                     error_reporting(0);
                     $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
                     $oFusion->process();
-                    if ($dl ==1)
+                    if ($dl ==1) {
 	                $oFusion->SendContentToFile($path.$nomFichier);
-                    else
-	                $oFusion->SendContentToClient();
+                        $content = $this->Conversion->convertirFichier($path.$nomFichier, $format);
+                        $this->Gedooo->createFile($path, $nomFichier, $content);
+                    }
+                    else {
+                        $nomFichier = "$nomFichier.$format";
+                        $this->Gedooo->createFile($path, $nomFichier, '');
+	                $oFusion->SendContentToFile($path.$nomFichier);
+                        $content = $this->Conversion->convertirFichier($path.$nomFichier, $format );                 
+                        header("Content-type: $sMimeType");
+                        header("Content-Disposition: attachment; filename=\"$nomFichier\"");
+                        header("Content-Length: ".strlen($content));
+                        die ($content);
+                    }
                 }
                 catch (Exception $e){
                     $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
