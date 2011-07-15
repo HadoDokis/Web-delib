@@ -212,14 +212,19 @@ function getContent() {
      * @since    1.0
      * @access   public
      */
-function sendToClient() {
+function sendToClient($sFileName=null, $sMimeType=null) {
 
 //
 //  Accéder à toutes les données avant de lancer le premier header
 //
-$sMimeType = $this->getMimeType();
-$sFileName = $this->getName();
+
+if ($sMimeType == null)
+    $sMimeType = $this->getMimeType();
+if ($sFileName == null)
+    $sFileName = $this->getName();
+
 $bContent  = $this->getContent();
+
 header("Content-type: $sMimeType");
 header("Content-disposition: attachment; filename=".$sFileName);
 header("Content-length: " . strlen($bContent));

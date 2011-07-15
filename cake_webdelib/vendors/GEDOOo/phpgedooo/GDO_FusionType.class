@@ -202,10 +202,10 @@ function getMessage() {
      * @since    1.0
      * @access   public
      */
-function sendContentToClient() {
+function sendContentToClient($sFileName=null, $sMimeType=null) {
 	//return;
 	$oContent = $this->getContent();
-	$oContent->sendToClient();
+	$oContent->sendToClient($sFileName, $sMimeType);
 }
 
     // }}}
