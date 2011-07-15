@@ -15,6 +15,9 @@
 <div id="conteneur">
 
 	<div id="header">
+	    <div id="formatEdition">
+                <?php echo $this->element('format'); ?>
+	    </div>
 	</div>
 
 	<div id="user">
