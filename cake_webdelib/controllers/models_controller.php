@@ -175,7 +175,7 @@
         }
 
 
-        function generer ($delib_id=null, $seance_id=null,  $model_id, $editable=null, $dl=0, $nomFichier='retour', $isPV=0, $unique=false) {
+        function generer ($delib_id=null, $seance_id=null,  $model_id, $editable=-1, $dl=0, $nomFichier='retour', $isPV=0, $unique=false) {
             include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
@@ -189,7 +189,8 @@
             //*****************************************
             // Choix du format de sortie
             //*****************************************
-            if ($this->Session->read('user.format.sortie')==0) {
+         
+            if (($this->Session->read('user.format.sortie')==0) || ($editable == 0)) {
 	        $sMimeType = "application/pdf";
                 $format    = "pdf";
             }
