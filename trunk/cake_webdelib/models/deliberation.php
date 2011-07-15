@@ -497,32 +497,31 @@ class Deliberation extends AppModel {
                    if (isset($delib['Deliberation']['texte_projet'])) {
                        $filename = $path."texte_projet.html";
                        $delib['Deliberation']['texte_projet'] = $this->_url2pathImage($delib['Deliberation']['texte_projet']);
-                       file_put_contents($filename,  $delib['Deliberation']['texte_projet']);
+                       $this->Gedooo->createFile($path, "texte_projet.html",  $delib['Deliberation']['texte_projet']);
                        $content = $this->Conversion->convertirFichier($filename, "odt");
-                       file_put_contents("$filename.odt", $content);
                        $oMainPart->addElement(new GDO_ContentType('texte_projet', 'texte_projet.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
                    }
                    if (isset($delib['Deliberation']['texte_synthese'])) {
                        $filename = $path."texte_synthese.html";
-                       file_put_contents($filename,  $delib['Deliberation']['texte_synthese']);
+                       $this->Gedooo->createFile($path, "texte_synthese.html",  $delib['Deliberation']['texte_synthese']);
                        $content = $this->Conversion->convertirFichier($filename, "odt");
                        $oMainPart->addElement(new GDO_ContentType('note_synthese', 'texte_synthese.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
                    }
                    if (isset($delib['Deliberation']['deliberation'])) { 
                        $filename = $path."texte_deliberation.html";
-                       file_put_contents($filename,  $delib['Deliberation']['deliberation']);
+                       $this->Gedooo->createFile($path, "texte_deliberation.html",  $delib['Deliberation']['deliberation']);
                        $content = $this->Conversion->convertirFichier($filename, "odt");
                        $oMainPart->addElement(new GDO_ContentType('texte_deliberation', 'deliberation.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
                    }
                    if (isset($delib['Deliberation']['debat'])) { 
                        $filename = $path."debat_deliberation.html";
-                       file_put_contents($filename,  $delib['Deliberation']['debat']);
+                       $this->Gedooo->createFile($path, "debat_deliberation.html",  $delib['Deliberation']['debat']);
                        $content = $this->Conversion->convertirFichier($filename, "odt");
                        $oMainPart->addElement(new GDO_ContentType('debat_deliberation', 'debat.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
                    }
                    if (isset($delib['Deliberation']['commission'])) {
                        $filename = $path."commission.html";
-                       file_put_contents($filename,  $delib['Deliberation']['commission']);
+                       $this->Gedooo->createFile($path, "commission.html",  $delib['Deliberation']['commission']);
                        $content = $this->Conversion->convertirFichier($filename, "odt");
                        $oMainPart->addElement(new GDO_ContentType('debat_commission', 'commission.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content)); 
                    }
@@ -822,11 +821,14 @@ class Deliberation extends AppModel {
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', $champs['content']));
              }
              elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
+                 include_once ('controllers/components/gedooo.php');
                  include_once ('controllers/components/conversion.php');
+
+                 $this->Gedooo = new GedoooComponent;
                  $this->Conversion = new ConversionComponent; 
 
                  $filename = WEBROOT_PATH."/files/generee/projet/$delib_id/".$champs_def['Infosupdef']['code'].".html";
-                 file_put_contents($filename, utf8_encode($champs['content']));
+                 $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$delib_id/", $champs_def['Infosupdef']['code'].".html", utf8_encode($champs['content']));
                  $content = $this->Conversion->convertirFichier($filename, "odt");
 
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
