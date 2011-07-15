@@ -487,7 +487,7 @@ class Deliberation extends AppModel {
                @$oMainPart->addElement($Multi);
 
 
-               $dyn_path = "/files/generee/deliberations/".$delib['Deliberation']['id']."/";
+               $dyn_path = "/files/generee/projet/".$delib['Deliberation']['id']."/";
                $path = WEBROOT_PATH.$dyn_path;
 
                if (Configure::read('GENERER_DOC_SIMPLE')) {
@@ -496,8 +496,10 @@ class Deliberation extends AppModel {
   
                    if (isset($delib['Deliberation']['texte_projet'])) {
                        $filename = $path."texte_projet.html";
+                       $delib['Deliberation']['texte_projet'] = $this->_url2pathImage($delib['Deliberation']['texte_projet']);
                        file_put_contents($filename,  $delib['Deliberation']['texte_projet']);
                        $content = $this->Conversion->convertirFichier($filename, "odt");
+                       file_put_contents("$filename.odt", $content);
                        $oMainPart->addElement(new GDO_ContentType('texte_projet', 'texte_projet.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
                    }
                    if (isset($delib['Deliberation']['texte_synthese'])) {
@@ -833,6 +835,11 @@ class Deliberation extends AppModel {
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
         }
 
+        function _url2pathImage($url) {
+            $content = str_replace('http://webdelib/app/', Configure::read('WEBDELIB_PATH'), $url);
+            $content = str_replace( '\"', '"', $content);
+            return $content;
+        }
 /**
  * opérations post sauvegarde des délibérations :
  * - gestion des séances et de l'ordre des projets
@@ -855,6 +862,7 @@ function majDelibRatt($delibId, $oldSeanceId) {
 		'fields' => $majFields,
 		'contain' => array('Multidelib.id', 'Multidelib.position'),
 		'conditions' => array('Deliberation.id' => $delibId)));
+
 
 	if (empty($delib['Multidelib'])) return;
 
