@@ -1,12 +1,5 @@
 <?php echo $javascript->link('utils'); ?>
 <h2>S&eacute;ances </h2>
-<?php    
-    $urlPage =  FULL_BASE_URL . $this->webroot;
-    echo ("<br />Choix du format de sortie des &eacute;ditions : ");
-    $format = $session->read('user.format.sortie');
-    echo $form->input('User.Sortie', array('type'=>'select', 'options'=>array(0=>'pdf', 1=>'odt'), 'default'=>$format, 'id' => "$urlPage", 'onChange'=>'changeFormat(this)','empty'=>false));
-?>
-<br /><br />
 <div class="seances">
 
 <table width='100%' cellpadding="0" cellspacing="0" border="0">
