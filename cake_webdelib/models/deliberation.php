@@ -242,54 +242,84 @@ class Deliberation extends AppModel {
         }
 
 	function refusDossier($id) {
-             // maj de l'etat de la delib dans la table deliberations
-             $delib=$this->read(null, $id);
-             $delib['Deliberation']['etat']=-1; //etat -1 : refuse
+		// lecture en base de données
+		$this->Behaviors->attach('Containable');
+		$delib=$this->find('first', array(
+			'contain' => array('Annex', 'Infosup'),
+			'conditions' => array('Deliberation.id'=>$id)));
 
-             // Retour de la position a 0 pour ne pas qu'il y ait de confusion
-             $delib['Deliberation']['position']=0;
-             $delib['Deliberation']['id']=$id;
-             $this->save($delib['Deliberation']);
+		// maj de l'etat de la delib dans la table deliberations
+		$delib['Deliberation']['etat']=-1; //etat -1 : refuse
+		// Retour de la position a 0 pour ne pas qu'il y ait de confusion
+		$delib['Deliberation']['position']=0;
+		$delib['Deliberation']['id']=$id;
+		$this->save($delib['Deliberation']);
 
-             //enregistrement d'une nouvelle delib
-             $this->create();
-             $delib['Deliberation']['id']='';
-             $delib['Deliberation']['etat']=0;
-             $delib['Deliberation']['anterieure_id']=$id;
-             $delib['Deliberation']['date_envoi']=0;
-//             $delib['Deliberation']['circuit_id']=0;
-             $delib['Deliberation']['created']=date('Y-m-d H:i:s', time());
-             $delib['Deliberation']['modified']=date('Y-m-d H:i:s', time());
-             $this->save($delib['Deliberation']);
- 
-             $delib_id = $this->getLastInsertId();
-             // Copie des annexes du projet refusé vers le nouveau projet
-             $annexes = $delib['Annex'];
-             foreach($annexes as $annexe) {
-		 $tmp['Annex']= $annexe;
-		 $tmp['Annex']['id']=null;
-		 $tmp['Annex']['deliberation_id']= $delib_id ;
-		 $this->Annex->save( $tmp, false);
-             }
-             // Copie des infos supplémentaires du projet refusé vers le nouveau projet
-             $infoSups = $delib['Infosup'];
-             foreach($infoSups as $infoSup) {
-                 $infoSup['id'] = null;
-                 $infoSup['deliberation_id'] = $delib_id;
-                 $this->Infosup->save($infoSup, false);
-             }
-             // Copie des commentaires du projet refusé vers le nouveau projet
-            /*
-             $commentaires = $delib['Commentaire'];
-             foreach($commentaires as $commentaire) {
-                 $commentaire['id'] = null;
-                 $commentaire['created'] = null;
-                 $commentaire['modified'] = null;
-                 $commentaire['delib_id'] = $delib_id;
-                 $this->Commentaire->save($commentaire, false);
-	     }
-             */
-        }
+		// création de la nouvelle version
+		$this->create();
+		$delib['Deliberation']['id']='';
+		$delib['Deliberation']['etat']=0;
+		$delib['Deliberation']['anterieure_id']=$id;
+		$delib['Deliberation']['date_envoi']=0;
+//		$delib['Deliberation']['circuit_id']=0;
+		$delib['Deliberation']['created']=date('Y-m-d H:i:s', time());
+		$delib['Deliberation']['modified']=date('Y-m-d H:i:s', time());
+		$this->save($delib['Deliberation']);
+		$delib_id = $this->id;
+
+		// copie des annexes du projet refusé vers le nouveau projet
+		$annexes = $delib['Annex'];
+		foreach($annexes as $annexe) {
+			$tmp['Annex']= $annexe;
+			$tmp['Annex']['id']=null;
+			$tmp['Annex']['model']='Deliberation';
+			$tmp['Annex']['foreign_key']= $delib_id;
+			$this->Annex->save( $tmp, false);
+		}
+
+		// copie des infos supplémentaires du projet refusé vers le nouveau projet
+		$infoSups = $delib['Infosup'];
+		foreach($infoSups as $infoSup) {
+			$infoSup['id'] = null;
+			$infoSup['deliberation_id'] = $delib_id;
+			$this->Infosup->save($infoSup, false);
+		}
+
+		// copie des délibérations rattachées vers le nouveau projet
+		$delibRattachees = $this->find('all', array(
+			'contain' => array('Annex'),
+			'conditions'=>array('Deliberation.parent_id'=>$id)));
+		foreach($delibRattachees as $delibRattachee) {
+			// maj de l'etat de la delib dans la table deliberations
+			$delibRattachee['Deliberation']['etat']=-1; //etat -1 : refuse
+			// Retour de la position a 0 pour ne pas qu'il y ait de confusion
+			$delibRattachee['Deliberation']['position']=0;
+			$this->save($delibRattachee['Deliberation']);
+	
+			// création de la nouvelle version
+			$this->create();
+			$delibRattachee['Deliberation']['id']='';
+			$delibRattachee['Deliberation']['parent_id']=$delib_id;
+			$delibRattachee['Deliberation']['etat']=0;
+			$delibRattachee['Deliberation']['anterieure_id']=0;
+			$delibRattachee['Deliberation']['date_envoi']=0;
+	//		$delibRattachee['Deliberation']['circuit_id']=0;
+			$delibRattachee['Deliberation']['created']=date('Y-m-d H:i:s', time());
+			$delibRattachee['Deliberation']['modified']=date('Y-m-d H:i:s', time());
+			$this->save($delibRattachee['Deliberation']);
+			$delibRattachee_id = $this->id;
+	
+			// copie des annexes du projet refusé vers le nouveau projet
+			$annexes = $delibRattachee['Annex'];
+			foreach($annexes as $annexe) {
+				$tmp['Annex']= $annexe;
+				$tmp['Annex']['id']=null;
+				$tmp['Annex']['model']='Deliberation';
+				$tmp['Annex']['foreign_key']= $delibRattachee_id ;
+				$this->Annex->save( $tmp, false);
+			}
+		}
+	}
 
        function canSave(){
            return $this->Seance->NaturecanSave($this->data['Deliberation']['seance_id'], $this->data['Deliberation']['nature_id']);
