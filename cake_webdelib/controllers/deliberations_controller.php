@@ -114,6 +114,7 @@ class DeliberationsController extends AppController {
 				'Seance.date',
 				'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom',
 				'Rapporteur.nom', 'Rapporteur.prenom',
+				'Annex',
 				'Infosup',
 				'Multidelib.id', 'Multidelib.objet', 'Multidelib.num_delib', 'Multidelib.etat'),
 			'conditions' => array('Deliberation.id' => $id)
@@ -539,9 +540,6 @@ class DeliberationsController extends AppController {
 	
 			if ($this->Deliberation->save($this->data)) {
 				$this->Filtre->supprimer();
-				// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
-				if (!empty($oldDelib['Deliberation']['seance_id']) AND ($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']))
-					$this->Deliberation->reOrdonnePositionSeance($oldDelib['Deliberation']['seance_id']);
 				// sauvegarde des informations supplémentaires
 				$infossupDefs = $this->Infosupdef->findAll("type='odtFile'", '', '', 0);
 				foreach ( $infossupDefs as $infodef) {
@@ -609,6 +607,10 @@ class DeliberationsController extends AppController {
 					}
 				}
 				$this->Deliberation->majDelibRatt($this->data['Deliberation']['id'], $oldDelib['Deliberation']['seance_id']);
+
+				// Si on change une delib de seance, il faut reclasser toutes les delibs de l'ancienne seance...
+				if (!empty($oldDelib['Deliberation']['seance_id']) AND ($oldDelib['Deliberation']['seance_id'] != $this->data['Deliberation']['seance_id']))
+					$this->Deliberation->reOrdonnePositionSeance($oldDelib['Deliberation']['seance_id']);
 
 				$this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
 				$this->redirect($redirect);
