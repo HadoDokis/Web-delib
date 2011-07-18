@@ -467,6 +467,17 @@ class Deliberation extends AppModel {
                $oMainPart->addElement(new GDO_FieldType('note_redacteur', utf8_encode($delib['Redacteur']['note']), 'text'));
 
 
+               // Informations sur la délibération
+               $nb_votant = $delib['Deliberation']['vote_nb_oui']+$delib['Deliberation']['vote_nb_abstention']+$delib['Deliberation']['vote_nb_non'];
+               $oMainPart->addElement(new GDO_FieldType('nombre_pour',  utf8_encode($delib['Deliberation']['vote_nb_oui'])   , 'text'));
+               $oMainPart->addElement(new GDO_FieldType('nombre_abstention', utf8_encode( $delib['Deliberation']['vote_nb_abstention']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('nombre_contre',  utf8_encode($delib['Deliberation']['vote_nb_non']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', utf8_encode( $delib['Deliberation']['vote_nb_retrait']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('nombre_votant', $nb_votant, 'text'));
+               $oMainPart->addElement(new GDO_FieldType('commentaire_vote',  utf8_encode($delib['Deliberation']['vote_commentaire']), 'text'));
+               $oMainPart->addElement(new GDO_FieldType('date_reception',  utf8_encode($delib['Deliberation']['dateAR']), 'text'));
+
+
                $commentaires = new GDO_IterationType("Commentaires");
                foreach($delib['Commentaire'] as $commentaire) {
                    $oDevPart = new GDO_PartType();
