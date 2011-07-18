@@ -298,9 +298,11 @@
  *
  */
 	Cache::config('default', array('engine' => 'File'));
-	
-	    $pos = @strripos($_SERVER['HTTP_USER_AGENT'], 'Chrome');
-    if ($pos === false)
+
+    $pos = @strripos($_SERVER['HTTP_USER_AGENT'], 'Chrome');
+    $pos2 = @strripos($_SERVER['HTTP_USER_AGENT'], 'Mozilla');
+
+    if (($pos === false) && ($pos2 === false))
 		define('SHY', '&shy;');
     else
 		define('SHY', '&nbsp;');
