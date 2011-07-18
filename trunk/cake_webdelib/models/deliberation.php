@@ -897,7 +897,10 @@ function majDelibRatt($delibId, $oldSeanceId) {
 	$majFields = array(
 		'nature_id', 'theme_id', 'service_id', 'redacteur_id', 'rapporteur_id',
 		'seance_id', 'position',
-		'num_pref', 'etat');
+		'titre', 'num_pref', 'etat',
+		'texte_projet', 'texte_projet_size', 'texte_projet_type', 'texte_projet_name',
+		'texte_synthese', 'texte_synthese_size', 'texte_synthese_type', 'texte_synthese_name', 
+		'date_limite');
 	
 	// lecture en base
 	$this->Behaviors->attach('Containable');
