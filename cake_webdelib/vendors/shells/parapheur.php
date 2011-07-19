@@ -48,11 +48,12 @@ function startup() {
                                    if (!empty($dossier['getdossier'][10])) {
                                        $this->Deliberation->saveField('delib_pdf',  base64_decode($dossier['getdossier'][8]));
                                        $this->Deliberation->saveField('signature',  base64_decode($dossier['getdossier'][10]));
-                                       $this->Deliberation->saveField('signee',  1);
                                    }
+                                   $this->Deliberation->saveField('signee',  1);
                                }
                                // etat_paraph à 1, donc, nous sommes en post_seance, on ne supprime pas le projet
                                $this->Deliberation->saveField('etat_parapheur', 2);
+
                            }
                        }
                        elseif(($histo['logdossier'][$i]['status']=='RejetSignataire')||
