@@ -46,7 +46,7 @@
                        echo  ("<td>Acte déclaré signé</td>");
                     } 
                    elseif (($delib['Deliberation']['etat']>=1) && ($delib['Deliberation']['etat']<3) && ($delib['Deliberation']['nature_id']==1) ) {
-                       echo '<td>'.$html->link('A faire voter', "/seances/voter/".$delib['Deliberation']['id']).'</td>';
+                       echo '<td>A faire voter</td>';
                    }
 		    elseif ($delib['Deliberation']['etat_parapheur']== -1) {
  		        echo("<td>Acte refusé à la signature</td>");
