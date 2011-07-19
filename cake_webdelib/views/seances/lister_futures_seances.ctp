@@ -29,7 +29,11 @@
 		       $urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/0/retour/0/true';
                     
                      if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
-		        echo $html->link(SHY, $urlConvocUnique, array('class'=>'link_convocation_unique', 'title'=>"Apercu d'une convocation"), 'Etes-vous sur de vouloir lancer la génération de l\'apercu  ?', false);
+//		        echo $html->link(SHY, $urlConvocUnique, array('class'=>'link_convocation_unique', 'title'=>"Apercu d'une convocation"), 'Etes-vous sur de vouloir lancer la génération de l\'apercu  ?', false);
+echo $html->link(SHY, $urlConvocUnique, array(
+	'class'=>'link_convocation_unique',
+	'title'=>"Apercu d'une convocation",
+	'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération de l\'apercu  ?");'), false, false);
 
 		    echo $html->link(SHY, $urlConvoc, array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'), 'Etes-vous sur de vouloir lancer la génération des documents ?', false);
                     if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
@@ -69,3 +73,32 @@
 </table>
 
 </div>
+<script type="text/javascript">
+
+function overlayResize() {
+	var overlayEle = $('#overlay');
+	if (overlayEle.length > 0) {
+		ovPosition = $('#centre').offset();
+		ovHeight = $('#centre').outerHeight();
+		ovWidth = $('#centre').outerWidth();
+		overlayEle
+			.css('left', ovPosition.left)
+			.css('top', ovPosition.top)
+			.width(ovWidth)
+			.height(ovHeight);
+	}
+}
+function overlayOn() {
+	$('<div></div>').appendTo(document.body).attr('id', 'overlay');
+	overlayResize();
+}
+function avantGeneration(message) {
+	if (confirm(message)) {
+		$('<div></div>').appendTo(document.body).attr('id', 'overlay');
+		overlayResize();
+		return true;
+	} else
+		return false
+}
+
+</script>
