@@ -1012,6 +1012,7 @@ class DeliberationsController extends AppController {
                 $conditions =  $this->Filtre->conditions();
                 $conditions['Deliberation.etat >='] = 2;
                 $conditions['Deliberation.etat <'] = 5;
+                $conditions['Deliberation.etat <>'] = 4;
                 $conditions['Deliberation.signee'] = 1;
                 $conditions['Deliberation.delib_pdf <>'] = '';
                 if ($seance_id != null)
