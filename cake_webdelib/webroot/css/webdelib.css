@@ -1273,4 +1273,5 @@ div.aModifier {
 	background: lightgrey;
 	opacity: .50;
 	filter:Alpha(Opacity=50);
+    background-image: url(../img/loading.gif);
 }
