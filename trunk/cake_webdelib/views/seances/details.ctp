@@ -12,8 +12,13 @@
     <th>Titre</th>
     <th width='20%'>Actions</th>
 </tr>
-<?php foreach ($deliberations as $deliberation): ?>
-<tr height="36px">
+<?php
+       $numLigne = 1;
+       foreach ($deliberations as $deliberation):
+          $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
+       echo $html->tag('tr', null, $rowClass);
+       $numLigne++;
+?>
 	<?php
 	    if ($deliberation['Deliberation']['etat']==2){
 	       echo '<td>'.$html->image('/img/icons/non_votee.png',  array('title'=> 'Projet validé')).'</td>';
