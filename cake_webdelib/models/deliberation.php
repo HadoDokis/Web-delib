@@ -607,7 +607,7 @@ class Deliberation extends AppModel {
 
                $acteurs = $this->Listepresence->find('all', 
                                                      array ('conditions' => array("delib_id" => $delib['Deliberation']['id']),
-                                                            'contain'   => array('Acteur'),           
+                                                            'contain'   => array('Acteur', 'Mandataire'),           
                                                             'order' => 'Acteur.position ASC'));
                if (!empty($acteurs)) {
                      foreach($acteurs as $acteur) {
@@ -785,6 +785,7 @@ class Deliberation extends AppModel {
               $oDevPart->addElement(new GDO_FieldType("telfixe_acteur".$type,        ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType("telmobile_acteur".$type,      ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType("note_acteur".$type,           ' ', "text"));
+
               $oDevPart->addElement(new GDO_FieldType('nom_acteur_mandate',                 ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType('prenom_acteur_mandate',              ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType('salutation_acteur_mandate',          ' ', "text"));
@@ -798,6 +799,7 @@ class Deliberation extends AppModel {
               $oDevPart->addElement(new GDO_FieldType('telfixe_acteur_mandate',             ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType('telmobile_acteur_mandate',           ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType('note_acteur_mandate',                ' ', "text"));
+
               $acteurs->addPart($oDevPart);
               return $acteurs;
             }
@@ -821,7 +823,7 @@ class Deliberation extends AppModel {
                 $oDevPart->addElement(new GDO_FieldType("telfixe_acteur".$type,utf8_encode($acteur['telfixe_acteur']), "text"));
                 $oDevPart->addElement(new GDO_FieldType("telmobile_acteur".$type,  utf8_encode($acteur['prenom_acteur']), "text"));
                 $oDevPart->addElement(new GDO_FieldType("note_acteur".$type, utf8_encode($acteur['note_acteur']), "text"));
-                if (isset($acteur['nom_mandate'])) {
+                if ($isMandate) {
                     $oDevPart->addElement(new GDO_FieldType('nom_acteur_mandate', utf8_encode($acteur['nom_mandate']), "text"));
                     $oDevPart->addElement(new GDO_FieldType('prenom_acteur_mandate', utf8_encode($acteur['prenom_mandate']), "text"));
                     $oDevPart->addElement(new GDO_FieldType('salutation_acteur_mandate', utf8_encode($acteur['salutation_mandate']), "text"));
