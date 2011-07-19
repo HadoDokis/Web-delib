@@ -467,7 +467,7 @@ class SeancesController extends AppController {
 				&& empty($deliberation['Deliberation']['num_delib']) )
 				$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id']);
 			if ($this->Deliberation->save($this->data['Deliberation'])) {
-			    $this->redirect($this->Session->read('user.User.lasturl'));
+			    $this->redirect("/seances/details/".$deliberation['Deliberation']['seance_id']);
                         }
 		}
 	}
