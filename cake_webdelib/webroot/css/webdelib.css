@@ -1275,4 +1275,5 @@ div.aModifier {
 	filter:Alpha(Opacity=50);
     background-image: url(../img/loading.gif);
     background-repeat: no-repeat;
+    background-position: center center;
 }
