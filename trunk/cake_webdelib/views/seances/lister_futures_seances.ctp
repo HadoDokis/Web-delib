@@ -21,25 +21,31 @@
 		<td><b><?php echo $seance['Typeseance']['libelle']; ?></b></td>
 		<td><?php echo ($html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id'])); ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
-		 	<?php echo $html->link(SHY,'/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_classer_odj', 'title'=>'Voir l\'ordre des projets', 'alt'=>'odj'), false, false)?>
-		<?php
-                       $urlConvoc = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'].'/null/';
-		       $urlOdj = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/';
-                       $urlConvocUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'].'/null/0/retour/0/true';
-		       $urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/0/retour/0/true';
-                    
-                     if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
-//		        echo $html->link(SHY, $urlConvocUnique, array('class'=>'link_convocation_unique', 'title'=>"Apercu d'une convocation"), 'Etes-vous sur de vouloir lancer la génération de l\'apercu  ?', false);
-echo $html->link(SHY, $urlConvocUnique, array(
-	'class'=>'link_convocation_unique',
-	'title'=>"Apercu d'une convocation",
-	'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération de l\'apercu  ?");'), false, false);
-
-		    echo $html->link(SHY, $urlConvoc, array('class'=>'link_convocation', 'title'=>'Générer la liste des convocations'), 'Etes-vous sur de vouloir lancer la génération des documents ?', false);
-                    if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
-		        echo $html->link(SHY, $urlOdjUnique, array('class'=>'link_ordre_jour_unique', 'title'=>"Apercu de l'ordre jour"),  'Etes-vous sur de vouloir lancer la génération de l\'apercu ?', false);
-		    echo $html->link(SHY, $urlOdj, array('class'=>'link_ordre_jour', 'title'=>'Générer l\'ordre du jour détaillé'),  'Etes-vous sur de vouloir lancer la génération des documents  ?', false);
-		?>
+<?php
+			echo $html->link(SHY,'/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_classer_odj', 'title'=>'Voir l\'ordre des projets', 'alt'=>'odj'), false, false);
+			$urlConvoc = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'].'/null/';
+			$urlOdj = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/';
+			$urlConvocUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'].'/null/0/retour/0/true';
+			$urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/0/retour/0/true';
+			if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
+				echo $html->link(SHY, $urlConvocUnique, array(
+					'class'=>'link_convocation_unique',
+					'title'=>"Apercu d'une convocation",
+					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération de l\'apercu ?");'), false, false);
+		    echo $html->link(SHY, $urlConvoc, array(
+				'class'=>'link_convocation',
+				'title'=>'Générer la liste des convocations',
+				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération des documents ?");'), false, false);
+			if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
+				echo $html->link(SHY, $urlOdjUnique, array(
+					'class'=>'link_ordre_jour_unique',
+					'title'=>"Apercu de l'ordre jour",
+					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération de l\'apercu ?");'), false, false);
+			echo $html->link(SHY, $urlOdj, array(
+					'class'=>'link_ordre_jour',
+					'title'=>'Générer l\'ordre du jour détaillé',
+					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération des documents ?");'), false, false);
+?>
 		</td>
 		<td class="actions">
 			<?php echo $html->link(SHY,'/seances/saisirSecretaire/' . $seance['Seance']['id'], array('class'=>'link_secretaire', 'title'=>'Choix du secrétaire de séance'), false, false); ?>
