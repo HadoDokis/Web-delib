@@ -9,11 +9,16 @@
  	<th>Numéro D&eacute;lib&eacute;ration</th>
  	<th>Objet</th>
  	<th>Titre</th>
- 	<th>statut</th>
+ 	<th width='65px'>statut</th>
     </tr>
+
 <?php
-	foreach ($deliberations as $delib) {
-               echo ("<tr height='36px'>");
+       $numLigne = 1;
+       foreach ($deliberations as $delib) {
+          $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
+       echo $html->tag('tr', null, $rowClass);
+       $numLigne++;
+
 		if ((($delib['Deliberation']['etat_parapheur']==null) || ($delib['Deliberation']['etat_parapheur']== -1) ) && 
                     ($delib['Deliberation']['signee']!=1) &&  
                      (($delib['Deliberation']['etat']>=3) || ($delib['Deliberation']['nature_id']>1 && $delib['Deliberation']['etat']>=2) )) 
