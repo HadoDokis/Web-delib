@@ -34,7 +34,7 @@
 					'annexes'=>$delibRattachee['Annex'],
 					'natureLibelle'=>$this->data['Nature']['libelle']));
 	    	}
-	    	echo $html->tag('h2', 'Informations communes');
+	    	echo $html->tag('h2', 'Informations du projet (communes aux délibérations)');
 	    }
 	?>
 
