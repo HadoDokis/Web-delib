@@ -946,7 +946,8 @@ class DeliberationsController extends AppController {
         $url = 'https://'.Configure::read('HOST')."/modules/actes/actes_transac_get_status.php?transaction=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+        if (Configure::read('USE_PROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
         curl_setopt($ch, CURLOPT_POST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
@@ -965,7 +966,8 @@ class DeliberationsController extends AppController {
         $url = 'https://'.Configure::read('HOST')."/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+        if (Configure::read('USE_PROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
@@ -1208,21 +1210,47 @@ class DeliberationsController extends AppController {
 		         }
 			 $nb_pj++;
                     }
+                    if ( $delib['Deliberation']['parent_id'] != null) {
+                        $annexes = $this->Annex->find('all', array('conditions' =>array('Model'                 =>'Deliberation', 
+                                                                                        'foreign_key'           => $delib['Deliberation']['parent_id'],
+                                                                                        'joindre_ctrl_legalite' => 1)));
+                        foreach ($annexes as $annexe) {
+                            if (filename_pdf == null ) {
+			        $pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/", 
+                                                                 $annexe['Annex']['filename'], 
+                                                                 $annexe['Annex']['data']);
+                            }
+                            else { 
+			        $pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/", 
+                                                                 $annexe['Annex']['filename_pdf'], 
+                                                                 $annexe['Annex']['data_pdf']);
 
-	                 $ch = curl_init();
-                         curl_setopt($ch, CURLOPT_URL, $url);
-			// curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
-                         curl_setopt($ch, CURLOPT_POST, TRUE);
-                         curl_setopt($ch, CURLOPT_POSTFIELDS, $acte );
-			 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-                         curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
-                         curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-                         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-                         curl_setopt($ch, CURLOPT_SSLKEY,  Configure::read('SSLKEY'));
-                         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-                         curl_setopt($ch, CURLOPT_VERBOSE, true);
-			 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-			 $curl_return = curl_exec($ch);
+                            }
+
+			    $data["acte_attachments[$nb_pj]"] = "@$pj_file";
+      	                    $data["acte_attachments_sign[$nb_pj]"] = "";
+                            $nb_pj++;
+                        }
+
+                    }
+
+	             $ch = curl_init();
+                     curl_setopt($ch, CURLOPT_URL, $url);
+                     if (Configure::read('USE_PROXY'))
+                         curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+
+                     curl_setopt($ch, CURLOPT_POST, TRUE);
+                     curl_setopt($ch, CURLOPT_POSTFIELDS, $acte );
+		     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+                     curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+                     curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
+                     curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
+                     curl_setopt($ch, CURLOPT_SSLKEY,  Configure::read('SSLKEY'));
+                     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+                     curl_setopt($ch, CURLOPT_VERBOSE, true);
+		     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+
+		     $curl_return = curl_exec($ch);
 
 			 $pos    = strpos($curl_return, 'OK');
 			 $tdt_id = substr  ($curl_return , 3 , strlen($curl_return) );
@@ -1273,8 +1301,9 @@ class DeliberationsController extends AppController {
 		         );
 		    $url .= '?'.http_build_query($data);
 		    $ch = curl_init();
-		    curl_setopt($ch, CURLOPT_URL, $url);
-		//  curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+ 		    curl_setopt($ch, CURLOPT_URL, $url);
+                    if (Configure::read('USE_PROXY'))
+                        curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
 		    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		    curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
 		    curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
