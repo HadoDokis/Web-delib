@@ -106,6 +106,7 @@ class DeliberationsController extends AppController {
 			'fields' => array(
 				'id', 'anterieure_id', 'service_id', 'circuit_id',
 				'etat', 'num_delib', 'titre', 'objet', 'num_pref',
+				'texte_projet', 'texte_projet_name', 'texte_synthese', 'texte_synthese_name', 'deliberation', 'deliberation_name',
 				'created', 'modified'),
 			'contain' => array(
 				'Nature.libelle',
@@ -116,7 +117,8 @@ class DeliberationsController extends AppController {
 				'Rapporteur.nom', 'Rapporteur.prenom',
 				'Annex',
 				'Infosup',
-				'Multidelib.id', 'Multidelib.objet', 'Multidelib.num_delib', 'Multidelib.etat'),
+				'Multidelib.id', 'Multidelib.objet', 'Multidelib.num_delib', 'Multidelib.etat', 'Multidelib.deliberation', 'Multidelib.deliberation_name',
+				'Multidelib.Annex'),
 			'conditions' => array('Deliberation.id' => $id)
 			));
 		if (empty($this->data)) {
