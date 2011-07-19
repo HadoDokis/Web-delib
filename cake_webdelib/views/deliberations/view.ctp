@@ -1,3 +1,6 @@
+<?php echo $javascript->link('ckeditor/ckeditor'); ?>
+<?php echo $javascript->link('ckeditor/adapters/jquery'); ?>
+
 <div id="vue_cadre">
 
 <dl>
@@ -21,23 +24,15 @@
 	    	echo $html->tag('dt', 'Libellé');
 	    	echo $html->tag('dd', '&nbsp;'.$this->data['Deliberation']['objet']);
 	    } else {
-			if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
-		    	echo $html->tag('h2', 'D&eacute;lib&eacute;ration n&deg; '.$this->data['Deliberation']['num_delib']);
-			else
-		    	echo $html->tag('h2', 'Identifiant projet '.$this->data['Nature']['libelle'].' : '.$this->data['Deliberation']['id']);
-	    	echo $html->tag('dt', 'Libellé');
-	    	echo $html->tag('dd', '&nbsp;'.$this->data['Deliberation']['objet']);
-	    	echo $html->tag('dt', 'Texte de la délibération');
-			echo $html->tag('dd', $html->link('afficher le texte de délibération','/deliberations/deliberationvue/' . $this->data['Deliberation']['id']));
+			echo $this->element('viewDelibRattachee', array(
+				'delib'=>$this->data['Deliberation'],
+				'annexes'=>$this->data['Annex'],
+				'natureLibelle'=>$this->data['Nature']['libelle']));
 	    	foreach($this->data['Multidelib'] as $delibRattachee) {
-				if ($delibRattachee['etat']==3 || $delibRattachee['etat']==5)
-			    	echo $html->tag('h2', 'D&eacute;lib&eacute;ration n&deg; '.$delibRattachee['num_delib']);
-				else
-			    	echo $html->tag('h2', 'Identifiant projet '.$this->data['Nature']['libelle'].' : '.$delibRattachee['id']);
-		    	echo $html->tag('dt', 'Libellé');
-		    	echo $html->tag('dd', '&nbsp;'.$delibRattachee['objet']);
-		    	echo $html->tag('dt', 'Texte de la délibération');
-				echo $html->tag('dd', $html->link('afficher le texte de délibération','/deliberations/deliberationvue/' . $delibRattachee['id']));
+				echo $this->element('viewDelibRattachee', array(
+					'delib'=>$delibRattachee,
+					'annexes'=>$delibRattachee['Annex'],
+					'natureLibelle'=>$this->data['Nature']['libelle']));
 	    	}
 	    	echo $html->tag('h2', 'Informations communes');
 	    }
@@ -92,8 +87,6 @@
 		</div>
 	</div>
 
-
-
 <div class="imbrique">
 	<div class="gauche">
 		<dt>Date création</dt>
@@ -105,6 +98,14 @@
 	</div>
 </div>
 
+
+<?php
+echo $this->element('viewTexte', array('type'=>'projet', 'delib'=>$this->data['Deliberation']));
+echo $this->element('viewTexte', array('type'=>'synthese', 'delib'=>$this->data['Deliberation']));
+if (empty($this->data['Multidelib']))
+	echo $this->element('viewTexte', array('type'=>'deliberation', 'delib'=>$this->data['Deliberation']));
+?>
+
 <?php
 	if(!empty($infosupdefs)) {
 		echo '<dt>Informations Suppl&eacute;mentaires </dt>';
@@ -112,9 +113,17 @@
 		foreach ($infosupdefs as $infosupdef) {
 			echo $infosupdef['Infosupdef']['nom'].' : ';
 			if (array_key_exists($infosupdef['Infosupdef']['code'], $this->data['Infosup'])) {
-				if ($infosupdef['Infosupdef']['type'] == 'richText')
-					echo '[Texte enrichi]';
-				else
+				if ($infosupdef['Infosupdef']['type'] == 'richText') {
+					if (!empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']])) {
+						echo $html->link('[Afficher le texte]', 'javascript:afficheMasqueTexteEnrichi(\'afficheMasque'.$infosupdef['Infosupdef']['code'].'\', \''.$infosupdef['Infosupdef']['code'].'\')', array(
+							'id'=> 'afficheMasque'.$infosupdef['Infosupdef']['code'], 'affiche'=>'masque'));
+						echo '<div class="annexesGauche"></div>';
+						echo '<div class="fckEditorProjet">';
+							echo $form->input($infosupdef['Infosupdef']['code'], array('label'=>'', 'type'=>'textarea', 'style'=>'display:none;', 'value'=>$this->data['Infosup'][$infosupdef['Infosupdef']['code']]));
+						echo '</div>';
+						echo '<div class="spacer"></div>';
+					}
+				} else
 					echo $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
 			}
 			echo '<br>';
@@ -123,18 +132,20 @@
 	}
 ?>
 
-<?php if(!empty($this->data['Annex'])) { ?>
-	<dt>Pi&egrave;ces jointes envoy&eacute;es au contr&ocirc;le de l&eacute;galit&eacute; </dt>
-	<dd>
- <?php foreach ($this->data['Annex'] as $annexe) {
-			if ($annexe['joindre_ctrl_legalite']){
-				if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
-				echo '<br>Nom fichier : '.$annexe['filename'];
-				echo '<br>Taille : '.$annexe['size'];
-				echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
-			}
- 		}	  ?></dd>
- <?php } ?>
+<?php
+	if(empty($this->data['Multidelib']) && !empty($this->data['Annex'])) {
+		echo '<dt>Annexes</dt>';
+		echo '<dd><br>';
+	 	foreach ($this->data['Annex'] as $annexe) {
+			if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
+			echo '<br>Nom fichier : '.$annexe['filename'];
+			echo '<br>Joindre au contrôle de légalité : '.($annexe['joindre_ctrl_legalite']?'oui':'non');
+//			echo '<br>Taille : '.$annexe['size'];
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
+ 		}
+		echo '</dd>';
+	}
+?>
 
 <?php
 	if ($tab_anterieure!=null)
@@ -171,9 +182,9 @@
 </dl>
 <ul id="actions_fiche">
 	<li><?php echo $html->link(SHY, $previous, array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?></li>
-	<li><?php echo $html->link(SHY,'/deliberations/textprojetvue/' . $this->data['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
-	<li><?php echo $html->link(SHY,'/deliberations/textsynthesevue/' . $this->data['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
-	<li><?php echo $html->link(SHY,'/deliberations/deliberationvue/' . $this->data['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?></li>
+	<li><?php //echo $html->link(SHY,'/deliberations/textprojetvue/' . $this->data['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
+	<li><?php //echo $html->link(SHY,'/deliberations/textsynthesevue/' . $this->data['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
+	<li><?php //echo $html->link(SHY,'/deliberations/deliberationvue/' . $this->data['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?></li>
 	<li>
 	<?php
 	    if ($userCanEdit)
@@ -183,3 +194,23 @@
 </ul>
 
 </div>
+<script type="text/javascript">
+function afficheMasqueTexteEnrichi(lienId, inputId) {
+	var lienAfficherMasquer = $('#'+lienId);
+	if(lienAfficherMasquer.attr('affiche') == 'masque') {
+		var config = {
+			readOnly : true,
+			toolbar : 'Basic',
+			toolbarStartupExpanded : false
+		};
+		$('#'+inputId).ckeditor(config);
+		lienAfficherMasquer.attr('affiche', 'affiche');
+		lienAfficherMasquer.html('[Masquer le texte]');
+	} else {
+		$('#'+inputId).ckeditor(function(){this.destroy();});
+		$('#'+inputId).hide();
+		lienAfficherMasquer.attr('affiche', 'masque');
+		lienAfficherMasquer.html('[Afficher le texte]');
+	}
+}
+</script>
