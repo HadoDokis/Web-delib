@@ -23,6 +23,8 @@
     Configure::write('FILE_CLASS', Configure::read('WEBDELIB_PATH').'webroot/files/actes/classification.xml');
     Configure::write('PASSWORD', 'pierre');
     Configure::write('HOST', 'test.s2low.fr');
+    Configure::write ('USE_PROXY', 'false');
+    Configure::write ('HOST_PROXY', '');
 
     ////////////////////////
     // Configuration du LDAP
@@ -85,7 +87,7 @@
     ////////////////////////
     //limitation du nombre de projets par banette
     ////////////////////////
-    Configure::write("LIMIT", 50);
+    Configure::write("LIMIT", 5);
 
     ////////////////////////
     // Configuration Webservice Stela
@@ -100,4 +102,11 @@
     // Mode délibérations multiples
     ////////////////////////
     Configure::write("DELIBERATIONS_MULTIPLES", false);
+
+    ////////////////////////
+    // Configuration pour la conversion de format des documents
+    ////////////////////////
+    Configure::write('CONVERSION_TYPE' , 'UNOCONV');
+    Configure::write('CONVERSION_EXEC' , '/opt/unoconv-0.4/unoconv');
+ 
 ?>
