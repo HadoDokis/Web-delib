@@ -4,7 +4,7 @@ class PostseancesController extends AppController {
 
 	var $name = 'Postseances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2' );
-	var $components = array('Date', 'Gedooo', 'Cmis');
+	var $components = array('Date', 'Gedooo', 'Cmis', 'Progress');
 	var $uses = array('Deliberation', 'Seance', 'User',  'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance');
 
 	// Gestion des droits
@@ -86,38 +86,31 @@ class PostseancesController extends AppController {
 
     function changeStatus ($seance_id) {
         $result = false;
-        $this->data=$this->Seance->read(null,$seance_id);
         // Avant de cloturer la séance, on stock les délibérations en base de données au format pdf
         $result = $this->_stockPvs($seance_id);
         if ($result){
-            $this->redirect('/postseances/afficherProjets/'.$seance_id);
+            $this->Progress->end('/postseances/afficherProjets/'.$seance_id);
+            exit;
         }
         else
             $this->Session->setFlash("Au moins un PV n'a pas &eacute;t&eacute; g&eacute;n&eacute;r&eacute; correctement...");
     }
 
 	function _stockPvs($seance_id) {
-		require_once ('vendors/progressbar.php');
-		Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
+	        $this->Progress->start(200, 100,200,'#000000','#FFCC00','#006699');
 		$result = true;
 
 		$path = WEBROOT_PATH."/files/generee/PV/$seance_id";
 		$this->Gedooo->createFile("$path/", 'empty', '');
 
 		$seance = $this->Seance->read(null, $seance_id);
-		ProgressBar(0, 'Préparation PV Sommaire : '.$seance['Typeseance']['libelle']);
+		$this->Progress->at(0, 'Préparation PV Sommaire : '.$seance['Typeseance']['libelle']);
 		$model_pv_sommaire = $seance['Typeseance']['modelpvsommaire_id'];
 		$model_pv_complet  = $seance['Typeseance']['modelpvdetaille_id'];
 		$retour1 = $this->requestAction("/models/generer/null/$seance_id/$model_pv_sommaire/0/1/pv_sommaire.pdf/1/false");
-		ProgressBar(50, 'Préparation du PV Complet : '.$seance['Typeseance']['libelle']);
+		$this->Progress->at(50, 'Préparation du PV Complet : '.$seance['Typeseance']['libelle']);
 		$retour2 = $this->requestAction("/models/generer/null/$seance_id/$model_pv_complet/0/1/pv_complet.pdf/1/false");
-		ProgressBar(99, 'Sauvegarde des PVs');
-		echo ('<script>');
-		echo ('    document.getElementById("pourcentage").style.display="none"; ');
-		echo ('    document.getElementById("progrbar").style.display="none";');
-		echo ('    document.getElementById("affiche").style.display="none";');
-		echo ('    document.getElementById("contTemp").style.display="none";');
-		echo ('</script>');
+		$this->Progress->at(99, 'Sauvegarde des PVs');
 		$path = WEBROOT_PATH."/files/generee/PV/$seance_id";
 		$pv_sommaire = file_get_contents("$path/pv_sommaire.pdf");
 		$pv_complet = file_get_contents("$path/pv_complet.pdf");
