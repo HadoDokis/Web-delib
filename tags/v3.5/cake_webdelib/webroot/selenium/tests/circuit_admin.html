@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<link rel="selenium.base" />
+<title>webdelib</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">webdelib</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/users/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][login]']</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[User][password]']</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/pages/gestion_utilisateurs']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@href='/circuits/index']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@class='link_add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[Circuit][libelle]']</td>
+	<td>Mon circuit</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectAndWait</td>
+	<td>xpath=//select[@name='data[Circuit][libelle]']</td>
+	<td>label=Mon circuit</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//a[@class='link_modifier_left']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=//input[@name='data[Circuit][libelle]']</td>
+	<td>Mon nouveau circuit</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//input[@class='bt_save_border']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectAndWait</td>
+	<td>xpath=//select[@name='data[Circuit][libelle]']</td>
+	<td>label=Mon nouveau circuit</td>
+</tr>
+<tr>
+	<td>selectAndWait</td>
+	<td>xpath=//select[@name='data[Service][libelle]']</td>
+	<td>label=D&eacute;faut</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='centre']/table[2]/tbody/tr[2]/td[4]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectAndWait</td>
+	<td>xpath=//select[@name='data[Service][libelle]']</td>
+	<td>label=TEST</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='centre']/table[2]/tbody/tr[5]/td[4]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='centre']/table[2]/tbody/tr[3]/td[4]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='centre']/table[1]/tbody/tr[5]/td[6]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='centre']/table[1]/tbody/tr[4]/td[5]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='centre']/table[1]/tbody/tr[5]/td[7]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='centre']/table[1]/tbody/tr[4]/td[7]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='centre']/table[1]/tbody/tr[3]/td[7]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=//div[@id='centre']/a[3]</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
