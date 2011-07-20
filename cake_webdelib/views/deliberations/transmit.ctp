@@ -12,6 +12,7 @@
 <h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
     La Classification enregistrée date du <?php echo $dateClassification ?> <br /><br />
     <table>
+<tr>
  	<th><?php echo  $paginator->sort('N° délibération', 'num_delib'); ?></th>
  	<th><?php echo  $paginator->sort('Objet', 'objet'); ?></th>
  	<th><?php echo  $paginator->sort('Date de séance', 'Seance.date'); ?></th>
@@ -19,11 +20,15 @@
  	<th><?php echo  $paginator->sort('Classification', 'num_pref'); ?></th>
  	<th><?php echo  $paginator->sort('Statut', 'tdt_id'); ?></th>
  	<th>Courrier Ministériel</th>
-<tr>
+</tr>
 <?php
-	foreach ($deliberations as $delib) {
-	     echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/'.$delib['Deliberation']['id']);
-		?>
+           $numLigne = 1;
+           foreach ($deliberations as $delib) {
+               $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
+	       echo $html->tag('tr', null, $rowClass);
+	       $numLigne++;
+	       echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/'.$delib['Deliberation']['id']);
+?>
 		</td>
 		<td><?php echo $delib['Deliberation']['objet']; ?></td>
 		<td><?php echo $delib['Seance']['date']; ?></td>

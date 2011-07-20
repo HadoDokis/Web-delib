@@ -4,14 +4,20 @@
 <h2>Verser les D&eacute;lib&eacute;rations &agrave; AS@LAE</h2>
 <?php echo $form->create('Deliberation',array('type'=>'file','url'=>'/deliberations/verserAsalae')); ?>
 <table>
+<tr>
 	<th></th>
  	<th>Numéro D&eacute;lib&eacute;ration</th>
  	<th>Objet</th>
  	<th>Titre</th>
  	<th>statut</th>
-<tr>
+</tr>
 <?php
-	foreach ($deliberations as $delib) {
+           $numLigne = 1;
+           foreach ($deliberations as $delib) {
+                $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
+	        echo $html->tag('tr', null, $rowClass);
+	        $numLigne++;
+
 		if ($delib['Deliberation']['etat_asalae']==null)
 		    echo("<td>".$form->checkbox('Deliberation.id_'.$delib['Deliberation']['id'])."</td>");
 		else

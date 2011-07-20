@@ -12,16 +12,22 @@
 <h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
 <?php echo $form->create('Deliberation',array('type'=>'file','url'=>'/deliberations/sendActe')); ?>
     La Classification enregistrée date du <?php echo $html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
-	<table style='width:auto;'>
+	<table style='100%'>
+<tr>
 	<th></th>
  	<th>Numéro Généré</th>
  	<th>Objet</th>
  	<th>Titre</th>
  	<th>Classification</th>
  	<th>statut</th>
-<tr>
+</tr>
 <?php
-	foreach ($deliberations as $delib) {
+           $numLigne = 1;
+           foreach ($deliberations as $delib) {
+		             $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
+	          echo $html->tag('tr', null, $rowClass);
+	          $numLigne++;
+
 		if ($delib['Deliberation']['etat']!= 5)
 			echo("<td>".$form->checkbox('Deliberation.id_'.$delib['Deliberation']['id'])."</td>");
 		else
