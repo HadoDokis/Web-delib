@@ -2141,7 +2141,8 @@ class DeliberationsController extends AppController {
 				$texte = $this->data['Deliberation']['texte'];
 				if ($conditions != "")
 					$conditions .= " AND ";
-				$conditions .= " (Deliberation.objet LIKE '%$texte%' OR Deliberation.titre LIKE '%$texte%')";
+
+                                $conditions .= ' (Deliberation.objet LIKE "%'.$texte.'%" OR Deliberation.titre LIKE "%'.$texte.'%")'; 
 			}
 
 			$seanced = $this->Seance->read(null, $this->data['Deliberation']['seance1_id']);
@@ -2267,7 +2268,7 @@ class DeliberationsController extends AppController {
 				$texte = $this->data['Deliberation']['texte'];
 				if ($conditions != "")
 					$conditions .= " AND ";
-				$conditions .= " (Deliberation.objet LIKE '%$texte%' OR Deliberation.titre LIKE '%$texte%')";
+				$conditions .= ' (Deliberation.objet LIKE "%'.$texte.'%" OR Deliberation.titre LIKE "%'.$texte.'%")';
 			}
 
 			$seanced = $this->Seance->read(null, $this->data['Deliberation']['seance1_id']);
