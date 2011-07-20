@@ -5,7 +5,6 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 CKEDITOR.editorConfig = function( config )
 {
-	// Define changes to default configuration here. For example:
         config.language            = 'fr';
 	config.uiColor             = '#AADC6E';
         config.toolbar             = 'MyToolbar';
@@ -14,7 +13,8 @@ CKEDITOR.editorConfig = function( config )
         config.entities_additional = false;
         config.entities_latin      = false;
         config.entities_greek      = false;
-
+        config.baseHref            = 'http://webdelib/';
+        config.baseUrl            = 'http://webdelib/';
 
         config.filebrowserBrowseUrl      = '/js/ckfinder/ckfinder.html';
 	config.filebrowserImageBrowseUrl = '/js/ckfinder/ckfinder.html?type=Images';
@@ -29,7 +29,7 @@ CKEDITOR.editorConfig = function( config )
                 '/',
 		{ name: 'basicstyles', items : [ 'Bold','Italic','Underline', 'Strike','-','RemoveFormat' ] },
 		{ name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','Blockquote' ] },
-		{ name: 'insert', items : [ 'Image','Table','SpecialChar'] },
+		{ name: 'insert', items : [ 'Table','SpecialChar'] },
             	{ name: 'colors', items : [ 'TextColor','BGColor' ] },
 		{ name: 'tools', items : [ 'Maximize','-','About' ] }
 	];
