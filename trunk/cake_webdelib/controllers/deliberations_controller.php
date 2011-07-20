@@ -1697,7 +1697,7 @@ class DeliberationsController extends AppController {
 				'Nature.libelle')));
         $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions));
         $this->_ajouterFiltre($projets);
-        $this->_afficheProjets($projets, 'Mes projets &agrave; traiter', array('traiter', 'generer'), array(), $nbProjets);
+        $this->_afficheProjets($projets, 'Mes projets &agrave; traiter', array('view', 'traiter', 'generer'), array(), $nbProjets);
     }
 
 /*
