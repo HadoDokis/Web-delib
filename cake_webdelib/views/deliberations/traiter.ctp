@@ -1,14 +1,16 @@
 <div id='loading' style="display:none;">&nbsp;</div>
 <div id="buttons">
-<?php 
-    echo $javascript->link('utils.js');     
-    echo $javascript->link('noback.js');     
+<?php
+    echo $javascript->link('utils.js');
+    echo $javascript->link('noback.js');
+	echo $javascript->link('ckeditor/ckeditor');
+	echo $javascript->link('ckeditor/adapters/jquery');
 ?>
 <?php // Initialisation des boutons action de la vue
 	$defBarre = array();
 	$defBarre[] = array('title'=>'Valider', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/1', 'htmlAttributes'=>array('class'=>'link_valider_avec_border', 'title'=>'Valider le projet', 'onclick'=>"disableDiv('buttons');"));
 	$defBarre[] = array('title'=>'Refuser', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/0', 'htmlAttributes'=>array('class'=>'link_refuser_avec_border', 'title'=>'Refuser le projet', 'onclick'=>"disableDiv('buttons');"));
-	 $defBarre[] = array('title'=>"Retourner à", 'url'=>'/deliberations/retour/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_retour_avec_border', 'title'=>'Retourner le projet à'));
+	$defBarre[] = array('title'=>"Retourner à", 'url'=>'/deliberations/retour/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_retour_avec_border', 'title'=>'Retourner le projet à'));
 	if ($Droits->check($session->read('user.User.id'), 'Deliberations:rebond'))
 		$defBarre[] = array('title'=>'Envoyer à', 'url'=>'/deliberations/rebond/' . $deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_rebond_avec_border','title'=>'Envoyer à'));
 	$defBarre[] = array();
@@ -18,27 +20,46 @@
 	if ($Droits->check($session->read('user.User.id'), 'Deliberations:edit'))
 		$defBarre[] = array('title'=>'Modifier', 'url'=>'/deliberations/edit/' . $deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_modifier_avec_border','title'=>'Modifier'));
 
-
 	$defBarre[] = array('title'=>'Annuler', 'url'=>'/deliberations/mesProjetsATraiter', 'htmlAttributes'=>array('class'=>'link_annuler', 'title'=>'Annuler'));
 
 	$linkBarre  = "<table class='table_action' cellspacing='0' cellpadding='0'><tr>";
 	$linkBarre .= $menu->linkBarre($defBarre, 'td');
 	$linkBarre .= "</tr></table>";
+	
+	echo $html->tag('div', null, array('id'=>"vue_cadre"));
+	// affichage  du titre
+	$listeIds = $deliberation['Deliberation']['id'];
+	foreach($deliberation['Multidelib'] as $delibRattachee) {
+		$listeIds .= ', '.$delibRattachee['id'];
+	}
+	echo $html->tag('h3', 'Valider ou refuser les projets '.$deliberation['Nature']['libelle'].' (id : '.$listeIds.')');
+	echo $linkBarre;
 ?>
-<div id="vue_cadre">
-	<h3>Valider ou refuser les projets <?php  echo $deliberation['Nature']['libelle']; ?> (id : <?php echo $deliberation['Deliberation']['id']?>)</h3>
-
-<?php echo $linkBarre; ?>
 </br>
 
 <dl>
-<div class="imbrique">
-	<dt>Libellé</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['objet']?></dd>
-
-	<dt>Titre</dt>
-	<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>
-</div>
+	<div class="imbrique">
+	<?php
+	    if (empty($deliberation['Multidelib'])) {
+	    	echo $html->tag('dt', 'Libellé');
+	    	echo $html->tag('dd', '&nbsp;'.$deliberation['Deliberation']['objet']);
+	    } else {
+			echo $this->element('viewDelibRattachee', array(
+				'delib'=>$deliberation['Deliberation'],
+				'annexes'=>$deliberation['Annex'],
+				'natureLibelle'=>$deliberation['Nature']['libelle']));
+	    	foreach($deliberation['Multidelib'] as $delibRattachee) {
+				echo $this->element('viewDelibRattachee', array(
+					'delib'=>$delibRattachee,
+					'annexes'=>$delibRattachee['Annex'],
+					'natureLibelle'=>$deliberation['Nature']['libelle']));
+	    	}
+	    	echo $html->tag('h2', 'Informations du projet (communes aux délibérations)');
+	    }
+	?>
+		<dt>Titre</dt>
+		<dd>&nbsp;<?php echo $deliberation['Deliberation']['titre']?></dd>
+	</div>
 
 <div class="imbrique">
 	<div class="gauche">
@@ -95,18 +116,12 @@
 	</div>
 </div>
 
-<div class="imbrique">
-	<dt>Textes</dt>
-	<dd>&nbsp;
-		<?php echo $html->link('Projet','/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?>
-		&nbsp;
-		<?php echo $html->link('Synthèse','/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?>
-		&nbsp;
-		<?php echo $html->link('Déliberation','/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?>
-	</dd>
-</div>
-
 <?php
+	echo $this->element('viewTexte', array('type'=>'projet', 'delib'=>$deliberation['Deliberation']));
+	echo $this->element('viewTexte', array('type'=>'synthese', 'delib'=>$deliberation['Deliberation']));
+	if (empty($deliberation['Multidelib']))
+		echo $this->element('viewTexte', array('type'=>'deliberation', 'delib'=>$deliberation['Deliberation']));
+
 	if ($tab_anterieure!=null)
 	{
 		echo"<dt>Versions Antérieures</dt>";
@@ -115,11 +130,8 @@
 			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";
 		}
 	}
-?>
 
-<?php
-	if(!empty($commentaires))
-	{
+	if(!empty($commentaires)) {
 		echo"<dt>Commentaires</dt><br />";
 		foreach ($commentaires as $commentaire){
 			echo '<dd><u>'. $commentaire['Commentaire']['prenomAgent'].' '.$commentaire['Commentaire']['nomAgent'] .' <br/></u>';
@@ -131,49 +143,53 @@
 			echo '</dd>';
 		}
 	}
-?>
 
-<?php
-    if(!empty($infosupdefs)) {
-        echo '<dt>Informations Suppl&eacute;mentaires </dt>';
-        echo '<dd><br>';
-        foreach ($infosupdefs as $infosupdef) {
-            echo $infosupdef['Infosupdef']['nom'].' : ';
-            if (array_key_exists($infosupdef['Infosupdef']['code'], $this->data['Infosup'])) {
-                if ($infosupdef['Infosupdef']['type'] == 'richText')
-                    echo '[Texte enrichi]';
-                else
-                    echo $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
-                }
-                echo '<br>';
-        }
-        echo '</dd>';
-    }
-?>
-
-<?php
-      if (!empty($historiques)) {
-          echo"<dt>Historique</dt><br />";
-          foreach ($historiques as $historique){
-              echo '<dd>'.$html2->ukToFrenchDateWithHour($historique['Historique']['created']).' '.$historique['Historique']['commentaire'];
-              echo '</dd>';
-          }
-      }
-?>
-
-<?php if(!empty($deliberation['Annex'])) { ?>
-	<dt>Pi&egrave;ces jointes au contr&ocirc;le de l&eacute;galit&eacute;</dt>
-	<dd>
- 		<?php foreach ($deliberation['Annex'] as $annexe) {
-			if ($annexe['joindre_ctrl_legalite']){
-				if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
-				echo '<br>Nom fichier : '.$annexe['filename'];
-				echo '<br>Taille : '.$annexe['size'];
-				echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
+	if(!empty($infosupdefs)) {
+		echo '<dt>Informations Suppl&eacute;mentaires </dt>';
+		echo '<dd><br>';
+		foreach ($infosupdefs as $infosupdef) {
+			echo $infosupdef['Infosupdef']['nom'].' : ';
+			if (array_key_exists($infosupdef['Infosupdef']['code'], $this->data['Infosup'])) {
+				if ($infosupdef['Infosupdef']['type'] == 'richText') {
+					if (!empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']])) {
+						echo $html->link('[Afficher le texte]', 'javascript:afficheMasqueTexteEnrichi(\'afficheMasque'.$infosupdef['Infosupdef']['code'].'\', \''.$infosupdef['Infosupdef']['code'].'\')', array(
+							'id'=> 'afficheMasque'.$infosupdef['Infosupdef']['code'], 'affiche'=>'masque'));
+						echo '<div class="annexesGauche"></div>';
+						echo '<div class="fckEditorProjet">';
+							echo $form->input($infosupdef['Infosupdef']['code'], array('label'=>'', 'type'=>'textarea', 'style'=>'display:none;', 'value'=>$this->data['Infosup'][$infosupdef['Infosupdef']['code']]));
+						echo '</div>';
+						echo '<div class="spacer"></div>';
+					}
+				} else
+					echo $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
 			}
- 		}	  ?>
- 	</dd>
- <?php } ?>
+			echo '<br>';
+		}
+		echo '</dd>';
+	}
+
+	if (!empty($historiques)) {
+		echo"<dt>Historique</dt><br />";
+		foreach ($historiques as $historique){
+			echo '<dd>'.$html2->ukToFrenchDateWithHour($historique['Historique']['created']).' '.$historique['Historique']['commentaire'];
+			echo '</dd>';
+		}
+	}
+?>
+
+<?php
+	if(empty($deliberation['Multidelib']) && !empty($deliberation['Annex'])) {
+		echo '<dt>Annexes</dt>';
+		echo '<dd><br>';
+	 	foreach ($deliberation['Annex'] as $annexe) {
+			if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
+			echo '<br>Nom fichier : '.$annexe['filename'];
+			echo '<br>Joindre au contrôle de légalité : '.($annexe['joindre_ctrl_legalite']?'oui':'non');
+			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
+ 		}
+		echo '</dd>';
+	}
+?>
 
 </dl>
 
@@ -181,3 +197,23 @@
 
 </div>
 </div>
+<script type="text/javascript">
+function afficheMasqueTexteEnrichi(lienId, inputId) {
+	var lienAfficherMasquer = $('#'+lienId);
+	if(lienAfficherMasquer.attr('affiche') == 'masque') {
+		var config = {
+			readOnly : true,
+			toolbar : 'Basic',
+			toolbarStartupExpanded : false
+		};
+		$('#'+inputId).ckeditor(config);
+		lienAfficherMasquer.attr('affiche', 'affiche');
+		lienAfficherMasquer.html('[Masquer le texte]');
+	} else {
+		$('#'+inputId).ckeditor(function(){this.destroy();});
+		$('#'+inputId).hide();
+		lienAfficherMasquer.attr('affiche', 'masque');
+		lienAfficherMasquer.html('[Afficher le texte]');
+	}
+}
+</script>
