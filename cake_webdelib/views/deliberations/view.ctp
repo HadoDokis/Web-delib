@@ -140,7 +140,6 @@ if (empty($this->data['Multidelib']))
 			if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
 			echo '<br>Nom fichier : '.$annexe['filename'];
 			echo '<br>Joindre au contrôle de légalité : '.($annexe['joindre_ctrl_legalite']?'oui':'non');
-//			echo '<br>Taille : '.$annexe['size'];
 			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
  		}
 		echo '</dd>';
