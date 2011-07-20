@@ -128,7 +128,7 @@ class ProfilsController extends AppController {
                                         $cpt = 0;
 					foreach($Users as $User) {
                                             $cpt++;
-                                            ProgressBar($cpt*(100/$nbUsers), 'Mise Ã  jour des donnÃ©es pour : <b>'. $User['User']['login'].'</b>');
+                                            ProgressBar($cpt*(100/$nbUsers), 'Mise à jour des données pour : <b>'. $User['User']['login'].'</b>');
 			                    $this->Dbdroits->MajCruDroits(
 						array(
 							'model'=>'Utilisateur','foreign_key'=>$User['User']['id'],'alias'=>$User['User']['login']),
@@ -180,7 +180,7 @@ class ProfilsController extends AppController {
 				}
 			}
 			else {
-				$this->Session->setFlash('Impossible de supprimer ce profil car il est attribuï¿½.');
+				$this->Session->setFlash('Impossible de supprimer ce profil car il est attribué.');
 				$this->redirect('/profils/index');
 			}
 		}
