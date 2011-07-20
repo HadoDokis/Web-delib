@@ -813,7 +813,25 @@ class DeliberationsController extends AppController {
 	}
 
 	function traiter($id = null, $valid=null) {
-            $projet = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
+		$this->Deliberation->Behaviors->attach('Containable');
+		$projet = $this->Deliberation->find('first', array(
+			'fields' => array(
+				'id', 'anterieure_id', 'service_id', 'circuit_id',
+				'etat', 'num_delib', 'titre', 'objet', 'num_pref',
+				'texte_projet', 'texte_projet_name', 'texte_synthese', 'texte_synthese_name', 'deliberation', 'deliberation_name',
+				'created', 'modified'),
+			'contain' => array(
+				'Nature.libelle',
+				'Theme.libelle',
+				'Service.libelle',
+				'Seance.date',
+				'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom',
+				'Rapporteur.nom', 'Rapporteur.prenom',
+				'Annex',
+				'Infosup',
+				'Multidelib.id', 'Multidelib.objet', 'Multidelib.num_delib', 'Multidelib.etat', 'Multidelib.deliberation', 'Multidelib.deliberation_name',
+				'Multidelib.Annex'),
+			'conditions' => array('Deliberation.id' => $id)));
 	    if (empty($projet)) {
 		$this->Session->setFlash('identifiant invalide pour le projet : '.$id, 'growl', array('type'=>'erreur'));
 		$this->redirect('/deliberations/mesProjetsATraiter');
@@ -839,7 +857,7 @@ class DeliberationsController extends AppController {
 		    $this->set('commentaires', $commentaires);
                     if (!empty($projet['Seance']['date']))
                         $projet['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($projet['Seance']['date']));
-                        $id_service = $projet['Service']['id'];
+                        $id_service = $projet['Deliberation']['service_id'];
                         $projet['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
 	                $projet['Circuit']['libelle'] = $this->Circuit->getLibelle($projet['Deliberation']['circuit_id']);
                         $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/'.$id, array('return')));
