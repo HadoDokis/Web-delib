@@ -3,7 +3,7 @@ class ProfilsController extends AppController {
 
 	var $name = 'Profils';
 	var $helpers = array('Session', 'Tree');
-	var $components = array('Dbdroits', 'Menu');
+	var $components = array('Dbdroits', 'Menu', 'Progress');
 	var $uses = array('Profil', 'Aro');
 
 	// Gestion des droits
@@ -137,21 +137,13 @@ class ProfilsController extends AppController {
 						$this->data['Droits']
 						);
 					}
-                                        die ("sdfsdfqsdfqdsfqsdf");
 					$this->Session->setFlash('Le profil a &eacute;t&eacute; modifi&eacute;');
 					$sortie = true;
 				} else
 				    $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 			}
 			if ($sortie) {
-                              echo ('<script>');
-                              echo ('    document.getElementById("pourcentage").style.display="none"; ');
-                              echo ('    document.getElementById("progrbar").style.display="none";');
-                              echo ('    document.getElementById("affiche").style.display="none";');
-                              echo ('    document.getElementById("contTemp").style.display="none";');
-                              echo ('</script>');
-                              die ('<br /><a href ="/profils/index"> Retour &agrave; la page pr&eacute;c&eacute;dente </a>');
-
+                              $this->Progress->end('/profils/index');
                         }
 			else {
 				$this->set('profils', $this->Profil->find('list',array('conditions'=>array("Profil.id <>"=>"$id"),'order'=>array('Profil.libelle ASC'))));
