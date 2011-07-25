@@ -2,7 +2,7 @@
 
 <h2>Liste des acteurs</h2>
 
-<table cellpadding="0" cellspacing="0">
+<table cellpadding="0" cellspacing="0" width='100%'>
 <tr>
 	<th>Civilit&eacute;</th>
 	<th><?php echo $paginator->sort('Nom', 'nom'); ?></th>
@@ -14,7 +14,7 @@
 	<th>Téléphone</th>
 	<th>Mobile</th>
 	<th><?php echo $paginator->sort('Délégation(s)', 'Service.libelle'); ?></th>
-	<th width='90px'>Actions</th>
+	<th width='120px'>Actions</th>
 </tr>
 <?php foreach ($acteurs as $acteur): ?>
 <tr height="36px">
