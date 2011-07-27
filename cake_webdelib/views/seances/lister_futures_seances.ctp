@@ -23,10 +23,10 @@
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
 <?php
 			echo $html->link(SHY,'/seances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_classer_odj', 'title'=>'Voir l\'ordre des projets', 'alt'=>'odj'), false, false);
-			$urlConvoc = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'].'/null/';
-			$urlOdj = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/';
-			$urlConvocUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'].'/null/0/retour/0/true';
-			$urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'].'/null/0/retour/0/true';
+			$urlConvoc = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id']."/$format/";
+			$urlOdj = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id']."/$format/";
+			$urlConvocUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id']."/$format/0/retour/0/true";
+			$urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id']."/$format/0/retour/0/true";
 			if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
 				echo $html->link(SHY, $urlConvocUnique, array(
 					'class'=>'link_convocation_unique',
