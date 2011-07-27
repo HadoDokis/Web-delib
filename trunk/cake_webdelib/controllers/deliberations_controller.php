@@ -2214,7 +2214,10 @@ class DeliberationsController extends AppController {
                                 }
                                 else {
                                     if(count($projets)>0){
-                                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model']);
+                                        $format =  $this->Session->read('user.format.sortie');
+                                        if (empty($format))
+                                            $format =0;
+                                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format);
                                     }
                                     else {
 				        $this->Session->setFlash('Aucun résultat à la recherche effectuée.', 'growl', array('type'=>'erreur'));
@@ -2334,7 +2337,10 @@ class DeliberationsController extends AppController {
                                                             array('mesProjetsRecherche'));
                                 }
                                 else {
-                                    $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model']);
+                                    $format =  $this->Session->read('user.format.sortie');
+                                    if (empty($format))
+                                        $format =0;
+                                    $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format);
                                 }
 
 			}
