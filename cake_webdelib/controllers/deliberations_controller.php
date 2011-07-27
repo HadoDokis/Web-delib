@@ -142,8 +142,7 @@ class DeliberationsController extends AppController {
 		    $this->set('userCanEdit', false);
 
 		// Lecture et initialisation des commentaires
-                $commentaires = $this->Commentaire->find('all', array('conditions' => array ('Commentaire.delib_id' => $id ,
-                                                                                                 'Commentaire.pris_en_compte' => 0),
+                $commentaires = $this->Commentaire->find('all', array('conditions' => array ('Commentaire.delib_id' => $id),
                                                                            'order' =>  'created ASC'));
                 for($i=0; $i< count($commentaires) ; $i++) {
                     $agent = $this->User->find('first', array('conditions' => array(
