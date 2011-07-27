@@ -325,7 +325,7 @@ class Deliberation extends AppModel {
            return $this->Seance->NaturecanSave($this->data['Deliberation']['seance_id'], $this->data['Deliberation']['nature_id']);
        }
 
-       function genererRecherche($projets, $model_id=1){
+       function genererRecherche($projets, $model_id=1, $format=0){
             include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
@@ -334,16 +334,27 @@ class Deliberation extends AppModel {
             include_once ('vendors/GEDOOo/phpgedooo/GDO_FusionType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-            include_once ('vendors/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+	    include_once ('vendors/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+
             include_once ('controllers/components/progress.php');
+	    include_once ('controllers/components/conversion.php');
 
-            $dyn_path = "/files/generee/deliberations/recherche.pdf";
+            $this->Conversion = new ConversionComponent;
+	    $this->Progress = new ProgressComponent;
+
+            if ($format == 0) {
+                $sMimeType = "application/pdf";
+                $format    = "pdf";
+            }
+            elseif ($format ==1) {
+                $sMimeType = "application/vnd.oasis.opendocument.text";
+                $format    = "odt";
+            }
+	    $dyn_path = "/files/generee/deliberations/";
+	    $nomFichier = "recherche";
             $path = WEBROOT_PATH.$dyn_path;
-            $urlpath =  'http://'.$_SERVER['HTTP_HOST'].$dyn_path;
+            $urlpath =  'http://'.$_SERVER['HTTP_HOST'].$dyn_path.$nomFichier.".$format";
 
-            $this->Progress = new ProgressComponent;
-            
-            $sMimeType = "application/pdf";
             $content = $this->Seance->Typeseance->Modelprojet->find('first', array('conditions'=> array('id' => $model_id),
                                                                                    'fields'    => array('content')));
             $oTemplate = new GDO_ContentType("",
@@ -378,7 +389,10 @@ class Deliberation extends AppModel {
             $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
             $oFusion->process();
 
-            $oFusion->SendContentToFile($path);
+	    $oFusion->SendContentToFile($path.$nomFichier.".odt");      
+            $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
+            $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
+
             $this->Progress->endPopup($urlpath);
             $this->Progress->end($_SERVER['HTTP_REFERER']);
         }
