@@ -2,7 +2,7 @@
 
 <h2>Liste des informations suppl&eacute;mentaires des projets</h2>
 
-<table cellpadding="0" cellspacing="0">
+<table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 	<th>Ordre</th>
 	<th>Nom</th>
@@ -10,7 +10,7 @@
 	<th>Code</th>
 	<th>Type</th>
 	<th>Recherche</th>
-	<th width='90px'>Actions</th>
+	<th width='160px'>Actions</th>
 </tr>
 
 <?php foreach ($this->data as $rownum=>$rowElement): ?>
