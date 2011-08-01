@@ -783,9 +783,12 @@ class Deliberation extends AppModel {
         }
 
         function _makeBlocsActeurs ($nomBloc, $listActeur, $isMandate, $type) {
-            $acteurs = new GDO_IterationType("$nomBloc");
+	    $acteurs = new GDO_IterationType("$nomBloc");
+            
             if ( count($listActeur) == 0 ) {
               $oDevPart = new GDO_PartType();
+	      $oDevPart->addElement(new GDO_FieldType("nombre_acteur".$type,        '0', "text"));
+             
               $oDevPart->addElement(new GDO_FieldType("nom_acteur".$type,            ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type,         ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,     ' ', "text"));
@@ -813,7 +816,6 @@ class Deliberation extends AppModel {
               $oDevPart->addElement(new GDO_FieldType('telfixe_acteur_mandate',             ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType('telmobile_acteur_mandate',           ' ', "text"));
               $oDevPart->addElement(new GDO_FieldType('note_acteur_mandate',                ' ', "text"));
-
               $acteurs->addPart($oDevPart);
               return $acteurs;
             }
