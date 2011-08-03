@@ -3,7 +3,7 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Form2', 'Javascript', 'Fck', 'Html2');
-	var $components = array('Date','Email', 'Gedooo');
+	var $components = array('Date','Email', 'Gedooo', 'Conversion');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex', 'Typeseance', 'Acteur');
 	var $cacheAction = 0;
 
@@ -205,12 +205,10 @@ class SeancesController extends AppController {
                  
 		// On génère la délibération au format PDF
                 $model_id = $this->Deliberation->getModelId($delib_id);
-                $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.pdf");
-	        $filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.pdf";
-                $tmp_delib = $this->Deliberation->read(null, $delib_id);
-             
-                 //On récupère le contenu du fichier
-                 $content = file_get_contents($filename);
+                $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.odt");
+		$filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.odt";
+                $content = file_get_contents($filename);
+
                  if (strlen($content) == 0)
 		     $result = false;
                  // On stock le fichier en base de données.
