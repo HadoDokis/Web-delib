@@ -6,7 +6,11 @@
     document.getElementById("contTemp").style.display='none';
 </script>
 <?php
-    foreach ($listFiles as $path=> $name)
-        echo $html->link($name, $path.".$format")."<br>";
+    foreach ($listFiles as $path=> $name) {
+        if ($name != 'Documents.zip') 
+	    echo $html->link($name, $path.".$format")."<br>";
+        else
+	    echo $html->link($name, $path)."<br>";
+    }
     echo ("<br /><br /><a href='/seances/listerFuturesSeances'> Retour &agrave; la liste des s&eacute;ances </a>");
 ?>

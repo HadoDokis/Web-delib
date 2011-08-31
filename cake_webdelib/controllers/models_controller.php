@@ -320,10 +320,10 @@
                      $model_tmp = $this->Model->read(null, $model_id);
                      $this->set('nom_modele',  $model_tmp['Model']['modele']);
                      if (empty($acteursConvoques))
-					 	 return "";
+			 return "";
+                     $zip = new ZipArchive;
                      foreach ($acteursConvoques as $acteur) {
                          $cpt++;
-                         $zip = new ZipArchive;
 
                          $this->set('unique', $unique);
 
@@ -355,22 +355,25 @@
                              $oFusion->process();
                              $oFusion->SendContentToFile($path.$nomFichier.".odt");
                              $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
-                             $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
-
+			     $chemin_fichier = $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
                          }
                          catch (Exception $e){
                              $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
                          }
-                         if ($unique== false) {
-                             if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
-                                 $zip->addFile($path.$nomFichier, $nomFichier);
-                                 $zip->close();
+			 if ($unique== false) {
+			     $res = $zip->open($path.'documents.zip', ZIPARCHIVE::CREATE);
+			     if ($res === TRUE) {
+                                 $zip->addFile($chemin_fichier, $nomFichier);
+				 $res2 = $zip->close();
+			     }
+                             else {
+				 $this->log("Echec de création du zip");
                              }
-			 			 }
-						 else
-							 break;
+			 }
+			 else
+			     break;
                          // envoi des mails si le champ est renseigné
-                        $this->_sendDocument($acteur['Acteur'], $nomFichier, $path, '');
+                         $this->_sendDocument($acteur['Acteur'], $nomFichier, $path, '');
                      }
 		     if ($unique== false)
                          $listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
@@ -490,7 +493,11 @@
             $oTemplate = new GDO_ContentType("", "empty.odt", "application/vnd.oasis.opendocument.text",
                                              "binary", file_get_contents(WEBROOT_PATH."/files/empty.odt"));
             $oMainPart = new GDO_PartType();
-            $oMainPart->addElement(new GDO_FieldType('test', 'OK', 'text'));
+	    $oMainPart->addElement(new GDO_FieldType('ma_variable', 'OK', 'text'));
+
+
+
+
             $oFusion = new GDO_FusionType($oTemplate, "application/pdf", $oMainPart);
             $oFusion->process();
             $oFusion->SendContentToFile($name);
