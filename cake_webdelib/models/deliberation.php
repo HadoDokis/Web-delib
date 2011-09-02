@@ -825,9 +825,11 @@ class Deliberation extends AppModel {
               $acteurs->addPart($oDevPart);
               return $acteurs;
             }
-            else {
+	    else {
+                $nbre_acteurs = count($listActeur);
              foreach($listActeur as $acteur) {
                 $oDevPart = new GDO_PartType();
+	        $oDevPart->addElement(new GDO_FieldType("nombre_acteur".$type, $nbre_acteurs , "text"));
                 $oDevPart->addElement(new GDO_FieldType("nom_acteur".$type, utf8_encode($acteur['nom_acteur']), "text"));
                 $oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type, utf8_encode($acteur['prenom_acteur']), "text"));
                 $oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,utf8_encode($acteur['salutation_acteur']), "text"));
