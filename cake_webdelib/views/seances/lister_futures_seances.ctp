@@ -66,11 +66,11 @@
                                            array('class'=>'link_signer', 
                                                  'title'=>'Envoi au parapheur électronique'), null, false);
 
-			echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id'].'/null/0/retour/0/true', array(
+			echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id']."/$format/1/retour/1/true", array(
 				'class'=>'link_pvsommaire',
 				'title'=>'Generation du pv sommaire',
 				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération des documents ?");'),  false, false);
-			echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id'].'/null/0/retour/0/true', array(
+			echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id']."/$format/1/retour/1/true", array(
 				'class'=>'link_pvcomplet',
 				'title'=>'Generation du pv complet',
 				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération des documents ?");'), false, false);
