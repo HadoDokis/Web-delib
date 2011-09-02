@@ -383,30 +383,30 @@
 		     $genereConvocation = true;
 		}
 		else {
-                   $dyn_path = "/files/generee/PV/".$seance['Seance']['id']."/";
-                   $path = WEBROOT_PATH.$dyn_path;
-                   if (!$this->Gedooo->checkPath($path))
-                       die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+                    $dyn_path = "/files/generee/PV/".$seance['Seance']['id']."/";
+                    $path = WEBROOT_PATH.$dyn_path;
+                    if (!$this->Gedooo->checkPath($path))
+                        die("Webdelib ne peut pas ecrire dans le repertoire : $path");
 
-                   if (Configure::read('GENERER_DOC_SIMPLE')) {
-                       include_once ('controllers/components/conversion.php');
-                       $this->Conversion = new ConversionComponent;
+                    if (Configure::read('GENERER_DOC_SIMPLE')) {
+                        include_once ('controllers/components/conversion.php');
+                        $this->Conversion = new ConversionComponent;
 
-                       $filename = $path."debat_seance.html";
-                       $this->Gedooo->createFile($path, "debat_seance.html",  $seance['Seance']['debat_global']);
-                       $content = $this->Conversion->convertirFichier($filename, "odt");
+                        $filename = $path."debat_seance.html";
+                        $this->Gedooo->createFile($path, "debat_seance.html",  $seance['Seance']['debat_global']);
+                        $content = $this->Conversion->convertirFichier($filename, "odt");
 
-                       $oMainPart->addElement(new GDO_ContentType('debat_seance',  $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
-                   }
-                   else {
-                       $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+                        $oMainPart->addElement(new GDO_ContentType('debat_seance',  $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                    }
+                    else {
+                        $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
 
-                       if ($seance['Seance']['debat_global_name']== "")
-                           $nameDSeance = "vide";
-                       else {
-                           $oMainPart->addElement(new GDO_ContentType('debat_seance', 'debat_seance.odt', "application/vnd.oasis.opendocument.text" , 'binary', $seance['Seance']['debat_global'] ));
-                       }
-	            	}
+                        if ($seance['Seance']['debat_global_name']== "")
+                            $nameDSeance = "vide";
+                        else {
+                            $oMainPart->addElement(new GDO_ContentType('debat_seance', 'debat_seance.odt', "application/vnd.oasis.opendocument.text" , 'binary', $seance['Seance']['debat_global'] ));
+                        }
+	            }
                 }
 	    }
 	     
@@ -418,11 +418,15 @@
                     Configure::write('debug', 1);
                     error_reporting(0);
                     $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
-                    $oFusion->process();
-                    if ($dl ==1) {
+		    $oFusion->process();
+		    if ($dl ==1) {
+                        $this->log("format : ".$format);
 	                $oFusion->SendContentToFile($path.$nomFichier);
                         $content = $this->Conversion->convertirFichier($path.$nomFichier, $format);
-                        $this->Gedooo->createFile($path, $nomFichier, $content);
+			$this->Gedooo->createFile($path, "$nomFichier.$format", $content);
+                        $listFiles[$urlWebroot.$nomFichier] = 'Document généré';
+                        $this->set('listFiles', $listFiles);
+                        $this->set('format', $format);
                     }
                     else {
                         $nomFichier = "$nomFichier.$format";
