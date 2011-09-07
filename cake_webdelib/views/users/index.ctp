@@ -1,7 +1,7 @@
 <div class="users">
 <h2>Liste des utilisateurs</h2>
 
-<table cellpadding="0" cellspacing="0">
+<table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 	<th><?php echo $paginator->sort('Login', 'login'); ?></th>
 	<th><?php echo $paginator->sort('Nom', 'nom'); ?></th>
