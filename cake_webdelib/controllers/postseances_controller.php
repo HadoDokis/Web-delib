@@ -25,13 +25,18 @@ class PostseancesController extends AppController {
 	);
 
 	function index() {
-		$this->set ('USE_GEDOOO', Configure::read('USE_GEDOOO'));
-		$seances = $this->Seance->find('all',array('conditions'=>array('Seance.traitee'=>1),'order'=>array('date desc'),'recursive'=>0));
+             $format =  $this->Session->read('user.format.sortie');
+             if (empty($format))
+                 $format =0;
+             $this->set('format', $format);
 
-		for ($i=0; $i<count($seances); $i++)
-		    $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
+	     $this->set ('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+	     $seances = $this->Seance->find('all',array('conditions'=>array('Seance.traitee'=>1),'order'=>array('date desc'),'recursive'=>0));
 
-		$this->set('seances', $seances);
+	     for ($i=0; $i<count($seances); $i++)
+	         $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
+
+             $this->set('seances', $seances);
 	}
 
 	function afficherProjets ($id=null, $return=null)
