@@ -363,7 +363,7 @@
 			 if ($unique== false) {
 			     $res = $zip->open($path.'documents.zip', ZIPARCHIVE::CREATE);
 			     if ($res === TRUE) {
-                                 $zip->addFile($chemin_fichier, $nomFichier);
+                                 $zip->addFile($chemin_fichier, $nomFichier.".$format");
 				 $res2 = $zip->close();
 			     }
                              else {
