@@ -173,6 +173,7 @@ class SeancesController extends AppController {
 	        $result = $this->_stockDelibs($seance_id,  $isArrete, $compteur_id);
             }
 	    if ($result || $this->data['Typeseance']['action']== 1) { 
+                $this->Seance->id = $seance_id; 
                 if ($this->Seance->saveField('traitee', 1)){
                     return true;
                 }
@@ -202,7 +203,8 @@ class SeancesController extends AppController {
                         $this->Deliberation->saveField('num_delib', $num);
                     }
                 }
-                 
+                if (($delib['Deliberation']['etat_parapheur'] == 2) && (!empty($delib['Deliberation']['delib_pdf'])))
+                    continue;
 		// On génère la délibération au format PDF
                 $model_id = $this->Deliberation->getModelId($delib_id);
                 $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.odt");
