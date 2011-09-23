@@ -2470,7 +2470,9 @@ class DeliberationsController extends AppController {
 						$tmp1++;
 					}
                                         $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delib['Seance']['type_id'], $delib['Deliberation']['etat']);
-                                        $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport.pdf/1/false");
+				//	$this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport.pdf/1/false");
+                                        $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport/1/false");
+
                                         $content = file_get_contents(WEBROOT_PATH."/files/generee/fd/null/$delib_id/rapport.pdf");
 					$creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), 
                                                                                                    $soustype, 
