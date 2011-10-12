@@ -157,7 +157,7 @@
                                                  'conditions'=> array('Model.id'=> $id),
                                                  'recursive' => '-1',
                                                  'fields'    => 'name'));
-                return $objCourant['Model']['name'];
+                return utf8_encode($objCourant['Model']['name']);
 
 	}
 
