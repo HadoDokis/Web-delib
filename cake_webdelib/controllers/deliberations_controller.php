@@ -1840,6 +1840,8 @@ class DeliberationsController extends AppController {
 		$this->set('titreVue', $titreVue);
 		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$this->set('listeLiens', $listeLiens);
+		if ( $nbProjets ==null)
+                     $nbProjets = count($projets);
 		$this->set('nbProjets', $nbProjets);
 		
 		// on affiche la vue index
@@ -1900,6 +1902,7 @@ class DeliberationsController extends AppController {
 
 		$ordre = 'Deliberation.created DESC';
 		$projets = $this->Deliberation->find('all', array('conditions' => $conditions,
+                                                                  'recursive'      =>  0,
                                                                   'order'      =>  $ordre,
                                                                   'contain'    => array( 'Seance.id','Seance.traitee', 
                                                                                          'Seance.date', 'Seance.Typeseance.libelle', 
@@ -1945,6 +1948,7 @@ class DeliberationsController extends AppController {
 											array('Deliberation.etat'=>2)
 								)))),
 								'order'=>array('Deliberation.created DESC'), 
+								'recursive'=> 0, 
                                                                 'contain'    => array( 'Seance.id','Seance.traitee', 
                                                                                        'Seance.date', 'Seance.Typeseance.libelle', 
                                                                                        'Service.libelle', 'Theme.libelle', 
@@ -1976,6 +1980,7 @@ class DeliberationsController extends AppController {
 		$conditions['Deliberation.seance_id !='] = 0;
                 $conditions['Deliberation.parent_id'] = null;
 		$projets = $this->Deliberation->find('all',array('conditions' => $conditions, 
+                                                                 'recursive'  => 0,
                                                                  'order'      => 'Deliberation.created DESC',
                                                                  'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
 
