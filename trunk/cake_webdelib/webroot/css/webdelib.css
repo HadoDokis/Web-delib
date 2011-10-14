@@ -1277,3 +1277,17 @@ div.aModifier {
     background-repeat: no-repeat;
     background-position: center center;
 }
+
+/* mise en forme des div ouvrables */
+
+.ouvrable {
+        margin-bottom : 15px;
+}
+.ouvrable-entete img {
+        padding-right : 10px;
+}
+.ouvrable-corps {
+        overflow: auto;
+        padding: 5px;
+}
+
