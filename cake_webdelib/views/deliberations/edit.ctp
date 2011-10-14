@@ -22,7 +22,7 @@
 	<a href="javascript:afficheOnglet(4)" id='lienTab4'>Informations suppl&eacute;mentaires</a>
 <?php endif; ?>
 <?php if (Configure::read('DELIBERATIONS_MULTIPLES')): ?>
-	<a href="javascript:afficheOnglet(5)" id='lienTab5'>D&eacute;lib&eacute;rations rattach&eacute;es</a>
+	<a href="javascript:afficheOnglet(5)" id='lienTab5' style="display: none">D&eacute;lib&eacute;rations rattach&eacute;es</a>
 <?php endif; ?>
 </div>
 
@@ -73,6 +73,9 @@
 			$value = "value=''";
 	?>
 	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", array('style'=>"border='0'")); ?></a>
+	<div class='spacer'></div>
+	  <?php echo $form->input('Deliberation.is_multidelib', array('before'=>'<label for="isMultiDelib">Multi Délibération</label>', 'legend'=>false, 'type'=>'radio', 'options'=>array('1'=>'oui','0'=>'non'), 'checked' => 0, 'div'=>false, 'label'=>false,  'onClick'=>"if(this.value==1) $('#lienTab5').show(); else $('#lienTab5').hide(); " ));?>
+
 	<div class='spacer'></div>
 </div>
 
