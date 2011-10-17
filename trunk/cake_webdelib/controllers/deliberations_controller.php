@@ -468,6 +468,7 @@ class DeliberationsController extends AppController {
 			$this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
 			$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
+			$this->set('is_multi', $this->data['Deliberation']['is_multidelib']);
 			$this->set('redirect', $redirect);
                         if ($this->data['Deliberation']['etat_parapheur'] >= 1)
                              $this->Session->setFlash("Attention, l'acte est en cours de signature!", 'growl', array('type'=>'erreur'));
@@ -628,6 +629,7 @@ class DeliberationsController extends AppController {
 				$this->set('date_seances', $this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
 				$this->set('infosupdefs', $this->Infosupdef->findAll('', array(), 'ordre', null, 1, -1));
 				$this->set('infosuplistedefs', $this->Infosupdef->generateListes());
+			        $this->set('is_multi', $oldDelib['Deliberation']['is_multidelib']);
 			}
 		}
 	}
