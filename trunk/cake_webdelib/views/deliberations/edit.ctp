@@ -2,6 +2,7 @@
 <?php echo $javascript->link('utils.js'); ?>
 <?php echo $javascript->link('ckeditor/ckeditor'); ?>
 <?php echo $javascript->link('ckeditor/adapters/jquery'); ?>
+<?php echo $javascript->link('multidelib.js'); ?>
 
 <?php
 	if($html->value('Deliberation.id')) {
@@ -74,7 +75,7 @@
 	?>
 	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", array('style'=>"border='0'")); ?></a>
 	<div class='spacer'></div>
-	  <?php echo $form->input('Deliberation.is_multidelib', array('before'=>'<label for="isMultiDelib">Multi Délibération</label>', 'legend'=>false, 'type'=>'radio', 'options'=>array('1'=>'oui','0'=>'non'), 'checked' => 0, 'div'=>false, 'label'=>false,  'onClick'=>"if(this.value==1) $('#lienTab5').show(); else $('#lienTab5').hide(); " ));?>
+	  <?php echo $form->input('Deliberation.is_multidelib', array('before'=>'<label for="isMultiDelib">Multi Délibération</label>', 'legend'=>false, 'type'=>'radio', 'options'=>array('1'=>'oui','0'=>'non'), 'checked' => 0, 'div'=>false, 'label'=>false,  'onClick'=>"multiDelib(this);" ));?>
 
 	<div class='spacer'></div>
 </div>
@@ -88,8 +89,10 @@
     <?php echo $this->element('texte', array('key' => 'texte_synthese'));?>
 	<div class='spacer'></div>
 
-	<h3>Texte de d&eacute;lib&eacute;ration</h3>
-    <?php echo $this->element('texte', array('key' => 'deliberation'));?>
+	<div id='texteDeliberation'>
+		<h3>Texte de d&eacute;lib&eacute;ration</h3>
+	    <?php echo $this->element('texte', array('key' => 'deliberation'));?>
+	</div>
 	<div class='spacer'></div>
 </div>
 
