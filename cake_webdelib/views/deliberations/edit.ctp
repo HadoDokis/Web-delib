@@ -75,7 +75,19 @@
 	?>
 	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", array('style'=>"border='0'")); ?></a>
 	<div class='spacer'></div>
-	  <?php echo $form->input('Deliberation.is_multidelib', array('before'=>'<label for="isMultiDelib">Multi Délibération</label>', 'legend'=>false, 'type'=>'radio', 'options'=>array('1'=>'oui','0'=>'non'), 'checked' => 0, 'div'=>false, 'label'=>false,  'onClick'=>"multiDelib(this);" ));?>
+<?php 
+          if (!isset($is_multi))
+              $is_multi = true;
+
+          echo $form->input('Deliberation.is_multidelib', 
+                             array('before'=>'<label for="isMultiDelib">Multi Délibération</label>', 
+                                   'id'    => 'radio_multi',
+                                   'legend'=>false, 
+                                   'type'=>'checkbox', 
+                                   'checked' => $is_multi, 
+	                           'div'=>false, 
+                                   'label'=>false,  
+                                   'onClick'=> "multiDelib(this);" ));?>
 
 	<div class='spacer'></div>
 </div>
