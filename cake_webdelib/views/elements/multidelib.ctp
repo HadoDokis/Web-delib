@@ -13,7 +13,7 @@ $links = array(
 		echo $html->tag('div', '', array('class'=>'spacer'));
 
 		// div pour recevoir le texte de la délib
-		echo $html->tag('div', '', array('id'=>'texteDeliberationMulti'));
+		echo $html->tag('div', '', array('id'=>'texteDelibOngletDelib'));
 		echo $html->tag('div', '', array('class'=>'spacer'));
 
 		// saisie des annexes
