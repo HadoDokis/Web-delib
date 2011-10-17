@@ -7,6 +7,25 @@ $links = array(
 	'annulerSupprimer' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_supprimer_back', 'title'=>'Annuler la suppression', 'style'=>'display: none;')),
 	);
 
+	echo $html->tag('fieldset', null, array('id'=>'delibRattachee'.$this->data['Deliberation']['id']));
+	echo $html->tag('legend', '&nbsp;Délibération : '.$this->data['Deliberation']['id'].'&nbsp;');
+		echo $form->input('Deliberation.objet_delib', array('type'=>'textarea','label'=>'Libellé<acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));
+		echo $html->tag('div', '', array('class'=>'spacer'));
+
+		// div pour recevoir le texte de la délib
+		echo $html->tag('div', '', array('id'=>'texteDeliberationMulti'));
+		echo $html->tag('div', '', array('class'=>'spacer'));
+
+		// saisie des annexes
+		echo $html->tag('label', 'Annexe(s)');
+		echo '<div class="fckEditorProjet">';
+			$annexeOptions = array('ref'=>'delibRattachee'.$delib['id'], 'affichage'=>'partiel');
+			if (isset($delib['Annex'])) $annexeOptions['annexes'] = $delib['Annex'];
+			echo $this->element('annexe', $annexeOptions);
+		echo '</div>';
+	echo $html->tag('/fieldset');
+	echo $html->tag('div', '', array('class'=>'spacer'));
+
 // affichage des délibérations rattachées
 if (isset($this->data['Multidelib'])) {
 	foreach($this->data['Multidelib'] as $i=>$delib) {
