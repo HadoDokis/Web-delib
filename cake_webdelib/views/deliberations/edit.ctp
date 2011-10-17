@@ -75,19 +75,10 @@
 	?>
 	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", array('style'=>"border='0'")); ?></a>
 	<div class='spacer'></div>
-<?php 
-          if (!isset($is_multi))
-              $is_multi = true;
-
-          echo $form->input('Deliberation.is_multidelib', 
-                             array('before'=>'<label for="isMultiDelib">Multi Délibération</label>', 
-                                   'id'    => 'radio_multi',
-                                   'legend'=>false, 
-                                   'type'=>'checkbox', 
-                                   'checked' => $is_multi, 
-	                           'div'=>false, 
-                                   'label'=>false,  
-                                   'onClick'=> "multiDelib(this);" ));?>
+<?php echo $form->input('Deliberation.is_multidelib', array(
+		'type'=>'checkbox',
+		'label'=>'Multi Délibération',
+		'onClick'=> "multiDelib(this);" ));?>
 
 	<div class='spacer'></div>
 </div>
@@ -101,9 +92,12 @@
     <?php echo $this->element('texte', array('key' => 'texte_synthese'));?>
 	<div class='spacer'></div>
 
-	<div id='texteDeliberation'>
-		<h3>Texte de d&eacute;lib&eacute;ration</h3>
-	    <?php echo $this->element('texte', array('key' => 'deliberation'));?>
+
+	<div id='texteDelibOngletTextes'>
+		<div id='texteDeliberation'>
+			<h3>Texte de d&eacute;lib&eacute;ration</h3>
+		    <?php echo $this->element('texte', array('key' => 'deliberation'));?>
+		</div>
 	</div>
 	<div class='spacer'></div>
 </div>
