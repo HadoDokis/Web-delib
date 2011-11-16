@@ -1,6 +1,16 @@
-/******************************************************************************/
-/* Masque/affiche les critËres du filtre                                      */
-/******************************************************************************/
+/**
+ * appel√©e √† l'ouverture
+ */
+$(document).ready(function() {
+	$('#filtreCriteres .submit').hide();
+	if ($('#filtreFoncAffiche').val() == 0)
+		$('#filtreCriteres').hide();
+});
+
+
+/**
+ * Masque/affiche les crit√®res du filtre
+ */
 function basculeCriteres() {
 	$cheminIcone = $('#boutonBasculeCriteres').attr('src');
 	$racine = $cheminIcone.substring(0, $cheminIcone.lastIndexOf('/')+1);
@@ -17,27 +27,27 @@ function basculeCriteres() {
 	$('#boutonBasculeCriteres').attr('src', $racine+$icone);
 }
 
-/******************************************************************************/
-/* Modifie l'image de l'icone du filtre si un critËre du filtre change        */
-/******************************************************************************/
+/**
+ * Modifie l'image de l'icone du filtre si un crit√®re du filtre change
+ */
 function critereChange() {
 	$cheminIcone = $('#filtreButton').attr('src');
 	$icone = $cheminIcone.substring($cheminIcone.lastIndexOf('/')+1);
 	if ($icone == 'filtre.png') {
 		$racine = $cheminIcone.substring(0, $cheminIcone.lastIndexOf('/')+1);
 		$icone = 'filtreUpdate.png'
-		$('#filtreButton').attr('title', 'Cliquer ici pour appliquer les critËres du filtre');
+		$('#filtreButton').attr('title', 'Cliquer ici pour appliquer les crit√®res du filtre');
 		$('#filtreButton').attr('src', $racine+$icone);
 		$('#filtreButton').attr('onClick', "$('#filtreForm').submit();");
 		$('#filtreButton').attr('onMouseOver', "this.style.cursor='pointer'");
 	}
 }
 
-/******************************************************************************/
-/* Annulation du filtre                                                       */
-/******************************************************************************/
+/**
+ * Annulation du filtre
+ */
 function razFiltre() {
-	// initialise la valeur des critËres ‡ 0
+	// initialise la valeur des crit√®res √† 0
 	$('#filtreCriteres select').val('');
 
 	$('#filtreForm').submit();

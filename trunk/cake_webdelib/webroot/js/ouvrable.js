@@ -9,6 +9,12 @@ $.fn.ouvrable = function(options) {
 	var arrow = '';
 
 	return this.each(function(index) {
+		// titre
+		var domTitle = $(this).find(o.titleTag).first();
+		if (domTitle.length==1)
+			domTitle.detach();
+		else
+			var domTitle = $('<'+o.titleTag+'/>').append(o.title);
 		// corps
 		$(this).wrapInner(function(index) {
 			var corps = $('<div/>').addClass('ouvrable-corps');
@@ -23,11 +29,6 @@ $.fn.ouvrable = function(options) {
 			return corps;
 		});
 		// entête
-		var title = ($(this).attr('title') == undefined) ? o.title : $(this).attr('title');
-		$(this).removeAttr('title');
-		var titleTag = ($(this).attr('titleTag') == undefined) ? o.titleTag : $(this).attr('titleTag');
-		$(this).removeAttr('titleTag');
-		var domTitle = $('<'+titleTag+'/>').append(title);
 		var ajouteFleche = true;
 		if (arrow == o.arrowDown) {
 			var minHeight = (o.minHeight == '') ? 0 : parseInt(o.minHeight);
@@ -35,7 +36,7 @@ $.fn.ouvrable = function(options) {
 			ajouteFleche = minHeight<ouvrableDivHeight;
 		}
 		if (ajouteFleche) {
-			var domFleche = $('<img/>').attr('src', arrow);
+			var domFleche = $('<img/>').attr('src', arrow).attr('alt', '');
 			domTitle.prepend(domFleche)
 				.attr('onMouseOver', "this.style.cursor='pointer'")
 				.click(function(){onClick(domFleche);});
@@ -50,17 +51,17 @@ $.fn.ouvrable = function(options) {
 		if ($this.attr('src') == o.arrowUp) {
 			$this.attr('src', o.arrowDown);
 			if (o.maxHeight == '')
-				corpsDiv.hide().css('max-height', '').show('slow');
+				corpsDiv.hide().css('max-height', '').slideDown('slow');
 			else {
 				if (o.minHeight == '')
-					corpsDiv.css('max-height', o.maxHeight).show('slow');
+					corpsDiv.css('max-height', o.maxHeight).slideDown('slow');
 				else
 					corpsDiv.animate({maxHeight: o.maxHeight}, 'slow');
 			}
 		} else {
 			$this.attr('src', o.arrowUp);
 			if (o.minHeight == '')
-				corpsDiv.hide('slow', function(index){$(this).css('max-height', '')});
+				corpsDiv.slideUp('slow', function(index){$(this).css('max-height', '')});
 			else
 				corpsDiv.animate({maxHeight: o.minHeight}, 'slow');
 		}
@@ -70,7 +71,7 @@ $.fn.ouvrable = function(options) {
 
 $.fn.ouvrable.defaults = {
 	title : 'Zone ouvrable',
-	titleTag : 'label',
+	titleTag : '*',
 	initHeight : 'MAX', // état d'ouverture à l'affichage initial : 'MIN'||'MAX'
 	minHeight : '', // ouverture minimum : ''||'npx'
 	maxHeight : '', // ouverture maximum : ''||'npx'
