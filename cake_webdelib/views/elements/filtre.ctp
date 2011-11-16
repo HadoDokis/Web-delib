@@ -23,7 +23,7 @@ echo $html->div('filtre');
 			echo $html->image($iconeBoutonBasculeCriteres, array(
 				'id'=>'boutonBasculeCriteres',
 				'border'=>"0", 'height'=>"28", 'width'=>"28",
-				'title'=>__('Afficher-masquer les critères du filtre', true),
+				'title'=>__('Afficher-masquer les critÃ¨res du filtre', true),
 				'onClick'=>"basculeCriteres();",
 				'onMouseOver'=>"this.style.cursor='pointer'"));
 			// affichage du bouton on/off
@@ -39,19 +39,15 @@ echo $html->div('filtre');
 					'id'=>'boutonOnOff',
 					'border'=>"0", 'height'=>"28", 'width'=>"28",
 					'title'=>__('Filtre inactif', true)));
-			// affichage du bouton pour applique le filtre
+			// affichage du bouton pour appliquer le filtre
 			echo $html->image('icons/filtre.png', array(
 				'id'=>'filtreButton',
 				'border'=>"0", 'height'=>"28", 'width'=>"28",
-				'title'=>__('Changer les critères du filtre puis cliquer ici pour appliquer les changements', true),
+				'title'=>__('Changer les critÃ¨res du filtre puis cliquer ici pour appliquer les changements', true),
 				));
 		echo $html->tag('/div');
 
-		if ($session->read('Filtre.Fonctionnement.affiche'))
-			$styleDisplay = "display:display;";
-		else
-			$styleDisplay = "display:none;";
-		echo $html->div('filtreCriteres', null, array('id' => 'filtreCriteres', 'style'=>$styleDisplay));
+		echo $html->div('filtreCriteres', null, array('id'=>'filtreCriteres'));
 			foreach($criteres as $nom => $critere) {
 				$options = $critere['inputOptions'];
 				$options['onChange'] = "critereChange();";
@@ -62,6 +58,7 @@ echo $html->div('filtre');
 				if ($critere['retourLigne'])
 					echo '<div class="spacer"></div>';
 			}
+			echo $form->submit('Appliquer le filtre');
 		echo '</div>';
 	echo $form->end();
 	echo '<div class="spacer"></div>';
