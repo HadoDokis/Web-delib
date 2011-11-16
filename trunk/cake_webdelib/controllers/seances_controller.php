@@ -297,7 +297,7 @@ class SeancesController extends AppController {
 		    $this->set('lastPosition', $this->Deliberation->getLastPosition($id) - 1 );
 			$deliberations = $this->Deliberation->find('all', array ('conditions' =>$condition,
                                                                                  'order'      =>'Deliberation.position ASC',
-                                                                                 'fields'     => array('position', 'objet', 'titre', 'id', 'theme_id', 'rapporteur_id'  ),
+                                                                                 'fields'     => array('position', 'objet_delib', 'titre', 'id', 'theme_id', 'rapporteur_id'  ),
                                                                                  'contain'    => array('Service.libelle', 'Rapporteur')));
 			$lst_pos=array();
 			for ($i=0; $i<count($deliberations); $i++) {
