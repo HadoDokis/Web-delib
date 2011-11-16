@@ -8,7 +8,7 @@
     <th>Thème</th>
     <th>Service émetteur</th>
     <th>Rapporteur</th>
-    <th>Libellé</th>
+    <th>Libellé de l'acte</th>
     <th>Titre</th>
     <th width='20%'>Actions</th>
 </tr>
@@ -39,7 +39,7 @@
 	<td><?php echo $deliberation['Theme']['libelle']; ?></td>
 	<td><?php echo $deliberation['Service']['libelle']; ?></td>
 	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['objet']; ?></td>
+	<td><?php echo $deliberation['Deliberation']['objet_delib']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
 	<td class="actions" width="80">
 		<?php echo $html->link(SHY,'/seances/saisirDebat/' .$deliberation['Deliberation']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats'), false, false); ?>

@@ -6,16 +6,16 @@
 
 <?php
 	if($html->value('Deliberation.id')) {
-		echo "<h2>Modification du projet : ".$html->value('Deliberation.id')."</h2>";
+		echo "<h1>Modification du projet : ".$html->value('Deliberation.id')."</h1>";
 		echo $form->create('Deliberation', array('url'=>'/deliberations/edit/'.$html->value('Deliberation.id'), 'type'=>'file', 'name'=>'Deliberation'));
 	} else {
-		echo "<h2>Ajout d'un projet</h2>";
+		echo "<h1>Ajout d'un projet</h1>";
 		echo $form->create('Deliberation', array('url'=>'/deliberations/add','type'=>'file', 'name'=>'Deliberation'));
 	}
 ?>
 
 <div class='onglet'>
-	<a></a>
+	<a href="#" id="emptylink" alt=""></a>
 	<a href="javascript:afficheOnglet(1)" id='lienTab1' class="ongletCourant">Informations principales</a>
 	<a href="javascript:afficheOnglet(2)" id='lienTab2'>Textes</a>
 	<a href="javascript:afficheOnglet(3)" id='lienTab3'>Annexe(s)</a>
@@ -73,39 +73,50 @@
 		else
 			$value = "value=''";
 	?>
-	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');"><?php echo $html->image("calendar.png", array('style'=>"border='0'")); ?></a>
+	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');" alt="" id="afficheCalendrier"><?php echo $html->image("calendar.png", array('style'=>"border='0'")); ?></a>
 	<div class='spacer'></div>
-<?php echo $form->input('Deliberation.is_multidelib', array(
-		'type'=>'checkbox',
-		'label'=>'Multi Délibération',
-		'onClick'=> "multiDelib(this);" ));?>
+
+
+<?php 
+        $disabled = isset($this->data['Multidelib']); 
+        if ($DELIBERATIONS_MULTIPLES) {
+           echo $form->input('Deliberation.is_multidelib', array(
+	                     'type'=>'checkbox',
+	                     'disabled'=>  $disabled ,
+		             'label'=>'Multi Délibération',
+		             'onClick'=> "multiDelib(this);" ));
+        }
+?>
 
 	<div class='spacer'></div>
 </div>
 
 <div id="tab2" style="display: none;">
-	<h3>Texte de projet</h3>
     <?php echo $this->element('texte', array('key' => 'texte_projet'));?>
 	<div class='spacer'></div>
 
-	<h3>Note synth&egrave;se</h3>
     <?php echo $this->element('texte', array('key' => 'texte_synthese'));?>
 	<div class='spacer'></div>
 
-
 	<div id='texteDelibOngletTextes'>
-		<div id='texteDeliberation'>
-			<h3>Texte de d&eacute;lib&eacute;ration</h3>
-		    <?php echo $this->element('texte', array('key' => 'deliberation'));?>
-		</div>
-	</div>
+            <div id='texteDeliberation'>
+                <?php echo $this->element('texte', array('key' => 'deliberation'));?>
+            </div>
+        </div>
 	<div class='spacer'></div>
 </div>
 
 <div id="tab3" style="display: none;">
 	<?php
 	$annexeOptions = array('ref' => 'delibPrincipale');
-	if (isset($this->data['Annex'])) $annexeOptions['annexes'] = $this->data['Annex'];
+	$tabAnnexes = array();
+        if (isset($this->data['Annex'])) {
+	    foreach ($this->data['Annex'] as $annexe) {
+	        if ($annexe['model'] == 'Projet') 
+		    $tabAnnexes[] = $annexe;
+            }
+        }
+	if (isset($this->data['Annex'])) $annexeOptions['annexes'] = $tabAnnexes;
    	echo $this->element('annexe', $annexeOptions);
 	echo $html->tag('div', '', array('class'=>'spacer'));
 	echo $html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');

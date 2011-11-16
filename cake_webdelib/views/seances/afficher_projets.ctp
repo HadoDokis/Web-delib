@@ -12,7 +12,7 @@ echo $form->hidden('Aplication.url', array('value'=>FULL_BASE_URL.$this->webroot
 		<?php echo ('<th width="13%">'.$html->link('Thème', "/deliberations/sortby/$seance_id/theme_id",null,'Etes-vous sur de vouloir trier par theme ?'). "</th>"); ?>
 		<?php echo ('<th width="13%">'.$html->link('Service émetteur', "/deliberations/sortby/$seance_id/service_id",null,'Etes-vous sur de vouloir trier par service ?'). "</th>"); ?>
 		<?php echo ('<th width="5%">'.$html->link('Rapporteur', "/deliberations/sortby/$seance_id/rapporteur_id", null,'Etes-vous sur de vouloir trier par rapporteur ?'). "</th>"); ?>
-		<?php echo ('<th>'.$html->link('Libellé', "/deliberations/sortby/$seance_id/objet",null,'Etes-vous sur de vouloir trier par libelle ?'). "</th>"); ?>
+		<?php echo ('<th>'.$html->link("Libellé de l'acte", "/deliberations/sortby/$seance_id/objet",null,'Etes-vous sur de vouloir trier par libelle ?'). "</th>"); ?>
 		<?php echo ('<th width="10%">'.$html->link('Titre', "/deliberations/sortby/$seance_id/titre",null,'Etes-vous sur de vouloir trier par titre ?'). "</th>"); ?>
 		<th width='4%'>Id.</th>
 		<th width='2%'>&nbsp;&nbsp;</th>
@@ -35,7 +35,7 @@ echo $form->hidden('Aplication.url', array('value'=>FULL_BASE_URL.$this->webroot
 				echo $html->link($rapporteurs[$projet['Deliberation']['rapporteur_id']], "javascript:onClickLinkRapporteur(".$projet['Deliberation']['rapporteur_id'].", ".$delibId.");", array('id'=>'linkRapporteur'.$delibId));
 			?>
 		</td>
-	    <td><?php echo $projet['Deliberation']['objet']; ?></td>
+	    <td><?php echo $projet['Deliberation']['objet_delib']; ?></td>
 	    <td><?php echo $projet['Deliberation']['titre']; ?></td>
 	    <td><?php echo $projet['Deliberation']['id']; ?></td>
 	    <?php
