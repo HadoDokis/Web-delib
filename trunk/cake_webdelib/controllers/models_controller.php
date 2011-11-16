@@ -424,7 +424,6 @@
                     $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
 		    $oFusion->process();
 		    if ($dl ==1) {
-                        $this->log("format : ".$format);
 	                $oFusion->SendContentToFile($path.$nomFichier);
                         $content = $this->Conversion->convertirFichier($path.$nomFichier, $format);
 			$this->Gedooo->createFile($path, "$nomFichier.$format", $content);
