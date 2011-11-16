@@ -238,6 +238,16 @@ body {
 	padding: 0px 75px 15px 75px;
 }
 
+h1 {
+        -moz-border-radius : 12px;
+        font: normal normal 22px/26px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+        color:#444444;
+        /* couleur NON-web */
+        border-left: 1px solid #e0ef90;
+        border-bottom: 1px solid #e0ef90;
+        padding-left: 1%;
+}
+
 h2 {
         -moz-border-radius : 12px;	
 	font: normal normal 20px/24px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
@@ -1290,4 +1300,7 @@ div.aModifier {
         overflow: auto;
         padding: 5px;
 }
-
+#login_submit {
+    text-align: center;
+    padding-bottom: 10px;
+}
