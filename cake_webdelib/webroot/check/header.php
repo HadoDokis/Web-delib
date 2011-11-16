@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US"> 
 <head> 
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
-	<script type="text/javascript" src="../js/jquery-1.6.2.js"></script>
+	<script type="text/javascript" src="../js/jquery.js"></script>
 	<script type="text/javascript" src="scripts/expand.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -16,7 +16,7 @@
 	<link rel="stylesheet" type="text/css" href="css/check.css" />
 	<link rel="stylesheet" type="text/css" href="css/effect.css" />
 	<div id="headerLogoContainer">
-		<img alt="" src="../img/logoAsalae60.png">
+		<img alt="" src="../img/wavedelib.png">
 	</div>
 </head> 
 <body>

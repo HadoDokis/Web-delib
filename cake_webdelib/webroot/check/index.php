@@ -46,7 +46,7 @@ include_once('header.php');
 			<?php verifConsoleCakePhp(); ?>
 		</div> 
 		
-		<h2 class="expand">Présence des fichiers de configuration de as@lae</h2>
+		<h2 class="expand">Présence des fichiers de configuration de webdelib.inc</h2>
 		<div class="collapse">
 			<?php verifPresenceFichierIni(); ?>
 		</div> 
@@ -60,26 +60,29 @@ include_once('header.php');
 		<div class="collapse">
 			<?php infoMails(); ?>
 		</div> 
-		
-		<h2 class="expand">Horodatage</h2>
-		<div class="collapse">
-			<?php verifHorodatage(); ?>
-		</div> 
-		
-		<h2 class="expand">Antivirus</h2>
-		<div class="collapse">
-			<?php verifAntivirus(); ?>
-		</div> 
-		
-		<h2 class="expand">Valideur de format</h2>
-		<div class="collapse">
-			<?php verifFormatValidator(); ?>
-		</div> 
-		
+
+                <h2 class="expand">Outil de fusion : ODFGEDOOo</h2>
+                <div class="collapse">
+                    <?php testerOdfGedooo(); ?>
+		</div>         
+
 		<h2 class="expand">Outil de conversion</h2>
 		<div class="collapse">
 			<?php verifConversion(); ?>
 		</div> 
+
+                <h2 class="expand">Dialogue avec S²LOW</h2>
+                <div class="collapse">
+                        <?php getClassification(); ?>
+                </div>
+                <h2 class="expand">Dialogue avec i-parapheur</h2>
+                <div class="collapse">
+                        <?php getCircuitsParapheur(); ?>
+                </div>
+                <h2 class="expand">Dialogue avec AS@LAE</h2>
+                <div class="collapse">
+                        <?php getVersionAsalae(); ?>
+                </div>
 	</div> 
 </div> 
 
