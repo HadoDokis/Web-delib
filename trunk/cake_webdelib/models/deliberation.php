@@ -81,7 +81,7 @@ class Deliberation extends AppModel {
 		'Annex'=>array(
 			'className'    => 'Annex',
 			'foreignKey' => 'foreign_key',
-			'conditions' => array('Annex.model' => 'Deliberation'),
+			//'conditions' => array('Annex.model' => 'Deliberation'),
 			'dependent' => true),
 		'Commentaire'=>array(
 			'className'    => 'Commentaire',
@@ -425,11 +425,15 @@ class Deliberation extends AppModel {
 
                $objet = utf8_encode($delib['Deliberation']['objet']);
                $objet = str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $objet);
+	       $oMainPart->addElement(new GDO_FieldType('objet_projet',                $objet,     'text'));
+	       $oMainPart->addElement(new GDO_FieldType('libelle_projet',              $objet,    'text'));
 
-               $oMainPart->addElement(new GDO_FieldType('objet_projet',                $objet,     'text'));
-               $oMainPart->addElement(new GDO_FieldType('libelle_projet',              $objet,    'text'));
+               $objet_delib = utf8_encode($delib['Deliberation']['objet_delib']);
+               $objet_delib = str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $objet_delib);
+	       $oMainPart->addElement(new GDO_FieldType('objet_delib',                $objet_delib,     'text'));
+	       $oMainPart->addElement(new GDO_FieldType('libelle_delib',              $objet_delib,    'text'));
+
                $oMainPart->addElement(new GDO_FieldType('nature_projet', utf8_encode($delib['Nature']['libelle']),     'text'));
-
                $oMainPart->addElement(new GDO_FieldType('position_projet',             utf8_encode($delib['Deliberation']['position']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('identifiant_projet',          utf8_encode($delib['Deliberation']['id']),       'text'));
                $oMainPart->addElement(new GDO_FieldType('identifiant_seance',          utf8_encode($delib['Deliberation']['seance_id']),'text'));
@@ -963,7 +967,8 @@ function majDelibRatt($delibId, $oldSeanceId) {
 			$majDelibRatt['Deliberation']['position'] = $position;
 		} else
 			unset($majDelibRatt['Deliberation']['position']);
-		$this->save($majDelibRatt['Deliberation'], array('validate' => false, 'callbacks' => false));
+
+            $this->save($majDelibRatt['Deliberation'], array('validate' => false, 'callbacks' => false));
 	}
 }
 
@@ -1016,9 +1021,10 @@ function saveDelibRattachees($parentId, $delib) {
 		$newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
 	} else {
 		if (isset($delib['deliberation'])) {
-			$newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
+ 			$newDelib['Deliberation']['objet_delib'] = $delib['objet'];
+ 			$newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
 			$newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
-			$newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'] ;
+			$newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
 			if (empty($delib['deliberation']['tmp_name']))
 				$newDelib['Deliberation']['deliberation'] = '';
 			else
