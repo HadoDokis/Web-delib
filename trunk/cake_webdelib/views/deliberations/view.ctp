@@ -2,14 +2,13 @@
 <?php echo $javascript->link('ckeditor/adapters/jquery'); ?>
 
 <div id="vue_cadre">
-
 <dl>
     <?php
-    if (empty($this->data['Multidelib'])) {
-		if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
-			echo '<h3>D&eacute;lib&eacute;ration n&deg; '.$this->data['Deliberation']['num_delib'].'</h3>';
-		else
-			echo '<h3>Identifiant projet '.$this->data['Nature']['libelle'].' : '.$this->data['Deliberation']['id'].'</h3>';
+        if (empty($this->data['Multidelib'])) {
+            if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
+                echo '<h3>D&eacute;lib&eacute;ration n&deg; '.$this->data['Deliberation']['num_delib'].'</h3>';
+            else
+                echo '<h3>Identifiant projet '.$this->data['Nature']['libelle'].' : '.$this->data['Deliberation']['id'].'</h3>';
     } else {
 		if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
 			echo '<h3>Multi-D&eacute;lib&eacute;rations</h3>';
@@ -17,14 +16,13 @@
 			echo '<h3>Projet Multi-D&eacute;lib&eacute;rations</h3>';
     }
 	?>
-
 	<div class="imbrique">
 	<?php
 	    if (empty($this->data['Multidelib'])) {
-	    	echo $html->tag('dt', 'Libellé');
+		echo $html->tag('dt', 'Libellé');
 	    	echo $html->tag('dd', '&nbsp;'.$this->data['Deliberation']['objet']);
 	    } else {
-			echo $this->element('viewDelibRattachee', array(
+		echo $this->element('viewDelibRattachee', array(
 				'delib'=>$this->data['Deliberation'],
 				'annexes'=>$this->data['Annex'],
 				'natureLibelle'=>$this->data['Nature']['libelle']));

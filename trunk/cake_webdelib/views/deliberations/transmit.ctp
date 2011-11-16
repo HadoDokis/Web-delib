@@ -11,10 +11,10 @@
 <?php if (isset($message))  echo ($message); ?>
 <h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
     La Classification enregistrée date du <?php echo $dateClassification ?> <br /><br />
-    <table>
+    <table width="100%">
 <tr>
  	<th><?php echo  $paginator->sort('N° délibération', 'num_delib'); ?></th>
- 	<th><?php echo  $paginator->sort('Objet', 'objet'); ?></th>
+ 	<th><?php echo  $paginator->sort("Libellé de l'acte", 'objet_delib'); ?></th>
  	<th><?php echo  $paginator->sort('Date de séance', 'Seance.date'); ?></th>
  	<th><?php echo  $paginator->sort('Titre', 'titre'); ?></th>
  	<th><?php echo  $paginator->sort('Classification', 'num_pref'); ?></th>
@@ -30,7 +30,7 @@
 	       echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/'.$delib['Deliberation']['id']);
 ?>
 		</td>
-		<td><?php echo $delib['Deliberation']['objet']; ?></td>
+		<td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
 		<td><?php echo $delib['Seance']['date']; ?></td>
 		<td><?php echo $delib['Deliberation']['titre']; ?></td>
 		<td><?php echo $delib['Deliberation']['num_pref']; ?></td>

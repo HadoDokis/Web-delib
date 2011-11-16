@@ -4,7 +4,7 @@
         echo '<div id="flashMessage" class="message">'.$message.'</div>	'; 
 ?>
 <cake:nocache>
-<h2> Vote pour le projet : "<?php echo $deliberation['Deliberation']['objet']?>"</h2>
+<h2> Vote pour le projet : "<?php echo $deliberation['Deliberation']['objet_delib']?>"</h2>
 
 <h3>Liste des présents : <?php echo $form->input('Vote.listePresents', array('label'=>false, 'div'=>false, 'options'=>array(1=>'masquée', 2=>'affichée'), 'default'=>1, 'onchange' => "affichageListePresents(this);", 'empty'=>false)); ?></h3>
 <div id='saisiePresents'>

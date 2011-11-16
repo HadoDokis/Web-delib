@@ -11,7 +11,7 @@
 	<tr>
 		<th>Thème</th>
 		<th>Rapporteur</th>
-		<th>Libellé</th>
+		<th>Libellé de l'acte</th>
 		<th>Titre</th>
 		<th>Num Delib</th>
 		<th>Action</th>
@@ -20,7 +20,7 @@
     	<tr height='36px'>
     	    <td><?php echo $projet['Theme']['libelle']; ?></td>
 		    <td><?php echo $projet['Rapporteur']['nom'].' '.$projet['Rapporteur']['prenom']; ?></td>
-		    <td><?php echo $projet['Deliberation']['objet']; ?></td>
+		    <td><?php echo $projet['Deliberation']['objet_delib']; ?></td>
 		    <td><?php echo $projet['Deliberation']['titre']; ?></td>
 		    <td><?php echo $projet['Deliberation']['num_delib']; ?></td>
 		    <td>

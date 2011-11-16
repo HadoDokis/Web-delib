@@ -12,11 +12,11 @@
 <h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
 <?php echo $form->create('Deliberation',array('type'=>'file','url'=>'/deliberations/sendActe')); ?>
     La Classification enregistrée date du <?php echo $html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
-	<table style='100%'>
+	<table width='100%'>
 <tr>
 	<th></th>
  	<th>Numéro Généré</th>
- 	<th>Objet</th>
+ 	<th>Libellé de l'acte</th>
  	<th>Titre</th>
  	<th>Classification</th>
  	<th>statut</th>
@@ -36,7 +36,7 @@
                 echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/'.$delib['Deliberation']['id']);
 		?>
 		</td>
-		<td><?php echo $delib['Deliberation']['objet']; ?></td>
+		<td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
 		<td><?php echo $delib['Deliberation']['titre']; ?></td>
 
 		<td><?php echo $form->input('Deliberation.'.$delib['Deliberation']['id'].'_num_pref',array('label'=>false, 'div'=>false, 'id'=>$delib['Deliberation']['id'].'classif1', 'size' => '60','disabled'=>'disabled', 'value' => $delib['Deliberation'][$delib['Deliberation']['id'].'_num_pref'] ));?><br/>

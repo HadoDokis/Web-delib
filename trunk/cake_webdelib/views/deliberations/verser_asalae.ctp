@@ -3,11 +3,11 @@
 <?php if (isset($message))  echo ($message); ?>
 <h2>Verser les D&eacute;lib&eacute;rations &agrave; AS@LAE</h2>
 <?php echo $form->create('Deliberation',array('type'=>'file','url'=>'/deliberations/verserAsalae')); ?>
-<table>
+<table width='100%'>
 <tr>
 	<th></th>
  	<th>Numéro D&eacute;lib&eacute;ration</th>
- 	<th>Objet</th>
+ 	<th>Libellé de l'acte</th>
  	<th>Titre</th>
  	<th>statut</th>
 </tr>
@@ -27,7 +27,7 @@
 		?>
 		</td>
 		<td>
-		<?php echo ($delib['Deliberation']['objet']) ; ?>
+		<?php echo ($delib['Deliberation']['objet_delib']) ; ?>
 		</td>
 		<td>
 		<?php echo ($delib['Deliberation']['titre']); ?>

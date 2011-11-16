@@ -7,7 +7,7 @@
     <tr>
 	<th></th>
  	<th>Numéro D&eacute;lib&eacute;ration</th>
- 	<th>Objet</th>
+ 	<th>Libellé de l'acte</th>
  	<th>Titre</th>
  	<th width='65px'>statut</th>
     </tr>
@@ -31,7 +31,7 @@
 		?>
 		</td>
 		<td>
-		<?php echo ($delib['Deliberation']['objet']) ; ?>
+		<?php echo ($delib['Deliberation']['objet_delib']) ; ?>
 		</td>
 		<td>
 		<?php echo ($delib['Deliberation']['titre']); ?>
