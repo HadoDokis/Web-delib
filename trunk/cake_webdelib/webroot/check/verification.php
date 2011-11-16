@@ -1,6 +1,4 @@
 <?php
-// initalisations
-$fichier_conf = 'webdelib.inc';
 
 $versionCakePHPAttendue = "1.2.10";
 $versionPHPAttendue = "5.2.4";
@@ -17,6 +15,25 @@ define('CONFIGS', APP.'config'.DS);
 define('CAKE_CORE_INCLUDE_PATH', ROOT);
 define('WEBROOT_DIR', basename(dirname(dirname(__FILE__))));
 define('WWW_ROOT', dirname(dirname(__FILE__)) . DS);
+define('LIBS', ROOT.DS.'cake'.DS.'libs'.DS);
+
+define ('MODELS', APP.'models'.DS);
+define ('BEHAVIORS', MODELS.'behaviors'.DS);
+define ('CONTROLLERS', APP.'controllers'.DS);
+define ('COMPONENTS', CONTROLLERS.'components'.DS);
+define ('VIEWS', APP.'views'.DS);
+define ('HELPERS', VIEWS.'helpers'.DS);
+define ('VENDORS', APP.'vendors'.DS);
+
+// initalisations
+include_once(ROOT.DS.'cake'.DS.'basics.php');
+include_once(LIBS.'object.php');
+include_once(LIBS.'configure.php');
+include_once(LIBS.'cache.php');
+include_once(LIBS.'inflector.php');
+$fichier_conf = 'webdelib.inc';
+
+
 if (function_exists('ini_set') && ini_set('include_path', CAKE_CORE_INCLUDE_PATH . PATH_SEPARATOR . ROOT . DS . APP_DIR . DS . PATH_SEPARATOR . ini_get('include_path'))) {
 	define('APP_PATH', null);
 	define('CORE_PATH', null);
@@ -68,7 +85,7 @@ function getValueFromIniFile($iniFileURI, $searchDeb, $searchFin=';') {
 	$searched = str_replace('=', '', $searched);
 	$searched = str_replace('\'', '', $searched);
 	$searched = str_replace('\"', '', $searched);
-	
+
 	return $searched;
 }
 
@@ -95,6 +112,25 @@ function getValueFromAsalaeIniFile($niv1, $niv2 = null) {
 
 	return $ret;
 }
+
+function getValueFromWebdelibIncFile($niv1) {
+        // initialisation
+        $ret = null;
+        global $appli_path;
+        global $fichier_conf;
+        global $config;
+
+        if (!file_exists($appli_path.'app'.DS.'config'.DS.$fichier_conf))
+                return FICHIER_NON_TROUVE;
+
+        $ret = Configure::read($niv1);
+
+        $ret = str_replace('<', '&lt;', $ret);
+        $ret = str_replace('>', '&gt;', $ret);
+
+        return $ret;
+}
+
 
 
 function apache_check_modules($mods) {
@@ -187,26 +223,18 @@ function verifVersions() {
 	// affichage de la version de asalae
 	if (file_exists($appli_path.'app'.DS.'config'.DS.'core.php')) {
 		$fCore = file_get_contents($appli_path.'app'.DS.'config'.DS.'core.php');
-		$verPos = strpos($fCore, 'appVersion');
+		$verPos = strpos($fCore, 'VERSION');
 		if ($verPos === false) {
-			d('Version de as@lae : déclaration de appVersion non trouvée dans le fichier core.php', 'ko');
+			d('Version de webdelib : déclaration de Version non trouvée dans le fichier core.php', 'ko');
 		} else {
-			$debPos = strpos($fCore, "'", $verPos+11)+1;
+			$debPos = strpos($fCore, "'", $verPos+8)+1;
 			$finPos = strpos($fCore, "'", $debPos)-1;
 			$verAsalae = substr($fCore, $debPos, ($finPos-$debPos)+1);
-			d("Version de as@lae : $verAsalae", 'info');
+			d("Version de Webdelib : $verAsalae", 'info');
 		}
 	} else {
-		d('Version de as@lae : fichier core.php non trouvé', 'ko');
+		d('Version de Webdelib : fichier core.php non trouvé', 'ko');
 	}
-
-	// affichage de la version du schéma des tables	
-	$dataBaseVersion = getVersionDataBase();
-	if ($dataBaseVersion) {
-		$okko = ($dataBaseVersion == $verAsalae) ? 'ok' : 'ko';
-		d("Version du schéma de la base de données : $dataBaseVersion", $okko);
-	} else
-		d("Version du schéma de la base de données non trouvée", 'ko');
 
 	// version de cakephp
 	if (file_exists($appli_path.'cake'.DS.'VERSION.txt')) {
@@ -224,19 +252,8 @@ function verifVersions() {
 
 	// affichage de la version de l'os du serveur
 	$result=array();
-	exec("lsb_release -d", $result);
-	if (!empty($result)) {
-		$ver = $result[0];
-	} else {
-		exec("ver", $result);
-		if (!empty($result[0]))
-			$ver = $result[0];
-		elseif (!empty($result[1]))
-			$ver = $result[1];
-		else
-			$ver = 'OS inconnu!';
-	}
-	d("Version de l'OS du serveur : $ver", 'info');
+        $version = file_get_contents('/etc/issue');
+	d("Version de l'OS du serveur : $version", 'info');
 }
 
 function getVersionDataBase() {
@@ -337,10 +354,6 @@ function verifRepEchangeStockage() {
 	// initialisations
 	global $appli_path, $fichier_conf;
 	$repLists = array();
-	$repLists[] = array('rep'=>'entree', 'nom'=>"Répertoire d'échange en entrée");
-	$repLists[] = array('rep'=>'sortie', 'nom'=>"Répertoire d'échange en sortie");
-	$repLists[] = array('rep' =>'stockageMessages', 'nom'=>"Répertoire de sauvegarde des bordereaux de transfert");
-	$repLists[] = array('rep'=>'planRangementRacine', 'nom'=>"Réperoire racine du plan de rangement");
 
 	// vérification de la présence du fichier .ini
 	if (!file_exists($appli_path.'app'.DS.'config'.DS.$fichier_conf)) {
@@ -352,7 +365,7 @@ function verifRepEchangeStockage() {
 	foreach($repLists as $repATester) {
 		$rep = $repATester['rep'];
 		$name = $repATester['nom'];
-		$repConfig = getValueFromAsalaeIniFile('Repertoire', $rep);
+		$repConfig = getValueFromWebdelibIncFile('Repertoire', $rep);
 		if ($repConfig == NON_TROUVE)
 			d("$name : déclaration de ['Repertoire']['$rep'] non trouvée dans le fichier $fichier_conf", 'ko');
 		elseif (empty($repConfig))
@@ -387,13 +400,26 @@ function infoMails() {
 	}
 
 	// mailadministrateur
-	$mailAdmin = getValueFromAsalaeIniFile('Mail', 'administrateur');
+	$mailAdmin = getValueFromWebdelibIncFile('MAIL_FROM');
 	if ($mailAdmin == NON_TROUVE)
 		d("Mail de l'administrateur : déclaration de ['Mail']['administrateur'] non trouvée dans le fichier $fichier_conf", 'ko');
 	elseif (empty($mailAdmin))
 		d("Mail de l'administrateur : ['Mail']['administrateur'] non renseigné dans le fichier $fichier_conf", 'ko');
 	else
-		d("Mail de l'administrateur : $mailAdmin", 'ok');
+		d("Adresse expéditeur : $mailAdmin", 'ok');
+
+	if (getValueFromWebdelibIncFile('SMTP_USE')) {
+	    d('Paramètres de connexion : ', 'info');
+	    echo ("<ul>"); 
+            t('li', 'Serveur SMTP : '.getValueFromWebdelibIncFile('SMTP_HOST'));
+            t('li', 'Port SMTP : '.getValueFromWebdelibIncFile('SMTP_PORT'));
+            t('li', 'Username SMTP : '.getValueFromWebdelibIncFile('SMTP_USERNAME'));
+            t('li', 'Password SMTP : ********');
+            echo ("</ul>"); 
+	}
+        else {
+		d("Utilisation du MTA local", 'info');
+        }
 }
 
 function verifAntivirus() {
@@ -408,7 +434,7 @@ function verifAntivirus() {
 	}
 
 	// type antivirus
-	$avType = getValueFromAsalaeIniFile('Antivirus', 'type');
+	$avType = getValueFromWebdelibIncFile('Antivirus', 'type');
 	if ($avType == NON_TROUVE)
 		d("Type de l'antivirus : déclaration de ['Antivirus']['type'] non trouvée dans le fichier $fichier_conf", 'ko');
 	elseif (empty($avType))
@@ -419,7 +445,7 @@ function verifAntivirus() {
 		d("Type de l'antivirus : $avType ($avTypes[$avType])", 'ok');
 
 	// exécutable de l'antivirus
-	$avExec = getValueFromAsalaeIniFile('Antivirus', 'exec');
+	$avExec = getValueFromWebdelibIncFile('Antivirus', 'exec');
 	if ($avType == NON_TROUVE)
 		d("Exécutable de l'antivirus : déclaration de ['Antivirus']['exec'] non trouvée dans le fichier $fichier_conf", 'ko');
 	elseif (empty($avType))
@@ -442,247 +468,6 @@ function verifAntivirus() {
 					d("Impossible de lire la version de l'antivirus", 'ko');
 			break;
 		}
-	}
-}
-
-function verifFormatValidator() {
-	// initialisations
-	global $appli_path, $fichier_conf;
-	$appliTypes = array('CINES'=>'Format validator du CINES');
-
-	// vérification de la présence du fichier .ini
-	if (!file_exists($appli_path.'app'.DS.'config'.DS.$fichier_conf)) {
-		d("Fichier de configuration de l'application $fichier_conf non trouvé", 'ko');
-		return false;
-	}
-
-	// type FormatValidator
-	$appliType = getValueFromAsalaeIniFile('FormatValidator', 'type');
-	if ($appliType == NON_TROUVE) {
-		d("Type du valideur de format : déclaration de ['FormatValidator']['type'] non trouvée dans le fichier $fichier_conf", 'ko');
-		return;		
-	} elseif (empty($appliType)) {
-		d("Type du valideur de format : ['FormatValidator']['type'] non renseigné dans le fichier $fichier_conf", 'ko');
-		return;		
-	} elseif (!array_key_exists($appliType, $appliTypes)) {
-		d("Type du valideur de format : $appliType n'est pas géré par as@ale", 'ko');
-		return;		
-	}
-	d("Type du valideur de format : $appliType ($appliTypes[$appliType])", 'ok');
-
-	// repertoire home
-	$appliHome = getValueFromAsalaeIniFile('FormatValidator', 'home');
-	if ($appliHome == NON_TROUVE) {
-		d("Répertoire d'installation (home) : déclaration de ['FormatValidator']['home'] non trouvée dans le fichier $fichier_conf", 'ko');
-		return;		
-	} elseif (empty($appliHome)) {
-		d("Répertoire d'installation (home) : ['FormatValidator']['home'] non renseigné dans le fichier $fichier_conf", 'ko');
-		return;		
-	} elseif (!file_exists($appliHome)) {
-		d("Répertoire d'installation (home) : le répertoire d'installation (home) $appliHome est introuvable", 'ko');
-		return;		
-	}
-	d("Répertoire d'installation (home) : $appliHome", 'ok');
-
-	// Shell launch_asalae.sh
-	if (!file_exists($appliHome.'launch_asalae.sh')) {
-		d("Le fichier ".$appliHome."launch_asalae.sh est introuvable", 'ko');
-		return;		
-	} elseif(!is_executable($appliHome.'launch_asalae.sh')) {
-		d("Le fichier ".$appliHome."launch_asalae.sh n'est pas exécutable", 'ko');
-		return;
-	}
-	d("Le fichier ".$appliHome."launch_asalae.sh est présent et exécutable", 'ok');
-
-	switch ($appliType) {
-		case 'CINES' :
-			t('h4', 'Essais du validateur sur des fichiers de référence');
-			// test d'un pdf valide
-			$result = array();
-			$checkFile = getcwd().DS.'files'.DS.'checkPdfOk.pdf';
-			$commande = $appliHome."launch_asalae.sh $checkFile";
-			exec("$commande 2>&1", $result);
-			if (isset($result[8]))
-				if (strpos($result[8], 'wf=1') !== false)
-					d("Test sur un fichier pdf valide réussi : ".$result[8], 'ok');
-				else
-					d("Test sur un fichier pdf valide échoué : ".$result[8], 'ko');
-			else
-				d("Test sur un fichier pdf valide échoué", 'ko');
-			// test d'un pdf non valide
-			$result = array();
-			$checkFile = getcwd().DS.'files'.DS.'checkPdfKo.pdf';
-			$commande = $appliHome."launch_asalae.sh $checkFile";
-			exec("$commande 2>&1", $result);
-			if (isset($result[8]))
-				if (strpos($result[8], 'wf=0') !== false)
-					d("Test sur un fichier pdf non valide réussi : ".$result[8], 'ok');
-				else
-					d("Test sur un fichier pdf non valide échoué : ".$result[8], 'ko');
-			else
-				d("Test sur un fichier pdf non valide échoué", 'ko');
-			// test d'un png valide
-			$result = array();
-			$checkFile = getcwd().DS.'files'.DS.'checkPngOk.png';
-			$commande = $appliHome."launch_asalae.sh $checkFile";
-			exec("$commande 2>&1", $result);
-			if (isset($result[9]))
-				if (strpos($result[9], 'wf=1') !== false)
-					d("Test sur un fichier png valide réussi : ".$result[9], 'ok');
-				else
-					d("Test sur un fichier png valide échoué : ".$result[9], 'ko');
-			else
-				d("Test sur un fichier png valide échoué", 'ko');
-			// test d'un png non valide
-			$result = array();
-			$checkFile = getcwd().DS.'files'.DS.'checkPngKo.png';
-			$commande = $appliHome."launch_asalae.sh $checkFile";
-			exec("$commande 2>&1", $result);
-			if (isset($result[8]))
-				if (strpos($result[8], 'wf=0') !== false)
-					d("Test sur un fichier png non valide réussi : ".$result[8], 'ok');
-				else
-					d("Test sur un fichier png non valide échoué : ".$result[8], 'ko');
-			else
-				d("Test sur un fichier png non valide échoué", 'ko');
-		break;
-	}
-}
-
-
-function verifHorodatage() {
-	// initialisations
-	global $appli_path, $fichier_conf;
-	$appliTypes = array(
-		'SIGNSERVER'=>'Serveur d\'horodatage SignServer',
-		'OPENSIGN'=>'Serveur d\'horodatage de l\'Adullact OpenSSL');
-
-	// vérification de la présence du fichier .ini
-	if (!file_exists($appli_path.'app'.DS.'config'.DS.$fichier_conf)) {
-		d("Fichier de configuration de l'application $fichier_conf non trouvé", 'ko');
-		return false;
-	}
-
-	// type Horodateur
-	$appliType = getValueFromAsalaeIniFile('Horodatage', 'type');
-	if ($appliType == NON_TROUVE)
-		d("Type du service d\'horodatage : déclaration de ['Horodatage']['type'] non trouvée dans le fichier $fichier_conf", 'ko');
-	elseif (empty($appliType))
-		d("Type du service d\'horodatage : ['Horodatage']['type'] non renseigné dans le fichier $fichier_conf", 'ko');
-	elseif (!array_key_exists($appliType, $appliTypes))
-		d("Type du service d\'horodatage : $appliType n'est pas géré par as@ale", 'ko');
-	else
-		d("Type du service d\'horodatage : $appliType ($appliTypes[$appliType])", 'ok');
-
-	switch($appliType) {
-		case 'SIGNSERVER' :
-			// host
-			$host = getValueFromAsalaeIniFile('Signserver', 'host');
-			if ($host == NON_TROUVE)
-				d("Signserver host : déclaration de ['Signserver']['host'] non trouvée dans le fichier $fichier_conf", 'ko');
-			elseif (empty($host))
-				d("Signserver host : ['Signserver']['host'] non renseigné dans le fichier $fichier_conf", 'ko');
-			else
-				d("Signserver host : $host", 'ok');
-			// port
-			$port = getValueFromAsalaeIniFile('Signserver', 'port');
-			if ($port == NON_TROUVE)
-				d("Signserver port : déclaration de ['Signserver']['port'] non trouvée dans le fichier $fichier_conf", 'ko');
-			else
-				d("Signserver port : $port", 'ok');
-			// java home
-			$javaHome = getValueFromAsalaeIniFile('Signserver', 'java_home');
-			if ($javaHome == NON_TROUVE)
-				d("Signserver java home : déclaration de ['Signserver']['java_home'] non trouvée dans le fichier $fichier_conf", 'ko');
-			elseif (empty($javaHome))
-				d("Signserver java home : ['Signserver']['java_home'] non renseigné dans le fichier $fichier_conf", 'ko');
-			else
-				d("Signserver java home : $javaHome", 'ok');
-		
-			if (!empty($host) && !empty($javaHome)) {
-				t('h4', "Essai de l'horodatage");
-				$result = array();
-				$fichierSource = getcwd().DS.'files'.DS.'checkHorodatage.pdf';
-				if (!file_exists($fichierSource)) {
-					d("Le fichier test pour l'horodatage $fichierSource est introuvable", 'ko');
-					return;
-				}
-				if (!is_writable(getcwd().DS.'files')) {
-					$repDest = getcwd().DS.'files';
-					d("Le répertoire $repDest n'est pas accessible en écriture", 'ko');
-					return;
-				}
-				$url = "http://$host:$port/signserver/process?workerId=1";
-				$timeStampClientJar = ROOT.DS.APP_DIR.DS.'vendors'.DS.'timestampclient'.DS.'timeStampClient.jar';
-				$outrep = getcwd().DS.'files'.DS.'checkHorodatage.rep.tsa';
-				$outreq = getcwd().DS.'files'.DS.'checkHorodatage.req.tsa';
-		
-				if (file_exists($outreq)) unlink($outreq);
-				if (file_exists($outrep)) unlink($outrep);
-		
-				$cmd = ' -jar '.$timeStampClientJar.' -base64 -infile '.$fichierSource.' -outreq '.$outreq.' -outrep '.$outrep.' -url '.$url;
-		        $java = $javaHome."java";
-		        ob_start();
-		          passthru("$java $cmd 2>&1", $result);
-		        ob_end_clean();
-		        
-		        if (file_exists($outreq) && file_exists($outrep))
-					d("Opération d'horodatage effectuée avec succés", 'ok');
-				else
-					d("Opération d'horodatage échouée", 'ko');
-			
-				if (file_exists($outreq)) unlink($outreq);
-				if (file_exists($outrep)) unlink($outrep);
-			}
-		break;
-		case 'OPENSIGN' :
-			// host
-			$host = getValueFromAsalaeIniFile('Opensign', 'host');
-			if ($host == NON_TROUVE)
-				d("Opensign host : déclaration de ['Opensign']['host'] non trouvée dans le fichier $fichier_conf", 'ko');
-			elseif (empty($host))
-				d("Opensign host : ['Opensign']['host'] non renseigné dans le fichier $fichier_conf", 'ko');
-			else
-				d("Opensign host : $host", 'ok');
-			
-			if (!empty($host)) {
-				t('h4', "Essai de l'horodatage");
-				$result = array();
-				$fichierSource = getcwd().DS.'files'.DS.'checkHorodatage.pdf';
-				if (!file_exists($fichierSource)) {
-					d("Le fichier test pour l'horodatage $fichierSource est introuvable", 'ko');
-					return;
-				}
-				if (!is_writable(getcwd().DS.'files')) {
-					$repDest = getcwd().DS.'files';
-					d("Le répertoire $repDest n'est pas accessible en écriture", 'ko');
-					return;
-				}
-				$outrep = getcwd().DS.'files'.DS.'checkHorodatage.rep.tsa';
-				$outreq = getcwd().DS.'files'.DS.'checkHorodatage.req.tsa';
-				if (file_exists($outreq)) unlink($outreq);
-				if (file_exists($outrep)) unlink($outrep);
-
-		        $sha1 = sha1_file($fichierSource);
-		        $params = array('sha1'=> $sha1);
-		        $client = new SoapClient($host);
-		        $requete = $client->__soapCall("createRequest", array('parameters' => $params));
-		        $params = array('request'=> $requete);
-		        $response = $client->__soapCall("createResponse", array('parameters' => $params));
-		        $params = array('response'=> $response);
-		        $token = $client->__soapCall("extractToken", array('parameter' => $params));
-		        file_put_contents($outreq, $requete);
-		        file_put_contents($outrep, $token);
-
-		        if (file_exists($outreq) && file_exists($outrep))
-					d("Opération d'horodatage effectuée avec succés", 'ok');
-				else
-					d("Opération d'horodatage échouée", 'ko');
-			
-				if (file_exists($outreq)) unlink($outreq);
-				if (file_exists($outrep)) unlink($outrep);
-			}
-		break;
 	}
 }
 
@@ -720,7 +505,7 @@ function verifConversion() {
 	}
 	
 	// type convertisseur
-	$convType = getValueFromAsalaeIniFile('Conversion', 'type');
+	$convType = getValueFromWebdelibIncFile('CONVERSION_TYPE');
 	if ($convType == NON_TROUVE)
 		d("Type d'outil de conversion : déclaration de ['Conversion']['type'] non trouvée dans le fichier $fichier_conf", 'ko');
 	elseif (empty($convType))
@@ -731,7 +516,8 @@ function verifConversion() {
 		d("Type d'outil de conversion : $convType ($convTypes[$convType])", 'ok');
 	
 	// exécutable du convertisseur
-	$convExec = getValueFromAsalaeIniFile('Conversion', 'exec');
+       
+	$convExec = getValueFromWebdelibIncFile('CONVERSION_EXEC');
 	if ($convType == NON_TROUVE)
 		d("Exécutable de l'outil de conversion : déclaration de ['Conversion']['exec'] non trouvée dans le fichier $fichier_conf", 'ko');
 	elseif (empty($convType))
@@ -815,6 +601,108 @@ function afficheMulti() {
 	}
 	echo '</ul>';
 	echo '<br/>';
+}
+
+function getClassification($id=null){
+    $pos =  strrpos ( getcwd(), 'webroot');
+    $path = substr(getcwd(), 0, $pos);
+
+    $url = 'https://'.Configure::read('HOST').'/modules/actes/actes_classification_fetch.php';
+    $data = array('api' => '1' );
+    $url .= '?'.http_build_query($data);
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    if (Configure::read('USE_PROXY'))
+        curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+    curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
+    curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
+    curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $reponse = curl_exec($ch);
+
+    if (curl_errno($ch))
+	d(curl_error($ch), 'ko');
+
+    curl_close($ch);
+    if ($reponse != "")  {
+	d(Configure::read('HOST'), 'info');
+	d('Fichier de classification S2LOW récupéré', 'ok');
+     }
+     else {
+	d('Echec de récupération du fichier de classification', 'ko');
+     }
+
+}
+ 
+
+function getCircuitsParapheur() { 
+    $circuits = array();
+    if (Configure::read('USE_PARAPH')) {
+        include_once(COMPONENTS.'iparapheur.php');      
+        $Parafwebservice = new IparapheurComponent();
+	$circuits = $Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+        if (!empty($circuits)) {
+            d(Configure::read('WSTO'), 'info');
+	    d('Circuits du iparapheur récupéré ', 'ok');
+        }
+        else 
+	    d('liste de circuit du iparapheur vide', 'ko');
+    }
+    else {
+        d('Utilisation du i-parapheur désactivé', 'info');
+
+    }
+
+
+}
+
+function getVersionAsalae() {
+ 
+    $client = new SoapClient(ASALAE_WSDL);
+    $version = $client->__soapCall("wsGetVersion", array(IDENTIFIANT_VERSANT, MOT_DE_PASSE));
+    if (is_int( $version)) {
+	d("Echec d'authentification", 'ko');
+    } 
+    else{
+	d(ASALAE_WSDL, 'info');
+	d('Version de AS@LAE : '.$version, 'ok');
+    }
+}
+
+function testerOdfGedooo() {
+    $tmpFile = "/tmp/FILE_RESULT.odt";
+    @unlink( $tmpFile );
+   
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_Utility.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_FieldType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_ContentType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_IterationType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_PartType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_FusionType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_MatrixType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_MatrixRowType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+
+    $fichierSource = getcwd().DS.'files'.DS.'recettage.odt';
+    $oTemplate = new GDO_ContentType("", "modele.odt", "application/vnd.oasis.opendocument.text", "binary", file_get_contents($fichierSource));
+
+    $oMainPart = new GDO_PartType();
+    $oMainPart->addElement(new GDO_FieldType('ma_variable', 'OK', 'text'));
+    $oFusion = new GDO_FusionType($oTemplate, "application/vnd.oasis.opendocument.text", $oMainPart);
+    $oFusion->process();
+    $oFusion->SendContentToFile($tmpFile);
+ 
+    if (file_exists($tmpFile))  {
+        d(Configure::read('GEDOOO_WSDL'), 'info');
+	d('Fusion réussie avec ODFGEDOOo', 'ok');
+    }
+    else 
+        d('Fusion échouée avec ODFGEDOOo', 'ko');
+
 }
 
 ?>
