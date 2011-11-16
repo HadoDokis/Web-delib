@@ -16,7 +16,7 @@ if ($delib['etat']==3 || $delib['etat']==5)
 else
 	echo $html->tag('h2', 'Identifiant projet '.$natureLibelle.' : '.$delib['id']);
 echo $html->tag('dt', 'Libellé');
-echo $html->tag('dd', '&nbsp;'.$delib['objet']);
+echo $html->tag('dd', '&nbsp;'.$delib['objet_delib']);
 
 echo $this->element('viewTexte', array('type'=>'deliberation', 'delib'=>$delib));
 

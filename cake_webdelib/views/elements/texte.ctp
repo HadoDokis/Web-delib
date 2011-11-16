@@ -33,7 +33,7 @@
 		echo '</div>';
 	} else {
 	    if (empty($delib['Deliberation'][$key."_name"]))
-                echo  $form->input("Deliberation.".$key, array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>$libelle));
+                echo  $form->input("Deliberation.".$key, array('label'=>$libelle, 'type'=>'file', 'size'=>'60', 'title'=>$libelle));
             else {
                 $url =    Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/$id/$key.odt";
    	        echo '<span id="Deliberation'.$key.'InputFichierJoint" style="display: none;"></span>';
