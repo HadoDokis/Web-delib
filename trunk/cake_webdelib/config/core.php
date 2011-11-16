@@ -296,8 +296,14 @@
  * 		'compress' => false, // [optional] compress data in Memcache (slower, but uses less memory)
  *	));
  *
- */
 	Cache::config('default', array('engine' => 'File'));
+ */
+    Cache::config('default', array(
+              'engine' => 'Apc', //[required]
+              'duration'=> 3600, //[optional]
+              'probability'=> 100, //[optional]
+              'prefix' => Inflector::slug(APP_DIR) . '_', //[optional]  prefix every cache file with this string
+      ));
 
     $pos = @strripos($_SERVER['HTTP_USER_AGENT'], 'Chrome');
     $pos2 = @strripos($_SERVER['HTTP_USER_AGENT'], 'Mozilla');
@@ -315,5 +321,5 @@
     define('CONFIG_PATH', $path2."config/");
 
     require_once ('webdelib.inc');
-    define('VERSION', '<b> 3.5.0 </b>');
+    define('VERSION', '<b> 3.5.1 - beta</b>');
     include_once(APP_DIR.DS.'plugins'.DS.'cakeflow'.DS.'config'.DS.'cakeflow.conf.php');
