@@ -7,22 +7,36 @@ $links = array(
 	'annulerSupprimer' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_supprimer_back', 'title'=>'Annuler la suppression', 'style'=>'display: none;')),
 	);
 
-	echo $html->tag('fieldset', null, array('id'=>'delibRattachee'.$this->data['Deliberation']['id']));
-	echo $html->tag('legend', '&nbsp;Délibération : '.$this->data['Deliberation']['id'].'&nbsp;');
-		echo $form->input('Deliberation.objet_delib', array('type'=>'textarea','label'=>'Libellé<acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));
-		echo $html->tag('div', '', array('class'=>'spacer'));
+        if (isset($this->data['Deliberation']['id'])) {
+	    echo $html->tag('fieldset', null, array('id'=>'delibRattachee'.$this->data['Deliberation']['id']));
+	    echo $html->tag('legend', '&nbsp;Délibération : '.$this->data['Deliberation']['id'].'&nbsp;');
+            $hideAnnexe = true;
+	}	
+        else 
+	    $hideAnnexe = false;
+	for($i =0; $i < count($this->data['Annex']); $i++) {
+            if ($this->data['Annex'][$i]['model'] == 'Projet')
+                unset($this->data['Annex'][$i]);
+        }
 
-		// div pour recevoir le texte de la délib
-		echo $html->tag('div', '', array('id'=>'texteDelibOngletDelib'));
-		echo $html->tag('div', '', array('class'=>'spacer'));
+        echo $form->input('Deliberation.objet_delib', array('type'=>'textarea','label'=>'Libellé<acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));
+	echo $html->tag('div', '', array('class'=>'spacer'));
 
-		// saisie des annexes
-		echo $html->tag('label', 'Annexe(s)');
-		echo '<div class="fckEditorProjet">';
-			$annexeOptions = array('ref'=>'delibRattachee'.$delib['id'], 'affichage'=>'partiel');
-			if (isset($delib['Annex'])) $annexeOptions['annexes'] = $delib['Annex'];
-			echo $this->element('annexe', $annexeOptions);
-		echo '</div>';
+	// div pour recevoir le texte de la délib
+	echo $html->tag('div', '', array('id'=>'texteDelibOngletDelib'));
+	echo $html->tag('div', '', array('class'=>'spacer'));
+
+	// saisie des annexes
+        if ($hideAnnexe) {
+	    echo $html->tag('label', 'Annexe(s)');
+	    echo '<div class="fckEditorProjet">';
+	    $annexeOptions = array('ref'=>'delibRattachee'.$this->data['Deliberation']['id'], 'affichage'=>'partiel');
+
+	        $annexeOptions['annexes'] = $this->data['Annex'];
+
+	    echo $this->element('annexe', $annexeOptions);
+	    echo '</div>';
+        }
 	echo $html->tag('/fieldset');
 	echo $html->tag('div', '', array('class'=>'spacer'));
 
