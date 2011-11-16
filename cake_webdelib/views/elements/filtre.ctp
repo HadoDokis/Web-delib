@@ -23,7 +23,7 @@ echo $html->div('filtre');
 			echo $html->image($iconeBoutonBasculeCriteres, array(
 				'id'=>'boutonBasculeCriteres',
 				'border'=>"0", 'height'=>"28", 'width'=>"28",
-				'title'=>__('Afficher-masquer les critÃ¨res du filtre', true),
+				'title'=>__('Afficher-masquer les critères du filtre', true),
 				'onClick'=>"basculeCriteres();",
 				'onMouseOver'=>"this.style.cursor='pointer'"));
 			// affichage du bouton on/off
@@ -43,7 +43,7 @@ echo $html->div('filtre');
 			echo $html->image('icons/filtre.png', array(
 				'id'=>'filtreButton',
 				'border'=>"0", 'height'=>"28", 'width'=>"28",
-				'title'=>__('Changer les critÃ¨res du filtre puis cliquer ici pour appliquer les changements', true),
+				'title'=>__('Changer les critères du filtre puis cliquer ici pour appliquer les changements', true),
 				));
 		echo $html->tag('/div');
 
