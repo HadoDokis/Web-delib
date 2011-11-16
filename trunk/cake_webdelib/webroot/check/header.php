@@ -12,7 +12,7 @@
 		});
 	</script>
 	<!--<![endif]-->
-	<title>as@lae check</title>
+	<title>Webdelib check</title>
 	<link rel="stylesheet" type="text/css" href="css/check.css" />
 	<link rel="stylesheet" type="text/css" href="css/effect.css" />
 	<div id="headerLogoContainer">
