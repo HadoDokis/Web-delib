@@ -198,10 +198,14 @@ class Infosupdef extends AppModel
 /**
  * Retourne les éléments des infosup de type 'list'
  */
-	function generateListes() {
+	function generateListes($model) {
 		$ret = array();
 
-		$recs = $this->findAll("type = 'list'", 'id, code', 'ordre', null, 1, -1);
+		$recs = $this->find('all', array('conditions' => array("type"  => 'list',
+								     'model' => $model),
+						 'fields'     => array('id', 'code'),
+                                                 'order'      => 'ordre', 
+                                                 'recursive'  => -1));
 		foreach($recs as $rec) {
 			$ret[$rec['Infosupdef']['code']] = $this->Infosuplistedef->find('list',array('conditions'=>array('actif' => '1','infosupdef_id' => $rec['Infosupdef']['id']),'order'=>array('ordre')));
 		}

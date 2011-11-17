@@ -32,7 +32,7 @@ class Infosup extends AppModel
 		$ret = array();
 
 		foreach($infosups as $infosup) {
-			$infosupdef = $this->Infosupdef->find('id = '.$infosup['infosupdef_id'], 'code, type', null, -1);
+			$infosupdef = $this->Infosupdef->find(" id = ".$infosup['infosupdef_id'], 'code, type', null, -1);
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
 				$ret[$infosupdef['Infosupdef']['code']] = $infosup['text'];
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
@@ -63,7 +63,7 @@ class Infosup extends AppModel
 	}
 
 	/* sauvegarde les info sup. recues sous la forme ['code_infosup']=>valeur, ... */
-	function saveCompacted($infosups, $delib_id) {
+	function saveCompacted($infosups, $delib_id, $model) {
 		foreach($infosups as $code=>$valeur) {
 			// lecture de la définition de l'info sup
 			$infosupdef = $this->Infosupdef->find('first', array(
@@ -74,17 +74,18 @@ class Infosup extends AppModel
 			// lecture de l'infosup en base
 			$infosup = $this->find('first', array(
 				'recursive' => -1,
-				'fields' => array('id', 'deliberation_id', 'infosupdef_id', 'file_name'),
+				'fields' => array('id', 'foreign_key', 'model', 'infosupdef_id', 'file_name'),
 				'conditions' => array(
-					'deliberation_id' => $delib_id,
+					'foreign_key' => $delib_id,
 					'infosupdef_id' => $infosupdef['Infosupdef']['id'])));
 
 			// si elle n'existe pas : création d'un nouveau et initialisation
 			if (empty($infosup)) {
 				$this->create();
-				$infosup['Infosup']['deliberation_id'] = $delib_id;
+				$infosup['Infosup']['foreign_key'] = $delib_id;
 				$infosup['Infosup']['infosupdef_id'] = $infosupdef['Infosupdef']['id'];
 			}
+				$infosup['Infosup']['model'] = $model;
 
 			// affectation de la valeur en fonction du type
 			switch($infosupdef['Infosupdef']['type']) {
@@ -156,7 +157,7 @@ class Infosup extends AppModel
 				$iAlias++;
 				$alias = 'infosups'.$iAlias;
 				$from .= (empty($from) ? '' : ', ') . 'infosups ' . $alias;
-				$jointure.= ($iAlias > 1) ? "infosups1.deliberation_id = $alias.deliberation_id AND " : '';
+				$jointure.= ($iAlias > 1) ? "infosups1.foreign_key = $alias.foreign_key AND " : '';
 				if ($infosupType == 'text') {
 					$champRecherche = $alias.'.text';
 					$operateurRecherche = (strpos($recherche, '%')===false) ? '=' : 'like';
@@ -180,7 +181,7 @@ class Infosup extends AppModel
 		}
 		if ($iAlias) {
 			// construction et exécution de la requête
-			$select = 'select infosups1.deliberation_id ';
+			$select = 'select infosups1.foreign_key ';
 			$select .= 'from ' . $from . ' ';
 			$select .= 'where ' . $jointure . $condition;
 			$repSelect = $this->query($select);
@@ -188,7 +189,7 @@ class Infosup extends AppModel
 				$ret = '-1';
 			else {
 				foreach($repSelect as $infosup)
-					$ret .= (empty($ret) ? '' : ', ') .$infosup['infosups1']['deliberation_id'];
+					$ret .= (empty($ret) ? '' : ', ') .$infosup['infosups1']['foreign_key'];
 			}
 		}
 

@@ -93,7 +93,9 @@ class Deliberation extends AppModel {
 			'className'    => 'Vote',
 			'foreignKey'   => 'delib_id'),
 		'Infosup'=>array(
-			'dependent' => true),
+			'dependent' => true,
+                        'foreignKey' => 'foreign_key',
+                        'conditions' => array('Infosup.model' => 'Deliberation')),
 		'Multidelib'=>array(
 			'className'    => 'Deliberation',
 			'foreignKey'   => 'parent_id',
@@ -281,7 +283,8 @@ class Deliberation extends AppModel {
 		$infoSups = $delib['Infosup'];
 		foreach($infoSups as $infoSup) {
 			$infoSup['id'] = null;
-			$infoSup['deliberation_id'] = $delib_id;
+			$infoSup['foreign_key'] = $delib_id;
+			$infoSup['model'] = 'Deliberation';
 			$this->Infosup->save($infoSup, false);
 		}
 
