@@ -4,7 +4,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Form2', 'Javascript', 'Fck', 'Html2');
 	var $components = array('Date','Email', 'Gedooo', 'Conversion');
-	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex', 'Typeseance', 'Acteur');
+	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef');
 	var $cacheAction = 0;
 
 	// Gestion des droits
@@ -71,6 +71,7 @@ class SeancesController extends AppController {
 				$this->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($this->params['form']['date']);
 				$this->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
 				if ($this->Seance->save($this->data)) {
+                                        $infossupDefs = $this->Infosupdef->findAll("type='odtFile'", '', '', 0);
 					$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
 					$this->redirect('/seances/listerFuturesSeances');
 				} else {
@@ -86,23 +87,55 @@ class SeancesController extends AppController {
 
 	function edit($id = null) {
 		if (empty($this->data)) {
+
 			if (!$id) {
 				$this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
 				$this->redirect('/seances/listerFuturesSeances');
 			}
 			$this->data = $this->Seance->read(null, $id);
+
+                        $seance = $this->Seance->find('first', array( 'contain'=>array('Infosup'),
+                                                                      'conditions'=>array('Seance.id'=> $id)));
+
+			$this->data['Infosup'] = $this->Seance->Infosup->compacte($seance['Infosup']);
+			$this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions'=> array('model'=>'Seance'),
+                                                                                       'order'     => 'ordre', 
+										       'recursive' => -1)));
+                         $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Seance'));
+
+
 			if (empty($this->data['Typeseance'])) { $this->data['Typeseance'] = null; }
 				$this->set('selectedTypeseances', $this->_selectedArray($this->data['Typeseance']));
 		} else {
 			$this->data['Seance']['date'] = $this->data['Seance']['date']['year'].'-'.$this->data['Seance']['date_month'].'-'.$this->data['Seance']['date']['day'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
 			if ($this->Seance->save($this->data)) {
-				$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
-				$this->redirect('/seances/listerFuturesSeances');
-			} else {
-				$this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-				if (empty($this->data['Typeseance']['Typeseance'])) { $this->data['Typeseance']['Typeseance'] = null; }
-					$this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
-			}
+
+                        $infossupDefs = $this->Infosupdef->findAll("type='odtFile'", '', '', 0);
+                        foreach ( $infossupDefs as $infodef) {
+                            $infodef_id = $infodef['Infosupdef']['id'];
+                            $infosups = $this->Infosup->findAll("Infosup.infosupdef_id = $infodef_id AND Infosup.foreign_key = $id AND Infosup.model = 'Seance' " );
+                            foreach ( $infosups  as $infosup) {
+                                $name = $infosup['Infosup']['file_name'] ;
+                                if (file_exists($path_projet.$name)){
+                                    $code = $infosup['Infosupdef']['code'];
+                                    $stat = stat($path_projet.$name);
+                                    if ($stat > 0) {
+                                         $infosup['Infosup']['content'] = $this->_getFileData($path_projet.$name, $stat['size'] );
+                                         $this->Infosup->save($infosup);
+                                    }
+                                }
+                            }
+                         }
+                         if (array_key_exists('Infosup', $this->data)) {
+                             $this->Seance->Infosup->saveCompacted($this->data['Infosup'], $id, 'Seance');
+                         }
+	             } else {
+		        $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
+			if (empty($this->data['Typeseance']['Typeseance'])) { $this->data['Typeseance']['Typeseance'] = null; }
+			    $this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
+		    }
+		    $this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
+		    $this->redirect('/seances/listerFuturesSeances');
 		}
                 $natures = array_keys($this->Session->read('user.Nature'));
                 $types = $this->Typeseance->TypeseancesNature->getTypeseanceParNature($natures);

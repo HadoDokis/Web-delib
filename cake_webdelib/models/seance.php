@@ -61,6 +61,16 @@ class Seance extends AppModel {
         'dependent' => false,
         'foreignKey' => 'president_id')
     );
+ 
+        var $hasMany = array(
+                'Infosup'=>array(
+                        'dependent' => true,
+                        'foreignKey' => 'foreign_key',
+			'conditions' => array('Infosup.model' => 'Seance')
+                 )
+        );
+
+
 
 	/* retourne la liste des séances futures avec le nom du type de séance  */
 	function generateList($conditionSup=null, $afficherTtesLesSeances = false, $natures = array()) {
