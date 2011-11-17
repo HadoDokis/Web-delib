@@ -530,6 +530,7 @@ function verifConversion() {
 		d("Exécutable de l'outil de conversion : $convExec", 'ok');
 		switch ($convType) {
 			case 'UNOCONV' :
+                                $time_start = microtime(true);
 				// affichage de la version de UnoConv
 				$result = '';
 				exec($convExec." --version", $result);
@@ -561,13 +562,15 @@ function verifConversion() {
 				$locale = 'fr_FR.UTF-8';
 				setlocale(LC_ALL, $locale);
 				putenv('LC_ALL='.$locale);
-	 			$result = shell_exec($cmd);
+				$result = shell_exec($cmd);
+                                $time_end = microtime(true);
 	
 		        // guess that if there is less than this characters probably an error
 		        if (strlen($result) < 10) {
-					d("Opération de conversion de format échouée", 'ko');
-		        } else {
-					d("Opération de conversion de format effectuée avec succés", 'ok');
+                            d("Opération de conversion de format échouée", 'ko');
+			} else { 
+                            $time = round($time_end - $time_start, 2);
+                            d("Opération de conversion de format effectuée avec succés en $time secondes", 'ok');
 		        }
 			break;
 		}
@@ -604,6 +607,7 @@ function afficheMulti() {
 }
 
 function getClassification($id=null){
+    $time_start = microtime(true);
     $pos =  strrpos ( getcwd(), 'webroot');
     $path = substr(getcwd(), 0, $pos);
 
@@ -628,9 +632,12 @@ function getClassification($id=null){
 	d(curl_error($ch), 'ko');
 
     curl_close($ch);
+    
+    $time_end = microtime(true);
     if ($reponse != "")  {
+        $time = round($time_end - $time_start, 2);
 	d(Configure::read('HOST'), 'info');
-	d('Fichier de classification S2LOW récupéré', 'ok');
+	d("Fichier de classification S2LOW récupéré en $time secondes", 'ok');
      }
      else {
 	d('Echec de récupération du fichier de classification', 'ko');
@@ -640,14 +647,17 @@ function getClassification($id=null){
  
 
 function getCircuitsParapheur() { 
+    $time_start = microtime(true);
     $circuits = array();
     if (Configure::read('USE_PARAPH')) {
         include_once(COMPONENTS.'iparapheur.php');      
         $Parafwebservice = new IparapheurComponent();
 	$circuits = $Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+        $time_end = microtime(true);
         if (!empty($circuits)) {
-            d(Configure::read('WSTO'), 'info');
-	    d('Circuits du iparapheur récupéré ', 'ok');
+	    d(Configure::read('WSTO'), 'info');
+            $time = round($time_end - $time_start, 2);
+	    d(count($circuits)." circuits du iparapheur récupéré en $time secondes", 'ok');
         }
         else 
 	    d('liste de circuit du iparapheur vide', 'ko');
@@ -674,6 +684,7 @@ function getVersionAsalae() {
 }
 
 function testerOdfGedooo() {
+
     $tmpFile = "/tmp/FILE_RESULT.odt";
     @unlink( $tmpFile );
    
@@ -690,15 +701,18 @@ function testerOdfGedooo() {
     $fichierSource = getcwd().DS.'files'.DS.'recettage.odt';
     $oTemplate = new GDO_ContentType("", "modele.odt", "application/vnd.oasis.opendocument.text", "binary", file_get_contents($fichierSource));
 
+    $time_start = microtime(true); 
     $oMainPart = new GDO_PartType();
     $oMainPart->addElement(new GDO_FieldType('ma_variable', 'OK', 'text'));
     $oFusion = new GDO_FusionType($oTemplate, "application/vnd.oasis.opendocument.text", $oMainPart);
     $oFusion->process();
+  
     $oFusion->SendContentToFile($tmpFile);
- 
+    $time_end = microtime(true);
+    $time = round($time_end - $time_start, 2);
     if (file_exists($tmpFile))  {
         d(Configure::read('GEDOOO_WSDL'), 'info');
-	d('Fusion réussie avec ODFGEDOOo', 'ok');
+	d("Fusion réussie avec ODFGEDOOo en $time secondes", 'ok');
     }
     else 
         d('Fusion échouée avec ODFGEDOOo', 'ko');
