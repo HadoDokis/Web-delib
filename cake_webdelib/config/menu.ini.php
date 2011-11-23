@@ -127,7 +127,8 @@ $webDelib = array(
 					'Séquences' => array('link' => '/sequences/index'),
 					'Compteurs' => array('link' => '/compteurs/index'),
 					'Types de séance' => array('link' => '/typeseances/index'),
-					'Informations sup.' => array('link' => '/infosupdefs/index')
+					'Informations sup. projet' => array('link' => '/infosupdefs/index'),
+					'Informations sup. séance' => array('link' => '/infosupdefs/index_seance')
 					)
 				)
 			)

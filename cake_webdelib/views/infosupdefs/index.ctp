@@ -29,15 +29,13 @@
 			echo $html->link(SHY,'/infosuplistedefs/index/' . $rowElement['Infosupdef']['id'], array('class'=>'link_liste', 'title'=>'Liste'), false, false); ?>
 		<?php echo $html->link(SHY,'/infosupdefs/view/' . $rowElement['Infosupdef']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false); ?>
 		<?php echo $html->link(SHY,'/infosupdefs/edit/' . $rowElement['Infosupdef']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false); ?>
-		<?php if ($Infosupdef->isDeletable($rowElement, $mesErr))
-			echo $html->link(SHY,'/infosupdefs/delete/' . $rowElement['Infosupdef']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Voulez-vous supprimer l\'information \''.$rowElement['Infosupdef']['nom'].'\' ?', false); ?>
 	</td>
 </tr>
 <?php endforeach; ?>
 </table>
 
 <ul class="actions">
-	<?php echo $html->link('Ajouter une information suppl&eacute;mentaire', '/infosupdefs/add/', array('class'=>'link_add', 'title'=>'Ajouter une information supplémentaire'), false, false); ?>
+	<?php echo $html->link('Ajouter une information suppl&eacute;mentaire', '/infosupdefs/add/Deliberation', array('class'=>'link_add', 'title'=>'Ajouter une information supplémentaire'), false, false); ?>
 </ul>
 
 </div>

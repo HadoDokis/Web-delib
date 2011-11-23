@@ -76,7 +76,7 @@
                                                 echo '['.$html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
                                         } else {
                                                 $name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']] ;
-                                                $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name";
+                                                $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/seances/".$this->data['Seance']['id']."/$name";
                                                 echo "<a href='$url'>$name</a> ";
                                         }
                                         echo '&nbsp;&nbsp;';

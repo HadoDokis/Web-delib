@@ -62,11 +62,10 @@ class Seance extends AppModel {
         'foreignKey' => 'president_id')
     );
  
-        var $hasMany = array(
-                'Infosup'=>array(
-                        'dependent' => true,
-                        'foreignKey' => 'foreign_key',
-			'conditions' => array('Infosup.model' => 'Seance')
+    var $hasMany = array(
+        'Infosup'=>array('dependent' => true,
+                         'foreignKey' => 'foreign_key',
+			 'conditions' => array('Infosup.model' => 'Seance')
                  )
         );
 
