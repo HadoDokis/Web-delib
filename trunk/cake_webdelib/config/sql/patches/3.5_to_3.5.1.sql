@@ -94,7 +94,4 @@ ALTER TABLE `infosups` ADD INDEX ( `foreign_key` ) ;
 UPDATE infosups set foreign_key = deliberation_id;
 
 ALTER TABLE `infosups` DROP `deliberation_id`;
-
 ALTER TABLE `infosupdefs` ADD `model` VARCHAR( 25 ) NOT NULL  DEFAULT 'Deliberation'  AFTER `id` ;
-
-

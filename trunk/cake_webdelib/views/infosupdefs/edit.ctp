@@ -62,7 +62,7 @@ function initAffichage() {
 	}
 	else {
 		echo "<h2>Ajout d'une information suppl&eacute;mentaire</h2>";
-		echo $form->create('Infosupdef',array('url'=>'/infosupdefs/add/','type'=>'post','name'=>'infoSupForm'));
+		echo $form->create('Infosupdef',array('url'=>'/infosupdefs/add/'.$model,'type'=>'post','name'=>'infoSupForm'));
 	}
 ?>
 

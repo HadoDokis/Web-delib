@@ -20,8 +20,17 @@ class InfosupdefsController extends AppController
 	}
 
 	function index() {
-		$this->data = $this->{$this->modelClass}->findAll(null, null, 'ordre', null, 1, -1);
+		$this->data = $this->Infosupdef->find('all',  array('conditions' => array('model' => 'Deliberation'),
+								     'recursive'  => -1 ,
+                                                                     'order'      => 'ordre'));
 	}
+
+        function index_seance() {
+	    $this->data = $this->Infosupdef->find('all', array('conditions'=>array('model' => 'Seance'),
+                                                                'recursive'  => -1 ,
+                                                                'order'      => 'ordre'));
+        }
+
 
 	function view($id = null) {
 		$this->data = $this->{$this->modelClass}->findById($id, null, null, -1);
@@ -34,9 +43,12 @@ class InfosupdefsController extends AppController
 		}
 	}
 
-	function add() {
+	function add($model) {
 		$sortie = false;
+                $this->set('model', $model);
 		if (!empty($this->data)) {
+			$this->data['Infosupdef']['model'] = $model;
+
 			/* traitement de la valeur par defaut */
 			if ($this->data['Infosupdef']['type'] == 'date')
 				$this->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_date'];

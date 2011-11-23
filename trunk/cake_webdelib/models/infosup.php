@@ -20,7 +20,11 @@ class Infosup extends AppModel
 	var $name = 'Infosup';
 
 	var $belongsTo = array(
-		'Deliberation',
+		'Deliberation' =>array('className'    => 'Deliberation',
+                        'conditions'   => '',
+                        'order'        => '',
+                        'dependent'    => false,
+                        'foreignKey'   => 'foreign_key'),
 		'Infosupdef'
 	);
 

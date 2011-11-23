@@ -22,7 +22,11 @@ class Infosupdef extends AppModel
 	var $displayField = "nom";
 
 	var $hasMany = array(
-		'Infosup',
+		'Infosup'=> array ( 'className'    => 'Infosup',
+                                    'conditions'   => '',
+                                    'order'        => '',
+                                   'dependent'    => false,
+                                   'foreignKey'   => 'foreign_key'),
 		'Infosuplistedef'
 	);
 	
@@ -119,7 +123,7 @@ class Infosupdef extends AppModel
 	/* retourne true si l'instance $aSupprimer peut être supprimée et false dans le cas contraire */
 	/* documente la raison de la non suppression dans $message */
 	function isDeletable($aSupprimer, &$message) {
-		if ($this->Infosup->find('first', array('conditions'=>array('infosupdef_id' => $aSupprimer['Infosupdef']['id']), 'recursive'-1))) {
+		if ($this->Infosup->find('first', array('conditions'=>array('infosupdef_id' => $aSupprimer['Infosupdef']['id']), 'recursive' => -1))) {
 			$message = "L'information suppl&eacute;mentaire '".$aSupprimer['Infosupdef']['nom']."' est utilis&eacute;e dans au moins un projet : suppression impossible";
 			return false;
 		} else
