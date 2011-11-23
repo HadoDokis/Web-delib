@@ -321,5 +321,5 @@
     define('CONFIG_PATH', $path2."config/");
 
     require_once ('webdelib.inc');
-    define('VERSION', '<b> 3.5.1 - beta</b>');
+    define('VERSION', '<b> 3.6 - beta</b>');
     include_once(APP_DIR.DS.'plugins'.DS.'cakeflow'.DS.'config'.DS.'cakeflow.conf.php');
