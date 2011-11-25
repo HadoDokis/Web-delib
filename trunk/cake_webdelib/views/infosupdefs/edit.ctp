@@ -53,17 +53,12 @@ function initAffichage() {
 }
 </script>
 
-<?php echo $javascript->link('calendrier.js'); ?>
-
 <?php
-	if($html->value('Infosupdef.id')) {
-		echo "<h2>Modification d'une information suppl&eacute;mentaire</h2>";
-		echo $form->create('Infosupdef',array('url'=>'/infosupdefs/edit/'.$html->value('Infosupdef.id'),'type'=>'post','name'=>'infoSupForm'));
-	}
-	else {
-		echo "<h2>Ajout d'une information suppl&eacute;mentaire</h2>";
-		echo $form->create('Infosupdef',array('url'=>'/infosupdefs/add/'.$model,'type'=>'post','name'=>'infoSupForm'));
-	}
+echo $javascript->link('calendrier.js');
+
+echo $html->tag('h2', $titre);
+
+echo $form->create('Infosupdef',array('url'=>array('action'=>$this->action),'type'=>'post','name'=>'infoSupForm'));
 ?>
 
 	<div class="required">
@@ -108,10 +103,15 @@ function initAffichage() {
 		<?php echo $html->link($html->image("calendar.png", array('style'=>"border:0;")), "javascript:show_calendar('infoSupForm.InfosupdefValInitialeDate', 'f');", array(), false, false);?>
 	</div>
 	<br/>
-	<div class="required" id="recherche">
-		<?php echo $form->label('Infosupdef.recherche','Inclure dans la recherche'); ?>
- 		<?php echo $form->input('Infosupdef.recherche',array('type'=>'checkbox', 'label'=>false));?>
-	</div>
+<?php
+	if($html->value('Infosupdef.model') == 'Deliberation') {
+		echo $html->tag('div', null, array('class'=>'required', 'id'=>'recherche'));
+			echo $form->label('Infosupdef.recherche','Inclure dans la recherche');
+			echo $form->input('Infosupdef.recherche',array('type'=>'checkbox', 'label'=>false));
+		echo $html->tag('/div');
+	} else
+		echo $form->hidden('Infosupdef.recherche', array('value'=>false));
+?>
 	<br/>
 	<div id="gestionListe">
 		<span>Note : la gestion des éléments de la liste est accessible &agrave; partir de la liste des informations suppl&eacute;mentaires.</span>
@@ -119,9 +119,13 @@ function initAffichage() {
 	<br/>
 
 	<div class="submit">
-		<?php if ($this->action=='edit') echo $form->hidden('Infosupdef.id'); ?>
-		<?php echo $form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-		<?php echo $html->link('Annuler', '/infosupdefs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php
+		if ($this->action=='edit') echo $form->hidden('Infosupdef.id');
+		echo $form->hidden('Infosupdef.id');
+		echo $form->hidden('Infosupdef.model');
+		echo $form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));
+		echo $html->link('Annuler', $lienRetour, array('class'=>'link_annuler', 'name'=>'Annuler'))
+	?>
 	</div>
 
 <?php echo $form->end(); ?>
