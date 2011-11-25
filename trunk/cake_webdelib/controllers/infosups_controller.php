@@ -6,11 +6,15 @@ class InfosupsController extends AppController
 	// Gestion des droits ?
 	var $aucunDroit;
 
-	function download($delib_id = 0, $infosupdef_id = 0) {
+	function download($foreignKey = 0, $infosupdef_id = 0) {
 		/* lecture en base */
-		$infosup = $this->Infosup->find('deliberation_id = '.$delib_id.' AND infosupdef_id = '.$infosupdef_id, null, null,-1);
+		$infosup = $this->Infosup->find('first', array(
+			'recursive' => -1,
+			'conditions' => array(
+				'foreign_key' => $foreignKey,
+				'infosupdef_id' => $infosupdef_id)));
 		if (empty($infosup))
-			$this->redirect('/');
+			$this->redirect($this->referer());
 		else {
 			header('Content-type: '.$infosup['Infosup']['file_type']);
 			header('Content-Length: '.$infosup['Infosup']['file_size']);
