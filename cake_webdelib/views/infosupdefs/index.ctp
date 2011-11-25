@@ -1,6 +1,6 @@
 <div class="seances">
 
-<h2>Liste des informations suppl&eacute;mentaires des projets</h2>
+<h2><?php echo $titre; ?></h2>
 
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
@@ -25,17 +25,21 @@
 	<td><?php echo $Infosupdef->libelleType($rowElement['Infosupdef']['type']); ?></td>
 	<td><?php echo $Infosupdef->libelleRecherche($rowElement['Infosupdef']['recherche']); ?></td>
 	<td class="actions">
-		<?php if ($rowElement['Infosupdef']['type'] == 'list')
-			echo $html->link(SHY,'/infosuplistedefs/index/' . $rowElement['Infosupdef']['id'], array('class'=>'link_liste', 'title'=>'Liste'), false, false); ?>
-		<?php echo $html->link(SHY,'/infosupdefs/view/' . $rowElement['Infosupdef']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false); ?>
-		<?php echo $html->link(SHY,'/infosupdefs/edit/' . $rowElement['Infosupdef']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false); ?>
+<?php
+		if ($rowElement['Infosupdef']['type'] == 'list')
+			echo $html->link(SHY,'/infosuplistedefs/index/' . $rowElement['Infosupdef']['id'], array('class'=>'link_liste', 'title'=>'Liste'), false, false);
+		echo $html->link(SHY,'/infosupdefs/view/' . $rowElement['Infosupdef']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false);
+		echo $html->link(SHY,'/infosupdefs/edit/' . $rowElement['Infosupdef']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
+		if ($Infosupdef->isDeletable($rowElement, $mesErr))
+			echo $html->link(SHY,'/infosupdefs/delete/' . $rowElement['Infosupdef']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Voulez-vous supprimer l\'information \''.$rowElement['Infosupdef']['nom'].'\' ?', false);
+?>
 	</td>
 </tr>
 <?php endforeach; ?>
 </table>
 
 <ul class="actions">
-	<?php echo $html->link('Ajouter une information suppl&eacute;mentaire', '/infosupdefs/add/Deliberation', array('class'=>'link_add', 'title'=>'Ajouter une information supplémentaire'), false, false); ?>
+	<?php echo $html->link('Ajouter une information suppl&eacute;mentaire', $lienAdd, array('class'=>'link_add', 'title'=>'Ajouter une information supplémentaire'), false, false); ?>
 </ul>
 
 </div>

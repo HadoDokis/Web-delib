@@ -1,5 +1,5 @@
 <div id="vue_cadre">
-<h3>Fiche information suppl&eacute;mentaire</h3>
+<h3><?php echo $titre; ?></h3>
 
 <dl>
 	<dt>Nom</dt>
@@ -30,7 +30,7 @@
 
 <ul id="actions_fiche">
 	<?php
-		echo '<li>' . $html->link(SHY, $session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+		echo '<li>' . $html->link(SHY, $lienRetour, array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
 		if ($Droits->check($session->read('user.User.id'), 'Infosupdefs:edit'))
 			echo '<li>'.$html->link(SHY, '/infosupdefs/edit/' . $this->data['Infosupdef']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
 	?>
