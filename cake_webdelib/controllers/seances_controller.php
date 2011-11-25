@@ -137,6 +137,8 @@ class SeancesController extends AppController {
 	                    	'recursive' => -1,
 	                    	'fields' => array('id', 'file_name'),
 	                    	'conditions' => array('foreign_key'=>$id, 'model'=>'Seance', 'infosupdef_id'=>$infossupDef['Infosupdef']['id'])));
+	                    if (empty($infosup) || empty($infosup['Infosup']['file_name']))
+	                    	continue;
 						$odtFileUri = $path_seance.$infosup['Infosup']['file_name'] ;
 						if (file_exists($odtFileUri)){
 						    $stat = stat($odtFileUri);
