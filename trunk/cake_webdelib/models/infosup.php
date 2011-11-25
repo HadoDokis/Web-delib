@@ -67,29 +67,29 @@ class Infosup extends AppModel
 	}
 
 	/* sauvegarde les info sup. recues sous la forme ['code_infosup']=>valeur, ... */
-	function saveCompacted($infosups, $delib_id, $model) {
+	function saveCompacted($infosups, $foreignKey, $model) {
 		foreach($infosups as $code=>$valeur) {
 			// lecture de la définition de l'info sup
 			$infosupdef = $this->Infosupdef->find('first', array(
 				'recursive' => -1,
 				'fields' => array('id', 'type'),
-				'conditions' => array('code' => $code)));
+				'conditions' => array('code' => $code, 'model'=>$model)));
 
 			// lecture de l'infosup en base
 			$infosup = $this->find('first', array(
 				'recursive' => -1,
 				'fields' => array('id', 'foreign_key', 'model', 'infosupdef_id', 'file_name'),
 				'conditions' => array(
-					'foreign_key' => $delib_id,
+					'foreign_key' => $foreignKey,
 					'infosupdef_id' => $infosupdef['Infosupdef']['id'])));
 
 			// si elle n'existe pas : création d'un nouveau et initialisation
 			if (empty($infosup)) {
 				$this->create();
-				$infosup['Infosup']['foreign_key'] = $delib_id;
+				$infosup['Infosup']['foreign_key'] = $foreignKey;
 				$infosup['Infosup']['infosupdef_id'] = $infosupdef['Infosupdef']['id'];
-			}
 				$infosup['Infosup']['model'] = $model;
+			}
 
 			// affectation de la valeur en fonction du type
 			switch($infosupdef['Infosupdef']['type']) {
@@ -110,7 +110,8 @@ class Infosup extends AppModel
 					break;
 				case 'file' :
 				case 'odtFile' :
-					$repDest = WWW_ROOT.'files'.DS.'generee'.DS.'projet'.DS.$delib_id.DS;
+					$modelRep = ($model == 'Deliberation') ? 'projet' : 'seance';
+					$repDest = WWW_ROOT.'files'.DS.'generee'.DS.$modelRep.DS.$foreignKey.DS;
 					if (empty($valeur['tmp_name'])) {
 						if (isset($infosup['Infosup']['file_name']) && is_file($repDest.$infosup['Infosup']['file_name']))
 							@unlink($repDest.$infosup['Infosup']['file_name']);
