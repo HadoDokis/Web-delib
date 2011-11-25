@@ -618,7 +618,27 @@ class Deliberation extends AppModel {
                        $oMainPart->addElement(new GDO_ContentType('debat_commission', 'debat_commission.odt',  'application/vnd.oasis.opendocument.text', 'binary', $delib['Deliberation']['commission']));
                    }
 
-               }
+	       }
+
+	       $annexe_ids = $this->Annex->getAnnexesIFromDelibId($delib['Deliberation']['id'], 0, 1);
+	       $oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($annexe_ids), 'text'));
+
+	       @$annexes =  new GDO_IterationType("Annexes");
+	       foreach($annexe_ids as $annexe_id) {
+                   $annexe = $this->Annex->find('first', array ('conditions' => array('Annex.id' => $annexe_id['Annex']['id']),
+                                                               'recursive'  => -1));
+                   if (($annexe['Annex']['joindre_fusion'] == 1) && ($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {  
+                       $oDevPart = new GDO_PartType();
+                       $oDevPart->addElement(new GDO_FieldType('nom_fichier',  utf8_encode($annexe['Annex']['filename']), 'text'));
+                       $oDevPart->addElement(new GDO_FieldType('titre_annexe', utf8_encode($annexe['Annex']['titre']), 'text'));
+                       $oDevPart->addElement(new GDO_ContentType('fichier',    utf8_encode($annexe['Annex']['filename']),  'application/vnd.oasis.opendocument.text', 'binary', $annexe['Annex']['data']));
+		       $annexes->addPart($oDevPart);
+		   }
+	       }
+               @$oMainPart->addElement($annexes);
+
+
+
                if (!$isDelib)
                   return $oMainPart;
                //LISTE DES PRESENCES...

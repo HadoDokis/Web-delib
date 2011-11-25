@@ -19,9 +19,9 @@ $tableOptions = array('cellpadding'=>'0', 'cellspacing'=>'0', 'width'=> '100%');
 if ($mode == 'edit') $tableOptions['id'] = 'tableAnnexe'.$ref;
 echo $html->tag('table', null, $tableOptions);
 if ($mode == 'edit')
-	echo $html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Action'));
+	echo $html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Joindre à la fusion', 'Action'));
 else
-	echo $html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité'));
+	echo $html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Joindre à la fusion'));
 if (isset($annexes)) {
 	foreach ($annexes as $rownum => $annexe) {
 		$rowClass = array();
@@ -72,6 +72,7 @@ if (isset($annexes)) {
 				} else
 					echo $html->tag('span', $annexe['titre']);
 			echo $html->tag('/td');
+
 			echo $html->tag('td');
 				if ($mode == 'edit') {
 					echo $html->tag('span', $annexe['joindre_ctrl_legalite']?'Oui':'Non', array(
@@ -87,6 +88,22 @@ if (isset($annexes)) {
 				} else
 					echo $html->tag('span', $annexe['joindre_ctrl_legalite']?'Oui':'Non');
 			echo $html->tag('/td');
+                        echo $html->tag('td');
+                                if ($mode == 'edit') {
+                                        echo $html->tag('span', $annexe['joindre_fusion']?'Oui':'Non', array(
+                                                'id' => 'afficheAnnexeCtrl'.$annexe['id'],
+                                                'valeur_init' => $annexe['joindre_fusion']));
+                                        echo $form->input('AnnexesAModifier.'.$annexe['id'].'.joindre_fusion', array(
+                                                'id'=>'modifieAnnexeFusion'.$annexe['id'],
+                                                'label'=>false,
+                                                'type'=>'checkbox',
+                                                'checked'=>($annexe['joindre_fusion']==1),
+                                                'disabled'=>'disabled',
+                                                'style'=>'display:none;'));
+                                } else
+                                        echo $html->tag('span', $annexe['joindre_fusion']?'Oui':'Non');
+                        echo $html->tag('/td');
+
 			if ($mode == 'edit') {
 				echo $html->tag('td');
 					echo $html->link(SHY, '#', array('title'=>'Supprimer', 'class'=>"link_supprimer",'onClick'=>'supprimerAnnexe(this, '.$annexe['id'].')'), false, false);
@@ -119,6 +136,8 @@ if ($affichage == 'complet') {
 			echo $form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '60', 'disabled'=>'disabled'));
 			echo $html->tag('div', '', array('class'=>'spacer'));
 			echo $form->input('Annex.0.ctrl', array('label'=>'Joindre ctrl légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
+			echo $html->tag('div', '', array('class'=>'spacer'));
+			echo $form->input('Annex.0.fusion', array('label'=>'Joindre fusion', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
 			echo $html->tag('div', '', array('class'=>'spacer'));
 			echo $html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
 		echo $html->tag('/fieldset');

@@ -96,3 +96,5 @@ UPDATE infosups set foreign_key = deliberation_id;
 
 ALTER TABLE `infosups` DROP `deliberation_id`;
 ALTER TABLE `infosupdefs` ADD `model` VARCHAR( 25 ) NOT NULL  DEFAULT 'Deliberation'  AFTER `id` ;
+
+ALTER TABLE `annexes` ADD `joindre_fusion` TINYINT( 1 ) NOT NULL DEFAULT '0' AFTER `joindre_ctrl_legalite` ;
