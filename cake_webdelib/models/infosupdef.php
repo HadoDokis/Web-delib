@@ -15,18 +15,13 @@
 * @license
 */
 
-class Infosupdef extends AppModel
-{
+class Infosupdef extends AppModel {
 	var $name = 'Infosupdef';
 
 	var $displayField = "nom";
 
 	var $hasMany = array(
-		'Infosup'=> array ( 'className'    => 'Infosup',
-                                    'conditions'   => '',
-                                    'order'        => '',
-                                   'dependent'    => false,
-                                   'foreignKey'   => 'foreign_key'),
+		'Infosup',
 		'Infosuplistedef'
 	);
 	
@@ -105,23 +100,31 @@ class Infosupdef extends AppModel
 		return $this->data['Infosupdef']['code'] == Inflector::variable($this->data['Infosupdef']['code']);
 	}
 
-	/* retourne la liste code/libellé pour les types d'information */
+/**
+ * retourne la liste code/libellé pour les types d'information
+ */
 	function generateListType() {
 		return $this->types;
 	}
 
-	/* retourne le libellé correspondant au type $type */
+/**
+ * retourne le libellé correspondant au type $type
+ */
 	function libelleType($type) {
 		return $this->types[$type];
 	}
 
-	/* retourne le libellé correspondant au booléen $recherche */
+/**
+ * retourne le libellé correspondant au booléen $recherche
+ */
 	function libelleRecherche($recherche) {
 		return $recherche ? 'Oui' : 'Non';
 	}
 
-	/* retourne true si l'instance $aSupprimer peut être supprimée et false dans le cas contraire */
-	/* documente la raison de la non suppression dans $message */
+/**
+ * retourne true si l'instance $aSupprimer peut être supprimée et false dans le cas contraire
+ * documente la raison de la non suppression dans $message
+ */
 	function isDeletable($aSupprimer, &$message) {
 		if ($this->Infosup->find('first', array('conditions'=>array('infosupdef_id' => $aSupprimer['Infosupdef']['id']), 'recursive' => -1))) {
 			$message = "L'information suppl&eacute;mentaire '".$aSupprimer['Infosupdef']['nom']."' est utilis&eacute;e dans au moins un projet : suppression impossible";
@@ -130,16 +133,26 @@ class Infosupdef extends AppModel
 			return true;
 	}
 
-	/* Intervertit l'ordre de l'élément $id avec le suivant ou le précédent suivant $following */
+/**
+ * Intervertit l'ordre de l'élément $id avec le suivant ou le précédent suivant $following
+ */
 	function invert($id = null, $following = true) {
 		// Initialisations
 		$gap = $following ? 1 : -1;
 
 		// lecture de l'élément à déplacer
-		$recFrom = $this->find('id = '.$id, 'id, ordre', null, -1);
+		$recFrom = $this->find('first', array(
+			'recursive' => -1,
+			'fields' => array('id', 'model', 'ordre'),
+			'conditions' => array('id' => $id)));
 
 		// lecture de l'élément a intervertir
-		$recTo = $this->find('ordre = '.($recFrom['Infosupdef']['ordre'] + $gap), 'id, ordre', null, -1);
+		$recTo = $this->find('first', array(
+			'recursive' => -1,
+			'fields' => array('id', 'model', 'ordre'),
+			'conditions' => array(
+				'model' => $recFrom['Infosupdef']['model'],
+				'ordre' => ($recFrom['Infosupdef']['ordre'] + $gap))));
 
 		// Si pas d'élément à intervertir alors on sort sans rien faire
 		if (empty($recTo)) return;
@@ -154,16 +167,15 @@ class Infosupdef extends AppModel
 	}
 
 	function beforeSave() {
-		/* valeur par defaut pour la taille du champ input lors de la saisie */
+		// valeur par defaut pour la taille du champ input lors de la saisie
 		if (isset($this->data['Infosupdef']['type']) && $this->data['Infosupdef']['type'] == 'text' && empty($this->data['Infosupdef']['taille']))
 			$this->data['Infosupdef']['taille'] = 20;
 
-		/* calcul du n° d'ordre en cas d'ajout */
-		if (!array_key_exists('id', $this->data['Infosupdef']) ||
-			empty($this->data['Infosupdef']['id']))
-			$this->data['Infosupdef']['ordre'] = $this->findCount(null, -1) + 1;
+		// calcul du n° d'ordre en cas d'ajout
+		if (!array_key_exists('id', $this->data['Infosupdef']) || empty($this->data['Infosupdef']['id']))
+			$this->data['Infosupdef']['ordre'] = $this->find('count',array('recursive'=>-1, 'conditions'=>array('model'=>$this->data['Infosupdef']['model']))) + 1;
 
-		/* pas de recherche possible pour les infosup de type fichier et fichier odt */
+		// pas de recherche possible pour les infosup de type fichier et fichier odt
 		if (isset($this->data['Infosupdef']['type']) && ($this->data['Infosupdef']['type'] == 'file' || $this->data['Infosupdef']['type'] == 'odtFile')) {
 			$this->data['Infosupdef']['recherche'] = 0;
 			$this->data['Infosupdef']['val_initiale'] = '';
@@ -172,14 +184,23 @@ class Infosupdef extends AppModel
 		return true;
 	}
 
-	/* Réordonne les numéros d'ordre après une suppression */
+/**
+ * Réordonne les numéros d'ordre après une suppression
+ */
 	function afterDelete() {
-		$recs = $this->findAll(null, 'id, ordre', 'ordre', null, 1, -1);
-
-		foreach($recs as $n=>$rec) {
-			if (($n+1) != $rec['Infosupdef']['ordre']) {
-				$rec['Infosupdef']['ordre'] = ($n+1);
-				$this->save($rec, false);
+		$models = array('Deliberation', 'Seance');
+		foreach($models as $model) {
+			$recs = $this->find('all', array(
+				'recursive' => -1,
+				'fields' => array('id', 'ordre'),
+				'conditions' => array('model' => $model),
+				'order' => array('ordre')));
+	
+			foreach($recs as $n=>$rec) {
+				if (($n+1) != $rec['Infosupdef']['ordre']) {
+					$rec['Infosupdef']['ordre'] = ($n+1);
+					$this->save($rec, false);
+				}
 			}
 		}
 	}
@@ -187,10 +208,15 @@ class Infosupdef extends AppModel
 /**
  * retourne un tableau ['code']['val_init'] des valeurs initiales des infosup
  */
-	function valeursInitiales() {
+	function valeursInitiales($model) {
 		$ret = array();
 
-		$recs = $this->findAll(null, 'code, val_initiale', 'ordre', null, 1, -1);
+		$recs = $this->find('all', array(
+			'recursive' => -1,
+			'conditions' => array('model' => $model),
+			'fields' => array('code', 'val_initiale'),
+			'order' => array('ordre')));
+
 		foreach($recs as $rec) {
 			if (!empty($rec['Infosupdef']['val_initiale']))
 				$ret[$rec['Infosupdef']['code']] = $rec['Infosupdef']['val_initiale'];
@@ -205,13 +231,15 @@ class Infosupdef extends AppModel
 	function generateListes($model) {
 		$ret = array();
 
-		$recs = $this->find('all', array('conditions' => array("type"  => 'list',
-								     'model' => $model),
-						 'fields'     => array('id', 'code'),
-                                                 'order'      => 'ordre', 
-                                                 'recursive'  => -1));
+		$recs = $this->find('all', array(
+			'recursive'  => -1,
+			'fields' => array('id', 'code'),
+			'conditions' => array("type"  => 'list', 'model' => $model),
+			'order'      => 'ordre'));
 		foreach($recs as $rec) {
-			$ret[$rec['Infosupdef']['code']] = $this->Infosuplistedef->find('list',array('conditions'=>array('actif' => '1','infosupdef_id' => $rec['Infosupdef']['id']),'order'=>array('ordre')));
+			$ret[$rec['Infosupdef']['code']] = $this->Infosuplistedef->find('list', array(
+				'conditions' => array('actif' => '1','infosupdef_id' => $rec['Infosupdef']['id']),
+				'order'=>array('ordre')));
 		}
 
 		return $ret;
