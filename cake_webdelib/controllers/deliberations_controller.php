@@ -561,19 +561,24 @@ class DeliberationsController extends AppController {
             if ($this->Deliberation->save($this->data)) {
                 $this->Filtre->supprimer();
                 // sauvegarde des informations supplémentaires
-                $infossupDefs = $this->Infosupdef->findAll("type='odtFile'", '', '', 0);
-                foreach ( $infossupDefs as $infodef) {
-                    $infodef_id = $infodef['Infosupdef']['id'];
-                    $infosups = $this->Infosup->findAll("Infosup.infosupdef_id = $infodef_id AND Infosup.foreign_key = $id AND Infosup.model = 'Deliberation' " );
-                    foreach ( $infosups  as $infosup) {
-                        $name = $infosup['Infosup']['file_name'] ;
-                        if (file_exists($path_projet.$name)){
-                            $code = $infosup['Infosupdef']['code'];
-                            $stat = stat($path_projet.$name);
-                            if ($stat > 0) {
-                                $infosup['Infosup']['content'] = $this->_getFileData($path_projet.$name, $stat['size'] );
-                                $this->Infosup->save($infosup);
-                            }
+				$infossupDefs = $this->Infosupdef->find('all', array(
+					'recursive' => -1,
+					'fields' => array('id'),
+					'conditions' => array('type' => 'odtFile', 'model' => 'Deliberation')));
+                foreach ( $infossupDefs as $infossupDef) {
+                    $infosup = $this->Infosup->find('first', array(
+                    	'recursive' => -1,
+                    	'fields' => array('id', 'file_name'),
+                    	'conditions' => array('foreign_key'=>$id, 'model'=>'Deliberation', 'infosupdef_id'=>$infossupDef['Infosupdef']['id'])));
+                    if (empty($infosup) || empty($infosup['Infosup']['file_name']))
+                    	continue;
+					$odtFileUri = $path_projet.$infosup['Infosup']['file_name'];
+                    if (file_exists($odtFileUri)){
+                        $stat = stat($odtFileUri);
+                        if ($stat > 0) {
+					        $infosup['Infosup']['content'] = file_get_contents($odtFileUri);
+					        $infosup['Infosup']['file_size'] = $stat['size'];
+					        $this->Infosup->save($infosup);
                         }
                     }
                 }
