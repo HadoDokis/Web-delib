@@ -99,6 +99,7 @@ class SeancesController extends AppController {
     function edit($id = null) {
 		$sortie = false;
     	$date = '';
+    	$path_seance= WWW_ROOT.'files'.DS.'generee'.DS.'seance'.DS.$id.DS;
 		if (empty($this->data)) {
     	    $this->Seance->Behaviors->attach('Containable');
     	    $this->data = $this->Seance->find('first', array( 'contain'=>array('Infosup'),
@@ -108,9 +109,6 @@ class SeancesController extends AppController {
     	    	$sortie = true;
     	    } else {
 				$date = date('d/m/Y', strtotime($this->data['Seance']['date']));
-	    	    $pos  =  strrpos ( getcwd(), 'webroot');
-	    	    $path = substr(getcwd(), 0, $pos);
-	    	    $path_seance = $path."webroot/files/generee/seance/$id/";
 	    	    foreach ($this->data['Infosup']  as $infosup) {
 	    	    	$infoSupDef = $this->Infosupdef->find('first', array(
 	    	    	    'recursive' => -1,
@@ -129,6 +127,26 @@ class SeancesController extends AppController {
 				$this->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($this->params['form']['date']);
 				$this->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
 				if ($this->Seance->save($this->data)) {
+	                // sauvegarde des fichiers odt car possibilité modifiés en webdav sur le serveur
+					$infossupDefs = $this->Infosupdef->find('all', array(
+						'recursive' => -1,
+						'fields' => array('id'),
+						'conditions' => array('type' => 'odtFile', 'model' => 'Seance')));
+	                foreach ($infossupDefs as $infossupDef) {
+	                    $infosup = $this->Infosup->find('first', array(
+	                    	'recursive' => -1,
+	                    	'fields' => array('id', 'file_name'),
+	                    	'conditions' => array('foreign_key'=>$id, 'model'=>'Seance', 'infosupdef_id'=>$infossupDef['Infosupdef']['id'])));
+						$odtFileUri = $path_seance.$infosup['Infosup']['file_name'] ;
+						if (file_exists($odtFileUri)){
+						    $stat = stat($odtFileUri);
+						    if ($stat > 0) {
+						        $infosup['Infosup']['content'] = file_get_contents($odtFileUri);
+						        $infosup['Infosup']['file_size'] = $stat['size'];
+						        $this->Infosup->save($infosup);
+						    }
+						}
+	                }
 			        // sauvegarde des informations supplémentaires
 			        if (array_key_exists('Infosup', $this->data))
 			            $this->Infosup->saveCompacted($this->data['Infosup'], $id, 'Seance');
