@@ -54,116 +54,105 @@ class SeancesController extends AppController {
     }
     
     function add($timestamp=null) {
-    	$natures = array_keys($this->Session->read('user.Nature'));        
-    	$types = $this->Typeseance->TypeseancesNature->getTypeseanceParNature($natures);
-    	$this->set('typeseances', $this->Seance->Typeseance->find('list', array('conditions'=>array('Typeseance.id'=> $types) )));
-    	$this->set('selectedTypeseances', null);
-    	
-    	if (empty($this->data)) {
-    	    if (isset($timestamp))
-    	    	$this->set('date', date('d/m/Y',$timestamp));
-    	    $this->render();
-    	} else {
-    	    if (count(explode('/',$this->params['form']['date']))!=3) {
-    	    	$this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type'=>'erreur'));
-    	    }
-    	    else {
-    	    	$this->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($this->params['form']['date']);
-    	    	$this->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
-    	    	if ($this->Seance->save($this->data)) {
-    	    	    $infossupDefs = $this->Infosupdef->findAll("type='odtFile'", '', '', 0);
-    	    	    $this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
-    	    	    $this->redirect('/seances/listerFuturesSeances');
-    	    	} else {
-    	    	    $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-    	    	    if (empty($this->data['Typeseance']['Typeseance'])) {
-    	    	    	$this->data['Typeseance']['Typeseance'] = null;
-    	    	    }
-    	    	    $this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
-    	    	}
-    	    }
-    	}
+    	// initialisation
+    	$sortie = false;
+    	$date = '';
+		if (empty($this->data)) {
+			if (isset($timestamp)) $date = date('d/m/Y',$timestamp);
+		} else {
+			$date = $this->params['form']['date'];
+			if (count(explode('/',$this->params['form']['date']))!=3) {
+				$this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type'=>'erreur'));
+			} else {
+				$this->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($this->params['form']['date']);
+				$this->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
+				if ($this->Seance->save($this->data)) {
+					$seanceId = $this->Seance->id;
+			        // sauvegarde des informations supplémentaires
+			        if (array_key_exists('Infosup', $this->data))
+			            $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $seanceId, 'Seance');
+				    $this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
+				    $sortie = true;
+				} else {
+				    $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
+				}
+			}
+		}
+		if ($sortie)
+			$this->redirect(array('action'=>'listerFuturesSeances'));
+		else {
+			$this->set('date', $date);
+	    	$natures = array_keys($this->Session->read('user.Nature'));        
+	    	$types = $this->Typeseance->TypeseancesNature->getTypeseanceParNature($natures);
+	    	$this->set('typeseances', $this->Seance->Typeseance->find('list', array('conditions'=>array('Typeseance.id'=> $types) )));
+            $this->set('infosupdefs', $this->Infosupdef->find('all', array(
+            	'recursive'=> -1,
+				'conditions'=> array('model' => 'Seance'),
+                'order' => 'ordre')));
+            $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Seance'));
+ 	        $this->data['Infosup'] = $this->Infosupdef->valeursInitiales('Seance');
+
+			$this->render('edit');
+		}
     }
     
     function edit($id = null) {
-    	if (empty($this->data)) {
-    	    if (!$id) {
-    	    	$this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
-    	    	$this->redirect('/seances/listerFuturesSeances');
-    	    }
-    	    $pos  =  strrpos ( getcwd(), 'webroot');
-    	    $path = substr(getcwd(), 0, $pos);
-    	    $path_seance = $path."webroot/files/generee/seances/$id/";
-    	    
+		$sortie = false;
+    	$date = '';
+		if (empty($this->data)) {
     	    $this->Seance->Behaviors->attach('Containable');
     	    $this->data = $this->Seance->find('first', array( 'contain'=>array('Infosup'),
     	    	'conditions'=>array('Seance.id'=> $id)));
-    	    
-    	    foreach ($this->data['Infosup']  as $infosup) {
-    	    	$infoSupDef = $this->Infosupdef->find('first', array(
-    	    	    'recursive' => -1,
-    	    	    'fields' => array('type'),
-    	    	    'conditions' => array('id' =>$infosup['infosupdef_id'], 'model' => 'Seance')));
-    	    	if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
-    	    	    $this->Gedooo->createFile($path_seance, $infosup['file_name'], $infosup['content']);
-    	    }
-    	    $this->data['Infosup'] = $this->Seance->Infosup->compacte($this->data['Infosup']);
-    	    $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions'=> array('model'=>'Seance'),
-    	                                                                   'order'     => 'ordre', 
-    	                                                                   'recursive' => -1)));
-    	    
-    	    $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Seance'));
-    	    
-    	    if (empty($this->data['Typeseance'])) { $this->data['Typeseance'] = null; }
-    	    $this->set('selectedTypeseances', $this->_selectedArray($this->data['Typeseance']));
-    	} else {
-    	    $this->data['Seance']['date'] = $this->data['Seance']['date']['year'].'-'.
-    	    $this->data['Seance']['date_month'].'-'.
-    	    $this->data['Seance']['date']['day'].' '.
-    	    $this->data['Seance']['date']['hour'].':'.
-    	    $this->data['Seance']['date']['min'];
-    	    
-    	    if ($this->Seance->save($this->data['Seance'])) {
-    	    	$pos  =  strrpos ( getcwd(), 'webroot');
-    	    	$path = substr(getcwd(), 0, $pos);
-    	    	$path_seance = $path."webroot/files/generee/seances/$id/";
-    	    	
-    	    	$infossupDefs = $this->Infosupdef->find('all', array('conditions' => 
-    	    	    array('type'  => 'odtFile',
-    	    	    	'model' => 'Seance'), 
-    	    	    'recursive'  => 0));
-    	    	
-    	    	foreach ( $infossupDefs as $infodef) {
-    	    	    $infodef_id = $infodef['Infosupdef']['id'];
-    	    	    $infosups = $this->Infosup->find('all', array('conditions' => array("Infosup.infosupdef_id" => $infodef_id,
-    	    	    	"Infosup.foreign_key"   => $id,
-    	    	    	"Infosup.model" => 'Seance'),
-    	    	    	    'recursive'  => -1));
-    	    	    foreach ( $infosups  as $infosup) {
-    	    	    	$name = $infosup['Infosup']['file_name'] ;
-    	    	    	if (file_exists($path_seance.$name)){
-    	    	    	    $stat = stat($path_seance.$name);
-    	    	    	    if ($stat > 0) {
-    	    	    	    	$infosup['Infosup']['content'] = file_get_contents($path_seance.$name);
-    	    	    	    	$this->Infosup->save($infosup);
-    	    	    	    }
-    	    	    	}
-    	    	    }
-    	    	}
-    	    	if (array_key_exists('Infosup', $this->data)) {
-    	    	    $this->Seance->Infosup->saveCompacted($this->data['Infosup'], $id, 'Seance');
-    	    	}
+    	    if (empty($this->data)) {
+    	    	$this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
+    	    	$sortie = true;
     	    } else {
-    	    	$this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-    	    	if (empty($this->data['Typeseance']['Typeseance'])) { $this->data['Typeseance']['Typeseance'] = null; }
-    	    	$this->set('selectedTypeseances', $this->data['Typeseance']['Typeseance']);
+				$date = date('d/m/Y', strtotime($this->data['Seance']['date']));
+	    	    $pos  =  strrpos ( getcwd(), 'webroot');
+	    	    $path = substr(getcwd(), 0, $pos);
+	    	    $path_seance = $path."webroot/files/generee/seance/$id/";
+	    	    foreach ($this->data['Infosup']  as $infosup) {
+	    	    	$infoSupDef = $this->Infosupdef->find('first', array(
+	    	    	    'recursive' => -1,
+	    	    	    'fields' => array('type'),
+	    	    	    'conditions' => array('id' =>$infosup['infosupdef_id'], 'model' => 'Seance')));
+	    	    	if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
+	    	    	    $this->Gedooo->createFile($path_seance, $infosup['file_name'], $infosup['content']);
+	    	    }
+	            $this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
     	    }
-    	    $this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
-    	    $this->redirect('/seances/listerFuturesSeances');
-    	}
-    	$natures = array_keys($this->Session->read('user.Nature'));
-    	$types = $this->Typeseance->TypeseancesNature->getTypeseanceParNature($natures);
-    	$this->set('typeseances', $this->Seance->Typeseance->find('list', array('conditions'=>array('Typeseance.id'=> $types) )));
+		} else {
+			$date = $this->params['form']['date'];
+			if (count(explode('/',$this->params['form']['date']))!=3) {
+				$this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type'=>'erreur'));
+			} else {
+				$this->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($this->params['form']['date']);
+				$this->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
+				if ($this->Seance->save($this->data)) {
+					$seanceId = $this->Seance->id;
+			        // sauvegarde des informations supplémentaires
+			        if (array_key_exists('Infosup', $this->data))
+			            $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $seanceId, 'Seance');
+				    $this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
+				    $sortie = true;
+				} else {
+				    $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
+				}
+			}
+		}
+		if ($sortie)
+			$this->redirect(array('action'=>'listerFuturesSeances'));
+		else {
+			$this->set('date', $date);
+	    	$natures = array_keys($this->Session->read('user.Nature'));        
+	    	$types = $this->Typeseance->TypeseancesNature->getTypeseanceParNature($natures);
+	    	$this->set('typeseances', $this->Seance->Typeseance->find('list', array('conditions'=>array('Typeseance.id'=> $types) )));
+            $this->set('infosupdefs', $this->Infosupdef->find('all', array(
+            	'recursive'=> -1,
+				'conditions'=> array('model' => 'Seance'),
+                'order' => 'ordre')));
+            $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Seance'));
+		}
     }
     
     function delete($id = null) {
