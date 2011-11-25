@@ -2,10 +2,11 @@ ALTER TABLE `deliberations` ADD INDEX `circuit_id`    ( `circuit_id` ) ;
 ALTER TABLE `deliberations` ADD INDEX `nature_id`     ( `nature_id` ) ;
 ALTER TABLE `deliberations` ADD INDEX `theme_id`      ( `theme_id` ) ;
 ALTER TABLE `deliberations` ADD INDEX `service_id`    ( `service_id` ) ;
-ALTER TABLE `deliberations` ADD INDEX `vote_id`       ( `vote_id` ) ;
 ALTER TABLE `deliberations` ADD INDEX `redacteur_id`  ( `redacteur_id` ) ;
 ALTER TABLE `deliberations` ADD INDEX `rapporteur_id` ( `rapporteur_id` ) ;
 ALTER TABLE `deliberations` ADD INDEX `seance_id`     ( `seance_id` ) ;
+
+ALTER TABLE `deliberations` DROP `vote_id`;
 
 ALTER TABLE `infosups` ADD INDEX `text` (`text` );
 
