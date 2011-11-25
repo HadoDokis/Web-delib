@@ -70,7 +70,7 @@ class SeancesController extends AppController {
 					$seanceId = $this->Seance->id;
 			        // sauvegarde des informations supplémentaires
 			        if (array_key_exists('Infosup', $this->data))
-			            $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $seanceId, 'Seance');
+			            $this->Infosup->saveCompacted($this->data['Infosup'], $seanceId, 'Seance');
 				    $this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
 				    $sortie = true;
 				} else {
@@ -119,7 +119,7 @@ class SeancesController extends AppController {
 	    	    	if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
 	    	    	    $this->Gedooo->createFile($path_seance, $infosup['file_name'], $infosup['content']);
 	    	    }
-	            $this->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup']);
+	            $this->data['Infosup'] = $this->Infosup->compacte($this->data['Infosup']);
     	    }
 		} else {
 			$date = $this->params['form']['date'];
@@ -129,10 +129,9 @@ class SeancesController extends AppController {
 				$this->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($this->params['form']['date']);
 				$this->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
 				if ($this->Seance->save($this->data)) {
-					$seanceId = $this->Seance->id;
 			        // sauvegarde des informations supplémentaires
 			        if (array_key_exists('Infosup', $this->data))
-			            $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $seanceId, 'Seance');
+			            $this->Infosup->saveCompacted($this->data['Infosup'], $id, 'Seance');
 				    $this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
 				    $sortie = true;
 				} else {
