@@ -286,7 +286,7 @@ class DeliberationsController extends AppController {
             $this->set('redirect', $redirect);
             
             /* valeurs initiales des info supplémentaires */
-            $this->data['Infosup'] = $this->Infosupdef->valeursInitiales();
+            $this->data['Infosup'] = $this->Infosupdef->valeursInitiales('Deliberation');
             
             $this->render('edit');
         }
