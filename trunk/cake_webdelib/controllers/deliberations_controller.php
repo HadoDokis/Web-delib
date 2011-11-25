@@ -361,6 +361,7 @@ class DeliberationsController extends AppController {
             $newAnnexe['Annex']['foreign_key'] = $delibId;
             $newAnnexe['Annex']['titre'] = $annexe['titre'];
             $newAnnexe['Annex']['joindre_ctrl_legalite'] = $annexe['ctrl'];
+            $newAnnexe['Annex']['joindre_fusion'] = $annexe['fusion'];
             $newAnnexe['Annex']['filename'] = $annexe['file']['name'];
             $newAnnexe['Annex']['filetype'] = $annexe['file']['type'];
             $newAnnexe['Annex']['size'] = $annexe['file']['size'];
@@ -395,13 +396,13 @@ class DeliberationsController extends AppController {
             $this->data = $this->Deliberation->find('first', array(
                 'contain'=>array( 'Annex.id', 'Annex.filetype', 'Annex.model',
                     'Annex.foreign_key', 'Annex.filename', 'Annex.filename_pdf',
-                    'Annex.titre', 'Annex.joindre_ctrl_legalite',       'Infosup'),
+                    'Annex.titre', 'Annex.joindre_ctrl_legalite', 'Annex.joindre_fusion', 'Infosup'),
                 'conditions'=>array('Deliberation.id'=> $id)));
             if (Configure::read('DELIBERATIONS_MULTIPLES')) {
                 $this->Deliberation->Multidelib->Behaviors->attach('Containable');
                 $multiDelibs = $this->Deliberation->Multidelib->find('all', array(
                     'fields' => array('Multidelib.id', 'Multidelib.objet', 'Multidelib.deliberation', 'Multidelib.deliberation_name'),
-                    'contain' => array('Annex.id','Annex.model', 'Annex.filetype', 'Annex.foreign_key', 'Annex.filename', 'Annex.filename_pdf', 'Annex.titre', 'Annex.joindre_ctrl_legalite'),
+                    'contain' => array('Annex.id','Annex.model', 'Annex.filetype', 'Annex.foreign_key', 'Annex.filename', 'Annex.filename_pdf', 'Annex.titre', 'Annex.joindre_ctrl_legalite', 'Annex.joindre_fusion'),
                     'conditions' => array('Multidelib.parent_id'=>$id)));
                 foreach($multiDelibs as $imd => $multiDelib) {
                     $this->data['Multidelib'][$imd] = $multiDelib['Multidelib'];
@@ -605,13 +606,15 @@ class DeliberationsController extends AppController {
                                 'id' => $annexeId,
                                 'titre' => $annexe['titre'],
                                 'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
+                                'joindre_fusion' => $annexe['joindre_fusion'],
                                 'data' => $data,
                                 'data_pdf' => $data_pdf));
                         } else {
                             $this->Annex->save(array(
                                 'id' => $annexeId,
                                 'titre' => $annexe['titre'],
-                                'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite']));
+				'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
+                                'joindre_fusion'  => $annexe['joindre_fusion']));
                         }
                     }
                 }
@@ -1254,7 +1257,7 @@ class DeliberationsController extends AppController {
                 }
                 
                 
-                $annexes_id =  $this->Annex->getAnnexesIdToSendFromDelibId($id);
+                $annexes_id =  $this->Annex->getAnnexesIdFromDelibId($id, 1);
                 $nb_pj=0;
                 foreach ($annexes_id as $annex_id) {
                     $annexe = $this->Annex->getContent($annex_id);
