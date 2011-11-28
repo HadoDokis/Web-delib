@@ -409,17 +409,19 @@ class Deliberation extends AppModel {
                if ($delib['Deliberation']['seance_id'] != 0 ) {
                    $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
                    $seance = $this->Seance->find('first', array(
-                                                 'conditions' => array(
-                                                 'Seance.id' =>$delib['Seance']['id'])));
+						 'conditions' => array('Seance.id' =>$delib['Seance']['id'])));
                    $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),        'text'));
                    $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),        'text'));
                    $oMainPart->addElement(new GDO_FieldType('date_seance',                $this->Date->frDate($seance['Seance']['date']),       'date'));
                    $oMainPart->addElement(new GDO_FieldType('hh_seance',           $this->Date->Hour($seance['Seance']['date'], 'hh'), 'string'));
                    $oMainPart->addElement(new GDO_FieldType('mm_seance',           $this->Date->Hour($seance['Seance']['date'], 'mm'), 'string'));
-
                    $oMainPart->addElement(new GDO_FieldType('date_convocation',                 $this->Date->frDate($seance['Seance']['date_convocation']),   'date'));
                    $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
-                   $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text')); 
+		   $oMainPart->addElement(new GDO_FieldType('date_seance_lettres',         utf8_encode($date_lettres),                      'text')); 
+                   foreach($seance['Infosup'] as $champs) {
+                       $oMainPart->addElement($this->_addField($champs, $u, $delib['Seance']['id'], 'Seance'));
+                   }
+
                }
           
                $titre = utf8_encode($delib['Deliberation']['titre']);
@@ -534,7 +536,7 @@ class Deliberation extends AppModel {
                @$oMainPart->addElement($historique);
 
                foreach($delib['Infosup'] as $champs) {
-                   $oMainPart->addElement($this->_addField($champs, $u, $delib['Deliberation']['id']));
+                   $oMainPart->addElement($this->_addField($champs, $u, $delib['Deliberation']['id'], 'Deliberation'));
                }
 
                @$Multi =  new GDO_IterationType("Deliberations");
@@ -896,7 +898,7 @@ class Deliberation extends AppModel {
             }
         }
 
-        function _addField($champs, $u, $delib_id) {
+        function _addField($champs, $u, $id, $model='Deliberation') {
             $champs_def = $this->Infosup->Infosupdef->read(null, $champs['infosupdef_id']);
 
             if(($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']!= "")) {
@@ -920,12 +922,19 @@ class Deliberation extends AppModel {
 
                  $this->Gedooo = new GedoooComponent;
                  $this->Conversion = new ConversionComponent; 
+                 if ( $model == 'Deliberation' ) { 
+                     $filename = WEBROOT_PATH."/files/generee/projet/$id/".$champs_def['Infosupdef']['code'].".html";
+                     $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
+                     $content = $this->Conversion->convertirFichier($filename, "odt");
+		     return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                 }
+		 elseif ( $model == 'Seance' ) {
+                     $filename = WEBROOT_PATH."/files/generee/seance/$id/".$champs_def['Infosupdef']['code'].".html";
+                     $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/seance/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
+                     $content = $this->Conversion->convertirFichier($filename, "odt");
+                     return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
 
-                 $filename = WEBROOT_PATH."/files/generee/projet/$delib_id/".$champs_def['Infosupdef']['code'].".html";
-                 $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$delib_id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
-                 $content = $this->Conversion->convertirFichier($filename, "odt");
-
-                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                 } 
              }
             elseif  ($champs['text'] == '' )
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
