@@ -36,7 +36,8 @@
                                                                   'Typeseance.modelpvsommaire_id'=>$id,
                                                                   'Typeseance.modelpvdetaille_id'=>$id)))))
 			    $deletable[$id]=false;
-                        else $deletable[$id]=true;
+			else 
+                           $deletable[$id]=true;
 		    }
 		    $this->set('deletable',$deletable);
 		    $this->set('models', $this->Model->find('all', array('order'=>array('type ASC '))));
@@ -228,17 +229,16 @@
 	    $oMainPart = new GDO_PartType();
 
 	    // Informations sur la collectivité
-        $data = $this->Collectivite->find('first', array(
-                                          'conditions'=>array(
-                                          'Collectivite.id'=>1)));
+            $data = $this->Collectivite->find('first', array(
+                                              'conditions'=>array('Collectivite.id'=>1)));
 
-        $oMainPart->addElement(new GDO_FieldType('nom_collectivite',utf8_encode($data['Collectivite']['nom']) , "text"));
+            $oMainPart->addElement(new GDO_FieldType('nom_collectivite',utf8_encode($data['Collectivite']['nom']) , "text"));
 	    $oMainPart->addElement(new GDO_FieldType('adresse_collectivite',utf8_encode($data['Collectivite']['adresse']) , "text"));
 	    $oMainPart->addElement(new GDO_FieldType('cp_collectivite',utf8_encode($data['Collectivite']['CP']) , "text"));
 	    $oMainPart->addElement(new GDO_FieldType('ville_collectivite',utf8_encode($data['Collectivite']['ville']) , "text"));
 	    $oMainPart->addElement(new GDO_FieldType('telephone_collectivite',utf8_encode($data['Collectivite']['telephone']) , "text"));
-        $oMainPart->addElement(new GDO_FieldType('date_jour_courant',utf8_encode($this->Date->frenchDate(strtotime("now"))), 'text'));
-        $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
+            $oMainPart->addElement(new GDO_FieldType('date_jour_courant',utf8_encode($this->Date->frenchDate(strtotime("now"))), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
 
             //*****************************************
 	    // Génération d'une délibération ou d'un texte de projet
@@ -284,7 +284,11 @@
                  $oMainPart->addElement(new GDO_FieldType('mm_seance',           $this->Date->Hour($seance['Seance']['date'], 'mm'), 'string'));
 
                  $oMainPart->addElement(new GDO_FieldType('type_seance',utf8_encode($seance['Typeseance']['libelle']) , "text"));
-                 $oMainPart->addElement(new GDO_FieldType('identifiant_seance',  utf8_encode($seance['Seance']['id']),'text'));
+		 $oMainPart->addElement(new GDO_FieldType('identifiant_seance',  utf8_encode($seance['Seance']['id']),'text'));
+
+                 foreach($seance['Infosup'] as $champs) {
+                     $oMainPart->addElement($this->Deliberation->_addField($champs, $u, $seance['Seance']['id'], 'Seance'));
+                 }
 
                  $oMainPart->addElement(new GDO_FieldType("nom_secretaire", utf8_encode($seance['Secretaire']['nom']), "text"));
                  $oMainPart->addElement(new GDO_FieldType("prenom_secretaire", utf8_encode($seance['Secretaire']['prenom']), "text"));
