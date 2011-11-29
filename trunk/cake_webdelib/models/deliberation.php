@@ -421,7 +421,6 @@ class Deliberation extends AppModel {
                    foreach($seance['Infosup'] as $champs) {
                        $oMainPart->addElement($this->_addField($champs, $u, $delib['Seance']['id'], 'Seance'));
                    }
-
                }
           
                $titre = utf8_encode($delib['Deliberation']['titre']);
@@ -909,9 +908,12 @@ class Deliberation extends AppModel {
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
 
             if ($champs['text'] != '')
-                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
-             elseif ($champs['date'] != '0000-00-00')
-                 return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
+                return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
+	    elseif ($champs['date'] != '0000-00-00') {
+                include_once ('controllers/components/date.php');
+                $this->Date = new DateComponent;
+		return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
+             }
              elseif ($champs['file_size'] != 0 ) {
                  $name = utf8_decode(str_replace(" ", "_", $champs['file_name']));
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', $champs['content']));
