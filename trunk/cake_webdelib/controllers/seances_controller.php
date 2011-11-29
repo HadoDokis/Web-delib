@@ -273,7 +273,7 @@ class SeancesController extends AppController {
     	    // On génère la délibération au format PDF
     	    $model_id = $this->Deliberation->getModelId($delib_id);
     	    $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.odt");
-    	    $filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.odt";
+    	    $filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.odt.pdf";
     	    $content = file_get_contents($filename);
     	    
     	    if (strlen($content) == 0)
