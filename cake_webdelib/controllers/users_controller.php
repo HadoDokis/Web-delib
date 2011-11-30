@@ -3,7 +3,7 @@ class UsersController extends AppController {
 
 	var $name = 'Users';
 	var $helpers = array('Form', 'Html', 'Html2', 'Session');
-	var $uses = array( 'User', 'Service', 'Cakeflow.Circuit', 'Profil', 'Deliberation', 'Nature', 'ArosAdo');
+	var $uses = array( 'User', 'Service', 'Cakeflow.Circuit', 'Profil', 'Deliberation', 'Nature', 'ArosAdo', 'Collectivite');
 	var $components = array('Utils', 'Acl', 'Menu', 'Dbdroits');
 	
 	var $paginate = array(
@@ -276,14 +276,14 @@ class UsersController extends AppController {
             if (!empty($this->data)) {
                 $isAuthentif = false;
                 //cherche si utilisateur enregistré possede ce login
-                $user = $this->User->findByLogin($this->data['User']['login']);
+		$user = $this->User->findByLogin($this->data['User']['login']);
+                unset($user['Historique']);
                 if (empty($user)){
                     $this->set('errorMsg',"L'utilisateur ".$this->data['User']['login']." n'existe pas dans l'application.");
                     $this->layout='connection';
                     $this->render();
                     //exit;
                 }
-
                 if ($user['User']['id']==1){
                     $isAuthentif =  ($user['User']['password'] == md5($this->data['User']['password']));
                 }
@@ -302,8 +302,15 @@ class UsersController extends AppController {
 
                 if ($isAuthentif) {
  
-                    //on stocke l'utilisateur en session
+		    //on stocke l'utilisateur en session
 		    $this->Session->write('user',$user);
+                    // On stock la collectivite de l'utilisateur en cas de PASTELL
+		    if (Configure::read('USE_PASTELL')) {
+                        $coll = $this->Collectivite->find('first', array('conditions' => array('Collectivite.id'=>1),
+                                                                         'recursive'  => -1, 
+									 'fields'     => array('id_entity'))); 
+                        $this->Session->write('user.Collectivite', $coll);
+                    }
                     // On stock les natures qu'il peut traiter
                     $natures = array();
                     $droits = $this->ArosAdo->find('all', array('conditions'=> array('aro_id'=>$user['User']['id'], '_read'=>1)));
