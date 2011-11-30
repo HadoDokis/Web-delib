@@ -62,10 +62,11 @@
     ////////////////////////
     // Configuration ASAL@AE
     ////////////////////////
-    Configure::write("ASALAE_WSDL",  "http://asalae.services.adullact.org/webservices/wsdl");
-    Configure::write('SIREN_VERSANT', '491011698');
-    Configure::write('SIREN_ARCHIVE', '227806460');
-    Configure::write('NUMERO_AGREMENT', 'ACCORDWD01');
+    define("ASALAE_WSDL",  "http://testasalae.dev.adullact.org/webservices/wsdl");
+    define('SIREN_ARCHIVE', 'DEMO');
+    define('NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
+    define('IDENTIFIANT_VERSANT', 'WEBDELIBSERVICES_LOGIN');
+    define('MOT_DE_PASSE', 'WEBDELIBSERVICES_MDP');
 
     ////////////////////////
     // Configuration d'envoie de mail
@@ -90,7 +91,7 @@
     Configure::write("LIMIT", 5);
 
     ////////////////////////
-    // Configuration Webservice Stela
+    // Configuration CONNECTEUR CMIS GED
     ////////////////////////
     Configure::write('USE_GED', false);
     Configure::write('GED_URL', 'http://ged.extranet.adullact.org/alfresco/service/api/cmis');
@@ -108,5 +109,15 @@
     ////////////////////////
     Configure::write('CONVERSION_TYPE' , 'UNOCONV');
     Configure::write('CONVERSION_EXEC' , '/opt/unoconv-0.4/unoconv');
+
+    ////////////////////////
+    // Configuration connexion PASTELL
+    ////////////////////////
+    Configure::write('USE_PASTELL',   true);
+    Configure::write('PASTELL_HOST',  'http://pastell.test.adullact.org');
+    Configure::write('PASTELL_LOGIN', 'col1');
+    Configure::write('PASTELL_PWD',   'col1');
+    Configure::write('PASTELL_TYPE',  'actes');
+
  
 ?>
