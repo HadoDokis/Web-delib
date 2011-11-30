@@ -7,6 +7,7 @@
  */
  class CollectivitesController extends AppController {
 	var $uses = array( 'Collectivite', 'User');
+	var $components = array('Pastell');
 
 	// Gestion des droits
 	var $aucunDroit = array(
@@ -29,14 +30,22 @@
 	}
 
  	function edit($id = null) {
-		if (empty($this->data)) {
-			$this->data = $this->Collectivite->read(null, $id);
-		}
-		else {
-			if(!empty($this->params['form']))
-				$this->Collectivite->save($this->data);
-				$this->redirect('/collectivites');
-		}
+	    if (empty($this->data)) {
+                $this->data = $this->Collectivite->read(null, $id);
+		if (Configure::read('USE_PASTELL')) {
+		    $this->set('entities', $this->Pastell->listEntities());
+		    $this->set('selected', $this->data['Collectivite']['id_entity']);
+                }
+	    }
+            else {
+		if(!empty($this->params['form'])) {
+		    $entities = $this->Pastell->listEntities();
+                    if (Configure::read('USE_PASTELL'))
+                        $this->data['Collectivite']['nom'] =  $entities[$this->data['Collectivite']['id_entity']];
+		    $this->Collectivite->save($this->data);
+                }
+                $this->redirect('/collectivites');
+            }
  	}
 
  	function setLogo($id = null) {

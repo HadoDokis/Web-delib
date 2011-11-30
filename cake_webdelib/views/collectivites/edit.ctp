@@ -1,7 +1,12 @@
 <h2>Modification de la collectivit&eacute;</h2>
 <?php echo $form->create('Collectivite',array('url'=>'/collectivites/edit/'.$html->value('Collectivite.id'),'type'=>'file')); ?>
 <div class="optional"> 
- 	<?php echo $form->input('Collectivite.nom',array('label'=>'Nom de la collectivité'));?>
+
+<?php 
+    if (isset($entities))
+        echo $form->input('Collectivite.id_entity', array('options'=>$entities, 'selected'=> $selected, 'label' => 'Nom :'));
+    else
+        echo $form->input('Collectivite.nom',array('label'=>'Nom de la collectivité'));?>
 </div>
 <br />
 <div class="optional">
