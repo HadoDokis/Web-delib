@@ -16,7 +16,7 @@
 		<?php echo $content_for_layout; ?>
 	</div>
 
-	<div id="pied">Web-delib v<?php echo VERSION; ?>&copy; 2010 ADULLACT</div>
+	<div id="pied">Web-delib v<?php echo VERSION; ?> &copy; 2006-2012 ADULLACT</div>
 </div>
 </body>
 </html>
