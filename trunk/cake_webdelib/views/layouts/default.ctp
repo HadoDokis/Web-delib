@@ -52,7 +52,7 @@
 		<?php echo $content_for_layout; ?>
 	</div>
 
-	<div id="pied"><?php echo " Web-delib v".VERSION; ?> &copy; 2011 ADULLACT</div>
+	<div id="pied"><?php echo " Web-delib v".VERSION; ?> &copy; 2006-2012 ADULLACT</div>
 
  </div>
 </body>
