@@ -109,7 +109,12 @@
                                               'Confirmez-vous la validation en urgence du projet \''.$deliberation['Deliberation']['id'].'\'', false);
 			
 			 if (in_array('goNext', $deliberation['Actions']))
-			     echo $html->link(SHY,"/deliberations/goNext/" . $deliberation['Deliberation']['id'], array('class'=>"link_jump", 'alt'=>'Sauter une ou des étapes pour le projet '.$deliberation['Deliberation']['objet']), false, false);
+			     echo $html->link(SHY,"/deliberations/goNext/" . $deliberation['Deliberation']['id'], 
+                                                   array('class'=>"link_jump", 
+							 'alt'=>'Sauter une ou des étapes pour le projet '.$deliberation['Deliberation']['objet'],
+							 'title'=>'Sauter une ou des étapes pour le projet '.$deliberation['Deliberation']['objet'],
+                     
+                                                          ), false, false);
 			
 			echo '<br /><br/><br/><br/>';
 			if (in_array('attribuerCircuit', $deliberation['Actions'])  && ($deliberation['Deliberation']['signee'] != 1 )) {
