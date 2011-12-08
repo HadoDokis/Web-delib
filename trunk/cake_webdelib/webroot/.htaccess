@@ -1,3 +1,4 @@
+php_value default_charset  "ISO-8859-1"
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-d
