@@ -1,11 +1,12 @@
 <div class="typeseances">
 <h2>Modèles d'édition</h2>
-<table cellpadding="0" cellspacing="0">
+<table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 	<th>Mod&egrave;le</th>
 	<th>Type</th>
 	<th>Nom du mod&egrave;le</th>
-	<th>Recherche</th>
+	<th width='25px'>Recherche</th>
+	<th width='25px'>Joindre les annexes</th>
 	<th>Dernière modification</th>
 	<th>Actions</th>
 </tr>
@@ -14,11 +15,23 @@
 	<td><?php echo $model['Model']['modele']; ?></td>
 	<td><?php echo $model['Model']['type']; ?></td>
 	<td><?php echo $model['Model']['name']; ?></td>
-	<td><?php  if ($model['Model']['recherche']) 
-                       echo 'Oui';
-                   else
-                       echo 'Non';
+	<td  style="text-align: center;"><?php  
+             echo $html->link(SHY, 
+                              '/models/changeStatus/recherche/'.$model['Model']['id'], 
+                              array('class'=>'link_bool_'.$model['Model']['recherche'], 
+                                    'title'=>'Voir'), 
+                              false, 
+                              false);
          ?></td>
+         <td style="text-align: center;"><?php  
+             echo $html->link(SHY, 
+                              '/models/changeStatus/joindre_annexe/'.$model['Model']['id'], 
+                              array('class'=>'link_bool_'.$model['Model']['joindre_annexe'], 
+                                    'title'=>'Voir'), 
+                              false, 
+                              false);
+         ?></td>
+
 	<td><?php if ($model['Model']['modified']!= 0)
                    echo $model['Model']['modified']; 
          ?></td>
