@@ -192,6 +192,7 @@ class SeancesController extends AppController {
     function listerFuturesSeances() {
     	$this->set('AFFICHE_CONVOCS_ANONYME', Configure::read('AFFICHE_CONVOCS_ANONYME'));
     	$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+    	$this->set('use_pastell', Configure::read('USE_PASTELL'));
     	$this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
     	$format =  $this->Session->read('user.format.sortie');
     	if (empty($format))
@@ -264,7 +265,8 @@ class SeancesController extends AppController {
     	    if ($isArrete){
     	    	$this->Deliberation->saveField('etat', 3);
     	    	if ( $compteur_id != null) {  
-    	    	    $num =  $this->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
+		    $num =  $this->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
+		    $num = str_replace('#pos#', $delib['Deliberation']['position'], $num);
     	    	    $this->Deliberation->saveField('num_delib', $num);
     	    	}
     	    }
@@ -534,8 +536,10 @@ class SeancesController extends AppController {
     	    
     	    // Attribution du numéro de la délibération si adoptée et si pas déjà attribué
     	    if ( ($this->data['Deliberation']['etat'] == 3)
-    	    	&& empty($deliberation['Deliberation']['num_delib']) )
-    	    $this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id']);
+    	    	&& empty($deliberation['Deliberation']['num_delib']) ) {
+		$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id']);
+	        $this->data['Deliberation']['num_delib']  = str_replace('#p#', $deliberation['Deliberation']['position'], $this->data['Deliberation']['num_delib'] );
+	    }
     	    if ($this->Deliberation->save($this->data['Deliberation'])) {
     	    	$this->redirect("/seances/details/".$deliberation['Deliberation']['seance_id']);
     	    }
@@ -659,7 +663,8 @@ class SeancesController extends AppController {
     	    	    // Calcul du numéro de la délibération car il n'y a pas de séance suivante attribuée
     	    	    //	if (empty($deliberation['Deliberation']['num_delib'])) {
     	    	    //		$compteurId = $this->Seance->Typeseance->field('compteur_id', 'Typeseance.id = '.$deliberation['Seance']['type_id']);
-    	    	    //		$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($compteurId);
+		    //		$this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($compteurId);
+                    //   $this->data['Deliberation']['num_delib']  = str_replace('#pos#', $delib ['Deliberation']['position'],   $this->data['Deliberation']['num_delib'] );
     	    	    //      }
     	    	} else
     	    	$this->data['Deliberation']['position'] = $this->Deliberation->findCount("seance_id =".$this->data['Deliberation']['seance_id']." AND (etat != -1 )")+1;
