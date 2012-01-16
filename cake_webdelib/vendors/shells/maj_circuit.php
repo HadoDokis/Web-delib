@@ -15,6 +15,7 @@
                                                FROM circuits");
             foreach ($circuits as $circuit){
                  $this->Circuit->create();
+                 $new['Circuit']['id'] = $circuit['circuits']['id'];
                  $new['Circuit']['nom'] = $circuit['circuits']['libelle'];
                  $new['Circuit']['actif'] = 1;
                  $this->Circuit->save($new);
