@@ -325,6 +325,19 @@ td.ordre a {
 	text-decoration: none;
 }
 
+a.link_bool_0 {
+        background-image: url(../img/icons/false.png);
+        background-repeat: no-repeat;
+        background-position: top;
+        padding: 0 0 10px 22px;
+}
+a.link_bool_1 {
+        background-image: url(../img/icons/true.png);
+        background-repeat: no-repeat;
+        background-position: top;
+        padding: 0 0 10px 22px;
+}
+
 a.link_liste {
 	background-image: url(../img/icons/liste.png);
 	background-repeat: no-repeat;
@@ -1304,3 +1317,4 @@ div.aModifier {
     text-align: center;
     padding-bottom: 10px;
 }
+

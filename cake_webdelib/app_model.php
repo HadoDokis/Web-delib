@@ -82,7 +82,16 @@ function listFields($params = array()) {
 	}
 
 	return $ret;
-}
+   }
+
+    function changeBoolean($model, $id, $field) {
+        $mod = new $model;
+        $data = $mod->find('first', array('conditions' => array("$model.id" => $id),
+                                                   'recursive'  => -1, 
+                                                   'fields'     => array("$field")));
+        $mod->id = $id; 
+        return ($mod->saveField($field, !$data[$model][$field])); 
+    }
 
 /*function isUnique($field, $value, $id)
     {
