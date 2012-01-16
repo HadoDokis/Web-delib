@@ -84,6 +84,15 @@ $webDelib = array(
 					)
 				)
 			),
+                 'Autres Actes...' => array(
+                        'link' => '/dossiers/signer', 
+                        'subMenu' => array(
+                                'items' => array(
+                                        'A signer' => array('link' => '/autres/signer'),
+                                        'Envoyer au tdt' => array('link' => '/autres/envoyerTdt')
+                                        )
+                                )
+                        ),
 		'Post-séance' => array(
 			'link' => '/postseances/index',
 			'subMenu' => array(
