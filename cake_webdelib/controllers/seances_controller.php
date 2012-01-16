@@ -200,8 +200,15 @@ class SeancesController extends AppController {
     	$this->set('format', $format);
     	
     	if (empty ($this->data)) {
-    	    $condition= 'Seance.traitee = 0';
-    	    $seances = $this->Seance->findAll(($condition),null,'date asc');
+            $this->Seance->Behaviors->attach('Containable');
+    	    $seances = $this->Seance->find('all', array('conditions'=> array('Seance.traitee'=>0),
+                                                        'order '    => 'Seance.date ASC',
+                                                        'fields'    => array('id', 'date', 'type_id'), 
+                                                        'contain'   => array('Typeseance.libelle', 'Typeseance.action',
+                                                                             'Typeseance.modelconvocation_id',
+                                                                             'Typeseance.modelordredujour_id',
+                                                                             'Typeseance.modelpvsommaire_id',
+                                                                             'Typeseance.modelpvdetaille_id')));
     	    
     	    for ($i=0; $i<count($seances); $i++){
     	    	$seances[$i]['Seance']['dateEn'] =  $seances[$i]['Seance']['date'];
