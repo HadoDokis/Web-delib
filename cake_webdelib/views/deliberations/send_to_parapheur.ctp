@@ -49,7 +49,10 @@
 		    }
                    elseif(($delib['Deliberation']['signee'] == 1) && ($delib['Deliberation']['etat_parapheur']==null)){
                        echo  ("<td>Acte déclaré signé</td>");
-                    } 
+		    } 
+                   elseif (($delib['Deliberation']['etat']>-1) && ($delib['Deliberation']['etat']<2) && ($delib['Deliberation']['nature_id']==1) ) {
+                       echo "<td>En cours d'élaboration</td>";
+                   }
                    elseif (($delib['Deliberation']['etat']>=1) && ($delib['Deliberation']['etat']<3) && ($delib['Deliberation']['nature_id']==1) ) {
                        echo '<td>A faire voter</td>';
                    }
@@ -57,7 +60,7 @@
  		        echo("<td>Acte refusé à la signature</td>");
 		    }
                     else {
- 		        echo("<td>&nbsp;</td>");
+ 		        echo("<td>A faire signer</td>");
                     }
 		  ?>
 		</tr>
