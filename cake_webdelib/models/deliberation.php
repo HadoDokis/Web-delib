@@ -22,6 +22,12 @@ class Deliberation extends AppModel {
 
 	//dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
 	var $belongsTo = array(
+                'Nomenclature'=>array(
+                        'className'    => 'Nomenclature',
+                        'conditions'   => '',
+                        'order'        => '',
+                        'dependent'    => false,
+                        'foreignKey'   => 'num_pref'),
 		'Service'=>array(
 			'className'    => 'Service',
 			'conditions'   => '',
@@ -253,7 +259,7 @@ class Deliberation extends AppModel {
 		// maj de l'etat de la delib dans la table deliberations
 		$delib['Deliberation']['etat']=-1; //etat -1 : refuse
 		// Retour de la position a 0 pour ne pas qu'il y ait de confusion
-		$delib['Deliberation']['position']=0;
+		//$delib['Deliberation']['position']=0;
 		$delib['Deliberation']['id']=$id;
 		$this->save($delib['Deliberation']);
 
@@ -296,7 +302,7 @@ class Deliberation extends AppModel {
 			// maj de l'etat de la delib dans la table deliberations
 			$delibRattachee['Deliberation']['etat']=-1; //etat -1 : refuse
 			// Retour de la position a 0 pour ne pas qu'il y ait de confusion
-			$delibRattachee['Deliberation']['position']=0;
+			//$delibRattachee['Deliberation']['position']=0;
 			$this->save($delibRattachee['Deliberation']);
 	
 			// création de la nouvelle version
@@ -401,17 +407,24 @@ class Deliberation extends AppModel {
         }
 
         function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null, $isPV=false)  {
-               include_once ('controllers/components/gedooo.php');
-               include_once ('controllers/components/date.php');
-               $this->Date = new DateComponent;
-               $this->Gedooo = new GedoooComponent;
+           include_once ('controllers/components/gedooo.php');
+	   include_once ('controllers/components/date.php');
+	   include_once ('controllers/components/conversion.php');
+
+           $this->Conversion = new ConversionComponent;
+           $this->Date = new DateComponent;
+           $this->Gedooo = new GedoooComponent;
+
+               $dyn_path = "/files/generee/projet/".$delib['Deliberation']['id']."/";
+	       $path = WEBROOT_PATH.$dyn_path;
                
                if ($delib['Deliberation']['seance_id'] != 0 ) {
                    $oMainPart->addElement(new GDO_FieldType('heure_seance',                $this->Date->Hour($delib['Seance']['date']),     'text'));
                    $seance = $this->Seance->find('first', array(
 						 'conditions' => array('Seance.id' =>$delib['Seance']['id'])));
-                   $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),        'text'));
-                   $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),        'text'));
+		   $oMainPart->addElement(new GDO_FieldType('type_seance',                utf8_encode($seance['Typeseance']['libelle']),        'text'));
+
+                   
                    $oMainPart->addElement(new GDO_FieldType('date_seance',                $this->Date->frDate($seance['Seance']['date']),       'date'));
                    $oMainPart->addElement(new GDO_FieldType('hh_seance',           $this->Date->Hour($seance['Seance']['date'], 'hh'), 'string'));
                    $oMainPart->addElement(new GDO_FieldType('mm_seance',           $this->Date->Hour($seance['Seance']['date'], 'mm'), 'string'));
@@ -502,8 +515,15 @@ class Deliberation extends AppModel {
 	           $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', utf8_encode( $delib['Deliberation']['vote_nb_retrait']), 'text'));
                }
                $oMainPart->addElement(new GDO_FieldType('nombre_votant', $nb_votant, 'text'));
-               $oMainPart->addElement(new GDO_FieldType('commentaire_vote',  utf8_encode($delib['Deliberation']['vote_commentaire']), 'text'));
                $oMainPart->addElement(new GDO_FieldType('date_reception',  utf8_encode($delib['Deliberation']['dateAR']), 'text'));
+               //$oMainPart->addElement(new GDO_FieldType('commentaire_vote',  utf8_encode($delib['Deliberation']['vote_commentaire']), 'text'));
+                    if (isset($delib['Deliberation']['vote_commentaire'])) {
+                       $filename = $path."commentaire_vote.html";
+                       $vote_commentaire = "<html><head></head><body><p>".nl2br($delib['Deliberation']['vote_commentaire'])."</p></body></html>";
+                       $filepath_comm = $this->Gedooo->createFile($path, "commentaire.html",  $vote_commentaire);
+		       $content = $this->Conversion->convertirFichier($filepath_comm, "odt");
+		       $oMainPart->addElement(new GDO_ContentType('commentaire_vote', 'commentaire.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                   }
 
 
                $commentaires = new GDO_IterationType("Commentaires");
@@ -533,11 +553,18 @@ class Deliberation extends AppModel {
                    $historique->addPart($oDevPart);
                }
                @$oMainPart->addElement($historique);
-
-               foreach($delib['Infosup'] as $champs) {
-                   $oMainPart->addElement($this->_addField($champs, $u, $delib['Deliberation']['id'], 'Deliberation'));
+ 
+               if (!empty($delib['Infosup'])) {
+                   foreach($delib['Infosup'] as  $champs)
+                       $oMainPart->addElement($this->_addField($champs, $u, $delib['Deliberation']['id'], 'Deliberation'));
                }
-
+               else {
+                   $defs = $this->Infosup->Infosupdef->find('all', array('conditions'=>array('model' => 'Deliberation'), 'recursive' => -1));
+                   foreach($defs as $def) {
+                        $oMainPart->addElement(new GDO_FieldType($def['Infosupdef']['code'],  utf8_encode(' '), 'text')) ;
+                   }
+               }
+ 
                @$Multi =  new GDO_IterationType("Deliberations");
                if (!empty($delib['Multidelib'])) {
                    foreach($delib['Multidelib'] as $multidelib ){
@@ -555,13 +582,7 @@ class Deliberation extends AppModel {
                }
                @$oMainPart->addElement($Multi);
 
-
-               $dyn_path = "/files/generee/projet/".$delib['Deliberation']['id']."/";
-               $path = WEBROOT_PATH.$dyn_path;
-
                if (Configure::read('GENERER_DOC_SIMPLE')) {
-                   include_once ('controllers/components/conversion.php');
-                   $this->Conversion = new ConversionComponent;
   
                    if (isset($delib['Deliberation']['texte_projet'])) {
                        $filename = $path."texte_projet.html";
@@ -907,8 +928,9 @@ class Deliberation extends AppModel {
             elseif (($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']== ""))
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
 
-            if ($champs['text'] != '')
+            if ($champs['text'] != '') { 
                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
+            }
 	    elseif ($champs['date'] != '0000-00-00') {
                 include_once ('controllers/components/date.php');
                 $this->Date = new DateComponent;
@@ -939,7 +961,7 @@ class Deliberation extends AppModel {
                  } 
              }
             elseif  ($champs['text'] == '' )
-                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
+                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode('toto '), 'text'));
         }
 
         function _url2pathImage($url) {
