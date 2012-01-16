@@ -31,7 +31,16 @@ class PostseancesController extends AppController {
              $this->set('format', $format);
 
 	     $this->set ('USE_GEDOOO', Configure::read('USE_GEDOOO'));
-	     $seances = $this->Seance->find('all',array('conditions'=>array('Seance.traitee'=>1),'order'=>array('date desc'),'recursive'=>0));
+ 
+             $this->Seance->Behaviors->attach('Containable');
+             $seances = $this->Seance->find('all', array('conditions'=> array('Seance.traitee'=> 1),
+                                                         'order '    => 'Seance.date DESC',
+                                                         'fields'    => array('id', 'date', 'type_id', 'pv_figes'),
+                                                         'contain'   => array('Typeseance.libelle', 'Typeseance.action',
+                                                                              'Typeseance.modelconvocation_id',
+                                                                              'Typeseance.modelordredujour_id',
+                                                                              'Typeseance.modelpvsommaire_id',
+                                                                              'Typeseance.modelpvdetaille_id')));
 
 	     for ($i=0; $i<count($seances); $i++)
 	         $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
