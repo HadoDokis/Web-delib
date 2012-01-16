@@ -27,7 +27,6 @@ function startup() {
             $this->Parafwebservice = new IparapheurComponent(); 
             $this->Deliberation->id = $delib_id;
             $histo = $this->Parafwebservice->getHistoDossierWebservice("$delib_id $objet");
-            debug($histo);
             for ($i =0; $i < count($histo['logdossier']); $i++){
                 if(!$tdt){
                    if (($histo['logdossier'][$i]['status']  ==  'Signe')    ||
@@ -53,7 +52,7 @@ function startup() {
                                }
                                // etat_paraph à 1, donc, nous sommes en post_seance, on ne supprime pas le projet
                                $this->Deliberation->saveField('etat_parapheur', 2);
-
+                               $this->Parafwebservice->archiverDossierWebservice("$delib_id $objet", "EFFACER");
                            }
                        }
                        elseif(($histo['logdossier'][$i]['status']=='RejetSignataire')||
@@ -69,7 +68,6 @@ function startup() {
                           // $this->Deliberation->refusDossier($delib_id);
                            // Supprimer le dossier du parapheur
                            $effdos = $this->Parafwebservice->effacerDossierRejeteWebservice("$delib_id $objet"); 
-                           debug( $effdos);
                        }
             }
             else{
