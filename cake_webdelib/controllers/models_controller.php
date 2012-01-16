@@ -35,7 +35,8 @@
                                                                   'Typeseance.modelconvocation_id'=>$id,
                                                                   'Typeseance.modelordredujour_id'=>$id,
                                                                   'Typeseance.modelpvsommaire_id'=>$id,
-                                                                  'Typeseance.modelpvdetaille_id'=>$id)))))
+                                                                  'Typeseance.modelpvdetaille_id'=>$id)),
+                                                                'recursive' => -1)))
 			    $deletable[$id]=false;
 			else 
                            $deletable[$id]=true;
