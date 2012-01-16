@@ -2459,10 +2459,15 @@ class DeliberationsController extends AppController {
         $erreur = false;
         $this->set('seance_id', $seance_id);
         if (empty($this->data)) {
+            $this->Deliberation->Behaviors->attach('Containable');
 	    $conditions["Deliberation.etat >"] = -1;
 	    $conditions["Deliberation.seance_id"] = $seance_id;
             $delibs = $this->Deliberation->find('all',array('conditions' => $conditions,
-							    'order'      => 'Deliberation.position'));
+							    'order'      => 'Deliberation.position',
+                                                            'fields'     => array('id', 'objet_delib', 'seance_id', 'nature_id',
+                                                                                  'titre', 'num_delib', 'num_pref', 'etat', 'pastell_id'),
+                                                            'contain'    => array('Seance.id', 'Seance.type_id')
+                                                           ));
             for ($i=0; $i<count($delibs); $i++){
                 $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delibs[$i]['Seance']['type_id'], 3);
             }
@@ -2501,13 +2506,20 @@ class DeliberationsController extends AppController {
             $circuits['soustype']['-1'] = 'Signature manuscrite';
         }
         if (empty($this->data)) {
+            $this->Deliberation->Behaviors->attach('Containable');
             $conditions["Deliberation.etat >"] = -1;
             if ($seance_id != null)
                 $conditions["Deliberation.seance_id"] = $seance_id;
             else
             $conditions["Deliberation.etat_parapheur != "] = null ;
+
             $delibs = $this->Deliberation->find('all',array('conditions' => $conditions,
-                'order'      => 'Deliberation.position'));
+                                                            'order'      => 'Deliberation.position',
+                                                            'fields'     => array('id', 'objet_delib', 'seance_id', 'nature_id', 'signee', 'signature',
+                                                                                  'titre', 'num_delib', 'num_pref', 'etat', 'etat_parapheur'),
+                                                            'contain'    => array('Seance.id', 'Seance.type_id')
+                                                           ));
+
             for ($i=0; $i<count($delibs); $i++){
                 $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delibs[$i]['Seance']['type_id'], 3);
             }
