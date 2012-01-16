@@ -4,7 +4,7 @@
 		var $name = 'Models';
 		var $uses = array('Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique');
 		var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
-		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion');
+		var $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf');
 
 		// Gestion des droits
 		var $aucunDroit = array(
@@ -13,12 +13,13 @@
                         'checkGedooo'
 		);
 		var $commeDroit = array(
-			'edit'=>'Models:index',
-			'add'=>'Models:index',
-			'delete'=>'Models:index',
-			'view'=>'Models:index',
-			'import'=>'Models:index',
-			'getFileData'=>'Models:index'
+			'edit'         => 'Models:index',
+			'add'          => 'Models:index',
+			'delete'       => 'Models:index',
+			'view'         => 'Models:index',
+			'import'       => 'Models:index',
+			'getFileData'  => 'Models:index',
+                        'changeStatus'=> 'Models:index'
 		);
 
 		function index() {
@@ -40,7 +41,9 @@
                            $deletable[$id]=true;
 		    }
 		    $this->set('deletable',$deletable);
-		    $this->set('models', $this->Model->find('all', array('order'=>array('type ASC '))));
+		    $this->set('models', $this->Model->find('all', array('fields' => array('modele', 'type', 'name', 'recherche', 'joindre_annexe', 'modified', 'id'),
+                                                                         'order'=>array('type ASC '), 
+                                                                         'recursive' => -1)));
 		}
 
 		function add() {
@@ -123,11 +126,12 @@
             $this->Model->id = $model_id;
             $Model = $this->Model->find('first', array('conditions'=> array('Model.id'=> $model_id),
                                                        'recursive' => -1,
-                                                       'fields'    => array('modele', 'recherche')));
+                                                       'fields'    => array('modele', 'recherche','joindre_annexe', 'name')));
 	    $this->set('libelle', $Model['Model']['modele']);
-	    if (! empty($this->data)){
+	    $this->set('filename', $Model['Model']['name']);
+
+	    if (!empty($this->data)){
 	        if (isset($this->data['Model']['template'])){
-                
 		    if ($this->data['Model']['template']['size']!=0){
                         $this->data['Model']['id']        = $model_id;
                         $this->data['Model']['name']      = $this->data['Model']['template']['name'];
@@ -215,7 +219,13 @@
 	    //Création du model ott
             //*****************************************
 	    $u = new GDO_Utility();
-            $content = $this->_getModel($model_id);
+            $model = $this->Model->find('first', array(
+                                                 'conditions'=> array('Model.id'=> $model_id),
+                                                 'recursive' => '-1',
+                                                 'fields'    => array('content', 'joindre_annexe')));
+
+            $content = $model['Model']['content'];
+            $joindre_annexe = $model['Model']['joindre_annexe'];
 
 	    $oTemplate = new GDO_ContentType("",
                                              $this->_getFileName($model_id),
@@ -240,6 +250,7 @@
             $oMainPart->addElement(new GDO_FieldType('date_jour_courant',utf8_encode($this->Date->frenchDate(strtotime("now"))), 'text'));
             $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
 
+            $annexes_id = array();
             //*****************************************
 	    // Génération d'une délibération ou d'un texte de projet
             //*****************************************
@@ -248,12 +259,32 @@
                                                    'conditions'=>array(
                                                    'Deliberation.id'=>$delib_id)));
                 $oMainPart = $this->Deliberation->makeBalisesProjet($delib, $oMainPart, true, $u);
-            }
+                $tmp_annexes = $this->Deliberation->Annex->getAnnexesIFromDelibId($delib_id, 0,1);
+                if (!empty($tmp_annexes))
+                    array_push($annexes_id,  $tmp_annexes);
+                 $path_annexes = $path.'annexes/';
+                 $annexes = array();
+                 foreach ($annexes_id as $annex_ids) {
+                     foreach($annex_ids as $annex_id) {
+                         $annexFile = $this->Deliberation->Annex->find('first', array('conditions' => array('Annex.id' => $annex_id['Annex']['id']),
+                                                                                      'recursive'  => -1));
+                         if ($annexFile['Annex']['filetype'] == 'application/pdf')
+                             $datAnnex =  $annexFile['Annex']['data'];
+                         elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text')
+                             $datAnnex =  $annexFile['Annex']['data_pdf'];
 
+                         $fichierAnnex = $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $datAnnex);
+                         array_push($annexes, $fichierAnnex);
+                     }
+                 }
+
+
+
+            }
             //*****************************************
 	    // Génération d'une convocation, ordre du jour ou PV
             //*****************************************
-             if ($seance_id != "null") {
+	     if ($seance_id != "null") {
                  $projets  = $this->Deliberation->find('all',array(
                                                        'conditions'=>array(
                                                            "seance_id"=>$seance_id, 
@@ -261,7 +292,6 @@
                                                        'order' =>'Deliberation.position ASC'));
                  $blocProjets = new GDO_IterationType("Projets");
 		 foreach ($projets as $projet) {
-		 //$projet =  $projets['0'];
 		     $oDevPart = new GDO_PartType();
 		     if ($isPV){
 		         $oDevPart = $this->Deliberation->makeBalisesProjet($projet,  $oDevPart, true, $u, true);
@@ -269,7 +299,28 @@
 		     else
 		         $oDevPart = $this->Deliberation->makeBalisesProjet($projet,  $oDevPart, false, $u, true);
 		     $blocProjets->addPart($oDevPart);
+
+		     $tmp_annexes = $this->Deliberation->Annex->getAnnexesIFromDelibId($projet['Deliberation']['id'], 0,1);
+                     if (!empty($tmp_annexes))
+		         array_push($annexes_id,  $tmp_annexes);
+		 }
+
+                 $path_annexes = $path.'annexes/';
+                 $annexes = array();
+                 foreach ($annexes_id as $annex_ids) { 
+                     foreach($annex_ids as $annex_id) {
+                         $annexFile = $this->Deliberation->Annex->find('first', array('conditions' => array('Annex.id' => $annex_id['Annex']['id']),
+                                                                                      'recursive'  => -1));
+                         if ($annexFile['Annex']['filetype'] == 'application/pdf') 
+                             $datAnnex =  $annexFile['Annex']['data'];
+                         elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text')
+                             $datAnnex =  $annexFile['Annex']['data_pdf'];
+                        
+                         $fichierAnnex = $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $datAnnex);
+                         array_push($annexes, $fichierAnnex);
+                     }
                  }
+
                  $oMainPart->addElement($blocProjets);
 		 $seance = $this->Seance->read(null, $seance_id);
 
@@ -364,6 +415,8 @@
                              $oFusion->SendContentToFile($path.$nomFichier.".odt");
                              $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
 			     $chemin_fichier = $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
+                             if (($format == 'pdf') && ($joindre_annexe))
+                                 $this->Pdf->concatener($chemin_fichier, $annexes); 
                          }
                          catch (Exception $e){
                              $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
@@ -430,16 +483,24 @@
 		    if ($dl ==1) {
 	                $oFusion->SendContentToFile($path.$nomFichier);
                         $content = $this->Conversion->convertirFichier($path.$nomFichier, $format);
-			$this->Gedooo->createFile($path, "$nomFichier.$format", $content);
+			$chemin_fichier = $this->Gedooo->createFile($path, "$nomFichier.$format", $content);
+                        if (($format == 'pdf') && ($joindre_annexe))
+                            $this->Pdf->concatener($chemin_fichier, $annexes); 
                         $listFiles[$urlWebroot.$nomFichier] = 'Document généré';
                         $this->set('listFiles', $listFiles);
                         $this->set('format', $format);
                     }
                     else {
                         $nomFichier = "$nomFichier.$format";
-                        $this->Gedooo->createFile($path, $nomFichier, '');
-	                $oFusion->SendContentToFile($path.$nomFichier);
-                        $content = $this->Conversion->convertirFichier($path.$nomFichier, $format );                 
+                        $fichier = $this->Gedooo->createFile($path, $nomFichier, '');
+	                $oFusion->SendContentToFile($fichier);
+                        $content = $this->Conversion->convertirFichier($fichier, $format );                 
+
+                        $chemin_fichier = $this->Gedooo->createFile($path,  $nomFichier."2", $content);
+                        if (($format == 'pdf') && ($joindre_annexe))
+                            $this->Pdf->concatener($chemin_fichier, $annexes);
+                        $content = file_get_contents($chemin_fichier);
+
                         header("Content-type: $sMimeType");
                         header("Content-Disposition: attachment; filename=\"$nomFichier\"");
                         header("Content-Length: ".strlen($content));
@@ -517,6 +578,17 @@
                 die ('OK');
             else
                 die ('OK');
+       }
+
+       function changeStatus($field, $id) {
+          if ($this->User->changeBoolean('Model', $id,  $field)) {
+              $this->Session->setFlash('Modification effectuée...', 'growl');
+              $this->redirect('/models/index');
+          }
+          else {
+              die("Erreur");
+          }
+          
        }
 
 }
