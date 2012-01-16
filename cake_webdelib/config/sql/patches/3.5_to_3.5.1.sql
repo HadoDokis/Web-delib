@@ -100,3 +100,17 @@ ALTER TABLE `infosupdefs` ADD `model` VARCHAR( 25 ) NOT NULL  DEFAULT 'Deliberat
 ALTER TABLE `annexes` ADD `joindre_fusion` TINYINT( 1 ) NOT NULL DEFAULT '0' AFTER `joindre_ctrl_legalite` ;
 
 ALTER TABLE `collectivites` ADD `id_entity` INT( 11 ) NULL AFTER `id` ;
+ALTER TABLE `deliberations` ADD `pastell_id` VARCHAR( 10 ) NULL AFTER `num_pref` ;
+
+CREATE  TABLE `nomenclatures` (  
+ `id` int( 11  )  NOT  NULL  auto_increment ,
+ `parent_id` int( 11  )  NOT  NULL default  '0',
+ `libelle` varchar( 100  )  NOT  NULL ,
+ `code` varchar( 50  )  default  '0',
+ `lft` int( 11  ) default  '0',
+ `rght` int( 11  ) default  '0',
+ `created` datetime NOT  NULL default  '0000-00-00 00:00:00',
+ `modified` datetime NOT  NULL default  '0000-00-00 00:00:00',
+ PRIMARY  KEY (  `id`  )  ) ENGINE  = InnoDB  DEFAULT CHARSET  = latin1;
+
+ALTER TABLE `models` ADD `joindre_annexe` TINYINT NOT NULL DEFAULT '0' AFTER `recherche` ;
