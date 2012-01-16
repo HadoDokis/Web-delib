@@ -119,5 +119,11 @@
     Configure::write('PASTELL_PWD',   'col1');
     Configure::write('PASTELL_TYPE',  'actes');
 
+    ////////////////////////
+    // Configuration pour la manipulation des pdf
+    ////////////////////////
+    Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
+
+
  
 ?>
