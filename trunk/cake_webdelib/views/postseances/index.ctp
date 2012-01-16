@@ -20,10 +20,10 @@
 		<!-- <td><?php echo $seance['Seance']['id']; ?></td> -->
 		<td><b><?php echo $seance['Typeseance']['libelle']; ?></b></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
-		<td class="actions" width="80px"> <!-- largeur en fonction des icones -->
+		<td class="actions">
 	  	<?php echo $html->link(SHY,'/postseances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir les actes'), false, false); ?>
 		<?php 
-		   if ($seance['Seance']['pv_figes']==1) {
+		   if (($seance['Seance']['pv_figes']==1) && ($format==0)) {
                        echo $html->link(SHY,'/postseances/downloadPV/'.$seance['Seance']['id'].'/sommaire',  array('class'=>'link_pvsommaire', 'title'=>'Génération du pv sommaire'), false, false);
                        echo $html->link(SHY,'/postseances/downloadPV/'.$seance['Seance']['id'].'/complet',  array('class'=>'link_pvcomplet', 'title'=>'Génération du pv complet'), false, false);
 		   }

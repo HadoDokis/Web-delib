@@ -7,7 +7,7 @@
 ?>
 <br /><br />
 <div class="deliberations">
-<table>
+<table width='100%'>
 	<tr>
 		<th>Thème</th>
 		<th>Rapporteur</th>
@@ -31,7 +31,7 @@
 		        if ($format == 0) 
 			    echo $html->link(SHY, '/deliberations/downloadDelib/'.$projet['Deliberation']['id'],  array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
 			else
-                            echo $html->link(SHY,'/models/generer/' .$projet['Deliberation']['id'].'/null/'.$projet['Model']['id'].'/null', array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
+                            echo $html->link(SHY,'/models/generer/' .$projet['Deliberation']['id'].'/null/'.$projet['Model']['id']."/$format", array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
 
 			?>
 
