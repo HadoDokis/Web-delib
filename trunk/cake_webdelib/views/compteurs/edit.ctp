@@ -38,6 +38,7 @@
     <option value="#MM#">num&eacute;ro du mois avec z&eacute;ro significatif</option>
     <option value="#J#">num&eacute;ro du jour sans z&eacute;ro significatif</option>
     <option value="#JJ#">num&eacute;ro du jour avec z&eacute;ro significatif</option>
+    <option value="#p#">num&eacute;ro de la position</option>
 </select>
 </div>
 
