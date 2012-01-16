@@ -103,12 +103,22 @@
 			echo $html->link(SHY,'/seances/saisirCommentaire/' . $seance['Seance']['id'], array('class'=>'link_commentaire_seance', 'title'=>'Saisir un commentaire pour la séance du '.$seance['Seance']['date'], 'alt'=>'Saisir un commentaire pour la séance du '.$seance['Seance']['date']), false, false);
                       echo ('</td>');
                       echo ('<td class="actions">');
-                      if ($canSign) 
-	                  echo $html->link(SHY,'/deliberations/sendToParapheur/' . $seance['Seance']['id'].'/', 
-                                           array('class'=>'link_signer', 
-						 'title'=>'Envoi des actes à la signature pour la séance du '.$seance['Seance']['date'],
-                                                'alt'=>'Envoi des actes à la signature pour la séance du '.$seance['Seance']['date'] 
-                                                 ), null, false);
+		      if ($canSign) {
+                          if (!$use_pastell) {
+	                      echo $html->link(SHY,'/deliberations/sendToParapheur/' . $seance['Seance']['id'].'/', 
+                                              array('class'=>'link_signer', 
+				                    'title'=>'Envoi des actes à la signature pour la séance du '.$seance['Seance']['date'],
+                                                    'alt'=>'Envoi des actes à la signature pour la séance du '.$seance['Seance']['date'] 
+						    ), null, false);
+                          }
+			  else {
+                              echo $html->link(SHY,'/deliberations/sendToPastell/' . $seance['Seance']['id'].'/',
+                                               array('class'=>'link_signer',
+                                                     'title'=>'Envoi des actes à Pastell pour la séance du '.$seance['Seance']['date'],
+                                                     'alt'=>'Envoi des actes à Pastell pour la séance du '.$seance['Seance']['date']
+                                                     ), null, false);
+                          }
+                      }
 
 			echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id']."/$format/1/retour/1/true", array(
 				'class'=>'link_pvsommaire',
