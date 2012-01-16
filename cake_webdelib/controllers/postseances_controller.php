@@ -41,6 +41,10 @@ class PostseancesController extends AppController {
 
 	function afficherProjets ($id=null, $return=null)
 	{
+            $format =  $this->Session->read('user.format.sortie');
+            if (empty($format))
+                $format =0;
+            $this->set('format', $format);
 	    $this->set ('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 	    $condition = array("seance_id"=>$id, "etat >="=>2);
 	    if (!isset($return)) {
