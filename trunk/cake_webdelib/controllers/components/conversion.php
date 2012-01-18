@@ -28,6 +28,7 @@ function convertirFichier($fileName, $format) {
 		    return false;
 		}
 		// exécution
+                $fileName = escapeshellarg($fileName);
 		$cmd = "$convertorExec --stdout -f $format $fileName";
 		$result = shell_exec($cmd);
 	        // guess that if there is less than this characters probably an error
