@@ -39,7 +39,7 @@ class DeliberationsController extends AppController {
         'sendToParapheur',
         'sendToGed'
         );
-    
+ 
     var $commeDroit = array(
         'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
         'delete'=>'Deliberations:mesProjetsRedaction',
@@ -76,7 +76,7 @@ class DeliberationsController extends AppController {
             'limit' => 10
             ),
         );
-    
+
     function view($id = null) {
         $this->set('previous', $this->referer());
         
@@ -1069,9 +1069,14 @@ class DeliberationsController extends AppController {
         $conditions['Seance.traitee'] = '1';
         if ($seance_id != null)
             $conditions['Deliberation.seance_id'] = $seance_id;
-        $deliberations = $this->Deliberation->find('all',array('conditions' => $conditions,
-            'fields' => array( 'Deliberation.objet', 'Deliberation.titre', 'Deliberation.num_pref', 'Deliberation.etat', 'Deliberation.num_delib', 'Deliberation.id', 'Deliberation.seance_id'),
-            'contain'    => array('Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle', 'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
+            $deliberations = $this->Deliberation->find('all',array('conditions' => $conditions,
+                                                                   'fields' => array( 'Deliberation.objet', 'Deliberation.titre', 
+                                                                                      'Deliberation.num_pref', 'Deliberation.etat', 
+                                                                                      'Deliberation.num_delib', 'Deliberation.id', 
+                                                                                      'Deliberation.seance_id'),
+                                                                   'contain'    => array( 'Seance.id','Seance.traitee', 
+                                                                                          'Seance.date', 'Seance.Typeseance.libelle', 
+                                                                                          'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
         for($i = 0; $i < count($deliberations); $i++)
             $deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
         if (!$this->Filtre->critereExists()){
@@ -2458,7 +2463,15 @@ class DeliberationsController extends AppController {
     function sendToPastell($seance_id){
         $erreur = false;
         $this->set('seance_id', $seance_id);
+        $coll = $this->Session->read('user.Collectivite');
+        $id_e = $coll['Collectivite']['id_entity'];
+
         if (empty($this->data)) {
+            $tmp_id_d = $this->Pastell->createDocument($id_e);
+            $this->Pastell->insertInParapheur($id_e, $tmp_id_d);
+            $circuits = $this->Pastell->getInfosField($id_e, $tmp_id_d,'iparapheur_sous_type');
+            $this->Pastell->action($id_e,  $tmp_id_d, 'supression');
+
             $this->Deliberation->Behaviors->attach('Containable');
 	    $conditions["Deliberation.etat >"] = -1;
 	    $conditions["Deliberation.seance_id"] = $seance_id;
@@ -2471,26 +2484,31 @@ class DeliberationsController extends AppController {
             for ($i=0; $i<count($delibs); $i++){
                 $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delibs[$i]['Seance']['type_id'], 3);
             }
-            $this->set('deliberations' , $delibs);
+            $this->set('deliberations', $delibs);
+            $this->set('circuits', $circuits);   
 	}
         else {
-            $coll = $this->Session->read('user.Collectivite');
-            $id_e = $coll['Collectivite']['id_entity'];
+            $message = '';
+            $circuit_id = $this->data['Pastell']['circuit_id'];
             foreach ($this->data['Deliberation'] as $id => $bool ) {
                 if ($bool == 1) {
 		    $delib_id = substr($id, 3, strlen($id));
 		    $this->Deliberation->id = $delib_id;
 		    $delib = $this->Deliberation->find('first', array('conditions'=>array('Deliberation.id'=>$delib_id)));
 		    $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delib['Seance']['type_id'],  3);
-		    $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/delib/1/false");               
+                    $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/delib/1/false");               
 		    $id_d = $this->Pastell->createDocument($id_e);
-		    $this->Deliberation->saveField('pastell_id', $id_d); 
+	//	    $this->Deliberation->saveField('pastell_id', $id_d); 
 		    $file_path = WEBROOT_PATH."/files/generee/fd/null/$delib_id/delib.pdf";
                     $this->Deliberation->saveField('delib_pdf', file_get_contents($file_path)); 
-                    $message = $this->Pastell->modifyDocument($id_e, $id_d, $delib);
+                    $this->Pastell->modifyDocument($id_e, $id_d, $delib);
+                  
+                    $this->Pastell->insertInParapheur($id_e, $id_d);      
+                    $this->Pastell->insertInCircuit($id_e, $id_d, $circuit_id);
+                    $message =+ $this->Pastell->action($id_e, $id_d, 'send-iparapheur');
 		}
 	    }
-            $this->Session->setFlash($message, 'growl',  array('type'=>'erreur'));
+            // $this->Session->setFlash($message, 'growl');
             $this->redirect("/deliberations/sendToPastell/$seance_id");
         }
     }

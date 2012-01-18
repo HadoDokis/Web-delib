@@ -15,18 +15,12 @@ class PastellComponent extends Object {
         return $curl;  
     }
 
-    function getNomenclature($id_e=3, $id_d='3YSYZNx', $type='type') {
+    function getInfosField($id_e, $id_d, $type) {
         $nomenclature = array();
         $curl = $this->_initCurl("external-data.php?id_e=$id_e&id_d=$id_d&field=$type");
         $result = curl_exec($curl);
         curl_close($curl);
-	$lignes = json_decode($result);
-
-        foreach ($lignes as $ligne) {
-	    $ligne = (array) $ligne;
-            $nomenclature[$ligne['code_interne']] = utf8_decode($ligne['nom']);
-        }
-        return ($nomenclature);
+	return  json_decode($result);
     }
 
     function listEntities() {
@@ -87,27 +81,36 @@ class PastellComponent extends Object {
                       'objet'                   => $delib['Deliberation']['objet_delib'],
                       'date_de_lacte'           => $delib['Seance']['date'],
                       'numero_de_lacte'         => $delib['Deliberation']['num_delib'],
-		      'type'                    => $delib['Nomenclature']['code'],
+                      'type'                    => $delib['Nomenclature']['code'],
                       'arrete'                  => "@$file",
-                      'acte_nature'             => $delib['Deliberation']['nature_id']
-		    );
+                      'acte_nature'             => $delib['Deliberation']['nature_id'],
+		      );
 
 	$curl = $this->_initCurl('modif-document.php', $acte);
 	$result = curl_exec($curl);
 	curl_close($curl);
-	$this->log($result); 
-        $this->log("Modification du type");
-        $curl = $this->_initCurl("modif-document.php?id_e=$id_e&id_d=$id_d&type=".$delib['Nomenclature']['code']);
+    }
+
+    function insertInParapheur($id_e, $id_d, $sous_type = null) {
+        $curl = $this->_initCurl("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_iparapheur=true");
 	$result = curl_exec($curl);
 	curl_close($curl);
-        $this->log($result); 
+    }
+
+    function insertInCircuit($id_e, $id_d, $sous_type) {
+        $infos = array('id_e'                    => $id_e,
+                      'id_d'                    => $id_d,
+                      'iparapheur_sous_type'    => $sous_type);
+        $curl = $this->_initCurl("modif-document.php", $infos);
+	$result = curl_exec($curl);
+	curl_close($curl);
     }
 
     function getInfosDocument($id_e, $id_d) { 
         $acte = array('id_e'                    => $id_e,
                       'id_d'                    => $id_d
 		    );
-        $curl = $this->_initCurl('external-data.php', $acte);
+        $curl = $this->_initCurl('detail-document.php', $acte);
         $result = curl_exec($curl);
         curl_close($curl);
         return json_decode($result);
