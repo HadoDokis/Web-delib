@@ -183,15 +183,15 @@
 
 
         function generer ($delib_id=null, $seance_id=null,  $model_id, $editable=-1, $dl=0, $nomFichier='retour', $isPV=0, $unique=false) {
-            include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
-            include_once ('vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
-            include_once ('vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
-            include_once ('vendors/GEDOOo/phpgedooo/GDO_IterationType.class');
-            include_once ('vendors/GEDOOo/phpgedooo/GDO_PartType.class');
-            include_once ('vendors/GEDOOo/phpgedooo/GDO_FusionType.class');
-            include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixType.class');
-            include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-            include_once ('vendors/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_Utility.class');
+            include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_IterationType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_PartType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_FusionType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_MatrixType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
             $genereConvocation = false;
             //*****************************************
             // Choix du format de sortie

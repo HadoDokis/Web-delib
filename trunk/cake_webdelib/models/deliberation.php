@@ -407,9 +407,9 @@ class Deliberation extends AppModel {
         }
 
         function makeBalisesProjet ($delib, $oMainPart, $isDelib, $u=null, $isPV=false)  {
-           include_once ('controllers/components/gedooo.php');
-	   include_once ('controllers/components/date.php');
-	   include_once ('controllers/components/conversion.php');
+           include_once (ROOT.DS.APP_DIR.DS.'controllers/components/gedooo.php');
+	   include_once (ROOT.DS.APP_DIR.DS.'controllers/components/date.php');
+	   include_once (ROOT.DS.APP_DIR.DS.'controllers/components/conversion.php');
 
            $this->Conversion = new ConversionComponent;
            $this->Date = new DateComponent;
@@ -617,7 +617,7 @@ class Deliberation extends AppModel {
                    }
                }
                else {
-                   include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
+                   include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_Utility.class');
                    $u = new GDO_Utility();
 
                    if (!$this->Gedooo->checkPath($path))
