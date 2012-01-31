@@ -74,7 +74,7 @@ class PastellComponent extends Object {
         return($infos['id_d']);
     }
 
-    function modifyDocument($id_e, $id_d, $delib=array()) {
+    function modifyDocument($id_e, $id_d, $delib=array(), $annexes=array() ) {
 	$file = WEBROOT_PATH."/files/generee/fd/null/".$delib['Deliberation']['id']."/delib.pdf";
 	$acte = array('id_e'                    => $id_e,
                       'id_d'                    => $id_d,
@@ -84,11 +84,12 @@ class PastellComponent extends Object {
                       'type'                    => $delib['Nomenclature']['code'],
                       'arrete'                  => "@$file",
                       'acte_nature'             => $delib['Deliberation']['nature_id'],
-		      );
-
+		     );
 	$curl = $this->_initCurl('modif-document.php', $acte);
 	$result = curl_exec($curl);
 	curl_close($curl);
+        foreach ($annexes as $annex) 
+            $this->sendAnnex($id_e, $id_d,  $annex);
     }
 
     function insertInParapheur($id_e, $id_d, $sous_type = null) {
@@ -125,6 +126,16 @@ class PastellComponent extends Object {
         $result = curl_exec($curl);
         curl_close($curl);
         return json_decode($result);
+    }
+
+    function sendAnnex($id_e, $id_d, $annex) {
+        $acte = array('id_e'                    => $id_e,
+                      'id_d'                    => $id_d,
+                      'autre_document_attache'  => "@$annex"
+                     );
+        $curl = $this->_initCurl('modif-document.php', $acte);
+        $result = curl_exec($curl);
+        curl_close($curl);
     }
 }
 
