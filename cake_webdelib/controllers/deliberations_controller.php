@@ -39,7 +39,8 @@ class DeliberationsController extends AppController {
         'sendToParapheur',
         'sendToGed'
         );
- 
+
+    var $aucunDroit = array("test"); 
     var $commeDroit = array(
         'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
         'delete'=>'Deliberations:mesProjetsRedaction',
@@ -70,12 +71,17 @@ class DeliberationsController extends AppController {
 
     var $paginate = array(
         'Deliberation' => array(
-            'fields' => array('Deliberation.id', 'Deliberation.objet',   'Deliberation.objet_delib', 'Deliberation.num_delib', 'Deliberation.dateAR' ,
-                'Deliberation.num_pref', 'Deliberation.etat', 'Deliberation.titre', 'Deliberation.tdt_id', 'Deliberation.seance_id', 'Seance.date'),
+            'fields' => array('Deliberation.id', 'Deliberation.objet',   'Deliberation.objet_delib', 'Deliberation.num_delib', 'Deliberation.dateAR', 'Deliberation.pastell_id' , 'Deliberation.num_pref', 'Deliberation.etat', 'Deliberation.titre', 'Deliberation.tdt_id', 'Deliberation.seance_id', 'Seance.date'),
             'conditions' => array('Deliberation.etat'=>5),
             'limit' => 10
             ),
         );
+
+    function test ($id) {
+         $this->Parafwebservice = new IparapheurComponent();
+         $res = $this->Parafwebservice->GetDossierWebservice($id);
+         debug($res);
+    }
 
     function view($id = null) {
         $this->set('previous', $this->referer());
@@ -314,10 +320,16 @@ class DeliberationsController extends AppController {
     
     function downloadDelib($delib_id) {
         $delib = $this->Deliberation->read(null, $delib_id);
+
         if ($delib['Deliberation']['nature_id'] > 1)
-            $name = "Acte_$delib_id.pdf";
-        else
-        $name = $delib['Deliberation']['num_delib'].'.pdf';
+                $name = "Acte_$delib_id.pdf";
+            else {
+                if (!empty( $delib['Deliberation']['num_delib']))
+                    $name = $delib['Deliberation']['num_delib'].'.pdf';
+                else
+                    $name = "projet_$delib_id.pdf";
+            }
+
         header('Content-type: application/pdf');
         header('Content-Length: '.strlen($delib['Deliberation']['delib_pdf']));
         header('Content-Disposition: attachment; filename='.$name);
@@ -964,22 +976,41 @@ class DeliberationsController extends AppController {
         $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
         $this->set('host', Configure::read('HOST') );
         $this->set('dateClassification', $this->_getDateClassification());
+        if ( Configure::read('USE_PASTELL')) {
+            $coll = $this->Session->read('user.Collectivite');
+            $id_e = $coll['Collectivite']['id_entity'];
+        }
+
         
         // On affiche que les delibs vote pour.
         $deliberations = $this->paginate('Deliberation');
         for($i = 0; $i < count( $deliberations); $i++) {
             if (empty($deliberations[$i]['Deliberation']['DateAR'])) {
-                if (isset($deliberations[$i]['Deliberation']['tdt_id'])){
-                    $flux   = $this->_getFluxRetour($deliberations[$i]['Deliberation']['tdt_id']);
-                    $codeRetour = substr($flux, 3, 1);
-                    $deliberations[$i]['Deliberation']['code_retour'] = $codeRetour;
-                    
-                    if($codeRetour==4) {
-                        $dateAR = $this->_getDateAR($res = mb_substr( $flux, strpos($flux, '<actes:ARActe'), strlen($flux)));
-                        $this->Deliberation->changeDateAR($deliberations[$i]['Deliberation']['id'], $dateAR);
-                        $deliberations[$i]['Deliberation']['DateAR'] =  $dateAR;
-                    }
+                if ( Configure::read('USE_PASTELL')) {
+                    if (isset($deliberations[$i]['Deliberation']['pastell_id'])) 
+                        $id_d = $deliberations[$i]['Deliberation']['pastell_id']; 
+                    if (isset($id_d)) {
+                        //$result = $this->Pastell->action($id_e,  $id_d, 'verif-tdt');
+                        //$result = (array) $result;
+                        //if (isset($result['result']) && ($result['result'] ==1)){
+                           $infos = $this->Pastell->getInfosDocument($id_e, $id_d); 
+                           $infos = (array) $infos;
+                           $this->Deliberation->id =  $deliberations[$i]['Deliberation']['id'];
+                           $this->Deliberation->saveField('tdt_id',  $infos['data']['tedetis_transaction_id']);  
+                        //}                      
+                   }
                 }
+                    if (isset($deliberations[$i]['Deliberation']['tdt_id'])){
+                        $flux   = $this->_getFluxRetour($deliberations[$i]['Deliberation']['tdt_id']);
+                        $codeRetour = substr($flux, 3, 1);
+                        $deliberations[$i]['Deliberation']['code_retour'] = $codeRetour;
+                    
+                        if($codeRetour==4) {
+                            $dateAR = $this->_getDateAR($res = mb_substr( $flux, strpos($flux, '<actes:ARActe'), strlen($flux)));
+                            $this->Deliberation->changeDateAR($deliberations[$i]['Deliberation']['id'], $dateAR);
+                            $deliberations[$i]['Deliberation']['DateAR'] =  $dateAR;
+                        }
+                    }
             }
         }
         $this->set('deliberations', $deliberations);
@@ -1073,7 +1104,7 @@ class DeliberationsController extends AppController {
                                                                    'fields' => array( 'Deliberation.objet', 'Deliberation.titre', 
                                                                                       'Deliberation.num_pref', 'Deliberation.etat', 
                                                                                       'Deliberation.num_delib', 'Deliberation.id', 
-                                                                                      'Deliberation.seance_id'),
+                                                                                      'Deliberation.seance_id', 'Deliberation.objet_delib'),
                                                                    'contain'    => array( 'Seance.id','Seance.traitee', 
                                                                                           'Seance.date', 'Seance.Typeseance.libelle', 
                                                                                           'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
@@ -1181,17 +1212,41 @@ class DeliberationsController extends AppController {
         }
         $nbDelibAEnvoyer = count($Tabclassification);
         $nbEnvoyee = 1;
+        if ( Configure::read('USE_PASTELL')) {
+            $coll = $this->Session->read('user.Collectivite');
+            $id_e = $coll['Collectivite']['id_entity'];
+        }
         foreach ($this->data['Deliberation'] as $id => $bool ){
             if ($bool == 1){
+                
                 $delib_id = substr($id, 3, strlen($id));
+                $this->Deliberation->id = $delib_id;
+                $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id)));
+                if ( Configure::read('USE_PASTELL')) {
+                    $id_d = $delib['Deliberation']['pastell_id'];
+                    $infos = $this->Pastell->getInfosDocument($id_e, $id_d);
+                    $infos = (array)$infos;
+                    $infos['data'] = (array)$infos['data'];
+                    if (isset($infos['action-possible'])) {
+                        if(isset($infos['data']['has_signature']))
+                            $result = $this->Pastell->action($id_e,  $id_d, 'send-tdt-2');
+                        else                   
+                            $result = $this->Pastell->action($id_e,  $id_d, 'send-tdt');
+                    }
+                    
+                    $result = (array) $result;
+                    if(isset($result['status']) && ($result['status'] == 'error'))
+                        $erreur .= $result['error-message'];
+                    if ($erreur == '')
+                        $this->Deliberation->saveField('etat', 5);
+                    continue;
+                }
                 
                 unlink(WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.pdf");
-                
                 $classification =   $Tabclassification[$delib_id];
                 if (!empty( $classification))
                     $this->Deliberation->changeClassification($delib_id, $classification);
-                
-                $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id)));
+
                 $classification = $delib['Deliberation']['num_pref'];
                 if (strpos($classification, ' -') != false)
                     $classification = (substr($classification, 0, strpos($classification, ' -')));
@@ -1296,7 +1351,6 @@ class DeliberationsController extends AppController {
                 }
                 else {
                     $nbEnvoyee ++;
-                    $this->Deliberation->id = $delib_id;
                     $this->Deliberation->saveField('etat', 5);
                     $this->Deliberation->saveField('tdt_id', $tdt_id);
                     
@@ -2467,9 +2521,11 @@ class DeliberationsController extends AppController {
         $id_e = $coll['Collectivite']['id_entity'];
 
         if (empty($this->data)) {
+            $circuits['-1'] = 'Signature manuscrite';
             $tmp_id_d = $this->Pastell->createDocument($id_e);
             $this->Pastell->insertInParapheur($id_e, $tmp_id_d);
-            $circuits = $this->Pastell->getInfosField($id_e, $tmp_id_d,'iparapheur_sous_type');
+            
+            $circuits[] = $this->Pastell->getInfosField($id_e, $tmp_id_d,'iparapheur_sous_type'); 
             $this->Pastell->action($id_e,  $tmp_id_d, 'supression');
 
             $this->Deliberation->Behaviors->attach('Containable');
@@ -2489,26 +2545,52 @@ class DeliberationsController extends AppController {
 	}
         else {
             $message = '';
+
             $circuit_id = $this->data['Pastell']['circuit_id'];
             foreach ($this->data['Deliberation'] as $id => $bool ) {
                 if ($bool == 1) {
 		    $delib_id = substr($id, 3, strlen($id));
 		    $this->Deliberation->id = $delib_id;
 		    $delib = $this->Deliberation->find('first', array('conditions'=>array('Deliberation.id'=>$delib_id)));
+
+                    $annexes_id = array();
+                    $annexes = array();
+                    $tmp_annexes = $this->Deliberation->Annex->getAnnexesIFromDelibId($delib_id, 1);
+                    $dyn_path = "/files/generee/fd/".$delib['Deliberation']['seance_id']."/$delib_id/";
+                    $path = WEBROOT_PATH.$dyn_path;
+                    if (!empty($tmp_annexes))
+                        array_push($annexes_id,  $tmp_annexes);
+                    $path_annexes = $path.'annexes/';
+                    foreach ($annexes_id as $annex_ids) {
+                        foreach($annex_ids as $annex_id) {
+                            $annexFile = $this->Deliberation->Annex->find('first', array('conditions' => array('Annex.id' => $annex_id['Annex']['id']),
+                                                                                         'recursive'  => -1));
+                            if ($annexFile['Annex']['filetype'] == 'application/pdf')
+                                $datAnnex =  $annexFile['Annex']['data'];
+                            elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text')
+                                $datAnnex =  $annexFile['Annex']['data_pdf'];
+                            $fichierAnnex = $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $datAnnex);
+                            array_push($annexes, $fichierAnnex);
+                        }
+                    }
+
 		    $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delib['Seance']['type_id'],  3);
                     $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/delib/1/false");               
 		    $id_d = $this->Pastell->createDocument($id_e);
-	//	    $this->Deliberation->saveField('pastell_id', $id_d); 
+		    //$this->Deliberation->saveField('pastell_id', $id_d); 
 		    $file_path = WEBROOT_PATH."/files/generee/fd/null/$delib_id/delib.pdf";
                     $this->Deliberation->saveField('delib_pdf', file_get_contents($file_path)); 
-                    $this->Pastell->modifyDocument($id_e, $id_d, $delib);
-                  
-                    $this->Pastell->insertInParapheur($id_e, $id_d);      
-                    $this->Pastell->insertInCircuit($id_e, $id_d, $circuit_id);
-                    $message =+ $this->Pastell->action($id_e, $id_d, 'send-iparapheur');
+                    $this->Pastell->modifyDocument($id_e, $id_d, $delib, $annexes);
+                    if ($circuit_id > -1 ) { 
+                        $this->Pastell->insertInParapheur($id_e, $id_d);      
+                        $this->Pastell->insertInCircuit($id_e, $id_d, $circuit_id);
+                        $message =+ $this->Pastell->action($id_e, $id_d, 'send-iparapheur');
+                    }
+                    else 
+                        $this->Deliberation->saveField('signee', 1); 
 		}
 	    }
-            // $this->Session->setFlash($message, 'growl');
+            $this->Session->setFlash($message, 'growl');
             $this->redirect("/deliberations/sendToPastell/$seance_id");
         }
     }
