@@ -246,6 +246,8 @@ class SeancesController extends AppController {
     	    $result = $this->_stockDelibs($seance_id,  $isArrete, $compteur_id);
     	}
     	if ($result || $this->data['Typeseance']['action']== 1) { 
+            $result = $this->_stockDelibs($seance_id,  $isArrete, $compteur_id);
+
     	    $this->Seance->id = $seance_id; 
     	    if ($this->Seance->saveField('traitee', 1)){
     	    	return true;
@@ -855,13 +857,17 @@ class SeancesController extends AppController {
     }
     
     function clore($seance_id) {
+         $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id)));
+
+
+
     	$actes = $this->Deliberation->find('all', array('conditions' => array('Deliberation.seance_id' => $seance_id,
     	    'Deliberation.etat > '   => '1', 
     	    'Deliberation.signee'   => null),
     	    	'fields' => 'id, seance_id',
     	    	'recursive' => -1));
     	
-    	if (count($actes) > 0) {
+    	if ((count($actes) > 0)  &&  ($seance['Typeseance']['action'] == 0)) {
     	    $this->Session->setFlash('Tous les actes ne sont pas signés.', 'growl', array('type'=>'erreur')); 
     	    $this->redirect('/seances/listerFuturesSeances');
     	}
