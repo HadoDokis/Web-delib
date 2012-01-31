@@ -57,6 +57,9 @@
 	</table>
 	<br />
 <?php
+        echo ('Circuits disponibles : ');
+        echo ($form->input('Pastell.circuit_id', array('options'=>$circuits, 'label'=>false, 'div'=> false)).'<br /><br />');
+
         echo ('<div class="submit">');
         echo $form->submit('Envoyer',array('div'=>false));
         echo ('</div>');
