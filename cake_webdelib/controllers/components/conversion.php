@@ -29,7 +29,7 @@ function convertirFichier($fileName, $format) {
 		}
 		// exécution
                 $fileName = escapeshellarg($fileName);
-		$cmd = "$convertorExec --stdout -f $format $fileName";
+		$cmd = "LANG=fr_FR.UTF-8; $convertorExec --stdout -f $format $fileName";
 		$result = shell_exec($cmd);
 	        // guess that if there is less than this characters probably an error
 	        if (strlen($result) < 10) {
