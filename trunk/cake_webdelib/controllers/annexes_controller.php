@@ -30,7 +30,7 @@ class AnnexesController extends AppController {
 		if (empty($annexe)) return;
 		header('Content-type: '.$type);
 		header('Content-Length: '.strlen($content));
-		header("Content-Disposition: attachment; filename=".str_replace(' ', '_', $filename));
+		header('Content-Disposition: attachment; filename="'.$filename.'"');
                 die($content);
 	}
 
