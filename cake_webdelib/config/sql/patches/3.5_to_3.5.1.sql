@@ -114,3 +114,5 @@ CREATE  TABLE `nomenclatures` (
  PRIMARY  KEY (  `id`  )  ) ENGINE  = InnoDB  DEFAULT CHARSET  = latin1;
 
 ALTER TABLE `models` ADD `joindre_annexe` TINYINT NOT NULL DEFAULT '0' AFTER `recherche` ;
+
+ALTER TABLE `deliberations` ADD `bordereau` BLOB NULL AFTER `delib_pdf` ;
