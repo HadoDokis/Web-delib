@@ -73,11 +73,15 @@ class Seance extends AppModel {
 
 	/* retourne la liste des séances futures avec le nom du type de séance  */
 	function generateList($conditionSup=null, $afficherTtesLesSeances = false, $natures = array()) {
-		$generateList = array();
-                $typeseances = $this->Typeseance->TypeseancesNature->getTypeseanceParNature($natures);
-                $conditions  = array();
-                $conditions['Seance.type_id'] = $typeseances;
-		$conditions['Seance.traitee'] = '0';
+            $generateList = array();
+
+            App::import('model','TypeseancesNature');
+            $TypeseancesNature = new TypeseancesNature(); 
+            $typeseances = $TypeseancesNature->getTypeseanceParNature($natures);
+
+            $conditions  = array();
+            $conditions['Seance.type_id'] = $typeseances;
+            $conditions['Seance.traitee'] = '0';
                 
 		if (!empty($conditionSup))
 			$conditions = Set::pushDiff($conditions,$conditionSup);
