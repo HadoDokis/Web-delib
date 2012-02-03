@@ -16,7 +16,7 @@ function convertirFichier($fileName, $format) {
 
 	if (empty($convertorType)) {
 		$ret['resultat'] = false;
-		$ret['info'] = __('Type du programme de conversion non déclaré dans le fichier de configuration de as@lae', true);
+		$ret['info'] = __('Type du programme de conversion non déclaré dans le fichier de configuration de Webdelib', true);
 		return $ret;
 	}
 
