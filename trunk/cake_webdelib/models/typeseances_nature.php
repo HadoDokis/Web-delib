@@ -1,6 +1,8 @@
 <?php
 class TypeseancesNature extends AppModel {
 
+    var $name = 'TypeseancesNature';
+
     var $belongsTo = array('Nature', 'Typeseance');
     
     function getTypeseanceParNature($natures){
