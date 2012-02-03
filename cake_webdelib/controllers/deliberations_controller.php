@@ -188,40 +188,40 @@ class DeliberationsController extends AppController {
             $this->data['Deliberation']['date_limite']= $this->Utils->FrDateToUkDate($this->params['form']['date_limite']);
             if (!Configure::read('GENERER_DOC_SIMPLE')){
                 // Initialisation du texte de projet
-                if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
-                    $this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
-                    $this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
-                    $this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'] ;
-                    if (empty($this->data['Deliberation']['texte_projet']['tmp_name']))
-                        $this->data['Deliberation']['texte_projet'] = '';
-                    else {
-                        $tp = $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
-                        $this->data['Deliberation']['texte_projet'] = $tp;
-                    }
+                if (array_key_exists('texte_projet', $this->data['Deliberation']) ) {
+                        $this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
+                        $this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
+                        $this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'] ;
+                        if (empty($this->data['Deliberation']['texte_projet']['tmp_name']))
+                            $this->data['Deliberation']['texte_projet'] = '';
+                        else {
+                            $tp = $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
+                            $this->data['Deliberation']['texte_projet'] = $tp;
+                        }  
                 }
                 // Initialisation de la note de synthèse
                 if (array_key_exists('texte_synthese', $this->data['Deliberation'])) {
-                    $this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
-                    $this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
-                    $this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'] ;
-                    if (empty($this->data['Deliberation']['texte_synthese']['tmp_name']))
-                        $this->data['Deliberation']['texte_synthese'] = '';
-                    else {
-                        $ts = $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
-                        $this->data['Deliberation']['texte_synthese'] = $ts;
-                    }
+                        $this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
+                        $this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
+                        $this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'] ;
+                        if (empty($this->data['Deliberation']['texte_synthese']['tmp_name']))
+                            $this->data['Deliberation']['texte_synthese'] = '';
+                        else {
+                            $ts = $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
+                            $this->data['Deliberation']['texte_synthese'] = $ts;
+                        }
                 }
                 // Initialisation du texte de délibération
                 if (array_key_exists('deliberation', $this->data['Deliberation'])) {
-                    $this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
-                    $this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
-                    $this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'] ;
-                    if (empty($this->data['Deliberation']['deliberation']['tmp_name']))
-                        $this->data['Deliberation']['deliberation'] = '';
-                    else {
-                        $td = $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
-                        $this->data['Deliberation']['deliberation'] = $td;
-                    }
+                        $this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
+                        $this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
+                        $this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'] ;
+                        if (empty($this->data['Deliberation']['deliberation']['tmp_name']))
+                            $this->data['Deliberation']['deliberation'] = '';
+                        else {
+                            $td = $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
+                            $this->data['Deliberation']['deliberation'] = $td;
+                        }
                 }
             }
             
@@ -247,8 +247,19 @@ class DeliberationsController extends AppController {
                     }
                     $this->Deliberation->majDelibRatt($delibId, null);
                 }
-                
-                $this->Session->setFlash('Le projet \''.$delibId.'\' a &eacute;t&eacute; ajout&eacute;',  'growl');
+                if ( $isValidDeliberation && $isValidSynthese && $isValidProjet)
+                    $this->Session->setFlash('Le projet \''.$delibId.'\' a &eacute;t&eacute; ajout&eacute;',  'growl');
+                else {
+                    $message = "";
+                    if (! $isValidProjet) 
+                        $message .= "Le format du texte de projet n'est pas valide!<br />" ;
+                    if (! $isValidSynthese) 
+                        $message .= "Le format du texte de synthèse n'est pas valide!<br />" ;
+                    if (! $isValidDeliberation) 
+                        $message .= "Le format du texte de délibération n'est pas valide!<br />" ;
+
+                    $this->Session->setFlash('Le projet \''.$delibId.'\' a &eacute;t&eacute; ajout&eacute;',  'growl', array('type'=>'erreur'));
+                }
                 $sortie = true;
             } else
             $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
@@ -292,7 +303,7 @@ class DeliberationsController extends AppController {
         
         header('Content-type: '.$delib['Deliberation'][$fileType]);
         header('Content-Length: '.$delib['Deliberation'][$fileSize]);
-        header('Content-Disposition: attachment; filename='.$delib['Deliberation'][$fileName]);
+        header('Content-Disposition: attachment; filename="'.$delib['Deliberation'][$fileName].'"');
         echo $delib['Deliberation'][$file];
         exit();
     }
@@ -508,15 +519,15 @@ class DeliberationsController extends AppController {
             
             if (!Configure::read('GENERER_DOC_SIMPLE')) {
                 if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
-                    $this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
-                    $this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
-                    $this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'] ;
-                    if (empty($this->data['Deliberation']['texte_projet']['tmp_name'])) {
-                        $this->data['Deliberation']['texte_projet'] = '';
-                    } else {
-                        $tp = $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
-                        $this->data['Deliberation']['texte_projet'] = $tp;
-                    }
+                        $this->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
+                        $this->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
+                        $this->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'] ;
+                        if (empty($this->data['Deliberation']['texte_projet']['tmp_name'])) {
+                            $this->data['Deliberation']['texte_projet'] = '';
+                        } else {
+                            $tp = $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
+                            $this->data['Deliberation']['texte_projet'] = $tp;
+                        }
                 } else {
                     $stat = stat($path_projet.'texte_projet.odt');
                     $td = $this->_getFileData($path_projet.'texte_projet.odt', $stat['size'] );
@@ -524,15 +535,15 @@ class DeliberationsController extends AppController {
                 }
                 // Initialisation de la note de synthèse
                 if (array_key_exists('texte_synthese', $this->data['Deliberation'])) {
-                    $this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
-                    $this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
-                    $this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'] ;
-                    if (empty($this->data['Deliberation']['texte_synthese']['tmp_name']))
-                        $this->data['Deliberation']['texte_synthese'] = '';
-                    else {
-                        $ts = $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
-                        $this->data['Deliberation']['texte_synthese'] = $ts;
-                    }
+                        $this->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
+                        $this->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
+                        $this->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'] ;
+                        if (empty($this->data['Deliberation']['texte_synthese']['tmp_name']))
+                            $this->data['Deliberation']['texte_synthese'] = '';
+                        else {
+                            $ts = $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
+                            $this->data['Deliberation']['texte_synthese'] = $ts;
+                        }
                 } else {
                     $stat = stat($path_projet.'texte_synthese.odt');
                     $ts = $this->_getFileData($path_projet.'texte_synthese.odt', $stat['size'] );
@@ -541,15 +552,15 @@ class DeliberationsController extends AppController {
                 
                 // Initialisation du texte de délibération
                 if (array_key_exists('deliberation', $this->data['Deliberation'])) {
-                    $this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
-                    $this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
-                    $this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'] ;
-                    if (empty($this->data['Deliberation']['deliberation']['tmp_name']))
-                        $this->data['Deliberation']['deliberation'] = '';
-                    else {
-                        $td = $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
-                        $this->data['Deliberation']['deliberation'] = $td;
-                    }
+                        $this->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
+                        $this->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
+                        $this->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'] ;
+                        if (empty($this->data['Deliberation']['deliberation']['tmp_name']))
+                            $this->data['Deliberation']['deliberation'] = '';
+                        else {
+                            $td = $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
+                            $this->data['Deliberation']['deliberation'] = $td;
+                        }
                 } else {
                     $stat = stat($path_projet.'deliberation.odt');
                     $ts = $this->_getFileData($path_projet.'deliberation.odt', $stat['size'] );
@@ -990,14 +1001,17 @@ class DeliberationsController extends AppController {
                     if (isset($deliberations[$i]['Deliberation']['pastell_id'])) 
                         $id_d = $deliberations[$i]['Deliberation']['pastell_id']; 
                     if (isset($id_d)) {
-                        //$result = $this->Pastell->action($id_e,  $id_d, 'verif-tdt');
-                        //$result = (array) $result;
-                        //if (isset($result['result']) && ($result['result'] ==1)){
+                        $result = $this->Pastell->action($id_e,  $id_d, 'verif-tdt');
+                        $result = (array) $result;
+                        if (isset($result['result']) && ($result['result'] ==1)){
                            $infos = $this->Pastell->getInfosDocument($id_e, $id_d); 
                            $infos = (array) $infos;
+                           $infos['data'] = (array) $infos['data'];
                            $this->Deliberation->id =  $deliberations[$i]['Deliberation']['id'];
                            $this->Deliberation->saveField('tdt_id',  $infos['data']['tedetis_transaction_id']);  
-                        //}                      
+                           $this->Deliberation->saveField('dateAR',  $infos['data']['date_ar']);   
+                           $this->Deliberation->saveField('bordereau', $this->Pastell->getFile($id_e, $id_d, 'bordereau'));
+                        }                      
                    }
                 }
                     if (isset($deliberations[$i]['Deliberation']['tdt_id'])){
@@ -1227,14 +1241,16 @@ class DeliberationsController extends AppController {
                     $infos = $this->Pastell->getInfosDocument($id_e, $id_d);
                     $infos = (array)$infos;
                     $infos['data'] = (array)$infos['data'];
-                    if (isset($infos['action-possible'])) {
-                        if(isset($infos['data']['has_signature']))
+
+                    if (isset($infos['action-possible'])) 
+                        if(isset($infos['data']['envoi_iparapheur']))
                             $result = $this->Pastell->action($id_e,  $id_d, 'send-tdt-2');
                         else                   
                             $result = $this->Pastell->action($id_e,  $id_d, 'send-tdt');
-                    }
+                     
                     
                     $result = (array) $result;
+                    $this->log($result);
                     if(isset($result['status']) && ($result['status'] == 'error'))
                         $erreur .= $result['error-message'];
                     if ($erreur == '')
@@ -2024,15 +2040,11 @@ class DeliberationsController extends AppController {
                         )))),
                 'order'=>array('Deliberation.created DESC'),
                 'recursive'=> 0,
-                'contain'    => array( 'Seance.id','Seance.traitee',
-                    'Seance.date', 'Seance.Typeseance.libelle',
-                    'Service.libelle', 'Theme.libelle',
-                    'Nature.libelle')));
+                'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.Typeseance.libelle',
+                                       'Service.libelle', 'Theme.libelle', 'Nature.libelle')));
         
         $afficherTtesLesSeances = $this->Xacl->check($this->Session->read('user.User.id'), "Deliberations:editerProjetValide");
-        $this->set('date_seances',$this->Seance->generateList(null,
-            $afficherTtesLesSeances,
-            array_keys($this->Session->read('user.Nature'))));
+        $this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances,  array_keys($this->Session->read('user.Nature'))));
         $this->_ajouterFiltre($projets);
         
         $this->_afficheProjets(
