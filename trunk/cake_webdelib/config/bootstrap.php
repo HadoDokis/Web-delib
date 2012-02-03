@@ -40,7 +40,9 @@
  * ));
  *
  */
-
+// TODO: créer répertoire APP.'libs' + bouger les fichiers
+define( 'APPLIBS', APP.'libs/' );
+require_once( APPLIBS.'basics.php' );
 /**
  * As of 1.3, additional rules for the inflector are added below
  *
