@@ -3,7 +3,7 @@ class UsersController extends AppController {
 
 	var $name = 'Users';
 	var $helpers = array('Form', 'Html', 'Html2', 'Session');
-	var $uses = array( 'User', 'Service', 'Cakeflow.Circuit', 'Profil', 'Deliberation', 'Nature', 'ArosAdo', 'Collectivite');
+	var $uses = array( 'User', 'Service', 'Cakeflow.Circuit', 'Profil', 'Nature', 'ArosAdo');
 	var $components = array('Utils', 'Acl', 'Menu', 'Dbdroits');
 	
 	var $paginate = array(
@@ -187,6 +187,7 @@ class UsersController extends AppController {
 
 /* dans le controleur car utilisé dans la vue index pour l'affichage */
 	function _isDeletable($user, &$message) {
+                $this->loadModel('Deliberation');
 		if ($user['User']['id'] == 1) {
 			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est protégé';
 			return false;
@@ -306,6 +307,7 @@ class UsersController extends AppController {
 		    $this->Session->write('user',$user);
                     // On stock la collectivite de l'utilisateur en cas de PASTELL
 		    if (Configure::read('USE_PASTELL')) {
+                        $this->loadModel('Collectivite');
                         $coll = $this->Collectivite->find('first', array('conditions' => array('Collectivite.id'=>1),
                                                                          'recursive'  => -1, 
 									 'fields'     => array('id_entity'))); 
