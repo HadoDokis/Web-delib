@@ -37,6 +37,9 @@
  * @package		cake
  * @subpackage	cake.cake
  */
+	App::import( 'Lib', 'LazyModel.LazyModel' );
+	App::import( 'Sanitize' );
+
 class AppModel extends Model{
 
  /*
