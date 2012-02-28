@@ -2,37 +2,54 @@
 
     App::import(array('Model', 'AppModel', 'File'));
     App::import(array('Model', 'Deliberation', 'File'));
+    App::import(array('Model', 'Seance', 'File'));
 
     class DecisionShell extends Shell{
 
-        var $uses = array ('Deliberation');
+        var $uses = array ('Deliberation', 'Seance');
         function main () {
+            $root_path = Configure::read('STOCK_PATH').DS.'fichiers'.DS;
+            if (!file_exists($root_path)) {
+                if(mkdir($root_path)) {
+                    echo ("Création du répertoire : $root_path");
+                }
+            } 
             $result = true;
-            $seances = array(24, 27);
-
-            $_SERVER['HTTP_HOST'] = 'webdelib.test.adullact.org';
             define ('CRON_DISPATCHER', true);
-            foreach($seances as $seance_id) {
-                echo ("####################################\n");
-                echo ("Stockage des acte de la séance : $seance_id\n");
-                echo ("####################################\n\n\n");
 
-                $delibs = $this->Deliberation->find("all", array('conditions' => array("Deliberation.seance_id"=>$seance_id),
-                                                              'order'      => "Deliberation.position ASC"));
+            $seances =  $this->Seance->find('all');
+
+            foreach($seances as $seance) {
+                $seance_id = $seance['Seance']['id'];
+                $seance_path = $root_path.DS.$seance_id.DS;
+                if (!file_exists($seance_path)) {
+                    if(mkdir($seance_path)) {
+                        echo ("####################################\n");
+                        echo ("Création du répertoire : $seance_path -> $result");
+                    }
+                }
+                $delibs = $this->Deliberation->find("all", array('conditions'=>array("Deliberation.seance_id"=> $seance_id)));
                 foreach($delibs as $delib) {
                     $delib_id =  $delib['Deliberation']['id'];
-                    $this->Deliberation->id =  $delib['Deliberation']['id'];
-                    echo ("Stockage de l'acte : $delib_id\n");
-                    $model_id = $this->Deliberation->getModelId($delib_id);
-                    echo ("Utilisation du modèle : $model_id\n");
-                    $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.odt");
-                    $filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.odt.pdf";
-                    $content = file_get_contents($filename);
+                    $delib_path = $seance_path.$delib_id.DS;
+                    $annex_path = $seance_path.$delib_id.DS.'annexes'.DS;
+                    if (!file_exists($delib_path)) {
+                        if(mkdir($delib_path)) {
+                            echo ("Création du répertoire : $delib_path");
+                        }
+                    }
+                    if (!file_exists($annex_path)) {
+                        if(mkdir($annex_path)) {
+                            echo ("Création du répertoire : $annex_path");
+                        }
+                    }
 
-                    if (strlen($content) == 0)
-                        $result = false;
-                    // On stock le fichier en base de données.
-                    if ($this->Deliberation->saveField('delib_pdf', $content))
+                    file_put_contents($delib_path.'texte_projet.odt', $delib['Deliberation']['texte_projet']);
+                    file_put_contents($delib_path.'texte_synthese.odt', $delib['Deliberation']['texte_synthese']);
+                    file_put_contents($delib_path.'texte_deliberation.odt', $delib['Deliberation']['deliberation']);
+                    file_put_contents($delib_path.'debat.odt', $delib['Deliberation']['debat']);
+                    file_put_contents($delib_path.'deliberation.pdf', $delib['Deliberation']['delib_pdf']);
+
                     echo ("Acte enregistré\n");
                     echo ("-----------------------------------\n");
                 }                
