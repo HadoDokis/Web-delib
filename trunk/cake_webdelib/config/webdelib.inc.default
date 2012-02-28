@@ -118,6 +118,7 @@
     Configure::write('PASTELL_LOGIN', 'col1');
     Configure::write('PASTELL_PWD',   'col1');
     Configure::write('PASTELL_TYPE',  'actes');
+    Configure::write('REFRESH_PASTELL', '/usr/local/bin/refreshPastell.sh');
 
     ////////////////////////
     // Configuration pour la manipulation des pdf
