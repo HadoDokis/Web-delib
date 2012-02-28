@@ -4,8 +4,8 @@ class DateComponent extends Object {
 	
 	var $days = array ('Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi');
 	
-	var $months = array ('','Janvier','Février','Mars','Avril','Mai','Juin',
-						'Juillet','Août','Septembre','Octobre','Novembre','Décembre');
+	var $months = array ('','janvier','février','mars','avril','mai','juin',
+						'juillet','août','septembre','octobre','novembre','décembre');
 						
 	function frenchDateConvocation($timestamp)
 	{
@@ -80,6 +80,7 @@ class DateComponent extends Object {
                     break;
                 case 10:
                     $nbJour = "dix";
+                    break;
                 case 11:
                     $nbJour = "onze";
                     break;
