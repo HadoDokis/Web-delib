@@ -8,7 +8,6 @@ class PastellComponent extends Object {
         curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN").":".Configure::read("PASTELL_PWD"));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $api = Configure::read("PASTELL_HOST").'/web/'.$api;
-        $this->log($api);
 	curl_setopt($curl, CURLOPT_URL, $api);
 	if (!empty($data)) {
             curl_setopt($curl, CURLOPT_POST, TRUE);
@@ -78,6 +77,8 @@ class PastellComponent extends Object {
 
     function modifyDocument($id_e, $id_d, $delib=array(), $annexes=array() ) {
 	$file = WEBROOT_PATH."/files/generee/fd/null/".$delib['Deliberation']['id']."/delib.pdf";
+        $delib['Deliberation']['objet_delib'] =  str_replace(Configure::read('CARACS_INTERDITS'), "_", $delib['Deliberation']['objet_delib']);
+
 	$acte = array('id_e'                    => $id_e,
                       'id_d'                    => $id_d,
                       'objet'                   => $delib['Deliberation']['objet_delib'],
@@ -87,11 +88,23 @@ class PastellComponent extends Object {
                       'arrete'                  => "@$file",
                       'acte_nature'             => $delib['Deliberation']['nature_id'],
 		     );
-	$curl = $this->_initCurl('api/modif-document.php', $acte);
+        $curl = $this->_initCurl('api/modif-document.php', $acte);
 	$result = curl_exec($curl);
 	curl_close($curl);
         foreach ($annexes as $annex) 
             $this->sendAnnex($id_e, $id_d,  $annex);
+
+        $resultat = $this->getInfosDocument($id_e, $id_d);
+        $resultat = (array)$resultat;
+        $resultat['data'] = (array)$resultat['data'];
+        $pos = strpos($resultat['data']['classification'] , "existe");
+        if (($pos!==false) &&  $resultat['data']['envoi_tdt']) {
+            $result = utf8_decode($resultat['data']['classification']);
+        }
+        else 
+            $result =1; 
+
+        return $result;
     }
 
     function insertInParapheur($id_e, $id_d, $sous_type = null) {
@@ -143,7 +156,7 @@ class PastellComponent extends Object {
     function getFile($id_e, $id_d, $field) {
         $url = Configure::read("PASTELL_HOST")."/web/document/recuperation-fichier.php?id_e=$id_e&id_d=$id_d&field=$field";
         $hostfile = fopen($url, 'r');
-        $filename = tempnam ("/tmp/", "$field_");
+        $filename = tempnam ("/tmp/", $field."_");
         $fh = fopen($filename, 'w');
 
         while (!feof($hostfile)) {
@@ -156,6 +169,27 @@ class PastellComponent extends Object {
         $content = file_get_contents($filename); 
         unlink($filename);
         return ($content);
+    }
+
+    function refresh() {
+        $refresh_exec = Configure::read('REFRESH_PASTELL');
+        if (!file_exists($refresh_exec)) {
+            $result['code'] = 'KO';
+            $result['message'] = "L'éxecutable n'a pas été trouvé";
+            return $result;         
+        }
+        $result = shell_exec($refresh_exec);        
+        return $result;
+    }
+
+    function journal ($id_e, $id_d) {
+        $acte = array('id_e'                    => $id_e,
+                       'id_d'                    => $id_d
+                    );
+        $curl = $this->_initCurl('api/journal.php', $acte);
+        $result = curl_exec($curl);
+        curl_close($curl);
+        return json_decode($result);
     }
 }
 
