@@ -15,7 +15,6 @@
             $doc_orig = $document_path.'-orig';
             rename($document_path, $doc_orig);
             $commande = "$pdftk_exec $doc_orig  $annexes_path output $document_path";
-            $this->log($commande);
 	    exec($commande, $output, $return_value);
               
             return ($return_value ==0);
