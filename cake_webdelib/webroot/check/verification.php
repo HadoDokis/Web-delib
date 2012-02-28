@@ -49,7 +49,7 @@ $appli_path = ROOT.DS;
 define('FICHIER_NON_TROUVE', 'CONSTANTE_FICHIER_NON_TROUVE');
 define('NON_TROUVE', 'CONSTANTE_NON_TROUVE');
 
-// chargement du fichier asalae.ini.php si il existe
+// chargement du fichier webdelib.inc si il existe
 if (file_exists($appli_path.'app'.DS.'config'.DS.$fichier_conf))
 	include_once($appli_path.'app'.DS.'config'.DS.$fichier_conf);
 
@@ -220,7 +220,7 @@ function verifVersions() {
 	global $appli_path, $versionCakePHPAttendue, $versionPHPAttendue;
 	$verAsalae = '';
 
-	// affichage de la version de asalae
+	// affichage de la version de webdelib
 	if (file_exists($appli_path.'app'.DS.'config'.DS.'core.php')) {
 		$fCore = file_get_contents($appli_path.'app'.DS.'config'.DS.'core.php');
 		$verPos = strpos($fCore, 'VERSION');
@@ -440,7 +440,7 @@ function verifAntivirus() {
 	elseif (empty($avType))
 		d("Type de l'antivirus : ['Antivirus']['type'] non renseigné dans le fichier $fichier_conf", 'ko');
 	elseif (!array_key_exists($avType, $avTypes))
-		d("Type de l'antivirus : $avType n'est pas géré par as@ale", 'ko');
+		d("Type de l'antivirus : $avType n'est pas géré par webdelib", 'ko');
 	else
 		d("Type de l'antivirus : $avType ($avTypes[$avType])", 'ok');
 
@@ -496,7 +496,7 @@ function verifConsoleCakePhp() {
 function verifConversion() {
 	// initialisations
 	global $appli_path, $fichier_conf;
-	$convTypes = array('UNOCONV'=>'Conversion Unoconv');
+	$convTypes = array('UNOCONV'=>'Conversion Unoconv', 'CLOUDOOO'=>'Serveur de Conversion');
 	
 	// vérification de la présence du fichier .ini
 	if (!file_exists($appli_path.'app'.DS.'config'.DS.$fichier_conf)) {
@@ -511,7 +511,7 @@ function verifConversion() {
 	elseif (empty($convType))
 		d("Type d'outil de conversion : ['Conversion']['type'] non renseigné dans le fichier $fichier_conf", 'ko');
 	elseif (!array_key_exists($convType, $convTypes))
-		d("Type d'outil de conversion : $convType n'est pas géré par as@ale", 'ko');
+		d("Type d'outil de conversion : $convType n'est pas géré par webdelib", 'ko');
 	else
 		d("Type d'outil de conversion : $convType ($convTypes[$convType])", 'ok');
 	
