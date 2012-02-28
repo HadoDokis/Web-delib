@@ -2597,7 +2597,6 @@ class DeliberationsController extends AppController {
 		    $file_path = WEBROOT_PATH."/files/generee/fd/null/$delib_id/delib.pdf";
                     $this->Deliberation->saveField('delib_pdf', file_get_contents($file_path)); 
                     $res = $this->Pastell->modifyDocument($id_e, $id_d, $delib, $annexes);
-                    $this->log($res);
                     if ($res == 1) { 
 		        $this->Deliberation->saveField('pastell_id', $id_d); 
                         if ($circuit_id > -1 ) { 
