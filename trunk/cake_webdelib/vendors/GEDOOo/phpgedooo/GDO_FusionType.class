@@ -120,11 +120,6 @@ function process() {
 				"classmap"=>$classmap));
 		$this->oResultat = $oService->Fusion($this);
 
-                //$fp = fopen('/tmp/soap.log', 'w');
-                //fwrite($fp,  "Request :\n".$oService->__getLastRequest() ."\n" );
-                //fwrite($fp,  "Response:\n".$oService->__getLastResponse() ."\n" );
-                //fclose($fp);
-
 		} catch (Exception $e) {
 			$soapfault = get_object_vars($e);
 			if (is_object($soapfault["detail"])) {
