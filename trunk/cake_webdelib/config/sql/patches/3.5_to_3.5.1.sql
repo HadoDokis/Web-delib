@@ -116,3 +116,5 @@ CREATE  TABLE `nomenclatures` (
 ALTER TABLE `models` ADD `joindre_annexe` TINYINT NOT NULL DEFAULT '0' AFTER `recherche` ;
 
 ALTER TABLE `deliberations` ADD `bordereau` BLOB NULL AFTER `delib_pdf` ;
+
+ALTER TABLE `deliberations` ADD `commentaire_refus_parapheur` VARCHAR( 1000 ) NULL AFTER `etat_parapheur` ;
