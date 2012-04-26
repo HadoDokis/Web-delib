@@ -961,7 +961,7 @@ class Deliberation extends AppModel {
                  } 
              }
             elseif  ($champs['text'] == '' )
-                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode('toto '), 'text'));
+                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
         }
 
         function _url2pathImage($url) {
