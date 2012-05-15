@@ -32,7 +32,7 @@
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
  */
-	Configure::write('debug', 0);
+        Configure::write('debug', 1);
 /**
  * CakePHP Log Level:
  *
@@ -242,7 +242,7 @@
  * If you are on PHP 5.3 uncomment this line and correct your server timezone
  * to fix the date & time related errors.
  */
-	//date_default_timezone_set('UTC');
+	date_default_timezone_set('UTC');
 
 /**
  *
@@ -296,14 +296,15 @@
  * 		'compress' => false, // [optional] compress data in Memcache (slower, but uses less memory)
  *	));
  *
-	Cache::config('default', array('engine' => 'File'));
- */
     Cache::config('default', array(
               'engine' => 'Apc', //[required]
               'duration'=> 3600, //[optional]
               'probability'=> 100, //[optional]
               'prefix' => Inflector::slug(APP_DIR) . '_', //[optional]  prefix every cache file with this string
       ));
+ */
+
+	Cache::config('default', array('engine' => 'File'));
 
     $pos = @strripos($_SERVER['HTTP_USER_AGENT'], 'Chrome');
     $pos2 = @strripos($_SERVER['HTTP_USER_AGENT'], 'Mozilla');
@@ -321,5 +322,5 @@
     define('CONFIG_PATH', $path2."config/");
 
     require_once ('webdelib.inc');
-    define('VERSION', '<b> 3.5.1</b>');
+    define('VERSION', '<b> 3.5.2 - Alpha </b>');
     include_once(APP_DIR.DS.'plugins'.DS.'cakeflow'.DS.'config'.DS.'cakeflow.conf.php');
