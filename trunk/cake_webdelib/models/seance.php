@@ -62,7 +62,7 @@ class Seance extends AppModel {
                                            'order'      => 'date ASC' ));
 
         foreach ($seances as $seance) {
-            $deliberante = "---";
+            $deliberante = "----";
             if ($seance['Typeseance']['action'] == 0)
                 $deliberante = "(*)";
             if ($afficherTtesLesSeances) {
