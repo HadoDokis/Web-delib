@@ -1318,3 +1318,7 @@ div.aModifier {
     padding-bottom: 10px;
 }
 
+.autocomplete {
+    background: grey;
+    list-style-type: none;
+}
