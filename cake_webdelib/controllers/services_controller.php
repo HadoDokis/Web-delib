@@ -10,7 +10,8 @@ class ServicesController extends AppController {
 		'changeParentId',
 		'changeService',
 		'isEditable',
-		'view'
+		'view', 
+                'autoComplete', 'test'
 	);
 	var $commeDroit = array(
 		'edit'=>'Services:index',
@@ -138,5 +139,21 @@ class ServicesController extends AppController {
 		$liste = $this->Service->findAll($condition);
 		return empty($liste);
 	}
+
+        function autoComplete() {
+ 
+            $this->layout = 'ajax';
+            $data = $this->Service->find('all', array( 'conditions'=>array('Service.libelle LIKE'=>$this->params['url']['q'].'%'),
+                                                                           'fields'=>array('libelle', 'id')));
+ 
+            $this->set('data', $data);
+        }
+      function test () {
+          Configure::write('debug', '1');
+          if (!empty($this->data))
+              debug($this->data);
+          $this->set('to', 'to');
+      }
+     
 }
 ?>

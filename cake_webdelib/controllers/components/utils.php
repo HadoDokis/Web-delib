@@ -142,7 +142,6 @@ class UtilsComponent extends Object
 function listFromArray($elements, $keyPath, $valuePaths, $format, $ordre='ASC') {
         // Initialisation
         $ret = array();
-
         foreach($elements as $element) {
                 // Extraction de la clé
                 $key = set::extract($element, $keyPath);

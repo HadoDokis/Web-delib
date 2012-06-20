@@ -13,7 +13,6 @@
                         'checkGedooo'
 		);
 		var $commeDroit = array(
-			'edit'         => 'Models:index',
 			'add'          => 'Models:index',
 			'delete'       => 'Models:index',
 			'view'         => 'Models:index',
@@ -52,20 +51,6 @@
 				$this->render();
 			} else{
 				$this->data['Model']['type']='Document';
-				if ($this->Model->save($this->data)) {
-					$this->redirect('/models/index');
-				}
-			}
-		}
-
-		function edit($id=null) {
-			$data = $this->Model->findAll("Model.id = $id");
-			$this->set('libelle', $data['0']['Model']['modele']);
-
-			if (empty($this->data)) {
-				$this->data = $this->Model->read(null, $id);
-			} else{
-				$this->data['Model']['id']=$id;
 				if ($this->Model->save($this->data)) {
 					$this->redirect('/models/index');
 				}
@@ -138,7 +123,7 @@
                         $this->data['Model']['name']      = $this->data['Model']['template']['name'];
                         $this->data['Model']['size']      = $this->data['Model']['template']['size'];
                         $this->data['Model']['extension'] = $this->data['Model']['template']['type'];
-                        $this->data['Model']['content']   = $this->getFileData($this->data['Model']['template']['tmp_name'], $this->data['Model']['template']['size']);
+                        $this->data['Model']['content']   = file_get_contents($this->data['Model']['template']['tmp_name']);
                     }
                 }
                 if ($this->Model->save($this->data))
@@ -148,14 +133,12 @@
 	    }
 	}
 
-	function getFileData($fileName, $fileSize) {
-		return fread(fopen($fileName, "r"), $fileSize);
-	}
-
 	function _getFileType($id=null) {
-		$condition = "Model.id = $id";
-		$objCourant = $this->Model->findAll($condition);
-		return $objCourant['0']['Model']['extension'];
+                $objCourant = $this->Model->find('first', array(
+                                                 'conditions'=> array('Model.id'=> $id),
+                                                 'recursive' => '-1',
+                                                 'fields'    => 'extension'));
+		return $objCourant['Model']['extension'];
 	}
 
 	function _getFileName($id=null) {
@@ -164,13 +147,14 @@
                                                  'recursive' => '-1',
                                                  'fields'    => 'name'));
                 return utf8_encode($objCourant['Model']['name']);
-
 	}
 
 	function _getSize($id=null) {
-		$condition = "Model.id = $id";
-		$objCourant = $this->Model->findAll($condition);
-		return $objCourant['0']['Model']["size"];
+                $objCourant = $this->Model->find('first', array(
+                                                 'conditions'=> array('Model.id'=> $id),
+                                                 'recursive' => '-1',
+                                                 'fields'    => 'size'));
+                return $objCourant['Model']['size'];
 	}
 
         function _getModel($id=null) {
@@ -183,6 +167,8 @@
 
 
         function generer ($delib_id=null, $seance_id=null,  $model_id, $editable=-1, $dl=0, $nomFichier='retour', $isPV=0, $unique=false) {
+            $time_start = microtime(true); 
+
             include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_Utility.class');
             include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
             include_once (ROOT.DS.APP_DIR.DS.'vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
@@ -257,9 +243,9 @@
             //*****************************************
             if ($delib_id != "null") {
 	        $delib = $this->Deliberation->find('first', array(
-                                                   'conditions'=>array(
-                                                   'Deliberation.id'=>$delib_id)));
-                $oMainPart = $this->Deliberation->makeBalisesProjet($delib, $oMainPart, true, $u);
+                                                   'conditions' => array('Deliberation.id'=>$delib_id),
+                                                   'recursive'  => -1));
+                $this->Deliberation->makeBalisesProjet($delib, $oMainPart);
                 $tmp_annexes = $this->Deliberation->Annex->getAnnexesIFromDelibId($delib_id, 0,1);
                 if (!empty($tmp_annexes))
                     array_push($annexes_id,  $tmp_annexes);
@@ -278,27 +264,17 @@
                          array_push($annexes, $fichierAnnex);
                      }
                  }
-
-
-
             }
             //*****************************************
 	    // Génération d'une convocation, ordre du jour ou PV
             //*****************************************
 	     if ($seance_id != "null") {
-                 $projets  = $this->Deliberation->find('all',array(
-                                                       'conditions'=>array(
-                                                           "seance_id"=>$seance_id, 
-                                                           "etat >="=>0), 
-                                                       'order' =>'Deliberation.position ASC'));
+                 $projets  =  $this->Seance->getDeliberations($seance_id, array('conditions' => array('etat >= '=> 0)));
+
                  $blocProjets = new GDO_IterationType("Projets");
 		 foreach ($projets as $projet) {
 		     $oDevPart = new GDO_PartType();
-		     if ($isPV){
-		         $oDevPart = $this->Deliberation->makeBalisesProjet($projet,  $oDevPart, true, $u, true);
-		     }
-		     else
-		         $oDevPart = $this->Deliberation->makeBalisesProjet($projet,  $oDevPart, false, $u, true);
+                     $this->Deliberation->makeBalisesProjet($projet,  $oDevPart);
 		     $blocProjets->addPart($oDevPart);
 
 		     $tmp_annexes = $this->Deliberation->Annex->getAnnexesIFromDelibId($projet['Deliberation']['id'], 0,1);
@@ -323,71 +299,27 @@
                  }
 
                  $oMainPart->addElement($blocProjets);
-		 $seance = $this->Seance->read(null, $seance_id);
-
-                 $oMainPart->addElement(new GDO_FieldType('date_seance',  $this->Date->frDate($seance['Seance']['date']),   'date'));
-                 $oMainPart->addElement(new GDO_FieldType('date_convocation',  $this->Date->frDate($seance['Seance']['date_convocation']),   'date'));
-		 $oMainPart->addElement(new GDO_FieldType('commentaire_seance',         utf8_encode($seance['Seance']['commentaire']),    'text'));
-	         $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
-	         $oMainPart->addElement(new GDO_FieldType('date_seance_lettres', utf8_encode($date_lettres),                     'text'));
-		 $oMainPart->addElement(new GDO_FieldType('heure_seance', $this->Date->Hour  ($seance['Seance']['date']),   'date'));
-
-                 $oMainPart->addElement(new GDO_FieldType('hh_seance',           $this->Date->Hour($seance['Seance']['date'], 'hh'), 'string'));
-                 $oMainPart->addElement(new GDO_FieldType('mm_seance',           $this->Date->Hour($seance['Seance']['date'], 'mm'), 'string'));
-
-                 $oMainPart->addElement(new GDO_FieldType('type_seance',utf8_encode($seance['Typeseance']['libelle']) , "text"));
-		 $oMainPart->addElement(new GDO_FieldType('identifiant_seance',  utf8_encode($seance['Seance']['id']),'text'));
-
-                 foreach($seance['Infosup'] as $champs) {
-                     $oMainPart->addElement($this->Deliberation->_addField($champs, $u, $seance['Seance']['id'], 'Seance'));
-                 }
-
-                 $oMainPart->addElement(new GDO_FieldType("nom_secretaire", utf8_encode($seance['Secretaire']['nom']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("prenom_secretaire", utf8_encode($seance['Secretaire']['prenom']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("salutation_secretaire",utf8_encode($seance['Secretaire']['salutation']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("titre_secretaire", utf8_encode($seance['Secretaire']['titre']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("date_naissance_secretaire", utf8_encode($seance['Secretaire']['date_naissance']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("adresse1_secretaire", utf8_encode($seance['Secretaire']['adresse1']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("adresse2_secretaire", utf8_encode($seance['Secretaire']['adresse2']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("cp_secretaire", utf8_encode($seance['Secretaire']['cp']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("ville_secretaire", utf8_encode($seance['Secretaire']['ville']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("email_secretaire", utf8_encode($seance['Secretaire']['email']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("telfixe_secretaire",utf8_encode($seance['Secretaire']['telfixe']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("note_secretaire", utf8_encode($seance['Secretaire']['note']), "text"));
-
-                 $oMainPart->addElement(new GDO_FieldType("nom_president", utf8_encode($seance['President']['nom']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("prenom_president", utf8_encode($seance['President']['prenom']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("salutation_president",utf8_encode($seance['President']['salutation']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("titre_president", utf8_encode($seance['President']['titre']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("date_naissance_president", utf8_encode($seance['President']['date_naissance']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("adresse1_president", utf8_encode($seance['President']['adresse1']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("adresse2_president", utf8_encode($seance['President']['adresse2']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("cp_president", utf8_encode($seance['President']['cp']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("ville_president", utf8_encode($seance['President']['ville']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("email_president", utf8_encode($seance['President']['email']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("telfixe_president",utf8_encode($seance['President']['telfixe']), "text"));
-                 $oMainPart->addElement(new GDO_FieldType("note_president", utf8_encode($seance['President']['note']), "text"));
+                 $this->Seance->makeBalise($seance_id, $oMainPart);
 
                  if (!$isPV) { // une convocation ou un ordre du jour
                    $this->Seance->id = $seance_id;
                    $this->Seance->saveField('date_convocation',  date("Y-m-d H:i:s", strtotime("now")));
-                     $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
-		     if (file_exists($path.'documents.zip'))
-		         unlink($path.'documents.zip');
+                   $type_id = $this->Seance->getType($seance_id);
+                   $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($type_id);
+		   if (file_exists($path.'documents.zip'))
+		       unlink($path.'documents.zip');
 
-                     $nbActeurs = count($acteursConvoques);
-                     $cpt=0;
-                     $model_tmp = $this->Model->read(null, $model_id);
-                     $this->set('nom_modele',  $model_tmp['Model']['modele']);
-                     if (empty($acteursConvoques))
-			 return "";
-                     $zip = new ZipArchive;
-                     foreach ($acteursConvoques as $acteur) {
-                         $cpt++;
-
-                         $this->set('unique', $unique);
-
-                         if ($unique== false) {
+                   $nbActeurs = count($acteursConvoques);
+                   $cpt=0;
+                   $model_tmp = $this->Model->read(null, $model_id);
+                   $this->set('nom_modele',  $model_tmp['Model']['modele']);
+                   if (empty($acteursConvoques))
+                       return "";
+                   $zip = new ZipArchive;
+                   foreach ($acteursConvoques as $acteur) {
+                       $cpt++;
+                       $this->set('unique', $unique);
+                       if ($unique== false) {
                              $oMainPart->addElement(new GDO_FieldType("nom_acteur", utf8_encode($acteur['Acteur']['nom']), "text"));
                              $oMainPart->addElement(new GDO_FieldType("prenom_acteur", utf8_encode($acteur['Acteur']['prenom']), "text"));
                              $oMainPart->addElement(new GDO_FieldType("salutation_acteur",utf8_encode($acteur['Acteur']['salutation']), "text"));
@@ -409,15 +341,32 @@
                          }
                    
                          try {
+
+
+
+
+
+
                              Configure::write('debug', 1);
                              error_reporting(0);
+                    $time_end = microtime(true);
+                    $time = $time_end - $time_start;
+                    $this->log("Objet SOAP construit en  $time secondes");
                              $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+                    $this->log(strlen( $oMainPart));
                              $oFusion->process();
+                    $time_end = microtime(true);
+                    $time = $time_end - $time_start;
+                    $this->log("Objet fusionné $time secondes");
                              $oFusion->SendContentToFile($path.$nomFichier.".odt");
                              $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
 			     $chemin_fichier = $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
                              if (($format == 'pdf') && ($joindre_annexe))
                                  $this->Pdf->concatener($chemin_fichier, $annexes); 
+                        $time_end = microtime(true);
+                        $time = $time_end - $time_start;
+                        $this->log("Document fini en $time secondes");
+
                          }
                          catch (Exception $e){
                              $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
@@ -479,8 +428,17 @@
                 try {
                     Configure::write('debug', 1);
                     error_reporting(0);
+
+                    $time_end = microtime(true);
+                    $time = $time_end - $time_start;
+                    $this->log("Objet SOAP construit en  $time secondes");
+
                     $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
 		    $oFusion->process();
+
+                    $time_end = microtime(true);
+                    $time = $time_end - $time_start;
+                    $this->log("Objet fusionné $time secondes");
 		    if ($dl ==1) {
 	                $oFusion->SendContentToFile($path.$nomFichier);
                         $content = $this->Conversion->convertirFichier($path.$nomFichier, $format);
@@ -501,6 +459,10 @@
                         if (($format == 'pdf') && ($joindre_annexe))
                             $this->Pdf->concatener($chemin_fichier, $annexes);
                         $content = file_get_contents($chemin_fichier);
+ 
+                        $time_end = microtime(true);
+                        $time = $time_end - $time_start;
+                        $this->log("Document fini en $time secondes");
 
                         header("Content-type: $sMimeType");
                         header("Content-Disposition: attachment; filename=\"$nomFichier\"");
@@ -514,36 +476,40 @@
             }
         }
 
-		function _sendDocument($acteur, $fichier, $path, $doc) {
-			if ($acteur['email'] != '') {
-				if (Configure::read("SMTP_USE")) {
-					$this->Email->smtpOptions = array(
-						'port'=>Configure::read("SMTP_PORT"), 
-						'timeout'=>Configure::read("SMTP_TIMEOUT"),
-						'host' => Configure::read("SMTP_HOST"),
-						'username'=>Configure::read("SMTP_USERNAME"),
-						'password'=>Configure::read("SMTP_PASSWORD"),
-						'client' =>Configure::read("SMTP_CLIENT")
+	function _sendDocument($acteur, $fichier, $path, $doc) {
+            if (($this->Session->read('user.format.sortie')==0) )
+                $format    = ".pdf";
+            else 
+                $format    = ".odt";
+
+            if ($acteur['email'] != '') {
+                if (Configure::read("SMTP_USE")) {
+                    $this->Email->smtpOptions = array( 'port'     => Configure::read("SMTP_PORT"), 
+                                                       'timeout'  => Configure::read("SMTP_TIMEOUT"),
+                                                       'host'     => Configure::read("SMTP_HOST"),
+                                                       'username' => Configure::read("SMTP_USERNAME"),
+                                                       'password' => Configure::read("SMTP_PASSWORD"),
+                                                       'client'   => Configure::read("SMTP_CLIENT")
 						);
-					$this->Email->delivery = 'smtp';
-				}
-				else
-					$this->Email->delivery = 'mail';
+                     $this->Email->delivery = 'smtp';
+                }
+                else
+                    $this->Email->delivery = 'mail';
 
-				$this->Email->from = Configure::read("MAIL_FROM");
-				$this->Email->to = $acteur['email'];
-                                $this->Email->charset = 'UTF-8';
+                $this->Email->from = Configure::read("MAIL_FROM");
+                $this->Email->to = $acteur['email'];
+                $this->Email->charset = 'UTF-8';
 				
-				$this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ");
-
-				$this->Email->sendAs = 'text';
-				$this->Email->template = 'convocation';
-				$this->set('data',   $this->paramMails('convocation',  $acteur ));
-				$this->Email->attachments = array($path.$fichier);
-
-				$this->Email->send();
-			}
-		}
+                $this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ");
+                $this->Email->sendAs = 'text';
+                $this->Email->template = 'convocation';
+                $this->set('data',   $this->paramMails('convocation',  $acteur ));
+                
+                $this->log($path.$fichier.$format);              
+                $this->Email->attachments = array($path.$fichier.$format);
+                $this->Email->send();
+            }
+        }
 
         function paramMails($type,  $acteur) {
             $handle  = fopen(CONFIG_PATH.'/emails/'.$type.'.txt', 'r');
