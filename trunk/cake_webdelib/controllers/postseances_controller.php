@@ -7,6 +7,8 @@ class PostseancesController extends AppController {
 	var $components = array('Date', 'Gedooo', 'Cmis', 'Progress');
 	var $uses = array('Deliberation', 'Seance', 'User',  'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance');
 
+        var $demandeDroit = array('index');
+
 	// Gestion des droits
 	var $aucunDroit = array(
 		'getNom',
@@ -48,22 +50,23 @@ class PostseancesController extends AppController {
              $this->set('seances', $seances);
 	}
 
-	function afficherProjets ($id=null, $return=null)
-	{
+	function afficherProjets ($id=null, $return=null) {
             $format =  $this->Session->read('user.format.sortie');
             if (empty($format))
                 $format =0;
             $this->set('format', $format);
 	    $this->set ('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+
 	    $condition = array("seance_id"=>$id, "etat >="=>2);
 	    if (!isset($return)) {
-	        $this->set('lastPosition', $this->Deliberation->getLastPosition($id));
-	        $deliberations = $this->Deliberation->find('all', array('conditions'=>$condition, 'order'=>array('Deliberation.position ASC')));
+	        $this->set('lastPosition', $this->Seance->getLastPosition($id));
+                $typeseance_id = $this->Seance->getType($id);
+	        $deliberations = $this->Seance->getDeliberations($id);
 	        for ($i=0; $i<count($deliberations); $i++)
-		    	$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($deliberations[$i]['Seance']['type_id'], $deliberations[$i]['Deliberation']['etat']);
-			$this->set('seance_id', $id);
-			$this->set('projets', $deliberations);
-			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->requestAction("seances/getDate/$id"))));
+		    	$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($typeseance_id, $deliberations[$i]['Deliberation']['etat']);
+		$this->set('seance_id', $id);
+		$this->set('projets', $deliberations);
+		$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->Seance->getDate($id))));
 	    }
 	    else
 	        return ($this->Deliberation->find('all', array('conditions'=>$condition, 'order'=>array('Deliberation.position ASC'))));
