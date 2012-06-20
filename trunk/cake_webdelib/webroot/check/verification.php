@@ -512,11 +512,16 @@ function verifConversion() {
 		d("Type d'outil de conversion : ['Conversion']['type'] non renseigné dans le fichier $fichier_conf", 'ko');
 	elseif (!array_key_exists($convType, $convTypes))
 		d("Type d'outil de conversion : $convType n'est pas géré par webdelib", 'ko');
-	else
-		d("Type d'outil de conversion : $convType ($convTypes[$convType])", 'ok');
+	else {
+                if ($convType == "CLOUDOOO"){
+		    d("Type d'outil de conversion : $convType ($convTypes[$convType])", 'ok');
+                    return true;
+                }
+                else
+		    d("Type d'outil de conversion : $convType ($convTypes[$convType])", 'ok');
+        }
 	
 	// exécutable du convertisseur
-       
 	$convExec = getValueFromWebdelibIncFile('CONVERSION_EXEC');
 	if ($convType == NON_TROUVE)
 		d("Exécutable de l'outil de conversion : déclaration de ['Conversion']['exec'] non trouvée dans le fichier $fichier_conf", 'ko');
@@ -574,7 +579,7 @@ function verifConversion() {
 		        }
 			break;
 		}
-	}
+      }
 }
 
 function isMulti() {
