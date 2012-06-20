@@ -87,7 +87,7 @@ OPTIMIZE table  wkf_traitements      ;
 OPTIMIZE table  wkf_visas            ;
 
 --
---Ajout après la 3.5.1-beta
+-- Ajout après la 3.5.1-beta
 --
 ALTER TABLE `infosups` ADD `model` VARCHAR( 25 ) NOT NULL DEFAULT 'Deliberation' AFTER `id` ;
 ALTER TABLE `infosups` ADD `foreign_key` INT( 11 ) NOT NULL AFTER `model` ;
