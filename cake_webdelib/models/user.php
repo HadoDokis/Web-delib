@@ -170,5 +170,18 @@ var $displayFields = array(
 		else
 			return $this->data['User']['prenom'].' '.$this->data['User']['nom'].' ('.$this->data['User']['login'].')';
 	}
+
+        function makeBalise(&$oMainPart, $user_id) {
+            $user = $this->find('first', 
+                                array('conditions' => array($this->alias.'.id' => $user_id),
+                                      'recursive'  => -1));
+            $oMainPart->addElement(new GDO_FieldType('prenom_redacteur',    utf8_encode($user[$this->alias]['prenom']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('nom_redacteur',       utf8_encode($user[$this->alias]['nom']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('email_redacteur',     utf8_encode($user[$this->alias]['email']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('telmobile_redacteur', utf8_encode($user[$this->alias]['telmobile']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('telfixe_redacteur',   utf8_encode($user[$this->alias]['telfixe']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('note_redacteur',      utf8_encode($user[$this->alias]['note']), 'text'));
+        }
+
 }
 ?>

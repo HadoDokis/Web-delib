@@ -19,6 +19,7 @@ class TypeseancesNature extends AppModel {
     function getNaturesParTypeseance($typeseance_id){
         $liste = array();
         $natures = $this->find('all', array('conditions'=>array('typeseance_id'=>$typeseance_id),
+                                            'fields'    => array('nature_id'),
                                             'recursive' => -1));
         foreach($natures as $nature) 
               $liste[] = $nature['TypeseancesNature']['nature_id'];

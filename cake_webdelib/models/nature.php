@@ -17,5 +17,13 @@
                 return $generateList;
         }
 
+        function makeBalise(&$oMainPart, $nature_id) {
+            $nature = $this->find('first', array('conditions' => array('Nature.id' => $nature_id),
+                                                 'fields'     => array('libelle'),
+                                                 'recursive'  => -1));
+
+            $oMainPart->addElement(new GDO_FieldType('nature_projet', utf8_encode($nature['Nature']['libelle']), 'text'));
+        }
+
     }
 ?>

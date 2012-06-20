@@ -138,6 +138,26 @@ class Acteur extends AppModel
 	function libelleOrdre($ordre = null, $majuscule = false) {
 		return ($ordre == 999) ? ($majuscule ? 'En dernier' : 'en dernier') : $ordre;
 	}
-
+  
+        function makeBalise(&$oMainPart, $acteur_id) {
+            $acteur = $this->find('first', 
+                                  array('conditions' => array($this->alias.'.id' => $acteur_id),
+                                        'recursive'  => -1));
+            $alias = trim(strtolower($this->alias));
+            $oMainPart->addElement(new GDO_FieldType("salutation_$alias",     utf8_encode($acteur[$this->alias]['salutation']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType("prenom_$alias",         utf8_encode($acteur[$this->alias]['prenom']),     'text'));
+            $oMainPart->addElement(new GDO_FieldType("nom_$alias",            utf8_encode($acteur[$this->alias]['nom']),        'text'));
+            $oMainPart->addElement(new GDO_FieldType("titre_$alias",          utf8_encode($acteur[$this->alias]['titre']),      'text'));
+            $oMainPart->addElement(new GDO_FieldType("position_$alias",       utf8_encode($acteur[$this->alias]['position']),   'text'));
+            $oMainPart->addElement(new GDO_FieldType("email_$alias",          utf8_encode($acteur[$this->alias]['email']),      'text'));
+            $oMainPart->addElement(new GDO_FieldType("telmobile_$alias",      utf8_encode($acteur[$this->alias]['telmobile']),  'text'));
+            $oMainPart->addElement(new GDO_FieldType("telfixe_$alias",        utf8_encode($acteur[$this->alias]['telfixe']),    'text'));
+            $oMainPart->addElement(new GDO_FieldType("date_naissance_$alias", utf8_encode($acteur[$this->alias]['date_naissance']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType("adresse1_$alias",       utf8_encode($acteur[$this->alias]['adresse1']),   'text'));
+            $oMainPart->addElement(new GDO_FieldType("adresse2_$alias",       utf8_encode($acteur[$this->alias]['adresse2']),   'text'));
+            $oMainPart->addElement(new GDO_FieldType("cp_$alias",             utf8_encode($acteur[$this->alias]['cp']),         'text'));
+            $oMainPart->addElement(new GDO_FieldType("ville_$alias",          utf8_encode($acteur[$this->alias]['ville']),      'text'));
+            $oMainPart->addElement(new GDO_FieldType("note_$alias",           utf8_encode($acteur[$this->alias]['note']),       'text'));
+        }
 }
 ?>
