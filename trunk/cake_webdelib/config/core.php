@@ -32,7 +32,7 @@
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
  */
-        Configure::write('debug', 1);
+        Configure::write('debug', 0);
 /**
  * CakePHP Log Level:
  *
@@ -322,5 +322,5 @@
     define('CONFIG_PATH', $path2."config/");
 
     require_once ('webdelib.inc');
-    define('VERSION', '<b> 3.5.2 - Alpha </b>');
+    define('VERSION', '<b> 3.5.2 </b>');
     include_once(APP_DIR.DS.'plugins'.DS.'cakeflow'.DS.'config'.DS.'cakeflow.conf.php');
