@@ -48,7 +48,10 @@
 
 		/* fonction récursive de doList */
 		function _doList($id) {
-			$service = $this->find("id = $id", 'libelle, parent_id', null, -1);
+			$service = $this->find('first', array(
+                                               'conditions' => array('Service.id' => $id), 
+                                               'fields'     => array('libelle', 'parent_id'), 
+                                               'recursive'  => -1));
 			if (!Configure::read('AFFICHE_HIERARCHIE_SERVICE'))
 				return $service['Service']['libelle'];
 
@@ -58,5 +61,14 @@
 				return $this->_doList($service['Service']['parent_id']). '/'. $service['Service']['libelle'];
 		}
 
-	}
+ 
+        function makeBalise(&$oMainPart, $service_id) {
+            $service = $this->find('first', array('conditions' => array('Service.id' => $service_id),
+                                                 'fields'     => array('libelle'),
+                                                 'recursive'  => -1));
+
+            $oMainPart->addElement(new GDO_FieldType('service_emetteur', utf8_encode($service['Service']['libelle']), 'text'));
+        }
+}
+
 ?>

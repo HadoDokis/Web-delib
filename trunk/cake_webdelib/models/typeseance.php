@@ -169,39 +169,46 @@ class Typeseance extends AppModel {
 	/* - true : les acteurs élus                                               */
 	/* - false : les acteurs non élus                                          */
 	function acteursConvoquesParTypeSeanceId($typeseance_id = null, $elu = null) {
+                $this->Behaviors->attach('Containable');
+                $this->Acteur->Behaviors->attach('Containable');
 		$typeseance = $this->find('first', array('conditions' => array('Typeseance.id'=> $typeseance_id),
-                                                          'fields'    => array ('id'))) ;
+                                                         'contain'    => array('Typeacteur', 
+                                                                               'Acteur.id', 
+                                                                               'Acteur.actif', 
+                                                                               'Acteur.typeacteur_id'),
+                                                         'fields'     => array ('id'))) ;
 		if (empty($typeseance)) return null;
 
 		/* Par type d'acteur */
-		$inTypeacteur = '';
-                $preCond = "Acteur.actif = 1";
+		$inTypeacteur = array();
 		foreach($typeseance['Typeacteur'] as $typeacteur)
-			$inTypeacteur .= ($inTypeacteur ? ', ' : '') . $typeacteur['id'];
-		/* Par acteur */
-		$inId = '';
-		foreach($typeseance['Acteur'] as $acteur)
-			$inId .= ($inId ? ', ' : '') . $acteur['id'];
+	      	    $inTypeacteur[] = $typeacteur['id'];
 
-		$condIn = ($inTypeacteur ? 'Acteur.typeacteur_id in ('.$inTypeacteur.')' : '').
-				(($inTypeacteur && $inId) ? ' or ' : '').
-				($inId ? 'Acteur.id in ('.$inId.')' : '');
-		$condElu = isset($elu) ? ('Typeacteur.elu=' . ($elu ? '1':'0')) : '';
-		$condition = ($condElu ? '(':'') . $condIn . ($condElu ? ') and ':'') . $condElu;
-                if (empty($condition))
-                    $condition =  $preCond;
-                else
-                     $condition =  $preCond ." AND ( ". $condition." )";
+		/* Par acteur */
+		$inId = array();
+		foreach($typeseance['Acteur'] as $acteur)
+			$inId[] = $acteur['id'];
+
+                $condition['Acteur.actif'] = 1;
+                $condition['OR']['Acteur.id'] =  $inId;
+                $condition['OR']['Acteur.typeacteur_id'] = $inTypeacteur;
+                if ($elu == null) 
+                    $condition['Typeacteur.elu'] = 1;
 
 		return ($this->Acteur->find('all', array ('conditions' => $condition,
-                                                         'order' => 'Acteur.position, Acteur.nom ASC')));
+                                                          'contain'    => array('Typeacteur.elu'),
+                                                          'order'      => 'Acteur.position, Acteur.nom ASC',
+                                                          )));
                   
 	}
 
 	/* retourne d'id du modèle d 'édition du type de séance $typeseance_id en sonction de l'état du projet de délibération */
 	function modeleProjetDelibParTypeSeanceId($typeseance_id, $etat) {
-		$typeseance = $this->find("id = $typeseance_id", 'modelprojet_id, modeldeliberation_id', null, -1);
-		if ($etat==3 || $etat==5)
+		$typeseance = $this->find('first', array('conditions' => array("Typeseance.id" => $typeseance_id), 
+                                                         'fields'     => array('modelprojet_id', 'modeldeliberation_id'),
+                                                         'recursive'  => -1));
+		//if ($etat==3 || $etat==5)
+		if ($etat >= 3)
 			return $typeseance['Typeseance']['modeldeliberation_id'];
 		else
 			return $typeseance['Typeseance']['modelprojet_id'];
