@@ -45,23 +45,26 @@
 
 	<div class="imbrique">
 		<div class="gauche">
-			<dt>Thème</dt>
-			<dd>&nbsp;<?php echo $html->link($this->data['Theme']['libelle'], '/themes/view/' .$this->data['Theme']['id'])?><br> </dd>
+                    <dt>Thème</dt>
+                    <dd>&nbsp;<?php echo $html->link($this->data['Theme']['libelle'], '/themes/view/' .$this->data['Theme']['id'])?><br> </dd>
 		</div>
 		<div class="droite">
-			<dt>Service émetteur</dt>
-			<dd>&nbsp;<?php echo $html->link($this->data['Service']['libelle'], '/services/view/' .$this->data['Service']['id'])?></dd>
+                    <dt>Service émetteur</dt>
+                    <dd>&nbsp;<?php echo $html->link($this->data['Service']['libelle'], '/services/view/' .$this->data['Service']['id'])?></dd>
 		</div>
 	</div>
 
 	<div class="imbrique">
 		<div class="gauche">
-			<dt>Num Pref</dt>
-			<dd>&nbsp;<?php echo $this->data['Deliberation']['num_pref']?></dd>
+                    <dt>Num Pref</dt>
+                    <dd>&nbsp;<?php echo $this->data['Deliberation']['num_pref']?></dd>
 		</div>
 		<div class="droite">
-			<dt>Date Séance</dt>
-			<dd>&nbsp;<?php echo $this->data['Seance']['date']?></dd>
+                    <dt>Date Séance</dt>
+                         <?php 
+                             foreach ( $this->data['Seance'] as $seance)
+                                 echo '<dd>&nbsp;'.$seance['date']."</dd>";
+                         ?>
 		</div>
 	</div>
 

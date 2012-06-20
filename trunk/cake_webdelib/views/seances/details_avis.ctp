@@ -27,13 +27,33 @@
 	<td><?php echo $deliberation['Deliberation']['objet_delib']; ?></td>
 	<td><?php //echo $deliberation['Deliberation']['titre']; ?></td>
 	<td class="actions" width="80">
-		<?php echo $html->link(SHY,'/seances/saisirDebat/' .$deliberation['Deliberation']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats'), false, false); ?>
- 		<?php echo $html->link(SHY,'/seances/donnerAvis/' .$deliberation['Deliberation']['id'], array('class'=>'link_donnerAvis', 'title'=>'Donner un avis'), false, false)?>
+		<?php echo $html->link(SHY,
+                                       '/seances/saisirDebat/'.$deliberation['Deliberation']['id'], 
+                                       array('class'=>'link_debat', 
+                                             'title'=>'Saisir les debats'), 
+                                       false, 
+                                       false); ?>
+ 		<?php echo $html->link(SHY,
+                                       '/seances/donnerAvis/'.$deliberation['Deliberation']['id']."/$seance_id", 
+                                       array('class'=>'link_donnerAvis', 
+                                             'title'=>'Donner un avis'), 
+                                       false, 
+                                       false)?>
                <?php 
 			if (Configure::read('USE_GEDOOO'))
-			    echo $html->link(SHY,'/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+			    echo $html->link(SHY,
+                                             '/models/generer/'.$deliberation['Deliberation']['id'].'/null/'.$deliberation['Model']['id'], 
+                                             array('class'=>'link_pdf', 
+                                                   'title'=>'Visionner PDF'), 
+                                             false, 
+                                             false);
 			else 
-			    echo $html->link(SHY,'/deliberations/convert/' . $deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'Visionner PDF'), false, false);
+			    echo $html->link(SHY, 
+                                             '/deliberations/convert/'.$deliberation['Deliberation']['id'], 
+                                             array('class'=>'link_pdf',  
+                                                   'title'=>'Visionner PDF'), 
+                                             false, 
+                                             false);
 		?>
 
 </td>
@@ -44,5 +64,8 @@
 </div>
 <br/>
 <div class="submit">
-<?php echo $html->link('Retour', '/seances/listerFuturesSeances', array('class'=>'link_annuler', 'name'=>'Retour'))?>
+    <?php echo $html->link('Retour', 
+                           '/seances/listerFuturesSeances', 
+                           array('class'=>'link_annuler', 
+                                 'name'=>'Retour'))?>
 </div>

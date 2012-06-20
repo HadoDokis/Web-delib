@@ -11,7 +11,8 @@
 	<?php echo $this->requestAction('/deliberations/listerPresents/'.$deliberation['Deliberation']['id'], array('return'));?>
 </div>
 
-<?php echo $form->create('Seances',array('url'=>'/seances/voter/'.$deliberation['Deliberation']['id'],'type'=>'post')); ?>
+<?php echo $form->create('Seances',array('url'=>'/seances/voter/'.$deliberation['Deliberation']['id']."/$seance_id",
+                                         'type'=>'post')); ?>
 	<h3>Saisie du vote : <?php echo $form->input('Vote.typeVote', array('label'=>false, 'div'=>false, 'options'=>array(1 => 'Détail des voix', 2 => 'Total des voix', 3 => 'Résultat'), 'default'=>1, 'onchange' => "affichageTypeVote(this);", 'empty'=>false)); ?></h3>
 	<div id='voteDetail'>
 		<table id="tableDetailVote" cellpadding="0" cellspacing="0">
@@ -105,7 +106,10 @@
 	<br/>
 	<div class="submit">
 		<?php echo $form->submit('Enregistrer le vote', array('div'=>false, 'class'=>'bt_add', 'name'=>'modifier'));?>
-		<?php echo $html->link('Annuler', '/seances/details/'.$deliberation['Deliberation']['seance_id'], array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+		<?php echo $html->link('Annuler', 
+                                       '/seances/details/'.$seance_id, 
+                                       array('class'=>'link_annuler', 
+                                             'name'=>'Annuler'))?>
 	</div>
 <?php echo $form->end(); ?>
 

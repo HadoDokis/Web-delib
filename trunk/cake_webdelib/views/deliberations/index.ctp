@@ -38,24 +38,38 @@
 	<tr>
 		<td rowspan=3 style="text-align:center;">
 		    <br />
-		    <?php echo $html->image($deliberation['iconeEtat']['image'], 
+		    <?php  //debug($deliberation);
+                            echo $html->image($deliberation['iconeEtat']['image'], 
                                             array('alt'=>$deliberation['iconeEtat']['titre'].' '.$deliberation['Deliberation']['objet'],
                                                   'title'=>$deliberation['iconeEtat']['titre'].' '.$deliberation['Deliberation']['objet']));?>
 		</td>
-		<td>Service &eacute;metteur :<br/><?php echo $deliberation['Service']['libelle'];?></td>
+		<td>Service &eacute;metteur :<br/>
+                <?php 
+                       if (isset( $deliberation['Deliberation']['Service']['libelle']))
+                           echo $deliberation['Deliberation']['Service']['libelle']; 
+                       elseif (isset( $deliberation['Service']['libelle']))
+                           echo $deliberation['Service']['libelle']; 
+                ?></td>
 		<td><?php echo $deliberation['Deliberation']['objet'];?></td>
 		<td>S&eacute;ance :<br />
 		<?php
 			if (in_array('attribuerSeance', $deliberation['Actions'])) {
 				echo $form->create('Deliberation',array('url'=>'/deliberations/attribuerSeance','type'=>'post'));
-					echo $form->input('Deliberation.seance_id',array('type'=>'select', 'label'=>'', 'options'=>$date_seances,'empty'=>true));
+					echo $form->input('Deliberation.seance_id',
+                                                          array('type'     => 'select', 
+                                                                'label'    => '', 
+                                                                'options'  => $date_seances,
+                                                                'empty'    => false,
+                                                                'multiple' => true));
 					echo $form->hidden('Deliberation.id',array('value'=> $deliberation['Deliberation']['id']));
 					echo $form->submit(' ', array('div'=>false, 'class'=>'bt_save', 'name'=>'sauvegarder'));
 				echo $form->end();
 			} else {
-                            if($deliberation['Seance']['date'] != ''){
-                                echo $deliberation['Seance']['libelle'].'<br />';
-                                echo $deliberation['Seance']['date'];
+                            if(isset($deliberation['Seance'][0])){
+                                foreach( $deliberation['Seance'] as  $seance) {
+                                    echo($seance['Typeseance']['libelle']." : ");
+                                    echo($html2->ukToFrenchDateWithHour($seance['date']).'<br>');
+                                }
                             }
                         }
 		?>
@@ -127,23 +141,24 @@
                                                        'title'=>'Attribuer un circuit pour le projet '.$deliberation['Deliberation']['objet']), false, false);
 			}
 			if (in_array('generer', $deliberation['Actions'])) {
-                            if ($deliberation['Seance']['traitee']==0)
+                            if (empty($deliberation['Deliberation']['delib_pdf']))
 		                echo $html->link(SHY,
-						'/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], array('class'=>'link_pdf', 
-	  'alt'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'],
-          'title'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'] ),
-           false, 
-           false);
-			     else
-				 echo $html->link(SHY, 
+						 '/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'], 
+                                                 array('class'=>'link_pdf', 
+	                                               'alt'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'],
+                                                       'title'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'] ),
+                                                 false, 
+                                                 false);
+			    else
+			        echo $html->link(SHY, 
                                                   '/deliberations/downloadDelib/'.$deliberation['Deliberation']['id'], 
-						  array('class'=>'link_pdf', 
+			  			  array('class'=>'link_pdf', 
                                                         'alt'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'],
                                                         'title'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet']), 
                                                        false, 
                                                        false);
 			}
-		?>
+	?>
 		</td>
 	</tr>
 	<tr>
@@ -156,9 +171,18 @@
 		<td>A traiter avant le :<br /><?php echo $deliberation['Deliberation']['date_limite']; ?></td>
 	</tr>
 	<tr>
-		<td>projet <?php echo strtolower($deliberation['Nature']['libelle']) .' : '.$deliberation['Deliberation']['id']; ?></td>
+		<td>projet 
+                <?php 
+                       if (isset( $deliberation['Nature']['libelle']))
+                           $nature = $deliberation['Nature']['libelle'];
+
+                   echo strtolower($nature) .' : '.$deliberation['Deliberation']['id']; ?>
+                </td>
 		<td class='corps' rowspan=1 >Th&egrave;me : 
-                <?php echo $deliberation['Theme']['libelle'] ?></td>
+                <?php 
+                  if (isset( $deliberation['Theme']['libelle']))
+                      echo $deliberation['Theme']['libelle'];
+                ?></td>
 		<td>Classification : <?php echo $deliberation['Deliberation']['num_pref'];  ?></td>
 	</tr>
 	<tr>

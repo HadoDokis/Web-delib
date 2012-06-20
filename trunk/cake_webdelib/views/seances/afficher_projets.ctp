@@ -3,6 +3,7 @@
 echo $form->input('Deliberation.position', array('options'=>$lst_pos, 'id'=>'selectOrdre', 'label'=>false, 'div'=>false, 'style'=>"display:none;", 'onChange'=>"onChangeSelectOrdre(this.value);"));
 echo $form->input('Deliberation.rapporteur_id', array('options'=>$rapporteurs, 'empty'=>true, 'id'=>'selectRapporteur', 'label'=>false, 'div'=>false, 'style'=>"display:none;", 'onChange'=>"onChangeSelectRapporteur(this.value);"));
 echo $form->hidden('Aplication.url', array('value'=>FULL_BASE_URL.$this->webroot));
+echo $form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 ?>
 
 <h2>Liste des projets pour la séance du <?php echo $date_seance; ?></h2>
@@ -21,7 +22,7 @@ echo $form->hidden('Aplication.url', array('value'=>FULL_BASE_URL.$this->webroot
 
 	<?php foreach($projets as $projet):
 		$delibId=$projet['Deliberation']['id'];
-		$delibPosition = $projet['Deliberation']['position'];
+		$delibPosition = $projet['Deliberationseance']['position'];
 	?>
 
 	<tr>
@@ -40,11 +41,11 @@ echo $form->hidden('Aplication.url', array('value'=>FULL_BASE_URL.$this->webroot
 	    <td><?php echo $projet['Deliberation']['id']; ?></td>
 	    <?php
 	        if($delibPosition!= 1)
-	            echo ('<td>'.$html->link(SHY, '/deliberations/positionner/'.$projet['Deliberation']['id'].'/-1', array('class'=>'link_monter', 'title'=>'Monter'), false, false).'</td>');
+	            echo ('<td>'.$html->link(SHY, '/deliberations/positionner/'.$seance_id.'/'.$projet['Deliberation']['id'].'/-1', array('class'=>'link_monter', 'title'=>'Monter'), false, false).'</td>');
 	        else
 	           echo("<td>&nbsp;</td>");
 			if($delibPosition!= $lastPosition)
-	                    echo ('<td>'.$html->link(SHY, '/deliberations/positionner/'.$projet['Deliberation']['id'].'/1', array('class'=>'link_descendre', 'title'=>'Descendre'), false, false).'</td>');
+	                    echo ('<td>'.$html->link(SHY, '/deliberations/positionner/'.$seance_id.'/'.$projet['Deliberation']['id'].'/1', array('class'=>'link_descendre', 'title'=>'Descendre'), false, false).'</td>');
 		        else
 		            echo("<td>&nbsp;</td>");
              ?>
@@ -80,7 +81,8 @@ function onClickLinkOrdre(ordre, delibId) {
 }
 
 function onChangeSelectOrdre(ordre) {
-	var url = $('#AplicationUrl').val()+"seances/changePosition/"+ordre+"/"+curdelibIdOrdre;
+        var seanceid = $('#AplicationSeanceid').val();
+	var url = $('#AplicationUrl').val()+"seances/changePosition/"+seanceid+"/"+ordre+"/"+curdelibIdOrdre;
 	document.location=url;
 }
 
@@ -102,7 +104,8 @@ function onClickLinkRapporteur(rapporteurId, delibId) {
 }
 
 function onChangeSelectRapporteur(rapporteurId) {
-	var url = $('#AplicationUrl').val()+"seances/changeRapporteur/"+rapporteurId+"/"+curdelibIdRapporteur;
+        var seanceid = $('#AplicationSeanceid').val();
+	var url = $('#AplicationUrl').val()+"seances/changeRapporteur/"+seanceid+"/"+rapporteurId+"/"+curdelibIdRapporteur;
 	document.location=url;
 }
 </script>

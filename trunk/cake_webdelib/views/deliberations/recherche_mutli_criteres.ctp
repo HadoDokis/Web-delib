@@ -7,26 +7,40 @@
 <div id="add_form">
 <table class="sample">
     <tr>
-            <td><?php echo $form->input('Deliberation.id', array('type'=>'text', 'between'=>'</td><td>','label'=>'Identifiant du projet','size' => '20'));?></td>
+            <td><?php echo $form->input('Deliberation.id', array( 'type'    => 'text', 
+                                                                  'between' => '</td><td>',
+                                                                  'label'   => 'Identifiant du projet',
+                                                                  'size'    => '20'));?>
+            </td>
     </tr>
     <tr>
          <td><?php echo $form->input('Deliberation.nature_id', array('label'   =>'Nature',
                                                                  'options' =>$session->read('user.Nature'),
                                                                  'empty'   =>true,
                                                                  'between'=>'</td><td>',
-                                                                 'escape'  =>false)); ?></td>
+                                                                 'escape'  =>false)); ?>
+            </td>
     </tr>
     <tr>
-            <td><?php echo $form->input('Deliberation.rapporteur_id', array('between'=>'</td><td>','label'=>'Rapporteur', 'options'=>$rapporteurs, 'empty'=>true));?></td>
+            <td><?php echo $form->input('Deliberation.rapporteur_id', array( 'between' => '</td><td>', 
+                                                                             'label'   => 'Rapporteur', 
+                                                                             'options' => $rapporteurs, 
+                                                                             'empty'   => true));?>
+            </td>
     </tr>
     <tr>
-            <td><?php echo $form->input('Deliberation.seance1_id',array('between'=>'</td><td>','label'=>'Date s&eacute;ance entre ', 'options'=>$date_seances, 'empty'=>true));?></td>
+            <td><?php echo $form->input('Deliberation.seance_id', array( 'between'  => '</td><td>',
+                                                                         'label'    => 'Date s&eacute;ance entre ', 
+                                                                         'options'  => $date_seances, 
+                                                                         'multiple' => true,
+                                                                         'empty'    => false));?>
+            </td>
     </tr>
     <tr>
-            <td><?php echo $form->input('Deliberation.seance2_id',array('between'=>'</td><td>','label'=>' et ', 'options'=>$date_seances, 'empty'=>true));?></td>
-    </tr>
-    <tr>
-            <td><?php echo $form->input('Deliberation.texte', array('between'=>'</td><td>','label'=>'Libell&eacute;','size' => '30'));?></td>
+            <td><?php echo $form->input('Deliberation.texte', array( 'between' => '</td><td>',
+                                                                     'label'   => 'Libell&eacute;',
+                                                                     'size' => '30'));?>
+            </td>
     </tr>
     <tr>
             <td><?php echo $form->input('Deliberation.service_id', array('between'=>'</td><td>','label'=>'Service Emetteur', 'options'=>$services, 'empty'=>true, 'escape'=>false));?></td>
