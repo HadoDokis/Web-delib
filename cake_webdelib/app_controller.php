@@ -55,8 +55,9 @@ class AppController extends Controller {
 		$this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
 
         if (CRON_DISPATCHER) return true;
-
-		if((substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login')&&($this->action!='writeSession'))
+		if((substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login') && 
+                   ($this->action!='writeSession') && 
+                   (substr(substr($_SERVER['REQUEST_URI'], strlen($this->base)), 0,  strlen('/cakeflow/traitements/traiter_mail')) != '/cakeflow/traitements/traiter_mail'))
 		{
 
 			//s'il n'y a pas d'utilisateur connecte en session
