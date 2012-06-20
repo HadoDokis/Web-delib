@@ -9,6 +9,7 @@
 		echo "<h1>Modification du projet : ".$html->value('Deliberation.id')."</h1>";
 		echo $form->create('Deliberation', array('url'=>'/deliberations/edit/'.$html->value('Deliberation.id'), 'type'=>'file', 'name'=>'Deliberation'));
 	} else {
+                $seances = array();
 		echo "<h1>Ajout d'un projet</h1>";
 		echo $form->create('Deliberation', array('url'=>'/deliberations/add','type'=>'file', 'name'=>'Deliberation'));
 	}
@@ -52,7 +53,11 @@
  	<?php echo $form->input('Deliberation.titre', array('type'=>'textarea','label'=>'Titre','cols' => '60','rows'=> '2'));?>
 	<div class='spacer'></div>
 
-	<?php echo $form->input('Deliberation.seance_id', array('label'=>'Date séance', 'options'=>$date_seances, 'empty'=>true)); ?>
+	<?php echo $form->input('Deliberation.seance_id', array('label'    => 'Date séance', 
+                                                'options'  => $date_seances, 
+                                                             'empty'    => false, 
+                                                             'multiple' =>'true',
+                                                             'selected' => $seances)); ?>
 	<div class='spacer'></div>
 
 	<?php echo $form->input('Deliberation.rapporteur_id', array('label'=>'Rapporteur', 'options'=>$rapporteurs, 'empty'=>true)); ?>

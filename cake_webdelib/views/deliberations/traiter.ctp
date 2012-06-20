@@ -79,8 +79,17 @@
 		<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref']?></dd>
 	</div>
 	<div class="droite">
-		<dt>Date Séance</dt>
-		<dd>&nbsp;<?php echo $deliberation['Seance']['date']?></dd>
+	    <dt>Date Séance</dt>
+            <dd>
+                <?php
+                    if(isset($deliberation['Seance'][0])){
+                        foreach( $deliberation['Seance'] as  $seance) {
+                            echo($seance['Typeseance']['libelle']." : ");
+                            echo($html2->ukToFrenchDateWithHour($seance['date']).'<br>');
+                        }
+                    }
+                ?>
+	    </dd>
 	</div>
 </div>
 

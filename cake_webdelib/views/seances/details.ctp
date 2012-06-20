@@ -51,7 +51,12 @@
 		    ?>
 	    <?php
             if ($deliberation['Deliberation']['nature_id'] ==1) 
-            echo $html->link(SHY,'/seances/voter/' .$deliberation['Deliberation']['id'], array('class'=>'link_voter', 'title'=>'Voter les projets'), false, false)?>
+            echo $html->link( SHY,
+                              '/seances/voter/' .$deliberation['Deliberation']['id'].'/'.$seance_id, 
+                              array('class' => 'link_voter', 
+                                    'title' => 'Voter les projets'), 
+                              false, 
+                              false)?>
 	</td>
 </tr>
 <?php endforeach; ?>

@@ -1,5 +1,6 @@
 <h2> Donner un avis pour le projet : "<?php echo $html->value('Deliberation.objet')?>"</h2>
-<?php echo $form->create('Deliberation',array('url'=>'/seances/donnerAvis/'.$html->value('Deliberation.id'),'type'=>'post')); ?>
+<?php echo $form->create('Deliberation',array('url'=>'/seances/donnerAvis/'.$html->value('Deliberation.id')."/$seance_id",
+                                              'type'=>'post')); ?>
 
 	<div class="demi">
 		<?php echo $form->label('Deliberation.avis', 'Donner un avis <acronym title="obligatoire">*</acronym>'); ?>
@@ -13,7 +14,11 @@
 
 	<div class="demi" id="selectSeance">
 		<?php echo $form->label('Deliberation.seance_id', 'Attribuer une nouvelle séance');?>
-		<?php echo $form->input('Deliberation.seance_id', array('label'=>false, 'div'=>false, 'options'=>$seances, 'empty'=>true, 'selected' => ''));?>
+		<?php echo $form->input('Deliberation.seance_id', array('label'    => false, 
+                                                                        'div'      => false, 
+                                                                        'multiple' => true, 
+                                                                        'options'  => $seances, 
+                                                                        'selected' => $seances_selected));?>
 		<br/>
 		<br/>
 	</div>
