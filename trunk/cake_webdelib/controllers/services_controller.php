@@ -148,12 +148,13 @@ class ServicesController extends AppController {
  
             $this->set('data', $data);
         }
-      function test () {
-          Configure::write('debug', '1');
-          if (!empty($this->data))
-              debug($this->data);
-          $this->set('to', 'to');
-      }
+
+    function test () {
+        Configure::write('debug', '1');
+        if (!empty($this->data))
+            debug($this->data);
+        $this->set('to', 'to');
+    }
      
 }
 ?>
