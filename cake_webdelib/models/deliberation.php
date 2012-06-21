@@ -1248,8 +1248,10 @@ function supprimer($delibId) {
     function afficherListePresents($delib_id=null, $seance_id)      {
         $presents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
                                                             'order'      => array("Acteur.position ASC")));
-        if ($this->isFirstDelib($delib_id, $seance_id) and (empty($presents)))
+        if ($this->isFirstDelib($delib_id, $seance_id) and (empty($presents))) {
+ 
             $presents = $this->_buildFirstList($delib_id, $seance_id);
+        }
 
         // Si la liste est vide, on recupere la liste des present lors de la derbiere deliberation.
         // Verifier que la liste precedente n'est pas vide...
@@ -1284,7 +1286,8 @@ function supprimer($delibId) {
     function _copyFromPreviousList($delib_id, $seance_id){
         $position = $this->getPosition($delib_id, $seance_id);
         $previousDelibId= $this->_getDelibIdByPosition($seance_id, $position);
-        $previousPresents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $previousDelibId)));
+        $previousPresents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $previousDelibId),
+                                                                    'recursive'  => -1));
 
         foreach ($previousPresents as $present){
             $this->Listepresence->create();
@@ -1294,7 +1297,8 @@ function supprimer($delibId) {
             $this->params['data']['Listepresence']['delib_id']= $delib_id;
             $this->Listepresence->save($this->params['data']);
         }
-        $liste = $this->Listepresence->findAll("delib_id =$delib_id");
+        $liste = $this->Listepresence->find('all', array('conditions' => array("Listepresence.delib_id" =>$delib_id),
+                                                         'recursive'  => -1));
         if (!empty($liste))
             return  $liste;
         else
@@ -1308,7 +1312,7 @@ function supprimer($delibId) {
     function _getDelibIdByPosition ($seance_id, $position){
         App::import('Model', 'Deliberationseance');
         $this->Deliberationseance = new Deliberationseance();
-        $delib = $this->Deliberationseance->find('first', array('conditions' => array('position'  =>  $position,
+        $delib = $this->Deliberationseance->find('first', array('conditions' => array('Deliberationseance.position'  =>  $position-1,
                                                                                       'Seance.id' => $seance_id),
                                                                 'fields'    => array('Deliberation.id')));
 

@@ -1583,7 +1583,8 @@ class DeliberationsController extends AppController {
     }
     
     function _getListPresent($delib_id){
-        return $this->Listepresence->find('all', array('conditions'=>array("Listepresence.delib_id" => $delib_id), 'order'=>array("Acteur.position ASC")));
+        return $this->Listepresence->find('all', array('conditions'=>array("Listepresence.delib_id" => $delib_id), 
+                                                       'order'=>array("Acteur.position ASC")));
     }
     
     function listerPresents($delib_id, $seance_id) {
