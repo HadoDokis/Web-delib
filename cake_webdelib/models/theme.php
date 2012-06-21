@@ -56,7 +56,7 @@ class Theme extends AppModel {
        // $level = $this->getLevel($theme_id);
         $level = count($arbre);
         for ($i=$level+1; $i <= 10; $i++) {
-            $oMainPart->addElement(new GDO_FieldType("T".$i."_theme", $tab[$i], 'text'));
+            $oMainPart->addElement(new GDO_FieldType("T".$i."_theme", '', 'text'));
         } 
         foreach ($arbre as $index => $libelle) {
             $tab[$level] = utf8_encode($libelle);
