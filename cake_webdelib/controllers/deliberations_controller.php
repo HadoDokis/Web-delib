@@ -1586,21 +1586,23 @@ class DeliberationsController extends AppController {
         return $this->Listepresence->find('all', array('conditions'=>array("Listepresence.delib_id" => $delib_id), 'order'=>array("Acteur.position ASC")));
     }
     
-    function listerPresents($delib_id) {
+    function listerPresents($delib_id, $seance_id) {
         if (empty($this->data)) {
             $presents = $this->_getListPresent($delib_id);
             foreach($presents as $present){
                 $this->data[$present['Listepresence']['acteur_id']]['present'] = $present['Listepresence']['present'];
                 $this->data[$present['Listepresence']['acteur_id']]['mandataire'] = $present['Listepresence']['mandataire'];
             }
+         
             $this->set('presents',$presents);
             $this->set('mandataires', $this->Acteur->generateListElus());
             $this->set('delib_id', $delib_id);
+            $this->set('seance_id', $seance_id);
         } else {
             $nbConvoques = 0;
             $nbVoix = 0;
             $nbPresents = 0;
-            $this->_effacerListePresence($delib_id);
+            $this->Deliberation->_effacerListePresence($delib_id);
             foreach($this->data as $acteur_id => $tab){
                 $this->Listepresence->create();
                 if (!is_int($acteur_id))
@@ -1629,7 +1631,7 @@ class DeliberationsController extends AppController {
             //if ($nbVoix < ($nbConvoques/2)) {
             //   $this->_reporteDelibs($delib_id);
             // }
-            $this->redirect('/seances/voter/'.$delib_id);
+            $this->redirect("/seances/voter/".$delib_id."/".$seance_id);
         }
         
     }

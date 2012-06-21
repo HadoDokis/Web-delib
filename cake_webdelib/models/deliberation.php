@@ -1258,8 +1258,8 @@ function supprimer($delibId) {
 
         for($i=0; $i<count($presents); $i++){
             if ($presents[$i]['Listepresence']['mandataire'] !='0') {
-                $mandataire = $this->Acteur->read('nom, prenom', $presents[$i]['Listepresence']['mandataire']);
-                $presents[$i]['Listepresence']['mandataire'] = $mandataire['Acteur']['prenom'].$mandataire['Acteur']['nom'];
+                $mandataire = $this->Rapporteur->read('nom, prenom', $presents[$i]['Listepresence']['mandataire']);
+                $presents[$i]['Listepresence']['mandataire'] = $mandataire['Rapporteur']['prenom']." ".$mandataire['Rapporteur']['nom'];
             }
         }
         return ($presents);

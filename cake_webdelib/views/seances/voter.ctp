@@ -8,7 +8,7 @@
 
 <h3>Liste des présents : <?php echo $form->input('Vote.listePresents', array('label'=>false, 'div'=>false, 'options'=>array(1=>'masquée', 2=>'affichée'), 'default'=>1, 'onchange' => "affichageListePresents(this);", 'empty'=>false)); ?></h3>
 <div id='saisiePresents'>
-	<?php echo $this->requestAction('/deliberations/listerPresents/'.$deliberation['Deliberation']['id'], array('return'));?>
+	<?php echo $this->requestAction('/deliberations/listerPresents/'.$deliberation['Deliberation']['id']."/$seance_id", array('return'));?>
 </div>
 
 <?php echo $form->create('Seances',array('url'=>'/seances/voter/'.$deliberation['Deliberation']['id']."/$seance_id",
