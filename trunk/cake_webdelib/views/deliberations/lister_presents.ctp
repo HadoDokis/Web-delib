@@ -1,4 +1,4 @@
-<?php echo $form->create('Deliberation',array('type'=>'post','url'=>'/deliberations/listerPresents/'.$delib_id)); ?>
+<?php echo $form->create('Deliberation',array('type'=>'post','url'=>"/deliberations/listerPresents/$delib_id/$seance_id")); ?>
 <table cellpadding="0" cellspacing="0">
 <tr>
 	<th>Elu</th>
