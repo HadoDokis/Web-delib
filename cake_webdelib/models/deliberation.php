@@ -1257,11 +1257,10 @@ function supprimer($delibId) {
         // Verifier que la liste precedente n'est pas vide...
         if (empty($presents))
             $presents = $this->_copyFromPreviousList($delib_id, $seance_id);
-
         for($i=0; $i<count($presents); $i++){
             if ($presents[$i]['Listepresence']['mandataire'] !='0') {
-                $mandataire = $this->Rapporteur->read('nom, prenom', $presents[$i]['Listepresence']['mandataire']);
-                $presents[$i]['Listepresence']['mandataire'] = $mandataire['Rapporteur']['prenom']." ".$mandataire['Rapporteur']['nom'];
+                $mandataire = $this->Seance->Typeseance->Acteur->read('nom, prenom', $presents[$i]['Listepresence']['mandataire']);
+                $presents[$i]['Listepresence']['mandataire'] = $mandataire['Acteur']['prenom']." ".$mandataire['Acteur']['nom'];
             }
         }
         return ($presents);
@@ -1284,6 +1283,8 @@ function supprimer($delibId) {
     }
 
     function _copyFromPreviousList($delib_id, $seance_id){
+        $this->Listepresence->Behaviors->attach('Containable');
+
         $position = $this->getPosition($delib_id, $seance_id);
         $previousDelibId= $this->_getDelibIdByPosition($seance_id, $position);
         $previousPresents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $previousDelibId),
@@ -1298,7 +1299,7 @@ function supprimer($delibId) {
             $this->Listepresence->save($this->params['data']);
         }
         $liste = $this->Listepresence->find('all', array('conditions' => array("Listepresence.delib_id" =>$delib_id),
-                                                         'recursive'  => -1));
+                                                         'contain'  => array('Acteur', 'Mandataire') ));
         if (!empty($liste))
             return  $liste;
         else
