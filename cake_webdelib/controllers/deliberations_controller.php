@@ -615,17 +615,15 @@ class DeliberationsController extends AppController {
                             'conditions' => array('Annex.id' => $annexeId)));
                         $pos = strpos($annex_filename['Annex']['filetype'], 'vnd.oasis.opendocument');
                         if ($pos !== false) {
-			    $path = WEBROOT_PATH."/files/generee/projet/".$id."/annexes/";
-                            $url = WEBROOT_PATH."/files/generee/projet/".$annexeId."/".$annexeId;
-                            $file =  $this->Gedooo->createFile($url, $annex_filename['Annex']['id'], $annex_filename['Annex']['data']);
-			    $data_pdf = $this->Conversion->convertirFichier($file, 'pdf');
+                            $path = WEBROOT_PATH."/files/generee/projet/".$id."/". $annex_filename['Annex']['filename'];
+			    $data_pdf = $this->Conversion->convertirFichier($path, 'pdf');
                             if (is_array($data_pdf)) $data_pdf = null;
                             $this->Annex->save(array(
                                 'id' => $annexeId,
                                 'titre' => $annexe['titre'],
                                 'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
                                 'joindre_fusion' => $annexe['joindre_fusion'],
-                                'data' => $annex_filename['Annex']['data'],
+                                'data' => file_get_contents($path),
                                 'data_pdf' => $data_pdf));
                         } else {
                             $this->Annex->save(array(
