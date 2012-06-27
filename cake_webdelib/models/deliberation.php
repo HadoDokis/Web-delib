@@ -1209,6 +1209,11 @@ function supprimer($delibId) {
         return $seances;
     }
 
+    function getSeanceDeliberanteId($deliberation_id) {
+        $seances = $this->getSeancesid($deliberation_id); 
+        return ($this->Seance->getSeanceDeliberante($seances));
+    }
+
    function getNbSeances($deliberation_id) {
        return count($this->getSeancesid($deliberation_id));
    }
