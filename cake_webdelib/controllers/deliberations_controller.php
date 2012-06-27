@@ -2602,6 +2602,9 @@ class DeliberationsController extends AppController {
             foreach ($this->data['Deliberation'] as $id => $bool ) {
                 if ($bool == 1) {
                     $delib_id = substr($id, 3, strlen($id));
+                    $seance_id = $this->Deliberation->getSeanceDeliberanteId($delib_id);
+                    $type_id = $this->Seance->getType($seance_id);
+
                     if ($this->data['Deliberation']['circuit_id'] == -1) {
                         $this->Deliberation->id =   $delib_id ;
                         $this->Deliberation->saveField('signee', true);
@@ -2611,17 +2614,25 @@ class DeliberationsController extends AppController {
                     $soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
                     $nomfichierpdf = "D_$id.pdf";
                     $objetDossier = utf8_encode($this->_objetParaph("$delib_id ".$delib['Deliberation']['objet_delib']));
+
+                    $objetDossier = trim($objetDossier);
+                    $objetDossier = str_replace('/', '-',  $objetDossier);
+                    $objetDossier = str_replace(':', '-',  $objetDossier);
+                    $objetDossier = str_replace('"', "'",  $objetDossier);
+                    $objetDossier = str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $objetDossier);
+
                     $annexes = array();
                     $tmp1=0;
                     foreach ($delib['Annex'] as $annex) {
-                        if ($annex['joindre_ctrl_legalite'])
+                        if ($annex['joindre_ctrl_legalite']) {
                             $annexes[$tmp1][3] = $annex['filename'];
-                        $annexes[$tmp1][2] = 'UTF-8';
-                        $annexes[$tmp1][1] = $annex['filetype'];
-                        $annexes[$tmp1][0] = $annex['data'];
-                        $tmp1++;
+                            $annexes[$tmp1][2] = 'UTF-8';
+                            $annexes[$tmp1][1] = $annex['filetype'];
+                            $annexes[$tmp1][0] = $annex['data'];
+                            $tmp1++;
+                        }
                     }
-                    $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delib['Seance']['type_id'], $delib['Deliberation']['etat']);
+                    $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($type_id, $delib['Deliberation']['etat']);
                     //  $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport.pdf/1/false");
                     $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport/1/false");
                     
