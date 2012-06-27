@@ -259,6 +259,8 @@
                              $datAnnex =  $annexFile['Annex']['data'];
                          elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text')
                              $datAnnex =  $annexFile['Annex']['data_pdf'];
+                         elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet')
+                             $datAnnex =  $annexFile['Annex']['data_pdf'];
 
                          $fichierAnnex = $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $datAnnex);
                          array_push($annexes, $fichierAnnex);
@@ -291,6 +293,8 @@
                          if ($annexFile['Annex']['filetype'] == 'application/pdf') 
                              $datAnnex =  $annexFile['Annex']['data'];
                          elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text')
+                             $datAnnex =  $annexFile['Annex']['data_pdf'];
+                         elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet')
                              $datAnnex =  $annexFile['Annex']['data_pdf'];
                         
                          $fichierAnnex = $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $datAnnex);
@@ -394,7 +398,9 @@
 		     $genereConvocation = true;
 		}
 		else {
-                    $dyn_path = "/files/generee/PV/".$seance['Seance']['id']."/";
+                    $seance = $this->Seance->find('first', array(
+                                                  'conditions' => array('Seance.id' => $seance_id)));
+                    $dyn_path = "/files/generee/PV/$seance_id/";
                     $path = WEBROOT_PATH.$dyn_path;
                     if (!$this->Gedooo->checkPath($path))
                         die("Webdelib ne peut pas ecrire dans le repertoire : $path");
