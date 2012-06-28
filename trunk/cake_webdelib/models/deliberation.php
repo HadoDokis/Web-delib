@@ -253,8 +253,6 @@ class Deliberation extends AppModel {
                                            'fields'     => array('Seance.id'),
                                            'contain'    => array('Typeseance.modelprojet_id', 'Typeseance.modeldeliberation_id') ));
 
-                                                   
-
              if (!empty($seance)){
                  if ($data['Deliberation']['etat']<3)
                      return $seance['Typeseance']['modelprojet_id'];
@@ -674,21 +672,30 @@ class Deliberation extends AppModel {
 
 	       }
 
-	       $annexe_ids = $this->Annex->getAnnexesIFromDelibId($delib['Deliberation']['id'], 0, 1);
-	       $oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($annexe_ids), 'text'));
+               // $annexe_ids = $this->Annex->getAnnexesIFromDelibId($delib['Deliberation']['id'], 0, 1);
+               $annexe_ids = array();
+               $anns = $this->Annex->find('all', array('conditions' =>  array(
+                                                           'Annex.foreign_key' => $delib['Deliberation']['id'],
+                                                           'Annex.filetype like' => '%vnd.oasis.opendocument.text%'),
+                                                       'fields' => array('id'),
+                                                       'recursive' => -1));
+               foreach( $anns as $ann )
+                   $annexe_ids[] = $ann['Annex']['id'];
+               $this->log( $annexe_ids );
+               $oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($annexe_ids), 'text'));
 
-	       @$annexes =  new GDO_IterationType("Annexes");
-	       foreach($annexe_ids as $annexe_id) {
-                   $annexe = $this->Annex->find('first', array ('conditions' => array('Annex.id' => $annexe_id['Annex']['id']),
+               @$annexes =  new GDO_IterationType("Annexes");
+               foreach($annexe_ids as $key => $annexe_id) {
+                   $annexe = $this->Annex->find('first', array ('conditions' => array('Annex.id' => $annexe_id),
                                                                'recursive'  => -1));
-                   if (($annexe['Annex']['joindre_fusion'] == 1) && ($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {  
+                   if (($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {  
                        $oDevPart = new GDO_PartType();
                        $oDevPart->addElement(new GDO_FieldType('nom_fichier',  utf8_encode($annexe['Annex']['filename']), 'text'));
                        $oDevPart->addElement(new GDO_FieldType('titre_annexe', utf8_encode($annexe['Annex']['titre']), 'text'));
                        $oDevPart->addElement(new GDO_ContentType('fichier',    utf8_encode($annexe['Annex']['filename']),  'application/vnd.oasis.opendocument.text', 'binary', $annexe['Annex']['data']));
-		       $annexes->addPart($oDevPart);
-		   }
-	       }
+                       $annexes->addPart($oDevPart);
+                   }
+               }
                @$oMainPart->addElement($annexes);
 
                //LISTE DES PRESENCES...
