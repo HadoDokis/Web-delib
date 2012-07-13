@@ -14,10 +14,27 @@ function startup() {
         function main() {
             // Controle de l'avancement des délibérations dans le parapheur
             $delibs = $this->Deliberation->find('all',
-                                                array('conditions' => array('Deliberation.etat' >0,
-                                                                            'Deliberation.etat_parapheur' => 1 )));
+                                                array('conditions' => array('Deliberation.etat >' =>0,
+                                                                            'Deliberation.etat_parapheur' => 1 ),
+                                                      'recursive' => -1,
+                                                      'fields'    => array('id', 'objet') ));
+
+            $objetDossier = utf8_encode($delib['Deliberation']['objet']);
+            $objetDossier = str_replace('/', '-',  $objetDossier);
+            $objetDossier = str_replace(':', '-',  $objetDossier);
+            $objetDossier = str_replace('"', "'",  $objetDossier);
+            $objetDossier = str_replace('+', "PLUS",  $objetDossier);
+
+            $objetDossier = str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $objetDossier);
+            if (strlen($objetDossier) > 190) {
+                $objetDossier =  substr($objetDossier, 0, 185);
+            }
+            if ($objetDossier[strlen($objetDossier)-1] == '.')
+                $objetDossier[strlen($objetDossier)-1] = " ";
+            $objetDossier = trim($objetDossier);
+ 
             foreach ($delibs as $delib) {
-                 $this->_checkEtatParapheur($delib['Deliberation']['id'], false, utf8_encode($delib['Deliberation']['objet']));
+                 $this->_checkEtatParapheur($delib['Deliberation']['id'], false,  $objetDossier));
             }
       
         }
