@@ -676,7 +676,8 @@ class SeancesController extends AppController {
     	    	$afficherTtesLesSeances = true;
     	    else
     	        $afficherTtesLesSeances = false;
-    	    $this->set('seances', $this->Seance->generateList(array('Seance.id <>'=> $seance_id), 
+    	    //$this->set('seances', $this->Seance->generateList(array('Seance.id <>'=> $seance_id), 
+    	    $this->set('seances', $this->Seance->generateList(array(), 
                                                               $afficherTtesLesSeances,  
                                                               array_keys($this->Session->read('user.Nature'))));
     	    $this->set('avis', array(1 => 'Favorable', 2 => 'Défavorable'));
