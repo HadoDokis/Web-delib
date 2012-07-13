@@ -2611,13 +2611,21 @@ class DeliberationsController extends AppController {
                     $delib = $this->Deliberation->find('first', array('conditions'=>array('Deliberation.id' => $delib_id)));
                     $soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
                     $nomfichierpdf = "D_$id.pdf";
-                    $objetDossier = utf8_encode($this->_objetParaph("$delib_id ".$delib['Deliberation']['objet_delib']));
 
-                    $objetDossier = trim($objetDossier);
+                    $objetDossier = utf8_encode($this->_objetParaph("$delib_id ".$delib['Deliberation']['objet']));
+
                     $objetDossier = str_replace('/', '-',  $objetDossier);
                     $objetDossier = str_replace(':', '-',  $objetDossier);
                     $objetDossier = str_replace('"', "'",  $objetDossier);
+                    $objetDossier = str_replace('+', "PLUS",  $objetDossier);
                     $objetDossier = str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $objetDossier);
+
+                    if (strlen($objetDossier) > 190) {
+                        $objetDossier =  substr($objetDossier, 0, 185);
+                    }
+                    if ($objetDossier[strlen($objetDossier)-1] == '.')
+                        $objetDossier[strlen($objetDossier)-1] = " ";
+                    $objetDossier = trim($objetDossier);
 
                     $annexes = array();
                     $tmp1=0;
