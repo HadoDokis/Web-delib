@@ -41,7 +41,21 @@ class Seance extends AppModel {
                          'foreignKey' => 'foreign_key',
                          'conditions' => array('Infosup.model' => 'Seance')));
 
-    var $hasAndBelongsToMany = array('Deliberation');
+//    var $hasAndBelongsToMany = array('Deliberation');
+       var $hasAndBelongsToMany = array( 'Deliberation' => array( 'className' => 'Deliberation',
+                                                                  'joinTable' => 'deliberations_seances',
+                                                                  'foreignKey' => 'seance_id',
+                                                                  'associationForeignKey' => 'deliberation_id',
+                                                                  'unique' => true,
+                                                                  'conditions' => '',
+                                                                  'fields' => '',
+                                                                  'order' => 'position',
+                                                                  'limit' => '',
+                                                                  'offset' => '',
+                                                                  'finderQuery' => '',
+                                                                  'deleteQuery' => '',
+                                                                  'insertQuery' => ''));
+
 
     /* retourne la liste des séances futures avec le nom du type de séance  */
     function generateList($conditionSup=null, $afficherTtesLesSeances = false, $natures = array()) {
@@ -91,8 +105,12 @@ class Seance extends AppModel {
     }
 
     function generateAllList() {
+        $this->Behaviors->attach('Containable');
+
         $generateList = array();
-        $seances = $this->findAll(null, null, 'date ASC');
+        $seances = $this->find('all', array('order'   => 'date ASC',
+                                            'contain' => 'Typeseance'));
+
         foreach ($seances as $seance){
             $deliberante = "";
             if ($seance['Typeseance']['action'] == 0)
@@ -284,7 +302,7 @@ class Seance extends AppModel {
         return null;
     }
 
-    function makeBalise($seance_id, $oDevPart=null, $include_projets=false) {
+    function makeBalise($seance_id, $oDevPart=null, $include_projets=false, $conditions = array()) {
         include_once (ROOT.DS.APP_DIR.DS.'controllers/components/date.php');
         $this->Date = new DateComponent;
 
@@ -293,19 +311,22 @@ class Seance extends AppModel {
                                              'contain'    => array('Deliberation.id')));
 
         $return = false;
-        $suffixe = '';
         if ( $oDevPart == null) {
             $oDevPart = new GDO_PartType();  
             $return = true;
+            $suffixe = "_seances";
         } 
         else {
             $suffixe = "_seance";
         }
+        $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
+        //$oDevPart->addElement(new GDO_FieldType('date_seance_lettres'.$suffixe, utf8_encode($date_lettres), 'text'));
+        $oDevPart->addElement(new GDO_FieldType('date_seance_lettres', utf8_encode($date_lettres), 'text'));
         $oDevPart->addElement(new GDO_FieldType("heure".$suffixe,       $this->Date->Hour($seance['Seance']['date']),     'text'));
         $oDevPart->addElement(new GDO_FieldType("date".$suffixe,        $this->Date->frDate($seance['Seance']['date']),       'date'));
         $oDevPart->addElement(new GDO_FieldType("hh".$suffixe,          $this->Date->Hour($seance['Seance']['date'], 'hh'), 'string'));
         $oDevPart->addElement(new GDO_FieldType("mm".$suffixe,          $this->Date->Hour($seance['Seance']['date'], 'mm'), 'string'));
-        $oDevPart->addElement(new GDO_FieldType("date_convocation".$suffixe,        $this->Date->frDate($seance['Seance']['date_convocation']),   'date'));
+        $oDevPart->addElement(new GDO_FieldType("date_convocation".$suffixe, $this->Date->frDate($seance['Seance']['date_convocation']),   'date'));
         $oDevPart->addElement(new GDO_FieldType("identifiant".$suffixe, $seance['Seance']['id'], 'text'));
 
         $elus = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']); 
@@ -333,8 +354,6 @@ class Seance extends AppModel {
         $this->President->makeBalise($oDevPart, $seance['Seance']['president_id']);
         $this->Secretaire->makeBalise($oDevPart, $seance['Seance']['secretaire_id']);
 
-        $date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
-        $oDevPart->addElement(new GDO_FieldType('date_seance_lettres'.$suffixe, utf8_encode($date_lettres), 'text'));
         
         $infosups = $this->Infosup->find( 'all',
                                           array('conditions' => array('Infosup.foreign_key' => $seance['Seance']['id'],
@@ -348,9 +367,9 @@ class Seance extends AppModel {
             if (isset($seance['Deliberation']) && !empty($seance['Deliberation'])) {
                 $blocProjets = new GDO_IterationType("Projets");
                 foreach($seance['Deliberation'] as $deliberation){
-                    $projet = $this->Deliberation->find('first', array('conditions' => 
-                                                                 array('Deliberation.id' => $deliberation['DeliberationsSeance']['deliberation_id']),
-                                                                 'recursive' => -1)); 
+                    $conditions['Deliberation.id'] = $deliberation['DeliberationsSeance']['deliberation_id'];
+                    $projet = $this->Deliberation->find('first', array('conditions' => $conditions,
+                                                                       'recursive'  => -1)); 
                     $Part = new GDO_PartType();
                     $this->Deliberation->makeBalisesProjet($projet, $Part, true, $seance['Seance']['id']);
                     $blocProjets->addPart($Part);
