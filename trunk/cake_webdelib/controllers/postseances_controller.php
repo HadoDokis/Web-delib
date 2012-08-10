@@ -36,7 +36,7 @@ class PostseancesController extends AppController {
  
              $this->Seance->Behaviors->attach('Containable');
              $seances = $this->Seance->find('all', array('conditions'=> array('Seance.traitee'=> 1),
-                                                         'order '    => 'Seance.date DESC',
+                                                         'order'     => 'Seance.date DESC',
                                                          'fields'    => array('id', 'date', 'type_id', 'pv_figes'),
                                                          'contain'   => array('Typeseance.libelle', 'Typeseance.action',
                                                                               'Typeseance.modelconvocation_id',
