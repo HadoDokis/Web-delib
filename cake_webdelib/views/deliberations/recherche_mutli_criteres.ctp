@@ -30,10 +30,11 @@
     </tr>
     <tr>
             <td><?php echo $form->input('Deliberation.seance_id', array( 'between'  => '</td><td>',
-                                                                         'label'    => 'Date s&eacute;ance entre ', 
+                                                                         'label'    => 'Date s&eacute;ance (et) ', 
                                                                          'options'  => $date_seances, 
                                                                          'multiple' => true,
-                                                                         'empty'    => false));?>
+                                                                         'empty'    => false, 
+                                                                         'size'     => '10'));?>
             </td>
     </tr>
     <tr>
