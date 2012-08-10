@@ -284,18 +284,17 @@ class Deliberation extends AppModel {
 		$delib['Deliberation']['etat']=0;
 		$delib['Deliberation']['anterieure_id']=$id;
 		$delib['Deliberation']['date_envoi']=0;
-//		$delib['Deliberation']['circuit_id']=0;
 		$delib['Deliberation']['created']=date('Y-m-d H:i:s', time());
 		$delib['Deliberation']['modified']=date('Y-m-d H:i:s', time());
 		$this->save($delib['Deliberation']);
 		$delib_id = $this->id;
+                $this->copyPositionsDelibs($id,  $delib_id );
 
 		// copie des annexes du projet refusé vers le nouveau projet
 		$annexes = $delib['Annex'];
 		foreach($annexes as $annexe) {
 			$tmp['Annex']= $annexe;
 			$tmp['Annex']['id']=null;
-			$tmp['Annex']['model']='Deliberation';
 			$tmp['Annex']['foreign_key']= $delib_id;
 			$this->Annex->save( $tmp, false);
 		}
@@ -372,7 +371,7 @@ class Deliberation extends AppModel {
            return true;
        }
 
-       function genererRecherche($projets, $model_id=1, $format=0, $multiSeances=array() ){
+       function genererRecherche($projets, $model_id=1, $format=0, $multiSeances=array(), $conditions=array() ){
             include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
             include_once ('vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
@@ -430,7 +429,7 @@ class Deliberation extends AppModel {
             else {
                 $seances = new GDO_IterationType("Seances");
                 foreach($multiSeances as $key => $seance_id) 
-                    $seances->addPart($this->Seance->makeBalise($seance_id, null, true));
+                    $seances->addPart($this->Seance->makeBalise($seance_id, null, true, $conditions));
                 $oMainPart->addElement($seances);
             }
 
@@ -681,7 +680,6 @@ class Deliberation extends AppModel {
                                                        'recursive' => -1));
                foreach( $anns as $ann )
                    $annexe_ids[] = $ann['Annex']['id'];
-               $this->log( $annexe_ids );
                $oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($annexe_ids), 'text'));
 
                @$annexes =  new GDO_IterationType("Annexes");
@@ -1363,6 +1361,24 @@ function supprimer($delibId) {
                                     AND Deliberation.nature_id IN ($natures_id)
                                     AND Deliberation.etat != -1
                               ORDER BY Deliberation.created DESC;"));
+
+    }
+
+    function copyPositionsDelibs($delib_id, $new_id) {
+        App::import('Model', 'Deliberationseance');
+        $this->Deliberationseance = new Deliberationseance();
+        $positions = $this->Deliberationseance->find('all', 
+                                                     array('conditions' => array('Deliberationseance.deliberation_id' => $delib_id),
+                                                           'fields'     => array('Deliberationseance.position', 
+                                                                                 'Deliberationseance.seance_id'),
+                                                           'recursive'  => -1));
+        foreach($positions as $position) {
+            $this->Deliberationseance->create();
+            $Deliberationseance['Deliberationseance']['position']  = $position['Deliberationseance']['position']; 
+            $Deliberationseance['Deliberationseance']['seance_id'] = $position['Deliberationseance']['seance_id'];
+            $Deliberationseance['Deliberationseance']['deliberation_id'] = $new_id;
+            $this->Deliberationseance->save($Deliberationseance);
+        }
 
     }
 
