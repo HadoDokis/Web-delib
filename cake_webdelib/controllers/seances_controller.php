@@ -840,8 +840,15 @@ class SeancesController extends AppController {
         $this->Seance->Behaviors->attach('Containable');
         $seance = $this->Seance->find('first', array(
                                       'conditions' => array('Seance.id' => $seance_id),
-                                      'fields'     => array('Seance.type_id'),
+                                      'fields'     => array('Seance.type_id', 'Seance.date'),
                                       'contain'    => array('Typeseance.action', 'Typeseance.id')));
+        $date_seance = strtotime($seance['Seance']['date']);
+        $date_now = strtotime(date('Y-m-d H:i:s'));
+        if ( $date_seance  >  $date_now) {
+    	    $this->Session->setFlash('Vous ne pouvez pas clôturer une séance future', 'growl', array('type'=>'erreur')); 
+    	    $this->redirect('/seances/listerFuturesSeances');
+        }
+
         $ids = $this->Seance->getDeliberationsId($seance_id);
 
     	$actes = $this->Deliberation->find('all', array(
