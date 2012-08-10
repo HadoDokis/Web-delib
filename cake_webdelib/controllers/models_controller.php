@@ -355,13 +355,10 @@
                              error_reporting(0);
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
-                    $this->log("Objet SOAP construit en  $time secondes");
-                             $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
-                    $this->log(strlen( $oMainPart));
-                             $oFusion->process();
+                    $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+                    $oFusion->process();
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
-                    $this->log("Objet fusionné $time secondes");
                              $oFusion->SendContentToFile($path.$nomFichier.".odt");
                              $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
 			     $chemin_fichier = $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
@@ -369,7 +366,6 @@
                                  $this->Pdf->concatener($chemin_fichier, $annexes); 
                         $time_end = microtime(true);
                         $time = $time_end - $time_start;
-                        $this->log("Document fini en $time secondes");
 
                          }
                          catch (Exception $e){
@@ -437,14 +433,12 @@
 
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
-                    $this->log("Objet SOAP construit en  $time secondes");
 
                     $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
 		    $oFusion->process();
 
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
-                    $this->log("Objet fusionné $time secondes");
 		    if ($dl ==1) {
 	                $oFusion->SendContentToFile($path.$nomFichier);
                         $content = $this->Conversion->convertirFichier($path.$nomFichier, $format);
@@ -468,7 +462,6 @@
  
                         $time_end = microtime(true);
                         $time = $time_end - $time_start;
-                        $this->log("Document fini en $time secondes");
 
                         header("Content-type: $sMimeType");
                         header("Content-Disposition: attachment; filename=\"$nomFichier\"");
@@ -511,7 +504,6 @@
                 $this->Email->template = 'convocation';
                 $this->set('data',   $this->paramMails('convocation',  $acteur ));
                 
-                $this->log($path.$fichier.$format);              
                 $this->Email->attachments = array($path.$fichier.$format);
                 $this->Email->send();
             }
