@@ -693,9 +693,14 @@ class DeliberationsController extends AppController {
                 $this->Session->setFlash('Invalide id pour la deliberation', 'growl', array('type'=>'erreur'));
                 $this->redirect('/deliberations/mesProjetsRedaction');
             }
-            $delib = $this->Deliberation->read(null, $id);
-            if(!empty($delib['Seance']['date']))
-                $delib['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($delib['Seance']['date']));
+            $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' =>$id)));
+            for($i = 0; $i< count($delib['Seance']); $i++) {
+                $type = $this->Seance->Typeseance->find('first', array('conditions' => array('Typeseance.id' => $delib['Seance'][$i]['type_id']),
+                                                                       'recursive'  => -1, 
+                                                                       'fields'     => array('libelle')));
+                $delib['Seance'][$i]['Typeseance']['libelle'] =  $type['Typeseance']['libelle'];
+            }
+             
             if(!empty($delib['Deliberation']['date_limite']))
                 $delib['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($delib['Deliberation']['date_limite']));
             $delib['Deliberation']['created'] = $this->Date->frenchDateConvocation(strtotime($delib['Deliberation']['created']));
@@ -2286,7 +2291,7 @@ class DeliberationsController extends AppController {
                         if (empty($format))
                             $format =0;
                         
-                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format,  $multiseances);
+                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format,  $multiseances,  $conditions);
                     }
                     else {
                         $this->Session->setFlash('Aucun résultat à la recherche effectuée.', 'growl', array('type'=>'erreur'));
@@ -2391,7 +2396,7 @@ class DeliberationsController extends AppController {
                         $format =0;
                     if (count($multiseances) == 1)
                          $multiseances = array();
-                    $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format,  $multiseances);
+                    $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format,  $multiseances, $conditions);
                 }
             }
         }
