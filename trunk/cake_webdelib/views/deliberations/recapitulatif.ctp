@@ -15,7 +15,16 @@
 	</tr>
 	<tr>
 		<td><?php echo $form->label('Deliberation.seance_id','Date séance'); ?></td>
-		<td><?php echo $deliberation['Seance']['date'];?></td>
+		<td>
+                <?php
+                    if(isset($deliberation['Seance'][0])){
+                        foreach( $deliberation['Seance'] as  $seance) {
+                            echo($seance['Typeseance']['libelle']." : ");
+                            echo($html2->ukToFrenchDateWithHour($seance['date']).'<br>');
+                        }
+                    }
+                ?>
+                </td>
 	</tr>
 	<tr>
 		<td><?php echo $form->label('Deliberation.rapporteur_id', 'Rapporteur');?></td>
