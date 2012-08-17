@@ -178,9 +178,14 @@ class SeancesController extends AppController {
     	    $this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
     	    $this->redirect('/seances/index');
     	}
+        $delibs = $this->Seance->getDeliberationsId($id);
+        if (count($delibs) != 0) {
+            $this->Session->setFlash('Cette séance contient des actes. Vous ne pouvez pas la supprimer.', 'growl', array('type'=>'erreur'));
+            $this->redirect('/seances/listerFuturesSeances');
+        }
     	if ($this->Seance->del($id)) {
     	    $this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; suprim&eacute;e');
-    	    $this->redirect('/seances/index');
+    	    $this->redirect('/seances/listerFuturesSeances');
     	}
     	else {
     	    $this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
