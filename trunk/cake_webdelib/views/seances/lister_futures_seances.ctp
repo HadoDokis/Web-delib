@@ -29,6 +29,13 @@
 		<td><?php echo ($html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id'])); ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
 <?php
+                     echo $html->link(SHY,
+                                     '/seances/delete/' . $seance['Seance']['id'],
+                                     array('class'=>'link_supprimer',
+                                           'title'=>'Supprimer la séance du '.$seance['Seance']['date'],
+                                           'alt'=>'Supprimer la séance du '.$seance['Seance']['date']),
+                                           false,
+                                           false);
                     echo $html->link(SHY,
                                      '/seances/afficherProjets/' . $seance['Seance']['id'], 
                                      array('class'=>'link_classer_odj', 
