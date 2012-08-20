@@ -238,7 +238,7 @@ class Seance extends AppModel {
                                                                                           'Deliberation.etat !=' => -1),
                                                                    'fields'     => array( 'Deliberationseance.id',
                                                                                           'Deliberationseance.position' ),
-                                                                   'order'      => array( 'position ASC' )));
+                                                                   'order'      => array( 'Deliberationseance.position ASC' )));
             // pour toutes les délibs
             foreach($delibs as $delib) {
                 $position++;
