@@ -1,7 +1,6 @@
 <div class="seances">
 
 <h2>Liste des acteurs</h2>
-
 <table cellpadding="0" cellspacing="0" width='100%'>
 <tr>
 	<th>Civilit&eacute;</th>
@@ -13,6 +12,7 @@
 	<th><?php echo $paginator->sort('N° d\'ordre', 'position'); ?></th>
 	<th>Téléphone</th>
 	<th>Mobile</th>
+	<th>Suppléant</th>
 	<th><?php echo $paginator->sort('Délégation(s)', 'Service.libelle'); ?></th>
 	<th width='120px'>Actions</th>
 </tr>
@@ -27,6 +27,7 @@
 	<td><?php echo $Acteur->libelleOrdre($acteur['Acteur']['position']); ?></td>
 	<td><?php echo $acteur['Acteur']['telfixe']; ?></td>
 	<td><?php echo $acteur['Acteur']['telmobile']; ?></td>
+	<td><?php if (isset( $acteur['Acteur']['suppleant_id'])) echo $acteur['Suppleant']['prenom']." ".$acteur['Suppleant']['nom']; ?></td>
 	<td><?php foreach ($acteur['Service'] as $service) 
               echo ($service['libelle']).'<br/>';
              ?></td>

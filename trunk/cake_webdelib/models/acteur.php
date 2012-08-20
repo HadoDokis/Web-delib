@@ -55,7 +55,9 @@ class Acteur extends AppModel
 		)
 	);
 
-	var $belongsTo = 'Typeacteur';
+	var $belongsTo = array('Suppleant' => array( 'className' => 'Acteur', 'foreignKey' => 'suppleant_id'),
+                               'Typeacteur' => array( 'className' => 'Typeacteur', 'foreignKey' => 'typeacteur_id'));
+
 
 	var $hasAndBelongsToMany = array(
 		'Service' => array(
@@ -77,7 +79,7 @@ class Acteur extends AppModel
 		if ($order_by==null)
 			$acteurs = $this->find('all', array('conditions' => array('Typeacteur.elu'=> 1, 'Acteur.actif' => 1), 
                                                              'fields'    => array('id', 'nom', 'prenom'),
-                                                             'order'     => 'position ASC'));
+                                                             'order'     => 'Acteur.position ASC'));
 		else
 			$acteurs = $this->find('all', array('conditions' => array('Typeacteur.elu'=> 1,  'Acteur.actif' => 1), 
                                                              'fields'    => array('id', 'nom', 'prenom'),
@@ -94,7 +96,7 @@ class Acteur extends AppModel
                 if ($order_by==null)
                         $acteurs = $this->find('all', array('conditions' => array('Acteur.actif' => 1),
                                                              'fields'    => array('id', 'nom', 'prenom'),
-                                                             'order'     => 'position ASC'));
+                                                             'order'     => 'Acteur.position ASC'));
                 else    
                         $acteurs = $this->find('all', array('conditions' => array('Acteur.actif' => 1), 
                                                              'fields'    => array('id', 'nom', 'prenom'),

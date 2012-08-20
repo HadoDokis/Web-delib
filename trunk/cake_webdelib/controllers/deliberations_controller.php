@@ -1586,8 +1586,29 @@ class DeliberationsController extends AppController {
     }
     
     function _getListPresent($delib_id){
-        return $this->Listepresence->find('all', array('conditions'=>array("Listepresence.delib_id" => $delib_id), 
-                                                       'order'=>array("Acteur.position ASC")));
+        $this->Listepresence->Behaviors->attach('Containable');
+
+        $acteurs =  $this->Listepresence->find('all', array('conditions'=> array("Listepresence.delib_id" => $delib_id), 
+                                                            'contain'   => array('Acteur'),
+                                                            'order'     => array("Acteur.position ASC")));
+        foreach ($acteurs as &$acteur) {
+            if (isset($acteur['Acteur']['suppleant_id'])  && ($acteur['Acteur']['suppleant_id'] != null)) {
+                $suppleant = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur['Acteur']['suppleant_id']),
+                                                                'recursive'  => -1,
+                                                                'fields' => array('id', 'nom', 'prenom')));
+                $acteur['Suppleant'] = $suppleant['Acteur'];
+            }
+            $is_suppleant = $this->Acteur->find('first', array('conditions' => array('Acteur.suppleant_id' => $acteur['Acteur']['id']),
+                                                               'recursive'  => -1,
+                                                               'fields'     => array('id', 'nom', 'prenom')));
+            if ( !empty($is_suppleant)) {
+                $acteur['Acteur']['is_suppleant'] = $is_suppleant;
+                $acteur['Titulaire']['id']     =  $is_suppleant['Acteur']['id'];
+                $acteur['Titulaire']['prenom'] =  $is_suppleant['Acteur']['prenom']; 
+                $acteur['Titulaire']['nom']    =  $is_suppleant['Acteur']['nom']; 
+             }
+        }
+        return $acteurs;
     }
     
     function listerPresents($delib_id, $seance_id) {
@@ -1607,9 +1628,15 @@ class DeliberationsController extends AppController {
             $nbVoix = 0;
             $nbPresents = 0;
             $this->Deliberation->_effacerListePresence($delib_id);
+
             foreach($this->data as $acteur_id => $tab){
+                if (isset($this->data[$acteur_id]['suppleant_id']))
+                    if ($acteur_id != $this->data[$acteur_id]['suppleant_id']) {
+                        $acteur_id = $this->data[$acteur_id]['suppleant_id'];
+                    }
+
                 $this->Listepresence->create();
-                if (!is_int($acteur_id))
+                if ($acteur_id == 0)
                     continue;
                 
                 $nbConvoques++;
@@ -1625,8 +1652,9 @@ class DeliberationsController extends AppController {
                 if (isset($tab['mandataire']) && !empty($tab['mandataire'])) {
                     $this->data['Listepresence']['mandataire'] = $tab['mandataire'];
                     $nbVoix++;
-                } else
-                $this->data['Listepresence']['mandataire'] =0;
+                } 
+                else
+                    $this->data['Listepresence']['mandataire'] =0;
                 
                 $this->data['Listepresence']['delib_id']=$delib_id;
                 $this->Listepresence->save($this->data['Listepresence']);
