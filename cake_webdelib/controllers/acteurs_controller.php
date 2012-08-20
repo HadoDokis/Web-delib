@@ -18,7 +18,7 @@ class ActeursController extends AppController
 	var $paginate = array(
 		'Acteur' => array(
                        'conditions' => array ('Acteur.actif'=> 1),
-                       'fields' => array('DISTINCT Acteur.id', 'Acteur.nom', 'Acteur.prenom', 'Acteur.salutation', 'Acteur.telfixe', 'Acteur.telmobile',  'Acteur.titre', 'Acteur.position', 'Typeacteur.nom',  'Typeacteur.elu', ),
+                       'fields' => array('DISTINCT Acteur.id', 'Acteur.nom', 'Acteur.prenom', 'Acteur.salutation', 'Acteur.telfixe', 'Acteur.telmobile',  'Acteur.suppleant_id', 'Acteur.titre', 'Acteur.position', 'Typeacteur.nom',  'Typeacteur.elu', 'Suppleant.nom', 'Suppleant.prenom'),
 			'limit' => 20,
 			'joins' => array(
 				array(
@@ -69,6 +69,7 @@ class ActeursController extends AppController
 			$this->redirect('/acteurs/index');
 		else {
 			$this->Acteur->Typeacteur->recursive = 0;
+			$this->set('acteurs', $this->Acteur->generateListElus() );
 			$this->set('typeacteurs', $this->Acteur->Typeacteur->find('all', array('fields'=>array( 'id', 'nom', 'elu'))));
 			$this->set('services', $this->Acteur->Service->generatetreelist(array('Service.actif'=>'1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
 			$this->set('selectedServices', null);
@@ -80,6 +81,7 @@ class ActeursController extends AppController
 		$sortie = false;
 		if (empty($this->data)) {
 			$this->data = $this->Acteur->read(null, $id);
+			$this->set('acteurs', $this->Acteur->generateListElus() );
 			if (empty($this->data)) {
 				$this->Session->setFlash('Invalide id pour l\'acteur');
 				$sortie = true;
@@ -100,6 +102,7 @@ class ActeursController extends AppController
 			    $this->set('selectedServices', $this->data['Service']['Service']);
 			else
 			    $this->set('selectedServices', null);			}
+                         
 		}
 		if ($sortie)
 			$this->redirect('/acteurs/index');

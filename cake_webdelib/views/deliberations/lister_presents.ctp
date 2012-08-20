@@ -6,9 +6,31 @@
 	<th>Mandataire</th>
 </tr>
 <?php foreach ($presents as $present):
-     $pres = $present['Acteur']['id']; ?>
+     $options = array();
+     $suppleant_id = $present['Acteur']['suppleant_id'];
+     $pres = $present['Acteur']['id']; 
+     if (($suppleant_id != null) || isset($present['Acteur']['is_suppleant'])) {
+         if (isset($present['Suppleant']['id'])){
+             $options[$suppleant_id] = "Suppléant : ".$present['Suppleant']['prenom'].' '.$present['Suppleant']['nom'];
+             $options[$pres] = "Titulaire : ".$present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
+         }
+         else {
+             $options[$present['Acteur']['id']] = "Suppléant : ".$present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
+             $options[$present['Titulaire']['id']] = "Titulaire : ".$present['Titulaire']['prenom'].' '.$present['Titulaire']['nom'];
+         }
+     }
+   
+?>
 <tr>
-	<td><?php echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom']; ?></td>
+    <td>
+        <?php 
+        if (($suppleant_id != null) || isset($present['Acteur']['is_suppleant'])) {
+            echo $form->input($present['Acteur']['id'].'.suppleant_id', array('options' =>  $options, 'label' => false));             
+        }
+        else
+            echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom']; 
+        ?>
+    </td>
 	<td>
  		<?php echo $form->input($present['Acteur']['id'].'.present', array('label'=>false, 'fieldset'=>false, 'legend'=>false, 'div'=>false, 'type'=>'radio', 'options'=>array(1=>'oui'),'selected'=>'selected', 'onclick'=>"javascript:disable('liste_$pres','1');")); ?>
 		<?php echo $form->input($present['Acteur']['id'].'.present', array('label'=>false, 'fieldset'=>false, 'legend'=>false, 'div'=>false, 'type'=>'radio', 'options'=>array(0=>'non'),'onclick'=>"javascript:disable('liste_$pres','2');")); ?>

@@ -65,6 +65,16 @@ function initAffichageInfosElus()
 	</div>
 
 	<div class="demi">
+                <fieldset>
+                <legend>Suppléant</legend>
+                        <?php
+                                if ($html->value('Acteur.suppleant_id')) 
+                                    $suppleant_id = $html->value('Acteur.suppleant_id');
+                                else 
+                                    $suppleant_id = null;
+                                echo $form->input('Acteur.suppleant_id', array('empty' => true, 'label'=>'Élus', 'selected' => $suppleant_id, 'options' => $acteurs));
+                        ?>
+		</fieldset>
 		<fieldset>
 		<legend>Type</legend>
 			<?php echo $form->label('Acteur.typeacteur_id', 'Type d\'acteur <acronym title="obligatoire">*</acronym>');?>
@@ -72,6 +82,7 @@ function initAffichageInfosElus()
 				if ($html->value('Acteur.typeacteur_id')) $typeacteur_id = $html->value('Acteur.typeacteur_id');
 				else $typeacteur_id = 0;
 			?>
+                 
 			<select id="ActeurTypeacteurId" onchange="afficheInfosElus(this);" name="data[Acteur][typeacteur_id]">
 				<?php if ((count($typeacteurs)>1) && (!$html->value('Acteur.id'))) echo '<option value=""> </option>' ?>
 				<?php
