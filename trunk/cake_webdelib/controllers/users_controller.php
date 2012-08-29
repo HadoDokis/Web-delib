@@ -386,7 +386,7 @@ class UsersController extends AppController {
 
     function _checkLDAP($login, $password) {
           //  $DN = Configure::read('UNIQUE_ID')."=$login, ".BASE_DN;
-            $conn=ldap_connect(LDAP_Configure::read('HOST'), LDAP_PORT) or  die("connexion impossible au serveur LDAP");
+            $conn=ldap_connect(Configure::read('LDAP_HOST'), Configure::read('LDAP_PORT')) or  die("connexion impossible au serveur LDAP");
             @ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
             @ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // required for AD
 
@@ -435,6 +435,5 @@ class UsersController extends AppController {
 				$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
 		}
 	}
-
 }
 ?>
