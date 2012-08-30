@@ -8,8 +8,8 @@ class TypeseancesNature extends AppModel {
     function getTypeseanceParNature($natures){
          $liste = array();
          $typeseances = $this->find('all', array('conditions'=>array('nature_id'=>$natures),
-                                                                              'fields'    => 'DISTINCT(typeseance_id)',
-                                                                              'recursive' => -1));
+                                                                     'fields'    => 'DISTINCT typeseance_id',
+                                                                     'recursive' => -1));
          foreach ($typeseances as $typeseance){
              $liste[]= $typeseance['TypeseancesNature']['typeseance_id'];
          }
