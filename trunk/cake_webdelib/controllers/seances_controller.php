@@ -618,10 +618,12 @@ class SeancesController extends AppController {
     	    }
     	    
     	    $this->data['Seance']['id']=$id;
+            $this->Seance->id = $id;
     	    if ($this->Seance->save($this->data)) {
     	    	$this->redirect('/seances/listerFuturesSeances');
     	    } else {
-    	    	$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
+    	    	$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous : format de fichier invalide', 'growl', array('type'=>'erreur'));
+    	    	$this->redirect("/seances/saisirDebatGlobal/$id");
     	    }
     	}
     }
