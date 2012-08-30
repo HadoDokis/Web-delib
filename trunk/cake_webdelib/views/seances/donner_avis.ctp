@@ -4,9 +4,9 @@
 
 	<div class="demi">
 		<?php echo $form->label('Deliberation.avis', 'Donner un avis <acronym title="obligatoire">*</acronym>'); ?>
-		<?php echo $form->input('Deliberation.avis', array('fieldset'=>false, 'legend'=>false, 'label'=>false, 'options'=>$avis, 'type'=>'radio'));?>
-		<br/>
-		<br/>
+		<?php echo $form->input('Deliberation.avis', array('fieldset'=>false, 'legend'=>false, 'label'=>false, 'options'=>$avis, 'type'=>'radio', 'value' => $avis_selected));?>
+	<br/>
+	<br/>
 	</div>
 	<br/>
 
