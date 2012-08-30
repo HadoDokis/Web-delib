@@ -1,5 +1,4 @@
 php_value output_buffering "0"
-php_value default_charset  "ISO-8859-1"
 
 <IfModule mod_rewrite.c>
     RewriteEngine on
