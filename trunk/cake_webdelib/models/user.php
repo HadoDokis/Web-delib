@@ -62,9 +62,9 @@ class User extends AppModel {
 
 	var $displayField = "nom";
 
-var $displayFields = array(
-	'fields' => array('prenom', 'nom', 'login'),
-	'format' => '%s %s (%s)');
+        var $displayFields = array(
+	    'fields' => array('prenom', 'nom', 'login'),
+	    'format' => '%s %s (%s)');
 
 	var $belongsTo = array(
 		'Profil'=>array(
@@ -85,7 +85,18 @@ var $displayFields = array(
 			'limit'=>'',
 			'unique'=>true,
 			'finderQuery'=>'',
-			'deleteQuery'=>'')
+			'deleteQuery'=>''),
+                 'Circuit'  => array(
+                        'classname'=>'Circuit',
+                        'joinTable'=>'circuits_users',
+                        'foreignKey'=>'user_id',
+                        'associationForeignKey'=>'circuit_id',
+                        'conditions'=>'',
+                        'order'=>'',
+                        'limit'=>'',
+                        'unique'=>true,
+                        'finderQuery'=>'',
+                        'deleteQuery'=>'')
 		);
 
          var $hasMany = array(
@@ -182,6 +193,16 @@ var $displayFields = array(
             $oMainPart->addElement(new GDO_FieldType('telfixe_redacteur',   utf8_encode($user[$this->alias]['telfixe']), 'text'));
             $oMainPart->addElement(new GDO_FieldType('note_redacteur',      utf8_encode($user[$this->alias]['note']), 'text'));
         }
+   
+        function getCircuits($user_id) {
+            $circuits = array();
+            $user = $this->find('first', array('conditions' => array('User.id' => $user_id)));
+            foreach($user['Circuit'] as $circuit) {
+                if ($circuit['actif'])
+                    $circuits[$circuit['id']] = $circuit['nom'];
+            }
+            return $circuits;
+         }
 
 }
 ?>
