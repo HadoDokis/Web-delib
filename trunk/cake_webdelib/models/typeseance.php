@@ -191,7 +191,8 @@ class Typeseance extends AppModel {
 
                 $condition['Acteur.actif'] = 1;
                 $condition['OR']['Acteur.id'] =  $inId;
-                $condition['OR']['Acteur.typeacteur_id'] = $inTypeacteur;
+                if (!empty($inTypeacteur))
+                    $condition['OR']['Acteur.typeacteur_id IN'] = $inTypeacteur;
                 if ($elu == null) 
                     $condition['Typeacteur.elu'] = 1;
 
