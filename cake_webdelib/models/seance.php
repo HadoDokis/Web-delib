@@ -49,7 +49,7 @@ class Seance extends AppModel {
                                                                   'unique' => true,
                                                                   'conditions' => '',
                                                                   'fields' => '',
-                                                                  'order' => 'position',
+                                                                  'order' => 'DeliberationsSeance.position',
                                                                   'limit' => '',
                                                                   'offset' => '',
                                                                   'finderQuery' => '',
@@ -146,7 +146,7 @@ class Seance extends AppModel {
 	$options = array_merge($defaut, $options);
 
         $options['conditions']['Seance.id'] = $seance_id;
-        $options['order'] = array('Deliberationseance.Position ASC');
+        $options['order'] = array('Deliberationseance.position ASC');
         $deliberations = $this->Deliberationseance->find('all', $options);
         for ($i = 0; $i < count($deliberations); $i++) {
             if (isset($deliberations[$i]['Deliberation']['theme_id'])) {
