@@ -792,7 +792,7 @@ class SeancesController extends AppController {
     function download($id=null, $file){
     	header('Content-type: '.$this->getFileType($id, $file));
     	header('Content-Length: '.$this->getSize($id, $file));
-    	header('Content-Disposition: attachment; filename='.$this->getFileName($id, $file));
+    	header('Content-Disposition: attachment; filename="'.$this->getFileName($id, $file).'"');
     	echo $this->getData($id, $file);
     	exit();
     }
