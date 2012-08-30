@@ -1,4 +1,4 @@
-<h2>Saisie des débats généraux :</h2>
+<h2>Saisie des dÃ©bats gÃ©nÃ©raux :</h2>
 <?php echo $javascript->link('ckeditor/ckeditor'); ?>
 <?php echo ('<div class="optional">');
 
