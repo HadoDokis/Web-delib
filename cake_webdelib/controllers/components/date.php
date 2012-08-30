@@ -4,13 +4,13 @@ class DateComponent extends Object {
 	
 	var $days = array ('Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi');
 	
-	var $months = array ('','janvier','février','mars','avril','mai','juin',
-						'juillet','août','septembre','octobre','novembre','décembre');
+	var $months = array ('','janvier','fÃ©vrier','mars','avril','mai','juin',
+						'juillet','aoÃ»t','septembre','octobre','novembre','dÃ©cembre');
 						
 	function frenchDateConvocation($timestamp)
 	{
 		return $this->days[date('w',$timestamp)].' '.date('d',$timestamp)
-                  .' '.$this->months[date('n',$timestamp)].' '.date('Y',$timestamp).' à '.date('H',$timestamp).' h '.date('i',$timestamp);
+                  .' '.$this->months[date('n',$timestamp)].' '.date('Y',$timestamp).' Ã  '.date('H',$timestamp).' h '.date('i',$timestamp);
 	}					
 
 	function frenchDate($timestamp)
