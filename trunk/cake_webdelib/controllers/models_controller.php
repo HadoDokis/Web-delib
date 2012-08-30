@@ -353,19 +353,27 @@
 
                              Configure::write('debug', 1);
                              error_reporting(0);
+
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
-                    $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
-                    $oFusion->process();
+                    $this->log("Temps création de requete :". $time );
+
+                    $time_start = microtime(true);
+                        $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+                        $oFusion->process();
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
+                    $this->log("Temps création de fusion : ". $time );
+
+                    $time_start = microtime(true);
                              $oFusion->SendContentToFile($path.$nomFichier.".odt");
                              $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
 			     $chemin_fichier = $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
                              if (($format == 'pdf') && ($joindre_annexe))
                                  $this->Pdf->concatener($chemin_fichier, $annexes); 
-                        $time_end = microtime(true);
-                        $time = $time_end - $time_start;
+                    $time_end = microtime(true);
+                    $time = $time_end - $time_start;
+                    $this->log("Temps conversion et concaténation : ". $time );
 
                          }
                          catch (Exception $e){
@@ -434,6 +442,7 @@
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
 
+                    $this->log($oTemplate);
                     $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
 		    $oFusion->process();
 
