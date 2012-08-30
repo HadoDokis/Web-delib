@@ -10,11 +10,11 @@
 	$defBarre = array();
 	$defBarre[] = array('title'=>'Valider', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/1', 'htmlAttributes'=>array('class'=>'link_valider_avec_border', 'title'=>'Valider le projet', 'onclick'=>"disableDiv('buttons');"));
 	$defBarre[] = array('title'=>'Refuser', 'url'=>'/deliberations/traiter/'.$deliberation['Deliberation']['id'].'/0', 'htmlAttributes'=>array('class'=>'link_refuser_avec_border', 'title'=>'Refuser le projet', 'onclick'=>"disableDiv('buttons');"));
-	$defBarre[] = array('title'=>"Retourner à", 'url'=>'/deliberations/retour/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_retour_avec_border', 'title'=>'Retourner le projet à'));
+	$defBarre[] = array('title'=>"Retourner Ã ", 'url'=>'/deliberations/retour/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_retour_avec_border', 'title'=>'Retourner le projet Ã '));
 	if ($Droits->check($session->read('user.User.id'), 'Deliberations:rebond'))
-		$defBarre[] = array('title'=>'Envoyer à', 'url'=>'/deliberations/rebond/' . $deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_rebond_avec_border','title'=>'Envoyer à'));
+		$defBarre[] = array('title'=>'Envoyer Ã ', 'url'=>'/deliberations/rebond/' . $deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_rebond_avec_border','title'=>'Envoyer Ã '));
 	$defBarre[] = array();
-	$defBarre[] = array('title'=>'Ajouter un commentaire', 'url'=>'/commentaires/add/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_commentaire_avec_border', 'title'=>'Ajouter un commentaire (affichés plus bas)'));
+	$defBarre[] = array('title'=>'Ajouter un commentaire', 'url'=>'/commentaires/add/'.$deliberation['Deliberation']['id'], 'htmlAttributes'=>array('class'=>'link_commentaire_avec_border', 'title'=>'Ajouter un commentaire (affichÃ©s plus bas)'));
 	$defBarre[] = array();
 
 	if ($Droits->check($session->read('user.User.id'), 'Deliberations:edit'))
@@ -41,7 +41,7 @@
 	<div class="imbrique">
 	<?php
 	    if (empty($deliberation['Multidelib'])) {
-	    	echo $html->tag('dt', 'Libellé');
+	    	echo $html->tag('dt', 'LibellÃ©');
 	    	echo $html->tag('dd', '&nbsp;'.$deliberation['Deliberation']['objet']);
 	    } else {
 			echo $this->element('viewDelibRattachee', array(
@@ -54,7 +54,7 @@
 					'annexes'=>$delibRattachee['Annex'],
 					'natureLibelle'=>$deliberation['Nature']['libelle']));
 	    	}
-	    	echo $html->tag('h2', 'Informations du projet (communes aux délibérations)');
+	    	echo $html->tag('h2', 'Informations du projet (communes aux dÃ©libÃ©rations)');
 	    }
 	?>
 		<dt>Titre</dt>
@@ -63,11 +63,11 @@
 
 <div class="imbrique">
 	<div class="gauche">
-		<dt>Thème</dt>
+		<dt>ThÃ¨me</dt>
 		<dd>&nbsp;<?php echo $deliberation['Theme']['libelle']?><br> </dd>
 	</div>
 	<div class="droite">
-		<dt>Service émetteur</dt>
+		<dt>Service Ã©metteur</dt>
 		<dd>&nbsp;<?php echo $deliberation['Service']['libelle']?></dd>
 	</div>
 </div>
@@ -79,7 +79,7 @@
 		<dd>&nbsp;<?php echo $deliberation['Deliberation']['num_pref']?></dd>
 	</div>
 	<div class="droite">
-	    <dt>Date Séance</dt>
+	    <dt>Date SÃ©ance</dt>
             <dd>
                 <?php
                     if(isset($deliberation['Seance'][0])){
@@ -105,7 +105,7 @@
 
 <div class="imbrique">
 	<div class="gauche">
-		<dt>Rédacteur</dt>
+		<dt>RÃ©dacteur</dt>
 		<dd>&nbsp;<?php echo $html->link($deliberation['Redacteur']['prenom'].' '.$deliberation['Redacteur']['nom'], '/users/view/' .$deliberation['Redacteur']['id'])?></dd>
 	</div>
 	<div class="droite">
@@ -116,7 +116,7 @@
 
 <div class="imbrique">
 	<div class="gauche">
-		<dt>Date création</dt>
+		<dt>Date crÃ©ation</dt>
 		<dd>&nbsp;<?php echo $deliberation['Deliberation']['created']?></dd>
 	</div>
 	<div class="droite">
@@ -133,7 +133,7 @@
 
 	if ($tab_anterieure!=null)
 	{
-		echo"<dt>Versions Antérieures</dt>";
+		echo"<dt>Versions AntÃ©rieures</dt>";
 		foreach ($tab_anterieure as $anterieure)
 		{
 			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";
@@ -193,7 +193,7 @@
 	 	foreach ($deliberation['Annex'] as $annexe) {
 			if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
 			echo '<br>Nom fichier : '.$annexe['filename'];
-			echo '<br>Joindre au contrôle de légalité : '.($annexe['joindre_ctrl_legalite']?'oui':'non');
+			echo '<br>Joindre au contrÃ´le de lÃ©galitÃ© : '.($annexe['joindre_ctrl_legalite']?'oui':'non');
 			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
  		}
 		echo '</dd>';
