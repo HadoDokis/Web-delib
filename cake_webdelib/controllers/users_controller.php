@@ -135,6 +135,7 @@ class UsersController extends AppController {
 			    $this->Session->setFlash('Invalide id pour l\'utilisateur');
 			    $sortie = true;
 			} else {
+			    $this->set('selectedCircuits', $this->data['User']['circuit_defaut_id']);
 			    $this->set('selectedServices', $this->_selectedArray($this->data['Service']));
 			    $this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Utilisateur','foreign_key'=>$id));
                             $natures = $this->Nature->find('all');
