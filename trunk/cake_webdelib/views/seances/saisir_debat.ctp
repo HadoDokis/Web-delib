@@ -1,16 +1,15 @@
 <h2>Saisie des débats :</h2>
 <?php echo $javascript->link('ckeditor/ckeditor'); ?>
-<?php echo $form->create('Seance',array('url'=>'/seances/saisirDebat/'.$delib['Deliberation']['id'],'type'=>'file')); ?>
+<?php echo $form->create('Seance',array('url'=>"/seances/saisirDebat/$delib_id/$seance_id",'type'=>'file')); ?>
 
 <?php
-    $seance_id = $delib['Deliberation']['seance_id'];
     if (!Configure::read('GENERER_DOC_SIMPLE')){
         if ($isCommission) {
             echo '<br>Nom fichier : '.$delib['Deliberation']['commission_name'];
             echo '<br>Taille : '.$delib['Deliberation']['commission_size'];
             if ($delib['Deliberation']['commission_size'] >0){
                 echo '<br>'.$html->link('Telecharger le débat','/deliberations/download/'.$delib['Deliberation']['id'].'/commission');
-                echo ' '.$html->link('Supprimer le débat','/deliberations/deleteDebat/'.$delib['Deliberation']['id']."/$isCommission");
+                echo ' '.$html->link('Supprimer le débat','/deliberations/deleteDebat/'.$delib['Deliberation']['id']."/$isCommission/$seance_id");
             }
             echo '<br><br><br>';
             echo  $form->input("Deliberation.texte_doc",array('label'=>'', 'type'=>'file'));
@@ -22,7 +21,7 @@
             echo '<br>Taille : '.$delib['Deliberation']['debat_size'];
             if ($delib['Deliberation']['debat_size'] >0) {
                 echo '<br>'.$html->link('Télécharger le débat','/deliberations/download/'.$delib['Deliberation']['id'].'/debat');
-                echo ' '.$html->link('Supprimer le débat','/deliberations/deleteDebat/'.$delib['Deliberation']['id']."/$isCommission");
+                echo ' '.$html->link('Supprimer le débat','/deliberations/deleteDebat/'.$delib['Deliberation']['id']."/$isCommission/$seance_id");
             }
             echo '<br><br><br>';
             echo  $form->input("Deliberation.texte_doc",array('label'=>'', 'type'=>'file'));
@@ -60,7 +59,7 @@
    	<?php echo $form->submit('Enregistrer', array('div'=>false, 'class'=>'bt_add', 'name'=>'saisir'));?>
 <?php echo $form->end(); ?>
       <?php 
-       if($delib['Seance']['traitee']==0) {
+       if($seance['Seance']['traitee']==0) {
            if (!$isCommission) {
                 echo $html->link('Retour aux votes', "/seances/details/$seance_id", array('class'=>'link_annuler', 'name'=>'Annuler'), 'Etes vous sur de vous quitter cette page ?');
            } 
