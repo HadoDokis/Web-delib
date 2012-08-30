@@ -15,8 +15,9 @@ class Seance extends AppModel {
                                        'message' => 'Entrer une date valide.')),
         'commission'   => array(array('rule'     => 'notEmpty',
                                        'message' => 'Entrer le texte de débat.')),
-        'debat_global' => array(array( 'rule'    => 'notEmpty',
-                                       'message' => 'Entrer le texte de débat.')));
+        'debat_global_type'   => array(array('rule' => array('checkMimetype', 'debat_global',  array('application/vnd.oasis.opendocument.text')),
+                                      'message' => "Ce type de fichier n'est pas autorisé")),
+    );
 
     var $belongsTo=array(
       'Typeseance'=>array(
