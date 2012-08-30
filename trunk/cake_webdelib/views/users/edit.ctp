@@ -48,10 +48,10 @@ function onchangeCircuitDefault() {
 		<div class="spacer"></div>
 
 		<fieldset>
-			<legend>Identité et contacts</legend>
+			<legend>IdentitÃ© et contacts</legend>
 			<div class="demi">
 	 			<?php echo $form->input('User.nom', array('label'=>'Nom <acronym title="obligatoire">*</acronym>','size' => '30'));?> <br />
-		 		<?php echo $form->input('User.prenom', array('label'=>'Prénom <acronym title="obligatoire">*</acronym>','size' => '30'));?>
+		 		<?php echo $form->input('User.prenom', array('label'=>'PrÃ©nom <acronym title="obligatoire">*</acronym>','size' => '30'));?>
 			</div>
 			<div class="demi">
 	 			<?php echo $form->input('User.telfixe',array('label'=>'Tel fixe'));?>
@@ -80,7 +80,7 @@ function onchangeCircuitDefault() {
                                          echo ("<fieldset id='mails'>"); 
                                 ?>
  
-			             <legend>Réception des mails</legend>
+			             <legend>RÃ©ception des mails</legend>
 				    <?php echo $form->input('User.mail_insertion', array('before'=>'<label for="UserAcceptInsertion">Insertion</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
 				<br /><br />
 				    <?php echo $form->input('User.mail_traitement', array('before'=>'<label for="UserAcceptTraitement">Traitement</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
@@ -102,7 +102,7 @@ function onchangeCircuitDefault() {
 
                                        echo $form->input('User.circuit_defaut_id', array('type'=>'select', 
                                                                                          'id' => 'default_circuit', 
-                                                                                         'label' => "Circuit par défaut", 
+                                                                                         'label' => "Circuit par dÃ©faut", 
                                                                                          'options' => array()));
 ?> 
 				<br /><br />
@@ -111,7 +111,7 @@ function onchangeCircuitDefault() {
 				 <?php
 				 	if (!isset($selectedServices) && empty($selectedServices)) $selectedServices=false;
 				 	echo $form->input('Service.Service', array('label'=>'Service(s) <acronym title="obligatoire">*</acronym>','options'=>$services,'default'=>$selectedServices,'multiple' => 'multiple', 'class' => 'selectMultiple', 'escape'=>false));
-				       echo $form->error('User.Service', 'Sélectionnez un ou plusieurs services');
+				       echo $form->error('User.Service', 'SÃ©lectionnez un ou plusieurs services');
 		                       echo ("<div class='spacer'></div>");
 	 			       echo $form->input('User.note', array('type'=>'textarea', 'cols' => '30', 'rows' => '2'));?>
 			</div>
