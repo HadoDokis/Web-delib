@@ -2941,7 +2941,13 @@ class DeliberationsController extends AppController {
                                 'trigger_id'=>$this->data['Insert']['user_id'],
                                 'type_validation'=>'V'
                                 )))));
-            $action = $this->data['Insert']['retour'] ? 'IL': 'IP';
+            if ( $this->data['Insert']['option'] == 'retour')
+                $action = 'IL';
+            elseif($this->data['Insert']['option'] == 'detour')
+                $action = 'IP';
+            elseif($this->data['Insert']['option'] == 'validation')
+                $action = 'VF';
+             
             $this->_notifier($delib_id, $this->data['Insert']['user_id'], 'traiter');
             $this->Traitement->execute($action, $user_connecte, $delib_id, $options);
             $this->redirect('/');
