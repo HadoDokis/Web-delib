@@ -6,6 +6,8 @@
 
 function onchangeCircuitDefault() {
     selected_default_circuit_id = $('#default_circuit').val();
+    if (selected_default_circuit_id == null) 
+         selected_default_circuit_id  = <?php echo  $selectedCircuits; ?>;
     $('#default_circuit').empty();
     $('#all_circuits').find("option:selected").each(function(index, element) {
         $(element).clone().appendTo('#default_circuit');
@@ -100,10 +102,10 @@ function onchangeCircuitDefault() {
 
 		                       echo ("<div class='spacer'></div>");
 
-                                       echo $form->input('User.circuit_defaut_id', array('type'=>'select', 
-                                                                                         'id' => 'default_circuit', 
-                                                                                         'label' => "Circuit par défaut", 
-                                                                                         'options' => array()));
+                                       echo $form->input('User.circuit_defaut_id', array('type'     =>'select', 
+                                                                                         'id'       => 'default_circuit', 
+                                                                                         'label'    => "Circuit par défaut", 
+                                                                                         'options'  => array()));
 ?> 
 				<br /><br />
 			</div>
