@@ -2,8 +2,9 @@
 class ProfilsController extends AppController {
 
 	var $name = 'Profils';
-	var $helpers = array('Session', 'Tree');
-	var $components = array('Dbdroits', 'Menu', 'Progress');
+        var $helpers = array('Html', 'Form', 'Javascript',  'Html2', 'Session', 'Tree', 'Fck');
+
+	var $components = array('Dbdroits', 'Menu', 'Progress', 'Email');
 	var $uses = array('Profil', 'Aro');
 
 	// Gestion des droits
@@ -12,7 +13,8 @@ class ProfilsController extends AppController {
 		'add'=>'Profils:index',
 		'delete'=>'Profils:index',
 		'edit'=>'Profils:index',
-		'view'=>'Profils:index'
+		'view'=>'Profils:index',
+		'notifier'=>'Profils:index'
 		);
 
 		function index() {
@@ -23,11 +25,11 @@ class ProfilsController extends AppController {
 
 		function _isDeletable(&$profils) {
 			foreach($profils as &$profil) {
-				if ($this->Profil->User->find('first', array('conditions'=>array('User.profil_id'=>$profil['Profil']['id']),'recursive'=>-1)))
+			    if ($this->Profil->User->find('first', array('conditions'=>array('User.profil_id'=>$profil['Profil']['id']),'recursive'=>-1)))
 				$profil['Profil']['deletable'] = false;
-				else
+			    else
 				$profil['Profil']['deletable'] = true;
-				if ($profil['children'] != array())
+			    if ($profil['children'] != array())
 				$this->_isDeletable($profil['children']);
 			}
 		}
@@ -179,8 +181,42 @@ class ProfilsController extends AppController {
 
 		function changeParentId($curruentParentId, $newParentId) {
 			$this->data = $this->Profil->findByParentId(null, $id);
-			debug($this->data);exit;
 		}
+
+                function notifier($profil_id) {
+                    $profil = $this->Profil->find('first', array('conditions' => array('Profil.id' => $profil_id),
+                                                                 'recursive' => -1));
+ 
+                    if (empty($this->data)) {
+                        $this->set('libelle_profil', $profil['Profil']['libelle']);
+                        $this->set('id', $profil['Profil']['id']);
+                    }
+                    else {
+                        require_once ('vendors/progressbar.php');
+                        Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
+                        $users = $this->Profil->User->find('all', array('conditions'=>array('User.profil_id'=>$profil['Profil']['id']),'recursive'=>-1));
+                        $nbUsers = count($users);
+                        $this->log($nbUsers);
+                        $cpt = 0;
+                        $this->Email->from = Configure::read("MAIL_FROM");
+                        $this->set('data',  $this->data['Profil']['content']);
+                        $this->Email->subject = "Notification aux utilisateurs du profil : ". $profil['Profil']['libelle'];
+                        $this->Email->template = 'insertion';
+                        $this->Email->sendAs = 'html';
+                        $this->Email->charset = 'UTF-8';
+                        $this->Email->attachments = null;
+
+                        foreach ($users as $user) { 
+                             ProgressBar($cpt*(100/$nbUsers), $user['User']['email']);
+                             $cpt++;
+                             $this->Email->to =  $user['User']['email'];
+                             $this->Email->send();
+                             sleep(1);
+                        }
+                        $this->Progress->end('/profils/index');
+                    }
+                    
+                } 
 
 }
 ?>
