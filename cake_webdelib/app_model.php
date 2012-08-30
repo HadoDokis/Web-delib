@@ -51,6 +51,23 @@ class AppModel extends Model{
  * Les clés manquantes sont initialisées par la variable du modèle $displayFields
  * Si 'fields' ou 'format' sont vides ou ne sont pas définis, alors la fonction retourne find('list')
  */
+
+function checkMimetype($field_validation, $content, $allowed_mimetypes) {
+    if (empty($this->data[$this->alias][$content])) {
+        return true;
+    }
+    else {
+        $tmpfname = tempnam(TMP, "CHK_");
+        file_put_contents($tmpfname, $this->data[$this->alias][$content]);
+        $file_exec = Configure::read('FILE_EXEC');
+        $cmd =  "LANG=fr_FR.UTF-8; $file_exec $tmpfname";
+        $result = shell_exec($cmd);
+        $result = trim($result);
+        unlink($tmpfname);
+        return (in_array($result, $allowed_mimetypes)) ;
+    }
+}
+
 function listFields($params = array()) {
 	// Initialisation des clés manquantes de $params avec les valeurs de $this->$displayFields
 	if (isset($this->displayFields))
