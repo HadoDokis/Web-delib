@@ -47,9 +47,9 @@ class TypeseancesController extends AppController {
                                                     2 => $this->Typeseance->libelleAction(2, true)));
 			$this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
 			$this->set('selectedTypeacteurs', null);
-			$this->set('acteurs', $this->Typeseance->Acteur->generateList('nom'));
+			$this->set('acteurs', $this->Typeseance->Acteur->generateList('Acteur.nom'));
 			$this->set('selectedActeurs', null);
-                        $this->set('natures', $this->Typeseance->Nature->generateList('libelle'));
+                        $this->set('natures', $this->Typeseance->Nature->generateList('Nature.libelle'));
                         $this->set('selectedNatures', null);
 			$this->render('edit');
 		}
@@ -91,8 +91,8 @@ class TypeseancesController extends AppController {
                                                     1 => $this->Typeseance->libelleAction(1, true),
                                                     2 => $this->Typeseance->libelleAction(2, true)));
 			$this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
-			$this->set('acteurs', $this->Typeseance->Acteur->generateList('nom'));
-			$this->set('natures', $this->Typeseance->Nature->generateList('libelle'));
+			$this->set('acteurs', $this->Typeseance->Acteur->generateList('Acteur.nom'));
+			$this->set('natures', $this->Typeseance->Nature->generateList('Nature.libelle'));
 		}
 	}
 
