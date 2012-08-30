@@ -1,7 +1,7 @@
 <div class="typeseances">
 <h2>Liste des types de séance</h2>
 
-<table cellpadding="0" cellspacing="0">
+<table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 	<th>Libell&eacute;</th>
 	<th>Nb jours avant retard</th>
