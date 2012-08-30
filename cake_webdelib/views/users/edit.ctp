@@ -1,3 +1,19 @@
+<script>
+
+    $(document).ready(function(){
+         onchangeCircuitDefault();
+    });
+
+function onchangeCircuitDefault() {
+    selected_default_circuit_id = $('#default_circuit').val();
+    $('#default_circuit').empty();
+    $('#all_circuits').find("option:selected").each(function(index, element) {
+        $(element).clone().appendTo('#default_circuit');
+    }) ; 
+    $('#default_circuit').val(selected_default_circuit_id );   
+}
+</script>
+
 <?php echo $this->element('onglets', array('listeOnglets' => array(
 	'Informations principales',
 	'Droits', 
@@ -6,7 +22,7 @@
 <?php
 	if($html->value('User.id')) {
 		echo "<h2>Modification d'un utilisateur</h2>";
-		echo $form->create('User', array('url' => '/users/edit/'.$html->value('User.id'),'type'=>'post'));
+		echo $form->create('User', array('url' => '/users/edit/'.$html->value('User.id'),'type'=>'post', 'name' =>'userEdit'));
 	}
 	else {
 		echo "<h2>Ajout d'un utilisateur</h2>";
@@ -72,16 +88,32 @@
 				    <?php echo $form->input('User.mail_refus', array('before'=>'<label for="UserAcceptRefus">Refus</label>', 'legend'=>false, 'type'=>'radio', 'options'=>$notif, 'div'=>false, 'label'=>false));?>
                                 </fieldset>
 				<br /><br />
-				<?php echo $form->input('User.circuit_defaut_id', array('label'=>'Circuit par d&eacute;faut','options'=>$circuits, 'empty'=>true));?>
+				<?php 
+                                      echo $form->input('Circuit.Circuit', 
+                                                        array('label'=>'Liste de tous les circuits',
+                                                              'options'=>$circuits, 
+                                                              'onchange'=>'onchangeCircuitDefault();',
+                                                              'multiple'=>true, 
+                                                              'id'=>'all_circuits', 
+                                                              'size' => 10,
+                                                              'empty'=>true));
+
+		                       echo ("<div class='spacer'></div>");
+
+                                       echo $form->input('User.circuit_defaut_id', array('type'=>'select', 
+                                                                                         'id' => 'default_circuit', 
+                                                                                         'label' => "Circuit par défaut", 
+                                                                                         'options' => array()));
+?> 
 				<br /><br />
-	 			<?php echo $form->input('User.note', array('type'=>'textarea', 'cols' => '30', 'rows' => '2'));?>
 			</div>
 			<div class="demi">
 				 <?php
 				 	if (!isset($selectedServices) && empty($selectedServices)) $selectedServices=false;
 				 	echo $form->input('Service.Service', array('label'=>'Service(s) <acronym title="obligatoire">*</acronym>','options'=>$services,'default'=>$selectedServices,'multiple' => 'multiple', 'class' => 'selectMultiple', 'escape'=>false));
-					echo $form->error('User.Service', 'Sélectionnez un ou plusieurs services');
-				 ?>
+				       echo $form->error('User.Service', 'Sélectionnez un ou plusieurs services');
+		                       echo ("<div class='spacer'></div>");
+	 			       echo $form->input('User.note', array('type'=>'textarea', 'cols' => '30', 'rows' => '2'));?>
 			</div>
 		</fieldset>
 	</div>
