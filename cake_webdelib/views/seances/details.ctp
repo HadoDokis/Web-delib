@@ -42,13 +42,10 @@
 	<td><?php echo $deliberation['Deliberation']['objet_delib']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
 	<td class="actions" width="80">
-		<?php echo $html->link(SHY,'/seances/saisirDebat/' .$deliberation['Deliberation']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats'), false, false); ?>
+		<?php echo $html->link(SHY,'/seances/saisirDebat/' .$deliberation['Deliberation']['id'].'/'.$seance_id, array('class'=>'link_debat', 'title'=>'Saisir les debats'), false, false); ?>
 		<?php 
-		if (!$USE_GEDOOO)
-		    echo $html->link(SHY,'/deliberations/convert/' .$deliberation['Deliberation']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
-		else
 		    echo $html->link(SHY,'/models/generer/' .$deliberation['Deliberation']['id'].'/null/'.$deliberation['Model']['id'], array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
-		    ?>
+		 ?>
 	    <?php
             if ($deliberation['Deliberation']['nature_id'] ==1) 
             echo $html->link( SHY,
