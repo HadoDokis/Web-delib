@@ -26,7 +26,9 @@
 ?>
 
 		<td><b><?php echo $seance['Typeseance']['libelle']; ?></b></td>
-		<td><?php echo ($html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id'])); ?></td>
+		<td><?php 
+                        echo $html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id']); 
+                      ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
 <?php
                      echo $html->link(SHY,
