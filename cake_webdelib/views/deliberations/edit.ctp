@@ -31,9 +31,9 @@
 <div id="tab1">
         <fieldset id='info'>
 	<div class='demi'>
-		<?php echo '<b><u>Rédacteur</u></b> : <i>'.$html->value('Redacteur.prenom').'</i>';?>
+		<?php echo '<b><u>RÃ©dacteur</u></b> : <i>'.$html->value('Redacteur.prenom').'</i>';?>
 		<br/>
-		<?php echo '<b><u>Service émetteur</u></b> : <i>'.$html->value('Service.libelle').'</i>'; ?>
+		<?php echo '<b><u>Service Ã©metteur</u></b> : <i>'.$html->value('Service.libelle').'</i>'; ?>
 	</div>
 	<div class='demi'>
 		<?php echo '<b><u>Date cr&eacute;ation</u></b> : <i>'. $html->value('Deliberation.created').'</i>';?>
@@ -47,13 +47,13 @@
                                                                  'empty'   =>false, 
                                                                  'escape'  =>false)); ?>
 	<div class='spacer'></div>
- 	<?php echo $form->input('Deliberation.objet', array('type'=>'textarea','label'=>'Libellé <acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));?>
+ 	<?php echo $form->input('Deliberation.objet', array('type'=>'textarea','label'=>'LibellÃ© <acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));?>
 	<div class='spacer'></div>
 
  	<?php echo $form->input('Deliberation.titre', array('type'=>'textarea','label'=>'Titre','cols' => '60','rows'=> '2'));?>
 	<div class='spacer'></div>
 
-	<?php echo $form->input('Deliberation.seance_id', array('label'    => 'Date séance', 
+	<?php echo $form->input('Deliberation.seance_id', array('label'    => 'Date sÃ©ance', 
                                                 'options'  => $date_seances, 
                                                              'empty'    => false, 
                                                              'multiple' =>'true',
@@ -63,7 +63,7 @@
 	<?php echo $form->input('Deliberation.rapporteur_id', array('label'=>'Rapporteur', 'options'=>$rapporteurs, 'empty'=>true)); ?>
 	<div class='spacer'></div>
 
-	<?php echo $form->input('Deliberation.theme_id', array('label'=>'Thème <acronym title="obligatoire">(*)</acronym>', 'options'=>$themes, 'default'=>$html->value('Deliberation.theme_id'), 'empty'=>false, 'escape'=>false)); ?>
+	<?php echo $form->input('Deliberation.theme_id', array('label'=>'ThÃ¨me <acronym title="obligatoire">(*)</acronym>', 'options'=>$themes, 'default'=>$html->value('Deliberation.theme_id'), 'empty'=>false, 'escape'=>false)); ?>
 	<div class='spacer'></div>
 
 	<?php 
@@ -101,7 +101,7 @@
            echo $form->input('Deliberation.is_multidelib', array(
 	                     'type'=>'checkbox',
 	                     'disabled'=>  $disabled ,
-		             'label'=>'Multi Délibération',
+		             'label'=>'Multi DÃ©libÃ©ration',
 		             'onClick'=> "multiDelib(this);" ));
         }
 ?>
@@ -137,7 +137,7 @@
 	if (isset($this->data['Annex'])) $annexeOptions['annexes'] = $tabAnnexes;
    	echo $this->element('annexe', $annexeOptions);
 	echo $html->tag('div', '', array('class'=>'spacer'));
-	echo $html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
+	echo $html->tag('p', 'Note : les modifications apportÃ©es ici ne prendront effet que lors de la sauvegarde du projet.');
    	?>
 </div>
 
@@ -225,7 +225,7 @@
 <script>
 // variables globales
 
-// affichage de l'éditeur de texte intégré ckEditor
+// affichage de l'Ã©diteur de texte intÃ©grÃ© ckEditor
 function editerTexte(obj, textId, afficheTextId) {
 	$('#'+textId).ckeditor();
 	$('#'+afficheTextId).hide();
