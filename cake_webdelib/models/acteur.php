@@ -85,7 +85,7 @@ class Acteur extends AppModel
                                                              'fields'    => array('id', 'nom', 'prenom'),
                                                              'order'     => "$order_by ASC"));
 		foreach($acteurs as $acteur) {
-				$generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
+			$generateListElus[$acteur['Acteur']['id']] = $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'];
 		}
 		return $generateListElus;
 	}
@@ -115,7 +115,7 @@ class Acteur extends AppModel
 	function selectActeurEluIdParDelegationId($delegationId) {
 		$users = $this->find('all', array('conditions' => array('Typeacteur.elu'=>1, 'Acteur.actif'=>1 ),
                                                   'fields'     => array ('id'),
-                                                  'order' => 'position ASC'));
+                                                  'order' => 'Acteur.position ASC'));
              
 		foreach($users as $user) {
 			foreach($user['Service'] as $service) {
@@ -131,8 +131,8 @@ class Acteur extends AppModel
 	/* mais on fait le calcul en php */
 	function getPostionMaxParActeursElus() {
 		$acteur = $this->find('all', array ('conditions'=> array('Typeacteur.elu'=>1, 'Acteur.actif'=>1), 
-                                                    'fields'    => array('position'),
-                                                    'order'     => 'position DESC'));
+                                                    'fields'    => array('Acteur.position'),
+                                                    'order'     => 'Acteur.position DESC'));
 		return empty($acteur) ? 0 : $acteur[0]['Acteur']['position'];
 	}
 
