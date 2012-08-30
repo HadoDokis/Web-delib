@@ -19,7 +19,7 @@
 	<div class="imbrique">
 	<?php
 	    if (empty($this->data['Multidelib'])) {
-		echo $html->tag('dt', 'Libellé');
+		echo $html->tag('dt', 'LibellÃ©');
 	    	echo $html->tag('dd', '&nbsp;'.$this->data['Deliberation']['objet']);
 	    } else {
 		echo $this->element('viewDelibRattachee', array(
@@ -32,7 +32,7 @@
 					'annexes'=>$delibRattachee['Annex'],
 					'natureLibelle'=>$this->data['Nature']['libelle']));
 	    	}
-	    	echo $html->tag('h2', 'Informations du projet (communes aux délibérations)');
+	    	echo $html->tag('h2', 'Informations du projet (communes aux dÃ©libÃ©rations)');
 	    }
 	?>
 
@@ -45,11 +45,11 @@
 
 	<div class="imbrique">
 		<div class="gauche">
-                    <dt>Thème</dt>
+                    <dt>ThÃ¨me</dt>
                     <dd>&nbsp;<?php echo $html->link($this->data['Theme']['libelle'], '/themes/view/' .$this->data['Theme']['id'])?><br> </dd>
 		</div>
 		<div class="droite">
-                    <dt>Service émetteur</dt>
+                    <dt>Service Ã©metteur</dt>
                     <dd>&nbsp;<?php echo $html->link($this->data['Service']['libelle'], '/services/view/' .$this->data['Service']['id'])?></dd>
 		</div>
 	</div>
@@ -60,7 +60,7 @@
                     <dd>&nbsp;<?php echo $this->data['Deliberation']['num_pref']?></dd>
 		</div>
 		<div class="droite">
-                    <dt>Date Séance</dt>
+                    <dt>Date SÃ©ance</dt>
                          <?php 
                              foreach ( $this->data['Seance'] as $seance)
                                  echo '<dd>&nbsp;'.$seance['date']."</dd>";
@@ -79,7 +79,7 @@
 
 	<div class="imbrique">
 		<div class="gauche">
-			<dt>Rédacteur</dt>
+			<dt>RÃ©dacteur</dt>
 			<dd>&nbsp;<?php echo $html->link($this->data['Redacteur']['prenom'].' '.$this->data['Redacteur']['nom'], '/users/view/' .$this->data['Redacteur']['id'])?></dd>
 		</div>
 		<div class="droite">
@@ -90,7 +90,7 @@
 
 <div class="imbrique">
 	<div class="gauche">
-		<dt>Date création</dt>
+		<dt>Date crÃ©ation</dt>
 		<dd>&nbsp;<?php echo $this->data['Deliberation']['created']?></dd>
 	</div>
 	<div class="droite">
@@ -140,7 +140,7 @@ if (empty($this->data['Multidelib']))
 	 	foreach ($this->data['Annex'] as $annexe) {
 			if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
 			echo '<br>Nom fichier : '.$annexe['filename'];
-			echo '<br>Joindre au contrôle de légalité : '.($annexe['joindre_ctrl_legalite']?'oui':'non');
+			echo '<br>Joindre au contrÃ´le de lÃ©galitÃ© : '.($annexe['joindre_ctrl_legalite']?'oui':'non');
 			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
  		}
 		echo '</dd>';
@@ -150,7 +150,7 @@ if (empty($this->data['Multidelib']))
 <?php
 	if ($tab_anterieure!=null)
 	{
-		echo"<dt>Versions Antérieures</dt>";
+		echo"<dt>Versions AntÃ©rieures</dt>";
 		foreach ($tab_anterieure as $anterieure)
 		{
 			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";
