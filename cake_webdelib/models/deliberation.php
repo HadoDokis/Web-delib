@@ -11,17 +11,37 @@ class Deliberation extends AppModel {
                                                  'message' => "Cette séance ne peux pas enregistrer cette nature d'acte")),
                            'seance_id' => array(
                                           array('rule'    => array('canSaveSeances'),
-                                                 'message' => "Un projet ne peux contenir qu'une séance délibérante")
-                                                    ));
+                                                 'message' => "Un projet ne peux contenir qu'une séance délibérante")),
+                           'texte_projet_type'   => array( 
+                                                    array('rule' => array('checkMimetype', 'texte_projet', array('application/vnd.oasis.opendocument.text')),
+                                                        'message' => "Ce type de fichier n'est pas autorisé")),
+                           'texte_synthese_type' => array(
+                                                    array('rule' => array('checkMimetype', 'texte_synthese',  array('application/vnd.oasis.opendocument.text')),
+                                                        'message' => "Ce type de fichier n'est pas autorisé")),
+                           'deliberation_type'   => array(
+                                                    array('rule' => array('checkMimetype', 'deliberation',  array('application/vnd.oasis.opendocument.text')),
+                                                        'message' => "Ce type de fichier n'est pas autorisé")),
+                           'debat_type'           => array(
+                                                    array('rule' => array('checkMimetype', 'debat',  array('application/vnd.oasis.opendocument.text')),
+                                                        'message' => "Ce type de fichier n'est pas autorisé")),
+                           'commission_type'      => array(
+                                                     array('rule' => array('checkMimetype', 'commission',  array('application/vnd.oasis.opendocument.text')),
+                                                        'message' => "Ce type de fichier n'est pas autorisé")),
+
+             
+                                                    );
+                          
+        
 
 	//dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
 	var $belongsTo = array(
-                'Nomenclature'=>array(
+/*                'Nomenclature'=>array(
                         'className'    => 'Nomenclature',
                         'conditions'   => '',
                         'order'        => '',
                         'dependent'    => false,
-                        'foreignKey'   => 'num_pref'),
+                        'foreignKey'   => 'num_pref'), 
+ */
 		'Service'=>array(
 			'className'    => 'Service',
 			'conditions'   => '',
@@ -363,12 +383,16 @@ class Deliberation extends AppModel {
        }
  
        function canSaveNature() {
-           foreach ($this->data['Deliberation']['seance_id'] as $key => $seance_id) {
-                $result = $this->Seance->NaturecanSave($seance_id, $this->data['Deliberation']['nature_id']);
-                if ($result == false)
-                    return false;
+           if (isset($this->data['Deliberation']['seance_id']) && (!empty($this->data['Deliberation']['seance_id']))) {
+               foreach ($this->data['Deliberation']['seance_id'] as $key => $seance_id) {
+                    $result = $this->Seance->NaturecanSave($seance_id, $this->data['Deliberation']['nature_id']);
+                    if ($result == false)
+                        return false;
+               }
+               return true;
            }
-           return true;
+           else
+               return true;
        }
 
        function genererRecherche($projets, $model_id=1, $format=0, $multiSeances=array(), $conditions=array() ){
@@ -614,7 +638,6 @@ class Deliberation extends AppModel {
                @$oMainPart->addElement($Multi);
 
                if (Configure::read('GENERER_DOC_SIMPLE')) {
-  
                    if (isset($delib['Deliberation']['texte_projet'])) {
                        $filename = $path."texte_projet.html";
                        $delib['Deliberation']['texte_projet'] = $this->_url2pathImage($delib['Deliberation']['texte_projet']);
@@ -654,19 +677,39 @@ class Deliberation extends AppModel {
 
                    $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$dyn_path;
                    if (!empty($delib['Deliberation']['texte_projet'])) {
-                       $oMainPart->addElement(new GDO_ContentType('texte_projet', 'text_projet.odt' ,'application/vnd.oasis.opendocument.text',  'binary', $delib['Deliberation']['texte_projet']));
+                       $oMainPart->addElement(new GDO_ContentType('texte_projet', 
+                                                                  'text_projet.odt' ,
+                                                                  'application/vnd.oasis.opendocument.text',  
+                                                                  'binary', 
+                                                                  $delib['Deliberation']['texte_projet']));
                   }
                   if (!empty($delib['Deliberation']['deliberation'])) {
-                      $oMainPart->addElement(new GDO_ContentType('texte_deliberation', 'td.odt', 'application/vnd.oasis.opendocument.text' ,   'binary', $delib['Deliberation']['deliberation']));
+                      $oMainPart->addElement(new GDO_ContentType('texte_deliberation', 
+                                                                 'td.odt', 
+                                                                 'application/vnd.oasis.opendocument.text' ,   
+                                                                 'binary', 
+                                                                  $delib['Deliberation']['deliberation']));
                   } 
                   if (!empty($delib['Deliberation']['texte_synthese'])) {
-                      $oMainPart->addElement(new GDO_ContentType('note_synthese', 'ns.odt', 'application/vnd.oasis.opendocument.text' , 'binary', $delib['Deliberation']['texte_synthese']));
+                      $oMainPart->addElement(new GDO_ContentType('note_synthese', 
+                                                                 'ns.odt', 
+                                                                 'application/vnd.oasis.opendocument.text' , 
+                                                                 'binary', 
+                                                                  $delib['Deliberation']['texte_synthese']));
                    }
                    if (!empty($delib['Deliberation']['debat'])) {
-                       $oMainPart->addElement(new GDO_ContentType('debat_deliberation', 'debat.odt',  'application/vnd.oasis.opendocument.text' , 'binary' , $delib['Deliberation']['debat']));
+                       $oMainPart->addElement(new GDO_ContentType('debat_deliberation', 
+                                                                  'debat.odt',  
+                                                                  'application/vnd.oasis.opendocument.text' , 
+                                                                  'binary', 
+                                                                  $delib['Deliberation']['debat']));
                    }
                    if (!empty($delib['Deliberation']['commission'])) {
-                       $oMainPart->addElement(new GDO_ContentType('debat_commission', 'debat_commission.odt',  'application/vnd.oasis.opendocument.text', 'binary', $delib['Deliberation']['commission']));
+                       $oMainPart->addElement(new GDO_ContentType('debat_commission', 
+                                                                  'debat_commission.odt',  
+                                                                  'application/vnd.oasis.opendocument.text', 
+                                                                  'binary', 
+                                                                  $delib['Deliberation']['commission']));
                    }
 
 	       }
@@ -690,7 +733,10 @@ class Deliberation extends AppModel {
                        $oDevPart = new GDO_PartType();
                        $oDevPart->addElement(new GDO_FieldType('nom_fichier',  utf8_encode($annexe['Annex']['filename']), 'text'));
                        $oDevPart->addElement(new GDO_FieldType('titre_annexe', utf8_encode($annexe['Annex']['titre']), 'text'));
-                       $oDevPart->addElement(new GDO_ContentType('fichier',    utf8_encode($annexe['Annex']['filename']),  'application/vnd.oasis.opendocument.text', 'binary', $annexe['Annex']['data']));
+                       $oDevPart->addElement(new GDO_ContentType('fichier',    utf8_encode($annexe['Annex']['filename']),  
+                                                                                           'application/vnd.oasis.opendocument.text', 
+                                                                                           'binary',
+                                                                                           $annexe['Annex']['data']));
                        $annexes->addPart($oDevPart);
                    }
                }
@@ -969,7 +1015,7 @@ class Deliberation extends AppModel {
              }
              elseif ($champs['file_size'] != 0 ) {
                  $name = utf8_decode(str_replace(" ", "_", $champs['file_name']));
-                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', $champs['content']));
+                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', utf8_decode($champs['content'])));
              }
              elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
                  include_once ('controllers/components/gedooo.php');
@@ -981,13 +1027,13 @@ class Deliberation extends AppModel {
                      $filename = WEBROOT_PATH."/files/generee/projet/$id/".$champs_def['Infosupdef']['code'].".html";
                      $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
                      $content = $this->Conversion->convertirFichier($filename, "odt");
-		     return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
+		     return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', utf8_decode($content)));
                  }
 		 elseif ( $model == 'Seance' ) {
                      $filename = WEBROOT_PATH."/files/generee/seance/$id/".$champs_def['Infosupdef']['code'].".html";
                      $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/seance/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
                      $content = $this->Conversion->convertirFichier($filename, "odt");
-                     return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                     return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', utf8_decode($content)));
 
                  } 
              }
@@ -1347,8 +1393,7 @@ function supprimer($delibId) {
         $natures_id =  implode(", ", $natures_id);
 
         $this->Behaviors->attach('Containable');
-      
-        return ($this->query("SELECT $fields
+        $requete = "SELECT $fields
                               FROM deliberations as Deliberation, 
                                    services as Service, 
                                    themes as Theme,
@@ -1360,7 +1405,9 @@ function supprimer($delibId) {
                                     AND Deliberation.service_id = Service.id 
                                     AND Deliberation.nature_id IN ($natures_id)
                                     AND Deliberation.etat != -1
-                              ORDER BY Deliberation.created DESC;"));
+                              ORDER BY Deliberation.created DESC;";
+      
+        return ($this->query($requete));
 
     }
 
