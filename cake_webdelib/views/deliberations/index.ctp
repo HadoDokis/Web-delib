@@ -125,8 +125,8 @@
 			 if (in_array('goNext', $deliberation['Actions']))
 			     echo $html->link(SHY,"/deliberations/goNext/" . $deliberation['Deliberation']['id'], 
                                                    array('class'=>"link_jump", 
-							 'alt'=>'Sauter une ou des étapes pour le projet '.$deliberation['Deliberation']['objet'],
-							 'title'=>'Sauter une ou des étapes pour le projet '.$deliberation['Deliberation']['objet'],
+							 'alt'=>'Sauter une ou des Ã©tapes pour le projet '.$deliberation['Deliberation']['objet'],
+							 'title'=>'Sauter une ou des Ã©tapes pour le projet '.$deliberation['Deliberation']['objet'],
                      
                                                           ), false, false);
 			
@@ -165,7 +165,7 @@
 		<td>
                     Circuit : <br /><?php echo $deliberation['Circuit']['libelle']; ?>
                               <br /><?php if (isset( $deliberation['last_viseur']))
-                          echo 'Visé par '. $deliberation['last_viseur'] ?>    
+                          echo 'VisÃ© par '. $deliberation['last_viseur'] ?>    
                 </td>
 		<td class='corps' rowspan=1 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
 		<td>A traiter avant le :<br /><?php echo $deliberation['Deliberation']['date_limite']; ?></td>
@@ -199,8 +199,8 @@
 	      echo '<li>'.$html->link('Ajouter un projet', 
 				      '/deliberations/add', 
                                       array('class'=>'link_add', 
-					    'alt'=>'créer un nouveau projet',
-                                            'title'=>'créer un nouveau projet')).'</li>';
+					    'alt'=>'crÃ©er un nouveau projet',
+                                            'title'=>'crÃ©er un nouveau projet')).'</li>';
 	      echo '</ul>';
               
           }
