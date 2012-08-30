@@ -125,6 +125,10 @@
     ////////////////////////
     Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
 
-
+    ////////////////////////
+    // Configuration pour la vérification des mimetypes
+    ////////////////////////
+    Configure::write('FILE_EXEC', '/usr/bin/file --mime-type -b ');
+ 
  
 ?>
