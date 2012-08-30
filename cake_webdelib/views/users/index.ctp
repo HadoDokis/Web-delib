@@ -5,9 +5,9 @@
 <tr>
 	<th><?php echo $paginator->sort('Login', 'login'); ?></th>
 	<th><?php echo $paginator->sort('Nom', 'nom'); ?></th>
-	<th><?php echo $paginator->sort('Prénom', 'prenom'); ?></th>
+	<th><?php echo $paginator->sort('PrÃ©nom', 'prenom'); ?></th>
 	<th><?php echo $paginator->sort('Profil', 'Profil.libelle'); ?></th>
-	<th>Téléphone</th>
+	<th>TÃ©lÃ©phone</th>
 	<th>Mobile</th>
 	<th><?php echo $paginator->sort('Services', 'Service.libelle'); ?></th>
 	<th>Natures</th>
@@ -50,14 +50,14 @@ foreach ($users as $user):?>
 </table>
 
 <div class='paginate'>
-	<!-- Affiche les numéros de pages -->
+	<!-- Affiche les numÃ©ros de pages -->
 	<?php echo $paginator->numbers(); ?>
-	<!-- Affiche les liens des pages précédentes et suivantes -->
+	<!-- Affiche les liens des pages prÃ©cÃ©dentes et suivantes -->
 	<?php
-		echo $paginator->prev('« Précédent ', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
-		echo $paginator->next(' Suivant »', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
+		echo $paginator->prev('Â« PrÃ©cÃ©dent ', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
+		echo $paginator->next(' Suivant Â»', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
 	?> 
-	<!-- Affiche X de Y, où X est la page courante et Y le nombre de pages -->
+	<!-- Affiche X de Y, oÃ¹ X est la page courante et Y le nombre de pages -->
 	<?php echo $paginator->counter(array('format'=>'Page %page% sur %pages%')); ?>
 </div>
 
