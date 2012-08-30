@@ -51,7 +51,7 @@
 /**
  * Application wide charset encoding
  */
-	Configure::write('App.encoding', 'ISO-8859-15');
+	Configure::write('App.encoding', 'UTF-8');
 
 /**
  * To configure CakePHP *not* to use mod_rewrite and to
@@ -242,7 +242,7 @@
  * If you are on PHP 5.3 uncomment this line and correct your server timezone
  * to fix the date & time related errors.
  */
-	date_default_timezone_set('UTC');
+	date_default_timezone_set('Europe/Paris');
 
 /**
  *
@@ -303,8 +303,7 @@
               'prefix' => Inflector::slug(APP_DIR) . '_', //[optional]  prefix every cache file with this string
       ));
  */
-
-	Cache::config('default', array('engine' => 'File'));
+    Cache::config('default', array('engine' => 'File'));
 
     $pos = @strripos($_SERVER['HTTP_USER_AGENT'], 'Chrome');
     $pos2 = @strripos($_SERVER['HTTP_USER_AGENT'], 'Mozilla');
@@ -322,5 +321,5 @@
     define('CONFIG_PATH', $path2."config/");
 
     require_once ('webdelib.inc');
-    define('VERSION', '<b> 3.5.2 </b>');
+    define('VERSION', '<b> 4.0-alpha </b>');
     include_once(APP_DIR.DS.'plugins'.DS.'cakeflow'.DS.'config'.DS.'cakeflow.conf.php');
