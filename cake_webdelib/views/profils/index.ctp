@@ -1,7 +1,7 @@
 <h2>Liste des profils des utilisateurs</h2>
 
 <div id="arbre">
-	<?php echo $tree->showTree('Profil', 'libelle', $data, 0, $this->base, array('Editer'=>'edit', 'Supprimer'=>'delete')); ?>
+	<?php echo $tree->showTree('Profil', 'libelle', $data, 0, $this->base, array('Editer'=>'edit', 'Supprimer'=>'delete', 'Envoyer un mail' => 'notifier')); ?>
 </div>
 
 <div>
