@@ -40,13 +40,13 @@ class InfosupdefsController extends AppController
 
 
 	function view($id = null) {
-		$this->data = $this->{$this->modelClass}->findById($id, null, null, -1);
+		$this->request->data = $this->{$this->modelClass}->findById($id, null, null, -1);
 		if (empty($this->data)) {
 			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible', 'growl');
 			$this->redirect('/infosupdefs/index');
 		} else {
-			$this->data['Infosupdef']['libelleType'] = $this->Infosupdef->libelleType($this->data['Infosupdef']['type']);
-			$this->data['Infosupdef']['libelleRecherche'] = $this->Infosupdef->libelleRecherche($this->data['Infosupdef']['recherche']);
+			$this->request->data['Infosupdef']['libelleType'] = $this->Infosupdef->libelleType($this->data['Infosupdef']['type']);
+			$this->request->data['Infosupdef']['libelleRecherche'] = $this->Infosupdef->libelleRecherche($this->data['Infosupdef']['recherche']);
 			$this->set('titre', 'Fiche information suppl&eacute;mentaire de '.($this->data['Infosupdef']['model']=='Deliberation'?'d&eacute;lib&eacute;ration':'s&eacute;ance'));
 			$this->set('lienRetour', '/infosupdefs/'.($this->data['Infosupdef']['model']=='Deliberation'?'index':'index_seance'));
 		}
@@ -58,15 +58,15 @@ class InfosupdefsController extends AppController
 		$codePropose = '';
 		
 		if (empty($this->data)) {
-			$this->data['Infosupdef']['model'] = $model;
+			$this->request->data['Infosupdef']['model'] = $model;
 		} else {
 			/* traitement de la valeur par defaut */
 			if ($this->data['Infosupdef']['type'] == 'date')
-				$this->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_date'];
+				$this->request->data['Infosupdef']['val_initiale'] = $this->request->data['Infosupdef']['val_initiale_date'];
 			elseif ($this->data['Infosupdef']['type'] == 'boolean')
-				$this->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_boolean'];
+				$this->request->data['Infosupdef']['val_initiale'] = $this->request->data['Infosupdef']['val_initiale_boolean'];
 			elseif ($this->data['Infosupdef']['type'] == 'file')
-				$this->data['Infosupdef']['val_initiale'] = '';
+				$this->request->data['Infosupdef']['val_initiale'] = '';
 
 			if ($this->{$this->modelClass}->save($this->data)) {
 				$this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$this->data['Infosupdef']['nom'].'\' a &eacute;t&eacute; ajout&eacute;e', 'growl');
@@ -103,17 +103,17 @@ class InfosupdefsController extends AppController
 			}
 			/* traitement de la valeur par defaut pour les dates et les booleens */
 			if ($this->data['Infosupdef']['type'] == 'date')
-				$this->data['Infosupdef']['val_initiale_date'] = $this->data['Infosupdef']['val_initiale'];
+				$this->request->data['Infosupdef']['val_initiale_date'] = $this->data['Infosupdef']['val_initiale'];
 			elseif ($this->data['Infosupdef']['type'] == 'boolean')
-				$this->data['Infosupdef']['val_initiale_boolean'] = $this->data['Infosupdef']['val_initiale'];
+				$this->request->data['Infosupdef']['val_initiale_boolean'] = $this->data['Infosupdef']['val_initiale'];
 		} else {
 			// traitement de la valeur par defaut
 			if ($this->data['Infosupdef']['type'] == 'date')
-				$this->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_date'];
+				$this->request->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_date'];
 			elseif ($this->data['Infosupdef']['type'] == 'boolean')
-				$this->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_boolean'];
+				$this->request->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_boolean'];
 			elseif ($this->data['Infosupdef']['type'] == 'file')
-				$this->data['Infosupdef']['val_initiale'] = '';
+				$this->request->data['Infosupdef']['val_initiale'] = '';
 
 			if ($this->{$this->modelClass}->save($this->data)) {
 				$this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$this->data['Infosupdef']['nom'].'\' a &eacute;t&eacute; modifi&eacute;e', 'growl');

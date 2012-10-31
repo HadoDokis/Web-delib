@@ -1,4 +1,5 @@
 <?php
+
 class ThemesController extends AppController {
 
 	var $name = 'Themes';
@@ -7,28 +8,31 @@ class ThemesController extends AppController {
 
 	// Gestion des droits
 	var $aucunDroit = array(
-		'changeParentId',
-		'getLibelle',
-		'isEditable',
-		'view'
+			'changeParentId',
+			'getLibelle',
+			'isEditable',
+			'view'
 	);
 	var $commeDroit = array(
-		'edit'=>'Themes:index',
-		'add'=>'Themes:index',
-		'delete'=>'Themes:index'
+			'edit'=>'Themes:index',
+			'add'=>'Themes:index',
+			'delete'=>'Themes:index'
 	);
 
 	function getLibelle ($id = null) {
-            $condition = "Theme.id = $id";
-            $objCourant = $this->Theme->findAll($condition);
-            return $objCourant['0']['Theme']['libelle'];
+		$condition = "Theme.id = $id";
+		$objCourant = $this->Theme->find('first', array(
+				'conditions' => array('Theme.id' => $id),
+				'recursive'  => -1,
+				'fields'     => array('libelle')));
+		return $objCourant['Theme']['libelle'];
 	}
 
 	function index() {
-            $themes =  $this->Theme->find('threaded',array('conditions'=>array('actif'=>1), 
-                                                           'order'=>'Theme.order ASC',
-                                                           'recursive'=>-1));
-            $this->set('data', $themes);
+		$themes =  $this->Theme->find('threaded',array('conditions'=>array('actif'=>1),
+				'order'=>'Theme.order ASC',
+				'recursive'=>-1));
+		$this->set('data', $themes);
 	}
 
 	function view($id = null) {
@@ -41,12 +45,13 @@ class ThemesController extends AppController {
 		$this->set('Droits',$this->Droits);
 	}
 
-    function add() {
-		$themes = $this->Theme->generatetreelist(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;');
+	function add() {
+		$themes = $this->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;');
 		$this->set('themes', $themes);
 		if (!empty($this->data)) {
-			if (empty($this->data['Theme']['parent_id'])) $this->data['Theme']['parent_id']=0;
-                        $this->data['Theme']['actif'] =1;
+			if (empty($this->data['Theme']['parent_id'])) 
+				$this->request->data['Theme']['parent_id']=0;
+			$this->request->data['Theme']['actif'] =1;
 
 			if ($this->Theme->save($this->data)) {
 				$this->Session->setFlash('Le th&egrave;me a &eacute;t&eacute; sauvegard&eacute;');
@@ -64,12 +69,12 @@ class ThemesController extends AppController {
 				$this->redirect('/Themes/index');
 			}
 			$this->data = $this->Theme->read(null, $id);
-			$themes = $this->Theme->generatetreelist(array('Theme.id <>'=> $id,'Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;');
+			$themes = $this->Theme->generateTreeList(array('Theme.id <>'=> $id,'Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;');
 			$this->set('isEditable', $this->isEditable($id));
 			$this->set('themes', $themes);
 			$this->set('selectedTheme',$this->data['Theme']['parent_id']);
 		} else {
-			if (empty($this->data['Theme']['parent_id'])) $this->data['Theme']['parent_id']=0;
+			if (empty($this->data['Theme']['parent_id'])) $this->request->data['Theme']['parent_id']=0;
 			if ($this->Theme->save($this->data)) {
 				$this->Session->setFlash('Le th&egrave;me a &eacute;t&eacute; modifi&eacute;');
 				$this->redirect('/themes/index');
@@ -80,27 +85,28 @@ class ThemesController extends AppController {
 	}
 
 	function delete($id = null) {
-	    if (!$id) {
-                $this->Session->setFlash('Invalide id pour le Th&egrave;me');
-                $this->redirect('/themes/index');
-            }
-        $theme = $this->Theme->read(null, $id);
-        $theme['Theme']['actif'] = 0;
-        if ( $this->Theme->save( $theme)) {
-            $this->Session->setFlash('Le Th&egrave;me a &eacute;t&eacute; d&eacute;sactiv&eacute;');
-            $this->redirect('/themes/index');
-        }
+		if (!$id) {
+			$this->Session->setFlash('Invalide id pour le Th&egrave;me');
+			$this->redirect('/themes/index');
+		}
+		$theme = $this->Theme->read(null, $id);
+		$theme['Theme']['actif'] = 0;
+		if ( $this->Theme->save( $theme)) {
+			$this->Session->setFlash('Le Th&egrave;me a &eacute;t&eacute; d&eacute;sactiv&eacute;');
+			$this->redirect('/themes/index');
+		}
 	}
 
 	function changeParentId($curruentParentId, $newParentId) {
-		$this->data = $this->Theme->findByParentId($curruentParentId);
+		$this->request->data = $this->Theme->findByParentId($curruentParentId);
 	}
 
 	function isEditable ($id) {
 		$condition = "parent_id = $id";
-		$liste = $this->Theme->findAll($condition);
+		$liste = $this->Theme->find("first", array(
+				'conditions' => array('Theme.parent_id' => $id),
+				'recursive'  => -1));
 		return empty($liste);
 	}
-
 }
 ?>

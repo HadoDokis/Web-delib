@@ -2,7 +2,7 @@
 class TypeseancesController extends AppController {
 
 	var $name = 'Typeseances';
-	var $uses = array('Typeseance', 'Model', 'Compteur', 'Seance');
+	var $uses = array('Typeseance', 'Typeacte', 'Model', 'Compteur', 'Seance');
 
 	// Gestion des droits
 	var $commeDroit = array(
@@ -13,16 +13,35 @@ class TypeseancesController extends AppController {
 	);
 
 	function index() {
-		$this->set('typeseances', $this->Typeseance->findAll());
-		$this->set('Typeseance', $this->Typeseance);
-		$this->set('Typeseances', $this);
+                $this->Typeseance->Behaviors->attach('Containable');
+		$typeseances = $this->Typeseance->find('all', array('contain' =>array('Modelpvdetaille.modele', 'Modelpvdetaille.id',
+                                                                                               'Modelpvsommaire.modele', 'Modelpvsommaire.id',
+                                                                                               'Modelordredujour.modele', 'Modelordredujour.id',
+                                                                                               'Modelconvocation.modele', 'Modelconvocation.id',
+                                                                                               'Modeldeliberation.modele', 'Modeldeliberation.id',
+                                                                                               'Modelprojet.modele', 'Modelprojet.id',
+                                                                                               'Compteur.id', 'Compteur.nom', 'Acteur',
+                                                                                               'Typeacteur', 'Typeacte' )));
+		for($i=0; $i < count($typeseances); $i++) {
+			$typeseances[$i]['Typeseance']['is_deletable'] = $this-> _isDeletable($typeseances[$i], $message);
+			$typeseances[$i]['Typeseance']['action'] = $this->Typeseance->libelleAction($typeseances[$i]['Typeseance']['action'], true);
+		}
+		$this->set('typeseances',	$typeseances );
 	}
 
 	function view($id = null) {
-		$typeseance = $this->Typeseance->read(null, $id);
-		if (empty($typeseance)) {
-			$this->Session->setFlash('Invalide id pour le type de seance.');
-			$this->redirect('/typeseances/index');
+		$typeseance = $this->Typeseance->find('first', array( 'conditions' => array('Typeseance.id' => $id),
+                                                                      'contain' =>array('Modelpvdetaille.modele', 'Modelpvdetaille.id',
+                                                                                               'Modelpvsommaire.modele', 'Modelpvsommaire.id',
+                                                                                               'Modelordredujour.modele', 'Modelordredujour.id',
+                                                                                               'Modelconvocation.modele', 'Modelconvocation.id',
+                                                                                               'Modeldeliberation.modele', 'Modeldeliberation.id',
+                                                                                               'Modelprojet.modele', 'Modelprojet.id',
+                                                                                               'Compteur.id', 'Compteur.nom', 'Acteur',
+                                                                                               'Typeacteur', 'Typeacte' )));
+		for($i=0; $i < count($typeseances); $i++) {
+			$typeseances[$i]['Typeseance']['is_deletable'] = $this-> _isDeletable($typeseances[$i], $message);
+			$typeseances[$i]['Typeseance']['action'] = $this->Typeseance->libelleAction($typeseances[$i]['Typeseance']['action'], true);
 		}
 		$this->set('typeseance', $typeseance);
 	}
@@ -49,7 +68,7 @@ class TypeseancesController extends AppController {
 			$this->set('selectedTypeacteurs', null);
 			$this->set('acteurs', $this->Typeseance->Acteur->generateList('Acteur.nom'));
 			$this->set('selectedActeurs', null);
-                        $this->set('natures', $this->Typeseance->Nature->generateList('Nature.libelle'));
+                        $this->set('natures', $this->Typeacte->find('list', array('fields' => array('Typeacte.libelle') )));
                         $this->set('selectedNatures', null);
 			$this->render('edit');
 		}
@@ -57,15 +76,25 @@ class TypeseancesController extends AppController {
 
 	function edit($id = null) {
 		$sortie = false;
+                $this->Typeseance->Behaviors->attach('Containable');
+
 		if (empty($this->data)) {
-			$this->data = $this->Typeseance->read(null, $id);
+			$this->data = $this->Typeseance->find('first', array('conditions' => array('Typeseance.id' => $id),
+                                                                            'contain' => array('Modelpvdetaille.modele', 'Modelpvdetaille.id',
+                                                                                               'Modelpvsommaire.modele', 'Modelpvsommaire.id',
+                                                                                               'Modelordredujour.modele', 'Modelordredujour.id',
+                                                                                               'Modelconvocation.modele', 'Modelconvocation.id',
+                                                                                               'Modeldeliberation.modele', 'Modeldeliberation.id',
+                                                                                               'Modelprojet.modele', 'Modelprojet.id', 
+                                                                                               'Compteur.id', 'Compteur.nom', 'Acteur', 
+                                                                                               'Typeacteur', 'Typeacte')));
 			if (empty($this->data)) {
 				$this->Session->setFlash('Invalide id pour le type de s&eacute;ance');
 				$sortie = true;
 			} else {
 				$this->set('selectedTypeacteurs', $this->_selectedArray($this->data['Typeacteur']));
 				$this->set('selectedActeurs', $this->_selectedArray($this->data['Acteur']));
-				$this->set('selectedNatures', $this->_selectedArray($this->data['Nature']));
+				$this->set('selectedNatures', $this->_selectedArray($this->data['Typeacte']));
 			}
 		} else {
 			if ($this->Typeseance->save($this->data)) {
@@ -92,14 +121,14 @@ class TypeseancesController extends AppController {
                                                     2 => $this->Typeseance->libelleAction(2, true)));
 			$this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
 			$this->set('acteurs', $this->Typeseance->Acteur->generateList('Acteur.nom'));
-			$this->set('natures', $this->Typeseance->Nature->generateList('Nature.libelle'));
+                        $this->set('natures', $this->Typeacte->find('list', array('fields' => array('Typeacte.libelle') )));
 		}
 	}
 
-/* dans le controleur car utilisé dans la vue index pour l'affichage */
+/* dans le controleur car utilisÃ© dans la vue index pour l'affichage */
 	function _isDeletable($typeseance, &$message) {
-		if ($this->Seance->findCount(array('type_id'=>$typeseance['Typeseance']['id']))) {
-			$message = 'Le type de s&eacute;ance \''.$typeseance['Typeseance']['libelle'].'\' ne peut pas être supprim&eacute; car il est utilis&eacute; par une s&eacute;ance';
+		if ($this->Seance->find('count', array('type_id'=>$typeseance['Typeseance']['id']))) {
+			$message = 'Le type de s&eacute;ance \''.$typeseance['Typeseance']['libelle'].'\' ne peut pas Ãªtre supprim&eacute; car il est utilis&eacute; par une s&eacute;ance';
 			return false;
 		}
 		return true;

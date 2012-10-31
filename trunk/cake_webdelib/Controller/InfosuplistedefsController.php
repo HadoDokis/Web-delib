@@ -12,12 +12,14 @@ var $commeDroit = array(
 	);
 
 /**
- * liste des éléments de la liste d'une information supplémentaire de type 'list'
+ * liste des Ã©lÃ©ments de la liste d'une information supplÃ©mentaire de type 'list'
  */
 function index($infosupdefId) {
 	$sortie = false;
 	// recherche de l'infosup
-	$infosupdef = $this->{$this->modelClass}->Infosupdef->findById($infosupdefId, null, null, -1);
+	//$infosupdef = $this->{$this->modelClass}->Infosupdef->findById($infosupdefId, null, null, -1);
+	$infosupdef = $this->{$this->modelClass}->Infosupdef->find('first', array('conditions' => array('Infosupdef.id' => $infosupdefId),
+                                                                                  'recursive'  => -1));
 	if (empty($infosupdef)) {
 		$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible');
 		$sortie = true;
@@ -29,12 +31,15 @@ function index($infosupdefId) {
 		$this->redirect('/infosupdefs/index');
 	else {
 		$this->set('infosupdef', $infosupdef);
-		$this->data = $this->{$this->modelClass}->findAll('actif = 1 AND infosupdef_id = '.$infosupdefId, null, 'ordre', null, 1, -1);
+		$this->request->data = $this->{$this->modelClass}->find('all', array('conditions' => array('actif' => 1,
+                                                                                                           'infosupdef_id' => $infosupdefId),
+                                                                                      'order'     => 'ordre',
+                                                                                      'recursive' => -1));
 	}
 }
 
 /**
- * Ajoute un éléments à la liste de l'info. sup. $infosupId
+ * Ajoute un Ã©lÃ©ments Ã  la liste de l'info. sup. $infosupId
  */
 function add($infosupId=0) {
 	$sortie = false;
@@ -75,7 +80,7 @@ function add($infosupId=0) {
 }
 
 /**
- * Edition de l'élément $id de la liste d'une info supplémentaire
+ * Edition de l'Ã©lÃ©ment $id de la liste d'une info supplÃ©mentaire
  */
 function edit($id=0) {
 	$sortie = false;
@@ -105,11 +110,12 @@ function edit($id=0) {
 }
 
 /**
- * Rend inactif l'élément $id de la liste d'une info supplémentaire
+ * Rend inactif l'Ã©lÃ©ment $id de la liste d'une info supplÃ©mentaire
  */
 function delete($id=0) {
 	// lecture de l'infosuplistedef
-	$this->data = $this->{$this->modelClass}->findById($id, null, null, -1);
+	$this->request->data = $this->{$this->modelClass}->find('first', array('conditions' => array('id' =>$id), 
+                                                                       'recursive' => -1));
 	if (empty($this->data)) {
 		$this->Session->setFlash('Invalide id pour l\'&eacute;l&eacute;ment de l\'information suppl&eacute;mentaire : suppression impossible');
 		$redirect = '/infosupdefs/index';
@@ -130,10 +136,11 @@ function delete($id=0) {
 }
 
 /**
- * intervertit l'élément de la liste $id avec son suivant ou son précédent
+ * intervertit l'Ã©lÃ©ment de la liste $id avec son suivant ou son prÃ©cÃ©dent
  */
 function changerOrdre($id = null, $suivant = true){
-	$this->data = $this->{$this->modelClass}->findById($id, null, null, -1);
+	$this->request->data = $this->{$this->modelClass}->find('first', array('conditions' => array('id' =>$id), 
+                                                                       'recursive' => -1));
 	if (empty($this->data))
 		$this->Session->setFlash('Invalide id : deplacement impossible.');
 	else

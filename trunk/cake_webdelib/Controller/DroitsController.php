@@ -12,7 +12,7 @@ class DroitsController extends AppController
 
 
 /* construit l'arborescence des profils et des utilisateurs dans le tableau $profilsTree */
-/* retourne le nombre d'éléments du profil */
+/* retourne le nombre d'Ã©lÃ©ments du profil */
 	function _chargeProfilsUsers(&$profilsTree, $parentId=0) {
 		// Initialisations
 		$nbTotElement = 0;
@@ -37,7 +37,7 @@ class DroitsController extends AppController
 				foreach($users as $user) {
 					$profilsTree[$key]['users'][] = $user['User'];
 					$keyUser = count($profilsTree[$key]['users']) - 1;
-					$profilsTree[$key]['users'][$keyUser]['arosAlias'] = 'Utilisateur:' . $user['User']['login'];
+					$profilsTree[$key]['users'][$keyUser]['arosAlias'] = 'User:' . $user['User']['login'];
 					$profilsTree[$key]['nbElement']++;
 				}
 			}
@@ -54,7 +54,7 @@ class DroitsController extends AppController
 	}
 
 /* ajoute les utilisateurs sans profil dans le tableau $profilsTree */
-/* retourne le nombre d'éléments du profil 'Sans profil' */
+/* retourne le nombre d'Ã©lÃ©ments du profil 'Sans profil' */
 	function _chargeUsersSansProfil(&$profilsTree) {
 
 		// Lecture des utilisateurs sans profil
@@ -63,7 +63,7 @@ class DroitsController extends AppController
 		// Sort si il n'y a pas d'utilisateur sans profil
 		if (empty($users)) return;
 
-		// Création de l'entrée dans le tableau
+		// CrÃ©ation de l'entrÃ©e dans le tableau
 		$profilsTree[] = array();
 		$key = count($profilsTree)-1;
 		$profilsTree[$key]['id'] = 0;
@@ -75,7 +75,7 @@ class DroitsController extends AppController
 		foreach($users as $user) {
 			$profilsTree[$key]['users'][] = $user['User'];
 			$keyUser = count($profilsTree[$key]['users']) - 1;
-			$profilsTree[$key]['users'][$keyUser]['arosAlias'] = 'Utilisateur:' . $user['User']['login'];
+			$profilsTree[$key]['users'][$keyUser]['arosAlias'] = 'User:' . $user['User']['login'];
 			$profilsTree[$key]['nbElement']++;
 		}
 		return $profilsTree[$key]['nbElement'] + 1;
@@ -83,7 +83,7 @@ class DroitsController extends AppController
 
 
 /* retourne la liste des profils principaux sous forme d'un tableau */
-/* utilisé dans la vue pour filtrer l'affichage des profils */
+/* utilisÃ© dans la vue pour filtrer l'affichage des profils */
 /* retourne un tableau associatif : ligneDeb-ligneFin => nom_du_profil */
 	function _chargeFiltreProfils($profilsUsersTree) {
 		// Initialisations
@@ -101,7 +101,7 @@ class DroitsController extends AppController
 
 
 /* construit l'arborescence du menu et des controleurs dans le tableau $menuCtrlTree */
-/* retourne le nombre d'éléments du menu */
+/* retourne le nombre d'Ã©lÃ©ments du menu */
 	function _chargeMenuControllers(&$menuCtrlTree, $menu, $niveau=0) {
 		// Initialisations
 		$nbTotElement = 0;
@@ -126,25 +126,26 @@ class DroitsController extends AppController
 		return $nbTotElement;
 	}
 
-/* ajoute les actions des controller qui ne sont pas liés au menu $menuCtrlTree     */
-/* retourne le nombre d'éléments ajoutés 											*/
+/* ajoute les actions des controller qui ne sont pas liÃ©s au menu $menuCtrlTree     */
+/* retourne le nombre d'Ã©lÃ©ments ajoutÃ©s 											*/
 	function _chargeControllersActions(&$menuCtrlTree) {
 
 		// Initialisation
 		$nbElements = 0;
 
 		// Parcours des controleurs
-		$controllerList = listClasses(APP."/controllers/");
+		$controllerList = listClasses(APP."/Controller/");
 		foreach($controllerList as $controllerFile) {
-			if (strpos($controllerFile, '_controller.php')>0)
+			if (strpos($controllerFile, 'Controller.php')>0)
 			{
-				$controllerName = Inflector::camelize(str_replace('_controller.php','',$controllerFile));
+				$controllerName = Inflector::camelize(str_replace('Controller.php','',$controllerFile));
+				debug($controllerName);
 				$listeActions = $this->Droits->listeActionsControleur($controllerName);
-				// Supprime les actions déjà liées au menu
+				// Supprime les actions dÃ©jÃ  liÃ©es au menu
 				foreach($listeActions as $key => $action) {
 					if ($this->_trouveAction($controllerName . ':' . $action, $menuCtrlTree)) unset($listeActions[$key]);
 				}
-				// Ajout à la liste des menus-controleurs
+				// Ajout Ã  la liste des menus-controleurs
 				if (!empty($listeActions)) {
 					$menuCtrlTree[] = array();
 					$key = count($menuCtrlTree) - 1;
@@ -152,7 +153,7 @@ class DroitsController extends AppController
 					$menuCtrlTree[$key]['acosAlias'] = $controllerName;
 					$menuCtrlTree[$key]['nbElement'] = count($listeActions);
 					$menuCtrlTree[$key]['subMenu'] = array();
-					// Ajoute les libellés des actions
+					// Ajoute les libellÃ©s des actions
 					$listeLibelles = $this->Droits->libellesActionsControleur($controllerName, $listeActions);
 					$i = 0;
 					foreach($listeActions as $action) {
@@ -169,7 +170,7 @@ class DroitsController extends AppController
 		return $nbElements;
 	}
 
-/* retourne le couple Controler:action pour le lien passé en paramètre */
+/* retourne le couple Controler:action pour le lien passÃ© en paramÃ¨tre */
 /*	function _calcAction($lien) {
 
 		// Traitement du lien
@@ -185,8 +186,8 @@ class DroitsController extends AppController
 	}
 */
 
-/* retourne la liste des éléments principaux du menu sous forme d'un tableau */
-/* utilisé dans la vue pour filtrer l'affichage des menus */
+/* retourne la liste des Ã©lÃ©ments principaux du menu sous forme d'un tableau */
+/* utilisÃ© dans la vue pour filtrer l'affichage des menus */
 /* retourne un tableau associatif : colDeb-colFin => titre_du_menu */
 	function _chargeFiltreMenu($menuControllersTree) {
 		// Initialisations
@@ -202,21 +203,21 @@ class DroitsController extends AppController
 		return $fMenu;
 	}
 
-/* Mise à jour de la table Acos avec les éléments du menu et les actions associées */
+/* Mise Ã  jour de la table Acos avec les Ã©lÃ©ments du menu et les actions associÃ©es */
 	function _ajouteMenuControllersDansAcos($menuControllersTree) {
-		// Supression de tous les éléments en base
+		// Supression de tous les Ã©lÃ©ments en base
 		$this->User->query("TRUNCATE `acos`");
 
-		// mise à jour de la table Acos
+		// mise Ã  jour de la table Acos
 		$this->_majAcos($menuControllersTree);
 	}
 
-/* Mise à jour de la table Acos avec les éléments du menu et les actions associées */
+/* Mise Ã  jour de la table Acos avec les Ã©lÃ©ments du menu et les actions associÃ©es */
 	function _majAcos($menuControllersTree, $parent=null) {
 		// Initialisations
 		$aco = new Aco();
 
-		// Parcours des éléments du menu et des actions de controleurs
+		// Parcours des Ã©lÃ©ments du menu et des actions de controleurs
 		foreach($menuControllersTree as $menuController) {
 			if (!$aco->findbyAlias($menuController['acosAlias']))
 				$aco->create(null, $parent, $menuController['acosAlias']);
@@ -228,16 +229,16 @@ class DroitsController extends AppController
 		}
 	}
 
-/* Mise à jour de la table Aros avec les profils et les utilisateurs */
+/* Mise Ã  jour de la table Aros avec les profils et les utilisateurs */
 	function _ajouteProfilsUsersDansAros($profilsUsersTree) {
-		// Supression de tous les éléments en base
+		// Supression de tous les Ã©lÃ©ments en base
 		$this->User->query("TRUNCATE `aros`");
 
-		// mise à jour de la table Acos
+		// mise Ã  jour de la table Acos
 		$this->_majAros($profilsUsersTree);
 	}
 
-/* Mise à jour de la table Aros avec les profils et les utilisateurs */
+/* Mise Ã  jour de la table Aros avec les profils et les utilisateurs */
 	function _majAros($profilsUsersTree, $parent=null) {
 		// Initialisations
 		$aro = new Aro();
@@ -260,7 +261,7 @@ class DroitsController extends AppController
 		}
 	}
 
-/* Mise à jour de la table aros_acos en fonction de la chaine $strDroits */
+/* Mise Ã  jour de la table aros_acos en fonction de la chaine $strDroits */
 	function _majDroits($profilsUsersTree, $menuControllersTree) {
 		// Supression de tous les droits en base
 		$this->User->query("TRUNCATE `aros_acos`");
@@ -269,7 +270,7 @@ class DroitsController extends AppController
 		$this->_majDroitsProfilsUsers($profilsUsersTree, $menuControllersTree);
 	}
 
-/* Fonction récursive sur les profils pour la mise à jour des droits */
+/* Fonction rÃ©cursive sur les profils pour la mise Ã  jour des droits */
 	function _majDroitsProfilsUsers($profilsUsersTree, $menuControllersTree, $iProfilPere=-1) {
 		// Initialisations
 		$iProfilCourant = 0;
@@ -297,23 +298,23 @@ class DroitsController extends AppController
 		}
 	}
 
-/* Fonction récursive sur les menus et actions des controleurs pour la mise à jour des droits */
+/* Fonction rÃ©cursive sur les menus et actions des controleurs pour la mise Ã  jour des droits */
 	function _majDroitsMenuControllers($aro, $menuControllersTree, $iProfilPere, $iMenuPere=-1) {
 		// Parcours des menus et controleurs
 		foreach($menuControllersTree as $menuController) {
 			$this->iMenu++;
-			// On ajoute des entrées dans la table aros_acos que si nécessaire selon les 4 cas possibles
+			// On ajoute des entrÃ©es dans la table aros_acos que si nÃ©cessaire selon les 4 cas possibles
 			if(($iProfilPere == -1) && ($iMenuPere == -1)) {
-				// cas 1 : profil et option principale du menu : on creer une entrée dans aros_acos
+				// cas 1 : profil et option principale du menu : on creer une entrÃ©e dans aros_acos
 				$creerDroits = true;
 			} elseif (($iProfilPere == -1) && ($iMenuPere != -1)) {
-				// cas 2 : profil et sous-menu : on creer une entrée dans aros_acos si droits menu père != sous-menu pour ce profil
+				// cas 2 : profil et sous-menu : on creer une entrÃ©e dans aros_acos si droits menu pÃ¨re != sous-menu pour ce profil
 				$creerDroits = $this->tabDroits[$this->iProfil][$this->iMenu] != $this->tabDroits[$this->iProfil][$iMenuPere];
 			} elseif (($iProfilPere != -1) && ($iMenuPere == -1)) {
-				// cas 3 : sous-profil ou utilisateur, et menu principal : on creer une entrée dans aros_acos si droits profil != sous-profil ou utilisateur pour ce menu principal
+				// cas 3 : sous-profil ou utilisateur, et menu principal : on creer une entrÃ©e dans aros_acos si droits profil != sous-profil ou utilisateur pour ce menu principal
 				$creerDroits = $this->tabDroits[$this->iProfil][$this->iMenu] != $this->tabDroits[$iProfilPere][$this->iMenu];
 			} elseif (($iProfilPere != -1) && ($iMenuPere != -1)) {
-				// cas 4 : sous-profil ou utilisateur, et sous-menu : ça se complique
+				// cas 4 : sous-profil ou utilisateur, et sous-menu : Ã§a se complique
 				$accesProfilPereMenuPere = $this->tabDroits[$iProfilPere][$iMenuPere] == '1';
 				$accesProfilPereMenu = $this->tabDroits[$iProfilPere][$this->iMenu] == '1';
 				$accesProfilMenuPere = $this->tabDroits[$this->iProfil][$iMenuPere] == '1';
@@ -375,7 +376,7 @@ class DroitsController extends AppController
 		}
 	}
 
-/* Fonction récursive sur les menus et actions des controleurs pour le chargement des droits */
+/* Fonction rÃ©cursive sur les menus et actions des controleurs pour le chargement des droits */
 	function _chargeDroitsMenuControllers($aro, $menuControllersTree, $indice=null, $user=null) {
 		// Parcours des menus et controleurs
 		foreach($menuControllersTree as $menuController) {
@@ -404,7 +405,7 @@ class DroitsController extends AppController
 		return false;
 	}
 
-/* construit le tableau $structColonnes avec le nombre d'éléments du menu par colonnes */
+/* construit le tableau $structColonnes avec le nombre d'Ã©lÃ©ments du menu par colonnes */
 	function _chargeStructureColonnes($menuControllersTree, &$structColonnes) {
 
 		foreach($menuControllersTree as $menu) {

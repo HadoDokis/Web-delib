@@ -22,13 +22,12 @@ class ServicesController extends AppController {
     function changeService($newServiceActif) {
     	$this->Session->del('user.User.service');
        	$this->Session->write('user.User.service',$newServiceActif);
-	//redirection sur la page où on était avant de changer de service
+	//redirection sur la page oÃ¹ on Ã©tait avant de changer de service
        	$this->Redirect($this->Referer());
     }
 
 	function index() {
                 $services = $this->Service->find('threaded',array('conditions'=>array('actif'=>1), 'order'=>'Service.id ASC','recursive'=>-1));
-
 		$this->_isDeletable($services);
 		$this->set('data', $services);
 	}
@@ -67,8 +66,10 @@ class ServicesController extends AppController {
 
 	function add() {
 		if (!empty($this->data)) {
-			if (empty($this->data['Service']['parent_id'])) $this->data['Service']['parent_id']=0;
-			if (empty($this->data['Service']['circuit_defaut_id'])) $this->data['Service']['circuit_defaut_id']=0;
+			if (empty($this->data['Service']['parent_id'])) 
+                            $this->request->data['Service']['parent_id']=0;
+			if (empty($this->data['Service']['circuit_defaut_id'])) 
+                            $this->request->data['Service']['circuit_defaut_id']=0;
 			if ($this->Service->save($this->data)) {
 				$this->Session->setFlash('Le service a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/services/index');
@@ -76,7 +77,7 @@ class ServicesController extends AppController {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 			}
 		}
-		$this->set('services', $this->Service->generatetreelist(array('Service.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+		$this->set('services', $this->Service->generateTreeList(array('Service.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
 		$this->set('circuits', $this->Circuit->find('list'));
 	}
 
@@ -89,8 +90,10 @@ class ServicesController extends AppController {
 			}
 		}
 		else {
-			if (empty($this->data['Service']['parent_id'])) $this->data['Service']['parent_id']=0;
-			if (empty($this->data['Service']['circuit_defaut_id'])) $this->data['Service']['circuit_defaut_id']=0;
+			if (empty($this->data['Service']['parent_id'])) 
+                            $this->request->data['Service']['parent_id']=0;
+			if (empty($this->data['Service']['circuit_defaut_id'])) 
+                            $this->request->data['Service']['circuit_defaut_id']=0;
 			if ($this->Service->save($this->data)) {
 				$this->Session->setFlash('Le service a &eacute;t&eacute; sauvegard&eacute;');
 				$this->redirect('/services/index');
@@ -98,7 +101,7 @@ class ServicesController extends AppController {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
 			}
 		}
-		$services=$this->Service->generatetreelist(array('Service.id <>'=>$id,'Service.actif'=>1),null,null,'&nbsp;&nbsp;&nbsp;&nbsp;');
+		$services=$this->Service->generateTreeList(array('Service.id <>'=>$id,'Service.actif'=>1),null,null,'&nbsp;&nbsp;&nbsp;&nbsp;');
 		$this->set('isEditable', $this->isEditable($id));
 		$this->set('services', $services);
 		$this->set('selectedService',$this->data['Service']['parent_id']);
@@ -123,7 +126,7 @@ class ServicesController extends AppController {
 			}
 		}
 		else {
-			$this->Session->setFlash('Ce service poss&egrave;de au moins un fils, il ne peut donc être supprim&eacute;');
+			$this->Session->setFlash('Ce service poss&egrave;de au moins un fils, il ne peut donc Ãªtre supprim&eacute;');
 			$this->redirect('/services/index');
 		}
 	}
@@ -136,7 +139,8 @@ class ServicesController extends AppController {
 
 	function isEditable ($id) {
 		$condition = "parent_id = $id";
-		$liste = $this->Service->findAll($condition);
+		$liste = $this->Service->find('all', array('conditions' => array('Service.parent_id' => $id),
+		                                            'recursive'  => -1));
 		return empty($liste);
 	}
 
