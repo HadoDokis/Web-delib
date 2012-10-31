@@ -180,3 +180,5 @@ CakeLog::config('error', array(
 	'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
 	'file' => 'error',
 ));
+
+require_once(ROOT.DS.APP_DIR.DS.'Lib'.DS.'basics.php');
