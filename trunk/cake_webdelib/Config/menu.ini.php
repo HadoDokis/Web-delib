@@ -4,13 +4,13 @@
  *
  *	$menuVar = array(
  *		'menuClass'' => str|array(str),		classe du menu
- *		'itemTag' => str|array(str),		defaut = 'li', nom de la balise des éléments du menu
- *		'currentItem' => str|array(str),	nom de la classe utilisée pour l'élément courant du menu
- *		'items' => array(					liste des éléments du menu
- *			str => array(					nom affiché de l'élément du menu
+ *		'itemTag' => str|array(str),		defaut = 'li', nom de la balise des Ã©lÃ©ments du menu
+ *		'currentItem' => str|array(str),	nom de la classe utilisÃ©e pour l'Ã©lÃ©ment courant du menu
+ *		'items' => array(					liste des Ã©lÃ©ments du menu
+ *			str => array(					nom affichÃ© de l'Ã©lÃ©ment du menu
  *				'link' => str,				lien cake du style /nomContoleur/index
  *				'title' => str,				infobulle
- *				'subMenu' => array()		sous-menu qui a la même structure que le menu
+ *				'subMenu' => array()		sous-menu qui a la mÃªme structure que le menu
  *			)
  *		)
  *	)
@@ -24,31 +24,31 @@ $webDelib = array(
 		'Accueil' => array('link' => '/'),
 		'Mes projets' => array(
 			'link' => 'mes_projets',
-			'title' => 'Projets que j\'ai créés ou qui sont dans mes circuits d\'élaboration et de validation',
+			'title' => 'Projets que j\'ai crÃ©Ã©s ou qui sont dans mes circuits d\'Ã©laboration et de validation',
 			'subMenu' => array(
 				'items' => array(
 					'Nouveau...' => array('link' => '/deliberations/add'),
-					'En cours de rédaction' => array(
+					'En cours de rÃ©daction' => array(
 						'link' => '/deliberations/mesProjetsRedaction',
-						'title' => 'Projets que j\'ai créés'),
+						'title' => 'Projets que j\'ai crÃ©Ã©s'),
 					'En cours de validation' => array(
 						'link' => '/deliberations/mesProjetsValidation',
-						'title' => 'Projets qui sont dans mes circuits d\'élaboration et de validation ou que j\'ai créés'),
+						'title' => 'Projets qui sont dans mes circuits d\'Ã©laboration et de validation ou que j\'ai crÃ©Ã©s'),
 					'A traiter' => array(
 						'link' => '/deliberations/mesProjetsATraiter',
-						'title' => 'Projets qui sont dans mes circuits d\'élaboration et de validation'),
-					'Validés' => array(
+						'title' => 'Projets qui sont dans mes circuits d\'Ã©laboration et de validation'),
+					'ValidÃ©s' => array(
 						'link' => '/deliberations/mesProjetsValides',
-						'title' => 'Projets qui sont dans mes circuits d\'élaboration et de validation ou que j\'ai créés'),
+						'title' => 'Projets qui sont dans mes circuits d\'Ã©laboration et de validation ou que j\'ai crÃ©Ã©s'),
 					'Recherches' => array(
 						'link' => '/deliberations/mesProjetsRecherche',
-						'title' => 'Parmi les projets qui sont dans mes circuits d\'élaboration et de validation ou que j\'ai créés')
+						'title' => 'Parmi les projets qui sont dans mes circuits d\'Ã©laboration et de validation ou que j\'ai crÃ©Ã©s')
 					)
 				)
 			),
                 'Projets de mon service' => array(
                         'link' => '/pages/projets_mon_service',
-                        'title' => 'Projets rédigés par mon service',
+                        'title' => 'Projets rÃ©digÃ©s par mon service',
                         'subMenu' => array(
                                 'items' => array(
                                         'Projets de mon service' => array('link'  => '/deliberations/projetsMonService',
@@ -56,51 +56,53 @@ $webDelib = array(
                 ),
 		'Tous les projets' => array(
 			'link' => '/pages/tous_les_projets',
-			'title' => 'Projets de tous les rédacteurs',
+			'title' => 'Projets de tous les rÃ©dacteurs',
 			'subMenu' => array(
 				'items' => array(
 					'A attribuer' => array(
 						'link' => '/deliberations/tousLesProjetsSansSeance',
-						'title' => 'Projets en cours de rédaction ou d\'élaboration ou validés non associés à une séance'),
+						'title' => 'Projets en cours de rÃ©daction ou d\'Ã©laboration ou validÃ©s non associÃ©s Ã  une sÃ©ance'),
 					'A valider' => array(
 						'link' => '/deliberations/tousLesProjetsValidation',
-						'title' => 'Projets en cours d\'élaboration et de validation'),
+						'title' => 'Projets en cours d\'Ã©laboration et de validation'),
 					'A faire voter' => array(
 						'link' => '/deliberations/tousLesProjetsAFaireVoter',
-						'title' => 'Projets validés associés à une séance'),
+						'title' => 'Projets validÃ©s associÃ©s Ã  une sÃ©ance'),
 					'Recherches' => array(
 						'link' => '/deliberations/tousLesProjetsRecherche',
 						'title' => 'Parmi tous les projets')
 					)
 				)
 			),
-		'Séances' => array(
+                 'Autres Actes...' => array(
+                        'link' => '/deliberations/autresActesAValider', 
+                        'subMenu' => array(
+                                'items' => array(
+                                        'En cours d\'Ã©laboration...' => array('link' => '/deliberations/autresActesAValider'),
+                                        'ValidÃ©s' => array('link' => '/deliberations/autreActesValides'),
+                                        'A tÃ©lÃ©transmettre' => array('link' => '/deliberations/autreActesAEnvoyer'),
+                                        'TÃ©lÃ©transmis' => array('link' => '/deliberations/autreActesEnvoyes'),
+                                        )
+                                )
+                        ),
+		'SÃ©ances' => array(
 			'link' => '/seances/listerFuturesSeances',
 			'subMenu' => array(
 				'items' => array(
 					'Nouvelle...' => array('link' => '/seances/add'),
-					'Passées' => array('link' => '/seances/listerAnciennesSeances'),
+					'PassÃ©es' => array('link' => '/seances/listerAnciennesSeances'),
 					'Calendrier' => array('link' => '/seances/afficherCalendrier')
 					)
 				)
 			),
-                 'Autres Actes...' => array(
-                        'link' => '/dossiers/signer', 
-                        'subMenu' => array(
-                                'items' => array(
-                                        'A signer' => array('link' => '/autres/signer'),
-                                        'Envoyer au tdt' => array('link' => '/autres/envoyerTdt')
-                                        )
-                                )
-                        ),
-		'Post-séance' => array(
+		'Post-sÃ©ance' => array(
 			'link' => '/postseances/index',
 			'subMenu' => array(
 				'items' => array(
 					'Editions' => array('link' => '/postseances/index'),
 					'Signature : i-Parapheur' => array('link' => '/deliberations/sendToParapheur'),
-					'Contrôle de légalité : à télétransmettre' => array('link' => '/deliberations/toSend'),
-					'Contrôle de légalité : télétransmises' => array('link' => '/deliberations/transmit'),
+					'ContrÃ´le de lÃ©galitÃ© : Ã  tÃ©lÃ©transmettre' => array('link' => '/deliberations/toSend'),
+					'ContrÃ´le de lÃ©galitÃ© : tÃ©lÃ©transmises' => array('link' => '/deliberations/transmit'),
 					'Versement As@lae' => array('link' => '/deliberations/verserAsalae')
 					)
 				)
@@ -130,14 +132,15 @@ $webDelib = array(
 			'link' => 'administration',
 			'subMenu' => array(
 				'items' => array(
-					'Collectivité' => array('link' => '/collectivites/index'),
-					'Thèmes' => array('link' => '/themes/index'),
-					'Modèles d\'édition' => array('link' => '/models/index'),
-					'Séquences' => array('link' => '/sequences/index'),
+					'CollectivitÃ©' => array('link' => '/collectivites/index'),
+					'ThÃ¨mes' => array('link' => '/themes/index'),
+					'ModÃ¨les d\'Ã©dition' => array('link' => '/models/index'),
+					'SÃ©quences' => array('link' => '/sequences/index'),
 					'Compteurs' => array('link' => '/compteurs/index'),
-					'Types de séance' => array('link' => '/typeseances/index'),
+					'Types d\'acte' => array('link' => '/typeactes/index'),
+					'Types de sÃ©ance' => array('link' => '/typeseances/index'),
 					'Informations sup. projet' => array('link' => '/infosupdefs/index'),
-					'Informations sup. séance' => array('link' => '/infosupdefs/index_seance')
+					'Informations sup. sÃ©ance' => array('link' => '/infosupdefs/index_seance')
 					)
 				)
 			)
