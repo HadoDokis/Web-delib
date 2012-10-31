@@ -1,5 +1,5 @@
 <?php
-class ParafwebserviceComponent extends Object {
+class ParafwebserviceComponent extends Component {
 	
 	var $requestPayloadString;
 	var $responseMessage='';
@@ -173,7 +173,7 @@ class ParafwebserviceComponent extends Object {
 	    $str = base64_decode($fichierPES->nodeValue);
 		if(!file_put_contents("dossier/recup/" . $nom_dossier . "_recup.xml", $str)){
 		}
-		else echo "le fichier a bien été récupéré !";*/
+		else echo "le fichier a bien Ã©tÃ© rÃ©cupÃ©rÃ© !";*/
 	}
 	
 	

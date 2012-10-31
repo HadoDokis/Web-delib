@@ -1,9 +1,13 @@
 <?php
 
-class GedoooComponent extends Object {
+class GedoooComponent extends Component {
 
+	
+	function GedoooComponent() { }
+	
+	
 	/**fonction createFile
-	 * $path va indiquer ou créer le fichier
+	 * $path va indiquer ou crÃ©er le fichier
 	 * $name sera le nom du fichier
 	 * $content est le contenu du fichier
 	 *
@@ -18,19 +22,19 @@ class GedoooComponent extends Object {
                 die("Impossible d'ouvrir le fichier ($path"."$name)");
 
             if (fwrite($handle, $content) === FALSE)
-                die ("Impossible d'écrire dans le fichier ($path"."$name)");
+                die ("Impossible d'Ã©crire dans le fichier ($path"."$name)");
 
             fclose($handle);
             return ($path.$name);
         }
 
     /**fonction sendFiles
-	 * $fileModel va indiquer ou récupérer le fichier de modèle
+	 * $fileModel va indiquer ou rÃ©cupÃ©rer le fichier de modÃ¨le
 	 *     exemple : '/var/www/tmp/Jean.xml'
-	 * $fileDatava indiquer ou récupérer le fichier de données
-	 * $retour = 'pdf' ou 'odt' suivant le retour souhaité de gedooo
+	 * $fileDatava indiquer ou rÃ©cupÃ©rer le fichier de donnÃ©es
+	 * $retour = 'pdf' ou 'odt' suivant le retour souhaitÃ© de gedooo
 	 *
-	 * la fonction va envoyer les deux fichiers à Ged'OOo
+	 * la fonction va envoyer les deux fichiers Ã  Ged'OOo
 	 */
 
     function sendFiles ($fileModel, $fileData, $retour = 1, $download=0, $name='retour', $seance_id=null) {
@@ -62,7 +66,7 @@ class GedoooComponent extends Object {
             die($return);
 	}
 	else {
-            // Préparation des répertoires et URL pour la création des fichiers
+            // PrÃ©paration des rÃ©pertoires et URL pour la crÃ©ation des fichiers
             if ($seance_id == null)
 	        $dyn_path = "/files/generee/modeles/";
             else 

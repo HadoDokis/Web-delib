@@ -1,6 +1,6 @@
 <?php
 
-class IparapheurComponent extends Object {
+class IparapheurComponent extends Component {
         
 	var $requestPayloadString;
 	var $responseMessage;
@@ -196,18 +196,24 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 		return $this->traiteXMLMessageRetour();
 	}
 
-	function creerDossierWebservice($typetech, $soustype, $emailemetteur, $dossierid, $annotpub='', $annotpriv='', $visibilite, $datelim='', $pdf, $docsannexes=array()){
+	function creerDossierWebservice($typetech, $soustype, $metas=array(), $dossierid, $annotpub='', $annotpriv='', $visibilite, $datelim='', $pdf, $docsannexes=array()){
 		$attachments = array('fichierPDF'=>array($pdf, "application/pdf", "binary", "document.pdf"));
 		$this->requestPayloadString = '<ns:CreerDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
 								         <ns:TypeTechnique>'.$typetech.'</ns:TypeTechnique>
 								         <ns:SousType>'.$soustype.'</ns:SousType>
-								         <ns:EmailEmetteur>'.$emailemetteur.'</ns:EmailEmetteur>
 								         <ns:DossierID>'.$dossierid.'</ns:DossierID>
 								         <ns:DocumentPrincipal xm:contentType="application/pdf">
 								         	<xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:fichierPDF"></xop:Include>
 								         </ns:DocumentPrincipal>';
+                if (isset($metas) && !empty($metas)) {
+                    $this->requestPayloadString .= '<ns:MetaData>';
+                    foreach($metas as $nom=>$valeur) {
+                        $this->requestPayloadString .= "<ns:MetaDonnee><ns:nom>$nom</ns:nom><ns:valeur>$valeur</ns:valeur></ns:MetaDonnee>";
+                    }
+                    $this->requestPayloadString .= '</ns:MetaData>';
+                }
+
 		$this->requestPayloadString .= '<ns:DocumentsAnnexes>';
-			
 		for($i=0; $i<count($docsannexes); $i++){
 			$this->requestPayloadString .= '<ns:DocAnnexe>
 		               <ns:nom>'.$docsannexes[$i][3].'</ns:nom>
@@ -415,6 +421,22 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 			
 		return $response;
 	}
+ 
+        function handleObject($objetDossier) {
+            $objetDossier = str_replace("&", "&amp;", $objetDossier);
+            $objetDossier = str_replace('/', '-',  $objetDossier);
+            $objetDossier = str_replace(':', '-',  $objetDossier);
+            $objetDossier = str_replace('"', "'",  $objetDossier);
+            $objetDossier = str_replace('+', "PLUS",  $objetDossier);
+            $objetDossier = str_replace(chr(0xC2).chr(0x80) , chr(0xE2).chr(0x82).chr(0xAC), $objetDossier);
+ 
+            if (strlen($objetDossier) > 190) {
+                $objetDossier =  substr($objetDossier, 0, 185);
+            }
+            if ($objetDossier[strlen($objetDossier)-1] == '.')
+                $objetDossier[strlen($objetDossier)-1] = " ";
+            return (trim($objetDossier));
+        }
 
 }
 

@@ -1,11 +1,13 @@
 <?php
  
-class DateComponent extends Object {
+class DateComponent extends Component {
 	
 	var $days = array ('Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi');
 	
 	var $months = array ('','janvier','février','mars','avril','mai','juin',
 						'juillet','août','septembre','octobre','novembre','décembre');
+
+	function DateComponent() {	}
 						
 	function frenchDateConvocation($timestamp)
 	{

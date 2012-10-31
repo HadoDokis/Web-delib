@@ -1,6 +1,6 @@
 <?php
 
-    class ProgressComponent extends Object {
+    class ProgressComponent extends Component {
     
         function start ($gauche,$haut,$largeur,$bord_col,$txt_col) {
             $tailletxt=30-10;
