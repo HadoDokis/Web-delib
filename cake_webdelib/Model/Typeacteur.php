@@ -1,6 +1,6 @@
 <?php
 /**
-* Gestion des séquences utilisées par les compteurs paramétrables
+* Gestion des sÃ©quences utilisÃ©es par les compteurs paramÃ©trables
 *
 * PHP versions 4 and 5
 * @filesource
@@ -29,20 +29,20 @@ class Typeacteur extends AppModel
 			),
 			array(
 				'rule' => 'isUnique',
-				'message' => 'Entrer un autre nom, celui-ci est déjà utilisé.'
+				'message' => 'Entrer un autre nom, celui-ci est dÃ©jÃ  utilisÃ©.'
 			)
 		),
 		'elu' => array(
 			'rule' => 'notEmpty',
-			'message' => 'Choisir un statut (élu ou non élu)'
+			'message' => 'Choisir un statut (Ã©lu ou non Ã©lu)'
 		)
 	);
 
 	var $hasMany = 'Acteur';
 
-	/* retourne le libellé correspondant au champ elu 1 : élu, 0 : non élu */
+	/* retourne le libellÃ© correspondant au champ elu 1 : Ã©lu, 0 : non Ã©lu */
 	function libelleElu($elu = null, $majuscule = false) {
-		return $elu ? ($majuscule ? 'Elu':'élu') : ($majuscule ? 'Non élu':'non élu');
+		return $elu ? ($majuscule ? 'Elu':'Ã©lu') : ($majuscule ? 'Non Ã©lu':'non Ã©lu');
 	}
 
 }

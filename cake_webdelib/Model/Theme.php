@@ -11,7 +11,7 @@ class Theme extends AppModel {
 		'libelle' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrer le libellé.'
+				'message' => 'Entrer le libellÃ©.'
 			)
 		)
 	);
@@ -59,14 +59,14 @@ class Theme extends AppModel {
             $oMainPart->addElement(new GDO_FieldType("T".$i."_theme", '', 'text'));
         } 
         foreach ($arbre as $index => $libelle) {
-            $tab[$level] = utf8_encode($libelle);
+            $tab[$level] = $libelle;
             $level--; 
         }
         for ($i =1; $i <= count($tab); $i++) {       
             $oMainPart->addElement(new GDO_FieldType("T".$i."_theme", $tab[$i], 'text'));
         }
-        $oMainPart->addElement(new GDO_FieldType('theme_projet',    utf8_encode($theme['Theme']['libelle']),         'text'));
-        $oMainPart->addElement(new GDO_FieldType('critere-trie_theme',          utf8_encode($theme['Theme']['order']),         'text'));
+        $oMainPart->addElement(new GDO_FieldType('theme_projet', $theme['Theme']['libelle'],  'text'));
+        $oMainPart->addElement(new GDO_FieldType('critere-trie_theme', $theme['Theme']['order'], 'text'));
     }
 
 }

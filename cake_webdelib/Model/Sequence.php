@@ -1,6 +1,6 @@
 <?php
 /**
-* Gestion des séquences utilisées par les compteurs paramétrables
+* Gestion des sÃ©quences utilisÃ©es par les compteurs paramÃ©trables
 *
 * PHP versions 4 and 5
 * @filesource
@@ -25,17 +25,17 @@ class Sequence extends AppModel
 		'nom' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrer un nom pour la séquence'
+				'message' => 'Entrer un nom pour la sÃ©quence'
 			),
 			array(
 				'rule' => 'isUnique',
-				'message' => 'Entrer un autre nom, celui-ci est déjà utilisé.'
+				'message' => 'Entrer un autre nom, celui-ci est dÃ©jÃ  utilisÃ©.'
 			)
 		),
 		'num_sequence' => array(
 			'rule' => 'numeric',
 			'allowEmpty' => true,
-			'message' => 'Le numéro de séquence doit être un nombre.'
+			'message' => 'Le numÃ©ro de sÃ©quence doit Ãªtre un nombre.'
 		)
 	);
 

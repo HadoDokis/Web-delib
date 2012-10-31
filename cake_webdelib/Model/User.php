@@ -10,7 +10,7 @@ class User extends AppModel {
 			),
 			array(
 				'rule' => 'isUnique',
-				'message' => 'Entrez un autre login, celui-ci est déjà utilisé.'
+				'message' => 'Entrez un autre login, celui-ci est dÃ©jÃ  utilisÃ©.'
 			)
 		),
 		'password' => array(
@@ -22,7 +22,7 @@ class User extends AppModel {
 		'password2' => array(
 			array(
 				'rule' => array('samePassword'),
-				'message' => 'Les mots de passe sont différents.'
+				'message' => 'Les mots de passe sont diffÃ©rents.'
 			),
 			array(
 				'rule' => 'notEmpty',
@@ -38,7 +38,7 @@ class User extends AppModel {
 		'prenom' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrez le prénom.'
+				'message' => 'Entrez le prÃ©nom.'
 			)
 		),
 		'email' => array(
@@ -87,7 +87,7 @@ class User extends AppModel {
 			'finderQuery'=>'',
 			'deleteQuery'=>''),
                  'Circuit'  => array(
-                        'classname'=>'Circuit',
+                        'className'=>'Cakeflow.Circuit',
                         'joinTable'=>'circuits_users',
                         'foreignKey'=>'user_id',
                         'associationForeignKey'=>'circuit_id',
@@ -138,19 +138,19 @@ class User extends AppModel {
 		}
 	}
 
-	/* Retourne le circuit par défaut défini pour l'utilisateur $id */
-	/* Si l'utilisateur n'a pas de circuit par défaut, retourne le circuit défini */
+	/* Retourne le circuit par dÃ©faut dÃ©fini pour l'utilisateur $id */
+	/* Si l'utilisateur n'a pas de circuit par dÃ©faut, retourne le circuit dÃ©fini */
 	/* au niveau du premier service de l'utilisateur. */
 	/* Si $field est vide alors retourne la structure de la classe circuit */
-	/* Si $field est spécifiée, retourne la valeur du champ $field */
+	/* Si $field est spÃ©cifiÃ©e, retourne la valeur du champ $field */
 	function circuitDefaut($id = null, $field = '') {
 		$circuitDefautId = 0;
 		$user = $this->findById($id);
-		// Circuit par défaut défini au niveau de l'utilisateur
+		// Circuit par dÃ©faut dÃ©fini au niveau de l'utilisateur
 		if (!empty($user['User']['circuit_defaut_id']))
 			$circuitDefautId = $user['User']['circuit_defaut_id'];
 		else {
-			// Premier circuit par défaut défini pour les services de l'utilisateur
+			// Premier circuit par dÃ©faut dÃ©fini pour les services de l'utilisateur
 			foreach ($user['Service'] as $service) {
 				if (!empty($service['circuit_defaut_id'])) {
 					$circuitDefautId = $service['circuit_defaut_id'];
@@ -160,7 +160,8 @@ class User extends AppModel {
 		}
 		if ($circuitDefautId > 0) {
 			$this->Circuit->recursive = -1;
-			$circuit = $this->Composition->Etape->Circuit->findById($circuitDefautId);
+			$circuit = $this->Composition->Etape->Circuit->find('first', 
+																array('conditions' => array('Circuit.id' => $circuitDefautId)));
 			if (empty($field))
 				return $circuit;
 			else
@@ -186,17 +187,20 @@ class User extends AppModel {
             $user = $this->find('first', 
                                 array('conditions' => array($this->alias.'.id' => $user_id),
                                       'recursive'  => -1));
-            $oMainPart->addElement(new GDO_FieldType('prenom_redacteur',    utf8_encode($user[$this->alias]['prenom']), 'text'));
-            $oMainPart->addElement(new GDO_FieldType('nom_redacteur',       utf8_encode($user[$this->alias]['nom']), 'text'));
-            $oMainPart->addElement(new GDO_FieldType('email_redacteur',     utf8_encode($user[$this->alias]['email']), 'text'));
-            $oMainPart->addElement(new GDO_FieldType('telmobile_redacteur', utf8_encode($user[$this->alias]['telmobile']), 'text'));
-            $oMainPart->addElement(new GDO_FieldType('telfixe_redacteur',   utf8_encode($user[$this->alias]['telfixe']), 'text'));
-            $oMainPart->addElement(new GDO_FieldType('note_redacteur',      utf8_encode($user[$this->alias]['note']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('prenom_redacteur',    ($user[$this->alias]['prenom']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('nom_redacteur',       ($user[$this->alias]['nom']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('email_redacteur',     ($user[$this->alias]['email']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('telmobile_redacteur', ($user[$this->alias]['telmobile']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('telfixe_redacteur',   ($user[$this->alias]['telfixe']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('note_redacteur',      ($user[$this->alias]['note']), 'text'));
         }
    
         function getCircuits($user_id) {
+            $this->Behaviors->attach('Containable');
             $circuits = array();
-            $user = $this->find('first', array('conditions' => array('User.id' => $user_id)));
+            $user = $this->find('first', array('conditions' => array('User.id' => $user_id),
+                                               'contain'    => array('Circuit'))
+                               );
             foreach($user['Circuit'] as $circuit) {
                 if ($circuit['actif'])
                     $circuits[$circuit['id']] = $circuit['nom'];

@@ -22,7 +22,7 @@
                                                  'fields'     => array('libelle'),
                                                  'recursive'  => -1));
 
-            $oMainPart->addElement(new GDO_FieldType('nature_projet', utf8_encode($nature['Nature']['libelle']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('nature_projet', ($nature['Nature']['libelle']), 'text'));
         }
 
     }

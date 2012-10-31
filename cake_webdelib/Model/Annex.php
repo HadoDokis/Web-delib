@@ -15,7 +15,6 @@ class Annex extends AppModel {
 	);  
      
         function checkFile() {
-            $this->log("Function checkFile".$this->data);
             $formats = array('application/pdf', 'image/png', 'image/jpg', 'image/jpeg', 'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet');
             if ($this->data['Annex']['joindre_ctrl_legalite'] == 1) {
                 $tmpfname = tempnam(TMP, "CHK_");

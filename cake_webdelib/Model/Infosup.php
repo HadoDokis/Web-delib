@@ -1,6 +1,6 @@
 <?php
 /**
-* Informations supplémentaires paramétrables des projets de délibération
+* Informations supplÃ©mentaires paramÃ©trables des projets de dÃ©libÃ©ration
 *
 * PHP versions 4 and 5
 * @filesource
@@ -30,13 +30,15 @@ class Infosup extends AppModel
 
 /**
  * Transforme la structure [0]['id']['deliberation_id']... en ['code_infosup']=>valeur, ...
- * Pour les infosup de type 'list', la paramètre $retIdEleListe permet de retourner soit l'id de l'élément de la liste soit sa valeur
+ * Pour les infosup de type 'list', la paramÃ¨tre $retIdEleListe permet de retourner soit l'id de l'Ã©lÃ©ment de la liste soit sa valeur
  */
 	function compacte($infosups = array(), $retIdEleListe = true) {
 		$ret = array();
 
 		foreach($infosups as $infosup) {
-			$infosupdef = $this->Infosupdef->find(" id = ".$infosup['infosupdef_id'], 'code, type', null, -1);
+			$infosupdef = $this->Infosupdef->find( 'first' , array('conditions' => array( "Infosupdef.id" =>$infosup['infosupdef_id']), 
+                                                                               'fields'     => array('code', 'type'),
+                                                                               'recursive'  => -1));
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
 				$ret[$infosupdef['Infosupdef']['code']] = $infosup['text'];
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
@@ -57,7 +59,9 @@ class Infosup extends AppModel
 				if ($retIdEleListe || empty($infosup['text']))
 					$ret[$infosupdef['Infosupdef']['code']] = $infosup['text'];
 				else {
-					$ele = $this->Infosupdef->Infosuplistedef->find('id = '.$infosup['text'], 'nom', null, -1);
+					$ele = $this->Infosupdef->Infosuplistedef->find('first', array('conditions' => array('id' =>$infosup['text']), 
+                                                                                                        'fields'    => array('nom'), 
+                                                                                                        'recursive' => -1));
 					$ret[$infosupdef['Infosupdef']['code']] = $ele['Infosuplistedef']['nom'];
 				}
 			}
@@ -69,7 +73,7 @@ class Infosup extends AppModel
 	/* sauvegarde les info sup. recues sous la forme ['code_infosup']=>valeur, ... */
 	function saveCompacted($infosups, $foreignKey, $model) {
 		foreach($infosups as $code=>$valeur) {
-			// lecture de la définition de l'info sup
+			// lecture de la dÃ©finition de l'info sup
 			$infosupdef = $this->Infosupdef->find('first', array(
 				'recursive' => -1,
 				'fields' => array('id', 'type'),
@@ -83,7 +87,7 @@ class Infosup extends AppModel
 					'foreign_key' => $foreignKey,
 					'infosupdef_id' => $infosupdef['Infosupdef']['id'])));
 
-			// si elle n'existe pas : création d'un nouveau et initialisation
+			// si elle n'existe pas : crÃ©ation d'un nouveau et initialisation
 			if (empty($infosup)) {
 				$this->create();
 				$infosup['Infosup']['foreign_key'] = $foreignKey;
@@ -145,7 +149,7 @@ class Infosup extends AppModel
 
  /*
   * Retourne la liste des deliberation_id sous la forme 'delib_id1, delib_id2, ...'
-  * correspondant à $recherches qui est sous la forme array('infosupdef_id'=>'valeur')
+  * correspondant Ã  $recherches qui est sous la forme array('infosupdef_id'=>'valeur')
   */
 	function selectInfosup($recherches) {
 		// initialisations
@@ -155,7 +159,7 @@ class Infosup extends AppModel
 		$condition = '';
 		$jointure = '';
 		$repSelect = array();
-		// construction des différentes clauses
+		// construction des diffÃ©rentes clauses
 		foreach($recherches as $infosupdefId => $recherche) {
 			if (strlen(trim($recherche))) {
 				$infosupType = $this->Infosupdef->field('type', "id = $infosupdefId");
@@ -185,7 +189,7 @@ class Infosup extends AppModel
 			}
 		}
 		if ($iAlias) {
-			// construction et exécution de la requête
+			// construction et exÃ©cution de la requÃªte
 			$select = 'select infosups1.foreign_key ';
 			$select .= 'from ' . $from . ' ';
 			$select .= 'where ' . $jointure . $condition;

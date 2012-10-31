@@ -1,6 +1,6 @@
 <?php
 /**
-* Gestion des séquences utilisées par les compteurs paramétrables
+* Gestion des sÃ©quences utilisÃ©es par les compteurs paramÃ©trables
 *
 * PHP versions 4 and 5
 * @filesource
@@ -31,7 +31,7 @@ class Acteur extends AppModel
 		'prenom' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrer un prénom pour l\'acteur'
+				'message' => 'Entrer un prÃ©nom pour l\'acteur'
 			)
 		),
 		'email' => array(
@@ -44,7 +44,7 @@ class Acteur extends AppModel
 		'service' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Sélectionnez un ou plusieurs services'
+				'message' => 'SÃ©lectionnez un ou plusieurs services'
 			)
 		),
 		'typeacteur_id' => array(
@@ -73,7 +73,7 @@ class Acteur extends AppModel
 			'deleteQuery'=>'')
 		);
 
-	/* retourne la liste des acteurs élus [id]=>[prenom et nom] pour utilisation html->selectTag */
+	/* retourne la liste des acteurs Ã©lus [id]=>[prenom et nom] pour utilisation html->selectTag */
 	function generateListElus($order_by=null) {
 		$generateListElus = array();
 		if ($order_by==null)
@@ -110,8 +110,8 @@ class Acteur extends AppModel
 		return $generateList;
 	}
 
-	/* retourne l'id du premier acteur élu associé à la délégation $serviceId */
-	/* retourne null si non trouvé                                            */
+	/* retourne l'id du premier acteur Ã©lu associÃ© Ã  la dÃ©lÃ©gation $serviceId */
+	/* retourne null si non trouvÃ©                                            */
 	function selectActeurEluIdParDelegationId($delegationId) {
 		$users = $this->find('all', array('conditions' => array('Typeacteur.elu'=>1, 'Acteur.actif'=>1 ),
                                                   'fields'     => array ('id'),
@@ -126,8 +126,8 @@ class Acteur extends AppModel
 	}
 
 
-	/* retourne le numéro de position max pour tous les acteurs élus */
-	/* pour rester compatible avec le plus grand nombre de bd, on ne passe pas de requête */
+	/* retourne le numÃ©ro de position max pour tous les acteurs Ã©lus */
+	/* pour rester compatible avec le plus grand nombre de bd, on ne passe pas de requÃªte */
 	/* mais on fait le calcul en php */
 	function getPostionMaxParActeursElus() {
 		$acteur = $this->find('all', array ('conditions'=> array('Typeacteur.elu'=>1, 'Acteur.actif'=>1), 
@@ -136,7 +136,7 @@ class Acteur extends AppModel
 		return empty($acteur) ? 0 : $acteur[0]['Acteur']['position'];
 	}
 
-	/* retourne le libellé correspondant au champ position : = 999 : en dernier, <999 : position */
+	/* retourne le libellÃ© correspondant au champ position : = 999 : en dernier, <999 : position */
 	function libelleOrdre($ordre = null, $majuscule = false) {
 		return ($ordre == 999) ? ($majuscule ? 'En dernier' : 'en dernier') : $ordre;
 	}
@@ -146,20 +146,20 @@ class Acteur extends AppModel
                                   array('conditions' => array($this->alias.'.id' => $acteur_id),
                                         'recursive'  => -1));
             $alias = trim(strtolower($this->alias));
-            $oMainPart->addElement(new GDO_FieldType("salutation_$alias",     utf8_encode($acteur[$this->alias]['salutation']), 'text'));
-            $oMainPart->addElement(new GDO_FieldType("prenom_$alias",         utf8_encode($acteur[$this->alias]['prenom']),     'text'));
-            $oMainPart->addElement(new GDO_FieldType("nom_$alias",            utf8_encode($acteur[$this->alias]['nom']),        'text'));
-            $oMainPart->addElement(new GDO_FieldType("titre_$alias",          utf8_encode($acteur[$this->alias]['titre']),      'text'));
-            $oMainPart->addElement(new GDO_FieldType("position_$alias",       utf8_encode($acteur[$this->alias]['position']),   'text'));
-            $oMainPart->addElement(new GDO_FieldType("email_$alias",          utf8_encode($acteur[$this->alias]['email']),      'text'));
-            $oMainPart->addElement(new GDO_FieldType("telmobile_$alias",      utf8_encode($acteur[$this->alias]['telmobile']),  'text'));
-            $oMainPart->addElement(new GDO_FieldType("telfixe_$alias",        utf8_encode($acteur[$this->alias]['telfixe']),    'text'));
-            $oMainPart->addElement(new GDO_FieldType("date_naissance_$alias", utf8_encode($acteur[$this->alias]['date_naissance']), 'text'));
-            $oMainPart->addElement(new GDO_FieldType("adresse1_$alias",       utf8_encode($acteur[$this->alias]['adresse1']),   'text'));
-            $oMainPart->addElement(new GDO_FieldType("adresse2_$alias",       utf8_encode($acteur[$this->alias]['adresse2']),   'text'));
-            $oMainPart->addElement(new GDO_FieldType("cp_$alias",             utf8_encode($acteur[$this->alias]['cp']),         'text'));
-            $oMainPart->addElement(new GDO_FieldType("ville_$alias",          utf8_encode($acteur[$this->alias]['ville']),      'text'));
-            $oMainPart->addElement(new GDO_FieldType("note_$alias",           utf8_encode($acteur[$this->alias]['note']),       'text'));
+            $oMainPart->addElement(new GDO_FieldType("salutation_$alias",     ($acteur[$this->alias]['salutation']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType("prenom_$alias",         ($acteur[$this->alias]['prenom']),     'text'));
+            $oMainPart->addElement(new GDO_FieldType("nom_$alias",            ($acteur[$this->alias]['nom']),        'text'));
+            $oMainPart->addElement(new GDO_FieldType("titre_$alias",          ($acteur[$this->alias]['titre']),      'text'));
+            $oMainPart->addElement(new GDO_FieldType("position_$alias",       ($acteur[$this->alias]['position']),   'text'));
+            $oMainPart->addElement(new GDO_FieldType("email_$alias",          ($acteur[$this->alias]['email']),      'text'));
+            $oMainPart->addElement(new GDO_FieldType("telmobile_$alias",      ($acteur[$this->alias]['telmobile']),  'text'));
+            $oMainPart->addElement(new GDO_FieldType("telfixe_$alias",        ($acteur[$this->alias]['telfixe']),    'text'));
+            $oMainPart->addElement(new GDO_FieldType("date_naissance_$alias", ($acteur[$this->alias]['date_naissance']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType("adresse1_$alias",       ($acteur[$this->alias]['adresse1']),   'text'));
+            $oMainPart->addElement(new GDO_FieldType("adresse2_$alias",       ($acteur[$this->alias]['adresse2']),   'text'));
+            $oMainPart->addElement(new GDO_FieldType("cp_$alias",             ($acteur[$this->alias]['cp']),         'text'));
+            $oMainPart->addElement(new GDO_FieldType("ville_$alias",          ($acteur[$this->alias]['ville']),      'text'));
+            $oMainPart->addElement(new GDO_FieldType("note_$alias",           ($acteur[$this->alias]['note']),       'text'));
         }
 }
 ?>

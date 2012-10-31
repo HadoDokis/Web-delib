@@ -7,7 +7,7 @@ class Profil extends AppModel {
 		'libelle' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrer le libellé.'
+				'message' => 'Entrer le libellÃ©.'
 			)
 		)
 	);

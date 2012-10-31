@@ -11,7 +11,7 @@
 			'libelle' => array(
 				array(
 					'rule' => 'notEmpty',
-					'message' => 'Entrer le libellé.'
+					'message' => 'Entrer le libellÃ©.'
 				)
 			)
 		);
@@ -46,7 +46,7 @@
 			return $this->_doList($id);
 		}
 
-		/* fonction récursive de doList */
+		/* fonction rÃ©cursive de doList */
 		function _doList($id) {
 			$service = $this->find('first', array(
                                                'conditions' => array('Service.id' => $id), 
@@ -67,7 +67,7 @@
                                                  'fields'     => array('libelle'),
                                                  'recursive'  => -1));
 
-            $oMainPart->addElement(new GDO_FieldType('service_emetteur', utf8_encode($service['Service']['libelle']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('service_emetteur', $service['Service']['libelle'], 'text'));
         }
 }
 
