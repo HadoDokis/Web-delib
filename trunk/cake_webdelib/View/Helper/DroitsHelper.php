@@ -5,14 +5,14 @@ class DroitsHelper extends Helper {
     var $helpers = array('Html');
 
 
-/* Affiche l'ntête du tableau avec les éléments du menu et les actions des controleurs */
+/* Affiche l'ntÃªte du tableau avec les Ã©lÃ©ments du menu et les actions des controleurs */
 	function afficheEnTeteTableau($menuTree, $nbLigneTable) {
 		$nbLigneEntete = $this->_profondeur($menuTree);
 		$enTeteTab = array();
 		$this->_construitLigneEnTete($enTeteTab, $menuTree, $nbLigneEntete, $nbLigneTable);
 		foreach($enTeteTab as $enTeteTr) {
 			echo '<tr>';
-			// On ajoute une cellule d'entete vide qui correspond à la colonne d'affichage des profils et des utilisateurs
+			// On ajoute une cellule d'entete vide qui correspond Ã  la colonne d'affichage des profils et des utilisateurs
 			echo '<th></th>';
 			foreach($enTeteTr as $enTeteTh) {
 				echo $enTeteTh;
@@ -21,12 +21,12 @@ class DroitsHelper extends Helper {
 		}
 	}
 
-/* Construit le tableau $enTeteTab en vu de l'affichage de l'entête du tableau */
+/* Construit le tableau $enTeteTab en vu de l'affichage de l'entÃªte du tableau */
 	function _construitLigneEnTete(&$enTeteTab, $menuTree, $nbLigneEnTete, $nbLigneTable, $iLigne=1, $celIdSup='') {
 		// Initialisation
 		static $iCol = 1;
 
-		// Parcours des éléments du menu
+		// Parcours des Ã©lÃ©ments du menu
 		foreach($menuTree as $menu) {
 			$celId = ($celIdSup ? $celIdSup : 'C') . sprintf("%02d", $iCol);
 
@@ -41,14 +41,14 @@ class DroitsHelper extends Helper {
 			$htmlCel .= $menu['title'] . '</th>';
 			$enTeteTab[$iLigne-1][$iCol-1] = $htmlCel;
 
-			// Affichage du caractère | sur les cellules des lignes inférieures
+			// Affichage du caractÃ¨re | sur les cellules des lignes infÃ©rieures
 			$celIdInf = $celId;
 			for ($i=$iLigne; $i<$nbLigneEnTete; $i++) {
 				$celIdInf .= sprintf("%02d", $iCol);
 				$enTeteTab[$i][$iCol-1]='<th id=\''.$celIdInf.'\'>|</th>';
 			}
 
-			// On passe à la colonne suivante
+			// On passe Ã  la colonne suivante
 			$iCol++;
 
 			// Traitement du sous-menu
@@ -58,7 +58,7 @@ class DroitsHelper extends Helper {
 		}
 	}
 
-/* retourne le nombre de lignes de l'entête du tableau */
+/* retourne le nombre de lignes de l'entÃªte du tableau */
 	function _profondeur($menuTree, $prof=1) {
 		static $profMax=0;
 
@@ -74,7 +74,7 @@ class DroitsHelper extends Helper {
 		$this->_afficheLigneTableau($profilsUsersTree, $structColonnes, $nbCol, $tabDroits);
 	}
 
-/* Affiche les lignes du tableau (récursive) */
+/* Affiche les lignes du tableau (rÃ©cursive) */
 	function _afficheLigneTableau($profilsTree, $structColonnes, $nbCol, $tabDroits, &$iLigne=0, $prof=0) {
 		// Initialisations
 		static $altProfil = false;
@@ -88,7 +88,7 @@ class DroitsHelper extends Helper {
 			$iLigne++;
 			if ($prof==0) $altProfil = !$altProfil;
 			echo '<tr id=\'l'.$iLigne.'\' class=\''.($altProfil ? 'altLigneProfil':'ligneProfil').'\'>';
-				// Affichage du profil dans première céllule
+				// Affichage du profil dans premiÃ¨re cÃ©llule
 				echo '<td>';
 					echo $margeProf;
 
@@ -112,7 +112,7 @@ class DroitsHelper extends Helper {
 				}
 			echo '</tr>';
 
-			// Affichage des utilisateurs associés
+			// Affichage des utilisateurs associÃ©s
 			if (array_key_exists('users', $profil)) {
 				foreach($profil['users'] as $user) {
 					// Nouvelle ligne du tableau

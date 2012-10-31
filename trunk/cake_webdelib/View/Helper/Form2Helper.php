@@ -1,23 +1,23 @@
 <?php
 /*
- * Création : 13 févr. 2006
+ * CrÃ©ation : 13 fÃ©vr. 2006
  * Christophe Espiau
  *
  * To change the template for this generated file go to
  * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
 
-class Html2Helper extends HtmlHelper
+class Form2Helper extends FormHelper
 {
 
 	/*
-	 * Retourne deux élements SELECT pour la saisie des heures et des minutes.
+	 * Retourne deux Ã©lements SELECT pour la saisie des heures et des minutes.
 	 *
 	 * Cette fonction est une surcharge de la fonction dateTimeOptionTag.
 	 * Elle est faite :
 	 * -  pour afficher seulement les heures et les minutes
-	 * -  pour que les deux champs SELECT n'affichent rien s'il n'y a pas encore eu de pointage enregistré
-	 * (alors que la fonction dateTimeOptionTag sélectionne l'heure courante par défaut).
+	 * -  pour que les deux champs SELECT n'affichent rien s'il n'y a pas encore eu de pointage enregistrÃ©
+	 * (alors que la fonction dateTimeOptionTag sÃ©lectionne l'heure courante par dÃ©faut).
 	 *
 	 * @param string $tagName Prefix name for the SELECT element
 	 * @param string $selected Option which is selected. Must be a timestamp. See also getTimestamp().
@@ -63,14 +63,14 @@ class Html2Helper extends HtmlHelper
 	}
 
 	/*
-	 * Retourne un timestamp Unix à partir d'une date et d'une heure.
+	 * Retourne un timestamp Unix Ã  partir d'une date et d'une heure.
 	 *
-	 * Un pointage est enregistré en base avec la date dans un champ,
-	 * l'heure de début dans un autre et l'heure de fin dans un troisième.
+	 * Un pointage est enregistrÃ© en base avec la date dans un champ,
+	 * l'heure de dÃ©but dans un autre et l'heure de fin dans un troisiÃ¨me.
 	 *
-	 * Dans l'écran de pointage, pour pouvoir afficher les heure déjà enregistrées,
-	 * il faut passer à la fonction timeOptionTag() (voir ci-dessus) le paramètre $selected
-	 * sous forme de timestamp, qu'il faut créer à partir du champ date et du champ heureDebut
+	 * Dans l'Ã©cran de pointage, pour pouvoir afficher les heure dÃ©jÃ  enregistrÃ©es,
+	 * il faut passer Ã  la fonction timeOptionTag() (voir ci-dessus) le paramÃ¨tre $selected
+	 * sous forme de timestamp, qu'il faut crÃ©er Ã  partir du champ date et du champ heureDebut
 	 * (ou bien date et heureFin).
 	 *
 	 * @param string $date Une date au format aaaa-mm-jj
@@ -81,7 +81,7 @@ class Html2Helper extends HtmlHelper
 	function getTimestamp($date, $time)
 	{
 		// Test pour l'heure de fin.
-		// Si celle-ci n'est pas encore enregistrée, elle est à NULL dans la base.
+		// Si celle-ci n'est pas encore enregistrÃ©e, elle est Ã  NULL dans la base.
 		// Et si $time = null, la fonction doit retourner null.
 		if($time == null) return null;
 
@@ -90,6 +90,33 @@ class Html2Helper extends HtmlHelper
 
 		return  mktime($hms[0],$hms[1],$hms[2],$amj[1],$amj[2],$amj[0]);
       }
+
+//    function monthOptionTagFra($tagName, $value=null, $selected=null,  $selectAttr=null, $optionAttr=null, $showEmpty = true)
+//    {
+//        $value = isset($value)? $value : $this->tagValue($tagName."_month");
+//        $monthValue = empty($selected) ? null : $selected ;
+//        $months=array('01'=>'Janvier','02'=>'Fevrier','03'=>'Mars',
+//        '04'=>'Avril','05'=>'Mai','06'=>'Juin','07'=>'Juillet','08'=>'Aout',
+//        '09'=>'Septembre','10'=>'Octobre','11'=>'Novembre','12'=>'Decembre');
+//        $option = $this->selectTag($tagName.'_month', $months, $monthValue, $selectAttr, $optionAttr, $showEmpty);
+//        return $option;
+//    }
+
+
+// pour la variable $tagname, penser Ã  l'envoyer via $html->value car c'est impossible de le faire ici
+	function monthOptionTagFr($tagName, $value = null, $selected = null, $selectAttr = null, $optionAttr = null, $showEmpty = true) {
+		if (!empty($selected)){
+                    $expl_date=explode('-',$selected);
+		    $selected=$expl_date[1];
+                }
+		if (empty($selected) && ($tagName)) {
+			$selected = date('m', strtotime($tagName));
+		}
+		$monthValue = empty($selected) ? ($showEmpty ? NULL : date('m')) : $selected;
+		$months = array('01' => 'Janvier', '02' => 'Fevrier', '03' => 'Mars', '04' => 'Avril', '05' => 'Mai', '06' => 'Juin', '07' => 'Juillet', '08' => 'AoÃ»t', '09' => 'Septembre', '10' => 'Octobre', '11' => 'Novembre', '12' => 'Decembre');
+		
+		return $this->select($tagName."_month", $months, $monthValue, $selectAttr, $optionAttr, $showEmpty);
+	}
 
 
 
@@ -113,7 +140,7 @@ class Html2Helper extends HtmlHelper
          {
              $years[$yearCounter] = $yearCounter;
          }
-         $option = $this->selectTag($tagName."_year", $years, $yearValue, $selectAttr, $optionAttr, $showEmpty);
+         $option = $this->select($tagName."_year", $years, $yearValue, $selectAttr, $optionAttr, $showEmpty);
          return $option;
      }
 
@@ -206,9 +233,10 @@ class Html2Helper extends HtmlHelper
  * @return mixed
  * @access public
  */
+// pour la variable $tagname, penser Ã  l'envoyer via $html->value car c'est impossible de le faire ici
         function yearOptionTag($tagName, $value = null, $minYear = null, $maxYear = null, $selected = null, $selectAttr = null, $optionAttr = null, $showEmpty = true) {
-                if (empty($selected) && ($this->tagValue($tagName))) {
-                    $selected = date('Y', strtotime($this->tagValue($tagName)));
+                if (empty($selected) && ($tagName)) {
+                    $selected = date('Y', strtotime($tagName));
                 }
 
                 $yearValue = empty($selected) ? ($showEmpty ? NULL : date('Y')) : $selected;
@@ -226,7 +254,7 @@ class Html2Helper extends HtmlHelper
                         $years[$yearCounter] = $yearCounter;
                 }
 
-                return $this->selectTag($tagName . "_year", $years, $yearValue, $selectAttr, $optionAttr, $showEmpty);
+                return $this->select($tagName . "_year", $years, $yearValue, $selectAttr, $optionAttr, $showEmpty);
         }
 
 
@@ -237,13 +265,58 @@ class Html2Helper extends HtmlHelper
 
 	function ukToFrenchDateWithHour($date)
 	{
-		return date("d/m/Y \a H\hi",strtotime($date));
+		return date("d-m-Y \a H:i",strtotime($date));
 	}
 
-/* affiche une flèche vers le bas et une flèche vers le bas pour le tri asc et desc de $urlChampTri */
+	/* idem selectTag mais ajoute l'attribut $optionPlusAttr aux options, renseignÃ©e avec les donnÃ©es de $optElements[][$optEleModel][$optElePlus] */
+	/* - $optElements = array[i]=>array[$optEleModel]=>array[$optEleValue, $optEleText, $optElePlus] */
+	/* - $optEleValue : attribut 'valeur' des options (utilisÃ© dans selectTag) */
+	/* - $optEleText : texte des options (utilisÃ© dans selectTag) */
+	function selectTagPlus($fieldName, $optElements, $selected = null, $selectAttr = null, $optionAttr = null, $showEmpty = true, $return = false, $optEleModel, $optEleValue, $optEleText, $optElePlus, $optionPlusAttr) {
+		// construction du tableau pour la fonction selectTag
+		foreach($optElements as $optElement) {
+			$optionElements[$optElement[$optEleModel][$optEleValue]] = $optElement[$optEleModel][$optEleText];
+		}
+
+		// ajout de l'attribut '$optionPlusAttr'
+		$optionAttr[$optionPlusAttr] = 'optionElementAttrPlusATraiter';
+		//debug(array($fieldName, $optionElements, $selected, $selectAttr, $optionAttr, $showEmpty, true));
+
+		$options=array();
+		foreach($optionAttr as $key=>$value) {
+			$options[$key]=$value;
+		}
+		$values=array();
+		foreach($optionElements as $key=>$value) {
+			$values[$key]=$value;
+		}
+		$options['options']=$values;
+		$options['default']=$selected;
+		$options['label']=false;
+		$options['div']=false;
+		$options['empty']=$showEmpty;
+		$options['return']=$return;
+		$options['onchange']=$selectAttr;
+		// appel de la fonction cake
+		$selectTag = $this->input($fieldName, $options);
+		$selectTagTab = explode("\n", $selectTag);
+
+		// affectation de l'attribut supplÃ©mentaire
+		$iOption = $showEmpty ? 2 : 1;
+		if ($showEmpty)
+			$selectTagTab[1] = str_replace($optionPlusAttr.'="optionElementAttrPlusATraiter"', '', $selectTagTab[1]);
+		foreach($optElements as $optElement) {
+			$selectTagTab[$iOption] = str_replace('optionElementAttrPlusATraiter', $optElement[$optEleModel][$optElePlus], $selectTagTab[$iOption]);
+			$iOption++;
+		}
+		
+		return $this->output(implode("\n", $selectTagTab), $return);
+	}
+
+/* affiche une flÃ¨che vers le bas et une flÃ¨che vers le bas pour le tri asc et desc de $urlChampTri */
 	function boutonsTri($urlChampTri = null, $inverse = false) {
 		echo $this->link(SHY, $urlChampTri.'/'.($inverse ? 'DESC':'ASC'), array('class'=>'link_triasc','title'=>'Trier par ordre croissant'), false, false);
-		echo $this->link(SHY, $urlChampTri.'/'.($inverse ? 'ASC':'DESC'), array('class'=>'link_tridesc','title'=>'Trier par ordre décroissant'), false, false);
+		echo $this->link(SHY, $urlChampTri.'/'.($inverse ? 'ASC':'DESC'), array('class'=>'link_tridesc','title'=>'Trier par ordre dÃ©croissant'), false, false);
 	}
 
 }
