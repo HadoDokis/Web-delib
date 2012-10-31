@@ -1,4 +1,6 @@
 <?php
+
+
 /* SVN FILE: $Id: app_model.php 4409 2007-02-02 13:20:59Z phpnut $ */
 /**
  * Application model for Cake.
@@ -37,19 +39,20 @@
  * @package		cake
  * @subpackage	cake.cake
  */
+App::uses('Model', 'Model');
 class AppModel extends Model{
 
  /*
  * Equivalent du find('list') mais sur plusieurs champs du model
- * $params permet de passer tous les paramètres à la fonction sous la forme :
+ * $params permet de passer tous les paramÃ¨tres Ã  la fonction sous la forme :
  * array(
  *		'fields' => array('field1', 'field2'), //array of field names
- *		'format' => string '%s, %s ....', (format utilisé dans la fonction php printf)
+ *		'format' => string '%s, %s ....', (format utilisÃ© dans la fonction php printf)
  *		'conditions' => array('field' => $thisValue), //array of conditions
  *		'order' => array('Model.field1', 'Model.field2 DESC') //string or array defining order
  *		);
- * Les clés manquantes sont initialisées par la variable du modèle $displayFields
- * Si 'fields' ou 'format' sont vides ou ne sont pas définis, alors la fonction retourne find('list')
+ * Les clÃ©s manquantes sont initialisÃ©es par la variable du modÃ¨le $displayFields
+ * Si 'fields' ou 'format' sont vides ou ne sont pas dÃ©finis, alors la fonction retourne find('list')
  */
 
 function checkMimetype($field_validation, $content, $allowed_mimetypes) {
@@ -69,22 +72,22 @@ function checkMimetype($field_validation, $content, $allowed_mimetypes) {
 }
 
 function listFields($params = array()) {
-	// Initialisation des clés manquantes de $params avec les valeurs de $this->$displayFields
+	// Initialisation des clÃ©s manquantes de $params avec les valeurs de $this->$displayFields
 	if (isset($this->displayFields))
 		$params = array_merge($this->displayFields, $params);
 
-	// Si la liste des champs ou le format ne sont pas définis on retourne la fonction find('list')
+	// Si la liste des champs ou le format ne sont pas dÃ©finis on retourne la fonction find('list')
 	if (empty($params['fields']) || empty($params['format']))
 		return $this->find('list', $params);
 
-	// Ajout de la clé primaire dans la liste des champs si elle n'y est pas déjà
+	// Ajout de la clÃ© primaire dans la liste des champs si elle n'y est pas dÃ©jÃ 
 	$clePrimaireAjoutee = false;
 	if (!in_array($this->primaryKey, $params['fields'])) {
 		$params['fields'][] = $this->primaryKey;
 		$clePrimaireAjoutee = true;
 	}
 
-	// On force la récursivite à -1
+	// On force la rÃ©cursivite Ã  -1
 	$params['recursive'] = -1;
 
 	// Execution du find
