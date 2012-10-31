@@ -33,8 +33,8 @@
 	if (Configure::read('GENERER_DOC_SIMPLE')){
 		echo '<div class="annexesGauche"></div>';
 		echo '<div class="fckEditorProjet">';
-			echo $form->input('Deliberation.'.$key, array('label'=>'', 'type'=>'textarea'));
-			echo $fck->load('Deliberation'.Inflector::camelize($key));
+			echo $this->Form->input('Deliberation.'.$key, array('label'=>'', 'type'=>'textarea'));
+			echo $this->Fck->load('Deliberation'.Inflector::camelize($key));
 		echo '</div>';
 	} else {
             if (isset($names[$key."_name"]) && !empty($names[$key."_name"]) ) {
@@ -43,18 +43,22 @@
             }
 
 	    if (empty($delib['Deliberation'][$key."_name"]) || isset($validationErrorsArray[$key.'_type'])) {
-                echo  $form->input("Deliberation.".$key, array('label'=>$libelle, 'type'=>'file', 'size'=>'60', 'title'=>$libelle));
+                echo  $this->Form->input("Deliberation.".$key, array('label'=>$libelle, 'type'=>'file', 'size'=>'60', 'title'=>$libelle));
             }
             else {
-                $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/$id/$key.odt";
+                if (isset($id)) 
+                    $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/$id/$key.odt";
+                else
+                    $url = '#';
    	        echo '<span id="Deliberation'.$key.'InputFichierJoint" style="display: none;"></span>';
 	        echo '<span id="Deliberation'.$key.'AfficheFichierJoint">'; 
                 echo "<a href='$url'>$filename</a>";
 	        echo '&nbsp;&nbsp;';
-	        echo $html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', '".$key."', '".$libelle."')", null, 'Voulez-vous vraiment supprimer le fichier ?');
+	        echo $this->Html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', '".$key."', '".$libelle."')", null, 'Voulez-vous vraiment supprimer le fichier ?');
                 echo '</span>';
 	    }
-            if (!empty($validationErrorsArray[$key.'_type']))
-                echo("<div class='error-message'>".$validationErrorsArray[$key.'_type'].'</div>');
+            if (!empty($validationErrorsArray[$key.'_type'])) {
+                echo("<div class='error-message'>".$validationErrorsArray[$key.'_type'][0].'</div>');
+            }
 	}
 ?>

@@ -1,3 +1,3 @@
 <div id="content">
-	<h2>Gestion post-séance</h2>
+	<h2>Gestion post-sÃ©ance</h2>
 </div>

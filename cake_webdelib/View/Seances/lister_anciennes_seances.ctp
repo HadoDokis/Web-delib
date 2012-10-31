@@ -12,13 +12,13 @@
        $numLigne = 1;
        foreach ($seances as $seance):
            $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
-       echo $html->tag('tr', null, $rowClass);
+       echo $this->Html->tag('tr', null, $rowClass);
        $numLigne++;
 ?>
 		<td><?php echo $seance['Typeseance']['libelle']; ?></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
 		<td class="actions">
-			<?php echo $html->link(SHY,'/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'title'=>'Saisir les débats généraux de la séance'), false, false); ?>
+			<?php echo $this->Html->link(SHY,'/seances/saisirDebatGlobal/' . $seance['Seance']['id'], array('class'=>'link_debat', 'escape' => false, 'title'=>'Saisir les dÃ©bats gÃ©nÃ©raux de la sÃ©ance'), false); ?>
 		</td>
 	</tr>
 	<?php endforeach; ?>

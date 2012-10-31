@@ -1,4 +1,4 @@
-<h2><?php echo $html->image('/img/icons/synthese.png')?> Note de Synthèse : </h2>
+<h2><?php echo $this->Html->image('/img/icons/synthese.png')?> Note de SynthÃ¨se : </h2>
 
 <div class="pave">
 <?php 
@@ -8,7 +8,7 @@
     else {
          echo '<br>Nom fichier : '.$deliberation['Deliberation']['texte_synthese_name'];
          echo '<br>Taille : '.$deliberation['Deliberation']['texte_synthese_size'];
-         echo '<br>'.$html->link('Telecharger','/deliberations/download/'.$deliberation['Deliberation']['id'].'/texte_synthese').'<br><br><br>';
+         echo '<br>'.$this->Html->link('Telecharger','/deliberations/download/'.$deliberation['Deliberation']['id'].'/texte_synthese').'<br><br><br>';
     }
 	
 ?>
@@ -18,15 +18,15 @@
 
 <div class="optional">
 	<?php if(!empty($annexes)){  ?>
-	<?php echo $html->image('/img/icons/bookmark.png').'Annexe(s) :';?>
+	<?php echo $this->Html->image('/img/icons/bookmark.png').'Annexe(s) :';?>
 	<?php foreach ($annexes as $annexe) :
 			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
 			echo '<br>Taille : '.$annexe['Annex']['size'];
-			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
+			echo '<br>'.$this->Html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
 	<?php endforeach; } ?>
 </div>
 
 <div class="submit">
-	<?php echo $html->link(SHY, $session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?>
+	<?php echo $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?>
 
 </div>

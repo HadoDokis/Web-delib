@@ -3,14 +3,15 @@
    $endDiv = false;
    if (@$this->params['filtre'] == 'hide') {
         $endDiv = true;
-        echo $html->tag('div', null, array('class'=>'ouvrable', 'id'=>'seanceATraiter'));
-        echo $html->tag('h2', "S&eacute;ances &agrave; traiter");
+        echo $this->Html->tag('div', null, array('class'=>'ouvrable', 'id'=>'seanceATraiter'));
+        echo $this->Html->tag('h2', "S&eacute;ances &agrave; traiter");
     }
     else 
-        echo $html->tag('h2', "S&eacute;ances &agrave; traiter");
+        echo $this->Html->tag('h2', "S&eacute;ances &agrave; traiter");
 ?>
 <table width='100%' cellpadding="0" cellspacing="0" border="0">
     <tr>
+        <th width='22px'> </th>
         <th width='150px'>Type</th>
 	<th width='190px'>Date S&eacute;ance</th>
 	<th width='20%'>Pr&eacute;paration</th>
@@ -21,131 +22,146 @@
        $numLigne = 1;
        foreach ($seances as $seance): 
           $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
-       echo $html->tag('tr', null, $rowClass); 
+       echo $this->Html->tag('tr', null, $rowClass); 
        $numLigne++;
 ?>
+                <td>
+<?php
+                     echo $this->Html->link(SHY,
+                                     '/seances/delete/' . $seance['Seance']['id'],
+                                     array('class'=>'link_supprimer',
+                                           'title'=>'Supprimer la s√©ance du '.$seance['Seance']['date'],
+                                           'escape' => false,
+                                           'alt'=>'Supprimer la s√©ance du '.$seance['Seance']['date']),
+                                           "Voulez-vous supprimer la s√©ance du : ".$seance['Seance']['date']);
+?>
 
+                </td>
 		<td><b><?php echo $seance['Typeseance']['libelle']; ?></b></td>
 		<td><?php 
-                        echo $html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id']); 
+                        echo $this->Html->link($seance['Seance']['date'], "/seances/edit/".$seance['Seance']['id']); 
                       ?></td>
 		<td class="actions" width="110px"> <!-- largeur en fonction des icones -->
 <?php
-                     echo $html->link(SHY,
-                                     '/seances/delete/' . $seance['Seance']['id'],
-                                     array('class'=>'link_supprimer',
-                                           'title'=>'Supprimer la sÈance du '.$seance['Seance']['date'],
-                                           'alt'=>'Supprimer la sÈance du '.$seance['Seance']['date']),
-                                           false,
-                                           false);
-                    echo $html->link(SHY,
+                    echo $this->Html->link(SHY,
                                      '/seances/afficherProjets/' . $seance['Seance']['id'], 
                                      array('class'=>'link_classer_odj', 
-					   'title'=>'Voir l\'ordre des projets de la sÈance du '.$seance['Seance']['date'], 
-                                           'alt'=>'Voir l\'ordre des projets de la sÈance du '.$seance['Seance']['date']), 
-                                           false, 
+					   'title'=>'Voir l\'ordre des projets de la s√©ance du '.$seance['Seance']['date'], 
+                                           'escape' => false,
+                                           'alt'=>'Voir l\'ordre des projets de la s√©ance du '.$seance['Seance']['date']), 
                                            false);
-			$urlConvoc = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id']."/$format/";
-			$urlOdj = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id']."/$format/";
+			$urlConvoc = '/seances/sendConvocations/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'];
+			$urlOdj    = '/seances/sendConvocations/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'];
 			$urlConvocUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id']."/$format/0/retour/0/true";
 			$urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id']."/$format/0/retour/0/true";
 			if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
-				echo $html->link(SHY, $urlConvocUnique, array(
+				echo $this->Html->link(SHY, $urlConvocUnique, array(
 					'class'=>'link_convocation_unique',
-					'title'=>"Apercu d'une convocation pour la sÈance du ".$seance['Seance']['date'],
-					'alt'=>"Apercu d'une convocation pour la sÈance du ".$seance['Seance']['date'],
-					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la gÈnÈration de l\'apercu ?");'), false, false);
-		    echo $html->link(SHY, $urlConvoc, array(
+					'title'=>"Apercu d'une convocation pour la s√©ance du ".$seance['Seance']['date'],
+                                        'escape' => false,
+					'alt'=>"Apercu d'une convocation pour la s√©ance du ".$seance['Seance']['date'],
+					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la g√©n√©ration de l\'apercu ?");'), false);
+		    echo $this->Html->link(SHY, $urlConvoc, array(
 				'class'=>'link_convocation',
-				'title'=>'GÈnÈrer la liste des convocations pour la sÈance du '.$seance['Seance']['date'],
-				'alt'=>'GÈnÈrer la liste des convocations pour la sÈance du '.$seance['Seance']['date'],
-				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la gÈnÈration des documents ?");'), false, false);
+				'title'=>'G√©n√©rer la liste des convocations pour la s√©ance du '.$seance['Seance']['date'],
+                                'escape' => false,
+				'alt'=>'G√©n√©rer la liste des convocations pour la s√©ance du '.$seance['Seance']['date'],
+				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la g√©n√©ration des documents ?");'), false);
 			if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
-				echo $html->link(SHY, $urlOdjUnique, array(
+				echo $this->Html->link(SHY, $urlOdjUnique, array(
 					'class'=>'link_ordre_jour_unique',
-					'title'=>"Apercu de l'ordre jour pour la sÈance du ".$seance['Seance']['date'],
-					'alt'=>"Apercu de l'ordre jour pour la sÈance du ".$seance['Seance']['date'],
-					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la gÈnÈration de l\'apercu ?");'), false, false);
-			echo $html->link(SHY, $urlOdj, array(
+                                        'escape' => false,
+					'title'=>"Apercu de l'ordre jour pour la s√©ance du ".$seance['Seance']['date'],
+					'alt'=>"Apercu de l'ordre jour pour la s√©ance du ".$seance['Seance']['date'],
+					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la g√©n√©ration de l\'apercu ?");'), false);
+			echo $this->Html->link(SHY, $urlOdj, array(
 					'class'=>'link_ordre_jour',
-					'title'=>'GÈnÈrer l\'ordre du jour dÈtaillÈ pour la sÈance du '.$seance['Seance']['date'],
-					'alt'=>'GÈnÈrer l\'ordre du jour dÈtaillÈ pour la sÈance du '.$seance['Seance']['date'],
-					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la gÈnÈration des documents ?");'), false, false);
+					'title'=>'G√©n√©rer l\'ordre du jour d√©taill√© pour la s√©ance du '.$seance['Seance']['date'],
+                                        'escape' => false,
+					'alt'=>'G√©n√©rer l\'ordre du jour d√©taill√© pour la s√©ance du '.$seance['Seance']['date'],
+					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la g√©n√©ration des documents ?");'), false);
 ?>
 		</td>
 		<td class="actions">
-			<?php echo $html->link(SHY,
+			<?php echo $this->Html->link(SHY,
 					       '/seances/saisirSecretaire/' . $seance['Seance']['id'], 
                                                array('class'=>'link_secretaire', 
-						     'title'=>'Choix du secrÈtaire de sÈance du '.$seance['Seance']['date'],
-                                                     'alt'=>'Choix du secrÈtaire de sÈance du '.$seance['Seance']['date']), 
-                                                     false, 
+						     'title'=>'Choix du secr√©taire de s√©ance du '.$seance['Seance']['date'],
+                                                     'escape' => false,
+                                                     'alt'=>'Choix du secr√©taire de s√©ance du '.$seance['Seance']['date']), 
 						     false); ?>
 
-			<?php echo $html->link(SHY,
+			<?php echo $this->Html->link(SHY,
 					      '/seances/saisirDebatGlobal/'.$seance['Seance']['id'], 
                                               array('class'=>'link_debat', 
-						    'title'=>'Saisir les dÈbats gÈnÈraux de la sÈance du '.$seance['Seance']['date'],
-                                                    'alt'=>'Saisir les dÈbats gÈnÈraux de la sÈance du '.$seance['Seance']['date']), 
-						    false, 
+						    'title'=>'Saisir les d√©bats g√©n√©raux de la s√©ance du '.$seance['Seance']['date'],
+                                                    'escape' => false,
+                                                    'alt'=>'Saisir les d√©bats g√©n√©raux de la s√©ance du '.$seance['Seance']['date']), 
                                                     false); ?>
 
 			<?php
                              if ($seance['Typeseance']['action']==0)
-                                 echo $html->link(SHY,
+                                 echo $this->Html->link(SHY,
                                                   '/seances/details/' . $seance['Seance']['id'],
                                                   array('class'=>'link_voter', 
-						  'alt'=>'Afficher les projets et voter pour la sÈance du '.$seance['Seance']['date'], 
-                                                  'title'=>'Afficher les projets et voter pour la sÈance du '.$seance['Seance']['date']), 
-                                                  false, 
+						  'alt'=>'Afficher les projets et voter pour la s√©ance du '.$seance['Seance']['date'], 
+                                                  'escape' => false,
+                                                  'title'=>'Afficher les projets et voter pour la s√©ance du '.$seance['Seance']['date']), 
 						  false);
 
 				elseif ($seance['Typeseance']['action']==1)
-                                    echo $html->link(SHY,
+                                    echo $this->Html->link(SHY,
                                                     '/seances/detailsAvis/'.$seance['Seance']['id'],
                                                     array('class'=>'link_donnerAvis', 
-                                                    'title'=>'Afficher les projets et donner un avis pour la sÈance du '.$seance['Seance']['date'],	
-                                                    'alt'=>'Afficher les projets et donner un avis pour la sÈance du '.$seance['Seance']['date']), false, false);
+                                                          'title'=>'Afficher les projets et donner un avis pour la s√©ance du '.$seance['Seance']['date'],	
+                                                          'escape' => false,
+                                                          'alt'=>'Afficher les projets et donner un avis pour la s√©ance du '.$seance['Seance']['date']), 
+                                                     false);
 				elseif ($seance['Typeseance']['action']==2)
-					echo $html->link(SHY,'/seances/details/' . $seance['Seance']['id'],array('class'=>'link_actes', 'title'=>'Afficher les projets pour la sÈance du '.$seance['Seance']['date'], 'alt'=>'Afficher les projets pour la sÈance du '.$seance['Seance']['date']), false, false);
+					echo $this->Html->link(SHY,'/seances/details/' . $seance['Seance']['id'],array('class'=>'link_actes', 'escape' => false, 'title'=>'Afficher les projets pour la s√©ance du '.$seance['Seance']['date'], 'alt'=>'Afficher les projets pour la s√©ance du '.$seance['Seance']['date']),false);
 
-			echo $html->link(SHY,'/seances/saisirCommentaire/' . $seance['Seance']['id'], array('class'=>'link_commentaire_seance', 'title'=>'Saisir un commentaire pour la sÈance du '.$seance['Seance']['date'], 'alt'=>'Saisir un commentaire pour la sÈance du '.$seance['Seance']['date']), false, false);
+			echo $this->Html->link(SHY,'/seances/saisirCommentaire/' . $seance['Seance']['id'], array('class'=>'link_commentaire_seance', 'title'=>'Saisir un commentaire pour la s√©ance du '.$seance['Seance']['date'], 'escape' => false, 'alt'=>'Saisir un commentaire pour la s√©ance du '.$seance['Seance']['date']),  false);
                       echo ('</td>');
                       echo ('<td class="actions">');
 		      if ($canSign) {
                           if (!$use_pastell) {
-	                      echo $html->link(SHY,'/deliberations/sendToParapheur/' . $seance['Seance']['id'].'/', 
+	                      echo $this->Html->link(SHY,'/deliberations/sendToParapheur/' . $seance['Seance']['id'].'/', 
                                               array('class'=>'link_signer', 
-				                    'title'=>'Envoi des actes ‡ la signature pour la sÈance du '.$seance['Seance']['date'],
-                                                    'alt'=>'Envoi des actes ‡ la signature pour la sÈance du '.$seance['Seance']['date'] 
-						    ), null, false);
+				                    'title'=>'Envoi des actes √† la signature pour la s√©ance du '.$seance['Seance']['date'],
+                                                     'escape' => false,
+                                                    'alt'=>'Envoi des actes √† la signature pour la s√©ance du '.$seance['Seance']['date'] 
+						    ));
                           }
 			  else {
-                              echo $html->link(SHY,'/deliberations/sendToPastell/' . $seance['Seance']['id'].'/',
+                              echo $this->Html->link(SHY,'/deliberations/sendToPastell/' . $seance['Seance']['id'].'/',
                                                array('class'=>'link_signer',
-                                                     'title'=>'Envoi des actes ‡ Pastell pour la sÈance du '.$seance['Seance']['date'],
-                                                     'alt'=>'Envoi des actes ‡ Pastell pour la sÈance du '.$seance['Seance']['date']
-                                                     ), null, false);
+                                                     'title'=>'Envoi des actes √† Pastell pour la s√©ance du '.$seance['Seance']['date'],
+                                                     'alt'=>'Envoi des actes √† Pastell pour la s√©ance du '.$seance['Seance']['date'],
+                                                      'escape' => false,
+                                                     ));
                           }
                       }
 
-			echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id']."/$format/1/retour/1/true", array(
+			echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id']."/$format/1/retour/1/true", array(
 				'class'=>'link_pvsommaire',
-				'title'=>'GÈnÈration du pv sommaire pour la sÈance du '.$seance['Seance']['date'],
-				'alt'=>'GÈnÈration du pv sommaire pour la sÈance du '.$seance['Seance']['date'],
-				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la gÈnÈration des documents ?");'),  false, false);
-			echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id']."/$format/1/retour/1/true", array(
+				'title'=>'G√©n√©ration du pv sommaire pour la s√©ance du '.$seance['Seance']['date'],
+				'alt'=>'G√©n√©ration du pv sommaire pour la s√©ance du '.$seance['Seance']['date'],
+                                'escape' => false,
+				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la g√©n√©ration des documents ?");'),  false);
+			echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id']."/$format/1/retour/1/true", array(
 				'class'=>'link_pvcomplet',
-				'title'=>'GÈnÈration du pv complet pour la sÈance du '.$seance['Seance']['date'],
-				'alt'=>'GÈnÈration du pv complet pour la sÈance du '.$seance['Seance']['date'],
-				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la gÈnÈration des documents ?");'), false, false);
+                                'escape' => false,
+				'title'=>'G√©n√©ration du pv complet pour la s√©ance du '.$seance['Seance']['date'],
+				'alt'=>'G√©n√©ration du pv complet pour la s√©ance du '.$seance['Seance']['date'],
+				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la g√©n√©ration des documents ?");'), false);
 
-		      echo $html->link(SHY,
+		      echo $this->Html->link(SHY,
                                        '/seances/clore/'.$seance['Seance']['id'],  
                                        array('class'=>'link_clore_seance', 
-                                             'title'=>'ClÙture de la sÈance du '.$seance['Seance']['date'], 
-                                             'alt'=>'ClÙture de la sÈance du '.$seance['Seance']['date']),  
-                                       'Etes-vous sur de vouloir clÙturer la sÈance ?', false);
+                                             'title'=>'Cl√¥ture de la s√©ance du '.$seance['Seance']['date'], 
+                                             'escape' => false,
+                                             'alt'=>'Cl√¥ture de la s√©ance du '.$seance['Seance']['date']),  
+                                       'Etes-vous sur de vouloir cl√¥turer la s√©ance ?', false);
 
 
 			?>

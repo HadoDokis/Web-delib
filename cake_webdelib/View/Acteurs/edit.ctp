@@ -23,68 +23,68 @@ function initAffichageInfosElus()
 </script>
 
 <?php
-	if($html->value('Acteur.id')) {
+	if($this->Html->value('Acteur.id')) {
 		echo "<h2>Modification d'un acteur</h2>";
-		echo $form->create('Acteur',array('url'=>'/acteurs/edit/'.$html->value('Acteur.id'),'type'=>'post'));
+		echo $this->Form->create('Acteur',array('url'=>'/acteurs/edit/'.$this->Html->value('Acteur.id'),'type'=>'post'));
 	}
 	else {
 		echo "<h2>Ajout d'un acteur</h2>";
-		echo $form->create('Acteur',array('url'=>'/acteurs/add','type'=>'post'));
+		echo $this->Form->create('Acteur',array('url'=>'/acteurs/add','type'=>'post'));
 	}
 ?>
 	<div class="demi">
 		<fieldset>
 		<legend>Identit&eacute;</legend>
-		 	<?php echo $form->input('Acteur.salutation', array('label'=>'Civilit&eacute;','size' => '20'));?>
+		 	<?php echo $this->Form->input('Acteur.salutation', array('label'=>'Civilit&eacute;','size' => '20'));?>
 			<br/>
-		 	<?php echo $form->input('Acteur.nom', array('label'=>'Nom <acronym title="obligatoire">*</acronym>','size' => '40'));?>
+		 	<?php echo $this->Form->input('Acteur.nom', array('label'=>'Nom <acronym title="obligatoire">*</acronym>','size' => '40'));?>
 			<br/>
-		 	<?php echo $form->input('Acteur.prenom', array('label'=>'Prénom <acronym title="obligatoire">*</acronym>','size' => '40'));?>
+		 	<?php echo $this->Form->input('Acteur.prenom', array('label'=>'PrÃ©nom <acronym title="obligatoire">*</acronym>','size' => '40'));?>
 			<br/>
-		 	<?php echo $form->input('Acteur.titre', array('label'=>'Titre','size' => '40'));?>
+		 	<?php echo $this->Form->input('Acteur.titre', array('label'=>'Titre','size' => '40'));?>
 		</fieldset>
 		<fieldset>
 		<legend>Adresse postale</legend>
-		 	<?php echo $form->input('Acteur.adresse1', array('label'=>'Adresse 1','size' => '40'));?>
+		 	<?php echo $this->Form->input('Acteur.adresse1', array('label'=>'Adresse 1','size' => '40'));?>
 			<br/>
-		 	<?php echo $form->input('Acteur.adresse2', array('label'=>'Adresse 2','size' => '40'));?>
+		 	<?php echo $this->Form->input('Acteur.adresse2', array('label'=>'Adresse 2','size' => '40'));?>
 			<br/>
-		 	<?php echo $form->input('Acteur.cp', array('label'=>'Code postal','size' => '20'));?>
+		 	<?php echo $this->Form->input('Acteur.cp', array('label'=>'Code postal','size' => '20'));?>
 			<br/>
-		 	<?php echo $form->input('Acteur.ville', array('label'=>'Ville','size' => '40'));?>
+		 	<?php echo $this->Form->input('Acteur.ville', array('label'=>'Ville','size' => '40'));?>
 			<br/>
 		</fieldset>
 		<fieldset>
 		<legend>Contacts</legend>
-		 	<?php echo $form->input('Acteur.telfixe', array('label'=>'Téléphone fixe','size' => '20'));?>
+		 	<?php echo $this->Form->input('Acteur.telfixe', array('label'=>'TÃ©lÃ©phone fixe','size' => '20'));?>
 			<br/>
-		 	<?php echo $form->input('Acteur.telmobile', array('label'=>'Téléphone mobile','size' => '20'));?>
+		 	<?php echo $this->Form->input('Acteur.telmobile', array('label'=>'TÃ©lÃ©phone mobile','size' => '20'));?>
 			<br/>
-		 	<?php echo $form->input('Acteur.email', array('label'=>'Email','size' => '40'));?>
+		 	<?php echo $this->Form->input('Acteur.email', array('label'=>'Email','size' => '40'));?>
 		</fieldset>
 	</div>
 
 	<div class="demi">
                 <fieldset>
-                <legend>Suppléant</legend>
+                <legend>SupplÃ©ant</legend>
                         <?php
-                                if ($html->value('Acteur.suppleant_id')) 
-                                    $suppleant_id = $html->value('Acteur.suppleant_id');
+                                if ($this->Html->value('Acteur.suppleant_id')) 
+                                    $suppleant_id = $this->Html->value('Acteur.suppleant_id');
                                 else 
                                     $suppleant_id = null;
-                                echo $form->input('Acteur.suppleant_id', array('empty' => true, 'label'=>'Élus', 'selected' => $suppleant_id, 'options' => $acteurs));
+                                echo $this->Form->input('Acteur.suppleant_id', array('empty' => true, 'label'=>'Ã‰lus', 'selected' => $suppleant_id, 'options' => $acteurs));
                         ?>
 		</fieldset>
 		<fieldset>
 		<legend>Type</legend>
-			<?php echo $form->label('Acteur.typeacteur_id', 'Type d\'acteur <acronym title="obligatoire">*</acronym>');?>
+			<?php echo $this->Form->label('Acteur.typeacteur_id', 'Type d\'acteur <acronym title="obligatoire">*</acronym>');?>
 			<?php
-				if ($html->value('Acteur.typeacteur_id')) $typeacteur_id = $html->value('Acteur.typeacteur_id');
+				if ($this->Html->value('Acteur.typeacteur_id')) $typeacteur_id = $this->Html->value('Acteur.typeacteur_id');
 				else $typeacteur_id = 0;
 			?>
                  
 			<select id="ActeurTypeacteurId" onchange="afficheInfosElus(this);" name="data[Acteur][typeacteur_id]">
-				<?php if ((count($typeacteurs)>1) && (!$html->value('Acteur.id'))) echo '<option value=""> </option>' ?>
+				<?php if ((count($typeacteurs)>1) && (!$this->Html->value('Acteur.id'))) echo '<option value=""> </option>' ?>
 				<?php
 					foreach($typeacteurs as $typeacteur) {
 						echo '<option class="'.$typeacteur['Typeacteur']['elu'].'" value="'.$typeacteur['Typeacteur']['id'].'"';
@@ -96,29 +96,28 @@ function initAffichageInfosElus()
 			</select>
 			<div class="spacer"></div>
 			<div id='infoElus'>
-			 	<?php echo $form->input('Acteur.position', array('label'=>'Ordre dans le conseil','size' => '3'));?>
+			 	<?php echo $this->Form->input('Acteur.position', array('label'=>'Ordre dans le conseil','size' => '3'));?>
 				<div class="spacer"></div>
-			 	<?php echo $form->input('Service.Service', array('label'=>'Délégation(s)', 'options'=>$services, 'default'=>$selectedServices, 'multiple' => 'multiple', 'class' => 'selectMultiple', 'empty'=>true, 'escape' => false));?>
+			 	<?php echo $this->Form->input('Service.Service', array('label'=>'DÃ©lÃ©gation(s)', 'options'=>$services, 'default'=>$selectedServices, 'multiple' => 'multiple', 'class' => 'selectMultiple', 'empty'=>true, 'escape' => false));?>
 				<div class="spacer"></div>
-				<?php echo $form->label('Acteur.date_naissance', 'Date de naissance');?>
-				<?php echo $form->day('Acteur.date_naissance',null,null,false); ?>-
-                <?php echo $form2->monthOptionTagFr('Acteur.date_naissance_month', $html->value('Acteur.date_naissance'));?>-
-                <?php echo $form2->yearOptionTag('Acteur.date_naissance_year', $html->value('Acteur.date_naissance'), 1920, 1990, null); ?>
+		<?php // echo $this->Form->day('Acteur.date_naissance',null,null,false); ?>-
+                <?php // echo $this->Form2->monthOptionTagFr('Acteur.date_naissance_month', $this->Html->value('Acteur.date_naissance'));?>-
+                <?php // echo $this->Form2->yearOptionTag('Acteur.date_naissance_year', $this->Html->value('Acteur.date_naissance'), 1920, 1990, null); ?>
 			</div>
 		</fieldset>
 		<div class="spacer"></div>
 
 		<fieldset>
 		<legend>Autres informations</legend>
- 			<?php echo $form->input('Acteur.note', array('type'=>'textarea', 'label'=>'Note', 'cols' => '30'));?>
+ 			<?php echo $this->Form->input('Acteur.note', array('type'=>'textarea', 'label'=>'Note', 'cols' => '30'));?>
 		</fieldset>
 	</div>
 	<div class="spacer"></div>
 
 <div class="submit">
-	<?php if ($this->action=='edit') echo $form->hidden('Acteur.id')?>
-	<?php echo $form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-	<?php echo $html->link('Annuler', '/acteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php if ($this->action=='edit') echo $this->Form->hidden('Acteur.id')?>
+	<?php echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
+	<?php echo $this->Html->link('Annuler', '/acteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 
-<?php echo $form->end(); ?>
+<?php echo $this->Form->end(); ?>

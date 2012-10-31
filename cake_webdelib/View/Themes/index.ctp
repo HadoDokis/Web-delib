@@ -1,9 +1,9 @@
-<h2>Liste des thèmes</h2>
+<h2>Liste des thÃ¨mes</h2>
 
 <div id="arbre">
-<?php echo $tree->showTree('Theme','libelle', $data,0,$this->base, array('Editer'=>'edit','Supprimer'=>'delete'), 'order'); ?>
+<?php echo $this->Tree->showTree('Theme','libelle', $data,0,$this->base, array('Editer'=>'edit','Supprimer'=>'delete'), 'order'); ?>
 </div>
 
 <div>
-<?php echo $html->link('Ajouter un thème', '/themes/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?>
+<?php echo $this->Html->link('Ajouter un thÃ¨me', '/themes/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?>
 </div>

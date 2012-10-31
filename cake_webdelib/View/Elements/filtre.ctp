@@ -4,63 +4,65 @@
  *
 */
 
-$criteres = $session->read('Filtre.Criteres');
+$criteres = $this->Session->read('Filtre.Criteres');
 if (empty($criteres)) return;
 
-echo $javascript->link('filtre.js');
+echo $this->Html->script('filtre.js');
 
-echo $html->div('filtre');
-	echo $form->create(null, array('action'=>$this->action, 'id'=>'filtreForm'));
-		echo $html->tag('div', null, array('class' => 'filtreFonc'));
+echo $this->Html->div('filtre');
+
+	echo $this->Form->create(null, array('url' => array('controller'=> 'deliberations', 'action'=>$this->action), 'id'=>'filtreForm'));
+		echo $this->Html->tag('div', null, array('class' => 'filtreFonc'));
 			// affichage du bouton afficher-masquer le filtre
-			if ($session->read('Filtre.Fonctionnement.affiche')) {
+			if ($this->Session->read('Filtre.Fonctionnement.affiche')) {
 				$iconeBoutonBasculeCriteres = 'icons/filtreDown.png';
-				echo $form->hidden('filtreFonc.affiche', array('value'=>true));
+				echo $this->Form->hidden('filtreFonc.affiche', array('value'=>true));
 			} else {
 				$iconeBoutonBasculeCriteres = 'icons/filtreUp.png';
-				echo $form->hidden('filtreFonc.affiche', array('value'=>false));
+				echo $this->Form->hidden('filtreFonc.affiche', array('value'=>false));
 			}
-			echo $html->image($iconeBoutonBasculeCriteres, array(
+			echo $this->Html->image($iconeBoutonBasculeCriteres, array(
 				'id'=>'boutonBasculeCriteres',
 				'border'=>"0", 'height'=>"28", 'width'=>"28",
-				'title'=>__('Afficher-masquer les critères du filtre', true),
+				'title'=>__('Afficher-masquer les critÃ¨res du filtre', true),
 				'onClick'=>"basculeCriteres();",
 				'onMouseOver'=>"this.style.cursor='pointer'"));
 			// affichage du bouton on/off
-			if ($session->read('Filtre.Fonctionnement.actif'))
-				echo $html->image('icons/filtreOn.png', array(
+			if ($this->Session->read('Filtre.Fonctionnement.actif'))
+				echo $this->Html->image('icons/filtreOn.png', array(
 					'id'=>'boutonOnOff',
 					'border'=>"0", 'height'=>"28", 'width'=>"28",
 					'title'=>__('Filtre actif, cliquer ici pour annuler le filtre', true),
 					'onClick'=>"razFiltre();",
 					'onMouseOver'=>"this.style.cursor='pointer'"));
 			else
-				echo $html->image('icons/filtreOff.png', array(
+				echo $this->Html->image('icons/filtreOff.png', array(
 					'id'=>'boutonOnOff',
 					'border'=>"0", 'height'=>"28", 'width'=>"28",
 					'title'=>__('Filtre inactif', true)));
 			// affichage du bouton pour appliquer le filtre
-			echo $html->image('icons/filtre.png', array(
+			echo $this->Html->image('icons/filtre.png', array(
 				'id'=>'filtreButton',
 				'border'=>"0", 'height'=>"28", 'width'=>"28",
-				'title'=>__('Changer les critères du filtre puis cliquer ici pour appliquer les changements', true),
+				'title'=>__('Changer les critÃ¨res du filtre puis cliquer ici pour appliquer les changements', true),
 				));
-		echo $html->tag('/div');
+		echo $this->Html->tag('/div');
 
-		echo $html->div('filtreCriteres', null, array('id'=>'filtreCriteres'));
+		echo $this->Html->div('filtreCriteres', null, array('id'=>'filtreCriteres'));
+		echo '<div class="spacer"></div>';
 			foreach($criteres as $nom => $critere) {
 				$options = $critere['inputOptions'];
 				$options['onChange'] = "critereChange();";
 				if (array_key_exists('type', $options) && $options['type'] == 'date')
-					echo $html->div($critere['classeDiv'], $datePicker->picker('Critere.'.$nom, $options));
+					echo $this->Html->div($critere['classeDiv'], $datePicker->picker('Critere.'.$nom, $options));
 				else
-					echo $html->div($critere['classeDiv'], $form->input('Critere.'.$nom, $options));
+					echo $this->Html->div($critere['classeDiv'], $this->Form->input('Critere.'.$nom, $options));
 				if ($critere['retourLigne'])
 					echo '<div class="spacer"></div>';
 			}
-			echo $form->submit('Appliquer le filtre');
+			echo $this->Form->submit('Appliquer le filtre');
 		echo '</div>';
-	echo $form->end();
+	echo $this->Form->end();
 	echo '<div class="spacer"></div>';
 echo '</div>';
 ?>

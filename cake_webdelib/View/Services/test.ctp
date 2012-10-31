@@ -1,11 +1,11 @@
 <?php 
-    echo $javascript->link('jquery.js');
-    echo $javascript->link('jquery.autocomplete.js');
-    echo $javascript->link('AutocompleteAction.js');
+    echo $this->Html->script('jquery.js');
+    echo $this->Html->script('jquery.autocomplete.js');
+    echo $this->Html->script('AutocompleteAction.js');
 
-    echo $form->create('Service',array('action' => 'test',
+    echo $this->Form->create('Service',array('action' => 'test',
                                        'type'   => 'post')); 
-    echo $form->input('Service.libelle', array('size' => '30',        'id'   => 'autoComplete')); 
-    echo $form->submit('Tester');
-    echo $form->end();
+    echo $this->Form->input('Service.libelle', array('size' => '30',        'id'   => 'autoComplete')); 
+    echo $this->Form->submit('Tester');
+    echo $this->Form->end();
 ?>

@@ -1,4 +1,4 @@
-<?php echo $javascript->link('utils'); ?>
+<?php echo $this->Html->script('utils'); ?>
 <h2>S&eacute;ances </h2>
 <div class="seances">
 
@@ -13,7 +13,7 @@
        $numLigne = 1;
        foreach ($seances as $seance):
           $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
-       echo $html->tag('tr', null, $rowClass);
+       echo $this->Html->tag('tr', null, $rowClass);
        $numLigne++;
 ?>
 
@@ -21,21 +21,21 @@
 		<td><b><?php echo $seance['Typeseance']['libelle']; ?></b></td>
 		<td><?php echo $seance['Seance']['date']; ?></td>
 		<td class="actions">
-	  	<?php echo $html->link(SHY,'/postseances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'title'=>'Voir les actes'), false, false); ?>
+	  	<?php echo $this->Html->link(SHY,'/postseances/afficherProjets/' . $seance['Seance']['id'], array('class'=>'link_voir', 'escape' => false,  'title'=>'Voir les actes'), false); ?>
 		<?php 
 		   if (($seance['Seance']['pv_figes']==1) && ($format==0)) {
-                       echo $html->link(SHY,'/postseances/downloadPV/'.$seance['Seance']['id'].'/sommaire',  array('class'=>'link_pvsommaire', 'title'=>'Génération du pv sommaire'), false, false);
-                       echo $html->link(SHY,'/postseances/downloadPV/'.$seance['Seance']['id'].'/complet',  array('class'=>'link_pvcomplet', 'title'=>'Génération du pv complet'), false, false);
+                       echo $this->Html->link(SHY,'/postseances/downloadPV/'.$seance['Seance']['id'].'/sommaire',  array('class'=>'link_pvsommaire', 'escape' => false,  'title'=>'GÃ©nÃ©ration du pv sommaire'),false);
+                       echo $this->Html->link(SHY,'/postseances/downloadPV/'.$seance['Seance']['id'].'/complet',  array('class'=>'link_pvcomplet',  'escape' => false, 'title'=>'GÃ©nÃ©ration du pv complet'), false);
 		   }
 		   else {
-                       echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id']."/$format/0/retour/1/", array('class'=>'link_pvsommaire', 'title'=>'Génération du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
-                       echo $html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id']."/$format/0/retour/1/", array('class'=>'link_pvcomplet', 'title'=>'Génération du pv détaillé'),  'Etes-vous sur de vouloir lancer la génération des documents ?', false);
+                       echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id']."/$format/0/retour/1/", array('class'=>'link_pvsommaire', 'escape' => false, 'title'=>'GÃ©nÃ©ration du pv sommaire'),  'Etes-vous sur de vouloir lancer la gÃ©nÃ©ration des documents ?');
+                       echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id']."/$format/0/retour/1/", array('class'=>'link_pvcomplet', 'escape' => false, 'title'=>'GÃ©nÃ©ration du pv dÃ©taillÃ©'),  'Etes-vous sur de vouloir lancer la gÃ©nÃ©ration des documents ?');
 		   }
-                   echo $html->link(SHY,'/deliberations/toSend/' . $seance['Seance']['id'], array('class'=>'link_tdt', 
-                                                                                                   'title'=>'Envoie au TdT'), false, false);
-                   echo $html->link(SHY,'/postseances/sendToGed/' . $seance['Seance']['id'], array('class'=>'link_sendtoged', 
+                   echo $this->Html->link(SHY,'/deliberations/toSend/' . $seance['Seance']['id'], array('class'=>'link_tdt', 'escape' => false, 
+                                                                                                   'title'=>'Envoie au TdT'), false);
+                   echo $this->Html->link(SHY,'/postseances/sendToGed/' . $seance['Seance']['id'], array('class'=>'link_sendtoged',  'escape' => false, 
                                                                                                    'title'=>'Envoie la seance a la GED'),  
-                                                                                                   'Envoie les documents à la GED',  false);
+                                                                                                   'Envoie les documents Ã  la GED');
 		?>
 		</td>
 	</tr>

@@ -11,17 +11,17 @@
 			<dd class="compact"><?php echo $acteur['Acteur']['cp']?></dd>
 			<dd class="compact"><?php echo $acteur['Acteur']['ville']?></dd>
 		<dt>Contacts</dt>
-			<dd class="compact">Téléphone fixe : <?php echo $acteur['Acteur']['telfixe']?></dd>
-			<dd class="compact">Téléphone mobile : <?php echo $acteur['Acteur']['telmobile']?></dd>
+			<dd class="compact">TÃ©lÃ©phone fixe : <?php echo $acteur['Acteur']['telfixe']?></dd>
+			<dd class="compact">TÃ©lÃ©phone mobile : <?php echo $acteur['Acteur']['telmobile']?></dd>
 			<dd class="compact">Adresse email : <?php echo $acteur['Acteur']['email']?></dd>
 	</div>
 	<div class="demi">
 		<dt>Type</dt>
 		<dd>&nbsp;<?php echo $acteur['Typeacteur']['nom']?></dd>
 		<?php if($acteur['Typeacteur']['elu']) {
-			echo "<dt>Numéro d'ordre dans le conseil</dt>";
+			echo "<dt>NumÃ©ro d'ordre dans le conseil</dt>";
 			echo "<dd>".$acteur['Acteur']['position']."</dd>";
-			echo "<dt>Délégations</dt>";
+			echo "<dt>DÃ©lÃ©gations</dt>";
 			foreach ($acteur['Service'] as $service){
 				echo '<dd class="compact">'.$service['libelle'].'</dd>';
 			};
@@ -49,9 +49,9 @@
 
 <ul id="actions_fiche">
 	<?php
-		echo '<li>' . $html->link(SHY, $session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
-		if ($Droits->check($session->read('user.User.id'), 'Acteurs:edit'))
-			echo '<li>'.$html->link(SHY, '/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'escape' => false, 'title'=>'Annuler'), false) . '</li>';
+            if ($Droits->check($this->Session->read('user.User.id'), 'Acteurs:edit'))
+			echo '<li>'.$this->Html->link(SHY, '/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false).'</li>';
 	?>
 </ul>
 

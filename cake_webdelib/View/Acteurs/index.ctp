@@ -4,17 +4,17 @@
 <table cellpadding="0" cellspacing="0" width='100%'>
 <tr>
 	<th>Civilit&eacute;</th>
-	<th><?php echo $paginator->sort('Nom', 'nom'); ?></th>
-	<th><?php echo $paginator->sort('Prénom', 'prenom'); ?></th>
-	<th><?php echo $paginator->sort('Titre', 'titre'); ?></th>
-	<th><?php echo $paginator->sort('Type d\'acteur', 'Typeacteur.nom'); ?></th>
+	<th><?php echo $this->Paginator->sort( 'nom', 'Nom'); ?></th>
+	<th><?php echo $this->Paginator->sort('prenom', 'PrÃ©nom'); ?></th>
+	<th><?php echo $this->Paginator->sort('titre', 'Titre'); ?></th>
+	<th><?php echo $this->Paginator->sort( 'Typeacteur.nom', 'Type d\'acteur'); ?></th>
 	<th>Elus</th>
-	<th><?php echo $paginator->sort('N° d\'ordre', 'position'); ?></th>
-	<th>Téléphone</th>
+	<th><?php echo $this->Paginator->sort('position', 'NÂ° d\'ordre'); ?></th>
+	<th>TÃ©lÃ©phone</th>
 	<th>Mobile</th>
-	<th>Suppléant</th>
-	<th><?php echo $paginator->sort('Délégation(s)', 'Service.libelle'); ?></th>
-	<th width='120px'>Actions</th>
+	<th>SupplÃ©ant</th>
+	<th><?php echo $this->Paginator->sort('Service.libelle',  'DÃ©lÃ©gation(s)'); ?></th>
+	<th width='160px'>Actions</th>
 </tr>
 <?php foreach ($acteurs as $acteur): ?>
 <tr height="36px">
@@ -23,8 +23,8 @@
 	<td><?php echo $acteur['Acteur']['prenom']; ?></td>
 	<td><?php echo $acteur['Acteur']['titre']; ?></td>
 	<td><?php echo $acteur['Typeacteur']['nom']; ?></td>
-	<td><?php echo $Acteur->Typeacteur->libelleElu($acteur['Typeacteur']['elu'], true); ?></td>
-	<td><?php echo $Acteur->libelleOrdre($acteur['Acteur']['position']); ?></td>
+	<td><?php echo $acteur['Typeacteur']['elu']; ?></td>
+	<td><?php echo $acteur['Acteur']['libelleOrdre']; ?></td>
 	<td><?php echo $acteur['Acteur']['telfixe']; ?></td>
 	<td><?php echo $acteur['Acteur']['telmobile']; ?></td>
 	<td><?php if (isset( $acteur['Acteur']['suppleant_id'])) echo $acteur['Suppleant']['prenom']." ".$acteur['Suppleant']['nom']; ?></td>
@@ -32,30 +32,30 @@
               echo ($service['libelle']).'<br/>';
              ?></td>
 	<td class="actions">
-		<?php echo $html->link(SHY,'/acteurs/view/' . $acteur['Acteur']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false); ?>
-		<?php echo $html->link(SHY,'/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false); ?>
+		<?php echo $this->Html->link(SHY,'/acteurs/view/' . $acteur['Acteur']['id'], array('class'=>'link_voir', 'escape' => false,  'title'=>'Voir'), false); ?>
+		<?php echo $this->Html->link(SHY,'/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false); ?>
 		<?php
 			$message='';
-                        echo $html->link(SHY,'/acteurs/delete/' . $acteur['Acteur']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Voulez-vous supprimer l\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' ?', false); ?>
+                        echo $this->Html->link(SHY,'/acteurs/delete/' . $acteur['Acteur']['id'], array('class'=>'link_supprimer','escape' => false,  'title'=>'Supprimer'), 'Voulez-vous supprimer l\'acteur \''.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'\' ?'); ?>
 	</td>
 </tr>
 <?php endforeach; ?>
 </table>
 
 <div class='paginate'>
-	<!-- Affiche les numéros de pages -->
-	<?php echo $paginator->numbers(); ?>
-	<!-- Affiche les liens des pages précédentes et suivantes -->
+	<!-- Affiche les numÃ©ros de pages -->
+	<?php echo $this->Paginator->numbers(); ?>
+	<!-- Affiche les liens des pages prÃ©cÃ©dentes et suivantes -->
 	<?php
-		echo $paginator->prev('« Précédent ', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
-		echo $paginator->next(' Suivant »', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
+		echo $this->Paginator->prev('Â« PrÃ©cÃ©dent ', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
+		echo $this->Paginator->next(' Suivant Â»', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
 	?> 
-	<!-- Affiche X de Y, où X est la page courante et Y le nombre de pages -->
-	<?php echo $paginator->counter(array('format'=>'Page %page% sur %pages%')); ?>
+	<!-- Affiche X de Y, oÃ¹ X est la page courante et Y le nombre de pages -->
+	<?php echo $this->Paginator->counter(array('format'=>'Page %page% sur %pages%')); ?>
 </div>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter un acteur', '/acteurs/add/', array('class'=>'link_add', 'title'=>'Ajouter un acteur')); ?></li>
+	<li><?php echo $this->Html->link('Ajouter un acteur', '/acteurs/add/', array('class'=>'link_add', 'title'=>'Ajouter un acteur')); ?></li>
 </ul>
 
 </div>

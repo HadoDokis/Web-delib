@@ -77,10 +77,10 @@
 <br />
 <ul id="actions_fiche">
 	<?php
-		echo '<li>' . $html->link(SHY, $session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'escape' => false, 'title'=>'Annuler'), false) . '</li>';
 
-		if ($Droits->check($session->read('user.User.id'), 'Users:edit'))
-			echo '<li>'.$html->link(SHY,   '/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+		if ($Droits->check($this->Session->read('user.User.id'), 'Users:edit'))
+			echo '<li>'.$this->Html->link(SHY,   '/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false).'</li>';
 	?>
 </ul>
 

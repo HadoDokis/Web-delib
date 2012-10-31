@@ -1,7 +1,7 @@
 <html>
 <head><title>Classification</title></head>
 <body>
-<?php echo $javascript->link('utils.js'); ?>
+<?php echo $this->Html->script('utils.js'); ?>
 <h2>Choisir la classification</h2>
 
 <div id="attribute_list">
@@ -9,7 +9,7 @@
 	if (!isset($_GET['id'])) {
         foreach ($classification as $key=>$value) {
 	        $val=addslashes($value);
-	        echo $html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:returnChoice('$key - $val','$key');", 'id'=>$key, 'name'=>$key, 'value'=>$key));
+	        echo $this->Html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:returnChoice('$key - $val','$key');", 'id'=>$key, 'name'=>$key, 'value'=>$key));
 	        echo '<br/>';
         }
     }
@@ -17,13 +17,13 @@
     	$id = $_GET['id'];
     	foreach ($classification as $key=>$value) {
 	        $val=addslashes($value);
-	       echo $html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:return_choice_lot('$key - $val','$key',$id);", 'id'=>$key, 'name'=>$key, 'value'=>$key));
+	       echo $this->Html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:return_choice_lot('$key - $val','$key',$id);", 'id'=>$key, 'name'=>$key, 'value'=>$key));
 	        echo '<br/>';
     	}
     }
 ?>
 <br/>
-<?php echo $html->link('Fermer la fenêtre','#add',array('onclick'=>"javascript:window.close();")); ?>
+<?php echo $this->Html->link('Fermer la fenÃªtre','#add',array('onclick'=>"javascript:window.close();")); ?>
 </div>
 </body>
 </html>

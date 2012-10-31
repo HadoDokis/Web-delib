@@ -16,7 +16,7 @@
 
 	<div class="demi">
 		<dt>Statut</dt>
-		<dd>&nbsp;<?php echo $typeacteur['Typeacteur']['elu'] ? 'élu' : 'non élu'; ?></dd>
+		<dd>&nbsp;<?php echo $typeacteur['Typeacteur']['elu'] ? 'Ã©lu' : 'non Ã©lu'; ?></dd>
 	</div>
 
 	<div class="spacer"></div>
@@ -38,9 +38,9 @@
 <br />
 <ul id="actions_fiche">
 	<?php
-		echo '<li>' . $html->link(SHY, $session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
-		if ($Droits->check($session->read('user.User.id'), 'Typeacteurs:edit'))
-			echo '<li>'.$html->link(SHY, '/typeacteurs/edit/' . $typeacteur['Typeacteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+		if ($Droits->check($this->Session->read('user.User.id'), 'Typeacteurs:edit'))
+			echo '<li>'.$this->Html->link(SHY, '/typeacteurs/edit/' . $typeacteur['Typeacteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
 	?>
 </ul>
 

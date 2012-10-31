@@ -1,17 +1,12 @@
-<h2>Liste des projets pour la séance du <?php echo $date_seance; ?></h2>
-<?php
-    $urlPage =  FULL_BASE_URL . $this->webroot;
-    echo ("<br />Choix du format de sortie des &eacute;ditions : ");
-    $format = $session->read('user.format.sortie');
-    echo $form->select('User.Sortie', array (0=>'pdf', 1=>'odt') , $format, array('id' => "$urlPage", 'onChange'=>'changeFormat(this)'),null,false);
-?>
+<h2>Liste des projets pour la sÃ©ance du <?php echo $date_seance; ?></h2>
+
 <br /><br />
 <div class="deliberations">
 <table width='100%'>
 	<tr>
-		<th>Thème</th>
+		<th>ThÃ¨me</th>
 		<th>Rapporteur</th>
-		<th>Libellé de l'acte</th>
+		<th>LibellÃ© de l'acte</th>
 		<th>Titre</th>
 		<th>Num Delib</th>
 		<th>Action</th>
@@ -25,13 +20,13 @@
 		    <td><?php echo $projet['Deliberation']['num_delib']; ?></td>
 		    <td>
 	           <?php 
-		        if ($projet['Seance']['pv_figes'] != 1)
-		            echo $html->link(SHY,'/seances/saisirDebat/' .$projet['Deliberation']['id'], array('class'=>'link_debat', 'title'=>'Saisir les debats'), false, false);
+		        if ($pv_figes != 1)
+		            echo $this->Html->link(SHY,'/seances/saisirDebat/' .$projet['Deliberation']['id'], array('class'=>'link_debat', 'escape' => false, 'title'=>'Saisir les debats'));
 		    
 		        if ($format == 0) 
-			    echo $html->link(SHY, '/deliberations/downloadDelib/'.$projet['Deliberation']['id'],  array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
-			else
-                            echo $html->link(SHY,'/models/generer/' .$projet['Deliberation']['id'].'/null/'.$projet['Model']['id']."/$format", array('class'=>'link_pdf', 'title'=>'PDF'), false, false);
+				    echo $this->Html->link(SHY, '/deliberations/downloadDelib/'.$projet['Deliberation']['id'],  array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'));
+				else
+                    echo $this->Html->link(SHY,'/models/generer/' .$projet['Deliberation']['id'].'/null/'.$projet['Model']['id']."/$format", array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'));
 
 			?>
 
@@ -43,14 +38,14 @@
 <div class="submit">
 <?php
 
-    echo $html->link('Retour', '/postseances/index', array('class'=>'link_annuler', 'name'=>'Retour'));
+    echo $this->Html->link('Retour', '/postseances/index', array('class'=>'link_annuler', 'name'=>'Retour'));
     
 ?>
 </div>
 <div class="close">
 <?php
-    if ($projet['Seance']['pv_figes'] != 1)
-        echo $html->link('Figer les débats','/postseances/changeStatus/' . $seance_id, array('class'=>'link_clore', 'name'=>'Clore', 'title'=>'Figer les débats'), 'Etes-vous sur de vouloir figer les débats ?', false);
+    if ($pv_figes != 1)
+        echo $this->Html->link('Figer les dÃ©bats','/postseances/changeStatus/' . $seance_id, array('class'=>'link_clore', 'escape' => false, 'name'=>'Clore', 'title'=>'Figer les dÃ©bats'), 'Etes-vous sur de vouloir figer les dÃ©bats ?', false);
 ?>
 </div>
 </div>

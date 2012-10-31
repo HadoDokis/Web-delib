@@ -8,9 +8,9 @@
 <?php
     foreach ($listFiles as $path=> $name) {
         if ($name != 'Documents.zip') 
-	    echo $html->link($name, $path.".$format")."<br>";
+	    echo $this->Html->link($name, $path.".$format")."<br>";
         else
-	    echo $html->link($name, $path)."<br>";
+	    echo $this->Html->link($name, $path)."<br>";
     }
     echo ("<br /><br /><a href='/seances/listerFuturesSeances'> Retour &agrave; la liste des s&eacute;ances </a>");
 ?>

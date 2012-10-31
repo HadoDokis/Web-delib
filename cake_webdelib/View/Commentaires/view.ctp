@@ -14,7 +14,7 @@
 
 </dl>
 <ul class="actions">
-	<li><?php echo $html->link('Retour delib',   '/deliberations/traiter/' . $commentaire['Commentaire']['delib_id']) ?> </li>
+	<li><?php echo $this->Html->link('Retour delib',   '/deliberations/traiter/' . $commentaire['Commentaire']['delib_id']) ?> </li>
 
 </ul>
 

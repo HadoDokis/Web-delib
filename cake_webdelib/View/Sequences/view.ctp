@@ -38,9 +38,9 @@
 <br />
 <ul id="actions_fiche">
 	<?php
-		echo '<li>' . $html->link(SHY, $session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
-		if ($Droits->check($session->read('user.User.id'), 'Sequences:edit'))
-			echo '<li>'.$html->link(SHY, '/sequences/edit/' . $sequence['Sequence']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+		if ($Droits->check($this->Session->read('user.User.id'), 'Sequences:edit'))
+			echo '<li>'.$this->Html->link(SHY, '/sequences/edit/' . $sequence['Sequence']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
 	?>
 </ul>
 
