@@ -92,16 +92,16 @@ class ProfilsController extends AppController {
 					$this->Session->setFlash('Invalide id pour le profil');
 					$sortie = true;
 				}
-				$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$id));
+				$this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$id));
 
 			} else {
-                                require_once ('vendors/progressbar.php');
+                                require_once (APP.DS.'Vendor'.DS.'progressbar.php');
                                 Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
-				if (empty($this->data['Profil']['parent_id'])) $this->data['Profil']['parent_id']=0;
+				if (empty($this->data['Profil']['parent_id'])) $this->request->data['Profil']['parent_id']=0;
 				$profil=$this->Profil->read(null,$id);
 				if ($this->Profil->save($this->data)) {
 					if ($profil['Profil']['parent_id']!=$this->data['Profil']['parent_id']) {
-						$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['Profil']['parent_id']));
+						$this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['Profil']['parent_id']));
 						$this->Dbdroits->MajCruDroits(
 						array('model'=>'Profil','foreign_key'=>$this->data['Profil']['id'],'alias'=>$this->data['Profil']['libelle']),
 						array('model'=>'Profil','foreign_key'=>$this->data['Profil']['parent_id']),
@@ -130,10 +130,10 @@ class ProfilsController extends AppController {
                                         $cpt = 0;
 					foreach($Users as $User) {
                                             $cpt++;
-                                            ProgressBar($cpt*(100/$nbUsers), 'Mise à jour des données pour : <b>'. $User['User']['login'].'</b>');
+                                            ProgressBar($cpt*(100/$nbUsers), 'Mise Ã  jour des donnÃ©es pour : <b>'. $User['User']['login'].'</b>');
 			                    $this->Dbdroits->MajCruDroits(
 						array(
-							'model'=>'Utilisateur','foreign_key'=>$User['User']['id'],'alias'=>$User['User']['login']),
+							'model'=>'User','foreign_key'=>$User['User']['id'],'alias'=>$User['User']['login']),
 						array(
 							'model'=>'Profil','foreign_key'=>$User['User']['profil_id']),
 						$this->data['Droits']
@@ -174,7 +174,7 @@ class ProfilsController extends AppController {
 				}
 			}
 			else {
-				$this->Session->setFlash('Impossible de supprimer ce profil car il est attribué.');
+				$this->Session->setFlash('Impossible de supprimer ce profil car il est attribuÃ©.');
 				$this->redirect('/profils/index');
 			}
 		}
@@ -192,16 +192,26 @@ class ProfilsController extends AppController {
                         $this->set('id', $profil['Profil']['id']);
                     }
                     else {
-                        require_once ('vendors/progressbar.php');
+                        require_once (ROOT.DS.APP_DIR.DS.'Vendor'.DS.'progressbar.php');
                         Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
                         $users = $this->Profil->User->find('all', array('conditions'=>array('User.profil_id'=>$profil['Profil']['id']),'recursive'=>-1));
                         $nbUsers = count($users);
-                        $this->log($nbUsers);
                         $cpt = 0;
+                        if (Configure::read("SMTP_USE")) {
+                            $this->Email->smtpOptions = array( 'port'    => Configure::read("SMTP_PORT"),
+                                                               'timeout' => Configure::read("SMTP_TIMEOUT"),
+                                                               'host'    => Configure::read("SMTP_HOST"),
+                                                               'username'=> Configure::read("SMTP_USERNAME"),
+                                                               'password'=> Configure::read("SMTP_PASSWORD"),
+                                                               'client'  => Configure::read("SMTP_CLIENT"));
+                            $this->Email->delivery = 'smtp';
+                        }
+                        else
+                            $this->Email->delivery = 'mail';
+
                         $this->Email->from = Configure::read("MAIL_FROM");
-                        $this->set('data',  $this->data['Profil']['content']);
                         $this->Email->subject = "Notification aux utilisateurs du profil : ". $profil['Profil']['libelle'];
-                        $this->Email->template = 'insertion';
+                        $this->Email->template = 'default';
                         $this->Email->sendAs = 'html';
                         $this->Email->charset = 'UTF-8';
                         $this->Email->attachments = null;
@@ -210,7 +220,7 @@ class ProfilsController extends AppController {
                              ProgressBar($cpt*(100/$nbUsers), $user['User']['email']);
                              $cpt++;
                              $this->Email->to =  $user['User']['email'];
-                             $this->Email->send();
+                             $this->Email->send($this->data['Profil']['content']);
                              sleep(1);
                         }
                         $this->Progress->end('/profils/index');

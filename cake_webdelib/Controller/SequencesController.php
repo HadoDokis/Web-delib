@@ -9,11 +9,10 @@ class SequencesController extends AppController
 		'edit' => 'Sequences:index',
 		'delete' => 'Sequences:index',
 		'view' => 'Sequences:index'
-		);
+	);
 
-	function index()
-	{
-		$this->set('sequences', $this->Sequence->findAll());
+	function index() {
+		$this->set('sequences', $this->Sequence->find('all', array('recursive' => 1)));
 	}
 
 	function view($id = null)
@@ -71,7 +70,7 @@ class SequencesController extends AppController
 		elseif (!empty($sequence['Compteur'])) {
 			$this->Session->setFlash('La s&eacute;quence \''.$sequence['Sequence']['nom'].'\' est utilis&eacute;e par un compteur. Suppression impossible.');
 		}
-		elseif ($this->Sequence->del($id)) {
+		elseif ($this->Sequence->delete($id)) {
 			$this->Session->setFlash('La s&eacute;quence \''.$sequence['Sequence']['nom'].'\' a &eacute;t&eacute; supprim&eacute;e');
 		}
 		$this->redirect('/sequences/index');

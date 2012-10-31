@@ -18,7 +18,7 @@
 		'edit'=>'Collectivites:index',
 		'setLogo'=>'Collectivites:index'
 		
-		//FIXME: ajout gd mais à vérifier
+		//FIXME: ajout gd mais Ã  vÃ©rifier
 		,'view'=>'Collectivites:index'
 		,'add'=>'Collectivites:index'
 		,'delete'=>'Collectivites:index'

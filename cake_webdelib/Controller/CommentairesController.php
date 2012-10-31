@@ -12,8 +12,8 @@ class CommentairesController extends AppController {
 		$this->set('delib_id',$delib_id);
 		if (!empty($this->data)) {
 		       $this->Commentaire->create();
-			$this->data['Commentaire']['agent_id'] = $this->Session->read('user.User.id');
-			$this->data['Commentaire']['commentaire_auto'] = 0;
+			$this->request->data['Commentaire']['agent_id'] = $this->Session->read('user.User.id');
+			$this->request->data['Commentaire']['commentaire_auto'] = 0;
 			if ($this->Commentaire->save($this->data)) {
 				$this->redirect('/deliberations/traiter/'.$this->data['Commentaire']['delib_id']);
 			} else {
@@ -45,7 +45,7 @@ class CommentairesController extends AppController {
 			$this->Session->setFlash('Invalide id pour le commentaire');
 			$this->redirect('/deliberations/traiter/'.$delib_id);
 		}
-		if ($this->Commentaire->del($id)) {
+		if ($this->Commentaire->delete($id)) {
 			$this->redirect('/deliberations/traiter/'.$delib_id);
 		}
 	}
@@ -63,8 +63,8 @@ class CommentairesController extends AppController {
 			$this->Session->setFlash('Invalide id pour le commentaire');
 			$this->redirect('/deliberations/traiter/'.$delib_id);
 		}
-		$this->data = $this->Commentaire->read(null, $id);
-		$this->data['Commentaire']['pris_en_compte'] = 1;
+		$this->request->data = $this->Commentaire->read(null, $id);
+		$this->request->data['Commentaire']['pris_en_compte'] = 1;
 		if ($this->Commentaire->save($this->data)) {
 			$this->redirect('/deliberations/traiter/'.$delib_id);
 		}

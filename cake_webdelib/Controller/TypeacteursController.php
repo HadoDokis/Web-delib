@@ -13,16 +13,16 @@ class TypeacteursController extends AppController
 
 	function index()
 	{
-		$this->set('typeacteurs', $this->Typeacteur->findAll());
+		$this->set('typeacteurs', $this->Typeacteur->find('all', array('recursive' => -1 )));
 	}
 
-	function view($id = null)
-	{
-		if (!$this->Typeacteur->exists()) {
+	function view($id = null) 	{
+		$typeacteur = $this->Typeacteur->find('first', array('conditions' => array('Typeacteur.id'=> $id)));
+		if (empty($typeacteur)) {
 			$this->Session->setFlash('Invalide id pour le type d\'acteur');
 			$this->redirect('/typeacteurs/index');
 		} else
-			$this->set('typeacteur', $this->Typeacteur->read(null, $id));
+			$this->set('typeacteur', $typeacteur);
 	}
 
 	function add() {
@@ -38,7 +38,7 @@ class TypeacteursController extends AppController
 		if ($sortie)
 			$this->redirect('/typeacteurs/index');
 		else {
-			$this->set('eluNonElu',array('1'=>'élu','0'=>'non élu'));
+			$this->set('eluNonElu',array('1'=>'Ã©lu','0'=>'non Ã©lu'));
 			$this->render('edit');
 		}
 	}
@@ -61,7 +61,7 @@ class TypeacteursController extends AppController
 		if ($sortie)
 			$this->redirect('/typeacteurs/index');
 		else
-			$this->set('eluNonElu',array('1'=>'élu','0'=>'non élu'));
+			$this->set('eluNonElu',array('1'=>'Ã©lu','0'=>'non Ã©lu'));
 	}
 
 	function delete($id = null) {
@@ -72,7 +72,7 @@ class TypeacteursController extends AppController
 		elseif (!empty($typeacteur['Acteur'])) {
 			$this->Session->setFlash('Le type d\'acteur \''.$typeacteur['Typeacteur']['nom'].'\' est utilis&eacute; par un acteur. Suppression impossible.');
 		}
-		elseif ($this->Typeacteur->del($id)) {
+		elseif ($this->Typeacteur->delete($id)) {
 			$this->Session->setFlash('Le type d\'acteur \''.$typeacteur['Typeacteur']['nom'].'\' a &eacute;t&eacute; supprim&eacute;');
 		}
 		$this->redirect('/typeacteurs/index');

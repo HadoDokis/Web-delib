@@ -19,7 +19,7 @@ class CompteursController extends AppController
     }
 
 	function index() {
-		$this->set('compteurs', $this->Compteur->findAll());
+		$this->set('compteurs', $this->Compteur->find('all', array('recursive' => 1)));
 	}
 
 	function view($id = null) {
@@ -76,7 +76,7 @@ class CompteursController extends AppController
 		elseif (!empty($compteur['Typeseance'])) {
 			$this->Session->setFlash('Le compteur \''.$compteur['Compteur']['nom'].'\' est utilis&eacute; par un type de s&eacute;ance. Suppression impossible.');
 		}
-		elseif ($this->Compteur->del($id)) {
+		elseif ($this->Compteur->delete($id)) {
 			$this->Session->setFlash('La compteur \''.$compteur['Compteur']['nom'].'\' a &eacute;t&eacute; supprim&eacute;');
 		}
 		$this->redirect('/compteurs/index');
