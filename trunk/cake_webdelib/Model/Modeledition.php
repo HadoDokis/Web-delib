@@ -1,20 +1,21 @@
 <?php
-class Model extends AppModel {
+class Modeledition extends AppModel {
 
-	var $name = 'Model';
+	var $name = 'Modeledition';
 	var $displayField = 'modele';
+        var $useTable = 'models';
 	
 	var $validate = array(
 		'modele' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrer le libellÈ.'
+				'message' => 'Entrer le libell√©.'
 			)
 		),
 		'content' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrer la dÈlibÈration.'
+				'message' => 'Entrer la d√©lib√©ration.'
 			)
 		)
 	);

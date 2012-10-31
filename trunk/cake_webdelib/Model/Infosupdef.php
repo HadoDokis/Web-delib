@@ -1,6 +1,6 @@
 <?php
 /**
-* éfinitions des informations supplémentaires paramétrables des projets de délibération
+* Ã©finitions des informations supplÃ©mentaires paramÃ©trables des projets de dÃ©libÃ©ration
 *
 * PHP versions 4 and 5
 * @filesource
@@ -29,11 +29,11 @@ class Infosupdef extends AppModel {
 		'nom' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrer un nom pour l\'information supplémentaire'
+				'message' => 'Entrer un nom pour l\'information supplÃ©mentaire'
 			),
 			array(
 				'rule' => 'isUnique',
-				'message' => 'Entrer un autre nom, celui-ci est déjà utilisé.'
+				'message' => 'Entrer un autre nom, celui-ci est dÃ©jÃ  utilisÃ©.'
 			)
 		),
 		'type' => array(
@@ -45,11 +45,11 @@ class Infosupdef extends AppModel {
 		'code' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrer un code pour l\'information supplémentaire'
+				'message' => 'Entrer un code pour l\'information supplÃ©mentaire'
 			),
 			array(
 				'rule' => 'isUnique',
-				'message' => 'Entrer un autre code, celui-ci est déjà utilisé.'
+				'message' => 'Entrer un autre code, celui-ci est dÃ©jÃ  utilisÃ©.'
 			),
 			array(
 				'rule' => 'non_conforme_code',
@@ -63,7 +63,7 @@ class Infosupdef extends AppModel {
 		'richText' => 'Texte enrichi',
 		'date' => 'Date',
 		'file' => 'Fichier',
-		'boolean' => 'Booléen',
+		'boolean' => 'BoolÃ©en',
 		'odtFile' => 'Fichier ODT',
 		'list' => 'Liste'
 	);
@@ -74,13 +74,13 @@ class Infosupdef extends AppModel {
 	);
 
 	var $listEditBoolean = array(
-		'0' => 'décoché',
-		'1' => 'coché'
+		'0' => 'dÃ©cochÃ©',
+		'1' => 'cochÃ©'
 	);
 	
 	/**
-	* FIXME: faire plus générique, car les règles d'un champ sont soit dans un
-	* 	array (règle unique pour un champ), soit dans un array d'array (règles
+	* FIXME: faire plus gÃ©nÃ©rique, car les rÃ¨gles d'un champ sont soit dans un
+	* 	array (rÃ¨gle unique pour un champ), soit dans un array d'array (rÃ¨gles
 	*	multiples pour un champ).
 	*/
 
@@ -101,28 +101,28 @@ class Infosupdef extends AppModel {
 	}
 
 /**
- * retourne la liste code/libellé pour les types d'information
+ * retourne la liste code/libellÃ© pour les types d'information
  */
 	function generateListType() {
 		return $this->types;
 	}
 
 /**
- * retourne le libellé correspondant au type $type
+ * retourne le libellÃ© correspondant au type $type
  */
 	function libelleType($type) {
 		return $this->types[$type];
 	}
 
 /**
- * retourne le libellé correspondant au booléen $recherche
+ * retourne le libellÃ© correspondant au boolÃ©en $recherche
  */
 	function libelleRecherche($recherche) {
 		return $recherche ? 'Oui' : 'Non';
 	}
 
 /**
- * retourne true si l'instance $aSupprimer peut être supprimée et false dans le cas contraire
+ * retourne true si l'instance $aSupprimer peut Ãªtre supprimÃ©e et false dans le cas contraire
  * documente la raison de la non suppression dans $message
  */
 	function isDeletable($aSupprimer, &$message) {
@@ -134,19 +134,19 @@ class Infosupdef extends AppModel {
 	}
 
 /**
- * Intervertit l'ordre de l'élément $id avec le suivant ou le précédent suivant $following
+ * Intervertit l'ordre de l'Ã©lÃ©ment $id avec le suivant ou le prÃ©cÃ©dent suivant $following
  */
 	function invert($id = null, $following = true) {
 		// Initialisations
 		$gap = $following ? 1 : -1;
 
-		// lecture de l'élément à déplacer
+		// lecture de l'Ã©lÃ©ment Ã  dÃ©placer
 		$recFrom = $this->find('first', array(
 			'recursive' => -1,
 			'fields' => array('id', 'model', 'ordre'),
 			'conditions' => array('id' => $id)));
 
-		// lecture de l'élément a intervertir
+		// lecture de l'Ã©lÃ©ment a intervertir
 		$recTo = $this->find('first', array(
 			'recursive' => -1,
 			'fields' => array('id', 'model', 'ordre'),
@@ -154,10 +154,10 @@ class Infosupdef extends AppModel {
 				'model' => $recFrom['Infosupdef']['model'],
 				'ordre' => ($recFrom['Infosupdef']['ordre'] + $gap))));
 
-		// Si pas d'élément à intervertir alors on sort sans rien faire
+		// Si pas d'Ã©lÃ©ment Ã  intervertir alors on sort sans rien faire
 		if (empty($recTo)) return;
 
-		// Mise à jour du champ ordre pour les deux enregistrements
+		// Mise Ã  jour du champ ordre pour les deux enregistrements
 		$recFrom['Infosupdef']['ordre'] += $gap;
 		$this->save($recFrom, false);
 		$recTo['Infosupdef']['ordre'] -= $gap;
@@ -171,7 +171,7 @@ class Infosupdef extends AppModel {
 		if (isset($this->data['Infosupdef']['type']) && $this->data['Infosupdef']['type'] == 'text' && empty($this->data['Infosupdef']['taille']))
 			$this->data['Infosupdef']['taille'] = 20;
 
-		// calcul du n° d'ordre en cas d'ajout
+		// calcul du nÂ° d'ordre en cas d'ajout
 		if (!array_key_exists('id', $this->data['Infosupdef']) || empty($this->data['Infosupdef']['id']))
 			$this->data['Infosupdef']['ordre'] = $this->find('count',array('recursive'=>-1, 'conditions'=>array('model'=>$this->data['Infosupdef']['model']))) + 1;
 
@@ -185,7 +185,7 @@ class Infosupdef extends AppModel {
 	}
 
 /**
- * Réordonne les numéros d'ordre après une suppression
+ * RÃ©ordonne les numÃ©ros d'ordre aprÃ¨s une suppression
  */
 	function afterDelete() {
 		$models = array('Deliberation', 'Seance');
@@ -226,7 +226,7 @@ class Infosupdef extends AppModel {
 	}
 
 /**
- * Retourne les éléments des infosup de type 'list'
+ * Retourne les Ã©lÃ©ments des infosup de type 'list'
  */
 	function generateListes($model) {
 		$ret = array();

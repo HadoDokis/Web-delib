@@ -1,6 +1,6 @@
 <?php
 /**
-* Gestion des compteurs paramétrables.
+* Gestion des compteurs paramÃ©trables.
 *
 * PHP versions 4 and 5
 * @filesource
@@ -29,19 +29,19 @@ class Compteur extends AppModel
 			),
 			array(
 				'rule' => 'isUnique',
-				'message' => 'Entrer un autre nom, celui-ci est déjà utilisé.'
+				'message' => 'Entrer un autre nom, celui-ci est dÃ©jÃ  utilisÃ©.'
 			)
 		),
 		'def_compteur' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrer la définition du compteur'
+				'message' => 'Entrer la dÃ©finition du compteur'
 			)
 		),
 		'sequence_id' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Selectionner une séquence'
+				'message' => 'Selectionner une sÃ©quence'
 			)
 		)
 	);
@@ -54,9 +54,9 @@ class Compteur extends AppModel
 
 /**
 * Retourne la valeur suivante du compteur,
-* enregistre la nouvelle valeur de la séquence et du critère de réinitialisation en base
+* enregistre la nouvelle valeur de la sÃ©quence et du critÃ¨re de rÃ©initialisation en base
 *
-* @param int $id Numéro de l'id du compteur
+* @param int $id NumÃ©ro de l'id du compteur
 * @retourne string Valeur suivante du compteur
 * @access public
 */
@@ -79,17 +79,17 @@ class Compteur extends AppModel
 		/* lecture du compteur en base */
 		$cptEnBase = $this->read(null, $id);
 
-		/* génération du critère de réinitialisation courant */
+		/* gÃ©nÃ©ration du critÃ¨re de rÃ©initialisation courant */
 		$val_reinitCourant = str_replace(array_keys($remplaceD), array_values($remplaceD), $cptEnBase['Compteur']['def_reinit']);
 
-		/* traitement de la séquence */
+		/* traitement de la sÃ©quence */
 		if ($val_reinitCourant != $cptEnBase['Compteur']['val_reinit']) {
 			$cptEnBase['Sequence']['num_sequence'] = 1;
 			$cptEnBase['Compteur']['val_reinit'] = $val_reinitCourant;
     	} else
 			$cptEnBase['Sequence']['num_sequence']++;
 
-		/* initialisation du tableau de recherche et de remplacement pour la séquence */
+		/* initialisation du tableau de recherche et de remplacement pour la sÃ©quence */
 		$strnseqS = sprintf("%'_10d", $cptEnBase['Sequence']['num_sequence']);
 		$strnseqZ = sprintf("%010d", $cptEnBase['Sequence']['num_sequence']);
 
@@ -116,15 +116,15 @@ class Compteur extends AppModel
 			, "#0000000000#" => $strnseqZ
 		);
 
-		/* génération de la valeur du compteur */
+		/* gÃ©nÃ©ration de la valeur du compteur */
 		$valCompteurD = str_replace(array_keys($remplaceD), array_values($remplaceD), $cptEnBase['Compteur']['def_compteur']);
 		$valCompteur = str_replace(array_keys($remplaceS), array_values($remplaceS), $valCompteurD);
 
-		/* Sauvegarde du compteur et de la séquence */
+		/* Sauvegarde du compteur et de la sÃ©quence */
 		$this->save($cptEnBase);
 		$this->Sequence->save($cptEnBase);
 
-		/* retourne la valeur du compteur générée */
+		/* retourne la valeur du compteur gÃ©nÃ©rÃ©e */
 		return $valCompteur;
 	}
 

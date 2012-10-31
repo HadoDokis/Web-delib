@@ -40,16 +40,14 @@
                     $nomenclature['Nomenclature']['parent_id'] = 0;
                     $nomenclature['Nomenclature']['libelle']   = $value;
                     $nomenclature['Nomenclature']['code']     = $key;
-                    if ($this->save($nomenclature))
-                        $this->log("$key => $value enregistré...<br>");
+                    $this->save($nomenclature);
 		}
                 else {
                     $this->create();
                     $nomenclature['Nomenclature']['parent_id'] =  $this->findParent_id($key);
                     $nomenclature['Nomenclature']['libelle']   = $value;
                     $nomenclature['Nomenclature']['code']     = $key;
-                    if ($this->save($nomenclature))
-                        $this->log("$key => $value enregistré...<br>");
+                    $this->save($nomenclature);
                 }
 	    }
         }
