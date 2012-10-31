@@ -17,7 +17,7 @@ class FckHelper extends Helper {
         }  
 
         $code = "CKEDITOR.replace( '".$did."' );"; 
-        return $this->Javascript->codeBlock($code);  
+        return $this->Html->scriptBlock($code);  
     } 
 } 
 

@@ -9,9 +9,9 @@ class MenuHelper extends Helper {
 	/**
 	 * Contruction d'un menu en html utilisant les balises <ul></ul>
 	 *
-	 * @param array		$menu données du menu
+	 * @param array		$menu donnÃ©es du menu
 	 * @param boolean	$echo indique si la fonction affiche ou retourne le html du menu (defaut : affiche)
-	 * @param boolean	$returnStr indique si la fonction retourne le html du menu sous forme d'un tableau ou d'une chaîne (defaut : chaîne)
+	 * @param boolean	$returnStr indique si la fonction retourne le html du menu sous forme d'un tableau ou d'une chaÃ®ne (defaut : chaÃ®ne)
 	 * @access public
 	 *
 	 */
@@ -31,7 +31,7 @@ class MenuHelper extends Helper {
 		$itemTag = $this->_getArrayValue($menu, 'itemTag', 'li');
 		$currentItem = $this->_getArrayValue($menu, 'currentItem', '');
 
-		// Initialisation du tableau de chaîne html
+		// Initialisation du tableau de chaÃ®ne html
 		$this->__menuHtml[] = "<ul".ife(!empty($menuClass)," class='$menuClass'").">\n";
 		$level = count($this->__menuHtml)-1;
 
@@ -48,7 +48,7 @@ class MenuHelper extends Helper {
 			else
 				$htmlAttributes = array();
 
-			// Determine si on est sur l'élément courant
+			// Determine si on est sur l'Ã©lÃ©ment courant
 			if (!$currentItemFound) {
 				$isCurrentItem = $this->_isCurrent($menuItem);
 				$currentItemFound = $isCurrentItem;
@@ -59,7 +59,7 @@ class MenuHelper extends Helper {
 			$this->__menuHtml[$level] .= $this->Html->link($title, $menuItem['link'], $htmlAttributes, null, false);
 			$this->__menuHtml[$level] .= '</'.$itemTag.'>'."\n";
 
-			// Dans le cas du menu courant, teste si il y à un sous-menu et le traite
+			// Dans le cas du menu courant, teste si il y Ã  un sous-menu et le traite
 			if ($isCurrentItem and array_key_exists('subMenu', $menuItem) and
 				is_array($menuItem['subMenu']) and count($menuItem['subMenu'])>0) {
 					// Initialisation du sous-menu
@@ -82,22 +82,22 @@ class MenuHelper extends Helper {
 
 /**
  *
- * Détermine si l'élément de menu $data est l'élément courant
- * ou bien si l'élément courant se trouve dans un de ses sous-menus.
+ * DÃ©termine si l'Ã©lÃ©ment de menu $data est l'Ã©lÃ©ment courant
+ * ou bien si l'Ã©lÃ©ment courant se trouve dans un de ses sous-menus.
  *
  * @return boolean
  *
- * @param array 	$data Elément de menu
+ * @param array 	$data ElÃ©ment de menu
  * @access private
  */
 	function _isCurrent($data) {
-		// Initialisation du lien à tester
+		// Initialisation du lien Ã  tester
 		$data['link'] = $this->_initLien($data['link']);
 
-		// test sur l'élément courant
+		// test sur l'Ã©lÃ©ment courant
 		if ($data['link'] === substr($this->here, strlen($this->base))) return true;
 		else {
-			// test sur les éléments du sous-menus
+			// test sur les Ã©lÃ©ments du sous-menus
 			if (array_key_exists('subMenu', $data) and is_array($data['subMenu']) and count($data['subMenu'])>0) {
 				foreach($data['subMenu']['items'] as $title => $menuItem)
 				{
@@ -118,7 +118,7 @@ class MenuHelper extends Helper {
  * @access private
  */
 	function _initLien($lien) {
-		// Initialisation du lien à tester
+		// Initialisation du lien Ã  tester
 		if($lien{0} != '/' && substr($lien,0,4) != 'http' && substr($lien,0,3) != 'www')
 			return '/pages/' . $lien;
 		else
@@ -131,17 +131,17 @@ class MenuHelper extends Helper {
  *
  * @return null
  *
- * @param array &$menu Données du menu
- * @param str &$subMenu Données du sous-menu
- * @param str $key Nom de la valeur à traiter
+ * @param array &$menu DonnÃ©es du menu
+ * @param str &$subMenu DonnÃ©es du sous-menu
+ * @param str $key Nom de la valeur Ã  traiter
  * @access private
  */
 	function _initSubMenu(&$menu, &$subMenu, $key) {
 		$val = null;
-		// Sort si il n'y a rien à hériter ou si déjà définis dans le sous-menu
+		// Sort si il n'y a rien Ã  hÃ©riter ou si dÃ©jÃ  dÃ©finis dans le sous-menu
 		if (!array_key_exists($key, $menu) or array_key_exists($key, $subMenu)) return;
 
-		// Teste si hérite d'un tableau
+		// Teste si hÃ©rite d'un tableau
 		if (is_array($menu[$key])) {
 			if (count($menu[$key])>1) $val = array_slice($menu[$key], 1);
 			elseif (count($menu[$key])==1) $val = $menu[$key][0];
@@ -156,9 +156,9 @@ class MenuHelper extends Helper {
  *
  * @return
  *
- * @param array &$menu Données du menu
- * @param str $key Nom de la valeur à traiter
- * @param str $default Valeur par défaut
+ * @param array &$menu DonnÃ©es du menu
+ * @param str $key Nom de la valeur Ã  traiter
+ * @param str $default Valeur par dÃ©faut
  * @access private
  */
 	function _getArrayValue($menu, $key, $default=null) {
