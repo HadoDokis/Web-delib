@@ -53,7 +53,6 @@ class AppController extends Controller {
 		$this->set('lienDeconnexion', true);
 		$this->set('session_service_id', $this->Session->read('user.User.service'));
 		$this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
-return true;
 		if (CRON_DISPATCHER) return true;
 		if((substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login') &&
 				($this->action!='writeSession') &&
