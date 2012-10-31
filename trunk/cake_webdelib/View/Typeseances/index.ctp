@@ -1,5 +1,5 @@
 <div class="typeseances">
-<h2>Liste des types de séance</h2>
+<h2>Liste des types de sÃ©ance</h2>
 
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
@@ -15,7 +15,7 @@
 <tr>
 	<td><?php echo $typeseance['Typeseance']['libelle']; ?></td>
 	<td><?php echo $typeseance['Typeseance']['retard']; ?></td>
-	<td><?php echo $Typeseance->libelleAction($typeseance['Typeseance']['action'], true); ?></td>
+	<td><?php echo $typeseance['Typeseance']['action']; ?></td>
 	<td><?php echo $typeseance['Compteur']['nom']; ?></td>
 	<td><?php
 		echo 'projet : ' .       $typeseance['Modelprojet']['modele'] . '<br/>';
@@ -39,10 +39,10 @@
 	?></td>
 	<td class="actions">
 	<?php
-		echo $html->link(SHY,'/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'title'=>'Voir'), false, false);
-		echo $html->link(SHY,'/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false);
-	    if ($Typeseances->_isDeletable($typeseance, $message))
-			echo $html->link(SHY,'/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?', false);
+		echo $this->Html->link(SHY,'/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'escape' => false,  'title'=>'Voir'),false);
+		echo $this->Html->link(SHY,'/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false);
+	    if ($typeseance['Typeseance']['is_deletable'])
+			echo $this->Html->link(SHY,'/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'escape' => false,  'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?');
 	?>
 	</td>
 </tr>
@@ -50,6 +50,6 @@
 </table>
 
 <ul class="actions">
-	<li><?php echo $html->link('Ajouter un type de séance', '/typeseances/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
+	<li><?php echo $this->Html->link('Ajouter un type de sÃ©ance', '/typeseances/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
 </ul>
 </div>

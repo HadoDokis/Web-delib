@@ -1,7 +1,7 @@
 <?php 
-    echo $javascript->link('utils.js'); 
-    echo $javascript->link('ckeditor/ckeditor'); 
-    echo $javascript->link('ckeditor/adapters/jquery'); 
+    echo $this->Html->script('utils.js'); 
+    echo $this->Html->script('ckeditor/ckeditor'); 
+    echo $this->Html->script('ckeditor/adapters/jquery'); 
 ?>
 
 
@@ -15,13 +15,13 @@
 
 
 <?php
-    echo $form->create('Profil', array('url'=>'/profils/notifier/'.$id)); 
+    echo $this->Form->create('Profil', array('url'=>'/profils/notifier/'.$id)); 
     echo '<div class="annexesGauche"></div>';
     echo '<div class="fckEditorProjet">';
-    echo $form->input('Profil.content', array('label'=>'', 'type'=>'textarea'));
-    echo $fck->load('Profil.content');
+    echo $this->Form->input('Profil.content', array('label'=>'', 'type'=>'textarea'));
+    echo $this->Fck->load('Profil.content');
     echo '</div>';
     echo '<div class="spacer"></div>';
-    echo $form->submit('Envoyer');
-    echo $form->end();
+    echo $this->Form->submit('Envoyer');
+    echo $this->Form->end();
 ?>

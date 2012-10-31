@@ -1,29 +1,29 @@
-<?php echo $javascript->link('compteurs.js'); ?>
+<?php echo $this->Html->script('compteurs.js'); ?>
 
 <?php
-	if($html->value('Compteur.id')) {
+	if($this->Html->value('Compteur.id')) {
 		echo "<h2>Modification d'un compteur param&eacute;trable</h2>";
-		echo $form->create('Compteur',array('url'=>'/compteurs/edit/'.$html->value('Compteur.id'),'type'=>'post','id'=>'form_compteur'));
+		echo $this->Form->create('Compteur',array('url'=>'/compteurs/edit/'.$this->Html->value('Compteur.id'),'type'=>'post','id'=>'form_compteur'));
 	}
 	else {
 		echo "<h2>Ajout d'un compteur param&eacute;trable</h2>";
-		echo $form->create('Compteur',array('url'=>'/compteurs/add/','type'=>'post','id'=>'form_compteur'));
+		echo $this->Form->create('Compteur',array('url'=>'/compteurs/add/','type'=>'post','id'=>'form_compteur'));
 	}
 ?>
 
 <div class="required">
- 	<?php echo $form->input('Compteur.nom', array('label'=>'Nom <acronym title="obligatoire">(*)</acronym>','size' => '60'));?> <br />
+ 	<?php echo $this->Form->input('Compteur.nom', array('label'=>'Nom <acronym title="obligatoire">(*)</acronym>','size' => '60'));?> <br />
 </div>
 <br/>
 <div class="required">
- 	<?php echo $form->input('Compteur.commentaire', array('label'=>'Commentaire','size' => '100'));?>
+ 	<?php echo $this->Form->input('Compteur.commentaire', array('label'=>'Commentaire','size' => '100'));?>
 </div>
 <br/>
 <div class="required">
- 	<?php echo $form->input('Compteur.def_compteur', array('label'=>'D&eacute;finition du compteur <acronym title="obligatoire">(*)</acronym>','size' => '40'));?>
+ 	<?php echo $this->Form->input('Compteur.def_compteur', array('label'=>'D&eacute;finition du compteur <acronym title="obligatoire">(*)</acronym>','size' => '40'));?>
 
 <select onchange="InsertSelectedValueInToInput(this, 'form_compteur', 'CompteurDefCompteur');">
-    <option value="AIDEFORMAT">sélectionner les formats dans la liste</option>
+    <option value="AIDEFORMAT">sÃ©lectionner les formats dans la liste</option>
     <option value="#s#">num&eacute;ro de la s&eacute;quence</option>
     <option value="#S#">num&eacute;ro de la s&eacute;quence sur 1 chiffre</option>
     <option value="#SS#">num&eacute;ro de la s&eacute;quence sur 2 chiffres (compl&eacute;t&eacute; par un soulign&eacute;)</option>
@@ -44,10 +44,10 @@
 
 <br/>
 <div class="required">
- 	<?php echo $form->input('Compteur.def_reinit', array('label'=>'Crit&egrave;re de r&eacute;initialisation','size' => '40'));?>
+ 	<?php echo $this->Form->input('Compteur.def_reinit', array('label'=>'Crit&egrave;re de r&eacute;initialisation','size' => '40'));?>
 
 <select onchange="InsertSelectedValueInToInput(this, 'form_compteur', 'CompteurDefReinit');">
-    <option value="AIDEFORMAT">sélectionner les formats dans la liste</option>
+    <option value="AIDEFORMAT">sÃ©lectionner les formats dans la liste</option>
     <option value="#AAAA#">Ann&eacute;e</option>
     <option value="#MM#">Mois</option>
     <option value="#JJ#">Jour</option>
@@ -56,16 +56,16 @@
 
 <br>
 <div class="required">
- 	<?php echo $form->input('Compteur.sequence_id', array('label'=>'S&eacute;quence <acronym title="obligatoire">(*)</acronym>', 'options'=>$sequences, 'empty'=>(count($sequences)>1)));?>
+ 	<?php echo $this->Form->input('Compteur.sequence_id', array('label'=>'S&eacute;quence <acronym title="obligatoire">(*)</acronym>', 'options'=>$sequences, 'empty'=>(count($sequences)>1)));?>
 </div>
 
 <br>
 
 <br/><br/><br/><br/><br/>
 <div class="submit">
-	<?php if ($this->action=='edit') echo $form->hidden('Compteur.id')?>
-	<?php echo $form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-	<?php echo $html->link('Annuler', '/compteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php if ($this->action=='edit') echo $this->Form->hidden('Compteur.id')?>
+	<?php echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
+	<?php echo $this->Html->link('Annuler', '/compteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 
-<?php echo $form->end(); ?>
+<?php echo $this->Form->end(); ?>

@@ -1,13 +1,13 @@
-<?php echo $javascript->link('utils.js'); ?>
+<?php echo $this->Html->script('utils.js'); ?>
 <div class="deliberations">
 <?php if (isset($message))  echo ($message); ?>
 <h2>Actes envoy&eacute;s &agrave; la signature</h2>
-<?php echo $form->create('Deliberation',array('url'=>'/deliberations/sendToParapheur/'.$seance_id,'type'=>'file')); ?>
+<?php echo $this->Form->create('Deliberation',array('url'=>'/deliberations/sendToParapheur/'.$seance_id,'type'=>'file')); ?>
 <table width='100%'>
     <tr>
 	<th></th>
- 	<th>Numéro D&eacute;lib&eacute;ration</th>
- 	<th>Libellé de l'acte</th>
+ 	<th>NumÃ©ro D&eacute;lib&eacute;ration</th>
+ 	<th>LibellÃ© de l'acte</th>
  	<th>Titre</th>
  	<th width='65px'>statut</th>
     </tr>
@@ -16,17 +16,17 @@
        $numLigne = 1;
        foreach ($deliberations as $delib) {
           $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
-       echo $html->tag('tr', null, $rowClass);
+       echo $this->Html->tag('tr', null, $rowClass);
        $numLigne++;
 
 		if ((($delib['Deliberation']['etat_parapheur']==null) || ($delib['Deliberation']['etat_parapheur']== -1) ) && 
                     ($delib['Deliberation']['signee']!=1) &&  
-                     (($delib['Deliberation']['etat']>=3) || ($delib['Deliberation']['nature_id']>1 && $delib['Deliberation']['etat']>=2) )) 
-		    echo("<td>".$form->checkbox('Deliberation.id_'.$delib['Deliberation']['id'], array('checked'=> true))."</td>");
+                     (($delib['Deliberation']['etat']>=3) || ($delib['Deliberation']['typeacte_id']>1 && $delib['Deliberation']['etat']>=2) )) 
+		    echo("<td>".$this->Form->checkbox('Deliberation.id_'.$delib['Deliberation']['id'], array('checked'=> true))."</td>");
 		else
 		    echo("<td></td>");
                     echo "<td>";
-                    echo $html->link($delib['Deliberation']['num_delib'],'/models/generer/' .$delib['Deliberation']['id'].'/null/'.$delib['Model']['id']);
+                    echo $this->Html->link($delib['Deliberation']['num_delib'],'/models/generer/' .$delib['Deliberation']['id'].'/null/'.$delib['Model']['id']);
                     
 		?>
 		</td>
@@ -43,21 +43,21 @@
 		   elseif($delib['Deliberation']['etat_parapheur']==2) {
 			   $delib_id = $delib['Deliberation']['id'];
                            if ($delib['Deliberation']['signature'] != '')
-			       echo  ("<td><a href='/deliberations/downloadSignature/$delib_id'>Acte signé</a></td>");
+			       echo  ("<td><a href='/deliberations/downloadSignature/$delib_id'>Acte signÃ©</a></td>");
                            else
-			       echo  ("<td>Acte signé</td>");
+			       echo  ("<td>Acte signÃ©</td>");
 		    }
                    elseif(($delib['Deliberation']['signee'] == 1) && ($delib['Deliberation']['etat_parapheur']==null)){
-                       echo  ("<td>Acte déclaré signé</td>");
+                       echo  ("<td>Acte dÃ©clarÃ© signÃ©</td>");
 		    } 
-                   elseif (($delib['Deliberation']['etat']>-1) && ($delib['Deliberation']['etat']<2) && ($delib['Deliberation']['nature_id']==1) ) {
-                       echo "<td>En cours d'élaboration</td>";
+                   elseif (($delib['Deliberation']['etat']>-1) && ($delib['Deliberation']['etat']<2) && ($delib['Deliberation']['typeacte_id']==1) ) {
+                       echo "<td>En cours d'Ã©laboration</td>";
                    }
-                   elseif (($delib['Deliberation']['etat']>=1) && ($delib['Deliberation']['etat']<3) && ($delib['Deliberation']['nature_id']==1) ) {
+                   elseif (($delib['Deliberation']['etat']>=1) && ($delib['Deliberation']['etat']<3) && ($delib['Deliberation']['typeacte_id']==1) ) {
                        echo '<td>A faire voter</td>';
                    }
 		    elseif ($delib['Deliberation']['etat_parapheur']== -1) {
- 		        echo("<td>Acte refusé à la signature</td>");
+ 		        echo("<td>Acte refusÃ© Ã  la signature</td>");
 		    }
                     else {
  		        echo("<td>A faire signer</td>");
@@ -72,12 +72,12 @@
         <?php  
             if ($seance_id != null) {
                 echo ('Circuit : ');
-                echo ($form->input('Deliberation.circuit_id', array('options'=>$circuits, 'label'=>false, 'div'=> false)).'<br /><br />'); 
+                echo ($this->Form->input('Deliberation.circuit_id', array('options'=>$circuits, 'label'=>false, 'div'=> false)).'<br /><br />'); 
 	        echo ('<div class="submit">');
-                echo $form->submit('Envoyer',array('div'=>false));
+                echo $this->Form->submit('Envoyer',array('div'=>false));
         	echo ('</div>');
             }
         ?>
 
-<?php echo $form->end(); ?>
+<?php echo $this->Form->end(); ?>
 </div>

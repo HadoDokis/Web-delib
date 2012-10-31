@@ -1,4 +1,4 @@
-<h2><?php echo $html->image('/img/icons/synthese.png')?> Modèle de génération : </h2>
+<h2><?php echo $this->Html->image('/img/icons/synthese.png')?> ModÃ¨le de gÃ©nÃ©ration : </h2>
 
 <div>
     <?php echo $model['Model']['content']; ?>
@@ -8,5 +8,5 @@
 
 
 <div class="submit">
-	<?php echo $html->link(SHY, '/models/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?>
+	<?php echo $this->Html->link(SHY, '/models/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?>
 </div>

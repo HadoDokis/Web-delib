@@ -3,7 +3,7 @@
 <head>
 	<title>WebDelib</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<?php echo $html->css('webdelib'); ?>
+	<?php echo $this->Html->css('webdelib'); ?>
 </head>
 <body>
 <div id="conteneur">

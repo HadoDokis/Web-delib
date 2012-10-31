@@ -1,8 +1,8 @@
-<?php echo $form->create('Deliberation',array('type'=>'post','url'=>"/deliberations/listerPresents/$delib_id/$seance_id")); ?>
+<?php echo $this->Form->create('Deliberation',array('type'=>'post','url'=>"/deliberations/listerPresents/$delib_id/$seance_id")); ?>
 <table cellpadding="0" cellspacing="0">
 <tr>
 	<th>Elu</th>
-	<th>Pr�sent</th>
+	<th>Présent</th>
 	<th>Mandataire</th>
 </tr>
 <?php foreach ($presents as $present):
@@ -11,11 +11,11 @@
      $pres = $present['Acteur']['id']; 
      if (($suppleant_id != null) || isset($present['Acteur']['is_suppleant'])) {
          if (isset($present['Suppleant']['id'])){
-             $options[$suppleant_id] = "Suppl�ant : ".$present['Suppleant']['prenom'].' '.$present['Suppleant']['nom'];
+             $options[$suppleant_id] = "Suppléant : ".$present['Suppleant']['prenom'].' '.$present['Suppleant']['nom'];
              $options[$pres] = "Titulaire : ".$present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
          }
          else {
-             $options[$present['Acteur']['id']] = "Suppl�ant : ".$present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
+             $options[$present['Acteur']['id']] = "Suppléant : ".$present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
              $options[$present['Titulaire']['id']] = "Titulaire : ".$present['Titulaire']['prenom'].' '.$present['Titulaire']['nom'];
          }
      }
@@ -24,23 +24,26 @@
 <tr>
     <td>
         <?php 
+        
         if (($suppleant_id != null) || isset($present['Acteur']['is_suppleant'])) {
-            echo $form->input($present['Acteur']['id'].'.suppleant_id', array('options' =>  $options, 'label' => false));             
+            echo $this->Form->input('Acteur.'.$present['Acteur']['id'].'.suppleant_id', array('options' =>  $options, 'label' => false));             
         }
         else
             echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom']; 
         ?>
     </td>
 	<td>
- 		<?php echo $form->input($present['Acteur']['id'].'.present', array('label'=>false, 'fieldset'=>false, 'legend'=>false, 'div'=>false, 'type'=>'radio', 'options'=>array(1=>'oui'),'selected'=>'selected', 'onclick'=>"javascript:disable('liste_$pres','1');")); ?>
-		<?php echo $form->input($present['Acteur']['id'].'.present', array('label'=>false, 'fieldset'=>false, 'legend'=>false, 'div'=>false, 'type'=>'radio', 'options'=>array(0=>'non'),'onclick'=>"javascript:disable('liste_$pres','2');")); ?>
+           <?php 
+               $selected = $present['Listepresence']['present'];
+ echo $this->Form->input("Acteur.$pres.present", array('label'=>false, 'fieldset'=>false, 'legend'=>false, 'div'=>false, 'type'=>'radio', 'value' => $selected,'options'=>array(1=>'oui',0=>'non'),  'onclick'=>"javascript:disable('liste_$pres', $(this).val() );"));
+ ?>
 	</td>
 	<td>
  	   <?php
 	   if (empty($present['Acteur']['id']))
-	       echo $form->input($present['Acteur']['id'].'.mandataire', array('label'=>false, 'options'=>$mandataires, 'readonly'=>'readonly', "id"=>"liste_".$present['Acteur']['id'],'empty'=>true));
+	       echo $this->Form->input("Acteur.".$present['Acteur']['id'].'.mandataire', array('label'=>false, 'options'=>$mandataires, 'readonly'=>'readonly', "id"=>"liste_".$present['Acteur']['id'],'empty'=>true));
 	   else 
-	       echo $form->input($present['Acteur']['id'].'.mandataire', array('label'=>false, 'options'=>$mandataires, "id"=>"liste_".$present['Acteur']['id'], 'empty'=>true));
+	       echo $this->Form->input("Acteur.".$present['Acteur']['id'].'.mandataire', array('label'=>false, 'options'=>$mandataires, "id"=>"liste_".$present['Acteur']['id'], 'empty'=>true));
 	   ?>
     </td>
 </tr>
@@ -48,7 +51,12 @@
 </table>
 <br />
 <div class="submit">
-	<?php echo $form->submit('Enregistrer la liste des pr�sents', array('div'=>false, 'class'=>'bt_add', 'name'=>'modifier'));?>
+	<?php echo $this->Form->submit('Enregistrer la liste des présents', array('div'=>false, 'class'=>'bt_add', 'name'=>'modifier'));   ?>
+    <?php 
+          echo $this->Html->link('Récupérer la liste des présents de la délibérations précédente', 
+                                 "/deliberations/copyFromPrevious/$delib_id/$seance_id",
+                                 array('class' => 'bt_add')); 
+    ?>
 </div>
 <br />
-<?php echo $form->end(); ?>
+<?php echo $this->Form->end(); ?>

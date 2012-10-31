@@ -1,5 +1,5 @@
-<?php echo $javascript->link('ckeditor/ckeditor'); ?>
-<?php echo $javascript->link('ckeditor/adapters/jquery'); ?>
+<?php echo $this->Html->script('ckeditor/ckeditor'); ?>
+<?php echo $this->Html->script('ckeditor/adapters/jquery'); ?>
 
 <div id="vue_cadre">
 <dl>
@@ -8,31 +8,31 @@
             if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
                 echo '<h3>D&eacute;lib&eacute;ration n&deg; '.$this->data['Deliberation']['num_delib'].'</h3>';
             else
-                echo '<h3>Identifiant projet '.$this->data['Nature']['libelle'].' : '.$this->data['Deliberation']['id'].'</h3>';
-    } else {
+                  echo '<h3>Identifiant projet '.$this->data['Typeacte']['libelle'].' : '.$this->data['Deliberation']['id'].'</h3>';
+      } else {
 		if ($this->data['Deliberation']['etat']==3 || $this->data['Deliberation']['etat']==5)
-			echo '<h3>Multi-D&eacute;lib&eacute;rations</h3>';
+                    echo '<h3>Multi-D&eacute;lib&eacute;rations</h3>';
 		else
-			echo '<h3>Projet Multi-D&eacute;lib&eacute;rations</h3>';
+		    echo '<h3>Projet Multi-D&eacute;lib&eacute;rations</h3>';
     }
 	?>
 	<div class="imbrique">
 	<?php
 	    if (empty($this->data['Multidelib'])) {
-		echo $html->tag('dt', 'Libellé');
-	    	echo $html->tag('dd', '&nbsp;'.$this->data['Deliberation']['objet']);
+		echo $this->Html->tag('dt', 'Libellé');
+	    	echo $this->Html->tag('dd', '&nbsp;'.$this->data['Deliberation']['objet']);
 	    } else {
 		echo $this->element('viewDelibRattachee', array(
 				'delib'=>$this->data['Deliberation'],
 				'annexes'=>$this->data['Annex'],
-				'natureLibelle'=>$this->data['Nature']['libelle']));
+				'natureLibelle'=>$this->data['Typeacte']['libelle']));
 	    	foreach($this->data['Multidelib'] as $delibRattachee) {
 				echo $this->element('viewDelibRattachee', array(
 					'delib'=>$delibRattachee,
 					'annexes'=>$delibRattachee['Annex'],
-					'natureLibelle'=>$this->data['Nature']['libelle']));
+					'natureLibelle'=>$this->data['Typeacte']['libelle']));
 	    	}
-	    	echo $html->tag('h2', 'Informations du projet (communes aux délibérations)');
+	    	echo $this->Html->tag('h2', 'Informations du projet (communes aux délibérations)');
 	    }
 	?>
 
@@ -46,11 +46,11 @@
 	<div class="imbrique">
 		<div class="gauche">
                     <dt>Thème</dt>
-                    <dd>&nbsp;<?php echo $html->link($this->data['Theme']['libelle'], '/themes/view/' .$this->data['Theme']['id'])?><br> </dd>
+                        <dd><?php echo $this->data['Theme']['libelle']; ?></dd>
 		</div>
 		<div class="droite">
                     <dt>Service émetteur</dt>
-                    <dd>&nbsp;<?php echo $html->link($this->data['Service']['libelle'], '/services/view/' .$this->data['Service']['id'])?></dd>
+                        <dd><?php echo $this->data['Service']['libelle']; ?></dd>
 		</div>
 	</div>
 
@@ -61,10 +61,13 @@
 		</div>
 		<div class="droite">
                     <dt>Date Séance</dt>
+                        <ul>                     
                          <?php 
-                             foreach ( $this->data['Seance'] as $seance)
-                                 echo '<dd>&nbsp;'.$seance['date']."</dd>";
+                             foreach ( $this->data['Seance'] as $seance) {
+                                 echo '<li><b>&nbsp;'.$seance['Typeseance']['libelle'].'</b> : ' .$this->Form2->ukToFrenchDateWithHour($seance['date'])."</li>";
+                             }
                          ?>
+                    </ul>
 		</div>
 	</div>
 
@@ -80,7 +83,7 @@
 	<div class="imbrique">
 		<div class="gauche">
 			<dt>Rédacteur</dt>
-			<dd>&nbsp;<?php echo $html->link($this->data['Redacteur']['prenom'].' '.$this->data['Redacteur']['nom'], '/users/view/' .$this->data['Redacteur']['id'])?></dd>
+                        <dd><?php echo $this->data['Redacteur']['prenom']. ' '.$this->data['Redacteur']['nom']; ?></dd>
 		</div>
 		<div class="droite">
 			<dt>Rapporteur</dt>
@@ -116,11 +119,11 @@ if (empty($this->data['Multidelib']))
 			if (array_key_exists($infosupdef['Infosupdef']['code'], $this->data['Infosup'])) {
 				if ($infosupdef['Infosupdef']['type'] == 'richText') {
 					if (!empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']])) {
-						echo $html->link('[Afficher le texte]', 'javascript:afficheMasqueTexteEnrichi(\'afficheMasque'.$infosupdef['Infosupdef']['code'].'\', \''.$infosupdef['Infosupdef']['code'].'\')', array(
+						echo $this->Html->link('[Afficher le texte]', 'javascript:afficheMasqueTexteEnrichi(\'afficheMasque'.$infosupdef['Infosupdef']['code'].'\', \''.$infosupdef['Infosupdef']['code'].'\')', array(
 							'id'=> 'afficheMasque'.$infosupdef['Infosupdef']['code'], 'affiche'=>'masque'));
 						echo '<div class="annexesGauche"></div>';
 						echo '<div class="fckEditorProjet">';
-							echo $form->input($infosupdef['Infosupdef']['code'], array('label'=>'', 'type'=>'textarea', 'style'=>'display:none;', 'value'=>$this->data['Infosup'][$infosupdef['Infosupdef']['code']]));
+							echo $this->Form->input($infosupdef['Infosupdef']['code'], array('label'=>'', 'type'=>'textarea', 'style'=>'display:none;', 'value'=>$this->data['Infosup'][$infosupdef['Infosupdef']['code']]));
 						echo '</div>';
 						echo '<div class="spacer"></div>';
 					}
@@ -141,7 +144,7 @@ if (empty($this->data['Multidelib']))
 			if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
 			echo '<br>Nom fichier : '.$annexe['filename'];
 			echo '<br>Joindre au contrôle de légalité : '.($annexe['joindre_ctrl_legalite']?'oui':'non');
-			echo '<br>'.$html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
+			echo '<br>'.$this->Html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
  		}
 		echo '</dd>';
 	}
@@ -172,7 +175,7 @@ if (empty($this->data['Multidelib']))
       if (!empty($historiques)) {
           echo"<dt>Historique</dt><br />";
           foreach ($historiques as $historique){
-              echo '<dd>'.$html2->ukToFrenchDateWithHour($historique['Historique']['created']).' '.$historique['Historique']['commentaire'];
+              echo '<dd>'.$this->Html2->ukToFrenchDateWithHour($historique['Historique']['created']).' '.$historique['Historique']['commentaire'];
               echo '</dd>';
           }
       }
@@ -181,16 +184,7 @@ if (empty($this->data['Multidelib']))
 
 </dl>
 <ul id="actions_fiche">
-	<li><?php echo $html->link(SHY, $previous, array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?></li>
-	<li><?php //echo $html->link(SHY,'/deliberations/textprojetvue/' . $this->data['Deliberation']['id'], array('class'=>'link_projet', 'title'=>'Projet'), false, false)?></li>
-	<li><?php //echo $html->link(SHY,'/deliberations/textsynthesevue/' . $this->data['Deliberation']['id'], array('class'=>'link_synthese', 'title'=>'Synthese'), false, false)?></li>
-	<li><?php //echo $html->link(SHY,'/deliberations/deliberationvue/' . $this->data['Deliberation']['id'], array('class'=>'link_deliberation', 'title'=>'Deliberation'), false, false)?></li>
-	<li>
-	<?php
-	    if ($userCanEdit)
-		    echo $html->link(SHY, '/deliberations/edit/' . $this->data['Deliberation']['id'],array('class'=>'link_modifier','title'=>'Modifier'), false, false);?>
-	</li>
-
+	<li><?php echo $this->Html->link(SHY, $previous, array('class'=>'link_annuler_sans_border', 'escape'=> false, 'title'=>'Retour fiche'), false);?></li>
 </ul>
 
 </div>

@@ -31,7 +31,7 @@
 		<dd>&nbsp;<?php echo $compteur['Compteur']['def_reinit']?></dd>
 	</div>
 	<div class="droite">
-		<dt>Dernière valeur calcul&eacute;e du crit&egrave;re de r&eacute;initialisation</dt>
+		<dt>DerniÃ¨re valeur calcul&eacute;e du crit&egrave;re de r&eacute;initialisation</dt>
 		<dd>&nbsp;<?php echo $compteur['Compteur']['val_reinit']?></dd>
 	</div>
 </div>
@@ -53,9 +53,9 @@
 <br />
 <ul id="actions_fiche">
 	<?php
-		echo '<li>' . $html->link(SHY, $session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
-		if ($Droits->check($session->read('user.User.id'), 'Compteurs:edit'))
-			echo '<li>'.$html->link(SHY, '/compteurs/edit/' . $compteur['Compteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+		if ($Droits->check($this->Session->read('user.User.id'), 'Compteurs:edit'))
+			echo '<li>'.$this->Html->link(SHY, '/compteurs/edit/' . $compteur['Compteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
 	?>
 </ul>
 

@@ -5,45 +5,73 @@
     document.getElementById("contTemp").style.display='none';
 </script>
 
-<?php echo $javascript->link('utils.js'); ?>
+<?php echo $this->Html->script('utils.js'); ?>
 <div class="deliberations">
 
-<?php if (isset($message))  echo ($message); ?>
-<h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>
-    La Classification enregistrée date du <?php echo $dateClassification ?> <br /><br />
+<?php 
+    if (isset($message))  
+        echo ($message); 
+
+    if ($this->action=='autreActesEnvoyes')
+        echo ('<h2>T&eacute;l&eacute;transmission des actes</h2>');
+    elseif ($this->action == 'transmit')
+        echo ('<h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>');
+?>
+    La Classification enregistrÃ©e date du <?php echo $dateClassification ?> <br /><br />
     <table width="100%">
 <tr>
- 	<th><?php echo  $paginator->sort('N° délibération', 'num_delib'); ?></th>
- 	<th><?php echo  $paginator->sort("Libellé de l'acte", 'objet_delib'); ?></th>
- 	<th><?php echo  $paginator->sort('Date de séance', 'Seance.date'); ?></th>
- 	<th><?php echo  $paginator->sort('Titre', 'titre'); ?></th>
- 	<th><?php echo  $paginator->sort('Classification', 'num_pref'); ?></th>
- 	<th><?php echo  $paginator->sort('Statut', 'tdt_id'); ?></th>
- 	<th>Courrier Ministériel</th>
+ 	<th><?php 
+               if ($this->action=='autreActesEnvoyes')
+                  echo  $this->Paginator->sort('num_delib', 'NÂ° de l\'acte').'</th>';
+               else
+                  echo  $this->Paginator->sort('num_delib', 'NÂ° dÃ©libÃ©ration'); ?></th>
+ 	<th><?php echo  $this->Paginator->sort('objet_delib', "LibellÃ© de l'acte"); ?></th>
+        
+ 	<th>
+        <?php 
+            if ($this->action == 'autreActesEnvoyes')
+                echo  $this->Paginator->sort('Deliberation.date_acte', 'Date de dÃ©cision'); 
+            else
+                echo  $this->Paginator->sort('Seance.date', 'Date de sÃ©ance'); 
+        ?>
+        </th>
+ 	<th><?php echo  $this->Paginator->sort('titre', 'Titre'); ?></th>
+ 	<th><?php echo  $this->Paginator->sort('num_pref', 'Classification'); ?></th>
+ 	<th><?php echo  $this->Paginator->sort('tdt_id', 'Statut'); ?></th>
+ 	<th>Courrier MinistÃ©riel</th>
 </tr>
 <?php
            $numLigne = 1;
            foreach ($deliberations as $delib) {
                $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
-	       echo $html->tag('tr', null, $rowClass);
+	       echo $this->Html->tag('tr', null, $rowClass);
 	       $numLigne++;
-	       echo "<td>".$html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/'.$delib['Deliberation']['id']);
+	       echo "<td>".$this->Html->link($delib['Deliberation']['num_delib'], '/deliberations/getTampon/'.$delib['Deliberation']['tdt_id']);
 ?>
 		</td>
 		<td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
-		<td><?php echo $delib['Seance']['date']; ?></td>
+		<td>
+                <?php 
+                   if ($this->action == 'autreActesEnvoyes')
+                       echo $this->Form2->ukToFrenchDateWithHour($delib['Deliberation']['date_acte']); 
+                   else
+                       echo $delib['Seance']['date']; 
+                ?>
+                </td>
 		<td><?php echo $delib['Deliberation']['titre']; ?></td>
 		<td><?php echo $delib['Deliberation']['num_pref']; ?></td>
 		<td>
 		   <?php 
+                    if (isset($delib['Deliberation']['code_retour'])) {
 		       if ($delib['Deliberation']['code_retour'] ==4)
-		           echo $html->link("Acquitement reçu le ".$delib['Deliberation']['dateAR'], '/deliberations/getAR/'.$delib['Deliberation']['tdt_id']); 
+		           echo $this->Html->link("Acquitement reÃ§u le ".$delib['Deliberation']['dateAR'], '/deliberations/getAR/'.$delib['Deliberation']['tdt_id']); 
 		       elseif($delib['Deliberation']['code_retour']==3)
 		           echo 'Transmis';
 		       elseif ($delib['Deliberation']['code_retour']==2)
 		           echo 'En attente de transmission';
 		       elseif ($delib['Deliberation']['code_retour']==1)
-		           echo 'Posté';
+		           echo 'PostÃ©';
+                    }
 	           ?>
 		</td> 
                 <td>
@@ -52,13 +80,13 @@
                             foreach ($delib['TdtMessage'] as $message){
                                 $url_newMessage = "https://".Configure::read("HOST")."/modules/actes/actes_transac_show.php?id=".$message['message_id'];
                                 if ($message['type_message'] ==2 )
-                                    echo $html->link("Courrier simple", $url_newMessage)."<br />";
+                                    echo $this->Html->link("Courrier simple", $url_newMessage)."<br />";
                                 if ($message['type_message'] ==3 )
-                                    echo $html->link("Demande de pièces complémentaires", $url_newMessage)."<br />";
+                                    echo $this->Html->link("Demande de piÃ¨ces complÃ©mentaires", $url_newMessage)."<br />";
                                 if ($message['type_message'] == 4 )
-                                    echo $html->link("Lettre d'observation", $url_newMessage)."<br />";
+                                    echo $this->Html->link("Lettre d'observation", $url_newMessage)."<br />";
                                 if ($message['type_message'] == 5 )
-                                    echo $html->link("Déféré au tribunal administratif", $url_newMessage)."<br />";
+                                    echo $this->Html->link("DÃ©fÃ©rÃ© au tribunal administratif", $url_newMessage)."<br />";
                             }
                         }
                     ?>
@@ -68,24 +96,24 @@
 
 	</table>
 <div class='paginate'>
-        <!-- Affiche les numéros de pages -->
-        <?php echo $paginator->numbers(); ?>
-        <!-- Affiche les liens des pages précédentes et suivantes -->
+        <!-- Affiche les numÃ©ros de pages -->
+        <?php echo $this->Paginator->numbers(); ?>
+        <!-- Affiche les liens des pages prÃ©cÃ©dentes et suivantes -->
         <?php
-                echo $paginator->prev('« Précédent ', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
-                echo $paginator->next(' Suivant »', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
+                echo $this->Paginator->prev('Â« PrÃ©cÃ©dent ', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
+                echo $this->Paginator->next(' Suivant Â»', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
         ?>
-        <!-- Affiche X de Y, où X est la page courante et Y le nombre de pages -->
-        <?php echo $paginator->counter(array('format'=>'Page %page% sur %pages%')); ?>
+        <!-- Affiche X de Y, oÃ¹ X est la page courante et Y le nombre de pages -->
+        <?php echo $this->Paginator->counter(array('format'=>'Page %page% sur %pages%')); ?>
 </div>
 
 
 	<br />
          <?php 
 	     if (isset($previous))
-	         echo $html->link('<--    ', "/deliberations/transmit/null/$previous"); 
+	         echo $this->Html->link('<--    ', "/deliberations/transmit/null/$previous"); 
 	     if (isset($next))
-	     echo $html->link('    -->', "/deliberations/transmit/null/$next"); 
+	     echo $this->Html->link('    -->', "/deliberations/transmit/null/$next"); 
 	 ?>
 	     
 </div>

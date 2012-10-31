@@ -1,5 +1,5 @@
 <?php
-// initialisation des boutons pour les dÈlibÈration
+// initialisation des boutons pour les d√©lib√©ration
 $links = array(
 	'modifier' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_modifier', 'title'=>'Modifier')),
 	'annulerModifier' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_modifier_back', 'title'=>'Annuler les modifications', 'style'=>'display: none;')),
@@ -8,8 +8,8 @@ $links = array(
 	);
 
         if (isset($this->data['Deliberation']['id'])) {
-	    echo $html->tag('fieldset', null, array('id'=>'delibRattachee'.$this->data['Deliberation']['id']));
-	    echo $html->tag('legend', '&nbsp;DÈlibÈration : '.$this->data['Deliberation']['id'].'&nbsp;');
+	    echo $this->Html->tag('fieldset', null, array('id'=>'delibRattachee'.$this->data['Deliberation']['id']));
+	    echo $this->Html->tag('legend', '&nbsp;D√©lib√©ration : '.$this->data['Deliberation']['id'].'&nbsp;');
             $hideAnnexe = true;
 	}	
         else 
@@ -19,16 +19,16 @@ $links = array(
                 unset($this->data['Annex'][$i]);
         }
 
-        echo $form->input('Deliberation.objet_delib', array('type'=>'textarea','label'=>'LibellÈ<acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));
-	echo $html->tag('div', '', array('class'=>'spacer'));
+        echo $this->Form->input('Deliberation.objet_delib', array('type'=>'textarea','label'=>'Libell√©<acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));
+	echo $this->Html->tag('div', '', array('class'=>'spacer'));
 
-	// div pour recevoir le texte de la dÈlib
-	echo $html->tag('div', '', array('id'=>'texteDelibOngletDelib'));
-	echo $html->tag('div', '', array('class'=>'spacer'));
+	// div pour recevoir le texte de la d√©lib
+	echo $this->Html->tag('div', '', array('id'=>'texteDelibOngletDelib'));
+	echo $this->Html->tag('div', '', array('class'=>'spacer'));
 
 	// saisie des annexes
         if ($hideAnnexe) {
-	    echo $html->tag('label', 'Annexe(s)');
+	    echo $this->Html->tag('label', 'Annexe(s)');
 	    echo '<div class="fckEditorProjet">';
 	    $annexeOptions = array('ref'=>'delibRattachee'.$this->data['Deliberation']['id'], 'affichage'=>'partiel');
 
@@ -37,55 +37,55 @@ $links = array(
 	    echo $this->element('annexe', $annexeOptions);
 	    echo '</div>';
         }
-	echo $html->tag('/fieldset');
-	echo $html->tag('div', '', array('class'=>'spacer'));
+	echo $this->Html->tag('/fieldset');
+	echo $this->Html->tag('div', '', array('class'=>'spacer'));
 
-// affichage des dÈlibÈrations rattachÈes
+// affichage des d√©lib√©rations rattach√©es
 if (isset($this->data['Multidelib'])) {
 	foreach($this->data['Multidelib'] as $i=>$delib) {
-		echo $html->tag('fieldset', null, array('id'=>'delibRattachee'.$delib['id']));
-		echo $html->tag('legend', '&nbsp;DÈlibÈration rattachÈe : '.$delib['id'].'&nbsp;');
+		echo $this->Html->tag('fieldset', null, array('id'=>'delibRattachee'.$delib['id']));
+		echo $this->Html->tag('legend', '&nbsp;D√©lib√©ration rattach√©e : '.$delib['id'].'&nbsp;');
 			// info pour la suppression
-			echo $form->hidden('MultidelibASupprimer.'.$delib['id'], array('value'=>$delib['id'], 'disabled'=>true));
-			// affichage de la dÈlibÈration rattachÈe
-			echo $html->tag('div', null, array('id'=>'delibRattacheeDisplay'.$delib['id']));
-				// affichage libellÈ
-				echo $html->tag('label', 'LibellÈ <acronym title="obligatoire">(*)</acronym>');
-				echo $html->tag('span', $delib['objet']);
-				echo $html->tag('div', '', array('class'=>'spacer'));
-				// affichage texte de dÈlibÈration
-				echo $html->tag('label', 'Texte dÈlibÈration');
+			echo $this->Form->hidden('MultidelibASupprimer.'.$delib['id'], array('value'=>$delib['id'], 'disabled'=>true));
+			// affichage de la d√©lib√©ration rattach√©e
+			echo $this->Html->tag('div', null, array('id'=>'delibRattacheeDisplay'.$delib['id']));
+				// affichage libell√©
+				echo $this->Html->tag('label', 'Libell√© <acronym title="obligatoire">(*)</acronym>');
+				echo $this->Html->tag('span', $delib['objet']);
+				echo $this->Html->tag('div', '', array('class'=>'spacer'));
+				// affichage texte de d√©lib√©ration
+				echo $this->Html->tag('label', 'Texte d√©lib√©ration');
 				if (Configure::read('GENERER_DOC_SIMPLE'))
-					echo $html->tag('span', $delib['deliberation']);
+					echo $this->Html->tag('span', $delib['deliberation']);
 				else
-					echo $html->tag('span', $delib['deliberation_name']);
-				echo $html->tag('div', '', array('class'=>'spacer'));
+					echo $this->Html->tag('span', $delib['deliberation_name']);
+				echo $this->Html->tag('div', '', array('class'=>'spacer'));
 				// affichage des annexes
-				echo $html->tag('label', 'Annexe(s)');
+				echo $this->Html->tag('label', 'Annexe(s)');
 				echo '<div class="fckEditorProjet">';
 					$annexeOptions = array('mode'=>'display');
 					if (isset($delib['Annex'])) $annexeOptions['annexes'] = $delib['Annex'];
 					echo $this->element('annexe', $annexeOptions);
 				echo '</div>';
-				echo $html->tag('div', '', array('class'=>'spacer'));
-			echo $html->tag('/div');
-			// modification de la dÈlibÈration rattachÈe
-			echo $html->tag('div', null, array('id'=>'delibRattacheeForm'.$delib['id'], 'style'=>'display: none'));
-				echo $form->hidden('Multidelib.'.$delib['id'].'.id', array('value'=>$delib['id'], 'disabled'=>true));
-				// saisie libellÈ
-				echo $html->tag('label', 'LibellÈ <acronym title="obligatoire">(*)</acronym>');
-				echo $form->input('Multidelib.'.$delib['id'].'.objet', array(
+				echo $this->Html->tag('div', '', array('class'=>'spacer'));
+			echo $this->Html->tag('/div');
+			// modification de la d√©lib√©ration rattach√©e
+			echo $this->Html->tag('div', null, array('id'=>'delibRattacheeForm'.$delib['id'], 'style'=>'display: none'));
+				echo $this->Form->hidden('Multidelib.'.$delib['id'].'.id', array('value'=>$delib['id'], 'disabled'=>true));
+				// saisie libell√©
+				echo $this->Html->tag('label', 'Libell√© <acronym title="obligatoire">(*)</acronym>');
+				echo $this->Form->input('Multidelib.'.$delib['id'].'.objet', array(
 					'type'=>'textarea',
 					'label'=>'',
 					'cols'=>'60','rows'=>'1',
 					'value'=>$delib['objet'],
 					'disabled'=>true));
-				echo $html->tag('div', '', array('class'=>'spacer'));
-				// saisie texte de dÈlibÈration
-				echo $html->tag('label', 'Texte dÈlibÈration');
+				echo $this->Html->tag('div', '', array('class'=>'spacer'));
+				// saisie texte de d√©lib√©ration
+				echo $this->Html->tag('label', 'Texte d√©lib√©ration');
 				if (Configure::read('GENERER_DOC_SIMPLE')){
 					echo '<div class="fckEditorProjet">';
-						echo $form->input('Multidelib.'.$delib['id'].'.deliberation', array(
+						echo $this->Form->input('Multidelib.'.$delib['id'].'.deliberation', array(
 							'label'=>'',
 							'type'=>'textarea',
 							'value'=>$delib['deliberation'],
@@ -93,106 +93,106 @@ if (isset($this->data['Multidelib'])) {
 					echo '</div>';
 				} else {
 					if (empty($delib['deliberation_name']))
-						echo  $form->input("Multidelib.".$delib['id'].".deliberation", array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>'Texte d&eacute;lib&eacute;ration', 'disabled'=>true));
+						echo  $this->Form->input("Multidelib.".$delib['id'].".deliberation", array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>'Texte d&eacute;lib&eacute;ration', 'disabled'=>true));
 					else {
 						$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$delib['id']."/deliberation.odt";
-						echo $html->tag('span', '', array('id'=>'MultidelibDeliberationAdd'.$delib['id'], 'style'=>'display: none;'));
-						echo $html->tag('span', null, array('id'=>'MultidelibDeliberationDisplay'.$delib['id']));
+						echo $this->Html->tag('span', '', array('id'=>'MultidelibDeliberationAdd'.$delib['id'], 'style'=>'display: none;'));
+						echo $this->Html->tag('span', null, array('id'=>'MultidelibDeliberationDisplay'.$delib['id']));
 							echo "<a href='$url'>".$delib['deliberation_name']."</a>";
 							echo '&nbsp;&nbsp;';
-							echo $html->link('Supprimer', 'javascript:supprimerTextDelibDelibRattachee('.$delib['id'].')', null, 'Voulez-vous vraiment supprimer le fichier ?');
-						echo $html->tag('/span');
+							echo $this->Html->link('Supprimer', 'javascript:supprimerTextDelibDelibRattachee('.$delib['id'].')', null, 'Voulez-vous vraiment supprimer le fichier ?');
+						echo $this->Html->tag('/span');
 					}
 				}
-				echo $html->tag('div', '', array('class'=>'spacer'));
+				echo $this->Html->tag('div', '', array('class'=>'spacer'));
 				// saisie des annexes
-				echo $html->tag('label', 'Annexe(s)');
+				echo $this->Html->tag('label', 'Annexe(s)');
 				echo '<div class="fckEditorProjet">';
 					$annexeOptions = array('ref'=>'delibRattachee'.$delib['id'], 'affichage'=>'partiel');
 					if (isset($delib['Annex'])) $annexeOptions['annexes'] = $delib['Annex'];
 					echo $this->element('annexe', $annexeOptions);
 				echo '</div>';
-			echo $html->tag('/div');
-			echo $html->tag('div', '', array('class'=>'spacer'));
+			echo $this->Html->tag('/div');
+			echo $this->Html->tag('div', '', array('class'=>'spacer'));
 			// affichage des boutons action
-			echo $html->tag('div', null, array('id'=>'delibRattacheeAction'.$delib['id'], 'class'=>'action'));
+			echo $this->Html->tag('div', null, array('id'=>'delibRattacheeAction'.$delib['id'], 'class'=>'action'));
 				$links['modifier']['htmlAttributes']['onclick'] = 'modifierDelibRattachee(this, '.$delib['id'].')';
 				$links['annulerModifier']['htmlAttributes']['onclick'] = 'annulerModifierDelibRattachee(this, '.$delib['id'].')';
 				$links['supprimer']['htmlAttributes']['onclick'] = 'supprimerDelibRattachee(this, '.$delib['id'].')';
 				$links['annulerSupprimer']['htmlAttributes']['onclick'] = 'annulerSupprimerDelibRattachee(this, '.$delib['id'].')';
-				echo $menu->linkBarre($links);
-			echo $html->tag('/div');
-		echo $html->tag('/fieldset');
-		echo $html->tag('div', '', array('class'=>'spacer'));
+				echo $this->Menu->linkBarre($links);
+			echo $this->Html->tag('/div');
+		echo $this->Html->tag('/fieldset');
+		echo $this->Html->tag('div', '', array('class'=>'spacer'));
 	}
 }
 
-// Ajout des dÈlibÈrations
+// Ajout des d√©lib√©rations
 // template pour l'ajout
-echo $html->tag('div', null, array('id'=>'ajouteMultiDelibTemplate', 'style'=>'width:800px; display:none'));
-	echo $html->tag('fieldset', null, array('id'=>'delibRattachee0'));
-	echo $html->tag('legend', 'Nouvelle dÈlibÈration rattachÈe ');
-		echo $html->tag('div', null, array('id'=>'delibRattacheeForm0'));
-			// saisie libellÈ
-			echo $html->tag('label', 'LibellÈ <acronym title="obligatoire">(*)</acronym>');
-			echo $form->input('Multidelib.0.objet', array(
+echo $this->Html->tag('div', null, array('id'=>'ajouteMultiDelibTemplate', 'style'=>'width:800px; display:none'));
+	echo $this->Html->tag('fieldset', null, array('id'=>'delibRattachee0'));
+	echo $this->Html->tag('legend', 'Nouvelle d√©lib√©ration rattach√©e ');
+		echo $this->Html->tag('div', null, array('id'=>'delibRattacheeForm0'));
+			// saisie libell√©
+			echo $this->Html->tag('label', 'Libell√© <acronym title="obligatoire">(*)</acronym>');
+			echo $this->Form->input('Multidelib.0.objet', array(
 				'type'=>'textarea',
 				'label'=>'',
 				'value'=>'',
 				'cols'=>'60','rows'=>'1',
 				'disabled'=>true));
-			echo $html->tag('div', '', array('class'=>'spacer'));
-			// saisie texte de dÈlibÈration
-			echo $html->tag('label', 'Texte dÈlibÈration');
+			echo $this->Html->tag('div', '', array('class'=>'spacer'));
+			// saisie texte de d√©lib√©ration
+			echo $this->Html->tag('label', 'Texte d√©lib√©ration');
 			if (Configure::read('GENERER_DOC_SIMPLE')){
 				echo '<div class="fckEditorProjet">';
-					echo $form->input('Multidelib.0.deliberation', array(
+					echo $this->Form->input('Multidelib.0.deliberation', array(
 						'label'=>'',
 						'type'=>'textarea',
 						'value'=>'',
 						'disabled'=>true));
 				echo '</div>';
 			} else
-				echo  $form->input("Multidelib.0.deliberation", array(
+				echo  $this->Form->input("Multidelib.0.deliberation", array(
 					'label'=>'',
 					'type'=>'file',
 					'size'=>'60',
 					'disabled'=>true));
-		echo $html->tag('/div');
-		echo $html->tag('div', '', array('class'=>'spacer'));
+		echo $this->Html->tag('/div');
+		echo $this->Html->tag('div', '', array('class'=>'spacer'));
 
-		echo $html->tag('label', 'Annexe(s)');
+		echo $this->Html->tag('label', 'Annexe(s)');
 		echo '<div class="fckEditorProjet">';
 			// div pour l'ajout des annexes
-			echo $html->tag('div', '', array('id'=>'ajouteAnnexesRef'));
+			echo $this->Html->tag('div', '', array('id'=>'ajouteAnnexesRef'));
 			
 			// lien pour ajouter une nouvelle annexes
-			echo $html->tag('div', '', array('class'=>'spacer'));
-			echo $html->link('Ajouter une annexe', 'javascript:ajouterAnnexe(\'#ref#\')', array('class'=>'link_annexe', 'id'=>'lienAjouteAnnexesRef'));
+			echo $this->Html->tag('div', '', array('class'=>'spacer'));
+			echo $this->Html->link('Ajouter une annexe', 'javascript:ajouterAnnexe(\'#ref#\')', array('class'=>'link_annexe', 'id'=>'lienAjouteAnnexesRef'));
 		echo '</div>';
-		echo $html->tag('div', '', array('class'=>'spacer'));
+		echo $this->Html->tag('div', '', array('class'=>'spacer'));
 
 		// affichage des boutons action
-		echo $html->tag('div', null, array('id'=>'delibRattacheeAction0', 'class'=>'action'));
-			echo $html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().parent().remove();'));
-		echo $html->tag('/div');
-	echo $html->tag('/fieldset');
-echo $html->tag('/div');
+		echo $this->Html->tag('div', null, array('id'=>'delibRattacheeAction0', 'class'=>'action'));
+			echo $this->Html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().parent().remove();'));
+		echo $this->Html->tag('/div');
+	echo $this->Html->tag('/fieldset');
+echo $this->Html->tag('/div');
 
-// div pour l'ajout les dÈlibÈrations rattachÈes
-echo $html->tag('div', '', array('id'=>'ajouteMultiDelib'));
+// div pour l'ajout les d√©lib√©rations rattach√©es
+echo $this->Html->tag('div', '', array('id'=>'ajouteMultiDelib'));
 
-// lien pour ajouter une nouvelle dÈlibÈration rattachÈe
-echo $html->tag('div', '', array('class'=>'spacer'));
-echo $html->link('Ajouter une dÈlibÈration rattachÈe', 'javascript:ajouterMultiDelib()', array('class'=>'link_annexe'));
-echo $html->tag('div', '', array('class'=>'spacer'));
-echo $html->tag('p', 'Note : les modifications apportÈes ici ne prendront effet que lors de la sauvegarde du projet.');
+// lien pour ajouter une nouvelle d√©lib√©ration rattach√©e
+echo $this->Html->tag('div', '', array('class'=>'spacer'));
+echo $this->Html->link('Ajouter une d√©lib√©ration rattach√©e', 'javascript:ajouterMultiDelib()', array('class'=>'link_annexe'));
+echo $this->Html->tag('div', '', array('class'=>'spacer'));
+echo $this->Html->tag('p', 'Note : les modifications apport√©es ici ne prendront effet que lors de la sauvegarde du projet.');
 ?>
 <script>
 // variables globales
 var iMultiDelibAAjouter = 1000;
 
-// Fonction d'ajout d'une nouvelle deliberation : duplique le div ajouteMultiDelibTemplate et incrÈmente l'indexe
+// Fonction d'ajout d'une nouvelle deliberation : duplique le div ajouteMultiDelibTemplate et incr√©mente l'indexe
 function ajouterMultiDelib() {
 	iMultiDelibAAjouter++; 
 	var newTemplate = $('#ajouteMultiDelibTemplate').clone();
@@ -223,7 +223,7 @@ function ajouterMultiDelib() {
 	newTemplate.show();
 }
 
-// Fonction de modification d'une dÈlibÈration rattachÈe
+// Fonction de modification d'une d√©lib√©ration rattach√©e
 function modifierDelibRattachee(obj, delibId) {
 	$('#delibRattacheeDisplay'+delibId).hide();
 	$('#delibRattacheeForm'+delibId).show();
@@ -239,7 +239,7 @@ function modifierDelibRattachee(obj, delibId) {
 	$(obj).next().next().hide();
 }
 
-// Fonction d'annulation des modifications d'une dÈlibÈration rattachÈe
+// Fonction d'annulation des modifications d'une d√©lib√©ration rattach√©e
 function annulerModifierDelibRattachee(obj, delibId) {
 	$('#delibRattacheeDisplay'+delibId).show();
 
@@ -269,7 +269,7 @@ function annulerModifierDelibRattachee(obj, delibId) {
 	$(obj).next().show();
 }
 
-// Fonction de suppression d'une dÈlibÈration rattachÈe
+// Fonction de suppression d'une d√©lib√©ration rattach√©e
 function supprimerDelibRattachee(obj, delibId) {
 	$('#delibRattacheeDisplay'+delibId).addClass('aSupprimer');
 
@@ -289,7 +289,7 @@ function annulerSupprimerDelibRattachee(obj, delibId) {
 	$(obj).prev().prev().prev().show();
 }
 
-// Fonction de suppression du texte de dÈlibÈration sous forme de fichier joint
+// Fonction de suppression du texte de d√©lib√©ration sous forme de fichier joint
 function supprimerTextDelibDelibRattachee(delibId) {
 	$('#MultidelibDeliberationDisplay'+delibId).hide();
 	$('#MultidelibDeliberationAdd'+delibId)

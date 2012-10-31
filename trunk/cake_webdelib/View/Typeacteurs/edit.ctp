@@ -1,32 +1,32 @@
 <?php
-	if($html->value('Typeacteur.id')) {
+	if($this->Html->value('Typeacteur.id')) {
 		echo "<h2>Modification d'un type d'acteur</h2>";
-		echo $form->create('Typeacteur', array('url' => '/typeacteurs/edit/'.$html->value('Typeacteur.id'),'type'=>'post'));
+		echo $this->Form->create('Typeacteur', array('url' => '/typeacteurs/edit/'.$this->Html->value('Typeacteur.id'),'type'=>'post'));
 	}
 	else {
 		echo "<h2>Ajout d'un type d'acteur</h2>";
-		echo $form->create('User', array('url' => '/typeacteurs/add/','type'=>'post'));
+		echo $this->Form->create('User', array('url' => '/typeacteurs/add/','type'=>'post'));
 	}
 ?>
 <div class="required">
- 	<?php echo $form->input('Typeacteur.nom', array('label'=>'Nom <acronym title="obligatoire">*</acronym>','size' => '60'));?> <br />
+ 	<?php echo $this->Form->input('Typeacteur.nom', array('label'=>'Nom <acronym title="obligatoire">*</acronym>','size' => '60'));?> <br />
 </div>
 <br/>
 <div class="required">
- 	<?php echo $form->input('Typeacteur.commentaire', array('label'=>'Commentaire','size' => '100'));?>
+ 	<?php echo $this->Form->input('Typeacteur.commentaire', array('label'=>'Commentaire','size' => '100'));?>
 </div>
 <br/>
 <div class="required">
-	<?php echo $form->label('Typeacteur.elu','Statut <acronym title="obligatoire">(*)</acronym>');?>
-	<?php echo $form->input('Typeacteur.elu',array('fieldset'=>false, 'legend'=>false, 'label'=>false, 'type'=>'radio', 'options'=>$eluNonElu));?>
+	<?php echo $this->Form->label('Typeacteur.elu','Statut <acronym title="obligatoire">(*)</acronym>');?>
+	<?php echo $this->Form->input('Typeacteur.elu',array('fieldset'=>false, 'legend'=>false, 'label'=>false, 'type'=>'radio', 'options'=>$eluNonElu));?>
 </div>
 <br/>
 
 <br/><br/><br/><br/><br/>
 <div class="submit">
-	<?php if( $this->action == 'edit' ) echo $form->hidden('Typeacteur.id'); ?>
-	<?php echo $form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-	<?php echo $html->link('Annuler', '/typeacteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php if( $this->action == 'edit' ) echo $this->Form->hidden('Typeacteur.id'); ?>
+	<?php echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
+	<?php echo $this->Html->link('Annuler', '/typeacteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 
-<?php $form->end(); ?>
+<?php $this->Form->end(); ?>

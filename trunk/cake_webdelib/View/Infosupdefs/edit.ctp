@@ -54,23 +54,23 @@ function initAffichage() {
 </script>
 
 <?php
-echo $javascript->link('calendrier.js');
+echo $this->Html->script('calendrier.js');
 
-echo $html->tag('h2', $titre);
+echo $this->Html->tag('h2', $titre);
 
-echo $form->create('Infosupdef',array('url'=>array('action'=>$this->action),'type'=>'post','name'=>'infoSupForm'));
+echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->action),'type'=>'post','name'=>'infoSupForm'));
 ?>
 
 	<div class="required">
-	 	<?php echo $form->input('Infosupdef.nom', array('label'=>'Nom <acronym title="obligatoire">*</acronym>','size' => '40', 'title'=>'Nom affiché dans le formulaire d\'édition des projets'));?>
+	 	<?php echo $this->Form->input('Infosupdef.nom', array('label'=>'Nom <acronym title="obligatoire">*</acronym>','size' => '40', 'title'=>'Nom affichÃ© dans le formulaire d\'Ã©dition des projets'));?>
 	</div>
 	<br/>
 	<div class="required">
-	 	<?php echo $form->input('Infosupdef.commentaire', array('label'=>'Commentaire','size' => '80', 'title'=>'Bulle d\'information affiché dans le formulaire d\'édition des projets'));?>
+	 	<?php echo $this->Form->input('Infosupdef.commentaire', array('label'=>'Commentaire','size' => '80', 'title'=>'Bulle d\'information affichÃ© dans le formulaire d\'Ã©dition des projets'));?>
 	</div>
 	<br/>
 	<div class="required">
-	 	<?php echo $form->input('Infosupdef.code', array('label'=>'Code <acronym title="obligatoire">*</acronym>','size' => '40', 'title'=>'Code unique utilisé pour les éditions (pas d\'espace ni de caractère spécial)'), false, false);?>
+	 	<?php echo $this->Form->input('Infosupdef.code', array('label'=>'Code <acronym title="obligatoire">*</acronym>','size' => '40', 'title'=>'Code unique utilisÃ© pour les Ã©ditions (pas d\'espace ni de caractÃ¨re spÃ©cial)'), false, false);?>
 	</div>
 	<br/>
 	<div class="required">
@@ -80,52 +80,52 @@ echo $form->create('Infosupdef',array('url'=>array('action'=>$this->action),'typ
 			$mesErr='';
 			if (($this->action=='edit') && !$Infosupdef->isDeletable($this->data, $mesErr)) {
 				$htmlAttributes['disabled'] = 'disabled';
-				echo $form->hidden('Infosupdef.type');
+				echo $this->Form->hidden('Infosupdef.type');
 				$empty=true;
 			}
 		?>
-	 	<?php echo $form->input('Infosupdef.type',array('label'=>'type <acronym title="obligatoire">(*)</acronym>', 'options'=>$types, 'id'=>'selectTypeInfoSup', 'onChange'=>"afficheOptions(this);", 'disabled'=>$htmlAttributes['disabled'], 'showEmpty'=>$empty)); ?>
+	 	<?php echo $this->Form->input('Infosupdef.type',array('label'=>'type <acronym title="obligatoire">(*)</acronym>', 'options'=>$types, 'id'=>'selectTypeInfoSup', 'onChange'=>"afficheOptions(this);", 'disabled'=>$htmlAttributes['disabled'], 'showEmpty'=>$empty)); ?>
 	</div>
 	</ br>
 	<div class="required" id="taille">
-	 	<?php echo $form->input('Infosupdef.taille', array('label'=>'Taille','size' => '2', 'title'=>'Taille du champ affiché dans le formulaire d\'édition des projets (uniquement pour le type Texte)'));?>
+	 	<?php echo $this->Form->input('Infosupdef.taille', array('label'=>'Taille','size' => '2', 'title'=>'Taille du champ affichÃ© dans le formulaire d\'Ã©dition des projets (uniquement pour le type Texte)'));?>
 	</div>
 	<br/>
 	<div class="required" id="val_initiale">
-	 	<?php echo $form->input('Infosupdef.val_initiale', array('label'=>'Valeur initiale','size' => '80', 'title'=>'Valeur initiale lors de la création d\'un projet'));?>
+	 	<?php echo $this->Form->input('Infosupdef.val_initiale', array('label'=>'Valeur initiale','size' => '80', 'title'=>'Valeur initiale lors de la crÃ©ation d\'un projet'));?>
 	</div>
 	<div class="required" id="val_initiale_boolean">
-	 	<?php echo $form->input('Infosupdef.val_initiale_boolean', array('label'=>'Valeur initiale','options'=>$listEditBoolean));?>
+	 	<?php echo $this->Form->input('Infosupdef.val_initiale_boolean', array('label'=>'Valeur initiale','options'=>$listEditBoolean));?>
 	</div>
 	<div class="required" id="val_initiale_date">
-		<?php echo $form->input('Infosupdef.val_initiale_date', array('div'=>false, 'label'=>'Valeur initiale','id'=>'InfosupdefValInitialeDate', 'size'=>'9', 'title'=>'Valeur initiale lors de la création d\'un projet'));?>
+		<?php echo $this->Form->input('Infosupdef.val_initiale_date', array('div'=>false, 'label'=>'Valeur initiale','id'=>'InfosupdefValInitialeDate', 'size'=>'9', 'title'=>'Valeur initiale lors de la crÃ©ation d\'un projet'));?>
 		<?php echo '&nbsp;';?>
-		<?php echo $html->link($html->image("calendar.png", array('style'=>"border:0;")), "javascript:show_calendar('infoSupForm.InfosupdefValInitialeDate', 'f');", array(), false, false);?>
+		<?php echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border:0;")), "javascript:show_calendar('infoSupForm.InfosupdefValInitialeDate', 'f');", array('escape' => false), false);?>
 	</div>
 	<br/>
 <?php
-	if($html->value('Infosupdef.model') == 'Deliberation') {
-		echo $html->tag('div', null, array('class'=>'required', 'id'=>'recherche'));
-			echo $form->label('Infosupdef.recherche','Inclure dans la recherche');
-			echo $form->input('Infosupdef.recherche',array('type'=>'checkbox', 'label'=>false));
-		echo $html->tag('/div');
+	if($this->Html->value('Infosupdef.model') == 'Deliberation') {
+		echo $this->Html->tag('div', null, array('class'=>'required', 'id'=>'recherche'));
+			echo $this->Form->label('Infosupdef.recherche','Inclure dans la recherche');
+			echo $this->Form->input('Infosupdef.recherche',array('type'=>'checkbox', 'label'=>false));
+		echo $this->Html->tag('/div');
 	} else
-		echo $form->hidden('Infosupdef.recherche', array('value'=>false));
+		echo $this->Form->hidden('Infosupdef.recherche', array('value'=>false));
 ?>
 	<br/>
 	<div id="gestionListe">
-		<span>Note : la gestion des éléments de la liste est accessible &agrave; partir de la liste des informations suppl&eacute;mentaires.</span>
+		<span>Note : la gestion des Ã©lÃ©ments de la liste est accessible &agrave; partir de la liste des informations suppl&eacute;mentaires.</span>
 	</div>
 	<br/>
 
 	<div class="submit">
 	<?php
-		if ($this->action=='edit') echo $form->hidden('Infosupdef.id');
-		echo $form->hidden('Infosupdef.id');
-		echo $form->hidden('Infosupdef.model');
-		echo $form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));
-		echo $html->link('Annuler', $lienRetour, array('class'=>'link_annuler', 'name'=>'Annuler'))
+		if ($this->action=='edit') echo $this->Form->hidden('Infosupdef.id');
+		echo $this->Form->hidden('Infosupdef.id');
+		echo $this->Form->hidden('Infosupdef.model');
+		echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));
+		echo $this->Html->link('Annuler', $lienRetour, array('class'=>'link_annuler', 'name'=>'Annuler'))
 	?>
 	</div>
 
-<?php echo $form->end(); ?>
+<?php echo $this->Form->end(); ?>

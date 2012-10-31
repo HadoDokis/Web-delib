@@ -1,9 +1,9 @@
 <div id="vue_cadre">
 
 <?php
-    echo $form->create('Nature',array('url'=>'/natures/add/','type'=>'post'));
-    echo $form->input('libelle',  array('label'=>"Libelle : "));
-    echo $form->submit('Enregistrer',array('div'=>false));
-    echo $form->end(); 
+    echo $this->Form->create('Nature',array('url'=>'/natures/add/','type'=>'post'));
+    echo $this->Form->input('libelle',  array('label'=>"Libelle : "));
+    echo $this->Form->submit('Enregistrer',array('div'=>false));
+    echo $this->Form->end(); 
 ?>
 </div>

@@ -1,4 +1,4 @@
-<?php echo $javascript->link('vote'); ?>
+<?php echo $this->Html->script('vote'); ?>
 <?php
     if (isset($message))
         echo '<div id="flashMessage" class="message">'.$message.'</div>	'; 
@@ -6,14 +6,14 @@
 <cake:nocache>
 <h2> Vote pour le projet : "<?php echo $deliberation['Deliberation']['objet_delib']?>"</h2>
 
-<h3>Liste des prÈsents : <?php echo $form->input('Vote.listePresents', array('label'=>false, 'div'=>false, 'options'=>array(1=>'masquÈe', 2=>'affichÈe'), 'default'=>1, 'onchange' => "affichageListePresents(this);", 'empty'=>false)); ?></h3>
+<h3>Liste des pr√©sents : <?php echo $this->Form->input('Vote.listePresents', array('label'=>false, 'div'=>false, 'options'=>array(1=>'masqu√©e', 2=>'affich√©e'), 'default'=>1, 'onchange' => "affichageListePresents(this);", 'empty'=>false)); ?></h3>
 <div id='saisiePresents'>
 	<?php echo $this->requestAction('/deliberations/listerPresents/'.$deliberation['Deliberation']['id']."/$seance_id", array('return'));?>
 </div>
 
-<?php echo $form->create('Seances',array('url'=>'/seances/voter/'.$deliberation['Deliberation']['id']."/$seance_id",
+<?php echo $this->Form->create('Seances',array('url'=>'/seances/voter/'.$deliberation['Deliberation']['id']."/$seance_id",
                                          'type'=>'post')); ?>
-	<h3>Saisie du vote : <?php echo $form->input('Vote.typeVote', array('label'=>false, 'div'=>false, 'options'=>array(1 => 'DÈtail des voix', 2 => 'Total des voix', 3 => 'RÈsultat'), 'default'=>1, 'onchange' => "affichageTypeVote(this);", 'empty'=>false)); ?></h3>
+	<h3>Saisie du vote : <?php echo $this->Form->input('Vote.typeVote', array('label'=>false, 'div'=>false, 'options'=>array(1 => 'D√©tail des voix', 2 => 'Total des voix', 3 => 'R√©sultat'), 'default'=>1, 'onchange' => "affichageTypeVote(this);", 'empty'=>false)); ?></h3>
 	<div id='voteDetail'>
 		<table id="tableDetailVote" cellpadding="0" cellspacing="0">
 			<tr>
@@ -28,7 +28,7 @@
 				<th>Pas de participation</th>
 			</tr>
 			<?php foreach ($presents as $present): ?>
-			<tr>
+			<tr class=<?php echo 'typeacteur_'.$present['Acteur']['typeacteur_id']; ?> >
 	 			<td>
 		 	 	<?php
 		  			echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
@@ -41,7 +41,7 @@
 				<td>
 				<?php
 					if  ($present['Listepresence']['present'] == '1' OR $present['Listepresence']['mandataire']!='0')
-						echo $form->input('detailVote.'.$present['Acteur']['id'], array('fieldset'=>false, 'label'=>false, 'legend'=>false, 'div'=>false, 'type'=>'radio', 'options'=>array('3'=>'', '2'=>'', '4'=>'', '5'=>''), 'separator'=>'</td><td>', 'onclick'=>"javascript:vote();"));
+						echo $this->Form->input('detailVote.'.$present['Acteur']['id'], array('fieldset'=>false, 'label'=>false, 'legend'=>false, 'div'=>false, 'type'=>'radio', 'options'=>array('3'=>'', '2'=>'', '4'=>'', '5'=>''), 'separator'=>'</td><td>', 'onclick'=>"javascript:vote();"));
 					else
 						echo '</td><td></td><td></td><td>';
 				?>
@@ -49,15 +49,31 @@
 			</tr>
 			<?php endforeach; ?>
 			<tr  bgcolor='#efefef'>
-				<td>
-					<?php echo $form->button('Vote.reset', array('type' => 'reset', 'value' => 'Remise ‡ zÈro'));?>
-				</td>
-		   		<td><input type="radio" name="global" id="oui" onclick="javascript:vote_global('3');" value="3"  .></td>
-		   		<td><input type="radio" name="global" id="non" onclick="javascript:vote_global('2');" value="2"  /></td>
-	   			<td><input type="radio" name="global" id="abst" onclick="javascript:vote_global('4');" value="4"  /></td>
-	   			<td><input type="radio" name="global" id="sans_part" onclick="javascript:vote_global('5');" value="5"  /></td>
-			</tr>
-
+				<td>Raccourcis pour les votes</td>
+				<td>Oui</td>
+				<td>Non</td>
+				<td>Abstention</td>
+				<td>Pas de participation</td>
+                        </tr>
+			<tr>
+				<td>Tous les pr√©sents</td>
+		   		<td><input type="radio" name="racc_tous" value="3" onclick="vote_global(this, 'tous');"/></td>
+		   		<td><input type="radio" name="racc_tous" value="2" onclick="vote_global(this, 'tous');"/></td>
+	   			<td><input type="radio" name="racc_tous" value="4" onclick="vote_global(this, 'tous');"/></td>
+	   			<td><input type="radio" name="racc_tous" value="5" onclick="vote_global(this, 'tous');"/></td>
+			</tr> 
+                        <?php
+                            foreach ($typeacteurs as $typeacteur_id => $typeacteur_nom) {
+                                echo ('<tr>');
+                                echo ("<td>$typeacteur_nom </td>");
+				$scope = 'typeacteur_'.$typeacteur_id;
+		   		echo ('<td><input type="radio" name="racc_'.$scope.'" value="3" onclick="vote_global(this, \''.$scope.'\');"/></td>');
+                                echo ('<td><input type="radio" name="racc_'.$scope.'" value="2" onclick="vote_global(this, \''.$scope.'\');"/></td>');
+                                echo ('<td><input type="radio" name="racc_'.$scope.'" value="4" onclick="vote_global(this, \''.$scope.'\');"/></td>');
+                                echo ('<td><input type="radio" name="racc_'.$scope.'" value="5" onclick="vote_global(this, \''.$scope.'\');"/></td>');
+                                echo ('</tr>');
+                            }
+                        ?>
 			<tr>
 				<td></td>
 				<td>Oui</td>
@@ -67,12 +83,13 @@
 			</tr>
 			<tr>
 				<td>Total</td>
-				<td><?php echo $form->input('Vote.res1', array('label'=>false, 'size' => '3', 'value' => '', 'disabled' => 'true'));?></td>
-				<td><?php echo $form->input('Vote.res0', array('label'=>false, 'size' => '3', 'value' => '', 'disabled' => 'true'));?></td>
-				<td><?php echo $form->input('Vote.res2', array('label'=>false, 'size' => '3', 'value' => '', 'disabled' => 'true'));?></td>
-				<td><?php echo $form->input('Vote.res3', array('label'=>false, 'size' => '3', 'value' => '', 'disabled' => 'true'));?></td>
+				<td><?php echo $this->Form->input('Vote.res3', array('label'=>false, 'size' => '3', 'value' => '', 'disabled' => 'true'));?></td>
+				<td><?php echo $this->Form->input('Vote.res2', array('label'=>false, 'size' => '3', 'value' => '', 'disabled' => 'true'));?></td>
+				<td><?php echo $this->Form->input('Vote.res4', array('label'=>false, 'size' => '3', 'value' => '', 'disabled' => 'true'));?></td>
+				<td><?php echo $this->Form->input('Vote.res5', array('label'=>false, 'size' => '3', 'value' => '', 'disabled' => 'true'));?></td>
 			</tr>
 		</table>
+		<?php echo $this->Form->button('Remise √† z√©ro', array('type'=>'reset', 'onclick' => "$('#tableDetailVote input[type=radio]').removeAttr('checked');"));?>
 	</div>
 
 	<div id='voteTotal'>
@@ -86,32 +103,32 @@
 			</tr>
 			<tr>
 				<td>Nombre total des voix</td>
-				<td><?php echo $form->input('Deliberation.vote_nb_oui', array('label'=>false, 'size' => '3'));?></td>
-				<td><?php echo $form->input('Deliberation.vote_nb_non', array('label'=>false, 'size' => '3'));?></td>
-				<td><?php echo $form->input('Deliberation.vote_nb_abstention', array('label'=>false, 'size' => '3'));?></td>
-				<td><?php echo $form->input('Deliberation.vote_nb_retrait', array('label'=>false, 'size' => '3'));?></td>
+				<td><?php echo $this->Form->input('Deliberation.vote_nb_oui', array('label'=>false, 'size' => '3'));?></td>
+				<td><?php echo $this->Form->input('Deliberation.vote_nb_non', array('label'=>false, 'size' => '3'));?></td>
+				<td><?php echo $this->Form->input('Deliberation.vote_nb_abstention', array('label'=>false, 'size' => '3'));?></td>
+				<td><?php echo $this->Form->input('Deliberation.vote_nb_retrait', array('label'=>false, 'size' => '3'));?></td>
 			</tr>
 		</table>
 	</div>
 
 	<div id='voteResultat'>
-		<?php echo $form->input('Deliberation.etat', array('fieldset'=>false, 'legend'=>false, 'label'=>false, 'div'=>false, 'type'=>'radio', 'options'=>array('3'=>'AdoptÈ', '4'=>'RejetÈ'))); ?>
+		<?php echo $this->Form->input('Deliberation.etat', array('fieldset'=>false, 'legend'=>false, 'label'=>false, 'div'=>false, 'type'=>'radio', 'options'=>array('3'=>'Adopt√©', '4'=>'Rejet√©'))); ?>
 	</div>
 
 	<br/><br/>
 	<div class="optional">
-		<?php echo $form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire', 'type'=>'textarea', 'rows'=>'5', 'cols' => '60'));?>
+		<?php echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire', 'type'=>'textarea', 'rows'=>'5', 'cols' => '60'));?>
 	</div>
 
 	<br/>
 	<div class="submit">
-		<?php echo $form->submit('Enregistrer le vote', array('div'=>false, 'class'=>'bt_add', 'name'=>'modifier'));?>
-		<?php echo $html->link('Annuler', 
+		<?php echo $this->Form->submit('Enregistrer le vote', array('div'=>false, 'class'=>'bt_add', 'name'=>'modifier'));?>
+		<?php echo $this->Html->link('Annuler', 
                                        '/seances/details/'.$seance_id, 
                                        array('class'=>'link_annuler', 
                                              'name'=>'Annuler'))?>
 	</div>
-<?php echo $form->end(); ?>
+<?php echo $this->Form->end(); ?>
 
 <div class='spacer'></div>
 

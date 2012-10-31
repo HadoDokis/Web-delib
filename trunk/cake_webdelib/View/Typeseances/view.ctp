@@ -36,7 +36,7 @@
 		<dd>&nbsp;<?php echo $typeseance['Modelpvsommaire']['modele']?></dd>
 	</div>
 	<div class="demi">
-		<dt>Model du PV détaillé</dt>
+		<dt>Model du PV dÃ©taillÃ©</dt>
 		<dd>&nbsp;<?php echo $typeseance['Modelpvdetaille']['modele']?></dd>
 	</div>
 	<div class="spacer"></div>
@@ -54,8 +54,12 @@
 
 <br />
 <ul id="actions_fiche">
-	<li><?php echo $html->link(SHY, '/typeseances/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retourner à la liste'), false, false) ?> </li>
-	<li><?php echo $html->link(SHY, '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false) ?> </li>
+	<li><?php echo $this->Html->link(SHY, '/typeseances/index', array('class'=>'link_annuler_sans_border', 
+                                                                          'title'=>'Retourner Ã  la liste', 
+                                                                          'escape' =>false), false) ?> </li>
+	<li><?php echo $this->Html->link(SHY, '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 
+                                                                                                            'title'=>'Modifier', 
+                                                                                                            'escape' => false), false) ?> </li>
 </ul>
 
 </div>
