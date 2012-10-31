@@ -1,5 +1,5 @@
 <?php
-class ValidformatComponent extends Object {
+class ValidformatComponent extends Component {
 
 /**
  *
@@ -8,9 +8,6 @@ function check($file, $format) {
     $tmp_name = $file['tmp_name'];
     $cmd = "file --mime -b  $tmp_name";
     $result = trim(shell_exec($cmd));
-
-    $this->log($result);
-    $this->log($format);
 
     switch ($format) {
     case 'odt':

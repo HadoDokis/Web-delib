@@ -1,6 +1,6 @@
 <?php
  
-class PastellComponent extends Object {
+class PastellComponent extends Component {
 
     function _initCurl ($api, $data=array()) {
         $curl = curl_init();

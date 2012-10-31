@@ -1,6 +1,6 @@
 <?php
 
-class UtilsComponent extends Object
+class UtilsComponent extends Component
 {
 	/**
 	 * Fonction utile pour l'affichage
@@ -9,13 +9,13 @@ class UtilsComponent extends Object
 	function mysql_DateTime($d) { 
 		$date = substr($d,8,2)."/";        // jour 
   		$date = $date.substr($d,5,2)."/";  // mois 
-  		$date = $date.substr($d,0,4). " "; // année 
+  		$date = $date.substr($d,0,4). " "; // annÃ©e 
   		$date = $date.substr($d,11,5);     // heures et minutes 
   		return $date; 
 	} 
  
 /*
- * Création : 11 mai 2006
+ * CrÃ©ation : 11 mai 2006
  * Christophe Espiau
  * 
  * To change the template for this generated file go to
@@ -118,10 +118,10 @@ class UtilsComponent extends Object
     }
 
     function strSansAccent($str) {
-        $recherche = array(' ','á','à','â','ã','ª','Á','À',
-        'Â','Ã', 'é','è','ê','É','È','Ê','í','ì','î','Í',
-        'Ì','Î','ò','ó','ô', 'õ','º','Ó','Ò','Ô','Õ','ú',
-        'ù','û','Ú','Ù','Û','ç','Ç','Ñ','ñ');
+        $recherche = array(' ','Ã¡','Ã ','Ã¢','Ã£','Âª','Ã','Ã€',
+        'Ã‚','Ãƒ', 'Ã©','Ã¨','Ãª','Ã‰','Ãˆ','ÃŠ','Ã­','Ã¬','Ã®','Ã',
+        'ÃŒ','ÃŽ','Ã²','Ã³','Ã´', 'Ãµ','Âº','Ã“','Ã’','Ã”','Ã•','Ãº',
+        'Ã¹','Ã»','Ãš','Ã™','Ã›','Ã§','Ã‡','Ã‘','Ã±');
        
         $substi = array('-','a','a','a','a','a','A','A',
         'A','A','e','e','e','E','E','E','i','i','i','I','I',
@@ -133,9 +133,9 @@ class UtilsComponent extends Object
 
 
     /**
- * Equivalent du find('list') mais extrait les informations d'un tableau d'éléments et non en base
- * @param array $elements tableau des données à utiliser pour constituer la liste
- * @param string $key nom de la clé de la liste
+ * Equivalent du find('list') mais extrait les informations d'un tableau d'Ã©lÃ©ments et non en base
+ * @param array $elements tableau des donnÃ©es Ã  utiliser pour constituer la liste
+ * @param string $key nom de la clÃ© de la liste
  * @param array $values nom des champs a utiliser comme valeur de la liste
  * @param string $format format pour la mise en forme des valeurs de la liste
  */
@@ -143,9 +143,10 @@ function listFromArray($elements, $keyPath, $valuePaths, $format, $ordre='ASC') 
         // Initialisation
         $ret = array();
         foreach($elements as $element) {
-                // Extraction de la clé
-                $key = set::extract($element, $keyPath);
-                // Si la clé existe déjà on passe au suivant
+                // Extraction de la clÃ©
+                $key = Set::extract($element, $keyPath);
+                // Si la clÃ© existe dÃ©jÃ  on passe au suivant
+            if (isset($key[0])) {
                 if (!array_key_exists($key[0], $ret)) {
                         // Extraction de la ou des valeurs
                         $values = array();
@@ -156,6 +157,7 @@ function listFromArray($elements, $keyPath, $valuePaths, $format, $ordre='ASC') 
                         // Mise en forme
                         $ret[$key[0]] = vsprintf($format, $values);
                 }
+            }
         }
         // trie du tableau
         if ($ordre === 'ASC') asort($ret);

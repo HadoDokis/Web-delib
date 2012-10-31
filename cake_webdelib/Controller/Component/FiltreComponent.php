@@ -2,7 +2,7 @@
 /**
  * Gestion des filtres dans les vues index
  * Stockage des listes des options des filtres dans la session
- * Passage des critères du filtre au controlleur par $this->data
+ * Passage des critÃ¨res du filtre au controlleur par $this->data
  * Utilise la variable de session Filtre qui a la structure suivante :
  * - nom : non du filtre courant
  * - Criteres('nomCritere') : liste des ciriteres qui ont la structure suivante :
@@ -12,36 +12,35 @@
  * 		-'retourLigne' : boobleen qui indique si il faut ajouter un div spacer
  */
 
-class FiltreComponent extends Object{
+class FiltreComponent extends Component{
 
 var $components = array('Session');
 
 /**
- * Initialisation du filtre : création et sauvegarde des valeurs des critères saisis dans la vue
+ * Initialisation du filtre : crÃ©ation et sauvegarde des valeurs des critÃ¨res saisis dans la vue
  * @param string $name : nom du filtre
- * @param string $dataFiltre : data du formulaire de saisi des critère du filtre
+ * @param string $dataFiltre : data du formulaire de saisi des critÃ¨re du filtre
  */
 function initialisation($name, $dataFiltre) {
 	// Initilisations
 	$filtreActif = false;
-	
-	// Si on a déjà un filtre en session et qu'il est différent alors on supprime l'ancien filtre
+	// Si on a dÃ©jÃ  un filtre en session et qu'il est diffÃ©rent alors on supprime l'ancien filtre
 	if ($this->Session->check('Filtre') && $this->Session->read('Filtre.nom')!=$name) {
 		$this->Session->delete('Filtre');
 	}
 	// Initialisation
 	if ($this->Session->check('Filtre')) {
 		if (!empty($dataFiltre)) {
-			// Sauvegarde des valeurs des critères sélectionnés dans la vue
+			// Sauvegarde des valeurs des critÃ¨res sÃ©lectionnÃ©s dans la vue
 			foreach($dataFiltre['Critere'] as $nomCritere => $valCritere) {
 				if ($this->Session->read('Filtre.Criteres.'.$nomCritere.'.inputOptions.type') == 'date') {
-					// critère de type date
+					// critÃ¨re de type date
 					$dateVide = array('day'=>'', 'month'=>'', 'year'=>'');
 					// initialisation de la valeur en session
 					$valSessionSelected = $this->Session->read('Filtre.Criteres.'.$nomCritere.'.inputOptions.selected'); 
 					if (empty($valSessionSelected))
 						$this->Session->write('Filtre.Criteres.'.$nomCritere.'.inputOptions.selected', $dateVide);
-					// Si la date est incomplete : on garde la valeur précédente en session
+					// Si la date est incomplete : on garde la valeur prÃ©cÃ©dente en session
 					if (	(!empty($valCritere['day']) || !empty($valCritere['month']) || !empty($valCritere['year']))
 						&&	(empty($valCritere['day']) || empty($valCritere['month']) || empty($valCritere['year']))) {
 						$this->Session->write('Filtre.Criteres.'.$nomCritere.'.changed', false);
@@ -78,7 +77,7 @@ function initialisation($name, $dataFiltre) {
 
 /**
  * Test l'existence du filtre $name
- * @param string $name : nom du filtre à tester
+ * @param string $name : nom du filtre Ã  tester
  * @return booleen true si il existe, false dans le cas contraire
  */
 function exists($name) {
@@ -86,8 +85,8 @@ function exists($name) {
 }
 
 /**
- * Test l'existence d'un critère du filtre
- * @param string $name : nom du critere du filtre à tester, si vide test l'existence de la présence de critères
+ * Test l'existence d'un critÃ¨re du filtre
+ * @param string $name : nom du critere du filtre Ã  tester, si vide test l'existence de la prÃ©sence de critÃ¨res
  * @return booleen true si il existe, false dans le cas contraire
  */
 function critereExists($name=null) {
@@ -99,22 +98,22 @@ function critereExists($name=null) {
 
 /**
  * Ajoute un critere au filtre courant (en session)
- * @param string $nomCritere : nom du critère
- * @param array $params paramètres de la fonction sous forme de tableau avec les entrées suivantes :
+ * @param string $nomCritere : nom du critÃ¨re
+ * @param array $params paramÃ¨tres de la fonction sous forme de tableau avec les entrÃ©es suivantes :
  * 	- string $field : nom du model.champ a filtrer (ex : User.name)
- * 	- array $inputOptions : options du select affiché dans le formulaire
- *  	'label' : texte affiché devant le select
+ * 	- array $inputOptions : options du select affichÃ© dans le formulaire
+ *  	'label' : texte affichÃ© devant le select
  *  	'options' : liste des options du select, ....
  * 	- string $classeDiv nom de la classe du div contenant l'input
  * 	- booleen $retourLigne indique si il faut ajouter un div spacer
  */
 function addCritere($nomCritere, $params) {
-	// Initialisation des valeurs par défaut
+	// Initialisation des valeurs par dÃ©faut
 	$defaut = array(
 		'classeDiv' => 'demi',
 		'retourLigne' => false);
 	$params = array_merge($defaut, $params);
-	// Initialisation des valeurs par défaut des options du select
+	// Initialisation des valeurs par dÃ©faut des options du select
 	$inputOptionsDefaut = array();
 	if (!array_key_exists('multiple', $params['inputOptions']) || !$params['inputOptions']['multiple'])
 		$inputOptionsDefaut = array(
@@ -122,7 +121,6 @@ function addCritere($nomCritere, $params) {
 	$params['inputOptions'] = array_merge($inputOptionsDefaut, $params['inputOptions']);
 
 	$this->Session->write('Filtre.Criteres.'.$nomCritere, $params);
-
 	$this->Session->write('Filtre.Criteres.'.$nomCritere.'.inputOptions.selected', '');
 	$this->Session->write('Filtre.Criteres.'.$nomCritere.'.changed', false);
 
@@ -130,7 +128,7 @@ function addCritere($nomCritere, $params) {
 
 /**
  * Supprime un critere au filtre courant (en session)
- * @param string $nomCritere : nom du critère à supprimer
+ * @param string $nomCritere : nom du critÃ¨re Ã  supprimer
  */
 function delCritere($nomCritere) {
 	$this->Session->delete('Filtre.Criteres.'.$nomCritere);
@@ -159,7 +157,7 @@ function conditions() {
 				&&	strlen($critere['inputOptions']['selected']['day'])>0
 				&&	strlen($critere['inputOptions']['selected']['month'])>0
 				&&	strlen($critere['inputOptions']['selected']['year'])>0	) {
-				// la date est renseignée
+				// la date est renseignÃ©e
 				if (strpos($critere['field'], '>') !== false)
 					$conditions[$critere['field']] = sprintf("%s-%s-%s 00:00:00", $critere['inputOptions']['selected']['year'], $critere['inputOptions']['selected']['month'], $critere['inputOptions']['selected']['day']);
 				elseif (strpos($critere['field'], '<') !== false)
@@ -183,9 +181,9 @@ function conditions() {
 }
 
 /**
- * Test la valeur du critère $name a changé
- * @param string $name : nom du filtre à tester si vide test l'existence de la présence de critères
- * @return booleen true si la valeur a changé, false dans le cas contraire ou si le critère n'existe pas
+ * Test la valeur du critÃ¨re $name a changÃ©
+ * @param string $name : nom du filtre Ã  tester si vide test l'existence de la prÃ©sence de critÃ¨res
+ * @return booleen true si la valeur a changÃ©, false dans le cas contraire ou si le critÃ¨re n'existe pas
  */
 function critereChanged($nomCritere) {
 	if (!$this->critereExists($nomCritere)) return false;
@@ -194,9 +192,9 @@ function critereChanged($nomCritere) {
 }
 
 /**
- * Retourne la valeur sélectionnée du critère $name
- * @param string $name : nom du filtre à tester si vide test l'existence de la présence de critères
- * @return multi valeur sélectionnée
+ * Retourne la valeur sÃ©lectionnÃ©e du critÃ¨re $name
+ * @param string $name : nom du filtre Ã  tester si vide test l'existence de la prÃ©sence de critÃ¨res
+ * @return multi valeur sÃ©lectionnÃ©e
  */
 function critereSelected($nomCritere) {
 	if (!$this->critereExists($nomCritere)) return false;
@@ -204,4 +202,6 @@ function critereSelected($nomCritere) {
 	return $this->Session->read('Filtre.Criteres.'.$nomCritere.'.inputOptions.selected');
 }
 
-}?>
+}
+
+?>
