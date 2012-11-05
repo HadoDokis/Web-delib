@@ -358,13 +358,20 @@ class Seance extends AppModel {
 
 
 		$infosups = $this->Infosup->find( 'all',
-				array('conditions' => array('Infosup.foreign_key' => $seance['Seance']['id'],
-						'Infosup.model'        => 'Seance'),
-						'recursive'   => -1));
-		if (isset($infosups['Infosup']) && !empty($infosups['Infosup']))
-			foreach($infosups['Infosup'] as $champs)
-			$oDevPart->addElement($this->_addField($champs, $u, $seance_id, 'Seance'));
-
+                                                  array('conditions' => array('Infosup.foreign_key' => $seance['Seance']['id'],
+                                                                              'Infosup.model'        => 'Seance'),
+                                                        'recursive'   => -1));
+                if (isset($infosups) && !empty($infosups))  {
+                    foreach($infosups as  $champs) {
+                        $oDevPart->addElement($this->Infosup->addField($champs['Infosup'], $seance_id, 'Seance'));
+                    }
+                }
+                else {
+                    $defs = $this->Infosup->Infosupdef->find('all', array('conditions'=>array('model' => 'Seance'), 'recursive' => -1));
+                    foreach($defs as $def) {
+                        $oDevPart->addElement(new GDO_FieldType($def['Infosupdef']['code'],  utf8_encode(' '), 'text')) ;
+                    }
+                }
 		if ($include_projets) {
 			if (isset($seance['Deliberation']) && !empty($seance['Deliberation'])) {
 				$blocProjets = new GDO_IterationType("Projets");
