@@ -91,7 +91,7 @@ class DeliberationsController extends AppController {
                  'texte_projet_name', 'texte_synthese_name',  'deliberation_name',
                 'created', 'modified',  'deliberation', 'texte_projet', 'texte_synthese'),
             'contain' => array( 'Typeacte.libelle', 'Theme.libelle', 'Service.libelle',
-                'Seance.date', 'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom',
+                'Seance.date', 'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom', 'Seance.Typeseance.libelle',
                 'Rapporteur.nom', 'Rapporteur.prenom', 'Annex',  'Seance.type_id',
                 'Infosup', 'Multidelib.id', 'Multidelib.objet', 'Multidelib.objet_delib',
                 'Multidelib.num_delib', 'Multidelib.etat', 'Multidelib.deliberation',
