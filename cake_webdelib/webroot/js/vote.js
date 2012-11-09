@@ -1,17 +1,17 @@
 window.onload=initAffichage;
 
 function initAffichage() {
-// Saisie des présents masquée
-	blocElement = document.getElementById("saisiePresents");
-	blocElement.style.display = 'none';
+	// Saisie des présents masquée
+	$('#VoteListePresents').val(1);
+	affichageListePresents($('#VoteListePresents'));
 
-// Affichage du type de saisie du vote
+	// Affichage du type de saisie du vote
 	selectElement = document.getElementById("VoteTypeVote");
 	selectElement.value=1;
 	affichageTypeVote(selectElement);
 
-// Intialisation di décompte de voix
-	vote();
+	// Intialisation du décompte des voix
+	majTotauxVotes();
 }
 
 function affichageTypeVote(selectElement) {
@@ -29,88 +29,31 @@ function affichageListePresents(selectElement) {
 
 
 function vote(){
-	document.getElementById('VoteRes0').value=0;
-	document.getElementById('VoteRes1').value=0;
-	document.getElementById('VoteRes2').value=0;
-	document.getElementById('VoteRes3').value=0;
-
-	blocElement = document.getElementById("tableDetailVote");
-	mesBoutons = blocElement.getElementsByTagName('input');
-
-	for (i = 0; i < mesBoutons.length; i++) {
-		if(mesBoutons[i].checked ==true && mesBoutons[i].type =='radio' && mesBoutons[i].name !='global'){
-			if(mesBoutons[i].value==2){
-				if(document.getElementById('VoteRes0').value=='')
-				{document.getElementById('VoteRes0').value=1;}
-				else{document.getElementById('VoteRes0').value=eval(document.getElementById('VoteRes0').value)+1;}
-			}
-			if(mesBoutons[i].value==3){
-				if(document.getElementById('VoteRes1').value=='')
-				{document.getElementById('VoteRes1').value=1;}
-				else{document.getElementById('VoteRes1').value=eval(document.getElementById('VoteRes1').value)+1;}
-			}
-			if(mesBoutons[i].value==4){
-				if(document.getElementById('VoteRes2').value=='')
-				{document.getElementById('VoteRes2').value=1;}
-				else{document.getElementById('VoteRes2').value=eval(document.getElementById('VoteRes2').value)+1;}
-			}
-			if(mesBoutons[i].value==5){
-				if(document.getElementById('VoteRes3').value=='')
-				{document.getElementById('VoteRes3').value=1;}
-				else{document.getElementById('VoteRes3').value=eval(document.getElementById('VoteRes3').value)+1;}
-			}
-		}
-
-		if(mesBoutons[i].checked==true && mesBoutons[i].name =='global'){
-			mesBoutons[i].checked=false;
-		}
-	}
+	majTotauxVotes();
 }
 
-function vote_global(rep){
-	document.getElementById('VoteRes0').value=0;
-	document.getElementById('VoteRes1').value=0;
-	document.getElementById('VoteRes2').value=0;
-	document.getElementById('VoteRes3').value=0;
-
-	blocElement = document.getElementById("tableDetailVote");
-	mesBoutons = blocElement.getElementsByTagName('input');
-
-	for (i = 0; i < mesBoutons.length; i++) {
-		if(mesBoutons[i].value ==rep && mesBoutons[i].type =='radio'){
-			mesBoutons[i].checked=true;
-			if(rep==2){
-				if(document.getElementById('VoteRes0').value=='')
-					{document.getElementById('VoteRes0').value=1;}
-				else{document.getElementById('VoteRes0').value=eval(document.getElementById('VoteRes0').value)+1;}
-			}
-			if(rep==3){
-				if(document.getElementById('VoteRes1').value=='')
-					{document.getElementById('VoteRes1').value=1;}
-				else{document.getElementById('VoteRes1').value=eval(document.getElementById('VoteRes1').value)+1;}
-			}
-			if(rep==4){
-				if(document.getElementById('VoteRes2').value=='')
-					{document.getElementById('VoteRes2').value=1;}
-				else{document.getElementById('VoteRes2').value=eval(document.getElementById('VoteRes2').value)+1;}
-			}
-			if(rep==5){
-				if(document.getElementById('VoteRes3').value=='')
-					{document.getElementById('VoteRes3').value=1;}
-				else{document.getElementById('VoteRes3').value=eval(document.getElementById('VoteRes3').value)+1;}
-			}
-		}
+/**
+ * gestion des raccourcis pour le vote
+ */
+function vote_global(obj, scope){
+	var name = $(obj).attr('name');
+	var valChecked = $('#tableDetailVote input[type=radio][name='+name+']:checked').val();
+	if (scope == 'tous') {
+		$('#tableDetailVote input[type=radio][name^=racc_typeacteur][value='+valChecked+']').attr('checked', 'checked');
+                $('#tableDetailVote input[type=radio][name^=data][value='+valChecked+']').attr('checked', 'checked');
+	} else {
+                $('#tableDetailVote tr.'+scope+' input[type=radio][name^=data][value='+valChecked+']').attr('checked', 'checked');
+                $('#tableDetailVote input[type=radio][name=racc_tous]:checked').removeAttr('checked');
 	}
+	majTotauxVotes();
+}
 
-	if(rep==2){
-		document.getElementById('VoteRes0').value=eval(document.getElementById('VoteRes0').value)-1;}
-
-	if(rep==3){
-		document.getElementById('VoteRes1').value=eval(document.getElementById('VoteRes1').value)-1;}
-
-	if(rep==4){
-		document.getElementById('VoteRes2').value=eval(document.getElementById('VoteRes2').value)-1;}
-
-	if(rep==5){
-		document.getElementById('VoteRes3').value=eval(document.getElementById('VoteRes3').value)-1;}
+/**
+ * mise à jour des totaux des votes
+ */
+function majTotauxVotes() {
+	$('#VoteRes3').val($('#tableDetailVote input[type=radio][name^=data][value=3]:checked').length);
+        $('#VoteRes2').val($('#tableDetailVote input[type=radio][name^=data][value=2]:checked').length);
+        $('#VoteRes4').val($('#tableDetailVote input[type=radio][name^=data][value=4]:checked').length);
+        $('#VoteRes5').val($('#tableDetailVote input[type=radio][name^=data][value=5]:checked').length);
 }

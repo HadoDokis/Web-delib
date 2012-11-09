@@ -209,7 +209,7 @@ class Infosup extends AppModel
             $champs_def = $this->Infosupdef->read(null, $champs['infosupdef_id']);
 
             if(($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']!= "")) {
-                $tmp= $this->Infosup->Infosupdef->Infosuplistedef->find('id = '.$champs['text'], 'nom', null, -1);
+                $tmp= $this->Infosupdef->Infosuplistedef->find('id = '.$champs['text'], 'nom', null, -1);
                 $champs['text'] = $tmp['Infosuplistedef']['nom'];
             }
             elseif (($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']== ""))

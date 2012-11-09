@@ -97,7 +97,7 @@ function onchangeCircuitDefault() {
                                                               'onchange'=>'onchangeCircuitDefault();',
                                                               'multiple'=>true, 
                                                               'id'=>'all_circuits', 
-                                                              'size' => 10,
+                                                              'size' => 15,
                                                               'empty'=>true));
 
 		                       echo ("<div class='spacer'></div>");
@@ -112,7 +112,13 @@ function onchangeCircuitDefault() {
 			<div class="demi">
 				 <?php
 				 	if (!isset($selectedServices) && empty($selectedServices)) $selectedServices=false;
-				 	echo $this->Form->input('Service.Service', array('label'=>'Service(s) <acronym title="obligatoire">*</acronym>','options'=>$services,'default'=>$selectedServices,'multiple' => 'multiple', 'class' => 'selectMultiple', 'escape'=>false));
+				 	echo $this->Form->input('Service.Service', array('label'=>'Service(s) <acronym title="obligatoire">*</acronym>',
+                                                                                         'options'=>$services,
+                                                                                         'default'=>$selectedServices,
+                                                                                         'multiple' => 'multiple', 
+                                                                                         'size' => '15', 
+                                                                                         'class' => 'selectMultiple', 
+                                                                                         'escape'=>false));
 				       echo $this->Form->error('User.Service', 'Sélectionnez un ou plusieurs services');
 		                       echo ("<div class='spacer'></div>");
 	 			       echo $this->Form->input('User.note', array('type'=>'textarea', 'cols' => '30', 'rows' => '2'));?>
