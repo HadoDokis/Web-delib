@@ -1,0 +1,111 @@
+1.1-1
+=====
+  *) Ajout de balises pour la generation des documents.
+  *) Validation des commentaires.
+  *) Import de fichiers odt pour les textes de projet, notes de synthese et textes de deliberation.
+  *) Correction de bug d'affichage
+  *) Agrandissement du champ commentaire lors des votes.
+  *) Moteur de recherche simple.
+
+1.1-2
+=====
+  *) Uniformisation de l'encodage des fichiers : tous sont encodés en ISO-8859-15
+
+2.0
+====
+  *) Suppression des composants documentaires, la conception des modèles se fait dans un fichier unique. 
+  *) Ajout de variable pour la génération des documents
+  *) Importation de la partie PHP de GEDOOo dans WEBDELIB
+  *) Ajout d'un moteur de recherche.
+  *) Envoi des pièces jointes des délibérations au controle de légalité
+  *) Enregistrement des débats de commission dans un nouveau champ
+  *) Possibilité de valider un projet en urgence.
+  *) Ajout de champ dynamique à la création d'un rapport de projet.
+
+2.0.1
+=====
+  *) Ajout des Styles ActeursContre, ActeursPour, ActeursAbstention qui permet de lister les élus qui ont votés contre, pour ou se sont abstenus au vote d'un projet.
+  *) Correction d'un bug dans l'affichage des services et des thèmes. 
+  *) Correction d'un bug lors du changement d'ordre ou de la suppression des informations supplémentaires.
+
+2.0.2
+=====
+  *) Correction faute d'orthographe (mois de septembre mal orthographié)
+  *) Correction bug lors d'un refus de dossier : le rédacteur ne recevait pas de mail
+  *) Mise en place des boutons d'aperçu pour la génération des convocations et de l'ordre du jour
+
+2.0.3
+=====
+  *) Conservation des informations supplémentaires, annexes et commentaires suite à un refus de dossier. 
+  *) Ré-ajout des styles : ActeursPour, ActeursContre et ActeursAbstenu
+
+2.1
+====
+  *) Choix du PV Sommaire lors de l'édition des types de séance (BUG N°330)
+  *) Amélioration de la cinématique OOo
+  *) Simplification de l'éditeur en ligne (BUG N°229)
+  *) Affichage du signe ¿ dans les documents générés (BUG N°297) 
+  *) Informations supplémentaires: Ajout du type "Booléen"
+  *) Informations supplémentaires: Ajout du type "Fichier ODT"
+  *) Informations supplémentaires: Ajout du type "Liste déroulante"
+  *) Possibilité de changer le contenu des mails envoyés par l'application (BUG N°340)
+  *) Connexion au parapheur électronique (pour la validation en préparation et pour la signature en post-séance)
+  *) Ajout d'un bouton "Retourner à ..." qui permet de returner le projet à n'importe quel membre du circuit avant la personne qui traite le projet
+  *) Possibilité de recherche sur un circuit 
+  *) Amélioration des tris des projets
+  *) Possibilité de générer les convocations et ordres du jour au format odt
+  *) Numérotation hiérarchisée des rapports/délibérations
+  *) Correction de la saisie des débats de projet (BUG N°316)
+  *) Gestion des pouvoirs (liste des mandataires) (BUG N°308)
+  *) Désactivation de la gestion du Quorum (BUG N°146)
+  *) Possibilité d'ajouter un commentaire à une séance
+  *) Stockage des délibérations au format pdf après la clôture de la séance.
+  *) Suite à l'envoi de délibération à s2low, il est possible de suivre l'avancé du cycle de vie de la délibération.
+  *) Récupération du bordereau d'acquittement du MIAT
+  *) Correction des fautes d'orthographe et de faute d'accent
+  *) Compatibilité avec le navigateur Chrome pour Windows
+  *) Ajout des variables : avisCommission, date_reception, commentaire_seance, total_votant, acteur_sans_participation
+
+2.1.1
+=====
+  *) Correction des short_open_tag
+  *) Correction d'un bug lors de la saisie des débats de projets en commission
+  *) Correction d'un bug dans l'affichage des délibérations télétransmises
+  *) Correction d'un bug lors de la ré-attribution d'un projet à un circuit
+  *) Actualisation du logo
+  *) Changement de la mise en page des vues synthétiques
+  *) Information par Infos Bulles
+  *) Possibilité (en fonction des droits) de sauter une étape du circuit
+  *) Enregistrement de la vie du projet dans un historique ( exploitable dans la génération des documents)
+  *) Possibilité d'avoir plusieurs fois le même utilisateur dans un circuit d'élaboration
+  *) Possibilité de saisir les débats de délib en postseances 
+  *) Enregistrement des PVs au format PDF
+  *) Possibilité de choisir directement la position d'un projet
+  *) Insertion dans le parapheur électronique avec le libellé du projet.
+  *) Insertion des pièces jointes dans le parapheur électronique
+  *) Récupération de la signature des dossiers envoyés dans le parapheur électronique
+  *) Export vers AS@LAE 
+2.1.2
+=====
+  *) Correction d'un bug lors de l'enregistrement des PVs (en mode editeur en ligne).
+  *) Correction d'encodage des caractères spéciaux (CP1252).
+  *) La premiere personne d'un circuit d'élaboration ne recevra plus le mail d'insertion mais le mail a traiter...
+  *) Lors d'un retour de dossier, la personne a qui est renvoyé le dossier recevra un mail de notification. 
+  *) Rétablissement du menu sinon cela posait un problème de droit. 
+  *) Correction de problème d'encodage lorsque l'on utilise l'éditeur en ligne en mode 'source' 
+  *) Désactivation du bouton précédent du navigateur pour eviter les effets de bords (exemple, je clique sur précédent apres avoir validé un projet...) 
+  *) Patch pour les navigateurs IE 6 : le message jgrowl empeche l'ouverture de la page avec ce navigateur. 
+3.0
+===
+  *) Upgrade du framework CakePHP 1.2.8 
+  *) Intégration du plugin CakeFlow : moteur de workflow intégrant des fonctions dynamiques d'exécution  
+  *) Attribution des droits par profil et par utilisateur	
+  *) Affinage des droits  (modification d'un projet, saut d'étape, envoyer à, ...
+  *) Gestion de différentes natures d'acte
+  *) Pagination des listes d'utilisateurs et acteurs 
+  *) Tri de ces listes en fonction de différents critères
+  *) Changement d'un mot de passe par l'utilisateur lui-même
+  *) Gestion des circuits via le plugin CakeFlow
+  *) Affichage des thèmes et services avec la forme hiéraérchique
+  *) Ajout des critères de filtre par banette
+  *) Enrichissement de l'historique
