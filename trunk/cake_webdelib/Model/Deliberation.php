@@ -8,7 +8,7 @@ class Deliberation extends AppModel {
 					'message' => 'L\'objet est obligatoire')),
 			'typeacte_id' => array(
 					array( 'rule'    => array('canSaveNature', 'notEmpty'),
-							'message' => "Cette séance ne peux pas enregistrer cette nature d'acte")),
+						'message' => "Type d'acte invalide")),
 			'id' => array(
 					array('rule'    => array('canSaveSeances'),
                                               'message' => "Un projet ne peux contenir qu'une séance délibérante")),
@@ -376,16 +376,19 @@ class Deliberation extends AppModel {
 	}
 
 	function canSaveNature() {
-		if (isset($this->data['Deliberation']['seance_id']) && (!empty($this->data['Deliberation']['seance_id']))) {
-			foreach ($this->data['Deliberation']['seance_id'] as $key => $seance_id) {
-				$result = $this->Seance->NaturecanSave($seance_id, $this->data['Deliberation']['typeacte_id']);
-				if ($result == false)
-					return false;
-			}
-			return true;
-		}
-		else
-			return true;
+            if ($this->data['Deliberation']['typeacte_id']=='')
+                return false;
+
+	    if (isset($this->data['Deliberation']['seance_id']) && (!empty($this->data['Deliberation']['seance_id']))) {
+                foreach ($this->data['Deliberation']['seance_id'] as $key => $seance_id) {
+                    $result = $this->Seance->NaturecanSave($seance_id, $this->data['Deliberation']['typeacte_id']);
+	            if ($result == false)
+	                return false;
+		    }
+		    return true;
+	    }
+	    else
+                return true;
 	}
 
 	function genererRecherche($projets, $model_id=1, $format=0, $multiSeances=array(), $conditions=array() ){
@@ -1424,17 +1427,16 @@ class Deliberation extends AppModel {
 		$this->Deliberationseance = new Deliberationseance();
 		$positions = $this->Deliberationseance->find('all',
 				array('conditions' => array('Deliberationseance.deliberation_id' => $delib_id),
-						'fields'     => array('Deliberationseance.position',
-								'Deliberationseance.seance_id'),
+		                      'fields'     => array('Deliberationseance.position', 'Deliberationseance.id',
+				                            'Deliberationseance.seance_id'),
 						'recursive'  => -1));
 		foreach($positions as $position) {
-			$this->Deliberationseance->create();
+			$this->Deliberationseance->id = $position['Deliberationseance']['id'];
 			$Deliberationseance['Deliberationseance']['position']  = $position['Deliberationseance']['position'];
 			$Deliberationseance['Deliberationseance']['seance_id'] = $position['Deliberationseance']['seance_id'];
 			$Deliberationseance['Deliberationseance']['deliberation_id'] = $new_id;
 			$this->Deliberationseance->save($Deliberationseance);
 		}
-
 	}
   
         function getActesExceptDelib($conditions=array(), $fields, $contain) {
