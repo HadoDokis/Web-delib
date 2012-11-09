@@ -182,11 +182,13 @@
 		<td>A traiter avant le :<br /><?php echo $deliberation['Deliberation']['date_limite']; ?></td>
 	</tr>
 	<tr>
-		<td>projet 
+		<td><b>projet 
                 <?php 
                        if (isset($deliberation['Typeacte']['libelle']))
                            $nature = $deliberation['Typeacte']['libelle'];
-                   echo strtolower($nature) .' : '.$deliberation['Deliberation']['id']; ?>
+                       echo strtolower($nature) .' : '.$deliberation['Deliberation']['id']; 
+                ?>
+                </b>
                 </td>
 		<td class='corps' rowspan=1 >Th&egrave;me : 
                 <?php 
