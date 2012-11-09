@@ -154,9 +154,8 @@ if (empty($this->data['Multidelib']))
 	if ($tab_anterieure!=null)
 	{
 		echo"<dt>Versions Antérieures</dt>";
-		foreach ($tab_anterieure as $anterieure)
-		{
-			echo "<dd>&nbsp;<a href=".$anterieure['lien'].">Version du ".$anterieure['date_version']."</a></dd>";
+		foreach ($tab_anterieure as $anterieure) {
+	            echo "<dd>&nbsp;<a href=".$anterieure['lien']."> Version du ".$anterieure['date_version']." <b>[ID : ".$anterieure['id']."]</b></a></dd>";
 		}
 	}
 ?>

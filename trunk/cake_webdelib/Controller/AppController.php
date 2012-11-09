@@ -65,14 +65,16 @@ class AppController extends Controller {
 			}
 			else {
 				// Contrôle des droits
-				$controllerAction = $this->name . ':' . ($this->name == 'Pages' ? $this->params['pass'][0] : $this->action);
-				$user_id = $this->Session->read('user.User.id');
-				if (!$this->Droits->check($user_id, $controllerAction)) {
-					$this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : $controllerAction", 'growl', array('type'=>'erreur'));
-					$this->redirect('/');
-				}
-                                else
-                                    $this->log("$user_id => $controllerAction");
+			     $controllerAction = $this->name . ':' . ($this->name == 'Pages' ? $this->params['pass'][0] : $this->action);
+                             if  ($controllerAction != 'Deliberations:delete') {  
+			         $user_id = $this->Session->read('user.User.id');
+				 if (!$this->Droits->check($user_id, $controllerAction)) {
+				     $this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : $controllerAction", 'growl', array('type'=>'erreur'));
+				     $this->redirect('/');
+				 }
+                                 else
+                                     $this->log("$user_id => $controllerAction");
+                            }
 			}
 		}
 	}

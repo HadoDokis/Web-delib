@@ -23,6 +23,7 @@ class DeliberationsController extends AppController {
     var $demandeDroit = array(
         'add',
         'edit',
+        'delete',
         'mesProjetsRedaction',
         'mesProjetsValidation',
         'mesProjetsValides',
@@ -44,7 +45,6 @@ class DeliberationsController extends AppController {
 
     var $commeDroit = array(
         'view'=>array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
-        'delete'=>'Deliberations:mesProjetsRedaction',
         'attribuercircuit'=>'Deliberations:mesProjetsRedaction',
         'addIntoCircuit'=>'Deliberations:mesProjetsRedaction',
         'traiter'=>'Deliberations:mesProjetsATraiter',
@@ -59,7 +59,7 @@ class DeliberationsController extends AppController {
         );
     var $libelleControleurDroit = 'Projets';
     var $ajouteDroit = array(
-        'edit',
+        'edit', 'delete',
         'editerProjetValide',
         'goNext',
         'validerEnUrgence',
@@ -67,6 +67,7 @@ class DeliberationsController extends AppController {
         );
     var $libellesActionsDroit = array(
         'edit' => "Modification d'un projet",
+        'delete' => "Suppression d'un projet",
         'editerProjetValide' => 'Editer projets valid&eacute;s',
         'goNext'=> 'Sauter une &eacute;tape',
         'validerEnUrgence'=> 'Valider un projet en urgence',
@@ -822,14 +823,22 @@ class DeliberationsController extends AppController {
     function delete($id = null) {
         $delib = $this->Deliberation->find('first', array(
             'recursive' => -1,
-            'fields' => array('Deliberation.id'),
+            'fields' => array('Deliberation.id','Deliberation.redacteur_id', 'Deliberation.etat'),
             'conditions' => array('id' => $id)));
         
         if (empty($delib)) {
             $this->Session->setFlash('Invalide id pour le projet de deliberation : suppression impossible', 'growl', array('type'=>'erreur'));
         } else {
-            $this->Deliberation->supprimer($id);
-            $this->Session->setFlash('Le projet \''.$id.'\' a &eacute;t&eacute; supprim&eacute;.', 'growl');
+            $canDelete = false;
+            $user_connecte = $this->Session->read('user.User.id');
+            $canDelete =   $this->Droits->check($user_connecte, "Deliberations:delete");
+            if ((($delib['Deliberation']['redacteur_id'] == $user_connecte) && ($delib['Deliberation']['etat']==0) ) || ($canDelete))  {
+                $this->Deliberation->supprimer($id);
+                $this->Session->setFlash('Le projet \''.$id.'\' a &eacute;t&eacute; supprim&eacute;.', 'growl');
+            }
+            else {
+                $this->Session->setFlash('Vous ne pouvez pas supprimer ce projet', 'growl');
+            }
         }
         $this->redirect('/deliberations/mesProjetsRedaction');
     }
@@ -2037,6 +2046,7 @@ class DeliberationsController extends AppController {
             'contain'    => array( 'Seance.id',
                 'Seance.traitee', 
                 'Seance.date',
+                'Circuit.nom',
                 'Seance.type_id',
                 'Service.libelle',
                 'Theme.libelle',
@@ -2046,6 +2056,9 @@ class DeliberationsController extends AppController {
             array_push($actions, 'validerEnUrgence');
         if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:goNext"))
             array_push($actions, 'goNext');
+        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
+            array_push($actions, 'delete');
+
         
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets($projets,
@@ -2084,6 +2097,8 @@ class DeliberationsController extends AppController {
             array_push($actions, 'validerEnUrgence');
         if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:goNext"))
             array_push($actions, 'goNext');
+        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
+            array_push($actions, 'delete');
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets(
             $projets,
@@ -2129,9 +2144,13 @@ class DeliberationsController extends AppController {
         
       //  $this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances,  array_keys($this->Session->read('user.Nature'))));
         $this->_ajouterFiltre($delibs);
+        $actions = array('view', 'generer', 'attribuerSeance');
+        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
+            array_push($actions, 'delete');
+
         $this->_afficheProjets( $delibs,
             'Projets non associ&eacute;s &agrave; une s&eacute;ance',
-            array('view', 'generer', 'attribuerSeance'));
+            $actions);
     }
     
     /*
@@ -2178,10 +2197,14 @@ class DeliberationsController extends AppController {
                                                                          'Typeacte.libelle', 'Service.libelle')));
         
         $this->_ajouterFiltre($projets);
+        $actions =   array('view', 'generer');
+        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
+            array_push($actions, 'delete');
+
         $this->_afficheProjets(
             $projets,
             'Projets valid&eacute;s associ&eacute;s &agrave; une s&eacute;ance',
-            array('view', 'generer'));
+            $actions);
     }
 
     function _ajouterFiltre(&$projets) {
@@ -2502,7 +2525,11 @@ class DeliberationsController extends AppController {
                 } 
                 if ($this->data['Deliberation']['generer'] == 0) {
                     $userId=$this->Session->read('user.User.id');
+                   
                     $actions =  array('view', 'generer');
+                    if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
+                        array_push($actions, 'delete');
+
                     if ($this->Droits->check($userId, "Deliberations:editerProjetValide") )
                         $actions[]='edit';
                     $this->_afficheProjets( $projets,
