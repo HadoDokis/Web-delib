@@ -1,4 +1,7 @@
-window.onload=montre;
+window.onload=function(){
+//	montre();
+	afficheOngletEnErreur(
+)};
 
 function montre(id) {
 	var d = document.getElementById(id);
@@ -60,10 +63,10 @@ function return_choice_lot(text,arg,delibId) {
 
 function disable(id,val)
 {
-  if (val=='1')
+  if (val==1)
   	document.getElementById(id).disabled=true;
   else
-  document.getElementById(id).disabled=false;
+      document.getElementById(id).disabled=false;
 }
 
 
@@ -142,30 +145,23 @@ function del_field(node)
 }
 
 function checkForm (Form, id){
-	var valide = true;
-	var erreur = 0;
-
+	if(Form.listeTypeactesId.value == "") {
+		alert( "Le type d'acte est obligatoire");
+                return false;
+	}
 	if(Form.DeliberationObjet.value == "") {
-		erreur = erreur + 1;
-		valide = false;
+		alert( "Le libellé est obligatoire");
+                return false;
 	}
-
-	if (erreur == 0) {
-		return true;
-    }
-	if (erreur == 1) {
-		message = "Le libelle est obligatoire";
-    }
-
-	if (valide == false) {
-	    alert (message);
-	    return valide;
+	if(Form.DeliberationThemeId.value == "") {
+		alert( "Le thème est obligatoire");
+                return false;
 	}
-
+	return true;
 }
 
 /******************************************************************************/
-/* Gestion des onglets pour l'affichage des informations suppl�mentaires      */
+/* Gestion des onglets pour l'affichage des informations supplémentaires      */
 /******************************************************************************/
 function afficheOnglet(nOnglet) {
 	for (var i = 1; i<=10; i++) {
@@ -184,7 +180,7 @@ function afficheOnglet(nOnglet) {
 }
 
 /******************************************************************************/
-/* Fonction de suppression d'une information suppl�mentaire de type fichier   */
+/* Fonction de suppression d'une information supplémentaire de type fichier   */
 /******************************************************************************/
 function infoSupSupprimerFichier(infoSupCode, titre) {
 	/* Masque le nom du fichier et les liens */
@@ -242,4 +238,25 @@ function disableDiv(nameDiv) {
 	}
     }
    clicAutorise = false;
+}
+
+/******************************************************************************/
+/* Affichage le premier onglets qui comporte un objet de class classError     */
+/******************************************************************************/
+function afficheOngletEnErreur() {
+	var classErreur = "error-message";
+	for (var iTab = 1; iTab<=10; iTab++) {
+		divTab = document.getElementById('tab'+iTab);
+		if (divTab) {
+			var divs = divTab.getElementsByTagName("div");
+			for(var j = 0; j < divs.length; j++) {
+				if(divs[j].className == classErreur) {
+					afficheOnglet(iTab);
+					return;
+				}
+			}
+		} else {
+			return;
+		}
+	}
 }

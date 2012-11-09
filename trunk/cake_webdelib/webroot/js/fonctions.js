@@ -7,7 +7,11 @@ function lister_services(params, url)
 function lister_circuits(params, url)
 {
 	$('.submit').hide();
-	var urlb=url+params.value+'/1';
+        var circuit_id  = params.value;
+        if (circuit_id == "" )
+            circuit_id=0;
+        
+	var urlb=url+circuit_id+'/1';
 	document.location=urlb;
 }
 
