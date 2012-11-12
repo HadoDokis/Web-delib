@@ -39,7 +39,7 @@
 */
 App::uses('Controller', 'Controller');
 class AppController extends Controller {
-
+     //public $theme = "Bootstrap";
 	var $components = array( 'Utils', 'Acl', 'Droits', 'Session');
 	var $helpers = array('Html', 'Form', 'Js', 'Session', 'Menu', 'DatePicker' );
 
