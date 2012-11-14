@@ -39,9 +39,9 @@
 */
 App::uses('Controller', 'Controller');
 class AppController extends Controller {
-     //public $theme = "Bootstrap";
+        public $theme = "Bootstrap";
 	var $components = array( 'Utils', 'Acl', 'Droits', 'Session');
-	var $helpers = array('Html', 'Form', 'Js', 'Session', 'Menu', 'DatePicker' );
+	var $helpers = array('Html', 'Form', 'Js', 'Session', 'Menu', 'DatePicker'  );
 
 	function beforeFilter() {
 		$this->set('Droits',$this->Droits);
