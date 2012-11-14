@@ -196,7 +196,6 @@ function litCruDroits($cru=null) {
             $ret[$mca['alias']] = $this->Acl->check($cru, $mca['alias']);
  
          }
-	$this->log($ret);
 	return $ret;
 }
 
