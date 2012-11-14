@@ -216,7 +216,6 @@ class Infosup extends AppModel
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
 
             if ($champs['text'] != '') {
-                $this->log($champs_def['Infosupdef']['code']." => ". $champs['text']);
                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
             }
             elseif ($champs['date'] != '0000-00-00') {
