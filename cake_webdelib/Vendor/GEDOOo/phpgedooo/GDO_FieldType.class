@@ -60,17 +60,17 @@ var $dataType;
      * @since    1.0
      * @access   public
      */
-Function GDO_FieldType($target, $value, $sDataType) {
-        if ($sDataType == 'text')
-            $value = $this->convertText($value);
+function GDO_FieldType($target, $value, $sDataType) {
+    if (($sDataType == 'text') || ($sDataType == 'lines'))
+        $value = $this->convertText($value);
 
-	$this->target= $target;
-	$this->value= $value;
-	if ($sDataType == "date" || $sDataType == "number" || $sDataType == "text" ) { 
-		$this->dataType = $sDataType;
-		} else {
-		$this->dataType = "string";
-		}
+    $this->target= $target;
+    $this->value= $value;
+    $types = array ('date', 'number', 'text', 'lines');
+    if (in_array($sDataType, $types)) 
+        $this->dataType = $sDataType;
+    else 
+        $this->dataType = "string";
 }
 
 }
