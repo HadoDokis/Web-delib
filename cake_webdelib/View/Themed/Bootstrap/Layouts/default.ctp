@@ -16,7 +16,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-$cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework');
+$cakeDescription = __d('webdelib', 'Webdelib');
 ?>
 <!doctype html>
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -58,21 +58,35 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                 <div class="navbar navbar-fixed-top">
                     <div class="navbar-inner"> 
 <div class='user'>
-                        <?php echo $this->Html->image('webdelib_petit.png', array('align' => 'left')); ?>
-<?php
-                    if (isset($infoUser)) {
-                        echo ("<a href='/users/changeUserMdp'>$infoUser</a>");
-                        echo (" [Service : <a href='/users/changeService'>".$agentServices[$session_service_id]."</a> ]");
-                        echo ("<a href='/users/logout'>Se déconnecter ".$this->Html->image('/img/icons/logout.png')."</a>");
-                    }
-?>
+             <?php echo $this->Html->image('webdelib_petit.png', array('align' => 'left')); ?>
+             <?php if (isset( $infoUser))  { ?>
+                  <form class="navbar-search pull-right" action="/deliberations/quicksearch">
+                      <?php echo $this->Form->input('field', array('class' => 'search-query span2',
+                                                                   'div' => false, 'label' => false,
+                                                                   'id'     => 'searchInput',
+                                                                   'placeholder' => 'Rechercher', 
+                                                                   'autocomplete' => 'off')); ?>
+                  </form>
+                  <ul class="nav pull-right">
+                       <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $infoUser;  ?><b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li class="">
+                                <a href="/users/changeUserMdp" class="">Changer de mot de passe</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <a id="logout" href="/users/logout">Se déconnecter</a>
+                            </li>
+                        </ul>
+                       </li>
+		    </ul>
+              <?php } ?>
 </div>
                     </div>
                 </div>
                 <ul class="nav nav-tabs">
-
                 <?php 
-                   
                    foreach ($session_menuPrincipal['items'] as $libelle => $items)  {
                        $carret = "";
                        $classDropdown = '';
@@ -81,7 +95,6 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                        if (isset($items['subMenu']))
                            $classDropdown = 'class="dropdown"';
                        echo ("<li $classDropdown>");
-                       $this->log($items);
                        echo ("<a class='dropdown-toggle' data-toggle='dropdown' href='".$items['link']."'>$libelle $carret</a>");
                        if (isset($items['subMenu'])) {
                            echo ('<ul class="dropdown-menu">');
@@ -95,6 +108,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
                    }
                 ?>
                </ul>
+
    		    <?php echo $this->Session->flash(); ?>
 		     <?php echo $this->fetch('content'); ?>
 		</div>
