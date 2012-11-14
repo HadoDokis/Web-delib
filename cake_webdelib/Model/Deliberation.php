@@ -545,18 +545,7 @@ class Deliberation extends AppModel {
 		}
 		$oMainPart->addElement(new GDO_FieldType('nombre_votant', $nb_votant, 'text'));
 		$oMainPart->addElement(new GDO_FieldType('date_reception',  ($delib['Deliberation']['dateAR']), 'text'));
-
-		if (isset($delib['Deliberation']['vote_commentaire'])) {
-			$filename = $path."commentaire_vote.html";
-			$vote_commentaire = "<html><head></head><body><p>".nl2br($delib['Deliberation']['vote_commentaire'])."</p></body></html>";
-			$filepath_comm = $this->Gedooo->createFile($path, "commentaire.html",  $vote_commentaire);
-			$content = $this->Conversion->convertirFichier($filepath_comm, "odt");
-			$oMainPart->addElement(new GDO_ContentType('commentaire_vote',
-					'commentaire.odt',
-					'application/vnd.oasis.opendocument.text',
-					'binary',
-					$content));
-		}
+		$oMainPart->addElement(new GDO_FieldType('commentaire_vote', utf8_encode($delib['Deliberation']['vote_commentaire']), 'lines'));
 
 		$coms = $this->Commentaire->find('all',
 				array('conditions' => array('Commentaire.delib_id' => $delib['Deliberation']['id']),
