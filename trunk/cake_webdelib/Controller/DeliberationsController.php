@@ -18,7 +18,7 @@ class DeliberationsController extends AppController {
     var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit',  'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance');
     var $components = array('Gedooo','Date','Utils','Email','Acl', 'Droits',  'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low');
 
-    var $aucunDroit = array('test', 'getTypeseancesParTypeacteAjax');    
+    var $aucunDroit = array('test', 'getTypeseancesParTypeacteAjax', 'quicksearch');    
     // Gestion des droits
     var $demandeDroit = array(
         'add',
@@ -3385,5 +3385,40 @@ class DeliberationsController extends AppController {
         $this->Session->setFlash('Action effectu&eacute;e avec succ&egrave;s', 'growl');
         $this->redirect($redirect);
      }
+
+    function quicksearch() {
+        $field = trim($this->params->query['data']['field']);
+        $userId=$this->Session->read('user.User.id');
+        if (!$this->Droits->check($userId, 'Deliberations:tousLesProjetsRecherche')) {
+            $listeCircuits = explode(',', $this->Circuit->listeCircuitsParUtilisateur($userId));
+            if (!empty($listeCircuits))
+                $conditions['AND']['OR']['Deliberation.circuit_id'] = $listeCircuits;
+            $conditions['AND']['OR']['Deliberation.redacteur_id'] =  $userId;
+        }
+        if (ctype_digit($field)) {
+            $conditions['OR']['Deliberation.id'] =  $field; 
+        }
+        $conditions['OR']['Deliberation.objet LIKE'] =  "%$field%"; 
+        $conditions['OR']['Deliberation.titre LIKE'] =  "%$field%"; 
+
+        $ordre = 'Deliberation.created DESC';
+        $this->Deliberation->Behaviors->attach('Containable');
+        $projets = $this->Deliberation->find('all', array ('conditions' => $conditions,
+            'order'      => array($ordre),
+            'fields'     => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat',  'Deliberation.signee',
+                                  'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
+                                  'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
+                                  'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
+            'contain'    => array( 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.type_id',
+                                   'Service.libelle', 'Theme.libelle', 'Typeacte.libelle', 'Circuit.nom')));
+
+                                   
+
+        $this->_afficheProjets( $projets,
+                       'R&eacute;sultat de la recherche parmi mes projets',
+                        array('view', 'generer'),
+                        array());
+         
+    }
 }
 ?>
