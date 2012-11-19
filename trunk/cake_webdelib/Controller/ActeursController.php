@@ -90,20 +90,19 @@ class ActeursController extends AppController
 	function edit($id = null) {
 		$sortie = false;
 		if (empty($this->data)) {
-			$this->data = $this->Acteur->read(null, $id);
+			$this->request->data = $this->Acteur->read(null, $id);
 			$this->set('acteurs', $this->Acteur->generateListElus() );
+                        if ($this->data['Acteur']['date_naissance'] != null) 
+                            $date = date('d/m/Y', strtotime($this->data['Acteur']['date_naissance']));
+
 			if (empty($this->data)) {
 				$this->Session->setFlash('Invalide id pour l\'acteur');
 				$sortie = true;
 			} else
 				$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
 		} else {
-                   /* if (isset( $this->data['Acteur']['_month'])) {
-                        $this->data['Acteur']['date_naissance_day']   = $this->data['Acteur']['date_naissance']['day'];
-                        $this->data['Acteur']['date_naissance_month'] = $this->data['Acteur']['_month'];
-                        $this->data['Acteur']['date_naissance_year']  = $this->data['Acteur']['_year'];
-                    }
-                   */
+                    $this->request->data['Acteur']['date_naissance'] =  $this->Utils->FrDateToUkDate($this->data['date']);
+                    
                     if ($this->_controleEtSauve()) {
                         $this->Session->setFlash('L\'acteur \''.$this->data['Acteur']['prenom'].' '.$this->data['Acteur']['nom'].'\' a &eacute;t&eacute; modifi&eacute;');
 			$sortie = true;
@@ -116,11 +115,13 @@ class ActeursController extends AppController
                          
 		}
 		if ($sortie)
-			$this->redirect('/acteurs/index');
+		    $this->redirect('/acteurs/index');
 		else {
-			$this->Acteur->Typeacteur->recursive = 0;
-			$this->set('typeacteurs', $this->Acteur->Typeacteur->find('all', array('fields'=>array( 'id', 'nom', 'elu'))));
-			$this->set('services', $this->Acteur->Service->generateTreeList(array('Service.actif'=>'1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
+		    $this->Acteur->Typeacteur->recursive = 0;
+		    $this->set('typeacteurs', $this->Acteur->Typeacteur->find('all', array('fields'=>array( 'id', 'nom', 'elu'))));
+		    $this->set('services', $this->Acteur->Service->generateTreeList(array('Service.actif'=>'1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
+                    if (isset($date)) $this->set('date', $date);
+ 
 		}
 	}
 
@@ -137,16 +138,7 @@ function _controleEtSauve() {
 			if (array_key_exists('Service', $this->data))
 				$this->request->data['Service']['Service'] = array();
                       $this->request->data['Acteur']['position'] = 999;
-	              $this->request->data['Acteur']['date_naissance_day'] = 0;
-	              $this->request->data['Acteur']['date_naissance_month'] = 0;
-	              $this->request->data['Acteur']['date_naissance_year'] = 0;
 		}
-	}
-	if (empty( $this->data['Acteur']['date_naissance_day']) || empty( $this->data['Acteur']['date_naissance_month']) || empty( $this->data['Acteur']['date_naissance_year'])) {
-            $this->request->data['Acteur']['date_naissance'] = null;
-	}
-	else {
-             $this->data['Acteur']['date_naissance'] =  $this->data['Acteur']['date_naissance_year'].'-'.$this->data['Acteur']['date_naissance_month'].'-'.$this->data['Acteur']['date_naissance_day'];
 	}
 	return $this->Acteur->save($this->data);
 }
