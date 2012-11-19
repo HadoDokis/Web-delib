@@ -45,7 +45,7 @@ class ProfilsController extends AppController {
 		function add() {
 			$sortie = false;
 			if (!empty($this->data)) {
-				if (empty($this->data['Profil']['parent_id'])) $this->data['Profil']['parent_id']=0;
+				if (empty($this->data['Profil']['parent_id'])) $this->request->data['Profil']['parent_id']=0;
 				if ($this->Profil->save($this->data)) {
 					if ($this->data['Profil']['parent_id']!=0) {
 						$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['Profil']['parent_id']));
