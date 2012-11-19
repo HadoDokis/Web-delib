@@ -25,25 +25,29 @@
 	);
 
 	function index() {
-		$this->set('collectivite', $this->Collectivite->find('all',array('recursive'=>-1)));
+  	    $this->set('collectivite', $this->Collectivite->find('first',array('conditions'=> array('Collectivite.id' => 1),  
+                                                                               'recursive' =>-1)));
         $this->set('logo_path',   'http://'.$_SERVER['HTTP_HOST'].$this->base."/files/image/logo.jpg");
 	}
 
  	function edit($id = null) {
 	    if (empty($this->data)) {
-                $this->data = $this->Collectivite->read(null, $id);
+                $this->request->data = $this->Collectivite->read(null, $id);
 		if (Configure::read('USE_PASTELL')) {
 		    $this->set('entities', $this->Pastell->listEntities());
 		    $this->set('selected', $this->data['Collectivite']['id_entity']);
                 }
 	    }
             else {
-		if(!empty($this->params['form'])) {
+                $this->Collectivite->id = 1;
+		if(Configure::read('USE_PASTELL')) {
 		    $entities = $this->Pastell->listEntities();
                     if (Configure::read('USE_PASTELL'))
-                        $this->data['Collectivite']['nom'] =  $entities[$this->data['Collectivite']['id_entity']];
-		    $this->Collectivite->save($this->data);
+                        $this->request->data['Collectivite']['nom'] =  $entities[$this->data['Collectivite']['id_entity']];
                 }
+		if (!$this->Collectivite->save($this->data['Collectivite']))
+                    $this->Session->setFlash('Erreur durant la sauvegarde', 'growl');
+
                 $this->redirect('/collectivites');
             }
  	}
