@@ -749,7 +749,9 @@ class DeliberationsController extends AppController {
             App::import('model','TypeseancesTypeacte');
             $TypeseancesTypeacte = new TypeseancesTypeacte();
             $typeseance_ids = $TypeseancesTypeacte->getTypeseanceParNature($this->request->data['Deliberation']['typeacte_id']);
-            $typeseances = $this->Typeseance->find('list', array('conditions' => array('Typeseance.id' =>  $typeseance_ids)));
+            $typeseances = $this->Typeseance->find('list', array('conditions' => array('Typeseance.id'      => $typeseance_ids),
+                                                                 'order'      => array('Typeseance.libelle' => 'ASC')));
+
             if (isset($this->request->data['Typeseance']) && !empty($this->request->data['Typeseance']) )
                 foreach ( $this->request->data['Typeseance'] as $typeseance)
                     if (isset( $typeseance['id']))
@@ -3286,7 +3288,7 @@ class DeliberationsController extends AppController {
         $this->set('titreVue', 'Autres actes envoyés au contrôle de légalité');
         $conditions['Deliberation.etat'] = 5;
         $conditions['Deliberation.signee'] = 1;
-        $ids = $this->Deliberation->getActesExceptDelib(array(), 'Deliberation.id', array());
+        $ids = $this->Deliberation->getActesExceptDelib(array(), array('Deliberation.id', 'Deliberation.typeacte_id'), array());
         $conditions['Deliberation.id'] = $ids; 
         $fields = array('Deliberation.id', 'Deliberation.num_delib',
                         'Deliberation.objet',  'Deliberation.objet_delib',
@@ -3296,10 +3298,10 @@ class DeliberationsController extends AppController {
         $contain = array('Typeacte.libelle',
                          'Service.libelle',
                          'Circuit.nom');
-        $this->paginate = array('conditions' => $conditions, 
+        $this->paginate = array('Deliberation' => array('conditions' => $conditions, 
                                 'fields'     => $fields,
                                 'contain'     => $contain,
-                                'limit'        => 20);
+                                'limit'        => 20));
         $deliberations = $this->paginate('Deliberation');
         $this->_addFiltresAutresActes($deliberations);
 
@@ -3328,7 +3330,8 @@ class DeliberationsController extends AppController {
             App::import('model','TypeseancesTypeacte');
             $TypeseancesTypeacte = new TypeseancesTypeacte();
             $typeseance_ids = $TypeseancesTypeacte->getTypeseanceParNature($typeacte_id);
-            $typeseances = $this->Typeseance->find('list', array('conditions' => array('Typeseance.id' =>  $typeseance_ids)));
+            $typeseances = $this->Typeseance->find('list', array('conditions' => array('Typeseance.id' =>  $typeseance_ids),
+                                                                 'order'      => array('Typeseance.libelle' => 'ASC')));
             $this->set('typeseances', $typeseances);
             $this->layout = 'ajax';
     }
@@ -3342,10 +3345,11 @@ class DeliberationsController extends AppController {
         $seances = $this->Seance->find('all', array('conditions' => array('Seance.type_id' => $typeseances_id,
                                                                           'Seance.traitee' => 0),
                                                     'contain'    => array('Typeseance.libelle'),
+                                                    'order'      => array('Typeseance.libelle' => 'ASC', 'Seance.date' => 'DESC'),
                                                     'fields'     => array('Seance.id', 'Seance.type_id', 'Seance.date')));
-        foreach ($seances as $seance) {
+        foreach ($seances as $seance)
             $result[$seance['Seance']['id']] = $seance['Typeseance']['libelle'].' : '. $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-        } 
+
         $this->set('seances', $result);
         $this->layout = 'ajax';
     }
@@ -3388,6 +3392,11 @@ class DeliberationsController extends AppController {
 
     function quicksearch() {
         $field = trim($this->params->query['data']['field']);
+        if (empty($field))  {
+            $this->Session->setFlash('Action effectu&eacute;e avec succ&egrave;s', 'growl');
+            $this->redirect($this->referer());
+        }
+        
         $userId=$this->Session->read('user.User.id');
         if (!$this->Droits->check($userId, 'Deliberations:tousLesProjetsRecherche')) {
             $listeCircuits = explode(',', $this->Circuit->listeCircuitsParUtilisateur($userId));
