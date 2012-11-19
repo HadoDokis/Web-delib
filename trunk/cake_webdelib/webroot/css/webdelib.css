@@ -242,10 +242,11 @@ h1 {
         -moz-border-radius : 12px;
         font: normal normal 22px/26px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
         color:#444444;
-        /* couleur NON-web */
+        /* couleur NON-web 
         border-left: 1px solid #e0ef90;
-        border-bottom: 1px solid #e0ef90;
+        border-bottom: 1px solid #e0ef90; */
         padding-left: 1%;
+        padding-bottom: 5px;
 }
 
 h2 {
