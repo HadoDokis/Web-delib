@@ -23,14 +23,16 @@ function initAffichageInfosElus()
 </script>
 
 <?php
-	if($this->Html->value('Acteur.id')) {
-		echo "<h2>Modification d'un acteur</h2>";
-		echo $this->Form->create('Acteur',array('url'=>'/acteurs/edit/'.$this->Html->value('Acteur.id'),'type'=>'post'));
-	}
-	else {
-		echo "<h2>Ajout d'un acteur</h2>";
-		echo $this->Form->create('Acteur',array('url'=>'/acteurs/add','type'=>'post'));
-	}
+    echo $this->Html->script('calendrier.js');
+
+    if($this->Html->value('Acteur.id')) {
+        echo "<h2>Modification d'un acteur</h2>";
+        echo $this->Form->create('Acteur',array('url'=>'/acteurs/edit/'.$this->Html->value('Acteur.id'),'type'=>'post', 'name'=>'ActeurForm'));
+    }
+    else {
+        echo "<h2>Ajout d'un acteur</h2>";
+        echo $this->Form->create('Acteur',array('url'=>'/acteurs/add','type'=>'post', 'name'=>'ActeurForm'));
+    }
 ?>
 	<div class="demi">
 		<fieldset>
@@ -100,9 +102,12 @@ function initAffichageInfosElus()
 				<div class="spacer"></div>
 			 	<?php echo $this->Form->input('Service.Service', array('label'=>'Délégation(s)', 'options'=>$services, 'default'=>$selectedServices, 'multiple' => 'multiple', 'class' => 'selectMultiple', 'empty'=>true, 'escape' => false));?>
 				<div class="spacer"></div>
-		<?php // echo $this->Form->day('Acteur.date_naissance',null,null,false); ?>-
-                <?php // echo $this->Form2->monthOptionTagFr('Acteur.date_naissance_month', $this->Html->value('Acteur.date_naissance'));?>-
-                <?php // echo $this->Form2->yearOptionTag('Acteur.date_naissance_year', $this->Html->value('Acteur.date_naissance'), 1920, 1990, null); ?>
+
+        <label>Date de naissance : </label>
+        <input name="date" size="9"   <?php if (isset($date)) echo("value =\"$date\"");  ?>/>&nbsp;
+        <a href="javascript:show_calendar('ActeurForm.date','f');"><?php echo $this->Html->image("calendar.png", array('style'=>"border='0'")); ?></a>
+    
+     
 			</div>
 		</fieldset>
 		<div class="spacer"></div>
