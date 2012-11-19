@@ -96,7 +96,7 @@ class SeancesController extends AppController {
 		$path_seance= WWW_ROOT.'files'.DS.'generee'.DS.'seance'.DS.$id.DS;
 		if (empty($this->data)) {
 			$this->Seance->Behaviors->attach('Containable');
-			$this->data = $this->Seance->find('first', array( 'contain'=>array('Infosup'),
+			$this->request->data = $this->Seance->find('first', array( 'contain'=>array('Infosup'),
 					'conditions'=>array('Seance.id'=> $id)));
 			if (empty($this->data)) {
 				$this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
