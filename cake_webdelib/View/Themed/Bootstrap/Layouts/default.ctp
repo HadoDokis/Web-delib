@@ -106,12 +106,11 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                        }
                        echo ('</li>');
                    }
-                ?>
+               ?>
                </ul>
-
-   		    <?php echo $this->Session->flash(); ?>
-		     <?php echo $this->fetch('content'); ?>
-		</div>
+               <?php echo $this->Session->flash(); ?>
+               <?php echo $this->fetch('content'); ?>
+            </div>
 	</div>
 	
         <div class="pied">
