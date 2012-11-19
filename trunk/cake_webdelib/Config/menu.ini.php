@@ -47,7 +47,7 @@ $webDelib = array(
 				)
 			),
                 'Projets de mon service' => array(
-                        'link' => '/pages/projets_mon_service',
+                        'link' => 'projets_mon_service',
                         'title' => 'Projets rédigés par mon service',
                         'subMenu' => array(
                                 'items' => array(
@@ -55,7 +55,7 @@ $webDelib = array(
                                                                           'title' => 'Projets de mon service' )))
                 ),
 		'Tous les projets' => array(
-			'link' => '/pages/tous_les_projets',
+			'link' => 'tous_les_projets',
 			'title' => 'Projets de tous les rédacteurs',
 			'subMenu' => array(
 				'items' => array(
@@ -75,7 +75,7 @@ $webDelib = array(
 				)
 			),
                  'Autres Actes...' => array(
-                        'link' => '/deliberations/autresActesAValider', 
+                        'link' => 'autresActesAValider', 
                         'subMenu' => array(
                                 'items' => array(
                                         'En cours d\'élaboration...' => array('link' => '/deliberations/autresActesAValider'),
@@ -86,17 +86,18 @@ $webDelib = array(
                                 )
                         ),
 		'Séances' => array(
-			'link' => '/seances/listerFuturesSeances',
+			'link' => 'listerFuturesSeances',
 			'subMenu' => array(
 				'items' => array(
 					'Nouvelle...' => array('link' => '/seances/add'),
+					'A traiter' => array('link' => '/seances/listerFuturesSeances'),
 					'Passées' => array('link' => '/seances/listerAnciennesSeances'),
 					'Calendrier' => array('link' => '/seances/afficherCalendrier')
 					)
 				)
 			),
 		'Post-séance' => array(
-			'link' => '/postseances/index',
+			'link' => 'postseances',
 			'subMenu' => array(
 				'items' => array(
 					'Editions' => array('link' => '/postseances/index'),
