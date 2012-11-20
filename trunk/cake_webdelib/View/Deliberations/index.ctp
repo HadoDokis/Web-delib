@@ -24,7 +24,11 @@
 ?>
 	<table width="100%" cellspacing="0" cellpadding="0" caption="<?php echo $titreVue;?>" summary="<?php echo $titreVue;?>" >
 	<tr>
-		<th width='5%' align="right">Vue </th>
+		<th width='5%' align="right">
+                 <?php if (isset($traitement_lot) && ($traitement_lot ==true))
+                           echo "<input type=\"checkbox\" onclick=\"$('td :checkbox').attr('checked', this.checked);\"/>";
+                 ?>
+                 &nbsp;Vue </th>
 		<th width='15%' align="left">synth&eacute;tique</th>
 		<th width='46%'> &nbsp;</th>
 		<th width='18%' >&nbsp;</th>
