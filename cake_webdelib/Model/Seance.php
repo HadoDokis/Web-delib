@@ -148,6 +148,7 @@ class Seance extends AppModel {
 		$options = array_merge($defaut, $options);
 
 		$options['conditions']['Seance.id'] = $seance_id;
+		$options['conditions']['Deliberation.etat >='] = 0;
 		$deliberations = $this->Deliberationseance->find('all', $options);
 		for ($i = 0; $i < count($deliberations); $i++) {
 			if (isset($deliberations[$i]['Deliberation']['theme_id'])) {
