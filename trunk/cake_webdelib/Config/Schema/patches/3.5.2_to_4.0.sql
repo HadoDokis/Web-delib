@@ -171,3 +171,5 @@ ALTER TABLE compteurs ALTER COLUMN val_reinit DROP NOT NULL;
 ALTER TABLE themes ALTER COLUMN parent_id DROP NOT NULL;
 ALTER TABLE services ALTER COLUMN parent_id DROP NOT NULL;
 
+INSERT INTO "circuits_users" (user_id, circuit_id)  select users.id, "wkf_circuits".id from users, "wkf_circuits";
+
