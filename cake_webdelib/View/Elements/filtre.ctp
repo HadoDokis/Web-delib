@@ -54,12 +54,13 @@ echo $this->Html->div('filtre');
 				$options = $critere['inputOptions'];
 				$options['onChange'] = "critereChange();";
 				if (array_key_exists('type', $options) && $options['type'] == 'date')
-					echo $this->Html->div($critere['classeDiv'], $datePicker->picker('Critere.'.$nom, $options));
+				    echo $this->Html->div($critere['classeDiv'], $datePicker->picker('Critere.'.$nom, $options));
 				else
-					echo $this->Html->div($critere['classeDiv'], $this->Form->input('Critere.'.$nom, $options));
+				    echo $this->Html->div($critere['classeDiv'], $this->Form->input('Critere.'.$nom, $options));
 				if ($critere['retourLigne'])
-					echo '<div class="spacer"></div>';
+			            echo '<div class="spacer"></div>';
 			}
+		        echo '<div class="spacer"></div>';
 			echo $this->Form->submit('Appliquer le filtre');
 		echo '</div>';
 	echo $this->Form->end();
