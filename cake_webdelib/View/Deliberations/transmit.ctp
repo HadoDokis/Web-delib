@@ -7,6 +7,9 @@
 
 <?php echo $this->Html->script('utils.js'); ?>
 <div class="deliberations">
+<?php
+        echo $this->element('filtre');
+?>
 
 <?php 
     if ($this->action=='autreActesEnvoyes')
