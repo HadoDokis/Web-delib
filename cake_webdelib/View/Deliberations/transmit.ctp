@@ -9,9 +9,6 @@
 <div class="deliberations">
 
 <?php 
-    if (isset($message))  
-        echo ($message); 
-
     if ($this->action=='autreActesEnvoyes')
         echo ('<h2>T&eacute;l&eacute;transmission des actes</h2>');
     elseif ($this->action == 'transmit')
