@@ -65,11 +65,11 @@ if (!defined("PCL_TAR"))
   // Library in order to limit the potential 'lib' directory path problem.
   if (!defined("PCLERROR_LIB"))
   {
-    include(APP.'vendors/pcltar/pclerror.lib.php');
+    include(ROOT.DS.APP_DIR.DS.'Vendor/pcltar/pclerror.lib.php');
   }
   if (!defined("PCLTRACE_LIB"))
   {
-    include(APP.'vendors/pcltar/pcltrace.lib.php');
+    include(ROOT.DS.APP_DIR.DS.'Vendor/pcltar/pcltrace.lib.php');
   }
 
   // --------------------------------------------------------------------------------
