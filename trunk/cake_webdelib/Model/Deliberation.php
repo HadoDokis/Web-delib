@@ -87,10 +87,9 @@ class Deliberation extends AppModel {
 			'Traitement'=>array(
 					'className'    => 'Cakeflow.Traitement',
 					'foreignKey'   => 'target_id'),
-			'Annex'=>array(
-					'className'    => 'Annex',
+			'Annex'=>array(	'className'    => 'Annex',
 					'foreignKey' => 'foreign_key',
-					//'conditions' => array('Annex.model' => 'Deliberation'),
+                                        'order'      => 'Annex.created ASC',
 					'dependent' => true),
 			'Commentaire'=>array(
 					'className'    => 'Commentaire',
