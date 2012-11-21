@@ -48,6 +48,7 @@ class Annex extends AppModel {
               
 	    $annexes = $this->find('all', array('conditions' => $conditions,
                                                 'recursive'  => -1,
+                                                'order'      => array('Annex.id' => 'ASC'),
 						'fields'     => array('id', 'model')));
 
 	    $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
