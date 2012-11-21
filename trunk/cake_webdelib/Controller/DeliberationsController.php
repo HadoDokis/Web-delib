@@ -1120,16 +1120,23 @@ class DeliberationsController extends AppController {
     }
     
     function transmit($seance_id=null){
-        if ($seance_id != null) {
-            $conditions['Deliberation.id'] =  $this->Seance->getDeliberationsId($seance_id);
+        $this->Deliberation->Behaviors->attach('Containable');
+        $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
+
+        $conditions = $this->_handleConditions($this->Filtre->conditions());
+        if (isset($conditions['Seance.id'])) {
+            $seance_id = $conditions['Seance.id'];
+            unset ($conditions['Seance.id']);
         }
+        if ($seance_id != null) 
+            $conditions['Deliberation.id'] =  $this->Seance->getDeliberationsId($seance_id);
         $conditions['Deliberation.typeacte_id']  = $this->Deliberation->Typeacte->getIdDesNaturesDelib();
         $conditions['Deliberation.etat'] = 5;
         
         $this->paginate = array( 'Deliberation' => array(
                                  'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.objet_delib', 
                                                     'Deliberation.num_delib', 'Deliberation.dateAR', 'Deliberation.pastell_id' , 
-                                                    'Deliberation.num_pref', 'Deliberation.etat', 
+                                                    'Deliberation.num_pref', 'Deliberation.etat',
                                                     'Deliberation.titre', 'Deliberation.tdt_id'),
                                  'order'      => array('Deliberation.modified'=> 'DESC'),
                                  'conditions' => $conditions,
@@ -1145,6 +1152,7 @@ class DeliberationsController extends AppController {
         
         // On affiche que les delibs vote pour.
         $deliberations = $this->paginate('Deliberation');
+        $toutes_seances = array();
         for($i = 0; $i < count( $deliberations); $i++) {
             $seances = $deliberations[$i]['Seance'];
             if (count($seances) == 1) {
@@ -1164,7 +1172,6 @@ class DeliberationsController extends AppController {
                 $deliberations[$i]['Seance']['id']      = $seance['Seance']['id'];
                 $deliberations[$i]['Seance']['date']    = $seance['Seance']['date'];
                 $deliberations[$i]['Seance']['type_id'] = $seance['Seance']['type_id'];
-
             }
             if (empty($deliberations[$i]['Deliberation']['DateAR'])) {
                 if ( Configure::read('USE_PASTELL')) {
@@ -1196,6 +1203,18 @@ class DeliberationsController extends AppController {
                     }
                 }
             }
+        }
+        $seances = $this->Seance->find('all', array('conditions' => array('Seance.traitee' => 1),
+                                                    'recursive'  => -1,
+                                                    'fields'    => array('Seance.id', 'Seance.date')));	
+        foreach($seances as $seance) 
+            $toutes_seances[$seance['Seance']['id']] =  $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
+        if (!$this->Filtre->critereExists()){
+            $this->Filtre->addCritere('SeanceId', array('field' => 'Seance.id',
+                'inputOptions' => array(
+                    'label'=>__('Séances', true),
+                    'empty' =>'toutes',
+                    'options' =>  $toutes_seances)));
         }
         $this->set('deliberations', $deliberations);
     }
@@ -1242,9 +1261,12 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.etat <>'] = 4;
         //$conditions['Deliberation.signee'] = true;
         $conditions['Deliberation.delib_pdf <>'] = '';
-        
+        if (isset($conditions['Seance.id'])) {
+            $seance_id = $conditions['Seance.id'];
+            unset ($conditions['Seance.id']);
+        }
+
         if ($seance_id != null) {
-            $conditions['Seance.traitee'] = '1';
             $deliberations = $this->Seance->getDeliberations($seance_id, $conditions);
         }
         else {
