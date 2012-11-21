@@ -88,9 +88,9 @@ class Deliberation extends AppModel {
 					'className'    => 'Cakeflow.Traitement',
 					'foreignKey'   => 'target_id'),
 			'Annex'=>array(	'className'    => 'Annex',
-					'foreignKey' => 'foreign_key',
-                                        'order'      => 'Annex.created ASC',
-					'dependent' => true),
+					'foreignKey'   => 'foreign_key',
+                                        'order'        => array('Annex.id' => 'ASC'),
+					'dependent'    => true),
 			'Commentaire'=>array(
 					'className'    => 'Commentaire',
 					'foreignKey'   => 'delib_id'),
@@ -705,7 +705,8 @@ class Deliberation extends AppModel {
 		$anns = $this->Annex->find('all', array('conditions' =>  array(
 				'Annex.foreign_key' => $delib['Deliberation']['id'],
 				'Annex.filetype like' => '%vnd.oasis.opendocument.text%'),
-				'fields' => array('id'),
+				'fields' => array('id'), 
+                                'order' => array('Annex.id' => 'ASC'),
 				'recursive' => -1));
 		foreach( $anns as $ann )
 			$annexe_ids[] = $ann['Annex']['id'];
