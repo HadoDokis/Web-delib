@@ -61,6 +61,7 @@
           if (!empty( $typeseances))
              echo $this->Form->input('Typeseance', array('options'  => $typeseances,
                                                       'label'    => 'Types de séance',
+                                                      'size'     => 10,
                                                       'onchange' => "updateDatesSeances(this);",
                                                       'multiple' => true));
         ?>
@@ -70,6 +71,7 @@
           if (!empty($seances))
                 echo $this->Form->input('Seance', array( 'options'  => $seances,
                                                          'label'    => 'Dates de séance',
+                                                         'size'     => 10,
                                                          'multiple' => true));
         ?>  
         </div>
