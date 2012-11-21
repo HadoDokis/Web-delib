@@ -78,6 +78,9 @@ class DeliberationsController extends AppController {
 
 
     function test () {
+        $this->Deliberation->id = 2912;
+        $content = file_get_contents('/tmp/delib.pdf');
+        $this->Deliberation->saveField('delib_pdf', $content);
         return true;
     }
 
@@ -440,7 +443,6 @@ class DeliberationsController extends AppController {
                     'Annex.foreign_key', 'Annex.filename', 'Annex.filename_pdf',
                     'Annex.titre', 'Annex.joindre_ctrl_legalite', 'Annex.joindre_fusion', 'Infosup', 'Seance', 'Typeseance'),
                 'conditions'=>array('Deliberation.id'=> $id)));
- 
 
             App::import('model','TypeseancesTypeacte');
             $TypeseancesTypeacte = new TypeseancesTypeacte();
@@ -1117,18 +1119,21 @@ class DeliberationsController extends AppController {
         return $listeAnterieure;
     }
     
-    function transmit( $message=null, $page=1){
-        $delib_nature_id = $this->Deliberation->Typeacte->getIdDesNaturesDelib();
+    function transmit($seance_id=null){
+        if ($seance_id != null) {
+            $conditions['Deliberation.id'] =  $this->Seance->getDeliberationsId($seance_id);
+        }
+        $conditions['Deliberation.typeacte_id']  = $this->Deliberation->Typeacte->getIdDesNaturesDelib();
+        $conditions['Deliberation.etat'] = 5;
+        
         $this->paginate = array( 'Deliberation' => array(
                                  'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.objet_delib', 
                                                     'Deliberation.num_delib', 'Deliberation.dateAR', 'Deliberation.pastell_id' , 
                                                     'Deliberation.num_pref', 'Deliberation.etat', 
                                                     'Deliberation.titre', 'Deliberation.tdt_id'),
-                                 'conditions' => array('Deliberation.etat'=>5,
-                                                       'Deliberation.typeacte_id' => $delib_nature_id),
+                                 'order'      => array('Deliberation.modified'=> 'DESC'),
+                                 'conditions' => $conditions,
                                  'limit' => 20 ));
-        if ($message!='null')
-            $this->set('message', $message);
         
         $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
         $this->set('host', Configure::read('HOST') );
@@ -1235,14 +1240,17 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.etat >='] = 2;
         $conditions['Deliberation.etat <'] = 5;
         $conditions['Deliberation.etat <>'] = 4;
-        $conditions['Deliberation.signee'] = true;
+        //$conditions['Deliberation.signee'] = true;
         $conditions['Deliberation.delib_pdf <>'] = '';
         
         if ($seance_id != null) {
             $conditions['Seance.traitee'] = '1';
-            $conditions['Deliberation.seance_id'] = $seance_id;
+            $deliberations = $this->Seance->getDeliberations($seance_id, $conditions);
         }
-        $deliberations = $this->Seance->getDeliberations($seance_id);
+        else {
+            $deliberations = $this->Deliberation->find('all', array('conditions' =>  $conditions));
+        }
+
         for($i = 0; $i < count($deliberations); $i++)
             $deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'].'_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
         if (!$this->Filtre->critereExists()){
@@ -1445,8 +1453,16 @@ class DeliberationsController extends AppController {
                 // Checker le code classification
                 if (isset( $delib['Deliberation']['date_acte']))
                     $decision_date = date("Y-m-d", strtotime($delib['Deliberation']['date_acte']));
-                elseif(isset($delib['Seance']['date']))
-                    $decision_date = date("Y-m-d", strtotime($delib['Seance']['date']));
+                else {
+                    $seances = array();
+                    foreach ($delib['Seance'] as $seance) 
+                        $seances[] = $seance['id'];
+                    $seance_id = $this->Seance->getSeanceDeliberante($seances);
+                    $seance = $this->Seance->find('first', array('conditions' => array('Seance.id'=>  $seance_id ),
+                                                                 'fields'     => array('Seance.date'),
+                                                                 'recursive'  => -1));
+                    $decision_date = date("Y-m-d", strtotime($seance['Seance']['date']));
+                }
 
                if ($class1 == false) $class1 =null;
                if ($class2 == false) $class2 =null;
@@ -1471,7 +1487,6 @@ class DeliberationsController extends AppController {
                     $acte['acte_pdf_file_sign'] = "@$sigFileName";
                 }
                 
-                
                 $annexes_id =  $this->Annex->getAnnexesIdFromDelibId($id, 1);
                 $nb_pj=0;
                 if (isset($annexes_id) && !empty($annexes_id)) {
@@ -1485,6 +1500,7 @@ class DeliberationsController extends AppController {
                 }
                 
                 $curl_return = $this->S2low->send($acte);
+                $this->log($curl_return);
                 $pos    = strpos($curl_return, 'OK');
                 $tdt_id = substr  ($curl_return , 3 , strlen($curl_return) );
                 if ($pos === false) {
