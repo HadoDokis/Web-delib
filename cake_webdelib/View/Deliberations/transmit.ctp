@@ -55,7 +55,7 @@
                    if ($this->action == 'autreActesEnvoyes')
                        echo $this->Form2->ukToFrenchDateWithHour($delib['Deliberation']['date_acte']); 
                    else
-                       echo $delib['Seance']['date']; 
+                       echo $this->Html2->ukToFrenchDateWithHour($delib['Seance']['date']); 
                 ?>
                 </td>
 		<td><?php echo $delib['Deliberation']['titre']; ?></td>
