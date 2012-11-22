@@ -32,7 +32,7 @@
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
  */
-	Configure::write('debug', 1);
+	Configure::write('debug', 0);
 /**
  * Configure the Error handler used to handle errors for your application.  By default
  * ErrorHandler::handleError() is used.  It will display errors using Debugger, when debug > 0
@@ -293,6 +293,6 @@ Cache::config('_cake_model_', array(
     define('CONFIG_PATH', $path2."Config/");
     define ('CRON_DISPATCHER', false);
     require_once ('webdelib.inc');
-    define('VERSION', '<b> 4.0-rc1 </b>');
+    define('VERSION', '<b> 4.0 </b>');
     include_once(ROOT.DS.APP_DIR.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'cakeflow.conf.php');
 
