@@ -391,17 +391,17 @@ class Deliberation extends AppModel {
 	}
 
 	function genererRecherche($projets, $model_id=1, $format=0, $multiSeances=array(), $conditions=array() ){
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_Utility.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_IterationType.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_PartType.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_FusionType.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixType.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
+		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
+		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
+		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
+		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_PartType.class');
+		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FusionType.class');
+		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixType.class');
+		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
+		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
 
-		include_once ('controllers/components/conversion.php');
+		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/ConversionComponent.php');
 		$this->Conversion = new ConversionComponent;
 
 		if ($format == 0) {
