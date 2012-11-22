@@ -3323,11 +3323,14 @@ class DeliberationsController extends AppController {
     }
 
     function autreActesEnvoyes() {
+        $delibs_id = array();
         $this->set('titreVue', 'Autres actes envoyés au contrôle de légalité');
         $conditions['Deliberation.etat'] = 5;
         $conditions['Deliberation.signee'] = 1;
         $ids = $this->Deliberation->getActesExceptDelib(array(), array('Deliberation.id', 'Deliberation.typeacte_id'), array());
-        $conditions['Deliberation.id'] = $ids; 
+        foreach($ids as $did) 
+           $delibs_id [] = $did['Deliberation']['id'];
+        $conditions['Deliberation.id'] =  $delibs_id; 
         $fields = array('Deliberation.id', 'Deliberation.num_delib',
                         'Deliberation.objet',  'Deliberation.objet_delib',
                         'Deliberation.titre', 'Deliberation.num_pref', 
