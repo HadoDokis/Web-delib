@@ -6,6 +6,13 @@
 <?php echo $this->Form->create( 'Seance',
                                 array( 'type'=>'file',
                                        'url'=>"/seances/sendConvocations/$seance_id/$model_id")); ?>
+    <?php echo ('<td>'.$this->Html->link("Générer les convocations", 
+                                         "/seances/genererConvoc/$seance_id/$model_id", 
+                                         array('class' => 'generer_convocation')).'</td>');  ?>
+    <?php echo ('<td>'.$this->Html->link("Récupérer une archive contenant les convocations", 
+                                         "/seances/recuperer_zip/$seance_id/$model_id", 
+                                         array('class' => 'link_retour_avec_border')).'</td>');  ?>
+<br /><br />
 <table width='100%'>
     <tr>
         <th></th>
@@ -45,11 +52,6 @@
             echo ('<td>'.'Reçu le : '.$this->Form2->ukToFrenchDateWithHour($acteur['Acteur']['date_reception']).'</td>');
     } 
 ?>
-</tr>
-<tr>
-    <td></td>
-    <td></td>
-    <?php echo ('<td>'.$this->Html->link("Générer les convocations", "/seances/genererConvoc/$seance_id/$model_id").'</td>');  ?>
 </tr>
 </table>
 <br />
