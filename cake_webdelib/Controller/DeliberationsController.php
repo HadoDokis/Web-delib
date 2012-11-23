@@ -447,12 +447,13 @@ class DeliberationsController extends AppController {
             App::import('model','TypeseancesTypeacte');
             $TypeseancesTypeacte = new TypeseancesTypeacte();
             $typeseance_ids = $TypeseancesTypeacte->getTypeseanceParNature($this->request->data['Deliberation']['typeacte_id']);
-            $typeseances = $this->Typeseance->find('list', array('conditions' => array('Typeseance.id' =>  $typeseance_ids)));
+            $typeseances = $this->Typeseance->find('list', array('conditions' => array('Typeseance.id' =>  $typeseance_ids), 'order' => 'libelle'));
             foreach ( $this->request->data['Typeseance'] as $typeseance) 
-                    $typeseances_selected[] = $typeseance['id'];
+                $typeseances_selected[] = $typeseance['id'];
 
             $seances_tmp = $this->Seance->find('all', array('conditions' => array('Seance.type_id' => $typeseances_selected,
                                                                               'Seance.traitee' => 0),
+                                                        'order'      => array('Seance.date' => 'ASC'),
                                                         'contain'    => array('Typeseance.libelle'),
                                                         'fields'     => array('Seance.id', 'Seance.type_id', 'Seance.date')));
             foreach ($seances_tmp as $seance) 
@@ -535,7 +536,7 @@ class DeliberationsController extends AppController {
                         'recursive' => -1,
                         'fields' => array('filename', 'data'),
                         'conditions' => array(
-                            'Annex.Model'=> 'Deliberation',
+                            'Annex.model'=> 'Deliberation',
                             'Annex.foreign_key' => $delibRattachee['id'],
                             'Annex.filetype like' => '%vnd.oasis.opendocument%')));
                     foreach ($annexes as $annexe)
@@ -626,7 +627,7 @@ class DeliberationsController extends AppController {
                     $this->request->data['Deliberation']['deliberation'] = file_get_contents($path_projet.'deliberation.odt');
                 }
             }
-            if (@$this->data['Deliberation']['is_multidelib'] == 0)
+            if (empty($this->data['Deliberation']['is_multidelib']) OR (@$this->data['Deliberation']['is_multidelib'] == 0))
                  $this->request->data['Deliberation']['objet_delib'] =  $this->data['Deliberation']['objet'];
             
             $this->request->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->data['date_limite']);
