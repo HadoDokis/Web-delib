@@ -360,6 +360,9 @@ class ModelsController extends AppController {
 
 						$time_start = microtime(true);
 						$oFusion->SendContentToFile($path.$nomFichier.".odt");
+                                                $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt');
+                                                file_put_contents  ($path.$nomFichier.".odt",   $content);
+
 						$content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
 						$chemin_fichier = $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
 						if (($format == 'pdf') && ($joindre_annexe))

@@ -1190,8 +1190,11 @@ class SeancesController extends AppController {
 
                     $time_start = microtime(true);
                     $oFusion->SendContentToFile($dirpath.$nomFichier.".odt");
-                    $content = $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", $format);
 
+                    $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt');
+                    file_put_contents  ($path.$nomFichier.".odt",   $content);
+
+                    $content = $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", $format);
                     $chemin_fichier = $this->Gedooo->createFile($dirpath, $nomFichier.".$format", $content);
                     if (($format == 'pdf') && ($joindre_annexe))
                         $this->Pdf->concatener($chemin_fichier, $annexes);
