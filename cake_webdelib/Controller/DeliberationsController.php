@@ -1138,7 +1138,7 @@ class DeliberationsController extends AppController {
                                                     'Deliberation.num_delib', 'Deliberation.dateAR', 'Deliberation.pastell_id' , 
                                                     'Deliberation.num_pref', 'Deliberation.etat',
                                                     'Deliberation.titre', 'Deliberation.tdt_id'),
-                                 'order'      => array('Deliberation.modified'=> 'DESC'),
+                                 'order'      => array('Deliberation.id'=> 'DESC'),
                                  'conditions' => $conditions,
                                  'limit' => 20 ));
         
@@ -1500,7 +1500,8 @@ class DeliberationsController extends AppController {
                     'classif3'      => $class3,
                     'classif4'      => $class4,
                     'classif5'      => $class5,
-                    'number'        => $delib['Deliberation']['num_delib'],
+                    'number'        => time(),
+                    //'number'        => $delib['Deliberation']['num_delib'],
                     'decision_date' => $decision_date,
                     'subject'       => $delib['Deliberation']['objet_delib'],
                     'acte_pdf_file' => "@$file",
