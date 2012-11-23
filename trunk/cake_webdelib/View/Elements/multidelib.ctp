@@ -1,10 +1,10 @@
 <?php
 // initialisation des boutons pour les délibération
 $links = array(
-	'modifier' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_modifier', 'title'=>'Modifier')),
-	'annulerModifier' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_modifier_back', 'title'=>'Annuler les modifications', 'style'=>'display: none;')),
-	'supprimer' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_supprimer', 'title'=>'Supprimer')),
-	'annulerSupprimer' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_supprimer_back', 'title'=>'Annuler la suppression', 'style'=>'display: none;')),
+	'modifier' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_modifier','escape' => false,  'title'=>'Modifier')),
+	'annulerModifier' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_modifier_back', 'escape' => false,  'title'=>'Annuler les modifications', 'style'=>'display: none;')),
+	'supprimer' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_supprimer', 'title'=>'Supprimer', 'escape' => false)),
+	'annulerSupprimer' => array('title'=>SHY, 'url'=>'#', 'escapeTitle'=>false, 'htmlAttributes'=>array('class'=>'link_supprimer_back', 'escape' => false, 'title'=>'Annuler la suppression', 'style'=>'display: none;')),
 	);
 
         if (isset($this->data['Deliberation']['id'])) {
@@ -74,11 +74,11 @@ if (isset($this->data['Multidelib'])) {
 				echo $this->Form->hidden('Multidelib.'.$delib['id'].'.id', array('value'=>$delib['id'], 'disabled'=>true));
 				// saisie libellé
 				echo $this->Html->tag('label', 'Libellé <acronym title="obligatoire">(*)</acronym>');
-				echo $this->Form->input('Multidelib.'.$delib['id'].'.objet', array(
+				echo $this->Form->input('Multidelib.'.$delib['id'].'.objet_delib', array(
 					'type'=>'textarea',
 					'label'=>'',
 					'cols'=>'60','rows'=>'1',
-					'value'=>$delib['objet'],
+					'value'=>$delib['objet_delib'],
 					'disabled'=>true));
 				echo $this->Html->tag('div', '', array('class'=>'spacer'));
 				// saisie texte de délibération
