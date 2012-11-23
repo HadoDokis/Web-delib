@@ -1865,10 +1865,9 @@ class DeliberationsController extends AppController {
         else {
             $conditions['Deliberation.id'] = $delibs_ids;
         }
-        $ordre = 'Deliberation.created DESC';
         $projets = $this->Deliberation->find('all', array(
             'conditions' => $conditions,
-            'order'      =>  array($ordre),
+            'order'      =>  array('Deliberation.id' => 'DESC'),
             'limit'      => $limit,
             'fields'     => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
                                   'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
