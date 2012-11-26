@@ -627,8 +627,9 @@ class DeliberationsController extends AppController {
                     $this->request->data['Deliberation']['deliberation'] = file_get_contents($path_projet.'deliberation.odt');
                 }
             }
-            if (empty($this->data['Deliberation']['is_multidelib']) OR (@$this->data['Deliberation']['is_multidelib'] == 0))
-                 $this->request->data['Deliberation']['objet_delib'] =  $this->data['Deliberation']['objet'];
+            if ($oldDelib['Deliberation']['is_multidelib']!= 1 )
+                if (empty($this->data['Deliberation']['is_multidelib']) OR (@$this->data['Deliberation']['is_multidelib'] == 0))
+                    $this->request->data['Deliberation']['objet_delib'] =  $this->data['Deliberation']['objet'];
             
             $this->request->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->data['date_limite']);
 
