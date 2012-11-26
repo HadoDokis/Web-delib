@@ -53,7 +53,7 @@
 <div class="submit">
 	<?php echo $this->Form->submit('Enregistrer la liste des présents', array('div'=>false, 'class'=>'bt_add', 'name'=>'modifier'));   ?>
     <?php 
-          echo $this->Html->link('Récupérer la liste des présents de la délibérations précédente', 
+          echo $this->Html->link('Récupérer la liste des présents de la délibération précédente', 
                                  "/deliberations/copyFromPrevious/$delib_id/$seance_id",
                                  array('class' => 'bt_add')); 
     ?>
