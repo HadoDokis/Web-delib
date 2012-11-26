@@ -703,9 +703,8 @@ class Deliberation extends AppModel {
 		// $annexe_ids = $this->Annex->getAnnexesIFromDelibId($delib['Deliberation']['id'], 0, 1);
 		$annexe_ids = array();
 		$anns = $this->Annex->find('all', array('conditions' =>  array(
-				'Annex.foreign_key' => $delib['Deliberation']['id'],
-				'Annex.filetype like' => '%vnd.oasis.opendocument.text%'),
-				'fields' => array('id'), 
+				'Annex.foreign_key' => $delib['Deliberation']['id']),
+				'fields' => array('Annex.id', 'Annex.filetype'), 
                                 'order' => array('Annex.id' => 'ASC'),
 				'recursive' => -1));
 		foreach( $anns as $ann )
@@ -715,11 +714,11 @@ class Deliberation extends AppModel {
 		@$annexes =  new GDO_IterationType("Annexes");
 		foreach($annexe_ids as $key => $annexe_id) {
 			$annexe = $this->Annex->find('first', array ('conditions' => array('Annex.id' => $annexe_id),
-					'recursive'  => -1));
+				                                     'recursive'  => -1));
+			$oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
 			if (($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {
 				$oDevPart = new GDO_PartType();
-				$oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
-				$oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
+			        $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
 				$oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
 						'application/vnd.oasis.opendocument.text',
 						'binary',
