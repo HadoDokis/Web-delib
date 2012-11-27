@@ -225,9 +225,6 @@ class UsersController extends AppController {
 		} elseif ($user['User']['id'] == $this->Session->read('user.User.id')) {
 			$message = 'L\'utilisateur courant \''.$user['User']['login'].'\' ne peut pas être supprimé';
 			return false;
-		} elseif (!empty($user['Circuit'])) {
-			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est présent dans un circuit de validation';
-			return false;
 		} elseif ($this->Deliberation->find('count', array('conditions' => array('Deliberation.redacteur_id'=>$user['User']['id']),
 				'recursive' => -1))) {
 				$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est l\'auteur de délibérations';
@@ -238,12 +235,14 @@ class UsersController extends AppController {
 
 	function delete($id = null) {
 		$messageErreur = '';
-		$user = $this->User->read('id, login', $id);
+		$user = $this->User->find('first' , array('conditions' => array('User.id' => $id),
+                                                          'fields'     => array('id', 'login'),
+                                                          'recursive'  => -1));
 		if (empty($user))
 			$this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
 		elseif (!$this->_isDeletable($user, $messageErreur)) {
 			$this->Session->setFlash($messageErreur);
-		} elseif ($this->User->del($id)) {
+		} elseif ($this->User->delete($id)) {
 			$aro = new Aro();
 			$aro_id = $aro->find('first',array('conditions'=>array('model'=>'User', 'foreign_key'=>$id),'fields'=>array('id')));
 			$aro->delete($aro_id['Aro']['id']);
