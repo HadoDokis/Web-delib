@@ -1126,7 +1126,6 @@ class Deliberation extends AppModel {
 		// initialisations
 		$newDelib = array();
 		if (!isset($delib['objet'])) {
-			$this->Session->setFlash('Libellé obligatoire.', 'growl', array('type'=>'erreur'));
 			return false;
 		}
 
@@ -1321,7 +1320,7 @@ class Deliberation extends AppModel {
 		$seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
 		                                             'recursive'  => -1,
 				                             'fields'     => array('Seance.type_id')));
-		$elus = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true);
+		$elus = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
 		foreach ($elus as $elu){
 			$this->Listepresence->create();
 			$params['data']['Listepresence']['acteur_id']=$elu['Acteur']['id'];
