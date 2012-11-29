@@ -6,11 +6,14 @@
         echo $this->Html->tag('div', null, array('class'=>'ouvrable', 'id'=>'seanceATraiter'));
         echo $this->Html->tag('h2', "S&eacute;ances &agrave; traiter");
     }
-    else 
+    else {
         echo $this->Html->tag('h2', "S&eacute;ances &agrave; traiter");
+        echo $this->Form->create('Seance', array('url'=>'/seances/multiodj/', 'type' => 'file'));
+    }
 ?>
 <table width='100%' cellpadding="0" cellspacing="0" border="0">
     <tr>
+      <?php    if (!$endDiv)  echo ("<th width='2px'>&nbsp;</th>"); ?>
         <th width='22px'> </th>
         <th width='150px'>Type</th>
 	<th width='190px'>Date S&eacute;ance</th>
@@ -25,6 +28,8 @@
        echo $this->Html->tag('tr', null, $rowClass); 
        $numLigne++;
 ?>
+<?php     if (!$endDiv) echo("<td>".$this->Form->checkbox('Seance.id_'.$seance['Seance']['id'], array('checked'=> false))."</td>"); ?>
+
                 <td>
 <?php
                      echo $this->Html->link(SHY,
@@ -170,7 +175,13 @@
 	<?php endforeach; ?>
 
 </table>
-
+<div class='spacer'> </div>
+<?php 
+    if (!$endDiv)  {
+        echo $this->Form->input('Seance.model_id', array('options' => $models, 'label' => 'Modèle')); 
+        echo $this->Form->submit('Générer'); 
+    }    
+?>
 </div>
 <script type="text/javascript">
 
