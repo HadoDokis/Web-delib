@@ -10,7 +10,7 @@
 <tr height='36px'>
 	<td style="text-align:center"><?php echo $collectivite['Collectivite']['nom']; ?>
 		<br/><br/><?php echo $collectivite['Collectivite']['adresse']; ?>
-		<br/><?php echo $collectivite['Collectivite']['CP'].' '.$collectivite['0']['Collectivite']['ville']; ?>
+		<br/><?php echo $collectivite['Collectivite']['CP'].' '.$collectivite['Collectivite']['ville']; ?>
 		<br/><br/><?php echo $collectivite['Collectivite']['telephone']; ?>
 	</td>
 	<td><?php  echo $this->Html->image($logo_path);?></td>
