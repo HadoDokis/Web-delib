@@ -33,11 +33,8 @@ class UsersController extends AppController {
                 $this->paginate = array('User' => array(
                                         'fields' => array('DISTINCT User.id', 'User.login', 'User.nom', 'User.prenom', 'User.telfixe', 'User.telmobile' ),
                                         'limit' => 20,
-                                        'contain' => array('Profil.libelle', 'Service'),
-                                        'order' => array(
-                                                        'User.login' => 'asc'
-                                        ),
-                        ));
+                                        'contain' => array('Profil.libelle', 'Service.libelle'),
+                                        'order' => array( 'User.login' => 'asc')));
 
 		$users = $this->paginate('User');
 		foreach ($users as &$user) {
