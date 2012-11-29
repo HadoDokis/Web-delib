@@ -30,29 +30,29 @@
 		<?php echo $this->Html->link(SHY,
                                        '/seances/saisirDebat/'.$deliberation['Deliberation']['id'], 
                                        array('class'=>'link_debat', 
+                                             'escape' => false,
                                              'title'=>'Saisir les debats'), 
-                                       false, 
                                        false); ?>
  		<?php echo $this->Html->link(SHY,
                                        '/seances/donnerAvis/'.$deliberation['Deliberation']['id']."/$seance_id", 
                                        array('class'=>'link_donnerAvis', 
+                                             'escape' => false,
                                              'title'=>'Donner un avis'), 
-                                       false, 
                                        false)?>
                <?php 
 			if (Configure::read('USE_GEDOOO'))
 			    echo $this->Html->link(SHY,
                                              '/models/generer/'.$deliberation['Deliberation']['id'].'/null/'.$deliberation['Model']['id'], 
                                              array('class'=>'link_pdf', 
+                                                   'escape' => false,
                                                    'title'=>'Visionner PDF'), 
-                                             false, 
                                              false);
 			else 
 			    echo $this->Html->link(SHY, 
                                              '/deliberations/convert/'.$deliberation['Deliberation']['id'], 
                                              array('class'=>'link_pdf',  
+                                                   'escape' => false,
                                                    'title'=>'Visionner PDF'), 
-                                             false, 
                                              false);
 		?>
 
@@ -66,6 +66,6 @@
 <div class="submit">
     <?php echo $this->Html->link('Retour', 
                            '/seances/listerFuturesSeances', 
-                           array('class'=>'link_annuler', 
+                           array('class'=>'link_annuler', 'escape' => false,
                                  'name'=>'Retour'))?>
 </div>
