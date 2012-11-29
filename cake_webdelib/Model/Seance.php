@@ -48,7 +48,7 @@ class Seance extends AppModel {
 			'foreignKey' => 'seance_id',
 			'associationForeignKey' => 'deliberation_id',
 			'unique' => true,
-			'conditions' => '',
+			'conditions' => array('Deliberation.etat >='=>0),
 			'fields' => '',
 			'order' => 'DeliberationsSeance.position',
 			'limit' => '',
@@ -175,15 +175,15 @@ class Seance extends AppModel {
 		App::import('Model', 'Deliberationseance');
 		$this->Deliberationseance = new Deliberationseance();
 
+		$this->Deliberationseance->Behaviors->attach('Containable');
 		$deliberations = $this->Deliberationseance->find('all', array(
-				'conditions' => array('Deliberationseance.seance_id' => $seance_id),
+				'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
 				'fields'     => array('Deliberationseance.deliberation_id'),
+                                'contain'    => array('Deliberation.id', 'Deliberation.etat', 'Seance.id'),
                                 'order'      => 'Deliberationseance.position',
-				'recursive'  => -1 ));
-
+				));
 		foreach ($deliberations as $deliberation)
 			$tab[] = $deliberation['Deliberationseance']['deliberation_id'];
-
 		return $tab;
 	}
 
