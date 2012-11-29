@@ -173,3 +173,23 @@ ALTER TABLE services ALTER COLUMN parent_id DROP NOT NULL;
 
 INSERT INTO "circuits_users" (user_id, circuit_id)  select users.id, "wkf_circuits".id from users, "wkf_circuits";
 
+
+ALTER TABLE "deliberations"  ALTER COLUMN titre DROP NOT NULL;
+ALTER TABLE "deliberations"  ALTER COLUMN num_pref  DROP NOT NULL;
+ALTER TABLE "deliberations"  ALTER COLUMN texte_name_projet DROP NOT NULL;
+
+ALTER TABLE "deliberations"  ALTER COLUMN texte_projet_name DROP NOT NULL;
+ALTER TABLE "deliberations"  ALTER COLUMN texte_projet_type DROP NOT NULL;
+ALTER TABLE "deliberations"  ALTER COLUMN texte_projet_size DROP NOT NULL;
+
+ALTER TABLE "deliberations"  ALTER COLUMN texte_synthese_type DROP NOT NULL;
+ALTER TABLE "deliberations"  ALTER COLUMN texte_synthese_name DROP NOT NULL;
+ALTER TABLE "deliberations"  ALTER COLUMN texte_synthese_size DROP NOT NULL;
+
+ALTER TABLE "deliberations"  ALTER COLUMN deliberation_type DROP NOT NULL;
+ALTER TABLE "deliberations"  ALTER COLUMN deliberation_name DROP NOT NULL;
+ALTER TABLE "deliberations"  ALTER COLUMN deliberation_size DROP NOT NULL;
+
+ALTER TABLE deliberations_seances ADD  COLUMN avis smallint;
+ALTER TABLE models ADD  COLUMN multiodj BOOLEAN DEFAULT false; 
+ALTER TABLE aros ALTER COLUMN parent_id DROP NOT NULL;
