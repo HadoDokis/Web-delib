@@ -7,6 +7,7 @@
 	<th>Nom du mod&egrave;le</th>
 	<th width='25px'>Recherche</th>
 	<th width='25px'>Joindre les annexes</th>
+	<th width='25px'>Multi-séances</th>
 	<th>Dernière modification</th>
 	<th>Actions</th>
 </tr>
@@ -16,6 +17,7 @@
 	<td><?php echo $model['Model']['type']; ?></td>
 	<td><?php echo $model['Model']['name']; ?></td>
 	<td  style="text-align: center;"><?php  
+             if ($model['Model']['recherche'] == '') $model['Model']['recherche'] = 0;
              echo $this->Html->link(SHY, 
                               '/models/changeStatus/recherche/'.$model['Model']['id'], 
                               array('class'=>'link_bool_'.$model['Model']['recherche'], 
@@ -24,6 +26,7 @@
                               false);
          ?></td>
          <td style="text-align: center;"><?php  
+             if ($model['Model']['joindre_annexe'] == '') $model['Model']['joindre_annexe'] = 0;
              echo $this->Html->link(SHY, 
                               '/models/changeStatus/joindre_annexe/'.$model['Model']['id'], 
                               array('class'=>'link_bool_'.$model['Model']['joindre_annexe'], 
@@ -31,6 +34,16 @@
                                     'title'=>'Voir'),  
                               false);
          ?></td>
+           <td style="text-align: center;"><?php  
+             if ($model['Model']['multiodj'] == '') $model['Model']['multiodj'] = 0;
+             echo $this->Html->link(SHY, 
+                              '/models/changeStatus/multiodj/'.$model['Model']['id'], 
+                              array('class'=>'link_bool_'.$model['Model']['multiodj'], 
+                                    'escape' => false, 
+                                    'title'=>'Voir'),  
+                              false);
+         ?></td>
+
 
 	<td><?php if ($model['Model']['modified']!= 0)
                    echo $model['Model']['modified']; 

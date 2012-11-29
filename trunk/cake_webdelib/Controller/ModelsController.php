@@ -41,8 +41,8 @@ class ModelsController extends AppController {
 				$deletable[$id]=true;
 		}
 		$this->set('deletable',$deletable);
-		$this->set('models', $this->Model->find('all', array('fields' => array('modele', 'type', 'name', 'recherche', 'joindre_annexe', 'modified', 'id'),
-				'order'=>array('type ASC '),
+		$this->set('models', $this->Model->find('all', array('fields' => array('modele', 'multiodj', 'type', 'name', 'recherche', 'joindre_annexe', 'modified', 'id'),
+				'order'=>array('Model.modele' => 'ASC'),
 				'recursive' => -1)));
 	}
 
