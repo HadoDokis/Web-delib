@@ -19,6 +19,7 @@ class SeancesController extends AppController {
 			'edit'             => 'Seances:listerFuturesSeances',
 			'afficherProjets'  => 'Seances:listerFuturesSeances',
 			'genererConvoc'    => 'Seances:listerFuturesSeances',
+			'multiodj'         => 'Seances:listerFuturesSeances',
 			'changePosition'   => 'Seances:listerFuturesSeances',
 			'addListUsers'     => 'Seances:listerFuturesSeances',
 			'saisirDebatGlobal'=> 'Seances:listerFuturesSeances',
@@ -198,6 +199,7 @@ class SeancesController extends AppController {
 		$this->set('use_pastell', Configure::read('USE_PASTELL'));
 		$this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
 		$format =  $this->Session->read('user.format.sortie');
+                $this->set('models', $this->Model->find('list', array('conditions' => array('Model.multiodj'  => true))));
 		if (empty($format))
 			$format =0;
 		$this->set('format', $format);
@@ -411,7 +413,7 @@ class SeancesController extends AppController {
 		$seance = $this->Seance->find('first', array( 'conditions' => array('Seance.id'=> $seance_id),
 				'fields'     => array('Seance.type_id'),
 				'recursive'  => -1));
-		$delibs = $this->afficherProjets($seance_id, 0);
+		$delibs = $this->Seance->getDeliberationsId($seance_id);
                 
 		$deliberations = array();
 		foreach ($delibs as $delib_id) {
@@ -652,13 +654,13 @@ class SeancesController extends AppController {
 
 		// initialisations
 		$deliberations = array();
-		$delibs = $this->afficherProjets($seance_id, 0);
-		foreach ($delibs as $delib) {
+		$delibs = $this->Seance->getDeliberationsId($seance_id);
+		foreach ($delibs as $delib_id) {
 			$deliberations[] = $this->Deliberation->find('first',
-					array('conditions' => array('Deliberation.id'=>$delib['Deliberation']['id']),
-							'contain'    => array('Theme', 'Rapporteur', 'Service')));
+				                      	array('conditions' => array('Deliberation.id'=>$delib_id),
+                                                        'fields'  => array('id', 'objet', 'objet_delib', 'titre', 'etat'),
+							'contain' => array('Theme.libelle', 'Rapporteur.nom',  'Rapporteur.prenom', 'Service.libelle')));
 		}
-
 		$date_tmpstp = strtotime($this->Seance->getDate($seance_id));
 		$toutesVisees = true;
 		$type_id = $this->Seance->getType($seance_id);
@@ -668,7 +670,6 @@ class SeancesController extends AppController {
 			$delib_seance=$this->Deliberation->Deliberationseance->find('first', array('conditions' => array('Deliberationseance.seance_id' => $seance_id,
 					'Deliberationseance.deliberation_id' => $deliberation_id),
 					'recursive'  => -1 ));
-
 			$deliberations[$i]['Deliberation']['avis'] = $delib_seance['Deliberationseance']['avis'];
 			$id_service = $deliberations[$i]['Service']['id'];
 			$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
@@ -1283,6 +1284,63 @@ class SeancesController extends AppController {
             header('Content-Length: '.strlen($content));
             header('Content-Disposition: attachment; filename="Convocation.zip"');
             die ($content);
+        }
+
+        function multiodj () {
+            Configure::write('debug', 1);
+            $model_id = $this->data['Seance']['model_id'];
+            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
+            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_PartType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FusionType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
+            include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+            $format =  $this->Session->read('user.format.sortie');
+            $dyn_path = "/files/generee/seances/";
+            $nomFichier = "odj";
+            $path = WEBROOT_PATH.$dyn_path;
+            if (!file_exists($path))
+                    mkdir($path);
+
+            if (empty($format)) $format =0;
+
+            if ($format == 0) {
+                $sMimeType = "application/pdf";
+                $format    = "pdf";
+            }
+            elseif ($format ==1) {
+                $sMimeType = "application/vnd.oasis.opendocument.text";
+                $format    = "odt";
+            }
+            $content = $this->Typeseance->Modelprojet->find('first', array('conditions' => array('id' => $model_id),
+                                                                           'fields'     => array('content'),
+                                                                           'recursive'  => -1));
+            $oTemplate = new GDO_ContentType("",
+                                             "modele.odt",
+                                             "application/vnd.oasis.opendocument.text",
+                                             "binary",
+                                             $content['Modelprojet']['content']);
+            $oMainPart = new GDO_PartType();
+
+            $seances = new GDO_IterationType("Seances");
+            foreach ($this->data['Seance'] as $id => $bool ) {
+                if ($bool == 1) {
+                    $seance_id = substr($id, 3, strlen($id));
+                    $seances->addPart($this->Seance->makeBalise($seance_id, null, true, array('Deliberation.etat >=' => 0)));
+                }  
+            }
+            $oMainPart->addElement($seances);
+            $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+            $oFusion->process();
+            $oFusion->SendContentToFile($path.$nomFichier.".odt");
+            $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
+
+            header("Content-type: $sMimeType");
+            header("Content-Disposition: attachment; filename=recherche.$format");
+            die($content);
         }
 }
 ?>
