@@ -9,7 +9,7 @@
 	<th><?php echo $this->Paginator->sort('Profil.libelle', 'Profil'); ?></th>
 	<th>Téléphone</th>
 	<th>Mobile</th>
-	<th><?php echo $this->Paginator->sort('Service.libelle', 'Service'); ?></th>
+	<th>Service</th>
 	<th>Type d'acte</th>
 	<th width='20%'>Actions</th>
 </tr>
