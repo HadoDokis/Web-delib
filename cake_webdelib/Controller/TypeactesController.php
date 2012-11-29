@@ -17,7 +17,8 @@ class TypeactesController extends AppController {
             $typeactes = $this->Typeacte->find('all', array('contain' => array('Nature.libelle', 
                                                                                'Compteur.nom', 
                                                                                'Modelprojet.modele', 
-                                                                               'Modeldeliberation.modele')));
+                                                                               'Modeldeliberation.modele'),
+                                                              'order' => array('Typeacte.libelle' => 'ASC')));
             for($i=0; $i < count($typeactes); $i++) 
                 $typeactes[$i]['Typeacte']['is_deletable'] = $this-> _isDeletable($typeactes[$i], $message);
 	    $this->set('typeactes',	$typeactes );
@@ -65,9 +66,13 @@ class TypeactesController extends AppController {
 	}
 
 	function edit($id = null) {
-		$sortie = false;
-		if (empty($this->data)) {
-			$this->data = $this->Typeacte->find('first', array('conditions' => array('Typeacte.id' =>$id), 'recursive' => -1));
+	    $sortie = false;
+            $this->Typeacte->Behaviors->attach('Containable');
+
+	    if (empty($this->data)) {
+                    
+			$this->request->data = $this->Typeacte->find('first', array('conditions' => array('Typeacte.id' =>$id),
+                                                                                    'contain'    => array('Nature')));
 			if (empty($this->data)) {
 				$this->Session->setFlash('Invalide id pour le type de s&eacute;ance');
 				$sortie = true;
