@@ -109,20 +109,37 @@ class DeliberationsController extends AppController {
         }
         $userId=$this->Session->read('user.User.id');
 
-        $user = $this->Session->read('user');
+        $user = $this->Session->read('user'); 
         if (!$this->Droits->check($user['User']['id'], "Pages:tous_les_projets")) {
-
             $conditions['Deliberation.id']    = $id;
             $conditions['OR']['redacteur_id'] =  $userId;
             $conditions['OR']['circuit_id']   = explode(',' ,$this->Circuit->listeCircuitsParUtilisateur($userId));
+ 
+            if($this->Droits->check($user['User']['id'], "Deliberations:projetsMonService")) {
+                $services = array();
+                Configure::write('debug', 1);
+                $conditions['Deliberation.id']    = $id;
+                $conditions['OR']['redacteur_id'] =  $userId;
+                $this->User->Behaviors->attach('Containable');
+                $user_services = $this->User->find('first', array('conditions' => array('User.id' =>  $userId),
+                                                             'fields'     => array('User.id'), 
+                                                             'contain'    => array('Service.id')));
+                foreach($user_services['Service'] as $service) 
+                   $services[] =  $service['id'];
+    
+                $conditions['OR']['service_id']   =  $services;
+
+            }
             $acte = $this->Deliberation->find('first', array('conditions' => $conditions,
                                                          'fields'     => array('Deliberation.id'),
                                                          'recursive'  => -1));
+            
             if (empty($acte)) {
                 $this->Session->setFlash("Vous n'avez pas les droits pour visualiser cet acte", 'growl');
                 $this->redirect('/deliberations/mesProjetsRedaction');
             }
         }
+
         // Compactage des informations supplémentaires
          $this->request->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup'], false);
         
@@ -634,6 +651,7 @@ class DeliberationsController extends AppController {
             $this->request->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->data['date_limite']);
 
             if ($this->Deliberation->save($this->data)) {
+                  $this->Historique->enregistre($id, $user['User']['id'], "Modification du projet");
             //if ($this->Deliberation->saveAll($this->data['Deliberation'], array('validate' => true))) {
                 $this->Filtre->supprimer();
                 // sauvegarde des informations supplémentaires
