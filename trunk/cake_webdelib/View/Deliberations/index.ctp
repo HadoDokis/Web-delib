@@ -179,8 +179,8 @@
 	<tr>
 		<td>
                     Circuit : <br /><?php echo $deliberation['Circuit']['nom']; ?>
-                              <br /><?php if (isset( $deliberation['last_viseur']))
-                          echo 'Visé par '. $deliberation['last_viseur'] ?>    
+                              <br /><?php if (isset( $deliberation['last_viseur']) && !empty($deliberation['last_viseur']))
+                          echo 'Dernière action de : '. $deliberation['last_viseur'] ?>    
                 </td>
 		<td class='corps' rowspan=1 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
 		<td>A traiter avant le :<br /><?php echo $deliberation['Deliberation']['date_limite']; ?></td>
