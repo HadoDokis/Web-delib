@@ -60,13 +60,14 @@
 class DATABASE_CONFIG {
 
 	public $default = array(
-		'datasource' => 'Database/Mysql',
+		'datasource' => 'Database/Postgres',
 		'persistent' => false,
-		'host' => 'localhost',
-		'login' => 'user',
-		'password' => 'password',
-		'database' => 'database_name',
-		'prefix' => '',
+		'host'     => 'localhost',
+		'port'     => '5432',
+		'login'    => 'webdelib',
+		'password' => 'webdelib',
+		'database' => 'webdelib',
+		'prefix'   => '',
 		//'encoding' => 'utf8',
 	);
 
