@@ -46,7 +46,10 @@ function add($infosupId=0) {
 
 	if (empty($this->data)) {
 		// recherche de l'infosupdef
-		$infosupdef = $this->{$this->modelClass}->Infosupdef->findById($infosupId, null, null, -1);
+		$infosupdef = $this->{$this->modelClass}->Infosupdef->find('first', array('conditions' => array('Infosupdef.id'=> $infosupId) ,
+                                                                                          'fields'     => array('id', 'type'),
+                                                                                           'recursive' => -1));
+                 $this->log( $infosupdef);
 		if (empty($infosupdef)) {
 			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible');
 			$redirect = '/infosupdefs/index';
@@ -57,8 +60,8 @@ function add($infosupId=0) {
 			$sortie = true;
 		} else {
 			// initialisations
-			$this->data['Infosuplistedef']['infosupdef_id'] = $infosupId;
-			$this->data['Infosuplistedef']['actif'] = true;
+			$this->request->data['Infosuplistedef']['infosupdef_id'] = $infosupId;
+			$this->request->data['Infosuplistedef']['actif'] = true;
 		}
 	} else {
 		if ($this->{$this->modelClass}->save($this->data)) {

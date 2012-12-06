@@ -9,9 +9,6 @@ class Deliberation extends AppModel {
 			'typeacte_id' => array(
 					array( 'rule'    => array('canSaveNature', 'notEmpty'),
 						'message' => "Type d'acte invalide")),
-			'id' => array(
-					array('rule'    => array('canSaveSeances'),
-                                              'message' => "Un projet ne peux contenir qu'une séance délibérante")),
 			'texte_projet_type'   => array(
 					array('rule' => array('checkMimetype', 'texte_projet', array('application/vnd.oasis.opendocument.text')),
 							'message' => "Ce type de fichier n'est pas autorisé")),
@@ -352,12 +349,13 @@ class Deliberation extends AppModel {
 		}
 	}
 
-	function canSaveSeances(){
+	function canSaveSeances($seances_id){
             $result = false;
             $nb_seances_deliberante = 0;
             $this->Seance->Behaviors->attach('Containable');
-            if (isset ($this->data['Seance']['Seance'])) {
-                $seances = $this->Seance->find('all', array('conditions' => array('Seance.id' => $this->data['Seance']['Seance']),
+            //$seances_id = $this->data['Seance']['Seance'];
+            if (isset ($seances_id)) {
+                $seances = $this->Seance->find('all', array('conditions' => array('Seance.id' => $seances_id),
 		                                            'fields'     => array('Seance.id'),
                                                             'contain'    => array('Typeseance.action')));
 		foreach($seances as $seance) {
@@ -371,7 +369,6 @@ class Deliberation extends AppModel {
             } 
             else 
                 return true;
-		//return $this->Seance->NaturecanSave($this->data['Deliberation']['seance_id'], $this->data['Deliberation']['nature_id']);
 	}
 
 	function canSaveNature() {
@@ -1041,9 +1038,8 @@ class Deliberation extends AppModel {
 	 * - gestion des séances et de l'ordre des projets
 	 * - mise à jour des délibérations rattachées
 	 * @param integer $delibId id du projet à traiter
-	 * @param integer $oldSeanceId id de la séance précédente avant sauvegarde
 	 */
-	function majDelibRatt($delibId, $oldSeanceId) {
+	function majDelibRatt($delibId) {
 		// initialisation
 		$position = 0;
 		$majPosition = false;
@@ -1066,18 +1062,8 @@ class Deliberation extends AppModel {
 		if (empty($delib['Multidelib'])) return;
 
 		// faut-il mettre a jour la position dans la séance
-		if (!empty($delib['Deliberation']['seance_id']) && (empty($oldSeanceId)))
-			// attribution d'une séance
-			$majPosition = true;
-		elseif (!empty($delib['Deliberation']['seance_id']) && (!empty($oldSeanceId) && ($delib['Deliberation']['seance_id'] !== $oldSeanceId)))
-		// changement de séance
-		$majPosition = true;
-		elseif (empty($delib['Deliberation']['seance_id']) && !empty($oldSeanceId))
-		// suppression de la séance
-		$majPosition = true;
-
-		if (!empty($delib['Deliberation']['seance_id']))
-			$position = $this->getLastPosition($delib['Deliberation']['seance_id'])-1;
+              //  if (isset($this->data['Deliberation']['seance_id']) && !empty($delib['Deliberation']['seance_id']))
+              //      $this->Seance->reOrdonne($id, $this->data['Deliberation']['seance_id']);
 
 		// mise à jour des délibérations rattachées
 		$majDelibRatt = array();

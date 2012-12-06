@@ -121,7 +121,6 @@ class SeancesController extends AppController {
 			} else {
 				$this->request->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($date);
 				$this->request->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
-
 				if ($this->Seance->save($this->data)) {
 					// sauvegarde des fichiers odt car possibilité modifiés en webdav sur le serveur
 					$infossupDefs = $this->Infosupdef->find('all', array(
@@ -136,6 +135,7 @@ class SeancesController extends AppController {
 						if (empty($infosup) || empty($infosup['Infosup']['file_name']))
 							continue;
 						$odtFileUri = $path_seance.$infosup['Infosup']['file_name'] ;
+                                     
 						if (file_exists($odtFileUri)){
 							$stat = stat($odtFileUri);
 							if ($stat > 0) {

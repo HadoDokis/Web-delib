@@ -207,19 +207,19 @@ class Infosup extends AppModel
 
          function addField($champs,  $id, $model='Deliberation') {
             $champs_def = $this->Infosupdef->read(null, $champs['infosupdef_id']);
-
             if(($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']!= "")) {
-                $tmp= $this->Infosupdef->Infosuplistedef->find('id = '.$champs['text'], 'nom', null, -1);
+                $tmp= $this->Infosupdef->Infosuplistedef->find('first', array('conditions' => array('Infosuplistedef.id' => $champs['text']),
+                                                                              'fields'     => array('Infosuplistedef.nom'),
+                                                                              'recursive'  => -1));
                 $champs['text'] = $tmp['Infosuplistedef']['nom'];
             }
             elseif (($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']== ""))
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
-
-            if ($champs['text'] != '') {
+            if ($champs['text'] != null) {
                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
             }
-            elseif ($champs['date'] != '0000-00-00') {
-                include_once ('controllers/components/date.php');
+            elseif ($champs['date'] != null) {
+                include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
                 $this->Date = new DateComponent;
                 return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
              }
@@ -228,11 +228,11 @@ class Infosup extends AppModel
                  return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', $champs['content']));
              }
              elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
-                 include_once ('controllers/components/gedooo.php');
-                 include_once ('controllers/components/conversion.php');
-
+                 include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/GedoooComponent.php');
+                 include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/ConversionComponent.php');
                  $this->Gedooo = new GedoooComponent;
                  $this->Conversion = new ConversionComponent;
+
                  if ( $model == 'Deliberation' ) {
                      $filename = WEBROOT_PATH."/files/generee/projet/$id/".$champs_def['Infosupdef']['code'].".html";
                      $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
