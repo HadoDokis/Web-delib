@@ -193,3 +193,5 @@ ALTER TABLE "deliberations"  ALTER COLUMN deliberation_size DROP NOT NULL;
 ALTER TABLE deliberations_seances ADD  COLUMN avis smallint;
 ALTER TABLE models ADD  COLUMN multiodj BOOLEAN DEFAULT false; 
 ALTER TABLE aros ALTER COLUMN parent_id DROP NOT NULL;
+ALTER TABLE infosups ALTER COLUMN deliberation_id DROP NOT NULL;
+
