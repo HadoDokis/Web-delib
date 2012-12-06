@@ -217,7 +217,7 @@ class Seance extends AppModel {
 			$seances_selectionnees[0] =  $seance_id;
 		}
 		elseif (!isset($seances_selectionnees) || empty($seances_selectionnees) || ($seances_selectionnees[0] == null))
-		$seances_selectionnees= array();
+		    $seances_selectionnees= array();
 
 		$seances_enregistrees = array();
 		App::import('Model', 'Deliberationseance');
@@ -227,7 +227,6 @@ class Seance extends AppModel {
 				'fields'     => array('Seance.id')));
 		foreach ($delibs as $delib)
 			$seances_enregistrees[] = $delib['Seance']['id'];
-
 		$seances_a_retirer = array_diff($seances_enregistrees, $seances_selectionnees);
 		foreach($seances_a_retirer as $key => $seance_id) {
 			$position = 0;
@@ -257,16 +256,17 @@ class Seance extends AppModel {
 		$seances_a_ajouter = array_diff($seances_selectionnees, $seances_enregistrees);
 		foreach($seances_a_ajouter as $key => $seance_id) {
 			$this->Deliberationseance->create();
+			$Deliberationseance['Deliberationseance']['position'] = intval($this->getLastPosition($seance_id));
 			$Deliberationseance['Deliberationseance']['deliberation_id'] = $delib_id;
 			$Deliberationseance['Deliberationseance']['seance_id'] = $seance_id;
-			$Deliberationseance['Deliberationseance']['position'] = $this->getLastPosition($seance_id);
 			$this->Deliberationseance->save($Deliberationseance['Deliberationseance']);
 		}
 
 		$multidelibs = $this->Deliberation->find('all', array('conditions' => array('Deliberation.parent_id' => $delib_id),
 				'recursive'  => -1,
 				'fields' => array('Deliberation.id')));
-		foreach ($multidelibs as $multidelib)
+                if (isset($multidelibs) && !empty($multidelibs)) 
+		    foreach ($multidelibs as $multidelib)
 			$this->reOrdonne($multidelib['Deliberation']['id'], $seances_selectionnees);
 	}
 

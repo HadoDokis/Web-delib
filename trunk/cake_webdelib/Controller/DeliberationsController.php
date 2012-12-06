@@ -78,10 +78,7 @@ class DeliberationsController extends AppController {
 
 
     function test () {
-        $this->Deliberation->id = 2912;
-        $content = file_get_contents('/tmp/delib.pdf');
-        $this->Deliberation->saveField('delib_pdf', $content);
-        return true;
+        $this->redirect('/'); 
     }
 
     function view($id = null) {
@@ -597,9 +594,22 @@ class DeliberationsController extends AppController {
         } else {
             $oldDelib = $this->Deliberation->find('first', array('conditions' =>array('Deliberation.id'=> $id)));
             // Si on definit une seance a une delib, on la place en derniere position de la seance
-            if (isset($this->data['Deliberation']['seance_id']))
-                $this->Seance->reOrdonne($id, $this->data['Deliberation']['seance_id']);
-          
+            if (!$this->Deliberation->canSaveSeances($this->data['Seance']['Seance'])) {
+                $this->Session->setFlash("Vous ne pouvez enregistrer une seule séance délibérante", 'growl', array('type'=>'erreur'));
+                $this->redirect("/deliberations/edit/$id");
+            }
+             
+            if (isset($this->data['Seance']['Seance'])) {
+                $seances = array();
+                if (!empty($this->data['Seance']['Seance'])) {
+                    foreach($this->data['Seance']['Seance'] as $seance_id)  {
+                        $seances[] = $seance_id;
+                    }
+                }
+                $this->Seance->reOrdonne($id, $seances);
+            }
+            unset ($this->request->data['Seance']['Seance']);
+
             if (!Configure::read('GENERER_DOC_SIMPLE')) {
                 if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
                         $this->request->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
@@ -651,8 +661,7 @@ class DeliberationsController extends AppController {
             $this->request->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->data['date_limite']);
 
             if ($this->Deliberation->save($this->data)) {
-                  $this->Historique->enregistre($id, $user['User']['id'], "Modification du projet");
-            //if ($this->Deliberation->saveAll($this->data['Deliberation'], array('validate' => true))) {
+                $this->Historique->enregistre($id, $user['User']['id'], "Modification du projet");
                 $this->Filtre->supprimer();
                 // sauvegarde des informations supplémentaires
 		$infossupDefs = $this->Infosupdef->find('all', array(
@@ -748,6 +757,7 @@ class DeliberationsController extends AppController {
                         $this->Deliberation->saveField('service_id',    $oldDelib['Deliberation']['service_id'] );
                         $this->Deliberation->saveField('theme_id',      $this->data['Deliberation']['theme_id'] );
                         $this->Deliberation->saveField('rapporteur_id', $this->data['Deliberation']['rapporteur_id']  );
+                        $this->Deliberation->saveField('typeacte_id', $this->data['Deliberation']['typeacte_id']  );
                     }
                 }
                 $this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
@@ -907,6 +917,8 @@ class DeliberationsController extends AppController {
                         $this->Deliberation->id = $id;
                         $this->Deliberation->saveField('etat', 2);
                     }
+                    $this->Traitement->Visa->replaceDynamicTrigger($id);
+
                 }
                 
                 // envoi un mail a tous les membres du circuit
@@ -3398,19 +3410,20 @@ class DeliberationsController extends AppController {
     }
  
     function getSeancesParTypeseanceAjax ($typeseances_id) {
+        $result = array();
         if (strpos($typeseances_id, ',') !== false) {
             $typeseances_id = explode(',', $typeseances_id);
         }
-        $result = array();
         $this->Seance->Behaviors->attach('Containable');
-        $seances = $this->Seance->find('all', array('conditions' => array('Seance.type_id' => $typeseances_id,
-                                                                          'Seance.traitee' => 0),
-                                                    'contain'    => array('Typeseance.libelle'),
-                                                    'order'      => array('Typeseance.libelle' => 'ASC', 'Seance.date' => 'DESC'),
-                                                    'fields'     => array('Seance.id', 'Seance.type_id', 'Seance.date')));
+        if ($typeseances_id != 'null') {
+            $seances = $this->Seance->find('all', array('conditions' => array('Seance.type_id' => $typeseances_id,
+                                                                              'Seance.traitee' => 0),
+                                                        'contain'    => array('Typeseance.libelle'),
+                                                        'order'      => array('Typeseance.libelle' => 'ASC', 'Seance.date' => 'DESC'),
+                                                        'fields'     => array('Seance.id', 'Seance.type_id', 'Seance.date')));
         foreach ($seances as $seance)
             $result[$seance['Seance']['id']] = $seance['Typeseance']['libelle'].' : '. $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-
+        }
         $this->set('seances', $result);
         $this->layout = 'ajax';
     }
