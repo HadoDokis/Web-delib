@@ -556,7 +556,7 @@ CREATE TABLE deliberations (
     redacteur_id integer DEFAULT 0 NOT NULL,
     rapporteur_id integer DEFAULT 0,
     anterieure_id integer,
-    is_multidelib boolean NOT NULL,
+    is_multidelib boolean,
     parent_id integer,
     objet character varying(1000) NOT NULL,
     objet_delib character varying(1000) NOT NULL,
@@ -567,17 +567,17 @@ CREATE TABLE deliberations (
     tdt_id integer,
     "dateAR" character varying(100),
     texte_projet bytea,
-    texte_projet_name character varying(75) NOT NULL,
-    texte_projet_type character varying(255) NOT NULL,
-    texte_projet_size integer NOT NULL,
+    texte_projet_name character varying(75),
+    texte_projet_type character varying(255),
+    texte_projet_size integer,
     texte_synthese bytea,
-    texte_synthese_name character varying(75) NOT NULL,
-    texte_synthese_type character varying(255) NOT NULL,
-    texte_synthese_size integer NOT NULL,
+    texte_synthese_name character varying(75) ,
+    texte_synthese_type character varying(255) ,
+    texte_synthese_size integer ,
     deliberation bytea,
-    deliberation_name character varying(75) NOT NULL,
-    deliberation_type character varying(255) NOT NULL,
-    deliberation_size integer NOT NULL,
+    deliberation_name character varying(75) ,
+    deliberation_type character varying(255) ,
+    deliberation_size integer ,
     date_limite date,
     date_envoi timestamp without time zone,
     etat integer DEFAULT 0 NOT NULL,
@@ -3204,10 +3204,74 @@ CREATE INDEX wkf_visas_traitements ON wkf_visas USING btree (traitement_id);
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
 
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
+ALTER TABLE models ADD  COLUMN multiodj BOOLEAN DEFAULT false;
+ALTER TABLE aros ALTER COLUMN parent_id DROP NOT NULL;
+-- ALTER TABLE deliberations ADD COLUMN date_acte timestamp without time zone ;
+
+-- CREATE INDEX deliberations_id ON deliberations_seances (deliberation_id);
+-- CREATE INDEX seances_id ON deliberations_seances (seance_id);
+-- ALTER TABLE deliberations RENAME COLUMN nature_id to typeacte_id;
+
+-- ALTER TABLE typeseances_natures RENAME TO typeseances_typeactes;
+-- ALTER TABLE typeseances_typeactes RENAME COLUMN nature_id to typeacte_id;
+
+ALTER TABLE users   ALTER COLUMN note TYPE varchar(300);
+ALTER TABLE seances  ALTER COLUMN  debat_global DROP NOT NULL;
+
+
+ALTER TABLE seances  ALTER COLUMN  debat_global_name DROP NOT NULL;
+ALTER TABLE seances  ALTER COLUMN  debat_global_type DROP NOT NULL;
+ALTER TABLE seances  ALTER COLUMN  debat_global_size DROP NOT NULL;
+
+ALTER TABLE models  ALTER COLUMN  modele DROP NOT NULL;
+ALTER TABLE models  ALTER COLUMN  type DROP NOT NULL;
+ALTER TABLE models  ALTER COLUMN  size DROP NOT NULL;
+ALTER TABLE models  ALTER COLUMN  content DROP NOT NULL;
+ALTER TABLE models  ALTER COLUMN  joindre_annexe DROP NOT NULL;
+
+ALTER TABLE deliberations  ALTER COLUMN  anterieure_id DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  num_delib DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  montant DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  debat DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  debat_size DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  debat_type DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  debat_name DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  avis DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  vote_nb_oui DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  vote_nb_non DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  vote_nb_abstention DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  vote_nb_retrait DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  vote_commentaire DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  commission DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  commission_size DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  commission_name DROP NOT NULL;
+ALTER TABLE deliberations  ALTER COLUMN  commission_type DROP NOT NULL;
+
+ALTER TABLE deliberations_seances  ALTER COLUMN  avis  DROP NOT NULL;
+
+ALTER TABLE infosups ALTER COLUMN text  DROP NOT NULL;
+ALTER TABLE infosups ALTER COLUMN date  DROP NOT NULL;
+ALTER TABLE infosups ALTER COLUMN file_name  DROP NOT NULL;
+ALTER TABLE infosups ALTER COLUMN file_size  DROP NOT NULL;
+ALTER TABLE infosups ALTER COLUMN file_type  DROP NOT NULL;
+ALTER TABLE infosups ALTER COLUMN content  DROP NOT NULL;
+ALTER TABLE infosups ALTER COLUMN infosupdef_id DROP NOT NULL;
+
+ALTER TABLE wkf_circuits  ALTER COLUMN created_user_id DROP NOT NULL;
+ALTER TABLE commentaires  ALTER COLUMN commentaire_auto DROP NOT NULL;
+ALTER TABLE annexes  ALTER COLUMN filename_pdf DROP NOT NULL;
+ALTER TABLE annexes  ALTER COLUMN data_pdf DROP NOT NULL;
+
+ALTER TABLE compteurs ALTER COLUMN val_reinit DROP NOT NULL;
+
+ALTER TABLE themes ALTER COLUMN parent_id DROP NOT NULL;
+ALTER TABLE services ALTER COLUMN parent_id DROP NOT NULL;
+
+INSERT INTO collectivites VALUES (1, 1, 'ADULLACT', '836, rue du Mas de Verchant', 34000, 'Montpellier', '04 67 65 05 88');
+-- REVOKE ALL ON SCHEMA public FROM PUBLIC;
+-- REVOKE ALL ON SCHEMA public FROM postgres;
+-- GRANT ALL ON SCHEMA public TO postgres;
+-- GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
