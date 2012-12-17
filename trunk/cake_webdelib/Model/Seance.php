@@ -189,11 +189,10 @@ class Seance extends AppModel {
 
 	function getDeliberationsIdByTypeseance_id($type_id) {
 		$tabs = array();
-		$seances = $this->find('all', array(
-				'conditions' => array('Seance.type_id' => $type_id,
-						'Seance.traitee' => 0),
+		$typeseances = $this->Typeseance->find('all', array(
+				'conditions' => array('Typeseance.id' => $type_id),
 				'recursive'  => -1,
-				'fields'     => array('Seance.id')));
+				'fields'     => array('.id')));
 		foreach($seances as $seance) {
 			$ids = $this->getDeliberationsId($seance['Seance']['id']);
 			$tabs = array_merge($tabs, $ids);
@@ -357,6 +356,20 @@ class Seance extends AppModel {
 		$this->President->makeBalise($oDevPart, $seance['Seance']['president_id']);
 		$this->Secretaire->makeBalise($oDevPart, $seance['Seance']['secretaire_id']);
 
+                App::import('Model', 'Deliberationseance');
+                $this->Deliberationseance = new Deliberationseance();
+                $avisSeances =  $this->Deliberationseance->find('all', array(
+                                'conditions' => array('seance_id' => $seance['Seance']['id']),
+                                'recursive'  => -1));
+                if (!empty($avisSeances)) {
+                    $aviss =  new GDO_IterationType("AvisSeance");
+                    foreach($avisSeances as $avisSeance) {
+                        $Part = new GDO_PartType();
+                        $Part->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
+                        $aviss->addPart($Part);
+                    }
+                    @$oDevPart->addElement($aviss);
+                }
 
 		$infosups = $this->Infosup->find( 'all',
                                                   array('conditions' => array('Infosup.foreign_key' => $seance['Seance']['id'],

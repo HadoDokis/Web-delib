@@ -199,7 +199,7 @@ class SeancesController extends AppController {
 		$this->set('use_pastell', Configure::read('USE_PASTELL'));
 		$this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
 		$format =  $this->Session->read('user.format.sortie');
-                $this->set('models', $this->Model->find('list', array('conditions' => array('Model.multiodj'  => true))));
+                $this->set('models', $this->Model->find('list', array('conditions' => array('Model.multiodj'  => true), 'fields' => array('modele'))));
 		if (empty($format))
 			$format =0;
 		$this->set('format', $format);
@@ -696,19 +696,19 @@ class SeancesController extends AppController {
 			if (!array_key_exists('avis', $this->data['Deliberation'])) {
 				$this->Seance->invalidate('avis');
 			} else {
-				// Sauvegarde de l'avus
+				// Sauvegarde de l'avis
+				$this->Seance->reOrdonne($deliberation_id, $this->data['Deliberation']['seance_id']);
 				$this->Deliberation->Deliberationseance->id = $delib_seance['Deliberationseance']['id'];
 				$this->Deliberation->Deliberationseance->saveField('avis', $this->data['Deliberation']['avis']);
-
-				$this->Seance->reOrdonne($deliberation_id, $this->data['Deliberation']['seance_id']);
+				$this->Deliberation->Deliberationseance->saveField('commentaire', $this->data['Deliberation']['commentaire']);
 
 				// ajout du commentaire
-				$this->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
-				$this->data['Commentaire']['texte'] = 'A reçu un avis ';
-				$this->data['Commentaire']['texte'].= ($this->data['Deliberation']['avis'] == 1) ? 'favorable' : 'défavorable';
-				$this->data['Commentaire']['texte'].= ' en '. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$this->Seance->getType($seance_id));
-				$this->data['Commentaire']['texte'].= ' du ' .$this->Date->frenchDate(strtotime($this->Seance->getDate($seance_id)));
-				$this->data['Commentaire']['commentaire_auto'] = 1;
+				$this->request->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
+				$this->request->data['Commentaire']['texte'] = 'A reçu un avis ';
+				$this->request->data['Commentaire']['texte'].= ($this->data['Deliberation']['avis'] == 1) ? 'favorable' : 'défavorable';
+				$this->request->data['Commentaire']['texte'].= ' en '. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$this->Seance->getType($seance_id));
+				$this->request->data['Commentaire']['texte'].= ' du ' .$this->Date->frenchDate(strtotime($this->Seance->getDate($seance_id)));
+				$this->request->data['Commentaire']['commentaire_auto'] = 1;
 				$this->Deliberation->Commentaire->save($this->data);
 				$sortie = true;
 			}
@@ -717,7 +717,7 @@ class SeancesController extends AppController {
 		if ($sortie)
 			$this->redirect('/seances/detailsAvis/'.$seance_id);
 		else {
-			$this->data = $deliberation;
+			$this->request->data = $deliberation;
 
 			$user = $this->Session->read('user');
 			if ($this->Droits->check($user['User']['id'], "Deliberations:editerProjetValide"))
@@ -730,6 +730,7 @@ class SeancesController extends AppController {
 					array_keys($this->Session->read('user.Nature'))));
 			$this->set('avis', array(1 => 'Favorable', 2 => 'Défavorable'));
 			$this->set('avis_selected', $delib_seance['Deliberationseance']['avis']);
+			$this->set('commentaire', $delib_seance['Deliberationseance']['commentaire']);
 			$this->set('seances_selected', $this->Deliberation->getCurrentSeances($deliberation_id, false));
 			$this->set('seance_id', $seance_id);
 		}

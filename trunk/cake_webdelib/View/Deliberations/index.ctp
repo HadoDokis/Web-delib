@@ -74,12 +74,20 @@
 					echo $this->Form->submit(' ', array('div'=>false, 'class'=>'bt_save', 'name'=>'sauvegarder'));
 				echo $this->Form->end();
 			} else {
+                            $listTypeseanceId = array();
                             if(isset($deliberation['Seance'][0])){
                                 foreach( $deliberation['Seance'] as  $seance) {
                                     echo($typeseances[$seance['type_id']]." : ");
                                     echo($this->Html2->ukToFrenchDateWithHour($seance['date']).'<br>');
+                                    $listTypeseanceId[] = $seance['type_id'];
                                 }
                             }
+                            if (isset($deliberation['Typeseance']) && !empty($deliberation['Typeseance']))
+                                foreach ($deliberation['Typeseance'] as $typeseance) {
+                                    if (!in_array($typeseance['id'],  $listTypeseanceId ))
+                                        echo ($typeseance['libelle']."<br>");
+                                }
+
                         }
 		?>
 		</td>
