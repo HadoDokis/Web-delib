@@ -349,6 +349,7 @@ class UsersController extends AppController {
 				$natures = array();
 				$droits = $this->ArosAdo->find('all', array('conditions'=> array('aro_id'=>$aro['Aro']['id'], '_read'=>1)));
 				foreach ($droits as $droit) {
+                                   if ($droit['Ado']['foreign_key'] != '') 
 					$natures[$droit['Ado']['foreign_key']] = substr($droit['Ado']['alias'], 9, strlen($droit['Ado']['alias']));
                                 }
 				$this->Session->write('user.Nature', $natures);
