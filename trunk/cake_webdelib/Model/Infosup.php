@@ -216,7 +216,7 @@ class Infosup extends AppModel
             elseif (($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']== ""))
                  return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
             if ($champs['text'] != null) {
-                return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
+                return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'lines'));
             }
             elseif ($champs['date'] != null) {
                 include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
