@@ -195,3 +195,6 @@ ALTER TABLE models ADD  COLUMN multiodj BOOLEAN DEFAULT false;
 ALTER TABLE aros ALTER COLUMN parent_id DROP NOT NULL;
 ALTER TABLE infosups ALTER COLUMN deliberation_id DROP NOT NULL;
 
+ALTER TABLE deliberations_seances ADD COLUMN commentaire character varying(1000);
+ALTER TABLE deliberations_seances ALTER COLUMN commentaire DROP NOT NULL;
+
