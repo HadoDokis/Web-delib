@@ -55,7 +55,7 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 	    echo "<div class='required'>";
 	            echo $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'], array('name'=>'label'.$infosupdef['Infosupdef']['code']));
 	            if ($infosupdef['Infosupdef']['type'] == 'text') {
-	                    echo $this->Form->input($fieldName, array('label'=>'', 'size'=>$infosupdef['Infosupdef']['taille'], 'title'=>$infosupdef['Infosupdef']['commentaire']));
+	                    echo $this->Form->input($fieldName, array('label'=>'', 'size'=>$infosupdef['Infosupdef']['taille'], 'type' => 'textarea', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
 	                    echo $this->Form->input($fieldName, array('label'=>'', 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
