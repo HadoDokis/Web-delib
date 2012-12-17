@@ -80,19 +80,26 @@ class TypeactesController extends AppController {
 				$this->set('selectedNatures', $this->data['Nature']['id']);
 			}
 		} else {
-			if ($this->Typeacte->save($this->data)) {
-				$this->Session->setFlash('Le type de s&eacute;ance \''.$this->data['Typeacte']['libelle'].'\' a &eacute;t&eacute; modifi&eacute;');
-				$sortie = true;
-			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
-				if (array_key_exists('Typeacteur', $this->data)) {
-					$this->set('selectedTypeacteurs', $this->data['Typeacteur']['Typeacteur']);
-					$this->set('selectedActeurs', $this->data['Acteur']['Acteur']);
-				} else {
-					$this->set('selectedTypeacteurs', null);
-					$this->set('selectedActeurs', null);
-				}
-			}
+                    $ado    = $this->Ado->find('first',array('conditions'=>array('Ado.model'       => 'Typeacte',
+                                                                                 'Ado.foreign_key' => $this->data['Typeacte']['id']),
+                                                             'fields'=>array('Ado.id'),
+                                                              'recursive' => -1));
+                                                           debug($ado); 
+                    if ($this->Typeacte->save($this->data)) {
+                        $this->Ado->id = $ado['Ado']['id'];
+                        $this->Ado->saveField('alias',  'Typeacte:'.$this->data['Typeacte']['libelle']);
+                        $this->Session->setFlash('Le type de s&eacute;ance \''.$this->data['Typeacte']['libelle'].'\' a &eacute;t&eacute; modifi&eacute;');
+                        $sortie = true;
+                    } else {
+                        $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+                        if (array_key_exists('Typeacteur', $this->data)) {
+                            $this->set('selectedTypeacteurs', $this->data['Typeacteur']['Typeacteur']);
+                            $this->set('selectedActeurs', $this->data['Acteur']['Acteur']);
+                        } else {
+                            $this->set('selectedTypeacteurs', null);
+                            $this->set('selectedActeurs', null);
+                        }
+                    }
 		}
 		if ($sortie)
 			$this->redirect('/typeactes/index');
