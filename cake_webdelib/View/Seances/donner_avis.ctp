@@ -11,6 +11,15 @@
 	<br/>
 
 	<div class="spacer"></div>
+         <div>
+	   <?php echo $this->Form->label('Deliberation.commentaire', 'Commentaire'); ?>
+           <?php echo $this->Form->input('Deliberation.commentaire', array('fieldset'=>false, 
+                                                                           'legend'=>false, 
+                                                                           'label'=>false,  
+                                                                           'value'=>$commentaire,  
+                                                                           'type'=>'textarea'));?>
+       </div>
+	<div class="spacer"></div>
 
 	<div class="demi" id="selectSeance">
 		<?php echo $this->Form->label('Deliberation.seance_id', 'Attribuer une nouvelle séance');?>
@@ -31,7 +40,7 @@
 	<div class="submit">
 		<?php echo $this->Form->hidden('Deliberation.id')?>
 		<?php echo $this->Form->submit('Sauvegarder', array('div'=>false,'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-		<?php echo $this->Html->link('Annuler', '/seances/detailsAvis/'.$html->value('Seance.id'), array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+		<?php echo $this->Html->link('Annuler', '/seances/detailsAvis/'.$this->Html->value('Seance.id'), array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 	</div>
 
 <?php echo $this->Form->end(); ?>
