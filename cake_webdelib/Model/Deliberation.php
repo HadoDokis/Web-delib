@@ -107,7 +107,13 @@ class Deliberation extends AppModel {
 					'dependent' => false),
 			'Deliberationseance' =>array(
 					'className'    => 'Deliberationseance',
-					'foreignKey'   => 'deliberation_id'));
+					'foreignKey'   => 'deliberation_id'),
+                       'Deliberationtypeseance' =>array(
+                                        'className'    => 'Deliberationtypeseance',
+                                        'foreignKey'   => 'deliberation_id'),
+
+
+                 );
 
 	var $hasAndBelongsToMany = array(
 	    'Seance',  
@@ -569,7 +575,42 @@ class Deliberation extends AppModel {
 			}
 			@$oMainPart->addElement($avisCommission);
 		}
+		$this->Deliberationseance->Behaviors->attach('Containable');
+                $avisSeances =  $this->Deliberationseance->find('all', array(
+                                'conditions' => array('Deliberationseance.deliberation_id' => $delib['Deliberation']['id']),
+                                'contain'  => array('Seance.date', 'Seance.Typeseance')));
+                include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
+                $this->Date = new DateComponent;
 
+
+                if (!empty($avisSeances)) {
+                    $aviss =  new GDO_IterationType("AvisProjet");
+                    foreach($avisSeances as $avisSeance) {
+                        if ( $avisSeance['Seance']['Typeseance']['action'] == 1) {
+			    $oDevPart = new GDO_PartType();
+                            $typeseance = $avisSeance['Seance']['Typeseance']['libelle'];
+                            $dateSeance =  $this->Date->frenchDate(strtotime($avisSeance['Seance']['date']));  
+                            if ($avisSeance['Deliberationseance']['avis'] == 2) {
+                                $message = "A reçu un avis défavorable  en $typeseance du $dateSeance";
+                                $avisFavorable = 1;
+                            }
+                            elseif  ($avisSeance['Deliberationseance']['avis'] == 1) {
+                                $message = "A reçu un avis favorable  en $typeseance du $dateSeance";
+                                $avisFavorable = 0;
+                            } 
+                            elseif ($avisSeance['Deliberationseance']['avis'] == null) {
+                                $message = "";
+                                $avisFavorable = null;
+                            }
+		            $oDevPart->addElement(new GDO_FieldType("avis", $message, "text"));
+			    $oDevPart->addElement(new GDO_FieldType("avis_favorable",  $avisFavorable, "text"));
+		            $oDevPart->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
+			    $aviss->addPart($oDevPart);
+                        }
+                    }
+		    @$oMainPart->addElement($aviss);
+                }
+                 
 		$historik = $this->Historique->find('all',
 				array('conditions' => array('Historique.delib_id' => $delib['Deliberation']['id']),
 						'fields'     => array('commentaire'),
@@ -589,10 +630,9 @@ class Deliberation extends AppModel {
 				array('conditions' => array('Infosup.foreign_key' => $delib['Deliberation']['id'],
 						'Infosup.model'       => 'Deliberation'),
 						'recursive'  => -1));
-
-		if (!empty($infosup['Infosup'])) {
-			foreach($infosup['Infosup'] as  $champs)
-				$oMainPart->addElement($this->_addField($champs, $delib['Deliberation']['id'], 'Deliberation'));
+		if (!empty($infosup)) {
+			foreach($infosup as  $champs)
+				$oMainPart->addElement($this->Infosup->addField($champs['Infosup'], $delib['Deliberation']['id'], 'Deliberation'));
 		}
 		else {
 			$defs = $this->Infosup->Infosupdef->find('all', array('conditions'=>array('model' => 'Deliberation'), 'recursive' => -1));
@@ -978,54 +1018,6 @@ class Deliberation extends AppModel {
 		}
 	}
 
-	function _addField($champs,  $id, $model='Deliberation') {
-		$champs_def = $this->Infosup->Infosupdef->read(null, $champs['infosupdef_id']);
-
-		if(($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']!= "")) {
-			$tmp= $this->Infosup->Infosupdef->Infosuplistedef->find('first',
-					array(   'conditions' => array('Infosuplistedef.id' => $champs['text']),
-							'fields' => array('nom'),
-							'recursive' => -1));
-			$champs['text'] = $tmp['Infosuplistedef']['nom'];
-		}
-		elseif (($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']== ""))
-		return (new GDO_FieldType($champs_def['Infosupdef']['code'],  (' '), 'text'));
-
-		if ($champs['text'] != '') {
-			return (new GDO_FieldType($champs_def['Infosupdef']['code'],  ($champs['text']), 'text'));
-		}
-		elseif ($champs['date'] != '0000-00-00') {
-			include_once ('controllers/components/date.php');
-			$this->Date = new DateComponent;
-			return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
-		}
-		elseif ($champs['file_size'] != 0 ) {
-			$name = utf8_decode(str_replace(" ", "_", $champs['file_name']));
-			return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', utf8_decode($champs['content'])));
-		}
-		elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
-			include_once ('controllers/components/gedooo.php');
-			include_once ('controllers/components/conversion.php');
-
-			$this->Gedooo = new GedoooComponent;
-			$this->Conversion = new ConversionComponent;
-			if ( $model == 'Deliberation' ) {
-				$filename = WEBROOT_PATH."/files/generee/projet/$id/".$champs_def['Infosupdef']['code'].".html";
-				$this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
-				$content = $this->Conversion->convertirFichier($filename, "odt");
-				return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', utf8_decode($content)));
-			}
-		 elseif ( $model == 'Seance' ) {
-		 	$filename = WEBROOT_PATH."/files/generee/seance/$id/".$champs_def['Infosupdef']['code'].".html";
-		 	$this->Gedooo->createFile(WEBROOT_PATH."/files/generee/seance/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
-		 	$content = $this->Conversion->convertirFichier($filename, "odt");
-		 	return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', utf8_decode($content)));
-
-		 }
-		}
-		elseif  ($champs['text'] == '' )
-		return (new GDO_FieldType($champs_def['Infosupdef']['code'],  (' '), 'text'));
-	}
 
 	function _url2pathImage($url) {
 		$content = str_replace('http://webdelib/app/', Configure::read('WEBDELIB_PATH'), $url);
@@ -1372,12 +1364,8 @@ class Deliberation extends AppModel {
 					Deliberation.theme_id';
 		elseif($fields == 'id')
 			$fields = 'Deliberation.id';
-
-               if (empty($natures_id))
-                  $natures_id = 0;
-               else
-                   $natures_id =  implode(", ", $natures_id);
-
+                $natures_id =  implode(", ", $natures_id);
+                       
 		$requete = "SELECT $fields
 					FROM deliberations as Deliberation,
 						 services as Service,
