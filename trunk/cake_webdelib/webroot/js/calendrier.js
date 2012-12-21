@@ -1,7 +1,7 @@
-//créer un object date (sans paramètres => today), qui sera utilisé dans getHTMLDay, show_calendar
+//crÃ©er un object date (sans paramÃ¨tres => today), qui sera utilisÃ© dans getHTMLDay, show_calendar
 var gNow = new Date();  
 
-//variable globale - la fenêtre du calendrier
+//variable globale - la fenÃªtre du calendrier
 var ggWinCal;
 
 //FONCTIONS POUR RETOURNER LES MOIS / ANNEES PRECEDENTES ET SUIVANTES
@@ -39,7 +39,7 @@ function Calendar(iTextBox, iWinCal, iMonth, iYear, iLanguage, iSubmit) {
 	vStyle += ".Today{color:#660066; font-weight:bold}\n";								//La date du jour ...
 	vStyle += ".Weekend{color:#000000; background-color:#EEEEEE}\n";					//Weekend
 	vStyle += ".Header{color:#369; font-weight:bold; background-color:#f2f3f5}\n";	//Headers (jours de la sem.)
-	vStyle += ".InactiveDate{color:#999999}\n";											//Dates à la fin du mois suivant
+	vStyle += ".InactiveDate{color:#999999}\n";											//Dates Ã  la fin du mois suivant
 	vStyle += ".Border{background-color:#369}\n";
 	vStyle += "</STYLE>";
 	this.gStyle = vStyle;
@@ -50,25 +50,25 @@ function Calendar(iTextBox, iWinCal, iMonth, iYear, iLanguage, iSubmit) {
 	this.gMonth = new Number(iMonth);							//"id" du mois
 	this.gTextBox = iTextBox;  									//textbox
 	this.gSubmit = iSubmit;										//est-ce qu'on soumet le formulaire? (1=oui, 0=non)
-	this.gTitle = eval('Calendar.' + this.gLanguage + 'Title;');  //Title de la fenêtre
+	this.gTitle = eval('Calendar.' + this.gLanguage + 'Title;');  //Title de la fenÃªtre
 }
 // This is for compatibility with Navigator 3, we have to create and discard one object before the prototype object exists.
 new Calendar();
 
-// Tableau avec les mois de l'année - pour l'affichage du mois en haut du calendrier
-Calendar.fMonths = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+// Tableau avec les mois de l'annÃ©e - pour l'affichage du mois en haut du calendrier
+Calendar.fMonths = ["Janvier", "FÃ©vrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "AoÃ»t", "Septembre", "Octobre", "Novembre", "DÃ©cembre"];
 Calendar.eMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 // Tableau des jours de la semaine - pour les titres dans le calendrier
 Calendar.fDays = ["lun", "mar", "mer", "jeu", "ven", "sam", "dim"];
 Calendar.eDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 // Nombre de jours par mois
 Calendar.Mois = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-// Title de la fenêtre
+// Title de la fenÃªtre
 Calendar.eTitle = "Calendar";
 Calendar.fTitle = "Calendrier";
 
-//Méthodes - elles sont héritées automatiquement, à chaque fois qu'une nouvelle instance d'un objet est créée 
-//par contre, les méthodes n'existent qu'une fois dans la mémoire de l'ordinateur.
+//MÃ©thodes - elles sont hÃ©ritÃ©es automatiquement, Ã  chaque fois qu'une nouvelle instance d'un objet est crÃ©Ã©e 
+//par contre, les mÃ©thodes n'existent qu'une fois dans la mÃ©moire de l'ordinateur.
 
 //METHODE getMonth - cherche le nom du mois dans le tableau des mois
 Calendar.prototype.getMonth = function(iMonthNo) {
@@ -83,7 +83,7 @@ Calendar.prototype.wwrite = function(wtext) {
 Calendar.prototype.show = function() {
 	var vCode = "";
 	this.gWinCal.document.open();
-	this.wwrite(this.getHTMLStartPage()); 	// Get début de la page
+	this.wwrite(this.getHTMLStartPage()); 	// Get dÃ©but de la page
 	this.wwrite(this.getHTMLNavigation()); 	// Get the code for the navigation bar ... 
 	this.wwrite(this.getHTMLCalendar()); 	// Get the complete calendar code for the month ...
 	this.wwrite(this.getHTMLEndPage());	// Terminer la page correctement
@@ -141,7 +141,7 @@ Calendar.prototype.getHTMLDayHeader = function(iDay,iWeekend) {
 		return ("<TD Width='14%' class='Header'>" + vDay + "</TD>");
 	}		
 }
-//getHTMLCalHeader() : Header du calendrier même avec les jours
+//getHTMLCalHeader() : Header du calendrier mÃªme avec les jours
 Calendar.prototype.getHTMLCalHeader = function() {
 	var vCode = "";
 	vCode += "<TR>";
@@ -168,15 +168,15 @@ Calendar.prototype.getHTMLWeekend = function(iDay) {
 	}
 	return "";
 }
-//METHODE getDaysInMonth - pour un mois et une ann´e donn´s
+//METHODE getDaysInMonth - pour un mois et une annÂ´e donnÂ´s
 Calendar.prototype.getDaysInMonth = function(iMonthNo, iYear) {
-	if (((iYear % 4 == 0 && iYear % 100 != 0 ) || (iYear % 400 == 0 )) && iMonthNo == 1) {  //bissextile et f´vrier
+	if (((iYear % 4 == 0 && iYear % 100 != 0 ) || (iYear % 400 == 0 )) && iMonthNo == 1) {  //bissextile et fÂ´vrier
 		return 29;
 	}else{
 		return Calendar.Mois[iMonthNo];
 	}
 }
-//METHODE getDateFormat - formattage de la date à retourner ...
+//METHODE getDateFormat - formattage de la date Ã  retourner ...
 Calendar.prototype.getDateFormat = function(iDay) {
 	var vData;
 	var vMonth = 1 + this.gMonth;
@@ -186,7 +186,7 @@ Calendar.prototype.getDateFormat = function(iDay) {
 	vData = vDD + "\/" + vMonth + "\/" + vY4;  //Date avec "/"
 	return vData;
 	/*
-	Utiliser les lignes suivantes pour modifier le format de la date retourn´e
+	Utiliser les lignes suivantes pour modifier le format de la date retournÂ´e
 	//var vMon = this.getMonth(this.gMonth).substr(0,3).toUpperCase();
 	//var vFMon = this.getMonth(this.gMonth).toUpperCase();
 	//var vY2 = new String(this.gYear.substr(2,2));
@@ -208,7 +208,7 @@ Calendar.prototype.getHTMLDateCell = function(iDay) {
 				"</A>" + 
 			"</TD>";
 }
-//METHODE getHTMLCalWeeks - crée la partie calendrier avec tous les jours du mois (le calendrier même)
+//METHODE getHTMLCalWeeks - crÃ©e la partie calendrier avec tous les jours du mois (le calendrier mÃªme)
 Calendar.prototype.getHTMLCalWeeks = function() {
 	var vDate = new Date();
 	vDate.setDate(1);
@@ -220,13 +220,13 @@ Calendar.prototype.getHTMLCalWeeks = function() {
 	var vLastDay=this.getDaysInMonth(this.gMonth, this.gYear);
 	var vOnLastDay=0;
 	var vCode = "";
-	//----Première semaine
+	//----PremiÃ¨re semaine
 	//il faut en mettre jusqu'au 1er du mois
 	vCode = vCode + "<TR>";
 	for (i=0; i<vFirstDay; i++) {
 		vCode = vCode + "<TD" + this.getHTMLWeekend(i) + ">&nbsp;</TD>";
 	}
-	// Write rest of the 1st week (on s'arrête à dimanche avec j<7)
+	// Write rest of the 1st week (on s'arrÃªte Ã  dimanche avec j<7)
 	for (j=vFirstDay; j<7; j++) {
 		vCode += this.getHTMLDateCell(vDay)
 		vDay=vDay + 1;
@@ -261,10 +261,10 @@ Calendar.prototype.getHTMLCalWeeks = function() {
 }
 //METHODE getHTMLCalendar - MET ENSEMBLE LE CODE HTML POUR LE CALENDRIER MEME (TABLEAUX & HEADERS & DATA)
 Calendar.prototype.getHTMLCalendar = function() {
-	//c'est deux tableaux, l'un dans l'autre pour créer une bordure colorée
+	//c'est deux tableaux, l'un dans l'autre pour crÃ©er une bordure colorÃ©e
 	var vBeginTable = "<TABLE width=220 BORDER=0 cellspacing=0 cellpadding=" + this.gBorderWidth + "><tr><td class='Border'><TABLE width=220 cellspacing=0 cellpadding=0 BORDER=0>";
 	var vHeader_Code = this.getHTMLCalHeader();			//Ligne avec lun, mar, mer, jeu etc.
-	var vData_Code = this.getHTMLCalWeeks();				//Le calendrier même
+	var vData_Code = this.getHTMLCalWeeks();				//Le calendrier mÃªme
 	var vEndTable = "</TABLE></td></tr></TABLE>";
 	return vBeginTable + vHeader_Code + vData_Code + vEndTable;
 }
@@ -277,14 +277,14 @@ function Build(iTextBox, iMonth, iYear, iLanguage, iSubmit) {
 	gCal = new Calendar(iTextBox, ggWinCal, iMonth, iYear, iLanguage, iSubmit);
 	gCal.show();
 }
-//FUNCTION show_calendar - appelée depuis la page
+//FUNCTION show_calendar - appelÃ©e depuis la page
 function show_calendar() {
-/* 	Le tableau "arguments" contient les paramètres de l'appel de cette fonction (dans la page elle-même)
-	p_item	: (obligatoire)  		Objet - champ texte où il faut rentrer la date (ex. document.form1.txtDate)
+/* 	Le tableau "arguments" contient les paramÃ¨tres de l'appel de cette fonction (dans la page elle-mÃªme)
+	p_item	: (obligatoire)  		Objet - champ texte oÃ¹ il faut rentrer la date (ex. document.form1.txtDate)
 	p_language : (obligatoire)		langue - "en" = English, "f" = francais (tableaux eMonths, eDays ...)
-	p_submit: (non-obligatoire)		1 = submit le formulaire dès qu'on a rentré une valeur, autrement pas de submit
+	p_submit: (non-obligatoire)		1 = submit le formulaire dÃ¨s qu'on a rentrÃ© une valeur, autrement pas de submit
 	p_month : (non-obligatoire) 		Mois sur lequel s'ouvre le calendrier
-	p_year	: (non-obligatoire)		Année sur laquelle s'ouvre le calendrier    */
+	p_year	: (non-obligatoire)		AnnÃ©e sur laquelle s'ouvre le calendrier    */
 
 	p_item = arguments[0];
 	p_language = arguments[1];
@@ -293,7 +293,7 @@ function show_calendar() {
 	if (arguments[3] == null) p_month = new String(gNow.getMonth()); else p_month = arguments[3];
 	if (arguments[4] == "" || arguments[4] == null)	p_year = new String(gNow.getFullYear().toString()); else p_year = arguments[4];
 
-	//créer nouvelle fenêtre
+	//crÃ©er nouvelle fenÃªtre
 	ggWinCal = window.open("", "Calendar", "width=240,height=188,status=no,resizable=no,top=200,left=200");  //dims correct pour IE Mac, changer pour autres browsers
 	ggWinCal.opener = self;
 
