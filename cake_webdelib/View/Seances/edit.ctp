@@ -61,7 +61,7 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
 	                    echo $this->Form->input($fieldName, array('type'=>'text', 'div'=>false, 'label'=>'', 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	                    echo '&nbsp;';
-	                    echo $this->Html->link($html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('seanceForm.$fieldId', 'f');", array(), false, false);
+	                    echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('seanceForm.$fieldId', 'f');", array(), false, false);
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
 	                    echo '<div class="annexesGauche"></div>';
 	                    echo '<div class="fckEditorProjet">';
