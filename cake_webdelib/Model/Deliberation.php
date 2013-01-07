@@ -513,11 +513,11 @@ class Deliberation extends AppModel {
 			$position = $this->getPosition($delib['Deliberation']['id'], $seance_id);
 			$oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
 		}
-		$oMainPart->addElement(new GDO_FieldType('titre_projet',   ($delib['Deliberation']['titre']),    'text'));
-		$oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet']),     'text'));
-		$oMainPart->addElement(new GDO_FieldType('libelle_projet', ($delib['Deliberation']['objet']),      'text'));
-		$oMainPart->addElement(new GDO_FieldType('objet_delib',    ($delib['Deliberation']['objet_delib']), 'text'));
-		$oMainPart->addElement(new GDO_FieldType('libelle_delib',  ($delib['Deliberation']['objet_delib']), 'text'));
+		$oMainPart->addElement(new GDO_FieldType('titre_projet',   ($delib['Deliberation']['titre']),    'lines'));
+		$oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet']),     'lines'));
+		$oMainPart->addElement(new GDO_FieldType('libelle_projet', ($delib['Deliberation']['objet']),      'lines'));
+		$oMainPart->addElement(new GDO_FieldType('objet_delib',    ($delib['Deliberation']['objet_delib']), 'lines'));
+		$oMainPart->addElement(new GDO_FieldType('libelle_delib',  ($delib['Deliberation']['objet_delib']), 'lines'));
 
 		$oMainPart->addElement(new GDO_FieldType('identifiant_projet',          ($delib['Deliberation']['id']),       'text'));
 		$oMainPart->addElement(new GDO_FieldType('numero_deliberation',         ($delib['Deliberation']['num_delib']),'text'));
@@ -750,11 +750,11 @@ class Deliberation extends AppModel {
 
 		@$annexes =  new GDO_IterationType("Annexes");
 		foreach($annexe_ids as $key => $annexe_id) {
+		        $oDevPart = new GDO_PartType();
 			$annexe = $this->Annex->find('first', array ('conditions' => array('Annex.id' => $annexe_id),
 				                                     'recursive'  => -1));
 			$oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
 			if (($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {
-				$oDevPart = new GDO_PartType();
 			        $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
 				$oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
 						'application/vnd.oasis.opendocument.text',
