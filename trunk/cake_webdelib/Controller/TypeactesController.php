@@ -84,7 +84,6 @@ class TypeactesController extends AppController {
                                                                                  'Ado.foreign_key' => $this->data['Typeacte']['id']),
                                                              'fields'=>array('Ado.id'),
                                                               'recursive' => -1));
-                                                           debug($ado); 
                     if ($this->Typeacte->save($this->data)) {
                         $this->Ado->id = $ado['Ado']['id'];
                         $this->Ado->saveField('alias',  'Typeacte:'.$this->data['Typeacte']['libelle']);
