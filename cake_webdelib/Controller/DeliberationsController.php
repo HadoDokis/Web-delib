@@ -2572,11 +2572,14 @@ class DeliberationsController extends AppController {
             if (empty($conditions["Deliberation.id"]) || (!isset($conditions["Deliberation.id"]))) {
                 if ((isset($this->data['Deliberation']['seance_id'])) && (!empty($this->data['Deliberation']['seance_id']))) {
                     $projet_ids= array();
+                    $multiseances= array();
                     foreach ($this->data['Deliberation']['seance_id'] as $key => $seance_id) {
-                        $multiseances[] = $seance_id;
+                  //      $multiseances[] = $seance_id;
                         $projet_ids = $this->Seance->getDeliberationsId($seance_id);
+                        $multiseances = array_merge($projet_ids, $multiseances);
                     }
-                    $conditions['Deliberation.id'] =  $projet_ids;
+                    // $conditions['Deliberation.id'] =  $projet_ids;
+                    $conditions['Deliberation.id'] =  $multiseances;
                 }
             }
             if (array_key_exists('Infosup', $this->data)) {
@@ -2629,7 +2632,7 @@ class DeliberationsController extends AppController {
                     }
                     if (empty($format))
                         $format =0;
-                    if (count($multiseances) == 1)
+                    //if (count($multiseances) == 1)
                          $multiseances = array();
                     $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format,  $multiseances, $conditions);
                 }
