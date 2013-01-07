@@ -1198,8 +1198,10 @@ class SeancesController extends AppController {
 
                     $content = $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", $format);
                     $chemin_fichier = $this->Gedooo->createFile($dirpath, $nomFichier.".$format", $content);
-                    if (($format == 'pdf') && ($joindre_annexe))
-                        $this->Pdf->concatener($chemin_fichier, $annexes);
+                    if (($format == 'pdf') && ($joindre_annexe)) {
+                        if (!empty($annexes)) 
+                            $this->Pdf->concatener($chemin_fichier, $annexes);
+                     }
 
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
