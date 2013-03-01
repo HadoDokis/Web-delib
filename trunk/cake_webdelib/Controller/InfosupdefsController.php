@@ -2,7 +2,7 @@
 class InfosupdefsController extends AppController
 {
 	var $name = 'Infosupdefs';
-
+        var $uses = array( 'Infosupdef', 'Profil');
 	var $helpers = array('Html', 'Html2');
 
 	// Gestion des droits : identiques aux droits de l'index
@@ -58,7 +58,9 @@ class InfosupdefsController extends AppController
 		$codePropose = '';
 		
 		if (empty($this->data)) {
-			$this->request->data['Infosupdef']['model'] = $model;
+                    $this->set('profils_selected', array());
+                    $this->set('profils', $this->Profil->find('list', array('conditions' => array ('Profil.actif' => 1))));
+		    $this->request->data['Infosupdef']['model'] = $model;
 		} else {
 			/* traitement de la valeur par defaut */
 			if ($this->data['Infosupdef']['type'] == 'date')
@@ -96,7 +98,11 @@ class InfosupdefsController extends AppController
 		$codePropose = '';
 
 		if (empty($this->data)) {
-			$this->data = $this->{$this->modelClass}->findById($id, null, null, -1);
+                        $profils = array();
+                        $this->{$this->modelClass}->Behaviors->attach('Containable');
+ 
+			$this->request->data = $this->{$this->modelClass}->find('first', array('conditions' => array("Infosupdef.id" => $id),
+                                                                                               'contain'    => array('Profil')));
 			if (empty($this->data)) {
 				$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible', 'growl');
 				$sortie = true;
@@ -106,6 +112,12 @@ class InfosupdefsController extends AppController
 				$this->request->data['Infosupdef']['val_initiale_date'] = $this->data['Infosupdef']['val_initiale'];
 			elseif ($this->data['Infosupdef']['type'] == 'boolean')
 				$this->request->data['Infosupdef']['val_initiale_boolean'] = $this->data['Infosupdef']['val_initiale'];
+                       
+                       if (isset($this->data['Profil']) && !empty($this->data['Profil']))
+                            foreach($this->data['Profil'] as $profil)
+                                $profils[] = $profil['id'];
+                        $this->set('profils_selected', $profils);
+                        $this->set('profils', $this->Profil->find('list', array('conditions' => array ('Profil.actif' => 1))));
 		} else {
 			// traitement de la valeur par defaut
 			if ($this->data['Infosupdef']['type'] == 'date')

@@ -124,8 +124,8 @@ function delete($id=0) {
 		$redirect = '/infosupdefs/index';
 		$sortie = true;
 	} else {
-		$this->data['Infosuplistedef']['actif'] = false;
-		$this->data['Infosuplistedef']['ordre'] = 0;
+		$this->request->data['Infosuplistedef']['actif'] = false;
+		$this->request->data['Infosuplistedef']['ordre'] = 0;
 		if ($this->{$this->modelClass}->save($this->data)) {
 			$this->{$this->modelClass}->reOrdonne($this->data['Infosuplistedef']['infosupdef_id']);
 			$this->Session->setFlash('L\'&eacute;l&eacute;ment \''.$this->data['Infosuplistedef']['nom'].'\' a &eacute;t&eacute; supprim&eacute;');
