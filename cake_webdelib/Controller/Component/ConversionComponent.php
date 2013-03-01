@@ -42,7 +42,10 @@ function convertirFichier($fileName, $format) {
                 require_once 'XML/RPC.php';
 		$content =  base64_encode(file_get_contents($fileName));
 		$fileinfo =  pathinfo($fileName);
-                if ($fileinfo['extension'] == 'pdf') $fileinfo['extension'] = 'odt';
+                if ($fileinfo['extension'] == 'pdf') {
+                     $fileinfo['extension'] = 'odt';
+                     $this->log( $fileinfo);
+                 }
  
                 $params = array( new XML_RPC_Value($content, 'string'),
                                  new XML_RPC_Value($fileinfo['extension'],    'string'),
@@ -55,7 +58,10 @@ function convertirFichier($fileName, $format) {
                 $msg = new XML_RPC_Message('convertFile', $params);
                 $cli = new XML_RPC_Client('/', $url);
                 $resp = $cli->send($msg);
-                return (base64_decode($resp->xv->me['string']));
+                if (!empty($resp->xv->me['string']))
+                    return (base64_decode($resp->xv->me['string']));
+                else
+                    return false;
            	break;       
 	}
         return false;
