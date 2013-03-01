@@ -19,4 +19,12 @@
         }
             return $val2;
     }
+
+    function tempdir($dir=false,$prefix='php') {
+        $tempfile=tempnam(TMP,'');
+        if (file_exists($tempfile)) { unlink($tempfile); }
+        mkdir($tempfile);
+        if (is_dir($tempfile)) { return $tempfile; }
+    }
+
 ?>
