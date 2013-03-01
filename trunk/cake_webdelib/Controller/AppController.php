@@ -39,9 +39,11 @@
 */
 App::uses('Controller', 'Controller');
 class AppController extends Controller {
-        //public $theme = "Bootstrap";
+        public $theme = "Bootstrap";
 	var $components = array( 'Utils', 'Acl', 'Droits', 'Session');
+	//var $components = array( 'Utils', 'Acl', 'Droits', 'Session', 'DebugKit.Toolbar');
 	var $helpers = array('Html', 'Form', 'Js', 'Session', 'Menu', 'DatePicker'  );
+        var $aucunDroit = array('Pages:format');
 
 	function beforeFilter() {
 		$this->set('Droits',$this->Droits);
@@ -64,9 +66,13 @@ class AppController extends Controller {
 				$this->redirect("/users/login");
 			}
 			else {
+  
 				// Contrôle des droits
 			     $controllerAction = $this->name . ':' . ($this->name == 'Pages' ? $this->params['pass'][0] : $this->action);
-                             if  ($controllerAction != 'Deliberations:delete') {  
+                             if ($controllerAction == 'Pages:format') {
+                                 return true;
+                             }
+                             elseif  ($controllerAction != 'Deliberations:delete') {  
 			         $user_id = $this->Session->read('user.User.id');
 				 if (!$this->Droits->check($user_id, $controllerAction)) {
 				     $this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : $controllerAction", 'growl', array('type'=>'erreur'));
