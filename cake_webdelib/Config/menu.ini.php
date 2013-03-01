@@ -141,7 +141,8 @@ $webDelib = array(
 					'Types d\'acte' => array('link' => '/typeactes/index'),
 					'Types de séance' => array('link' => '/typeseances/index'),
 					'Informations sup. projet' => array('link' => '/infosupdefs/index'),
-					'Informations sup. séance' => array('link' => '/infosupdefs/index_seance')
+					'Informations sup. séance' => array('link' => '/infosupdefs/index_seance'),
+					'Gestion des connecteurs' => array('link' => '/connecteurs/index')
 					)
 				)
 			)
