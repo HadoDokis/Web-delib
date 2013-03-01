@@ -148,18 +148,20 @@ class MenuComponent extends Component
 	 * @return array  List of files in directory
 	 */
 	function _listClasses($path, $filtre='') {
-		$dir = opendir($path);
+            $dir = opendir($path);
+            if ($dir !== false) {
 		$classes=array();
 		while (false !== ($file = readdir($dir))) {
-			if ((substr($file, -3, 3) == 'php') && substr($file, 0, 1) != '.') {
-				if (!empty($filtre)) {
-					if (strpos($file, $filtre)>0)
-						$classes[] = $file;
+	            if ((substr($file, -3, 3) == 'php') && substr($file, 0, 1) != '.') {
+		 	if (!empty($filtre)) {
+				if (strpos($file, $filtre)>0)
+					$classes[] = $file;
 				} else $classes[] = $file;
 			}
 		}
 		closedir($dir);
-		return $classes;
+                return $classes;
+            }
 	}
 
 	/**
