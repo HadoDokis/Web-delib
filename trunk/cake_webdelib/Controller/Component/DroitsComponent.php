@@ -252,13 +252,14 @@ class DroitsComponent extends Component
 			require_once($file);
 		}
 		else{
-			$plugins = App::objects('plugin');
-			foreach  ($plugins as $plugin){
-                                require_once(APP."Plugin".DS.ucfirst(strtolower($plugin)).DS.'Controller'.DS.ucfirst(strtolower($plugin)).'AppController.php');
-				$file = APP."Plugin".DS.ucfirst(strtolower($plugin)).DS."Controller".DS.$controllerName."Controller.php";
-				if (file_exists($file))
-					require_once($file);
-			}
+                    $plugins = App::objects('plugin');
+		    foreach  ($plugins as $plugin){
+                        if (file_exists(APP."Plugin".DS.ucfirst(strtolower($plugin)).DS.'Controller'.DS.ucfirst(strtolower($plugin)).'AppController.php'))
+                            require_once(APP."Plugin".DS.ucfirst(strtolower($plugin)).DS.'Controller'.DS.ucfirst(strtolower($plugin)).'AppController.php');
+                        $file = APP."Plugin".DS.ucfirst(strtolower($plugin)).DS."Controller".DS.$controllerName."Controller.php";
+                        if (file_exists($file))
+                            require_once($file);
+                    }
 		}
 		$subClassVars = get_class_vars($controllerName.'Controller');
 		if ($subClassVars === false)
