@@ -57,12 +57,14 @@ class Annex extends AppModel {
 
 	    if (isset($delib['Deliberation']['parent_id'])) {
 		$tab = $this->getAnnexesIFromDelibId( $delib['Deliberation']['parent_id'] );
-                
-                for($i=0; $i< count($tab); $i ++) 
-                    if ($tab[$i]['Annex']['Model'] == 'Deliberation')
-		       unset($tab[$i]);
+                if (isset($tab) && !empty($tab)) {
+                    for($i=0; $i< count($tab); $i ++)  {
+                        if ($tab[$i]['Annex']['model'] == 'Deliberation')
+		           unset($tab[$i]);
+                        }
 
-                $annexes = array_merge ($annexes , $tab); 
+                    $annexes = array_merge ($annexes , $tab); 
+                }
             }     
             
             return $annexes;
