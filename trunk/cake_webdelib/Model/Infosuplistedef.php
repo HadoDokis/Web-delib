@@ -76,7 +76,7 @@
 
 			$recs = $this->find('all', array('conditions' => array( 'actif' => 1, 
                                                                                 'infosupdef_id' => $infosupdefId), 
-                                                          'fields'  => array('id, ordre', 'ordre'), 
+                                                          'fields'  => array('id', 'ordre'), 
                                                           'recursive' => -1));
 
 			foreach($recs as $n=>$rec) {

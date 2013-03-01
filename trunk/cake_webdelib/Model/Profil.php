@@ -35,5 +35,6 @@ class Profil extends AppModel {
         )
     );
 
+        var $hasAndBelongsToMany = array('Infosupdef');
 }
 ?>

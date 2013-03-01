@@ -750,17 +750,19 @@ class Deliberation extends AppModel {
 
 		@$annexes =  new GDO_IterationType("Annexes");
 		foreach($annexe_ids as $key => $annexe_id) {
+                        unset ($annexe);
 		        $oDevPart = new GDO_PartType();
 			$annexe = $this->Annex->find('first', array ('conditions' => array('Annex.id' => $annexe_id),
 				                                     'recursive'  => -1));
 			$oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
 			if (($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {
-			        $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
-				$oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
-						'application/vnd.oasis.opendocument.text',
+			    $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
+			    $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
+			 			'application/vnd.oasis.opendocument.text',
 						'binary',
 						$annexe['Annex']['data']));
-				$annexes->addPart($oDevPart);
+			    $annexes->addPart($oDevPart);
+                            file_put_contents('/tmp/Annexe_'.$annexe_id, $annexe['Annex']['data']);
 			}
 		}
 		@$oMainPart->addElement($annexes);
