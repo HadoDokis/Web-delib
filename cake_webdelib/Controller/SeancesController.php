@@ -33,6 +33,7 @@ class SeancesController extends AppController {
 			'saisirSecretaire' => 'Seances:listerFuturesSeances',
 			'getListActeurs'   => 'Seances:listerFuturesSeances',
                         'sendConvocations' => 'Seances:listerFuturesSeances',
+                        'sendToIdelibre' => 'Seances:listerFuturesSeances',
 			'saisirCommentaire'=>'Seances:listerFuturesSeances');
 
 
@@ -1135,24 +1136,9 @@ class SeancesController extends AppController {
            
             $oMainPart->addElement($blocProjets);
             $this->Seance->makeBalise($seance_id, $oMainPart);
-            $infosup = $this->Seance->Infosup->find('all',
-                                                    array('conditions' => array('Infosup.foreign_key' => $seance_id,
-                                                                                'Infosup.model'       => 'Seance'),
-                                                          'recursive'  => -1));
-            if (!empty($infosup)) {
-                foreach($infosup as  $champs) {
-                    $oMainPart->addElement($this->_addField($champs['Infosup'], $seance_id, 'Seance'));
-                }
-            }
-            else {
-                $defs = $this->Seance->Infosup->Infosupdef->find('all', array('conditions'=>array('model' => 'Seance'), 'recursive' => -1));
-                foreach($defs as $def) {
-                    $oMainPart->addElement(new GDO_FieldType($def['Infosupdef']['code'],  utf8_encode(' '), 'text')) ;
-                }
-            } 
             $this->Seance->saveField('date_convocation',  date("Y-m-d H:i:s", strtotime("now")));   
             $typeseance_id = $this->Seance->getType($seance_id);
-            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($typeseance_id);
+            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($typeseance_id, true);
             $this->Progress->start(200, 100,200, '#FFCC00','#006699');
             $cpt =0;
             $nbActeurs = count($acteursConvoques);
@@ -1214,48 +1200,6 @@ class SeancesController extends AppController {
             $this->Progress->end("/seances/sendConvocations/$seance_id/$model_id");
         }
 
-        function _addField($champs,  $id, $model='Deliberation') {
-                $champs_def = $this->Infosup->Infosupdef->read(null, $champs['infosupdef_id']);
-
-                if(($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']!= "")) {
-                        $tmp= $this->Infosup->Infosupdef->Infosuplistedef->find('first',
-                                        array(   'conditions' => array('Infosuplistedef.id' => $champs['text']),
-                                                        'fields' => array('nom'),
-                                                        'recursive' => -1));
-                        $champs['text'] = $tmp['Infosuplistedef']['nom'];
-                }
-                elseif (($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']== ""))
-                return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
-
-                if ($champs['text'] != '') {
-                        return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode($champs['text']), 'text'));
-                }
-                elseif ($champs['date'] != '0000-00-00') {
-                        return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
-                }
-                elseif ($champs['file_size'] != 0 ) {
-                        $name = utf8_decode(str_replace(" ", "_", $champs['file_name']));
-                        return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', utf8_decode($champs['content'])));
-                }
-                elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
-
-                        if ( $model == 'Deliberation' ) {
-                                $filename = WEBROOT_PATH."/files/generee/projet/$id/".$champs_def['Infosupdef']['code'].".html";
-                                $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
-                                $content = $this->Conversion->convertirFichier($filename, "odt");
-                                return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', utf8_decode($content)));
-                        }
-                        elseif ( $model == 'Seance' ) {
-                            $filename = WEBROOT_PATH."/files/generee/seance/$id/".$champs_def['Infosupdef']['code'].".html";
-                            $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/seance/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
-                            $content = $this->Conversion->convertirFichier($filename, "odt");
-                            return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', utf8_decode($content)));
-
-                 }
-                }
-                elseif  ($champs['text'] == '' )
-                return (new GDO_FieldType($champs_def['Infosupdef']['code'],  utf8_encode(' '), 'text'));
-        }
 
         function recuperer_zip($seance_id, $model_id) {
             $dirpath = WEBROOT_PATH."/files/seances/$seance_id/$model_id/";
@@ -1345,5 +1289,67 @@ class SeancesController extends AppController {
             header("Content-Disposition: attachment; filename=recherche.$format");
             die($content);
         }
+
+    function sendToIdelibre($seance_id) {
+        $this->Progress->start(200, 100,200, '#FFCC00','#006699');
+        $this->Progress->at(0, "Initialisation");
+        
+        $this->Seance->Behaviors->attach('Containable');
+        $this->Deliberation->Behaviors->attach('Containable');
+
+        $url = Configure::read('IDELIBRE_HOST').'convocations.json';
+
+        $projets = array();
+        $seance = $this->Seance->find('first', array('conditions'=> array('Seance.id'=>$seance_id),
+                                      'fields'    => array('id', 'date', 'type_id'),
+                                      'contain'   => array('Typeseance.libelle', 'Typeseance.action', 'Typeseance.id',
+                                                           'Typeseance.modelconvocation_id', 'Typeseance.action')));
+
+        $acteurs_convoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Typeseance']['id'], true);
+
+        $model_seance_id =  $seance['Typeseance']['modelconvocation_id'];
+        $this->Progress->at(0, "G&eacute;n&eacute;ration de la convocation");
+
+        $delibs = $this->Seance->getDeliberationsId($seance_id, array('Deliberation.etat >' =>0 ));
+        $err = $this->requestAction("/models/generer/null/$seance_id/$model_seance_id/0/0/retour/0/true");
+        $filename = WEBROOT_PATH."/files/generee/fd/$seance_id/null/Document.pdf";
+        $data = array(  'username' => "idelibre_user",
+                        'password' => "idelibre_user",
+                        'date_seance' => $seance['Seance']['date'],
+                        'type_seance' => $seance['Typeseance']['libelle'],
+                        'acteurs_convoques' => json_encode($acteurs_convoques),
+                        'convocation' => "@$filename" );
+        $i = 0;
+        $num_delib = count($delibs );
+        foreach ($delibs as $delib_id) {
+            $this->Progress->at($i*(100/$num_delib), "G&eacute;n&eacute;ration du projet $i/$num_delib");
+            $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
+                                                              'contain'    => array('Theme.libelle'),
+                                                              'fields'     => array('Deliberation.objet', 'Deliberation.typeacte_id', 
+                                                                                    'Deliberation.theme_id',
+                                                                                    'Deliberation.etat')));
+
+            if ( $seance['Typeseance']['action'] == 0) {
+                $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'], $delib['Deliberation']['etat']);
+            }
+            else {
+                $model_id = $this->Deliberation->Typeacte->getModelId($delib['Deliberation']['typeacte_id'],  'modeleprojet_id');
+            }
+            $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/P_$delib_id.pdf");
+            $projet_filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/P_$delib_id.pdf.pdf"; 
+            $data['projet_'.$i.'_libelle'] = $delib['Deliberation']['objet'];
+            $data['projet_'.$i.'_theme']  = $delib['Theme']['libelle'];
+            $data['projet_'.$i.'_rapport']  = "@$projet_filename";
+            $i++;  
+        }
+
+       $request = curl_init();
+       curl_setopt($request, CURLOPT_URL, $url);
+       curl_setopt($request, CURLOPT_POST, 1);
+       curl_setopt($request, CURLOPT_POSTFIELDS, $data);
+       $result = curl_exec($request);
+       curl_close($request);
+       $this->Progress->end("/seances/listerFuturesSeances");
+    }
 }
 ?>
