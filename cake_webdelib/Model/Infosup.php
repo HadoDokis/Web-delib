@@ -235,7 +235,7 @@ class Infosup extends AppModel
 
                  if ( $model == 'Deliberation' ) {
                      $filename = WEBROOT_PATH."/files/generee/projet/$id/".$champs_def['Infosupdef']['code'].".html";
-                     $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
+                     $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$id/", $champs_def['Infosupdef']['code'].".html", utf8_decode($champs['content']));
                      $content = $this->Conversion->convertirFichier($filename, "odt");
                      return (new GDO_ContentType($champs_def['Infosupdef']['code'], $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
                  }
