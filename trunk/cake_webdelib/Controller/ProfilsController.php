@@ -48,7 +48,7 @@ class ProfilsController extends AppController {
 				if (empty($this->data['Profil']['parent_id'])) $this->request->data['Profil']['parent_id']=0;
 				if ($this->Profil->save($this->data)) {
 					if ($this->data['Profil']['parent_id']!=0) {
-						$this->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['Profil']['parent_id']));
+						$this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['Profil']['parent_id']));
 						$this->Dbdroits->MajCruDroits(
 						array(
 							'model'=>'Profil',
@@ -162,16 +162,17 @@ class ProfilsController extends AppController {
 				$this->redirect('/profils/index');
 			}
 			if (!$this->Profil->User->find('first', array('conditions'=>array('User.profil_id'=>$id)))) {
-				if ($this->Profil->delete($id)) {
-					$aro_id = $this->Aro->find('first',array('conditions'=>array('model'=>'Profil', 'foreign_key'=>$id),'fields'=>array('id')));
-					$this->Aro->delete($aro_id['Aro']['id']);
-					$this->Session->setFlash('Le profil a &eacute;t&eacute; supprim&eacute;');
-					$this->redirect('/profils/index');
-				}
-				else {
-					$this->Session->setFlash('Impossible de supprimer ce profil');
-					$this->redirect('/profils/index');
-				}
+			    if ($this->Profil->delete($id)) {
+			        $aro_id = $this->Aro->find('first',array('conditions'=>array('model'=>'Profil', 'foreign_key'=>$id),'fields'=>array('id')));
+                                if (!empty($aro_id))
+				    $this->Aro->delete($aro_id['Aro']['id']);
+				$this->Session->setFlash('Le profil a &eacute;t&eacute; supprim&eacute;');
+				$this->redirect('/profils/index');
+			    }
+			    else {
+			 	$this->Session->setFlash('Impossible de supprimer ce profil');
+				$this->redirect('/profils/index');
+			    }
 			}
 			else {
 				$this->Session->setFlash('Impossible de supprimer ce profil car il est attribué.');
