@@ -8,6 +8,7 @@
 	<?php echo $this->Html->css('jquery.jgrowl'); ?>
 	<?php echo $this->Html->script('utils'); ?>
 	<?php echo $this->html->script('jquery', true); ?>
+	<?php echo $this->html->script('jquery-ui', true); ?>
 	<?php echo $this->html->script('jquery.jgrowl', true); ?>
 
 </head>
@@ -49,11 +50,13 @@
 		</div>
 		<?php echo $this->Session->flash(); ?>
 		<?php echo $content_for_layout; ?>
+
 	</div>
 
 	<div id="pied">
             <?php echo "Web-delib v".VERSION; ?> &copy; 2006-2012 ADULLACT
         </div>
+
        
 </div>
 </body>
