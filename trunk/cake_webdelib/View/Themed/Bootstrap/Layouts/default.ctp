@@ -34,6 +34,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
 		echo $this->Html->meta('icon');
 		
 		echo $this->Html->css('webdelib');
+                echo $this->Html->css('jquery.jgrowl');
 
 		echo $this->Html->css('bootstrap.min');
 		echo $this->Html->css('bootstrap-responsive.min');
@@ -41,10 +42,12 @@ $cakeDescription = __d('webdelib', 'Webdelib');
 		echo $this->Html->css('docs');
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
+
 		echo $this->Html->script('libs/modernizr.min');
 		echo $this->Html->script('libs/jquery');
 		echo $this->Html->script('libs/bootstrap.min');
 		echo $this->Html->script('bootstrap/application');
+                echo $this->html->script('jquery.jgrowl', true);
 
                 echo $this->Html->script('utils'); 
 
@@ -74,6 +77,9 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                             <li class="">
                                 <a href="/users/changeUserMdp" class="">Changer de mot de passe</a>
                             </li>
+                            <li class="">
+                                <a href="/pages/format" class="">Changer le format de sortie des éditions</a>
+                            </li>
                             <li class="divider"></li>
                             <li>
                                 <a id="logout" href="/users/logout">Se déconnecter</a>
@@ -85,7 +91,15 @@ $cakeDescription = __d('webdelib', 'Webdelib');
 </div>
                     </div>
                 </div>
-                <ul class="nav nav-tabs">
+<?php
+    App::uses('Debugger', 'Utility');
+    if (Configure::read('debug') > 0):
+        Debugger::checkSecurityKeys();
+    endif;
+?>
+
+
+                <ul class="nav nav-tabs hidden-phone">
                 <?php 
                    foreach ($session_menuPrincipal['items'] as $libelle => $items)  {
                        $carret = "";
@@ -114,10 +128,9 @@ $cakeDescription = __d('webdelib', 'Webdelib');
 	</div>
 	
         <div class="pied">
-            <?php echo $this->element('format'); ?><br /><br />
             <?php echo "Web-delib v".VERSION; ?> &copy; 2006-2012 ADULLACT 
 	</div><!-- /container -->
 	
-	<?php echo $this->element('sql_dump'); ?>
+	<?php // echo $this->element('sql_dump'); ?>
 </body>
 </html>
