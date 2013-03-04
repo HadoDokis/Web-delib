@@ -24,6 +24,8 @@ class Infosupdef extends AppModel {
 		'Infosup',
 		'Infosuplistedef'
 	);
+
+       var $hasAndBelongsToMany = array('Profil');
 	
 	var $validate = array(
 		'nom' => array(
