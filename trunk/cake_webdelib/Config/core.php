@@ -32,7 +32,7 @@
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
  */
-	Configure::write('debug', 0);
+	Configure::write('debug', 1);
 /**
  * Configure the Error handler used to handle errors for your application.  By default
  * ErrorHandler::handleError() is used.  It will display errors using Debugger, when debug > 0
@@ -91,7 +91,7 @@
  *
  * And uncomment the App.baseUrl below:
  */
-	//Configure::write('App.baseUrl', env('SCRIPT_NAME'));
+	//Configure::write('App.baseUrl', env(SCRIPT_NAME'));
 
 /**
  * Uncomment the define below to use CakePHP prefix routes.
@@ -183,12 +183,12 @@
 /**
  * A random string used in security hashing methods.
  */
-	Configure::write('Security.salt', 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi');
+	Configure::write('Security.salt', 'Webdelib-2013');
 
 /**
  * A random numeric string (digits only) used to encrypt/decrypt strings.
  */
-	Configure::write('Security.cipherSeed', '76859309657453542496749683645');
+	Configure::write('Security.cipherSeed', '20092011657453542496749683645');
 
 /**
  * Apply timestamps with the last modified time to static assets (js, css, images).
@@ -228,7 +228,7 @@
  * Uncomment this line and correct your server timezone to fix 
  * any date & time related errors.
  */
-	//date_default_timezone_set('UTC');
+	date_default_timezone_set('Europe/Paris');
 
 /**
  * Pick the caching engine to use.  If APC is enabled use it.
@@ -291,8 +291,11 @@ Cache::config('_cake_model_', array(
 
     define('WEBROOT_PATH', $path2."webroot");
     define('CONFIG_PATH', $path2."Config/");
+    Configure::write('WEBDELIB_PATH', ROOT.DS.APP_DIR.DS);
+
     define ('CRON_DISPATCHER', false);
     require_once ('webdelib.inc');
-    define('VERSION', '<b> 4.0 </b>');
+    define('VERSION', '<b> 4.1 </b>');
     include_once(ROOT.DS.APP_DIR.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'cakeflow.conf.php');
 
+?>
