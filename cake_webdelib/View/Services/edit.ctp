@@ -5,9 +5,9 @@
 </div>
 <div class="optional">
 	<?php
-		if ($isEditable){
+//		if ($isEditable){
 		    echo $this->Form->input('Service.parent_id', array('label'=>'Appartient à','options'=>$services,'default'=>$selectedService, 'empty'=>'', 'escape'=>false));
-		}
+//		}
 	?>
 </div>
 <div class="optional">
