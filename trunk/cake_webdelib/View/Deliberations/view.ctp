@@ -1,5 +1,17 @@
 <?php echo $this->Html->script('ckeditor/ckeditor'); ?>
 <?php echo $this->Html->script('ckeditor/adapters/jquery'); ?>
+<?php echo $this->Html->script('ouvrable', true); ?>
+<script type="text/javascript">
+$(document).ready(function() {
+        $("div.ouvrable").ouvrable({
+                arrowUp : '<?php echo $this->Html->webroot('img/icons/arrow-right.png');?>',
+                arrowDown : '<?php echo $this->Html->webroot('img/icons/arrow-down.png');?>',
+                initHeight : 'MIN'
+                });
+});
+</script>
+
+
 
 <div id="vue_cadre">
 <dl>
@@ -16,6 +28,28 @@
 		    echo '<h3>Projet Multi-D&eacute;lib&eacute;rations</h3>';
     }
 	?>
+	<div class="imbrique">
+		<div class="gauche">
+			<dt>Rédacteur</dt>
+                        <dd><?php echo $this->data['Redacteur']['prenom']. ' '.$this->data['Redacteur']['nom']; ?></dd>
+		</div>
+		<div class="droite">
+			<dt>Rapporteur</dt>
+			<dd>&nbsp;<?php echo $this->data['Rapporteur']['prenom'].' '.$this->data['Rapporteur']['nom']?></dd>
+		</div>
+	</div>
+
+<div class="imbrique">
+	<div class="gauche">
+		<dt>Date création</dt>
+		<dd>&nbsp;<?php echo $this->data['Deliberation']['created']?></dd>
+	</div>
+	<div class="droite">
+		<dt>Date modification</dt>
+		<dd>&nbsp;<?php echo $this->data['Deliberation']['modified']?></dd>
+	</div>
+</div>
+
 	<div class="imbrique">
 	<?php
 	    if (empty($this->data['Multidelib'])) {
@@ -73,47 +107,27 @@
 
 
 	<div class="imbrique">
-		<dt>Circuit : <?php echo $this->data['Circuit']['libelle']?></dt>
+            <?php echo $this->Html->tag('div', null, array('class'=>'ouvrable', 'id'=>'Circuit', 'initHeight' => 'MIN'));
+            echo $this->Html->tag('dt', "Circuit ". $this->data['Circuit']['libelle']); ?>
 		<dd><?php echo $visu; ?></dd>
+            </div>
 	</div>
-	<br/>
-	<br/>
-	<br/>
-
-	<div class="imbrique">
-		<div class="gauche">
-			<dt>Rédacteur</dt>
-                        <dd><?php echo $this->data['Redacteur']['prenom']. ' '.$this->data['Redacteur']['nom']; ?></dd>
-		</div>
-		<div class="droite">
-			<dt>Rapporteur</dt>
-			<dd>&nbsp;<?php echo $this->data['Rapporteur']['prenom'].' '.$this->data['Rapporteur']['nom']?></dd>
-		</div>
-	</div>
-
-<div class="imbrique">
-	<div class="gauche">
-		<dt>Date création</dt>
-		<dd>&nbsp;<?php echo $this->data['Deliberation']['created']?></dd>
-	</div>
-	<div class="droite">
-		<dt>Date modification</dt>
-		<dd>&nbsp;<?php echo $this->data['Deliberation']['modified']?></dd>
-	</div>
-</div>
-
 
 <?php
-echo $this->element('viewTexte', array('type'=>'projet', 'delib'=>$this->data['Deliberation']));
-echo $this->element('viewTexte', array('type'=>'synthese', 'delib'=>$this->data['Deliberation']));
-if (empty($this->data['Multidelib']))
+    echo $this->Html->tag('div', null, array('class'=>'ouvrable', 'id'=>'textes'));
+    echo $this->Html->tag('dt', "Textes");
+    echo $this->element('viewTexte', array('type'=>'projet', 'delib'=>$this->data['Deliberation']));
+    echo $this->element('viewTexte', array('type'=>'synthese', 'delib'=>$this->data['Deliberation']));
+    if (empty($this->data['Multidelib']))
 	echo $this->element('viewTexte', array('type'=>'deliberation', 'delib'=>$this->data['Deliberation']));
+    echo ('</div>');
 ?>
 
 <?php
 	if(!empty($infosupdefs)) {
-		echo '<dt>Informations Suppl&eacute;mentaires </dt>';
-		echo '<dd><br>';
+            echo $this->Html->tag('div', null, array('class'=>'ouvrable', 'id'=>'Infosupps'));
+            echo $this->Html->tag('dt', "Informations Suppl&eacute;mentaires");
+	    echo '<dd><br>';
 		foreach ($infosupdefs as $infosupdef) {
 			echo $infosupdef['Infosupdef']['nom'].' : ';
 			if (array_key_exists($infosupdef['Infosupdef']['code'], $this->data['Infosup'])) {
@@ -133,12 +147,14 @@ if (empty($this->data['Multidelib']))
 			echo '<br>';
 		}
 		echo '</dd>';
+               echo ('</div>');
 	}
 ?>
 
 <?php
 	if(empty($this->data['Multidelib']) && !empty($this->data['Annex'])) {
-		echo '<dt>Annexes</dt>';
+            echo $this->Html->tag('div', null, array('class'=>'ouvrable', 'id'=>'Annexes'));
+            echo $this->Html->tag('dt', "Annexes");
 		echo '<dd><br>';
 	 	foreach ($this->data['Annex'] as $annexe) {
 			if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
@@ -147,6 +163,7 @@ if (empty($this->data['Multidelib']))
 			echo '<br>'.$this->Html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
  		}
 		echo '</dd>';
+              echo ('</div>');
 	}
 ?>
 
@@ -161,22 +178,27 @@ if (empty($this->data['Multidelib']))
 ?>
 
 <?php
-	if(!empty($commentaires)) {
-		echo"<dt>Commentaires</dt><br />";
+      if(!empty($commentaires)) {
+          echo $this->Html->tag('div', null, array('class'=>'ouvrable', 'id'=>'Commentaires'));
+          echo $this->Html->tag('dt', "Commentaires");
 		foreach ($commentaires as $commentaire){
 			echo '<dd><u>'. $commentaire['Commentaire']['prenomAgent'].' '.$commentaire['Commentaire']['nomAgent'] .' </u><br/>';
 		    echo $commentaire['Commentaire']['texte'];
 			echo '</dd>';
 		}
+           echo ('</div>');
 	}
 ?>
 <?php
       if (!empty($historiques)) {
-          echo"<dt>Historique</dt><br />";
+          echo $this->Html->tag('div', null, array('class'=>'ouvrable', 'id'=>'Historique'));
+          echo $this->Html->tag('dt', "Historique");
+
           foreach ($historiques as $historique){
               echo '<dd>'.$this->Html2->ukToFrenchDateWithHour($historique['Historique']['created']).' '.$historique['Historique']['commentaire'];
               echo '</dd>';
           }
+          echo ('</div>');
       }
 ?>
 
