@@ -251,9 +251,13 @@ class Seance extends AppModel {
 			}
 
 		}
+                if (is_array($seances_enregistrees) and  (!empty($seances_enregistrees)))  {
+		    $seances_a_ajouter = array_diff($seances_selectionnees, $seances_enregistrees);
+                }
+                else
+                    $seances_a_ajouter = $seances_selectionnees;
 
-		$seances_a_ajouter = array_diff($seances_selectionnees, $seances_enregistrees);
-		foreach($seances_a_ajouter as $key => $seance_id) {
+		foreach($seances_a_ajouter as $seance_id) {
 			$this->Deliberationseance->create();
 			$Deliberationseance['Deliberationseance']['position'] = intval($this->getLastPosition($seance_id));
 			$Deliberationseance['Deliberationseance']['deliberation_id'] = $delib_id;
