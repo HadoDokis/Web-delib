@@ -7,7 +7,7 @@ echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 ?>
 
 <h2>Liste des projets pour la séance du <?php echo $date_seance; ?></h2>
-<table>
+<table  class="table table-hover">
 	<tr>
 		<th width='4%'>Ordre</th>
 		<?php echo ('<th width="13%">'.$this->Html->link('Thème', "/deliberations/sortby/$seance_id/theme_id",null,'Etes-vous sur de vouloir trier par theme ?'). "</th>"); ?>
@@ -25,16 +25,21 @@ echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 		$delibPosition = $projet['Deliberationseance']['position'];
 	?>
 
-	<tr>
+	<tr height='36px'>
 		<td><?php echo $this->Html->link($delibPosition, "javascript:onClickLinkOrdre(".$delibPosition.", ".$delibId.");", array('id'=>'linkOrdre'.$delibPosition)); ?></td>
 		<td><?php echo '['.$projet['Theme']['order'].'] '.$projet['Theme']['libelle']; ?></td>
 	    <td><?php echo $projet['Service']['libelle']; ?></td>
-	    <td><?php
-			if (empty($projet['Deliberation']['rapporteur_id']) || !array_key_exists($projet['Deliberation']['rapporteur_id'], $rapporteurs))
-				echo $this->Html->link('[sélectionner_un_rapporteur]', "javascript:onClickLinkRapporteur(0, ".$delibId.");", array('id'=>'linkRapporteur'.$delibId));
-			else
-				echo $this->Html->link($rapporteurs[$projet['Deliberation']['rapporteur_id']], "javascript:onClickLinkRapporteur(".$projet['Deliberation']['rapporteur_id'].", ".$delibId.");", array('id'=>'linkRapporteur'.$delibId));
-			?>
+	    <td>
+            <?php
+                if (empty($projet['Deliberation']['rapporteur_id']) || !array_key_exists($projet['Deliberation']['rapporteur_id'], $rapporteurs))
+                    echo $this->Html->link(" [sélectionner_un_rapporteur] ", 
+                                           "javascript:onClickLinkRapporteur(0, ".$delibId.");", 
+                                           array('id'=>'linkRapporteur'.$delibId));
+		else
+                    echo $this->Html->link($rapporteurs[$projet['Deliberation']['rapporteur_id']], 
+                                           "javascript:onClickLinkRapporteur(".$projet['Deliberation']['rapporteur_id'].", ".$delibId.");", 
+                                           array('id'=>'linkRapporteur'.$delibId));
+	     ?>
 		</td>
 	    <td><?php echo $projet['Deliberation']['objet_delib']; ?></td>
 	    <td><?php echo $projet['Deliberation']['titre']; ?></td>
