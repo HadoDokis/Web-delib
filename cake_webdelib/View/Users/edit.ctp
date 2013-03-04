@@ -19,16 +19,17 @@ function onchangeCircuitDefault() {
 <?php echo $this->element('onglets', array('listeOnglets' => array(
 	'Informations principales',
 	'Droits', 
-        'Types d\'acte'))); ?>
+        'Types d\'acte',
+        'Configuration vue de synthèse'))); ?>
 
 <?php
 	if($this->Html->value('User.id')) {
 		echo "<h2>Modification d'un utilisateur</h2>";
-		echo $this->Form->create('User', array('url' => '/users/edit/'.$this->Html->value('User.id'),'type'=>'post', 'name' =>'userEdit'));
+		echo $this->Form->create('User', array('url' => '/users/edit/'.$this->Html->value('User.id'),'type'=>'post', 'name' =>'userEdit', 'id'=>'userForm'));
 	}
 	else {
 		echo "<h2>Ajout d'un utilisateur</h2>";
-		echo $this->Form->create('User', array('url' => '/users/add','type'=>'post'));
+		echo $this->Form->create('User', array('url' => '/users/add','type'=>'post', 'id'=>'userForm'));
 	}
 ?>
 	<div id='tab1'>
@@ -137,6 +138,8 @@ function onchangeCircuitDefault() {
 		?>
 	</div>
 
+         
+
 <div id='tab3' style="display: none;">
     <?php 
         foreach ($natures as $nature){
@@ -145,6 +148,13 @@ function onchangeCircuitDefault() {
         } 
     ?>
 </div>
+
+<div id='tab4' style="display: none;">
+<?php
+     echo $this->element('configuration_synthese');
+?>
+</div>
+
 
 <br/>
 
