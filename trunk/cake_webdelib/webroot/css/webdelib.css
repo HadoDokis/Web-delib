@@ -327,6 +327,14 @@ td.ordre a {
 	text-decoration: none;
 }
 
+a.link_tablet {
+        background-image: url(../img/icons/tablet.png);
+        background-repeat: no-repeat;
+        background-position: top;
+        padding: 0 0 10px 22px;
+}
+
+
 a.link_bool_0 {
         background-image: url(../img/icons/false.png);
         background-repeat: no-repeat;
@@ -1347,4 +1355,12 @@ div.aModifier {
 .autocomplete {
     background: grey;
     list-style-type: none;
+}
+
+#seances, #emetteur, #circuit, #acteur, #etat, #description, #limite, #classification, #theme, #objet, #nature {
+    margin:  1px;
+    padding: 1px;
+    width:   180px;
+    display: block;
+    border:  2px outset black;
 }
