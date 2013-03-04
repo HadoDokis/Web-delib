@@ -106,8 +106,8 @@ echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->action
 <?php
 	if($this->Html->value('Infosupdef.model') == 'Deliberation') {
 		echo $this->Html->tag('div', null, array('class'=>'required', 'id'=>'recherche'));
-			echo $this->Form->label('Infosupdef.recherche','Inclure dans la recherche');
-			echo $this->Form->input('Infosupdef.recherche',array('type'=>'checkbox', 'label'=>false));
+		echo $this->Form->label('Infosupdef.recherche','Inclure dans la recherche');
+		echo $this->Form->input('Infosupdef.recherche',array('type'=>'checkbox', 'label'=>false));
 		echo $this->Html->tag('/div');
 	} else
 		echo $this->Form->hidden('Infosupdef.recherche', array('value'=>false));
@@ -117,6 +117,7 @@ echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->action
 		<span>Note : la gestion des éléments de la liste est accessible &agrave; partir de la liste des informations suppl&eacute;mentaires.</span>
 	</div>
 	<br/>
+        <?php echo $this->Form->input('Profil', array('options' =>$profils, 'multiple' => true, 'size' => 10, 'default' => $profils_selected)); ?>
 
 	<div class="submit">
 	<?php
@@ -127,5 +128,4 @@ echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->action
 		echo $this->Html->link('Annuler', $lienRetour, array('class'=>'link_annuler', 'name'=>'Annuler'))
 	?>
 	</div>
-
 <?php echo $this->Form->end(); ?>
