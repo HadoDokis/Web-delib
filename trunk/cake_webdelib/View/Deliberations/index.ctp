@@ -1,3 +1,14 @@
+<script>
+function choixModele(o) {
+    if (o.value == 'generation') {
+        $('#divmodeles').show();
+        $('#divmodeles').css('display', 'inline'); 
+    }
+    else {
+        $('#divmodeles').hide();
+    }
+}
+</script>
 <div class="deliberations">
 <?php 
 
@@ -150,7 +161,7 @@
                                                          'escape' => false), 
                                                     false);
 			
-			echo '<br /><br/><br/><br/>';
+			echo '<br /><br/><br/>';
 			if (in_array('attribuerCircuit', $deliberation['Actions'])  && ($deliberation['Deliberation']['signee'] != 1 )) {
 				$actionAttribuer = '/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'];
 				$actionAttribuer .= $deliberation['Deliberation']['circuit_id'] ? '/'.$deliberation['Deliberation']['circuit_id'] : '';
@@ -245,9 +256,16 @@
 <br />
 <?php 
      if (isset($traitement_lot) && ($traitement_lot ==true)) {
+         $actions_possibles['generation'] = 'Génération';
          echo $this->Form->input('Deliberation.action', array('options' => $actions_possibles, 
                                                               'div'     => false,
+                                                              'onChange'     => 'javascript:choixModele(this);',
                                                               'empty'   => 'Selectionner une action'));
+   
+         echo $this->Form->input('Deliberation.modele', array('options' => $modeles,
+							      'div'     => array('id' => 'divmodeles', 'style' => 'display:none;'),
+							      'label'   => false,
+                                                              'empty'   => 'Selectionner un modèle'));
          echo $this->Form->Submit('Executer', array('div' => false, 
                                                     'before' => '&nbsp;&nbsp;&nbsp;'));
          echo $this->Form->end(); 
