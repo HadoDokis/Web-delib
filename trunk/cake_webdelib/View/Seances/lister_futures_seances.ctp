@@ -85,6 +85,14 @@
                                         'escape' => false,
 					'alt'=>'Générer l\'ordre du jour détaillé pour la séance du '.$seance['Seance']['date'],
 					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération des documents ?");'), false);
+
+                   echo $this->Html->link(SHY, '/seances/sendToIdelibre/'.$seance['Seance']['id'], array(
+                                        'class'=>'link_tablet',
+                                        'title'=>'Envoyer à Idelibre la séance du '.$seance['Seance']['date'],
+                                        'escape' => false,
+                                        'alt'=>'Envoyer à Idelibre la séance du '.$seance['Seance']['date'],
+                                        'onClick'=>'return avantGeneration("Etes-vous sur de vouloir envoyer les documents ?");'), false);
+
 ?>
 		</td>
 		<td class="actions">
