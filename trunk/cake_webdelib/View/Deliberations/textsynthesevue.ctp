@@ -27,6 +27,6 @@
 </div>
 
 <div class="submit">
-	<?php echo $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);?>
+	<?php echo $this->Html->link(SHY, $this->Session->read('user.User.myUrl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche', 'escape' => false));?>
 
 </div>
