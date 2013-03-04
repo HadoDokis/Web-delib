@@ -41,7 +41,6 @@ ALTER SEQUENCE typeactes_id_seq OWNED BY typeactes.id;
 ALTER TABLE ONLY typeactes ALTER COLUMN id SET DEFAULT nextval('typeactes_id_seq'::regclass);
 ALTER TABLE ONLY typeactes ADD CONSTRAINT typeactes_id_key UNIQUE (id);
 
-
 BEGIN;
     ALTER TABLE wkf_traitements ADD COLUMN treated_b boolean;
     UPDATE wkf_traitements 
@@ -176,7 +175,6 @@ INSERT INTO "circuits_users" (user_id, circuit_id)  select users.id, "wkf_circui
 
 ALTER TABLE "deliberations"  ALTER COLUMN titre DROP NOT NULL;
 ALTER TABLE "deliberations"  ALTER COLUMN num_pref  DROP NOT NULL;
-ALTER TABLE "deliberations"  ALTER COLUMN texte_name_projet DROP NOT NULL;
 
 ALTER TABLE "deliberations"  ALTER COLUMN texte_projet_name DROP NOT NULL;
 ALTER TABLE "deliberations"  ALTER COLUMN texte_projet_type DROP NOT NULL;
@@ -189,6 +187,7 @@ ALTER TABLE "deliberations"  ALTER COLUMN texte_synthese_size DROP NOT NULL;
 ALTER TABLE "deliberations"  ALTER COLUMN deliberation_type DROP NOT NULL;
 ALTER TABLE "deliberations"  ALTER COLUMN deliberation_name DROP NOT NULL;
 ALTER TABLE "deliberations"  ALTER COLUMN deliberation_size DROP NOT NULL;
+ALTER TABLE "deliberations"  ALTER COLUMN is_multidelib  DROP NOT NULL;
 
 ALTER TABLE deliberations_seances ADD  COLUMN avis smallint;
 ALTER TABLE models ADD  COLUMN multiodj BOOLEAN DEFAULT false; 
