@@ -43,7 +43,7 @@ class AppController extends Controller {
 	var $components = array( 'Utils', 'Acl', 'Droits', 'Session');
 	//var $components = array( 'Utils', 'Acl', 'Droits', 'Session', 'DebugKit.Toolbar');
 	var $helpers = array('Html', 'Form', 'Js', 'Session', 'Menu', 'DatePicker'  );
-        var $aucunDroit = array('Pages:format');
+        var $aucunDroit = array('Pages:format', 'Pages:service');
 
 	function beforeFilter() {
 		$this->set('Droits',$this->Droits);
@@ -68,8 +68,9 @@ class AppController extends Controller {
 			else {
   
 				// Contrôle des droits
+                             $Pages = array('Pages:format', 'Pages:service');
 			     $controllerAction = $this->name . ':' . ($this->name == 'Pages' ? $this->params['pass'][0] : $this->action);
-                             if ($controllerAction == 'Pages:format') {
+                             if (in_array($controllerAction, $Pages)) {
                                  return true;
                              }
                              elseif  ($controllerAction != 'Deliberations:delete') {  
