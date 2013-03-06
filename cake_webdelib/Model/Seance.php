@@ -334,6 +334,7 @@ class Seance extends AppModel {
 		$oDevPart->addElement(new GDO_FieldType("mm".$suffixe,          $this->Date->Hour($seance['Seance']['date'], 'mm'), 'string'));
 		$oDevPart->addElement(new GDO_FieldType("date_convocation".$suffixe, $this->Date->frDate($seance['Seance']['date_convocation']),   'date'));
 		$oDevPart->addElement(new GDO_FieldType("identifiant".$suffixe, $seance['Seance']['id'], 'text'));
+		$oDevPart->addElement(new GDO_FieldType("commentaire".$suffixe, $seance['Seance']['commentaire'], 'lines'));
 
 		$elus = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
 		if (!empty($elus)) {
