@@ -1,7 +1,7 @@
 <h2>Envoyer le projet à un utilisateur</h2>
 
 <?php
-    $options = array('detour' =>'Envoyé à : ', 'retour' => 'Aller-retour :', 'validation'=> 'Validation finale :');
+    $options = array('detour' =>'Envoyé (sans retour) : ', 'retour' => 'Aller-retour :', 'validation'=> 'Validation finale :');
     $attributes=array('legend'=>false, 'style'=>'float:right;', 'separator' => '<br/><br/>', 'value' => 'retour');
 
     echo $this->Form->create('Insert', array('url'=>'/deliberations/rebond/'.$delib_id,'type'=>'post'));
