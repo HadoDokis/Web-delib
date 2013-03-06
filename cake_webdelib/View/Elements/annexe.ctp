@@ -66,7 +66,7 @@ if (isset($annexes)) {
 						'id' => 'modifieAnnexeTitre'.$annexe['id'],
 						'label' => false,
 						'value' => $annexe['titre'],
-						'size' => '40',
+						'size' => '200',
 						'disabled'=>'disabled',
 						'style'=>'display:none;'));
 				} else
@@ -147,7 +147,7 @@ if ($affichage == 'complet') {
 			echo $this->Form->hidden('Annex.0.ref', array('disabled'=>'disabled'));
 			echo $this->Form->input('Annex.0.file', array('label'=>'Annexe<acronym title="obligatoire">(*)</acronym>', 'type'=>'file', 'size' => '80', 'disabled'=>'disabled'));
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
-			echo $this->Form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '60', 'disabled'=>'disabled'));
+			echo $this->Form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '200', 'disabled'=>'disabled'));
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
 			echo $this->Form->input('Annex.0.ctrl', array('label'=>'Joindre ctrl légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
