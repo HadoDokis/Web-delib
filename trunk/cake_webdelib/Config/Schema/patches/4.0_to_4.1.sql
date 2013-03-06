@@ -25,4 +25,4 @@ ALTER SEQUENCE infosupdefs_profils_id_seq OWNED BY infosupdefs_profils.id;
 ALTER TABLE infosupdefs_profils ALTER COLUMN id  SET DEFAULT NEXTVAL('infosupdefs_profils_id_seq');
 INSERT INTO "infosupdefs_profils" (profil_id, infosupdef_id) select profils.id, infosupdefs.id from profils, infosupdefs;
 
-
+ALTER TABLE annexes   ALTER COLUMN titre TYPE varchar(200);
