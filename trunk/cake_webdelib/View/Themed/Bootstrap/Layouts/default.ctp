@@ -75,10 +75,13 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $infoUser;  ?><b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li class="">
-                                <a href="/users/changeUserMdp" class="">Changer de mot de passe</a>
+                                <a href="/pages/format" class="">Changer le format de sortie des éditions</a>
                             </li>
                             <li class="">
-                                <a href="/pages/format" class="">Changer le format de sortie des éditions</a>
+                                <a href="/pages/service" class="">Changer le service émetteur</a>
+                            </li>
+                            <li class="">
+                                <a href="/users/changeUserMdp" class="">Changer de mot de passe</a>
                             </li>
                             <li class="divider"></li>
                             <li>
