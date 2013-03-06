@@ -189,6 +189,7 @@ class Infosup extends AppModel
 			}
 		}
 		if ($iAlias) {
+                        $resultIds = array();
 			// construction et exécution de la requête
 			$select = 'select infosups1.foreign_key ';
 			$select .= 'from ' . $from . ' ';
@@ -197,12 +198,15 @@ class Infosup extends AppModel
 			if (empty($repSelect))
 				$ret = '-1';
 			else {
-				foreach($repSelect as $infosup)
-					$ret .= (empty($ret) ? '' : ', ') .$infosup['infosups1']['foreign_key'];
+                            foreach($repSelect as $infosup)
+                                if (!empty($infosup['0']['foreign_key']))
+                                     $resultIds[] = $infosup['0']['foreign_key'];
+
+			//		$ret .= (empty($ret) ? '' : ', ') .$infosup['0']['foreign_key'];
 			}
 		}
 
-		return $ret;
+		return $resultIds;
 	}
 
          function addField($champs,  $id, $model='Deliberation') {
