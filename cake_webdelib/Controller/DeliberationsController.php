@@ -155,7 +155,7 @@ class DeliberationsController extends AppController {
         // Lecture et initialisation des commentaires
  
         $commentaires = $this->Commentaire->find('all', array('conditions' => array ('Commentaire.delib_id' => $id),
-                                                              'order' =>  'created ASC'));
+                                                              'order' =>  'created DESC'));
         for($i=0; $i< count($commentaires) ; $i++) {
             $agent = $this->User->find('first', array('conditions' => array(
                 'User.id' => $commentaires[$i]['Commentaire']['agent_id']) ,
@@ -165,7 +165,8 @@ class DeliberationsController extends AppController {
             $commentaires[$i]['Commentaire']['prenomAgent'] =  $agent['User']['prenom'];
         }
         $this->set ('commentaires', $commentaires );
-        $this->set('historiques',$this->Historique->find('all', array('conditions' => array("Historique.delib_id" => $id))));
+        $this->set('historiques',$this->Historique->find('all', array('conditions' => array("Historique.delib_id" => $id),
+                                                              'order' =>  'Historique.created DESC')));
         
         // Mise en forme des données du projet ou de la délibération
         $this->request->data['Deliberation']['libelleEtat'] = $this->Deliberation->libelleEtat($this->data['Deliberation']['etat']);
