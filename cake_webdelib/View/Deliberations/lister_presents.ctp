@@ -42,8 +42,11 @@
  	   <?php
 	   if (empty($present['Acteur']['id']))
 	       echo $this->Form->input("Acteur.".$present['Acteur']['id'].'.mandataire', array('label'=>false, 'options'=>$mandataires, 'readonly'=>'readonly', "id"=>"liste_".$present['Acteur']['id'],'empty'=>true));
-	   else 
-	       echo $this->Form->input("Acteur.".$present['Acteur']['id'].'.mandataire', array('label'=>false, 'options'=>$mandataires, "id"=>"liste_".$present['Acteur']['id'], 'empty'=>true));
+	   else
+               if($present['Listepresence']['mandataire']!= 0) 
+	           echo $this->Form->input("Acteur.".$present['Acteur']['id'].'.mandataire', array('label'=>false, 'options'=>$mandataires, "id"=>"liste_".$present['Acteur']['id'], 'empty'=>true, 'selected' => $present['Listepresence']['mandataire']));
+               else
+	           echo $this->Form->input("Acteur.".$present['Acteur']['id'].'.mandataire', array('label'=>false, 'options'=>$mandataires, "id"=>"liste_".$present['Acteur']['id'], 'empty'=>true));
 	   ?>
     </td>
 </tr>
