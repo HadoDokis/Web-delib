@@ -4,6 +4,23 @@
 <?php echo $this->Html->script('ckeditor/ckeditor'); ?>
 <?php echo $this->Html->script('ckeditor/adapters/jquery'); ?>
 <?php echo $this->Html->script('multidelib.js'); ?>
+<!--
+<script>
+function reset_html(id) {
+    $('#'+id).html($('#'+id).html());
+}
+$(document).ready(function() {
+
+    var file_input_index = 0;
+    $('input[type=file]').each(function() {
+        file_input_index++;
+        $(this).wrap('<div id="file_input_container_'+file_input_index+'"></div>');
+        $(this).after('<input type="button" value="Effacer" class="purge_file"  onclick="reset_html(\'file_input_container_'+file_input_index+'\')" />');
+    });
+   
+});
+</script>
+-->
 
 <?php
 	if($this->Html->value('Deliberation.id')) {
