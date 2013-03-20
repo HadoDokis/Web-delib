@@ -5,7 +5,7 @@
 	}
 	else {
 		echo "<h2>Ajout d'un &eacute;l&eacute;ment &agrave; la liste de l'information suppl&eacute;mentaire : ".$infosupdef['Infosupdef']['nom']."</h2>";
-		echo $this->Form->create('Infosuplistedef',array('url'=>'/infosuplistedefs/add','type'=>'post'));
+		echo $this->Form->create('Infosuplistedef',array('url'=>'/infosuplistedefs/add/'.$infosupdef['Infosupdef']['id'],'type'=>'post'));
 	}
 ?>
 
