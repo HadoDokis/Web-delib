@@ -26,3 +26,6 @@ ALTER TABLE infosupdefs_profils ALTER COLUMN id  SET DEFAULT NEXTVAL('infosupdef
 INSERT INTO "infosupdefs_profils" (profil_id, infosupdef_id) select profils.id, infosupdefs.id from profils, infosupdefs;
 
 ALTER TABLE annexes   ALTER COLUMN titre TYPE varchar(200);
+
+ALTER TABLE infosupdefs ADD COLUMN actif boolean;
+UPDATE infosupdefs set actif = true;
