@@ -1,7 +1,6 @@
 <?php
 
 class PostseancesController extends AppController {
-
 	var $name = 'Postseances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2' );
 	var $components = array('Date', 'Gedooo', 'Cmis', 'Progress', 'Conversion');
@@ -176,20 +175,27 @@ class PostseancesController extends AppController {
 
 
         function sendToGed($seance_id) {
+            $cmis = new CmisComponent();
+            // Création du répertoire de séance
+            $result = $cmis->client->getFolderTree($cmis->folder->id, 1); 
+
+
             $this->Seance->Behaviors->attach('Containable');
             $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
                                                          'contain'    => array('Typeseance.libelle') ));
+
+            $my_seance_folder = $cmis->client->createFolder($cmis->folder->id, $seance['Typeseance']['libelle']." ".$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date'])));
+
             $delibs_id = $this->Seance->getDeliberationsId($seance_id);
             $output = array();
-            $odt2txt_exec = Configure::read('odt2txt_EXEC');    
 
             $dom = new DOMDocument('1.0', 'utf-8');
             $dom->formatOutput = true;
-            $dossier = $this->_createElement($dom, 'dossier', null, array('id'=>$seance_id."-".$seance['Seance']['date'],
+            $seance = $this->_createElement($dom, 'seance', null, array('id'=>$seance_id."-".$seance['Seance']['date'],
                                                                       'xmlns:webdelibdossier' => 'http://www.adullact.org/webdelib/infodossier/1.0',
                                                                       'xmlns:xm'  => 'http://www.w3.org/2005/05/xmlmine'));
 
-            $dossier->appendChild($this->_createElement($dom, 'typeDoc', 'Déliberation'));
+            $seance->appendChild($this->_createElement($dom, 'typeDoc', 'Déliberation'));
             $doc = $dom->createElement('documents');
             foreach ($delibs_id as $delib_id) {
 		$this->Deliberation->Behaviors->attach('Containable');
@@ -216,21 +222,22 @@ class PostseancesController extends AppController {
 
                 $type->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
                 $type->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
-                $type->appendChild($this->_createElement($dom, 'dateSeance', $this->Date->frDate($seance['Seance']['date'])));
                 $type->appendChild($this->_createElement($dom, 'nomServiceEmetteur', $delib['Service']['libelle']));
                 $type->appendChild($this->_createElement($dom, 'themeRAAD', $delib['Theme']['libelle']));
 
-                $doc->appendChild($this->_createElement($dom, 'typeDeliberation', $seance['Typeseance']['libelle']));
                 $document->appendChild($type);
                 $doc->appendChild($document);
-
-
             }
-            $dossier->appendChild($doc); 
-            $dom->appendChild($dossier);
+            $seance->appendChild($doc); 
+            $dom->appendChild($seance);
             $xmlContent =  $dom->saveXML();
-            echo   $xmlContent ;
-            exit;
+            $xml_desc = $cmis->client->createDocument($my_seance_folder->id,
+                                                      "XML_DESC_$seance_id.xml",
+                                                      array (),
+                                                      $xmlContent,
+                                                      "application/xml");
+            $this->redirect('/postseances/index');
+
         }
 
 
@@ -258,8 +265,8 @@ function _createElement($domObj, $tag_name, $value = NULL, $attributes = NULL)
 		$seance = $this->Seance->find('first', array('conditions'=>array('Seance.id' =>$seance_id )));
 		$my_seance_folder = $cmis->client->createFolder($cmis->folder->id, utf8_encode($seance['Typeseance']['libelle'])." ".utf8_encode($this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']))));
 
-		$condition = array("seance_id"=> $seance_id,
-				"etat >="  => 2 );
+		$condition = array("seance_id"=> $seance_id,"etat >="  => 2 );
+ 
 		$deliberations = $this->Deliberation->find('all', array('conditions'=>$condition,
 				'order'     =>'Deliberation.position ASC'));
 		foreach ($deliberations as $delib) {
