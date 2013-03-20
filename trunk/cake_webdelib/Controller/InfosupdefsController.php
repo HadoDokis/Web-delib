@@ -20,9 +20,9 @@ class InfosupdefsController extends AppController
 	}
 
 	function index() {
-		$this->data = $this->Infosupdef->find('all', array(
+		$this->request->data = $this->Infosupdef->find('all', array(
 			'recursive' => -1 ,
-			'conditions' => array('model' => 'Deliberation'),
+			'conditions' => array('model' => 'Deliberation', 'actif' => true),
 			'order' => 'ordre'));
 		$this->set('titre', 'Liste des informations suppl&eacute;mentaires des projets');
 		$this->set('lienAdd', '/infosupdefs/add/Deliberation');
@@ -62,6 +62,7 @@ class InfosupdefsController extends AppController
                     $this->set('profils', $this->Profil->find('list', array('conditions' => array ('Profil.actif' => 1))));
 		    $this->request->data['Infosupdef']['model'] = $model;
 		} else {
+                          $this->data['Infosupdef']['actif'] = true;
 			/* traitement de la valeur par defaut */
 			if ($this->data['Infosupdef']['type'] == 'date')
 				$this->request->data['Infosupdef']['val_initiale'] = $this->request->data['Infosupdef']['val_initiale_date'];
@@ -149,14 +150,15 @@ class InfosupdefsController extends AppController
 
 	function delete($id = null) {
 		$messageErreur = '';
-		$aSupprimer = $this->{$this->modelClass}->findById($id, null, null, -1);
+		$aSupprimer = $this->{$this->modelClass}->find('first', array('conditions' => array('Infosupdef.id' => $id),
+                                                                              'recursive'  => -1,
+                                                                              'fields'     => array('Infosupdef.id', 'Infosupdef.nom')));
 		if (empty($aSupprimer))
 			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : suppression impossible', 'growl');
-		elseif (!$this->{$this->modelClass}->isDeletable($aSupprimer, $messageErreur))
-			$this->Session->setFlash($messageErreur, 'growl');
-		elseif ($this->{$this->modelClass}->delete($id)) {
-			$this->{$this->modelClass}->Infosuplistedef->delList($id);
-			$this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$aSupprimer['Infosupdef']['nom'].'\' a &eacute;t&eacute; supprim&eacute;e', 'growl');
+		else {
+                    $this->{$this->modelClass}->id = $id;
+                    $this->{$this->modelClass}->saveField('actif', false);
+                    $this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$aSupprimer['Infosupdef']['nom'].'\' a &eacute;t&eacute; supprim&eacute;e', 'growl');
 		}
 
 		$this->redirect($this->referer());
