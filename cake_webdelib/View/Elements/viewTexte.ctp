@@ -22,7 +22,7 @@ switch($type) {
 		$filename = $delib['texte_synthese_name'];
 		break;
 	case 'deliberation' :
-		$libelle = 'Texte d&eacute;lib&eacute;ration';
+		$libelle = 'Texte acte';
 		$textKey = 'deliberation';
 		$filename = $delib['deliberation_name'];
 }
