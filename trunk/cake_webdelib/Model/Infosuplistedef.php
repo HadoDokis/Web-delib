@@ -60,14 +60,17 @@
 			return;
 		}
 
-		function beforeSave() {
-			/* calcul du n° d'ordre en cas d'ajout */
-			if (!array_key_exists('id', $this->data['Infosuplistedef']) ||
-				empty($this->data['Infosuplistedef']['id']))
-				$this->data['Infosuplistedef']['ordre'] = $this->findCount('actif = 1 AND infosupdef_id = '.$this->data['Infosuplistedef']['infosupdef_id'], -1) + 1;
+    function beforeSave() {
+        /* calcul du n° d'ordre en cas d'ajout */
+	if (!array_key_exists('id', $this->data['Infosuplistedef']) ||	empty($this->data['Infosuplistedef']['id']))
+            $this->data['Infosuplistedef']['ordre'] = $this->find('count', array(
+                                                                  'conditions' => array(
+                                                                      'actif' => 1,
+                                                                      'infosupdef_id' => $this->data['Infosuplistedef']['infosupdef_id']),
+                                                                  'recurtsive' => -1)) + 1;
 
-			return true;
-		}
+             return true;
+	}
 
 		/**
 		 * Réordonne les numéros d'ordre après une suppression pour l'infosupdef $infosupdefId
