@@ -6,6 +6,7 @@
 <tr>
 	<th>Ordre</th>
 	<th>Nom</th>
+	<th>Position</th>
 	<th width='150px'>Actions</th>
 </tr>
 
@@ -16,12 +17,12 @@
        echo $this->Html->tag('tr', null, $rowClass);
        $numLigne++;
 ?>
-
 	<td class="ordre">
 		<?php echo $this->Html->link('&#9650;', '/infosuplistedefs/changerOrdre/'.$rowElement['Infosuplistedef']['id'].'/0', array('escape' => false), false); ?>
 		<?php echo $this->Html->link('&#9660;', '/infosuplistedefs/changerOrdre/'.$rowElement['Infosuplistedef']['id'], array('escape' => false), false); ?>
 	</td>
 	<td><?php echo $rowElement['Infosuplistedef']['nom']; ?></td>
+	<td><?php echo $rowElement['Infosuplistedef']['ordre']; ?></td>
 	<td class="actions">
 		<?php echo $this->Html->link(SHY,'/infosuplistedefs/edit/'.$rowElement['Infosuplistedef']['id'], array('class'=>'link_modifier',  'escape' => false, 'title'=>'Modifier'), false); ?>
 		<?php echo '&nbsp;&nbsp;'; ?>
