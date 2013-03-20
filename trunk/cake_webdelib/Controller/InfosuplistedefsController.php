@@ -8,7 +8,8 @@ var $commeDroit = array(
 	'add' => 'Infosupdefs:index',
 	'edit' => 'Infosupdefs:index',
 	'delete' => 'Infosupdefs:index',
-	'changerOrdre' => 'Infosupdefs:index'
+	'changerOrdre' => 'Infosupdefs:index',
+        'test' => 'Infosupdefs:index'
 	);
 
 /**
@@ -47,9 +48,8 @@ function add($infosupId=0) {
 	if (empty($this->data)) {
 		// recherche de l'infosupdef
 		$infosupdef = $this->{$this->modelClass}->Infosupdef->find('first', array('conditions' => array('Infosupdef.id'=> $infosupId) ,
-                                                                                          'fields'     => array('id', 'type'),
+                                                                                          'fields'     => array('id', 'type', 'nom'),
                                                                                            'recursive' => -1));
-                 $this->log( $infosupdef);
 		if (empty($infosupdef)) {
 			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible');
 			$redirect = '/infosupdefs/index';
@@ -64,7 +64,10 @@ function add($infosupId=0) {
 			$this->request->data['Infosuplistedef']['actif'] = true;
 		}
 	} else {
-		if ($this->{$this->modelClass}->save($this->data)) {
+                $nb_liste = $this->Infosuplistedef->find('count', array('conditions' => array('Infosuplistedef.infosupdef_id' => $infosupId),
+                                                                        'recursive'  => -1 ));
+                $this->request->data['Infosuplistedef']['ordre'] = $nb_liste+1;
+		if ($this->Infosuplistedef->save($this->data['Infosuplistedef'])) {
 			$this->Session->setFlash('L\'&eacute;l&eacute;ment \''.$this->data['Infosuplistedef']['nom'].'\' a &eacute;t&eacute; ajout&eacute;');
 			$redirect = '/infosuplistedefs/index/'.$this->data['Infosuplistedef']['infosupdef_id'];
 			$sortie = true;
@@ -136,6 +139,11 @@ function delete($id=0) {
 		}
 	}
 	$this->redirect($redirect);
+}
+
+
+function test($infosupdef_id) {
+    $this->{$this->modelClass}->reOrdonne($infosupdef_id);
 }
 
 /**
