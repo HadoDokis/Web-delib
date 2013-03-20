@@ -42,6 +42,7 @@ class ActeursController extends AppController
 
             $this->Acteur->Behaviors->attach('Containable');
             $this->paginate = array('Acteur' => array(
+                                    'conditions' => array('Acteur.actif' => 1),
                                     'limit' => 20,
                                     'contain' => array( 'Service', 'Suppleant', 'Typeacteur'),
                                     'order' => array( 'Acteur.position' => 'asc')));
@@ -160,6 +161,7 @@ function _controleEtSauve() {
 	function delete($id = null) {
 		$messageErreur = '';
 		$acteur = $this->Acteur->read('id, nom, prenom', $id);
+                $this->log($acteur);
 		if (empty($acteur))
 			$this->Session->setFlash('Invalide id pour l\'acteur');
 		else {
