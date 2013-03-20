@@ -109,7 +109,7 @@ class SeancesController extends AppController {
 					$infoSupDef = $this->Infosupdef->find('first', array(
 							'recursive' => -1,
 							'fields' => array('type'),
-							'conditions' => array('id' =>$infosup['infosupdef_id'], 'model' => 'Seance')));
+							'conditions' => array('id' =>$infosup['infosupdef_id'], 'model' => 'Seance', 'actif'=>true)));
 					if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
 						$this->Gedooo->createFile($path_seance, $infosup['file_name'], $infosup['content']);
 				}
@@ -127,7 +127,7 @@ class SeancesController extends AppController {
 					$infossupDefs = $this->Infosupdef->find('all', array(
 							'recursive' => -1,
 							'fields' => array('id'),
-							'conditions' => array('type' => 'odtFile', 'model' => 'Seance')));
+							'conditions' => array('type' => 'odtFile', 'model' => 'Seance', 'actif' => true)));
 					foreach ($infossupDefs as $infossupDef) {
 						$infosup = $this->Infosup->find('first', array(
 								'recursive' => -1,
@@ -168,7 +168,7 @@ class SeancesController extends AppController {
 			$this->set('typeseances', $this->Typeseance->find('list', array('conditions'=>array('Typeseance.id'=> $types) )));
 			$this->set('infosupdefs', $this->Infosupdef->find('all', array(
 					'recursive'=> -1,
-					'conditions'=> array('model' => 'Seance'),
+					'conditions'=> array('model' => 'Seance', 'actif' => true),
 					'order' => 'ordre')));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes('Seance'));
 		}

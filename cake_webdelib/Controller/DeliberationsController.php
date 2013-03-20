@@ -176,7 +176,7 @@ class DeliberationsController extends AppController {
          $this->request->data['Circuit']['libelle'] = $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
         
         // Définitions des infosup
-        $this->set('infosupdefs', $this->Infosupdef->find('all', array('recursive'=> -1, 'order'=> 'ordre')));
+        $this->set('infosupdefs', $this->Infosupdef->find('all', array('recursive'=> -1, 'order'=> 'ordre', 'conditions' => array('actif' => true) )));
         $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/'.$id, array('return')));
     }
     
@@ -324,7 +324,7 @@ class DeliberationsController extends AppController {
 
             $this->set('profil_id', $user['User']['profil_id']);
             $this->Infosupdef->Behaviors->attach('Containable');
-            $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions'=> array('model'=>'Deliberation'),
+            $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions'=> array('model'=>'Deliberation', 'actif' => true),
                 'order'     => 'ordre',
 		'contain' => array('Profil.id'))));
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
@@ -508,7 +508,7 @@ class DeliberationsController extends AppController {
             if (Configure::read('DELIBERATIONS_MULTIPLES')) {
                 $this->Deliberation->Multidelib->Behaviors->attach('Containable');
                 $multiDelibs = $this->Deliberation->Multidelib->find('all', array(
-                    'fields' => array('Multidelib.id', 'Multidelib.objet', 'Multidelib.deliberation', 'Multidelib.deliberation_name'),
+                    'fields' => array('Multidelib.id', 'Multidelib.objet', 'Multidelib.deliberation', 'Multidelib.deliberation_name', 'Multidelib.objet_delib'),
                     'contain' => array('Annex.id','Annex.model', 
                                        'Annex.filetype', 'Annex.foreign_key', 
                                        'Annex.filename', 'Annex.filename_pdf', 
@@ -552,7 +552,7 @@ class DeliberationsController extends AppController {
                 $infoSupDef = $this->Infosupdef->find('first', array(
                     'recursive' => -1,
                     'fields' => array('type'),
-                    'conditions' => array('id' =>$infosup['infosupdef_id'], 'model' => 'Deliberation')));
+                    'conditions' => array('id' =>$infosup['infosupdef_id'], 'model' => 'Deliberation', 'actif' => true)));
                 if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
                     $this->Gedooo->createFile($path_projet, $infosup['file_name'] , $infosup['content']);
             }
@@ -606,7 +606,7 @@ class DeliberationsController extends AppController {
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
             $this->set('profil_id', $user['User']['profil_id']);
             $this->Infosupdef->Behaviors->attach('Containable');
-            $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions'=> array('model'=>'Deliberation'),
+            $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions'=> array('model'=>'Deliberation', 'actif' => true),
                 'order'     => 'ordre',
 		'contain' => array('Profil.id'))));
 
@@ -702,7 +702,7 @@ class DeliberationsController extends AppController {
 		$infossupDefs = $this->Infosupdef->find('all', array(
                                                         'recursive' => -1,
                                                         'fields' => array('id', 'code'),
-                                                        'conditions' => array('type' => 'odtFile', 'model' => 'Deliberation')));
+                                                        'conditions' => array('type' => 'odtFile', 'model' => 'Deliberation', 'actif' => true)));
                 foreach ( $infossupDefs as $infossupDef) {
                     $infosup = $this->Infosup->find('first', array(
                     	'recursive' => -1,
@@ -832,27 +832,22 @@ class DeliberationsController extends AppController {
                 $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'].' : '. $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
 
             $seances_selected = $this->Deliberation->getCurrentSeances($id, false);
-
-                
-                    
-                $this->set('services', $this->Deliberation->Service->find('list',array('conditions'=>array('Service.actif'=>'1'))));
-                $this->set('themes', $this->Deliberation->Theme->find('list',array('conditions'=>array('Theme.actif'=>'1'))));
-                $this->set('circuits', $this->Deliberation->Circuit->find('list'));
-                $this->set('datelim',$this->data['Deliberation']['date_limite']);
-                $this->set('annexes',$this->Annex->find('all', array('conditions'=> array('model'=>'Deliberation', 'foreign_key'=>$id))));
-                $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
-                $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
-                $this->set('redirect', $redirect);
-                $this->set('date_seances', $this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
-                $this->set('infosupdefs', $this->Infosupdef->find('all', array('recursive' => -1)));
-                $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
-                $this->set('is_multi', $oldDelib['Deliberation']['is_multidelib']);
-                $this->set('DELIBERATIONS_MULTIPLES', Configure::read('DELIBERATIONS_MULTIPLES'));
+            $this->set('services', $this->Deliberation->Service->find('list',array('conditions'=>array('Service.actif'=>'1'))));
+            $this->set('themes', $this->Deliberation->Theme->find('list',array('conditions'=>array('Theme.actif'=>'1'))));
+            $this->set('circuits', $this->Deliberation->Circuit->find('list'));
+            $this->set('datelim',$this->data['Deliberation']['date_limite']);
+            $this->set('annexes',$this->Annex->find('all', array('conditions'=> array('model'=>'Deliberation', 'foreign_key'=>$id))));
+            $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
+            $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
+            $this->set('redirect', $redirect);
+            $this->set('date_seances', $this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
+            $this->set('infosupdefs', $this->Infosupdef->find('all', array('recursive' => -1, 'conditions' => array('actif'=>true) )));
+            $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
+            $this->set('is_multi', $oldDelib['Deliberation']['is_multidelib']);
+            $this->set('DELIBERATIONS_MULTIPLES', Configure::read('DELIBERATIONS_MULTIPLES'));
             $this->set('selectedTypeacteId', $this->request->data['Deliberation']['typeacte_id']);
-
             $this->set('seances', $seances);
             $this->set('seances_selected', $seances_selected);
-
             $this->set ('typeseances',  $typeseances);
             $this->set ('typeseances_selected',  $typeseances_selected);
 
@@ -1116,6 +1111,7 @@ class DeliberationsController extends AppController {
                 $this->request->data['Infosup'] = $this->Deliberation->Infosup->compacte($projet['Infosup'], false);
                 $this->set('infosupdefs', $this->Infosupdef->find('all', array(
                     'recursive'=> -1,
+                    'conditions'=> array('actif' => true),
                     'order'    => 'ordre')));
             }
             else {
@@ -2230,6 +2226,8 @@ class DeliberationsController extends AppController {
     * Permet de modifier un projet validé si l'utilisateur à les droits editerProjetValide
     */
     function tousLesProjetsSansSeance() {
+        $afficherTtesLesSeances = $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:editerProjetValide");
+
         $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
         $this->Deliberation->Behaviors->attach('Containable');
         $conditions = $this->_handleConditions($this->Filtre->conditions());
@@ -2255,7 +2253,7 @@ class DeliberationsController extends AppController {
                                   'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
                                   'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                                   'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id')));
-                $acte['Seances'] = $this->Seance->generateList(null, false,  $acte['Deliberation']['typeacte_id']);
+                $acte['Seances'] = $this->Seance->generateList(null, $afficherTtesLesSeances, $acte['Deliberation']['typeacte_id']);
                 if (!empty($acte['Seances']))
                     $delibs[] = $acte;
 
@@ -2289,7 +2287,7 @@ class DeliberationsController extends AppController {
         if (!isset($conditions['Deliberation.typeacte_id']))
             $conditions['Deliberation.typeacte_id'] = array_keys($this->Session->read('user.Nature'));
         $conditions['Deliberation.etat'] = 2;
-        $conditions['Seance.id'] = $this->Seance->getSeancesDeliberantes();
+//        $conditions['Seance.id'] = $this->Seance->getSeancesDeliberantes();
         $conditions['Deliberation.parent_id'] = null;
         $delibs_sans_seance = $this->Deliberation->getDeliberationsSansSeance('id',  
                                                                               array_keys($this->Session->read('user.Nature')));
@@ -2467,7 +2465,7 @@ class DeliberationsController extends AppController {
             		                                                  'recursive' => -1)));
             $this->set('etats', $this->Deliberation->generateListEtat());
             $this->set('infosupdefs', $this->Infosupdef->find('all', 
-            		     array('conditions' => array('recherche' => 1), 
+            		     array('conditions' => array('recherche' => 1, 'actif'=>true), 
             		     		'fields'     => array('id', 'code', 'nom', 'commentaire', 'type', 'taille'), 
             		     		 'order'     => array('ordre'), 
             		     		 'recursive'  => -1)));
@@ -2575,7 +2573,7 @@ class DeliberationsController extends AppController {
             		                                                 'fields' => array('Circuit.id', 'Circuit.nom'),
             		                                                  'recursive' => -1)));           $this->set('etats', $this->Deliberation->generateListEtat());
     	    $this->set('infosupdefs', $this->Infosupdef->find('all', 
-            		     array('conditions' => array('recherche' => 1), 
+            		     array('conditions' => array('recherche' => 1, 'actif' => true), 
             		     		'fields'     => array('id', 'code', 'nom', 'commentaire', 'type', 'taille'), 
             		     		 'order'     => array('ordre'), 
             		     		 'recursive' => -1)));
@@ -2865,13 +2863,16 @@ class DeliberationsController extends AppController {
         if (empty($this->data)) {
             $this->Deliberation->Behaviors->attach('Containable');
             $conditions["Deliberation.etat >"] = -1;
-            if ($seance_id == null)
-               $conditions["Deliberation.etat_parapheur != "] = null ;
-
-            $delibs = $this->Seance->getDeliberations($seance_id, array('conditions' => $conditions));
-
+            if ($seance_id == null) {
+                $conditions["Deliberation.etat_parapheur != "] = null ;
+                $delibs = $this->Deliberation->find('all', array('conditions' =>  $conditions));
+            }
+            else {
+                $delibs = $this->Seance->getDeliberations($seance_id, array('conditions' => $conditions));
+            }
+            $type_id = $this->Seance->getType($seance_id);
             for ($i=0; $i<count($delibs); $i++){
-                $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delibs[$i]['Seance']['type_id'], 3);
+                $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($type_id, 3);
             }
             $this->set('deliberations', $delibs);
             $this->set('circuits', $circuits['soustype']);
