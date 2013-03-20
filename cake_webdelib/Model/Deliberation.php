@@ -519,9 +519,10 @@ class Deliberation extends AppModel {
 		$oMainPart->addElement(new GDO_FieldType('objet_delib',    ($delib['Deliberation']['objet_delib']), 'lines'));
 		$oMainPart->addElement(new GDO_FieldType('libelle_delib',  ($delib['Deliberation']['objet_delib']), 'lines'));
 
-		$oMainPart->addElement(new GDO_FieldType('identifiant_projet',          ($delib['Deliberation']['id']),       'text'));
-		$oMainPart->addElement(new GDO_FieldType('numero_deliberation',         ($delib['Deliberation']['num_delib']),'text'));
-		$oMainPart->addElement(new GDO_FieldType('classification_deliberation', ($delib['Deliberation']['num_pref']), 'text'));
+		$oMainPart->addElement(new GDO_FieldType('identifiant_projet',          $delib['Deliberation']['id'],       'text'));
+		$oMainPart->addElement(new GDO_FieldType('etat_projet',                 $delib['Deliberation']['etat'],       'text'));
+		$oMainPart->addElement(new GDO_FieldType('numero_deliberation',         $delib['Deliberation']['num_delib'],'text'));
+		$oMainPart->addElement(new GDO_FieldType('classification_deliberation', $delib['Deliberation']['num_pref'], 'text'));
 
 		$this->Service->makeBalise($oMainPart, $delib['Deliberation']['service_id']);
 		// Informations sur la nature
@@ -1106,7 +1107,10 @@ class Deliberation extends AppModel {
 		// initialisations
 		$newDelib = array();
 		if (!isset($delib['objet'])) {
-			return false;
+                    if (isset($delib['objet_delib']))
+                        $delib['objet'] = $delib['objet_delib'];
+                    else  
+                        return false;
 		}
 
 		if (isset($delib['id'])) {
@@ -1123,7 +1127,7 @@ class Deliberation extends AppModel {
 		if (Configure::read('GENERER_DOC_SIMPLE')){
 			$newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
 		} else {
-			if (isset($delib['deliberation'])) {
+			if (isset($delib['Deliberation'])) {
 				$newDelib['Deliberation']['objet_delib'] = $delib['objet'];
 				$newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
 				$newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
