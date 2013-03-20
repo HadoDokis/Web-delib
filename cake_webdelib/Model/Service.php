@@ -68,6 +68,8 @@
                                                  'recursive'  => -1));
 
             $oMainPart->addElement(new GDO_FieldType('service_emetteur', $service['Service']['libelle'], 'text'));
+            $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->_doList($service_id), 'text'));
+          
         }
 }
 
