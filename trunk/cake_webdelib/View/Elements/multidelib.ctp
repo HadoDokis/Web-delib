@@ -79,7 +79,7 @@ if (isset($this->data['Multidelib'])) {
 					'label'=>'',
 					'cols'=>'60','rows'=>'1',
 					'value'=>$delib['objet_delib'],
-					'disabled'=>true));
+					'disabled'=>false));
 				echo $this->Html->tag('div', '', array('class'=>'spacer'));
 				// saisie texte de délibération
 				echo $this->Html->tag('label', 'Texte délibération');
