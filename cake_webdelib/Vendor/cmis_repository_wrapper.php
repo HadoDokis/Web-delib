@@ -461,7 +461,7 @@ class CMISRepositoryWrapper
         if (is_object($children_feed_c)) {
 			$children_feed_l = $children_feed_c->getElementsByTagName("feed");
         }
-        if (is_object($children_feed_l) && is_object($children_feed_l->item(0))) {
+        if (@is_object($children_feed_l) && is_object(@$children_feed_l->item(0))) {
         	$children_feed = $children_feed_l->item(0);
 			$children_doc = new DOMDocument();
 			$xnode = $children_doc->importNode($children_feed,true); // Avoid Wrong Document Error
@@ -688,7 +688,7 @@ class CMISService extends CMISRepositoryWrapper
 
     function getPropertyType($typeId, $propertyId)
     {
-        if ($this->_type_cache[$typeId]->properties)
+        if (@$this->_type_cache[$typeId]->properties)
         {
             return $this->_type_cache[$typeId]->properties[$propertyId]["cmis:propertyType"];
         }
