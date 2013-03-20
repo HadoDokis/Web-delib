@@ -195,8 +195,10 @@ class Infosup extends AppModel
 			$select .= 'from ' . $from . ' ';
 			$select .= 'where ' . $jointure . $condition;
 			$repSelect = $this->query($select);
-			if (empty($repSelect))
-				$ret = '-1';
+			if (empty($repSelect[0][0]['foreign_key'])) {
+                                $resultIds[] = 0;                         
+			//	$ret = '-1';
+                        }
 			else {
                             foreach($repSelect as $infosup)
                                 if (!empty($infosup['0']['foreign_key']))
