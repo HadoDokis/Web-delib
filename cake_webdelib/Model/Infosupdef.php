@@ -27,7 +27,7 @@ class Infosupdef extends AppModel {
 
        var $hasAndBelongsToMany = array('Profil');
 	
-	var $validate = array(
+       var $validate = array(
 		'nom' => array(
 			array(
 				'rule' => 'notEmpty',
@@ -236,7 +236,7 @@ class Infosupdef extends AppModel {
 		$recs = $this->find('all', array(
 			'recursive'  => -1,
 			'fields' => array('id', 'code'),
-			'conditions' => array("type"  => 'list', 'model' => $model),
+			'conditions' => array("type"  => 'list', 'model' => $model, 'actif' => true),
 			'order'      => 'ordre'));
 		foreach($recs as $rec) {
 			$ret[$rec['Infosupdef']['code']] = $this->Infosuplistedef->find('list', array(
