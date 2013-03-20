@@ -67,7 +67,7 @@
 		<td><?php echo $this->Form->label('Annexe.titre', 'Texte ');?></td>
 		<td id="actions_fiche">	<li><?php echo $this->Html->link(SHY,'/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'escape'=>false, 'title'=>'Projet'), false)?></li>
 								<li><?php echo $this->Html->link(SHY,'/deliberations/textsynthesevue/' . $deliberation['Deliberation']['id'], array('class'=>'link_synthese', 'escape'=>false, 'title'=>'Synthese'), false)?></li>
-								<li><?php echo $this->Html->link(SHY,'/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'escape'=>false, 'title'=>'Deliberation'), false)?></li>
+								<li><?php echo $this->Html->link(SHY,'/deliberations/deliberationvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_deliberation', 'escape'=>false, 'title'=>'Acte'), false)?></li>
 		</td>
 	</tr>
 	<tr>
