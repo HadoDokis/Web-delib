@@ -23,7 +23,7 @@
 	}
 	elseif ($key=='deliberation'){
 	    $cible = 3;
-	    $libelle = 'Texte d&eacute;lib&eacute;ration';
+	    $libelle = 'Texte acte';
             if (!empty($delib['Deliberation']['deliberation_name'])) 
                 $filename = $delib['Deliberation']['deliberation_name'];
             else $filename = '';
@@ -52,7 +52,7 @@
                     $url = '#';
    	        echo '<span id="Deliberation'.$key.'InputFichierJoint" style="display: none;"></span>';
 	        echo '<span id="Deliberation'.$key.'AfficheFichierJoint">'; 
-                echo "<a href='$url'>$filename</a>";
+                echo $libelle .": <a href='$url'>$filename</a>";
 	        echo '&nbsp;&nbsp;';
 	        echo $this->Html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', '".$key."', '".$libelle."')", null, 'Voulez-vous vraiment supprimer le fichier ?');
                 echo '</span>';
