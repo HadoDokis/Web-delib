@@ -60,6 +60,10 @@ echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 <br/>
 <div class="submit">
 <?php echo $this->Html->link('Retour', '/seances/listerFuturesSeances', array('class'=>'link_annuler', 'name'=>'Retour'))?>
+<?php
+     if ($is_deliberante) 
+          echo $this->Html->link('Reporter l\'ordre du jour', "/seances/reportePositionsSeanceDeliberante/$seance_id", array('class'=>'link_annuler', 'name'=>'Retour'));
+?>
 </div>
 
 <script>
