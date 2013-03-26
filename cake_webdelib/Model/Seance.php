@@ -308,6 +308,14 @@ class Seance extends AppModel {
 		return null;
 	}
 
+        function isSeanceDeliberante($seance_id) {
+            $this->Behaviors->attach('Containable');
+            $seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
+                                                 'fields'     => array('Seance.id', 'Seance.type_id'),
+                                                 'contain'    => array('Typeseance.action')));
+            return ($seance['Typeseance']['action'] == 0); 
+        }
+
 	function makeBalise($seance_id, $oDevPart=null, $include_projets=false, $conditions = array()) {
 		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
 		$this->Date = new DateComponent;
