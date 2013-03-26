@@ -18,6 +18,7 @@ class SeancesController extends AppController {
 			'delete'           => 'Seances:listerFuturesSeances',
 			'edit'             => 'Seances:listerFuturesSeances',
 			'afficherProjets'  => 'Seances:listerFuturesSeances',
+			'reportePositionsSeanceDeliberante'  => 'Seances:listerFuturesSeances',
 			'genererConvoc'    => 'Seances:listerFuturesSeances',
 			'multiodj'         => 'Seances:listerFuturesSeances',
 			'changePosition'   => 'Seances:listerFuturesSeances',
@@ -375,35 +376,43 @@ class SeancesController extends AppController {
 
 	function afficherProjets ($id=null, $return=null) {
             if (!isset($return)) {
-			$this->set('lastPosition', $this->Seance->getLastPosition($id) - 1 );
-			$deliberations =  $this->Seance->getDeliberations($id, array('conditions' => array('etat !=' => -1)));
-			$lst_pos=array();
-			for ($i=0; $i<count($deliberations); $i++) {
-				$theme = $this->Deliberation->Theme->find('first',
-						array('conditions' => array('Theme.id' => $deliberations[$i]['Deliberation']['theme_id'] ),
-													 'recursive'  => -1));
+		$this->set('lastPosition', $this->Seance->getLastPosition($id) - 1 );
+		$deliberations =  $this->Seance->getDeliberations($id, array('conditions' => array('etat !=' => -1)));
+		$lst_pos=array();
+		for ($i=0; $i<count($deliberations); $i++) {
+			$theme = $this->Deliberation->Theme->find('first',
+					array('conditions' => array('Theme.id' => $deliberations[$i]['Deliberation']['theme_id'] ),
+												 'recursive'  => -1));
 
-				$service = $this->Deliberation->Service->find('first', array('conditions' => array('Service.id' => $deliberations[$i]['Deliberation']['service_id'] ),
-																			  'recursive'  => -1));
-				$deliberations[$i]['Theme'] = $theme['Theme'];
-				$deliberations[$i]['Service'] = $service['Service'];
-				$lst_pos[$i+1] = $i+1;
-			}
-			$this->set('seance_id', $id);
-			$this->set('rapporteurs', $this->Acteur->generateListElus());
-			$this->set('projets', $deliberations);
-			$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->Seance->getDate($id))));
-			$this->set('lst_pos', $lst_pos);
+			$service = $this->Deliberation->Service->find('first', array('conditions' => array('Service.id' => $deliberations[$i]['Deliberation']['service_id'] ),
+																		  'recursive'  => -1));
+			$deliberations[$i]['Theme'] = $theme['Theme'];
+			$deliberations[$i]['Service'] = $service['Service'];
+			$lst_pos[$i+1] = $i+1;
 		}
-		else
-			return ($this->Seance->getDeliberationsId($id));
+		$this->set('seance_id', $id);
+		$this->set('rapporteurs', $this->Acteur->generateListElus());
+		$this->set('projets', $deliberations);
+		$this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->Seance->getDate($id))));
+		$this->set('lst_pos', $lst_pos);
+                $this->set('is_deliberante', $this->Seance->isSeanceDeliberante($id));
+           } 
+	   else
+	       return ($this->Seance->getDeliberationsId($id));
 	}
 
+        function reportePositionsSeanceDeliberante ($seance_id) {
+            Configure::write('debug', 1);
+            $delib_ids = $this->Seance->getDeliberationsId($seance_id);
+            foreach ( $delib_ids as $delib_id) 
+                $this->Deliberation->reportePositionToCommissions($delib_id, $seance_id);
+            $this->redirect('/seances/afficherProjets/'.$seance_id);
+        }
+
 	function changeRapporteur($seance_id, $newRapporteur,$delib_id) {
-		$this->Deliberation->id = $delib_id;
-		if ($this->Deliberation->saveField('rapporteur_id', $newRapporteur)) {
-			$this->Redirect('/seances/afficherProjets/'.$seance_id);
-		}
+            $this->Deliberation->id = $delib_id;
+            if ($this->Deliberation->saveField('rapporteur_id', $newRapporteur))
+                $this->redirect('/seances/afficherProjets/'.$seance_id);
 	}
 
 	function details ($seance_id=null) {
@@ -1341,7 +1350,19 @@ class SeancesController extends AppController {
             $data['projet_'.$i.'_theme']  = $delib['Theme']['libelle'];
             $data['projet_'.$i.'_rapport']  = "@$projet_filename";
             $i++;  
-        }
+       }
+            //AJOUT SEB
+       $j=0;
+       if (is_dir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {
+           if ($dh = opendir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {
+                while (($file = readdir($dh)) !== false) {
+                    $annex_filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/".$file;
+                    $data['projet_'.$i.'_'.$j.'_annexe']  = "@$annex_filename";
+                 $j++;
+                }
+                closedir($dh);
+            }
+       }
 
        $request = curl_init();
        curl_setopt($request, CURLOPT_URL, $url);
