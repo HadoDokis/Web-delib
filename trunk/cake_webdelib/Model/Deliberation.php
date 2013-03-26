@@ -1445,6 +1445,23 @@ class Deliberation extends AppModel {
         function is_arrete($acte_id) {
             return !($this->is_delib($acte_id));
         }
-      
+
+        function reportePositionToCommissions($delib_id, $seance_deliberante_id) {
+            $position = $this->getPosition($delib_id, $seance_deliberante_id);
+            $seances = $this->getSeancesid($delib_id);
+
+            App::import('Model', 'Deliberationseance');
+            $this->Deliberationseance = new Deliberationseance();
+
+            foreach ($seances as $seance_id) {
+                $Deliberationseance = $this->Deliberationseance->find('first',
+                                array('conditions' => array('Deliberationseance.deliberation_id' => $delib_id,
+                                                            'Deliberationseance.seance_id'       => $seance_id),
+                                      'fields'     => array('Deliberationseance.id'),
+                                      'recursive'  => -1));
+                $this->Deliberationseance->id =  $Deliberationseance['Deliberationseance']['id'];
+                $this->Deliberationseance->saveField('position',  $position);
+            }
+        }
 }
 ?>
