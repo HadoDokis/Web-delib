@@ -40,7 +40,7 @@ class Annex extends AppModel {
         }
 
 	function getAnnexesIFromDelibId($delib_id, $to_send = 0, $to_merge = 0) {
-	    $conditions = array('Annex.foreign_key' => $delib_id); 
+	    $conditions = array('foreign_key' => $delib_id); 
             if ($to_send == 1) 
 		$conditions['Annex.joindre_ctrl_legalite'] = 1;
             if ($to_merge == 1) 
@@ -68,6 +68,13 @@ class Annex extends AppModel {
             }     
             
             return $annexes;
+	}
+        
+        function getAnnexesToSend($delib_id) {
+            $conditions = array('foreign_key' => $delib_id); 
+            $conditions['joindre_ctrl_legalite'] = 1;
+	    return ($this->find('all', array('conditions' => $conditions,
+                                             'fields' => array('filename', 'filetype', 'data')))); 
 	}
 
         function getContent($annex_id) {

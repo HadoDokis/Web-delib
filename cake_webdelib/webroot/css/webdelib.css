@@ -956,8 +956,9 @@ a.link_rebond_avec_border {
 	text-indent: 3%;
 }
 
-ul.actions {
-	list-style-type: none;
+ul.actions, .actions ul {
+        margin-top: 10px;
+	list-style: none;
 }
 
 #actions_fiche {

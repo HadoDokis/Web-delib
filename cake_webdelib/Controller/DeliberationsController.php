@@ -76,15 +76,9 @@ class DeliberationsController extends AppController {
         'sendToGed' => 'Envoie &agrave; une GED'
         );
 
-
-    function test () {
-        die ('OK TOTO');
-        $this->redirect('/'); 
-    }
-
     function view($id = null) {
         $this->set('previous', $this->referer());
-    
+
         $this->Deliberation->Behaviors->attach('Containable');
         $this->request->data = $this->Deliberation->find('first', array(
             'fields' => array(
@@ -102,7 +96,7 @@ class DeliberationsController extends AppController {
         ));
 
         if (empty($this->data)) {
-            $this->Session->setFlash('Invalide id pour la d&eacute;lib&eacute;ration : affichage de la vue impossible.', 'growl');
+            $this->Session->setFlash('Invalide id pour la délibération : affichage de la vue impossible.', 'growl');
             $this->redirect('/deliberations/mesProjetsRedaction');
         }
         $userId=$this->Session->read('user.User.id');
@@ -131,7 +125,7 @@ class DeliberationsController extends AppController {
                                                          'recursive'  => -1));
             $estDansCircuit = $this->Traitement->triggerDansTraitementCible($userId, $id); 
             if (empty($acte) &&($estDansCircuit==false)) {
-                $this->Session->setFlash("Vousssss n'avez pas les droits pour visualiser cet acte", 'growl');
+                $this->Session->setFlash("Vous n'avez pas les droits pour visualiser cet acte", 'growl');
                 $this->redirect('/deliberations/mesProjetsRedaction');
             }
         }
@@ -157,12 +151,17 @@ class DeliberationsController extends AppController {
         $commentaires = $this->Commentaire->find('all', array('conditions' => array ('Commentaire.delib_id' => $id),
                                                               'order' =>  'created DESC'));
         for($i=0; $i< count($commentaires) ; $i++) {
-            $agent = $this->User->find('first', array('conditions' => array(
-                'User.id' => $commentaires[$i]['Commentaire']['agent_id']) ,
-                    'recursive' => -1,
-                    'fields'    => array('nom', 'prenom') ));
-            $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
-            $commentaires[$i]['Commentaire']['prenomAgent'] =  $agent['User']['prenom'];
+            if($commentaires[$i]['Commentaire']['agent_id'] == -1){
+                $commentaires[$i]['Commentaire']['prenomAgent'] =  "i-Parapheur";
+                $commentaires[$i]['Commentaire']['nomAgent'] = "Adullact";
+            }else{
+                $agent = $this->User->find('first', array('conditions' => array(
+                    'User.id' => $commentaires[$i]['Commentaire']['agent_id']) ,
+                        'recursive' => -1,
+                        'fields'    => array('nom', 'prenom') ));
+                $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
+                $commentaires[$i]['Commentaire']['prenomAgent'] =  $agent['User']['prenom'];
+            }
         }
         $this->set ('commentaires', $commentaires );
         $this->set('historiques',$this->Historique->find('all', array('conditions' => array("Historique.delib_id" => $id),
@@ -179,6 +178,39 @@ class DeliberationsController extends AppController {
         // Définitions des infosup
         $this->set('infosupdefs', $this->Infosupdef->find('all', array('recursive'=> -1, 'order'=> 'ordre', 'conditions' => array('actif' => true) )));
         $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/'.$id, array('return')));
+        
+        //si bloqué à une étape de délégation
+        $visa = false;
+        $traitement = $this->Traitement->findByTargetId($id);
+        if ($traitement !=null){
+            //si reste des étapes de délégation en attente (passées)
+                $delegation_restante = array(
+                    'Visa.traitement_id' => $traitement['Traitement']['id'],
+                    'Visa.trigger_id' => -1,
+                    'Visa.action' => "RI");
+            if (!$traitement['Traitement']['treated']){
+                $conditions = array('traitement_id' => $traitement['Traitement']['id'],
+                                    'numero_traitement <=' => $traitement['Traitement']['numero_traitement'],
+                                    'trigger_id' => -1,
+                                    'action' => 'RI');
+                $visa = $this->Visa->hasAny($conditions);
+                
+                $delegation_restante['Visa.numero_traitement <'] = $traitement['Traitement']['numero_traitement'];
+            }else{ // pour voir bouton actualiser sur derniere etape de délégation
+                $delegation_restante['Visa.numero_traitement <='] = $traitement['Traitement']['numero_traitement'];
+            }
+            $visas_retard = $this->Visa->find('all', array("conditions" => $delegation_restante, "recursive" => -1));
+            //boutons MàJ visas en retard
+            $this->set('visas_retard', $visas_retard);
+        }
+        //Afficher bouton MàJ
+        $this->set('majDeleg', $visa);
+        
+    }
+    
+    function majEtatParapheur($id=null){
+        $this->requestAction("/cakeflow/traitements/majTraitementsParapheur/".$id);
+        $this->redirect("/deliberations/view/".$id);
     }
     
     function _getFileData($fileName, $fileSize) {
@@ -189,7 +221,7 @@ class DeliberationsController extends AppController {
       // initialisations
         $sortie = false;
         /* initialisation du lien de redirection */
-        $redirect = '/pages/mes_projets';
+        $redirect = '/deliberations/mesProjetsRedaction';
         /* initialisation du rédateur et du service emetteur */
         $user = $this->Session->read('user');
         if ($this->Droits->check($user['User']['id'], "Deliberations:editerProjetValide"))
@@ -946,15 +978,15 @@ class DeliberationsController extends AppController {
     }
     
     function addIntoCircuit($id = null){
-        $this->data = $this->Deliberation->find('first',array('conditions' => array('Deliberation.id' => $id)));
+        $this->request->data = $this->Deliberation->find('first',array('conditions' => array('Deliberation.id' => $id)));
         $user_connecte = $this->Session->read('user.User.id');
-        if ($this->data['Deliberation']['circuit_id']!= 0){
+        if ($this->request->data['Deliberation']['circuit_id']!= 0){
             // enregistrement de l'historique
             $message = "Projet injecté au circuit : ".$this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
             $this->Historique->enregistre($id, $user_connecte, $message);
             $this->request->data['Deliberation']['date_envoi']=date('Y-m-d H:i:s', time());
             $this->request->data['Deliberation']['etat']='1';
-            if ($this->Deliberation->save($this->data)) {
+            if ($this->Deliberation->save($this->request->data)) {
                 // insertion dans le circuit de traitement
                 $this->Deliberation->id = $id;
                 if ($this->Traitement->targetExists($id)) {
@@ -979,7 +1011,11 @@ class DeliberationsController extends AppController {
                                     '0'=>array(
                                         'trigger_id'=>$user_connecte,
                                         'type_validation'=>'V'
-                                        )))));
+                                    )
+                                )
+                            )
+                        )
+                    );
                     $traitementTermine =  $this->Traitement->execute('IN', $user_connecte, $id, $options);
                     if ($traitementTermine) {
                         $this->Historique->enregistre($id, $user_connecte, 'Projet valide' );
@@ -987,13 +1023,27 @@ class DeliberationsController extends AppController {
                         $this->Deliberation->saveField('etat', 2);
                     }
                     $this->Traitement->Visa->replaceDynamicTrigger($id);
-
                 }
                 
                 // envoi un mail a tous les membres du circuit
                 $listeUsers = $this->Circuit->getAllMembers($this->data['Deliberation']['circuit_id']);
-                
-                for($i = 1; $i <= count($listeUsers); $i++){
+
+                $prem=true;
+                foreach($listeUsers as $etape){
+                    if ($prem){
+                        foreach( $etape as $user_id)
+                            $this->_notifier($id, $user_id, 'traiter');
+                        $prem=false;
+                    }
+                    else {
+                        foreach( $etape as $user_id)
+                            $this->_notifier($id, $user_id, 'insertion');
+                    }
+                }
+//                debug($listeUsers);
+                //@Deprecated: les étapes en délégation ont une composition inexistante 
+                //donc quand on pointe sur l'indice de ces étapes on déclenchait une erreur 
+                /*for($i = 1; $i <= count($listeUsers); $i++){
                     if ($i ==1){
                         foreach( $listeUsers[$i] as $user_id)
                             $this->_notifier($id, $user_id, 'traiter');
@@ -1002,12 +1052,12 @@ class DeliberationsController extends AppController {
                         foreach( $listeUsers[$i] as $user_id)
                             $this->_notifier($id, $user_id, 'insertion');
                     }
-                }
-                $this->Session->setFlash('Projet ins&eacute;r&eacute; dans le circuit', 'growl');
+                }*/
+                $this->Session->setFlash('Projet inséré dans le circuit', 'growl');
                 $this->redirect('/deliberations/mesProjetsRedaction');
             }
             else {
-                $this->Session->setFlash('Probl&egrave;me de sauvegarde.', 'growl', array('type'=>'erreur'));
+                $this->Session->setFlash('Problème de sauvegarde.', 'growl', array('type'=>'erreur'));
                 $this->redirect('/deliberations/attribuercircuit/'.$id);
             }
         }
@@ -1050,7 +1100,7 @@ class DeliberationsController extends AppController {
             }   
         } else {
             $this->Deliberation->id = $id;
-            $this->data = $this->Deliberation->find('first',array('conditions'=>array("Deliberation.id"=>$id),'recursive'=>-1));
+            $this->request->data = $this->Deliberation->find('first',array('conditions'=>array("Deliberation.id"=>$id),'recursive'=>-1));
             
             if ($this->Deliberation->saveField('circuit_id', $circuit_id)) {
                 // cas pour l'editeur en ligne
@@ -1151,6 +1201,33 @@ class DeliberationsController extends AppController {
                     'recursive'=> -1,
                     'conditions'=> array('actif' => true),
                     'order'    => 'ordre')));
+                
+                            //si bloqué à une étape de délégation
+                            $visa = false;
+                            $traitement = $this->Traitement->findByTargetId($id);
+                            if ($traitement !=null){
+                                //si reste des étapes de délégation en attente (passées)
+                                    $delegation_restante = array(
+                                        'Visa.traitement_id' => $traitement['Traitement']['id'],
+                                        'Visa.trigger_id' => -1,
+                                        'Visa.action' => "RI");
+                                if (!$traitement['Traitement']['treated']){
+                                    $conditions = array('traitement_id' => $traitement['Traitement']['id'],
+                                                        'numero_traitement <=' => $traitement['Traitement']['numero_traitement'],
+                                                        'trigger_id' => -1,
+                                                        'action' => 'RI');
+                                    $visa = $this->Visa->hasAny($conditions);
+
+                                    $delegation_restante['Visa.numero_traitement <'] = $traitement['Traitement']['numero_traitement'];
+                                }else{ // pour voir bouton actualiser sur derniere etape de délégation
+                                    $delegation_restante['Visa.numero_traitement <='] = $traitement['Traitement']['numero_traitement'];
+                                }
+                                $visas_retard = $this->Visa->find('all', array("conditions" => $delegation_restante, "recursive" => -1));
+                                //boutons MàJ visas en retard
+                                $this->set('visas_retard', $visas_retard);
+                            }
+                            //Afficher bouton MàJ
+                            $this->set('majDeleg', $visa);
             }
             else {
                 if ($valid=='1') {
@@ -1181,22 +1258,26 @@ class DeliberationsController extends AppController {
         $user_id = $this->Session->read('user.User.id');
         $traitementTermine = $this->Traitement->execute('OK', $user_id, $id);
         $this->Historique->enregistre($id, $user_id, 'Projet vis&eacute;' );
-
         if ($traitementTermine) {
              $this->Deliberation->id = $id;
-             if ($this->Deliberation->saveField('etat', 2))
+             if ($this->Deliberation->saveField('etat', 2)){
                  if (isset($projet['Multidelib'] ) && !empty($projet['Multidelib'])) {
                      foreach ($projet['Multidelib'] as $multidelib){
                          $this->Deliberation->id = $multidelib['id'];
                          $this->Deliberation->saveField('etat', 2);
                      }
                  }
-              }
-              else {
-                  $destinataires = $this->Traitement->whoIsNext($id);
-                  foreach( $destinataires as $destinataire_id)
-                      $this->_notifier($id, $destinataire_id, 'traiter');
-              }
+             }
+        }
+        else {
+            $destinataires = $this->Traitement->whoIsNext($id);
+//            if (isset($destinataires[0]) && $destinataires[0] == -1){//Cas destinataire ==> PARAPHEUR
+//                $this->sendToParapheur($id);
+//            }else{
+                foreach( $destinataires as $destinataire_id)
+                    $this->_notifier($id, $destinataire_id, 'traiter');
+//            }
+        }
     }
 
     function _chercherVersionAnterieure($delib_id, $tab_delib, $nb_recursion, $listeAnterieure, $action)

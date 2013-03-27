@@ -142,7 +142,8 @@ $webDelib = array(
 					'Types de séance' => array('link' => '/typeseances/index'),
 					'Informations sup. projet' => array('link' => '/infosupdefs/index'),
 					'Informations sup. séance' => array('link' => '/infosupdefs/index_seance'),
-					'Gestion des connecteurs' => array('link' => '/connecteurs/index')
+					'Gestion des connecteurs' => array('link' => '/connecteurs/index'),
+					'Gestion des crons' => array('link' => '/crons/index')
 					)
 				)
 			)
