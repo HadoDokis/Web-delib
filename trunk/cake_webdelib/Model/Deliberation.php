@@ -1463,13 +1463,42 @@ class Deliberation extends AppModel {
 
             foreach ($seances as $seance_id) {
                 $Deliberationseance = $this->Deliberationseance->find('first',
-                                array('conditions' => array('Deliberationseance.deliberation_id' => $delib_id,
-                                                            'Deliberationseance.seance_id'       => $seance_id),
-                                      'fields'     => array('Deliberationseance.id'),
-                                      'recursive'  => -1));
+                    array('conditions' => array('Deliberationseance.deliberation_id' => $delib_id,
+                                                'Deliberationseance.seance_id'       => $seance_id),
+                          'fields'     => array('Deliberationseance.id'),
+                          'recursive'  => -1));
                 $this->Deliberationseance->id =  $Deliberationseance['Deliberationseance']['id'];
                 $this->Deliberationseance->saveField('position',  $position);
             }
+        }
+        
+        /**
+         * 
+         * @param type $parafhisto
+         * @param type $delib_id
+         * @param type $circuit_id
+         */
+        function setHistorique($parafhisto,$delib_id, $circuit_id){
+            $histo = $this->Historique->create();
+            $histo['Historique']['delib_id'] = $delib_id;
+            $histo['Historique']['user_id'] = -1;
+            $histo['Historique']['commentaire'] = $parafhisto;
+            $histo['Historique']['circuit_id'] = $circuit_id;
+            $this->Historique->save($histo['Historique']);
+        }
+        /**
+         * 
+         * @param type $delib_id
+         * @param type $logdossier
+         */
+        function setCommentaire($delib_id, $logdossier){
+            $com = $this->Commentaire->create();
+            $com['Commentaire']['delib_id'] = $delib_id;
+            $com['Commentaire']['agent_id'] = -1;
+            $com['Commentaire']['pris_en_compte'] = 0;
+            $com['Commentaire']['commentaire_auto'] = false;
+            $com['Commentaire']['texte'] = $logdossier['nom'] . " : " . $logdossier['annotation'];
+            $this->Commentaire->save($com['Commentaire']);
         }
 }
 ?>

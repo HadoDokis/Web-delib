@@ -1,10 +1,10 @@
 <?php
 class ConversionComponent extends Component {
 
-	function ConversionComponent() {	}
+function ConversionComponent() {}
 /**
  * conversion de format du fichie $fileUri vers le format $format
- * @return array tableau de rÃ©ponse composÃ© comme suit :
+ * @return array tableau de réponse composé comme suit :
  * 	'resultat' => boolean
  *  'info' => string
  * 	'convertedFileUri' => nom et chemin du fichier converti
@@ -42,9 +42,8 @@ function convertirFichier($fileName, $format) {
                 require_once 'XML/RPC.php';
 		$content =  base64_encode(file_get_contents($fileName));
 		$fileinfo =  pathinfo($fileName);
-                if ($fileinfo['extension'] == 'pdf') {
+                if (!isset($fileinfo['extension']) || $fileinfo['extension'] == 'pdf') {
                      $fileinfo['extension'] = 'odt';
-                     $this->log( $fileinfo);
                  }
  
                 $params = array( new XML_RPC_Value($content, 'string'),
