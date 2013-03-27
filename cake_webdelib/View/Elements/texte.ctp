@@ -32,6 +32,7 @@
 
 	if (Configure::read('GENERER_DOC_SIMPLE')){
 		echo '<div class="annexesGauche"></div>';
+                echo '<label class="spacer">'.$libelle.'</label>';
 		echo '<div class="fckEditorProjet">';
 			echo $this->Form->input('Deliberation.'.$key, array('label'=>'', 'type'=>'textarea'));
 			echo $this->Fck->load('Deliberation'.Inflector::camelize($key));

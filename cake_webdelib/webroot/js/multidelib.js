@@ -4,13 +4,15 @@ $(document).ready(function() {
 
 function multiDelib(obj) {
 	if( $(obj).attr('checked')=='checked') {
-		var domTextDelib = $('#texteDeliberation').detach();
-		$('#texteDelibOngletDelib').append(domTextDelib);
 		$('#lienTab5').show();
-		$('#htextebelib').hide();
+		$('#htextedelib').hide();
+                $('#lienTab3').hide();
+                var domTextDelib = $('#texteDeliberation').detach();
+		$('#texteDelibOngletDelib').append(domTextDelib);
 	} else {
+                $('#lienTab3').show();
 		$('#lienTab5').hide();
-                $('#htextebelib').show();
+                $('#htextedelib').show();
 		var domTextDelib = $('#texteDeliberation').detach();
 		$('#texteDelibOngletTextes').append(domTextDelib);
 	}

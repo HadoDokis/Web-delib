@@ -71,6 +71,50 @@
             $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->_doList($service_id), 'text'));
           
         }
+        
+        /** 
+         * doListId Retourne toute la liste de services disponibles par rapport à un service donné
+         * @param int $id
+         * @return array Liste Id de tous les services disponibles
+        */
+        function doListId($id) {
+            
+                return $this->_doListId($id);
+        }
+
+        /** 
+         * _doListId Retourne la liste de services disponibles par rapport à un service donné. Fonction privée recursive
+         * @param int $id
+         * @return array Liste Id de tous les services disponibles
+        */
+        function _doListId($id) {
+                $aArray=array();
+                $service = $this->find('all', array(
+                                       'conditions' => array('Service.parent_id' => $id), 
+                                       'fields'     => array('id', 'parent_id'), 
+                                       'recursive'  => -1));
+                
+                if (!empty($service)) {
+                    $aArray[]=$id;
+                    
+                    foreach($service as $champs)
+                    {
+                        $aServices=$this->_doListId($champs['Service']['id']);
+                        if(!empty($aServices))
+                            foreach($aServices as $aService)
+                            {
+                               $aArray[]=$aService; 
+                            }
+                    }
+                }
+                else
+                   $aArray[]=$id;
+                    
+                
+                return $aArray;
+               }
+                 
+
 }
 
 ?>
