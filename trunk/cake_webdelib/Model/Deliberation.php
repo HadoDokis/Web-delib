@@ -1106,37 +1106,45 @@ class Deliberation extends AppModel {
 	function saveDelibRattachees($parentId, $delib) {
 		// initialisations
 		$newDelib = array();
-		if (!isset($delib['objet'])) {
-                    if (isset($delib['objet_delib']))
+                
+		if (isset($delib['objet_delib'])) {
                         $delib['objet'] = $delib['objet_delib'];
-                    else  
-                        return false;
-		}
-
+                } 
+                else  
+                    return false;
+                
 		if (isset($delib['id'])) {
-			// modification
-                        $this->id =  $delib['id'];
-			$newDelib['Deliberation']['id'] = $delib['id'];
+                    // modification
+                    $this->id =  $delib['id'];
+                    $newDelib['Deliberation']['id'] = $delib['id'];
 		} else {
-			// ajout
-			$newDelib = $this->create();
-			$newDelib['Deliberation']['parent_id'] = $parentId;
-		}
-
-		$newDelib['Deliberation']['objet'] = $delib['objet'];
+                    // ajout
+                    $newDelib = $this->create();
+                    $newDelib['Deliberation']['parent_id'] = $parentId;
+              }
+              
+                $newDelib['Deliberation']['objet'] = $delib['objet'];
+                $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
+		
 		if (Configure::read('GENERER_DOC_SIMPLE')){
 			$newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
 		} else {
-			if (isset($delib['Deliberation'])) {
-				$newDelib['Deliberation']['objet_delib'] = $delib['objet'];
-				$newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
-				$newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
-				$newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
-				if (empty($delib['deliberation']['tmp_name']))
-					$newDelib['Deliberation']['deliberation'] = '';
-				else
-					$newDelib['Deliberation']['deliberation'] = file_get_contents($delib['deliberation']['tmp_name']);
-			}
+			if (isset($delib['deliberation'])) {
+                            $newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
+                            $newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'];
+                            $newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
+                            if (empty($delib['deliberation']['tmp_name']))
+                                    $newDelib['Deliberation']['deliberation'] = '';
+                            else
+                                    $newDelib['Deliberation']['deliberation'] = file_get_contents($delib['deliberation']['tmp_name']);
+                        }else{
+                                $pos  =  strrpos ( getcwd(), 'webroot');
+                                $path = substr(getcwd(), 0, $pos);
+                                $path_projet = $path.'webroot/files/generee/projet/'.$this->id.'/';
+                                if(file_exists($path_projet.'deliberation.odt'))
+                                    $newDelib['Deliberation']['deliberation'] = file_get_contents($path_projet.'deliberation.odt');
+                            
+                        }
 		}
 
 		if(!$this->save($newDelib['Deliberation'], false)) {

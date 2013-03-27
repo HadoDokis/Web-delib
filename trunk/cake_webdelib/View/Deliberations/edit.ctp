@@ -48,7 +48,7 @@ $(document).ready(function() {
 <div id="tab1">
         <fieldset id='info'>
 	<div class='demi'>
-		<?php echo '<b><u>Rédacteur</u></b> : <i>'.$this->Html->value('Redacteur.prenom').'</i>';?>
+		<?php echo '<b><u>Rédacteur</u></b> : <i>'.$this->Html->value('Redacteur.prenom').' '.$this->Html->value('Redacteur.nom').'</i>';?>
 		<br/>
 		<?php echo '<b><u>Service émetteur</u></b> : <i>'.$this->Html->value('Service.libelle').'</i>'; ?>
 	</div>
@@ -130,11 +130,11 @@ $(document).ready(function() {
 
 
 <?php 
-        $disabled = isset($this->data['Multidelib']); 
         if ($DELIBERATIONS_MULTIPLES) {
            echo $this->Form->input('Deliberation.is_multidelib', array(
 	                     'type'=>'checkbox',
-	                     'disabled'=>  $disabled ,
+	                     'disabled'=>  isset($this->data['Multidelib']) ,
+                             'checked'=>  isset($this->data['Multidelib']) OR (isset($this->data['Deliberation']['is_multidelib']) && $this->data['Deliberation']['is_multidelib']==1)?true:false,
 		             'label'=>'Multi Délibération',
 		             'onClick'=> "multiDelib(this);" ));
         }
