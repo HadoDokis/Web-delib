@@ -15,7 +15,22 @@ Copyright 2006 ThoughtWorks, Inc
  limitations under the License.
 -->
 <head>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+
+<script language="javascript">
+<!--
+function changeFieldValue() {
+  setTimeout("document.theForm.theField.value = 'newValue'", 1500);
+}
+function changeSpanText() {
+  setTimeout("document.getElementById('theSpan').innerHTML = 'Some new text'", 1500);
+}
+function delayedAlert() {
+  setTimeout("alert('An alert')", 1500);
+}
+-->
+</script>
+
 </head>
 <body>
 <img style="width: 644px; height: 41px;" alt="banner" src="banner.gif"><br>
@@ -34,19 +49,5 @@ Copyright 2006 ThoughtWorks, Inc
   <input type="button" name="theAlertButton" value="Delayed Alert" onclick="javascript: delayedAlert();"/>
 </form>
 </body>
-
-<script language="javascript">
-<!--
-function changeFieldValue() {
-  setTimeout("document.theForm.theField.value = 'newValue'", 1500);
-}
-function changeSpanText() {
-  setTimeout("document.getElementById('theSpan').innerHTML = 'Some new text'", 1500);
-}
-function delayedAlert() {
-  setTimeout("alert('An alert')", 1500);
-}
--->
-</script>
 
 </html>
