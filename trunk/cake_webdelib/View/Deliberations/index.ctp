@@ -230,15 +230,14 @@ function choixModele(o) {
 
 <?php if (!empty($listeLiens)) {
 	  if (in_array('add', $listeLiens)) {
-              echo '<ul class="actions">';
-	      echo '<li>'.$this->Html->link('Ajouter un projet', 
-				      '/deliberations/add', 
-                                      array('class'=>'link_add', 
-                                            'escape' => false,
-					    'alt'=>'créer un nouveau projet',
-                                            'title'=>'créer un nouveau projet')).'</li>';
-	      echo '</ul>';
-              
+              echo "<div style='text-align:center;'>";
+              echo $this->Html->link('<i class=" icon-plus-sign"></i> Ajouter un projet', 
+                      array("action" => "add"), 
+                      array('class' => 'btn btn-primary', 
+                          'escape' => false, 
+                          'title' => 'Créer un nouveau projet',
+                          'style'=> 'margin-top: 10px;'));
+              echo "</div>";
           }
 	  if (in_array('mesProjetsRecherche', $listeLiens)) {
               echo '<ul class="actions">';
@@ -251,25 +250,43 @@ function choixModele(o) {
               echo '</ul>';
           }
 } ?>
-
 </div>
-<br />
 <?php 
      if (isset($traitement_lot) && ($traitement_lot ==true)) {
          $actions_possibles['generation'] = 'Génération';
+         echo "<div id='actions_bottom'>";
          echo $this->Form->input('Deliberation.action', array('options' => $actions_possibles, 
                                                               'div'     => false,
-                                                              'onChange'     => 'javascript:choixModele(this);',
+                                                              'onChange'=> 'javascript:choixModele(this);',
                                                               'empty'   => 'Selectionner une action'));
    
          echo $this->Form->input('Deliberation.modele', array('options' => $modeles,
 							      'div'     => array('id' => 'divmodeles', 'style' => 'display:none;'),
 							      'label'   => false,
                                                               'empty'   => 'Selectionner un modèle'));
-         echo $this->Form->Submit('Executer', array('div' => false, 
-                                                    'before' => '&nbsp;&nbsp;&nbsp;'));
+         
+         echo $this->Form->button("<i class='icon-cogs'></i> Executer", 
+                                        array ( 'div'   => false, 
+                                                'class' => 'btn',
+                                                'escape'=> false,
+                                                'id'    => 'btn_executer',
+                                                'type'  => 'submit'));
+         echo '</div>';
          echo $this->Form->end(); 
      }
      if ($endDiv)
          echo ('</div>');
 ?>
+<style>
+    #actions_bottom label{
+        float: none;
+        display: inline;
+    }
+    #actions_bottom #btn_executer{
+        margin-left: 5px;
+        margin-top: -10px;
+    }
+    #actions_bottom {
+        text-align: center;
+    }
+</style>

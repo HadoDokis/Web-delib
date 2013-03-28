@@ -43,6 +43,9 @@ if (isset($visas_retard) && !empty($visas_retard)) {
     div.majDeleg{
         border-top: 1px dashed;
     }
+    #etapes.circuit{
+        padding: 0;
+    }
 </style>
 
 <div id="vue_cadre">
@@ -238,11 +241,12 @@ if (!empty($historiques)) {
 
 
 </dl>
-<ul id="actions_fiche">
-    <li><?php echo $this->Html->link(SHY, $previous, array('class' => 'link_annuler_sans_border', 'escape' => false, 'title' => 'Retour fiche'), false); ?></li>
-</ul>
-
+<div id="actions_fiche">
+    <?php echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', $previous, array('class' => 'btn', 'escape' => false, 'title' => 'Retour fiche')); ?>
 </div>
+    
+</div>
+
 <script type="text/javascript">
     function afficheMasqueTexteEnrichi(lienId, inputId) {
         var lienAfficherMasquer = $('#' + lienId);
