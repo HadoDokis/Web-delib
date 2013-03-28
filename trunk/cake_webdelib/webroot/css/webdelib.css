@@ -964,6 +964,9 @@ ul.actions, .actions ul {
 #actions_fiche {
 	text-align: center;
 }
+#actions_fiche .btn {
+        margin-bottom: 10px;
+}
 
 #actions_fiche li {
 	display: inline;
