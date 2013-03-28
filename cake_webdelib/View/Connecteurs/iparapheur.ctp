@@ -1,23 +1,26 @@
 <script>
-    $(document).ready(function(){
-        var ma_valeur =  <?php  echo Configure::read('USE_PARAPH'); ?>;
-        if (ma_valeur == 1) $('#parapheur').show(); else $('#parapheur').hide(); 
-    });
+$(document).ready(function(){
+    var ma_valeur =  <?php  echo Configure::read('USE_PARAPH'); ?>;
+    if (ma_valeur == 1) $('#parapheur').show(); else $('#parapheur').hide(); 
+});
 </script>
 <div class='spacer'> </div>
-<?php  
-
+<style type="text/css">
+    div.input.radio fieldset label { text-align: left; padding-left: 5px; width:auto;}
+    div.input.radio {padding-left: 0px;}
+    div.input.radio input[type="radio"]{margin-left: 25px;}
+</style>
+<?php
     echo $this->Form->create('Connecteur',array('url'=>'/connecteurs/makeconf/iparapheur', 'type'=>'file' )); 
-
     $notif = array(1 => 'Oui', 0=>'Non');
-    echo $this->Form->input('use_paraph', array('before'  => '<label for="UseParapheur">Utilisation du i-parapheur électronique</label>',
-                                               'legend'  => false,
+    echo $this->Form->input('use_paraph', array('before'  => '',
+                                               'legend'  => "Utilisation du i-parapheur électronique",
                                                'type'    => 'radio',
                                                'options' => $notif,
                                                'value' => Configure::read('USE_PARAPH'),
-                                               'div'     => false,
+                                               'div'     => true,
                                                'default' => 0,
-                                               'label'   => false,
+                                               'label'   => true,
                                                'onClick'=>"if(this.value==1) $('#parapheur').show(); else $('#parapheur').hide(); " ));
  ?>
     <div class='spacer'> </div>
@@ -25,7 +28,7 @@
     <fieldset>
         <legend>Adresse de la plateforme I-Parapheur</legend>
 <?php  
-        echo $this->Form->input('wsaction', 
+        echo $this->Form->input('wsaction',
                                 array('type' => 'text', 
                                       "placeholder"=>"Exemple : https://parapheur.demonstrations.adullact.org/alfresco", 
                                       'label' => 'WsAction : ' , 
