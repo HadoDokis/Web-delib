@@ -237,7 +237,7 @@ class Html2Helper extends HtmlHelper
 
 	function ukToFrenchDateWithHour($date)
 	{
-		return date("d/m/Y \a H\hi",strtotime($date));
+		return date("d/m/Y \à H\hi",strtotime($date));
 	}
 
 /* affiche une flèche vers le bas et une flèche vers le bas pour le tri asc et desc de $urlChampTri */

@@ -6,6 +6,7 @@
 	
 	<?php echo $this->Html->css('webdelib'); ?>
 	<?php echo $this->Html->css('jquery.jgrowl'); ?>
+	<?php echo $this->Html->css('font-awesome.min'); ?>
 	<?php echo $this->Html->script('utils'); ?>
 	<?php echo $this->html->script('jquery', true); ?>
 	<?php echo $this->html->script('jquery-ui', true); ?>
