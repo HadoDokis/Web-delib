@@ -60,9 +60,12 @@ foreach ($users as $user):?>
 	<!-- Affiche X de Y, où X est la page courante et Y le nombre de pages -->
 	<?php echo $this->Paginator->counter(array('format'=>'Page %page% sur %pages%')); ?>
 </div>
-
-<ul class="actions">
-	<li><?php echo $this->Html->link('Ajouter', '/users/add/', array('class'=>'link_add', 'title'=>'Ajouter un utilisateur')); ?></li>
-</ul>
+<?php 
+$this->Html2->boutonAdd("Ajouter", "Ajouter un utilisateur");
+?>
+<!--<ul class="actions">
+    
+	<li><?php // echo $this->Html->link('Ajouter', '/users/add/', array('class'=>'link_add', 'title'=>'Ajouter un utilisateur')); ?></li>
+</ul>-->
 </div>
 

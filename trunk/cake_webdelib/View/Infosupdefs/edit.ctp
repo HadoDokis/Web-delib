@@ -124,8 +124,9 @@ echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->action
 		if ($this->action=='edit') echo $this->Form->hidden('Infosupdef.id');
 		echo $this->Form->hidden('Infosupdef.id');
 		echo $this->Form->hidden('Infosupdef.model');
-		echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));
-		echo $this->Html->link('Annuler', $lienRetour, array('class'=>'link_annuler', 'name'=>'Annuler'))
+                $this->Html2->boutonsSaveCancelUrl($lienRetour); 
+//		echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));
+//		echo $this->Html->link('Annuler', $lienRetour, array('class'=>'link_annuler', 'name'=>'Annuler'))
 	?>
 	</div>
 <?php echo $this->Form->end(); ?>

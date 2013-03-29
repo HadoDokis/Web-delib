@@ -1,9 +1,9 @@
-<h2>Param&eacute;trage des e-mails</h2>
+<h2>Paramétrage des e-mails</h2>
 <?php echo $this->Form->create('Collectivites',array('url'=>$this->webroot.'collectivites/setMails','type'=>'file')); ?>
 
 <table>
   <tr> 
-    <td> Projet refus&eacute; </td>
+    <td> Projet refusé </td>
     <td> <?php echo $this->Form->input('Mail.refus', array('type'=>'file', 'size' => '40'))?></td>
     <td> <?php echo $this->Html->link(SHY, $email_path.'refus', array('class'=>'link_voir', 'title'=>'Voir'), false, false) ?></td>
   </tr>
@@ -27,8 +27,9 @@
     <p> <br/><i>(au format .txt)</i> </p>                                                                      
     <br/><br/>
     <div class="submit">
-		<?php echo $this->Form->submit('Enregistrer', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-		<?php echo $this->Html->link('Annuler', '/collectivites/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+        <?php $this->Html2->boutonsSaveCancel(); ?>
+		<?php // echo $this->Form->submit('Enregistrer', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+		<?php // echo $this->Html->link('Annuler', '/collectivites/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
     </div>
           
 <?php echo $this->Form->end(); ?>

@@ -49,7 +49,9 @@
 <?php endforeach; ?>
 </table>
 
-<ul class="actions">
+<?php $this->Html2->boutonAdd("Ajouter un type de séance", "Ajoute un type de séance"); ?>
+
+<!--<ul class="actions">
 	<li><?php echo $this->Html->link('Ajouter un type de séance', '/typeseances/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
-</ul>
+</ul>-->
 </div>

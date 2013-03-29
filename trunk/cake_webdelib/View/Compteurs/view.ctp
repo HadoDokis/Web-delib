@@ -46,17 +46,26 @@
 		<dd>&nbsp;<?php echo $compteur['Compteur']['modified']?></dd>
 	</div>
 </div>
-
 </dl>
 
+<div id="actions_fiche" class='btn-group' style='text-align: center;'>
+	<?php
+        $this->Html2->boutonRetour('index', 'float:none;');
+		if ($Droits->check($this->Session->read('user.User.id'), 'Compteurs:edit'))
+                    $this->Html2->boutonModifierUrl('/compteurs/edit/' . $compteur['Compteur']['id'], 'Modifier', 'Modifier', 'float:none;', '');
+                
+	?>
+</div>
 
-<br />
+<div class="spacer"></div>
+
+<!--<br />
 <ul id="actions_fiche">
 	<?php
-		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
-		if ($Droits->check($this->Session->read('user.User.id'), 'Compteurs:edit'))
-			echo '<li>'.$this->Html->link(SHY, '/compteurs/edit/' . $compteur['Compteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+//		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+//		if ($Droits->check($this->Session->read('user.User.id'), 'Compteurs:edit'))
+//			echo '<li>'.$this->Html->link(SHY, '/compteurs/edit/' . $compteur['Compteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
 	?>
-</ul>
+</ul>-->
 
 </div>

@@ -40,10 +40,10 @@
 App::uses('Controller', 'Controller');
 class AppController extends Controller {
         public $theme = "Bootstrap";
-	var $components = array( 'Utils', 'Acl', 'Droits', 'Session');
+	public $components = array( 'Utils', 'Acl', 'Droits', 'Session');
 	//var $components = array( 'Utils', 'Acl', 'Droits', 'Session', 'DebugKit.Toolbar');
-	var $helpers = array('Html', 'Form', 'Js', 'Session', 'Menu', 'DatePicker'  );
-        var $aucunDroit = array('Pages:format', 'Pages:service');
+	public $helpers = array('Html', 'Form', 'Js', 'Session', 'Menu', 'DatePicker', 'Html2' );
+        public $aucunDroit = array('Pages:format', 'Pages:service');
 
 	function beforeFilter() {
 		$this->set('Droits',$this->Droits);

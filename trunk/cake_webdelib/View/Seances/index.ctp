@@ -22,7 +22,9 @@
 <?php endforeach; ?>
 </table>
 
-<ul class="actions">
+
+<?php $this->Html2->boutonAdd("Ajouter une seance","Ajouter une seance"); ?>
+<!--<ul class="actions">
 	<li><?php echo $this->Html->link('Ajouter une seance', '/seances/add', array('class'=>'link_add', 'title'=>'Ajouter une Séance')); ?></li>
-</ul>
+</ul>-->
 </div>

@@ -1,6 +1,6 @@
 <div class="seances">
 
-<h2>Gestion de la liste de l'information suppl&eacute;mentaire : <?php echo $infosupdef['Infosupdef']['nom']; ?></h2>
+<h2>Gestion de la liste de l'information supplémentaire : <?php echo $infosupdef['Infosupdef']['nom']; ?></h2>
 
 <table cellpadding="0" cellspacing="0" width='100%'>
 <tr>
@@ -33,8 +33,8 @@
 </table>
 
 <ul class="actions">
-	<?php echo $this->Html->link('Ajouter un &eacute;l&eacute;ment', '/infosuplistedefs/add/'.$infosupdef['Infosupdef']['id'], array('class'=>'link_add',  'escape' => false,  'title'=>'Ajouter un &eacute;l&eacute;ment'), false); ?>
-	<?php echo $this->Html->link('Retourner à la liste des informations suppl&eacute;mentaires', '/infosupdefs/index/', array('class'=>'link_annuler_sans_border',  'escape' => false), false); ?>
+	<?php echo $this->Html->link('Ajouter un élément', '/infosuplistedefs/add/'.$infosupdef['Infosupdef']['id'], array('class'=>'link_add',  'escape' => false,  'title'=>'Ajouter un élément'), false); ?>
+	<?php echo $this->Html->link('Retourner à la liste des informations supplémentaires', '/infosupdefs/index/', array('class'=>'link_annuler_sans_border',  'escape' => false), false); ?>
 </ul>
 
 </div>

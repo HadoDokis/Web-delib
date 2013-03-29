@@ -34,8 +34,11 @@
 <div class="spacer"></div>
 
 <div class="submit">
-	<?php echo $this->Form->hidden('Typeacte.id')?>
-	<?php echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-	<?php echo $this->Html->link('Annuler', '/typeactes/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php 
+        echo $this->Form->hidden('Typeacte.id');
+        $this->Html2->boutonsSaveCancel(); 
+//	echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));
+//	echo $this->Html->link('Annuler', '/typeactes/index', array('class'=>'link_annuler', 'name'=>'Annuler'));
+        ?>
 </div>
 <?php $this->Form->end(); ?>

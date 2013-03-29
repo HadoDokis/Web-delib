@@ -25,9 +25,6 @@
 			echo $this->element('editDroits');
 		?>
 	</div>
-	
-<br/><br/><br/><br/><br/>
-
 <script>
     document.getElementById("pourcentage").style.display='none';
     document.getElementById("progrbar").style.display='none';
@@ -36,8 +33,7 @@
 </script>
 
 <div class="submit"> 
-	<?php echo $this->Form->hidden('Profil.id',array('label'=>'$nbsp;'))?>
-	<?php echo $this->Form->submit('Modifier', array('div'=>false,'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-	<?php echo $this->Html->link('Annuler', '/profils/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+    <?php echo $this->Form->hidden('Profil.id',array('label'=>'$nbsp;'))?>
+    <?php $this->Html2->boutonsSaveCancel('', 'index', 'Modifier');?>
 </div>
 <?php echo $this->Form->end(); ?>

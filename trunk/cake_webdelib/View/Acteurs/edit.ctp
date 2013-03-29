@@ -120,9 +120,11 @@ function initAffichageInfosElus()
 	<div class="spacer"></div>
 
 <div class="submit">
-	<?php if ($this->action=='edit') echo $this->Form->hidden('Acteur.id')?>
-	<?php echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-	<?php echo $this->Html->link('Annuler', '/acteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php 
+        if ($this->action=='edit') 
+            echo $this->Form->hidden('Acteur.id');
+        $this->Html2->boutonsSaveCancel(); 
+        ?>
 </div>
 
 <?php echo $this->Form->end(); ?>

@@ -1,18 +1,16 @@
 <?php
     echo $this->Html->script('utils');
 ?>
-<h2>Import du mod&egrave;le : <?php echo $libelle; ?></h2>
+<h2>Import du modèle : <?php echo $libelle; ?></h2>
 <div class="optional">
 <?php
     echo $this->Form->create('Model',array('url'=>'/models/import/'.$model_id,'type'=>'file'));
-    echo  $this->Form->input("template",array('label'=>'', 'type'=>'file', 'div'=>false));
+    echo $this->Form->input("template",array('label'=>false, 'type'=>'file', 'div'=>false));
 ?>
 </div>
 <div class="submit">
 <?php 
-    echo '<br><br>';
-    echo $this->Form->submit('Importer', array('div'=>false, 'class'=>'bt_add', 'name'=>'importer'));
-    echo '<br><br>';
+    echo $this->Form->button('<i class="icon-download"></i> Importer', array('div'=>false, 'class'=>'btn btn-primary', 'name'=>'importer', 'type'=>'submit'));
 ?>
 </div>
 <?php echo $this->Form->end(); ?>

@@ -6,8 +6,7 @@
 </div>
 <br/><br/><br/><br/><br/>
 <div class="submit">
-	<?php echo $this->Form->hidden('Commentaire.id')?>
-	<?php echo $this->Form->submit('Modifier', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-	<?php echo $this->Html->link('Annuler', '/commentaires/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+    <?php echo $this->Form->hidden('Commentaire.id')?>
+    <?php $this->Html2->boutonsSaveCancel(); ?>
 </div>
 <?php echo $this->Form->end(); ?>

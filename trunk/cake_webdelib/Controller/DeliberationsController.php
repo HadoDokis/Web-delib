@@ -14,7 +14,7 @@ class DeliberationsController extends AppController {
     * Deliberation.avis = 2 : avis défavorable
     */
     var $name = 'Deliberations';
-    var $helpers = array('Html', 'Form', 'Javascript',  'Html2', 'Session', 'Fck');
+    var $helpers = array('Javascript', 'Fck');
     var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire','Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit',  'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
     var $components = array('Gedooo','Date','Utils','Email','Acl', 'Droits',  'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf');
 
@@ -183,6 +183,11 @@ class DeliberationsController extends AppController {
         $visa = false;
         $traitement = $this->Traitement->findByTargetId($id);
         if ($traitement !=null){
+            //Si il n'y a pas eu de jump
+            $jump= array(
+                'Visa.traitement_id' => $traitement['Traitement']['id'],
+                'Visa.action' => "JS"
+            );
             //si reste des étapes de délégation en attente (passées)
                 $delegation_restante = array(
                     'Visa.traitement_id' => $traitement['Traitement']['id'],
@@ -199,13 +204,16 @@ class DeliberationsController extends AppController {
             }else{ // pour voir bouton actualiser sur derniere etape de délégation
                 $delegation_restante['Visa.numero_traitement <='] = $traitement['Traitement']['numero_traitement'];
             }
-            $visas_retard = $this->Visa->find('all', array("conditions" => $delegation_restante, "recursive" => -1));
+            
+            $visas_retard=array();
+            if (!$this->Visa->hasAny($jump))
+                $visas_retard = $this->Visa->find('all', array("conditions" => $delegation_restante, "recursive" => -1));
+            
             //boutons MàJ visas en retard
             $this->set('visas_retard', $visas_retard);
         }
         //Afficher bouton MàJ
         $this->set('majDeleg', $visa);
-        
     }
     
     function majEtatParapheur($id=null){
@@ -1202,32 +1210,40 @@ class DeliberationsController extends AppController {
                     'conditions'=> array('actif' => true),
                     'order'    => 'ordre')));
                 
-                            //si bloqué à une étape de délégation
-                            $visa = false;
-                            $traitement = $this->Traitement->findByTargetId($id);
-                            if ($traitement !=null){
-                                //si reste des étapes de délégation en attente (passées)
-                                    $delegation_restante = array(
-                                        'Visa.traitement_id' => $traitement['Traitement']['id'],
-                                        'Visa.trigger_id' => -1,
-                                        'Visa.action' => "RI");
-                                if (!$traitement['Traitement']['treated']){
-                                    $conditions = array('traitement_id' => $traitement['Traitement']['id'],
-                                                        'numero_traitement <=' => $traitement['Traitement']['numero_traitement'],
-                                                        'trigger_id' => -1,
-                                                        'action' => 'RI');
-                                    $visa = $this->Visa->hasAny($conditions);
+                //si bloqué à une étape de délégation
+                $visa = false;
+                $traitement = $this->Traitement->findByTargetId($id);
+                if ($traitement !=null){
+                    //Si il n'y a pas eu de jump
+                    $jump= array(
+                        'Visa.traitement_id' => $traitement['Traitement']['id'],
+                        'Visa.action' => "JS"
+                    );
+                    //si reste des étapes de délégation en attente (passées)
+                    $delegation_restante = array(
+                        'Visa.traitement_id' => $traitement['Traitement']['id'],
+                        'Visa.trigger_id' => -1,
+                        'Visa.action' => "RI");
+                    if (!$traitement['Traitement']['treated']){
+                        $conditions = array('traitement_id' => $traitement['Traitement']['id'],
+                                            'numero_traitement <=' => $traitement['Traitement']['numero_traitement'],
+                                            'trigger_id' => -1,
+                                            'action' => 'RI');
+                        $visa = $this->Visa->hasAny($conditions);
 
-                                    $delegation_restante['Visa.numero_traitement <'] = $traitement['Traitement']['numero_traitement'];
-                                }else{ // pour voir bouton actualiser sur derniere etape de délégation
-                                    $delegation_restante['Visa.numero_traitement <='] = $traitement['Traitement']['numero_traitement'];
-                                }
-                                $visas_retard = $this->Visa->find('all', array("conditions" => $delegation_restante, "recursive" => -1));
-                                //boutons MàJ visas en retard
-                                $this->set('visas_retard', $visas_retard);
-                            }
-                            //Afficher bouton MàJ
-                            $this->set('majDeleg', $visa);
+                        $delegation_restante['Visa.numero_traitement <'] = $traitement['Traitement']['numero_traitement'];
+                    }else{ // pour voir bouton actualiser sur derniere etape de délégation
+                        $delegation_restante['Visa.numero_traitement <='] = $traitement['Traitement']['numero_traitement'];
+                    }
+                    $visas_retard=array();
+                    if (!$this->Visa->hasAny($jump))
+                        $visas_retard = $this->Visa->find('all', array("conditions" => $delegation_restante, "recursive" => -1));
+            
+                    //boutons MàJ visas en retard
+                    $this->set('visas_retard', $visas_retard);
+                }
+                //Afficher bouton MàJ
+                $this->set('majDeleg', $visa);
             }
             else {
                 if ($valid=='1') {
@@ -2521,22 +2537,25 @@ class DeliberationsController extends AppController {
     * Appelée depuis la vue deliberations/tous_les_projets
     */
     function attribuerSeance () {
-        $nbSeancesDeliberantes = 0;
-        $this->Seance->Behaviors->attach('Containable');
-
-        foreach ($this->data['Deliberation']['seance_id'] as $key => $seance_id) {
-            $seance =$this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
-                                                        'fields'     => array('Seance.id', 'Seance.type_id'),
-                                                        'contain'    => array('Typeseance.action')));            
-            if ($seance['Typeseance']['action'] == 0 )
-                $nbSeancesDeliberantes++;
-        }
-        if ( $nbSeancesDeliberantes> 1) {
-            $this->Session->setFlash('Une seule séance délibérante par projet', 'growl', array('type'=>'erreur'));
-        }
-        else { 
-            $this->Seance->reOrdonne($this->data['Deliberation']['id'], $this->data['Deliberation']['seance_id']);
-            $this->Session->setFlash('Séance enregistrée', 'growl');
+        if (!empty($this->data['Deliberation']['seance_id'])){
+            $nbSeancesDeliberantes = 0;
+            $this->Seance->Behaviors->attach('Containable');
+            foreach ($this->data['Deliberation']['seance_id'] as $key => $seance_id) {
+                $seance =$this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
+                                                            'fields'     => array('Seance.id', 'Seance.type_id'),
+                                                            'contain'    => array('Typeseance.action')));            
+                if ($seance['Typeseance']['action'] == 0 )
+                    $nbSeancesDeliberantes++;
+            }
+            if ( $nbSeancesDeliberantes> 1) {
+                $this->Session->setFlash('Une seule séance délibérante par projet', 'growl', array('type'=>'erreur'));
+            }
+            else { 
+                $this->Seance->reOrdonne($this->data['Deliberation']['id'], $this->data['Deliberation']['seance_id']);
+                $this->Session->setFlash('Séance enregistrée', 'growl');
+            }
+        }else{
+                $this->Session->setFlash('Vous devez selectionner une séance', 'growl', array('type'=>'erreur'));
         }
         $this->redirect('/deliberations/tousLesProjetsSansSeance');
     }
@@ -3029,7 +3048,6 @@ class DeliberationsController extends AppController {
                     }
                     $delib = $this->Deliberation->find('first', array('conditions'=>array('Deliberation.id' => $delib_id)));
                     $soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
-                    $nomfichierpdf = "D_$id.pdf";
                     $objetDossier =   $this->Parafwebservice->handleObject($delib['Deliberation']['objet']);
                     $annexes = array();
                     $tmp1=0;
@@ -3043,7 +3061,6 @@ class DeliberationsController extends AppController {
                         }
                     }
                     $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($type_id, $delib['Deliberation']['etat']);
-                    //  $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport.pdf/1/false");
                     $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport/1/false");
                     
                     $content = file_get_contents(WEBROOT_PATH."/files/generee/fd/null/$delib_id/rapport.pdf");
@@ -3235,8 +3252,8 @@ class DeliberationsController extends AppController {
             $insertion = array(
                 '0' => array(
                     'Etape' => array(
-                        'etape_nom'=>'Aller à une étape suivante',
-                        'etape_type'=>1
+                        'etape_nom' => 'Aller à une étape suivante',
+                        'etape_type' => 1
                         ),
                     'Visa' => array(
                         '0'=>array(
@@ -3257,8 +3274,6 @@ class DeliberationsController extends AppController {
             $this->Session->setFlash("Le projet est maintenant à l'étape suivante ", 'growl');
             $this->redirect('/deliberations/tousLesProjetsValidation');
         }
-        
-        
     }
     
     function rebond($delib_id) {

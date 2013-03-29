@@ -30,7 +30,8 @@
 <?php endforeach; ?>
 </table>
 
-<ul class="actions">
+<?php $this->Html2->boutonAdd("Ajouter un type d'acte", "Ajouter"); ?>
+<!--<ul class="actions">
 	<li><?php echo $this->Html->link('Ajouter un type d\' acte', '/typeactes/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?></li>
-</ul>
+</ul>-->
 </div>

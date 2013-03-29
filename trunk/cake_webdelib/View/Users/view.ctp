@@ -73,15 +73,12 @@
 
 </dl>
 
-
-<br />
-<ul id="actions_fiche">
+<div class='btn-group' style='text-align: center;'>
 	<?php
-		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'escape' => false, 'title'=>'Annuler'), false) . '</li>';
-
+                $this->Html2->boutonRetour('index', 'float:none;');
 		if ($Droits->check($this->Session->read('user.User.id'), 'Users:edit'))
-			echo '<li>'.$this->Html->link(SHY,   '/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false).'</li>';
+                    $this->Html2->boutonModifierUrl('/users/edit/' . $user['User']['id'], 'Modifier', 'Modifier', 'float:none;', '');
 	?>
-</ul>
-
+</div>
+<div class="spacer"></div>
 </div>

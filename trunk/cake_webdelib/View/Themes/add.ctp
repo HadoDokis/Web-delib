@@ -9,10 +9,8 @@
 <div>
 	<?php echo $this->Form->input('Theme.parent_id', array('label'=>'Appartient &agrave; ', 'options'=>$themes, 'empty'=>true, 'escape'=>false))?>
 </div>
-<br/><br/><br/><br/>
 
 <div class="submit">
-	<?php echo $this->Form->submit('Ajouter', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-	<?php echo $this->Html->link('Annuler', '/themes/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+    <?php $this->Html2->boutonsAddCancel(); ?>
 </div>
 <?php echo $this->Form->end(); ?>

@@ -187,7 +187,7 @@
 <?php 
     if (!$endDiv)  {
         echo $this->Form->input('Seance.model_id', array('options' => $models, 'label' => 'Modèle')); 
-        echo $this->Form->submit('Générer'); 
+        echo $this->Form->button('<i class="icon-cogs"></i> Générer', array('type'=>'submit', 'class'=>'btn btn-primary')); 
     }    
 ?>
 </div>

@@ -5,6 +5,7 @@
 </div>
 
 <div>
-	<?php echo $this->Html->link('Ajouter un profil', '/profils/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?>
+    <?php $this->Html2->boutonAdd("Ajouter un profil", 'Ajouter');
+//	<?php echo $this->Html->link('Ajouter un profil', '/profils/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?>
 </div>
 

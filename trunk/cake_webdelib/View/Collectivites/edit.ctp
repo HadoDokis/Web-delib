@@ -20,9 +20,7 @@
 <div > 
  		<?php echo $this->Form->input('Collectivite.telephone', array('label'=>'Num téléphone'));?>
 </div>
-<br/><br/><br/><br/><br/>
 <div class="submit">
-	<?php echo $this->Form->submit('Modifier', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-	<?php echo $this->Html->link('Annuler', '/collectivites/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+    <?php $this->Html2->boutonsSaveCancel(); ?>
 </div>
 <?php echo $this->Form->end(); ?>

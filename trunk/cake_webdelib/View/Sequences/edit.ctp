@@ -29,9 +29,12 @@
 
 <br/><br/><br/><br/><br/>
 <div class="submit">
-	<?php if ($this->action=='edit') echo $this->Form->hidden('Sequence.id')?>
-	<?php echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-	<?php echo $this->Html->link('Annuler', '/sequences/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php 
+        if ($this->action=='edit') echo $this->Form->hidden('Sequence.id');
+        $this->Html2->boutonsSaveCancel(); 
+//	echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));
+//	echo $this->Html->link('Annuler', '/sequences/index', array('class'=>'link_annuler', 'name'=>'Annuler'));
+        ?>
 </div>
 
 <?php echo $this->Form->end(); ?>
