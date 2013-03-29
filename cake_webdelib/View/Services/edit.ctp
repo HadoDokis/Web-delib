@@ -18,8 +18,10 @@
 </div>
 <br/><br/><br/><br/><br/>
 <div class="submit">
-	<?php echo $this->Form->hidden('Service.id',array('label'=>'&nbsp;'))?>
-	<?php echo $this->Form->submit('Modifier', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-	<?php echo $this->Html->link('Annuler', '/services/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+	<?php echo $this->Form->hidden('Service.id',array('label'=>'&nbsp;'));
+        $this->Html2->boutonsSaveCancel(); 
+//	echo $this->Form->submit('Modifier', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));
+//	echo $this->Html->link('Annuler', '/services/index', array('class'=>'link_annuler', 'name'=>'Annuler'));
+        ?>
 </div>
 <?php $this->Form->end(); ?>

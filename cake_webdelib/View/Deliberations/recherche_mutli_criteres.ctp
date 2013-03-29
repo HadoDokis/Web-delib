@@ -84,10 +84,12 @@
     </tr>
 </table>
 <br />
-<?php  echo $this->Form->submit('Rechercher', array('div'=>false, 'class'=>'bt_add', 'name'=>'Rechercher')); ?>
+<?php
+echo $this->Form->button('<i class="icon-search"></i> Rechercher', array('type' => 'submit', 'div' => false, 'class'=>'btn btn-primary', 'name'=>'Rechercher')); 
+?>
 </div>
 <?php if ($afficheNote): ?>
-<p>* : le caract&egrave;re % permet d'affiner les recherches comme indiqu&eacute; ci-dessous :
+<p>* : le caractère % permet d'affiner les recherches comme indiqué ci-dessous :
 	<ul>
 		<li>Commence par : texte% (si on recherche une information qui commence par 'Département' on écrit comme critère de recherche : Département%)</li>
 		<li>Comprend : %texte% (si on recherche une information qui comprend 'avril' on écrit comme critère de recherche : %avril%)</li>

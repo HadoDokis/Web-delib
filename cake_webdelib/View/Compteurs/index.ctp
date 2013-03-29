@@ -28,8 +28,9 @@
 <?php endforeach; ?>
 </table>
 
-<ul class="actions">
+<?php $this->Html2->boutonAdd("Ajouter un compteur", "Ajouter un compteur"); ?>
+<!--<ul class="actions">
 	<li><?php echo $this->Html->link('Ajouter un compteur', '/compteurs/add/', array('class'=>'link_add', 'title'=>'Ajouter un compteur')); ?></li>
-</ul>
+</ul>-->
 
 </div>

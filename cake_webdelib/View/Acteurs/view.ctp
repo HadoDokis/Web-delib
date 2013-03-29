@@ -36,7 +36,7 @@
 		<dd>&nbsp;<?php echo $acteur['Acteur']['note']?></dd>
 	</div>
 	<div class="tiers">
-		<dt>Date de cr&eacute;ation</dt>
+		<dt>Date de création</dt>
 		<dd>&nbsp;<?php echo $acteur['Acteur']['created']?></dd>
 	</div>
 	<div class="tiers">
@@ -47,12 +47,19 @@
 
 </dl>
 
-<ul id="actions_fiche">
+
+<div class='btn-group' style='text-align: center;'>
 	<?php
-		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'escape' => false, 'title'=>'Annuler'), false) . '</li>';
-            if ($Droits->check($this->Session->read('user.User.id'), 'Acteurs:edit'))
-			echo '<li>'.$this->Html->link(SHY, '/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false).'</li>';
+        $this->Html2->boutonRetour('index', 'float:none;');
+		if ($Droits->check($this->Session->read('user.User.id'), 'Acteurs:edit'))
+                    $this->Html2->boutonModifierUrl('/acteurs/edit/' . $acteur['Acteur']['id'], 'Modifier', 'Modifier', 'float:none;', '');
+                
+//		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'escape' => false, 'title'=>'Annuler'), false) . '</li>';
+//            if ($Droits->check($this->Session->read('user.User.id'), 'Acteurs:edit'))
+//			echo '<li>'.$this->Html->link(SHY, '/acteurs/edit/' . $acteur['Acteur']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false).'</li>';
 	?>
-</ul>
+</div>
+
+<div class="spacer"></div>
 
 </div>

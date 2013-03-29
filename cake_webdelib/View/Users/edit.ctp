@@ -108,7 +108,6 @@ function onchangeCircuitDefault() {
                                                                                          'label'    => "Circuit par défaut", 
                                                                                          'options'  => array()));
 ?> 
-				<br /><br />
 			</div>
 			<div class="demi">
 				 <?php
@@ -156,11 +155,12 @@ function onchangeCircuitDefault() {
 </div>
 
 
-<br/>
-
 <div class="submit">
 	<?php if ($this->action=='edit') echo $this->Form->hidden('User.id');?>
-	<?php echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-	<?php echo $this->Html->link('Annuler', '/users/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+    
+    <?php $this->Html2->boutonsSaveCancel('', 'index', ''); ?>
+    
+	<?php // echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
+	<?php // echo $this->Html->link('Annuler', '/users/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
 <?php echo $this->Form->end(); ?>

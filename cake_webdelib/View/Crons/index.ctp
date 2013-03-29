@@ -104,7 +104,7 @@ echo $this->Html->tag('div', null, array('id' => 'run_crons', 'style' => 'text-a
 echo $this->Html->link('<i class="icon-cogs icon-large"></i> Exécuter toutes les tâches', array("action" => "runCrons"), array('class' => 'btn btn-primary', 'escape' => false, 'title' => 'Exécuter toutes les tâches planifiées maintenant'));
 
 echo $this->Html->tag('br');
-//echo $this->Html->link('<i class=" icon-plus-sign icon-large"></i> Nouvelle tâche', array("action" => "add"), array('class' => 'btn', 'escape' => false, 'title' => 'Créer une nouvelle tâche planifiée'));
+//echo $this->Html2->boutonAdd("Nouvelle tâche", "Créer une nouvelle tâche planifiée");
 echo $this->Html->tag('/div');
 //echo $this->element('indexPageNavigation');
 ?>

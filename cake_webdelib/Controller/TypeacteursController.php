@@ -2,7 +2,7 @@
 class TypeacteursController extends AppController
 {
 	var $name = 'Typeacteurs';
-
+        public $helpers = array('Html2');
 	// Gestion des droits : identiques aux droits des acteurs
 	var $commeDroit = array(
 		'add' => 'Typeacteurs:index',

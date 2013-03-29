@@ -22,6 +22,7 @@
     echo $this->Fck->load('Profil.content');
     echo '</div>';
     echo '<div class="spacer"></div>';
-    echo $this->Form->submit('Envoyer');
+//    echo $this->Form->submit('Envoyer');
+    $this->Html2->boutonSubmit("Envoyer");
     echo $this->Form->end();
 ?>

@@ -1,4 +1,4 @@
-<h2>Nouveau mod&egrave;le : </h2>
+<h2>Nouveau modèle : </h2>
 <?php echo $this->Html->script('fckeditor/fckeditor'); ?>
 <?php echo $this->Form->create('Model',array('url'=>'/models/add','type'=>'post')); ?>
 
@@ -6,10 +6,14 @@
    <?php echo $this->Form->input('Model.modele', array('label'=>'Libellé', 'size' => '50', 'empty'=>''));?>
 </div>
 
-<br/><br/><br/><br/>
+<br/>
 
 <div class="submit">
-	<?php echo $this->Form->submit('Ajouter', array('class'=>'bt_save_border', 'name'=>'Ajouter', 'div'=>false));?>
-	<?php echo $this->Html->link('Annuler', '/models/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+    <?php $this->Html2->boutonsAddCancel(); ?>
 </div>
 <?php echo $this->Form->end(); ?>
+<style>
+    label{
+        padding-top:6px;
+    }
+</style>

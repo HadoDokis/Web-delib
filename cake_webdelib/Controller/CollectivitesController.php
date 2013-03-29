@@ -8,7 +8,6 @@
  class CollectivitesController extends AppController {
 	var $uses = array( 'Collectivite', 'User');
 	var $components = array('Pastell');
-
 	// Gestion des droits
 	var $aucunDroit = array(
 		'synchronize',

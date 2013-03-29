@@ -5,5 +5,5 @@
 </div>
 
 <div>
-<?php echo $this->Html->link('Ajouter un Service', '/services/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?>
+<?php $this->Html2->boutonAdd("Ajouter un service", "Ajouter"); ?>
 </div>

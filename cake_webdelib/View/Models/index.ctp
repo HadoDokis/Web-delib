@@ -64,7 +64,9 @@
 </tr>
 <?php endforeach; ?>
 </table>
-    <ul class="actions">
+<!--    <ul class="actions">
 	<li><?php echo $this->Html->link('Ajouter', '/models/add/', array('class'=>'link_add', 'title'=>'Ajouter un modele')); ?></li>
-    </ul>
+    </ul>-->
+
+<?php $this->Html2->boutonAdd("Ajouter","Ajouter un modèle"); ?>
 </div>

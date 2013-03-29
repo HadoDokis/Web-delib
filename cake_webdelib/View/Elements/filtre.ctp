@@ -67,3 +67,11 @@ echo $this->Html->div('filtre');
 	echo '<div class="spacer"></div>';
 echo '</div>';
 ?>
+<style>
+select[multiple], select[size] {
+    width: 220px;
+}
+#filtreCriteres{
+    padding-left: 5px;
+}
+</style>

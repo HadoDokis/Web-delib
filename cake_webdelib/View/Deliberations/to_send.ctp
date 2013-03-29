@@ -10,9 +10,9 @@
 
 <?php if (isset($message))  echo ($message); 
   if ($this->action=='autreActesAEnvoyer')
-        echo ('<h2>T&eacute;l&eacute;transmission des actes</h2>');
+        echo ('<h2>Télétransmission des actes</h2>');
     elseif ($this->action == 'toSend')
-        echo ('<h2>T&eacute;l&eacute;transmission des d&eacute;lib&eacute;rations</h2>');
+        echo ('<h2>Télétransmission des délibérations</h2>');
 ?>
 <?php echo $this->Form->create('Deliberation',array('type'=>'file','url'=>'/deliberations/sendActe')); ?>
     La Classification enregistrée date du <?php echo $this->Html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
@@ -71,7 +71,7 @@
 	<br />
 
 	<div class="submit">
-		<?php echo $this->Form->submit('Envoyer',array('div'=>false));?>
+            <?php echo $this->Form->button('<i class="icon-cloud-upload"></i> Envoyer',array('div'=>false, 'type'=>'submit','class'=>'btn'));?>
 	</div>
 
 <?php echo $this->Form->end(); ?>

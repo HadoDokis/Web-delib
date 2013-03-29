@@ -54,8 +54,6 @@
 	<?php echo $this->Paginator->counter(array('format'=>'Page %page% sur %pages%')); ?>
 </div>
 
-<ul class="actions">
-	<li><?php echo $this->Html->link('Ajouter un acteur', '/acteurs/add/', array('class'=>'link_add', 'title'=>'Ajouter un acteur')); ?></li>
-</ul>
+<?php $this->Html2->boutonAdd("Ajouter un acteur","Ajouter un acteur"); ?>
 
 </div>

@@ -24,8 +24,9 @@
 <?php endforeach; ?>
 </table>
 
-<ul class="actions">
+<?php $this->Html2->boutonAdd("Ajouter une séquence","Ajouter une séquence"); ?>
+<!--<ul class="actions">
 	<li><?php echo $this->Html->link('Ajouter une séquence', '/sequences/add/', array('class'=>'link_add', 'title'=>'Ajouter une séquence')); ?></li>
-</ul>
+</ul>-->
 
 </div>

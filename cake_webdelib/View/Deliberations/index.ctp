@@ -35,12 +35,11 @@ function choixModele(o) {
 ?>
 	<table width="100%" cellspacing="0" cellpadding="0" caption="<?php echo $titreVue;?>" summary="<?php echo $titreVue;?>" >
 	<tr>
-		<th width='5%' align="right">
+		<th width='5%'>
                  <?php if (isset($traitement_lot) && ($traitement_lot ==true))
                            echo "<input type=\"checkbox\" onclick=\"$('td :checkbox').attr('checked', this.checked);\"/>";
-                 ?>
-                 &nbsp;Vue </th>
-		<th width='15%' align="left">synth&eacute;tique</th>
+                 ?><br/>Vue</th>
+		<th width='15%' align="left">synthétique</th>
 		<th width='46%'> &nbsp;</th>
 		<th width='18%' >&nbsp;</th>
 		<th width='250px'>Actions</th>
@@ -71,7 +70,7 @@ function choixModele(o) {
                            echo $deliberation['Service']['libelle']; 
                 ?></td>
 		<td><?php echo $deliberation['Deliberation']['objet'];?></td>
-		<td>S&eacute;ance(s) :<br />
+		<td>Séance(s) :<br />
 		<?php
 			if (in_array('attribuerSeance', $deliberation['Actions'])) {
 				echo $this->Form->create('Deliberation',array('url'=>'/deliberations/attribuerSeance','type'=>'post'));
@@ -82,7 +81,7 @@ function choixModele(o) {
                                                                 'empty'    => false,
                                                                 'multiple' => true));
 					echo $this->Form->hidden('Deliberation.id',array('value'=> $deliberation['Deliberation']['id']));
-					echo $this->Form->submit(' ', array('div'=>false, 'class'=>'bt_save', 'name'=>'sauvegarder'));
+					echo $this->Form->button("<i class='icon-save'></i> Sauvegarder", array('type'=>'submit', 'div'=>false, 'class'=>'btn','escape'=>false, 'name'=>'sauvegarder'));
 				echo $this->Form->end();
 			} else {
                             $listTypeseanceId = array();
@@ -289,4 +288,8 @@ function choixModele(o) {
     #actions_bottom {
         text-align: center;
     }
+    .checkbox input[type="checkbox"] {
+        float: none;
+    }
+    
 </style>

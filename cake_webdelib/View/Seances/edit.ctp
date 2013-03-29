@@ -106,18 +106,17 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 ?>
 </div>
 <?php endif; ?>
-<!--
-<ul class="actions">
-	<li><?php echo $this->Html->link('Supprimer','/seances/delete/' . $this->Html->value('Seance.id'), null, 'Etes-vous sur de vouloir supprimer la seance du "' . $this->Html->value('Seance.date').'" ?');?> 
-	
-	
-	<li><?php echo $this->Html->link('Annuler', '/seances/index')?></li>
-</ul>
--->
+
+<!--<div class="actions btn-group">
+    <?php echo $this->Html->link('<i class="icon-arrow-left"></i> Annuler', '/seances/index', array('escape'=>false, 'class'=>'btn'))?>
+    <?php echo $this->Html->link('<i class="icon-trash icon-large"></i> Supprimer','/seances/delete/' . $this->Html->value('Seance.id'), array('escape'=>false, 'class'=>'btn btn-danger'), 'Etes-vous sur de vouloir supprimer la seance du "' . $this->Html->value('Seance.date').'" ?');?> 
+</div>-->
+
 <div class="submit">
-	<?php echo $this->Form->hidden('Seance.id');?>
-	<?php echo $this->Form->submit('Enregistrer', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-	<?php echo $this->Html->link('Annuler', '/seances/listerFuturesSeances', array('class'=>'link_annuler', 'title'=>'Annuler'))?>
+<?php 
+    echo $this->Form->hidden('Seance.id'); 
+    $this->Html2->boutonsSaveCancel('', 'listerFuturesSeances' , 'Ajouter la séance');
+?>
 </div>
 
 <?php echo $this->Form->end(); ?>

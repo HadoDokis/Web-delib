@@ -14,7 +14,6 @@
 </div>
 <br/><br/><br/><br/>
 <div class="submit">
-	<?php echo $this->Form->submit('Ajouter', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-	<?php echo $this->Html->link('Annuler', '/services/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+    <?php $this->Html2->boutonsAddCancel(); ?>
 </div>
 <?php $this->Form->end(); ?>

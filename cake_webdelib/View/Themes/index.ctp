@@ -5,5 +5,5 @@
 </div>
 
 <div>
-<?php echo $this->Html->link('Ajouter un thème', '/themes/add', array('class'=>'link_add', 'title'=>'Ajouter')); ?>
+<?php $this->Html2->boutonAdd(); ?>
 </div>
