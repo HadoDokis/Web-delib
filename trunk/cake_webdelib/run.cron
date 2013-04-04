@@ -1,2 +1,2 @@
-#On lance runCrons toutes les minutes (runCrons n'execute que les taches cron en attente)
+#On lance les taches crons toutes les 5 minutes (n'execute que les taches cron en attente)
 */5 * * * * /var/www/webdelib/app/Console/cake -app /var/www/webdelib/app cron > /dev/null 2>&1
