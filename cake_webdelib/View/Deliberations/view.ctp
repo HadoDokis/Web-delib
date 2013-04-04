@@ -14,10 +14,9 @@ if ($majDeleg) {
             function afficheMAJ() {
                 $("div.nomcourante").parent().append('<?php
     echo $this->Html->tag('div', $this->Html->link(
-                    $this->Html->tag("i", "", array("class" => "icon-repeat")) . "&nbsp; MàJ état délégations", "/deliberations/majEtatParapheur/" . $this->data['Deliberation']['id'], array('escape' => false, "class" => "btn btn-inverse")), array('class' => 'majDeleg', 'title'=>'Mettre à jour le statut des étapes de délégations'));
+                    $this->Html->tag("i", "", array("class" => "icon-repeat")) . " Mise à jour", "/deliberations/majEtatParapheur/" . $this->data['Deliberation']['id'], array('escape' => false, "class" => "btn btn-inverse")), array('class' => 'majDeleg', 'title'=>'Mettre à jour le statut des étapes de délégations'));
     ?>')
             }
-            ;
             afficheMAJ();
     <?php
 }
