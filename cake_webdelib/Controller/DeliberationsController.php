@@ -217,7 +217,7 @@ class DeliberationsController extends AppController {
     }
     
     function majEtatParapheur($id=null){
-        $this->requestAction("/cakeflow/traitements/majTraitementsParapheur/".$id);
+        $this->requestAction("/cakeflow/traitements/majTraitementsParapheur/".$id."/true");
         $this->redirect("/deliberations/view/".$id);
     }
     

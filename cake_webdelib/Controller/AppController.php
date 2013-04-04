@@ -55,8 +55,14 @@ class AppController extends Controller {
 		$this->set('lienDeconnexion', true);
 		$this->set('session_service_id', $this->Session->read('user.User.service'));
 		$this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
+                
+                // ????
 		if (CRON_DISPATCHER) return true;
-                if ($this->action == 'runCrons' || $this->action == 'majTraitementsParapheur') return true;
+                // Exception pour le bon déroulement de cron
+                $action_accepted = array('runCrons', 'majTraitementsParapheur', 'traiterDelegationsPassees', 'generer');
+                
+                if (in_array($this->action, $action_accepted)) return true;
+                
 		if((substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login') &&
 				($this->action!='writeSession') &&
 				(substr(substr($_SERVER['REQUEST_URI'], strlen($this->base)), 0,  strlen('/cakeflow/traitements/traiter_mail')) != '/cakeflow/traitements/traiter_mail'))

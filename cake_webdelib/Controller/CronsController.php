@@ -239,6 +239,7 @@ class CronsController extends AppController {
      * fonction d'exécution de tous les crons actifs (appelée par le shell 'cron')
      */
     function runCrons() {
+        $this->log('Exécution des tâches crons..');
         $cron = $this->Cron;
         // initialisation de l'heure de prochaine exécution des tâches en erreur
         $now = date(self::FORMAT_DATE);
@@ -250,15 +251,17 @@ class CronsController extends AppController {
             'recursive' => -1,
             'fields' => array('id'),
             'conditions' => array(
-                'active' => true,
-                array('OR' => array(
-                        'next_execution_time' => NULL,
-                        'next_execution_time <=' => $now)),
-                array('OR' => array(
-                        'last_execution_status' => array($cron::EXECUTION_STATUS_SUCCES, $cron::EXECUTION_STATUS_WARNING),
-                        array(
-                            'last_execution_status' => $cron::EXECUTION_STATUS_FAILED,
-                            'last_execution_start_time <=' => $nextExecutionErrorTime)))),
+                'active' => true
+//                ,
+//                array('OR' => array(
+//                        'next_execution_time' => NULL,
+//                        'next_execution_time <=' => $now)),
+//                array('OR' => array(
+//                        'last_execution_status' => array($cron::EXECUTION_STATUS_SUCCES, $cron::EXECUTION_STATUS_WARNING),
+//                        array(
+//                            'last_execution_status' => $cron::EXECUTION_STATUS_FAILED,
+//                            'last_execution_start_time <=' => $nextExecutionErrorTime)))
+                ),
             'order' => array('next_execution_time')));
 
         // excécutions
@@ -277,11 +280,10 @@ class CronsController extends AppController {
      */
     function _runCronId($id) {
         // initialisations
-
         require_once(APP . 'Lib' . DS . 'tools.php');
         $lastExecutionStartTime = null;
         $appliUrl = FULL_BASE_URL . $this->webroot;
-
+        $this->log("Serveur cible : ".$appliUrl);
         // lecture du cron à exécuter
         $cron = $this->Cron->find('first', array(
             'recursive' => -1,
@@ -290,7 +292,7 @@ class CronsController extends AppController {
         // Sortie si tâche non trouvée
         if (empty($cron))
             return;
-
+        
         // initialisation de l'url
         $url = $appliUrl . $cron['Cron']['plugin'] . '/' . $cron['Cron']['controller'] . '/' . $cron['Cron']['action'];
         if (!empty($cron['Cron']['params'])) {
@@ -299,25 +301,20 @@ class CronsController extends AppController {
                 $url .= '/' . $param;
         }
         for ($iTentative = 1; $iTentative <= Cron::TENTATIVES_NB; $iTentative++) {
-            //TODO : SE RENSEIGNER POURQUOI FLORENT UTILISAIT CURL AU LIEU DE REQUESTACTION!!
             // initialisation de la ressource curl
-//            $ch = curl_init();
-//            curl_setopt($ch, CURLOPT_URL, $url);
-//            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//            curl_setopt($ch, CURLOPT_HEADER, 0);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
             // execution de la requete
             if (empty($lastExecutionStartTime))
                 $lastExecutionStartTime = date(self::FORMAT_DATE);
-//            $output = curl_exec($ch);
-//            
-//            if (AppTools::url_exists($url)) {
-            $output = $this->requestAction($url);
-//            } else {
-//                $output = Cron::MESSAGE_FIN_EXEC_ERROR . "Erreur lors de la requête à l'url : " . $url;
-//            }
-
+            $output = curl_exec($ch);
+            
+            $this->log("cron : ".$id." returned :".$output);
+            
             $lastExecutionEndTime = date(self::FORMAT_DATE);
-//            curl_close($ch);
+            curl_close($ch);
             // initialisation du rapport d'exécution
             $rappExecution = str_replace(array(Cron::MESSAGE_FIN_EXEC_SUCCES, Cron::MESSAGE_FIN_EXEC_WARNING, Cron::MESSAGE_FIN_EXEC_ERROR), '', $output);
 
@@ -346,20 +343,38 @@ class CronsController extends AppController {
     }
 
     function test($id=null) {
-        $plugins = $this->Applist->get('plugins');
-        debug($plugins);
-        
-        $pluginControllers = $this->Applist->getPluginControllers($plugins[0]);
-        debug($pluginControllers);
-        
-        $pluginControllerMethods = $this->Applist->getControllerMethods($pluginControllers[2], $plugins[0]);
-        debug($pluginControllerMethods);
-
-        $controllers = $this->Applist->get('controller');
-        debug($controllers);
-        
-        $methods = $this->Applist->getControllerMethods($controllers[0]);
-        debug($methods);
+        // initialisation de la ressource curl
+//        $c = curl_init();
+//        // indique à curl quelle url on souhaite télécharger
+//        curl_setopt($c, CURLOPT_URL, "http://".$_SERVER['HTTP_HOST'].$this->base."/models/generer/$id/null/1/0/1/documents/0/false");
+//        // indique à curl de ne pas retourner les headers http de la réponse dans la chaine de retour
+//        curl_setopt($c, CURLOPT_HEADER, false);
+//        // Display communication with server
+//        curl_setopt($c, CURLOPT_VERBOSE, true); 
+//        // indique à curl de nous retourner le contenu de la requête plutôt que de l'afficher
+//        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+//        // execution de la requete
+//        $output = curl_exec($c);
+////        if ($output === false) {
+////            trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
+////        } else {
+//            debug($output);
+////        }
+//        curl_close($c);
+//        $plugins = $this->Applist->get('plugins');
+//        debug($plugins);
+//        
+//        $pluginControllers = $this->Applist->getPluginControllers($plugins[0]);
+//        debug($pluginControllers);
+//        
+//        $pluginControllerMethods = $this->Applist->getControllerMethods($pluginControllers[2], $plugins[0]);
+//        debug($pluginControllerMethods);
+//
+//        $controllers = $this->Applist->get('controller');
+//        debug($controllers);
+//        
+//        $methods = $this->Applist->getControllerMethods($controllers[0]);
+//        debug($methods);
     }
 
 }
