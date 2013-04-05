@@ -9,6 +9,6 @@
 <br/><br/><br/><br/>
 
 <div class="submit">
-    <?php $this->Html2->boutonsAddCancel(); ?>
+    <?php $this->Html2->boutonsAddCancel("",'/deliberations/traiter/' . $delib_id); ?>
 </div>
 <?php echo $this->Form->end(); ?>
