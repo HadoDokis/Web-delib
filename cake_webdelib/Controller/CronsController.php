@@ -6,11 +6,16 @@ class CronsController extends AppController {
     var $helpers = array('DurationPicker');
     var $components = array('VueDetaillee', 'Applist');
     // Gestion des droits
-    var $commeDroit = array(
-        'view' => 'Crons:index',
-        'edit' => 'Crons:index',
-        'executer' => 'Crons:index');
-
+    var $libelleControleurDroit = 'Tâches planifiées';
+    var $commeDroit = array('view' => 'Crons:index');
+    var $aucunDroit = array('delete','edit','add');
+    var $libellesActionsDroit = array(
+        'view' => 'Afficher les informations détaillées',
+        'planifier' => 'Planifier une tâche',
+        'executer' => 'Exécuter une tâche manuellement',
+        'runCrons' => 'Exécuter les tâches simultanément'
+    );
+    
     const FORMAT_DATE = 'Y-m-d H:i:s';
 
     function beforeFilter() {
@@ -340,41 +345,6 @@ class CronsController extends AppController {
         $cron['Cron']['last_execution_end_time'] = $lastExecutionEndTime;
         $cron['Cron']['last_execution_report'] = $rappExecution;
         $this->Cron->save($cron);
-    }
-
-    function test($id=null) {
-        // initialisation de la ressource curl
-//        $c = curl_init();
-//        // indique à curl quelle url on souhaite télécharger
-//        curl_setopt($c, CURLOPT_URL, "http://".$_SERVER['HTTP_HOST'].$this->base."/models/generer/$id/null/1/0/1/documents/0/false");
-//        // indique à curl de ne pas retourner les headers http de la réponse dans la chaine de retour
-//        curl_setopt($c, CURLOPT_HEADER, false);
-//        // Display communication with server
-//        curl_setopt($c, CURLOPT_VERBOSE, true); 
-//        // indique à curl de nous retourner le contenu de la requête plutôt que de l'afficher
-//        curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-//        // execution de la requete
-//        $output = curl_exec($c);
-////        if ($output === false) {
-////            trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
-////        } else {
-//            debug($output);
-////        }
-//        curl_close($c);
-//        $plugins = $this->Applist->get('plugins');
-//        debug($plugins);
-//        
-//        $pluginControllers = $this->Applist->getPluginControllers($plugins[0]);
-//        debug($pluginControllers);
-//        
-//        $pluginControllerMethods = $this->Applist->getControllerMethods($pluginControllers[2], $plugins[0]);
-//        debug($pluginControllerMethods);
-//
-//        $controllers = $this->Applist->get('controller');
-//        debug($controllers);
-//        
-//        $methods = $this->Applist->getControllerMethods($controllers[0]);
-//        debug($methods);
     }
 
 }
