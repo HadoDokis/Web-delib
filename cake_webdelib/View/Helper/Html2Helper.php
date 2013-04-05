@@ -238,21 +238,21 @@ class Html2Helper extends HtmlHelper {
             echo $this->tag('/div', null);
     }
 
-    function boutonRetour($url = "javascript:history.go(-1)", $style = '', $center = false) {
+    function boutonRetour($action = "index", $style = '', $center = false, $value="Retour") {
         if ($center)
             echo $this->tag('div', null, array('style' => 'text-align:center;'));
 
-        echo $this->link("<i class='icon-arrow-left'></i> Retour", $url, array('class' => "btn", 'escape' => false, 'title' => 'Revenir à la page précédente', 'style' => $style));
+        echo $this->link("<i class='icon-arrow-left'></i> $value", array('action'=>$action), array('class' => "btn", 'escape' => false, 'title' => 'Revenir à la page précédente', 'style' => $style));
 
         if ($center)
             echo $this->tag('/div', null);
     }
     
-    function boutonRetourUrl($url = "javascript:history.go(-1)", $style = '', $center = false) {
+    function boutonRetourUrl($url = "javascript:history.go(-1)", $style = '', $center = false, $value="Retour") {
         if ($center)
             echo $this->tag('div', null, array('style' => 'text-align:center;'));
 
-        echo $this->link("<i class='icon-arrow-left'></i> Retour", $url, array('class' => "btn", 'escape' => false, 'title' => 'Revenir à la page précédente', 'style' => $style));
+        echo $this->link("<i class='icon-arrow-left'></i> $value", $url, array('class' => "btn", 'escape' => false, 'title' => 'Revenir à la page précédente', 'style' => $style));
 
         if ($center)
             echo $this->tag('/div', null);
