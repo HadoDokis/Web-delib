@@ -69,6 +69,15 @@ class CommentairesController extends AppController {
 			$this->redirect('/deliberations/traiter/'.$delib_id);
 		}
 	}
+        
+        function RetourTraiter($delib_id=null) {
+            $this->Session->setFlash('Invalide id pour le commentaire.');
+            if (!$delib_id) {
+                    $this->redirect('/');
+            }else {
+                    $this->redirect('/deliberations/traiter/'.$this->request->data['']);
+            }
+        }
 
 }
 ?>
