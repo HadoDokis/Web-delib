@@ -1699,14 +1699,17 @@ class DeliberationsController extends AppController {
                     'classif3'      => $class3,
                     'classif4'      => $class4,
                     'classif5'      => $class5,
-                    'number'        => $delib['Deliberation']['num_delib'],
+                    //'number'        => $delib['Deliberation']['num_delib'],
+                    'number'        => time(),
                     'decision_date' => $decision_date,
                     'subject'       => $delib['Deliberation']['objet_delib'],
                     'acte_pdf_file' => "@$file",
                     );
+/*
                 if ($sigFileName != '') {
                     $acte['acte_pdf_file_sign'] = "@$sigFileName";
                 }
+*/
                 
                 $annexes_id =  $this->Annex->getAnnexesIdFromDelibId($id, 1);
                 $nb_pj=0;
@@ -2280,23 +2283,15 @@ class DeliberationsController extends AppController {
         $this->Filtre->initialisation($this->name.':'.$this->action, $this->data);
         $this->Deliberation->Behaviors->attach('Containable');
         $conditions = $this->_handleConditions($this->Filtre->conditions());
-        //$conditions =  $this->Filtre->conditions();
-        // lecture en base
-        foreach ($this->Session->read('user.Service') as $service_id => $service)
-            $services_id[] = $service_id;
-        $conditions['Deliberation.service_id'] = $services_id;
 
-        foreach ($this->Session->read('user.Service') as $service_id => $service)
-            $services_id[] = $service_id;
-        
-        $aService_id=array();
-        foreach ($this->Session->read('user.Service') as $service_id => $service)
-        {
-            foreach($this->User->Service->doListId($service_id) as $aService)
-                $aService_id[]=$aService;
+        if (!isset($conditions['Deliberation.service_id'])) {
+            $aService_id=array();
+            foreach ($this->Session->read('user.Service') as $service_id => $service) {
+                foreach($this->User->Service->doListId($service_id) as $aService)
+                    $aService_id[]=$aService;
+            }
+            $conditions['Deliberation.service_id'] = $aService_id;
         }
-
-        $conditions['Deliberation.service_id'] = $aService_id;
         $conditions['Deliberation.etat !=']    = -1;
         $conditions['Deliberation.etat <']     = 3;
         $conditions['Deliberation.parent_id'] =  NULL;
