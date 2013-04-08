@@ -328,11 +328,12 @@ td.ordre a {
 	text-decoration: none;
 }
 
-a.link_tablet {
+a.link_tablet, a.link_tablet:hover {
         background-image: url(../img/icons/tablet.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 10px 22px;
+        text-decoration: none;
 }
 
 
@@ -355,11 +356,12 @@ a.link_liste {
 	background-position: top;
 	padding: 0 0 10px 22px;
 }
-a.link_clore_seance {
+a.link_clore_seance, a.link_clore_seance:hover {
         background-image: url(../img/icons/close_seance.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
 a.link_delib {
@@ -369,63 +371,74 @@ a.link_delib {
 	padding: 3px 0 10px 22px;
 }
 
-a.link_pvcomplet {
+a.link_pvcomplet, a.link_pvcomplet:hover {
 	background-image: url(../img/icons/pvcomplet.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
-a.link_pvsommaire {
+a.link_pvsommaire, a.link_pvsommaire:hover {
 	background-image: url(../img/icons/message.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
-a.link_signer {
+a.link_signer, a.link_signer:hover {
         background-image: url(../img/icons/signer.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
-a.link_sendtoged {
+a.link_sendtoged, a.link_sendtoged:hover {
         background-image: url(../img/icons/archiver.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
+        text-decoration: none;
 }
-a.link_tdt {
+
+a.link_tdt, a.link_tdt:hover {
         background-image: url(../img/icons/tdt.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
+        text-decoration: none;
 }
-a.link_tdt_transmit {
+
+a.link_tdt_transmit, a.link_tdt_transmit:hover {
         background-image: url(../img/icons/tdt_transmit.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
-a.link_pdf {
+a.link_pdf ,a.link_pdf:hover {
 	background-image: url(../img/icons/acroread.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
-a.link_ordre_jour {
+a.link_ordre_jour, a.link_ordre_jour:hover {
 	background-image: url(../img/icons/ordre_jour.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
-a.link_ordre_jour_unique {
+a.link_ordre_jour_unique, a.link_ordre_jour_unique:hover {
         background-image: url(../img/icons/ordre_jour2.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
 a.link_lister_presents {
@@ -435,51 +448,58 @@ a.link_lister_presents {
 	padding: 0 0 10px 22px;
 }
 
-a.link_voter {
+a.link_voter, a.link_voter:hover {
 	background-image: url(../img/icons/vote.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
-a.link_classer_odj {
+a.link_classer_odj, a.link_classer_odj:hover {
         background-image: url(../img/icons/odj.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
+        text-decoration: none;
 }
-a.link_debat {
+a.link_debat, a.link_debat:hover {
 	background-image: url(../img/icons/saisir.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
-a.link_commentaire_seance {
+a.link_commentaire_seance, a.link_commentaire_seance:hover {
 	background-image: url(../img/icons/paper.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
-a.link_secretaire {
+a.link_secretaire, a.link_secretaire:hover {
 	background-image: url(../img/icons/secretaire.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
-a.link_voir {
+a.link_voir, a.link_voir:hover {
 	background-image: url(../img/icons/find.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0px 0px 32px 32px;
+        text-decoration: none;
 }
 
-a.link_modifier {
+a.link_modifier, a.link_modifier:hover {
 	background-image: url(../img/icons/klpq.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
 a.link_modifier_back {
@@ -496,25 +516,28 @@ a.link_modifier_left {
 	padding: 0 0 10px 22px;
 }
 
-a.link_supprimer {
+a.link_supprimer, a.link_supprimer:hover {
 	background-image: url(../img/icons/edittrash.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 38px 38px;
+        text-decoration: none;
 }
 
-a.link_supprimer_back {
+a.link_supprimer_back, a.link_supprimer_back:hover {
 	background-image: url(../img/icons/edittrash-back.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 38px 38px;
+        text-decoration: none;
 }
 
-a.link_circuit {
+a.link_circuit, a.link_circuit:hover {
 	background-image: url(../img/icons/reload.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 38px 38px;
+        text-decoration: none;
 }
 
 a.link_projet {
@@ -545,18 +568,20 @@ a.link_add {
 	padding: 0 0 10px 22px;
 }
 
-a.link_traiter {
+a.link_traiter, a.link_traiter:hover {
 	background-image: url(../img/icons/traiter.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
-a.link_validerenurgence {
+a.link_validerenurgence, a.link_validerenurgence:hover {
 /*      background-image: url(../img/icons/valider.png); */
         background-image: url(../img/icons/apply.png); 
         background-repeat: no-repeat;
         background-position: top left;
         padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 a.link_addUsers {
 	background-image: url(../img/icons/identity.png);
@@ -565,17 +590,19 @@ a.link_addUsers {
 	padding: 0 0 10px 22px;
 }
 
-a.link_convocation {
+a.link_convocation, a.link_convocation:hover {
 	background-image: url(../img/icons/mail.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
-a.link_convocation_unique {
+a.link_convocation_unique, a.link_convocation_unique:hover {
         background-image: url(../img/icons/mail2.png);
         background-repeat: no-repeat;
         background-position: top left;
         padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
 a.link_convocation_anonyme {
@@ -585,11 +612,12 @@ a.link_convocation_anonyme {
 	padding: 0 0 10px 22px;
 }
 
-a.link_jump {
+a.link_jump, a.link_jump:hover {
         background-image: url(../img/icons/jump.png);
         background-repeat: no-repeat;
         background-position: top left;
         padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
 a.link_monter {
@@ -693,18 +721,22 @@ a.link_annexe {
 	padding: 4px 4px 4px 25px;
 }
 
-a.link_donnerAvis {
+a.link_donnerAvis, a.link_donnerAvis:hover {
 	background-image: url(../img/icons/apply.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
-a.link_actes {
+
+a.link_actes, a.link_actes:hover {
         background-image: url(../img/icons/actes.png);
         background-repeat: no-repeat;
         background-position: top left;
         padding: 0 0 10px 22px;
+        text-decoration: none;
 }
+
 a.link_valider_avec_border {
 	color: black;
 	text-decoration: none;
@@ -786,7 +818,7 @@ a.link_modifier_avec_border {
 	background-image: url(../img/icons/klpq.png);
 	background-repeat: no-repeat;
 	background-position: top left;
-	padding: 4px 4px 4px 25px;
+	padding: 4px 4px 14px 36px;
 }
 
 a.link_rebond_avec_border {
