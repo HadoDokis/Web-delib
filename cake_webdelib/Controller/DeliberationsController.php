@@ -2284,6 +2284,10 @@ class DeliberationsController extends AppController {
         // lecture en base
         foreach ($this->Session->read('user.Service') as $service_id => $service)
             $services_id[] = $service_id;
+        $conditions['Deliberation.service_id'] = $services_id;
+
+        foreach ($this->Session->read('user.Service') as $service_id => $service)
+            $services_id[] = $service_id;
         
         $aService_id=array();
         foreach ($this->Session->read('user.Service') as $service_id => $service)
