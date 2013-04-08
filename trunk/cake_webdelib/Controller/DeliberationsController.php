@@ -404,18 +404,18 @@ class DeliberationsController extends AppController {
     }
     
     function download($id=null, $file){
+        
+        $this->autoRender = false;
+        
         $fileType = $file.'_type';
         $fileSize = $file.'_size';
         $fileName = $file.'_name';
         $delib = $this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $id),
                                                           'fields'     => array($fileType, $fileSize,  $fileName, $file), 
                                                           'recursive'  => -1));
-        
-        header('Content-type: '.$delib['Deliberation'][$fileType]);
-        header('Content-Length: '.$delib['Deliberation'][$fileSize]);
-        header('Content-Disposition: attachment; filename="'.$delib['Deliberation'][$fileName].'"');
-        echo $delib['Deliberation'][$file];
-        exit();
+        $this->response->type($delib['Deliberation'][$fileType]);
+        $this->response->download($delib['Deliberation'][$fileName]);
+        $this->response->body($delib['Deliberation'][$file]);
     }
     
     
@@ -2292,6 +2292,7 @@ class DeliberationsController extends AppController {
             }
             $conditions['Deliberation.service_id'] = $aService_id;
         }
+        
         $conditions['Deliberation.etat !=']    = -1;
         $conditions['Deliberation.etat <']     = 3;
         $conditions['Deliberation.parent_id'] =  NULL;
