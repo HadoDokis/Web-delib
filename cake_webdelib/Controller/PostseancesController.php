@@ -29,6 +29,10 @@ class PostseancesController extends AppController {
 		$this->set('format', $format);
 
 		$this->set ('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+                
+                $actions=array();
+                if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToGed"))
+                    array_push($actions, 'ged');
 
 		$this->Seance->Behaviors->attach('Containable');
 		$seances = $this->Seance->find('all', array('conditions'=> array('Seance.traitee'=> 1),
@@ -40,9 +44,12 @@ class PostseancesController extends AppController {
 									  'Typeseance.modelpvsommaire_id',
 									  'Typeseance.modelpvdetaille_id')));
 
-		for ($i=0; $i<count($seances); $i++)
+		for ($i=0; $i<count($seances); $i++){
 			$seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
-
+                        $seances[$i]['Seance']['Actions']=$actions;
+                        
+                }
+                
 		$this->set('seances', $seances);
 	}
 
