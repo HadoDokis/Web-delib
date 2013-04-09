@@ -1353,12 +1353,15 @@ class SeancesController extends AppController {
        }
             //AJOUT SEB
        $j=0;
+       $points = array('.', '..');
        if (is_dir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {
            if ($dh = opendir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {
                 while (($file = readdir($dh)) !== false) {
-                    $annex_filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/".$file;
-                    $data['projet_'.$i.'_'.$j.'_annexe']  = "@$annex_filename";
-                 $j++;
+                    if (!in_array($file,   $points)) {
+                        $annex_filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/".$file;
+                        $data['projet_'.$i.'_'.$j.'_annexe']  = "@$annex_filename";
+                        $j++;
+                    }
                 }
                 closedir($dh);
             }

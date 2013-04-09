@@ -13,7 +13,8 @@ class S2lowComponent extends Component {
             curl_setopt($ch, CURLOPT_POST, TRUE);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $acte );
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+            //curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+            curl_setopt($ch, CURLOPT_CAINFO, Configure::read('WEBDELIB_PATH').'Config/cert_s2low/bundle.pem');
             curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
             curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
             curl_setopt($ch, CURLOPT_SSLKEY,  Configure::read('SSLKEY'));
@@ -37,7 +38,8 @@ class S2lowComponent extends Component {
             if (Configure::read('USE_PROXY'))
                 curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+        //    curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+            curl_setopt($ch, CURLOPT_CAINFO, Configure::read('WEBDELIB_PATH').'Config/cert_s2low/bundle.pem');
             curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
             curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
             curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));

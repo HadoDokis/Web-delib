@@ -44,6 +44,7 @@ class ActeursController extends AppController
             $this->paginate = array('Acteur' => array(
                                     'conditions' => array('Acteur.actif' => 1),
                                     'limit' => 20,
+                                    'conditions' => array ('Acteur.actif'=> 1),
                                     'contain' => array( 'Service', 'Suppleant', 'Typeacteur'),
                                     'order' => array( 'Acteur.position' => 'asc')));
 
