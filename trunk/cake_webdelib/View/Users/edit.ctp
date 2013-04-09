@@ -19,8 +19,8 @@ function onchangeCircuitDefault() {
 <?php echo $this->element('onglets', array('listeOnglets' => array(
 	'Informations principales',
 	'Droits', 
-        'Types d\'acte',
-        'Configuration vue de synthèse'))); ?>
+        'Types d\'acte' ))); ?>
+
 
 <?php
 	if($this->Html->value('User.id')) {
@@ -149,9 +149,7 @@ function onchangeCircuitDefault() {
 </div>
 
 <div id='tab4' style="display: none;">
-<?php
-     echo $this->element('configuration_synthese');
-?>
+    <?php // echo $this->element('configuration_synthese'); ?>
 </div>
 
 
