@@ -40,6 +40,7 @@ function convertirFichier($fileName, $format) {
 		break;
 	    case 'CLOUDOOO' : 
                 require_once 'XML/RPC.php';
+                Configure::write('debug', 0);
 		$content =  base64_encode(file_get_contents($fileName));
 		$fileinfo =  pathinfo($fileName);
                 if (!isset($fileinfo['extension']) || $fileinfo['extension'] == 'pdf') {

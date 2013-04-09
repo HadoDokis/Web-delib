@@ -518,11 +518,11 @@ class Deliberation extends AppModel {
 		$oMainPart->addElement(new GDO_FieldType('libelle_projet', ($delib['Deliberation']['objet']),      'lines'));
 		$oMainPart->addElement(new GDO_FieldType('objet_delib',    ($delib['Deliberation']['objet_delib']), 'lines'));
 		$oMainPart->addElement(new GDO_FieldType('libelle_delib',  ($delib['Deliberation']['objet_delib']), 'lines'));
-
 		$oMainPart->addElement(new GDO_FieldType('identifiant_projet',          $delib['Deliberation']['id'],       'text'));
 		$oMainPart->addElement(new GDO_FieldType('etat_projet',                 $delib['Deliberation']['etat'],       'text'));
 		$oMainPart->addElement(new GDO_FieldType('numero_deliberation',         $delib['Deliberation']['num_delib'],'text'));
 		$oMainPart->addElement(new GDO_FieldType('classification_deliberation', $delib['Deliberation']['num_pref'], 'text'));
+                $oMainPart->addElement(new GDO_FieldType("date_envoi_signature", $this->Date->frDate($Deliberation['Deliberation']['date_envoi_signature']), 'date'));
 
 		$this->Service->makeBalise($oMainPart, $delib['Deliberation']['service_id']);
 		// Informations sur la nature
