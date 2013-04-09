@@ -102,6 +102,7 @@ class ConnecteursController extends AppController
                     file_put_contents($path_dir_s2low.'key.pem', $certs['pkey']);
                     file_put_contents($path_dir_s2low.'client.pem', $certs['cert']);
                     file_put_contents($path_dir_s2low.'ac.pem', $certs['extracerts'][0]);
+                // a tester : file_put_contents($path_dir_s2low.'bundle.pem', $certs['extracerts'][1]);
                 }
                 break;
             case 'iparapheur' : 
