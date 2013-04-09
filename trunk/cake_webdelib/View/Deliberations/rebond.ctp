@@ -15,16 +15,17 @@
         echo $this->Html->div('profil', 'Note : pour les étapes collaboratives (ET), l\'aller-retour est obligatoire.');
     } else {
         echo ('<div style="width: 200px">');
-        echo $this->Form->radio('option', $options,$attributes);
+        echo $this->Form->radio('option', $options, $attributes);
         echo ('</div>');
     }
 ?>
 <br/> <br/> <br/> <br />
 <?php
-        echo '<div class="submit">';
-                echo $this->Form->submit('Valider', array('div'=>false, 'class'=>'bt_add', 'name'=>'Valider'));
-                echo $this->Html->link('Annuler', array('action'=>'traiter', $delib_id), array('class'=>'link_annuler', 'name'=>'Annuler'));
+        echo '<div class="submit btn-group">';
+        echo $this->Html->link('<i class=" icon-circle-arrow-left"></i> Annuler', array('action' => 'traiter', $delib_id), array('class' => 'btn', 'name' => 'Annuler', 'escape' => false));
+        echo $this->Form->button('<i class="icon-ok-sign"></i> Valider', array('div' => false, 'class' => 'btn btn-primary', 'name' => 'Valider', 'type' => 'submit'));
         echo '</div>';
+        
     echo $this->Form->end();
 ?>
 
