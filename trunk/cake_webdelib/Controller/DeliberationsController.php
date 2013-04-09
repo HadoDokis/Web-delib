@@ -3041,8 +3041,9 @@ class DeliberationsController extends AppController {
                     $seance_id = $this->Deliberation->getSeanceDeliberanteId($delib_id);
                     $type_id = $this->Seance->getType($seance_id);
 
+                    $this->Deliberation->id =   $delib_id ;
+                    $this->Deliberation->saveField('date_envoi_signature', date("Y-m-d H:i:s", strtotime("now")));
                     if ($this->data['Deliberation']['circuit_id'] == -1) {
-                        $this->Deliberation->id =   $delib_id ;
                         $this->Deliberation->saveField('signee', true);
                         continue;
                     }
