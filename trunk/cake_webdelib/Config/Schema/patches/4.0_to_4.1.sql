@@ -34,13 +34,13 @@ ALTER TABLE historiques ALTER COLUMN commentaire TYPE TEXT;
 
 --Crons
 CREATE TABLE crons (
-    id serial DEFAULT nextval('crons_id_seq'::regclass)  NOT NULL SERIAL, 
+    id SERIAL NOT NULL, 
     nom varchar(255) NOT NULL, 
     description varchar(255) DEFAULT NULL::character varying , 
     plugin varchar(255) DEFAULT '', 
     controller varchar(255) NOT NULL, 
     "action" varchar(255) NOT NULL, 
-    has_params bool(1) DEFAULT false , 
+    has_params boolean, 
     params varchar(255) DEFAULT NULL::character varying , 
     next_execution_time timestamp, 
     execution_duration varchar(255), 
@@ -48,8 +48,8 @@ CREATE TABLE crons (
     last_execution_end_time timestamp, 
     last_execution_report text, 
     last_execution_status varchar(255), 
-    active bool(1) DEFAULT true , 
-    created timestamp NOT NULL, 
+    active boolean, 
+    created timestamp NOT NULL,
     created_user_id int4 NOT NULL, 
     modified timestamp NOT NULL, 
     modified_user_id int4 NOT NULL
