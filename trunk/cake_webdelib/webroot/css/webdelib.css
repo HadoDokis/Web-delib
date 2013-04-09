@@ -1401,3 +1401,7 @@ div.aModifier {
     display: block;
     border:  2px outset black;
 }
+.purge_file {
+     float: right;
+     width: 600px;
+}
