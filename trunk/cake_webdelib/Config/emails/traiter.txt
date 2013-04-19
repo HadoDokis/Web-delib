@@ -1,10 +1,10 @@
-dhddBonjour #PRENOM# #NOM#,<br>
+Bonjour #PRENOM# #NOM#,<br>
 <br>
-Le projet avec l'identifiant #IDENTIFIANT_PROJET# dont l'objet est :  #OBJET_PROJET# est arrivé dans votre bannette "Projets à traiter".<br>
-Il est arrivé via le circuit : #LIBELLE_CIRCUIT#<br>
+Le projet avec l'identifiant #IDENTIFIANT_PROJET# dont l'objet est :  #OBJET_PROJET# est arrivÃ© dans votre bannette "Projets Ã  traiter".<br>
+Il est arrivÃ© via le circuit : #LIBELLE_CIRCUIT#<br>
 <br>
-Vous pouvez le traiter à l'adresse : <a href="#ADRESSE_A_TRAITER#">#ADRESSE_A_TRAITER#</a><br>
+Vous pouvez le traiter Ã  l'adresse : <a href="#ADRESSE_A_TRAITER#">#ADRESSE_A_TRAITER#</a><br>
 <br>
-Très cordialement.<br>
+TrÃ¨s cordialement.<br>
 <br>
 Webdelib<br>

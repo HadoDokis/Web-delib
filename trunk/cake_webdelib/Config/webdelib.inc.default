@@ -41,7 +41,7 @@
     Configure::write ('DN',              'dn');
 
     ////////////////////////
-    // Configuration Webservice du parapheur électronique
+    // Configuration Webservice du parapheur Ã©lectronique
     ////////////////////////
     Configure::write('USE_PARAPH', false);
     Configure::write('WSACTION', 'https://x.x.x.x/alfresco');
@@ -81,7 +81,7 @@
     Configure::write("SMTP_CLIENT", 'smtp_helo_hostname');
 
     ////////////////////////
-    // Initialiser le numéro de séquence
+    // Initialiser le numÃ©ro de sÃ©quence
     ////////////////////////
     Configure::write("INIT_SEQ", false);
 
@@ -100,7 +100,7 @@
     Configure::write('GED_REPO', '/Sites/Web-delib');
 
     ////////////////////////
-    // Mode délibérations multiples
+    // Mode dÃ©libÃ©rations multiples
     ////////////////////////
     Configure::write("DELIBERATIONS_MULTIPLES", false);
 
@@ -132,7 +132,7 @@
     Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
 
     ////////////////////////
-    // Configuration pour la vérification des mimetypes
+    // Configuration pour la vÃ©rification des mimetypes
     ////////////////////////
     Configure::write('FILE_EXEC', '/usr/bin/file --mime-type -b ');
 
@@ -142,7 +142,7 @@
     Configure::write('GS_EXEC', '/usr/bin/gs ');
 
     ////////////////////////
-    // Configuration pour Idélibre
+    // Configuration pour IdÃ©libre
     ////////////////////////
     Configure::write('IDELIBRE_HOST', 'http://idelibre-server.dev.adullact.org/');
 
