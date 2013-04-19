@@ -34,7 +34,8 @@
                    echo $this->Html->link(SHY,'/deliberations/toSend/'.$seance['Seance']['id'], array('class'=>'link_tdt', 'escape' => false, 
                                                                                                    'title'=>'Envoie au TdT'), false);
                    echo $this->Html->link(SHY,'/deliberations/transmit/'.$seance['Seance']['id'], array('class'=>'link_tdt_transmit', 'escape' => false, 
-                                                                                                   'title'=>'délibérations envoyees au TdT'), false);
+                                                                                                  'title'=>'délibérations envoyees au TdT'), false);
+                   if (in_array('ged', $seance['Seance']['Actions']))
                    echo $this->Html->link(SHY,'/postseances/sendToGed/' . $seance['Seance']['id'], array('class'=>'link_sendtoged',  'escape' => false, 
                                                                                                    'title'=>'Envoie la seance a la GED'),  
                                                                                                    'Envoie les documents à la GED');

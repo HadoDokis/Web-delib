@@ -88,8 +88,8 @@
 				<td><?php echo $this->Form->input('Vote.res4', array('label'=>false, 'size' => '3', 'value' => '', 'disabled' => 'true'));?></td>
 				<td><?php echo $this->Form->input('Vote.res5', array('label'=>false, 'size' => '3', 'value' => '', 'disabled' => 'true'));?></td>
 			</tr>
-		</table>
-		<?php echo $this->Form->button('Remise à zéro', array('type'=>'reset', 'onclick' => "$('#tableDetailVote input[type=radio]').removeAttr('checked');"));?>
+		</table><br />
+		<?php echo $this->Form->button('Remise à zéro des votes', array('type'=>'reset', 'onclick' => "$('#tableDetailVote input[type=radio]').removeAttr('checked');",'class'=>'btn small btn-small'));?>
 	</div>
 
 	<div id='voteTotal'>
@@ -122,11 +122,12 @@
 
 	<br/>
 	<div class="submit">
-		<?php echo $this->Form->submit('Enregistrer le vote', array('div'=>false, 'class'=>'bt_add', 'name'=>'modifier'));?>
-		<?php echo $this->Html->link('Annuler', 
-                                       '/seances/details/'.$seance_id, 
-                                       array('class'=>'link_annuler', 
-                                             'name'=>'Annuler'))?>
+            <?php
+            echo $this->Html->tag('div', null, array("class" => "btn-group"));
+            echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Annuler', '/seances/details/'.$seance_id, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+            echo $this->Form->button('<i class="icon-save"></i> Enregistrer le vote', array('type' => 'submit', 'name' => 'modifier', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le vote'));
+            echo $this->Html->tag('/div', null);
+            ?>
 	</div>
 <?php echo $this->Form->end(); ?>
 

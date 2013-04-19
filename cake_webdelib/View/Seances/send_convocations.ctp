@@ -6,14 +6,15 @@
 <?php echo $this->Form->create( 'Seance',
                                 array( 'type'=>'file',
                                        'url'=>"/seances/sendConvocations/$seance_id/$model_id")); ?>
-    <?php echo ('<td>'.$this->Html->link("Générer les convocations", 
-                                         "/seances/genererConvoc/$seance_id/$model_id", 
-                                         array('class' => 'generer_convocation')).'</td>');  ?>
-    <?php echo ('<td>'.$this->Html->link("Récupérer une archive contenant les convocations", 
-                                         "/seances/recuperer_zip/$seance_id/$model_id", 
-                                         array('class' => 'link_retour_avec_border')).'</td>');  ?>
+<?php 
+echo $this->Html->tag('div', null, array('style' => 'padding-right:1em;float:left;'));
+$this->Html2->boutonSubmitUrl("/seances/genererConvoc/$seance_id/$model_id",'Générer les convocations','Générer les convocations', null, null,'icon-cogs');
+echo $this->Html->tag('/div', null);
+$this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Récupérer une archive contenant les convocations','Récupérer une archive contenant les convocations',null,'btn-inverse','icon-download');
+?>
 <br /><br />
 <table width='100%'>
+    <caption>Liste des acteurs</caption>
     <tr>
         <th></th>
         <th>Élus</th>
@@ -56,7 +57,7 @@
 </table>
 <br />
 <div class="submit">
-    <?php echo $this->Form->submit('Envoyer',array('div'=>false));?>
+    <?php $this->Html2->boutonSubmit('Envoyer les convocations','Envoyer les convocations','envelope'); ?>
 </div>
 
 <?php echo $this->Form->end(); ?>
