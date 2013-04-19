@@ -68,7 +68,7 @@ echo $this->Html->div('filtre');
 echo '</div>';
 ?>
 <style>
-select[multiple], select[size] {
+.demi select[multiple], .demi filtre.select[size] {
     width: 220px;
 }
 #filtreCriteres{
