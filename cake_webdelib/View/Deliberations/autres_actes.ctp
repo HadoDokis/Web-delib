@@ -28,7 +28,7 @@
            $numLigne++;
 
            if ($this->action != "autresActesAValider") 
-               echo("<td>".$this->Form->checkbox('Deliberation.id_'.$acte['Deliberation']['id'], array('checked'=> true))."</td>");
+               echo("<td>".$this->Form->checkbox('Deliberation.id_'.$acte['Deliberation']['id'], array('checked'=> true,'autocomplete'=> 'off'))."</td>");
            else
                 echo("<td></td>");
 
