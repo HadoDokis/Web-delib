@@ -14,7 +14,7 @@
             </td>
     </tr>
     <tr>
-         <td><?php echo $this->Form->input('Deliberation.nature_id', array('label'   =>'Nature',
+         <td><?php echo $this->Form->input('Deliberation.typeacte_id', array('label'   =>'Nature',
                                                                  'options' =>$this->Session->read('user.Nature'),
                                                                  'empty'   =>true,
                                                                  'between'=>'</td><td>',
