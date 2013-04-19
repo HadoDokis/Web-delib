@@ -188,8 +188,8 @@ class Infosup extends AppModel
 				$condition .= (empty($condition) ? '' : ' AND ') . "($alias.infosupdef_id = $infosupdefId AND $champRecherche $operateurRecherche '$recherche')";
 			}
 		}
+                $resultIds = array();
 		if ($iAlias) {
-                        $resultIds = array();
 			// construction et exécution de la requête
 			$select = 'select infosups1.foreign_key ';
 			$select .= 'from ' . $from . ' ';
