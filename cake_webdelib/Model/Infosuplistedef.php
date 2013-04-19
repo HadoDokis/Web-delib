@@ -75,12 +75,18 @@
 		/**
 		 * Réordonne les numéros d'ordre après une suppression pour l'infosupdef $infosupdefId
 		 */
-		function reOrdonne($infosupdefId) {
+		function reOrdonne($infosupdefId, $sortby=null, $ordre=null) {
 
+                        if(!empty($sortby) and !empty($ordre))
+                            $order=array ("$sortby  $ordre");
+                        else
+                            $order='';
+                    
 			$recs = $this->find('all', array('conditions' => array( 'actif' => 1, 
                                                                                 'infosupdef_id' => $infosupdefId), 
                                                           'fields'  => array('id', 'ordre'), 
-                                                          'recursive' => -1));
+                                                          'recursive' => -1,
+                                                          'order'      => $order));
 
 			foreach($recs as $n=>$rec) {
 				if (($n+1) != $rec['Infosuplistedef']['ordre']) {

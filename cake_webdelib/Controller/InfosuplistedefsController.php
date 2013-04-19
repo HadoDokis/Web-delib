@@ -9,7 +9,8 @@ var $commeDroit = array(
 	'edit' => 'Infosupdefs:index',
 	'delete' => 'Infosupdefs:index',
 	'changerOrdre' => 'Infosupdefs:index',
-        'test' => 'Infosupdefs:index'
+        'test' => 'Infosupdefs:index',
+        'test2' => 'Infosupdefs:index'
 	);
 
 /**
@@ -145,6 +146,12 @@ function delete($id=0) {
 function test($infosupdef_id) {
     $this->{$this->modelClass}->reOrdonne($infosupdef_id);
 }
+
+function test2($infosupdef_id, $var1, $var2) {
+    $this->{$this->modelClass}->reOrdonne($infosupdef_id, $var1, $var2);
+}
+
+
 
 /**
  * intervertit l'élément de la liste $id avec son suivant ou son précédent
