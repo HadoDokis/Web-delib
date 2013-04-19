@@ -44,7 +44,7 @@
             }
 
 	    if (empty($delib['Deliberation'][$key."_name"]) || isset($validationErrorsArray[$key.'_type'])) {
-                echo  $this->Form->input("Deliberation.".$key, array('label'=>$libelle, 'type'=>'file', 'size'=>'60', 'title'=>$libelle));
+                echo  $this->Form->input("Deliberation.".$key, array('label'=>$libelle, 'type'=>'file', 'size'=>'60', 'title'=>$libelle, 'class'=>'file-texte'));
             }
             else {
                 if (isset($id)) 

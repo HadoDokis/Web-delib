@@ -4,7 +4,7 @@
 <?php echo $this->Html->script('ckeditor/ckeditor'); ?>
 <?php echo $this->Html->script('ckeditor/adapters/jquery'); ?>
 <?php echo $this->Html->script('multidelib.js'); ?>
-<!--
+
 <script>
 function reset_html(id) {
     $('#'+id).html($('#'+id).html());
@@ -12,15 +12,17 @@ function reset_html(id) {
 $(document).ready(function() {
 
     var file_input_index = 0;
-    $('input[type=file]').each(function() {
+    
+    $('.file-texte').each(function() {
         file_input_index++;
+        
         $(this).wrap('<div id="file_input_container_'+file_input_index+'"></div>');
-        $(this).after('<input type="button" value="Effacer" class="purge_file"  onclick="reset_html(\'file_input_container_'+file_input_index+'\')" />');
+        $(this).after('<input type="button" value="Effacer" class="purge_file"  onclick="javascript: reset_html(\'file_input_container_'+file_input_index+'\')" />');
     });
    
 });
 </script>
--->
+
 
 <?php
 	if($this->Html->value('Deliberation.id')) {
@@ -133,10 +135,11 @@ $(document).ready(function() {
         if ($DELIBERATIONS_MULTIPLES) {
            echo $this->Form->input('Deliberation.is_multidelib', array(
 	                     'type'=>'checkbox',
+                              'autocomplete'=>'off',
 	                     'disabled'=>  isset($this->data['Multidelib']) ,
                              'checked'=>  isset($this->data['Multidelib']) OR (isset($this->data['Deliberation']['is_multidelib']) && $this->data['Deliberation']['is_multidelib']==1)?true:false,
 		             'label'=>'Multi Délibération',
-		             'onClick'=> "multiDelib(this);" ));
+                               'onClick'=>'multiDelib(this)'));
         }
 ?>
 
@@ -155,10 +158,16 @@ $(document).ready(function() {
                 <?php echo $this->element('texte', array('key' => 'deliberation'));?>
             </div>
         </div>
+        <?php 
+        echo $this->Html->tag('div', '', array('class'=>'spacer'));
+        echo $this->Html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
+        ?>
 	<div class='spacer'></div>
 </div>
 
 <div id="tab3" style="display: none;">
+    <div id='DelibOngleAnnexes'>
+    <div id="DelibPrincipaleAnnexes">
 	<?php
 	$annexeOptions = array('ref' => 'delibPrincipale');
 	$tabAnnexes = array();
@@ -169,10 +178,14 @@ $(document).ready(function() {
             }
         }
 	if (isset($this->data['Annex'])) $annexeOptions['annexes'] = $tabAnnexes;
-   	echo $this->element('annexe', $annexeOptions);
+            echo $this->element('annexe', $annexeOptions);
+        ?>
+        </div></div>
+        <?php
 	echo $this->Html->tag('div', '', array('class'=>'spacer'));
 	echo $this->Html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
-   	?>
+        ?>
+        
 </div>
 
 <?php if (!empty($infosupdefs)): ?>
