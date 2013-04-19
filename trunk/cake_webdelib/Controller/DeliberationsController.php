@@ -2760,8 +2760,8 @@ class DeliberationsController extends AppController {
                 $conditions["Deliberation.etat"] = $this->data['Deliberation']['etat'];
             if (!empty($this->data['Deliberation']['texte'])) {
                 $texte = $this->data['Deliberation']['texte'];
-                $conditions["OR"]["Deliberation.objet LIKE"] = $texte;
-                $conditions["OR"]["Deliberation.titre LIKE"] = $texte;
+                $conditions["OR"]["Deliberation.objet ILIKE"] = $texte;
+                $conditions["OR"]["Deliberation.titre ILIKE"] = $texte;
             }
             if (empty($conditions["Deliberation.id"]) || (!isset($conditions["Deliberation.id"]))) {
                 if ((isset($this->data['Deliberation']['seance_id'])) && (!empty($this->data['Deliberation']['seance_id']))) {
