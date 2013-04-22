@@ -17,6 +17,6 @@
                                                                       'div'=>false));?>
 	</fieldset>
        <br />
-    <?php echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
+       <?php $this->Html2->boutonsAddCancel("",'/seances/listerFuturesSeances'); ?>
 <?php echo $this->Form->end(); ?>
 

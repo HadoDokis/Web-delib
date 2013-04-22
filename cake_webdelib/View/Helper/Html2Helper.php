@@ -285,6 +285,10 @@ class Html2Helper extends HtmlHelper {
         if ($center)
             echo $this->tag('/div', null);
     }
+    
+    function boutonSubmitUrl($url = 'edit', $value = 'Modifier', $title = 'Modifier', $style = '', $class = 'btn-primary', $type='', $center = false) {
+        echo $this->link("<i class='$type'></i> $value", $url, array('class' => "btn $class", 'escape' => false, 'title' => $title, 'style' => $style));
+    }
 
     function boutonsSaveCancel($onclick = '', $urlCancel = "javascript:history.go(-1)", $titleSave = "Sauvegarder", $valueSave = 'Sauvegarder', $center = false) {
         if ($center) {

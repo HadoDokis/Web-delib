@@ -74,7 +74,7 @@
                 echo ('Circuit : ');
                 echo ($this->Form->input('Deliberation.circuit_id', array('options'=>$circuits, 'label'=>false, 'div'=> false)).'<br /><br />'); 
 	        echo ('<div class="submit">');
-                echo $this->Form->submit('Envoyer',array('div'=>false));
+                echo $this->Form->button('<i class="icon-cloud-upload"></i> Envoyer',array('div'=>false, 'type'=>'submit','class'=>'btn btn-primary'));
         	echo ('</div>');
             }
         ?>
