@@ -16,12 +16,19 @@ if ($this->Html->value('Typeacteur.id')) {
     <?php echo $this->Form->input('Typeacteur.commentaire', array('label' => 'Commentaire', 'size' => '100')); ?>
 </div>
 <br/>
-<div class="required">
+<div class="required inline">
     <?php echo $this->Form->label('Typeacteur.elu', 'Statut <acronym title="obligatoire">(*)</acronym>'); ?>
-    <?php echo $this->Form->input('Typeacteur.elu', array('fieldset' => false, 'legend' => false, 'label' => false, 'type' => 'radio', 'options' => $eluNonElu)); ?>
+    <?php echo $this->Form->input('Typeacteur.elu', array(  'label' => false,
+                                                            'fieldset' => false, 
+                                                            'legend' => false, 
+                                                            'div' => false,
+                                                            'type' => 'radio', 
+                                                            'class'=>'btn',
+                                                            'style'=>'margin-left:5px;margin-right:5px;',
+                                                            'options' => $eluNonElu)); ?>
 </div>
 <br/>
-
+                                                                                
 <br/>
 <div class="submit">
     <?php if ($this->action == 'edit') echo $this->Form->hidden('Typeacteur.id'); ?>

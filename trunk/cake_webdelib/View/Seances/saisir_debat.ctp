@@ -1,4 +1,4 @@
-<h2>Saisie des débats :</h2>
+<h2>Saisie des débats</h2>
 <?php echo $this->Html->script('ckeditor/ckeditor'); ?>
 <?php echo $this->Form->create('Seance',array('url'=>"/seances/saisirDebat/$delib_id/$seance_id",'type'=>'file')); ?>
 
@@ -56,22 +56,23 @@
 
 
 <div class="submit">
-   	<?php echo $this->Form->submit('Enregistrer', array('div'=>false, 'class'=>'bt_add', 'name'=>'saisir'));?>
-<?php echo $this->Form->end(); ?>
+
       <?php 
-       if($seance['Seance']['traitee']==0) {
-           if (!$isCommission) {
-                echo $this->Html->link('Retour aux votes', "/seances/details/$seance_id", array('class'=>'link_annuler', 'name'=>'Annuler'), 'Etes vous sur de vous quitter cette page ?');
-           } 
-	   	   else {
-               echo $this->Html->link('Retour aux avis', "/seances/detailsAvis/$seance_id", array('class'=>'link_annuler', 'name'=>'Annuler'), 'Etes vous sur de vous quitter cette page ?');
-           }
-       }
-       else {
-               echo $this->Html->link('Retour aux délibérations', "/postseances/afficherProjets/$seance_id", array('class'=>'link_annuler', 'name'=>'Annuler'), 'Etes vous sur de vous quitter cette page ?');
-       }
+        echo $this->Html->tag("div", null, array("class" => "btn-group", 'style' => 'margin-top:10px;'));
+        if($seance['Seance']['traitee']==0) {
+            if (!$isCommission) {
+                 echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour aux votes', "/seances/details/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false), 'Etes vous sur de vous quitter cette page ?');
+            } 
+            else {
+                echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour aux avis', "/seances/detailsAvis/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false), 'Etes vous sur de vous quitter cette page ?');
+            }
+        }
+        else {
+                echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour aux délibérations', "/postseances/afficherProjets/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false), 'Etes vous sur de vous quitter cette page ?');
+        }
 	   
-	   ?>
-    <?php // echo $this->Form->submit('Annuler', array('class'=>'bt_annuler', 'name'=>'retour', 'onclick'=>"javascript:FermerFenetre2()"));?>
+        echo $this->Form->button('<i class="icon-save"></i> Enregistrer', array('class'=>'btn btn-primary', 'name'=>'saisir','escape'=>false, 'title' => 'Enregistrer'));
+        echo $this->Html->tag('/div', null);
+        echo $this->Form->end(); 
+        ?>
 </div>
-<?php //$this->Form->end(); ?>

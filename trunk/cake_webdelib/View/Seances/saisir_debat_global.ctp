@@ -1,4 +1,4 @@
-<h2>Saisie des débats généraux :</h2>
+<h2>Saisie des débats généraux</h2>
 <?php echo $this->Html->script('ckeditor/ckeditor'); ?>
 <?php echo ('<div class="optional">');
 
@@ -41,8 +41,10 @@ else {          ?>
 <br>
 <div class="submit">
 <?php
-     echo $this->Form->submit('Enregistrer', array('class'=>'bt_add', 'div'=>false, 'name'=>'saisir'));
+     echo $this->Html->tag("div", null, array("class" => "btn-group"));
+     echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour aux seances', "/seances/listerFuturesSeances", array('class'=>'btn', 'name'=>'Annuler','escape'=>false), 'Etes vous sur de vous quitter cette page ?');
+     echo $this->Form->button('<i class="icon-save"></i> Enregistrer', array('class'=>'btn btn-primary', 'name'=>'saisir','escape'=>false));
      echo $this->Form->end();
-     echo $this->Html->link('Retour aux seances', "/seances/listerFuturesSeances", array('class'=>'link_annuler', 'name'=>'Annuler'), 'Etes vous sur de vous quitter cette page ?');
-?>
+     echo $this->Html->tag('/div', null);
+ ?>
  </div>

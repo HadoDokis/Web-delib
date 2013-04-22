@@ -38,14 +38,15 @@
 <div class="submit">
 <?php
 
-    echo $this->Html->link('Retour', '/postseances/index', array('class'=>'link_annuler', 'name'=>'Retour'));
+    echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', '/postseances/index', array('class'=>'btn', 'escape' => false, 'name'=>'Retour'));
     
 ?>
 </div>
 <div class="close">
 <?php
-    if ($pv_figes != 1)
-        echo $this->Html->link('Figer les débats','/postseances/changeStatus/' . $seance_id, array('class'=>'link_clore', 'escape' => false, 'name'=>'Clore', 'title'=>'Figer les débats'), 'Etes-vous sur de vouloir figer les débats ?', false);
-?>
+    if ($pv_figes != 1){
+        echo $this->Html->link('<i class="icon-ok-sign"></i> Figer les débats','/postseances/changeStatus/' . $seance_id, array('class'=>'btn btn-primary', 'escape' => false, 'name'=>'Clore', 'title'=>'Figer les débats'), 'Etes-vous sur de vouloir figer les débats ?', false);
+    }
+        ?>
 </div>
 </div>
