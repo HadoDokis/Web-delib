@@ -64,8 +64,8 @@
 </div>
 <br/>
 <div class="submit">
-    <?php echo $this->Html->link('Retour', 
+    <?php echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', 
                            '/seances/listerFuturesSeances', 
-                           array('class'=>'link_annuler', 'escape' => false,
+                           array('class'=>'btn', 'escape' => false,
                                  'name'=>'Retour'))?>
 </div>

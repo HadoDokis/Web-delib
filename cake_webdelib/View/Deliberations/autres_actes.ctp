@@ -104,7 +104,7 @@
             echo ("<div class='submit'>");
         }
         if ($this->action != 'autresActesAValider')
-            echo $this->Form->submit('Envoyer',array('div'=>false));
+            echo $this->Form->button('<i class="icon-cloud-upload"></i> Envoyer',array('class'=>'btn btn-primary','escape'=>false));
         echo $this->Form->end(); 
         echo ("</div>");
 ?>
