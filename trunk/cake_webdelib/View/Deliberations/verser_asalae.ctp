@@ -47,10 +47,14 @@
 	</table>
 <div class='paginate'>
         <!-- Affiche les numéros de pages -->
-        <?php echo $this->Paginator->numbers(); ?>
+        <?php 
+        echo $this->Paginator->prev('« Précédent ', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
+        echo $this->Paginator->numbers(); 
+        
+        ?>
         <!-- Affiche les liens des pages précédentes et suivantes -->
         <?php
-                echo $this->Paginator->prev('« Précédent ', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
+                
                 echo $this->Paginator->next(' Suivant »', null, null, array( 'tag' => 'span', 'class' => 'disabled'));
         ?>
         <!-- Affiche X de Y, où X est la page courante et Y le nombre de pages -->
@@ -59,7 +63,7 @@
 
 	<br />
 	<div class="submit">
-            <?php echo $this->Form->button('<i class="icon-cloud-upload"></i> Envoyer',array('div'=>false, 'type'=>'submit','class'=>'btn'));?>
+            <?php echo $this->Form->button('<i class="icon-cloud-upload"></i> Envoyer',array('escape'=>false, 'type'=>'submit','class'=>'btn btn-primary'));?>
 	</div>
 
 <?php $this->Form->end(); ?>

@@ -71,7 +71,7 @@
 	<br />
 
 	<div class="submit">
-            <?php echo $this->Form->button('<i class="icon-cloud-upload"></i> Envoyer',array('div'=>false, 'type'=>'submit','class'=>'btn'));?>
+            <?php echo $this->Form->button('<i class="icon-cloud-upload"></i> Envoyer',array('escape'=>false, 'type'=>'submit','class'=>'btn btn-primary'));?>
 	</div>
 
 <?php echo $this->Form->end(); ?>
