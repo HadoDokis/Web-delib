@@ -62,4 +62,5 @@ INSERT INTO "public".crons (nom, description, plugin, controller, "action", has_
 
 ALTER TABLE deliberations ADD COLUMN date_envoi_signature timestamp without time zone NULL;
 
-
+ALTER TABLE deliberations_seances ALTER COLUMN avis boolean;
+ALTER TABLE deliberations_seances  ALTER COLUMN  avis  DROP NULL;

@@ -15,9 +15,9 @@
 <tr height='36px'>
 	<td>
 	<?php
-        if ($deliberation['Deliberation']['avis']==1)
+        if ($deliberation['Deliberation']['avis']===true)
             echo $this->Html->image('/img/icons/thumbs_up.png', array('title'=>'Avis favorable'));
-  	    elseif ($deliberation['Deliberation']['avis']==2)
+  	    elseif ($deliberation['Deliberation']['avis']===false)
     	    echo $this->Html->image('/img/icons/thumbs_down.png', array('title'=>'Avis défavorable'));
 	?>
 	</td>
@@ -28,7 +28,7 @@
 	<td><?php //echo $deliberation['Deliberation']['titre']; ?></td>
 	<td class="actions" width="80">
 		<?php echo $this->Html->link(SHY,
-                                       '/seances/saisirDebat/'.$deliberation['Deliberation']['id'], 
+                                       '/seances/saisirDebat/'.$deliberation['Deliberation']['id']."/$seance_id", 
                                        array('class'=>'link_debat', 
                                              'escape' => false,
                                              'title'=>'Saisir les debats'), 

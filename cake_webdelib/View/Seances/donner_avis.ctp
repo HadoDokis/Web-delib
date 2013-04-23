@@ -3,11 +3,21 @@
                                               'type'=>'post')); ?>
 
 	<div class="demi">
+            <div class="required inline">
 		<?php echo $this->Form->label('Deliberation.avis', 'Donner un avis <acronym title="obligatoire">*</acronym>'); ?>
-		<?php echo $this->Form->input('Deliberation.avis', array('fieldset'=>false, 'legend'=>false, 'label'=>false, 'options'=>$avis, 'type'=>'radio', 'value' => $avis_selected));?>
+                    <?php echo $this->Form->input('Deliberation.avis', array(   'fieldset'=>false, 
+                                                                            'legend'=>false, 
+                                                                            'label'=>false, 
+                                                                            'fieldset' => false, 
+                                                                             'div' => false,
+                                                                            'options'=>$avis, 
+                                                                            'type'=>'radio', 
+                                                                            'class'=>'btn',
+                                                                             'style'=>'margin-left:5px;margin-right:5px;',
+                                                                            'value' => $avis_selected));?>
+	
+	</div></div>
 	<br/>
-	<br/>
-	</div>
 	<br/>
 
 	<div class="spacer"></div>
@@ -15,7 +25,7 @@
 	   <?php echo $this->Form->label('Deliberation.commentaire', 'Commentaire'); ?>
            <?php echo $this->Form->input('Deliberation.commentaire', array('fieldset'=>false, 
                                                                            'legend'=>false, 
-                                                                           'label'=>false,  
+                                                                           'label'=>false,
                                                                            'value'=>$commentaire,  
                                                                            'type'=>'textarea'));?>
        </div>
@@ -39,8 +49,7 @@
 	<br/>
 	<div class="submit">
 		<?php echo $this->Form->hidden('Deliberation.id')?>
-		<?php echo $this->Form->submit('Sauvegarder', array('div'=>false,'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
-		<?php echo $this->Html->link('Annuler', '/seances/detailsAvis/'.$this->Html->value('Seance.id'), array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+             <?php $this->Html2->boutonsAddCancel("",'/seances/detailsAvis/'.$seance_id); ?>
 	</div>
 
 <?php echo $this->Form->end(); ?>
