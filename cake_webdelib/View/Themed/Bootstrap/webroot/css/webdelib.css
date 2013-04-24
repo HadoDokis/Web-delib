@@ -280,6 +280,7 @@ a {
 
 a:hover {
 	color: #999933;
+        cursor: pointer;
 }
 
 table {
