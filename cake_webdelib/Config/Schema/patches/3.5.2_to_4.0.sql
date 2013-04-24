@@ -149,8 +149,10 @@ ALTER TABLE deliberations  ALTER COLUMN  commission_size DROP NOT NULL;
 ALTER TABLE deliberations  ALTER COLUMN  commission_name DROP NOT NULL;
 ALTER TABLE deliberations  ALTER COLUMN  commission_type DROP NOT NULL;
 
-ALTER TABLE deliberations_seances ADD COLUMN avis boolean;
+ALTER TABLE deliberations_seances ALTER COLUMN avis TYPE boolean USING 
+    CASE WHEN avis=1 THEN TRUE ELSE CASE WHEN avis=2 THEN FALSE ELSE NULL END END;
 ALTER TABLE deliberations_seances  ALTER COLUMN  avis  DROP NOT NULL;
+
 
 ALTER TABLE infosups ALTER COLUMN text  DROP NOT NULL;
 ALTER TABLE infosups ALTER COLUMN date  DROP NOT NULL;
@@ -189,7 +191,6 @@ ALTER TABLE "deliberations"  ALTER COLUMN deliberation_name DROP NOT NULL;
 ALTER TABLE "deliberations"  ALTER COLUMN deliberation_size DROP NOT NULL;
 ALTER TABLE "deliberations"  ALTER COLUMN is_multidelib  DROP NOT NULL;
 
-ALTER TABLE deliberations_seances ADD  COLUMN avis smallint;
 ALTER TABLE models ADD  COLUMN multiodj BOOLEAN DEFAULT false; 
 ALTER TABLE aros ALTER COLUMN parent_id DROP NOT NULL;
 ALTER TABLE infosups ALTER COLUMN deliberation_id DROP NOT NULL;

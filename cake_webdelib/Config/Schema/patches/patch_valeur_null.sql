@@ -1,3 +1,6 @@
+/* Pour résoudre les problèmes de compatibilité Mysql sur certain serveur */
+
+
 ALTER TABLE `acos` CHANGE `alias` `alias` VARCHAR( 255 ) NULL;
 
 ALTER TABLE `acteurs` CHANGE `prenom` `prenom` VARCHAR( 50 ) NULL ,
