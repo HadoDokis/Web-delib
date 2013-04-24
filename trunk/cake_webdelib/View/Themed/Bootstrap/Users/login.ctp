@@ -4,7 +4,7 @@
     <?php echo $this->Html->image('webdelib_petit.png', array('align' => 'left')); ?>
     </div>
         <p class="error-message"><?php echo $errorMsg; ?></p>
-    <p>Veuillez saisir votre nom d'utilisateur et votre mot de passe. </p>
+    <p>Veuillez saisir votre identifiant et votre mot de passe. </p>
     <?php echo $this->Form->create('User', array('action' => 'login', 'type' => 'post', 'class'=>'row form-horizontal', 'inputDefaults' => array(
         'label' => false,
         'div' => false
