@@ -134,11 +134,4 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                 <?php echo $this->fetch('content'); ?>
             </div>
         </div>
-
-        <div class="pied">
-            <?php echo "Web-delib v" . VERSION; ?> &copy; 2006-2012 ADULLACT 
-        </div><!-- /container -->
-
-        <?php // echo $this->element('sql_dump'); ?>
-    </body>
-</html>
+<?php echo $this->element('footer'); ?>
