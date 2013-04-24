@@ -295,7 +295,7 @@ Cache::config('_cake_model_', array(
 
     define ('CRON_DISPATCHER', false);
     require_once ('webdelib.inc');
-    define('VERSION', '<b> 4.1 </b>');
+    define('VERSION', '4.1');
     include_once(ROOT.DS.APP_DIR.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'cakeflow.conf.php');
 
 ?>

@@ -301,10 +301,12 @@ class UsersController extends AppController {
 	function login() {
 		//pas de message d'erreur
 		$this->set('errorMsg',"");
-		//si le formulaire d'authentification a Ã©tÃ© soumis
+                $this->set('logo_path',   'http://'.$_SERVER['HTTP_HOST'].$this->base."/files/image/logo.jpg");
+                
+		//si le formulaire d'authentification a été soumis
 		if (!empty($this->data)) {
 			$isAuthentif = false;
-			//cherche si utilisateur enregistrÃ© possede ce login
+			//cherche si utilisateur enregistré possede ce login
 			$user = $this->User->findByLogin($this->data['User']['login']);
 			unset($user['Historique']);
 			if (empty($user)){
@@ -368,7 +370,7 @@ class UsersController extends AppController {
 				$this->redirect('/');
 			}
 			else{
-				//sinon on prÃ©pare le message d'erreur a afficher dans la vue
+				//sinon on prépare le message d'erreur a afficher dans la vue
 				$this->set('errorMsg','Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
 				$this->layout='connection';
 			}
