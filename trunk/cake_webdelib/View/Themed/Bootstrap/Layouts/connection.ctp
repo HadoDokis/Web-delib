@@ -39,7 +39,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->Html->css('bootstrap-responsive.min');
         echo $this->Html->css('font-awesome.min');
         // docs.css is only for this exapmple, remove for app dev
-        echo $this->Html->css('docs');
+        echo $this->Html->css('docs-connexion');
         echo $this->fetch('meta');
         echo $this->fetch('css');
 
@@ -53,12 +53,11 @@ $cakeDescription = __d('webdelib', 'Webdelib');
 
         echo $this->fetch('script');
         ?>
-
     </head>
     <body data-spy="scroll" data-target=".subnav" data-offset="50" style="background-position: 0 0;">
         <div id="container">
-        <div class="navbar navbar-fixed-top" style="background: white;">
-            <div class="navbar-inner" style="background: white;height: 85px;padding-left:10px"> 
-            <?php echo $this->Html->image($logo_path, array('align' => 'left')); ?></div></div>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner navbar-inner"> 
+            <?php echo $this->Html->image($logo_path, array('align' => 'left','style' => 'margin-left:10px')); ?></div></div>
         <?php echo $content_for_layout; ?>
 <?php echo $this->element('footer'); ?>
