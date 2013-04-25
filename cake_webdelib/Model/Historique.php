@@ -20,6 +20,7 @@ class Historique extends AppModel {
 
  
     function enregistre($delib_id, $user_id, $commentaire) {
+        $this->create();
         $deliberation = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
                                                                  'fields'     => array('id', 'circuit_id'),
                                                                  'recursive'  => -1));
