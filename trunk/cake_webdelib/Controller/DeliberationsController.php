@@ -2027,7 +2027,7 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.redacteur_id'] = $userId;
         $conditions['Deliberation.parent_id'] = null;
         
-        $ordre = array('Deliberation.created DESC');
+        $ordre = array('Deliberation.created' =>  'DESC');
         $nbProjets =  $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
         $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
             'limit'     => $limit,
@@ -2035,7 +2035,7 @@ class DeliberationsController extends AppController {
                                  'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
                                  'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                                'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
-            'ordre' => $ordre,
+            'order' => $ordre,
             'contain'    => array(  'Service.libelle', 'Theme.libelle', 'Typeacte.libelle', 'Deliberationseance.seance_id', 'Seance.date', 'Seance.id',  'Seance.type_id', 'Circuit.nom', 'Deliberationtypeseance.typeseance_id', 'Typeseance.libelle', 'Typeseance.id')));
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets(
@@ -2123,7 +2123,7 @@ class DeliberationsController extends AppController {
         $conditions['OR']['Deliberation.redacteur_id'] = $userId;
         $conditions['Deliberation.parent_id'] =  NULL;
         
-        $ordre = 'Deliberation.created DESC';
+        $ordre = array('Deliberation.created' => 'DESC');
         $projets = $this->Deliberation->find('all', array(
             'fields'     => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat',  'Deliberation.signee',
                                   'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
