@@ -190,7 +190,9 @@ class PostseancesController extends AppController {
             $this->Seance->Behaviors->attach('Containable');
             $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
                                                          'contain'    => array('Typeseance.libelle') ));
-
+            $date_seance = $seance['Seance']['date'];
+            $date_convocation = $seance['Seance']['date_convocation'];
+            $type_seance = $seance['Typeseance']['libelle'];
             $my_seance_folder = $cmis->client->createFolder($cmis->folder->id, $seance['Typeseance']['libelle']." ".$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date'])));
 
             $delibs_id = $this->Seance->getDeliberationsId($seance_id);
@@ -201,43 +203,90 @@ class PostseancesController extends AppController {
             $seance = $this->_createElement($dom, 'seance', null, array('id'=>$seance_id."-".$seance['Seance']['date'],
                                                                       'xmlns:webdelibdossier' => 'http://www.adullact.org/webdelib/infodossier/1.0',
                                                                       'xmlns:xm'  => 'http://www.w3.org/2005/05/xmlmine'));
+            $seance->appendChild($this->_createElement($dom, 'typeSeance', $type_seance));
+            $seance->appendChild($this->_createElement($dom, 'dateSeance', $date_seance));
+            $seance->appendChild($this->_createElement($dom, 'dateConvocation', $date_convocation));
 
-            $seance->appendChild($this->_createElement($dom, 'typeDoc', 'Déliberation'));
-            $doc = $dom->createElement('documents');
+            $seance->appendChild($this->_createElement($dom, 'convocation', 'convocation.pdf'));
+            $seance->appendChild($this->_createElement($dom, 'ordre_du_jour', 'ordre_du_jour.pdf'));
+            $seance->appendChild($this->_createElement($dom, 'pv_complet', 'pv_complet.pdf'));
+            $seance->appendChild($this->_createElement($dom, 'pv_sommaire','pv_sommaire.pdf'));
+
             foreach ($delibs_id as $delib_id) {
+                $doc = $this->_createElement($dom, 'dossierActe', null,  array('id'=>$delib_id, 'seance' => $seance_id));
+
 		$this->Deliberation->Behaviors->attach('Containable');
                 $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
                                                                   'fields'     => array('Deliberation.num_delib', 'Deliberation.objet_delib',
                                                                                         'Deliberation.titre', 'deliberation'),
-                                                                  'contain'  => array('Service.libelle', 'Theme.libelle')));
-                $dir=  TMP."delib_$delib_id/";
-                $odtFile =  $dir."delib_$delib_id";
-                if (!file_exists($dir))
-                    mkdir($dir);
-                file_put_contents($odtFile.".odt", $delib['Deliberation']['deliberation']);
-                $contenu_delib =  $this->Conversion->convertirFichier($odtFile.".odt", 'txt');
-                unlink($odtFile.".odt"); 
-                rmdir($dir);
-              
+                                                                  'contain'  => array('Service.libelle', 'Theme.libelle', 'Typeacte.libelle', 
+                                                                                      'Redacteur.nom', 'Redacteur.prenom',
+                                                                                      'Rapporteur.nom', 'Rapporteur.prenom')));
+
+                $doc->appendChild($this->_createElement($dom, 'natureACTE', $delib['Typeacte']['libelle'] ));
+                $doc->appendChild($this->_createElement($dom, 'dateACTE',  $date_seance ));
+                if (isset( $delib['Deliberation']['dateAR']))  $doc->appendChild($this->_createElement($dom, 'dateAR',  $delib['Deliberation']['dateAR']));
+                $doc->appendChild($this->_createElement($dom, 'numeroACTE', $delib['Deliberation']['num_delib']));
+                $doc->appendChild($this->_createElement($dom, 'themeACTE', $delib['Theme']['libelle']));
+                $doc->appendChild($this->_createElement($dom, 'emetteurACTE', $delib['Service']['libelle']));
+                $doc->appendChild($this->_createElement($dom, 'redacteurACTE', $delib['Redacteur']['prenom'].' '.$delib['Redacteur']['nom']));
+                $doc->appendChild($this->_createElement($dom, 'rapporteurACTE', $delib['Rapporteur']['prenom'].' '.$delib['Rapporteur']['nom']));
+                $doc->appendChild($this->_createElement($dom, 'cantonACTE', 'Basse ville'));
+                $doc->appendChild($this->_createElement($dom, 'communeACTE', 'Valence'));
+
+                $seances_id = $this->Deliberation->getSeancesid($delib_id);
+                $liste_commissions = array();
+                $libelle = '';
+                $typeSeance = '';
+                foreach ( $seances_id as $commission_id)  {
+                    if (!$this->Deliberation->Seance->isSeanceDeliberante($commission_id)) {
+                        $typeSeance = $this->Deliberation->Seance->Typeseance->getLibelle( $this->Deliberation->Seance->getType($commission_id)); 
+                        $libelle .=  $typeSeance.' : '.  $this->Deliberation->Seance->getDate($commission_id).', ';
+                    }
+                }
+                $doc->appendChild($this->_createElement($dom, 'listeCommissions', $libelle));
+                $doc->appendChild($this->_createElement($dom, 'typeseanceACTE', $type_seance));
                 $delib_filename = $delib_id.'-'.$delib['Deliberation']['num_delib'].'.pdf';
-                $document = $this->_createElement($dom, 'document', null, array('nom'=>$delib_filename));
 
-                $type = $this->_createElement($dom, 'type', null, array('id'=>'Délibération')); 
-                $type->appendChild($this->_createElement($dom, 'titre', $delib['Deliberation']['objet_delib']));
-                $type->appendChild($this->_createElement($dom, 'description', $delib['Deliberation']['titre']));
-                $type->appendChild($this->_createElement($dom, 'contenuDeliberation', $contenu_delib));
-
-                $type->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
-                $type->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
-                $type->appendChild($this->_createElement($dom, 'nomServiceEmetteur', $delib['Service']['libelle']));
-                $type->appendChild($this->_createElement($dom, 'themeRAAD', $delib['Theme']['libelle']));
-
-                $document->appendChild($type);
+                $document = $this->_createElement($dom, 'document', null, array('nom'=>$delib_filename, 'type' => 'Deliberation' ));
+                $document->appendChild($this->_createElement($dom, 'titre', $delib['Deliberation']['objet_delib']));
+                $document->appendChild($this->_createElement($dom, 'description', $delib['Deliberation']['titre']));
+                $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
+                $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                 $doc->appendChild($document);
+
+                $document = $this->_createElement($dom, 'document', null, array('nom'=>$delib_filename, 'type' => 'Rapport' ));
+                $document->appendChild($this->_createElement($dom, 'titre', $delib['Deliberation']['objet_delib']));
+                $document->appendChild($this->_createElement($dom, 'description', $delib['Deliberation']['titre']));
+                $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
+                $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
+                $doc->appendChild($document);
+
+                $annexes_id =  $this->Deliberation->Annex->getAnnexesIFromDelibId($delib_id, 1);
+                if (isset($annexes_id) && !empty($annexes_id)) {
+                    foreach ($annexes_id as $annex_id) {
+                        $annex_id = $annex_id['Annex']['id'];
+                        $annex = $this->Deliberation->Annex->find('first', array('conditions' => array('Annex.id' => $annex_id),
+                                                                   'fields'      => array('Annex.titre', 'Annex.filename', 'filetype'),
+                                                                   'recursive' => -1));
+                        $document = $this->_createElement($dom, 'document', null, array('nom'=>$annex['Annex']['filename'], 'type' => 'Annexe' ));
+                        $document->appendChild($this->_createElement($dom, 'titre', $annex['Annex']['titre']));
+                        $document->appendChild($this->_createElement($dom, 'mimetype',  $annex['Annex']['filetype'] ));
+                        $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
+                        $doc->appendChild($document);
+
+                        $annexe = $this->Deliberation->Annex->getContent($annex_id);
+                    }
+                }
+
+
+                $seance->appendChild($doc); 
+                 
             }
-            $seance->appendChild($doc); 
             $dom->appendChild($seance);
             $xmlContent =  $dom->saveXML();
+
+            $this->log( $xmlContent);
             $xml_desc = $cmis->client->createDocument($my_seance_folder->id,
                                                       "XML_DESC_$seance_id.xml",
                                                       array (),
