@@ -2789,10 +2789,10 @@ class DeliberationsController extends AppController {
                 $this->Deliberation->Behaviors->attach('Containable');
                 $projets = $this->Deliberation->find('all', array(
                                                 'conditions' => $conditions,
-                                                'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
+                                                /*'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
                                                                   'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
                                                                   'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
-                                                                  'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
+                                                                  'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),*/
                                                 'contain'    => array( 'Service.libelle', 'Theme.libelle', 'Typeacte.libelle', 'Circuit.nom', 
                                                                        'Deliberationseance.seance_id', 'Seance.date', 'Seance.id', 'Seance.type_id')));
                 for($i = 0; $i < count($projets); $i ++) {
