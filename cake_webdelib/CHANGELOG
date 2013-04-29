@@ -1,111 +1,181 @@
 1.1-1
 =====
-  *) Ajout de balises pour la generation des documents.
-  *) Validation des commentaires.
-  *) Import de fichiers odt pour les textes de projet, notes de synthese et textes de deliberation.
-  *) Correction de bug d'affichage
-  *) Agrandissement du champ commentaire lors des votes.
-  *) Moteur de recherche simple.
+    *) Ajout de balises pour la generation des documents.
+    *) Validation des commentaires.
+    *) Import de fichiers odt pour les textes de projet, notes de synthese et textes de deliberation.
+    *) Correction de bug d'affichage
+    *) Agrandissement du champ commentaire lors des votes.
+    *) Moteur de recherche simple.
 
 1.1-2
 =====
-  *) Uniformisation de l'encodage des fichiers : tous sont encodÈs en ISO-8859-15
+    *) Uniformisation de l'encodage des fichiers : tous sont encod√©s en ISO-8859-15
 
 2.0
 ====
-  *) Suppression des composants documentaires, la conception des modËles se fait dans un fichier unique. 
-  *) Ajout de variable pour la gÈnÈration des documents
-  *) Importation de la partie PHP de GEDOOo dans WEBDELIB
-  *) Ajout d'un moteur de recherche.
-  *) Envoi des piËces jointes des dÈlibÈrations au controle de lÈgalitÈ
-  *) Enregistrement des dÈbats de commission dans un nouveau champ
-  *) PossibilitÈ de valider un projet en urgence.
-  *) Ajout de champ dynamique ‡ la crÈation d'un rapport de projet.
+    *) Suppression des composants documentaires, la conception des mod√®les se fait dans un fichier unique. 
+    *) Ajout de variable pour la g√©n√©ration des documents
+    *) Importation de la partie PHP de GEDOOo dans WEBDELIB
+    *) Ajout d'un moteur de recherche.
+    *) Envoi des pi√®ces jointes des d√©lib√©rations au controle de l√©galit√©
+    *) Enregistrement des d√©bats de commission dans un nouveau champ
+    *) Possibilit√© de valider un projet en urgence.
+    *) Ajout de champ dynamique √† la cr√©ation d'un rapport de projet.
 
 2.0.1
 =====
-  *) Ajout des Styles ActeursContre, ActeursPour, ActeursAbstention qui permet de lister les Èlus qui ont votÈs contre, pour ou se sont abstenus au vote d'un projet.
-  *) Correction d'un bug dans l'affichage des services et des thËmes. 
-  *) Correction d'un bug lors du changement d'ordre ou de la suppression des informations supplÈmentaires.
+    *) Ajout des Styles ActeursContre, ActeursPour, ActeursAbstention qui permet de lister les √©lus qui ont vot√©s contre, pour ou se sont abstenus au vote d'un projet.
+    *) Correction d'un bug dans l'affichage des services et des th√®mes. 
+    *) Correction d'un bug lors du changement d'ordre ou de la suppression des informations suppl√©mentaires.
 
 2.0.2
 =====
-  *) Correction faute d'orthographe (mois de septembre mal orthographiÈ)
-  *) Correction bug lors d'un refus de dossier : le rÈdacteur ne recevait pas de mail
-  *) Mise en place des boutons d'aperÁu pour la gÈnÈration des convocations et de l'ordre du jour
+    *) Correction faute d'orthographe (mois de septembre mal orthographi√©)
+    *) Correction bug lors d'un refus de dossier : le r√©dacteur ne recevait pas de mail
+    *) Mise en place des boutons d'aper√ßu pour la g√©n√©ration des convocations et de l'ordre du jour
 
 2.0.3
 =====
-  *) Conservation des informations supplÈmentaires, annexes et commentaires suite ‡ un refus de dossier. 
-  *) RÈ-ajout des styles : ActeursPour, ActeursContre et ActeursAbstenu
+    *) Conservation des informations suppl√©mentaires, annexes et commentaires suite √† un refus de dossier. 
+    *) R√©-ajout des styles : ActeursPour, ActeursContre et ActeursAbstenu
 
 2.1
 ====
-  *) Choix du PV Sommaire lors de l'Èdition des types de sÈance (BUG N∞330)
-  *) AmÈlioration de la cinÈmatique OOo
-  *) Simplification de l'Èditeur en ligne (BUG N∞229)
-  *) Affichage du signe ø dans les documents gÈnÈrÈs (BUG N∞297) 
-  *) Informations supplÈmentaires: Ajout du type "BoolÈen"
-  *) Informations supplÈmentaires: Ajout du type "Fichier ODT"
-  *) Informations supplÈmentaires: Ajout du type "Liste dÈroulante"
-  *) PossibilitÈ de changer le contenu des mails envoyÈs par l'application (BUG N∞340)
-  *) Connexion au parapheur Èlectronique (pour la validation en prÈparation et pour la signature en post-sÈance)
-  *) Ajout d'un bouton "Retourner ‡ ..." qui permet de returner le projet ‡ n'importe quel membre du circuit avant la personne qui traite le projet
-  *) PossibilitÈ de recherche sur un circuit 
-  *) AmÈlioration des tris des projets
-  *) PossibilitÈ de gÈnÈrer les convocations et ordres du jour au format odt
-  *) NumÈrotation hiÈrarchisÈe des rapports/dÈlibÈrations
-  *) Correction de la saisie des dÈbats de projet (BUG N∞316)
-  *) Gestion des pouvoirs (liste des mandataires) (BUG N∞308)
-  *) DÈsactivation de la gestion du Quorum (BUG N∞146)
-  *) PossibilitÈ d'ajouter un commentaire ‡ une sÈance
-  *) Stockage des dÈlibÈrations au format pdf aprËs la clÙture de la sÈance.
-  *) Suite ‡ l'envoi de dÈlibÈration ‡ s2low, il est possible de suivre l'avancÈ du cycle de vie de la dÈlibÈration.
-  *) RÈcupÈration du bordereau d'acquittement du MIAT
-  *) Correction des fautes d'orthographe et de faute d'accent
-  *) CompatibilitÈ avec le navigateur Chrome pour Windows
-  *) Ajout des variables : avisCommission, date_reception, commentaire_seance, total_votant, acteur_sans_participation
+    *) Choix du PV Sommaire lors de l'√©dition des types de s√©ance (BUG N¬∞330)
+    *) Am√©lioration de la cin√©matique OOo
+    *) Simplification de l'√©diteur en ligne (BUG N¬∞229)
+    *) Affichage du signe ¬ø dans les documents g√©n√©r√©s (BUG N¬∞297) 
+    *) Informations suppl√©mentaires: Ajout du type "Bool√©en"
+    *) Informations suppl√©mentaires: Ajout du type "Fichier ODT"
+    *) Informations suppl√©mentaires: Ajout du type "Liste d√©roulante"
+    *) Possibilit√© de changer le contenu des mails envoy√©s par l'application (BUG N¬∞340)
+    *) Connexion au parapheur √©lectronique (pour la validation en pr√©paration et pour la signature en post-s√©ance)
+    *) Ajout d'un bouton "Retourner √† ..." qui permet de returner le projet √† n'importe quel membre du circuit avant la personne qui traite le projet
+    *) Possibilit√© de recherche sur un circuit 
+    *) Am√©lioration des tris des projets
+    *) Possibilit√© de g√©n√©rer les convocations et ordres du jour au format odt
+    *) Num√©rotation hi√©rarchis√©e des rapports/d√©lib√©rations
+    *) Correction de la saisie des d√©bats de projet (BUG N¬∞316)
+    *) Gestion des pouvoirs (liste des mandataires) (BUG N¬∞308)
+    *) D√©sactivation de la gestion du Quorum (BUG N¬∞146)
+    *) Possibilit√© d'ajouter un commentaire √† une s√©ance
+    *) Stockage des d√©lib√©rations au format pdf apr√®s la cl√¥ture de la s√©ance.
+    *) Suite √† l'envoi de d√©lib√©ration √† s2low, il est possible de suivre l'avanc√© du cycle de vie de la d√©lib√©ration.
+    *) R√©cup√©ration du bordereau d'acquittement du MIAT
+    *) Correction des fautes d'orthographe et de faute d'accent
+    *) Compatibilit√© avec le navigateur Chrome pour Windows
+    *) Ajout des variables : avisCommission, date_reception, commentaire_seance, total_votant, acteur_sans_participation
 
 2.1.1
 =====
-  *) Correction des short_open_tag
-  *) Correction d'un bug lors de la saisie des dÈbats de projets en commission
-  *) Correction d'un bug dans l'affichage des dÈlibÈrations tÈlÈtransmises
-  *) Correction d'un bug lors de la rÈ-attribution d'un projet ‡ un circuit
-  *) Actualisation du logo
-  *) Changement de la mise en page des vues synthÈtiques
-  *) Information par Infos Bulles
-  *) PossibilitÈ (en fonction des droits) de sauter une Ètape du circuit
-  *) Enregistrement de la vie du projet dans un historique ( exploitable dans la gÈnÈration des documents)
-  *) PossibilitÈ d'avoir plusieurs fois le mÍme utilisateur dans un circuit d'Èlaboration
-  *) PossibilitÈ de saisir les dÈbats de dÈlib en postseances 
-  *) Enregistrement des PVs au format PDF
-  *) PossibilitÈ de choisir directement la position d'un projet
-  *) Insertion dans le parapheur Èlectronique avec le libellÈ du projet.
-  *) Insertion des piËces jointes dans le parapheur Èlectronique
-  *) RÈcupÈration de la signature des dossiers envoyÈs dans le parapheur Èlectronique
-  *) Export vers AS@LAE 
+    *) Correction des short_open_tag
+    *) Correction d'un bug lors de la saisie des d√©bats de projets en commission
+    *) Correction d'un bug dans l'affichage des d√©lib√©rations t√©l√©transmises
+    *) Correction d'un bug lors de la r√©-attribution d'un projet √† un circuit
+    *) Actualisation du logo
+    *) Changement de la mise en page des vues synth√©tiques
+    *) Information par Infos Bulles
+    *) Possibilit√© (en fonction des droits) de sauter une √©tape du circuit
+    *) Enregistrement de la vie du projet dans un historique ( exploitable dans la g√©n√©ration des documents)
+    *) Possibilit√© d'avoir plusieurs fois le m√™me utilisateur dans un circuit d'√©laboration
+    *) Possibilit√© de saisir les d√©bats de d√©lib en postseances 
+    *) Enregistrement des PVs au format PDF
+    *) Possibilit√© de choisir directement la position d'un projet
+    *) Insertion dans le parapheur √©lectronique avec le libell√© du projet.
+    *) Insertion des pi√®ces jointes dans le parapheur √©lectronique
+    *) R√©cup√©ration de la signature des dossiers envoy√©s dans le parapheur √©lectronique
+    *) Export vers AS@LAE 
+
 2.1.2
 =====
-  *) Correction d'un bug lors de l'enregistrement des PVs (en mode editeur en ligne).
-  *) Correction d'encodage des caractËres spÈciaux (CP1252).
-  *) La premiere personne d'un circuit d'Èlaboration ne recevra plus le mail d'insertion mais le mail a traiter...
-  *) Lors d'un retour de dossier, la personne a qui est renvoyÈ le dossier recevra un mail de notification. 
-  *) RÈtablissement du menu sinon cela posait un problËme de droit. 
-  *) Correction de problËme d'encodage lorsque l'on utilise l'Èditeur en ligne en mode 'source' 
-  *) DÈsactivation du bouton prÈcÈdent du navigateur pour eviter les effets de bords (exemple, je clique sur prÈcÈdent apres avoir validÈ un projet...) 
-  *) Patch pour les navigateurs IE 6 : le message jgrowl empeche l'ouverture de la page avec ce navigateur. 
+    *) Correction d'un bug lors de l'enregistrement des PVs (en mode editeur en ligne).
+    *) Correction d'encodage des caract√®res sp√©ciaux (CP1252).
+    *) La premiere personne d'un circuit d'√©laboration ne recevra plus le mail d'insertion mais le mail a traiter...
+    *) Lors d'un retour de dossier, la personne a qui est renvoy√© le dossier recevra un mail de notification. 
+    *) R√©tablissement du menu sinon cela posait un probl√®me de droit. 
+    *) Correction de probl√®me d'encodage lorsque l'on utilise l'√©diteur en ligne en mode 'source' 
+    *) D√©sactivation du bouton pr√©c√©dent du navigateur pour eviter les effets de bords (exemple, je clique sur pr√©c√©dent apres avoir valid√© un projet...) 
+    *) Patch pour les navigateurs IE 6 : le message jgrowl empeche l'ouverture de la page avec ce navigateur.
+
 3.0
 ===
-  *) Upgrade du framework CakePHP 1.2.8 
-  *) IntÈgration du plugin CakeFlow : moteur de workflow intÈgrant des fonctions dynamiques d'exÈcution  
-  *) Attribution des droits par profil et par utilisateur	
-  *) Affinage des droits  (modification d'un projet, saut d'Ètape, envoyer ‡, ...
-  *) Gestion de diffÈrentes natures d'acte
-  *) Pagination des listes d'utilisateurs et acteurs 
-  *) Tri de ces listes en fonction de diffÈrents critËres
-  *) Changement d'un mot de passe par l'utilisateur lui-mÍme
-  *) Gestion des circuits via le plugin CakeFlow
-  *) Affichage des thËmes et services avec la forme hiÈraÈrchique
-  *) Ajout des critËres de filtre par banette
-  *) Enrichissement de l'historique
+    *) Upgrade du framework CakePHP 1.2.8 
+    *) Int√©gration du plugin CakeFlow : moteur de workflow int√©grant des fonctions dynamiques d'ex√©cution  
+    *) Attribution des droits par profil et par utilisateur	
+    *) Affinage des droits  (modification d'un projet, saut d'√©tape, envoyer √†, ...
+    *) Gestion de diff√©rentes natures d'acte
+    *) Pagination des listes d'utilisateurs et acteurs 
+    *) Tri de ces listes en fonction de diff√©rents crit√®res
+    *) Changement d'un mot de passe par l'utilisateur lui-m√™me
+    *) Gestion des circuits via le plugin CakeFlow
+    *) Affichage des th√®mes et services avec la forme hi√©ra√©rchique
+    *) Ajout des crit√®res de filtre par banette
+    *) Enrichissement de l'historique
+
+3.5
+===
+
+3.5.1
+=====
+
+3.5.2
+=====
+
+4.0
+===
+    *) WEBDELIB migre sur cake2.2.x,
+    *) Utilisation de PostgreSQL comme base de donn√©es,
+    *) Optimisation de la gestion des arr√™t√©s,
+    *) R√©vision des types de s√©ances,
+    *) Envoi des convocations via mail s√©curis√©,
+    *) Traitement par lot,
+    *) Valider les formats envoy√©s au contr√¥le de l√©galit√©,
+    *) Limiter les circuits vus par un utilisateur,
+    *) Effacer une s√©ance compl√®te,
+    *) D√©lib√©ration tamponn√©e,
+    *) Outil mail de notifications aux utilisateurs,
+    *) Vote par groupe,
+    *) Gestion des suppl√©ants,
+    *) Ajout du droit de suppression d'un projet pour les administrateurs fonctionnels.
+
+
+4.1
+===
+    *) Multi-mod√®les et traitement par lot pour la synth√®se
+    *) Gestion des configurations des connecteurs dans l'administration
+    *) Modification d'une info suppl√©mentaire sous condition de profils/droits
+    *) Affichage des annexes via URL 
+    *) R√©f√©rences sur les annexes PDF
+    *) Int√©gration des annexes PDF dans les documents g√©n√©r√©s
+    *) D√©sactivation d'une information suppl√©mentaire
+    *) Refonte de l'ergonomie de l'application
+    *) Ticket 1097 : Correction d'un bug sur l'ordre de vote des d√©lib√©rations
+    *) Ticket 1374 : Ajout d'un champ service_avec_hi√©rarchie pour l'utilisation dans les mod√®les
+    *) Ticket 1408 : Ajout d'un champ date_envoi_signature pour l'utilisation dans les mod√®les
+    *) Ticket 1560 : Correction d'un bug lors de l'enregistrement d'un projet avec jour de retard
+    *) Ticket 1627/2183 : Correction sur l'enregistrement webdav des multi-d√©lib√©rations
+    *) Ticket 1644 : Ajout d'un champ date_projet pour l'utilisation dans les mod√®les
+    *) Ticket 1718 : Correction d'un bug lors du refus d'un projet par un validateur
+    *) Ticket 1744 : Correction sur l'application du nombre de jour avant retard d'une s√©ance
+    *) Ticket 1796 : Ajout d'un bouton pour vider les champs de type file
+    *) Ticket 1783 : Correction d'un bug sur les annexes de projet en multi-d√©lib√©ration
+    *) Ticket 1976 : Ajout des libell√©s texte projet, note synth√®se et texte acte apr√®s cr√©ation du projet
+    *) Ticket 1962/2021 : Correction d'un bug sur l'ordre des informations suppl√©mentaires 
+    *) Ticket 2029 : Modification de l'encodage des templates mails et webdelib.inc.default en UTF8 
+    *) Ticket 2031 : La variable titre_annexe ne reprenait pas toutes les annexes
+    *) Ticket 2072 : La fonction de recherche passe de LIKE √† ILIKE 
+    *) Ticket 2117 : Modification de la longueur du titre d'une annexe en cr√©ation
+    *) Ticket 2147 : Correction sur la recherche avec comme crit√®res des informations suppl√©mentaires
+    *) Ticket 2175/2217 : Correction d'un bug sur gestion des votes
+    *) Ticket 2182 : Correction sur l'enregistrement des multi-d√©lib√©rations dans un projet
+    *) Ticket 2183 : Correction sur l'enregistrement webdav des multi-d√©lib√©rations
+    *) Ticket 2187 : Correction sur les visualisations des projets inclus dans des s√©ances non d√©lib√©rantes
+    *) Ticket 2199 : Les projets des sous-services n'apparaissaient pas dans les projet de mon service
+    *) Ticket 2200 : Chronologie des historiques du plus r√©cent au plus ancien
+    *) Ticket 2201 : Chronologie des commentaires du plus r√©cent au plus ancien
+    *) Ticket 2244 : Correction sur la r√©cup√©ration de la liste des mandataires
+    *) Ticket 2301 : Correction sur le bouton de suppression d'un acteur
+    *) Ticket 2316 : Correction sur l'enregistrement de l'historique par un traitement par lot des projets vis√©s
+    *) Ticket 2338 : Liste des projets class√©s par id sur le tableau de bord
+    *) Ticket 2356 : Correction prise en compte du type d'actes pour la recherche multi-crit√®res
+    *) Ticket 2357 : Correction probl√®me d'affichage des boutons "favorable" et "d√©favorable" sur un avis
