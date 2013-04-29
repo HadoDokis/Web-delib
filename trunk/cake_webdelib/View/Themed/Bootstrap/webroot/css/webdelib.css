@@ -704,12 +704,13 @@ a.link_annuler_sans_border {
 	padding-bottom: 10px;
 }
 
-a.link_inserer_logo {
+a.link_inserer_logo, a.link_inserer_logo:hover {
 	background-image: url(../../../img/icons/insert_logo.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding-left: 25px;
 	padding-bottom: 10px;
+        text-decoration: none;
 }
 
 a.link_param_mail {
