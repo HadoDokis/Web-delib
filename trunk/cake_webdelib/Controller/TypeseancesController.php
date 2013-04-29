@@ -50,10 +50,10 @@ class TypeseancesController extends AppController {
 		$sortie = false;
 		if (!empty($this->data)) {
 			if ($this->Typeseance->save($this->data)) {
-				$this->Session->setFlash('Le type de seance \''.$this->data['Typeseance']['libelle'].'\' a &eacute;t&eacute; sauvegard&eacute;');
+				$this->Session->setFlash('Le type de seance \''.$this->data['Typeseance']['libelle'].'\' a &eacute;t&eacute; sauvegard&eacute;', 'growl');
 				$sortie = true;
 			} else
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl',array('type'=>'erreur'));
 		}
 		if ($sortie)
 			$this->redirect('/typeseances/index');
