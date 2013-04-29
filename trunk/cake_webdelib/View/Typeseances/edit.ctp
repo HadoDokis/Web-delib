@@ -60,7 +60,7 @@
 <br/>
 <div class="submit">
     <?php echo $this->Form->hidden('Typeseance.id')?>
-    <?php $this->Html2->boutonsSaveCancel(); ?>
+    <?php $this->Html2->boutonsSaveCancel('','/typeseances/index'); ?>
     <?php // echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
     <?php // echo $this->Html->link('Annuler', '/typeseances/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
