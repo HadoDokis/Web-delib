@@ -37,10 +37,10 @@
 
 <br />
 <ul id="actions_fiche">
-	<?php
-		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
-		if ($Droits->check($this->Session->read('user.User.id'), 'Typeacteurs:edit'))
-			echo '<li>'.$this->Html->link(SHY, '/typeacteurs/edit/' . $typeacteur['Typeacteur']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+	<li><?php echo $this->Html->link('<i class="icon-arrow-left"></i> Retour', '/typeacteurs/index', array('class'=>'btn', 'title'=>'Retourner à la liste', 'escape' =>false), false); ?>
+	<?php if ($Droits->check($this->Session->read('user.User.id'), 'Typeacteurs:edit'))
+		echo '<li>'.$this->Html->link('<i class="icon-edit"></i> Modifier', '/typeacteurs/edit/' . $typeacteur['Typeacteur']['id'], array('class'=>'btn', 'title'=>'Modifier', 
+                                                                                                     'escape' =>false), false).'</li>';
 	?>
 </ul>
 

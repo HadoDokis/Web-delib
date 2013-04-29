@@ -54,10 +54,10 @@
 
 <br />
 <ul id="actions_fiche">
-	<li><?php echo $this->Html->link(SHY, '/typeseances/index', array('class'=>'link_annuler_sans_border', 
+	<li><?php echo $this->Html->link('<i class="icon-arrow-left"></i> Retour', '/typeseances/index', array('class'=>'btn', 
                                                                           'title'=>'Retourner à la liste', 
                                                                           'escape' =>false), false) ?> </li>
-	<li><?php echo $this->Html->link(SHY, '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 
+	<li><?php echo $this->Html->link('<i class="icon-edit"></i> Modifier', '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'btn', 
                                                                                                             'title'=>'Modifier', 
                                                                                                             'escape' => false), false) ?> </li>
 </ul>
