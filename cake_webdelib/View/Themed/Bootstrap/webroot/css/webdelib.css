@@ -343,24 +343,27 @@ a.link_tablet, a.link_tablet:hover {
 }
 
 
-a.link_bool_0 {
+a.link_bool_0, a.link_bool_0:hover {
         background-image: url(../../../img/icons/false.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 10px 22px;
+        text-decoration: none;
 }
-a.link_bool_1 {
+a.link_bool_1, a.link_bool_1:hover {
         background-image: url(../../../img/icons/true.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 10px 22px;
+        text-decoration: none;
 }
 
-a.link_liste {
+a.link_liste, a.link_liste:hover {
 	background-image: url(../../../img/icons/liste.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 10px 22px;
+        text-decoration: none;
 }
 a.link_clore_seance, a.link_clore_seance:hover {
         background-image: url(../../../img/icons/close_seance.png);

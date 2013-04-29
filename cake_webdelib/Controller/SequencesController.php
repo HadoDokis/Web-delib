@@ -18,7 +18,7 @@ class SequencesController extends AppController
 	function view($id = null)
 	{
 		if (!$this->Sequence->exists()) {
-			$this->Session->setFlash('Invalide id pour la s&eacute;quence');
+			$this->Session->setFlash('Invalide id pour la s&eacute;quence', 'growl', array('type'=>'erreur'));
 			$this->redirect('/sequences/index');
 		} else
 			$this->set('sequence', $this->Sequence->read(null, $id));
@@ -30,10 +30,10 @@ class SequencesController extends AppController
 			if (empty($this->data['Sequence']['num_sequence'])) $this->data['Sequence']['num_sequence']=1;
 			$this->Sequence->create($this->data);
 			if ($this->Sequence->save()) {
-				$this->Session->setFlash('La s&eacute;quence \''.$this->data['Sequence']['nom'].'\' a &eacute;t&eacute; ajout&eacute;e');
+				$this->Session->setFlash('La s&eacute;quence \''.$this->data['Sequence']['nom'].'\' a &eacute;t&eacute; ajout&eacute;e', 'growl');
 				$sortie = true;
 			} else
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl',array('type'=>'erreur'));
 		}
 		if ($sortie)
 			$this->redirect('/sequences/index');
@@ -46,17 +46,17 @@ class SequencesController extends AppController
 		if (empty($this->data)) {
 			$this->data = $this->Sequence->read(null, $id);
 			if (empty($this->data)) {
-				$this->Session->setFlash('Invalide id pour la s&eacute;quence');
+				$this->Session->setFlash('Invalide id pour la s&eacute;quence', 'growl',array('type'=>'erreur'));
 				$sortie = true;
 			}
 		} else {
 			if (empty($this->data['Sequence']['num_sequence'])) $this->data['Sequence']['num_sequence']=1;
 			if ($this->Sequence->save($this->data)) {
-				$this->Session->setFlash('La s&eacute;quence \''.$this->data['Sequence']['nom'].'\' a &eacute;t&eacute; modifi&eacute;e');
+				$this->Session->setFlash('La s&eacute;quence \''.$this->data['Sequence']['nom'].'\' a &eacute;t&eacute; modifi&eacute;e', 'growl');
 				$sortie = true;
 			}
 			else
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl',array('type'=>'erreur'));
 		}
 		if ($sortie)
 			$this->redirect('/sequences/index');
@@ -65,13 +65,13 @@ class SequencesController extends AppController
 	function delete($id = null) {
 		$sequence = $this->Sequence->read('id, nom', $id);
 		if (empty($sequence)) {
-			$this->Session->setFlash('Invalide id pour la s&eacute;quence');
+			$this->Session->setFlash('Invalide id pour la s&eacute;quence', 'growl',array('type'=>'erreur'));
 		}
 		elseif (!empty($sequence['Compteur'])) {
-			$this->Session->setFlash('La s&eacute;quence \''.$sequence['Sequence']['nom'].'\' est utilis&eacute;e par un compteur. Suppression impossible.');
+			$this->Session->setFlash('La s&eacute;quence \''.$sequence['Sequence']['nom'].'\' est utilis&eacute;e par un compteur. Suppression impossible.', 'growl', array('type'=>'erreur'));
 		}
 		elseif ($this->Sequence->delete($id)) {
-			$this->Session->setFlash('La s&eacute;quence \''.$sequence['Sequence']['nom'].'\' a &eacute;t&eacute; supprim&eacute;e');
+			$this->Session->setFlash('La s&eacute;quence \''.$sequence['Sequence']['nom'].'\' a &eacute;t&eacute; supprim&eacute;e', 'growl');
 		}
 		$this->redirect('/sequences/index');
 	}

@@ -37,7 +37,7 @@ class ThemesController extends AppController {
 
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalide id pour le Th&egrave;me.');
+			$this->Session->setFlash('Invalide id pour le Th&egrave;me.', 'growl',array('type'=>'erreur'));
 			$this->redirect('/themes/index');
 		}
 		$this->set('theme', $this->Theme->read(null, $id));
@@ -54,10 +54,10 @@ class ThemesController extends AppController {
 			$this->request->data['Theme']['actif'] =1;
 
 			if ($this->Theme->save($this->data)) {
-				$this->Session->setFlash('Le th&egrave;me a &eacute;t&eacute; sauvegard&eacute;');
+				$this->Session->setFlash('Le th&egrave;me a &eacute;t&eacute; sauvegard&eacute;', 'growl');
 				$this->redirect('/themes/index');
 			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl',array('type'=>'erreur'));
 			}
 		}
 	}
@@ -65,7 +65,7 @@ class ThemesController extends AppController {
 	function edit($id = null) {
 		if (empty($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalide id pour le Th&egrave;me');
+				$this->Session->setFlash('Invalide id pour le Th&egrave;me', 'growl',array('type'=>'erreur'));
 				$this->redirect('/Themes/index');
 			}
 			$this->data = $this->Theme->read(null, $id);
@@ -76,23 +76,23 @@ class ThemesController extends AppController {
 		} else {
 			if (empty($this->data['Theme']['parent_id'])) $this->request->data['Theme']['parent_id']=0;
 			if ($this->Theme->save($this->data)) {
-				$this->Session->setFlash('Le th&egrave;me a &eacute;t&eacute; modifi&eacute;');
+				$this->Session->setFlash('Le th&egrave;me a &eacute;t&eacute; modifi&eacute;', 'growl');
 				$this->redirect('/themes/index');
 			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl',array('type'=>'erreur'));
 			}
 		}
 	}
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalide id pour le Th&egrave;me');
+			$this->Session->setFlash('Invalide id pour le Th&egrave;me', 'growl',array('type'=>'erreur'));
 			$this->redirect('/themes/index');
 		}
 		$theme = $this->Theme->read(null, $id);
 		$theme['Theme']['actif'] = 0;
 		if ( $this->Theme->save( $theme)) {
-			$this->Session->setFlash('Le Th&egrave;me a &eacute;t&eacute; d&eacute;sactiv&eacute;');
+			$this->Session->setFlash('Le Th&egrave;me a &eacute;t&eacute; d&eacute;sactiv&eacute;', 'growl');
 			$this->redirect('/themes/index');
 		}
 	}
