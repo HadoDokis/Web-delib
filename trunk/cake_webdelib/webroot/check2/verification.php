@@ -231,7 +231,8 @@ function verifVersions() {
 
 	// version de cakephp
 	if (file_exists(LIBS.'VERSION.txt')) {
-		$fVer = trim(file_get_contents(LIBS.'VERSION.txt'));
+                $versionFile = file(LIBS. 'VERSION.txt');
+		$fVer = trim(array_pop($versionFile));
 
 		$okko = ($fVer==trim($versionCakePHPAttendue)) ? 'ok' : 'ko';
 		d("Version de CakePHP (attendue $versionCakePHPAttendue) : $fVer", $okko);
