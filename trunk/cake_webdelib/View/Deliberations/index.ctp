@@ -35,14 +35,17 @@ function choixModele(o) {
 ?>
 	<table width="100%" cellspacing="0" cellpadding="0" caption="<?php echo $titreVue;?>" summary="<?php echo $titreVue;?>" >
 	<tr>
-		<th width='5%'>
-                 <?php if (isset($traitement_lot) && ($traitement_lot ==true))
+		<th width='72'>
+                 <?php if (isset($traitement_lot) && ($traitement_lot ==true)){
                            echo "<input type=\"checkbox\" onclick=\"$('td :checkbox').attr('checked', this.checked);\"/>";
-                 ?><br/>Vue</th>
-		<th width='15%' align="left">synthétique</th>
-		<th width='46%'> &nbsp;</th>
-		<th width='18%' >&nbsp;</th>
-		<th width='250px'>Actions</th>
+                 echo '<br/>';
+                 
+                 }
+                 ?>Vue</th>
+		<th width='15%' align="left">Synthétique</th>
+		<th width='40%'>&nbsp;</th>
+		<th width='30%'>&nbsp;</th>
+		<th width='150'>Actions</th>
 	</tr>
 	<tr>
 		<td colspan='5' class='Border' height='1' >
@@ -78,8 +81,10 @@ function choixModele(o) {
                                                           array('type'     => 'select', 
                                                                 'label'    => '', 
                                                                 'options'  => $deliberation['Seances'],
-                                                                'empty'    => false,
-                                                                'multiple' => true));
+                                                                'empty' => 'Choisir une séance',
+                                                                'empty' => false,
+                                                                'multiple' => true,
+                                                                ));
 					echo $this->Form->hidden('Deliberation.id',array('value'=> $deliberation['Deliberation']['id']));
 					echo $this->Form->button("<i class='icon-save'></i> Sauvegarder", array('type'=>'submit', 'div'=>false, 'class'=>'btn','escape'=>false, 'name'=>'sauvegarder'));
 				echo $this->Form->end();
@@ -240,12 +245,12 @@ function choixModele(o) {
           }
 	  if (in_array('mesProjetsRecherche', $listeLiens)) {
               echo '<ul class="actions">';
-              echo '<li>'.$this->Html->link('Nouvelle recherche', '/deliberations/mesProjetsRecherche', array('class'=>'link_add', 'escape' => false, 'alt'=>'Nouvelle recherche parmi mes projets', 'title'=>'Nouvelle recherche parmi mes projets')).'</li>'; 
+              echo '<li>'.$this->Html->link('Nouvelle recherche', '/deliberations/mesProjetsRecherche', array('class'=>'btn', 'escape' => false, 'alt'=>'Nouvelle recherche parmi mes projets', 'title'=>'Nouvelle recherche parmi mes projets')).'</li>'; 
               echo '</ul>';
           }
 	  if (in_array('tousLesProjetsRecherche', $listeLiens)) {
               echo '<ul class="actions">';
-              echo '<li>'.$this->Html->link('Nouvelle recherche', '/deliberations/tousLesProjetsRecherche', array('class'=>'link_add', 'escape' => false, 'alt'=>'Nouvelle recherche parmi tous les projets', 'title'=>'Nouvelle recherche parmi tous les projets')).'</li>';
+              echo '<li>'.$this->Html->link('Nouvelle recherche', '/deliberations/tousLesProjetsRecherche', array('class'=>'btn', 'escape' => false, 'alt'=>'Nouvelle recherche parmi tous les projets', 'title'=>'Nouvelle recherche parmi tous les projets')).'</li>';
               echo '</ul>';
           }
 } ?>
