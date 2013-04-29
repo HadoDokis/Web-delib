@@ -94,7 +94,6 @@
     </fieldset>
     </div>
 <?php
-    echo $this->Form->submit('Configurer', array('class' => "btn btn-primary"));
-
+    echo $this->Html2->boutonsSaveCancel('','/connecteurs/index');
     echo $this->Form->end();
 ?>
