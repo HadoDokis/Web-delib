@@ -32,7 +32,7 @@ class TypeactesController extends AppController {
                                                                                        'Modelprojet.modele',
                                                                                'Modeldeliberation.modele')));
 		if (empty($typeacte)) {
-			$this->Session->setFlash('Invalide id pour le type de acte.');
+			$this->Session->setFlash('Invalide id pour le type de acte.', 'growl',array('type'=>'erreur'));
 			$this->redirect('/typeactes/index');
 		}
 		$this->set('typeacte', $typeacte);
@@ -47,10 +47,10 @@ class TypeactesController extends AppController {
                                   'foreign_key'=>$this->Typeacte->id,
                                   'parent_id'=>0,
                                   'alias'=>'Typeacte:'.$this->data['Typeacte']['libelle']));   
-			    $this->Session->setFlash('Le type de acte \''.$this->data['Typeacte']['libelle'].'\' a &eacute;t&eacute; sauvegard&eacute;');
+			    $this->Session->setFlash('Le type de acte \''.$this->data['Typeacte']['libelle'].'\' a &eacute;t&eacute; sauvegard&eacute;', 'growl');
 			    $sortie = true;
                         } else {
-                            $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+                            $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl',array('type'=>'erreur'));
                         }
 		} 
 		if ($sortie)
@@ -74,7 +74,7 @@ class TypeactesController extends AppController {
 			$this->request->data = $this->Typeacte->find('first', array('conditions' => array('Typeacte.id' =>$id),
                                                                                     'contain'    => array('Nature')));
 			if (empty($this->data)) {
-				$this->Session->setFlash('Invalide id pour le type de s&eacute;ance');
+				$this->Session->setFlash('Invalide id pour le type de s&eacute;ance', 'growl',array('type'=>'erreur'));
 				$sortie = true;
 			} else {
 				$this->set('selectedNatures', $this->data['Nature']['id']);
@@ -87,10 +87,10 @@ class TypeactesController extends AppController {
                     if ($this->Typeacte->save($this->data)) {
                         $this->Ado->id = $ado['Ado']['id'];
                         $this->Ado->saveField('alias',  'Typeacte:'.$this->data['Typeacte']['libelle']);
-                        $this->Session->setFlash('Le type de s&eacute;ance \''.$this->data['Typeacte']['libelle'].'\' a &eacute;t&eacute; modifi&eacute;');
+                        $this->Session->setFlash('Le type de s&eacute;ance \''.$this->data['Typeacte']['libelle'].'\' a &eacute;t&eacute; modifi&eacute;', 'growl');
                         $sortie = true;
                     } else {
-                        $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+                        $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl',array('type'=>'erreur'));
                         if (array_key_exists('Typeacteur', $this->data)) {
                             $this->set('selectedTypeacteurs', $this->data['Typeacteur']['Typeacteur']);
                             $this->set('selectedActeurs', $this->data['Acteur']['Acteur']);
@@ -125,11 +125,11 @@ class TypeactesController extends AppController {
 		$messageErreur = '';
 		$typeacte = $this->Typeacte->read('id, libelle', $id);
 		if (empty($typeacte))
-			$this->Session->setFlash('Invalide id pour le type de s&eacute;ance');
+			$this->Session->setFlash('Invalide id pour le type de s&eacute;ance', 'growl',array('type'=>'erreur'));
 		elseif (!$this->_isDeletable($typeacte, $messageErreur))
 			$this->Session->setFlash($messageErreur);
 		elseif ($this->Typeacte->del($id))
-			$this->Session->setFlash('Le type de s&eacute;ance \''.$typeacte['Typeacte']['libelle'].'\' a &eacute;t&eacute; supprim&eacute;');
+			$this->Session->setFlash('Le type de s&eacute;ance \''.$typeacte['Typeacte']['libelle'].'\' a &eacute;t&eacute; supprim&eacute;', 'growl');
 
 		$this->redirect('/typeactes/index');
 	}

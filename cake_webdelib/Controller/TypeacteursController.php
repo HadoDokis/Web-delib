@@ -19,7 +19,7 @@ class TypeacteursController extends AppController
 	function view($id = null) 	{
 		$typeacteur = $this->Typeacteur->find('first', array('conditions' => array('Typeacteur.id'=> $id)));
 		if (empty($typeacteur)) {
-			$this->Session->setFlash('Invalide id pour le type d\'acteur');
+			$this->Session->setFlash('Invalide id pour le type d\'acteur', 'growl',array('type'=>'erreur'));
 			$this->redirect('/typeacteurs/index');
 		} else
 			$this->set('typeacteur', $typeacteur);
@@ -33,7 +33,7 @@ class TypeacteursController extends AppController
 				$this->Session->setFlash('Le type d\'acteur \''.$this->data['Typeacteur']['nom'].'\' a &eacute;t&eacute; ajout&eacute;');
 				$sortie = true;
 			} else
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl',array('type'=>'erreur'));
 		}
 		if ($sortie)
 			$this->redirect('/typeacteurs/index');
@@ -48,15 +48,15 @@ class TypeacteursController extends AppController
 		if (empty($this->data)) {
 			$this->data = $this->Typeacteur->read(null, $id);
 			if (empty($this->data)) {
-				$this->Session->setFlash('Invalide id pour le type d\'acteur');
+				$this->Session->setFlash('Invalide id pour le type d\'acteur', 'growl', array('type'=>'erreur'));
 				$sortie = true;
 			}
 		} else {
 			if ($this->Typeacteur->save($this->data)) {
-				$this->Session->setFlash('Le type d\'acteur \''.$this->data['Typeacteur']['nom'].'\' a &eacute;t&eacute; modifi&eacute;');
+				$this->Session->setFlash('Le type d\'acteur \''.$this->data['Typeacteur']['nom'].'\' a &eacute;t&eacute; modifi&eacute;', 'growl');
 				$sortie = true;
 			} else
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl',array('type'=>'erreur'));
 		}
 		if ($sortie)
 			$this->redirect('/typeacteurs/index');
@@ -67,13 +67,13 @@ class TypeacteursController extends AppController
 	function delete($id = null) {
 		$typeacteur = $this->Typeacteur->read('id, nom', $id);
 		if (empty($typeacteur)) {
-			$this->Session->setFlash('Invalide id pour le type d\'acteur');
+			$this->Session->setFlash('Invalide id pour le type d\'acteur', 'growl',array('type'=>'erreur'));
 		}
 		elseif (!empty($typeacteur['Acteur'])) {
-			$this->Session->setFlash('Le type d\'acteur \''.$typeacteur['Typeacteur']['nom'].'\' est utilis&eacute; par un acteur. Suppression impossible.');
+			$this->Session->setFlash('Le type d\'acteur \''.$typeacteur['Typeacteur']['nom'].'\' est utilis&eacute; par un acteur. Suppression impossible.', 'growl', array('type'=>'erreur'));
 		}
 		elseif ($this->Typeacteur->delete($id)) {
-			$this->Session->setFlash('Le type d\'acteur \''.$typeacteur['Typeacteur']['nom'].'\' a &eacute;t&eacute; supprim&eacute;');
+			$this->Session->setFlash('Le type d\'acteur \''.$typeacteur['Typeacteur']['nom'].'\' a &eacute;t&eacute; supprim&eacute;', 'growl');
 		}
 		$this->redirect('/typeacteurs/index');
 	}
