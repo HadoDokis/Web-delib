@@ -32,7 +32,7 @@ if ($this->Html->value('Typeacteur.id')) {
 <br/>
 <div class="submit">
     <?php if ($this->action == 'edit') echo $this->Form->hidden('Typeacteur.id'); ?>
-    <?php $this->Html2->boutonsSaveCancel(); ?>
+    <?php $this->Html2->boutonsSaveCancel('','/typeacteurs/index'); ?>
     <?php // echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));?>
     <?php // echo $this->Html->link('Annuler', '/typeacteurs/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
 </div>
