@@ -30,7 +30,7 @@ class TypeacteursController extends AppController
 		if (!empty($this->data)) {
 			$this->Typeacteur->create($this->data);
 			if ($this->Typeacteur->save()) {
-				$this->Session->setFlash('Le type d\'acteur \''.$this->data['Typeacteur']['nom'].'\' a &eacute;t&eacute; ajout&eacute;');
+				$this->Session->setFlash('Le type d\'acteur \''.$this->data['Typeacteur']['nom'].'\' a &eacute;t&eacute; ajout&eacute;', 'growl');
 				$sortie = true;
 			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl',array('type'=>'erreur'));
