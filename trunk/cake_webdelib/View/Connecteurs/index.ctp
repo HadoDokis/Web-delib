@@ -21,6 +21,7 @@
                                    "/check2/index2.php#".strtolower($connecteur),
                                    array('class'=>'link_validerenurgence',
                                          'alt'=>"Tester le connecteur $connecteur",
+                                         'target'=>"_blank",
                                          'title'=>"Tester le connecteur $connecteur",
                                           'escape' => false
                                          )).'</td>';

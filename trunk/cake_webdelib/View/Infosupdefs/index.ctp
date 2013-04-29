@@ -38,7 +38,7 @@
 </table>
 
 <ul class="actions">
-	<?php echo $this->Html->link('Ajouter une information suppl&eacute;mentaire', $lienAdd, array('class'=>'link_add', 'escape' => false, 'title'=>'Ajouter une information supplémentaire'), false); ?>
+	<?php echo $this->Html->link('<i class="icon-plus-sign"></i> Ajouter une information suppl&eacute;mentaire', $lienAdd, array('class'=>'btn btn-primary', 'escape' => false, 'title'=>'Ajouter une information supplémentaire'), false); ?>
 </ul>
 
 </div>
