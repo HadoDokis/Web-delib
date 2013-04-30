@@ -66,7 +66,7 @@ class Theme extends AppModel {
             $oMainPart->addElement(new GDO_FieldType("T".$i."_theme", $tab[$i], 'text'));
         }
         $oMainPart->addElement(new GDO_FieldType('theme_projet', $theme['Theme']['libelle'],  'text'));
-        $oMainPart->addElement(new GDO_FieldType('critere-trie_theme', $theme['Theme']['order'], 'text'));
+        $oMainPart->addElement(new GDO_FieldType('critere_trie_theme', $theme['Theme']['order'], 'text'));
     }
 
 }
