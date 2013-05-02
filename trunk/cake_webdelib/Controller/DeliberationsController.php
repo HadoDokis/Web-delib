@@ -3022,8 +3022,19 @@ class DeliberationsController extends AppController {
             else {
                 $delibs = $this->Seance->getDeliberations($seance_id, array('conditions' => $conditions));
             }
-            $type_id = $this->Seance->getType($seance_id);
+            
             for ($i=0; $i<count($delibs); $i++){
+                if ($seance_id == null){
+                    $tab_seances = array();
+                    foreach($delibs[$i]['Seance'] as $seance) {
+                        $tab_seances[] = $seance['id'];
+                    }
+                    $seance_id = $this->Seance->getSeanceDeliberante($tab_seances);
+                    $type_id = $this->Seance->getType($seance_id);
+                }
+                else 
+                    $type_id = $this->Seance->getType($seance_id);
+                
                 $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($type_id, 3);
             }
             $this->set('deliberations', $delibs);
