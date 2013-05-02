@@ -53,7 +53,7 @@ class ParapheurShell extends Shell {
                     $this->Commentaire->create();
                     $comm ['Commentaire']['delib_id'] = $delib_id;
                     $comm ['Commentaire']['agent_id'] = -1;
-                    $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation']);
+                    $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
                     $comm ['Commentaire']['commentaire_auto'] = 0;
                     $this->Commentaire->save($comm['Commentaire']);
 
@@ -81,7 +81,7 @@ class ParapheurShell extends Shell {
                     $this->Commentaire->create();
                     $comm ['Commentaire']['delib_id'] = $delib_id;
                     $comm ['Commentaire']['agent_id'] = -1;
-                    $comm ['Commentaire']['texte'] = utf8_decode($histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation']);
+                    $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
                     $comm ['Commentaire']['commentaire_auto'] = 0;
                     $this->Commentaire->save($comm['Commentaire']);
                     $this->Deliberation->saveField('etat_parapheur', -1);
