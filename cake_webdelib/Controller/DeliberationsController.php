@@ -1993,7 +1993,7 @@ class DeliberationsController extends AppController {
             "#ADRESSE_A_VISUALISER#" =>  $addr2
             );
         
-        return (utf8_encode(str_replace(array_keys($searchReplace), array_values($searchReplace), $content)));
+        return (str_replace(array_keys($searchReplace), array_values($searchReplace), $content));
     }
     
     /*
