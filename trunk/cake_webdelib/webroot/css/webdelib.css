@@ -543,32 +543,36 @@ a.link_circuit, a.link_circuit:hover {
         text-decoration: none;
 }
 
-a.link_projet {
+a.link_projet,a.link_projet:hover {
 	background-image: url(../img/icons/projet.png);
 	background-repeat: no-repeat;
 	background-position: top left ;
 	padding: 0 0 10px 22px;
+        text-decoration: none;
 }
 
-a.link_synthese {
+a.link_synthese,a.link_synthese:hover {
 	background-image: url(../img/icons/synthese.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
+        text-decoration: none;
 }
 
-a.link_deliberation {
+a.link_deliberation,a.link_deliberation:hover {
 	background-image: url(../img/icons/delibe.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
+        text-decoration: none;
 }
 
-a.link_add {
+a.link_add,a.link_add:hover {
 	background-image: url(../img/icons/edit_add.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
+        text-decoration: none;
 }
 
 a.link_traiter, a.link_traiter:hover {
