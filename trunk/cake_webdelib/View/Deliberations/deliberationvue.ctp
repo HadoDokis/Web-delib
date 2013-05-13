@@ -21,10 +21,12 @@
 			echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
 			echo '<br>Taille : '.$annexe['Annex']['size'];
 			echo '<br>'.$this->Html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
-	<?php endforeach; } ?>
+	<?php endforeach; } 
+        ?>
 </div>
 
-<div class="submit">
-	<?php echo $this->Html->link(SHY, $this->Session->read('user.User.myUrl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche', 'escape' => false));?>
+<div class="actions">
+	<?php
+        echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', 'javascript:history.go(-1)', array('class'=>'btn', 'title'=>'Retour fiche', 'escape' => false));?>
 
 </div>

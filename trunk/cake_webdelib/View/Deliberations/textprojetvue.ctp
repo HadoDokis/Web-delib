@@ -25,6 +25,7 @@
 </div>
 
 <div class="actions">
-	<?php echo $this->Html->link(SHY, $this->Session->read('user.User.myUrl'), array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche', 'escape' => false))?>
+	<?php 
+        echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', 'javascript:history.go(-1)', array('class'=>'btn', 'title'=>'Retour fiche', 'escape' => false))?>
 
 </div>
