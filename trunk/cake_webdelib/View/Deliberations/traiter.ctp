@@ -140,7 +140,7 @@
         if (!empty($commentaires)) {
             echo"<dt>Commentaires</dt><br />";
             foreach ($commentaires as $commentaire) {
-                echo '<dd><u>' . $commentaire['Commentaire']['prenomAgent'] . ' ' . $commentaire['Commentaire']['nomAgent'] . ' <br/></u>';
+                echo '<dd>'.$this->Html2->ukToFrenchDateWithHour($commentaire['Commentaire']['created']) . ' [' . $commentaire['Commentaire']['prenomAgent'] . ' ' . $commentaire['Commentaire']['nomAgent'] . ']&nbsp;';
                 echo $commentaire['Commentaire']['texte'] . ' ';
                 if ($commentaire['Commentaire']['agent_id'] == $this->Session->read('user.User.id'))
                     echo $this->Html->link('Supprimer', '/commentaires/delete/' . $commentaire['Commentaire']['id'] . '/' . $deliberation['Deliberation']['id']);
