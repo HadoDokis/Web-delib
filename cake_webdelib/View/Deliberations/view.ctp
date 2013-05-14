@@ -218,7 +218,7 @@ if (!empty($commentaires)) {
     echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'Commentaires'));
     echo $this->Html->tag('dt', "Commentaires");
     foreach ($commentaires as $commentaire) {
-        echo '<dd><u>' . $commentaire['Commentaire']['prenomAgent'] . ' ' . $commentaire['Commentaire']['nomAgent'] . ' </u><br/>';
+        echo '<dd>'.$this->Html2->ukToFrenchDateWithHour($commentaire['Commentaire']['created']) . ' [' . $commentaire['Commentaire']['prenomAgent'] . ' ' . $commentaire['Commentaire']['nomAgent'] . ']&nbsp;';
         echo $commentaire['Commentaire']['texte'];
         echo '</dd>';
     }
