@@ -548,7 +548,7 @@ class Deliberation extends AppModel {
 		}
 		$oMainPart->addElement(new GDO_FieldType('nombre_votant', $nb_votant, 'text'));
 		$oMainPart->addElement(new GDO_FieldType('date_reception',  ($delib['Deliberation']['dateAR']), 'text'));
-		$oMainPart->addElement(new GDO_FieldType('commentaire_vote', utf8_encode($delib['Deliberation']['vote_commentaire']), 'lines'));
+		$oMainPart->addElement(new GDO_FieldType('commentaire_vote', $delib['Deliberation']['vote_commentaire'], 'lines'));
 
 		$coms = $this->Commentaire->find('all',
 				array('conditions' => array('Commentaire.delib_id' => $delib['Deliberation']['id']),
