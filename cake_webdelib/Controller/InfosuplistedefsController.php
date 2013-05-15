@@ -23,10 +23,10 @@ function index($infosupdefId) {
 	$infosupdef = $this->{$this->modelClass}->Infosupdef->find('first', array('conditions' => array('Infosupdef.id' => $infosupdefId),
                                                                                   'recursive'  => -1));
 	if (empty($infosupdef)) {
-		$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible');
+		$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible', 'growl', array('type'=>'erreur'));
 		$sortie = true;
 	} elseif ($infosupdef['Infosupdef']['type'] != 'list') {
-		$this->Session->setFlash('Cette information suppl&eacute;mentaire n\'est pas de type liste : &eacute;dition impossible');
+		$this->Session->setFlash('Cette information suppl&eacute;mentaire n\'est pas de type liste : &eacute;dition impossible', 'growl', array('type'=>'erreur'));
 		$sortie = true;
 	}
 	if ($sortie)
@@ -52,11 +52,11 @@ function add($infosupId=0) {
                                                                                           'fields'     => array('id', 'type', 'nom'),
                                                                                            'recursive' => -1));
 		if (empty($infosupdef)) {
-			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible');
+			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible', 'growl', array('type'=>'erreur'));
 			$redirect = '/infosupdefs/index';
 			$sortie = true;
 		} elseif ($infosupdef['Infosupdef']['type'] != 'list') {
-			$this->Session->setFlash('Cette information suppl&eacute;mentaire n\'est pas de type liste : &eacute;dition impossible');
+			$this->Session->setFlash('Cette information suppl&eacute;mentaire n\'est pas de type liste : &eacute;dition impossible', 'growl', array('type'=>'erreur'));
 			$redirect = '/infosupdefs/index';
 			$sortie = true;
 		} else {
@@ -69,12 +69,12 @@ function add($infosupId=0) {
                                                                         'recursive'  => -1 ));
                 $this->request->data['Infosuplistedef']['ordre'] = $nb_liste+1;
 		if ($this->Infosuplistedef->save($this->data['Infosuplistedef'])) {
-			$this->Session->setFlash('L\'&eacute;l&eacute;ment \''.$this->data['Infosuplistedef']['nom'].'\' a &eacute;t&eacute; ajout&eacute;');
+			$this->Session->setFlash('L\'&eacute;l&eacute;ment \''.$this->data['Infosuplistedef']['nom'].'\' a &eacute;t&eacute; ajout&eacute;', 'growl');
 			$redirect = '/infosuplistedefs/index/'.$this->data['Infosuplistedef']['infosupdef_id'];
 			$sortie = true;
 		} else {
 			$infosupdef = $this->{$this->modelClass}->Infosupdef->findById($this->data['Infosuplistedef']['infosupdef_id'], null, null, -1);
-			$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+			$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
 		}
 	}
 
@@ -96,17 +96,17 @@ function edit($id=0) {
 		// lecture de l'infosuplistedef
 		$this->data = $this->{$this->modelClass}->findById($id, null, null, -1);
 		if (empty($this->data)) {
-			$this->Session->setFlash('Invalide id pour l\'&eacute;l&eacute;ment de l\'information suppl&eacute;mentaire : &eacute;dition impossible');
+			$this->Session->setFlash('Invalide id pour l\'&eacute;l&eacute;ment de l\'information suppl&eacute;mentaire : &eacute;dition impossible', 'growl', array('type'=>'erreur'));
 			$redirect = '/infosupdefs/index';
 			$sortie = true;
 		}
 	} else {
 		if ($this->{$this->modelClass}->save($this->data)) {
-			$this->Session->setFlash('L\'&eacute;l&eacute;ment \''.$this->data['Infosuplistedef']['nom'].'\' a &eacute;t&eacute; modifi&eacute;');
+			$this->Session->setFlash('L\'&eacute;l&eacute;ment \''.$this->data['Infosuplistedef']['nom'].'\' a &eacute;t&eacute; modifi&eacute;', 'growl');
 			$redirect = '/infosuplistedefs/index/'.$this->data['Infosuplistedef']['infosupdef_id'];
 			$sortie = true;
 		} else {
-			$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+			$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
 		}
 	}
 	if ($sortie)
@@ -124,7 +124,7 @@ function delete($id=0) {
 	$this->request->data = $this->{$this->modelClass}->find('first', array('conditions' => array('id' =>$id), 
                                                                        'recursive' => -1));
 	if (empty($this->data)) {
-		$this->Session->setFlash('Invalide id pour l\'&eacute;l&eacute;ment de l\'information suppl&eacute;mentaire : suppression impossible');
+		$this->Session->setFlash('Invalide id pour l\'&eacute;l&eacute;ment de l\'information suppl&eacute;mentaire : suppression impossible', 'growl', array('type'=>'erreur'));
 		$redirect = '/infosupdefs/index';
 		$sortie = true;
 	} else {
@@ -132,11 +132,11 @@ function delete($id=0) {
 		$this->request->data['Infosuplistedef']['ordre'] = 0;
 		if ($this->{$this->modelClass}->save($this->data)) {
 			$this->{$this->modelClass}->reOrdonne($this->data['Infosuplistedef']['infosupdef_id']);
-			$this->Session->setFlash('L\'&eacute;l&eacute;ment \''.$this->data['Infosuplistedef']['nom'].'\' a &eacute;t&eacute; supprim&eacute;');
+			$this->Session->setFlash('L\'&eacute;l&eacute;ment \''.$this->data['Infosuplistedef']['nom'].'\' a &eacute;t&eacute; supprim&eacute;', 'growl');
 			$redirect = '/infosuplistedefs/index/'.$this->data['Infosuplistedef']['infosupdef_id'];
 			$sortie = true;
 		} else {
-			$this->Session->setFlash('Erreur lors de la suppression.');
+			$this->Session->setFlash('Erreur lors de la suppression.', 'growl', array('type'=>'erreur'));
 		}
 	}
 	$this->redirect($redirect);
@@ -160,7 +160,7 @@ function changerOrdre($id = null, $suivant = true){
 	$this->request->data = $this->{$this->modelClass}->find('first', array('conditions' => array('id' =>$id), 
                                                                        'recursive' => -1));
 	if (empty($this->data))
-		$this->Session->setFlash('Invalide id : deplacement impossible.');
+		$this->Session->setFlash('Invalide id : deplacement impossible.', 'growl', array('type'=>'erreur'));
 	else
 		$this->{$this->modelClass}->invert($id, $suivant);
 
