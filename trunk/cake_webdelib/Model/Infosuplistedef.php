@@ -65,7 +65,7 @@
 	if (!array_key_exists('id', $this->data['Infosuplistedef']) ||	empty($this->data['Infosuplistedef']['id']))
             $this->data['Infosuplistedef']['ordre'] = $this->find('count', array(
                                                                   'conditions' => array(
-                                                                      'actif' => 1,
+                                                                      'Infosuplistedef.actif' => 1,
                                                                       'infosupdef_id' => $this->data['Infosuplistedef']['infosupdef_id']),
                                                                   'recurtsive' => -1)) + 1;
 
@@ -75,18 +75,12 @@
 		/**
 		 * Réordonne les numéros d'ordre après une suppression pour l'infosupdef $infosupdefId
 		 */
-		function reOrdonne($infosupdefId, $sortby=null, $ordre=null) {
+		function reOrdonne($infosupdefId) {
 
-                        if(!empty($sortby) and !empty($ordre))
-                            $order=array ("$sortby  $ordre");
-                        else
-                            $order='';
-                    
 			$recs = $this->find('all', array('conditions' => array( 'actif' => 1, 
                                                                                 'infosupdef_id' => $infosupdefId), 
                                                           'fields'  => array('id', 'ordre'), 
-                                                          'recursive' => -1,
-                                                          'order'      => $order));
+                                                          'recursive' => -1));
 
 			foreach($recs as $n=>$rec) {
 				if (($n+1) != $rec['Infosuplistedef']['ordre']) {
