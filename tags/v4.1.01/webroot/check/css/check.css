@@ -1,0 +1,24 @@
+@CHARSET "UTF-8";
+
+.ok {
+ /*   border: solid 1px; */
+    background: #d3d3d3 url(../img/ok.png) 100% 50% no-repeat;
+    padding: 0.5em 1em 0.5em 0;
+}
+
+.ko {
+/*    border: solid 1px;*/
+    background: #9d9d9d url(../img/ko.png) 100% 50% no-repeat;
+    padding: 0.5em 1em 0.5em 0;
+}
+.info {
+    background: url(../img/info.png) 100% 50% no-repeat;
+    padding: 0.5em 1em 0.5em 0;
+}
+#headerLogoContainer {
+/*    padding: 5px 20px;*/
+    padding-right: 58em;
+}
+ul {
+padding: 0px 30px;
+}
