@@ -535,7 +535,8 @@ CREATE TABLE deliberations_seances (
     deliberation_id integer NOT NULL,
     seance_id integer NOT NULL,
     "position" integer,
-    avis boolean
+    avis boolean,
+    commentaire character varying(1000),
 );
 
 

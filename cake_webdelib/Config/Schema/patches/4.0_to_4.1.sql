@@ -51,3 +51,5 @@ INSERT INTO "public".crons (nom, description, plugin, controller, "action", has_
 	VALUES ('Circuits de traitement : Mise à jour des traitements extérieurs', 'Lecture de l''état des traitements extérieurs (iParapheur)', 'cakeflow', 'traitements', 'majTraitementsParapheur', false, '', '2013-03-14 17:45:00.0', 'PT1H', '2013-03-14 17:10:03.0', '2013-03-14 17:10:03.0', '', 'SUCCES', true, '2013-03-06 11:01:46.996708', 1, '2013-03-14 11:44:45.0', 2);
 
 ALTER TABLE deliberations ADD COLUMN date_envoi_signature timestamp without time zone NULL;
+
+ALTER TABLE deliberations_seances ADD COLUMN commentaire character varying(1000) NULL;
