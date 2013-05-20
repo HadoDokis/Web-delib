@@ -1226,16 +1226,7 @@ CREATE TABLE users (
     mail_insertion boolean NOT NULL,
     "position" integer,
     created timestamp without time zone NOT NULL,
-    modified timestamp without time zone NOT NULL,
-    zone_1 character varying(50),
-    zone_2 character varying(50),
-    zone_3 character varying(50),
-    zone_4 character varying(50),
-    zone_5 character varying(50),
-    zone_6 character varying(50),
-    zone_7 character varying(50),
-    zone_8 character varying(50),
-    zone_9 character varying(50)
+    modified timestamp without time zone NOT NULL
 );
 
 
