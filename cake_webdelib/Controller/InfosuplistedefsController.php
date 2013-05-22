@@ -63,7 +63,6 @@ function add($infosupId=0) {
 			// initialisations
 			$this->request->data['Infosuplistedef']['infosupdef_id'] = $infosupId;
 			$this->request->data['Infosuplistedef']['actif'] = true;
-                        exit;
 		}
 	} else {
                 $nb_liste = $this->Infosuplistedef->find('count', array('conditions' => array('Infosuplistedef.infosupdef_id' => $infosupId),
