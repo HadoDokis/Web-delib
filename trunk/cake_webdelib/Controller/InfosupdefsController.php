@@ -31,7 +31,7 @@ class InfosupdefsController extends AppController
 	function index_seance() {
 		$this->data = $this->Infosupdef->find('all', array(
 			'recursive' => -1 ,
-			'conditions' => array('model' => 'Seance'),
+			'conditions' => array('model' => 'Seance', 'actif' => true),
 			'order' => 'ordre'));
 		$this->set('titre', 'Liste des informations suppl&eacute;mentaires des s&eacute;ances');
 		$this->set('lienAdd', '/infosupdefs/add/Seance');
@@ -62,7 +62,7 @@ class InfosupdefsController extends AppController
                     $this->set('profils', $this->Profil->find('list', array('conditions' => array ('Profil.actif' => 1))));
 		    $this->request->data['Infosupdef']['model'] = $model;
 		} else {
-                          $this->data['Infosupdef']['actif'] = true;
+                          $this->request->data['Infosupdef']['actif'] = true;
 			/* traitement de la valeur par defaut */
 			if ($this->data['Infosupdef']['type'] == 'date')
 				$this->request->data['Infosupdef']['val_initiale'] = $this->request->data['Infosupdef']['val_initiale_date'];
