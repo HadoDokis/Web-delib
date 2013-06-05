@@ -180,7 +180,7 @@ class Seance extends AppModel {
 				'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
 				'fields'     => array('Deliberationseance.deliberation_id'),
                                 'contain'    => array('Deliberation.id', 'Deliberation.etat', 'Seance.id'),
-                                'order'      => 'Deliberationseance.position',
+                                'order'      => 'Deliberationseance.position ASC',
 				));
 		foreach ($deliberations as $deliberation)
 			$tab[] = $deliberation['Deliberationseance']['deliberation_id'];
@@ -378,7 +378,7 @@ class Seance extends AppModel {
                     $aviss =  new GDO_IterationType("AvisSeance");
                     foreach($avisSeances as $avisSeance) {
                         $Part = new GDO_PartType();
-                        $Part->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
+                        $Part->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['avis']), "lines"));
                         $aviss->addPart($Part);
                     }
                     @$oDevPart->addElement($aviss);
