@@ -57,7 +57,7 @@ class S2lowComponent extends Component {
                 exit;
             }
             // Ecrivons quelque chose dans notre fichier.
-            elseif (fwrite($handle, $reponse) === FALSE) {
+            elseif (fwrite($handle, utf8_encode($reponse)) === FALSE) {
                 echo "Impossible d'ecrire dans le fichier ($filename)";
                 exit;
             }
