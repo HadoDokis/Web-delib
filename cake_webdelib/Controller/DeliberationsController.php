@@ -1516,19 +1516,19 @@ class DeliberationsController extends AppController {
         
         foreach ($xml->Matieres->children($namespaces["actes"]) as $matiere1) {
             $mat1=$this->_object2array($matiere1);
-            $tab[$mat1['@attributes']['CodeMatiere']] = utf8_decode($mat1['@attributes']['Libelle']);
+            $tab[$mat1['@attributes']['CodeMatiere']] = ($mat1['@attributes']['Libelle']);
             foreach ($matiere1->children($namespaces["actes"]) as $matiere2) {
                 $mat2=$this->_object2array($matiere2);
-                $tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere']] = utf8_decode($mat2['@attributes']['Libelle']);
+                $tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere']] = ($mat2['@attributes']['Libelle']);
                 foreach ($matiere2->children($namespaces["actes"]) as $matiere3) {
                     $mat3=$this->_object2array($matiere3);
-                    $tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere'].'.'.$mat3['@attributes']['CodeMatiere']] = utf8_decode($mat3['@attributes']['Libelle']);
+                    $tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere'].'.'.$mat3['@attributes']['CodeMatiere']] = ($mat3['@attributes']['Libelle']);
                     foreach ($matiere3->children($namespaces["actes"]) as $matiere4) {
                         $mat4=$this->_object2array($matiere4);
-                        $tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere'].'.'.$mat3['@attributes']['CodeMatiere'].'.'.$mat4['@attributes']['CodeMatiere']] = utf8_decode($mat4['@attributes']['Libelle']);
+                        $tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere'].'.'.$mat3['@attributes']['CodeMatiere'].'.'.$mat4['@attributes']['CodeMatiere']] = ($mat4['@attributes']['Libelle']);
                         foreach ($matiere4->children($namespaces["actes"]) as $matiere5) {
                             $mat5=$this->_object2array($matiere5);
-                            $tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere'].'.'.$mat3['@attributes']['CodeMatiere'].'.'.$mat4['@attributes']['CodeMatiere'].'.'.$mat5['@attributes']['CodeMatiere']] = utf8_decode($mat5['@attributes']['Libelle']);
+                            $tab[$mat1['@attributes']['CodeMatiere'].'.'.$mat2['@attributes']['CodeMatiere'].'.'.$mat3['@attributes']['CodeMatiere'].'.'.$mat4['@attributes']['CodeMatiere'].'.'.$mat5['@attributes']['CodeMatiere']] = ($mat5['@attributes']['Libelle']);
                         }
                     }
                 }
@@ -1693,16 +1693,15 @@ class DeliberationsController extends AppController {
 
                 $acte = array(
                     'api'           => '1',
-                    'nature_code'   => $nature_code,
-                    'classif1'      => $class1 ,
-                    'classif2'      => $class2,
-                    'classif3'      => $class3,
-                    'classif4'      => $class4,
-                    'classif5'      => $class5,
-                    //'number'        => $delib['Deliberation']['num_delib'],
-                    'number'        => time(),
+                    'nature_code'   => utf8_decode($nature_code),
+                    'classif1'      => utf8_decode($class1) ,
+                    'classif2'      => utf8_decode($class2),
+                    'classif3'      => utf8_decode($class3),
+                    'classif4'      => utf8_decode($class4),
+                    'classif5'      => utf8_decode($class5),
+                    'number'        => utf8_decode($delib['Deliberation']['num_delib']),
                     'decision_date' => $decision_date,
-                    'subject'       => $delib['Deliberation']['objet_delib'],
+                    'subject'       => utf8_decode($delib['Deliberation']['objet_delib']),
                     'acte_pdf_file' => "@$file",
                     );
 /*
@@ -1711,7 +1710,7 @@ class DeliberationsController extends AppController {
                 }
 */
                 
-                $annexes_id =  $this->Annex->getAnnexesIdFromDelibId($id, 1);
+                $annexes_id =  $this->Annex->getAnnexesFromDelibId($id, 1);
                 $nb_pj=0;
                 if (isset($annexes_id) && !empty($annexes_id)) {
                     foreach ($annexes_id as $annex_id) {
@@ -2952,7 +2951,7 @@ class DeliberationsController extends AppController {
 
                     $annexes_id = array();
                     $annexes = array();
-                    $tmp_annexes = $this->Deliberation->Annex->getAnnexesIFromDelibId($delib_id, 1);
+                    $tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, 1);
                     $dyn_path = "/files/generee/fd/".$delib['Deliberation']['seance_id']."/$delib_id/";
                     $path = WEBROOT_PATH.$dyn_path;
                     if (!empty($tmp_annexes))
