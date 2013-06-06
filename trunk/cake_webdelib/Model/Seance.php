@@ -378,7 +378,7 @@ class Seance extends AppModel {
                     $aviss =  new GDO_IterationType("AvisSeance");
                     foreach($avisSeances as $avisSeance) {
                         $Part = new GDO_PartType();
-                        $Part->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['avis']), "lines"));
+                        $Part->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
                         $aviss->addPart($Part);
                     }
                     @$oDevPart->addElement($aviss);

@@ -605,7 +605,7 @@ class Deliberation extends AppModel {
                             }
 		            $oDevPart->addElement(new GDO_FieldType("avis", $message, "text"));
 			    $oDevPart->addElement(new GDO_FieldType("avis_favorable",  $avisFavorable, "text"));
-		            $oDevPart->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['avis']), "lines"));
+		            $oDevPart->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
 			    $aviss->addPart($oDevPart);
                         }
                     }
