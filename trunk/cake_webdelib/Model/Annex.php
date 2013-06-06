@@ -39,9 +39,9 @@ class Annex extends AppModel {
             return true;
         }
 
-	function getAnnexesIFromDelibId($delib_id, $to_send = 0, $to_merge = 0) {
+	function getAnnexesFromDelibId($delib_id, $to_send = 0, $to_merge = 0) {
             $conditions['Annex.foreign_key'] = $delib_id;
-            $conditions['Annex.model'] = 'Deliberation';
+            //$conditions['Annex.model'] = 'Deliberation';
             if ($to_send == 1) 
 		$conditions['Annex.joindre_ctrl_legalite'] = true;
             if ($to_merge == 1) 
@@ -56,7 +56,7 @@ class Annex extends AppModel {
                                                               'fields'     => array('id', 'parent_id'))); 
 
 	    if (isset($delib['Deliberation']['parent_id'])) {
-		$tab = $this->getAnnexesIFromDelibId( $delib['Deliberation']['parent_id'] );
+		$tab = $this->getAnnexesFromDelibId( $delib['Deliberation']['parent_id'] );
                 if (isset($tab) && !empty($tab)) {
                     for($i=0; $i< count($tab); $i ++)  {
                         if ($tab[$i]['Annex']['model'] == 'Deliberation')

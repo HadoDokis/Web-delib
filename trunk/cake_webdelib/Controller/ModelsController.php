@@ -246,7 +246,7 @@ class ModelsController extends AppController {
 					'conditions' => array('Deliberation.id'=>$delib_id),
 					'recursive'  => -1));
 			$this->Deliberation->makeBalisesProjet($delib, $oMainPart);
-			$tmp_annexes = $this->Deliberation->Annex->getAnnexesIFromDelibId($delib_id, 0,1);
+			$tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, 0,1);
 			if (!empty($tmp_annexes))
 				array_push($annexes_id,  $tmp_annexes);
 			$path_annexes = $path.'annexes/';
@@ -280,7 +280,7 @@ class ModelsController extends AppController {
 				$this->Deliberation->makeBalisesProjet($projet,  $oDevPart);
 				$blocProjets->addPart($oDevPart);
 
-				$tmp_annexes = $this->Deliberation->Annex->getAnnexesIFromDelibId($projet['Deliberation']['id'], 0,1);
+				$tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($projet['Deliberation']['id'], 0,1);
 				if (!empty($tmp_annexes))
 					array_push($annexes_id,  $tmp_annexes);
 			}
@@ -344,7 +344,7 @@ class ModelsController extends AppController {
 					}
 
 					try {
-						Configure::write('debug', 1);
+						Configure::write('debug', 0);
 						error_reporting(0);
 
 						$time_end = microtime(true);

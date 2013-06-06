@@ -402,7 +402,7 @@ class SeancesController extends AppController {
 	}
 
         function reportePositionsSeanceDeliberante ($seance_id) {
-            Configure::write('debug', 1);
+            Configure::write('debug', 0);
             $delib_ids = $this->Seance->getDeliberationsId($seance_id);
             foreach ( $delib_ids as $delib_id) 
                 $this->Deliberation->reportePositionToCommissions($delib_id, $seance_id);
@@ -1215,7 +1215,7 @@ class SeancesController extends AppController {
                 $blocProjets->addPart($oDevPart);
 
                 $annexes = array();
-                $tmp_annexes = $this->Deliberation->Annex->getAnnexesIFromDelibId($projet['Deliberation']['id'], 0,1);
+                $tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($projet['Deliberation']['id'], 0,1);
                 if (!empty($tmp_annexes))
                     array_push($annexes_id,  $tmp_annexes);
 
@@ -1265,7 +1265,7 @@ class SeancesController extends AppController {
                 //$nomFichier = $acteur['Acteur']['id'].'-'.Inflector::camelize($this->Utils->strSansAccent($acteur['Acteur']['nom']));
 
                 try {
-                    Configure::write('debug', 1);
+                    Configure::write('debug', 0);
                     error_reporting(0);
 
                     $time_end = microtime(true);
@@ -1337,7 +1337,7 @@ class SeancesController extends AppController {
         }
 
         function multiodj () {
-            Configure::write('debug', 1);
+            Configure::write('debug', 0);
             $model_id = $this->data['Seance']['model_id'];
             include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
             include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
@@ -1441,11 +1441,11 @@ class SeancesController extends AppController {
             $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/P_$delib_id.pdf");
             $projet_filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/P_$delib_id.pdf.pdf"; 
             $data['projet_'.$i.'_libelle'] = $delib['Deliberation']['objet'];
-            $data['projet_'.$i.'_theme']  = $delib['Theme']['libelle'];
+            //TODO --- POUR Stéphance + ardoressence getLibelleParent
+            $data['projet_'.$i.'_theme']  = implode(',', $this->Theme->getLibelleParent($delib['Deliberation']['theme_id']));
             $data['projet_'.$i.'_rapport']  = "@$projet_filename";
             $i++;  
        }
-            //AJOUT SEB
        $j=0;
        $points = array('.', '..');
        if (is_dir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {

@@ -738,7 +738,7 @@ class Deliberation extends AppModel {
 
 		}
 
-		// $annexe_ids = $this->Annex->getAnnexesIFromDelibId($delib['Deliberation']['id'], 0, 1);
+		// $annexe_ids = $this->Annex->getAnnexesFromDelibId($delib['Deliberation']['id'], 0, 1);
 		$annexe_ids = array();
 		$anns = $this->Annex->find('all', array('conditions' =>  array(
 				'Annex.foreign_key' => $delib['Deliberation']['id']),
