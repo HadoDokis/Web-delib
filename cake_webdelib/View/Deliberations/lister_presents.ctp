@@ -11,12 +11,12 @@
      $pres = $present['Acteur']['id']; 
      if (($suppleant_id != null) || isset($present['Acteur']['is_suppleant'])) {
          if (isset($present['Suppleant']['id'])){
-             $options[$suppleant_id] = "Suppléant : ".$present['Suppleant']['prenom'].' '.$present['Suppleant']['nom'];
              $options[$pres] = "Titulaire : ".$present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
+             $options[$suppleant_id] = "Suppléant : ".$present['Suppleant']['prenom'].' '.$present['Suppleant']['nom'];
          }
          else {
-             $options[$present['Acteur']['id']] = "Suppléant : ".$present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
-             $options[$present['Titulaire']['id']] = "Titulaire : ".$present['Titulaire']['prenom'].' '.$present['Titulaire']['nom'];
+                $options[$present['Titulaire']['id']] = "Titulaire : ".$present['Titulaire']['prenom'].' '.$present['Titulaire']['nom'];
+                $options[$present['Acteur']['id']] = "Suppléant : ".$present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
          }
      }
    
@@ -26,7 +26,11 @@
         <?php 
         
         if (($suppleant_id != null) || isset($present['Acteur']['is_suppleant'])) {
-            echo $this->Form->input('Acteur.'.$present['Acteur']['id'].'.suppleant_id', array('options' =>  $options, 'label' => false));             
+            echo $this->Form->input('Acteur.'.$present['Acteur']['id'].'.suppleant_id', 
+                                            array(  'options' =>  $options, 
+                                                    'label' => false,
+                                                    'default'=> $present['Acteur']['id'])
+                                    );             
         }
         else
             echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom']; 
@@ -54,11 +58,11 @@
 </table>
 <br />
 <div class="submit">
-	<?php echo $this->Form->submit('Enregistrer la liste des présents', array('div'=>false, 'class'=>'bt_add', 'name'=>'modifier'));   ?>
+	<?php echo $this->Form->button('<i class="icon-circle-arrow-down"></i> Enregistrer la liste des présents', array('div'=>false, 'class'=>'btn btn-primary', 'name'=>'modifier'));   ?>
     <?php 
-          echo $this->Html->link('Récupérer la liste des présents de la délibération précédente', 
+          echo $this->Html->link('<i class="icon-flag"></i> Récupérer la liste des présents de la délibération précédente', 
                                  "/deliberations/copyFromPrevious/$delib_id/$seance_id",
-                                 array('class' => 'bt_add')); 
+                                 array('escape' => false, 'class' => 'btn btn-inverse')); 
     ?>
 </div>
 <br />
