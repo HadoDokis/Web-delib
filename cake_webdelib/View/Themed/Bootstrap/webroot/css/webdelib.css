@@ -511,11 +511,12 @@ a.link_modifier, a.link_modifier:hover {
         text-decoration: none;
 }
 
-a.link_modifier_back {
+a.link_modifier_back,a.link_modifier_back:hover {
 	background-image: url(../../../img/icons/klpq-back.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
 a.link_modifier_left {

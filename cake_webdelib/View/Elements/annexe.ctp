@@ -149,11 +149,11 @@ if ($affichage == 'complet') {
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
 			echo $this->Form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '200', 'disabled'=>'disabled'));
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
-			echo $this->Form->input('Annex.0.ctrl', array('label'=>'Joindre ctrl légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
+			echo $this->Form->input('Annex.0.ctrl', array('label'=>'Joindre&nbsp;ctrl&nbsp;légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
-			echo $this->Form->input('Annex.0.fusion', array('label'=>'Joindre fusion', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
+			echo $this->Form->input('Annex.0.fusion', array('label'=>'Joindre&nbsp;fusion', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
-			echo $this->Html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
+			echo $this->Html->link('Annuler', '#self', array('class'=>'btn btn-link', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
 		echo $this->Html->tag('/fieldset');
 	echo $this->Html->tag('/div');
 }
