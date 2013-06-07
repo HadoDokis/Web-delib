@@ -1210,9 +1210,9 @@ class SeancesController extends AppController {
             $this->Collectivite->makeBalise($oMainPart, 1);
 
             $blocProjets = new GDO_IterationType("Projets");
-            $projets_id  = $this->Seance->getDeliberationsId($seance_id, array('conditions' => array('etat >= '=> 0))); 
-            $projets = $this->Deliberation->find('all', array('conditions' => array('Deliberation.id' => $projets_id),
-                                                              'recursive'  => -1));
+            
+            $projets  =  $this->Seance->getDeliberations($seance_id, array('conditions' => array('etat >= '=> 0)));
+            
             foreach ($projets as $projet) {
                 $oDevPart = new GDO_PartType();
                 $this->Deliberation->makeBalisesProjet($projet, $oDevPart);
