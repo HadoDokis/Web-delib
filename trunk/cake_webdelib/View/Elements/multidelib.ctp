@@ -11,6 +11,7 @@ $links = array(
 	    echo $this->Html->tag('fieldset', null, array('id'=>'delibRattachee'.$this->data['Deliberation']['id']));
 	    echo $this->Html->tag('legend', '&nbsp;Délibération : '.$this->data['Deliberation']['id'].'&nbsp;');
             $hideAnnexe = true;
+            $hideAnnexe = false;
 	}	
         else 
 	    $hideAnnexe = false;
@@ -26,18 +27,12 @@ $links = array(
 	// div pour recevoir le texte de la délib
 	echo $this->Html->tag('div', '', array('id'=>'texteDelibOngletDelib'));
 	echo $this->Html->tag('div', '', array('class'=>'spacer'));
+        echo $this->Html->tag('label', 'Annexe(s)');
+        echo '<div class="fckEditorProjet">';
         echo $this->Html->tag('div', '', array('id'=>'delibPrincipaleAnnexeRatt'));
-	// saisie des annexes
-        if ($hideAnnexe) {
-	    echo $this->Html->tag('label', 'Annexe(s)');
-	    echo '<div class="fckEditorProjet">';
-	    $annexeOptions = array('ref'=>'delibRattachee'.$this->data['Deliberation']['id'], 'affichage'=>'partiel');
-
-	        $annexeOptions['annexes'] = $this->data['Annex'];
-
-	    echo $this->element('annexe', $annexeOptions);
-	    echo '</div>';
-        }
+        echo '</div>';
+        echo $this->Html->tag('div', '', array('class'=>'spacer'));
+        
 	echo $this->Html->tag('/fieldset');
 	echo $this->Html->tag('div', '', array('class'=>'spacer'));
 
@@ -183,7 +178,7 @@ echo $this->Html->tag('div', null, array('id'=>'ajouteMultiDelibTemplate', 'styl
 
 		// affichage des boutons action
 		echo $this->Html->tag('div', null, array('id'=>'delibRattacheeAction0', 'class'=>'action'));
-			echo $this->Html->link('Annuler', '#self', array('class'=>'link_annuler_sans_border', 'onClick'=>'javascript:$(this).parent().parent().parent().remove();'));
+			echo $this->Html->link('Annuler', '#self', array('class'=>'btn btn-link', 'onClick'=>'javascript:$(this).parent().parent().parent().remove();'));
 		echo $this->Html->tag('/div');
 	echo $this->Html->tag('/fieldset');
 echo $this->Html->tag('/div');
@@ -311,23 +306,4 @@ function supprimerTextDelibDelibRattachee(delibId) {
 		.show();
 	
 }
-
-$("#DeliberationIsMultidelib2").click(function(){
-    
-    if( $("#DeliberationIsMultidelib").attr('checked')==='checked') {
-        $('#lienTab5').show();
-        $('#htextedelib').hide();
-        $('#lienTab3').hide();
-        $('#delibPrincipaleAnnexeRatt').append($('#DelibPrincipaleAnnexes').detach());
-        $('#texteDelibOngletDelib').append($('#texteDeliberation').detach());
-    }
-    else{
-        $('#lienTab3').show();
-        $('#lienTab5').hide();
-        $('#htextedelib').show();
-        $('#DelibOngleAnnexes').append($('#DelibPrincipaleAnnexes').detach());
-        $('#texteDelibOngletTextes').append($('#texteDeliberation').detach());
-            
-    }
-});
 </script>
