@@ -535,7 +535,8 @@ CREATE TABLE deliberations_seances (
     deliberation_id integer NOT NULL,
     seance_id integer NOT NULL,
     "position" integer,
-    avis boolean
+    avis boolean,
+    commentaire character varying(1000),
 );
 
 
@@ -1226,16 +1227,7 @@ CREATE TABLE users (
     mail_insertion boolean NOT NULL,
     "position" integer,
     created timestamp without time zone NOT NULL,
-    modified timestamp without time zone NOT NULL,
-    zone_1 character varying(50),
-    zone_2 character varying(50),
-    zone_3 character varying(50),
-    zone_4 character varying(50),
-    zone_5 character varying(50),
-    zone_6 character varying(50),
-    zone_7 character varying(50),
-    zone_8 character varying(50),
-    zone_9 character varying(50)
+    modified timestamp without time zone NOT NULL
 );
 
 
@@ -2216,8 +2208,8 @@ SELECT pg_catalog.setval('typeseances_typeacteurs_id_seq', 1, false);
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY users (id, profil_id, statut, login, note, circuit_defaut_id, password, nom, prenom, email, telfixe, telmobile, date_naissance, accept_notif, mail_refus, mail_traitement, mail_insertion, "position", created, modified, zone_1, zone_2, zone_3, zone_4, zone_5, zone_6, zone_7, zone_8, zone_9) FROM stdin;
-1	1	0	admin		\N	21232f297a57a5a743894a0e4a801fc3	Administrateur	Franck				\N	f	f	f	f	\N	2012-11-16 14:57:03	2012-11-16 15:03:43	\N	\N	\N	\N	\N	\N	\N	\N	\N
+COPY users (id, profil_id, statut, login, note, circuit_defaut_id, password, nom, prenom, email, telfixe, telmobile, date_naissance, accept_notif, mail_refus, mail_traitement, mail_insertion, "position", created, modified) FROM stdin;
+1	1	0	admin		\N	21232f297a57a5a743894a0e4a801fc3	Administrateur	Franck				\N	f	f	f	f	\N	2012-11-16 14:57:03	2012-11-16 15:03:43
 \.
 
 

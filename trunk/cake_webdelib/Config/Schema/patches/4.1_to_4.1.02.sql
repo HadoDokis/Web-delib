@@ -1,0 +1,1 @@
+ALTER TABLE deliberations_seances ADD COLUMN commentaire character varying(1000) NULL;
