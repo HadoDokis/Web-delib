@@ -420,9 +420,12 @@ class SeancesController extends AppController {
 		$this->Deliberation->Behaviors->attach('Containable');
 
 		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
+                
+                $this->Seance->Behaviors->attach('Containable');
 		$seance = $this->Seance->find('first', array( 'conditions' => array('Seance.id'=> $seance_id),
 				'fields'     => array('Seance.type_id'),
-				'recursive'  => -1));
+                                'contain'   => array('Typeseance.libelle', 'Typeseance.action')));
+                
 		$delibs = $this->Seance->getDeliberationsId($seance_id);
                 
 		$deliberations = array();
@@ -444,6 +447,7 @@ class SeancesController extends AppController {
 			$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'],
 	                                                                                                        $deliberations[$i]['Deliberation']['etat']);
 		}
+                $this->set('seance',$seance);
 		$this->set('deliberations',$deliberations);
 		$date_tmpstp = strtotime($this->Seance->getDate($seance_id));
 		$this->set('date_tmpstp', $date_tmpstp);

@@ -44,18 +44,19 @@
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['id']; ?></td>
 	<td class="actions" width="80">
-		<?php echo $this->Html->link(SHY,'/seances/saisirDebat/' .$deliberation['Deliberation']['id'].'/'.$seance_id, array('class'=>'link_debat', 'escape' => false, 'title'=>'Saisir les debats'), false); ?>
-		<?php 
-		    echo $this->Html->link(SHY,'/models/generer/' .$deliberation['Deliberation']['id'].'/null/'.$deliberation['Model']['id'], array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'), false);
-		 ?>
-	    <?php
-            if ($deliberation['Deliberation']['is_delib']) 
+            <?php echo $this->Html->link(SHY,'/seances/saisirDebat/' .$deliberation['Deliberation']['id'].'/'.$seance_id, array('class'=>'link_debat', 'escape' => false, 'title'=>'Saisir les debats'), false); ?>
+            <?php
+            if ( $seance['Typeseance']['action']<2 && $deliberation['Deliberation']['is_delib']) 
                 echo $this->Html->link( SHY,
                                         '/seances/voter/' .$deliberation['Deliberation']['id'].'/'.$seance_id, 
                                         array('class' => 'link_voter', 
                                         'title' => 'Voter les projets',
                                         'escape' => false),
                                         false)?>
+            <?php 
+                echo $this->Html->link(SHY,'/models/generer/' .$deliberation['Deliberation']['id'].'/null/'.$deliberation['Model']['id'], array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'), false);
+            ?>
+
     </td>
 </tr>
 <?php endforeach; ?>
