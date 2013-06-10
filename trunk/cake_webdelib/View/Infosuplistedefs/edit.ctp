@@ -13,15 +13,16 @@
 	 	<?php echo $this->Form->input('Infosuplistedef.nom', array('label'=>'Nom <acronym title="obligatoire">*</acronym>', 'size' => '40', 'title'=>'Nom de l\'element'));?>
 	</div>
 	<br/>
+<?php
+	echo $this->Form->label('Infosuplistedef.actif', $this->Form->input('Infosuplistedef.actif',array('type'=>'checkbox', 'label'=>false, 'div'=>false)).' élément actif', array('class'=>'span2'));
+	echo $this->Html->tag('div', '', array('class'=>'spacer'));
+?>
 
 	<div class="submit">
             <?php 
-                if ($this->action=='edit') echo $this->Form->hidden('Infosuplistedef.id');
+                echo $this->Form->hidden('Infosuplistedef.id');
                 echo $this->Form->hidden('Infosuplistedef.infosupdef_id');
-                echo $this->Form->hidden('Infosuplistedef.actif');
                 $this->Html2->boutonsSaveCancelUrl('/infosuplistedefs/index/'.$infosupdef['Infosupdef']['id']); 
-//                echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));
-//                echo $this->Html->link('Annuler', '/infosuplistedefs/index/'.$infosupdef['Infosupdef']['id'], array('class'=>'link_annuler', 'name'=>'Annuler'));
             ?>
 	</div>
 
