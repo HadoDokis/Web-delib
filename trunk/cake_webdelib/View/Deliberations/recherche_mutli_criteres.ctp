@@ -88,6 +88,7 @@
 echo $this->Form->button('<i class="icon-search"></i> Rechercher', array('type' => 'submit', 'div' => false, 'class'=>'btn btn-primary', 'name'=>'Rechercher')); 
 ?>
 </div>
+<br />
 <?php if ($afficheNote): ?>
 <p>* : le caractère % permet d'affiner les recherches comme indiqué ci-dessous :
 	<ul>
