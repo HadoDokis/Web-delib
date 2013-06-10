@@ -1860,13 +1860,13 @@ class DeliberationsController extends AppController {
             $this->Email->attachments = null;
             if ($type == 'insertion'){
                 if ($user['User']['mail_insertion']) {
-                    $this->Email->subject = "vous allez recevoir la delib : $delib_id";
+                    $this->Email->subject = "Vous allez recevoir le projet : $delib_id";
                     $this->Email->send($this->_paramMails('insertion', $delib,  $user['User']));
                 }
             }
             if ($type == 'traiter'){
                 if ($user['User']['mail_traitement']) {
-                    $this->Email->subject = "vous avez le projet (id : $delib_id) à traiter";
+                    $this->Email->subject = "Vous avez le projet (id : $delib_id) à traiter";
                     $this->Email->send($this->_paramMails('traiter', $delib,  $user['User']));
                 }
             }
