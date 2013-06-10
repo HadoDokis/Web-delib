@@ -2654,8 +2654,8 @@ class DeliberationsController extends AppController {
             
             if (!empty($this->data['Deliberation']['texte'])) {
                 $texte = $this->data['Deliberation']['texte'];
-                $conditions['AND']["OR"]["Deliberation.objet LIKE"] = $texte;
-                $conditions['AND']["OR"]["Deliberation.titre LIKE"] = $texte;
+                $conditions['AND']["OR"]["Deliberation.objet ILIKE"] = $texte;
+                $conditions['AND']["OR"]["Deliberation.titre ILIKE"] = $texte;
             }
             if (empty($conditions["Deliberation.id"]) || (!isset($conditions["Deliberation.id"]))) {
                 if ((isset($this->data['Deliberation']['seance_id'])) && (!empty($this->data['Deliberation']['seance_id']))) {
@@ -2766,7 +2766,7 @@ class DeliberationsController extends AppController {
                 if ((isset($this->data['Deliberation']['seance_id'])) && (!empty($this->data['Deliberation']['seance_id']))) {
                     $projet_ids= array();
                     $multiseances= array();
-                    foreach ($this->data['Deliberation']['seance_id'] as $key => $seance_id) {
+                    foreach ($this->data['Deliberation']['seance_id'] as $seance_id) {
                   //      $multiseances[] = $seance_id;
                         $projet_ids = $this->Seance->getDeliberationsId($seance_id);
                         $multiseances = array_merge($projet_ids, $multiseances);
