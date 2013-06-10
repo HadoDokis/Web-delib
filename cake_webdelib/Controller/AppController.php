@@ -87,7 +87,7 @@ class AppController extends Controller {
 				     $this->redirect('/');
 				 }
                                  else
-                                     $this->log("$user_id => $controllerAction");
+                                     $this->log("$user_id => $controllerAction", 'trace');
                             }
 			}
 		}
