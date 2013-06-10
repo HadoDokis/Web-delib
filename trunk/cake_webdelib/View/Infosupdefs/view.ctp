@@ -18,6 +18,8 @@
 		<dd class="compact"><?php echo $this->data['Infosupdef']['val_initiale']; ?></dd>
 	<dt>Inclure dans la recherche</dt>
 		<dd class="compact"><?php echo $this->data['Infosupdef']['libelleRecherche']; ?></dd>
+	<dt>Active</dt>
+		<dd class="compact"><?php echo $this->data['Infosupdef']['libelleActif']; ?></dd>
 	<div class="gauche">
 		<dt>Date de cr&eacute;ation</dt>
 		<dd>&nbsp;<?php echo $this->data['Infosupdef']['created']?></dd>
