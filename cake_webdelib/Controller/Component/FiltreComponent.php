@@ -16,14 +16,28 @@ class FiltreComponent extends Component{
 
 var $components = array('Session');
 
+//var $controller = array('Session');
+
+// called before Controller::beforeFilter()
+function initialize(&$controller, $settings = array()) {
+	// saving the controller reference for later use
+	$this->controller = $controller;
+}
+
 /**
  * Initialisation du filtre : création et sauvegarde des valeurs des critères saisis dans la vue
  * @param string $name : nom du filtre
  * @param string $dataFiltre : data du formulaire de saisi des critère du filtre
- */
-function initialisation($name, $dataFiltre) {
+  *@param array $options tableau des parmètres optionnels :
+ * 		'url' : array, optionnel, url du formulaire du filtre
+*/
+function initialisation($name, $dataFiltre, $options=array()) {
 	// Initilisations
 	$filtreActif = false;
+	$defaultOptions = array(
+		'url' => array('controller'=>$this->controller->request->params['controller'], 'action'=>$this->controller->request->params['action']));
+	$options = array_merge($defaultOptions, $options);
+
 	// Si on a déjà un filtre en session et qu'il est différent alors on supprime l'ancien filtre
 	if ($this->Session->check('Filtre') && $this->Session->read('Filtre.nom')!=$name) {
 		$this->Session->delete('Filtre');
@@ -72,6 +86,7 @@ function initialisation($name, $dataFiltre) {
 		$this->Session->write('Filtre.nom', $name);
 		$this->Session->write('Filtre.Fonctionnement.affiche', false);
 		$this->Session->write('Filtre.Fonctionnement.actif', false);
+		$this->Session->write('Filtre.url', $options['url']);
 	}
 }
 
@@ -132,6 +147,29 @@ function addCritere($nomCritere, $params) {
  */
 function delCritere($nomCritere) {
 	$this->Session->delete('Filtre.Criteres.'.$nomCritere);
+}
+
+/**
+ * Initialise la valeur sélectionnée du critère
+ * @param string $nomCritere : nom du critère
+ * @param string $valCritere valeur du critère
+ */
+function setCritere($nomCritere, $valCritere) {
+	// initialisation
+	if (!$this->critereExists($nomCritere)) return;
+	// selon le type de critère
+	if ($this->Session->check('Filtre.Criteres.'.$nomCritere.'.inputOptions.options')) {
+		// select : recherche de l'option correspondante à $valCritere
+		$options = $this->Session->read('Filtre.Criteres.'.$nomCritere.'.inputOptions.options');
+		if (array_key_exists($valCritere, $options)) {
+			$this->Session->write('Filtre.Criteres.'.$nomCritere.'.inputOptions.selected', $valCritere);
+			$this->Session->write('Filtre.Fonctionnement.actif', true);
+		}
+	} else {
+		// input
+		$this->Session->write('Filtre.Criteres.'.$nomCritere.'.inputOptions.selected', $valCritere);
+		$this->Session->write('Filtre.Fonctionnement.actif', true);
+	}
 }
 
 /**
