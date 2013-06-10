@@ -224,9 +224,22 @@ class UsersController extends AppController {
 			return false;
 		} elseif ($this->Deliberation->find('count', array('conditions' => array('Deliberation.redacteur_id'=>$user['User']['id']),
 				'recursive' => -1))) {
-				$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est l\'auteur de délibérations';
-				return false;
-		}
+                        $message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est l\'auteur de délibérations';
+                        return false;
+		}else{ //Si l'utilisateur à des projets A traiter, ne pas permettre la suppression
+                    $this->loadModel('Cakeflow.Traitement');
+                    $delibs_ids = $this->Traitement->listeTargetId( $user['User']['id'], 
+                                                        array('etat'       => 'NONTRAITE',
+                                                              'traitement' => 'AFAIRE'));
+                    $conditions['Deliberation.id'] = $delibs_ids;
+                    $conditions['Deliberation.etat'] =  1;
+                    $conditions['Deliberation.parent_id'] =  NULL;
+                    $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1 ));
+                    if ($nbProjets > 0){
+                        $message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il a des projets à traiter';
+                        return false;
+                    }
+                }
 		return true;
 	}
 
