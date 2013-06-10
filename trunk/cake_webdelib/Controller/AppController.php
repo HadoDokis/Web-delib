@@ -49,7 +49,7 @@ class AppController extends Controller {
 		$this->set('Droits',$this->Droits);
 		$this->set('name',$this->name);
 		$this->set('Droit', $this->Droits);
-		$this->set('infoUser',"<span class=\"user\">".$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom')."</span> ");
+		$this->set('infoUser',$this->Session->read('user.User.prenom')." ".$this->Session->read('user.User.nom'));
 		$this->set('user_id',$this->Session->read('user.User.id'));
 		$this->set('agentServices',$this->Session->read('user.Service'));
 		$this->set('lienDeconnexion', true);
