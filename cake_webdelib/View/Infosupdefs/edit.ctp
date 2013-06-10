@@ -11,7 +11,7 @@ function afficheOptions(typeInfoSup) {
 	document.getElementById("val_initiale").style.display = 'none';
 	document.getElementById("val_initiale_boolean").style.display = 'none';
 	document.getElementById("val_initiale_date").style.display = 'none';
-	document.getElementById("recherche").style.display = 'none';
+	if (document.getElementById("recherche") != null) document.getElementById("recherche").style.display = 'none';
 	document.getElementById("gestionListe").style.display = 'none';
 
 	/* si le choix est vide : on sort */
@@ -22,26 +22,26 @@ function afficheOptions(typeInfoSup) {
 	case "text":
 		document.getElementById("taille").style.display = '';
 		document.getElementById("val_initiale").style.display = '';
-		document.getElementById("recherche").style.display = '';
+		if (document.getElementById("recherche") != null) document.getElementById("recherche").style.display = '';
 		break;
 	case "richText":
 		document.getElementById("val_initiale").style.display = '';
-		document.getElementById("recherche").style.display = '';
+		if (document.getElementById("recherche") != null) document.getElementById("recherche").style.display = '';
 		break;
 	case "date":
 		document.getElementById("val_initiale_date").style.display = '';
-		document.getElementById("recherche").style.display = '';
+		if (document.getElementById("recherche") != null) document.getElementById("recherche").style.display = '';
 		break;
 	case "file":
 		break;
 	case "boolean":
 		document.getElementById("val_initiale_boolean").style.display = '';
-		document.getElementById("recherche").style.display = '';
+		if (document.getElementById("recherche") != null) document.getElementById("recherche").style.display = '';
 		break;
 	case "odtFile":
 		break;
 	case "list":
-		document.getElementById("recherche").style.display = '';
+		if (document.getElementById("recherche") != null) document.getElementById("recherche").style.display = '';
 		document.getElementById("gestionListe").style.display = '';
 		break;
 	}
@@ -58,9 +58,8 @@ echo $this->Html->script('calendrier.js');
 
 echo $this->Html->tag('h2', $titre);
 
-echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->action),'type'=>'post','name'=>'infoSupForm'));
+echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->request->action), 'type'=>'post' ,'name'=>'infoSupForm'));
 ?>
-
 	<div class="required">
 	 	<?php echo $this->Form->input('Infosupdef.nom', array('label'=>'Nom <acronym title="obligatoire">*</acronym>','size' => '40', 'title'=>'Nom affiché dans le formulaire d\'édition des projets'));?>
 	</div>
@@ -77,14 +76,16 @@ echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->action
 		<?php
 			$htmlAttributes['disabled'] = '';
 			$empty=false;
-			$mesErr='';
-			if (($this->action=='edit') && !$Infosupdef->isDeletable($this->data, $mesErr)) {
+			if (($this->action=='edit') && !$Infosupdef->isDeletable($this->request->data['Infosupdef']['id'])) {
 				$htmlAttributes['disabled'] = 'disabled';
 				echo $this->Form->hidden('Infosupdef.type');
 				$empty=true;
 			}
 		?>
 	 	<?php echo $this->Form->input('Infosupdef.type',array('label'=>'type <acronym title="obligatoire">(*)</acronym>', 'options'=>$types, 'id'=>'selectTypeInfoSup', 'onChange'=>"afficheOptions(this);", 'disabled'=>$htmlAttributes['disabled'], 'showEmpty'=>$empty)); ?>
+	</div>
+	<div id="gestionListe">
+		<span>Note : la gestion des éléments de la liste est accessible &agrave; partir de la liste des informations suppl&eacute;mentaires.</span>
 	</div>
 	</ br>
 	<div class="required" id="taille">
@@ -103,30 +104,26 @@ echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->action
 		<?php echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border:0;")), "javascript:show_calendar('infoSupForm.InfosupdefValInitialeDate', 'f');", array('escape' => false), false);?>
 	</div>
 	<br/>
+	<br/>
 <?php
-	if($this->Html->value('Infosupdef.model') == 'Deliberation') {
-		echo $this->Html->tag('div', null, array('class'=>'required', 'id'=>'recherche'));
-		echo $this->Form->label('Infosupdef.recherche','Inclure dans la recherche');
-		echo $this->Form->input('Infosupdef.recherche',array('type'=>'checkbox', 'label'=>false));
-		echo $this->Html->tag('/div');
-	} else
+	if($this->request->data['Infosupdef']['model'] == 'Deliberation')
+		echo $this->Form->label('Infosupdef.recherche', $this->Form->input('Infosupdef.recherche', array('type'=>'checkbox', 'label'=>false, 'div'=>false)).' Inclure dans la recherche', array('class'=>'span2', 'id'=>'recherche'));
+	else
 		echo $this->Form->hidden('Infosupdef.recherche', array('value'=>false));
+
+	echo $this->Form->label('Infosupdef.actif', $this->Form->input('Infosupdef.actif',array('type'=>'checkbox', 'label'=>false, 'div'=>false)).' information active', array('class'=>'span2'));
+	echo $this->Html->tag('div', '', array('class'=>'spacer'));
 ?>
 	<br/>
-	<div id="gestionListe">
-		<span>Note : la gestion des éléments de la liste est accessible &agrave; partir de la liste des informations suppl&eacute;mentaires.</span>
-	</div>
-	<br/>
-        <?php echo $this->Form->input('Profil', array('options' =>$profils, 'multiple' => true, 'size' => 10, 'default' => $profils_selected)); ?>
+
+	<?php echo $this->Form->input('Profil', array('options' =>$profils, 'multiple' => true, 'size' => 10,
+		'label'=>'Profils autorisés', 'title'=>'l\'information supplémentaire ne sera utilisable que pour les profils sélectionnés dans cette liste')); ?>
 
 	<div class="submit">
 	<?php
-		if ($this->action=='edit') echo $this->Form->hidden('Infosupdef.id');
 		echo $this->Form->hidden('Infosupdef.id');
 		echo $this->Form->hidden('Infosupdef.model');
-                $this->Html2->boutonsSaveCancelUrl($lienRetour); 
-//		echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder'));
-//		echo $this->Html->link('Annuler', $lienRetour, array('class'=>'link_annuler', 'name'=>'Annuler'))
+		$this->Html2->boutonsSaveCancelUrl($lienRetour); 
 	?>
 	</div>
 <?php echo $this->Form->end(); ?>
