@@ -3045,9 +3045,13 @@ class DeliberationsController extends AppController {
                 $this->redirect('/deliberations/sendToParapheur');
                 exit;
             }
-            foreach ($this->data['Deliberation'] as $id => $bool ) {
+            if (!isset($this->data['Deliberation']['id'])) {
+                $this->Session->setFlash("Vous devez sélectionner un acte à envoyer.", 'growl', array('type'=>'erreur'));
+                $this->redirect('/deliberations/sendToParapheur/'.$seance_id);
+                exit;
+            }
+            foreach ($this->data['Deliberation']['id'] as $delib_id => $bool ) {
                 if ($bool == 1) {
-                    $delib_id = substr($id, 3, strlen($id));
                     $seance_id = $this->Deliberation->getSeanceDeliberanteId($delib_id);
                     $type_id = $this->Seance->getType($seance_id);
 
