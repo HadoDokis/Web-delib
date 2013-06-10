@@ -74,7 +74,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                                 </form>
                                 <ul class="nav pull-right">
                                     <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $infoUser; ?><b class="caret"></b></a>
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="user"><?php echo $infoUser; ?></span><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
                                             <li class="">
                                                 <a href="/pages/format" class="">Changer le format de sortie des éditions</a>
