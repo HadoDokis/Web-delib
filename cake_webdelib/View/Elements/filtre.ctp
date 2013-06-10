@@ -10,8 +10,7 @@ if (empty($criteres)) return;
 echo $this->Html->script('filtre.js');
 
 echo $this->Html->div('filtre');
-
-	echo $this->Form->create(null, array('url' => array('controller'=> 'deliberations', 'action'=>$this->action), 'id'=>'filtreForm'));
+	echo $this->Form->create(null, array('url' => $this->Session->read('Filtre.url'), 'id'=>'filtreForm'));
 		echo $this->Html->tag('div', null, array('class' => 'filtreFonc'));
 			// affichage du bouton afficher-masquer le filtre
 			if ($this->Session->read('Filtre.Fonctionnement.affiche')) {
