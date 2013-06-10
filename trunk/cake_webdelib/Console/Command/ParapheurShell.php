@@ -44,6 +44,7 @@ class ParapheurShell extends Shell {
 
         $this->Deliberation->id = $delib_id;
         $histo = $this->Parafwebservice->getHistoDossierWebservice("$delib_id $objet");
+        if (isset($histo['logdossier'])){
         for ($i = 0; $i < count($histo['logdossier']); $i++) {
             if (!$tdt) {
                 if (($histo['logdossier'][$i]['status'] == 'Signe') ||
@@ -93,7 +94,7 @@ class ParapheurShell extends Shell {
                 if ($histo['logdossier'][$i]['status'] == 'EnCoursTransmission')
                     return true;
             }
-        }
+        }}
         return false;
     }
 
