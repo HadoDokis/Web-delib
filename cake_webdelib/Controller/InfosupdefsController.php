@@ -2,8 +2,9 @@
 class InfosupdefsController extends AppController
 {
 	var $name = 'Infosupdefs';
-        var $uses = array( 'Infosupdef', 'Profil');
+	var $uses = array( 'Infosupdef', 'Profil');
 	var $helpers = array('Html', 'Html2');
+    var $components = array('Filtre');
 
 	// Gestion des droits : identiques aux droits de l'index
 	var $commeDroit = array(
@@ -20,21 +21,45 @@ class InfosupdefsController extends AppController
 	}
 
 	function index() {
+		$this->Filtre->initialisation($this->name.':'.$this->request->action, $this->request->data);
+		$conditions =  $this->Filtre->conditions();
+		if (!$this->Filtre->critereExists('Actif')) $conditions['actif'] = 1;
+		$conditions['model'] = 'Deliberation';
 		$this->request->data = $this->Infosupdef->find('all', array(
 			'recursive' => -1 ,
-			'conditions' => array('model' => 'Deliberation', 'actif' => true),
+			'conditions' => $conditions,
 			'order' => 'ordre'));
-		$this->set('titre', 'Liste des informations suppl&eacute;mentaires des projets');
+		$this->set('titre', 'Liste des informations supplémentaires des projets');
 		$this->set('lienAdd', '/infosupdefs/add/Deliberation');
+		if (!$this->Filtre->critereExists()) {
+			$this->Filtre->addCritere('Actif', array('field' => 'Infosupdef.actif',
+				'inputOptions' => array(
+					'label'=>__('Active', true),
+					'empty' =>'toutes',
+					'options' => array(1 => 'Oui', 0 => 'Non'))));
+			$this->Filtre->setCritere('Actif', 1);
+		}
 	}
 
 	function index_seance() {
+		$this->Filtre->initialisation($this->name.':'.$this->request->action, $this->request->data);
+		$conditions =  $this->Filtre->conditions();
+		if (!$this->Filtre->critereExists('Actif')) $conditions['actif'] = 1;
+		$conditions['model'] = 'Seance';
 		$this->data = $this->Infosupdef->find('all', array(
 			'recursive' => -1 ,
-			'conditions' => array('model' => 'Seance', 'actif' => true),
+			'conditions' => $conditions,
 			'order' => 'ordre'));
-		$this->set('titre', 'Liste des informations suppl&eacute;mentaires des s&eacute;ances');
+		$this->set('titre', 'Liste des informations supplémentaires des séances');
 		$this->set('lienAdd', '/infosupdefs/add/Seance');
+		if (!$this->Filtre->critereExists()) {
+			$this->Filtre->addCritere('Actif', array('field' => 'Infosupdef.actif',
+				'inputOptions' => array(
+					'label'=>__('Active', true),
+					'empty' =>'toutes',
+					'options' => array(1 => 'Oui', 0 => 'Non'))));
+			$this->Filtre->setCritere('Actif', 1);
+		}
 		$this->render('index');
 	}
 
@@ -42,12 +67,13 @@ class InfosupdefsController extends AppController
 	function view($id = null) {
 		$this->request->data = $this->{$this->modelClass}->findById($id, null, null, -1);
 		if (empty($this->data)) {
-			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible', 'growl');
+			$this->Session->setFlash('Invalide id pour l\'information supplémentaire : édition impossible', 'growl');
 			$this->redirect('/infosupdefs/index');
 		} else {
 			$this->request->data['Infosupdef']['libelleType'] = $this->Infosupdef->libelleType($this->data['Infosupdef']['type']);
 			$this->request->data['Infosupdef']['libelleRecherche'] = $this->Infosupdef->libelleRecherche($this->data['Infosupdef']['recherche']);
-			$this->set('titre', 'Fiche information suppl&eacute;mentaire de '.($this->data['Infosupdef']['model']=='Deliberation'?'d&eacute;lib&eacute;ration':'s&eacute;ance'));
+			$this->request->data['Infosupdef']['libelleActif'] = $this->Infosupdef->libelleActif($this->data['Infosupdef']['actif']);
+			$this->set('titre', 'Fiche information supplémentaire de '.($this->data['Infosupdef']['model']=='Deliberation'?'délibération':'séance'));
 			$this->set('lienRetour', '/infosupdefs/'.($this->data['Infosupdef']['model']=='Deliberation'?'index':'index_seance'));
 		}
 	}
@@ -57,36 +83,35 @@ class InfosupdefsController extends AppController
 		$sortie = false;
 		$codePropose = '';
 		
-		if (empty($this->data)) {
-                    $this->set('profils_selected', array());
-                    $this->set('profils', $this->Profil->find('list', array('conditions' => array ('Profil.actif' => 1))));
-		    $this->request->data['Infosupdef']['model'] = $model;
+		if (empty($this->request->data)) {
+			$this->request->data['Infosupdef']['model'] = $model;
+			$this->request->data['Infosupdef']['actif'] = true;
 		} else {
-                          $this->request->data['Infosupdef']['actif'] = true;
-			/* traitement de la valeur par defaut */
-			if ($this->data['Infosupdef']['type'] == 'date')
+			// traitement de la valeur par defaut
+			if ($this->request->data['Infosupdef']['type'] == 'date')
 				$this->request->data['Infosupdef']['val_initiale'] = $this->request->data['Infosupdef']['val_initiale_date'];
-			elseif ($this->data['Infosupdef']['type'] == 'boolean')
+			elseif ($this->request->data['Infosupdef']['type'] == 'boolean')
 				$this->request->data['Infosupdef']['val_initiale'] = $this->request->data['Infosupdef']['val_initiale_boolean'];
-			elseif ($this->data['Infosupdef']['type'] == 'file')
+			elseif ($this->request->data['Infosupdef']['type'] == 'file')
 				$this->request->data['Infosupdef']['val_initiale'] = '';
 
-			if ($this->{$this->modelClass}->save($this->data)) {
-				$this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$this->data['Infosupdef']['nom'].'\' a &eacute;t&eacute; ajout&eacute;e', 'growl');
+			if ($this->{$this->modelClass}->save($this->request->data)) {
+				$this->Session->setFlash('L\'information supplémentaire \''.$this->request->data['Infosupdef']['nom'].'\' a été ajoutée', 'growl');
 				$sortie = true;
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
-				$codePropose = Inflector::variable($this->data['Infosupdef']['code']);
+				$codePropose = Inflector::variable($this->request->data['Infosupdef']['code']);
 			}
 		}
-		$lienRetour = '/infosupdefs/'.($this->data['Infosupdef']['model']=='Deliberation'?'index':'index_seance');
+		$lienRetour = '/infosupdefs/'.($this->request->data['Infosupdef']['model']=='Deliberation'?'index':'index_seance');
 		if ($sortie)
 			$this->redirect($lienRetour);
 		else {
+			$this->set('titre', 'Ajout d\'une information supplémentaire de '.($this->request->data['Infosupdef']['model']=='Deliberation'?'délibération':'séance'));
 			$this->set('types', $this->{$this->modelClass}->generateListType());
 			$this->set('listEditBoolean', $this->{$this->modelClass}->listEditBoolean);
 			$this->set('codePropose', $codePropose);
-			$this->set('titre', 'Ajout d\'une information suppl&eacute;mentaire de '.($this->data['Infosupdef']['model']=='Deliberation'?'d&eacute;lib&eacute;ration':'s&eacute;ance'));
+            $this->set('profils', $this->Profil->find('list', array('conditions' => array ('Profil.actif' => 1))));
 			$this->set('lienRetour', $lienRetour);
 
 			$this->render('edit');
@@ -98,68 +123,63 @@ class InfosupdefsController extends AppController
 		$sortie = false;
 		$codePropose = '';
 
-		if (empty($this->data)) {
-                        $profils = array();
-                        $this->{$this->modelClass}->Behaviors->attach('Containable');
- 
-			$this->request->data = $this->{$this->modelClass}->find('first', array('conditions' => array("Infosupdef.id" => $id),
-                                                                                               'contain'    => array('Profil')));
-			if (empty($this->data)) {
-				$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : &eacute;dition impossible', 'growl');
+		if (empty($this->request->data)) {
+			$this->{$this->modelClass}->Behaviors->attach('Containable');
+			$this->request->data = $this->{$this->modelClass}->find('first', array(
+				'contain' => array('Profil'),
+				'conditions' => array("Infosupdef.id" => $id)));
+			if (empty($this->request->data)) {
+				$this->Session->setFlash('Invalide id pour l\'information supplémentaire : édition impossible', 'growl');
 				$sortie = true;
 			}
-			/* traitement de la valeur par defaut pour les dates et les booleens */
-			if ($this->data['Infosupdef']['type'] == 'date')
-				$this->request->data['Infosupdef']['val_initiale_date'] = $this->data['Infosupdef']['val_initiale'];
-			elseif ($this->data['Infosupdef']['type'] == 'boolean')
-				$this->request->data['Infosupdef']['val_initiale_boolean'] = $this->data['Infosupdef']['val_initiale'];
-                       
-                       if (isset($this->data['Profil']) && !empty($this->data['Profil']))
-                            foreach($this->data['Profil'] as $profil)
-                                $profils[] = $profil['id'];
-                        $this->set('profils_selected', $profils);
-                        $this->set('profils', $this->Profil->find('list', array('conditions' => array ('Profil.actif' => 1))));
+			// traitement de la valeur par defaut pour les dates et les booleens
+			if ($this->request->data['Infosupdef']['type'] == 'date')
+				$this->request->data['Infosupdef']['val_initiale_date'] = $this->request->data['Infosupdef']['val_initiale'];
+			elseif ($this->request->data['Infosupdef']['type'] == 'boolean')
+				$this->request->data['Infosupdef']['val_initiale_boolean'] = $this->request->data['Infosupdef']['val_initiale'];
 		} else {
 			// traitement de la valeur par defaut
-			if ($this->data['Infosupdef']['type'] == 'date')
-				$this->request->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_date'];
-			elseif ($this->data['Infosupdef']['type'] == 'boolean')
-				$this->request->data['Infosupdef']['val_initiale'] = $this->data['Infosupdef']['val_initiale_boolean'];
-			elseif ($this->data['Infosupdef']['type'] == 'file')
+			if ($this->request->data['Infosupdef']['type'] == 'date')
+				$this->request->data['Infosupdef']['val_initiale'] = $this->request->data['Infosupdef']['val_initiale_date'];
+			elseif ($this->request->data['Infosupdef']['type'] == 'boolean')
+				$this->request->data['Infosupdef']['val_initiale'] = $this->request->data['Infosupdef']['val_initiale_boolean'];
+			elseif ($this->request->data['Infosupdef']['type'] == 'file')
 				$this->request->data['Infosupdef']['val_initiale'] = '';
 
-			if ($this->{$this->modelClass}->save($this->data)) {
-				$this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$this->data['Infosupdef']['nom'].'\' a &eacute;t&eacute; modifi&eacute;e', 'growl');
+			if ($this->{$this->modelClass}->save($this->request->data)) {
+				$this->Session->setFlash('L\'information supplémentaire \''.$this->request->data['Infosupdef']['nom'].'\' a été modifiée', 'growl');
 				$sortie = true;
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
-				$codePropose = Inflector::variable($this->data['Infosupdef']['code']);
+				$codePropose = Inflector::variable($this->request->data['Infosupdef']['code']);
 			}
 		}
-		$lienRetour = '/infosupdefs/'.($this->data['Infosupdef']['model']=='Deliberation'?'index':'index_seance');
+		$lienRetour = '/infosupdefs/'.($this->request->data['Infosupdef']['model']=='Deliberation'?'index':'index_seance');
 		if ($sortie)
 			$this->redirect($lienRetour);
 		else {
+			$this->set('titre', 'Edition d\'une information supplémentaire de '.($this->request->data['Infosupdef']['model']=='Deliberation'?'délibération':'séance'));
 			$this->set('types', $this->{$this->modelClass}->generateListType());
 			$this->set('listEditBoolean', $this->{$this->modelClass}->listEditBoolean);
 			$this->set('codePropose', $codePropose);
-			$this->set('titre', 'Edition d\'une information suppl&eacute;mentaire de '.($this->data['Infosupdef']['model']=='Deliberation'?'d&eacute;lib&eacute;ration':'s&eacute;ance'));
+			$this->set('profils', $this->Profil->find('list', array('conditions' => array ('Profil.actif' => 1))));
 			$this->set('lienRetour', $lienRetour);
 		}
 	}
 
 	function delete($id = null) {
-		$messageErreur = '';
-		$aSupprimer = $this->{$this->modelClass}->find('first', array('conditions' => array('Infosupdef.id' => $id),
-                                                                              'recursive'  => -1,
-                                                                              'fields'     => array('Infosupdef.id', 'Infosupdef.nom')));
-		if (empty($aSupprimer))
+		$data = $this->{$this->modelClass}->find('first', array(
+			'recursive' => -1,
+			'conditions' => array('id'=>$id)));
+		if (empty($data))
 			$this->Session->setFlash('Invalide id pour l\'information suppl&eacute;mentaire : suppression impossible', 'growl');
-		else {
-                    $this->{$this->modelClass}->id = $id;
-                    $this->{$this->modelClass}->saveField('actif', false);
-                    $this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$aSupprimer['Infosupdef']['nom'].'\' a &eacute;t&eacute; supprim&eacute;e', 'growl');
+		elseif (!$this->{$this->modelClass}->isDeletable($id))
+			$this->Session->setFlash('Cette information supplémentaire ne peut pas être supprimée', 'growl');
+		elseif ($this->{$this->modelClass}->delete($id)) {
+			$this->{$this->modelClass}->Infosuplistedef->delList($id);
+			$this->Session->setFlash('L\'information suppl&eacute;mentaire \''.$data['Infosupdef']['nom'].'\' a &eacute;t&eacute; supprim&eacute;e', 'growl');
 		}
+
 
 		$this->redirect($this->referer());
 	}
