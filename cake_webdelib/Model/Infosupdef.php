@@ -124,15 +124,20 @@ class Infosupdef extends AppModel {
 	}
 
 /**
- * retourne true si l'instance $aSupprimer peut être supprimée et false dans le cas contraire
- * documente la raison de la non suppression dans $message
+ * retourne le libellé correspondant au booléen $actif
  */
-	function isDeletable($aSupprimer, &$message) {
-		if ($this->Infosup->find('first', array('conditions'=>array('infosupdef_id' => $aSupprimer['Infosupdef']['id']), 'recursive' => -1))) {
-			$message = "L'information suppl&eacute;mentaire '".$aSupprimer['Infosupdef']['nom']."' est utilis&eacute;e dans au moins un projet : suppression impossible";
-			return false;
-		} else
-			return true;
+	function libelleActif($actif) {
+		return $actif ? 'Oui' : 'Non';
+	}
+
+/**
+ * détermine si une occurence peut être supprimée
+ * @param integer $id id de l'occurence à supprimer
+ * @return boolean true si l'instance peut être supprimée et false dans le cas contraire
+ */
+	function isDeletable($id) {
+		// si utilisée alors on ne peut pas la supprimer
+		return !$this->Infosup->hasAny(array('infosupdef_id' => $id));
 	}
 
 /**
