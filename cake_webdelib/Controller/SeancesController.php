@@ -3,7 +3,7 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Form2', 'Javascript', 'Fck', 'Html2');
-	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low');
+	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low','Pdf');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
 	var $cacheAction = 0;
 
