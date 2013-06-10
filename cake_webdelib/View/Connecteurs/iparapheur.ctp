@@ -1,7 +1,10 @@
 <script>
 $(document).ready(function(){
-    var ma_valeur =  <?php  echo Configure::read('USE_PARAPH'); ?>;
-    if (ma_valeur == 1) $('#parapheur').show(); else $('#parapheur').hide(); 
+    <?php  if (Configure::read('USE_PARAPH')): ?>
+        $('#parapheur').show(); 
+    <?php else: ?>
+        $('#parapheur').hide(); 
+    <?php endif; ?>
 });
 </script>
 <div class='spacer'> </div>
