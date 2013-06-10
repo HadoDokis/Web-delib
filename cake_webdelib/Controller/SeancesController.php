@@ -85,7 +85,7 @@ class SeancesController extends AppController {
 			$this->set('typeseances', $this->Typeseance->find('list', array('conditions'=>array('Typeseance.id'=> $types) )));
 			$this->set('infosupdefs', $this->Infosupdef->find('all', array(
 					'recursive'=> -1,
-					'conditions'=> array('model' => 'Seance'),
+					'conditions'=> array('model' => 'Seance', 'actif' => true),
 					'order' => 'ordre')));
 			$this->set('infosuplistedefs', $this->Infosupdef->generateListes('Seance'));
 			$this->request->data['Infosup'] = $this->Infosupdef->valeursInitiales('Seance');
