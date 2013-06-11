@@ -39,7 +39,7 @@
     </tr>
     <tr>
             <td><?php echo $this->Form->input('Deliberation.texte', array( 'between' => '</td><td>',
-                                                                     'label'   => 'Libell&eacute;',
+                                                                     'label'   => 'Libell&eacute; *',
                                                                      'size' => '30'));?>
             </td>
     </tr>
