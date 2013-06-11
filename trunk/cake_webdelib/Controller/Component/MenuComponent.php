@@ -83,11 +83,11 @@ class MenuComponent extends Component
 
 		// Ajout des actions de tous les controllers du projet qui ne sont pas référencées par le menu
 		$listeAliasCtrl = array();
-		$controllerList = $this->_listClasses(APP."/Controller/", 'Controller.php');
+		$controllerList = $this->_listClasses(APP."Controller".DS, '*Controller.php', array('AppController.php', 'PagesController.php'));
 		 
 		$plugins =  App::objects('plugin');
 		foreach  ($plugins as $plugin){
-			$plugin_controllers = $this->_listClasses(APP."Plugin".DS.ucfirst(strtolower($plugin)).DS."Controller/",  'Controller.php');
+			$plugin_controllers = $this->_listClasses(APP."Plugin".DS.ucfirst(strtolower($plugin)).DS."Controller".DS, '*Controller.php', array('AppController.php', 'PagesController.php'));
 			$controllerList = array_merge ($controllerList, $plugin_controllers);
 		}
 		foreach($controllerList as $controllerFile) {
@@ -145,21 +145,16 @@ class MenuComponent extends Component
 	 * @param  string $path Path to scan for files
 	 * @return array  List of files in directory
 	 */
-	function _listClasses($path, $filtre='') {
-            $dir = opendir($path);
-            if ($dir !== false) {
-		$classes=array();
-		while (false !== ($file = readdir($dir))) {
-	            if ((substr($file, -3, 3) == 'php') && substr($file, 0, 1) != '.') {
-		 	if (!empty($filtre)) {
-				if (strpos($file, $filtre)>0)
-					$classes[] = $file;
-				} else $classes[] = $file;
-			}
+	function _listClasses($path, $filtre='*.php', $excluded=array()) {
+		$ret = array();
+		$dir = glob($path.$filtre);
+		foreach($dir as $fileUri) {
+			if (is_dir($fileUri)) continue;
+			$filename = basename($fileUri);
+			if (!empty($excluded) && in_array($filename, $excluded)) continue;
+			$ret[] = $filename;
 		}
-		closedir($dir);
-                return $classes;
-            }
+		return $ret;
 	}
 
 	/**
@@ -232,11 +227,11 @@ class MenuComponent extends Component
 		$nbElements = 0;
 
 		// Parcours des controleurs
-		$controllerList = $this->_listClasses(APP."/Controller/");
+		$controllerList = $this->_listClasses(APP."Controller".DS, '*Controller.php', array('AppController.php', 'PagesController.php'));
 		$plugins =  App::objects('plugin');
 		foreach  ($plugins as $plugin){
 			$plugin_dir_controller = APP."Plugin".DS.ucfirst(strtolower($plugin)).DS."Controller".DS;
-			$controllerList = array_merge( $controllerList, $this->_listClasses( $plugin_dir_controller));
+			$controllerList = array_merge( $controllerList, $this->_listClasses( $plugin_dir_controller, '*Controller.php', array('AppController.php', 'PagesController.php')));
 		}
 		foreach($controllerList as $controllerFile) {
 			if (strpos($controllerFile, 'Controller.php')>0) {
