@@ -43,17 +43,15 @@ class MenuComponent extends Component
 
 	/* retourne le couple Controler:action pour le lien passé en paramètre */
 	function _calcAction($lien) {
+		if (empty($lien) or $lien == '/')
+			return 'Pages:home';
 
-		// Traitement du lien
-		if (empty($lien) or $lien == '/') return 'Pages:home';
-		else {
-			if ($lien[0] == '/') $lien = substr($lien, 1);
-			else $lien = 'pages/' . $lien;
-			$tabAction = explode('/', $lien);
-			$tabAction[0] = ucwords($tabAction[0]);
-			if (count($tabAction) == 1) $tabAction[] = 'index';
-			return $tabAction[0] . ':' . $tabAction[1];
-		};
+		// le lien n'est pas vide
+		if ($lien[0] != '/') $lien = 'pages/' . $lien;
+		$lienTab = array_filter(explode('/', $lien));
+		$action = count($lienTab) == 1 ? 'index' : array_pop($lienTab);
+		$controller = ucwords(array_pop($lienTab));
+		return $controller . ':' . $action;
 	}
 
 
