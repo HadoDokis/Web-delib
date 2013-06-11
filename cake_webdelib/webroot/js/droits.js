@@ -1,4 +1,4 @@
-/* Affiche ou masque les lignes de l1 à l2 et modifie l'image imgId */
+/* Affiche ou masque les lignes de l1 ï¿½ l2 et modifie l'image imgId */
 function toggleLigne(l1, l2, imgId) {
 	var trElement;
 	var imgElement;
@@ -9,7 +9,7 @@ function toggleLigne(l1, l2, imgId) {
 	masquer = (imgElement.src.substr(imgElement.src.lastIndexOf('/')+1) == 'replier.png');
 	imgElement.src = masquer ? '../img/icons/deplier.png' : '../img/icons/replier.png';
 
-	// Parcours des lignes à traiter
+	// Parcours des lignes ï¿½ traiter
 	for(i=l1; i<=l2; i++) {
 		lId = 'l' + i;
 		trElement = document.getElementById(lId) ;
@@ -54,10 +54,10 @@ function toggleCol(enTeteId, nbColonne, nbLigne, imgId) {
 	if (masquer) masqueColRec(enTeteId, c1, c2);
 	else afficheColRec(enTeteId, c1, c2);
 
-	// Parcours des colonnes à traiter
+	// Parcours des colonnes ï¿½ traiter
 	for(c=c1; c<=c2; c++) {
 		cId = 'c' + c;
-		// traitement des céllules de la colonne
+		// traitement des cï¿½llules de la colonne
 		for(l=1; l<=nbLigne; l++) {
 			lId = 'l' + l;
 			Element = document.getElementById(lId+cId) ;
@@ -66,13 +66,13 @@ function toggleCol(enTeteId, nbColonne, nbLigne, imgId) {
 	}
 };
 
-/* Masque les célulles situées sous la cellule enTeteId de la colonne colDep à colFin */
+/* Masque les cï¿½lulles situï¿½es sous la cellule enTeteId de la colonne colDep ï¿½ colFin */
 function masqueColRec(enTeteId, colDep, colFin) {
 	var i;
 	var eleId;
 	var Element;
 
-	// Sort si la première cellule sous enTeteId n'existe pas
+	// Sort si la premiï¿½re cellule sous enTeteId n'existe pas
 	eleId = enTeteId + (colDep<10 ? '0' : '') + colDep;
 	Element = document.getElementById(eleId);
 	if (!Element) return;
@@ -83,20 +83,20 @@ function masqueColRec(enTeteId, colDep, colFin) {
 		Element = document.getElementById(eleId);
 		if (Element) {
 			Element.style.display = "none";
-			// traitement des sous célulles
+			// traitement des sous cï¿½lulles
 			masqueColRec(eleId, i, colFin);
 		}
 	}
 };
 
-/* Affiche les célulles situées sous la cellule enTeteId de la colonne colDep à colFin */
+/* Affiche les cï¿½lulles situï¿½es sous la cellule enTeteId de la colonne colDep ï¿½ colFin */
 function afficheColRec(enTeteId, colDep, colFin) {
 	var i;
 	var eleId;
 	var Element, imgElement;
 	var nbCelAff=0;
 
-	// Sort si la première cellule sous enTeteId n'existe pas
+	// Sort si la premiï¿½re cellule sous enTeteId n'existe pas
 	eleId = enTeteId + (colDep<10 ? '0' : '') + colDep;
 	Element = document.getElementById(eleId);
 	if (!Element) return 0;
@@ -108,7 +108,7 @@ function afficheColRec(enTeteId, colDep, colFin) {
 		if (Element) {
 			Element.style.display = "";
 			nbCelAff++;
-			// traitement des sous célulles
+			// traitement des sous cï¿½lulles
 			imgId = eleId + 'Img';
 			imgElement = document.getElementById(imgId);
 			if (imgElement) {
@@ -125,7 +125,7 @@ function afficheColRec(enTeteId, colDep, colFin) {
 	return nbCelAff;
 };
 
-/* Affiche les lignes du profil sélectionné et masque les autres */
+/* Affiche les lignes du profil sï¿½lectionnï¿½ et masque les autres */
 function filtreProfil(choix, nbLignesMax) {
 	var lDeb, lFin;
 	var lPlage;
@@ -158,7 +158,7 @@ function filtreProfil(choix, nbLignesMax) {
 	}
 };
 
-/* Affiche les colonnes du menu sélectionné et masque les autres */
+/* Affiche les colonnes du menu sï¿½lectionnï¿½ et masque les autres */
 function filtreMenu(choix, nbCol, nbLigne) {
 	var c, c1, c2;
 	var masquer;
@@ -178,7 +178,7 @@ function filtreMenu(choix, nbCol, nbLigne) {
 	for (c=1; c<=nbCol; c++) {
 		masquer = (c<c1) || (c>c2);
 
-		// Traitement de l'entête
+		// Traitement de l'entï¿½te
 		enTeteId = 'C' + (c<10 ? '0' : '') + c;
 		Element = document.getElementById(enTeteId);
 		if (Element) {
@@ -204,7 +204,7 @@ function filtreMenu(choix, nbCol, nbLigne) {
 	}
 };
 
-/* coche ou décoche les checkBox des cellules comprises entres les colonnes c1 à c2 et entre les lignes l1 à l2*/
+/* coche ou dï¿½coche les checkBox des cellules comprises entres les colonnes c1 ï¿½ c2 et entre les lignes l1 ï¿½ l2*/
 function toggleCheckBox(c1, c2, l1, l2) {
 	var c, l;
 	var cId, lId;
@@ -232,7 +232,7 @@ function toggleCheckBox(c1, c2, l1, l2) {
 
 };
 
-/* Prépare les variables et fait le submit du formulaire */
+/* Prï¿½pare les variables et fait le submit du formulaire */
 function appliquerModifications(nbCol, nbLigne) {
 	var c, l;
 	var d, cId, lId;
@@ -259,10 +259,10 @@ function appliquerModifications(nbCol, nbLigne) {
 	Element.submit();
 };
 
-/* coche ou décoche les checkBox des cellules comprises entres les colonnes c1 à c2 et entre les lignes l1 à l2*/
+/* coche ou dï¿½coche les checkBox des cellules comprises entres les colonnes c1 ï¿½ c2 et entre les lignes l1 ï¿½ l2*/
 function toggleCheckBoxDroits(idCheckBox, nbCheckBox) {
-	valCheckBox = $('#chkBoxDroits'+idCheckBox).attr('checked');
+	var checked = ($('#chkBoxDroits'+idCheckBox).prop('checked') === true);
 	for(i=1; i<=nbCheckBox; i++) {
-		$('#chkBoxDroits'+(idCheckBox+i)).attr('checked', valCheckBox);
+                $('#chkBoxDroits'+(idCheckBox+i)).prop('checked', checked);
 	}
 };
