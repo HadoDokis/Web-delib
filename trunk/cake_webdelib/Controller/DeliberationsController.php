@@ -40,7 +40,12 @@ class DeliberationsController extends AppController {
         'rebond',
         'sendToParapheur',
         'sendToGed',
-        'autresActesAValider'
+        'autresActesAValider',
+        'toSend',
+        'transmit',
+        'verserAsalae',
+        'autreActesAEnvoyer',
+        'autreActesEnvoyes'
         );
 
     var $commeDroit = array(
@@ -176,7 +181,10 @@ class DeliberationsController extends AppController {
          $this->request->data['Circuit']['libelle'] = $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
         
         // Définitions des infosup
-        $this->set('infosupdefs', $this->Infosupdef->find('all', array('recursive'=> -1, 'order'=> 'ordre', 'conditions' => array('actif' => true) )));
+        $this->set('infosupdefs', $this->Infosupdef->find('all', array(
+			'recursive'=>-1,
+			'conditions'=>array('model'=>'Deliberation', 'actif' => true),
+			'order'=>'ordre')));
         $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/'.$id, array('return')));
         
         //si bloqué à une étape de délégation
