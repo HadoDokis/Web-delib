@@ -11,7 +11,8 @@ class SeancesController extends AppController {
 	var $demandeDroit = array(
 			'listerFuturesSeances',
 			'add',
-			'afficherCalendrier');
+			'afficherCalendrier',
+			'listerAnciennesSeances');
 
 	var $commeDroit = array(
 			'view'             => 'Seances:listerFuturesSeances',
