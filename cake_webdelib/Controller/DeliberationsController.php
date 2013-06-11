@@ -2087,7 +2087,8 @@ class DeliberationsController extends AppController {
                 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.type_id', 'Circuit.nom',
                 'Service.libelle',  
                 'Theme.libelle',
-                'Typeacte.libelle')));
+                'Typeacte.libelle',
+                'Typeseance.id', 'Typeseance.libelle')));
         $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1 ));
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets($projets, 'Mes projets &agrave; traiter', array('view', 'traiter', 'generer'), array(), $nbProjets);
@@ -2134,7 +2135,8 @@ class DeliberationsController extends AppController {
             'contain'    => array(  'Seance.id','Seance.traitee', 'Seance.date', 'Seance.type_id', 'Circuit.nom',
                 'Service.libelle', 
                 'Theme.libelle',
-                'Typeacte.libelle')));
+                'Typeacte.libelle',
+                'Typeseance.id', 'Typeseance.libelle')));
         $this->_ajouterFiltre($projets);
         $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
         
@@ -2185,7 +2187,8 @@ class DeliberationsController extends AppController {
                 'Seance.id','Seance.traitee', 'Seance.date', 'Seance.type_id',
                 'Service.libelle', 
                 'Theme.libelle', 'Circuit.nom',
-                'Typeacte.libelle')));
+                'Typeacte.libelle',
+                'Typeseance.id', 'Typeseance.libelle')));
         
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets(
