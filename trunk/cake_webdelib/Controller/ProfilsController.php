@@ -195,7 +195,12 @@ class ProfilsController extends AppController {
                     else {
                         require_once (ROOT.DS.APP_DIR.DS.'Vendor'.DS.'progressbar.php');
                         Initialize(200, 100,200, 30,'#000000','#FFCC00','#006699');
-                        $users = $this->Profil->User->find('all', array('conditions'=>array('User.profil_id'=>$profil['Profil']['id']),'recursive'=>-1));
+                        Configure::write('debug', 2);
+                        $conditions['AND']['User.profil_id'] = $profil['Profil']['id'];
+                        $conditions['AND']['User.email ILIKE'] = "%@%";
+                        $users = $this->Profil->User->find('all', array('conditions'=>$conditions,
+                                                                        'recursive'=>-1)
+                                                            );
                         $nbUsers = count($users);
                         $cpt = 0;
                         if (Configure::read("SMTP_USE")) {
