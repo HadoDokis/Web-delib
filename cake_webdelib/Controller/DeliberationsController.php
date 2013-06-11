@@ -1564,16 +1564,14 @@ class DeliberationsController extends AppController {
         return $return;
     }
     
-    function sendActe ($delib_id = null) {
+    function sendActe() {
         $erreur = '';
-        $Tabclassification = array();
         if (!is_file(Configure::read('FILE_CLASS')))
             $this->S2low->getClassification();
         $pos =  strrpos ( getcwd(), 'webroot');
         $path = substr(getcwd(), 0, $pos);
-        foreach ($this->data['Deliberation'] as $id => $bool ){
+        foreach ($this->data['Deliberation']['id'] as $delib_id => $bool ){
             if ($bool == 1){
-                $delib_id = substr($id, 3, strlen($id));
                 $this->Deliberation->id = $delib_id;
                 if (!isset($this->data[$delib_id."classif2"]))
                     continue;
@@ -1581,17 +1579,14 @@ class DeliberationsController extends AppController {
                 $this->Deliberation->saveField('num_pref',  $this->data[$delib_id."classif2"]);
             }
         }
-        $nbDelibAEnvoyer = count($Tabclassification);
         $nbEnvoyee = 1;
         if ( Configure::read('USE_PASTELL')) {
             $coll = $this->Session->read('user.Collectivite');
             $id_e = $coll['Collectivite']['id_entity'];
         }
         $this->Deliberation->Typeacte->Behaviors->attach('Containable');
-        foreach ($this->data['Deliberation'] as $id => $bool ){
+        foreach ($this->data['Deliberation']['id'] as $delib_id => $bool ){
             if ($bool == 1){
-                
-                $delib_id = substr($id, 3, strlen($id));
                 $this->Deliberation->id = $delib_id;
                 $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id))); 
                 $typeacte = $this->Deliberation->Typeacte->find('first', array('conditions' => array('Typeacte.id' =>  $delib['Typeacte']['id']),
@@ -1717,8 +1712,7 @@ class DeliberationsController extends AppController {
                     $acte['acte_pdf_file_sign'] = "@$sigFileName";
                 }
 */
-                
-                $annexes_id =  $this->Annex->getAnnexesFromDelibId($id, 1);
+                $annexes_id =  $this->Annex->getAnnexesFromDelibId($delib_id, 1);
                 $nb_pj=0;
                 if (isset($annexes_id) && !empty($annexes_id)) {
                     foreach ($annexes_id as $annex_id) {
@@ -1753,6 +1747,7 @@ class DeliberationsController extends AppController {
             $this->Session->setFlash('Actes envoyés correctement au TdT', 'growl');
         else 
             $this->Session->setFlash('Erreur : '. $erreur, 'growl', array('type'=>'erreurTDT'));
+        
         $this->redirect($this->Session->read('user.User.lasturl'));
     }
     

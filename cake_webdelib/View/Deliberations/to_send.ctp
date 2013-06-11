@@ -33,7 +33,7 @@
 	          $numLigne++;
 
 		if ($delib['Deliberation']['etat']!= 5)
-			echo("<td>".$this->Form->checkbox('Deliberation.id_'.$delib['Deliberation']['id'])."</td>");
+			echo("<td>".$this->Form->checkbox('Deliberation.id.'.$delib['Deliberation']['id'])."</td>");
 		else
 		    echo("<td></td>");
 
