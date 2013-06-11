@@ -228,17 +228,35 @@ class UsersController extends AppController {
                         return false;
 		}else{ //Si l'utilisateur à des projets A traiter, ne pas permettre la suppression
                     $this->loadModel('Cakeflow.Traitement');
-                    $delibs_ids = $this->Traitement->listeTargetId( $user['User']['id'], 
+                    //A traiter
+                    $conditions=array();
+                    $conditions['Deliberation.id'] = $this->Traitement->listeTargetId( $user['User']['id'], 
                                                         array('etat'       => 'NONTRAITE',
                                                               'traitement' => 'AFAIRE'));
-                    $conditions['Deliberation.id'] = $delibs_ids;
                     $conditions['Deliberation.etat'] =  1;
                     $conditions['Deliberation.parent_id'] =  NULL;
-                    $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1 ));
+                    $nbProjetsATraiter = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1 ));
+                    
+                    //En cours de validation
+                    $conditions=array();
+                    $conditions['Deliberation.etat'] =  1;
+                    $conditions['Deliberation.parent_id'] =  NULL;
+                    $conditions['OR']['Deliberation.id'] = $this->Traitement->listeTargetId($user['User']['id'], 
+                                                        array('etat'=>'NONTRAITE', 
+                                                              'traitement'=>'NONAFAIRE'));
+                    $conditions['OR']['Deliberation.redacteur_id'] = $user['User']['id'];
+                    $nbProjetsValidation = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
+                    
+                    $nbProjets = $nbProjetsATraiter+$nbProjetsValidation;
+                    
                     if ($nbProjets > 0){
-                        $message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il a des projets à traiter';
+                        $message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il a des projets en cours';
                         return false;
                     }
+                    
+
+                    
+                    
                 }
 		return true;
 	}
