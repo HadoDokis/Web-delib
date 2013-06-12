@@ -1345,6 +1345,7 @@ class DeliberationsController extends AppController {
                                                     'Deliberation.num_delib', 'Deliberation.dateAR', 'Deliberation.pastell_id' , 
                                                     'Deliberation.num_pref', 'Deliberation.etat',
                                                     'Deliberation.titre', 'Deliberation.tdt_id'),
+                                 'contain' => array('TdtMessage', 'Seance'),
                                  'order'      => array('Deliberation.id'=> 'DESC'),
                                  'conditions' => $conditions,
                                  'limit' => 20 ));
@@ -1707,17 +1708,17 @@ class DeliberationsController extends AppController {
                     'subject'       => utf8_decode($delib['Deliberation']['objet_delib']),
                     'acte_pdf_file' => "@$file",
                     );
-/*
+
                 if ($sigFileName != '') {
                     $acte['acte_pdf_file_sign'] = "@$sigFileName";
                 }
-*/
+                
                 $annexes_id =  $this->Annex->getAnnexesFromDelibId($delib_id, 1);
                 $nb_pj=0;
                 if (isset($annexes_id) && !empty($annexes_id)) {
                     foreach ($annexes_id as $annex_id) {
                         $annexe = $this->Annex->getContent($annex_id['Annex']['id']);
-                        $pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/annexes/", $annex_id.'.pdf', $annexe);
+                        $pj_file = $this->Gedooo->createFile($path."webroot/files/generee/fd/null/$delib_id/annexes/", $annex_id['Annex']['id'].'.pdf', $annexe);
                         $acte["acte_attachments[$nb_pj]"] = "@$pj_file";
                         $acte["acte_attachments_sign[$nb_pj]"] = "";
                         $nb_pj++;
