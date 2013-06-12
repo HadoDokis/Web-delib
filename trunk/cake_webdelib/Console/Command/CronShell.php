@@ -7,12 +7,7 @@ class CronShell extends Shell {
     }
 
     function main() {
-//        /*Gestion des droits*/
-//        App::import('Component','Auth'); 
-//        $this->Auth = new AuthComponent(null); 
-//        App::import('Component','Session'); 
-//        $this->Auth->Session = new SessionComponent(null); 
-
+        
         //////////////////////////////////////////////////////////////////////////////
         // A MODIFIER SI webdelib n'est pas joignable en localhost (valeur par défaut)
         //////////////////////////////////////////////////////////////////////////////
