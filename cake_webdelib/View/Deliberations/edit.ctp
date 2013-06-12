@@ -193,70 +193,68 @@ $(document).ready(function() {
 	<?php
 	foreach($infosupdefs as $infosupdef) {
 		// Amélioration 4.1 : on ne peut modifier une infosup qu'en fonction du profil
-		$canEdit = 'disabled';
+		$disabled = true;
 		foreach ($infosupdef['Profil'] as $profil) 
 			if ($profil['id'] == $profil_id) 
-			$canEdit = 'enable';
+			$disabled = false;
 
 		$fieldName = 'Infosup.'.$infosupdef['Infosupdef']['code'];
 		$fieldId = 'Infosup'.Inflector::camelize($infosupdef['Infosupdef']['code']);
 		echo "<div class='required'>";
 			echo $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'], array('name'=>'label'.$infosupdef['Infosupdef']['code']));
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
-				echo $this->Form->input($fieldName, array('label'=>'', 'type'=> 'textarea', 'size'=>$infosupdef['Infosupdef']['taille'], 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $canEdit  ));
+				echo $this->Form->input($fieldName, array('label'=>'', 'type'=> 'textarea', 'size'=>$infosupdef['Infosupdef']['taille'], 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $disabled  ));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
-				$options = array('label'=>'', 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire']);
-				if ($canEdit == 'disabled') $options['disabled'] = $canEdit;
-				echo $this->Form->input($fieldName, $options);
+				echo $this->Form->input($fieldName, array('label'=>'', 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=>$disabled, 'div'=>array('class'=>'input')));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
-				echo $this->Form->input($fieldName, array('type'=>'text',  'disabled'=> $canEdit,  'div'=>false, 'label'=>'', 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+				echo $this->Form->input($fieldName, array('type'=>'text',  'disabled'=> $disabled,  'div'=>false, 'label'=>'', 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				echo '&nbsp;';
-                                if ($canEdit ==  'enable')
-				    echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('Deliberation.$fieldId', 'f');", array('escape' =>false), false); 
-                                elseif ($canEdit ==  'disabled')
-                                     echo($this->Html->image("calendar.png", array('style'=>"border='0'")));
+				if (!$disabled)
+					echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('Deliberation.$fieldId', 'f');", array('escape' =>false), false); 
+				else
+					echo($this->Html->image("calendar.png", array('style'=>"border='0'")));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
 				echo '<div class="annexesGauche"></div>';
 				echo '<div class="fckEditorProjet">';
-					echo $this->Form->input($fieldName, array('label'=>'', 'type'=>'textarea', 'disabled'=> $canEdit));
+					echo $this->Form->input($fieldName, array('label'=>'', 'type'=>'textarea', 'disabled'=> $disabled));
 					echo $this->Fck->load($fieldId);
 				echo '</div>';
 				echo '<div class="spacer"></div>';
 			} elseif ($infosupdef['Infosupdef']['type'] == 'file') {
 				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
-					echo  $this->Form->input($fieldName, array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'],  'disabled'=> $canEdit));
+					echo  $this->Form->input($fieldName, array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'],  'disabled'=> $disabled));
 				else {
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
 					echo '['.$this->Html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
 					echo '&nbsp;&nbsp;';
-                                        if ($canEdit == 'enable')
-					    echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
+					if (!$disabled)
+						echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
 					echo '</span>';
 				}
 			} elseif ($infosupdef['Infosupdef']['type'] == 'odtFile') {
 				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
-					echo  $this->Form->input($fieldName, array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $canEdit));
+					echo  $this->Form->input($fieldName, array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $disabled));
 				else {
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
 					if (Configure::read('GENERER_DOC_SIMPLE')) {
-						echo '['.$this->Html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'],  'disabled'=> $canEdit)).']';
+						echo '['.$this->Html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'],  'disabled'=> $disabled)).']';
 					} else {
 						$name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']] ;
-                                                if ($canEdit == 'enable')
+						if (!$disabled)
 						    $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name"; 
-                                                else 
-                                                    $url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name";
+						else 
+							$url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name";
 						echo "<a href='$url'>$name</a> ";
 					}
 					echo '&nbsp;&nbsp;';
-                                        if ($canEdit == 'enable')
-					    echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
+					if (!$disabled)
+						echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
 					echo '</span>';
 				}
 			} elseif ($infosupdef['Infosupdef']['type'] == 'list') {
-				echo $this->Form->input($fieldName, array('label'=>'', 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true, 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $canEdit));
+				echo $this->Form->input($fieldName, array('label'=>'', 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true, 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $disabled));
 			}
 		echo '</div>';
 		echo '<br>';
