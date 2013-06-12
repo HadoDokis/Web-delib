@@ -613,7 +613,8 @@ class DeliberationsController extends AppController {
                 $this->Gedooo->createFile($path_projet, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
                 $this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
                 $this->Gedooo->createFile($path_projet, 'deliberation.odt',  $this->data['Deliberation']['deliberation']);
-            } else {
+            } 
+            else {
                 $content = str_replace('\&quot;', '', $this->data['Deliberation']['texte_projet']);
                 $content = str_replace('\\"', '"', $content);
                 $content = str_replace('"\\', '"', $content);
@@ -625,8 +626,9 @@ class DeliberationsController extends AppController {
                     'recursive' => -1,
                     'fields' => array('type'),
                     'conditions' => array('id' =>$infosup['infosupdef_id'], 'model' => 'Deliberation', 'actif' => true)));
-                if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
+                if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content'])){
                     $this->Gedooo->createFile($path_projet, $infosup['file_name'] , $infosup['content']);
+                }
             }
             // création des fichiers des annexes de type vnd.oasis.opendocument
             $annexes = $this->Annex->find('all', array(
@@ -637,8 +639,9 @@ class DeliberationsController extends AppController {
                     'Annex.foreign_key' => $id,
                     'Annex.filetype like' => '%vnd.oasis.opendocument%')));
             
-            foreach ($annexes as $annexe)
+            foreach ($annexes as $annexe){
                 $this->Gedooo->createFile($path_projet,  $annexe['Annex']['filename'], $annexe['Annex']['data']);
+            }
             
             // initialisation des délibérations rattachées
             if (array_key_exists('Multidelib', $this->data)) {
@@ -655,8 +658,9 @@ class DeliberationsController extends AppController {
                             'Annex.model'=> 'Deliberation',
                             'Annex.foreign_key' => $delibRattachee['id'],
                             'Annex.filetype like' => '%vnd.oasis.opendocument%')));
-                    foreach ($annexes as $annexe)
+                    foreach ($annexes as $annexe){
                         $this->Gedooo->createFile($path_projet_delibRattachee,  $annexe['Annex']['filename'], $annexe['Annex']['data']);
+                    }
                 }
             }
             $this->request->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->request->data['Infosup']);
@@ -685,17 +689,18 @@ class DeliberationsController extends AppController {
 	    if (Configure::read('USE_PASTELL'))  {
 		$res =  $this->Nomenclature->generatetreelist(null, null, null, '___');
 		$this->set('nomenclatures', $res);
-            }  
+            } 
 
             $this->set('DELIBERATIONS_MULTIPLES', Configure::read('DELIBERATIONS_MULTIPLES'));
             $this->set('is_multi', $this->request->data['Deliberation']['is_multidelib']);
             $this->set('redirect', $redirect);
-            if ($this->request->data['Deliberation']['etat_parapheur'] >= 1)
+            if ($this->request->data['Deliberation']['etat_parapheur'] >= 1){
                 $this->Session->setFlash("Attention, l'acte est en cours de signature!", 'growl', array('type'=>'erreur'));
-            
+            }
             $this->render();
             
-        } else {
+        } 
+        else {
             $oldDelib = $this->Deliberation->find('first', array('conditions' =>array('Deliberation.id'=> $id)));
             // Si on definit une seance a une delib, on la place en derniere position de la seance
             if (isset($this->data['Seance'])) {
@@ -903,11 +908,12 @@ class DeliberationsController extends AppController {
             $typeseances = $this->Typeseance->find('list', array('conditions' => array('Typeseance.id'      => $typeseance_ids),
                                                                  'order'      => array('Typeseance.libelle' => 'ASC')));
 
-            if (isset($this->request->data['Typeseance']) && !empty($this->request->data['Typeseance']) )
-                foreach ( $this->request->data['Typeseance'] as $typeseance)
+            if (isset($this->request->data['Typeseance']) && !empty($this->request->data['Typeseance']) ){
+                foreach ( $this->request->data['Typeseance'] as $typeseance){
                     if (isset( $typeseance['id']))
                         $typeseances_selected[] = $typeseance['id'];
-
+                }
+            }
             $seances_tmp = $this->Seance->find('all', array('conditions' => array('Seance.type_id' => $typeseance_ids,
                                                                               'Seance.traitee' => 0),
                                                         'contain'    => array('Typeseance.libelle'),
@@ -3028,8 +3034,15 @@ class DeliberationsController extends AppController {
                     $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport/1/false");
 
                     $content = file_get_contents(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/rapport.pdf");
-                    $creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $soustype, array(), "$delib_id $objetDossier", '', '', Configure::read('VISIBILITY'), '', $content, $annexes);
-
+                    $creerdos = $this->Parafwebservice->creerDossierWebservice(
+                            "WD_".$delib_id, 
+                            "[".$delib_id."] ". $objetDossier, 
+                            Configure::read('TYPETECH'), 
+                            $soustype, 
+                            Configure::read('VISIBILITY'), 
+                            $content, 
+                            $annexes);
+                    
                     $delib['Deliberation']['etat_parapheur'] = 1;
                     if ($creerdos['messageretour']['coderetour'] == 'OK') {
                         $this->Deliberation->id = $delib_id;
@@ -3443,7 +3456,16 @@ class DeliberationsController extends AppController {
                             $tmp1++;
                         }
                     }
-                    $creerdos = $this->Parafwebservice->creerDossierWebservice(Configure::read('TYPETECH'), $circuits['soustype'][$this->data['Parapheur']['circuit_id']], array(), "$acte_id $objetDossier", '', '', Configure::read('VISIBILITY'), '', $content, $annexes);
+                    
+                    $creerdos = $this->Parafwebservice->creerDossierWebservice(
+                            "WD_".$acte_id,
+                            "[".$acte_id."] ". $objetDossier, 
+                            Configure::read('TYPETECH'), 
+                            $circuits['soustype'][$this->data['Parapheur']['circuit_id']], 
+                            Configure::read('VISIBILITY'), 
+                            $content, 
+                            $annexes);
+                    
                     if ($creerdos['messageretour']['coderetour'] == 'OK') {
                         $this->Deliberation->saveField('etat_parapheur', 1);
                         $this->Deliberation->saveField('etat', 3);
