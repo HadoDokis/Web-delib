@@ -41,9 +41,10 @@ class ParapheurShell extends Shell {
         App::uses('IparapheurComponent', 'Controller/Component');
         $collection = new ComponentCollection();
         $this->Parafwebservice = new IparapheurComponent($collection);
-
+        $id_dossier="WD_".$delib_id;
+        
         $this->Deliberation->id = $delib_id;
-        $histo = $this->Parafwebservice->getHistoDossierWebservice("$delib_id $objet");
+        $histo = $this->Parafwebservice->getHistoDossierWebservice($id_dossier);
         if (isset($histo['logdossier'])){
         for ($i = 0; $i < count($histo['logdossier']); $i++) {
             if (!$tdt) {
@@ -61,7 +62,7 @@ class ParapheurShell extends Shell {
                     $delib = $this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $delib_id)));
                     if ($delib['Deliberation']['etat_parapheur'] == 1) {
                         if ($histo['logdossier'][$i]['status'] == 'Signe') {
-                            $dossier = $this->Parafwebservice->GetDossierWebservice("$delib_id $objet");
+                            $dossier = $this->Parafwebservice->GetDossierWebservice($id_dossier);
                             if (!empty($dossier['getdossier'][10])) {
                                 $this->Deliberation->saveField('delib_pdf', base64_decode($dossier['getdossier'][8]));
                                 $this->Deliberation->saveField('signature', base64_decode($dossier['getdossier'][10]));
@@ -75,7 +76,7 @@ class ParapheurShell extends Shell {
                         }
                         // etat_paraph à 1, donc, nous sommes en post_seance, on ne supprime pas le projet
                         $this->Deliberation->saveField('etat_parapheur', 2);
-                        $this->Parafwebservice->archiverDossierWebservice("$delib_id $objet", "EFFACER");
+                        $this->Parafwebservice->archiverDossierWebservice($id_dossier, "EFFACER");
                     }
                 } elseif (($histo['logdossier'][$i]['status'] == 'RejetSignataire') ||
                         ($histo['logdossier'][$i]['status'] == 'RejetVisa')) { // Cas de refus dans le parapheur
@@ -86,9 +87,8 @@ class ParapheurShell extends Shell {
                     $comm ['Commentaire']['commentaire_auto'] = 0;
                     $this->Commentaire->save($comm['Commentaire']);
                     $this->Deliberation->saveField('etat_parapheur', -1);
-                    // $this->Deliberation->refusDossier($delib_id);
                     // Supprimer le dossier du parapheur
-                    $this->Parafwebservice->effacerDossierRejeteWebservice("$delib_id $objet");
+                    $this->Parafwebservice->effacerDossierRejeteWebservice($id_dossier);
                 }
             } else {
                 if ($histo['logdossier'][$i]['status'] == 'EnCoursTransmission')
