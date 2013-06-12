@@ -1060,7 +1060,7 @@ ul.actions, .actions ul {
 	border-left: 1px solid #888888;
 	border-right: 1px solid #888888;
 	moz-opacity:0.5;
-	webkit-opacity;0.5;
+	webkit-opacity: 0.5;
 	opacity:0.5;
 
 }
