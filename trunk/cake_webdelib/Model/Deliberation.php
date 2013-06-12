@@ -286,7 +286,7 @@ class Deliberation extends AppModel {
 		// lecture en base de données
 		$this->Behaviors->attach('Containable');
 		$delib=$this->find('first', array(
-				'contain' => array('Annex', 'Infosup'),
+				'contain' => array('Annex', 'Infosup', 'Typeseance'),
 				'conditions' => array('Deliberation.id'=>$id)));
 
 		// maj de l'etat de la delib dans la table deliberations
@@ -319,7 +319,7 @@ class Deliberation extends AppModel {
 			$infoSup['model'] = 'Deliberation';
 			$this->Infosup->save($infoSup, false);
 		}
-
+                
 		// copie des délibérations rattachées vers le nouveau projet
 		$delibRattachees = $this->find('all', array(
 				'contain' => array('Annex'),
