@@ -283,9 +283,6 @@ echo $this->Html->tag("div", null, array("class" => "btn-group"));
 echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Annuler', array('action' => 'mesProjetsRedaction'), array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name'=>'Annuler'));
 echo $this->Form->button('<i class="icon-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le circuit de traitement', 'onclick'=>$onclick));
 echo $this->Html->tag('/div', null);
-                
-//		echo $this->Form->submit('Sauvegarder', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Sauvegarder', 'onclick'=>$onclick));
-//                echo $this->Html->link('Annuler', '/deliberations/mesProjetsRedaction', array('class'=>'link_annuler', 'name'=>'Annuler'))
 ?>
 
 </div>
