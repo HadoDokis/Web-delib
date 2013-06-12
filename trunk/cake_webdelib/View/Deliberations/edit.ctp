@@ -192,11 +192,11 @@ $(document).ready(function() {
 <div id="tab4" style="display: none;">
 	<?php
 	foreach($infosupdefs as $infosupdef) {
-                // Amélioration 4.1 : on ne peut modifier une infosup qu'en fonction du profil
-                $canEdit = 'disabled';
-                foreach ($infosupdef['Profil'] as $profil) 
-                    if ($profil['id'] == $profil_id) 
-                        $canEdit = 'enable';
+		// Amélioration 4.1 : on ne peut modifier une infosup qu'en fonction du profil
+		$canEdit = 'disabled';
+		foreach ($infosupdef['Profil'] as $profil) 
+			if ($profil['id'] == $profil_id) 
+			$canEdit = 'enable';
 
 		$fieldName = 'Infosup.'.$infosupdef['Infosupdef']['code'];
 		$fieldId = 'Infosup'.Inflector::camelize($infosupdef['Infosupdef']['code']);
@@ -205,7 +205,9 @@ $(document).ready(function() {
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
 				echo $this->Form->input($fieldName, array('label'=>'', 'type'=> 'textarea', 'size'=>$infosupdef['Infosupdef']['taille'], 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $canEdit  ));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
-				echo $this->Form->input($fieldName, array('label'=>'', 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $canEdit));
+				$options = array('label'=>'', 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire']);
+				if ($canEdit == 'disabled') $options['disabled'] = $canEdit;
+				echo $this->Form->input($fieldName, $options);
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
 				echo $this->Form->input($fieldName, array('type'=>'text',  'disabled'=> $canEdit,  'div'=>false, 'label'=>'', 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				echo '&nbsp;';
