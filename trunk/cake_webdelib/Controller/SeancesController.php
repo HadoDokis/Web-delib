@@ -303,25 +303,29 @@ class SeancesController extends AppController {
 	}
 
 	function afficherCalendrier ($annee=null){
-		$this->Seance->Behaviors->attach('Containable');
+		// initialisations
 		require_once(APP.'Vendor'.DS.'Calendar'.DS.'includeCalendarVendor.php');
-			
-		Configure::write('CALENDAR_MONTH_STATE',Configure::read('CALENDAR_USE_MONTH_WEEKDAYS'));
-			
-		if (!isset($annee))
-			$annee = date('Y');
-			
+		Configure::write('CALENDAR_MONTH_STATE', Configure::read('CALENDAR_USE_MONTH_WEEKDAYS'));
 		$tabJoursSeances = array();
-		$joursSeance = $this->Seance->find('all',
-										array('conditions' => array('Seance.traitee'=> 1),
-												'contain'    => array('Typeseance.libelle'),
-												'fields'     => array('Seance.id', 'Seance.date', 'Seance.type_id'),
-												'ordre'      => 'date asc'));
-		foreach ($joursSeance as $date) {
-			$date = strtotime(substr($date['Seance']['date'], 0, 10));
-			array_push($tabJoursSeances,  $date);
+		$annee = empty($annee) ? date('Y') : $annee;
+		$droitAdd = $this->Droits->check($this->Session->read('user.User.id'), 'Seances:add');
+		$droitEdit = $this->Droits->check($this->Session->read('user.User.id'), 'Seances:edit');
+
+		// lecture des séances non traitées en DB
+		$this->Seance->Behaviors->attach('Containable');
+		$seances = $this->Seance->find('all', array(
+			'fields' => array('Seance.id', 'Seance.date', 'Seance.type_id'),
+			'contain' => array('Typeseance.libelle'),
+			'conditions' => array('Seance.traitee'=> 0),
+			'order' => 'date ASC'));
+		foreach ($seances as $seance) {
+			$date = strtotime(substr($seance['Seance']['date'], 0, 10));
+			$tabJoursSeances[$date][] = array(
+				'seanceId' => $seance['Seance']['id'],
+				'seanceLibelle' => $seance['Typeseance']['libelle'].' à '.date('H\Hi', strtotime($seance['Seance']['date'])));
 		}
 
+		// contruction du html du calendrier
 		$Year = new Calendar_Year($annee);
 		$Year->build();
 		$today = mktime('0','0','0');
@@ -339,23 +343,28 @@ class SeancesController extends AppController {
 				if ( $Day->isFirst() == 1 ) {
 					$calendrier .= "<tr>\n" ;
 				}
-					
 				if ( $Day->isEmpty() ) {
 					$calendrier .=  "<td>&nbsp;</td>\n" ;
-				}
-				else {
-					$timestamp = $Day->thisDay('timestamp');
+				} else {
+					$class="normal";
+					$url = $droitAdd ? 'add/'.$Day->thisDay('timestamp') : ''; 
+					$title = '';
+					$infoPlusDuneSeance = '';
 					if ($today == $Day->thisDay('timestamp')){
-						$balise="today";
+						$class="today";
+					} elseif (!empty($tabJoursSeances[$Day->thisDay('timestamp')]) ) {
+						if ($droitEdit) {
+							$class="seance";
+							foreach($tabJoursSeances[$Day->thisDay('timestamp')] as $jourSeance)
+								$title .= (empty($title)?'':', ').$jourSeance['seanceLibelle'].' ';
+							$infoPlusDuneSeance = count($tabJoursSeances[$Day->thisDay('timestamp')])>1 ? ' *' : ''; 
+							$url = 'edit/'.$tabJoursSeances[$Day->thisDay('timestamp')][0]['seanceId'];
+						}
 					}
-					elseif (in_array ($Day->thisDay('timestamp'), $tabJoursSeances) )
-					{
-						$balise="seance";
-					}
-					else {
-						$balise="normal";
-					}
-					$calendrier .=  "<td><a href =\"add/$timestamp\"><p class=\"$balise\">".$Day->thisDay()."</p></a></td>\n" ;
+					if (empty($url))
+						$calendrier .=  "<td>".$Day->thisDay()."</td>\n" ;
+					else
+						$calendrier .=  "<td><a href =\"$url\"><p class=\"$class\" title=\"$title\">".$Day->thisDay()."$infoPlusDuneSeance</p></a></td>\n" ;
 				}
 				if ( $Day->isLast() ) {
 					$calendrier .=  "</tr>\n" ;
@@ -365,7 +374,7 @@ class SeancesController extends AppController {
 			$calendrier .= "</table>\n</td>\n" ;
 
 			if ($i==5)
-				$calendrier .= "</tr><tr   style=\"vertical-align:top;\">\n" ;
+				$calendrier .= "</tr><tr style=\"vertical-align:top;\">\n" ;
 
 			$i++;
 		}
