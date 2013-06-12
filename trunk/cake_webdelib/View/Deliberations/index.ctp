@@ -84,6 +84,8 @@ function choixModele(o) {
                                                                 'empty' => 'Choisir une séance',
                                                                 'empty' => false,
                                                                 'multiple' => true,
+                                                                'id'    => false,
+                                                                'style' => 'width:100%;'
                                                                 ));
 					echo $this->Form->hidden('Deliberation.id',array('value'=> $deliberation['Deliberation']['id']));
 					echo $this->Form->button("<i class='icon-save'></i> Sauvegarder", array('type'=>'submit', 'div'=>false, 'class'=>'btn','escape'=>false, 'name'=>'sauvegarder'));
