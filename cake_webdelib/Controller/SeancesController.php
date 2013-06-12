@@ -713,19 +713,6 @@ class SeancesController extends AppController {
                         if (!array_key_exists('avis', $this->data['Deliberation'])) {
                                 $this->Seance->invalidate('avis');
                         } else {
-//                                // Initialisations liées à la nouvelle date de séance ou non
-//                                if (empty($this->data['Deliberation']['seance_id'])) {
-//                                        unset($this->data['Deliberation']['seance_id']);
-//                                        // Calcul du numéro de la délibération car il n'y a pas de séance suivante attribuée
-//                                //      if (empty($deliberation['Deliberation']['num_delib'])) {
-//                                //              $compteurId = $this->Seance->Typeseance->field('compteur_id', 'Typeseance.id = '.$deliberation['Seance']['type_id']);
-//                                //              $this->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($compteurId);
-//                                //      }
-//                                } else
-//                                        $this->data['Deliberation']['position'] = $this->Deliberation->findCount("seance_id =".$this->data['Deliberation']['seance_id']." AND (etat != -1 )")+1;
-//                                
-                                //debug($this->data['Deliberation']['seance_id'][0]);
-                                
                                 $this->Deliberation->Deliberationseance->id = $delib_seance['Deliberationseance']['id'];
                                 $this->Deliberation->Deliberationseance->set('deliberation_id', $deliberation_id);
                                 $this->Deliberation->Deliberationseance->set('seance_id', $seance_id);
@@ -734,7 +721,7 @@ class SeancesController extends AppController {
                                 $this->Deliberation->Deliberationseance->save();
                                 
                                 //Ajout sur plusieurs seances du projet en cours
-                                foreach($this->data['Deliberation']['seance_id'] as $seances=>$seance )
+                                foreach($this->data['Deliberation']['seance_id'] as $seance )
                                 {
                                     if($seance_id!= $seance){
                                         
@@ -745,8 +732,8 @@ class SeancesController extends AppController {
                                         $this->Deliberation->Deliberationseance->id=$delib_seance['Deliberationseance']['id'];
                                         $this->Deliberation->Deliberationseance->set('deliberation_id', $deliberation_id);
                                         $this->Deliberation->Deliberationseance->set('seance_id', $seance);
-                                        $this->Deliberation->Deliberationseance->set('avis', $delib_seance['Deliberationseance']['avis']);
-                                        $this->Deliberation->Deliberationseance->set('commentaire', $delib_seance['Deliberationseance']['commentaire']);
+                                        $this->Deliberation->Deliberationseance->set('avis', $this->data['Deliberation']['avis']);
+                                        $this->Deliberation->Deliberationseance->set('commentaire', $this->data['Deliberation']['commentaire']);
                                         $this->Deliberation->Deliberationseance->save();
                                     }
                                 }
