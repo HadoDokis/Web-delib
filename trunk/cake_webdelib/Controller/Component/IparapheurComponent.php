@@ -189,13 +189,14 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         //return $this->responseMessageStr;
         return $this->traiteXMLMessageRetour();
     }
-
-    function creerDossierWebservice($typetech, $soustype, $metas = array(), $dossierid, $annotpub = '', $annotpriv = '', $visibilite, $datelim = '', $pdf, $docsannexes = array()) {
+    
+    function creerDossierWebservice($dossierid, $titre, $typetech, $soustype, $visibilite, $pdf, $docsannexes = array(), $datelim = '', $annotpub = '', $annotpriv = '', $metas = array()) {
         $attachments = array('fichierPDF' => array($pdf, "application/pdf", "binary", "document.pdf"));
         $this->requestPayloadString = '<ns:CreerDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
 								         <ns:TypeTechnique>' . $typetech . '</ns:TypeTechnique>
 								         <ns:SousType>' . $soustype . '</ns:SousType>
 								         <ns:DossierID>' . $dossierid . '</ns:DossierID>
+								         <ns:DossierTitre>' . $titre . '</ns:DossierTitre>
 								         <ns:DocumentPrincipal xm:contentType="application/pdf">
 								         	<xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:fichierPDF"></xop:Include>
 								         </ns:DocumentPrincipal>';
