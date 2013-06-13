@@ -3061,7 +3061,11 @@ class DeliberationsController extends AppController {
             if ($erreur)
                 $this->Session->setFlash(utf8_decode($message), 'growl', array('type' => 'erreur'));
             else {
-                $this->Session->setFlash("Les documents ont &eacute;t&eacute; envoy&eacute;s au parapheur &eacute;lectronique.", 'growl');
+                if ($this->data['Deliberation']['circuit_id'] == -1){
+                    $this->Session->setFlash("Les documents ont &eacute;t&eacute; d&eacute;clar&eacute;s sign&eacute;s.", 'growl');
+                }else{
+                    $this->Session->setFlash("Les documents ont &eacute;t&eacute; envoy&eacute;s au parapheur &eacute;lectronique.", 'growl');
+                }
             }
             $this->redirect('/deliberations/sendToParapheur/' . $seance_id);
             exit;
