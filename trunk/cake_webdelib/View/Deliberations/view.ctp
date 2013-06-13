@@ -1,6 +1,7 @@
 <?php echo $this->Html->script('ckeditor/ckeditor'); ?>
 <?php echo $this->Html->script('ckeditor/adapters/jquery'); ?>
 <?php echo $this->Html->script('ouvrable', true); ?>
+
 <script type="text/javascript">
     $(document).ready(function() {
         $("div.ouvrable").ouvrable({
@@ -8,7 +9,11 @@
             arrowDown: '<?php echo $this->Html->webroot('img/icons/arrow-down.png'); ?>',
             initHeight: 'MIN'
         });
+        
 <?php
+if ($etat==2){ //Enlever l'affichage en gras de la derniere étape si le traitement est fini
+    echo "$('.nomcourante').attr('class', 'nom');";
+}
 if ($majDeleg) {
     ?>
             function afficheMAJ() {
