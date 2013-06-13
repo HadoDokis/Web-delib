@@ -8,7 +8,6 @@ class ProfilsController extends AppController {
 	var $uses = array('Profil', 'Aro');
 
 	// Gestion des droits
-	var $aucunDroit = array('changeParentId');
 	var $commeDroit = array(
 		'add'=>'Profils:index',
 		'delete'=>'Profils:index',
@@ -178,10 +177,6 @@ class ProfilsController extends AppController {
 				$this->Session->setFlash('Impossible de supprimer ce profil car il est attribué.');
 				$this->redirect('/profils/index');
 			}
-		}
-
-		function changeParentId($curruentParentId, $newParentId) {
-			$this->data = $this->Profil->findByParentId(null, $id);
 		}
 
                 function notifier($profil_id) {

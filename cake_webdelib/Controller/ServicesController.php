@@ -7,7 +7,6 @@ class ServicesController extends AppController {
 
 	// Gestion des droits
 	var $aucunDroit = array(
-		'changeParentId',
 		'changeService',
 		'isEditable',
 		'view', 
@@ -130,12 +129,6 @@ class ServicesController extends AppController {
 			$this->redirect('/services/index');
 		}
 	}
-
-	function changeParentId($curruentParentId, $newParentId) {
-		$this->data = $this->Service->findByParentId($curruentParentId);
-		//debug($this->data);exit;
-	}
-
 
 	function isEditable ($id) {
 		$condition = "parent_id = $id";
