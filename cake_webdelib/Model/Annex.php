@@ -5,8 +5,11 @@ class Annex extends AppModel {
 	var $displayField="titre";
 
         var $validate = array('joindre_ctrl_legalite' => array(
-                              'rule' => 'checkFile',
-                              'message' => 'Vous devez changer le format de fichier'));
+                              'rule' => 'checkFileControlLegalite',
+                              'message' => 'Ce format de fichier est invalide pour joindre au contrôle de légalité'),
+                              'joindre_fusion' => array(
+                              'rule' => 'checkFileFusion',
+                              'message' => 'Ce format de fichier est invalide pour le joindre à la fusion'));
 	
 	var $belongsTo = array(
 		'Deliberation' => array(
@@ -14,28 +17,75 @@ class Annex extends AppModel {
 		)
 	);  
      
-        function checkFile() {
-            $formats = array('application/pdf', 'image/png', 'image/jpg', 'image/jpeg', 'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet');
-            if ($this->data['Annex']['joindre_ctrl_legalite'] == 1) {
-                $tmpfname = tempnam(TMP, "CHK_");
+        function checkFileControlLegalite() {
+            //$formats = array('application/pdf', 'image/png', 'image/jpg', 'image/jpeg', 'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet');
+            
+            if ($this->data['Annex']['joindre_ctrl_legalite'] == 1) 
+            {
+                $DOC_TYPE = Configure::read('DOC_TYPE');
+                
                 if (!empty($this->data['Annex']['filename'])) {
-                    file_put_contents($tmpfname, $this->data["Annex"]['data']);
+                    $file = new File(TMP.time().'.'.$DOC_TYPE[$this->data["Annex"]['filetype']]['extention'] , true);
+                   $file->append($this->data["Annex"]['data']);
                 }
                 else {
                     $annex = $this->find('first', array('conditions' => array('Annex.id' => $this->data['Annex']['id']),
                                                         'recursive'  => -1,
                                                         'fields'     => array('Annex.filename', 'Annex.filetype', 'Annex.data')));
                     
-                    file_put_contents($tmpfname, $annex["Annex"]['data']);
+                    $file = new File(TMP.time().'.'.$annex["Annex"]['filetype'] , true);
+                    $file->append($annex["Annex"]['data']);
 
                 }
-                $file_exec = Configure::read('FILE_EXEC');
-                $cmd =  "LANG=fr_FR.UTF-8; $file_exec $tmpfname";
-                $result = shell_exec($cmd);
-                $result = trim($result);
-                unlink($tmpfname);
-                return (in_array($result, $formats))  ;
+                
+                if(array_key_exists($file->mime(), $DOC_TYPE))
+                      if (isset($DOC_TYPE[$file->mime()]['joindre_ctrl_legalite']) 
+                              && $DOC_TYPE[$file->mime()]['joindre_ctrl_legalite']==true)  
+                        $return=true;
+                
+                $file->delete();
+                $file->close();
+                
+                return isset($return) && $return==true?$return:false;
             }
+            
+            return true;
+        }
+        
+        function checkFileFusion() {
+            
+            
+            //$formats = array('application/pdf', 'image/png', 'image/jpg', 'image/jpeg', 'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet');
+            
+            if ($this->data['Annex']['joindre_fusion'] == 1) 
+            {
+                $DOC_TYPE = Configure::read('DOC_TYPE');
+                
+                if (!empty($this->data['Annex']['filename'])) {
+                    $file = new File(TMP.time().'.'.$DOC_TYPE[$this->data["Annex"]['filetype']]['extention'] , true);
+                   $file->append($this->data["Annex"]['data']);
+                }
+                else {
+                    $annex = $this->find('first', array('conditions' => array('Annex.id' => $this->data['Annex']['id']),
+                                                        'recursive'  => -1,
+                                                        'fields'     => array('Annex.filename', 'Annex.filetype', 'Annex.data')));
+                    
+                    $file = new File(TMP.time().'.'.$annex["Annex"]['filetype'] , true);
+                    $file->append($annex["Annex"]['data']);
+
+                }
+                
+                if(array_key_exists($file->mime(), $DOC_TYPE))
+                      if (isset($DOC_TYPE[$file->mime()]['joindre_fusion']) 
+                              && $DOC_TYPE[$file->mime()]['joindre_fusion']==true)  
+                        $return=true;
+                
+                $file->delete();
+                $file->close();
+                
+                return isset($return) && $return==true?$return:false;
+            }
+            
             return true;
         }
 
