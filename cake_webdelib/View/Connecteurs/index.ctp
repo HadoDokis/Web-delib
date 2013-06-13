@@ -18,7 +18,7 @@
                                                ));
         if ($id != 8) {
             echo $this->Html->link(SHY,
-                                   "/check2/index2.php#".strtolower($connecteur),
+                                   "/check/index.php#".strtolower($connecteur),
                                    array('class'=>'link_validerenurgence',
                                          'alt'=>"Tester le connecteur $connecteur",
                                          'target'=>"_blank",
