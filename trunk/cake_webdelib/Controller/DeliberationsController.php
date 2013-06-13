@@ -2511,6 +2511,11 @@ class DeliberationsController extends AppController {
                 $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
                     'fields' => array('Seance.id', 'Seance.type_id'),
                     'contain' => array('Typeseance.action')));
+
+                $this->Deliberationtypeseance->create();
+                $this->Deliberationtypeseance->save(array('deliberation_id' => $this->data['Deliberation']['id'],
+                                                          'typeseance_id'   => $seance['Seance']['type_id']));
+
                 if ($seance['Typeseance']['action'] == 0)
                     $nbSeancesDeliberantes++;
             }
