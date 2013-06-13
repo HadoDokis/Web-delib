@@ -474,7 +474,9 @@ class DeliberationsController extends AppController {
     }
 
     function _saveAnnexe($delibId, $annexe) {
-        if ($annexe['ref'] == 'delibPrincipale')
+        App::uses('File', 'Utility');
+        
+        if ($annexe['ref']==  'delibPrincipale')
             $Model = 'Projet';
         else
             $Model = 'Deliberation';
@@ -486,29 +488,29 @@ class DeliberationsController extends AppController {
             $newAnnexe['Annex']['titre'] = $annexe['titre'];
             $newAnnexe['Annex']['joindre_ctrl_legalite'] = $annexe['ctrl'];
             $newAnnexe['Annex']['joindre_fusion'] = $annexe['fusion'];
+            
+            $DOC_TYPE = Configure::read('DOC_TYPE');
+            
+            $file = new File($annexe['file']['tmp_name'], false);
             $newAnnexe['Annex']['filename'] = $annexe['file']['name'];
-            $newAnnexe['Annex']['filetype'] = $annexe['file']['type'];
-            $newAnnexe['Annex']['size'] = $annexe['file']['size'];
-            $newAnnexe['Annex']['data'] = file_get_contents($annexe['file']['tmp_name']);
-
-            if ($newAnnexe['Annex']['filetype'] == 'application/pdf') {
-                $newAnnexe['Annex']['data_pdf'] = file_get_contents($annexe['file']['tmp_name']);
-                $newAnnexe['Annex']['filename_pdf'] = $annexe['file']['name'];
-                $newAnnexe['Annex']['filetype'] = "application/vnd.oasis.opendocument.text";
-                $newAnnexe['Annex']['data'] = $this->Pdf->toOdt($annexe['file']['tmp_name']);
-                $newAnnexe['Annex']['filename'] = $annexe['file']['name'] . ".odt";
-            } else {
-                $pos = strpos($newAnnexe['Annex']['filetype'], 'vnd.oasis.opendocument');
-                if ($pos === true) {
-                    $data_pdf = $this->Conversion->convertirFichier($annexe['file']['tmp_name'], 'pdf');
-                    if (!is_array($data_pdf)) {
-                        $newAnnexe['Annex']['data_pdf'] = $data_pdf;
-                        $newAnnexe['Annex']['filename_pdf'] = $annexe['file']['name'] . '.pdf';
-                    }
-                }
+            //Enregistrement du type mime vérifier
+            $newAnnexe['Annex']['filetype'] = $DOC_TYPE[$file->mime()]['mime_conversion'];
+            $newAnnexe['Annex']['size'] = $file->size();
+            $newAnnexe['Annex']['data'] = $file->read();
+            
+            if(array_key_exists($file->mime(), $DOC_TYPE) && $DOC_TYPE[$file->mime()]['extention']=='pdf') {
+                $newAnnexe['Annex']['data_pdf'] = $file->read();
+                $newAnnexe['Annex']['filename_pdf'] =  $annexe['file']['name'];
+                $newAnnexe['Annex']['data'] =   $this->Pdf->toOdt($file->pwd());
+                $newAnnexe['Annex']['filename'] =  $annexe['file']['name'].'.odt';
+            } elseif(array_key_exists($file->mime(), $DOC_TYPE) && $DOC_TYPE[$file->mime()]['extention']=='odt') {
+                $newAnnexe['Annex']['data_pdf'] = $this->Conversion->convertirFichier($file->pwd(), 'pdf');
+                $newAnnexe['Annex']['filename_pdf'] = $annexe['file']['name'].'.pdf';
             }
-            if (!$this->Annex->save($newAnnexe['Annex']))
-                $this->Session->setFlash('Erreur lors de la sauvegarde des annexes.', 'growl', array('type' => 'erreur'));
+            $file->close();
+            
+            if(!$this->Annex->save($newAnnexe['Annex']))
+                $this->Session->setFlash('Erreur lors de la sauvegarde des annexes.', 'growl', array('type'=>'erreur'));
         }
         return true;
     }
@@ -839,9 +841,12 @@ class DeliberationsController extends AppController {
                         }
                     }
                 }
-                // Validation du format des annexes pour l'envoi au Tdt
-                if (!$this->Annex->validates()) {
-                    $this->Session->setFlash("L'annexe n'a pas le bon format", 'growl', array('type'=>'erreur') );
+                // Validation du format des annexes pour l'envoi au Tdt et fusion
+                
+                if (!empty($this->Annex->validationErrors)) {
+                    
+                    $this->Session->setFlash(@implode(',',$this->Annex->validationErrors['joindre_ctrl_legalite']).' '.
+                    @implode(',',$this->Annex->validationErrors['joindre_fusion']), 'growl', array('type'=>'erreur') );
                     $this->redirect("/deliberations/edit/$id");
                 }
                 

@@ -60,13 +60,18 @@ function checkMimetype($field_validation, $content, $allowed_mimetypes) {
         return true;
     }
     else {
+        $DOC_TYPE = Configure::read('DOC_TYPE');
         $tmpfname = tempnam(TMP, "CHK_");
-        file_put_contents($tmpfname, $this->data[$this->alias][$content]);
-        $file_exec = Configure::read('FILE_EXEC');
-        $cmd =  "LANG=fr_FR.UTF-8; $file_exec $tmpfname";
-        $result = shell_exec($cmd);
-        $result = trim($result);
-        unlink($tmpfname);
+        $file = new File($tmpfname, true);
+        $file->append($this->data[$this->alias][$content]);
+        
+        if(array_key_exists($file->mime(), $DOC_TYPE))
+                 $result = $DOC_TYPE[$file->mime()]['mime_conversion'];
+        else $result=NULL;
+                
+        $file->delete();
+        $file->close();
+        
         return (in_array($result, $allowed_mimetypes)) ;
     }
 }
