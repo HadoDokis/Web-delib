@@ -185,7 +185,7 @@ class DeliberationsController extends AppController {
                     'conditions' => array('model' => 'Deliberation', 'actif' => true),
                     'order' => 'ordre')));
         $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/' . $id, array('return')));
-
+        $this->set('etat', $this->data['Deliberation']['etat']);
         //si bloqué à une étape de délégation
         $visa = false;
         $traitement = $this->Traitement->findByTargetId($id);
