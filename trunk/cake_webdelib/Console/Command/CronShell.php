@@ -8,12 +8,7 @@ class CronShell extends Shell {
 
     function main() {
         
-        //////////////////////////////////////////////////////////////////////////////
-        // A MODIFIER SI webdelib n'est pas joignable en localhost (valeur par défaut)
-        //////////////////////////////////////////////////////////////////////////////
-        $baseUrl = FULL_BASE_URL;
-        /////////////////////////
-        $url = $baseUrl."/crons/runCrons";
+        $url = Configure::read('WEBDELIB_URL')."/crons/runCrons";
         
         // initialisation de la ressource curl
         $c = curl_init();
