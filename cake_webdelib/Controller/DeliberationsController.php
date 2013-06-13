@@ -1847,7 +1847,7 @@ class DeliberationsController extends AppController {
 
             $this->Email->from = Configure::read("MAIL_FROM");
             $this->Email->to = $user['User']['email'];
-            $this->Email->sendAs = 'both';
+            $this->Email->sendAs = 'text';
             $this->Email->charset = 'UTF-8';
 
             $delib = $this->Deliberation->read(null, $delib_id);
