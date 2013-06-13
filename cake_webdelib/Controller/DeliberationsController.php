@@ -1,5 +1,4 @@
 <?php
-
 class DeliberationsController extends AppController {
     /*
      * Deliberation.etat = -1 : refusé
@@ -572,10 +571,6 @@ class DeliberationsController extends AppController {
                 if($bSeanceok)
                     $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'].' : '. $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
             }
-                
-
-            
-
             if (Configure::read('DELIBERATIONS_MULTIPLES')) {
                 $this->Deliberation->Multidelib->Behaviors->attach('Containable');
                 $multiDelibs = $this->Deliberation->Multidelib->find('all', array(
@@ -588,7 +583,8 @@ class DeliberationsController extends AppController {
                                        'Annex.filename', 'Annex.filename_pdf', 
                                        'Annex.titre', 'Annex.joindre_ctrl_legalite', 
                                        'Annex.joindre_fusion'),
-                    'conditions' => array('Multidelib.parent_id'=>$id)));
+                    'conditions' => array('Multidelib.parent_id'=>$id),
+                    'order' => array('Multidelib.id')));
                 foreach($multiDelibs as $imd => $multiDelib) {
                     $this->request->data['Multidelib'][$imd] = $multiDelib['Multidelib'];
                     $this->request->data['Multidelib'][$imd]['Annex'] = $multiDelib['Annex'];
@@ -673,14 +669,11 @@ class DeliberationsController extends AppController {
             $this->set('selectedTypeacteId', $this->request->data['Deliberation']['typeacte_id']);
 
             $this->set('seances', $seances);
-//            $this->set('seances_selected', $seances_selected);
         
             $this->set ('typeseances',  $typeseances);
-//            $this->set ('typeseances_selected',  $typeseances_selected);
 
             $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
             $this->set('selectedRapporteur', $this->request->data['Deliberation']['rapporteur_id']);
-   //         $this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
             $this->set('profil_id', $user['User']['profil_id']);
             $this->Infosupdef->Behaviors->attach('Containable');
