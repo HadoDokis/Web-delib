@@ -1150,7 +1150,7 @@ class SeancesController extends AppController {
             }
         }
 
-        function genererConvoc($seance_id, $model_id, $est_apercu=true) { 
+        function genererConvoc($seance_id, $model_id) { 
           
             $this->Seance->id = $seance_id;
             $time_start = microtime(true);
@@ -1166,11 +1166,10 @@ class SeancesController extends AppController {
             include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
             include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
   
-            if (($this->Session->read('user.format.sortie')==0) || ($editable == 0)) {
+            if (($this->Session->read('user.format.sortie')==0)) {
                 $sMimeType = "application/pdf";
                 $format    = "pdf";
-            }
-            else {
+            } else {
                 $sMimeType = "application/vnd.oasis.opendocument.text";
                 $format    = "odt";
             }
