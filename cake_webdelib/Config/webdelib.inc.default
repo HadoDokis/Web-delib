@@ -1,13 +1,16 @@
 <?php
-
     
-    Configure::write ('WEBDELIB_URL', 'http://localhost/');
 
     Configure::write ('AFFICHE_HIERARCHIE_SERVICE', true);
     Configure::write ('AFFICHE_CONVOCS_ANONYME',    true);
     Configure::write ('CONVOCS_MODIFIABLES',        false);
     Configure::write ('NOT_UNIQUE_CIRCUIT',         true);
 
+    ////////////////////////
+    // Configuration CRON
+    ////////////////////////
+    Configure::write ('WEBDELIB_URL', 'http://webdelib-recette.test.adullact.org/');
+    
     ////////////////////////
     // Configuration GEDOOo
     ////////////////////////
