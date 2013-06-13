@@ -1,5 +1,8 @@
 <?php
 
+    
+    Configure::write ('WEBDELIB_URL', 'http://localhost/');
+
     Configure::write ('AFFICHE_HIERARCHIE_SERVICE', true);
     Configure::write ('AFFICHE_CONVOCS_ANONYME',    true);
     Configure::write ('CONVOCS_MODIFIABLES',        false);
@@ -17,9 +20,9 @@
     // Configuration S2LOW
     ////////////////////////
     Configure::write('WEBDELIB_PATH', '/var/www/webdelib/app/');
-    Configure::write('PEM',        Configure::read('WEBDELIB_PATH').'config/cert_s2low/client.pem');
-    Configure::write('SSLKEY',     Configure::read('WEBDELIB_PATH').'config/cert_s2low/key.pem');
-    Configure::write('CA_PATH',    Configure::read('WEBDELIB_PATH').'config/cert_s2low/');
+    Configure::write('PEM',        Configure::read('WEBDELIB_PATH').'Config/cert_s2low/client.pem');
+    Configure::write('SSLKEY',     Configure::read('WEBDELIB_PATH').'Config/cert_s2low/key.pem');
+    Configure::write('CA_PATH',    Configure::read('WEBDELIB_PATH').'Config/cert_s2low/');
     Configure::write('FILE_CLASS', Configure::read('WEBDELIB_PATH').'webroot/files/actes/classification.xml');
     Configure::write('PASSWORD', 'password');
     Configure::write('HOST', 'www.s2low.org');
@@ -46,8 +49,8 @@
     Configure::write('USE_PARAPH', false);
     Configure::write('WSACTION', 'https://x.x.x.x/alfresco');
     Configure::write('WSTO', 'https://x.x.x.x/ws-iparapheur');
-    Configure::write('CACERT',     Configure::read('WEBDELIB_PATH').'config/cert_paraf/AC.pem');
-    Configure::write('CLIENTCERT', Configure::read('WEBDELIB_PATH').'config/cert_paraf/iparapheur-client_AC.pem');
+    Configure::write('CACERT',     Configure::read('WEBDELIB_PATH').'Config/cert_parapheur/AC.pem');
+    Configure::write('CLIENTCERT', Configure::read('WEBDELIB_PATH').'Config/cert_parapheur/iparapheur-client_AC.pem');
     Configure::write('PASSPHRASE', 'passphrase');
     Configure::write('HTTPAUTH',   'login');
     Configure::write('HTTPPASSWD', 'paswwod');
