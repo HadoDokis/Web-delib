@@ -8,16 +8,16 @@
 <?php
 	if (!isset($_GET['id'])) {
         foreach ($classification as $key=>$value) {
-	        $val=addslashes(utf8_encode($value));
-	        echo $this->Html->link($key.' - '.utf8_encode($value),'#add',array('onclick'=>"javascript:returnChoice('$key - $val','$key');", 'id'=>$key, 'name'=>$key, 'value'=>$key));
+	        $val=addslashes($value);
+	        echo $this->Html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:returnChoice('$key - $val','$key');", 'id'=>$key, 'name'=>$key, 'value'=>$key));
 	        echo '<br/>';
         }
     }
     else {
     	$id = $_GET['id'];
     	foreach ($classification as $key=>$value) {
-	        $val=addslashes(utf8_encode($value));
-	       echo $this->Html->link($key.' - '.utf8_encode($value),'#add',array('onclick'=>"javascript:return_choice_lot('$key - $val','$key',$id);", 'id'=>$key, 'name'=>$key, 'value'=>$key));
+	        $val=addslashes($value);
+	       echo $this->Html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:return_choice_lot('$key - $val','$key',$id);", 'id'=>$key, 'name'=>$key, 'value'=>$key));
 	        echo '<br/>';
     	}
     }
