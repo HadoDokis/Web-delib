@@ -479,8 +479,9 @@ class SeancesController extends AppController {
 				array('conditions' => array('Deliberation.id' =>$deliberation_id)));
 		$seance = $this->Seance->find('first',
 				array('conditions' => array('Seance.id' =>$seance_id),
-						'contain'    =>array('Typeseance.compteur_id')));
-		$position =  $this->Deliberation->getPosition($deliberation_id, $seance_id);
+                                    'fields'     => array('Seance.date'),
+                                    'contain'    =>array('Typeseance.compteur_id')));
+//		$position =  $this->Deliberation->getPosition($deliberation_id, $seance_id);
 		if (empty($this->data)) {
 			$nbAbsent = 0;
 			// Initialisation du détail du vote
@@ -569,7 +570,7 @@ class SeancesController extends AppController {
 			// Attribution du numéro de la délibération si adoptée et si pas déjà attribué
 			if ( ($this->data['Deliberation']['etat'] == 3)
 					&& empty($deliberation['Deliberation']['num_delib']) ) {
-				$this->request->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id']);
+				$this->request->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id'], $seance['Seance']['date']);
 				$this->request->data['Deliberation']['num_delib'] = str_replace('#p#',
 						$this->Deliberation->getPosition($deliberation_id, $seance_id),
 						$this->data['Deliberation']['num_delib'] );
