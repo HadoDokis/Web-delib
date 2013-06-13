@@ -1079,6 +1079,7 @@ class SeancesController extends AppController {
                 $this->set('model_id',  $model_id);
             }
             else {
+                
                 $message = '';
                 foreach ($this->data['Acteur'] as $tmp_id => $bool ){
                     $data = array(); 
@@ -1086,8 +1087,15 @@ class SeancesController extends AppController {
                         $acteur_id = substr($tmp_id, 3, strlen($tmp_id));
                         $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id),
                                                                      'recursive'  => -1));
-                        $filepath =  WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf';
-
+                        
+                        if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf')){
+                            $filepath = WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf';
+                        }else if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt')){
+                            $filepath = WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt';
+                        }else{
+                            continue;
+                        }
+                        
                         $searchReplace = array("#NOM#" => $acteur['Acteur']['nom'], "#PRENOM#" => $acteur['Acteur']['prenom'] );
                         $template = file_get_contents(CONFIG_PATH.'/emails/convocation.txt');
                         $content = utf8_decode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $template))));
@@ -1178,8 +1186,13 @@ class SeancesController extends AppController {
             // Préparation des répertoires pour la création des fichiers
             //*****************************************
             $dirpath = WEBROOT_PATH."/files/seances/$seance_id/$model_id/";
-
-            $urlpath = 'http://'.$_SERVER['HTTP_HOST'].$this->base."/files/$seance_id/$model_id/";
+            
+            //Suppression des fichiers éventuellement existants
+            $dir = glob($dirpath."*");
+            foreach ($dir as $fileuri) {
+                if (is_file($fileuri)) unlink($fileuri);
+            }
+            
             if (!$this->Gedooo->checkPath($dirpath))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $dirpath");
 
@@ -1263,7 +1276,6 @@ class SeancesController extends AppController {
                 $oMainPart->addElement(new GDO_FieldType("note_acteur", ($acteur['Acteur']['note']), "text"));
 
                 $nomFichier = $acteur['Acteur']['id'];
-                //$nomFichier = $acteur['Acteur']['id'].'-'.Inflector::camelize($this->Utils->strSansAccent($acteur['Acteur']['nom']));
 
                 try {
                     Configure::write('debug', 0);
@@ -1283,15 +1295,14 @@ class SeancesController extends AppController {
                     $time_start = microtime(true);
                     $oFusion->SendContentToFile($dirpath.$nomFichier.".odt");
 
-                    $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt');
-                    file_put_contents  ($path.$nomFichier.".odt",   $content);
-
-                    $content = $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", $format);
-                    $chemin_fichier = $this->Gedooo->createFile($dirpath, $nomFichier.".$format", $content);
+                    if ($format == 'pdf'){
+                        $content = $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", $format);
+                        $chemin_fichier = $this->Gedooo->createFile($dirpath, $nomFichier.".$format", $content);
+                    }
                     if (($format == 'pdf') && ($joindre_annexe)) {
                         if (!empty($annexes)) 
                             $this->Pdf->concatener($chemin_fichier, $annexes);
-                     }
+                    }
 
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
@@ -1302,6 +1313,7 @@ class SeancesController extends AppController {
                 }
             }
             $this->Progress->end("/seances/sendConvocations/$seance_id/$model_id");
+            exit;
         }
 
 
