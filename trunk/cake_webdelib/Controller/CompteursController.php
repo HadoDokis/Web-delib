@@ -23,7 +23,7 @@ class CompteursController extends AppController
 	}
 
 	function view($id = null) {
-		if (!$this->Compteur->exists()) {
+		if (!$this->Compteur->exists($id)) {
 			$this->Session->setFlash('Invalide id pour le compteur', 'growl',array('type'=>'erreur'));
 			$this->redirect('/compteurs/index');
 		} else
