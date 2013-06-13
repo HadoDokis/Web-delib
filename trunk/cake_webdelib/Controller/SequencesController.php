@@ -17,7 +17,7 @@ class SequencesController extends AppController
 
 	function view($id = null)
 	{
-		if (!$this->Sequence->exists()) {
+		if (!$this->Sequence->exists($id)) {
 			$this->Session->setFlash('Invalide id pour la s&eacute;quence', 'growl', array('type'=>'erreur'));
 			$this->redirect('/sequences/index');
 		} else
