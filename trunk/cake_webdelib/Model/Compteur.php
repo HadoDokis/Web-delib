@@ -57,24 +57,29 @@ class Compteur extends AppModel
 * enregistre la nouvelle valeur de la séquence et du critère de réinitialisation en base
 *
 * @param int $id Numéro de l'id du compteur
+* @param date $date Date personnalisée, date du jour si omis
 * @retourne string Valeur suivante du compteur
 * @access public
 */
-	function genereCompteur($id = null) {
+	function genereCompteur($id = null, $date = null) {
 		/* initialisations */
 		if (!$id) {
 			$id = $this->id;
 		}
 
 		/* initialisation du tableau de recherche et de remplacement pour la date */
-		$timestamp = time();
-		$remplaceD = array("#AAAA#" => date("Y", $timestamp)
-			, "#AA#" => date("y", $timestamp)
-			, "#M#" => date("n", $timestamp)
-			, "#MM#" => date("m", $timestamp)
-			, "#J#" => date("j", $timestamp)
-			, "#JJ#" => date("d", $timestamp)
-		);
+                if ($date == null) // Date d'aujourd'hui
+                    $timestamp = time();
+                else //Date personnalisée
+                    $timestamp = strtotime($date);
+                
+                $remplaceD = array("#AAAA#" => date("Y", $timestamp)
+                        , "#AA#" => date("y", $timestamp)
+                        , "#M#" => date("n", $timestamp)
+                        , "#MM#" => date("m", $timestamp)
+                        , "#J#" => date("j", $timestamp)
+                        , "#JJ#" => date("d", $timestamp)
+                );
 
 		/* lecture du compteur en base */
 		$cptEnBase = $this->read(null, $id);
@@ -86,7 +91,7 @@ class Compteur extends AppModel
 		if ($val_reinitCourant != $cptEnBase['Compteur']['val_reinit']) {
 			$cptEnBase['Sequence']['num_sequence'] = 1;
 			$cptEnBase['Compteur']['val_reinit'] = $val_reinitCourant;
-    	} else
+                } else
 			$cptEnBase['Sequence']['num_sequence']++;
 
 		/* initialisation du tableau de recherche et de remplacement pour la séquence */
