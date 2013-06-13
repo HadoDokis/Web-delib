@@ -35,13 +35,12 @@
 </dl>
 
 
-<br />
-<ul id="actions_fiche">
+<div class='btn-group' id="actions_fiche">
 	<?php
-		echo '<li>' . $this->Html->link(SHY, $this->Session->read('user.User.lasturl'), array('class'=>'link_annuler_sans_border', 'title'=>'Annuler'), false, false) . '</li>';
+                $this->Html2->boutonRetour('index', 'float:none;');
 		if ($Droits->check($this->Session->read('user.User.id'), 'Sequences:edit'))
-			echo '<li>'.$this->Html->link(SHY, '/sequences/edit/' . $sequence['Sequence']['id'], array('class'=>'link_modifier', 'title'=>'Modifier'), false, false).'</li>';
+                    $this->Html2->boutonModifierUrl('/sequences/edit/' . $sequence['Sequence']['id'], 'Modifier', 'Modifier', 'float:none;', '');
 	?>
-</ul>
+</div>
 
 </div>
