@@ -295,6 +295,8 @@ class Deliberation extends AppModel {
 
 		// création de la nouvelle version
 		$delib['Deliberation']['id']=null;
+		$delib['Deliberation']['created']=null;
+		$delib['Deliberation']['modified']=null;
 		$delib['Deliberation']['etat']=0;
 		$delib['Deliberation']['anterieure_id']=$id;
                 $this->create();
