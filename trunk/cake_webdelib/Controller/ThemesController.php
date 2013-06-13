@@ -8,7 +8,6 @@ class ThemesController extends AppController {
 
 	// Gestion des droits
 	var $aucunDroit = array(
-			'changeParentId',
 			'getLibelle',
 			'isEditable',
 			'view'
@@ -97,12 +96,7 @@ class ThemesController extends AppController {
 		}
 	}
 
-	function changeParentId($curruentParentId, $newParentId) {
-		$this->request->data = $this->Theme->findByParentId($curruentParentId);
-	}
-
 	function isEditable ($id) {
-		$condition = "parent_id = $id";
 		$liste = $this->Theme->find("first", array(
 				'conditions' => array('Theme.parent_id' => $id),
 				'recursive'  => -1));
