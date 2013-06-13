@@ -33,9 +33,20 @@ $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Ré
         else
             echo ('<td> </td>');
         echo ('<td>'.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'</td>'); 
-        $filepath = '/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf';
-        if (file_exists(WEBROOT_PATH.$filepath))
-            echo ('<td>'.$this->Html->link($model['Model']['modele'].'.pdf', $filepath).' : ['.$date_convocation.']</td>');
+        
+        if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf')){
+            $filepath = '/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf';
+            $ext = '.pdf';
+        }else if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt')){
+            $filepath = '/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt';
+            $ext = '.odt';
+        }else{
+            $filepath = '';
+        }
+            
+        
+        if ($filepath != '')
+            echo ('<td>'.$this->Html->link($model['Model']['modele'].$ext, $filepath).' : ['.$date_convocation.']</td>');
         else
             echo ('<td></td>');
         if ($acteur['Acteur']['date_envoi'] == null)
