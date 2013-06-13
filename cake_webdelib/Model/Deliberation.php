@@ -1042,7 +1042,6 @@ class Deliberation extends AppModel {
 		$majPosition = false;
 		$majFields = array(
 				'typeacte_id', 'theme_id', 'service_id', 'redacteur_id', 'rapporteur_id',
-				'seance_id', 'position',
 				'titre', 'num_pref', 'etat',
 				'texte_projet', 'texte_projet_size', 'texte_projet_type', 'texte_projet_name',
 				'texte_synthese', 'texte_synthese_size', 'texte_synthese_type', 'texte_synthese_name',
@@ -1052,7 +1051,7 @@ class Deliberation extends AppModel {
 		$this->Behaviors->attach('Containable');
 		$delib = $this->find('first', array(
 				'fields' => $majFields,
-				'contain' => array('Multidelib.id', 'Multidelib.position'),
+				'contain' => array('Multidelib.id'),
 				'conditions' => array('Deliberation.id' => $delibId)));
 
 
@@ -1125,6 +1124,8 @@ class Deliberation extends AppModel {
                     $newDelib['Deliberation']['parent_id'] = $parentId;
               }
               
+                $newDelib['Deliberation']['titre'] = '';
+                $newDelib['Deliberation']['num_pref'] = '';
                 $newDelib['Deliberation']['objet'] = $delib['objet'];
                 $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
 		
