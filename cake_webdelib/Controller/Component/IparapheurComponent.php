@@ -190,12 +190,12 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         return $this->traiteXMLMessageRetour();
     }
     
-    function creerDossierWebservice($dossierid, $titre, $typetech, $soustype, $visibilite, $pdf, $docsannexes = array(), $datelim = '', $annotpub = '', $annotpriv = '', $metas = array()) {
+    function creerDossierWebservice($titre, $typetech, $soustype, $visibilite, $pdf, $docsannexes = array(), $datelim = '', $annotpub = '', $annotpriv = '', $metas = array()) {
         $attachments = array('fichierPDF' => array($pdf, "application/pdf", "binary", "document.pdf"));
         $this->requestPayloadString = '<ns:CreerDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
 								         <ns:TypeTechnique>' . $typetech . '</ns:TypeTechnique>
 								         <ns:SousType>' . $soustype . '</ns:SousType>
-								         <ns:DossierID>' . $dossierid . '</ns:DossierID>
+								         <ns:DossierID></ns:DossierID>
 								         <ns:DossierTitre>' . $titre . '</ns:DossierTitre>
 								         <ns:DocumentPrincipal xm:contentType="application/pdf">
 								         	<xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:fichierPDF"></xop:Include>
@@ -271,7 +271,10 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         $message = @$messages->item(0)->nodeValue;
         $severites = $dom->documentElement->getElementsByTagName('severite');
         $severite = @$severites->item(0)->nodeValue;
+        $dossierIDs = $dom->documentElement->getElementsByTagName('DossierID');
+        $dossierID = @$dossierIDs->item(0)->nodeValue;
         $response['messageretour'] = array("coderetour" => $coderetour, "message" => $message, "severite" => $severite);
+        $response['dossierID'] = $dossierID;
         return $response;
     }
 
@@ -305,6 +308,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         $dom = new DomDocument();
         $dom->loadXML($this->responseMessageStr);
         $dataset = $dom->getElementsByTagName("TypeTechnique");
+        $response = array();
         foreach ($dataset as $row) {
             $response['typetechnique'][] = $row->nodeValue;
         }
@@ -330,6 +334,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         $dom = new DomDocument();
         $dom->loadXML($this->responseMessageStr);
         $dataset = $dom->getElementsByTagName("EtapeCircuit");
+        $response = array();
         foreach ($dataset as $row) {
             $parapheurs = $row->getElementsByTagName("Parapheur");
             $parapheur = $parapheurs->item(0)->nodeValue;
