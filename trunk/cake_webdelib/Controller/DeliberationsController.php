@@ -1849,7 +1849,7 @@ class DeliberationsController extends AppController {
             $this->Email->charset = 'UTF-8';
 
             $delib = $this->Deliberation->read(null, $delib_id);
-            $this->Email->template = 'default';
+            $this->Email->layout = 'default';
             $this->Email->attachments = null;
             if ($type == 'insertion') {
                 if ($user['User']['mail_insertion']) {
