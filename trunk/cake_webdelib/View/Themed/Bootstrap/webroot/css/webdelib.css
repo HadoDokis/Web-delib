@@ -1168,6 +1168,7 @@ div.fckEditorProjet {
 	float: left;
 	width: 80%;
 	padding: 2px;
+        text-indent: 0;
 }
 
 /* Mise en forme des onglets */
