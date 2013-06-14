@@ -176,8 +176,9 @@ if (!empty($infosupdefs)) {
                     echo $this->Html->link('[Afficher le texte]', 'javascript:afficheMasqueTexteEnrichi(\'afficheMasque' . $infosupdef['Infosupdef']['code'] . '\', \'' . $infosupdef['Infosupdef']['code'] . '\')', array(
                         'id' => 'afficheMasque' . $infosupdef['Infosupdef']['code'], 'affiche' => 'masque'));
                     echo '<div class="annexesGauche"></div>';
+                    echo '<div class="spacer"></div>';
                     echo '<div class="fckEditorProjet">';
-                    echo $this->Form->input($infosupdef['Infosupdef']['code'], array('label' => '', 'type' => 'textarea', 'style' => 'display:none;', 'value' => $this->data['Infosup'][$infosupdef['Infosupdef']['code']]));
+                    echo $this->Form->input($infosupdef['Infosupdef']['code'], array('label' => false, 'div' => false, 'type' => 'textarea', 'style' => 'display:none;', 'value' => $this->data['Infosup'][$infosupdef['Infosupdef']['code']]));
                     echo '</div>';
                     echo '<div class="spacer"></div>';
                 }
