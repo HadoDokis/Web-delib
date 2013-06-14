@@ -31,26 +31,20 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         <?php
         echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
         echo $this->Html->meta('icon');
-
+        echo $this->fetch('meta');
+        
         echo $this->Html->css('webdelib');
         echo $this->Html->css('jquery.jgrowl');
-
         echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('bootstrap-responsive.min');
         echo $this->Html->css('font-awesome.min');
-        // docs.css is only for this exapmple, remove for app dev
-        echo $this->Html->css('docs');
-        echo $this->fetch('meta');
         echo $this->fetch('css');
 
         echo $this->Html->script('libs/modernizr.min');
         echo $this->Html->script('libs/jquery');
         echo $this->Html->script('libs/bootstrap.min');
-        echo $this->Html->script('bootstrap/application');
         echo $this->html->script('jquery.jgrowl', true);
-
         echo $this->Html->script('utils');
-
         echo $this->fetch('script');
         ?>
 
