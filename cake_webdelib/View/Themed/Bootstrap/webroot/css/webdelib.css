@@ -195,9 +195,15 @@ body {
 	font-size: 0.8em;
 	margin: 0;
 	padding: 0;
-	background-image: url(../../../img/wavedelib.png);
-	background-repeat: no-repeat;
+	/*background-image: url(../../../img/wavedelib.png);*/
+	/*background-repeat: no-repeat;*/
 	padding-bottom: 100px;
+        position: relative;
+        padding-top: 90px;
+        background-color: #fff;
+        background-image: url(../img/grid-18px-masked.png);
+        background-repeat: repeat-x;
+        background-position: 0 40px;
 }
 
 #header {
