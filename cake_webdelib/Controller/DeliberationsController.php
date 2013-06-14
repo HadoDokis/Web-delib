@@ -168,7 +168,7 @@ class DeliberationsController extends AppController {
         }
         $this->set('commentaires', $commentaires);
         $this->set('historiques', $this->Historique->find('all', array('conditions' => array("Historique.delib_id" => $id),
-                    'order' => 'Historique.created DESC')));
+                    'order' => 'Historique.created ASC')));
 
         // Mise en forme des données du projet ou de la délibération
         $this->request->data['Deliberation']['libelleEtat'] = $this->Deliberation->libelleEtat($this->data['Deliberation']['etat']);
