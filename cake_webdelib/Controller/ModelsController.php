@@ -259,12 +259,13 @@ class ModelsController extends AppController {
 					if ($annexFile['Annex']['filetype'] == 'application/pdf')
 						$datAnnex =  $annexFile['Annex']['data'];
 					elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text')
-					$datAnnex =  $annexFile['Annex']['data_pdf'];
+                                            $datAnnex =  $annexFile['Annex']['data_pdf'];
 					elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet')
-					$datAnnex =  $annexFile['Annex']['data_pdf'];
-
-					$fichierAnnex = $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $datAnnex);
-					array_push($annexes, $fichierAnnex);
+                                            $datAnnex =  $annexFile['Annex']['data_pdf'];
+                                        if (isset($datAnnex)){
+                                            $fichierAnnex = $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $datAnnex);
+                                            array_push($annexes, $fichierAnnex);
+                                        }
 				}
 			}
 		}
