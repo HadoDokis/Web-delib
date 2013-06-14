@@ -183,7 +183,14 @@ class DeliberationsController extends AppController {
                     'recursive' => -1,
                     'conditions' => array('model' => 'Deliberation', 'actif' => true),
                     'order' => 'ordre')));
-        $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/' . $id, array('return')));
+        
+        //Test si le projet a été inséré dans un circuit, si oui charger l'affichage
+        $wkf_exist = $this->Traitement->find('count', array('recursive' => -1, 'conditions' => array('target_id' => $id)));
+        if ($wkf_exist !== 0) 
+            $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/' . $id, array('return')));
+        else
+            $this->set('visu', null, array('return'));
+        
         $this->set('etat', $this->data['Deliberation']['etat']);
         //si bloqué à une étape de délégation
         $visa = false;
