@@ -38,8 +38,8 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('bootstrap-responsive.min');
         echo $this->Html->css('font-awesome.min');
-        echo $this->Html->css('docs.min');
-        echo $this->Html->css('docs-connexion.min');
+        echo $this->Html->css('docs');
+        echo $this->Html->css('docs-connexion');
         echo $this->fetch('css');
 
         echo $this->Html->script('libs/modernizr.min');
@@ -47,6 +47,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->Html->script('libs/bootstrap.min');
         echo $this->html->script('jquery.jgrowl', true);
         echo $this->Html->script('utils');
+        echo $this->Html->script('bootstrap/application');
         echo $this->fetch('script');
         ?>
 
