@@ -1062,19 +1062,6 @@ class DeliberationsController extends AppController {
                             $this->_notifier($id, $user_id, 'insertion');
                     }
                 }
-//                debug($listeUsers);
-                //@Deprecated: les étapes en délégation ont une composition inexistante 
-                //donc quand on pointe sur l'indice de ces étapes on déclenchait une erreur 
-                /* for($i = 1; $i <= count($listeUsers); $i++){
-                  if ($i ==1){
-                  foreach( $listeUsers[$i] as $user_id)
-                  $this->_notifier($id, $user_id, 'traiter');
-                  }
-                  else {
-                  foreach( $listeUsers[$i] as $user_id)
-                  $this->_notifier($id, $user_id, 'insertion');
-                  }
-                  } */
                 $this->Session->setFlash('Projet inséré dans le circuit', 'growl');
                 $this->redirect('/deliberations/mesProjetsRedaction');
             } else {
@@ -1096,7 +1083,6 @@ class DeliberationsController extends AppController {
         if (empty($this->data)) {
             $this->data = $this->Deliberation->read(null, $id);
             $this->set('lastPosition', '-1');
-            $old_circuit = $this->data['Deliberation']['circuit_id'];
 
             //circuit par défaut de l'utilisateur connecté
             if ($circuit_id == null)
@@ -1296,12 +1282,8 @@ class DeliberationsController extends AppController {
             }
         } else {
             $destinataires = $this->Traitement->whoIsNext($id);
-//            if (isset($destinataires[0]) && $destinataires[0] == -1){//Cas destinataire ==> PARAPHEUR
-//                $this->sendToParapheur($id);
-//            }else{
             foreach ($destinataires as $destinataire_id)
                 $this->_notifier($id, $destinataire_id, 'traiter');
-//            }
         }
     }
 
@@ -1834,46 +1816,48 @@ class DeliberationsController extends AppController {
     }
 
     function _notifier($delib_id, $user_id, $type) {
-        $user = $this->User->read(null, $user_id);
+        if ($this->User->exist($user_id)){
+            $user = $this->User->read(null, $user_id);
 
-        // Si l'utilisateur accepte les mails
-        if ($user['User']['accept_notif']) {
-            if (Configure::read("SMTP_USE")) {
-                $this->Email->smtpOptions = array('port' => Configure::read("SMTP_PORT"),
-                    'timeout' => Configure::read("SMTP_TIMEOUT"),
-                    'host' => Configure::read("SMTP_HOST"),
-                    'username' => Configure::read("SMTP_USERNAME"),
-                    'password' => Configure::read("SMTP_PASSWORD"),
-                    'client' => Configure::read("SMTP_CLIENT"));
-                $this->Email->delivery = 'smtp';
-            }
-            else
-                $this->Email->delivery = 'mail';
-
-            $this->Email->from = Configure::read("MAIL_FROM");
-            $this->Email->to = $user['User']['email'];
-            $this->Email->sendAs = 'text';
-            $this->Email->charset = 'UTF-8';
-
-            $delib = $this->Deliberation->read(null, $delib_id);
-            $this->Email->layout = 'default';
-            $this->Email->attachments = null;
-            if ($type == 'insertion') {
-                if ($user['User']['mail_insertion']) {
-                    $this->Email->subject = "Vous allez recevoir le projet : $delib_id";
-                    $this->Email->send($this->_paramMails('insertion', $delib, $user['User']));
+            // Si l'utilisateur accepte les mails
+            if ($user['User']['accept_notif']) {
+                if (Configure::read("SMTP_USE")) {
+                    $this->Email->smtpOptions = array('port' => Configure::read("SMTP_PORT"),
+                        'timeout' => Configure::read("SMTP_TIMEOUT"),
+                        'host' => Configure::read("SMTP_HOST"),
+                        'username' => Configure::read("SMTP_USERNAME"),
+                        'password' => Configure::read("SMTP_PASSWORD"),
+                        'client' => Configure::read("SMTP_CLIENT"));
+                    $this->Email->delivery = 'smtp';
                 }
-            }
-            if ($type == 'traiter') {
-                if ($user['User']['mail_traitement']) {
-                    $this->Email->subject = "Vous avez le projet (id : $delib_id) à traiter";
-                    $this->Email->send($this->_paramMails('traiter', $delib, $user['User']));
+                else
+                    $this->Email->delivery = 'mail';
+
+                $this->Email->from = Configure::read("MAIL_FROM");
+                $this->Email->to = $user['User']['email'];
+                $this->Email->sendAs = 'text';
+                $this->Email->charset = 'UTF-8';
+
+                $delib = $this->Deliberation->read(null, $delib_id);
+                $this->Email->layout = 'default';
+                $this->Email->attachments = null;
+                if ($type == 'insertion') {
+                    if ($user['User']['mail_insertion']) {
+                        $this->Email->subject = "Vous allez recevoir le projet : $delib_id";
+                        $this->Email->send($this->_paramMails('insertion', $delib, $user['User']));
+                    }
                 }
-            }
-            if ($type == 'refus') {
-                if ($user['User']['mail_refus']) {
-                    $this->Email->subject = "Le projet (id : $delib_id) a été refusé";
-                    $this->Email->send($this->_paramMails('refus', $delib, $user['User']));
+                if ($type == 'traiter') {
+                    if ($user['User']['mail_traitement']) {
+                        $this->Email->subject = "Vous avez le projet (id : $delib_id) à traiter";
+                        $this->Email->send($this->_paramMails('traiter', $delib, $user['User']));
+                    }
+                }
+                if ($type == 'refus') {
+                    if ($user['User']['mail_refus']) {
+                        $this->Email->subject = "Le projet (id : $delib_id) a été refusé";
+                        $this->Email->send($this->_paramMails('refus', $delib, $user['User']));
+                    }
                 }
             }
         }
@@ -3045,18 +3029,17 @@ class DeliberationsController extends AppController {
 
                     $content = file_get_contents(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/rapport.pdf");
                     $creerdos = $this->Parafwebservice->creerDossierWebservice(
-                            "WD_".$delib_id, 
                             "[".$delib_id."] ". $objetDossier, 
                             Configure::read('TYPETECH'), 
-                            $soustype, 
+                            $soustype,
                             Configure::read('VISIBILITY'), 
                             $content, 
                             $annexes);
-                    
                     $delib['Deliberation']['etat_parapheur'] = 1;
                     if ($creerdos['messageretour']['coderetour'] == 'OK') {
                         $this->Deliberation->id = $delib_id;
                         $this->Deliberation->saveField('etat_parapheur', 1);
+                        $this->Deliberation->saveField('id_parapheur', $creerdos['dossierID']);
                     } else {
                         $erreur = true;
                         $message = $creerdos['messageretour']['message'];
@@ -3472,7 +3455,6 @@ class DeliberationsController extends AppController {
                     }
                     
                     $creerdos = $this->Parafwebservice->creerDossierWebservice(
-                            "WD_".$acte_id,
                             "[".$acte_id."] ". $objetDossier, 
                             Configure::read('TYPETECH'), 
                             $circuits['soustype'][$this->data['Parapheur']['circuit_id']], 
@@ -3483,6 +3465,7 @@ class DeliberationsController extends AppController {
                     if ($creerdos['messageretour']['coderetour'] == 'OK') {
                         $this->Deliberation->saveField('etat_parapheur', 1);
                         $this->Deliberation->saveField('etat', 3);
+                        $this->Deliberation->saveField('id_parapheur', $creerdos['dossierID']);
                     } else {
                         $this->Session->setFlash($creerdos['messageretour']['coderetour'], 'growl', array('type' => 'erreur'));
                     }
