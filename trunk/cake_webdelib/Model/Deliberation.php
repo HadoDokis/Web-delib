@@ -104,6 +104,7 @@ class Deliberation extends AppModel {
 			'Multidelib'=>array(
 					'className'    => 'Deliberation',
 					'foreignKey'   => 'parent_id',
+					'order' => 'id ASC',
 					'dependent' => false),
 			'Deliberationseance' =>array(
 					'className'    => 'Deliberationseance',
