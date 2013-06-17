@@ -41,9 +41,16 @@ class ParapheurShell extends Shell {
         App::uses('IparapheurComponent', 'Controller/Component');
         $collection = new ComponentCollection();
         $this->Parafwebservice = new IparapheurComponent($collection);
-        $id_dossier="WD_".$delib_id;
         
         $this->Deliberation->id = $delib_id;
+        $delib = $this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $delib_id), 'recursive' => -1));
+        
+        $id_dossier = $delib['Deliberation']['id_parapheur'];
+        if ($delib['Deliberation']['id_parapheur'] != "")
+                $id_dossier = $delib['Deliberation']['id_parapheur'];
+        else //DEPRECATED (rétro-compatibilité vieux dossiers parapheur)
+                $id_dossier = "$delib_id $objet";
+            
         $histo = $this->Parafwebservice->getHistoDossierWebservice($id_dossier);
         if (isset($histo['logdossier'])){
         for ($i = 0; $i < count($histo['logdossier']); $i++) {
@@ -59,7 +66,6 @@ class ParapheurShell extends Shell {
                     $comm ['Commentaire']['commentaire_auto'] = 0;
                     $this->Commentaire->save($comm['Commentaire']);
 
-                    $delib = $this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $delib_id)));
                     if ($delib['Deliberation']['etat_parapheur'] == 1) {
                         if ($histo['logdossier'][$i]['status'] == 'Signe') {
                             $dossier = $this->Parafwebservice->GetDossierWebservice($id_dossier);
