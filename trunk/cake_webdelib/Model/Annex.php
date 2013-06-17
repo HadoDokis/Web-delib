@@ -126,16 +126,24 @@ class Annex extends AppModel {
                                              'fields' => array('filename', 'filetype', 'data')))); 
 	}
 
-        function getContent($annex_id) {
+        function getContentToTdT(){
+            $DOC_TYPE = Configure::read('DOC_TYPE');
+            
 	    $annex = $this->find('first', array('conditions' => array('Annex.id'     => $annex_id),
                                                 'recursive'  => -1,
 						'fields'     => array('filetype', 'data', 'data_pdf')));
 
+            if ($annex['Annex']['filetype'] === 'application/pdf')
+                return array( $type=>$DOC_TYPE[$annex['Annex']['filetype']]['extention'],
+                                $data=>$annex['Annex']['data_pdf']);
+            
             $pos = strpos($annex['Annex']['filetype'], 'vnd.oasis.opendocument');
-	    if ($pos === false)
-		return $annex['Annex']['data'];
-            else
-                return $annex['Annex']['data_pdf'];
+            if ($pos === true)
+                return array( $type=>'pdf',
+                                $data=>$annex['Annex']['data']);
+            
+            return array( $type=>$DOC_TYPE[$annex['Annex']['data']]['extention'],
+                                $data=>$annex['Annex']['data']);
         }
 
 }

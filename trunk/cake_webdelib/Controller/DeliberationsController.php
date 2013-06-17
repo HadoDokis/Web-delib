@@ -1696,15 +1696,15 @@ class DeliberationsController extends AppController {
                 $nb_pj = 0;
                 if (isset($annexes_id) && !empty($annexes_id)) {
                     foreach ($annexes_id as $annex_id) {
-                        $annexe = $this->Annex->getContent($annex_id['Annex']['id']);
-                        $pj_file = $this->Gedooo->createFile($path . "webroot/files/generee/fd/null/$delib_id/annexes/", $annex_id['Annex']['id'] . '.pdf', $annexe);
+                        $annexe = $this->Annex->getContentToTdT($annex_id['Annex']['id']);
+                        $pj_file = $this->Gedooo->createFile($path . "webroot/files/generee/fd/null/$delib_id/annexes/", $annex_id['Annex']['id'] . '.'.$annexe['type'], $annexe['data']);
                         $acte["acte_attachments[$nb_pj]"] = "@$pj_file";
                         $acte["acte_attachments_sign[$nb_pj]"] = "";
                         $nb_pj++;
                     }
                 }
 
-                $curl_return = $this->S2low->send($acte);
+                $curl_return = utf8_encode($this->S2low->send($acte));
                 $this->log($curl_return);
                 $pos = strpos($curl_return, 'OK');
                 $tdt_id = substr($curl_return, 3, strlen($curl_return));
@@ -1722,7 +1722,7 @@ class DeliberationsController extends AppController {
                 sleep(5);
             }
         }
-        if ($erreur == '')
+        if (empty($erreur))
             $this->Session->setFlash('Actes envoyés correctement au TdT', 'growl');
         else
             $this->Session->setFlash('Erreur : ' . $erreur, 'growl', array('type' => 'erreurTDT'));
