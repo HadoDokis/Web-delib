@@ -38,6 +38,8 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('bootstrap-responsive.min');
         echo $this->Html->css('font-awesome.min');
+        echo $this->Html->css('docs.min');
+        echo $this->Html->css('docs-connexion.min');
         echo $this->fetch('css');
 
         echo $this->Html->script('libs/modernizr.min');
