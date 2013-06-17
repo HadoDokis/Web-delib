@@ -205,7 +205,7 @@ $(document).ready(function() {
 		echo "<div class='required'>";
 			echo $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'], array('name'=>'label'.$infosupdef['Infosupdef']['code']));
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
-				echo $this->Form->input($fieldName, array('label' => false, 'type'=> 'textarea', 'size'=>$infosupdef['Infosupdef']['taille'], 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $disabled  ));
+				echo $this->Form->input($fieldName, array('label' => false, 'type'=> 'textarea', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $disabled  ));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
 				echo $this->Form->input($fieldName, array('label' => false, 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=>$disabled, 'div'=>array('class'=>'input')));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
