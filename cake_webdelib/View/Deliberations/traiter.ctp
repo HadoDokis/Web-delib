@@ -46,12 +46,12 @@
                 echo $this->element('viewDelibRattachee', array(
                     'delib' => $deliberation['Deliberation'],
                     'annexes' => $deliberation['Annex'],
-                    'natureLibelle' => $deliberation['Nature']['libelle']));
+                    'natureLibelle' => $deliberation['Typeacte']['libelle']));
                 foreach ($deliberation['Multidelib'] as $delibRattachee) {
                     echo $this->element('viewDelibRattachee', array(
                         'delib' => $delibRattachee,
                         'annexes' => $delibRattachee['Annex'],
-                        'natureLibelle' => $deliberation['Nature']['libelle']));
+                        'natureLibelle' => $deliberation['Typeacte']['libelle']));
                 }
                 echo $this->Html->tag('h2', 'Informations du projet (communes aux délibérations)');
             }
