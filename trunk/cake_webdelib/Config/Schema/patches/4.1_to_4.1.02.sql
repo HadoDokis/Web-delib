@@ -7,6 +7,8 @@ ALTER TABLE deliberations_seances ADD COLUMN commentaire character varying(1000)
 
 ALTER TABLE deliberations ADD COLUMN id_parapheur varchar(50);
 
+ALTER TABLE infosupdefs DROP COLUMN taille;
+
 --
 -- Fin du patch : fin de la transaction
 --
