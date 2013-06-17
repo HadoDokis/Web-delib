@@ -142,7 +142,7 @@ class Annex extends AppModel {
                 return array( $type=>'pdf',
                                 $data=>$annex['Annex']['data']);
             
-            return array( $type=>$DOC_TYPE[$annex['Annex']['data']]['extention'],
+            return array( $type=>$DOC_TYPE[$annex['Annex']['filetype']]['extention'],
                                 $data=>$annex['Annex']['data']);
         }
 
