@@ -61,7 +61,7 @@
 			echo '<td>'.$this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'].($infosupdef['Infosupdef']['type'] == 'date' ? '' : ' *')).'</td>';
 			echo '<td>';
 			if ($infosupdef['Infosupdef']['type'] == 'text' || $infosupdef['Infosupdef']['type'] == 'richText') {
-				echo $this->Form->input($fieldName, array('label'=>false, 'size'=>$infosupdef['Infosupdef']['taille'], 'title'=>$infosupdef['Infosupdef']['commentaire']));
+				echo $this->Form->input($fieldName, array('label'=>false, 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				$afficheNote = true;
 			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
 				echo $this->Form->input($fieldName, array('label'=>false, 'size'=>'9', 'div'=>false, 'title'=>$infosupdef['Infosupdef']['commentaire']));
