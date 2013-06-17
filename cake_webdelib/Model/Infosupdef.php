@@ -174,10 +174,6 @@ class Infosupdef extends AppModel {
 	}
 
 	function beforeSave() {
-		// valeur par defaut pour la taille du champ input lors de la saisie
-		if (isset($this->data['Infosupdef']['type']) && $this->data['Infosupdef']['type'] == 'text' && empty($this->data['Infosupdef']['taille']))
-			$this->data['Infosupdef']['taille'] = 20;
-
 		// calcul du n° d'ordre en cas d'ajout
 		if (!array_key_exists('id', $this->data['Infosupdef']) || empty($this->data['Infosupdef']['id']))
 			$this->data['Infosupdef']['ordre'] = $this->find('count',array('recursive'=>-1, 'conditions'=>array('model'=>$this->data['Infosupdef']['model']))) + 1;
