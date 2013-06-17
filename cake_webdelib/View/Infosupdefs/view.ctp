@@ -12,8 +12,6 @@
 		<dd class="compact"><?php echo $this->data['Infosupdef']['ordre']; ?></dd>
 	<dt>Type</dt>
 		<dd class="compact"><?php echo $this->data['Infosupdef']['libelleType']; ?></dd>
-	<dt>Taille</dt>
-		<dd class="compact"><?php echo $this->data['Infosupdef']['taille']; ?></dd>
 	<dt>Valeur initiale</dt>
 		<dd class="compact"><?php echo $this->data['Infosupdef']['val_initiale']; ?></dd>
 	<dt>Inclure dans la recherche</dt>
