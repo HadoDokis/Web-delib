@@ -1165,7 +1165,7 @@ class DeliberationsController extends AppController {
         $projet = $this->Deliberation->find('first', array(
             'fields' => array(
                 'id', 'anterieure_id', 'service_id', 'circuit_id',
-                'etat', 'num_delib', 'titre', 'objet', 'num_pref',
+                'etat', 'num_delib', 'titre', 'objet', 'objet_delib', 'num_pref',
                 'texte_projet', 'texte_projet_name',
                 'texte_synthese', 'texte_synthese_name',
                 'deliberation', 'deliberation_name',
@@ -1179,8 +1179,8 @@ class DeliberationsController extends AppController {
                 'Rapporteur.nom', 'Rapporteur.prenom',
                 'Annex',
                 'Infosup',
-                'Multidelib.id', 'Multidelib.objet', 'Multidelib.num_delib',
-                'Multidelib.etat', 'Multidelib.deliberation', 'Multidelib.deliberation_name',
+                'Multidelib.id', 'Multidelib.objet', 'Multidelib.objet_delib', 'Multidelib.num_delib',
+                'Multidelib.etat', 'Multidelib.deliberation', 'Multidelib.deliberation_name', 'Multidelib.Typeacte.libelle',
                 'Multidelib.Annex'),
             'conditions' => array('Deliberation.id' => $id)));
         if (empty($projet)) {
@@ -1218,7 +1218,7 @@ class DeliberationsController extends AppController {
                 $this->request->data['Infosup'] = $this->Deliberation->Infosup->compacte($projet['Infosup'], false);
                 $this->set('infosupdefs', $this->Infosupdef->find('all', array(
                             'recursive' => -1,
-                            'conditions' => array('actif' => true),
+                            'conditions' => array('actif' => true, 'model' => 'Deliberation'),
                             'order' => 'ordre')));
 
                 //si bloqué à une étape de délégation
