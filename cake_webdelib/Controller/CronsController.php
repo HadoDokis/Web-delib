@@ -247,28 +247,23 @@ class CronsController extends AppController {
         $this->log('Exécution des tâches crons..');
         $cron = $this->Cron;
         // initialisation de l'heure de prochaine exécution des tâches en erreur
-        $now = date(self::FORMAT_DATE);
         require_once(APP . 'Lib' . DS . 'tools.php');
-        $nextExecutionErrorTime = AppTools::addSubDurationToDate($now, $cron::NOUVEL_ESSAI_DELAIS_DURATION, self::FORMAT_DATE, 'sub');
+
+        /*
+         * @TODO
+         * restreindre aux taches dont la date/time d'execution prévue est inférieur à la date/time du jour OU
+         *  le délais entre 2 éxecutions est dépassé
+         */
+//        $now = date(self::FORMAT_DATE);
+//        $nextExecutionErrorTime = AppTools::addSubDurationToDate($now, $cron::NOUVEL_ESSAI_DELAIS_DURATION, self::FORMAT_DATE, 'sub');
 
         // lecture des crons à exécuter
         $crons = $this->Cron->find('all', array(
             'recursive' => -1,
             'fields' => array('id'),
-            'conditions' => array(
-                'active' => true
-//                ,
-//                array('OR' => array(
-//                        'next_execution_time' => NULL,
-//                        'next_execution_time <=' => $now)),
-//                array('OR' => array(
-//                        'last_execution_status' => array($cron::EXECUTION_STATUS_SUCCES, $cron::EXECUTION_STATUS_WARNING),
-//                        array(
-//                            'last_execution_status' => $cron::EXECUTION_STATUS_FAILED,
-//                            'last_execution_start_time <=' => $nextExecutionErrorTime)))
-                ),
-            'order' => array('next_execution_time')));
-
+            'conditions' => array('active' => true),
+            'order' => array('next_execution_time ASC')));
+        
         // excécutions
         foreach ($crons as $cron) {
             $this->_runCronId($cron['Cron']['id']);
@@ -287,8 +282,9 @@ class CronsController extends AppController {
         // initialisations
         require_once(APP . 'Lib' . DS . 'tools.php');
         $lastExecutionStartTime = null;
+        
         $appliUrl = FULL_BASE_URL . $this->webroot;
-        $this->log("Serveur cible : ".$appliUrl);
+        
         // lecture du cron à exécuter
         $cron = $this->Cron->find('first', array(
             'recursive' => -1,
@@ -314,17 +310,15 @@ class CronsController extends AppController {
             // execution de la requete
             if (empty($lastExecutionStartTime))
                 $lastExecutionStartTime = date(self::FORMAT_DATE);
-            $output = curl_exec($ch);
             
-            $this->log("cron : ".$id." returned :".$output);
+            $output = curl_exec($ch);
             
             $lastExecutionEndTime = date(self::FORMAT_DATE);
             curl_close($ch);
             // initialisation du rapport d'exécution
             $rappExecution = str_replace(array(Cron::MESSAGE_FIN_EXEC_SUCCES, Cron::MESSAGE_FIN_EXEC_WARNING, Cron::MESSAGE_FIN_EXEC_ERROR), '', $output);
-
             // si pas d'erreur, sortie du traitement
-            if (empty($output) || strpos($output, Cron::MESSAGE_FIN_EXEC_ERROR) === false)
+            if (strpos($output, Cron::MESSAGE_FIN_EXEC_ERROR) === false)
                 break;
 
             // attente avant nouvelle tentative
@@ -332,7 +326,7 @@ class CronsController extends AppController {
         }
 
         // mise à jour du cron
-        if (empty($output) || substr($output, 0, 21) == Cron::MESSAGE_FIN_EXEC_SUCCES) {
+        if (substr($output, 0, 21) == Cron::MESSAGE_FIN_EXEC_SUCCES) {
             $cron['Cron']['last_execution_status'] = Cron::EXECUTION_STATUS_SUCCES;
             $cron['Cron']['next_execution_time'] = $this->Cron->calcNextExecutionTime($cron);
         } elseif (strpos($output, Cron::MESSAGE_FIN_EXEC_WARNING) !== false) {
