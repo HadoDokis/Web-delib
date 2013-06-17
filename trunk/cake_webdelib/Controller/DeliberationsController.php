@@ -2578,7 +2578,7 @@ class DeliberationsController extends AppController {
                         'recursive' => -1)));
             $this->set('etats', $this->Deliberation->generateListEtat());
             $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions' => array('recherche' => 1, 'actif' => true),
-                        'fields' => array('id', 'code', 'nom', 'commentaire', 'type', 'taille'),
+                        'fields' => array('id', 'code', 'nom', 'commentaire', 'type'),
                         'order' => array('ordre'),
                         'recursive' => -1)));
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
@@ -2682,7 +2682,7 @@ class DeliberationsController extends AppController {
                         'recursive' => -1)));
             $this->set('etats', $this->Deliberation->generateListEtat());
             $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions' => array('recherche' => 1, 'actif' => true),
-                        'fields' => array('id', 'code', 'nom', 'commentaire', 'type', 'taille'),
+                        'fields' => array('id', 'code', 'nom', 'commentaire', 'type'),
                         'order' => array('ordre'),
                         'recursive' => -1)));
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
