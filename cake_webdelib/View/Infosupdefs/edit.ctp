@@ -7,7 +7,6 @@ window.onload=initAffichage;
 function afficheOptions(typeInfoSup) {
 
 	/* On masque toutes les options */
-	document.getElementById("taille").style.display = 'none';
 	document.getElementById("val_initiale").style.display = 'none';
 	document.getElementById("val_initiale_boolean").style.display = 'none';
 	document.getElementById("val_initiale_date").style.display = 'none';
@@ -20,7 +19,6 @@ function afficheOptions(typeInfoSup) {
 	/* on affiche en fonction du type d'info sup */
 	switch(typeInfoSup.value) {
 	case "text":
-		document.getElementById("taille").style.display = '';
 		document.getElementById("val_initiale").style.display = '';
 		if (document.getElementById("recherche") != null) document.getElementById("recherche").style.display = '';
 		break;
@@ -87,11 +85,7 @@ echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->reques
 	<div id="gestionListe">
 		<span>Note : la gestion des éléments de la liste est accessible &agrave; partir de la liste des informations suppl&eacute;mentaires.</span>
 	</div>
-	</ br>
-	<div class="required" id="taille">
-	 	<?php echo $this->Form->input('Infosupdef.taille', array('label'=>'Taille','size' => '2', 'title'=>'Taille du champ affiché dans le formulaire d\'édition des projets (uniquement pour le type Texte)'));?>
-	</div>
-	<br/>
+        <br>
 	<div class="required" id="val_initiale">
 	 	<?php echo $this->Form->input('Infosupdef.val_initiale', array('label'=>'Valeur initiale','size' => '80', 'title'=>'Valeur initiale lors de la création d\'un projet'));?>
 	</div>
@@ -103,8 +97,7 @@ echo $this->Form->create('Infosupdef',array('url'=>array('action'=>$this->reques
 		<?php echo '&nbsp;';?>
 		<?php echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border:0;")), "javascript:show_calendar('infoSupForm.InfosupdefValInitialeDate', 'f');", array('escape' => false), false);?>
 	</div>
-	<br/>
-	<br/>
+        <br>
 <?php
 	if($this->request->data['Infosupdef']['model'] == 'Deliberation')
 		echo $this->Form->label('Infosupdef.recherche', $this->Form->input('Infosupdef.recherche', array('type'=>'checkbox', 'label'=>false, 'div'=>false)).' Inclure dans la recherche', array('class'=>'span2', 'id'=>'recherche'));
