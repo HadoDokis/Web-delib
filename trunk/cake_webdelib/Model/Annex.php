@@ -2,6 +2,7 @@
 class Annex extends AppModel {
 
 	var $name = 'Annex';
+        
 	var $displayField="titre";
 
         var $validate = array('joindre_ctrl_legalite' => array(
@@ -145,6 +146,5 @@ class Annex extends AppModel {
             return array( $type=>$DOC_TYPE[$annex['Annex']['filetype']]['extention'],
                                 $data=>$annex['Annex']['data']);
         }
-
 }
 ?>

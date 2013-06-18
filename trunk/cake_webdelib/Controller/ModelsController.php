@@ -256,16 +256,7 @@ class ModelsController extends AppController {
 					$annexFile = $this->Deliberation->Annex->find('first', array(
 							'conditions' => array('Annex.id' => $annex_id['Annex']['id']),
 							'recursive'  => -1));
-					if ($annexFile['Annex']['filetype'] == 'application/pdf')
-						$datAnnex =  $annexFile['Annex']['data'];
-					elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text')
-                                            $datAnnex =  $annexFile['Annex']['data_pdf'];
-					elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet')
-                                            $datAnnex =  $annexFile['Annex']['data_pdf'];
-                                        if (isset($datAnnex)){
-                                            $fichierAnnex = $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $datAnnex);
-                                            array_push($annexes, $fichierAnnex);
-                                        }
+                                        array_push($annexes, $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $annexFile['Annex']['data_pdf']));
 				}
 			}
 		}
@@ -289,17 +280,10 @@ class ModelsController extends AppController {
 			$annexes = array();
 			foreach ($annexes_id as $annex_ids) {
 				foreach($annex_ids as $annex_id) {
-					$annexFile = $this->Deliberation->Annex->find('first', array('conditions' => array('Annex.id' => $annex_id['Annex']['id']),
+					$annexFile = $this->Deliberation->Annex->find('first', array(
+                                                        'conditions' => array('Annex.id' => $annex_id['Annex']['id']),
 							'recursive'  => -1));
-					if ($annexFile['Annex']['filetype'] == 'application/pdf')
-						$datAnnex =  $annexFile['Annex']['data'];
-					elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text')
-					$datAnnex =  $annexFile['Annex']['data_pdf'];
-					elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet')
-					$datAnnex =  $annexFile['Annex']['data_pdf'];
-
-					$fichierAnnex = $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $datAnnex);
-					array_push($annexes, $fichierAnnex);
+                                         array_push($annexes, $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $annexFile['Annex']['data_pdf']));
 				}
 			}
 
