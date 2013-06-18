@@ -766,7 +766,15 @@ class Deliberation extends AppModel {
 						'binary',
 						$annexe['Annex']['data']));
 			    $annexes->addPart($oDevPart);
-                            file_put_contents('/tmp/Annexe_'.$annexe_id, $annexe['Annex']['data']);
+                            //file_put_contents('/tmp/Annexe_'.$annexe_id.'.odt', $annexe['Annex']['data']);
+			}elseif (($annexe['Annex']['filetype'] == "application/pdf") && !empty($annexe['Annex']['data'])) {
+			    $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
+			    $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
+			 			'application/vnd.oasis.opendocument.text',
+						'binary',
+						$annexe['Annex']['data']));
+			    $annexes->addPart($oDevPart);
+                            //file_put_contents('/tmp/Annexe_'.$annexe_id.'.odt', $annexe['Annex']['data']);
 			}
 		}
 		@$oMainPart->addElement($annexes);
