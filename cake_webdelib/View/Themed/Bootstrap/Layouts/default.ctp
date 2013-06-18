@@ -102,27 +102,29 @@ $cakeDescription = __d('webdelib', 'Webdelib');
 
                 <ul class="nav nav-tabs hidden-phone">
                     <?php
-                    foreach ($session_menuPrincipal['items'] as $libelle => $items) {
-                        $carret = "";
-                        $classDropdown = '';
-                        if (isset($session_menuPrincipal['currentItem']) && isset($items['subMenu']))
-                            $carret = " <b class='caret'></b>";
-                        if (isset($items['subMenu']))
-                            $classDropdown = 'class="dropdown"';
-                        echo ("<li $classDropdown>");
-                        if ($libelle == "Accueil")
-                            echo ("<a href='" . $items['link'] . "'>$libelle</a>");
-                        else
-                            echo ("<a class='dropdown-toggle' data-toggle='dropdown' href='" . $items['link'] . "'>$libelle $carret</a>");
-                        if (isset($items['subMenu'])) {
-                            echo ('<ul class="dropdown-menu">');
-                            foreach ($items['subMenu'] as $key => $url) {
-                                foreach ($url as $titre => $lien)
-                                    echo ("<li> <a href='" . $lien['link'] . "'> $titre</a></li>");
+                    if (isset($session_menuPrincipal['items'])){
+                        foreach ($session_menuPrincipal['items'] as $libelle => $items) {
+                            $carret = "";
+                            $classDropdown = '';
+                            if (isset($session_menuPrincipal['currentItem']) && isset($items['subMenu']))
+                                $carret = " <b class='caret'></b>";
+                            if (isset($items['subMenu']))
+                                $classDropdown = 'class="dropdown"';
+                            echo ("<li $classDropdown>");
+                            if ($libelle == "Accueil")
+                                echo ("<a href='" . $items['link'] . "'>$libelle</a>");
+                            else
+                                echo ("<a class='dropdown-toggle' data-toggle='dropdown' href='" . $items['link'] . "'>$libelle $carret</a>");
+                            if (isset($items['subMenu'])) {
+                                echo ('<ul class="dropdown-menu">');
+                                foreach ($items['subMenu'] as $key => $url) {
+                                    foreach ($url as $titre => $lien)
+                                        echo ("<li> <a href='" . $lien['link'] . "'> $titre</a></li>");
+                                }
+                                echo ('</ul>');
                             }
-                            echo ('</ul>');
+                            echo ('</li>');
                         }
-                        echo ('</li>');
                     }
                     ?>
                 </ul>
