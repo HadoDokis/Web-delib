@@ -671,31 +671,31 @@ class Deliberation extends AppModel {
 				$this->Gedooo->createFile($path, "texte_projet.html",  $delib['Deliberation']['texte_projet']);
 				$content = $this->Conversion->convertirFichier($filename, "odt");
 				$oMainPart->addElement(new GDO_ContentType('texte_projet', 'texte_projet.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-			}
+			}else $oMainPart->addElement(new GDO_FieldType("texte_projet",      "",    "text"));
 			if (isset($delib['Deliberation']['texte_synthese'])) {
 				$filename = $path."texte_synthese.html";
 				$this->Gedooo->createFile($path, "texte_synthese.html",  $delib['Deliberation']['texte_synthese']);
 				$content = $this->Conversion->convertirFichier($filename, "odt");
 				$oMainPart->addElement(new GDO_ContentType('note_synthese', 'texte_synthese.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-			}
+			}else $oMainPart->addElement(new GDO_FieldType("note_synthese",      "",    "text"));
 			if (isset($delib['Deliberation']['deliberation'])) {
 				$filename = $path."texte_deliberation.html";
 				$this->Gedooo->createFile($path, "texte_deliberation.html",  $delib['Deliberation']['deliberation']);
 				$content = $this->Conversion->convertirFichier($filename, "odt");
 				$oMainPart->addElement(new GDO_ContentType('texte_deliberation', 'deliberation.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-			}
+			}else $oMainPart->addElement(new GDO_FieldType("texte_deliberation",      "",    "text"));
 			if (isset($delib['Deliberation']['debat'])) {
 				$filename = $path."debat_deliberation.html";
 				$this->Gedooo->createFile($path, "debat_deliberation.html",  $delib['Deliberation']['debat']);
 				$content = $this->Conversion->convertirFichier($filename, "odt");
 				$oMainPart->addElement(new GDO_ContentType('debat_deliberation', 'debat.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-			}
+			}else $oMainPart->addElement(new GDO_FieldType("debat_deliberation",      "",    "text"));
 			if (isset($delib['Deliberation']['commission'])) {
 				$filename = $path."commission.html";
 				$this->Gedooo->createFile($path, "commission.html",  $delib['Deliberation']['commission']);
 				$content = $this->Conversion->convertirFichier($filename, "odt");
 				$oMainPart->addElement(new GDO_ContentType('debat_commission', 'commission.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-			}
+			}else $oMainPart->addElement(new GDO_FieldType("debat_commission",      "",    "text"));
 		}
 		else {
 
@@ -709,35 +709,35 @@ class Deliberation extends AppModel {
 						'application/vnd.oasis.opendocument.text',
 						'binary',
 						$delib['Deliberation']['texte_projet']));
-			}
+                        }else $oMainPart->addElement(new GDO_FieldType("texte_projet",      "",    "text"));
 			if (!empty($delib['Deliberation']['deliberation'])) {
 				$oMainPart->addElement(new GDO_ContentType('texte_deliberation',
 						'td.odt',
 						'application/vnd.oasis.opendocument.text' ,
 						'binary',
 						$delib['Deliberation']['deliberation']));
-			}
+			}else $oMainPart->addElement(new GDO_FieldType("texte_deliberation",      "",    "text"));
 			if (!empty($delib['Deliberation']['texte_synthese'])) {
 				$oMainPart->addElement(new GDO_ContentType('note_synthese',
 						'ns.odt',
 						'application/vnd.oasis.opendocument.text' ,
 						'binary',
 						$delib['Deliberation']['texte_synthese']));
-			}
+			}else $oMainPart->addElement(new GDO_FieldType("note_synthese",      "",    "text"));
 			if (!empty($delib['Deliberation']['debat'])) {
 				$oMainPart->addElement(new GDO_ContentType('debat_deliberation',
 						'debat.odt',
 						'application/vnd.oasis.opendocument.text' ,
 						'binary',
 						$delib['Deliberation']['debat']));
-			}
+			}else $oMainPart->addElement(new GDO_FieldType("debat_deliberation",      "",    "text"));
 			if (!empty($delib['Deliberation']['commission'])) {
 				$oMainPart->addElement(new GDO_ContentType('debat_commission',
 						'debat_commission.odt',
 						'application/vnd.oasis.opendocument.text',
 						'binary',
 						$delib['Deliberation']['commission']));
-			}
+			}else $oMainPart->addElement(new GDO_FieldType("debat_commission",      "",    "text"));
 
 		}
 
