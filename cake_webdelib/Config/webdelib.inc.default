@@ -75,7 +75,6 @@ Configure::write('USEMTOM', TRUE);
 Configure::write('WSDL', 'ws-iparapheur.wsdl');
 Configure::write('TYPETECH', 'ACTES');
 Configure::write('VISIBILITY', 'PUBLIC');
-Configure::write('PREFIX_WEBDELIB', 'WD_');
 Configure::write('EMAIL_EMMETEUR', 'parapheur@adullact.org');
 
 /* Configuration ASAL@AE */
