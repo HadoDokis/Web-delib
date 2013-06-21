@@ -406,35 +406,32 @@ class DeliberationsController extends AppController {
                 $selectedTypeseanceIds = set::extract('/Typeseance/Typeseance', $this->request->data);
                 
                 $seances_tmp = $this->Seance->find('all', array('conditions' => array('Seance.type_id' => $selectedTypeseanceIds,
-                                                                              'Seance.traitee' => 0),
+                                                                                      'Seance.traitee' => 0),
                                                         'order'      => array('Seance.date' => 'ASC'),
                                                         'contain'    => array('Typeseance.libelle','Typeseance.retard'),
                                                         'fields'     => array('Seance.id', 'Seance.type_id', 'Seance.date')));
                 foreach ($seances_tmp as $seance)
                     $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'] . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-            
                 
                 foreach ($seances_tmp as $seance){
-                $bSeanceok=false;
-                
-                if($afficherTtesLesSeances)
-                    $bSeanceok=true;
-                    
-                if(!$bSeanceok){
-                    $iTime=strtotime($seance['Seance']['date']);
-                    if(time()<mktime(0, 0, 0, date("m",$iTime),   date("d", $iTime)-$seance['Typeseance']['retard'],   date("Y", $iTime)))
-                    $bSeanceok=true;
-                
+                    $bSeanceok=false;
+
+                    if($afficherTtesLesSeances)
+                        $bSeanceok=true;
+
+                    if(!$bSeanceok){
+                        $iTime=strtotime($seance['Seance']['date']);
+                        if(time()<mktime(0, 0, 0, date("m",$iTime),   date("d", $iTime)-$seance['Typeseance']['retard'],   date("Y", $iTime)))
+                        $bSeanceok=true;
+
+                    }
+
+                    if($bSeanceok)
+                        $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'].' : '. $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
                 }
-                        
-                if($bSeanceok)
-                    $seances[$seance['Seance']['id']] = $seance['Typeseance']['libelle'].' : '. $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-                
             }
             $this->set('seances', $seances);
-
             $this->render('edit');
-            }
         }
     }
 
