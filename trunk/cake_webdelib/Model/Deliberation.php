@@ -596,14 +596,12 @@ class Deliberation extends AppModel {
                             $dateSeance =  $this->Date->frenchDate(strtotime($avisSeance['Seance']['date']));  
                             if  ($avisSeance['Deliberationseance']['avis'] == 1) {
                                 $message = "A reçu un avis favorable  en $typeseance du $dateSeance";
-                                $avisFavorable = 1;
                             } 
                             else {
                                 $message = "A reçu un avis défavorable  en $typeseance du $dateSeance";
-                                $avisFavorable = null;
                             }
 		            $oDevPart->addElement(new GDO_FieldType("avis", $message, "text"));
-			    $oDevPart->addElement(new GDO_FieldType("avis_favorable",  $avisFavorable, "text"));
+			    $oDevPart->addElement(new GDO_FieldType("avis_favorable",  $avisSeance['Deliberationseance']['avis'], "text"));
 		            $oDevPart->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
 			    $aviss->addPart($oDevPart);
                         }
