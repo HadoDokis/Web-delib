@@ -103,9 +103,9 @@ $(document).ready(function() {
 	<div class='spacer'></div>
 
 	<?php 
-	    if ($USE_PASTELL)
+        if ($USE_PASTELL)
                 echo $this->Form->input('Deliberation.num_pref', array('label'=>'Nomenclature <acronym title="obligatoire">(*)</acronym>', 'options'=>$nomenclatures, 'default'=>$this->Html->value('Deliberation.num_pref'), 'empty'=>true, 'escape'=>false)); 
-            else {
+        else {
                 echo $this->Form->input( 'Deliberation.num_pref',
 				   array('div'      => false,
                                          'label'    => 'Num Pref',
@@ -114,9 +114,10 @@ $(document).ready(function() {
 					 'readonly' => 'readonly'));
         ?>
 
-		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification', 'Select_attribut', 'scrollbars=yes,width=570,height=450');" id="classification_text">[Choisir la classification]</a>
-               <?php echo $this->Form->hidden('Deliberation.num_pref',array('id'=>'classif2','name'=>'classif2'));
-            }
+                <a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification', 'Select_attribut', 'scrollbars=yes,width=570,height=450');" id="classification_text">[Choisir la classification]</a>
+        <?php 
+               echo $this->Form->hidden('Deliberation.num_pref',array('id'=>'classif2','name'=>'classif2'));
+        }
         ?>
 	<div class='spacer'></div>
 
@@ -198,33 +199,43 @@ $(document).ready(function() {
 			if ($profil['id'] == $profil_id) 
                             $disabled = false;
                         
-                if ($infosupdef['Infosupdef']['type'] == 'richText' && $disabled) continue;
+                if ($infosupdef['Infosupdef']['type'] == 'file' && $disabled) continue;
                 
 		$fieldName = 'Infosup.'.$infosupdef['Infosupdef']['code'];
 		$fieldId = 'Infosup'.Inflector::camelize($infosupdef['Infosupdef']['code']);
 		echo "<div class='required'>";
 			echo $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'], array('name'=>'label'.$infosupdef['Infosupdef']['code']));
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
-				echo $this->Form->input($fieldName, array('label' => false, 'type'=> 'textarea', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $disabled  ));
+				echo $this->Form->input($fieldName, array('label' => false, 'type'=> 'textarea', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'readonly'=> $disabled  ));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
-				echo $this->Form->input($fieldName, array('label' => false, 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=>$disabled, 'div'=>array('class'=>'input')));
-			} elseif ($infosupdef['Infosupdef']['type'] == 'date') {
-				echo $this->Form->input($fieldName, array('type'=>'text',  'disabled'=> $disabled,  'div' => false, 'label' => false, 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+                            if (!$disabled)
+				echo $this->Form->input($fieldName, array('label' => false, 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'div'=>array('class'=>'input')));
+                            else{
+                                echo $this->Form->input($fieldName, array('label' => false, 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=>$disabled, 'div'=>array('class'=>'input')));
+                                echo $this->Form->input($fieldName, array('type'=>'hidden', 'id'=>false));
+                            }
+                        } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
+				echo $this->Form->input($fieldName, array('type'=>'text',  'readonly'=> $disabled,  'div' => false, 'label' => false, 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				echo '&nbsp;';
 				if (!$disabled)
 					echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('Deliberation.$fieldId', 'f');", array('escape' =>false), false); 
 				else
 					echo($this->Html->image("calendar.png", array('style'=>"border='0'")));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
-				echo '<div class="annexesGauche"></div>';
-				echo '<div class="fckEditorProjet">';
-					echo $this->Form->input($fieldName, array('label'=>false, 'type'=>'textarea'));
-					echo $this->Fck->load($fieldId);
-				echo '</div>';
-				echo '<div class="spacer"></div>';
+                                    echo '<div class="annexesGauche"></div>';
+                                if (!$disabled){
+                                    echo '<div class="fckEditorProjet">';
+                                            echo $this->Form->input($fieldName, array('label'=>false, 'type'=>'textarea'));
+                                            echo $this->Fck->load($fieldId);
+                                    echo '</div>';
+                                    echo '<div class="spacer"></div>';
+                                }
+                                else{
+                                    echo $this->Form->input($fieldName, array('label'=>false, 'type' => 'textarea', 'readonly' => true));
+                                }
 			} elseif ($infosupdef['Infosupdef']['type'] == 'file') {
 				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
-					echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'],  'disabled'=> $disabled));
+					echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'],  'readonly'=> $disabled));
 				else {
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
@@ -236,18 +247,18 @@ $(document).ready(function() {
 				}
 			} elseif ($infosupdef['Infosupdef']['type'] == 'odtFile') {
 				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
-					echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $disabled));
+					echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'readonly'=> $disabled));
 				else {
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
 					if (Configure::read('GENERER_DOC_SIMPLE')) {
-						echo '['.$this->Html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'],  'disabled'=> $disabled)).']';
+						echo '['.$this->Html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'],  'readonly'=> $disabled)).']';
 					} else {
 						$name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']] ;
 						if (!$disabled)
 						    $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name"; 
 						else 
-							$url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name";
+                                                    $url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name";
 						echo "<a href='$url'>$name</a> ";
 					}
 					echo '&nbsp;&nbsp;';
@@ -256,8 +267,14 @@ $(document).ready(function() {
 					echo '</span>';
 				}
 			} elseif ($infosupdef['Infosupdef']['type'] == 'list') {
-				echo $this->Form->input($fieldName, array('label'=>false, 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true, 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $disabled));
-			}
+                            if (!$disabled){
+				echo $this->Form->input($fieldName, array('label'=>false, 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true, 'title'=>$infosupdef['Infosupdef']['commentaire'], 'readonly'=> $disabled));
+                            }
+                            else{
+                                echo $this->Form->input($fieldName, array('label'=>false, 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true, 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $disabled));
+                                echo $this->Form->input($fieldName, array('id'=> false, 'type'=> 'hidden'));
+                            }
+                        }
 		echo '</div>';
 		echo '<br>';
                 echo "<div class='spacer'> </div>";
