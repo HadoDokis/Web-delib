@@ -348,7 +348,7 @@ class DeliberationsController extends AppController {
                 // sauvegarde des délibérations rattachées
                 if (array_key_exists('Multidelib', $this->data)) {
                     foreach ($this->data['Multidelib'] as $iref => $multidelib) {
-                        $delibRattacheeId = $this->Deliberation->saveDelibRattachees($delibId, $multidelib);
+                        $delibRattacheeId = $this->Deliberation->saveDelibRattachees($delibId, $multidelib, $this->data['Deliberation']['objet']);
                         // sauvegarde des nouvelles annexes pour cette delib rattachée
                         if (array_key_exists('Annex', $this->data))
                             foreach ($this->data['Annex'] as $annexe)
@@ -791,7 +791,6 @@ class DeliberationsController extends AppController {
                     $this->request->data['Deliberation']['objet_delib'] =  $this->data['Deliberation']['objet'];
             
             $this->request->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->data['date_limite']);
-
             if ($this->Deliberation->save($this->data)) {
                 $this->Historique->enregistre($id, $user['User']['id'], "Modification du projet");
                 $this->Filtre->supprimer();
@@ -879,7 +878,7 @@ class DeliberationsController extends AppController {
                 // sauvegarde de délibérations rattachées
                 if (array_key_exists('Multidelib', $this->data)) {
                     foreach($this->data['Multidelib'] as $iref => $multidelib) {
-                        $delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib);
+                        $delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib, $this->data['Deliberation']['objet']);
                         // sauvegarde des nouvelles annexes pour cette delib rattachée
                         if (array_key_exists('Annex', $this->data))
                             foreach($this->data['Annex'] as $annexe)
