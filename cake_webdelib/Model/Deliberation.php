@@ -1107,29 +1107,22 @@ class Deliberation extends AppModel {
 	 * @param integer $parentId id de la délibération principale
 	 * @param array $delib délibération rattachée retourné par le formulaire 'edit'
 	 */
-	function saveDelibRattachees($parentId, $delib) {
+	function saveDelibRattachees($parentId, $delib, $objet_projet) {
 		// initialisations
 		$newDelib = array();
-                
-		if (isset($delib['objet_delib'])) {
-                        $delib['objet'] = $delib['objet_delib'];
-                } 
-                else  
-                    return false;
                 
 		if (isset($delib['id'])) {
                     // modification
                     $this->id =  $delib['id'];
                     $newDelib['Deliberation']['id'] = $delib['id'];
-		} else {
+		 } else {
                     // ajout
                     $newDelib = $this->create();
                     $newDelib['Deliberation']['parent_id'] = $parentId;
-              }
-              
+                }
                 $newDelib['Deliberation']['titre'] = '';
                 $newDelib['Deliberation']['num_pref'] = '';
-                $newDelib['Deliberation']['objet'] = $delib['objet'];
+                $newDelib['Deliberation']['objet'] = $objet_projet;
                 $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
 		
 		if (Configure::read('GENERER_DOC_SIMPLE')){
@@ -1476,6 +1469,7 @@ class Deliberation extends AppModel {
                 $this->Deliberationseance->id =  $Deliberationseance['Deliberationseance']['id'];
                 $this->Deliberationseance->saveField('position',  $position);
             }
+            return $seances;
         }
         
         /**
