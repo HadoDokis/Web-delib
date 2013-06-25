@@ -1102,7 +1102,7 @@ class DeliberationsController extends AppController {
             $this->set('lastPosition', '-1');
 
             //circuit par défaut de l'utilisateur connecté
-            if ($circuit_id == null)
+            if ($circuit_id == null || !array_key_exists($circuit_id,$circuits))
                 $circuit_id = $this->User->circuitDefaut($user_id, 'id');
 
             //affichage du circuit existant
