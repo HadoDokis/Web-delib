@@ -492,6 +492,7 @@ class Deliberation extends AppModel {
 		if (!$exceptSeance) {
 			$delibseances = $this->getSeancesid($delib['Deliberation']['id']);
 			$oMainPart->addElement(new GDO_FieldType('nombre_seance', count($delibseances), 'text'));
+                        $oMainPart->addElement(new GDO_FieldType('identifiant_projet', $delib['Deliberation']['id'],       'text'));
 			if (count($delibseances) == 1) {
 				$this->Seance->makeBalise($delibseances[0], $oMainPart);
 				$position = $this->getPosition($delib['Deliberation']['id'], $delibseances[0]);
