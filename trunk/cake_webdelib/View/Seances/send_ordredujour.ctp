@@ -1,16 +1,16 @@
 <div class="deliberations">
 <?php echo $this->Html->script('utils.js'); ?>
 
-<h2>Envoi des convocations</h2>
+<h2>Envoi de l'odre du jour</h2>
 
 <?php echo $this->Form->create( 'Seance',
                                 array( 'type'=>'file',
-                                       'url'=>"/seances/sendConvocations/$seance_id/$model_id")); ?>
+                                       'url'=>"/seances/sendOrdredujour/$seance_id/$model_id")); ?>
 <?php 
 echo $this->Html->tag('div', null, array('style' => 'padding-right:1em;float:left;'));
-$this->Html2->boutonSubmitUrl("/seances/genererConvocation/$seance_id/$model_id",'Générer les convocations','Générer les convocations', null, null,'icon-cogs');
+$this->Html2->boutonSubmitUrl("/seances/genererOrdredujour/$seance_id/$model_id",'Générer l\'ordres du jour','Générer l\'ordre du jour', null, null,'icon-cogs');
 echo $this->Html->tag('/div', null);
-$this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Récupérer une archive contenant les convocations','Récupérer une archive contenant les convocations',null,'btn-inverse','icon-download');
+$this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Récupérer une archive contenant l\'ordre du jour','Récupérer une archive contenant l\'ordre du jour',null,'btn-inverse','icon-download');
 ?>
 <br /><br />
 <table width='100%'>
@@ -68,7 +68,7 @@ $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Ré
 </table>
 <br />
 <div class="submit">
-    <?php $this->Html2->boutonSubmit('Envoyer les convocations','Envoyer les convocations','envelope'); ?>
+    <?php $this->Html2->boutonSubmit('Envoyer l\'ordre du jour','Envoyer l\'ordre du jour','envelope'); ?>
 </div>
 
 <?php echo $this->Form->end(); ?>

@@ -20,6 +20,14 @@ class Listepresence extends AppModel {
 						'order' => '',
 						'counterCache' => ''
 				),
+                        'Suppleant' =>
+				array('className' => 'Acteur',
+						'foreignKey' => 'suppleant_id',
+						'conditions' => '',
+						'fields' => '',
+						'order' => '',
+						'counterCache' => ''
+				),
 			'Mandataire' =>
 				array('className' => 'Acteur',
 						'foreignKey' => 'mandataire',

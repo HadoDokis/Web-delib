@@ -27,23 +27,33 @@
 				<th>Abstention</th>
 				<th>Pas de participation</th>
 			</tr>
-			<?php foreach ($presents as $present): ?>
+			<?php 
+                        foreach ($presents as $present): ?>
 			<tr class=<?php echo 'typeacteur_'.$present['Acteur']['typeacteur_id']; ?> >
 	 			<td>
 		 	 	<?php
-		  			echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
-	 				if ($present['Listepresence']['mandataire'] != '0')
-						echo ' (donne mandat &agrave; '.$present['Listepresence']['mandataire'].')';
-		 			elseif ($present['Listepresence']['present']=='0')
-		 			    echo ' (Absent)';
+                                        if($present['Listepresence']['present']==true && empty($present['Listepresence']['suppleant_id']))
+                                            echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
+                                        elseif ($present['Listepresence']['present']==true && !empty($present['Listepresence']['suppleant_id']))
+                                            echo $present['Listepresence']['suppleant'];
+                                        elseif ($present['Listepresence']['present']==false && !empty($present['Listepresence']['mandataire'])){
+                                            echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
+                                            echo ' (donne mandat &agrave; '.$present['Listepresence']['mandataire'].')';
+                                        }
+	 				elseif ($present['Listepresence']['present']==false){
+                                            echo $present['Acteur']['prenom'].' '.$present['Acteur']['nom'];
+                                            echo ' (Absent)';
+                                        }
+                                        
  			 	?>
 				</td>
 				<td>
 				<?php
-					if  ($present['Listepresence']['present'] == '1' OR $present['Listepresence']['mandataire']!='0')
+					if($present['Listepresence']['present'] == false && empty($present['Listepresence']['mandataire']))
+                                            echo '</td><td></td><td></td><td>';
+                                        else
 						echo $this->Form->input('detailVote.'.$present['Acteur']['id'], array('fieldset'=>false, 'label'=>false, 'legend'=>false, 'div'=>false, 'type'=>'radio', 'options'=>array('3'=>'', '2'=>'', '4'=>'', '5'=>''), 'separator'=>'</td><td>', 'onclick'=>"javascript:vote();"));
-					else
-						echo '</td><td></td><td></td><td>';
+						
 				?>
 				</td>
 			</tr>
