@@ -1,4 +1,7 @@
 <?php
+App::uses('File', 'Utility');
+
+
 class ConnecteursController extends AppController
 {
     var $name = 'Connecteurs';
@@ -73,19 +76,30 @@ class ConnecteursController extends AppController
     }
 
     function _replaceValue($content, $param,  $new_value) {
+        
         $host_b = "Configure::write('$param', '".Configure::read($param)."');";
         $host_a = "Configure::write('$param', '$new_value');";
-        return str_replace( $host_b,  $host_a , $content);
+        $return=str_replace( $host_b,  $host_a , $content, $count);
+        
+        if($count===0){
+            $host_b = "Configure::write('$param', ".Configure::read($param).");";
+            $host_a = "Configure::write('$param', $new_value);";
+            
+            $return=str_replace( $host_b,  $host_a , $content);
+        }
+        
+        return $return;
     }
 
     function makeconf($type) {
         $certs = array();
-        $path = Configure::read('WEBDELIB_PATH').DS.'Config'.DS;
-        $content = file_get_contents($path.'webdelib.inc');
+        $file = new File(Configure::read('WEBDELIB_PATH').DS.'Config'.DS.'webdelib.inc' , true);
+        $content = $file->read();
         $content =  str_replace('"', "'", $content);
-        $content =  str_replace('  ', " ", $content);
-        $content =  str_replace('true', "'1'", $content);
-        $content =  str_replace('false', "'0'", $content);
+        $content =  str_replace('e (', "e(", $content);
+        $content =  str_replace("' , '","', '", $content);
+        $content =  str_replace("'1'", 'true', $content);
+        $content =  str_replace("'0'", 'false', $content);
         switch($type) {
             case 's2low' :
                 $content = $this->_replaceValue($content, 'USE_S2LOW',        $this->data['Connecteur']['use_s2low']);
@@ -96,7 +110,7 @@ class ConnecteursController extends AppController
                 $content = $this->_replaceValue($content, 'USE_MAIL_SECURISE',   $this->data['Connecteur']['use_mails']);
                 $content = $this->_replaceValue($content, 'PASSWORD_MAIL_SECURISE',   $this->data['Connecteur']['mails_password']);
                 if (file_exists($this->data['Connecteur']['certificat']['tmp_name'])) {
-                    $path_dir_s2low = $path.'cert_s2low'.DS;
+                    $path_dir_s2low = Configure::read('WEBDELIB_PATH').DS.'Config'.DS.'cert_s2low'.DS;
                     $pkcs12 = file_get_contents($this->data['Connecteur']['certificat']['tmp_name']);
                     openssl_pkcs12_read($pkcs12, $certs, $this->data['Connecteur']['password']);
                     file_put_contents($path_dir_s2low.'key.pem', $certs['pkey']);
@@ -115,7 +129,7 @@ class ConnecteursController extends AppController
                 $content = $this->_replaceValue($content, 'TYPETECH',   $this->data['Connecteur']['typetech']);
                 if (file_exists($this->data['Connecteur']['certificat']['tmp_name'])) {
                     $certs = array();
-                    $path_dir_parapheur = $path.'cert_parapheur'.DS;
+                    $path_dir_parapheur = Configure::read('WEBDELIB_PATH').DS.'Config'.DS.'cert_parapheur'.DS;
                     $pkcs12 = file_get_contents($this->data['Connecteur']['certificat']['tmp_name']);
                     openssl_pkcs12_read($pkcs12, $certs, $this->data['Connecteur']['passphrase']);
                     file_put_contents($path_dir_parapheur.'cert.pem', $certs['pkey'].$certs['cert']);
@@ -123,9 +137,9 @@ class ConnecteursController extends AppController
                 } 
                 break;
             case 'conversion' :
-                $content = $this->_replaceValue($content, 'GEDOOO_WSDL',   $this->data['Connecteur']['urlgedooo']);
-                $content = $this->_replaceValue($content, 'CLOUDOOO_HOST', $this->data['Connecteur']['urlcloudooo']);
-                $content = $this->_replaceValue($content, 'CLOUDOOO_PORT', $this->data['Connecteur']['portcloudooo']);
+                $content = $this->_replaceValue($content, 'GEDOOO_WSDL',   $this->data['Connecteur']['gedooo_url']);
+                $content = $this->_replaceValue($content, 'CLOUDOOO_HOST', $this->data['Connecteur']['cloudooo_url']);
+                $content = $this->_replaceValue($content, 'CLOUDOOO_PORT', $this->data['Connecteur']['cloudooo_port']);
                 break;
             case 'pastell' :
                 $content = $this->_replaceValue($content, 'USE_PASTELL',   $this->data['Connecteur']['use_pastell']);
@@ -170,7 +184,10 @@ class ConnecteursController extends AppController
                 $this->Session->setFlash('Ce connecteur n\'est pas valide', 'growl', array('type'=>'erreur') );
                 $this->redirect('/connecteurs/index');
         } 
-        file_put_contents($path.'webdelib.inc', $content);
+        $file->open('w+');
+        $file->append($content);
+        $file->close();
+        
         $this->redirect('/connecteurs/index');
     }
 
