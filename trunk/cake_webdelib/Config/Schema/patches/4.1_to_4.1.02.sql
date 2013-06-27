@@ -3,8 +3,11 @@
 --
 BEGIN;
 
+ALTER TABLE deliberations ADD COLUMN id_parapheur varchar(50);
 
 ALTER TABLE deliberations_seances ADD COLUMN commentaire character varying(1000) NULL;
+
+ALTER TABLE infosupdefs DROP COLUMN taille;
 
 
 ALTER TABLE acteurs_seances ADD COLUMN model varchar(20);
@@ -13,10 +16,10 @@ ALTER TABLE acteurs_seances ALTER COLUMN model SET NOT NULL;
 
 
 
-//Script à faire
+--Script à faire
 
 ALTER TABLE listepresences ADD COLUMN suppleant_id integer NULL;
-//Script à faire
+--Script à faire
 
 
 ALTER TABLE listepresences ALTER COLUMN mandataire DROP NOT NULL;
@@ -28,7 +31,7 @@ UPDATE listepresences SET mandataire=NULL WHERE mandataire=0;
 
 UPDATE annexes SET filetype='application/vnd.oasis.opendocument.text' WHERE filetype LIKE '%vnd.oasis.opendocument%';
 UPDATE annexes SET filetype='application/pdf' WHERE filetype LIKE '%pdf%';
-//Script à faire
+--Script à faire
 
 
 --
