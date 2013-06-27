@@ -38,8 +38,8 @@ if (isset($annexes)) {
 				if ($mode == 'edit') {
                                         // lien de téléchargement de la version pdf de l'annexe
 					if ($annexe['filetype']=='application/pdf'){
-                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename_pdf'], '/annexes/download/'.$annexe['id'].'/1', array('title'=>'Télécharger le fichier')));
-                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu odt)', '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
+                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename_pdf'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
+                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu odt)', '/annexes/download/'.$annexe['id'].'/odt', array('title'=>'Télécharger le fichier')));
                                         }
                                         else
                                         {
