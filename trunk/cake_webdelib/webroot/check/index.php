@@ -8,7 +8,7 @@ require_once('verification.php');
       <div class="hero-unit">
         <h2>Webdelib check</h2>
         <p>Vérification de l'environenemt Webdelib.</p>
-        <p><a class="btn btn-primary btn-large" href="index2.php">Relancer la vérification <i class="icon-white icon-repeat"></i></a></p>
+        <p><a class="btn btn-primary btn-large" href="index.php">Relancer la vérification <i class="icon-white icon-repeat"></i></a></p>
 </div>
 
 <div class="row">
