@@ -333,16 +333,18 @@ class Seance extends AppModel {
 		else {
 			$suffixe = "_seance";
 		}
+                if(!empty($seance['Seance']['date']))
 		$date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
+                else $date_lettres='';
 		//$oDevPart->addElement(new GDO_FieldType('date_seance_lettres'.$suffixe, ($date_lettres), 'text'));
 		$oDevPart->addElement(new GDO_FieldType('date_seance_lettres', $date_lettres, 'text'));
-		$oDevPart->addElement(new GDO_FieldType("heure".$suffixe,       $this->Date->Hour($seance['Seance']['date']),     'text'));
-		$oDevPart->addElement(new GDO_FieldType("date".$suffixe,        $this->Date->frDate($seance['Seance']['date']),       'date'));
-		$oDevPart->addElement(new GDO_FieldType("hh".$suffixe,          $this->Date->Hour($seance['Seance']['date'], 'hh'), 'string'));
-		$oDevPart->addElement(new GDO_FieldType("mm".$suffixe,          $this->Date->Hour($seance['Seance']['date'], 'mm'), 'string'));
+		$oDevPart->addElement(new GDO_FieldType("heure".$suffixe,       (!empty($seance['Seance']['date'])?$this->Date->Hour($seance['Seance']['date']):''),     'text'));
+		$oDevPart->addElement(new GDO_FieldType("date".$suffixe,        (!empty($seance['Seance']['date'])?$this->Date->frDate($seance['Seance']['date']):''),       'date'));
+		$oDevPart->addElement(new GDO_FieldType("hh".$suffixe,          (!empty($seance['Seance']['date'])?$this->Date->Hour($seance['Seance']['date'], 'hh'):''), 'string'));
+		$oDevPart->addElement(new GDO_FieldType("mm".$suffixe,          (!empty($seance['Seance']['date'])?$this->Date->Hour($seance['Seance']['date'], 'mm'):''), 'string'));
 		$oDevPart->addElement(new GDO_FieldType("date_convocation".$suffixe, $this->Date->frDate($seance['Seance']['date_convocation']),   'date'));
-		$oDevPart->addElement(new GDO_FieldType("identifiant".$suffixe, $seance['Seance']['id'], 'text'));
-		$oDevPart->addElement(new GDO_FieldType("commentaire".$suffixe, $seance['Seance']['commentaire'], 'lines'));
+		$oDevPart->addElement(new GDO_FieldType("identifiant".$suffixe, (!empty($seance['Seance']['id'])?$seance['Seance']['id']:''), 'text'));
+		$oDevPart->addElement(new GDO_FieldType("commentaire".$suffixe, (!empty($seance['Seance']['commentaire'])?$seance['Seance']['commentaire']:''), 'lines'));
 
 		$elus = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
 		if (!empty($elus)) {
@@ -364,7 +366,7 @@ class Seance extends AppModel {
 		$typeSeance = $this->Typeseance->find('first',
 				array('conditions' => array('Typeseance.id' => $seance['Seance']['type_id']),
 						'recursive'   => -1));
-		$oDevPart->addElement(new GDO_FieldType('type'.$suffixe, ($typeSeance['Typeseance']['libelle']), 'text'));
+		$oDevPart->addElement(new GDO_FieldType('type'.$suffixe, (!empty($typeSeance['Typeseance']['libelle'])?$typeSeance['Typeseance']['libelle']:''), 'text'));
 
 		$this->President->makeBalise($oDevPart, $seance['Seance']['president_id']);
 		$this->Secretaire->makeBalise($oDevPart, $seance['Seance']['secretaire_id']);

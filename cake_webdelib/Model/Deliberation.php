@@ -787,12 +787,11 @@ class Deliberation extends AppModel {
 
 		$acteurs = $this->Listepresence->find('all',
 				array ('conditions' => array("delib_id" => $delib['Deliberation']['id']),
-						'contain'   => array('Acteur', 'Mandataire'),
+						'contain'   => array('Acteur', 'Mandataire', 'Suppleant'),
 						'order' => 'Acteur.position ASC'));
 		if (!empty($acteurs)) {
 			foreach($acteurs as $acteur) {
-				if ( $acteur['Listepresence']['present'] == 1 ){
-					$acteurs_presents[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                                $aActeur=array('nom_acteur' => $acteur['Acteur']['nom'],
 							'prenom_acteur' => $acteur['Acteur']['prenom'],
 							'salutation_acteur'=> $acteur['Acteur']['salutation'],
 							'titre_acteur'=> $acteur['Acteur']['titre'],
@@ -805,51 +804,45 @@ class Deliberation extends AppModel {
 							'telfixe_acteur' => $acteur['Acteur']['telfixe'],
 							'telmobile_acteur' => $acteur['Acteur']['telmobile'],
 							'note_acteur' => $acteur['Acteur']['note']);
+                                
+				if ( $acteur['Listepresence']['present'] == true && empty($acteur['Listepresence']['Suppleant'])){
+                                    $acteurs_presents[] = $aActeur;
 				}
-				elseif(($acteur['Listepresence']['present'] == 0) AND ($acteur['Listepresence']['mandataire']==0)) {
-					$acteurs_absents[] = array('nom_acteur' => $acteur['Acteur']['nom'],
-							'prenom_acteur' => $acteur['Acteur']['prenom'],
-							'salutation_acteur'=> $acteur['Acteur']['salutation'],
-							'titre_acteur'=> $acteur['Acteur']['titre'],
-							'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
-							'adresse1_acteur' => $acteur['Acteur']['adresse1'],
-							'adresse2_acteur' => $acteur['Acteur']['adresse2'],
-							'cp_acteur' => $acteur['Acteur']['cp'],
-							'ville_acteur' => $acteur['Acteur']['ville'],
-							'email_acteur' => $acteur['Acteur']['email'],
-							'telfixe_acteur' => $acteur['Acteur']['telfixe'],
-							'telmobile_acteur' => $acteur['Acteur']['telmobile'],
-							'note_acteur' => $acteur['Acteur']['note']);
-
+                                elseif(($acteur['Listepresence']['present'] == true) && !empty($acteur['Listepresence']['Suppleant'])) {
+                                    $aActeur=array('nom_acteur' => $acteur['Suppleant']['nom'],
+							'prenom_acteur' => $acteur['Suppleant']['prenom'],
+							'salutation_acteur'=> $acteur['Suppleant']['salutation'],
+							'titre_acteur'=> $acteur['Suppleant']['titre'],
+							'date_naissance_acteur' => $acteur['Suppleant']['date_naissance'],
+							'adresse1_acteur' => $acteur['Suppleant']['adresse1'],
+							'adresse2_acteur' => $acteur['Suppleant']['adresse2'],
+							'cp_acteur' => $acteur['Suppleant']['cp'],
+							'ville_acteur' => $acteur['Suppleant']['ville'],
+							'email_acteur' => $acteur['Suppleant']['email'],
+							'telfixe_acteur' => $acteur['Suppleant']['telfixe'],
+							'telmobile_acteur' => $acteur['Suppleant']['telmobile'],
+							'note_acteur' => $acteur['Suppleant']['note']);
+                                    $acteurs_presents[]=$aActeur;
 				}
-				elseif(($acteur['Listepresence']['present'] == 0) AND ($acteur['Listepresence']['mandataire']!=0)) {
-					$acteurs_remplaces[] = array(
-							'nom_acteur' => $acteur['Acteur']['nom'],
-							'prenom_acteur' => $acteur['Acteur']['prenom'],
-							'salutation_acteur'=> $acteur['Acteur']['salutation'],
-							'titre_acteur'=> $acteur['Acteur']['titre'],
-							'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
-							'adresse1_acteur' => $acteur['Acteur']['adresse1'],
-							'adresse2_acteur' => $acteur['Acteur']['adresse2'],
-							'cp_acteur' => $acteur['Acteur']['cp'],
-							'ville_acteur' => $acteur['Acteur']['ville'],
-							'email_acteur' => $acteur['Acteur']['email'],
-							'telfixe_acteur' => $acteur['Acteur']['telfixe'],
-							'telmobile_acteur' => $acteur['Acteur']['telmobile'],
-							'note_acteur' => $acteur['Acteur']['note'],
-							'nom_mandate' => $acteur['Mandataire']['nom'],
-							'prenom_mandate' => $acteur['Mandataire']['prenom'],
-							'salutation_mandate'=> $acteur['Mandataire']['salutation'],
-							'titre_mandate'=> $acteur['Mandataire']['titre'],
-							'date_naissance_mandate' => $acteur['Mandataire']['date_naissance'],
-							'adresse1_mandate' => $acteur['Mandataire']['adresse1'],
-							'adresse2_mandate' => $acteur['Mandataire']['adresse2'],
-							'cp_mandate' => $acteur['Mandataire']['cp'],
-							'ville_mandate' => $acteur['Mandataire']['ville'],
-							'email_mandate' => $acteur['Mandataire']['email'],
-							'telfixe_mandate' => $acteur['Mandataire']['telfixe'],
-							'telmobile_mandate' => $acteur['Mandataire']['telmobile'],
-							'note_mandate' => $acteur['Mandataire']['note']);
+				elseif(($acteur['Listepresence']['present'] == false) && !empty($acteur['Listepresence']['mandataire'])) {
+                                    $acteur_mandataire = array(
+                                                    'nom_mandate' => $acteur['Mandataire']['nom'],
+                                                    'prenom_mandate' => $acteur['Mandataire']['prenom'],
+                                                    'salutation_mandate'=> $acteur['Mandataire']['salutation'],
+                                                    'titre_mandate'=> $acteur['Mandataire']['titre'],
+                                                    'date_naissance_mandate' => $acteur['Mandataire']['date_naissance'],
+                                                    'adresse1_mandate' => $acteur['Mandataire']['adresse1'],
+                                                    'adresse2_mandate' => $acteur['Mandataire']['adresse2'],
+                                                    'cp_mandate' => $acteur['Mandataire']['cp'],
+                                                    'ville_mandate' => $acteur['Mandataire']['ville'],
+                                                    'email_mandate' => $acteur['Mandataire']['email'],
+                                                    'telfixe_mandate' => $acteur['Mandataire']['telfixe'],
+                                                    'telmobile_mandate' => $acteur['Mandataire']['telmobile'],
+                                                    'note_mandate' => $acteur['Mandataire']['note']);
+                                    $acteurs_remplaces[]=array_push($aActeur, $acteur_mandataire);
+				}
+                                elseif(($acteur['Listepresence']['present'] == false) && empty($acteur['Listepresence']['mandataire'])) {
+                                    $acteurs_absents[] = $aActeur;
 				}
 			}
 		}
@@ -1291,7 +1284,7 @@ class Deliberation extends AppModel {
 		$presents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
 		                                         	    'order'      => array("Acteur.position ASC"),
                                                                     'contain'    => array('Acteur', 'Acteur.Typeacteur')));
-		if ($this->isFirstDelib($delib_id, $seance_id) and (empty($presents))) {
+		if (empty($presents) && $this->isFirstDelib($delib_id, $seance_id)) {
 			$presents = $this->_buildFirstList($delib_id, $seance_id);
 		}
 
@@ -1299,13 +1292,18 @@ class Deliberation extends AppModel {
 		// Verifier que la liste precedente n'est pas vide...
 		if (empty($presents))
 			$presents = $this->_copyFromPreviousList($delib_id, $seance_id);
-		for($i=0; $i<count($presents); $i++){
-			if ($presents[$i]['Listepresence']['mandataire'] !='0') {
-				$mandataire = $this->Seance->Typeseance->Acteur->read('nom, prenom', $presents[$i]['Listepresence']['mandataire']);
-				$presents[$i]['Listepresence']['mandataire'] = $mandataire['Acteur']['prenom']." ".$mandataire['Acteur']['nom'];
-			}
+                
+                if (!empty($presents))
+		foreach($presents as &$acteur){
+                    if (!empty($acteur['Listepresence']['mandataire'])) {
+                        $mandataire = $this->Seance->Typeseance->Acteur->read('nom, prenom', $acteur['Listepresence']['mandataire']);
+                            $acteur['Listepresence']['mandataire'] = $mandataire['Acteur']['prenom']." ".$mandataire['Acteur']['nom'];
+                    }elseif (!empty($acteur['Listepresence']['suppleant_id'])) {
+                        $suppleant= $this->Seance->Typeseance->Acteur->read('nom, prenom', $acteur['Listepresence']['suppleant_id']);
+                            $acteur['Listepresence']['suppleant'] = $suppleant['Acteur']['prenom']." ".$suppleant['Acteur']['nom'];
+                    }
 		}
-		return ($presents);
+		return $presents;
 	}
 
 	function _buildFirstList($delib_id, $seance_id) {
@@ -1321,6 +1319,7 @@ class Deliberation extends AppModel {
 			$params['data']['Listepresence']['delib_id']= $delib_id;
 			$this->Listepresence->save($params['data']);
 		}
+                
 		return  $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
 		                                       	        'order'      => array("Acteur.position ASC"),
                                                                 'contain'    => array('Acteur', 'Acteur.Typeacteur')));
@@ -1330,6 +1329,7 @@ class Deliberation extends AppModel {
 		$this->Listepresence->Behaviors->attach('Containable');
 
 		$position = $this->getPosition($delib_id, $seance_id);
+                if($position==1)return NULL;
 		$previousDelibId= $this->_getDelibIdByPosition($seance_id, $position);
 		$previousPresents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $previousDelibId),
 		                                                            'recursive'  => -1));

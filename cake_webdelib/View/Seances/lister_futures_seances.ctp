@@ -56,7 +56,7 @@
                                            'alt'=>'Voir l\'ordre des projets de la séance du '.$seance['Seance']['date']), 
                                            false);
 			$urlConvoc = '/seances/sendConvocations/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'];
-			$urlOdj    = '/seances/sendConvocations/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'];
+			$urlOdj    = '/seances/sendOrdredujour/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'];
 			$urlConvocUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id']."/$format/0/retour/0/true";
 			$urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id']."/$format/0/retour/0/true";
 			if (Configure::read('AFFICHE_CONVOCS_ANONYME'))

@@ -1,4 +1,7 @@
 <?php
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
+
 class SeancesController extends AppController {
 
 	var $name = 'Seances';
@@ -535,7 +538,8 @@ class SeancesController extends AppController {
 
 			$this->set('seance_id', $seance_id);
 			$this->set('deliberation' , $deliberation);
-			$listPresents =  $this->Deliberation->afficherListePresents($deliberation_id, $seance_id);
+			
+                        $listPresents =  $this->Deliberation->afficherListePresents($deliberation_id, $seance_id);
                         $typeacteurs = array();
                         foreach ( $listPresents as $present ) {
                             $typeacteurs[$present['Acteur']['Typeacteur']['id']] = $present['Acteur']['Typeacteur']['nom'];
@@ -545,7 +549,7 @@ class SeancesController extends AppController {
 
 			$nbPresent = count ($listPresents);
 			foreach ( $listPresents as $present) 
-			    if(($present['Listepresence']['present']==0)&&($present['Listepresence']['mandataire']==0))
+			    if(empty($present['Listepresence']['present']) && empty($present['Listepresence']['mandataire']))
 				$nbAbsent++;
                             else
                                $nbPresent ++;
@@ -1096,6 +1100,7 @@ class SeancesController extends AppController {
                 $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true);
                 foreach ($acteurs as &$acteur) {
                     $dates = $this->Acteurseance->find('first', array('conditions'=> array('Acteurseance.seance_id' => $seance_id,
+                                                                                            'Acteurseance.model' => 'convocation',
                                                                                           'Acteurseance.acteur_id' => $acteur['Acteur']['id']),
                                                                      'recursive' => -1,
                                                                      'fields'    => array('Acteurseance.date_envoi', 'Acteurseance.date_reception')));
@@ -1178,6 +1183,121 @@ class SeancesController extends AppController {
                             $acteurseance['acteur_id'] = $acteur_id;
                             $acteurseance['mail_id']   = $mail_id;
                             $acteurseance['date_envoi']   = date("Y-m-d H:i:s", strtotime("now"));
+                            $acteurseance['model']   = 'convacation';
+                            $this->Acteurseance->save( $acteurseance );
+                        }
+                        else {
+                            $message .=  $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].' :' .$retour."\n";
+                        }
+                        sleep(5);
+                    }
+                }
+                if ($message != '') 
+                    $this->Session->setFlash($message, 'growl', array('type'=>'error'));
+                $this->redirect("/seances/sendConvocations/$seance_id/$model_id");
+            }
+        }
+        
+        function sendOrdredujour ($seance_id, $model_id) {
+            $this->loadModel('Acteurseance');
+	    $this->Seance->Behaviors->attach('Containable');
+            $seance = $this->Seance->find('first', array('conditions' => array('Seance.id'=>$seance_id),
+                                                         'order'      => array('date ASC'),
+                                                         'fields'     => array('id', 'date', 'type_id', 'date_convocation'),
+                                                         'contain'    => array('Typeseance.libelle', 'Typeseance.action',
+                                                                               'Typeseance.modelconvocation_id', 
+                                                                               'Typeseance.modelordredujour_id',
+                                                                               'Typeseance.modelpvsommaire_id',
+                                                                               'Typeseance.modelpvdetaille_id')));
+            $this->set('use_mail_securise', Configure::read('USE_MAIL_SECURISE') );
+            if (empty($this->data) ) {
+                $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true);
+                foreach ($acteurs as &$acteur) {
+                    $dates = $this->Acteurseance->find('first', array('conditions'=> array('Acteurseance.seance_id' => $seance_id,
+                                                                                            'Acteurseance.model' => 'ordredujour',
+                                                                                          'Acteurseance.acteur_id' => $acteur['Acteur']['id']),
+                                                                     'recursive' => -1,
+                                                                     'fields'    => array('Acteurseance.date_envoi', 'Acteurseance.date_reception')));
+                    $acteur['Acteur']['date_envoi'] = $dates['Acteurseance']['date_envoi'];
+                    $acteur['Acteur']['date_reception'] = $dates['Acteurseance']['date_reception'];
+
+                }
+                $model   = $this->Model->find('first', array('conditions' => array('Model.id' => $model_id),
+                                                             'fields'     => array('modele'),
+                                                             'recursive'  => -1));
+                $this->set('model',     $model);
+                $this->set('acteurs',   $acteurs);
+                $this->set('seance_id', $seance_id);
+                $this->set('date_convocation', $seance['Seance']['date_convocation']);
+                $this->set('model_id',  $model_id);
+            }
+            else {
+                
+                $message = '';
+                foreach ($this->data['Acteur'] as $tmp_id => $bool ){
+                    $data = array(); 
+                    if($bool) {
+                        $acteur_id = substr($tmp_id, 3, strlen($tmp_id));
+                        $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id),
+                                                                     'recursive'  => -1));
+                        
+                        if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf')){
+                            $filepath = WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf';
+                        }else if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt')){
+                            $filepath = WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt';
+                        }else{
+                            continue;
+                        }
+                        
+                        $searchReplace = array("#NOM#" => $acteur['Acteur']['nom'], "#PRENOM#" => $acteur['Acteur']['prenom'] );
+                        $template = file_get_contents(CONFIG_PATH.'/emails/convocation.txt');
+                        $content = utf8_decode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $template))));
+                        $subject = utf8_decode('Convocation à la séance \''.$seance['Typeseance']['libelle'].'\' du : '
+                                              .$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date'])));
+                        if (Configure::read('USE_MAIL_SECURISE')) {
+                            $data['mailto']  = $acteur['Acteur']['email'];
+                            $data['objet']   = $subject;
+                            $data['message'] = $content;
+                            $data['uploadFile1']  = "@$filepath";
+                            if (Configure::read('PASSWORD_MAIL_SECURISE') != '')  {
+                                $data['send_password'] = 1;
+                                $data['password'] = Configure::read('PASSWORD_MAIL_SECURISE');
+                            }
+                            $retour = $this->S2low->sendMail($data);
+                        }
+                        else {
+                            if (Configure::read("SMTP_USE")) {
+                                $this->Email->smtpOptions = array( 'port'    => Configure::read("SMTP_PORT"),
+                                                                   'timeout' => Configure::read("SMTP_TIMEOUT"),
+                                                                   'host'    => Configure::read("SMTP_HOST"),
+                                                                   'username'=> Configure::read("SMTP_USERNAME"),
+                                                                   'password'=> Configure::read("SMTP_PASSWORD"),
+                                                                   'client'  => Configure::read("SMTP_CLIENT"));
+                                $this->Email->delivery = 'smtp';
+                            }
+                            else
+                                $this->Email->delivery = 'mail';
+
+                            $this->Email->from = Configure::read("MAIL_FROM");
+                            $this->Email->to =  $acteur['Acteur']['email'];
+                            $this->Email->sendAs = 'both';
+                            $this->Email->charset = 'UTF-8';
+                            $this->Email->subject =  utf8_encode($subject);
+                            $this->Email->attachments = array($filepath);
+                            if ($this->Email->send( utf8_encode($content)) )
+                                $retour = 'OK:0';
+                            else
+                                $retour = 'KO';
+                        }
+
+                        if ( strpos($retour, 'OK:') !== false ){
+                            $mail_id = substr($retour, 3, strlen($retour));
+                            $this->Acteurseance->create();
+                            $acteurseance['seance_id'] = $seance_id;
+                            $acteurseance['acteur_id'] = $acteur_id;
+                            $acteurseance['mail_id']   = $mail_id;
+                            $acteurseance['date_envoi']   = date("Y-m-d H:i:s", strtotime("now"));
+                            $acteurseance['model']   = 'odredujour';
                             $this->Acteurseance->save( $acteurseance );
                         }
                         else {
@@ -1192,7 +1312,12 @@ class SeancesController extends AppController {
             }
         }
 
-        function genererConvoc($seance_id, $model_id) { 
+        /**
+         * Génération de la convocation ou de l'odre du jour
+         * @param $seance_id
+         * @param $model_id
+         */
+        function _generer($seance_id, $model_id) { 
           
             $this->Seance->id = $seance_id;
             $time_start = microtime(true);
@@ -1346,37 +1471,50 @@ class SeancesController extends AppController {
                     $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
                 }
             }
+        }
+        
+        function genererConvocation($seance_id, $model_id) { 
+            $this->_generer($seance_id,$model_id);
             $this->Progress->end("/seances/sendConvocations/$seance_id/$model_id");
+            exit;
+        }
+        
+                
+        function genererOrdredujour($seance_id, $model_id) { 
+            $this->_generer($seance_id,$model_id);
+            $this->Progress->end("/seances/sendOrdredujour/$seance_id/$model_id");
             exit;
         }
 
 
-        function recuperer_zip($seance_id, $model_id) {
-            $dirpath = WEBROOT_PATH."/files/seances/$seance_id/$model_id/";
-            if (file_exists($dirpath.'convocations.zip')) 
-                unlink($dirpath.'convocations.zip');
 
-            $d = dir( $dirpath);
+        function recuperer_zip($seance_id, $model_id) {
+            $dirpath = WEBROOT_PATH.DS.'files'.DS.'seances'.DS.$seance_id.DS.$model_id;
+            if (file_exists($dirpath.DS.'convocations.zip')) 
+                unlink($dirpath.DS.'convocations.zip');
+
+            $dir = new Folder($dirpath);
             $zip = new ZipArchive;
-            $res = $zip->open($dirpath.'convocations.zip', ZIPARCHIVE::CREATE);
-            while (false !== ($entry = $d->read())) {
-                if ($entry[0] != '.') {
-                    $extension = substr($entry, strlen($entry) -4, strlen($entry));
-                    if ($extension == '.pdf') {
-                        if ($res === TRUE) {
-                            if (file_exists( $dirpath.$entry)) {
-                                $acteur_id = substr($entry, 0, strlen($entry) -4);
-                                $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id), 
-                                                                             'recursive'  => -1,
-                                                                             'fields'     => array('Acteur.nom')));
-                                $zip->addFile($dirpath.$entry, $acteur['Acteur']['nom'].'.pdf');
-                            }
-                        }
-                    }
+            
+            $files = $dir->find('.*\.pdf');
+            try{
+                if($zip->open($dirpath.DS.'convocations.zip', ZIPARCHIVE::CREATE))
+                foreach ($files as $file) {
+                    $file = new File($dir->pwd() . DS . $file);
+                    $acteur_id = $file->name();
+                    $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id), 
+                                                                 'recursive'  => -1,
+                                                                 'fields'     => array('Acteur.nom')));
+                    $zip->addFile($file->path, $acteur['Acteur']['nom'].'.pdf');
+                    $file->close();
                 }
+                $zip->close();
             }
-            $res = $zip->close();
-            $content = file_get_contents($dirpath.'convocations.zip');
+            catch(Exception $e) {
+                 $this->Session->setFlash('Une erreur est survenu lors de la génération de l\'archive', 'growl');
+            }
+            
+            $content = file_get_contents($dirpath.DS.'convocations.zip');
             header('Content-type: application/zip');
             header('Content-Length: '.strlen($content));
             header('Content-Disposition: attachment; filename="Convocation.zip"');
