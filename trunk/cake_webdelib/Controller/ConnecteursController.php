@@ -95,11 +95,6 @@ class ConnecteursController extends AppController
         $certs = array();
         $file = new File(Configure::read('WEBDELIB_PATH').DS.'Config'.DS.'webdelib.inc' , true);
         $content = $file->read();
-        $content =  str_replace('"', "'", $content);
-        $content =  str_replace('e (', "e(", $content);
-        $content =  str_replace("' , '","', '", $content);
-        $content =  str_replace("'1'", 'true', $content);
-        $content =  str_replace("'0'", 'false', $content);
         switch($type) {
             case 's2low' :
                 $content = $this->_replaceValue($content, 'USE_S2LOW',        $this->data['Connecteur']['use_s2low']);
