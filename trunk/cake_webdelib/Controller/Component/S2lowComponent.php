@@ -56,7 +56,7 @@ class S2lowComponent extends Component {
         curl_close($ch);
 
         $file = new File(Configure::read('FILE_CLASS'), true);
-        $file->append(utf8_encode($reponse));
+        $file->write(utf8_encode($reponse));
         $file->close();
         //echo "Impossible d'ecrire dans le fichier ($filename)";
 
