@@ -1505,7 +1505,8 @@ class DeliberationsController extends AppController {
     }
 
     function classification() {
-        $this->layout = 'fckeditor';
+        $this->layout = 'popup';
+        $this->set('title_for_layout', 'Classification');
         $this->set('classification', $this->_getMatiereListe());
     }
 

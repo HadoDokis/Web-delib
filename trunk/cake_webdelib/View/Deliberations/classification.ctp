@@ -1,9 +1,4 @@
-<html>
-<head><title>Classification</title></head>
-<body>
-<?php echo $this->Html->script('utils.js'); ?>
 <h2>Choisir la classification</h2>
-
 <div id="attribute_list">
 <?php
 	if (!isset($_GET['id'])) {
@@ -25,5 +20,3 @@
 <br/>
 <?php echo $this->Html->link('Fermer la fenêtre','#add',array('onclick'=>"javascript:window.close();")); ?>
 </div>
-</body>
-</html>
