@@ -1,4 +1,4 @@
-AuthUserFile /var/www/asalae/app/webroot/check/.htpasswd
+AuthUserFile .htpasswd
 AuthGroupFile /dev/null
 AuthName "Restricted Access"
 AuthType Basic
