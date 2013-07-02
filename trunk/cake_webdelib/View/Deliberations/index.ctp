@@ -61,7 +61,7 @@ function choixModele(o) {
                                             array('alt'=>$deliberation['iconeEtat']['titre'].' '.$deliberation['Deliberation']['objet'],           
                                                   'title'=>$deliberation['iconeEtat']['titre'].' '.$deliberation['Deliberation']['objet']));
                         if (isset($traitement_lot) && ($traitement_lot ==true))
-                            echo $this->Form->input('Deliberation.id_'.$deliberation['Deliberation']['id'], array('type' => 'checkbox', 'label' => false) );
+                            echo $this->Form->input('Deliberation_check.id_'.$deliberation['Deliberation']['id'], array('type' => 'checkbox', 'label' => false) );
                     ?> 
                             
 		</td>

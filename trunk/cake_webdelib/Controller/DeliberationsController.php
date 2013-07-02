@@ -3652,15 +3652,17 @@ class DeliberationsController extends AppController {
     }
 
     function traitementLot() {
-        $action = $this->data['Deliberation']['action'];
+        
         $ids = array();
         //$redirect = $this->Session->read('user.User.lasturl');
         $redirect = $this->referer();
-        if ($action == '') {
+        if (isset($this->data['Deliberation']['action']) && empty($this->data['Deliberation']['action'])) {
             $this->Session->setFlash('Veuillez s&eacute;lectionner une action.', 'growl', array('type' => 'erreur'));
             $this->redirect($redirect);
-        }
-        foreach ($this->data['Deliberation'] as $id => $bool) {
+        }else $action = $this->data['Deliberation']['action'];
+        
+        if(isset($this->data['Deliberation_check']))
+        foreach ($this->data['Deliberation_check'] as $id => $bool) {
             if ($bool == 1) {
                 $delib_id = substr($id, 3, strlen($id));
                 $this->Deliberation->id = $delib_id;
@@ -3679,6 +3681,12 @@ class DeliberationsController extends AppController {
                 $ids[] = $delib_id;
             }
         }
+        
+        if (!isset($ids) || (isset($ids) && count($ids)==0)) {
+            $this->Session->setFlash('Veuillez s&eacute;lectionner une d&eacutelibération.', 'growl', array('type' => 'erreur'));
+            $this->redirect($redirect);
+        }
+        
         if ($action == 'generation') {
             $model_id = $this->data['Deliberation']['modele'];
             $projets = $this->Deliberation->find('all', array('conditions' => array('Deliberation.id' => $ids)));
