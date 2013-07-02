@@ -59,7 +59,7 @@ class ModelsController extends AppController {
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('id invalide pour le modèle de  délibération');
+			$this->Session->setFlash('id invalide pour le modèle de  délibération','growl', array('type'=>'erreur'));
 			$this->redirect('/models/index');
 		}
 		$data = $this->Model->read(null, $id);
@@ -75,16 +75,16 @@ class ModelsController extends AppController {
 		)
 		)))) {
 			if ($this->Model->delete($id)) {
-				$this->Session->setFlash('Le modèle a été supprimé.');
+				$this->Session->setFlash('Le modèle a été supprimé.', 'growl');
 				$this->redirect('/models/index');
 			}
 			else{
-				$this->Session->setFlash('Impossible de supprimer ce type de modele');
+				$this->Session->setFlash('Impossible de supprimer ce type de modele','growl', array('type'=>'erreur'));
 				$this->redirect('/models/index');
 			}
 		}
 		else{
-			$this->Session->setFlash('Impossible de supprimer ce type de modele');
+			$this->Session->setFlash('Impossible de supprimer ce type de modele','growl', array('type'=>'erreur'));
 			$this->redirect('/models/index');
 		}
 	}
@@ -100,7 +100,7 @@ class ModelsController extends AppController {
 			exit();
 		}
 		else {
-			$this->Session->setFlash('Aucun fichier li&eacute; &agrave; ce mod&egrave;le');
+			$this->Session->setFlash('Aucun fichier li&eacute; &agrave; ce mod&egrave;le','growl', array('type'=>'erreur'));
 			$this->redirect('/models/index');
 		}
 	}
@@ -124,7 +124,11 @@ class ModelsController extends AppController {
 					$this->request->data['Model']['size']      = $this->data['Model']['template']['size'];
 					$this->request->data['Model']['extension'] = $this->data['Model']['template']['type'];
 					$this->request->data['Model']['content']   = file_get_contents($this->data['Model']['template']['tmp_name']);
-				}
+				}else
+                                {
+                                   $this->Session->setFlash('Aucun fichier importé','growl', array('type'=>'erreur'));
+                                    $this->redirect('/models/index'); 
+                                }
 			}
 			if ($this->Model->save($this->data))
 				$this->redirect('/models/index');
