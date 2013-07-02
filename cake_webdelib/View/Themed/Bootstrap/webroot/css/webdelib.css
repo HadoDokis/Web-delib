@@ -1427,3 +1427,5 @@ div.aModifier {
      float: right;
      width: 600px;
 }
+
+input[type="file"]{width: auto}
