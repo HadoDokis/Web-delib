@@ -342,7 +342,7 @@ class DeliberationsController extends AppController {
                 if (array_key_exists('Annex', $this->data))
                     foreach ($this->data['Annex'] as $annexe) {
                         if ($annexe['ref'] == 'delibPrincipale')
-                            $this->_saveAnnexe($delibId, $annexe);
+                            if(!$this->_saveAnnexe($delibId, $annexe))$sortie = false;goto ErreurAnnexe;
                     }
 
                 // sauvegarde des délibérations rattachées
@@ -353,7 +353,7 @@ class DeliberationsController extends AppController {
                         if (array_key_exists('Annex', $this->data))
                             foreach ($this->data['Annex'] as $annexe)
                                 if ($annexe['ref'] == 'delibRattachee' . $iref)
-                                    $this->_saveAnnexe($delibRattacheeId, $annexe);
+                                    if(!$this->_saveAnnexe($delibRattacheeId, $annexe))$sortie = false;goto ErreurAnnexe;
                     }
                     $this->Deliberation->majDelibRatt($delibId, null);
                 }
@@ -363,9 +363,13 @@ class DeliberationsController extends AppController {
             else
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
         }
+
+        ErreurAnnexe:
+        
         if ($sortie)
             $this->redirect($redirect);
         else {
+            
             $this->request->data['Service']['libelle'] = $this->Deliberation->Service->doList($user['User']['service']);
             $this->request->data['Redacteur']['nom'] = $this->User->field('nom', array('User.id' => $user['User']['id']));
             $this->request->data['Redacteur']['prenom'] = $this->User->field('prenom', array('User.id' => $user['User']['id']));
@@ -519,6 +523,12 @@ class DeliberationsController extends AppController {
             $file = new File($annexe['file']['tmp_name'], false);
             $newAnnexe['Annex']['filename'] = $annexe['file']['name'];
             //Enregistrement du type mime vérifier
+            if(!isset($DOC_TYPE[$file->mime()]['mime_conversion'])){
+                $file->close();
+                $this->Session->setFlash('Fichier de type inconnu. Veuillez contacter votre administrateur', 'growl', array('type'=>'erreur'));
+                return false;
+            }
+                
             $newAnnexe['Annex']['filetype'] = $DOC_TYPE[$file->mime()]['mime_conversion'];
             $newAnnexe['Annex']['size'] = $file->size();
             $newAnnexe['Annex']['data'] = $file->read();
@@ -824,8 +834,8 @@ class DeliberationsController extends AppController {
                 // sauvegarde des nouvelles annexes
                 if (array_key_exists('Annex', $this->data))
                 foreach($this->data['Annex'] as $annexe) {
-                    if ($annexe['ref'] == 'delibPrincipale') $this->_saveAnnexe($id, $annexe);
-                    if ($annexe['ref'] == 'delibRattachee'.$id) $this->_saveAnnexe($id, $annexe);
+                    if ($annexe['ref'] == 'delibPrincipale') if(!$this->_saveAnnexe($id, $annexe))$this->redirect("/deliberations/edit/$id");
+                    if ($annexe['ref'] == 'delibRattachee'.$id) if(!$this->_saveAnnexe($id, $annexe))$this->redirect("/deliberations/edit/$id");
                 }
                 // suppression des annexes
                 if (array_key_exists('AnnexesASupprimer', $this->data))
@@ -883,7 +893,7 @@ class DeliberationsController extends AppController {
                         // sauvegarde des nouvelles annexes pour cette delib rattachée
                         if (array_key_exists('Annex', $this->data))
                             foreach($this->data['Annex'] as $annexe)
-                            if ($annexe['ref'] == 'delibRattachee'.$iref) $this->_saveAnnexe($delibRattacheeId, $annexe);
+                            if ($annexe['ref'] == 'delibRattachee'.$iref) if(!$this->_saveAnnexe($delibRattacheeId, $annexe))$this->redirect($redirect);
                     }
                 }
                 
