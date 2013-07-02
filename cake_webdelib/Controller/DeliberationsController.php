@@ -3683,7 +3683,7 @@ class DeliberationsController extends AppController {
         }
         
         if (!isset($ids) || (isset($ids) && count($ids)==0)) {
-            $this->Session->setFlash('Veuillez s&eacute;lectionner une d&eacutelibération.', 'growl', array('type' => 'erreur'));
+            $this->Session->setFlash('Veuillez s&eacute;lectionner une d&eacute;libération.', 'growl', array('type' => 'erreur'));
             $this->redirect($redirect);
         }
         
