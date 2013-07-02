@@ -1118,7 +1118,6 @@ class SeancesController extends AppController {
                 $this->set('model_id',  $model_id);
             }
             else {
-                
                 $message = '';
                 foreach ($this->data['Acteur'] as $tmp_id => $bool ){
                     $data = array(); 
@@ -1127,27 +1126,30 @@ class SeancesController extends AppController {
                         $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id),
                                                                      'recursive'  => -1));
                         
-                        if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf')){
-                            $filepath = WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf';
-                        }else if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt')){
-                            $filepath = WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt';
+                        if (file_exists(WEBROOT_PATH.DS.'files'.DS.'seances'.DS.$seance_id.DS.$model_id.DS.$acteur['Acteur']['id'].'.pdf')){
+                            $filepath = WEBROOT_PATH.DS.'files'.DS.'seances'.DS.$seance_id.DS.$model_id.DS.$acteur['Acteur']['id'].'.pdf';
+                        }else if (file_exists(WEBROOT_PATH.DS.'files'.DS.'seances'.DS.$seance_id.DS.$model_id.DS.$acteur['Acteur']['id'].'.odt')){
+                            $filepath = WEBROOT_PATH.DS.'files'.DS.'seances'.DS.$seance_id.DS.$model_id.DS.$acteur['Acteur']['id'].'.odt';
                         }else{
                             continue;
                         }
                         
                         $searchReplace = array("#NOM#" => $acteur['Acteur']['nom'], "#PRENOM#" => $acteur['Acteur']['prenom'] );
-                        $template = file_get_contents(CONFIG_PATH.'/emails/convocation.txt');
+                        $template = file_get_contents(CONFIG_PATH.DS.'emails'.DS.'convocation.txt');
+                        //S2low est encodé en iso
                         $content = utf8_decode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $template))));
-                        $subject = utf8_decode('Convocation à la séance \''.$seance['Typeseance']['libelle'].'\' du : '
+                        $subject = utf8_decode('Convocation à la s&eacute;ance \''.$seance['Typeseance']['libelle'].'\' du : '
                                               .$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date'])));
                         if (Configure::read('USE_MAIL_SECURISE')) {
                             $data['mailto']  = $acteur['Acteur']['email'];
                             $data['objet']   = $subject;
                             $data['message'] = $content;
                             $data['uploadFile1']  = "@$filepath";
-                            if (Configure::read('PASSWORD_MAIL_SECURISE') != '')  {
+                            
+                            $password=Configure::read('PASSWORD_MAIL_SECURISE');
+                            if (!empty($password))  {
                                 $data['send_password'] = 1;
-                                $data['password'] = Configure::read('PASSWORD_MAIL_SECURISE');
+                                $data['password'] = $password;
                             }
                             $retour = $this->S2low->sendMail($data);
                         }
@@ -1168,9 +1170,9 @@ class SeancesController extends AppController {
                             $this->Email->to =  $acteur['Acteur']['email'];
                             $this->Email->sendAs = 'both';
                             $this->Email->charset = 'UTF-8';
-                            $this->Email->subject =  utf8_encode($subject);
+                            $this->Email->subject =  $subject;
                             $this->Email->attachments = array($filepath);
-                            if ($this->Email->send( utf8_encode($content)) )
+                            if ($this->Email->send($content))
                                 $retour = 'OK:0';
                             else
                                 $retour = 'KO';
@@ -1183,7 +1185,7 @@ class SeancesController extends AppController {
                             $acteurseance['acteur_id'] = $acteur_id;
                             $acteurseance['mail_id']   = $mail_id;
                             $acteurseance['date_envoi']   = date("Y-m-d H:i:s", strtotime("now"));
-                            $acteurseance['model']   = 'convacation';
+                            $acteurseance['model']   = 'convocation';
                             $this->Acteurseance->save( $acteurseance );
                         }
                         else {
@@ -1194,6 +1196,10 @@ class SeancesController extends AppController {
                 }
                 if ($message != '') 
                     $this->Session->setFlash($message, 'growl', array('type'=>'error'));
+                else {
+                    $this->Session->setFlash('Veuillez s&eacute;lectionner un acteur au minimum.', 'growl', array('type' => 'erreur'));
+                }
+                
                 $this->redirect("/seances/sendConvocations/$seance_id/$model_id");
             }
         }
