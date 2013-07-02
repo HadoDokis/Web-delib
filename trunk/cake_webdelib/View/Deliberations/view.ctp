@@ -247,7 +247,7 @@ if (!empty($historiques)) {
 
 </dl>
 <div id="actions_fiche">
-    <?php echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', $previous, array('class' => 'btn', 'escape' => false, 'title' => 'Retour fiche')); ?>
+    <?php echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', 'javascript:history.go(-1)', array('class' => 'btn', 'escape' => false, 'title' => 'Retour fiche')); ?>
 </div>
     
 </div>
