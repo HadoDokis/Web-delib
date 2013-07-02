@@ -1958,17 +1958,16 @@ class DeliberationsController extends AppController {
             
             foreach ($this->data['Acteur'] as $acteur_id => $tab) 
             {
-                if (isset($this->data['Acteur'][$acteur_id]['suppleant_id'])) {
-                    if ($acteur_id != $this->data['Acteur'][$acteur_id]['suppleant_id']) 
-                    $this->request->data['Listepresence']['suppleant_id'] = $tab['suppleant_id'];
+                if ($acteur_id == 0)
+                    continue;
+                
+                if (isset($this->data['Acteur'][$acteur_id]['suppleant_id'] ) && $acteur_id != $this->data['Acteur'][$acteur_id]['suppleant_id']) {
+                        $this->request->data['Listepresence']['suppleant_id'] = $tab['suppleant_id'];
                     
                 }else
                      $this->request->data['Listepresence']['suppleant_id']=NULL;
-                    
                 
                 $this->Listepresence->create();
-                if ($acteur_id == 0)
-                    continue;
 
                 $nbConvoques++;
                 $this->request->data['Listepresence']['acteur_id'] = $acteur_id;
