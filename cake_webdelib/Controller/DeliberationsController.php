@@ -95,7 +95,7 @@ class DeliberationsController extends AppController {
                 'Rapporteur.nom', 'Rapporteur.prenom', 'Annex', 'Seance.type_id',
                 'Infosup', 'Multidelib.id', 'Multidelib.objet', 'Multidelib.objet_delib',
                 'Multidelib.num_delib', 'Multidelib.etat', 'Multidelib.deliberation',
-                'Multidelib.deliberation_name', 'Multidelib.Annex'),
+                'Multidelib.deliberation_name', 'Multidelib.Annex','Deliberationseance.id'),
             'conditions' => array('Deliberation.id' => $id)
         ));
 
@@ -583,7 +583,7 @@ class DeliberationsController extends AppController {
 
             $seances_tmp = $this->Seance->find('all', array('conditions' => array('Seance.type_id' => $typeseances_selected,
                                                                               'Seance.traitee' => 0),
-                                                        'order'      => array('Seance.date' => 'ASC'),
+                                                        'order'      => array('Typeseance.libelle' => 'ASC','Seance.date' => 'ASC'),
                                                         'contain'    => array('Typeseance.libelle','Typeseance.retard'),
                                                         'fields'     => array('Seance.id', 'Seance.type_id', 'Seance.date')));
             
@@ -3644,7 +3644,7 @@ class DeliberationsController extends AppController {
                 'contain' => array('Typeseance.libelle', 'Typeseance.retard'),
                 'order' => array('Typeseance.libelle' => 'ASC', 'Seance.date' => 'ASC'),
                 'fields' => array('Seance.id', 'Seance.type_id', 'Seance.date')));
-
+            
             foreach ($seances as $seance) {
                 $iTime = strtotime($seance['Seance']['date']);
                 //Voir tous les projets ou tous les futurs dates avec un delais respecté

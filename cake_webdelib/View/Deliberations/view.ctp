@@ -11,7 +11,7 @@
         });
         
 <?php
-if ($etat==2){ //Enlever l'affichage en gras de la derniere étape si le traitement est fini
+if ($etat==2){ //Enlever l'affichage en gras de la derniere étape si le traitement est fdini
     echo "$('.nomcourante').attr('class', 'nom');";
 }
 if ($majDeleg) {
@@ -127,19 +127,20 @@ if (empty($this->data['Multidelib'])) {
             </div>
         </div>
 
-        <div class="imbrique">
+        <div class="row imbrique" style="margin-left: 0px;">
             <div class="gauche">
                 <dt>Num Pref</dt>
                 <dd>&nbsp;<?php echo $this->data['Deliberation']['num_pref'] ?></dd>
             </div>
             <div class="droite">
                 <dt>Date Séance</dt>
-                <ul>                     
+                <dd>
+                <ul class="fix">                     
 <?php
 foreach ($this->data['Seance'] as $seance) {
     echo '<li><b>&nbsp;' . $seance['Typeseance']['libelle'] . '</b> : ' . $this->Form2->ukToFrenchDateWithHour($seance['date']) . "</li>";
 }
-?>
+?></dd>
                 </ul>
             </div>
         </div>
