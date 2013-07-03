@@ -34,73 +34,88 @@ class Deliberation extends AppModel {
 			'conditions'   => '',
 			'order'        => '',
 			'dependent'    => false,
-			'foreignKey'   => 'num_pref'),
+			'foreignKey'   => 'num_pref'
+         * ),
 	*/
 			'Service'=>array(
 					'className'    => 'Service',
 					'conditions'   => '',
 					'order'        => '',
 					'dependent'    => false,
-					'foreignKey'   => 'service_id'),
+					'foreignKey'   => 'service_id'
+                            ),
 			'Theme'=>array(
 					'className'    => 'Theme',
 					'conditions'   => '',
 					'order'        => '',
 					'dependent'    => false,
-					'foreignKey'   => 'theme_id'),
+					'foreignKey'   => 'theme_id'
+                            ),
 			'Circuit'=>array(
 					'className'    => 'Cakeflow.Circuit',
 					'conditions'   => '',
 					'order'        => '',
 					'dependent'    => false,
-					'foreignKey'   => 'circuit_id'),
+					'foreignKey'   => 'circuit_id'
+                            ),
 			'Redacteur' =>array(
 					'className'    => 'User',
 					'conditions'   => '',
 					'order'        => '',
 					'dependent'    =>  true,
-					'foreignKey'   => 'redacteur_id'),
+					'foreignKey'   => 'redacteur_id'
+                            ),
 			'Rapporteur'=> array(
 					'className'    => 'Acteur',
 					'conditions'   => '',
 					'order'        => '',
 					'dependent'    =>  true,
-					'foreignKey'   => 'rapporteur_id'),
+					'foreignKey'   => 'rapporteur_id'
+                            ),
 			'Typeacte'=> array(
 					'className'    => 'Typeacte',
 					'conditions'   => '',
 					'order'        => '',
 					'dependent'    =>  true,
-					'foreignKey'   => 'typeacte_id')
+					'foreignKey'   => 'typeacte_id'
+                            )
 	);
 
 	var $hasMany = array(
 			'TdtMessage' => array (
 					'className'    => 'TdtMessage',
-					'foreignKey'   => 'delib_id'),
+					'foreignKey'   => 'delib_id'
+                            ),
 			'Historique' =>array(
 					'className'    => 'Historique',
-					'foreignKey'   => 'delib_id'),
+					'foreignKey'   => 'delib_id'
+                            ),
 			'Traitement'=>array(
 					'className'    => 'Cakeflow.Traitement',
-					'foreignKey'   => 'target_id'),
+					'foreignKey'   => 'target_id'
+                            ),
 			'Annex'=>array(	'className'    => 'Annex',
 					'foreignKey'   => 'foreign_key',
                                         'order'        => array('Annex.id' => 'ASC'),
-					'dependent'    => true),
+					'dependent'    => true
+                            ),
 			'Commentaire'=>array(
 					'className'    => 'Commentaire',
-					'foreignKey'   => 'delib_id'),
+					'foreignKey'   => 'delib_id'
+                            ),
 			'Listepresence'=>array(
 					'className'    => 'Listepresence',
-					'foreignKey'   => 'delib_id'),
+					'foreignKey'   => 'delib_id'
+                            ),
 			'Vote'=>array(
 					'className'    => 'Vote',
-					'foreignKey'   => 'delib_id'),
+					'foreignKey'   => 'delib_id'
+                            ),
 			'Infosup'=>array(
 					'dependent' => true,
 					'foreignKey' => 'foreign_key',
-					'conditions' => array('Infosup.model' => 'Deliberation')),
+					'conditions' => array('Infosup.model' => 'Deliberation')
+                            ),
 			'Multidelib'=>array(
 					'className'    => 'Deliberation',
 					'foreignKey'   => 'parent_id',
@@ -108,17 +123,33 @@ class Deliberation extends AppModel {
 					'dependent' => false),
 			'Deliberationseance' =>array(
 					'className'    => 'Deliberationseance',
-					'foreignKey'   => 'deliberation_id'),
+					'foreignKey'   => 'deliberation_id',
+                                        'order'      => 'Deliberationseance.position ASC'
+                         ),
                        'Deliberationtypeseance' =>array(
                                         'className'    => 'Deliberationtypeseance',
-                                        'foreignKey'   => 'deliberation_id'),
+                                        'foreignKey'   => 'deliberation_id'
+                           ),
 
 
                  );
 
 	var $hasAndBelongsToMany = array(
-	    'Seance',  
-            'Typeseance'
+            'Seance' => array( 'className' => 'Seance',
+			'joinTable' => 'deliberations_seances',
+			'foreignKey' => 'deliberation_id',
+			'associationForeignKey' => 'seance_id',
+			'unique' => true,
+			'conditions' => '',
+			'fields' => '',
+			'order' => 'DeliberationsSeance.position ASC',
+			'limit' => '',
+			'offset' => '',
+			'finderQuery' => '',
+			'deleteQuery' => '',
+			'insertQuery' => ''),
+            'Typeseance',
+            
 	);
 
 	/*
@@ -487,15 +518,17 @@ class Deliberation extends AppModel {
 
 		$dyn_path = "/files/generee/projet/".$delib['Deliberation']['id']."/";
 		$path = WEBROOT_PATH.$dyn_path;
-
 		// Itération sur les séances
 		if (!$exceptSeance) {
 			$delibseances = $this->getSeancesid($delib['Deliberation']['id']);
 			$oMainPart->addElement(new GDO_FieldType('nombre_seance', count($delibseances), 'text'));
                         $oMainPart->addElement(new GDO_FieldType('identifiant_projet', $delib['Deliberation']['id'],       'text'));
-			if (count($delibseances) == 1) {
+			var_dump(count($delibseances));
+                        if (count($delibseances) == 1) {
 				$this->Seance->makeBalise($delibseances[0], $oMainPart);
 				$position = $this->getPosition($delib['Deliberation']['id'], $delibseances[0]);
+                                
+                                debug($position);
 				$oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
 				$seances = new GDO_IterationType("Seances");
 				$seances->addPart($this->Seance->makeBalise($delibseances[0]));
@@ -805,11 +838,11 @@ class Deliberation extends AppModel {
 							'telmobile_acteur' => $acteur['Acteur']['telmobile'],
 							'note_acteur' => $acteur['Acteur']['note']);
                                 
-				if ( $acteur['Listepresence']['present'] == true && empty($acteur['Listepresence']['Suppleant'])){
+				if ( $acteur['Listepresence']['present'] == true && empty($acteur['Listepresence']['suppleant_id'])){
                                     $acteurs_presents[] = $aActeur;
 				}
-                                elseif(($acteur['Listepresence']['present'] == true) && !empty($acteur['Listepresence']['Suppleant'])) {
-                                    $aActeur=array('nom_acteur' => $acteur['Suppleant']['nom'],
+                                elseif(($acteur['Listepresence']['present'] == true) && !empty($acteur['Listepresence']['suppleant_id'])) {
+                                    $aSuppleant=array('nom_acteur' => $acteur['Suppleant']['nom'],
 							'prenom_acteur' => $acteur['Suppleant']['prenom'],
 							'salutation_acteur'=> $acteur['Suppleant']['salutation'],
 							'titre_acteur'=> $acteur['Suppleant']['titre'],
@@ -822,7 +855,7 @@ class Deliberation extends AppModel {
 							'telfixe_acteur' => $acteur['Suppleant']['telfixe'],
 							'telmobile_acteur' => $acteur['Suppleant']['telmobile'],
 							'note_acteur' => $acteur['Suppleant']['note']);
-                                    $acteurs_presents[]=$aActeur;
+                                    $acteurs_presents[]=$aSuppleant;
 				}
 				elseif(($acteur['Listepresence']['present'] == false) && !empty($acteur['Listepresence']['mandataire'])) {
                                     $acteur_mandataire = array(
@@ -839,7 +872,7 @@ class Deliberation extends AppModel {
                                                     'telfixe_mandate' => $acteur['Mandataire']['telfixe'],
                                                     'telmobile_mandate' => $acteur['Mandataire']['telmobile'],
                                                     'note_mandate' => $acteur['Mandataire']['note']);
-                                    $acteurs_remplaces[]=array_push($aActeur, $acteur_mandataire);
+                                    $acteurs_remplaces[]=Hash::merge($aActeur, $acteur_mandataire);
 				}
                                 elseif(($acteur['Listepresence']['present'] == false) && empty($acteur['Listepresence']['mandataire'])) {
                                     $acteurs_absents[] = $aActeur;
@@ -1114,7 +1147,7 @@ class Deliberation extends AppModel {
                     $newDelib = $this->create();
                     $newDelib['Deliberation']['parent_id'] = $parentId;
                 }
-                $newDelib['Deliberation']['titre'] = '';
+                //$newDelib['Deliberation']['titre'] = '';
                 $newDelib['Deliberation']['num_pref'] = '';
                 $newDelib['Deliberation']['objet'] = $objet_projet;
                 $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
