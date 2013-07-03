@@ -3331,9 +3331,10 @@ class DeliberationsController extends AppController {
                 $action = 'VF';
             }
 
+            $this->Traitement->execute($action, $user_connecte, $delib_id, $options);
             $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a  été envoyé à $destinataire $action_com");
             $this->_notifier($delib_id, $this->data['Insert']['user_id'], 'traiter');
-            $this->Traitement->execute($action, $user_connecte, $delib_id, $options);
+            
             $this->redirect('/');
         }
     }
