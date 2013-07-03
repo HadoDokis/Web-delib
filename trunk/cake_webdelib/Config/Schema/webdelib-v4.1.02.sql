@@ -2040,7 +2040,7 @@ SELECT pg_catalog.setval('seances_id_seq', 1, false);
 --
 
 COPY sequences (id, nom, commentaire, num_sequence, created, modified) FROM stdin;
-1	Conseil Municipal		1	2012-11-16 14:59:42	2012-11-16 14:59:42
+1	Conseil Municipal		0	2012-11-16 14:59:42	2012-11-16 14:59:42
 \.
 
 

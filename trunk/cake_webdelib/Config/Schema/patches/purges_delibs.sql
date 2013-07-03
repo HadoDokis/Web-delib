@@ -11,4 +11,4 @@ TRUNCATE TABLE wkf_visas;
 TRUNCATE TABLE commentaires;
 TRUNCATE TABLE listepresences;
 TRUNCATE TABLE historiques;
-UPDATE sequences SET num_sequence = '1' WHERE sequences.id =1 ;
+UPDATE sequences SET num_sequence = '0' WHERE sequences.id =1 ;
