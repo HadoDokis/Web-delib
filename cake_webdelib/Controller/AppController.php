@@ -128,8 +128,14 @@ class AppController extends Controller {
 					($this->here != '/deliberations/listerPresences')) {
                                 $pos =  strpos(Router::url( null, true ), 'Ajax');
                                 if ($pos === false) {
-				    $this->Session->write( 'user.User.lasturl', $this->referer() );
+                                    if(substr( $this->referer(), 0, 4) != 'http' )
+                                        $url = 'http://'. $this->referer();
+                                    else
+                                         $url =  $this->referer();
+
+                                    $this->Session->write( 'user.User.lasturl', $url );
                                 }
+
                        }
 		}
 	}
