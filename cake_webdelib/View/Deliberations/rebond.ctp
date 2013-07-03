@@ -8,18 +8,19 @@
     echo $this->Form->input('user_id', array('label'=>'Destinataire', 'title'=>"A qui voulez vous envoyer le projet ? : "));
     echo '<br/>';
     if ($typeEtape == CAKEFLOW_COLLABORATIF) {
-        $disable = 'disabled';
+        echo ('<div style="width: 200px">');
         echo $this->Form->hidden('retour', array('value'=>1));
-        echo $this->Form->input('retour', array('label'=>'Aller-retour :', 'type'=>'radio' ,'disabled'=>'disabled', 'options' => $options));
-        echo '<br/>';
-        echo $this->Html->div('profil', 'Note : pour les étapes collaboratives (ET), l\'aller-retour est obligatoire.');
+        echo $this->Form->radio('option', $options,   array_merge($attributes, array('readonly'=>'readonly')));
+        echo ('</div>');
+        echo '<br class="clear:both"/>'; echo '<br />';
+        echo $this->Html->para('profil', 'Note : pour les étapes collaboratives (ET), l\'aller-retour est obligatoire.',array('style'=>'float: left;text-align: left;'));
     } else {
         echo ('<div style="width: 200px">');
         echo $this->Form->radio('option', $options, $attributes);
         echo ('</div>');
     }
 ?>
-<br/> <br/> <br/> <br />
+<br/> <br/> <br/>
 <?php
         echo '<div class="submit btn-group">';
         echo $this->Html->link('<i class=" icon-circle-arrow-left"></i> Annuler', array('action' => 'traiter', $delib_id), array('class' => 'btn', 'name' => 'Annuler', 'escape' => false));
