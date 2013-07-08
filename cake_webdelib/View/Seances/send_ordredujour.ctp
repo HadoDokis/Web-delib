@@ -1,7 +1,7 @@
 <div class="deliberations">
 <?php echo $this->Html->script('utils.js'); ?>
 
-<h2>Envoi de l'odre du jour</h2>
+<h2>Envoi de l'ordre du jour</h2>
 
 <?php echo $this->Form->create( 'Seance',
                                 array( 'type'=>'file',
