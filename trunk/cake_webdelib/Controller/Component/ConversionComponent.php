@@ -22,6 +22,7 @@ function convertirFichier($fileName, $format) {
 	}
 
 	switch($convertorType) {
+            //OBSOLETE
 	    case 'UNOCONV' :
 		// lecture fichier exécutable de unoconv
 		$convertorExec = Configure::read('CONVERSION_EXEC');
@@ -60,6 +61,70 @@ function convertirFichier($fileName, $format) {
                 $resp = $cli->send($msg);
                 if (!empty($resp->xv->me['string']))
                     return (base64_decode($resp->xv->me['string']));
+                else
+                    return false;
+           	break;       
+	}
+        return false;
+}
+
+/**
+ * conversion de format du fichie $fileUri vers le format $format
+ * @return array tableau de réponse composé comme suit :
+ * 	'resultat' => boolean
+ *  'info' => string
+ * 	'convertedFileUri' => nom et chemin du fichier converti
+ */
+function convertirFlux($content, $format) {
+	// initialisations
+	$ret = array();
+	$result = array();
+	$convertorType = Configure::read('CONVERSION_TYPE');
+
+	if (empty($convertorType)) {
+		$ret['resultat'] = false;
+		$ret['info'] = __('Type du programme de conversion non déclaré dans le fichier de configuration de Webdelib', true);
+		return $ret;
+	}
+
+	switch($convertorType) {
+	    case 'UNOCONV' :
+		// lecture fichier exécutable de unoconv
+		$convertorExec = Configure::read('CONVERSION_EXEC');
+		if (empty($convertorExec)) {
+		    return false;
+		}
+		// exécution
+                $fileName = escapeshellarg($fileName);
+		$cmd = "LANG=fr_FR.UTF-8; $convertorExec --stdout -f $format $fileName";
+		$result = shell_exec($cmd);
+	        if (strlen($result) < 10) {
+                    return false;
+	        } else {
+                    return ($result);
+	        }
+		break;
+	    case 'CLOUDOOO' : 
+                require_once 'XML/RPC.php';
+                Configure::write('debug', 0);
+		
+                if (!isset($format) || $format == 'pdf') {
+                     $content_format = 'odt';
+                 }
+ 
+                $params = array( new XML_RPC_Value($content, 'string'),
+                                 new XML_RPC_Value($content_format,    'string'),
+                                 new XML_RPC_Value($format,    'string'),
+                                 new XML_RPC_Value(false,      'boolean'),
+				 new XML_RPC_Value(true,       'boolean'));
+
+                $url = Configure::read('CLOUDOOO_HOST').":".Configure::read('CLOUDOOO_PORT');
+               
+                $msg = new XML_RPC_Message('convertFile', $params);
+                $cli = new XML_RPC_Client('/', $url);
+                $resp = $cli->send($msg);
+                if (!empty($resp->xv->me['string']))
+                    return ($resp->xv->me['string']);
                 else
                     return false;
            	break;       
