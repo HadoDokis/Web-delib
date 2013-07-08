@@ -205,12 +205,10 @@ class Seance extends AppModel {
 		$this->Deliberationseance = new Deliberationseance();
 		$deliberations = $this->Deliberationseance->find('count', array('conditions' => array('Seance.id' => $seance_id,
 				'Deliberation.etat !='=> -1) ));
-                var_dump($deliberations);
 		return($deliberations+1);
 	}
 
 	function reOrdonne($delib_id, $seances_selectionnees) {
-                
 		if (is_int($seances_selectionnees)) {
 			$seance_id = $seances_selectionnees;
 			unset($seances_selectionnees);
@@ -234,6 +232,7 @@ class Seance extends AppModel {
 		$seances_a_retirer = array_diff($seances_enregistrees, $seances_selectionnees);
                 
 		foreach($seances_a_retirer as $key => $seance_id) {
+                    $position = 1;
                     $jointure = $this->Deliberationseance->find('first', array('conditions' => array( 'Seance.id'            => $seance_id,
                                     'Deliberation.id'      => $delib_id,
                                     'Deliberation.etat !=' => -1),
@@ -248,7 +247,8 @@ class Seance extends AppModel {
                     // pour toutes les délibs
                     foreach($delibs as $delib) {
                             if ($position != $delib['Deliberationseance']['position'])
-                                    $this->Deliberationseance->save(array( 'id'      => $delib['Deliberationseance']['id']),
+                                    $this->Deliberationseance->save(array( 'id'      => $delib['Deliberationseance']['id'],
+                                            'position' => $position++),
                                                     array( 'validate' => false,
                                                                     'callbacks' => false));
                     }
@@ -278,21 +278,6 @@ class Seance extends AppModel {
 		    foreach ($multidelibs as $multidelib)
 			$this->reOrdonne($multidelib['Deliberation']['id'], $seances_selectionnees);
                 
-                
-                //Actualisation de ordre suivant la date de séance
-                $delibs = $this->Deliberationseance->find('all', array('conditions' => array('Deliberation.id' => $delib_id),
-				'fields'     => array('Seance.id','Deliberationseance.id'),
-                                'order'      => array( 'Seance.date ASC' )));
-                
-                $position = 1;
-		foreach ($delibs as $delib)
-		{
-                    $Deliberationseance=array();
-                    $this->Deliberationseance->create();
-                    $Deliberationseance['Deliberationseance']['id'] = $delib['Deliberationseance']['id'];
-                    $Deliberationseance['Deliberationseance']['position'] = $position++;
-                    $this->Deliberationseance->save($Deliberationseance['Deliberationseance']);
-		}
 	}
 
 	function getDate($seance_id) {
@@ -412,17 +397,21 @@ class Seance extends AppModel {
                                                   array('conditions' => array('Infosup.foreign_key' => $seance['Seance']['id'],
                                                                               'Infosup.model'        => 'Seance'),
                                                         'recursive'   => -1));
+                
                 if (isset($infosups) && !empty($infosups))  {
                     foreach($infosups as  $champs) {
-                        $oDevPart->addElement($this->Infosup->addField($champs['Infosup'], $seance_id, 'Seance'));
+                        $infosup=$this->Infosup->addField($champs['Infosup'], $seance_id, 'Seance');
+                        if(!empty($infosup))
+                            $oDevPart->addElement($infosup);
                     }
                 }
-                else {
+                /*else {
                     $defs = $this->Infosup->Infosupdef->find('all', array('conditions'=>array('model' => 'Seance'), 'recursive' => -1));
                     foreach($defs as $def) {
-                        $oDevPart->addElement(new GDO_FieldType($def['Infosupdef']['code'],  utf8_encode(' '), 'text')) ;
+                        
+                        $oDevPart->addElement(new GDO_FieldType($def['Infosupdef']['code'],  '', 'text')) ;
                     }
-                }
+                }*/
 		if ($include_projets) {
 			if (isset($seance['Deliberation']) && !empty($seance['Deliberation'])) {
 				$blocProjets = new GDO_IterationType("Projets");
