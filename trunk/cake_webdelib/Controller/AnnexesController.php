@@ -24,6 +24,11 @@ class AnnexesController extends AppController {
                     $filename = $annexe['Annex']['filename'];
                     $type     = 'application/vnd.oasis.opendocument.text';
                 }
+                elseif ($type == 'pdf') {
+		    $content  = $annexe['Annex']['data_pdf'];
+                    $filename = $annexe['Annex']['filename_pdf'];
+                    $type     = 'application/pdf';
+                }
                 elseif ($DOC_TYPE[$annexe['Annex']['filetype']]['extention']!='pdf') {
 		    $content  = $annexe['Annex']['data'];
                     $filename = $annexe['Annex']['filename'];
