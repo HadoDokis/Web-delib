@@ -1,5 +1,5 @@
 <div id="vue_cadre">
-<h3>Fiche Types de s&eacute;ance</h3>
+<h3>Fiche Type de s&eacute;ance</h3>
 
 <dl>
 	<div class="demi">
@@ -18,13 +18,13 @@
 	</div>
 
 	<div class="demi">
-		<dt>Modèle de document finale</dt>
+		<dt>Modèle de document final</dt>
 		<dd>&nbsp;<?php echo $typeacte['Modeldeliberation']['modele']?></dd>
 	</div>
 	<div class="spacer"></div>
 
 	<div class="demi">
-		<dt>Date de c&eacute;ration</dt>
+		<dt>Date de cr&eacute;ation</dt>
 		<dd>&nbsp;<?php echo $typeacte['Typeacte']['created']?></dd>
 	</div>
 	<div class="demi">

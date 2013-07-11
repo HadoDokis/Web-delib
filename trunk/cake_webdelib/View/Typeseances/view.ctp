@@ -1,5 +1,5 @@
 <div id="vue_cadre">
-<h3>Fiche Types de s&eacute;ance</h3>
+<h3>Fiche Type de s&eacute;ance</h3>
 
 <dl>
 	<div class="demi">
@@ -22,7 +22,7 @@
 	<div class="spacer"></div>
 
 	<div class="demi">
-		<dt>Model de la convocation</dt>
+		<dt>Mod&eagrave;le de la convocation</dt>
 		<dd>&nbsp;<?php echo $typeseance['Modelconvocation']['modele']; ?></dd>
 	</div>
 	<div class="demi">
@@ -42,7 +42,7 @@
 	<div class="spacer"></div>
 
 	<div class="demi">
-		<dt>Date de c&eacute;ration</dt>
+		<dt>Date de cr&eacute;ation</dt>
 		<dd>&nbsp;<?php echo $typeseance['Typeseance']['created']?></dd>
 	</div>
 	<div class="demi">
