@@ -101,7 +101,7 @@ class SeancesController extends AppController {
 		$sortie = false;
 		$date = '';
 		$path_seance= WWW_ROOT.'files'.DS.'generee'.DS.'seance'.DS.$id.DS;
-		if (empty($this->data)) {
+		if (empty($this->data)) { // not is post
 			$this->Seance->Behaviors->attach('Containable');
 			$this->request->data = $this->Seance->find('first', array( 'contain'=>array('Infosup'),
 					'conditions'=>array('Seance.id'=> $id)));
@@ -125,9 +125,14 @@ class SeancesController extends AppController {
 			if (count(explode('/',$date))!=3) {
 				$this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type'=>'erreur'));
 			} else {
+                                $success = true;
+                                $this->Seance->begin();
+
 				$this->request->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($date);
 				$this->request->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
-				if ($this->Seance->save($this->data)) {
+                                
+                                $success = $this->Seance->save($this->data) && $success;
+				if ( $success ) {
 					// sauvegarde des fichiers odt car possibilité modifiés en webdav sur le serveur
 					$infossupDefs = $this->Infosupdef->find('all', array(
 							'recursive' => -1,
@@ -147,18 +152,29 @@ class SeancesController extends AppController {
 							if ($stat > 0) {
 								$infosup['Infosup']['content'] = file_get_contents($odtFileUri);
 								$infosup['Infosup']['file_size'] = $stat['size'];
-								$this->Infosup->save($infosup);
+								$success = $this->Infosup->save($infosup) && $success;
 							}
 						}
 					}
 					// sauvegarde des informations supplémentaires
 					if (array_key_exists('Infosup', $this->data))
-						$this->Infosup->saveCompacted($this->data['Infosup'], $id, 'Seance');
-					$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
-					$sortie = true;
-				} else {
-					$this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
+						$success = $this->Infosup->saveCompacted($this->data['Infosup'], $id, 'Seance') && $success;
+                                        //exit; // FIXME
 				}
+                                
+                                if( $success ) {
+                                    $this->Seance->commit();
+                                    $this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
+                                    $sortie = true;
+                                } else {
+                                    $this->Seance->rollback();
+                                    $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
+                                    $errors_Infosup = $this->Infosup->invalidFields();	
+                                    $this->set('errors_Infosup', $errors_Infosup);
+                                    $errors_Seance = $this->Seance->invalidFields();
+                                    $this->set('errors_Seance', $errors_Seance);
+                                    
+                                }
 			}
 		}
 		if ($sortie)
@@ -1426,7 +1442,7 @@ class SeancesController extends AppController {
             $nbActeurs = count($acteursConvoques);
             foreach ($acteursConvoques as $acteur) {
                 $cpt++;
-                $this->Progress->at($cpt*(100/$nbActeurs), "Convocation de : ".$acteur['Acteur']['nom']." ".$acteur['Acteur']['prenom']);
+                $this->Progress->at($cpt*(100/$nbActeurs), 'G&eacute;&eacute;ration de l\'acteur : '.$acteur['Acteur']['nom']." ".$acteur['Acteur']['prenom']);
                 $oMainPart->addElement(new GDO_FieldType("nom_acteur", ($acteur['Acteur']['nom']), "text"));
                 $oMainPart->addElement(new GDO_FieldType("prenom_acteur", ($acteur['Acteur']['prenom']), "text"));
                 $oMainPart->addElement(new GDO_FieldType("salutation_acteur",($acteur['Acteur']['salutation']), "text"));

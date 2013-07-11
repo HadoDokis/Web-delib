@@ -25,29 +25,24 @@ $(document).ready(function() {
 
 
 <?php
-	if($this->Html->value('Deliberation.id')) {
-		echo "<h1>Modification du projet : ".$this->Html->value('Deliberation.id')."</h1>";
-		echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$this->Html->value('Deliberation.id'), 'type'=>'file', 'name'=>'Deliberation'));
-	} else {
-		echo "<h1>Ajout d'un projet</h1>";
-		echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type'=>'file', 'name'=>'Deliberation'));
-	}
+echo "<h1>Modification du projet : ".$this->Html->value('Deliberation.id')."</h1>";
+echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$this->Html->value('Deliberation.id'), 'type'=>'file', 'name'=>'Deliberation'));
 ?>
 
 <div class='onglet'>
 	<a href="#" id="emptylink" alt=""></a>
-	<a href="javascript:afficheOnglet(1)" id='lienTab1' class="ongletCourant">Informations principales</a>
-	<a href="javascript:afficheOnglet(2)" id='lienTab2'>Textes</a>
-	<a href="javascript:afficheOnglet(3)" id='lienTab3'>Annexe(s)</a>
+        <a href="javascript:afficheOnglet(1)" id='lienTab1' <?php echo !isset($lienTab) || (isset($lienTab) && ($lienTab==1 || empty($lienTab)))?'class="ongletCourant"':''?>>Informations principales</a>
+	<a href="javascript:afficheOnglet(2)" id='lienTab2' <?php echo isset($lienTab) &&  $lienTab==2?'class="ongletCourant"':''?>>Textes</a>
+	<a href="javascript:afficheOnglet(3)" id='lienTab3' <?php echo isset($lienTab) &&  $lienTab==3?'class="ongletCourant"':''?>>Annexe(s)</a>
 <?php if (!empty($infosupdefs)): ?>
-	<a href="javascript:afficheOnglet(4)" id='lienTab4'>Informations suppl&eacute;mentaires</a>
+	<a href="javascript:afficheOnglet(4)" id='lienTab4' <?php echo isset($lienTab) &&  $lienTab==4?'class="ongletCourant"':''?>>Informations suppl&eacute;mentaires</a>
 <?php endif; ?>
 <?php if (Configure::read('DELIBERATIONS_MULTIPLES')): ?>
-	<a href="javascript:afficheOnglet(5)" id='lienTab5' style="display: none">D&eacute;lib&eacute;rations rattach&eacute;es</a>
+	<a href="javascript:afficheOnglet(5)" id='lienTab5' style="display: none" <?php echo isset($lienTab) && $lienTab==5?'class="ongletCourant"':''?>>D&eacute;lib&eacute;rations rattach&eacute;es</a>
 <?php endif; ?>
 </div>
 
-<div id="tab1">
+<div id="tab1"  <?php echo isset($lienTab) && $lienTab!=1?'style="display:none"':''?>>
         <fieldset id='info'>
 	<div class='demi'>
 		<?php echo '<b><u>Rédacteur</u></b> : <i>'.$this->Html->value('Redacteur.prenom').' '.$this->Html->value('Redacteur.nom').'</i>';?>
@@ -77,21 +72,33 @@ $(document).ready(function() {
 
         <div id='selectTypeseances' class='gauche'>
         <?php
+        /*debug($typeseances);
+        debug($typeseances_selected);*/
+        
           if (!empty( $typeseances))
              echo $this->Form->input('Typeseance', array('options'  => $typeseances,
+                                                        'type'=>'select',
                                                       'label'    => 'Types de séance',
+                                                     'autocomplete' => 'off',
                                                       'size'     => 10,
                                                       'onchange' => "updateDatesSeances(this);",
-                                                      'multiple' => true));
+                                                      'multiple' => true,
+                                                      'selected' =>isset($typeseances_selected)?$typeseances_selected:''));
         ?>
         </div>
         <div id='selectDatesSeances' class='droite'>
+            
         <?php
+      /* debug($seances);
+        debug($seances_selected);*/
           if (!empty($seances))
                 echo $this->Form->input('Seance', array( 'options'  => $seances,
+                                                        'type'=>'select',
                                                          'label'    => 'Dates de séance',
+                                                        'autocomplete' => 'off',
                                                          'size'     => 10,
-                                                         'multiple' => true));
+                                                         'multiple' => true,
+                                                        'selected' =>isset($seances_selected)?$seances_selected:''));
         ?>  
         </div>
 
@@ -147,7 +154,7 @@ $(document).ready(function() {
 	<div class='spacer'></div>
 </div>
 
-<div id="tab2" style="display: none;">
+<div id="tab2" <?php echo isset($lienTab) && $lienTab==2?'':'style="display: none;"'?>>
     <?php echo $this->element('texte', array('key' => 'texte_projet'));?>
 	<div class='spacer'></div>
 
@@ -166,7 +173,7 @@ $(document).ready(function() {
 	<div class='spacer'></div>
 </div>
 
-<div id="tab3" style="display: none;">
+<div id="tab3" <?php echo isset($lienTab) && $lienTab==3?'':'style="display: none;"'?>>
     <div id='DelibOngleAnnexes'>
     <div id="DelibPrincipaleAnnexes">
 	<?php
@@ -190,7 +197,7 @@ $(document).ready(function() {
 </div>
 
 <?php if (!empty($infosupdefs)): ?>
-<div id="tab4" style="display: none;">
+<div id="tab4" <?php echo isset($lienTab) && $lienTab==4?'':'style="display: none;"'?>">
 	<?php
 	foreach($infosupdefs as $infosupdef) {
 		// Amélioration 4.1 : on ne peut modifier une infosup qu'en fonction du profil
@@ -246,7 +253,9 @@ $(document).ready(function() {
 					echo '</span>';
 				}
 			} elseif ($infosupdef['Infosupdef']['type'] == 'odtFile') {
-				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
+				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']])
+                                    || empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]['tmp_name'])
+                                    || isset($errors_Infosup[$infosupdef['Infosupdef']['code']]))
 					echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'readonly'=> $disabled));
 				else {
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
@@ -255,9 +264,11 @@ $(document).ready(function() {
 						echo '['.$this->Html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'],  'readonly'=> $disabled)).']';
 					} else {
 						$name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']] ;
-						if (!$disabled)
+						if (!$disabled){
 						    $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name"; 
-						else 
+                                                    echo $this->Form->hidden($fieldName);
+                                                }
+                                              else 
                                                     $url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name";
 						echo "<a href='$url'>$name</a> ";
 					}
@@ -283,7 +294,7 @@ $(document).ready(function() {
 <?php endif; ?>
 
 <?php if (Configure::read('DELIBERATIONS_MULTIPLES')) :?> 
-<div id="tab5" style="display: none;">
+<div id="tab5" <?php echo isset($lienTab) && $lienTab==5?'':'style="display: none;"'?>>
     <?php echo $this->element('multidelib');?>
 </div>
 <?php endif; ?>
@@ -293,14 +304,10 @@ $(document).ready(function() {
 <div class="submit">
 <?php 
 echo $this->Form->hidden('Deliberation.id');
-if ($this->Html->value('Deliberation.id'))
-        $onclick = "javascript:return checkForm(form, ".$this->Html->value('Deliberation.id').")";
-else
-        $onclick = "javascript:return checkForm(form, 0)";
 
 echo $this->Html->tag("div", null, array("class" => "btn-group"));
 echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Annuler', array('action' => 'mesProjetsRedaction'), array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name'=>'Annuler'));
-echo $this->Form->button('<i class="icon-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le circuit de traitement', 'onclick'=>$onclick));
+echo $this->Form->button('<i class="icon-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le projet'));
 echo $this->Html->tag('/div', null);
 ?>
 

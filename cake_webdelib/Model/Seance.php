@@ -222,10 +222,12 @@ class Seance extends AppModel {
 		App::import('Model', 'Deliberationseance');
 		$this->Deliberationseance = new Deliberationseance();
 
-		$delibs = $this->Deliberationseance->find('all', array('conditions' => array('Deliberation.id' => $delib_id),
-				'fields'     => array('Seance.id'),
+		$delibs = $this->Deliberationseance->find('all', array(
+                                'conditions' => array('Deliberation.id' => $delib_id),
+				'fields'     => array('Seance.id',
+                                    'Deliberationseance.deliberation_id','Deliberationseance.id',
+                                    'Deliberationseance.position','Deliberationseance.seance_id'),
                                 'order'      => array( 'Deliberationseance.position ASC' )));
-                
 		foreach ($delibs as $delib)
 			$seances_enregistrees[] = $delib['Seance']['id'];
                 
@@ -244,10 +246,12 @@ class Seance extends AppModel {
                                     'fields'     => array( 'Deliberationseance.id',
                                                     'Deliberationseance.position' ),
                                     'order'      => array( 'Deliberationseance.position ASC' )));
-                    // pour toutes les délibs
+                    // pour toutes les délibsd
                     foreach($delibs as $delib) {
                             if ($position != $delib['Deliberationseance']['position'])
                                     $this->Deliberationseance->save(array( 'id'      => $delib['Deliberationseance']['id'],
+                                            'deliberation_id'      => $delib['Deliberationseance']['deliberation_id'],
+                                            'seance_id'      => $delib['Deliberationseance']['seance_id'],
                                             'position' => $position++),
                                                     array( 'validate' => false,
                                                                     'callbacks' => false));

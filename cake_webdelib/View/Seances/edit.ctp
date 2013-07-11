@@ -55,7 +55,7 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 	    echo "<div class='required'>";
 	            echo $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'], array('name'=>'label'.$infosupdef['Infosupdef']['code']));
 	            if ($infosupdef['Infosupdef']['type'] == 'text') {
-	                    echo $this->Form->input($fieldName, array('label'=>'', 'size'=>$infosupdef['Infosupdef']['taille'], 'type' => 'textarea', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+	                    echo $this->Form->input($fieldName, array('label'=>'', 'type' => 'textarea', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
 	                    echo $this->Form->input($fieldName, array('label'=>'', 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
@@ -81,7 +81,9 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 	                            echo '</span>';
 	                    }
 	       } elseif ($infosupdef['Infosupdef']['type'] == 'odtFile') {
-	                    if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
+	                    if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]) 
+                                    || empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]['tmp_name'])
+                                    || isset($errors_Infosup[$infosupdef['Infosupdef']['code']]))
 	                            echo  $this->Form->input($fieldName, array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	                    else {
 	                            echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
@@ -92,6 +94,7 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 	                                    $name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']] ;
 	                                    $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/seance/".$this->data['Seance']['id']."/$name";
 	                                    echo "<a href='$url'>$name</a> ";
+                                            echo $this->Form->hidden($fieldName);
 	                            }
 	                            echo '&nbsp;&nbsp;';
 	                            echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');

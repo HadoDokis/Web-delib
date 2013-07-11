@@ -139,7 +139,6 @@ class DroitsController extends AppController
 			if (strpos($controllerFile, 'Controller.php')>0)
 			{
 				$controllerName = Inflector::camelize(str_replace('Controller.php','',$controllerFile));
-				debug($controllerName);
 				$listeActions = $this->Droits->listeActionsControleur($controllerName);
 				// Supprime les actions déjà liées au menu
 				foreach($listeActions as $key => $action) {

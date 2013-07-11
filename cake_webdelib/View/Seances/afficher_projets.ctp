@@ -62,7 +62,7 @@ echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 <?php 
     $this->Html2->boutonRetour("listerFuturesSeances");
     if ($is_deliberante) 
-        echo $this->Html->link('Reporter l\'ordre du jour', "/seances/reportePositionsSeanceDeliberante/$seance_id", array('class'=>'link_annuler', 'name'=>'Retour'));
+        echo $this->Html->link('Reporter l\'ordre du jour', "/seances/reportePositionsSeanceDeliberante/$seance_id", array('class'=>'btn', 'name'=>'Retour'));
 ?>
 </div>
 
