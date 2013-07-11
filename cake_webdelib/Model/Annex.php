@@ -144,7 +144,7 @@ class Annex extends AppModel {
             $pos = strpos($annex['Annex']['filetype'], 'vnd.oasis.opendocument');
             if ($pos === true)
                 return array( 'type'=>'pdf',
-                                'data'=>$annex['Annex']['data']);
+                                'data'=>$annex['Annex']['data_pdf']);
             
             return array( 'type'=>$DOC_TYPE[$annex['Annex']['filetype']]['extention'],
                                 'data'=>$annex['Annex']['data']);

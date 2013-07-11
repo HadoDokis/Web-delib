@@ -41,6 +41,10 @@ if (isset($annexes)) {
                                             echo $this->Html->tag('span', $this->Html->link($annexe['filename_pdf'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
                                             echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu odt)', '/annexes/download/'.$annexe['id'].'/odt', array('title'=>'Télécharger le fichier')));
                                         }
+                                        elseif ($annexe['filetype']=='application/vnd.oasis.opendocument.text'){
+                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
+                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/pdf', array('title'=>'Télécharger le fichier')));
+                                        }
                                         else
                                         {
                                         // lien de téléchargement de l'annexe
