@@ -1904,7 +1904,7 @@ class DeliberationsController extends AppController {
     }
 
     function _notifier($delib_id, $user_id, $type) {
-        if ($this->User->exist($user_id)){
+        if ($this->User->exists($user_id)){
             $user = $this->User->read(null, $user_id);
 
             // Si l'utilisateur accepte les mails
