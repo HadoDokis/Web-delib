@@ -31,7 +31,7 @@ Configure::write("SMTP_CLIENT", 'smtp_helo_hostname');
 
 /* Configuration GEDOOo */
 Configure::write('USE_GEDOOO', true);
-Configure::write("GEDOOO_WSDL", "http://gedooo.services.adullact.org:8082/ODFgedooo/OfficeService?wsdl");
+Configure::write('GEDOOO_WSDL', 'http://gedooo.services.adullact.org:8082/ODFgedooo/OfficeService?wsdl');
 
 /* Configuration S2LOW */
 Configure::write('USE_S2LOW', false);
@@ -63,7 +63,7 @@ Configure::write('USE_PARAPH', false);
 Configure::write('WSACTION', 'https://x.x.x.x/alfresco');
 Configure::write('WSTO', 'https://x.x.x.x/ws-iparapheur');
 Configure::write('CACERT',     Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/AC.pem');
-Configure::write('CLIENTCERT', Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/iparapheur-client_AC.pem');
+Configure::write('CLIENTCERT', Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/cert.pem');
 Configure::write('PASSPHRASE', 'passphrase');
 Configure::write('HTTPAUTH', 'login');
 Configure::write('HTTPPASSWD', 'paswwod');
@@ -91,8 +91,6 @@ Configure::write('GED_PASSWD', 'password');
 Configure::write('GED_REPO', '/Sites/Web-delib');
 
 /* Configuration pour la conversion de format des documents */
-//  Configure::write('CONVERSION_TYPE' , 'UNOCONV');
-//  Configure::write('CONVERSION_EXEC' , '/usr/bin/unoconv');
 Configure::write('CONVERSION_TYPE', 'CLOUDOOO');
 Configure::write('CLOUDOOO_HOST', '127.0.0.1');
 Configure::write('CLOUDOOO_PORT', '8011');
