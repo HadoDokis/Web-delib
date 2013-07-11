@@ -4,6 +4,7 @@
 BEGIN;
 
 ALTER TABLE deliberations ADD COLUMN id_parapheur varchar(50);
+ALTER TABLE deliberations ALTER COLUMN titre DROP NOT NULL;
 
 ALTER TABLE deliberations_seances ADD COLUMN commentaire character varying(1000) NULL;
 

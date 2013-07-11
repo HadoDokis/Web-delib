@@ -101,6 +101,7 @@ CREATE TABLE acteurs (
 
 CREATE TABLE acteurs_seances (
     id integer NOT NULL,
+    model varchar(20),
     acteur_id integer NOT NULL,
     seance_id integer NOT NULL,
     mail_id integer NOT NULL,
@@ -463,7 +464,7 @@ CREATE TABLE deliberations (
     parent_id integer,
     objet character varying(1000) NOT NULL,
     objet_delib character varying(1000) NOT NULL,
-    titre character varying(1000) NOT NULL,
+    titre character varying(1000),
     num_delib character varying(15),
     num_pref character varying(100) NOT NULL,
     pastell_id character varying(10),
@@ -510,7 +511,8 @@ CREATE TABLE deliberations (
     commission_type character varying(255),
     commission_name character varying(255),
     date_acte timestamp without time zone,
-    date_envoi_signature timestamp without time zone
+    date_envoi_signature timestamp without time zone,
+    id_parapheur varchar(50)
 );
 
 
@@ -737,8 +739,9 @@ CREATE TABLE listepresences (
     id integer DEFAULT nextval('listepresences_id_seq'::regclass) NOT NULL,
     delib_id integer NOT NULL,
     acteur_id integer NOT NULL,
+    suppleant_id integer,
     present boolean NOT NULL,
-    mandataire integer DEFAULT 0 NOT NULL
+    mandataire integer,
 );
 
 
