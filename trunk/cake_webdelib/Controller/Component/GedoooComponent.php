@@ -1,4 +1,6 @@
 <?php
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
 
 class GedoooComponent extends Component {
 
@@ -14,21 +16,19 @@ class GedoooComponent extends Component {
 	 * la fonction va retourner le path ou gedooo pourra aller chercher le fichier
 	 */
 	function createFile ($path, $name, $content) {
-	    $this->checkPath($path);
-            if (file_exists($path.$name))
-               @unlink($path.$name);
-
-	    if (!$handle = fopen($path.$name, 'a'))
-                die("Impossible d'ouvrir le fichier ($path"."$name)");
-
-            if (fwrite($handle, $content) === FALSE)
-                die ("Impossible d'écrire dans le fichier ($path"."$name)");
-
-            fclose($handle);
+            
+            $file = new File($path.$name, false, 0644);
+            if($file->exists())
+                $file->delete();
+            
+            $file->create();
+            $file->write($content);
+            $file->close();
+            
             return ($path.$name);
         }
 
-    /**fonction sendFiles
+    /**fonction sendFiles ATTENTION : Cette fonction est obsolète
 	 * $fileModel va indiquer ou récupérer le fichier de modèle
 	 *     exemple : '/var/www/tmp/Jean.xml'
 	 * $fileDatava indiquer ou récupérer le fichier de données
@@ -72,11 +72,13 @@ class GedoooComponent extends Component {
             else 
 	         $dyn_path = "/files/generee/modeles/$seance_id/";
 	    $path = WEBROOT_PATH.$dyn_path;
-            if (!$this->checkPath($path))
-                die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-            $fp = fopen($path.$name, 'w');
-            fwrite($fp, $return);
-	    fclose($fp);
+            $folder = new Folder($path,true,0755);
+            $errors=$folder->errors();
+            if (!empty($errors) && is_array($errors))
+                die("Webdelib ne peut pas ecrire dans le repertoire : ".@implode(',',$folder->errors));
+            
+            $this->createFile ($path, $name, $return);
+            
 	    $zip = new ZipArchive;
 	    if ($zip->open($path.'documents.zip', ZipArchive::CREATE) === TRUE) {
 	        $zip->addFile($path.$name, $name);
@@ -84,19 +86,6 @@ class GedoooComponent extends Component {
 	  } else {
 	      echo 'Impossible d\'ajouter le fichier dans l\'archive';
 	  }
-	}
-    }
-
-    function checkPath($path) {
-	if (!is_dir($path))
-	   return (mkdir($path, 0770, true));
-	else {
-            // on nettoie ce qu'il y a dedans pour ne pas encombrer le serveur
-	    $dh = opendir($path);
-	    while (false !== ($document = readdir($dh)))
-                if (is_file($document))
-		    unlink($document);
-            return true;
 	}
     }
 

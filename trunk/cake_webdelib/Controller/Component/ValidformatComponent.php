@@ -2,7 +2,7 @@
 class ValidformatComponent extends Component {
 
 /**
- *
+ * NON UTILISE PAR WEBDELIB
  */
 function check($file, $format) {
     $tmp_name = $file['tmp_name'];
