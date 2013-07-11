@@ -417,7 +417,7 @@ class ModelsController extends AppController {
 			//*****************************************
 			// Lancement de la fusion
 			//*****************************************
-				Configure::write('debug', 1);
+				Configure::write('debug', 0);
 				$time_end = microtime(true);
 				$time = $time_end - $time_start;
 				$oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);

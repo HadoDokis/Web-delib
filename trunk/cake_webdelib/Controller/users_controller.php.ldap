@@ -31,7 +31,7 @@ var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'
 		$sortie = false;
 
 		if (empty($this->data))
-			// Initialisation des données
+			// Initialisation des donnÃ©es
 			$this->data['User']['accept_notif'] = 0;
 		else {
 			$this->cleanUpFields();
@@ -100,19 +100,19 @@ var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'
 		}
 	}
 
-/* dans le controleur car utilisé dans la vue index pour l'affichage */
+/* dans le controleur car utilisï¿½ dans la vue index pour l'affichage */
 	function _isDeletable($user, &$message) {
 		if ($user['User']['id'] == 1) {
-			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est protégé';
+			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas Ãªtre supprimÃ© car il est protÃ©gÃ©';
 			return false;
 		} elseif ($user['User']['id'] == $this->Session->read('user.User.id')) {
-			$message = 'L\'utilisateur courant \''.$user['User']['login'].'\' ne peut pas être supprimé';
+			$message = 'L\'utilisateur courant \''.$user['User']['login'].'\' ne peut pas Ãªtre supprimÃ©';
 			return false;
 		} elseif (!empty($user['Circuit'])) {
-			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est présent dans un circuit de validation';
+			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas Ãªtre supprimÃ© car il est prÃ©sent dans un circuit de validation';
 			return false;
 		} elseif ($this->Deliberation->findCount(array('redacteur_id'=>$user['User']['id']))) {
-			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est l\'auteur de délibérations';
+			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas Ãªtre supprimÃ© car il est l\'auteur de dÃ©libÃ©rations';
 			return false;
 		}
 		return true;
@@ -277,7 +277,7 @@ var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'
         function changeFormat($id) {
             $this->Session->del('user.format.sortie');
 	    $this->Session->write('user.format.sortie', $id);
-	    //redirection sur la page où on était avant de changer de service
+	    //redirection sur la page oï¿½ on ï¿½tait avant de changer de service
 	    $this->redirect($this->Session->read('user.User.lasturl'));
 	}
 
@@ -356,8 +356,7 @@ var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'
                          $user['User']['telfixe']  = "";
                      
                      if (!$this->User->save($user)){
-                         debug($user);
-                         die ('Sauvegarde echouée'.$person['displayname'][0]);
+                         die ('Sauvegarde echouï¿½e'.$person['displayname'][0]);
                      }
                      /*else {
                          $user_id = $this->User->getLastInsertId();
@@ -407,8 +406,7 @@ var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'
                          $user['User']['telfixe']  = "";
 
                      if (!$this->User->save($user)){
-                         debug($user);
-                         die ('Sauvegarde echouée'.$person['displayname'][0]);
+                         die ('Sauvegarde echouï¿½e'.$person['displayname'][0]);
                      }
                  }
             }

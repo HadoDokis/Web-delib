@@ -142,7 +142,7 @@ class Deliberation extends AppModel {
 			'unique' => true,
 			'conditions' => '',
 			'fields' => '',
-			'order' => 'DeliberationsSeance.position ASC',
+			'order' => 'Seance.date ASC',
 			'limit' => '',
 			'offset' => '',
 			'finderQuery' => '',
@@ -523,12 +523,10 @@ class Deliberation extends AppModel {
 			$delibseances = $this->getSeancesid($delib['Deliberation']['id']);
 			$oMainPart->addElement(new GDO_FieldType('nombre_seance', count($delibseances), 'text'));
                         $oMainPart->addElement(new GDO_FieldType('identifiant_projet', $delib['Deliberation']['id'],       'text'));
-			var_dump(count($delibseances));
                         if (count($delibseances) == 1) {
 				$this->Seance->makeBalise($delibseances[0], $oMainPart);
 				$position = $this->getPosition($delib['Deliberation']['id'], $delibseances[0]);
                                 
-                                debug($position);
 				$oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
 				$seances = new GDO_IterationType("Seances");
 				$seances->addPart($this->Seance->makeBalise($delibseances[0]));

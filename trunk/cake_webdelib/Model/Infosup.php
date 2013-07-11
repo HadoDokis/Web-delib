@@ -14,6 +14,7 @@
 * @lastmodified	$Date: 2007-10-14
 * @license
 */
+App::uses('File', 'Utility');
 
 class Infosup extends AppModel
 {
@@ -27,6 +28,13 @@ class Infosup extends AppModel
                         'foreignKey'   => 'foreign_key'),
 		'Infosupdef'
 	);
+  
+        var $validate = array(
+                'file_name' => array(
+                        'rule' => array('maxLength', 255),
+                        'message' => 'Nom de fichier trop long (255 caract&eageave;res maximum)','growl'
+                    ),
+        );
 
 /**
  * Transforme la structure [0]['id']['deliberation_id']... en ['code_infosup']=>valeur, ...
@@ -72,7 +80,14 @@ class Infosup extends AppModel
 
 	/* sauvegarde les info sup. recues sous la forme ['code_infosup']=>valeur, ... */
 	function saveCompacted($infosups, $foreignKey, $model) {
+                $success = true;
+
 		foreach($infosups as $code=>$valeur) {
+                    $validator = $this->validator();
+                    // Retire la règle 'required' de file_type
+                    if(isset($validator['file_type']))
+                        unset($validator['file_type']);
+                    
 			// lecture de la définition de l'info sup
 			$infosupdef = $this->Infosupdef->find('first', array(
 				'recursive' => -1,
@@ -114,37 +129,59 @@ class Infosup extends AppModel
 					break;
 				case 'file' :
 				case 'odtFile' :
-					$modelRep = ($model == 'Deliberation') ? 'projet' : 'seance';
-					$repDest = WWW_ROOT.'files'.DS.'generee'.DS.$modelRep.DS.$foreignKey.DS;
-					if (empty($valeur['tmp_name'])) {
-						if (isset($infosup['Infosup']['file_name']) && is_file($repDest.$infosup['Infosup']['file_name']))
+                                        $DOC_TYPE = Configure::read('DOC_TYPE');
+                                        $modelRep = ($model == 'Deliberation') ? 'projet' : 'seance';
+                                        $repDest = WWW_ROOT.'files'.DS.'generee'.DS.$modelRep.DS.$foreignKey.DS;
+                                            
+                                        //Si import d'un nouveau fichier
+                                        if (is_array($infosups[$code]) && !empty($infosups[$code]['tmp_name'])) {
+                                                
+                                                $file = new File($infosups[$code]['tmp_name'], false);
+                                                
+                                                $this->validator()->add('file_type' ,'required', array(
+                                                            'rule' => array('checkMimetype', 'content', array('application/vnd.oasis.opendocument.text')),
+                                                            'message' => 'Le format de fichier n\'est pas de type odt', 'growl'
+                                                          )
+                                                );
+                                                
+						$infosup['Infosup']['file_name'] = $infosups[$code]['name'];
+						$infosup['Infosup']['file_size'] = $file->size();
+						$infosup['Infosup']['file_type'] = $DOC_TYPE[$file->mime()]['mime_conversion'];
+						$infosup['Infosup']['content'] = $file->read();
+                                                $file->close();
+					}
+                                        //On sauvegarde le fichier déjà present avec les modifications apportées
+                                        elseif (is_string($infosups[$code]) && !empty($infosups[$code])) {
+						$file = new File($repDest.$infosup['Infosup']['file_name'], false);
+						$infosup['Infosup']['file_size'] = $file->size();
+						$infosup['Infosup']['content'] = $file->read();
+                                                $file->close();
+					}
+                                        //Si aucun fichier présent on vide la base
+                                        else{
+                                                if (isset($infosup['Infosup']['file_name']) && is_file($repDest.$infosup['Infosup']['file_name']))
 							@unlink($repDest.$infosup['Infosup']['file_name']);
+                                                
 						$infosup['Infosup']['file_name'] = '';
-						$infosup['Infosup']['file_size'] = 0;
-						$infosup['Infosup']['file_type'] = '';
-						$infosup['Infosup']['content'] = '';
-					} elseif (file_exists($valeur['tmp_name'])) {
-						if (isset($infosup['Infosup']['file_name']) && ($infosup['Infosup']['file_name'] != $valeur['name']) && is_file($repDest.$infosup['Infosup']['file_name']))
-							@unlink($repDest.$infosup['Infosup']['file_name']);
-						$infosup['Infosup']['file_name'] = $valeur['name'];
-						$infosup['Infosup']['file_size'] = $valeur['size'];
-						$infosup['Infosup']['file_type'] = $valeur['type'];
-						$infosup['Infosup']['content'] = fread(fopen($valeur['tmp_name'], "r"), $valeur['size']);
-						if ($infosupdef['Infosupdef']['type'] == 'odtFile') {
-							if (!is_dir($repDest)) mkdir($repDest, 0770, true);
-							move_uploaded_file($valeur['tmp_name'], $repDest.$valeur['name']);
-						}
-					} elseif (!empty($valeur)) {
-						$infosup['Infosup']['file_name'] = $code;
-						$infosup['Infosup']['file_size'] = strlen($valeur);
-						$infosup['Infosup']['content']= $valeur;
+						$infosup['Infosup']['file_size'] = '';
+                                                $infosup['Infosup']['file_type'] = '';
+						$infosup['Infosup']['content']= '';
 					}
 					break;
 			}
-
+                        //var_dump($infosup);
 			// Sauvegarde de l'info sup
-			$this->save($infosup);
+			$success = $this->save($infosup) && $success;
+                        
+                        if( !empty( $this->validationErrors ) ) {
+                            if( isset( $this->validationErrors['file_type'] ) ) {
+                                $this->validationErrors[$code] = $this->validationErrors['file_type'];
+                                unset( $this->validationErrors['file_type'] );
+                            }
+                        }
 		}
+                
+            return $success;
 	}
 
  /*
@@ -255,8 +292,8 @@ class Infosup extends AppModel
 
                  }
              }
-            elseif  ($champs['text'] == '' )
-                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  ' ', 'text'));
+            elseif  (empty($champs['text'] ))
+                 return NULL;
         }
 }
 ?>
