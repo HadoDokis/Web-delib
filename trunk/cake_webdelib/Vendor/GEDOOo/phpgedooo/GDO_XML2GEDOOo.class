@@ -276,16 +276,18 @@ function XMLToPart($sXMLparm) {
 
 $sXML = $sXMLparm;
 
-if (strpos($sXML, '<![CDATA[')) {
-   function parseCDATA($data) {
-      return htmlentities($data[1]);
-   }
-   $sXML = preg_replace_callback(
-      '#<!\[CDATA\[(.*)\]\]>#',
-      'parseCDATA',
-      str_replace("\n", " ", $sXML)
-   		);
-	}
+//if (strpos($sXML, '<![CDATA[')) {
+//   function parseCDATA($data) {
+//      return htmlentities($data[1]);
+//   }
+//   $sXML = preg_replace_callback(
+//      '#<!\[CDATA\[([^]]*)\]\]>#',
+//      'parseCDATA',
+//      str_replace("\n", " ", $sXML)
+//   		);
+//	}
+	
+	
 	$aParsedDocument = simplexml_load_string("<XML>".$sXML."</XML>");
 	if (!$aParsedDocument) {
 		if (ereg("^ *$", $sXML)) {

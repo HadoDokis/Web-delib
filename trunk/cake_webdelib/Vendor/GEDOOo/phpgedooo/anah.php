@@ -1,34 +1,40 @@
-<?
+<?php
 require_once("GDO_wsdl.inc");
+//define("GEDOOO_WSDL",  "http://arrigo-test:8081/axis2/services/OfficeService?wsdl");
+
 require_once("GDO_Utility.class");
 require_once("GDO_FieldType.class");
 require_once("GDO_ContentType.class");
 require_once("GDO_IterationType.class");
 require_once("GDO_PartType.class");
 require_once("GDO_FusionType.class");
-require_once("GDO_MatrixType.class");
-require_once("GDO_MatrixRowType.class");
-require_once("GDO_AxisTitleType.class");
-require_once("GDO_XML2GEDOOo.class");
-
+require_once("GDO_CSV.class");
 
 if ( isset($_FILES["data"])) {
 
 // Methode POST avec envoi des fichiers
 $methode = "POST";
-$nomFichierXML = $_FILES["data"]["tmp_name"];
+$nomData = $_FILES["data"]["tmp_name"];
+$nomColumns = $_FILES["columns"]["tmp_name"];
 $nomFichierModele = $_FILES["model"]["tmp_name"];
 $nomModele = $_FILES["model"]["name"];
 $extension = $_POST["Format"];
+$session = $_POST["session"];
+$notification = $_POST["notification"];
+$limite = $_POST["limite"];
 $debug = $_POST["Debug"];
 
 } else {
 $methode = "GET";
 // Methode GET avec transmission des URL
-$nomFichierXML = $_GET["data"];
+$nomData = $_GET["data"];
+$nomColumns = $_GET["columns"];
 $nomFichierModele = $_GET["model"];
 $nomModele="temp.ott";
 $extension = $_GET["Format"];
+$session = $_GET["session"];
+$notification = $_GET["notification"];
+$limite = $_GET["limite"];
 $debug = $_GET["Debug"];
 }
 
@@ -45,7 +51,10 @@ if ($debug == "true") {
 <td> Type de requ&ecirc;te: </td><td><? echo $methode;  ?></td>
 </tr>
 <tr>
-<td> Fichier XML: </td><td><? echo $nomFichierXML;  ?></td>
+<td> Fichier CSV de données: </td><td><? echo $nomData;  ?></td>
+</tr>
+<tr>
+<td> Fichier CSV des noms de colonnes: </td><td><? echo $nomColumns;  ?></td>
 </tr>
 <tr>
 <td> Fichier Mod&egrave;le: </td><td><? echo $nomFichierModele;  ?></td>
@@ -65,51 +74,43 @@ if ($debug == "true") {
 //
 $u = new GDO_Utility();
 //
-// Classe qui interface le fichier XML
+// Generation d'une iteration à partir du fichier CSV
 //
-$x = new GDO_XML2GEDOOo();
+$csv = new GDO_CSV("csv");
+$csv->setCSVFile($nomData, ";", "\"", "UTF8");
+$csv->setMapFile($nomColumns);
+if ($session != "") $csv->addConstant("session", $session, "date"); 
+if ($notification != "") $csv->addConstant("notification", $notification, "date"); 
+if ($limite != "") $csv->addConstant("limite", $limite, "date"); 
 
-$sXMLContent = $u->ReadFile($nomFichierXML);  
+$oIteration = $csv->getIteration();
+
+
 $sTemplateContent = $u->ReadFile($nomFichierModele);  
-
-if ($debug == "true") {
-?>
-<h2>Lecture des fichiers</h2>
-<table>
-<tr>
-<td> Nom </td><td>Longueur</td>
-</tr>
-<tr>
-<td><? echo $nomFichierXML;  ?></td><td><? echo strlen($sXMLContent);  ?></td>
-</tr>
-<tr>
-<td><? echo $nomFichierModele;  ?></td><td><? echo strlen($sTemplateContent);  ?></td>
-</tr>
-</table>
-
-<?php
-
-}
-
-
 
 
 $newstring=utf8_encode($sXMLContent);          // it's important!
-$mainPart = $x->XMLToPart($newstring);
-//var_dump($mainPart);
-//exit;
+$mainPart = new GDO_PartType();
 
-//$template = new GDO_ContentType("", $nomModele, GDO_getMimeType($nomModele), "url", $nomFichierModele);
+$mainPart->addElement($oIteration);
+
 $template = new GDO_ContentType("", $nomModele, $u->getMimeType($nomModele), "binary", $sTemplateContent);
 $oFusion = new GDO_FusionType($template, $u->extensionToMimeType($extension), $mainPart);
-//var_dump($oFusion);
-//echo "<br/>";
 
+if ($debug == "true") {
+
+var_dump($oIteration);
+
+exit;
+}
+
+ini_set('default_socket_timeout', 300); 
 $oFusion->process();
 
-if ($debug == "true") exit;
+
 
 $oFusion->SendContentToClient();
+
 
 
 ?>

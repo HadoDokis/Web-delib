@@ -529,8 +529,7 @@ if (strpos($sXML, '<![CDATA[')) {
 		throw new Exception("Unable to parse XML document:\n".$sXMLparm);
 		}
 	$oPart = GDO_ElmtToPart($aParsedDocument);
-
-        return ($oPart);
+	return ($oPart);
 
 }
 
