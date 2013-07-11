@@ -8,7 +8,7 @@ class GDO_Utility {
     /**
      * renvoi le contenu d'un fichier
      *
-     * @return   binary      Le contenu du fichier dans l'ï¿½tat
+     * @return   binary      Le contenu du fichier dans l'état
      * @since    1.0
      * @access   public
      */
@@ -16,12 +16,16 @@ function ReadFile($sFileName) {
 
 //echo $sFileName;
 $iFile = fopen($sFileName, "rb");
-
-while ($tmp = fread($iFile, 1024))
-    {
-        @$sData .= $tmp;
-    } 
+try{
+	while ($tmp = fread($iFile, 1024))
+    	{
+        	$sData .= $tmp;
+    	} 
 //$sData = fread($iFile, filesize($sFileName));
+} catch (Exception $e) {
+            echo $e->getMessage();
+			echo "Filename: ". $sFileName;
+}
 fclose($iFile);
 
 return $sData;

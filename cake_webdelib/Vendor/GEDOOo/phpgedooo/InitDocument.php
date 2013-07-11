@@ -16,13 +16,19 @@ require_once("GDO_XML2GEDOOo.class");
 //
 $u = new GDO_Utility();
 
-$repertoire = $_GET["repertoire"];
-unset($_GET["repertoire"]);
 
-$modele = $_GET["modele"];
-unset($_GET["modele"]);
+if (isset($_GET["url"])) {
+	$nomFichierModele = $_GET["url"];
+	unset($_GET["url"]);
+} else {
+	$repertoire = $_GET["repertoire"];
+	unset($_GET["repertoire"]);
 
-$nomFichierModele = $repertoire."/".$modele;
+	$modele = $_GET["modele"];
+	unset($_GET["modele"]);
+
+	$nomFichierModele = $repertoire."/".$modele;
+}
 
 //echo $nomFichierModele;
 
