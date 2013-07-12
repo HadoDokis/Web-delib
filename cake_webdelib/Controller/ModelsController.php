@@ -361,7 +361,9 @@ class ModelsController extends AppController {
 						$this->log("Temps conversion et concaténation : ". $time );
 					}
 					catch (Exception $e){
-						$this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
+                                            $this->Session->setFlash($e, 'growl', array('type' => 'erreur'));
+                                            $this->redirect('/seances/listerFuturesSeances');
+                                            die;
 					}
 					if ($unique== false) {
 						$res = $zip->open($path.'documents.zip', ZIPARCHIVE::CREATE);
@@ -448,7 +450,7 @@ class ModelsController extends AppController {
 
 					$time_end = microtime(true);
 					$time = $time_end - $time_start;
-
+                                        
 					header("Content-type: $sMimeType");
 					header("Content-Disposition: attachment; filename=\"$nomFichier\"");
 					header("Content-Length: ".strlen($content));
