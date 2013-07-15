@@ -406,7 +406,7 @@ class SeancesController extends AppController {
 	function afficherProjets ($id=null, $return=null) {
             if (!isset($return)) {
 		$this->set('lastPosition', $this->Seance->getLastPosition($id) - 1 );
-		$deliberations =  $this->Seance->getDeliberations($id, array('conditions' => array('etat !=' => -1)));
+		$deliberations =  $this->Seance->getDeliberations($id);
 		$lst_pos=array();
 		for ($i=0; $i<count($deliberations); $i++) {
 			$theme = $this->Deliberation->Theme->find('first',
@@ -1404,7 +1404,7 @@ class SeancesController extends AppController {
 
             $blocProjets = new GDO_IterationType("Projets");
             
-            $projets  =  $this->Seance->getDeliberations($seance_id, array('conditions' => array('etat >= '=> 0)));
+            $projets  =  $this->Seance->getDeliberations($seance_id);
             
             foreach ($projets as $projet) {
                 $oDevPart = new GDO_PartType();

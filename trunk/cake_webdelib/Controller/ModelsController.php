@@ -268,8 +268,7 @@ class ModelsController extends AppController {
 		// Génération d'une convocation, ordre du jour ou PV
 		//*****************************************
 		if ($seance_id != "null") {
-			$projets  =  $this->Seance->getDeliberations($seance_id, array('conditions' => array('etat >= '=> 0)));
-
+			$projets  =  $this->Seance->getDeliberations($seance_id);
 			$blocProjets = new GDO_IterationType("Projets");
 			foreach ($projets as $projet) {
 				$oDevPart = new GDO_PartType();
