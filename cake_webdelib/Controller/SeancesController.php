@@ -1154,7 +1154,7 @@ class SeancesController extends AppController {
                         $template = file_get_contents(CONFIG_PATH.DS.'emails'.DS.'convocation.txt');
                         //S2low est encodé en iso
                         $content = utf8_decode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $template))));
-                        $subject = utf8_decode('Convocation à la s&eacute;ance \''.$seance['Typeseance']['libelle'].'\' du : '
+                        $subject = utf8_decode('Convocation à la séance \''.$seance['Typeseance']['libelle'].'\' du : '
                                               .$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date'])));
                         if (Configure::read('USE_MAIL_SECURISE')) {
                             $data['mailto']  = $acteur['Acteur']['email'];
@@ -1319,7 +1319,7 @@ class SeancesController extends AppController {
                             $acteurseance['acteur_id'] = $acteur_id;
                             $acteurseance['mail_id']   = $mail_id;
                             $acteurseance['date_envoi']   = date("Y-m-d H:i:s", strtotime("now"));
-                            $acteurseance['model']   = 'odredujour';
+                            $acteurseance['model']   = 'ordredujour';
                             $this->Acteurseance->save( $acteurseance );
                         }
                         else {
@@ -1330,7 +1330,7 @@ class SeancesController extends AppController {
                 }
                 if ($message != '') 
                     $this->Session->setFlash($message, 'growl', array('type'=>'error'));
-                $this->redirect("/seances/sendConvocations/$seance_id/$model_id");
+                $this->redirect("/seances/sendOrdredujour/$seance_id/$model_id");
             }
         }
 
