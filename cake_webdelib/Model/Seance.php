@@ -40,7 +40,17 @@ class Seance extends AppModel {
 	var $hasMany = array(
 			'Infosup'=>array('dependent' => true,
 					'foreignKey' => 'foreign_key',
-					'conditions' => array('Infosup.model' => 'Seance')));
+					'conditions' => array('Infosup.model' => 'Seance')),
+                        'Deliberationseance' =>array(
+					'className'    => 'Deliberationseance',
+                                        'joinTable' => 'Deliberation',
+					'foreignKey'   => 'seance_id',
+                                        'conditions' => array('Deliberation.etat >='=>0),
+                                        'order'      => 'Deliberationseance.position ASC'
+                         ),
+            
+            
+            );
 
 	//    var $hasAndBelongsToMany = array('Deliberation');
 	var $hasAndBelongsToMany = array( 'Deliberation' => array( 'className' => 'Deliberation',
@@ -137,19 +147,20 @@ class Seance extends AppModel {
 		return in_array($nature_id, $natures);
 	}
 
-	function getDeliberations($seance_id, $options = array()) {
-		// initialisation des valeurs par défaut
-		App::import('Model', 'Deliberationseance');
-		$this->Deliberationseance = new Deliberationseance();
-
-		$defaut = array(
-				'order'     => array('Deliberationseance.position ASC'),
-				'conditions' => array());
-		$options = array_merge($defaut, $options);
-
-		$options['conditions']['Seance.id'] = $seance_id;
-		$options['conditions']['Deliberation.etat >='] = 0;
-		$deliberations = $this->Deliberationseance->find('all', $options);
+	function getDeliberations($seance_id) {
+            $deliberations = $this->Deliberationseance->find(
+                    'all',
+                    array(
+                        'fields' => array('Deliberationseance.seance_id','Deliberationseance.deliberation_id','Deliberationseance.position','Deliberation.*'),
+                        'contain'=>'Deliberation',
+                        'recursive' => 1,
+                        'conditions' =>  array(
+                            'Deliberationseance.seance_id' => $seance_id
+                        ),
+                        'order'=>'Deliberationseance.position ASC',
+                    )
+                );
+                
 		for ($i = 0; $i < count($deliberations); $i++) {
 			if (isset($deliberations[$i]['Deliberation']['theme_id'])) {
 				$theme = $this->Deliberation->Theme->find('first',
@@ -234,20 +245,20 @@ class Seance extends AppModel {
 		$seances_a_retirer = array_diff($seances_enregistrees, $seances_selectionnees);
                 
 		foreach($seances_a_retirer as $key => $seance_id) {
-                    $position = 1;
+                    //$position = 1;
                     $jointure = $this->Deliberationseance->find('first', array('conditions' => array( 'Seance.id'            => $seance_id,
                                     'Deliberation.id'      => $delib_id,
                                     'Deliberation.etat !=' => -1),
                                     'fields'     => array( 'Deliberationseance.id')));
                     $this->Deliberationseance->delete($jointure['Deliberationseance']['id']);
-
-                    $seances = $this->Deliberationseance->find('all', array('conditions' => array( 'Seance.id'            => $seance_id,
+//On commente le code car on ne veut pas reordonner après une supression
+                   /* $seances = $this->Deliberationseance->find('all', array('conditions' => array( 'Seance.id'            => $seance_id,
                                     'Deliberation.etat !=' => -1),
                                     'fields'     => array( 'Deliberationseance.id',
                                                     'Deliberationseance.position' ),
                                     'order'      => array( 'Deliberationseance.position ASC' )));
                     // pour toutes les délibsd
-                    foreach($delibs as $delib) {
+                    /*foreach($delibs as $delib) {
                             if ($position != $delib['Deliberationseance']['position'])
                                     $this->Deliberationseance->save(array( 'id'      => $delib['Deliberationseance']['id'],
                                             'deliberation_id'      => $delib['Deliberationseance']['deliberation_id'],
@@ -255,7 +266,7 @@ class Seance extends AppModel {
                                             'position' => $position++),
                                                     array( 'validate' => false,
                                                                     'callbacks' => false));
-                    }
+                    }*/
 		}
                 
                 if (is_array($seances_enregistrees) and  (!empty($seances_enregistrees)))  {
