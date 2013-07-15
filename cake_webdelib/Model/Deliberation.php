@@ -1362,7 +1362,6 @@ class Deliberation extends AppModel {
 		foreach ($elus as $elu){
 			$this->Listepresence->create();
 			$params['data']['Listepresence']['acteur_id']=$elu['Acteur']['id'];
-			$params['data']['Listepresence']['mandataire'] = '0';
 			$params['data']['Listepresence']['present']= 1;
 			$params['data']['Listepresence']['delib_id']= $delib_id;
 			$this->Listepresence->save($params['data']);
@@ -1385,7 +1384,8 @@ class Deliberation extends AppModel {
 		foreach ($previousPresents as $present){
                     $this->Listepresence->create();
 		    $params['data']['Listepresence']['acteur_id']=$present['Listepresence']['acteur_id'];
-		    $params['data']['Listepresence']['mandataire'] = $present['Listepresence']['mandataire'];
+                    $params['data']['Listepresence']['mandataire'] = $present['Listepresence']['mandataire'];
+		    $params['data']['Listepresence']['suppleant_id'] = $present['Listepresence']['suppleant_id'];
 		    $params['data']['Listepresence']['present']= $present['Listepresence']['present'];
 		    $params['data']['Listepresence']['delib_id']= $delib_id;
 		    $this->Listepresence->save($params['data']);
