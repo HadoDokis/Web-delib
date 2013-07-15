@@ -213,6 +213,7 @@ class ProfilsController extends AppController {
                         $this->Email->from = Configure::read("MAIL_FROM");
                         $this->Email->subject = "Notification aux utilisateurs du profil : ". $profil['Profil']['libelle'];
                         $this->Email->template = 'default';
+			$this->Email->layout = 'default';
                         $this->Email->sendAs = 'html';
                         $this->Email->charset = 'UTF-8';
                         $this->Email->attachments = null;
