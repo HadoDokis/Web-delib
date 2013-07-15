@@ -2765,6 +2765,10 @@ class DeliberationsController extends AppController {
                 if (!empty($listeCircuits))
                     $conditions['OR']['Deliberation.circuit_id'] = $listeCircuits;
                 $conditions['OR']['Deliberation.redacteur_id'] = $userId;
+                //Récupère la liste des délib que l'utilisateur a visé (résolution bug changement circuit non visible)
+                $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($userId));
+                if (!empty($listeDelibsParticipe))
+                    $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
                 $ordre = 'Deliberation.created DESC';
                 $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
                     'order' => array($ordre)));
