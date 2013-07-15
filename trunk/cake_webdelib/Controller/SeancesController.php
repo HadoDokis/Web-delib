@@ -1186,6 +1186,7 @@ class SeancesController extends AppController {
                             $this->Email->to =  $acteur['Acteur']['email'];
                             $this->Email->sendAs = 'both';
                             $this->Email->charset = 'UTF-8';
+                            $this->Email->layout = 'default';
                             $this->Email->subject =  $subject;
                             $this->Email->attachments = array($filepath);
                             if ($this->Email->send($content))
@@ -1305,6 +1306,7 @@ class SeancesController extends AppController {
                             $this->Email->sendAs = 'both';
                             $this->Email->charset = 'UTF-8';
                             $this->Email->subject =  utf8_encode($subject);
+			    $this->Email->layout = 'default';
                             $this->Email->attachments = array($filepath);
                             if ($this->Email->send( utf8_encode($content)) )
                                 $retour = 'OK:0';

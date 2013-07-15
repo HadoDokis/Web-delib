@@ -485,6 +485,7 @@ class ModelsController extends AppController {
 
 			$this->Email->subject = utf8_encode("Vous venez de recevoir un document de Webdelib ");
 			$this->Email->sendAs = 'text';
+			$this->Email->layout = 'default';
 			$this->Email->template = 'convocation';
 			$this->set('data',   $this->paramMails('convocation',  $acteur ));
 
