@@ -931,7 +931,6 @@ class DeliberationsController extends AppController {
                         $typeseances_selected[] = $key;
                     }
             }
-            $this->log($typeseances_selected);  
             $seances=array();
             $seances_tmp = $this->Seance->find('all', array('conditions' => array('Seance.type_id' => $typeseances_selected,
                                                                               'Seance.traitee' => 0),
@@ -1793,7 +1792,6 @@ class DeliberationsController extends AppController {
                 }
 
                 $curl_return = utf8_encode($this->S2low->send($acte));
-                $this->log($curl_return);
                 $pos = strpos($curl_return, 'OK');
                 $tdt_id = substr($curl_return, 3, strlen($curl_return));
                 if ($pos === false) {
@@ -2770,6 +2768,9 @@ class DeliberationsController extends AppController {
                 if (!empty($listeDelibsParticipe))
                     $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
                 $ordre = 'Deliberation.created DESC';
+                
+                //debug($conditions);
+                //TODO on peut voir certain projet mecanique à revoir
                 $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
                     'order' => array($ordre)));
 
@@ -2829,6 +2830,7 @@ class DeliberationsController extends AppController {
                 }
                 $conditions["Deliberation.id"] = $this->data['Deliberation']['id'];
             }
+            
             if (!empty($this->data['Deliberation']['rapporteur_id']))
                 $conditions["Deliberation.rapporteur_id"] = $this->data['Deliberation']['rapporteur_id'];
             if (!empty($this->data['Deliberation']['service_id']))
