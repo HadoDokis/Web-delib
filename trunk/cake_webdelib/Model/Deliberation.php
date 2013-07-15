@@ -526,7 +526,6 @@ class Deliberation extends AppModel {
                         if (count($delibseances) == 1) {
 				$this->Seance->makeBalise($delibseances[0], $oMainPart);
 				$position = $this->getPosition($delib['Deliberation']['id'], $delibseances[0]);
-                                
 				$oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
 				$seances = new GDO_IterationType("Seances");
 				$seances->addPart($this->Seance->makeBalise($delibseances[0]));
@@ -1248,15 +1247,19 @@ class Deliberation extends AppModel {
 	}
 
 	function getSeancesid($deliberation_id) {
-		$seances = array();
-		$delib_seances = $this->Deliberationseance->find( 'all',
-				array('conditions' =>  array(
-						'Deliberationseance.deliberation_id' => $deliberation_id),
-						'fields' => array('Deliberationseance.seance_id'),
-						'recursive' => -1));
-		if (!empty( $delib_seances ))
-			foreach( $delib_seances as $seance)
-			$seances[] = $seance['Deliberationseance']['seance_id'];
+		$seances = $this->Deliberationseance->find(
+                    'all',
+                    array(
+                        'fields' => array('Deliberationseance.seance_id'),
+                        'recursive' => -1,
+                        'conditions' =>  array(
+                            'Deliberationseance.deliberation_id' => $deliberation_id
+                        ),
+                        'order'=>'Deliberationseance.position ASC',
+                    )
+                );
+
+		$seances = (array)Hash::extract($seances, '{n}.Deliberationseance.seance_id');
 		return $seances;
 	}
 
@@ -1302,12 +1305,20 @@ class Deliberation extends AppModel {
 	}
 
 	function getPosition($deliberation_id, $seance_id) {
-		App::import('Model', 'Deliberationseance');
-		$this->Deliberationseance = new Deliberationseance();
-		$deliberation = $this->Deliberationseance->find('first', array('conditions' => array('Seance.id' => $seance_id,
-				'Deliberation.id' => $deliberation_id),
-				'fields'     => array('Deliberationseance.position')));
-		return($deliberation['Deliberationseance']['position']);
+		$deliberationseance = $this->Deliberationseance->find(
+                    'first',
+                    array(
+                        'fields' => array( 'Deliberationseance.position' ),
+                        'recursive' => -1,
+                        'conditions' => array(
+                            'Deliberationseance.seance_id' => $seance_id,
+                            'Deliberationseance.deliberation_id' => $deliberation_id
+                        ),
+                        'order' => array( 'Deliberationseance.position ASC' ),
+                    )
+                );
+                
+		return $deliberationseance['Deliberationseance']['position'];
 	}
 
 	function afficherListePresents($delib_id=null, $seance_id)      {
