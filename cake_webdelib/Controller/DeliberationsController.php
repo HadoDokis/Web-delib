@@ -1509,7 +1509,7 @@ class DeliberationsController extends AppController {
     }
 
     function toSend($seance_id = null) {
-        $this->Deliberation->Behaviors->attach('Containable');
+        $this->Deliberationseance->Behaviors->attach('Containable');
         if (isset($this->params['filtre']) && ($this->params['filtre'] == 'hide'))
             $limit = Configure::read('LIMIT');
         else
@@ -1528,11 +1528,36 @@ class DeliberationsController extends AppController {
         else
             $this->set('dateClassification', "Récupérer la classification");
 
+        $defaut = array(
+                        'fields' => array('Deliberationseance.seance_id','Deliberationseance.deliberation_id',
+                            'Deliberationseance.position'),
+                        'contain'=>array(   'Deliberation.id','Deliberation.objet_delib'
+                                            ,'Deliberation.num_delib'
+                                            ,'Deliberation.titre'
+                                            ,'Deliberation.etat'
+                                            ,'Deliberation.tdt_id','Deliberation.num_pref',
+                                            'Seance'=>array('fields' => array('id', 'date'),'Typeseance'=>array('libelle'))),
+                        'order'     => array('Deliberationseance.position ASC'),
+                        'conditions' => array());
+        
         // On affiche que les delibs vote pour.
         $conditions = $this->_handleConditions($this->Filtre->conditions());
         //$conditions =  $this->Filtre->conditions();
-        $conditions['Deliberation.etat >='] = 2;
-        $conditions['Deliberation.etat <'] = 5;
+        /*  Deliberation.etat = -1 : refusé
+        * Deliberation.etat = 0 : en cours de rédaction
+        * Deliberation.etat = 1 : dans un circuit
+        * Deliberation.etat = 2 : validé
+        * Deliberation.etat = 3 : Voté pour
+        * Deliberation.etat = 4 : Voté contre
+        * Deliberation.etat = 5 : envoyé*/
+        
+        if (!empty($seance_id))
+            $conditions['Deliberation.etat <='] = 5;
+        else
+            $conditions['Deliberation.etat <'] = 5;
+        
+        $conditions['Deliberation.etat >='] = 3;
+        //$conditions['Deliberation.etat >='] = 2;
         $conditions['Deliberation.etat <>'] = 4;
         //$conditions['Deliberation.signee'] = true;
         $conditions['Deliberation.delib_pdf <>'] = '';
@@ -1540,15 +1565,20 @@ class DeliberationsController extends AppController {
             $seance_id = $conditions['Seance.id'];
             unset($conditions['Seance.id']);
         }
+        
+        $options = array_merge($defaut, array('conditions' => $conditions));
 
-        if ($seance_id != null) {
-            $deliberations = $this->Seance->getDeliberations($seance_id, $conditions);
-        } else {
-            $deliberations = $this->Deliberation->find('all', array('conditions' => $conditions));
+        if (!empty($seance_id)) {
+		$options['conditions']['Deliberationseance.id'] = $seance_id;
+        }  
+        else {
+            $options['order']=array('Seance.date ASC');
         }
-
+        $deliberations = $this->Deliberationseance->find('all', $options);
+        
         for ($i = 0; $i < count($deliberations); $i++)
             $deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'] . '_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
+       
         if (!$this->Filtre->critereExists()) {
             $this->Filtre->addCritere('SeanceId', array('field' => 'Seance.id',
                 'inputOptions' => array(
@@ -1557,6 +1587,9 @@ class DeliberationsController extends AppController {
                     'options' => $this->Utils->listFromArray($deliberations, '/Seance/id', array('/Seance/date',
                         '/Seance/Typeseance/libelle'), '%s : %s'))));
         }
+        
+        if (!empty($seance_id))
+            $this->set('seance_id', $seance_id);
         $this->set('deliberations', $deliberations);
     }
 
@@ -1630,190 +1663,199 @@ class DeliberationsController extends AppController {
 
     function sendActe() {
         $erreur = '';
-        if (!is_file(Configure::read('FILE_CLASS')))
+        
+        if(isset($this->data['Deliberation']['id']) && !empty($this->data['Deliberation']['id'])){
+        
+            if (!is_file(Configure::read('FILE_CLASS')))
             $this->S2low->getClassification();
-        $pos = strrpos(getcwd(), 'webroot');
-        $path = substr(getcwd(), 0, $pos);
-        foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
-            if ($bool == 1) {
-                $this->Deliberation->id = $delib_id;
-                if (!isset($this->data[$delib_id . "classif2"]))
-                    continue;
+            $pos = strrpos(getcwd(), 'webroot');
+            $path = substr(getcwd(), 0, $pos);
 
-                $this->Deliberation->saveField('num_pref', $this->data[$delib_id . "classif2"]);
-            }
-        }
-        $nbEnvoyee = 1;
-        if (Configure::read('USE_PASTELL')) {
-            $coll = $this->Session->read('user.Collectivite');
-            $id_e = $coll['Collectivite']['id_entity'];
-        }
-        $this->Deliberation->Typeacte->Behaviors->attach('Containable');
-        foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
-            if ($bool == 1) {
-                $this->Deliberation->id = $delib_id;
-                $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id)));
-                $typeacte = $this->Deliberation->Typeacte->find('first', array('conditions' => array('Typeacte.id' => $delib['Typeacte']['id']),
-                    'contain' => array('Nature.code')));
-                if ($typeacte['Nature']['code'] == "DE")
-                    $nature_code = 1;
-                elseif ($typeacte['Nature']['code'] == "AR")
-                    $nature_code = 2;
-                elseif ($typeacte['Nature']['code'] == "AI")
-                    $nature_code = 3;
-                elseif ($typeacte['Nature']['code'] == "CC")
-                    $nature_code = 4;
-                elseif ($typeacte['Nature']['code'] == "AU")
-                    $nature_code = 5;
+            foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
+                if ($bool == 1) {
+                    $this->Deliberation->id = $delib_id;
+                    if (!isset($this->data[$delib_id . "classif2"]))
+                        continue;
 
-                if (Configure::read('USE_PASTELL')) {
-                    $id_d = $delib['Deliberation']['pastell_id'];
-                    $infos = $this->Pastell->getInfosDocument($id_e, $id_d);
-                    $infos = (array) $infos;
-                    $infos['data'] = (array) $infos['data'];
-
-                    if (isset($infos['action-possible']))
-                        if (isset($infos['data']['has_signature']))
-                            $result = $this->Pastell->action($id_e, $id_d, 'send-tdt-2');
-                        else
-                            $result = $this->Pastell->action($id_e, $id_d, 'send-tdt');
-
-
-                    $result = (array) $result;
-                    if (isset($result['status']) && ($result['status'] == 'error'))
-                        $erreur .= $result['error-message'];
-                    if ($erreur == '')
-                        $this->Deliberation->saveField('etat', 5);
-                    continue;
+                    $this->Deliberation->saveField('num_pref', $this->data[$delib_id . "classif2"]);
                 }
+            }
+            $nbEnvoyee = 1;
+            if (Configure::read('USE_PASTELL')) {
+                $coll = $this->Session->read('user.Collectivite');
+                $id_e = $coll['Collectivite']['id_entity'];
+            }
+            $this->Deliberation->Typeacte->Behaviors->attach('Containable');
+            foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
+                if ($bool == 1) {
+                    $this->Deliberation->id = $delib_id;
+                    $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id)));
+                    $typeacte = $this->Deliberation->Typeacte->find('first', array('conditions' => array('Typeacte.id' => $delib['Typeacte']['id']),
+                        'contain' => array('Nature.code')));
+                    if ($typeacte['Nature']['code'] == "DE")
+                        $nature_code = 1;
+                    elseif ($typeacte['Nature']['code'] == "AR")
+                        $nature_code = 2;
+                    elseif ($typeacte['Nature']['code'] == "AI")
+                        $nature_code = 3;
+                    elseif ($typeacte['Nature']['code'] == "CC")
+                        $nature_code = 4;
+                    elseif ($typeacte['Nature']['code'] == "AU")
+                        $nature_code = 5;
 
-                if (file_exists(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/D_$delib_id.pdf"))
-                    unlink(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/D_$delib_id.pdf");
-                //$this->Deliberation->changeClassification($delib_id, $classification);
+                    if (Configure::read('USE_PASTELL')) {
+                        $id_d = $delib['Deliberation']['pastell_id'];
+                        $infos = $this->Pastell->getInfosDocument($id_e, $id_d);
+                        $infos = (array) $infos;
+                        $infos['data'] = (array) $infos['data'];
 
-                $classification = $delib['Deliberation']['num_pref'];
-                if (strpos($classification, ' -') != false)
-                    $classification = (substr($classification, 0, strpos($classification, ' -')));
+                        if (isset($infos['action-possible']))
+                            if (isset($infos['data']['has_signature']))
+                                $result = $this->Pastell->action($id_e, $id_d, 'send-tdt-2');
+                            else
+                                $result = $this->Pastell->action($id_e, $id_d, 'send-tdt');
 
-                $class1 = substr($classification, 0, strpos($classification, '.'));
-                $rest = substr($classification, strpos($classification, '.') + 1, strlen($classification));
-                $class2 = substr($rest, 0, strpos($classification, '.'));
-                $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
-                $class3 = substr($rest, 0, strpos($classification, '.'));
-                $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
-                $class4 = substr($rest, 0, strpos($classification, '.'));
-                $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
-                $class5 = substr($rest, 0, strpos($classification, '.'));
 
-                //Création du fichier de délibération au format pdf (on ne passe plus par la génération)
-                $file = $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/", "D_$delib_id.pdf", $delib['Deliberation']['delib_pdf']);
-                $sigFileName = '';
-                if (isset($delib['Deliberation']['signature'])) {
-                    $signature = $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/", "signature_$delib_id.zip", $delib['Deliberation']['signature']);
-                    $zip = zip_open($signature);
-                    if (is_resource($zip)) {
-                        while ($zip_entry = zip_read($zip)) {
-                            $fichier = basename(zip_entry_name($zip_entry));
-                            $tmp = substr($fichier, 0, 3);
-                            if ($tmp == '1- ') {
+                        $result = (array) $result;
+                        if (isset($result['status']) && ($result['status'] == 'error'))
+                            $erreur .= $result['error-message'];
+                        if ($erreur == '')
+                            $this->Deliberation->saveField('etat', 5);
+                        continue;
+                    }
 
-                                $sigFileName = WEBROOT_PATH . "/files/generee/fd/null/$delib_id/signature.pkcs7";
-                                $fp = fopen($sigFileName, "w+");
+                    if (file_exists(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/D_$delib_id.pdf"))
+                        unlink(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/D_$delib_id.pdf");
+                    //$this->Deliberation->changeClassification($delib_id, $classification);
 
-                                if (zip_entry_open($zip, $zip_entry, "r")) {
-                                    $buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
-                                    zip_entry_close($zip_entry);
+                    $classification = $delib['Deliberation']['num_pref'];
+                    if (strpos($classification, ' -') != false)
+                        $classification = (substr($classification, 0, strpos($classification, ' -')));
+
+                    $class1 = substr($classification, 0, strpos($classification, '.'));
+                    $rest = substr($classification, strpos($classification, '.') + 1, strlen($classification));
+                    $class2 = substr($rest, 0, strpos($classification, '.'));
+                    $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
+                    $class3 = substr($rest, 0, strpos($classification, '.'));
+                    $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
+                    $class4 = substr($rest, 0, strpos($classification, '.'));
+                    $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
+                    $class5 = substr($rest, 0, strpos($classification, '.'));
+
+                    //Création du fichier de délibération au format pdf (on ne passe plus par la génération)
+                    $file = $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/", "D_$delib_id.pdf", $delib['Deliberation']['delib_pdf']);
+                    $sigFileName = '';
+                    if (isset($delib['Deliberation']['signature'])) {
+                        $signature = $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/", "signature_$delib_id.zip", $delib['Deliberation']['signature']);
+                        $zip = zip_open($signature);
+                        if (is_resource($zip)) {
+                            while ($zip_entry = zip_read($zip)) {
+                                $fichier = basename(zip_entry_name($zip_entry));
+                                $tmp = substr($fichier, 0, 3);
+                                if ($tmp == '1- ') {
+
+                                    $sigFileName = WEBROOT_PATH . "/files/generee/fd/null/$delib_id/signature.pkcs7";
+                                    $fp = fopen($sigFileName, "w+");
+
+                                    if (zip_entry_open($zip, $zip_entry, "r")) {
+                                        $buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
+                                        zip_entry_close($zip_entry);
+                                    }
+
+                                    fwrite($fp, $buf);
+                                    fclose($fp);
+                                    zip_close($zip);
+                                    break;
                                 }
-
-                                fwrite($fp, $buf);
-                                fclose($fp);
-                                zip_close($zip);
-                                break;
                             }
+                            @zip_close($zip);
                         }
-                        @zip_close($zip);
                     }
-                }
-                if (!file_exists($file))
-                    die("Problème lors de la récupération du fichier");
-                // Checker le code classification
-                if (isset($delib['Deliberation']['date_acte']))
-                    $decision_date = date("Y-m-d", strtotime($delib['Deliberation']['date_acte']));
-                else {
-                    $seances = array();
-                    foreach ($delib['Seance'] as $seance)
-                        $seances[] = $seance['id'];
-                    $seance_id = $this->Seance->getSeanceDeliberante($seances);
-                    $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
-                        'fields' => array('Seance.date'),
-                        'recursive' => -1));
-                    $decision_date = date("Y-m-d", strtotime($seance['Seance']['date']));
-                }
-
-                if ($class1 == false)
-                    $class1 = null;
-                if ($class2 == false)
-                    $class2 = null;
-                if ($class3 == false)
-                    $class3 = null;
-                if ($class4 == false)
-                    $class4 = null;
-                if ($class5 == false)
-                    $class5 = null;
-
-                $acte = array(
-                    'api' => '1',
-                    'nature_code' => utf8_decode($nature_code),
-                    'classif1' => utf8_decode($class1),
-                    'classif2' => utf8_decode($class2),
-                    'classif3' => utf8_decode($class3),
-                    'classif4' => utf8_decode($class4),
-                    'classif5' => utf8_decode($class5),
-                    'number' => utf8_decode($delib['Deliberation']['num_delib']),
-                    'decision_date' => $decision_date,
-                    'subject' => utf8_decode($delib['Deliberation']['objet_delib']),
-                    'acte_pdf_file' => "@$file",
-                );
-
-                if ($sigFileName != '') {
-                    $acte['acte_pdf_file_sign'] = "@$sigFileName";
-                }
-
-                $annexes_id = $this->Annex->getAnnexesFromDelibId($delib_id, 1);
-                $nb_pj = 0;
-                if (isset($annexes_id) && !empty($annexes_id)) {
-                    foreach ($annexes_id as $annex_id) {
-                        $annexe = $this->Annex->getContentToTdT($annex_id['Annex']['id']);
-                        $pj_file = $this->Gedooo->createFile($path . "webroot/files/generee/fd/null/$delib_id/annexes/", $annex_id['Annex']['id'] . '.'.$annexe['type'], $annexe['data']);
-                        $acte["acte_attachments[$nb_pj]"] = "@$pj_file";
-                        $acte["acte_attachments_sign[$nb_pj]"] = "";
-                        $nb_pj++;
+                    if (!file_exists($file))
+                        die("Problème lors de la récupération du fichier");
+                    // Checker le code classification
+                    if (isset($delib['Deliberation']['date_acte']))
+                        $decision_date = date("Y-m-d", strtotime($delib['Deliberation']['date_acte']));
+                    else {
+                        $seances = array();
+                        foreach ($delib['Seance'] as $seance)
+                            $seances[] = $seance['id'];
+                        $seance_id = $this->Seance->getSeanceDeliberante($seances);
+                        $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
+                            'fields' => array('Seance.date'),
+                            'recursive' => -1));
+                        $decision_date = date("Y-m-d", strtotime($seance['Seance']['date']));
                     }
-                }
 
-                $curl_return = utf8_encode($this->S2low->send($acte));
-                $pos = strpos($curl_return, 'OK');
-                $tdt_id = substr($curl_return, 3, strlen($curl_return));
-                if ($pos === false) {
-                    $order = array("\r\n", "\n", "\r");
-                    $replace = '<br />';
-                    $curl_return = str_replace($order, $replace, $curl_return);
-                    $erreur .= $delib['Deliberation']['objet'] . '(' . $delib['Deliberation']['num_delib'] . ') : ' . $curl_return . '<br />';
-                } else {
-                    $nbEnvoyee++;
-                    $this->Deliberation->saveField('etat', 5);
-                    $this->Deliberation->saveField('tdt_id', $tdt_id);
-                    unlink($file);
+                    if ($class1 == false)
+                        $class1 = null;
+                    if ($class2 == false)
+                        $class2 = null;
+                    if ($class3 == false)
+                        $class3 = null;
+                    if ($class4 == false)
+                        $class4 = null;
+                    if ($class5 == false)
+                        $class5 = null;
+
+                    $acte = array(
+                        'api' => '1',
+                        'nature_code' => utf8_decode($nature_code),
+                        'classif1' => utf8_decode($class1),
+                        'classif2' => utf8_decode($class2),
+                        'classif3' => utf8_decode($class3),
+                        'classif4' => utf8_decode($class4),
+                        'classif5' => utf8_decode($class5),
+                        'number' => utf8_decode($delib['Deliberation']['num_delib']),
+                        'decision_date' => $decision_date,
+                        'subject' => utf8_decode($delib['Deliberation']['objet_delib']),
+                        'acte_pdf_file' => "@$file",
+                    );
+
+                    if ($sigFileName != '') {
+                        $acte['acte_pdf_file_sign'] = "@$sigFileName";
+                    }
+
+                    $annexes_id = $this->Annex->getAnnexesFromDelibId($delib_id, 1);
+                    $nb_pj = 0;
+                    if (isset($annexes_id) && !empty($annexes_id)) {
+                        foreach ($annexes_id as $annex_id) {
+                            $annexe = $this->Annex->getContentToTdT($annex_id['Annex']['id']);
+                            $pj_file = $this->Gedooo->createFile($path . "webroot/files/generee/fd/null/$delib_id/annexes/", $annex_id['Annex']['id'] . '.'.$annexe['type'], $annexe['data']);
+                            $acte["acte_attachments[$nb_pj]"] = "@$pj_file";
+                            $acte["acte_attachments_sign[$nb_pj]"] = "";
+                            $nb_pj++;
+                        }
+                    }
+
+                    $curl_return = utf8_encode($this->S2low->send($acte));
+                    $pos = strpos($curl_return, 'OK');
+                    $tdt_id = substr($curl_return, 3, strlen($curl_return));
+                    if ($pos === false) {
+                        $order = array("\r\n", "\n", "\r");
+                        $replace = '<br />';
+                        $curl_return = str_replace($order, $replace, $curl_return);
+                        $erreur .= $delib['Deliberation']['objet'] . '(' . $delib['Deliberation']['num_delib'] . ') : ' . $curl_return . '<br />';
+                    } else {
+                        $nbEnvoyee++;
+                        $this->Deliberation->saveField('etat', 5);
+                        $this->Deliberation->saveField('tdt_id', $tdt_id);
+                        unlink($file);
+                    }
+                    sleep(5);
                 }
-                sleep(5);
             }
-        }
+        }else $erreur='Aucun Acte(s) selectionn&eacute;(s)';
+        
         if (empty($erreur))
-            $this->Session->setFlash('Actes envoyés correctement au TdT', 'growl');
+            $this->Session->setFlash('Acte(s) envoyé(s) correctement au TdT', 'growl');
         else
             $this->Session->setFlash('Erreur : ' . $erreur, 'growl', array('type' => 'erreurTDT'));
 
-        $this->redirect($this->Session->read('user.User.lasturl'));
+        if(isset($this->data['Seance']['id']) && !empty($this->data['Seance']['id']))
+        $this->redirect('/deliberations/toSend/'.$this->data['Seance']['id']);
+        else
+            $this->redirect('/deliberations/toSend/');
     }
 
     function getClassification() {
