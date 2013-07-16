@@ -43,19 +43,20 @@
 		<td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
 		<td><?php echo $delib['Deliberation']['titre']; ?></td>
                        
-		<td><?php 
-                          $id_num_pref = $delib['Deliberation']['id'].'_num_pref';
+		<td><?php $id_num_pref = $delib['Deliberation']['id'].'_num_pref';
                           echo $this->Form->input('Deliberation.'.$id_num_pref, array('label'=>false, 
                                                                                       'div'=>false, 
                                                                                       'id'=>$delib['Deliberation']['id'].'classif1', 
                                                                                       'size' => '60',
-                                                                                      'disabled'=>'disabled', 
+                                                                                      'readonly'=>'readonly', 
                                                                                       'value' => $delib['Deliberation'][$id_num_pref] ));?><br/>
 		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base;?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id'];?>', 'Classification', 'scrollbars=yes,,width=570,height=450');" id="<?php echo $delib['Deliberation']['id']; ?> _classification_text">[Choisir la classification]</a>
 		 <?php 
-		         echo $this->Form->hidden('Deliberation.'.$delib['Deliberation']['id'].'_num_pref',array('id'=>$delib['Deliberation']['id'].'classif2','name'=>$delib['Deliberation']['id'].'classif2')); 
-                 ?>
-		 </td>
+		         echo $this->Form->hidden('Deliberation.'.$delib['Deliberation']['id'].'_num_pref',array(   'id'=>$delib['Deliberation']['id'].'classif2',
+                                                                                                                    'name'=>$delib['Deliberation']['id'].'classif2',
+                                                                                                                    'value' => strstr($delib['Deliberation'][$id_num_pref], ' - ', true)
+                                                                                                                    ));
+		 ?></td>
 		   <?php
 		        if ($delib['Deliberation']['etat']== 5) {
 			   $tdt_id = $delib['Deliberation']['tdt_id'];
@@ -71,8 +72,12 @@
 	<br />
 
 	<div class="submit">
-            <?php echo $this->Form->button('<i class="icon-cloud-upload"></i> Envoyer',array('escape'=>false, 'type'=>'submit','class'=>'btn btn-primary'));?>
-	</div>
+            <?php echo $this->Form->button('<i class="icon-cloud-upload"></i> Envoyer',array('escape'=>false, 'type'=>'submit','class'=>'btn btn-primary'));
+            if(isset($seance_id))  
+            echo $this->Form->hidden('Seance.id',array('value' => $seance_id));
+            ?>
+	
+        </div>
 
 <?php echo $this->Form->end(); ?>
 </div>
