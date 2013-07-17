@@ -16,6 +16,8 @@ class GedoooComponent extends Component {
 	 * la fonction va retourner le path ou gedooo pourra aller chercher le fichier
 	 */
 	function createFile ($path, $name, $content) {
+            //TODO Pourquoi supprimer le dossier
+	    $this->checkPath($path);
             
             $file = new File($path.$name, false, 0644);
             if($file->exists())
@@ -86,6 +88,14 @@ class GedoooComponent extends Component {
 	  } else {
 	      echo 'Impossible d\'ajouter le fichier dans l\'archive';
 	  }
+	}
+    }
+    //Attention fonction public
+    function checkPath($path) {
+	if (!is_dir($path))
+	   return (mkdir($path, 0770, true));
+	else {
+            return true;
 	}
     }
 
