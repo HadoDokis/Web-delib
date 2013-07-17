@@ -20,8 +20,6 @@ App::uses('File', 'Utility');
             $this->out("Patch Processing...\n");
             $collection = new ComponentCollection();
             $this->Pdf = new PdfComponent($collection);
-           // $controller = null;
-            //$this->Pdf->initialize($controller);
              
             $annexes = $this->Annex->find('all',
                         array('fields'=>array('id','filename','filename_pdf','data_pdf'),
@@ -32,7 +30,7 @@ App::uses('File', 'Utility');
                 if ( strpos($annexe['Annex']['filename'], 'odt') === false )
                         continue;
                 
-                $this->out('Generation '.$annexe['Annex']['id'].'  ...');
+                $this->out('Generation '.$annexe['Annex']['id'].'...');
                 
                 $i++;
                 $newAnnexe['Annex']['id']=$annexe['Annex']['id'];
