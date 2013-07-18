@@ -7,13 +7,13 @@ class Annex extends AppModel {
 
         var $validate = array('joindre_ctrl_legalite' => array(
                                                                 'rule' => 'checkFileControlLegalite',
-                                                                'message' => 'Ce format de fichier est invalide pour joindre au contrôle de légalité'),
+                                                                'message' => 'Le format de fichier est invalide pour joindre au contrôle de légalité'),
                               'joindre_fusion' => array(
                                                         'rule' => 'checkFileFusion',
-                                                        'message' => 'Ce format de fichier est invalide pour le joindre à la fusion'),
+                                                        'message' => 'Le format de fichier est invalide pour le joindre à la fusion'),
                               'filename' => array(
                                                     'rule' => array('maxLength', 70),
-                                                    'message' => 'Nom de fichier trop long (70 caract&eageave;res maximum)','growl'));
+                                                    'message' => 'Le nom de fichier trop long (70 caract&eageave;res maximum)','growl'));
 	
 	var $belongsTo = array(
 		'Deliberation' => array(
