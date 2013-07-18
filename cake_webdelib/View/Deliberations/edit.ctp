@@ -181,7 +181,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 	$tabAnnexes = array();
         if (isset($this->data['Annex'])) {
 	    foreach ($this->data['Annex'] as $annexe) {
-	        if ($annexe['model'] == 'Projet') 
+	        if (isset($annexe['model']) && $annexe['model'] == 'Projet') 
 		    $tabAnnexes[] = $annexe;
             }
         }

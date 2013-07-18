@@ -42,6 +42,7 @@
 App::uses('Model', 'Model');
 class AppModel extends Model{
 
+    //var $actsAs=array('Containable');
  /*
  * Equivalent du find('list') mais sur plusieurs champs du model
  * $params permet de passer tous les paramètres à la fonction sous la forme :
@@ -137,5 +138,15 @@ function listFields($params = array()) {
         else 
             return true;
    }*/
+    
+    public function isUploadedFile($params) {
+        $val = array_shift($params);
+        if ((isset($val['error']) && $val['error'] == 0) ||
+            (!empty( $val['tmp_name']) && $val['tmp_name'] != 'none')
+        ) {
+            return true;
+        }
+        return false;
+    }
 }
 ?>

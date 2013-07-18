@@ -10,19 +10,19 @@ class Deliberation extends AppModel {
 					array( 'rule'    => array('canSaveNature', 'notEmpty'),
 						'message' => "Type d'acte invalide")),
 			'texte_projet_type'   => array(
-					array('rule' => array('checkMimetype', 'texte_projet', array('application/vnd.oasis.opendocument.text','application/zip')),
+					array('rule' => array('checkMimetype', 'texte_projet', array('application/vnd.oasis.opendocument.text')),
 							'message' => "Ce type de fichier n'est pas autorisé")),
 			'texte_synthese_type' => array(
-					array('rule' => array('checkMimetype', 'texte_synthese',  array('application/vnd.oasis.opendocument.text','application/zip')),
+					array('rule' => array('checkMimetype', 'texte_synthese',  array('application/vnd.oasis.opendocument.text')),
 							'message' => "Ce type de fichier n'est pas autorisé")),
 			'deliberation_type'   => array(
-					array('rule' => array('checkMimetype', 'deliberation',  array('application/vnd.oasis.opendocument.text','application/zip')),
+					array('rule' => array('checkMimetype', 'deliberation',  array('application/vnd.oasis.opendocument.text')),
 							'message' => "Ce type de fichier n'est pas autorisé")),
 			'debat_type'           => array(
-					array('rule' => array('checkMimetype', 'debat',  array('application/vnd.oasis.opendocument.text','application/zip')),
+					array('rule' => array('checkMimetype', 'debat',  array('application/vnd.oasis.opendocument.text')),
 							'message' => "Ce type de fichier n'est pas autorisé")),
 			'commission_type'      => array(
-					array('rule' => array('checkMimetype', 'commission',  array('application/vnd.oasis.opendocument.text','application/zip')),
+					array('rule' => array('checkMimetype', 'commission',  array('application/vnd.oasis.opendocument.text')),
 							'message' => "Ce type de fichier n'est pas autorisé")));
 
 
@@ -1442,6 +1442,7 @@ class Deliberation extends AppModel {
 						  AND Deliberation.etat != -1
 					ORDER BY Deliberation.created DESC;";
 
+                echo $requete;
 		return ($this->query($requete));
 
 	}

@@ -453,13 +453,14 @@ class DeliberationsController extends AppController {
 
     function _saveAnnexe($delibId, $annexe) {
         App::uses('File', 'Utility');
+        $return=false;
         
         if ($annexe['ref']==  'delibPrincipale')
             $Model = 'Projet';
         else
             $Model = 'Deliberation';
-
-        if (is_array($annexe) && !empty($annexe['file']['name'])) {
+        
+        if (is_array($annexe) && !empty($annexe['file']['name']) && $this->Annex->isUploadedFile(array('file'=>$annexe['file']))) {
             $newAnnexe = $this->Annex->create();
             $newAnnexe['Annex']['model'] = $Model;
             $newAnnexe['Annex']['foreign_key'] = $delibId;
@@ -474,7 +475,7 @@ class DeliberationsController extends AppController {
             //Enregistrement du type mime vérifier
             if(!isset($DOC_TYPE[$file->mime()]['mime_conversion'])){
                 $file->close();
-                $this->Session->setFlash('Fichier de type inconnu. Veuillez contacter votre administrateur', 'growl', array('type'=>'erreur'));
+                $this->Annex->validationErrors['_save_annexe'] = 'Fichier de type inconnu. Veuillez contacter votre administrateur';
                 return false;
             }
                 
@@ -494,9 +495,14 @@ class DeliberationsController extends AppController {
             $file->close();
             
             if(!$this->Annex->save($newAnnexe['Annex']))
-                $this->Session->setFlash('Erreur lors de la sauvegarde des annexes.', 'growl', array('type'=>'erreur'));
+            {
+                $this->Annex->validationErrors['_save_annexe'] = 'Lors de la sauvegarde des annexes :';
+            }else $return=true;
         }
-        return true;
+        else
+            $this->Annex->validationErrors['_save_annexe'] = 'Lors de la sauvegarde des annexes : Limite Upload:'.ini_get('upload_max_filesize');
+        
+        return $return;
     }
 
     function edit($id=null) {
@@ -688,6 +694,7 @@ class DeliberationsController extends AppController {
         { 
             $success = true;
             $this->Deliberation->begin();
+            $DOC_TYPE = Configure::read('DOC_TYPE');
             
             $oldDelib = $this->Deliberation->find('first', array('conditions' =>array('Deliberation.id'=> $id)));
             // Si on definit une seance a une delib, on la place en derniere position de la seance
@@ -795,11 +802,16 @@ class DeliberationsController extends AppController {
                 }
                 
                 // sauvegarde des nouvelles annexes
+               if($success)
                 if (array_key_exists('Annex', $this->data))
                 foreach($this->data['Annex'] as $annexe) {
-                    if ($annexe['ref'] == 'delibPrincipale') if(!$this->_saveAnnexe($id, $annexe))$this->redirect("/deliberations/edit/$id");
-                    if ($annexe['ref'] == 'delibRattachee'.$id) if(!$this->_saveAnnexe($id, $annexe))$this->redirect("/deliberations/edit/$id");
+                    if ($annexe['ref'] == 'delibPrincipale')
+                        $success = $this->_saveAnnexe($id, $annexe) && $success;
+                    if ($annexe['ref'] == 'delibRattachee'.$id)
+                        $success = $this->_saveAnnexe($id, $annexe) && $success;
                 }
+
+                if($success){
                 // suppression des annexes
                 if (array_key_exists('AnnexesASupprimer', $this->data))
                     foreach($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
@@ -832,15 +844,9 @@ class DeliberationsController extends AppController {
                         }
                     }
                 }
-                
-                if (!empty($this->Annex->validationErrors)) {
-                    
-                    $this->Session->setFlash(@implode(',',$this->Annex->validationErrors['joindre_ctrl_legalite']).' '.
-                    @implode(',',$this->Annex->validationErrors['joindre_fusion']), 'growl', array('type'=>'erreur') );
-                    $this->redirect("/deliberations/edit/$id");
-                }
-                
+               }
                 // suppression des délibérations rattachées
+                if($success)
                 if (array_key_exists('MultidelibASupprimer', $this->data)) {
                     foreach($this->data['MultidelibASupprimer'] as $delibId){
                         $this->Deliberation->supprimer($delibId);
@@ -849,6 +855,7 @@ class DeliberationsController extends AppController {
                 }
                
                 // sauvegarde de délibérations rattachées
+                if($success)
                 if (array_key_exists('Multidelib', $this->data)) {
                     foreach($this->data['Multidelib'] as $iref => $multidelib) {
                         $delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib, $this->data['Deliberation']['objet']);
@@ -889,12 +896,16 @@ class DeliberationsController extends AppController {
                     $redirect='/';
                     
                 } else {
-                    $this->Deliberation->commit();
-                    //$this->Deliberation->rollback();
-                    $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-                    $errors_Infosup = $this->Deliberation->Infosup->invalidFields();	
-                    
-                    $this->set('errors_Infosup', $errors_Infosup);
+                    $this->Deliberation->rollback();
+                   // $this->Session->
+                   $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
+                   if (!empty($this->Annex->validationErrors)) {
+                    $this->Session->setFlash($this->Annex->validationErrors['_save_annexe'].' -'.@implode(',',$this->Annex->validationErrors['joindre_ctrl_legalite']).' -'.
+                    @implode(',',$this->Annex->validationErrors['joindre_fusion'])
+                    , 'growl', array('type'=>'erreur') );
+                   }
+                   
+                   $this->set('errors_Infosup', $this->Deliberation->Infosup->invalidFields());
                     $sortie = false;
                 }
          
@@ -902,20 +913,18 @@ class DeliberationsController extends AppController {
                 $this->redirect($redirect);
           else
             {
-                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur') );
+                //$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur') );
                 $errors_field =  $this->Deliberation->invalidFields();
 
-                $this->set('validationErrorsArray',  $errors_field);
-                if (!empty($errors_field)) {
-                    $name = array();
-                    if (!isset($this->data['Deliberation']['texte_projet_name']))
-                        $name['texte_projet_name']  =   $oldDelib['Deliberation']['texte_projet_name'];
-                    if (!isset($this->data['Deliberation']['texte_synthese_name']))
-                        $name['texte_synthese_name']= $oldDelib['Deliberation']['texte_synthese_name'];
-                    if (!isset($this->data['Deliberation']['deliberation_name']))
-                        $name['deliberation_name']  =  $oldDelib['Deliberation']['deliberation_name'];
-                    $this->set('names', $name);
-               }
+                if (!isset($this->data['Deliberation']['texte_projet_name']))
+                    $this->request->data['Deliberation']['texte_projet_name']  =   $oldDelib['Deliberation']['texte_projet_name'];
+                if (!isset($this->data['Deliberation']['texte_synthese_name']))
+                    $this->request->data['Deliberation']['texte_synthese_name']= $oldDelib['Deliberation']['texte_synthese_name'];
+                if (!isset($this->data['Deliberation']['deliberation_name']))
+                    $this->request->data['Deliberation']['deliberation_name'] =  $oldDelib['Deliberation']['deliberation_name'];
+               
+               
+               
 
             App::import('model','TypeseancesTypeacte');
             $TypeseancesTypeacte = new TypeseancesTypeacte();
@@ -1006,8 +1015,6 @@ class DeliberationsController extends AppController {
             }*/
             
             
-            
-            
             $this->set('seances', $seances);
             $this->set('seances_selected', $seances_selected);
             $this->set ('typeseances',  $typeseances);
@@ -1017,7 +1024,10 @@ class DeliberationsController extends AppController {
             $this->set('themes', $this->Deliberation->Theme->find('list',array('conditions'=>array('Theme.actif'=>'1'))));
             $this->set('circuits', $this->Deliberation->Circuit->find('list'));
             $this->set('datelim',$this->data['Deliberation']['date_limite']);
-            $this->set('annexes',$this->Annex->find('all', array('conditions'=> array('model'=>'Deliberation', 'foreign_key'=>$id))));
+            $annexes=$this->Annex->find('all', array('conditions'=> array('model'=>'Projet', 'foreign_key'=>$id)));
+            foreach($annexes as $id => $annexe) 
+                    $this->request->data['Annex'][$id] = $annexe['Annex'];
+                
             $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
             $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
             $this->set('redirect', $redirect);
