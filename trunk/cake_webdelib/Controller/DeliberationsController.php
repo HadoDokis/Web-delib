@@ -915,6 +915,7 @@ class DeliberationsController extends AppController {
             {
                 //$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur') );
                 $errors_field =  $this->Deliberation->invalidFields();
+                $this->set('validationErrorsArray',  $errors_field);
 
                 if (!isset($this->data['Deliberation']['texte_projet_name']))
                     $this->request->data['Deliberation']['texte_projet_name']  =   $oldDelib['Deliberation']['texte_projet_name'];
@@ -925,20 +926,20 @@ class DeliberationsController extends AppController {
                
                
                
-
             App::import('model','TypeseancesTypeacte');
             $TypeseancesTypeacte = new TypeseancesTypeacte();
             $typeseance_ids = $TypeseancesTypeacte->getTypeseanceParNature($this->request->data['Deliberation']['typeacte_id']);
             $typeseances = $this->Typeseance->find('list', array('conditions' => array('Typeseance.id'      => $typeseance_ids),
                                                            'order'      => array('Typeseance.libelle' => 'ASC')));
-             
             array($typeseances_selected);
             if (isset($this->request->data['Typeseance']) && !empty($this->request->data['Typeseance']) ){
-                foreach ( $typeseances as $key=>$typeseance)
+                foreach ( $typeseances as $key=>$typeseance){
+                    if(isset($this->request->data['Typeseance']['Typeseance']) && !empty($this->request->data['Typeseance']['Typeseance']))
                     foreach($this->request->data['Typeseance']['Typeseance'] as $num_type){
                     if ($num_type==$key)
                         $typeseances_selected[] = $key;
                     }
+                }
             }
             $seances=array();
             $seances_tmp = $this->Seance->find('all', array('conditions' => array('Seance.type_id' => $typeseances_selected,

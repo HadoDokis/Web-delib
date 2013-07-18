@@ -1442,7 +1442,6 @@ class Deliberation extends AppModel {
 						  AND Deliberation.etat != -1
 					ORDER BY Deliberation.created DESC;";
 
-                echo $requete;
 		return ($this->query($requete));
 
 	}
