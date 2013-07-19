@@ -1,30 +1,26 @@
-<script>
-    $(document).ready(function(){
-        var ma_valeur =  <?php  echo Configure::read('USE_PASTELL'); ?>;
-        if (ma_valeur == 1) $('#affiche').show(); else $('#affiche').hide(); 
-    });
-</script>
-
-
-
 <div class='spacer'> </div>
+<style type="text/css">
+    div.input.radio fieldset label { text-align: left; padding-left: 5px; width:auto;}
+    div.input.radio {padding-left: 0px;}
+    div.input.radio input[type="radio"]{margin-left: 25px;}
+</style>
 <?php  
 
     echo $this->Form->create('Connecteur',array('url'=>'/connecteurs/makeconf/pastell')); 
 
-    $notif = array(1 => 'Oui', 0=>'Non');
-    echo $this->Form->input('use_pastell', array('before'  => '<label>Utilisation du PASTELL</label>',
-                                               'legend'  => false,
+    $notif = array('true' => 'Oui','false'=>'Non');
+    echo $this->Form->input('use_pastell', array('before'  => '',
+                                               'legend'  => 'Utilisation du PASTELL',
                                                'type'    => 'radio',
                                                'options' => $notif,
-                                               'value' => Configure::read('USE_PASTELL'),
-                                               'div'     => false,
-                                               'default' => 0,
-                                               'label'   => false,
-                                               'onClick'=>"if(this.value==1) $('#affiche').show(); else $('#affiche').hide(); " ));
+                                               'value' => Configure::read('USE_PASTELL')?'true':'false',
+                                               'div'     => true,
+                                               'default' => 'false',
+                                               'label'   => true,
+                                               'onClick'=>"if(this.value=='true') $('#affiche').show(); else $('#affiche').hide(); " ));
  ?>
     <div class='spacer'> </div>
-    <div id='affiche'>
+    <div id='affiche' <?php  echo Configure::read('USE_PASTELL')===false?'style="display: none;"':''; ?>>
     <fieldset>
         <legend>Paramètrage de PASTELL</legend>
 <?php  

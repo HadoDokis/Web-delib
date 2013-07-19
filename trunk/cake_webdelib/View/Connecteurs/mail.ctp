@@ -3,7 +3,7 @@
 
     echo $this->Form->create('Connecteur',array('url'=>'/connecteurs/makeconf/mail')); 
 
-    $notif = array(1 => 'Oui', 0=>'Non');
+    $notif = array('true' => 'Oui', 'false'=>'Non');
     echo $this->Form->input('smtp_use', array('before'  => '<label>Utilisation du SMTP de la collectivité</label>',
                                                'legend'  => false,
                                                'type'    => 'radio',
@@ -12,10 +12,10 @@
                                                'div'     => false,
                                                'default' => 0,
                                                'label'   => false,
-                                               'onClick'=>"if(this.value==1) $('#affiche').show(); else $('#affiche').hide(); " ));
+                                               'onClick'=>"if(this.value=='true') $('#affiche').show(); else $('#affiche').hide(); " ));
  ?>
     <div class='spacer'> </div>
-    <div id='affiche'>
+    <div id='affiche' <?php echo !Configure::read('SMTP_USE')===false?'style="display: none;"':''; ?>>
     <fieldset>
         <legend>Paramètrage du SMTP</legend>
 <?php  
