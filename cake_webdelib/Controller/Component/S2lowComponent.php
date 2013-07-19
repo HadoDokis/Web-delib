@@ -28,6 +28,7 @@ class S2lowComponent extends Component {
     }
 
     function getClassification() {
+        $sucess=true;
         $pos = strrpos(getcwd(), 'webroot');
         $path = substr(getcwd(), 0, $pos);
 
@@ -56,11 +57,14 @@ class S2lowComponent extends Component {
         curl_close($ch);
 
         $file = new File(Configure::read('FILE_CLASS'), true);
-        $file->write(utf8_encode($reponse));
+        if($file->writable())
+            $file->write(utf8_encode($reponse));
+        else
+            $sucess=false;
         $file->close();
         //echo "Impossible d'ecrire dans le fichier ($filename)";
 
-        return true;
+        return $sucess;
     }
 
     function getFluxRetour($tdt_id) {
@@ -80,6 +84,7 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         $curl_return = curl_exec($ch);
+        
         return($curl_return);
     }
 
