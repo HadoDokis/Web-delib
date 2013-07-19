@@ -4,6 +4,9 @@
 	if (!isset($_GET['id'])) {
         foreach ($classification as $key=>$value) {
 	        $val=addslashes($value);
+                if(is_int($key) && !is_string($key))
+                echo $key.' - '.$value;
+                    else
 	        echo $this->Html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:returnChoice('$key - $val','$key');", 'id'=>$key, 'name'=>$key, 'value'=>$key));
 	        echo '<br/>';
         }
@@ -12,6 +15,9 @@
     	$id = $_GET['id'];
     	foreach ($classification as $key=>$value) {
 	        $val=addslashes($value);
+                 if(is_int($key) && !is_string($key))
+                echo $key.' - '.$value;
+                    else
 	       echo $this->Html->link($key.' - '.$value,'#add',array('onclick'=>"javascript:return_choice_lot('$key - $val','$key',$id);", 'id'=>$key, 'name'=>$key, 'value'=>$key));
 	        echo '<br/>';
     	}
