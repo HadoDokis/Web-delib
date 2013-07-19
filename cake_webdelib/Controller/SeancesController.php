@@ -983,28 +983,36 @@ class SeancesController extends AppController {
 	}
 
 	function download($id=null, $file){
-		header('Content-type: '.$this->getFileType($id, $file));
-		header('Content-Length: '.$this->getSize($id, $file));
-		header('Content-Disposition: attachment; filename="'.$this->getFileName($id, $file).'"');
-		echo $this->getData($id, $file);
+            
+                $objCourant = $this->Seance->find('first', array(
+                                                        'fields'     => array('Seance.'.$file,'Seance.'.$file.'_type'
+                                                            ,'Seance.'.$file.'_size','Seance.'.$file.'_name'),
+                                                        'conditions' => array('Seance.id' => $id),
+                                                        'recursive'=>-1)
+                                                          );
+            
+		header('Content-type: '.$objCourant['Seance'][$file."_type"]);
+		header('Content-Length: '.$objCourant['Seance'][$file."_size"]);
+		header('Content-Disposition: attachment; filename="'.$objCourant['Seance'][$file."_name"].'"');
+		echo $objCourant['Seance'][$file];
 		exit();
 	}
-
+//Obsolete
 	function getFileType($id=null, $file) {
 		$objCourant = $this->Seance->read(null, $id);
 		return $objCourant['Seance'][$file."_type"];
 	}
-
+//Obsolete
 	function getFileName($id=null, $file) {
 		$objCourant = $this->Seance->read(null, $id);
 		return $objCourant['Seance'][$file."_name"];
 	}
-
+//Obsolete
 	function getSize($id=null, $file) {
 		$objCourant = $this->Seance->read(null, $id);
 		return $objCourant['Seance'][$file."_size"];
 	}
-
+//Obsolete
 	function getData($id=null, $file) {
 		$objCourant = $this->Seance->find('first', array('conditions' => array('Seance.id' => $id),
 		                                                  'fields'     => array("Seance.$file")));
@@ -1285,7 +1293,7 @@ class SeancesController extends AppController {
                         $searchReplace = array("#NOM#" => $acteur['Acteur']['nom'], "#PRENOM#" => $acteur['Acteur']['prenom'] );
                         $template = file_get_contents(CONFIG_PATH.'/emails/convocation.txt');
                         $content = utf8_decode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $template))));
-                        $subject = utf8_decode('Convocation à la séance \''.$seance['Typeseance']['libelle'].'\' du : '
+                        $subject = utf8_decode('Ordre du jour de la séance \''.$seance['Typeseance']['libelle'].'\' du : '
                                               .$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date'])));
                         if (Configure::read('USE_MAIL_SECURISE')) {
                             $data['mailto']  = $acteur['Acteur']['email'];
