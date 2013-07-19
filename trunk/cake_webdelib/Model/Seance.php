@@ -43,9 +43,9 @@ class Seance extends AppModel {
 					'conditions' => array('Infosup.model' => 'Seance')),
                         'Deliberationseance' =>array(
 					'className'    => 'Deliberationseance',
-                                        'joinTable' => 'Deliberation',
+                                        //'joinTable' => 'Deliberation',
 					'foreignKey'   => 'seance_id',
-                                        'conditions' => array('Deliberation.etat >='=>0),
+                                        //'conditions' => array('Deliberation.etat >='=>0),
                                         'order'      => 'Deliberationseance.position ASC'
                          ),
             
@@ -155,7 +155,8 @@ class Seance extends AppModel {
                         'contain'=>'Deliberation',
                         'recursive' => 1,
                         'conditions' =>  array(
-                            'Deliberationseance.seance_id' => $seance_id
+                            'Deliberationseance.seance_id' => $seance_id,
+                            'Deliberation.etat >='=>0,
                         ),
                         'order'=>'Deliberationseance.position ASC',
                     )
