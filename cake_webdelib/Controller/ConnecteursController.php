@@ -76,16 +76,19 @@ class ConnecteursController extends AppController
     }
 
     function _replaceValue($content, $param,  $new_value) {
+        if(is_bool(Configure::read($param)))
+            $valeur=Configure::read($param)===true?'true':'false';
+        else
+             $valeur=Configure::read($param);
         
-        $host_b = "Configure::write('$param', '".Configure::read($param)."');";
+        $host_b = "Configure::write('$param', '".$valeur."');";
         $host_a = "Configure::write('$param', '$new_value');";
         $return=str_replace( $host_b,  $host_a , $content, $count);
-        
         if($count===0){
-            $host_b = "Configure::write('$param', ".Configure::read($param).");";
+            $host_b = "Configure::write('$param', ".$valeur.");";
             $host_a = "Configure::write('$param', $new_value);";
             
-            $return=str_replace( $host_b,  $host_a , $content);
+            $return=str_replace( $host_b,  $host_a , $content,$count);
         }
         
         return $return;
@@ -161,11 +164,11 @@ class ConnecteursController extends AppController
                 break;
             case 'asalae' :
                 $content = $this->_replaceValue($content, 'USE_ASALAE',     $this->data['Connecteur']['use_asalae']);
-                $content = $this->_replaceValue($content, 'USE_GED',   $this->data['Connecteur']['use_ged']);
                 $content = $this->_replaceValue($content, 'SIREN_ARCHIVE',   $this->data['Connecteur']['siren_archive']);
                 $content = $this->_replaceValue($content, 'NUMERO_AGREMENT', $this->data['Connecteur']['numero_agrement']);
                 $content = $this->_replaceValue($content, 'IDENTIFIANT_VERSANT', $this->data['Connecteur']['identifiant_versant']);
                 $content = $this->_replaceValue($content, 'MOT_DE_PASSE',     $this->data['Connecteur']['mot_de_passe']);
+             break;
             case 'debug' :
                 $content = $this->_replaceValue($content, 'debug',   $this->data['Connecteur']['debug']);
                 break;

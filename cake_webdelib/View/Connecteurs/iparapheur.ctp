@@ -1,12 +1,3 @@
-<script>
-$(document).ready(function(){
-    <?php  if (Configure::read('USE_PARAPH')): ?>
-        $('#parapheur').show(); 
-    <?php else: ?>
-        $('#parapheur').hide(); 
-    <?php endif; ?>
-});
-</script>
 <div class='spacer'> </div>
 <style type="text/css">
     div.input.radio fieldset label { text-align: left; padding-left: 5px; width:auto;}
@@ -15,19 +6,19 @@ $(document).ready(function(){
 </style>
 <?php
     echo $this->Form->create('Connecteur',array('url'=>'/connecteurs/makeconf/iparapheur', 'type'=>'file' )); 
-    $notif = array(1 => 'Oui', 0=>'Non');
+    $notif = array('true' => 'Oui', 'false' => 'Non');
     echo $this->Form->input('use_paraph', array('before'  => '',
                                                'legend'  => "Utilisation du i-parapheur électronique",
                                                'type'    => 'radio',
                                                'options' => $notif,
-                                               'value' => Configure::read('USE_PARAPH'),
+                                               'value' => Configure::read('USE_PARAPH')?'true':'false',
                                                'div'     => true,
-                                               'default' => 0,
+                                               'default' => 'false',
                                                'label'   => true,
-                                               'onClick'=>"if(this.value==1) $('#parapheur').show(); else $('#parapheur').hide(); " ));
+                                               'onClick'=>"if(this.value=='true') $('#affiche').show(); else $('#affiche').hide(); " ));
  ?>
     <div class='spacer'> </div>
-    <div id='parapheur'>
+    <div id='affiche' <?php  echo Configure::read('USE_PARAPH')===false?'style="display: none;"':''; ?>>
     <fieldset>
         <legend>Adresse de la plateforme I-Parapheur</legend>
 <?php  

@@ -1,28 +1,21 @@
-<script>
-    $(document).ready(function(){
-        var ma_valeur =  <?php  echo Configure::read('USE_GED'); ?>;
-        if (ma_valeur == 1) $('#affiche').show(); else $('#affiche').hide(); 
-    });
-</script>
-
 <div class='spacer'> </div>
 <?php  
 
     echo $this->Form->create('Connecteur',array('url'=>'/connecteurs/makeconf/cmis')); 
 
-    $notif = array(1 => 'Oui', 0=>'Non');
+    $notif = array('true' => 'Oui', 'false'=>'Non');
     echo $this->Form->input('use_ged', array('before'  => '<label>Utilisation d\'une GED</label>',
                                                'legend'  => false,
                                                'type'    => 'radio',
                                                'options' => $notif,
-                                               'value' => Configure::read('USE_GED'),
+                                               'value' => Configure::read('USE_GED')?'true':'false',
                                                'div'     => false,
-                                               'default' => 0,
+                                               'default' => 'false',
                                                'label'   => false,
-                                               'onClick'=>"if(this.value==1) $('#affiche').show(); else $('#affiche').hide(); " ));
+                                               'onClick'=>"if(this.value=='true') $('#affiche').show(); else $('#affiche').hide(); " ));
  ?>
     <div class='spacer'> </div>
-    <div id='affiche'>
+    <div id='affiche' <?php echo Configure::read('USE_GED')===false?'style="display: none;"':''; ?>>
     <fieldset>
         <legend>Paramètrage de la GED</legend>
 <?php  
