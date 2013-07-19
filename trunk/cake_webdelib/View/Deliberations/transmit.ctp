@@ -80,13 +80,13 @@
                             foreach ($delib['TdtMessage'] as $message){
                                 $url_newMessage = "https://".Configure::read("HOST")."/modules/actes/actes_transac_show.php?id=".$message['message_id'];
                                 if ($message['type_message'] ==2 )
-                                    echo $this->Html->link("Courrier simple", $url_newMessage)."<br />";
+                                    echo $this->Html->link("Courrier simple", $url_newMessage,array('target' => '_blank'))."<br />";
                                 if ($message['type_message'] ==3 )
-                                    echo $this->Html->link("Demande de pièces complémentaires", $url_newMessage)."<br />";
+                                    echo $this->Html->link("Demande de pièces complémentaires", $url_newMessage,array('target' => '_blank'))."<br />";
                                 if ($message['type_message'] == 4 )
-                                    echo $this->Html->link("Lettre d'observation", $url_newMessage)."<br />";
+                                    echo $this->Html->link("Lettre d'observation", $url_newMessage,array('target' => '_blank'))."<br />";
                                 if ($message['type_message'] == 5 )
-                                    echo $this->Html->link("Déféré au tribunal administratif", $url_newMessage)."<br />";
+                                    echo $this->Html->link("Déféré au tribunal administratif", $url_newMessage,array('target' => '_blank'))."<br />";
                             }
                         }
                     ?>

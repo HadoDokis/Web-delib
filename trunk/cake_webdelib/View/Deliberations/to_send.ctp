@@ -33,7 +33,7 @@
 	          $numLigne++;
 
 		if ($delib['Deliberation']['etat']!= 5)
-			echo("<td>".$this->Form->checkbox('Deliberation.id.'.$delib['Deliberation']['id'])."</td>");
+			echo("<td>".$this->Form->checkbox('Deliberation.id.'.$delib['Deliberation']['id'], array('hiddenField' => false))."</td>");
 		else
 		    echo("<td></td>");
 
@@ -43,18 +43,21 @@
 		<td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
 		<td><?php echo $delib['Deliberation']['titre']; ?></td>
                        
-		<td><?php $id_num_pref = $delib['Deliberation']['id'].'_num_pref';
-                          echo $this->Form->input('Deliberation.'.$id_num_pref, array('label'=>false, 
+		<td><?php 
+                            //debug(tabMatiere);
+                //$tabMatiere['$id_num_pref']
+                          $id_num_pref = $delib['Deliberation']['id'].'_num_pref';
+                          echo $this->Form->input('Deliberation.'.$delib['Deliberation']['id'].'_num_pref_libelle', array('label'=>false, 
                                                                                       'div'=>false, 
                                                                                       'id'=>$delib['Deliberation']['id'].'classif1', 
-                                                                                      'size' => '60',
-                                                                                      'readonly'=>'readonly', 
-                                                                                      'value' => $delib['Deliberation'][$id_num_pref] ));?><br/>
+                                                                                      'style' => 'width: 25em;',
+                                                                                      'disabled'=>'disabled', 
+                                                                                      'value' => $delib['Deliberation']['num_pref'].' - '.$delib['Deliberation']['num_pref_libelle']));?><br/>
 		<a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base;?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id'];?>', 'Classification', 'scrollbars=yes,,width=570,height=450');" id="<?php echo $delib['Deliberation']['id']; ?> _classification_text">[Choisir la classification]</a>
 		 <?php 
 		         echo $this->Form->hidden('Deliberation.'.$delib['Deliberation']['id'].'_num_pref',array(   'id'=>$delib['Deliberation']['id'].'classif2',
                                                                                                                     'name'=>$delib['Deliberation']['id'].'classif2',
-                                                                                                                    'value' => strstr($delib['Deliberation'][$id_num_pref], ' - ', true)
+                                                                                                                    'value' => $delib['Deliberation']['num_pref']
                                                                                                                     ));
 		 ?></td>
 		   <?php

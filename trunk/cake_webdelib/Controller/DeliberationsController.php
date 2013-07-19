@@ -98,7 +98,9 @@ class DeliberationsController extends AppController {
                 'Multidelib.deliberation_name', 'Multidelib.Annex','Deliberationseance.id'),
             'conditions' => array('Deliberation.id' => $id)
         ));
-
+        
+        $this->request->data['Deliberation']['num_pref']=$this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
+        
         if (empty($this->data)) {
             $this->Session->setFlash('Invalide id pour la délibération : affichage de la vue impossible.', 'growl');
             $this->redirect('/deliberations/mesProjetsRedaction');
@@ -263,6 +265,9 @@ class DeliberationsController extends AppController {
             $this->request->data['Deliberation']['service_id'] = $user['User']['service'];
             if (!isset($this->data['Deliberation']['is_multidelib']) || ($this->data['Deliberation']['is_multidelib'] == 0))
                 $this->request->data['Deliberation']['objet_delib'] = $this->data['Deliberation']['objet'];
+            
+            if(isset($this->data['Deliberation']['num_pref']) && isset($this->data['Deliberation']['classif2']))
+            $this->request->data['Deliberation']['num_pref'] =  $this->data['Deliberation']['classif2'];
             
             if(empty($this->data['Deliberation']['theme_id']))
                 unset($this->request->data['Deliberation']['theme_id']);
@@ -705,6 +710,10 @@ class DeliberationsController extends AppController {
                 }
             }
             
+           if(isset($this->data['Deliberation']['num_pref']) && isset($this->data['Deliberation']['classif2']))
+            $this->request->data['Deliberation']['num_pref'] =  $this->data['Deliberation']['classif2'];
+            
+            
            if(empty($this->data['Deliberation']['theme_id']))
                 unset($this->request->data['Deliberation']['theme_id']);
              
@@ -1028,6 +1037,10 @@ class DeliberationsController extends AppController {
             $annexes=$this->Annex->find('all', array('conditions'=> array('model'=>'Projet', 'foreign_key'=>$id)));
             foreach($annexes as $id => $annexe) 
                     $this->request->data['Annex'][$id] = $annexe['Annex'];
+            
+             if(isset($this->data['Deliberation']['num_pref']) && isset($this->data['Deliberation']['classif2']))
+            $this->request->data['Deliberation']['num_pref'] =  $this->_getMatiereByKey($this->data['Deliberation']['classif2']);
+            
                 
             $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
             $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
@@ -1137,13 +1150,14 @@ class DeliberationsController extends AppController {
                         )
                     );
                     $traitementTermine = $this->Traitement->execute('IN', $user_connecte, $id, $options);
+                    
                     if ($traitementTermine) {
                         $this->Historique->enregistre($id, $user_connecte, 'Projet valide');
                         $this->Deliberation->id = $id;
                         $this->Deliberation->saveField('etat', 2);
                     }
                     $this->Traitement->Visa->replaceDynamicTrigger($id);
-                }
+               }
 
                 // envoi un mail a tous les membres du circuit
                 $listeUsers = $this->Circuit->getAllMembers($this->data['Deliberation']['circuit_id']);
@@ -1428,7 +1442,7 @@ class DeliberationsController extends AppController {
                 'order' => array('Deliberation.id' => 'DESC'),
                 'conditions' => $conditions,
                 'limit' => 20));
-
+        
         $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
         $this->set('host', Configure::read('HOST'));
         $this->set('dateClassification', $this->S2low->getDateClassification());
@@ -1441,6 +1455,9 @@ class DeliberationsController extends AppController {
         $deliberations = $this->paginate('Deliberation');
         $toutes_seances = array();
         for ($i = 0; $i < count($deliberations); $i++) {
+            
+        $deliberations[$i]['Deliberation']['num_pref']=$deliberations[$i]['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($deliberations[$i]['Deliberation']['num_pref']);
+        
             $seances = $deliberations[$i]['Seance'];
             if (count($seances) == 1) {
                 $deliberations[$i]['Seance']['id'] = $seances[0]['id'];
@@ -1562,10 +1579,9 @@ class DeliberationsController extends AppController {
         * Deliberation.etat = 4 : Voté contre
         * Deliberation.etat = 5 : envoyé*/
         
-        if (!empty($seance_id))
-            $conditions['Deliberation.etat <='] = 5;
-        else
+        if (empty($seance_id))
             $conditions['Deliberation.etat <'] = 5;
+      
         
         $conditions['Deliberation.etat >='] = 3;
         //$conditions['Deliberation.etat >='] = 2;
@@ -1580,16 +1596,17 @@ class DeliberationsController extends AppController {
         $options = array_merge($defaut, array('conditions' => $conditions));
 
         if (!empty($seance_id)) {
-		$options['conditions']['Deliberationseance.id'] = $seance_id;
+		$options['conditions']['Deliberationseance.seance_id'] = $seance_id;
         }  
         else {
             $options['order']=array('Seance.date ASC');
         }
         $deliberations = $this->Deliberationseance->find('all', $options);
         
-        for ($i = 0; $i < count($deliberations); $i++)
-            $deliberations[$i]['Deliberation'][$deliberations[$i]['Deliberation']['id'] . '_num_pref'] = $deliberations[$i]['Deliberation']['num_pref'];
-       
+        for ($i = 0; $i < count($deliberations); $i++){
+            $deliberations[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($deliberations[$i]['Deliberation']['num_pref']);
+            
+        }
         if (!$this->Filtre->critereExists()) {
             $this->Filtre->addCritere('SeanceId', array('field' => 'Seance.id',
                 'inputOptions' => array(
@@ -1654,6 +1671,17 @@ class DeliberationsController extends AppController {
         }
         return $tab;
     }
+    
+    /** Retourne la matière par rapport a une clé donnée en parametre
+     * 
+     * @param type $key
+     * @return String
+     */
+    function _getMatiereByKey($key)
+    {
+        $aMatiere=$this->_getMatiereListe();
+        return isset($aMatiere[$key])?$aMatiere[$key]:NULL;
+    }
 
     function _object2array($object) {
         $return = NULL;
@@ -1674,7 +1702,6 @@ class DeliberationsController extends AppController {
 
     function sendActe() {
         $erreur = '';
-        
         if(isset($this->data['Deliberation']['id']) && !empty($this->data['Deliberation']['id'])){
         
             if (!is_file(Configure::read('FILE_CLASS')))
@@ -2363,6 +2390,8 @@ class DeliberationsController extends AppController {
             if (isset($projet[0]))
                 $projet['Deliberation'] = $projet[0];
             $this->request->data[$i]['last_viseur'] = $this->Traitement->dernierVisaTrigger($projet['Deliberation']['id']);
+            $this->request->data[$i]['Deliberation']['num_pref']=$this->_getMatiereByKey($this->request->data[$i]['Deliberation']['num_pref']);
+        
             if ($projet['Deliberation']['etat'] == 0 && $projet['Deliberation']['anterieure_id'] != 0)
                 $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat(-2);
             elseif ($projet['Deliberation']['etat'] == 1) {
