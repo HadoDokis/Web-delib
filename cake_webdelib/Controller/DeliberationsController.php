@@ -99,7 +99,7 @@ class DeliberationsController extends AppController {
             'conditions' => array('Deliberation.id' => $id)
         ));
         
-        $this->request->data['Deliberation']['num_pref']=$this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
+        $this->request->data['Deliberation']['num_pref']=$this->data['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
         
         if (empty($this->data)) {
             $this->Session->setFlash('Invalide id pour la délibération : affichage de la vue impossible.', 'growl');
@@ -1280,6 +1280,9 @@ class DeliberationsController extends AppController {
                 'Multidelib.etat', 'Multidelib.deliberation', 'Multidelib.deliberation_name', 'Multidelib.Typeacte.libelle',
                 'Multidelib.Annex'),
             'conditions' => array('Deliberation.id' => $id)));
+        
+          $projet['Deliberation']['num_pref'] =  $projet['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($projet['Deliberation']['num_pref']);
+            
         if (empty($projet)) {
             $this->Session->setFlash('identifiant invalide pour le projet : ' . $id, 'growl', array('type' => 'erreur'));
             $this->redirect('/deliberations/mesProjetsATraiter');
@@ -2390,7 +2393,7 @@ class DeliberationsController extends AppController {
             if (isset($projet[0]))
                 $projet['Deliberation'] = $projet[0];
             $this->request->data[$i]['last_viseur'] = $this->Traitement->dernierVisaTrigger($projet['Deliberation']['id']);
-            $this->request->data[$i]['Deliberation']['num_pref']=$this->_getMatiereByKey($this->request->data[$i]['Deliberation']['num_pref']);
+            $this->request->data[$i]['Deliberation']['num_pref']=$this->request->data[$i]['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($this->request->data[$i]['Deliberation']['num_pref']);
         
             if ($projet['Deliberation']['etat'] == 0 && $projet['Deliberation']['anterieure_id'] != 0)
                 $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat(-2);
