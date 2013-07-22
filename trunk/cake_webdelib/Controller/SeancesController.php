@@ -1153,9 +1153,12 @@ class SeancesController extends AppController {
             }
             else {
                 $message = '';
+                $i=0;
                 foreach ($this->data['Acteur'] as $tmp_id => $bool ){
                     $data = array(); 
+                    
                     if($bool) {
+                        $i++;
                         $acteur_id = substr($tmp_id, 3, strlen($tmp_id));
                         $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id),
                                                                      'recursive'  => -1));
@@ -1165,6 +1168,7 @@ class SeancesController extends AppController {
                         }else if (file_exists(WEBROOT_PATH.DS.'files'.DS.'seances'.DS.$seance_id.DS.$model_id.DS.$acteur['Acteur']['id'].'.odt')){
                             $filepath = WEBROOT_PATH.DS.'files'.DS.'seances'.DS.$seance_id.DS.$model_id.DS.$acteur['Acteur']['id'].'.odt';
                         }else{
+                            $message .=  $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].' : Pas de Document'."<br />";
                             continue;
                         }
                         
@@ -1224,16 +1228,16 @@ class SeancesController extends AppController {
                             $this->Acteurseance->save( $acteurseance );
                         }
                         else {
-                            $message .=  $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].' :' .$retour."\n";
+                            $message .=  $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].' : Non envoyé'."<br />";
                         }
                         sleep(5);
                     }
                 }
-                if ($message != '') 
-                    $this->Session->setFlash($message, 'growl', array('type'=>'error'));
-                else {
+                if($i==0) {
                     $this->Session->setFlash('Veuillez s&eacute;lectionner un acteur au minimum.', 'growl', array('type' => 'erreur'));
                 }
+                elseif (!empty($message)) 
+                    $this->Session->setFlash($message, 'growl', array('type'=>'error'));
                 
                 $this->redirect("/seances/sendConvocations/$seance_id/$model_id");
             }
@@ -1273,11 +1277,12 @@ class SeancesController extends AppController {
                 $this->set('model_id',  $model_id);
             }
             else {
-                
+                $i=0;
                 $message = '';
                 foreach ($this->data['Acteur'] as $tmp_id => $bool ){
                     $data = array(); 
                     if($bool) {
+                        $i++;
                         $acteur_id = substr($tmp_id, 3, strlen($tmp_id));
                         $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id),
                                                                      'recursive'  => -1));
@@ -1287,6 +1292,7 @@ class SeancesController extends AppController {
                         }else if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt')){
                             $filepath = WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt';
                         }else{
+                            $message .=  $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].' : Pas de Document'."<br />";
                             continue;
                         }
                         
@@ -1343,13 +1349,17 @@ class SeancesController extends AppController {
                             $this->Acteurseance->save( $acteurseance );
                         }
                         else {
-                            $message .=  $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].' :' .$retour."\n";
+                            $message .=  $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].' : Non envoyé'."<br />";
                         }
                         sleep(5);
                     }
                 }
-                if ($message != '') 
+               if($i==0) {
+                    $this->Session->setFlash('Veuillez s&eacute;lectionner un acteur au minimum.', 'growl', array('type' => 'erreur'));
+                }
+                elseif (!empty($message)) 
                     $this->Session->setFlash($message, 'growl', array('type'=>'error'));
+                
                 $this->redirect("/seances/sendOrdredujour/$seance_id/$model_id");
             }
         }
