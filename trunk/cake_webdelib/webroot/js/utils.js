@@ -26,7 +26,7 @@ function FermerFenetre2(){
 function returnChoice(text,arg) {
 
     var1 = 'classif1';
-    var2 = 'classif2';
+    var2 = 'num_pref';
     elt1 = window.opener.document.getElementById(var1);
     elt2 = window.opener.document.getElementById(var2);
 
@@ -142,22 +142,6 @@ function del_field(node)
 		var a = document.getElementById('lien_annexe');
 		a.firstChild.nodeValue = 'Joindre une annexe';
 	}
-}
-
-function checkForm (Form, id){
-	if(Form.listeTypeactesId.value == "") {
-		alert( "Le type d'acte est obligatoire");
-                return false;
-	}
-	if(Form.DeliberationObjet.value == "") {
-		alert( "Le libellé est obligatoire");
-                return false;
-	}
-	if(Form.DeliberationThemeId.value == "") {
-		alert( "Le thème est obligatoire");
-                return false;
-	}
-	return true;
 }
 
 /******************************************************************************/
