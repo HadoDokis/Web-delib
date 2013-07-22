@@ -7,8 +7,8 @@
 
 <br/><br/><br/><br/>
 
-<div class="submit">
-	<?php echo $this->Form->submit('Ajouter', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-	<?php echo $this->Html->link('Annuler', '/seances/listerFuturesSeances', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
+<div class="submit btn-group">
+     <?php echo $this->Html->link('<i class="icon-arrow-left"></i> Annuler', '/seances/listerFuturesSeances', array('escape'=>false, 'class'=>'btn'))?>
+    <?php echo $this->Form->button('<i class="icon-save"></i> Enregistrer', array('class'=>'btn btn-primary', 'name'=>'saisir','escape'=>false, 'title' => 'Enregistrer'));?>
 </div>
 <?php echo $this->Form->end(); ?>
