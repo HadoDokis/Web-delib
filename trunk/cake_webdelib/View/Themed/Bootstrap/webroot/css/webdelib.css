@@ -640,18 +640,21 @@ a.link_jump, a.link_jump:hover {
         text-decoration: none;
 }
 
-a.link_monter {
-	background-image: url(../../../img/icons/monter.png);
+a.link_monter, a.link_monter:hover {
+	background-image: url(../img/icons/monter.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
+        text-decoration: none;
 }
 
-a.link_descendre {
-	background-image: url(../../../img/icons/descendre.png);
+a.link_descendre, a.link_descendre:hover {
+	background-image: url(../img/icons/descendre.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
+        text-decoration: none;
+}padding: 0 0 10px 22px;
 }
 
 a.link_triasc {
