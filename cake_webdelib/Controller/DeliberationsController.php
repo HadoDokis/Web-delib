@@ -266,9 +266,6 @@ class DeliberationsController extends AppController {
             if (!isset($this->data['Deliberation']['is_multidelib']) || ($this->data['Deliberation']['is_multidelib'] == 0))
                 $this->request->data['Deliberation']['objet_delib'] = $this->data['Deliberation']['objet'];
             
-            if(isset($this->data['Deliberation']['num_pref']) && isset($this->data['Deliberation']['classif2']))
-            $this->request->data['Deliberation']['num_pref'] =  $this->data['Deliberation']['classif2'];
-            
             if(empty($this->data['Deliberation']['theme_id']))
                 unset($this->request->data['Deliberation']['theme_id']);
 
@@ -331,6 +328,11 @@ class DeliberationsController extends AppController {
             $this->request->data['Redacteur']['nom'] = $this->User->field('nom', array('User.id' => $user['User']['id']));
             $this->request->data['Redacteur']['prenom'] = $this->User->field('prenom', array('User.id' => $user['User']['id']));
 
+            if(!empty($this->data['Deliberation']['num_pref'])){
+                $this->request->data['Deliberation']['num_pref_libelle'] =  $this->data['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
+            $this->request->data['Deliberation']['num_pref']=$this->data['Deliberation']['num_pref'];
+                
+            }        
             $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
             $this->set('selectedRapporteur', $this->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
@@ -657,6 +659,9 @@ class DeliberationsController extends AppController {
                     }
                 }
             }
+             if(!empty($this->data['Deliberation']['num_pref']))
+                $this->request->data['Deliberation']['num_pref_libelle'] =  $this->data['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
+                      
             $this->request->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->request->data['Infosup']);
             $this->request->data['Deliberation']['date_limite'] = date("d/m/Y",(strtotime($this->data['Deliberation']['date_limite'])));
             $this->request->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->request->data['Deliberation']['service_id']);
@@ -709,10 +714,6 @@ class DeliberationsController extends AppController {
                     $this->redirect("/deliberations/edit/$id");
                 }
             }
-            
-           if(isset($this->data['Deliberation']['num_pref']) && isset($this->data['Deliberation']['classif2']))
-            $this->request->data['Deliberation']['num_pref'] =  $this->data['Deliberation']['classif2'];
-            
             
            if(empty($this->data['Deliberation']['theme_id']))
                 unset($this->request->data['Deliberation']['theme_id']);
@@ -1038,8 +1039,9 @@ class DeliberationsController extends AppController {
             foreach($annexes as $id => $annexe) 
                     $this->request->data['Annex'][$id] = $annexe['Annex'];
             
-             if(isset($this->data['Deliberation']['num_pref']) && isset($this->data['Deliberation']['classif2']))
-            $this->request->data['Deliberation']['num_pref'] =  $this->_getMatiereByKey($this->data['Deliberation']['classif2']);
+             if(!empty($this->data['Deliberation']['num_pref']))
+                $this->request->data['Deliberation']['num_pref_libelle'] =  $this->data['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
+                      
             
                 
             $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
