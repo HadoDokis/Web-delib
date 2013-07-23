@@ -67,7 +67,7 @@
 				echo $this->Form->input($fieldName, array('label'=>false, 'size'=>'9', 'div'=>false, 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				echo '&nbsp;';
 				$fieldId = "'Deliberation.Infosup".Inflector::camelize($infosupdef['Infosupdef']['id'])."'";
-				echo $this->Html->link($html->image("calendar.png", array('style' => "border='0'")), "javascript:show_calendar($fieldId, 'f');", array(), false, false);
+				echo $this->Html->link($this->Html->image("calendar.png", array('border' => '0')), "javascript:show_calendar($fieldId, 'f');", array('escape' => false), false, false);
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
 				echo $this->Form->input($fieldName, array('label'=>false, 'options'=>$listeBoolean, 'empty'=>true));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'list') {
