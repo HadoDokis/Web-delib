@@ -551,7 +551,7 @@ class Deliberation extends AppModel {
                         $this->log($delib['Deliberation']['id'].', '.$seance_id.'=>'.$position);
 			$oMainPart->addElement(new GDO_FieldType('position_projet', $delib['Deliberationseance']['position'], 'text'));
 		}*/
-                $oMainPart->addElement(new GDO_FieldType('position_projet', $delib['Deliberationseance']['position'], 'text'));
+                $oMainPart->addElement(new GDO_FieldType('position_projet', isset($delib['Deliberationseance']['position'])?$delib['Deliberationseance']['position']:'', 'text'));
 		$oMainPart->addElement(new GDO_FieldType('titre_projet',   ($delib['Deliberation']['titre']),    'lines'));
 		$oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet']),     'lines'));
 		$oMainPart->addElement(new GDO_FieldType('libelle_projet', ($delib['Deliberation']['objet']),      'lines'));
