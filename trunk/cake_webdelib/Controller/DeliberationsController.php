@@ -3645,17 +3645,22 @@ class DeliberationsController extends AppController {
                 $this->Deliberation->id = $acte_id;
                 $acte = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $acte_id),
                     'contain' => array('Annex', 'Typeacte.compteur_id')));
+                
+                //On génére le numéro de l'acte lors de l'envoi a signature
+                $num = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
+                $this->Deliberation->saveField('num_delib', $num);
+                $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
+                    
+                
                 $model_id = $this->Deliberation->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
                 $err = $this->requestAction("/models/generer/$acte_id/null/$model_id/0/1/D_$acte_id.odt");
                 $filename = WEBROOT_PATH . "/files/generee/fd/null/$acte_id/D_$acte_id.odt.pdf";
                 $content = file_get_contents($filename);
+                $this->Deliberation->saveField('delib_pdf', $content);
+                
                 if ($this->data['Parapheur']['circuit_id'] == -1) {
-                    $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
                     $this->Deliberation->saveField('signee', 1);
                     $this->Deliberation->saveField('etat', 3);
-                    $this->Deliberation->saveField('delib_pdf', $content);
-                    $num = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
-                    $this->Deliberation->saveField('num_delib', $num);
                 } else {
                     $this->Parafwebservice = new IparapheurComponent();
                     $objetDossier = $this->Parafwebservice->handleObject($acte['Deliberation']['objet']);
@@ -3713,9 +3718,11 @@ class DeliberationsController extends AppController {
 
         $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
         $this->_addFiltresAutresActes($actes);
-        for ($i = 0; $i < count($actes); $i++)
+        for ($i = 0; $i < count($actes); $i++){
             $actes[$i]['Deliberation'][$actes[$i]['Deliberation']['id'] . '_num_pref'] = $actes[$i]['Deliberation']['num_pref'];
-
+            $actes[$i]['Deliberation']['num_pref_libelle']=$this->_getMatiereByKey($actes[$i]['Deliberation']['num_pref']);
+        }         
+            
         $circuits['soustype']['-1'] = 'Signature manuscrite';
         $this->set('deliberations', $actes);
         $this->set('circuits', $circuits['soustype']);
