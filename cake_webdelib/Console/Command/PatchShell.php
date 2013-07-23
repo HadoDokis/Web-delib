@@ -34,6 +34,7 @@ App::uses('File', 'Utility');
 
                 $annexes = $this->Annex->find('all',
                             array('fields'=>array('id','filename','filename_pdf','data_pdf'),
+                                    'order'=>'id ASC',
                                     'recursive' => -1));
 
                 $i=0;
