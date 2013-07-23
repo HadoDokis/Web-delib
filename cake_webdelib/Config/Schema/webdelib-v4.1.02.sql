@@ -101,7 +101,7 @@ CREATE TABLE acteurs (
 
 CREATE TABLE acteurs_seances (
     id integer NOT NULL,
-    model varchar(20),
+    model varchar(20) NOT NULL,
     acteur_id integer NOT NULL,
     seance_id integer NOT NULL,
     mail_id integer NOT NULL,
@@ -463,7 +463,7 @@ CREATE TABLE deliberations (
     is_multidelib boolean,
     parent_id integer,
     objet character varying(1000) NOT NULL,
-    objet_delib character varying(1000) NOT NULL,
+    objet_delib character varying(1000),
     titre character varying(1000),
     num_delib character varying(15),
     num_pref character varying(100) NOT NULL,
@@ -622,7 +622,6 @@ CREATE TABLE infosupdefs (
     commentaire character varying(255) NOT NULL,
     ordre integer NOT NULL,
     code character varying(255) NOT NULL,
-    taille integer,
     type character varying(255) NOT NULL,
     val_initiale character varying(255),
     recherche boolean DEFAULT false NOT NULL,
