@@ -75,9 +75,10 @@ class ParapheurShell extends Shell {
                             }
                             $this->Deliberation->saveField('signee', 1);
                             if ($compteur_id != 0) {
-                                $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
+                                /* 
+                                 * $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
                                 $num = $this->Deliberation->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
-                                $this->Deliberation->saveField('num_delib', $num);
+                                $this->Deliberation->saveField('num_delib', $num);*/
                             }
                         }
                         // etat_paraph à 1, donc, nous sommes en post_seance, on ne supprime pas le projet
