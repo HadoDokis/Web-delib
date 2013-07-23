@@ -551,7 +551,7 @@ class Deliberation extends AppModel {
                         $this->log($delib['Deliberation']['id'].', '.$seance_id.'=>'.$position);
 			$oMainPart->addElement(new GDO_FieldType('position_projet', $delib['Deliberationseance']['position'], 'text'));
 		}*/
-                $oMainPart->addElement(new GDO_FieldType('position_projet', isset($delib['Deliberationseance']['position'])?$delib['Deliberationseance']['position']:'', 'text'));
+                $oMainPart->addElement(new GDO_FieldType('position_projet', (isset($delib['Deliberationseance']) && isset($delib['Deliberationseance']['position'])?$delib['Deliberationseance']['position']:''), 'text'));
 		$oMainPart->addElement(new GDO_FieldType('titre_projet',   ($delib['Deliberation']['titre']),    'lines'));
 		$oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet']),     'lines'));
 		$oMainPart->addElement(new GDO_FieldType('libelle_projet', ($delib['Deliberation']['objet']),      'lines'));
@@ -560,7 +560,8 @@ class Deliberation extends AppModel {
 		$oMainPart->addElement(new GDO_FieldType('identifiant_projet',          $delib['Deliberation']['id'],       'text'));
 		$oMainPart->addElement(new GDO_FieldType('etat_projet',                 $delib['Deliberation']['etat'],       'text'));
 		$oMainPart->addElement(new GDO_FieldType('numero_deliberation',         $delib['Deliberation']['num_delib'],'text'));
-		$oMainPart->addElement(new GDO_FieldType('classification_deliberation', $delib['Deliberation']['num_pref'], 'text'));
+		$oMainPart->addElement(new GDO_FieldType('numero_acte',         $delib['Deliberation']['num_delib'],'text'));
+                $oMainPart->addElement(new GDO_FieldType('classification_deliberation', $delib['Deliberation']['num_pref'], 'text'));
                 $oMainPart->addElement(new GDO_FieldType("date_envoi_signature", $this->Date->frDate($delib['Deliberation']['date_envoi_signature']), 'date'));
 
 		$this->Service->makeBalise($oMainPart, $delib['Deliberation']['service_id']);
