@@ -9,6 +9,9 @@ class Deliberation extends AppModel {
 			'typeacte_id' => array(
 					array( 'rule'    => array('canSaveNature', 'notEmpty'),
 						'message' => "Type d'acte invalide")),
+                        'theme_id' => array(
+					array( 'rule'    => array('notEmpty'),
+						'message' => "Theme invalide")),
 			'texte_projet_type'   => array(
 					array('rule' => array('checkMimetype', 'texte_projet', array('application/vnd.oasis.opendocument.text')),
 							'message' => "Ce type de fichier n'est pas autorisé")),
