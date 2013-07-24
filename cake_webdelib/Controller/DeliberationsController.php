@@ -266,9 +266,6 @@ class DeliberationsController extends AppController {
             if (!isset($this->data['Deliberation']['is_multidelib']) || ($this->data['Deliberation']['is_multidelib'] == 0))
                 $this->request->data['Deliberation']['objet_delib'] = $this->data['Deliberation']['objet'];
             
-            if(empty($this->data['Deliberation']['theme_id']))
-                unset($this->request->data['Deliberation']['theme_id']);
-
             $this->request->data['Deliberation']['date_limite'] = $this->Utils->FrDateToUkDate($this->data['date_limite']);
             $this->Deliberation->unbindModel(array('hasAndBelongsToMany' => array('Seance')));
             // Si on definit une seance a une delib, on la place en derniere position de la seance
