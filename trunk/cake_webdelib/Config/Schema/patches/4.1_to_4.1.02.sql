@@ -33,6 +33,11 @@ UPDATE listepresences SET mandataire=NULL WHERE mandataire=0;
 
 UPDATE annexes SET filetype='application/vnd.oasis.opendocument.text' WHERE filetype LIKE '%vnd.oasis.opendocument%';
 UPDATE annexes SET filetype='application/pdf' WHERE filetype LIKE '%pdf%';
+
+--Pour que les anciennes annexes soient générées en ODT
+UPDATE annexes SET data_pdf=data WHERE filetype='application/pdf' AND filename NOT LIKE '%odt%';
+UPDATE annexes SET filename_pdf=filename WHERE filetype='application/pdf' AND filename NOT LIKE '%odt%';
+UPDATE annexes SET filename=CONCAT(filename_pdf,'.odt') WHERE filetype='application/pdf' AND filename NOT LIKE '%odt%';
 --Script à faire
 
 
