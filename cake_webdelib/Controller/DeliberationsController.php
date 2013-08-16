@@ -334,7 +334,13 @@ class DeliberationsController extends AppController {
             $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
             $this->set('selectedRapporteur', $this->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
             $this->set('date_seances', $this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
-
+            
+            if(!empty($this->request->data['Deliberation']['date_limite'])){
+                App::uses('CakeTime', 'Utility');
+                $this->set('date_limite', CakeTime::format($this->request->data['Deliberation']['date_limite'], '%d/%m/%Y', 'invalid'));
+            
+            }
+            
             $this->set('profil_id', $user['User']['profil_id']);
             $this->Infosupdef->Behaviors->attach('Containable');
             $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions' => array('model' => 'Deliberation', 'actif' => true),
