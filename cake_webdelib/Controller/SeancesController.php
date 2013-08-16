@@ -1369,7 +1369,7 @@ class SeancesController extends AppController {
          * @param $seance_id
          * @param $model_id
          */
-        function _generer($seance_id, $model_id) { 
+        function _generer($seance_id, $model_id, $url_retour) { 
           
             $this->Seance->id = $seance_id;
             $time_start = microtime(true);
@@ -1385,12 +1385,15 @@ class SeancesController extends AppController {
             include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
             include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
   
-            if (($this->Session->read('user.format.sortie')==0)) {
-                $sMimeType = "application/pdf";
-                $format    = "pdf";
-            } else {
+            $this->Progress->start(200, 100,200, '#FFCC00','#006699');
+           
+            if (($this->Session->read('user.format.sortie')==1)) {
                 $sMimeType = "application/vnd.oasis.opendocument.text";
                 $format    = "odt";
+            
+            } else {
+                $sMimeType = "application/pdf";
+                $format    = "pdf";
             }
 
             //*****************************************
@@ -1406,6 +1409,8 @@ class SeancesController extends AppController {
             
             if (!$this->Gedooo->checkPath($dirpath))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $dirpath");
+            
+            $this->Progress->at(5, 'D&eacute;but de pr&eacute;paration du document');
 
             //*****************************************
             //Création du model ott
@@ -1451,7 +1456,7 @@ class SeancesController extends AppController {
                     $annexFile = $this->Deliberation->Annex->find('first', array('conditions' => array('Annex.id' => $annex_id['Annex']['id']),
                                                                                  'recursive'  => -1));
                     if ($annexFile['Annex']['filetype'] == 'application/pdf')
-                        $datAnnex =  $annexFile['Annex']['data'];
+                        $datAnnex =  $annexFile['Annex']['data_pdf'];
                     elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text')
                         $datAnnex =  $annexFile['Annex']['data_pdf'];
                     elseif ($annexFile['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet')
@@ -1461,18 +1466,19 @@ class SeancesController extends AppController {
                     array_push($annexes, $fichierAnnex);
                 }
             }
-           
+            $this->Progress->at(20, 'Fin de pr&eacute;paration du document');
             $oMainPart->addElement($blocProjets);
             $this->Seance->makeBalise($seance_id, $oMainPart);
             $this->Seance->saveField('date_convocation',  date("Y-m-d H:i:s", strtotime("now")));   
             $typeseance_id = $this->Seance->getType($seance_id);
             $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($typeseance_id, true);
-            $this->Progress->start(200, 100,200, '#FFCC00','#006699');
-            $cpt =0;
-            $nbActeurs = count($acteursConvoques);
+            $cpt =2;
+            $nbActeurs = count($acteursConvoques)+3;
             foreach ($acteursConvoques as $acteur) {
+    
                 $cpt++;
-                $this->Progress->at($cpt*(100/$nbActeurs), 'G&eacute;&eacute;ration de l\'acteur : '.$acteur['Acteur']['nom']." ".$acteur['Acteur']['prenom']);
+                $this->Progress->at($cpt*(100/$nbActeurs), 'G&eacute;n&eacute;ration du document : '.$acteur['Acteur']['nom']." ".$acteur['Acteur']['prenom']);
+                
                 $oMainPart->addElement(new GDO_FieldType("nom_acteur", ($acteur['Acteur']['nom']), "text"));
                 $oMainPart->addElement(new GDO_FieldType("prenom_acteur", ($acteur['Acteur']['prenom']), "text"));
                 $oMainPart->addElement(new GDO_FieldType("salutation_acteur",($acteur['Acteur']['salutation']), "text"));
@@ -1506,10 +1512,9 @@ class SeancesController extends AppController {
                     $time_start = microtime(true);
                     $oFusion->SendContentToFile($dirpath.$nomFichier.".odt");
 
-                    if ($format == 'pdf'){
-                        $content = $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", $format);
-                        $chemin_fichier = $this->Gedooo->createFile($dirpath, $nomFichier.".$format", $content);
-                    }
+                    $content = $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", $format);
+                    $chemin_fichier = $this->Gedooo->createFile($dirpath, $nomFichier.".$format", $content);
+                    
                     if (($format == 'pdf') && ($joindre_annexe)) {
                         if (!empty($annexes)) 
                             $this->Pdf->concatener($chemin_fichier, $annexes);
@@ -1523,18 +1528,21 @@ class SeancesController extends AppController {
                     $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
                 }
             }
+            $this->Progress->at(100, 'Fin de G&eacute;n&eacute;ration des documents');
+            sleep(1);
+            $this->Progress->end($url_retour);
         }
         
         function genererConvocation($seance_id, $model_id) { 
-            $this->_generer($seance_id,$model_id);
-            $this->Progress->end("/seances/sendConvocations/$seance_id/$model_id");
+            
+            $this->_generer($seance_id,$model_id ,"/seances/sendConvocations/$seance_id/$model_id");
             exit;
         }
         
                 
-        function genererOrdredujour($seance_id, $model_id) { 
-            $this->_generer($seance_id,$model_id);
-            $this->Progress->end("/seances/sendOrdredujour/$seance_id/$model_id");
+        function genererOrdredujour($seance_id, $model_id) {
+            $this->Progress->start(200, 100,200, '#FFCC00','#006699');
+            $this->_generer($seance_id,$model_id, "/seances/sendOrdredujour/$seance_id/$model_id");
             exit;
         }
 
