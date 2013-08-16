@@ -1,12 +1,13 @@
 <?php
 
     class ProgressComponent extends Component {
-    
+        
         function start ($gauche,$haut,$largeur,$bord_col,$txt_col) {
             $tailletxt=30-10;
             echo '<div id="contTemp" style="position:absolute;top:0;left:0px;';
-            echo 'background-image:url(../../../img/wavedelib.png);';
-            echo 'width:1000px; height:250px; margin-left: 0px; padding: 0px;">';
+            echo 'background-image:url(../../../theme/Bootstrap/img/grid-18px-masked.png);';
+            echo 'width:100%; height:250px; margin-left: 0px; padding: 0px;">';
+            echo '<img src="../../../img/webdelib_petit.png" />';
 
             echo '<div id="pourcentage" style="position:absolute;top:'.($haut +1 );
             echo ';left: '.($gauche + $largeur ).'px';
