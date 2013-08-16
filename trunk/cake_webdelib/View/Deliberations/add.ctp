@@ -96,8 +96,8 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type
 
 	<?php echo $this->Form->label('Deliberation.date_limite', 'Date limite');?>
 	<?php
-		if (!empty($this->data['Deliberation']['date_limite']) && $this->data['Deliberation']['date_limite'] != '01/01/1970')
-			$value = "value='".$this->data['Deliberation']['date_limite']."'";
+		if (!empty($date_limite) && $date_limite != '01/01/1970')
+			$value = "value='".$date_limite."'";
 		else
 			$value = "value=''";
 	?>
