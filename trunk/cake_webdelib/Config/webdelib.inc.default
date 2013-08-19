@@ -21,7 +21,7 @@ Configure::write('PROTOCOLE_DL', 'vnd.sun.star.webdav');
 
 /* Configuration d'envoie de mail */
 Configure::write("MAIL_FROM", 'Webdelib <webdelib@mon-domaine.fr>');
-Configure::write('SMTP_USE', true);
+Configure::write('SMTP_USE', false);
 Configure::write('SMTP_PORT', 25);
 Configure::write("SMTP_TIMEOUT", 30);
 Configure::write("SMTP_HOST", 'your.smtp.server');
