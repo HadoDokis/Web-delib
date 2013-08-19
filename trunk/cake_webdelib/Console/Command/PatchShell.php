@@ -48,7 +48,7 @@ App::uses('File', 'Utility');
                     $newAnnexe['Annex']['id']=$annexe['Annex']['id'];
                     $outputDir =  tempdir();
                     $folder = new Folder($outputDir);
-                    $file = new File($outputDir.$annexe['Annex']['id'].'pdf', false);
+                    $file = new File($outputDir.$annexe['Annex']['id'].'.pdf', false);
                     $file->write($annexe['Annex']['data_pdf']);
                     $newAnnexe['Annex']['data'] =   $this->Pdf->toOdt($file->pwd());
                     $newAnnexe['Annex']['filetype'] = 'application/pdf';
@@ -92,7 +92,7 @@ App::uses('File', 'Utility');
                 
                 foreach($deliberations as $deliberation) 
                 {
-                    $this->out('Migration deliberaion : '.$deliberation['Deliberation']['id'].'...');
+                    $this->out('Migration deliberation : '.$deliberation['Deliberation']['id'].'...');
                    $num_pref=strstr($deliberation['Deliberation']['num_pref'], ' - ',true);
                     if(isset($num_pref) && !empty($num_pref)){
                         $this->Deliberation->id=$deliberation['Deliberation']['id'];
