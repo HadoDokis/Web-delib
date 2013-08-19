@@ -192,24 +192,24 @@
     *) Prise en compte de la nouvelle version de Cloudooo 1.2.4r573
     *) Ajout de la variable  "texte_projet" pour la génération
     *) Création d'un formulaire pour l'envoi des ordres du jour
-    *) Ammélioration de l'upload des types d'annexes
-    *) Ammélioration des mails de notifications
-    *) Ammélioration de l'enregistrement des annexes pdf en odt (format odt valide)
+    *) Amélioration de l'upload des types d'annexes
+    *) Amélioration des mails de notifications
+    *) Amélioration de l'enregistrement des annexes pdf en odt (format odt valide)
     *) Correction sur la génération pour la prise en compte des annexes pdf en fin de documents
     *) Correction sur la création d'informations supplémentaires
     *) Correction sur la création d'étape de circuit, l'affichage d'un circuit
     *) Correction sur l'ajout d'annexes
     *) Correction sur la modification d'une séance
-    *) Correction sur l'attibution du numéro final d'un acte
+    *) Correction sur l'attribution du numéro final d'un acte
     *) Correction sur les droits des menus
     *) Correction de la génération multi-séances
     *) Correction sur l'envoi de mail à partir d'un profil
-    *) Correction sur la supression d'un utilisateur
+    *) Correction sur la suppression d'un utilisateur
     *) Correction sur la modification d'une date de séance d'un acte
     *) Correction sur le filtre par rapport au type de séance
     *) Correction sur la liste des votants
     *) Correction sur la recherche par libellé
-    *) Correction sur le repport d'un ordre du jour
+    *) Correction sur le report d'un ordre du jour
     *) Correction sur la visualisation d'un projet
     *) Correction pour la transmission vers S²LOW
     *) Correction sur un projet refusé
