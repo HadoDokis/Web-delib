@@ -8,14 +8,14 @@
                                                'legend'  => false,
                                                'type'    => 'radio',
                                                'options' => $notif,
-                                               'value' => Configure::read('SMTP_USE'),
+                                               'value' => Configure::read('SMTP_USE')?'true':'false',
                                                'div'     => false,
-                                               'default' => 0,
+                                               'default' => 'false',
                                                'label'   => false,
                                                'onClick'=>"if(this.value=='true') $('#affiche').show(); else $('#affiche').hide(); " ));
  ?>
     <div class='spacer'> </div>
-    <div id='affiche' <?php echo !Configure::read('SMTP_USE')===false?'style="display: none;"':''; ?>>
+    <div id='affiche' <?php echo Configure::read('SMTP_USE')===false?'style="display: none;"':''; ?>>
     <fieldset>
         <legend>Paramètrage du SMTP</legend>
 <?php  
