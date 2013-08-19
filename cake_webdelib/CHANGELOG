@@ -150,11 +150,11 @@
     *) Désactivation d'une information supplémentaire
     *) Refonte de l'ergonomie de l'application
     *) Ticket 1097 : Correction d'un bug sur l'ordre de vote des délibérations
-    *) Ticket 1374 : Ajout d'un champ service_avec_hiérarchie pour l'utilisation dans les modèles
+    *) Ticket 1374 : Ajout d'un champ service_avec_hierarchie pour l'utilisation dans les modèles
     *) Ticket 1408 : Ajout d'un champ date_envoi_signature pour l'utilisation dans les modèles
     *) Ticket 1560 : Correction d'un bug lors de l'enregistrement d'un projet avec jour de retard
     *) Ticket 1627/2183 : Correction sur l'enregistrement webdav des multi-délibérations
-    *) Ticket 1644 : Ajout d'un champ date_projet pour l'utilisation dans les modèles
+    *) Ticket 1644 : Ajout d'un champ etat_projet pour l'utilisation dans les modèles
     *) Ticket 1718 : Correction d'un bug lors du refus d'un projet par un validateur
     *) Ticket 1744 : Correction sur l'application du nombre de jour avant retard d'une séance
     *) Ticket 1796 : Ajout d'un bouton pour vider les champs de type file
@@ -179,3 +179,42 @@
     *) Ticket 2338 : Liste des projets classés par id sur le tableau de bord
     *) Ticket 2356 : Correction prise en compte du type d'actes pour la recherche multi-critères
     *) Ticket 2357 : Correction problème d'affichage des boutons "favorable" et "défavorable" sur un avis
+
+4.1.1
+======
+    *) Multi-modèles et traitement par lot pour la synthèse
+    *) Gestion des configurations des connecteurs dans l'administration
+    *) Modification d'une info supplémentaire sous condition de profils/droits
+
+4.1.2
+======
+    *) Prise en compte de la nouvelle version de Gedooo r390
+    *) Prise en compte de la nouvelle version de Cloudooo 1.2.4r573
+    *) Ajout de la variable  "texte_projet" pour la génération
+    *) Création d'un formulaire pour l'envoi des ordres du jour
+    *) Ammélioration de l'upload des types d'annexes
+    *) Ammélioration des mails de notifications
+    *) Ammélioration de l'enregistrement des annexes pdf en odt (format odt valide)
+    *) Correction sur la génération pour la prise en compte des annexes pdf en fin de documents
+    *) Correction sur la création d'informations supplémentaires
+    *) Correction sur la création d'étape de circuit, l'affichage d'un circuit
+    *) Correction sur l'ajout d'annexes
+    *) Correction sur la modification d'une séance
+    *) Correction sur l'attibution du numéro final d'un acte
+    *) Correction sur les droits des menus
+    *) Correction de la génération multi-séances
+    *) Correction sur l'envoi de mail à partir d'un profil
+    *) Correction sur la supression d'un utilisateur
+    *) Correction sur la modification d'une date de séance d'un acte
+    *) Correction sur le filtre par rapport au type de séance
+    *) Correction sur la liste des votants
+    *) Correction sur la recherche par libellé
+    *) Correction sur le repport d'un ordre du jour
+    *) Correction sur la visualisation d'un projet
+    *) Correction pour la transmission vers S²LOW
+    *) Correction sur un projet refusé
+    *) Correction du paramétrage de "service_avec_hierarchie"
+    *) Correction du saut d'étape dans un circuit
+    *) Correction sur une séance de type non délibérante, prise en compte des avis et commentaires
+    *) Correction sur l'affichage de la classification
+    *) Correction sur la saisie des débats généraux
