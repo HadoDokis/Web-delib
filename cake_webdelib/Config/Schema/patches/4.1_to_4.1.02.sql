@@ -37,7 +37,7 @@ UPDATE annexes SET filetype='application/pdf' WHERE filetype LIKE '%pdf%';
 --Pour que les anciennes annexes soient générées en ODT
 UPDATE annexes SET data_pdf=data WHERE filetype='application/pdf' AND filename NOT LIKE '%odt%';
 UPDATE annexes SET filename_pdf=filename WHERE filetype='application/pdf' AND filename NOT LIKE '%odt%';
-UPDATE annexes SET filename=CONCAT(filename_pdf,'.odt') WHERE filetype='application/pdf' AND filename NOT LIKE '%odt%';
+UPDATE annexes SET filename=CONCAT(substring(filename_pdf, 0, 72),'.odt') WHERE filetype='application/pdf' AND filename NOT LIKE '%odt%';
 --Script à faire
 
 

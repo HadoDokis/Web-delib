@@ -13,11 +13,15 @@ class AppSchema extends CakeSchema {
 		'alias' => array('type' => 'string', 'null' => false),
 		'lft' => array('type' => 'integer', 'null' => true),
 		'rght' => array('type' => 'integer', 'null' => true),
-		'parent_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'parent_id' => array('type' => 'integer', 'null' => true, 'default' => '0'),
 		'model' => array('type' => 'string', 'null' => true),
 		'foreign_key' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'acos_idx1' => array('unique' => false, 'column' => array('lft', 'rght')),
+			'acos_idx2' => array('unique' => false, 'column' => 'alias'),
+			'acos_idx3' => array('unique' => false, 'column' => array('model', 'foreign_key')),
+			'acos_leftright' => array('unique' => false, 'column' => array('lft', 'rght')),
 			'lft' => array('unique' => false, 'column' => 'lft')
 		),
 		'tableParameters' => array()
@@ -38,13 +42,17 @@ class AppSchema extends CakeSchema {
 		'email' => array('type' => 'string', 'null' => false, 'length' => 100),
 		'telfixe' => array('type' => 'string', 'null' => true, 'length' => 20),
 		'telmobile' => array('type' => 'string', 'null' => true, 'length' => 20),
+		'suppleant_id' => array('type' => 'integer', 'null' => true),
 		'note' => array('type' => 'string', 'null' => false),
 		'actif' => array('type' => 'boolean', 'null' => false, 'default' => true),
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
-		'suppleant_id' => array('type' => 'integer', 'null' => true),
 		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
+			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'acteurs_actif' => array('unique' => false, 'column' => 'actif'),
+			'index' => array('unique' => false, 'column' => 'id'),
+			'suppleant_id' => array('unique' => false, 'column' => 'suppleant_id'),
+			'typeacteur' => array('unique' => false, 'column' => 'typeacteur_id')
 		),
 		'tableParameters' => array()
 	);
@@ -55,6 +63,7 @@ class AppSchema extends CakeSchema {
 		'mail_id' => array('type' => 'integer', 'null' => false),
 		'date_envoi' => array('type' => 'datetime', 'null' => false),
 		'date_reception' => array('type' => 'datetime', 'null' => true),
+		'model' => array('type' => 'string', 'null' => false, 'length' => 20),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id')
 		),
@@ -65,7 +74,9 @@ class AppSchema extends CakeSchema {
 		'acteur_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'service_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
+			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'acteursservices_acteur_id' => array('unique' => false, 'column' => 'acteur_id'),
+			'acteursservices_service_id' => array('unique' => false, 'column' => 'service_id')
 		),
 		'tableParameters' => array()
 	);
@@ -87,7 +98,8 @@ class AppSchema extends CakeSchema {
 		'model' => array('type' => 'string', 'null' => false),
 		'foreign_key' => array('type' => 'integer', 'null' => false),
 		'joindre_ctrl_legalite' => array('type' => 'boolean', 'null' => false),
-		'titre' => array('type' => 'string', 'null' => false, 'length' => 50),
+		'joindre_fusion' => array('type' => 'boolean', 'null' => false),
+		'titre' => array('type' => 'string', 'null' => false, 'length' => 200),
 		'filename' => array('type' => 'string', 'null' => false, 'length' => 75),
 		'filetype' => array('type' => 'string', 'null' => false),
 		'size' => array('type' => 'integer', 'null' => false),
@@ -96,9 +108,9 @@ class AppSchema extends CakeSchema {
 		'data_pdf' => array('type' => 'binary', 'null' => true),
 		'created' => array('type' => 'datetime', 'null' => true),
 		'modified' => array('type' => 'datetime', 'null' => true),
-		'joindre_fusion' => array('type' => 'integer', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'annexes_joindre' => array('unique' => false, 'column' => array('foreign_key', 'joindre_fusion')),
 			'model_foreign_key' => array('unique' => false, 'column' => array('model', 'foreign_key'))
 		),
 		'tableParameters' => array()
@@ -115,7 +127,10 @@ class AppSchema extends CakeSchema {
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'alias' => array('unique' => false, 'column' => 'alias'),
 			'alias_2' => array('unique' => false, 'column' => 'alias'),
-			'model' => array('unique' => false, 'column' => array('model', 'foreign_key')),
+			'aros_idx1' => array('unique' => false, 'column' => array('lft', 'rght')),
+			'aros_idx2' => array('unique' => false, 'column' => 'alias'),
+			'aros_idx3' => array('unique' => false, 'column' => array('model', 'foreign_key')),
+			'aros_leftright' => array('unique' => false, 'column' => array('lft', 'rght')),
 			'parent_id' => array('unique' => false, 'column' => 'parent_id'),
 			'rght' => array('unique' => false, 'column' => 'rght')
 		),
@@ -138,7 +153,7 @@ class AppSchema extends CakeSchema {
 	public $aros_ados = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
 		'aro_id' => array('type' => 'integer', 'null' => false),
-		'ado_id' => array('type' => 'integer', 'null' => true),
+		'ado_id' => array('type' => 'integer', 'null' => false),
 		'_create' => array('type' => 'string', 'null' => false, 'default' => '0', 'length' => 2),
 		'_read' => array('type' => 'string', 'null' => false, 'default' => '0', 'length' => 2),
 		'_update' => array('type' => 'string', 'null' => false, 'default' => '0', 'length' => 2),
@@ -155,12 +170,14 @@ class AppSchema extends CakeSchema {
 		'circuit_id' => array('type' => 'integer', 'null' => false),
 		'user_id' => array('type' => 'integer', 'null' => false),
 		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
+			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'user_id' => array('unique' => false, 'column' => 'user_id')
 		),
 		'tableParameters' => array()
 	);
 	public $collectivites = array(
 		'id' => array('type' => 'integer', 'null' => false, 'length' => 11, 'key' => 'primary'),
+		'id_entity' => array('type' => 'integer', 'null' => true),
 		'nom' => array('type' => 'string', 'null' => false, 'length' => 30),
 		'adresse' => array('type' => 'string', 'null' => false),
 		'CP' => array('type' => 'integer', 'null' => false),
@@ -200,25 +217,48 @@ class AppSchema extends CakeSchema {
 		),
 		'tableParameters' => array()
 	);
+	public $crons = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
+		'nom' => array('type' => 'string', 'null' => false),
+		'description' => array('type' => 'string', 'null' => true, 'default' => null),
+		'plugin' => array('type' => 'string', 'null' => true),
+		'controller' => array('type' => 'string', 'null' => false),
+		'action' => array('type' => 'string', 'null' => false),
+		'has_params' => array('type' => 'boolean', 'null' => true),
+		'params' => array('type' => 'string', 'null' => true, 'default' => null),
+		'next_execution_time' => array('type' => 'datetime', 'null' => true),
+		'execution_duration' => array('type' => 'string', 'null' => true),
+		'last_execution_start_time' => array('type' => 'datetime', 'null' => true),
+		'last_execution_end_time' => array('type' => 'datetime', 'null' => true),
+		'last_execution_report' => array('type' => 'text', 'null' => true, 'length' => 1073741824),
+		'last_execution_status' => array('type' => 'string', 'null' => true),
+		'active' => array('type' => 'boolean', 'null' => true),
+		'created' => array('type' => 'datetime', 'null' => false),
+		'created_user_id' => array('type' => 'integer', 'null' => false),
+		'modified' => array('type' => 'datetime', 'null' => false),
+		'modified_user_id' => array('type' => 'integer', 'null' => false),
+		'indexes' => array(
+			
+		),
+		'tableParameters' => array()
+	);
 	public $deliberations = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
 		'typeacte_id' => array('type' => 'integer', 'null' => false, 'default' => '1'),
 		'circuit_id' => array('type' => 'integer', 'null' => true, 'default' => '0'),
 		'theme_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'service_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
-		'vote_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'redacteur_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'rapporteur_id' => array('type' => 'integer', 'null' => true, 'default' => '0'),
-		'seance_id' => array('type' => 'integer', 'null' => true),
-		'position' => array('type' => 'integer', 'null' => true),
 		'anterieure_id' => array('type' => 'integer', 'null' => true),
 		'is_multidelib' => array('type' => 'boolean', 'null' => true),
 		'parent_id' => array('type' => 'integer', 'null' => true),
 		'objet' => array('type' => 'string', 'null' => false, 'length' => 1000),
-		'objet_delib' => array('type' => 'string', 'null' => false, 'length' => 1000),
+		'objet_delib' => array('type' => 'string', 'null' => true, 'length' => 1000),
 		'titre' => array('type' => 'string', 'null' => true, 'length' => 1000),
 		'num_delib' => array('type' => 'string', 'null' => true, 'length' => 15),
-		'num_pref' => array('type' => 'string', 'null' => true, 'length' => 100),
+		'num_pref' => array('type' => 'string', 'null' => false, 'length' => 100),
+		'pastell_id' => array('type' => 'string', 'null' => true, 'length' => 10),
 		'tdt_id' => array('type' => 'integer', 'null' => true),
 		'dateAR' => array('type' => 'string', 'null' => true, 'length' => 100),
 		'texte_projet' => array('type' => 'binary', 'null' => true),
@@ -237,20 +277,14 @@ class AppSchema extends CakeSchema {
 		'date_envoi' => array('type' => 'datetime', 'null' => true),
 		'etat' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'etat_parapheur' => array('type' => 'integer', 'null' => true),
+		'commentaire_refus_parapheur' => array('type' => 'string', 'null' => true, 'length' => 1000),
 		'etat_asalae' => array('type' => 'boolean', 'null' => true),
 		'reporte' => array('type' => 'boolean', 'null' => false),
-		'localisation1_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
-		'localisation2_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
-		'localisation3_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'montant' => array('type' => 'integer', 'null' => true),
 		'debat' => array('type' => 'binary', 'null' => true),
-		'debat_name' => array('type' => 'string', 'null' => true, 'length' => 2555),
+		'debat_name' => array('type' => 'string', 'null' => true),
 		'debat_size' => array('type' => 'integer', 'null' => true),
 		'debat_type' => array('type' => 'string', 'null' => true),
-		'commission' => array('type' => 'binary', 'null' => true),
-		'commission_size' => array('type' => 'integer', 'null' => true),
-		'commission_type' => array('type' => 'string', 'null' => true),
-		'commission_name' => array('type' => 'string', 'null' => true),
 		'avis' => array('type' => 'integer', 'null' => true),
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
@@ -260,19 +294,25 @@ class AppSchema extends CakeSchema {
 		'vote_nb_retrait' => array('type' => 'integer', 'null' => true),
 		'vote_commentaire' => array('type' => 'string', 'null' => true, 'length' => 500),
 		'delib_pdf' => array('type' => 'binary', 'null' => true),
+		'bordereau' => array('type' => 'binary', 'null' => true),
 		'signature' => array('type' => 'binary', 'null' => true),
 		'signee' => array('type' => 'boolean', 'null' => true),
+		'commission' => array('type' => 'binary', 'null' => true),
+		'commission_size' => array('type' => 'integer', 'null' => true),
+		'commission_type' => array('type' => 'string', 'null' => true),
+		'commission_name' => array('type' => 'string', 'null' => true),
 		'date_acte' => array('type' => 'datetime', 'null' => true),
-		'pastell_id' => array('type' => 'integer', 'null' => true),
+		'date_envoi_signature' => array('type' => 'datetime', 'null' => true),
+		'id_parapheur' => array('type' => 'string', 'null' => true, 'length' => 50),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'etat' => array('unique' => false, 'column' => 'etat'),
 			'nature_id' => array('unique' => false, 'column' => 'typeacte_id'),
+			'parent' => array('unique' => false, 'column' => 'parent_id'),
 			'rapporteur_id' => array('unique' => false, 'column' => 'rapporteur_id'),
 			'redacteur_id' => array('unique' => false, 'column' => 'redacteur_id'),
-			'seance_id' => array('unique' => false, 'column' => 'seance_id'),
 			'service_id' => array('unique' => false, 'column' => 'service_id'),
-			'theme_id' => array('unique' => false, 'column' => 'theme_id'),
-			'vote_id' => array('unique' => false, 'column' => 'vote_id')
+			'theme_id' => array('unique' => false, 'column' => 'theme_id')
 		),
 		'tableParameters' => array()
 	);
@@ -281,10 +321,13 @@ class AppSchema extends CakeSchema {
 		'deliberation_id' => array('type' => 'integer', 'null' => false),
 		'seance_id' => array('type' => 'integer', 'null' => false),
 		'position' => array('type' => 'integer', 'null' => true),
-		'avis' => array('type' => 'integer', 'null' => true),
+		'avis' => array('type' => 'boolean', 'null' => true),
 		'commentaire' => array('type' => 'string', 'null' => true, 'length' => 1000),
 		'indexes' => array(
-			'deliberations_seances_id_key' => array('unique' => true, 'column' => 'id')
+			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'deliberations_id' => array('unique' => false, 'column' => 'deliberation_id'),
+			'deliberations_seances_seance' => array('unique' => false, 'column' => 'seance_id'),
+			'seances_id' => array('unique' => false, 'column' => 'seance_id')
 		),
 		'tableParameters' => array()
 	);
@@ -302,35 +345,46 @@ class AppSchema extends CakeSchema {
 		'delib_id' => array('type' => 'integer', 'null' => false),
 		'user_id' => array('type' => 'integer', 'null' => false),
 		'circuit_id' => array('type' => 'integer', 'null' => false),
-		'commentaire' => array('type' => 'string', 'null' => false, 'length' => 1000),
+		'commentaire' => array('type' => 'text', 'null' => false, 'length' => 1073741824),
 		'modified' => array('type' => 'datetime', 'null' => false),
 		'created' => array('type' => 'datetime', 'null' => false),
 		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
+			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'user' => array('unique' => false, 'column' => 'user_id')
 		),
 		'tableParameters' => array()
 	);
 	public $infosupdefs = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
+		'model' => array('type' => 'string', 'null' => false, 'default' => 'Deliberation', 'length' => 25),
 		'nom' => array('type' => 'string', 'null' => false),
 		'commentaire' => array('type' => 'string', 'null' => false),
 		'ordre' => array('type' => 'integer', 'null' => false),
 		'code' => array('type' => 'string', 'null' => false),
-		'taille' => array('type' => 'integer', 'null' => true),
 		'type' => array('type' => 'string', 'null' => false),
 		'val_initiale' => array('type' => 'string', 'null' => true),
 		'recherche' => array('type' => 'boolean', 'null' => false),
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
-		'model' => array('type' => 'string', 'null' => true, 'length' => 30),
+		'actif' => array('type' => 'boolean', 'null' => true),
 		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
+			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'model' => array('unique' => false, 'column' => 'model')
+		),
+		'tableParameters' => array()
+	);
+	public $infosupdefs_profils = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
+		'profil_id' => array('type' => 'integer', 'null' => false),
+		'infosupdef_id' => array('type' => 'integer', 'null' => false),
+		'indexes' => array(
+			
 		),
 		'tableParameters' => array()
 	);
 	public $infosuplistedefs = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
-		'infosupdef_id' => array('type' => 'integer', 'null' => true),
+		'infosupdef_id' => array('type' => 'integer', 'null' => false),
 		'ordre' => array('type' => 'integer', 'null' => false),
 		'nom' => array('type' => 'string', 'null' => false),
 		'actif' => array('type' => 'boolean', 'null' => false, 'default' => true),
@@ -344,7 +398,8 @@ class AppSchema extends CakeSchema {
 	);
 	public $infosups = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
-		'deliberation_id' => array('type' => 'integer', 'null' => true),
+		'model' => array('type' => 'string', 'null' => false, 'default' => 'Deliberation', 'length' => 25),
+		'foreign_key' => array('type' => 'integer', 'null' => false),
 		'infosupdef_id' => array('type' => 'integer', 'null' => true),
 		'text' => array('type' => 'string', 'null' => true),
 		'date' => array('type' => 'date', 'null' => true),
@@ -352,10 +407,9 @@ class AppSchema extends CakeSchema {
 		'file_size' => array('type' => 'integer', 'null' => true),
 		'file_type' => array('type' => 'string', 'null' => true),
 		'content' => array('type' => 'binary', 'null' => true),
-		'foreign_key' => array('type' => 'integer', 'null' => true),
-		'model' => array('type' => 'string', 'null' => true, 'length' => 30),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'foreign_key' => array('unique' => false, 'column' => 'foreign_key'),
 			'infosupdef_id' => array('unique' => false, 'column' => 'infosupdef_id'),
 			'text' => array('unique' => false, 'column' => 'text')
 		),
@@ -366,7 +420,8 @@ class AppSchema extends CakeSchema {
 		'delib_id' => array('type' => 'integer', 'null' => false),
 		'acteur_id' => array('type' => 'integer', 'null' => false),
 		'present' => array('type' => 'boolean', 'null' => false),
-		'mandataire' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'mandataire' => array('type' => 'integer', 'null' => true),
+		'suppleant_id' => array('type' => 'integer', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id')
 		),
@@ -374,16 +429,16 @@ class AppSchema extends CakeSchema {
 	);
 	public $models = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
-		'type' => array('type' => 'string', 'null' => true, 'length' => 100),
 		'modele' => array('type' => 'string', 'null' => true, 'length' => 100),
-		'content' => array('type' => 'binary', 'null' => true),
+		'type' => array('type' => 'string', 'null' => true, 'length' => 100),
 		'name' => array('type' => 'string', 'null' => true),
 		'size' => array('type' => 'integer', 'null' => true),
 		'extension' => array('type' => 'string', 'null' => true),
+		'content' => array('type' => 'binary', 'null' => true),
 		'recherche' => array('type' => 'boolean', 'null' => true),
+		'joindre_annexe' => array('type' => 'integer', 'null' => true, 'default' => '0'),
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
-		'joindre_annexe' => array('type' => 'integer', 'null' => true),
 		'multiodj' => array('type' => 'boolean', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id')
@@ -397,6 +452,20 @@ class AppSchema extends CakeSchema {
 		'dua' => array('type' => 'string', 'null' => true, 'length' => 50),
 		'sortfinal' => array('type' => 'string', 'null' => true, 'length' => 50),
 		'communicabilite' => array('type' => 'string', 'null' => true, 'length' => 50),
+		'indexes' => array(
+			'PRIMARY' => array('unique' => true, 'column' => 'id')
+		),
+		'tableParameters' => array()
+	);
+	public $nomenclatures = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
+		'parent_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'libelle' => array('type' => 'string', 'null' => false, 'length' => 100),
+		'code' => array('type' => 'string', 'null' => true, 'default' => '0', 'length' => 50),
+		'lft' => array('type' => 'integer', 'null' => true, 'default' => '0'),
+		'rght' => array('type' => 'integer', 'null' => true, 'default' => '0'),
+		'created' => array('type' => 'datetime', 'null' => false),
+		'modified' => array('type' => 'datetime', 'null' => false),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id')
 		),
@@ -434,6 +503,7 @@ class AppSchema extends CakeSchema {
 		'pv_complet' => array('type' => 'binary', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'seances_traitee' => array('unique' => false, 'column' => 'traitee'),
 			'type_id' => array('unique' => false, 'column' => 'type_id')
 		),
 		'tableParameters' => array()
@@ -475,7 +545,8 @@ class AppSchema extends CakeSchema {
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
 		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
+			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'tdtmsg_' => array('unique' => false, 'column' => 'delib_id')
 		),
 		'tableParameters' => array()
 	);
@@ -491,7 +562,7 @@ class AppSchema extends CakeSchema {
 		'rght' => array('type' => 'integer', 'null' => true, 'default' => '0'),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
-			'index' => array('unique' => false, 'column' => 'id')
+			'themes_left' => array('unique' => false, 'column' => 'lft')
 		),
 		'tableParameters' => array()
 	);
@@ -517,7 +588,8 @@ class AppSchema extends CakeSchema {
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
 		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
+			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'elu' => array('unique' => false, 'column' => 'elu')
 		),
 		'tableParameters' => array()
 	);
@@ -554,7 +626,8 @@ class AppSchema extends CakeSchema {
 		'typeseance_id' => array('type' => 'integer', 'null' => false),
 		'typeacte_id' => array('type' => 'integer', 'null' => false),
 		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
+			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'typeseancenature_nature' => array('unique' => false, 'column' => 'typeacte_id')
 		),
 		'tableParameters' => array()
 	);
@@ -573,7 +646,7 @@ class AppSchema extends CakeSchema {
 		'profil_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'statut' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'login' => array('type' => 'string', 'null' => false, 'length' => 50),
-		'note' => array('type' => 'string', 'null' => false, 'length' => 300),
+		'note' => array('type' => 'string', 'null' => true, 'length' => 300),
 		'circuit_defaut_id' => array('type' => 'integer', 'null' => true),
 		'password' => array('type' => 'string', 'null' => false, 'length' => 100),
 		'nom' => array('type' => 'string', 'null' => false, 'length' => 50),
@@ -589,6 +662,15 @@ class AppSchema extends CakeSchema {
 		'position' => array('type' => 'integer', 'null' => true),
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
+		'zone_1' => array('type' => 'string', 'null' => true, 'length' => 50),
+		'zone_2' => array('type' => 'string', 'null' => true, 'length' => 50),
+		'zone_3' => array('type' => 'string', 'null' => true, 'length' => 50),
+		'zone_4' => array('type' => 'string', 'null' => true, 'length' => 50),
+		'zone_5' => array('type' => 'string', 'null' => true, 'length' => 50),
+		'zone_6' => array('type' => 'string', 'null' => true, 'length' => 50),
+		'zone_7' => array('type' => 'string', 'null' => true, 'length' => 50),
+		'zone_8' => array('type' => 'string', 'null' => true, 'length' => 50),
+		'zone_9' => array('type' => 'string', 'null' => true, 'length' => 50),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'login' => array('unique' => true, 'column' => 'login')
@@ -600,7 +682,8 @@ class AppSchema extends CakeSchema {
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'service_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
+			'PRIMARY' => array('unique' => true, 'column' => 'id'),
+			'users_services_users' => array('unique' => false, 'column' => 'user_id')
 		),
 		'tableParameters' => array()
 	);
