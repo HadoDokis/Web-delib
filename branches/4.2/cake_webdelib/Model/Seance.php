@@ -149,7 +149,7 @@ class Seance extends AppModel {
         
         /**
          * Récupère en base la liste des délibérations pour une séance ainsi que le theme et le rapporteur associé 
-         * TODO: Diviser le nombre de requêtes en utilisant contain + conditions ! (vérifier que valeur != null)
+         * @todo Description: Diviser le nombre de requêtes en utilisant contain + conditions ! (vérifier que valeur != null)
          * @param integer $seance_id
          * @return array deliberations liste des délibérations avec libelle du theme et nom, prenom du rapporteur
          */
@@ -205,6 +205,10 @@ class Seance extends AppModel {
 		return $tab;
 	}
 
+        /**
+         * @deprecated
+         * NOTE: cette fonction n'est pas utilisée et ne pourrai pas fonctionner en l'état
+         */
 	function getDeliberationsIdByTypeseance_id($type_id) {
 		$tabs = array();
 		$typeseances = $this->Typeseance->find('all', array(
