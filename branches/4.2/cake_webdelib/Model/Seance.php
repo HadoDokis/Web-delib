@@ -345,120 +345,140 @@ class Seance extends AppModel {
             return ($seance['Typeseance']['action'] == 0); 
         }
 
-        /**
-         * 
-         * @param type $seance_id
-         * @param GDO_PartType $oDevPart
-         * @param boolean $include_projets
-         * @param array $conditions
-         * @return \GDO_PartType
-         */
-	function makeBalise($seance_id, $oDevPart=null, $include_projets=false, $conditions = array()) {
-		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
-		$this->Date = new DateComponent;
+    /**
+     * contruit l'objet GDO_PartType passé en paramètre, ou en crée un nouveau si celui-ci est null et le rempli avec les valeurs des champs trouvés en base  
+     * les dates et heure sont mises en français : @see DateComponent
+     * la fonction insère également 
+     *  - les attributs de la seance (passée en paramètre)
+     *  - un bloc comprenant les informations sur les élus convoqués à la séance
+     *  - un bloc président @see President:makeBalise
+     *  - un bloc secrétaire @see Secretaire:makeBalise
+     *  - un bloc concernant les avis des seances
+     *  - un bloc concernant les infos sups
+     *  - un bloc projet concernant les délibérations de la séance (si $include_projets = true)
+     * 
+     * ATTENTION:
+     *  - utilisation de $oDevPart puis de @$oDevPart (@$oDevPart->addElement($aviss);)
+     * 
+     * @see
+     *  - President:makeBalise
+     *  - Secretaire:makeBalise
+     * 
+     * @param integer $seance_id l'id de la seance
+     * @param GDO_PartType $oDevPart l'objet GDO_PartType dans lequel ajouter les champs
+     * - Si ce champ est null, crée un nouveau objet GDO_PartType et met le suffixe seance au pluriel, la variable $return à true (la méthode retournera l'objet GDO_PartType)
+     * @param boolean $include_projets, inclure ou non un bloc projet (infos sur les délibérations de la séance)
+     * @param array $conditions, tableau de conditions pour la méthode find sur le modèle délibération.
+     * - Si $include_projets = false, le paramètre $conditions est inutilisé
+     * @return \GDO_PartType $oDevPart, l'objet GDO_PartType construit si le paramètre $oDevPart passé est null, retourne rien sinon
+     */
+    function makeBalise($seance_id, $oDevPart = null, $include_projets = false, $conditions = array()) {
+        include_once (ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
+        $this->Date = new DateComponent;
 
-		$this->Behaviors->attach('Containable');
-		$seance = $this->find('first', array('conditions' => array('Seance.id' =>$seance_id),
-				'contain'    => array('Deliberation.id')));
+        $this->Behaviors->attach('Containable');
+        $seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
+            'contain' => array('Deliberation.id')));
 
-		$return = false;
-		if ( $oDevPart == null) {
-			$oDevPart = new GDO_PartType();
-			$return = true;
-			$suffixe = "_seances";
-		}
-		else {
-			$suffixe = "_seance";
-		}
-                if(!empty($seance['Seance']['date']))
-		$date_lettres =  $this->Date->dateLettres(strtotime($seance['Seance']['date']));
-                else $date_lettres='';
-		//$oDevPart->addElement(new GDO_FieldType('date_seance_lettres'.$suffixe, ($date_lettres), 'text'));
-		$oDevPart->addElement(new GDO_FieldType('date_seance_lettres', $date_lettres, 'text'));
-		$oDevPart->addElement(new GDO_FieldType("heure".$suffixe,       (!empty($seance['Seance']['date'])?$this->Date->Hour($seance['Seance']['date']):''),     'text'));
-		$oDevPart->addElement(new GDO_FieldType("date".$suffixe,        (!empty($seance['Seance']['date'])?$this->Date->frDate($seance['Seance']['date']):''),       'date'));
-		$oDevPart->addElement(new GDO_FieldType("hh".$suffixe,          (!empty($seance['Seance']['date'])?$this->Date->Hour($seance['Seance']['date'], 'hh'):''), 'string'));
-		$oDevPart->addElement(new GDO_FieldType("mm".$suffixe,          (!empty($seance['Seance']['date'])?$this->Date->Hour($seance['Seance']['date'], 'mm'):''), 'string'));
-		$oDevPart->addElement(new GDO_FieldType("date_convocation".$suffixe, $this->Date->frDate($seance['Seance']['date_convocation']),   'date'));
-		$oDevPart->addElement(new GDO_FieldType("identifiant".$suffixe, (!empty($seance['Seance']['id'])?$seance['Seance']['id']:''), 'text'));
-		$oDevPart->addElement(new GDO_FieldType("commentaire".$suffixe, (!empty($seance['Seance']['commentaire'])?$seance['Seance']['commentaire']:''), 'lines'));
+        $return = false;
+        $suffixe = "_seance";
+        if ($oDevPart == null) {
+            $oDevPart = new GDO_PartType();
+            $return = true;
+            $suffixe = "_seances";
+        }
 
-		$elus = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
-		if (!empty($elus)) {
-			$oDevPart->addElement(new GDO_FieldType("nombre_acteur".$suffixe,     count($elus), "text"));
-			$blocConvoque = new GDO_IterationType("Convoques");
-			$oDevPartConvoque = new GDO_PartType();
-			foreach($elus as $elu) {
-				$oDevPartConvoque = new GDO_PartType();
-				$oDevPartConvoque->addElement(new GDO_FieldType("nom_acteur_convoque".$suffixe, ($elu['Acteur']['nom']), "text"));
-				$oDevPartConvoque->addElement(new GDO_FieldType("prenom_acteur_convoque".$suffixe, ($elu['Acteur']['prenom']), "text"));
-				$oDevPartConvoque->addElement(new GDO_FieldType("salutation_acteur_convoque".$suffixe, ($elu['Acteur']['salutation']), "text"));
-				$oDevPartConvoque->addElement(new GDO_FieldType("titre_acteur_convoque".$suffixe, ($elu['Acteur']['titre']), "text"));
-				$oDevPartConvoque->addElement(new GDO_FieldType("note_acteur_convoque".$suffixe, ($elu['Acteur']['note']), "text"));
-				$blocConvoque->addPart($oDevPartConvoque);
-			}
-			$oDevPart->addElement($blocConvoque);
-		}
+        $date_lettres= (!empty($seance['Seance']['date'])) ? $this->Date->dateLettres(strtotime($seance['Seance']['date'])) : '';
+        
+        //$oDevPart->addElement(new GDO_FieldType('date_seance_lettres'.$suffixe, ($date_lettres), 'text'));
+        $oDevPart->addElement(new GDO_FieldType('date_seance_lettres', $date_lettres, 'text'));
+        $oDevPart->addElement(new GDO_FieldType("heure" . $suffixe, (!empty($seance['Seance']['date']) ? $this->Date->Hour($seance['Seance']['date']) : ''), 'text'));
+        $oDevPart->addElement(new GDO_FieldType("date" . $suffixe, (!empty($seance['Seance']['date']) ? $this->Date->frDate($seance['Seance']['date']) : ''), 'date'));
+        $oDevPart->addElement(new GDO_FieldType("hh" . $suffixe, (!empty($seance['Seance']['date']) ? $this->Date->Hour($seance['Seance']['date'], 'hh') : ''), 'string'));
+        $oDevPart->addElement(new GDO_FieldType("mm" . $suffixe, (!empty($seance['Seance']['date']) ? $this->Date->Hour($seance['Seance']['date'], 'mm') : ''), 'string'));
+        $oDevPart->addElement(new GDO_FieldType("date_convocation" . $suffixe, $this->Date->frDate($seance['Seance']['date_convocation']), 'date'));
+        $oDevPart->addElement(new GDO_FieldType("identifiant" . $suffixe, (!empty($seance['Seance']['id']) ? $seance['Seance']['id'] : ''), 'text'));
+        $oDevPart->addElement(new GDO_FieldType("commentaire" . $suffixe, (!empty($seance['Seance']['commentaire']) ? $seance['Seance']['commentaire'] : ''), 'lines'));
 
-		$typeSeance = $this->Typeseance->find('first',
-				array('conditions' => array('Typeseance.id' => $seance['Seance']['type_id']),
-						'recursive'   => -1));
-		$oDevPart->addElement(new GDO_FieldType('type'.$suffixe, (!empty($typeSeance['Typeseance']['libelle'])?$typeSeance['Typeseance']['libelle']:''), 'text'));
+        $elus = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+        if (!empty($elus)) {
+            //insère un bloc comprenant les informations sur les élus convoqués à la séance
+            $oDevPart->addElement(new GDO_FieldType("nombre_acteur" . $suffixe, count($elus), "text"));
+            $blocConvoque = new GDO_IterationType("Convoques");
+            $oDevPartConvoque = new GDO_PartType();
+            foreach ($elus as $elu) {
+                $oDevPartConvoque = new GDO_PartType();
+                $oDevPartConvoque->addElement(new GDO_FieldType("nom_acteur_convoque" . $suffixe, ($elu['Acteur']['nom']), "text"));
+                $oDevPartConvoque->addElement(new GDO_FieldType("prenom_acteur_convoque" . $suffixe, ($elu['Acteur']['prenom']), "text"));
+                $oDevPartConvoque->addElement(new GDO_FieldType("salutation_acteur_convoque" . $suffixe, ($elu['Acteur']['salutation']), "text"));
+                $oDevPartConvoque->addElement(new GDO_FieldType("titre_acteur_convoque" . $suffixe, ($elu['Acteur']['titre']), "text"));
+                $oDevPartConvoque->addElement(new GDO_FieldType("note_acteur_convoque" . $suffixe, ($elu['Acteur']['note']), "text"));
+                $blocConvoque->addPart($oDevPartConvoque);
+            }
+            $oDevPart->addElement($blocConvoque);
+        }
 
-		$this->President->makeBalise($oDevPart, $seance['Seance']['president_id']);
-		$this->Secretaire->makeBalise($oDevPart, $seance['Seance']['secretaire_id']);
+        $typeSeance = $this->Typeseance->find('first', array(
+            'conditions' => array('Typeseance.id' => $seance['Seance']['type_id']),
+            'recursive' => -1));
+        $oDevPart->addElement(new GDO_FieldType('type' . $suffixe, (!empty($typeSeance['Typeseance']['libelle']) ? $typeSeance['Typeseance']['libelle'] : ''), 'text'));
 
-                App::import('Model', 'Deliberationseance');
-                $this->Deliberationseance = new Deliberationseance();
-                $avisSeances =  $this->Deliberationseance->find('all', array(
-                                'conditions' => array('seance_id' => $seance['Seance']['id']),
-                                'recursive'  => -1));
-                if (!empty($avisSeances)) {
-                    $aviss =  new GDO_IterationType("AvisSeance");
-                    foreach($avisSeances as $avisSeance) {
-                        $Part = new GDO_PartType();
-                        $Part->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
-                        $aviss->addPart($Part);
-                    }
-                    @$oDevPart->addElement($aviss);
+        $this->President->makeBalise($oDevPart, $seance['Seance']['president_id']);
+        $this->Secretaire->makeBalise($oDevPart, $seance['Seance']['secretaire_id']);
+
+        App::import('Model', 'Deliberationseance');
+        $this->Deliberationseance = new Deliberationseance();
+        $avisSeances = $this->Deliberationseance->find('all', array(
+            'conditions' => array('seance_id' => $seance['Seance']['id']),
+            'recursive' => -1));
+        if (!empty($avisSeances)) {
+            $aviss = new GDO_IterationType("AvisSeance");
+            foreach ($avisSeances as $avisSeance) {
+                $Part = new GDO_PartType();
+                $Part->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
+                $aviss->addPart($Part);
+            }
+            @$oDevPart->addElement($aviss);
+        }
+
+        $infosups = $this->Infosup->find('all', array('conditions' => array('Infosup.foreign_key' => $seance['Seance']['id'],
+                'Infosup.model' => 'Seance'),
+            'recursive' => -1));
+
+        if (isset($infosups) && !empty($infosups)) {
+            foreach ($infosups as $champs) {
+                $infosup = $this->Infosup->addField($champs['Infosup'], $seance_id, 'Seance');
+                if (!empty($infosup))
+                    $oDevPart->addElement($infosup);
+            }
+        }
+        /*
+        else {
+            $defs = $this->Infosup->Infosupdef->find('all', array('conditions' => array('model' => 'Seance'), 'recursive' => -1));
+            foreach ($defs as $def) {
+                $oDevPart->addElement(new GDO_FieldType($def['Infosupdef']['code'], '', 'text'));
+            }
+        }
+        */
+        if ($include_projets) {
+            if (isset($seance['Deliberation']) && !empty($seance['Deliberation'])) {
+                $blocProjets = new GDO_IterationType("Projets");
+                foreach ($seance['Deliberation'] as $deliberation) {
+                    $conditions['Deliberation.id'] = $deliberation['DeliberationsSeance']['deliberation_id'];
+                    $projet = $this->Deliberation->find('first', array(
+                        'conditions' => $conditions,
+                        'recursive' => -1));
+                    $Part = new GDO_PartType();
+                    $this->Deliberation->makeBalisesProjet($projet, $Part, true, $seance['Seance']['id']);
+                    $blocProjets->addPart($Part);
                 }
+                $oDevPart->addElement($blocProjets);
+            }
+        }
 
-		$infosups = $this->Infosup->find( 'all',
-                                                  array('conditions' => array('Infosup.foreign_key' => $seance['Seance']['id'],
-                                                                              'Infosup.model'        => 'Seance'),
-                                                        'recursive'   => -1));
-                
-                if (isset($infosups) && !empty($infosups))  {
-                    foreach($infosups as  $champs) {
-                        $infosup=$this->Infosup->addField($champs['Infosup'], $seance_id, 'Seance');
-                        if(!empty($infosup))
-                            $oDevPart->addElement($infosup);
-                    }
-                }
-                /*else {
-                    $defs = $this->Infosup->Infosupdef->find('all', array('conditions'=>array('model' => 'Seance'), 'recursive' => -1));
-                    foreach($defs as $def) {
-                        
-                        $oDevPart->addElement(new GDO_FieldType($def['Infosupdef']['code'],  '', 'text')) ;
-                    }
-                }*/
-		if ($include_projets) {
-			if (isset($seance['Deliberation']) && !empty($seance['Deliberation'])) {
-				$blocProjets = new GDO_IterationType("Projets");
-				foreach($seance['Deliberation'] as $deliberation){
-					$conditions['Deliberation.id'] = $deliberation['DeliberationsSeance']['deliberation_id'];
-					$projet = $this->Deliberation->find('first', array('conditions' => $conditions,
-							'recursive'  => -1));
-					$Part = new GDO_PartType();
-					$this->Deliberation->makeBalisesProjet($projet, $Part, true, $seance['Seance']['id']);
-					$blocProjets->addPart($Part);
-				}
-				$oDevPart->addElement($blocProjets);
-			}
-		}
-
-		if ($return) return  $oDevPart;
-	}
+        if ($return)
+            return $oDevPart;
+    }
 
 	function getSeancesDeliberantes () {
 		$tab_seances = array();
