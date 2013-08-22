@@ -169,7 +169,162 @@ class ModelsController extends AppController {
 		return $objCourant['Model']['content'];
 	}
 
-
+        /**
+	 * ****************************************************************************************
+	 * Méthode de génération documentaire (délibération, texte de projet, convocation, ODJ, PV)
+	 * ****************************************************************************************
+	 * - Récupération des données de la collectivité (id=1)
+	 * - Instanciation d'un objet GDO_PartType
+         * - Ajout des champs concernants la collectivité et les dates dans la partie principale du modèle de document
+	 * - Si un identifiant de délibération ($delib_id) est renseigné : Génération d'une délibération ou d'un texte de projet
+	 * 	- récupère en base la délibération 
+	 * 	- fait appel à Deliberation:makeBalisesProjet (NOTE: ?)
+	 * 	- récupère les annexes de la délibération (Annex:getAnnexesFromDelibId)
+	 * 	- pour chaque annexe :
+	 * 		- récupérer en base de données la valeur de ses attributs 
+	 * 		(ATTENTION: Seul les champs 'id' et 'data_pdf' sont utilisés alors qu'ils sont tous récupérés)
+	 * 		- ajouter au tableau d'annexes le fichier retourné par la fonction  Gedooo:createFile à partir de ses attributs
+	 * 
+	 * - Si un identifiant de séance ($seance_id) est renseigné : Génération d'une convocation, ordre du jour ou PV
+	 *      - récupère en base les délibérations associées à la séance (projets)
+	 *      - instancie un objet GDO_IterationType("Projets")
+	 *      - pour chaque projet :
+         *              - instancie un objet GDO_PartType (NOTE: partie projet dans GDO ?)
+         *              - appel de Deliberation:makeBalisesProjet (paramètres : le projet et l'objet GDO_PartType) (NOTE: ?)
+	 *              - ajout de la partie créée au bloc projet
+         *              - récupération en base des annexes associées au projet
+	 *              - si des annexes existent pour ce projet, les ajouter au tableau $annexes_id
+	 *      - pour chaque annexes ($annexes_id) : (NOTE: utilité de stocker le tableau dans un tableau ?) 
+	 *              - récupérer en base les données de l'annexe
+         *              - création du fichier annexe en pdf à partir des données de la base (appel de Gedooo:createFile)
+         *              - ajout du chemin du fichier créé au tableau d'annexes ($annexes) pour GEDOOO
+	 *      - ajout du bloc projet à l'objet GDO_PartType ($oMainPart)
+         *      - si ce n'est pas un PV (par défaut PV=0)
+         *              - mise à la date et heure du jour du paramètre date_convocation de la séance en base de données 
+         *              - récupérer en base le type de la séance 
+         *              - récupérer à partir du type de séance, la liste des acteurs convoqués
+         *              - si le fichier documents.zip existe dans le repertoire de destination:
+         *                      - supprimer le fichier
+         *              - compter le nombre d'acteurs convoqués (NOTE: variable inutilisée)
+         *              - lecture du model (appel de Model:read(null, $model_id)) et passage du nom à la vue (NOTE: la variable est elle utilisée?, que fait Model:read?)
+         *              - si la liste des acteurs convoqués est vide :
+         *                      - stopper l'éxecution (return "")
+         *              - instanciation d'un objet ZipArchive
+         *              - pour chaque acteur convoqué :
+         *                      - passage à la vue de la variable unique (paramètre de la méthode par défaut à false) (NOTE: la variable est elle utilisée?)
+         *                      - si unique = false (par défaut) :
+         *                              - ajout des champs concernants l'acteur dans la partie principale du modèle de document
+         *                              - ajout au tableau liste de fichier (clé = $urlWebroot."acteur_id-ActeurNomSansAccentCamelize", valeur = $prenom_acteur." ".$nom_acteur)
+         *                      - sinon (unique = true)
+         *                              - nom de fichier = 'Document'
+         *                              - ajout au tableau liste de fichier (clé = $urlWebroot."Document", valeur = "Document généré")
+         *                      - bloc try catch (ATTENTION: création de plusieurs fichiers équivalent avec des méthodes différentes si format = odt, écrasement? perte de perfs)
+         *                              - fusion GDO avec comme paramètres : ($oTemplate, $sMimeType, $oMainPart)
+	 *                              - envoi le contenu fusionné vers le fichier dont le chemin est $path.$nomFichier.".odt" (appel de GDO_FusionType:SendContentToFile) (NOTE: utilisation de file_put_contents)
+         *                              - conversion du fichier vers le format odt (NOTE: format d'origine?)
+         *                              - conversion du fichier vers le format choisi par l'utilisateur ($format) (ATTENTION: si le format choisi est odt, on effectue 2 conversion identiques)
+         *                              - création du fichier par Gedooo à partir du contenu retourné par la conversion
+         *                              - si le format choisi est pdf est que la variable joindre_annexe est vrai : 
+         *                                      - concaténer le fichier avec ses annexes
+         *                      - si une exception est lancée (catch)
+         *                              - rediriger vers la page /seances/listerFuturesSeances avec un message d'erreur
+         *                      - si unique = false (par défaut) :
+         *                              - ouverture de l'archive zip au chemin $path.'documents.zip' (création si elle n'existe pas encore)
+         *                              - si l'ouverture/création s'est effectuée sans erreur : 
+         *                                      - ajout du fichier généré à l'archive
+         *                      - sinon (unique = true) : 
+         *                              - stopper la boucle foreach
+         *                      - envoi du document par mail à l'acteur (si le champ mail est renseigné: test interne)
+         *              - si unique = false (par défaut) :
+         *                      - ajout au tableau de la liste des fichiers du document zip
+         *              - passage à la vue des variables listFiles et format
+         *              - déclaration de l'utilisation de la vue generer (NOTE: n'est elle pas celle par défaut?)
+         *              - affectation de la valeur true à la variable genereConvocation
+         *      - sinon (si PV = 1 dans les paramètres)
+         *              - récupération en base de données des informations de la séance (ATTENTION: tous les champs sont récupérés alors que uniquement les champs debat_global et debat_global_name sont utilisés)
+         *              - déclaration du chemin du repertoire à utiliser (WEBROOT_PATH."/files/generee/PV/$seance_id/")
+         *              - vérification que Gedooo a la possibilité d'écrire dans le répertoire
+         *                      - si Gedooo ne peut pas écrire dans le répertoire, stoper l'éxecution avec un message d'erreur
+         *              - si la constante GENERER_DOC_SIMPLE du fichier de configuration est vrai :
+         *                      - inclure le composant conversion.php (ATTENTION: appel de include_once au lieu d'une méthode CakePHP)
+         *                      - création du fichier debat_seance.html dans le repertoire (appel de Gedooo:createFile)
+         *                      - conversion du fichier créé en odt pour insertion dans le document $oMainPart dans le champ debat_seance
+         *              - sinon (constante GENERER_DOC_SIMPLE = false)
+         *                      - écrasement de la variable $urlWebroot (ATTENTION: inutile, prend la même valeur que l'originale)
+         *                      - si ($seance['Seance']['debat_global_name']== "") : (ATTENTION: bloc inutile)
+         *                              - affectation de la variable nameDSeance = "vide" (ATTENTION: variable inutilisée)
+         *                      - sinon :
+         *                              - ajout du champ debat_seance au model à partir de la variable $seance['Seance']['debat_global']
+	 * - Si on ne génère pas de convocation : Lancement de la fusion
+	 *  $convocation est vrai seulement si $seance_id n'est pas null ET $isPV est faux (=> donc si on génére une convocation ou un ordre du jour)
+	 * 	- création d'un objet GDO_FusionType et appel de GDO_FusionType:process
+	 * 	- si le fichier doit être envoyé au navigateur ($dl = 1)
+	 * 		- envoi le contenu généré vers le fichier dont le chemin est $path.$nomFichier (appel de GDO_FusionType:SendContentToFile)
+	 * 		- convertit ce fichier vers le format choisi (pdf ou odt) (appel de Conversion:convertirFichier) (NOTE: quel est son format d'origine ?)
+	 * 		- crée le fichier à partir du résultat de la conversion (NOTE: deuxième fichier créé ?) (appel de Gedooo:createFile)
+	 * 		- si le format choisi est pdf et que le modèle en base possède l'attribut $joindre_annexe à vrai :
+	 * 			- concatène les annexes au fichier (appel de Pdf:concatener avec utilisation de pdftk)
+	 * 		- passage à la vue des variables listFiles et format
+	 * 	- sinon (cas par défaut: fichier à stocker sur le serveur)
+	 * 		- crée le fichier à vide (appel de Gedooo:createFile)
+	 * 		- envoi le contenu généré vers le fichier (appel de GDO_FusionType:SendContentToFile)
+	 * 		- convertit ce fichier vers le format choisi (pdf ou odt) (appel de Conversion:convertirFichier)
+	 * 		- crée le fichier à partir du résultat de la conversion (deuxième fichier créé ?) (appel de Gedooo:createFile)
+	 * 		- si le format choisi est pdf et que le modèle en base possède l'attribut $joindre_annexe à vrai :
+	 * 			- concatène les annexes au fichier (appel de Pdf:concatener avec utilisation de pdftk)
+	 * 		- ouverture dans le navigateur du fichier (passage au navigateur : déclaration headers et die)
+	 * 
+	 * @see Configure
+	 *	- boolean GENERER_DOC_SIMPLE
+	 *		@see app/Config/webdelib.inc
+	 * @see Session
+	 *	- integer user.format.sortie
+	 *		@see Controller/UsersConrtoller::changeFormat()
+	 *		@see Pages/format.ctp array( 0=>'pdf', 1=>'odt' )
+	 *
+	 * ATTENTION: $delib_id et $seance_id ont l'air logiquement exclusifs
+	 * au vu des paramètres, mais ne le sont pas réellement dans le code
+	 * (pas de if / else if).
+	 *
+	 * ATTENTION: pour chacun des acteurs, pour une séance (convocation ou
+	 * ordre du jour, pas pour un PV), on fabrique l'archive Zip et on l'
+	 * envoie (ou juste le lien) à chacun des acteurs, si celui-ci possède
+	 * une adresse email et que Configure::SMTP_USE est vrai.
+	 *
+	 * ATTENTION: $editable et stockage dans webroot pour une histoire de WebDav
+	 *
+	 * @see
+	 *	- Annex:find()
+	 *	- Annex:getAnnexesFromDelibId()
+	 *	- Collectivite::find() Celle d'id 1
+	 *	- ConversionComponent::convertirFichier()
+	 *	- DateComponent::frenchDate()
+	 *	- Deliberation::find()
+	 *	- Deliberation::makeBalisesProjet()
+	 *  - GedoooComponent::checkPath()
+	 *  - GedoooComponent::createFile()
+	 *  - Model::find() / ATTENTION: Model
+	 *  - PdfComponent::concatener()
+	 *	- Seance::getDeliberations()
+	 *	- Seance::makeBalise()
+	 *	- Seance::getType()
+	 *	- Seance::saveField()
+	 *	- Typeseance::acteursConvoquesParTypeSeanceId()
+	 *  - UtilsComponent::strSansAccent() 326
+	 *
+	 * @param integer $delib_id La clé primaire d'une délibération ou d'un texte de projet
+	 * @param integer $seance_id La clé primaire d'une séance
+	 * @param integer $model_id La clé primaire du modèle de document à utiliser (classe Model)
+	 * @param boolean $editable Permet de spécifier si le format du fichier
+	 *	généré sera du PDF ($editable=0 && user.format.sortie=0) ou de l'ODT
+	 * @param boolean $dl Permet de spécifier si le fichier doit être stocké
+	 *	(dans webroot?) ou directement envoyé au navigateur.
+	 * @param string $nomFichier Basename du nom du (des) fichier(s) généré(s)
+	 *	ou stocké(s)
+	 * @param boolean $isPV Permet de savoir si l'on génère un PV ou alors
+	 *	une convocation, un ordre du jour, ...
+	 * @param boolean $unique
+	 */
 	function generer ($delib_id=null, $seance_id=null,  $model_id, $editable=-1, $dl=0, $nomFichier='retour', $isPV=0, $unique=false) {
 		$time_start = microtime(true);
                 
@@ -384,34 +539,34 @@ class ModelsController extends AppController {
 				$genereConvocation = true;
 			}
 			else {
-		 	$seance = $this->Seance->find('first', array(
-		 			'conditions' => array('Seance.id' => $seance_id),
-		 			'recursive'  => -1));
-		 	$dyn_path = "/files/generee/PV/$seance_id/";
-		 	$path = WEBROOT_PATH.$dyn_path;
-		 	if (!$this->Gedooo->checkPath($path))
-		 		die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+                                $seance = $this->Seance->find('first', array(
+                                                'conditions' => array('Seance.id' => $seance_id),
+                                                'recursive'  => -1));
+                                $dyn_path = "/files/generee/PV/$seance_id/";
+                                $path = WEBROOT_PATH.$dyn_path;
+                                if (!$this->Gedooo->checkPath($path))
+                                        die("Webdelib ne peut pas ecrire dans le repertoire : $path");
 
-		 	if (Configure::read('GENERER_DOC_SIMPLE')) {
-		 		include_once ('controllers/components/conversion.php');
-		 		$this->Conversion = new ConversionComponent;
+                                if (Configure::read('GENERER_DOC_SIMPLE')) {
+                                        include_once ('controllers/components/conversion.php');
+                                        $this->Conversion = new ConversionComponent;
 
-		 		$filename = $path."debat_seance.html";
-		 		$this->Gedooo->createFile($path, "debat_seance.html",  $seance['Seance']['debat_global']);
-		 		$content = $this->Conversion->convertirFichier($filename, "odt");
+                                        $filename = $path."debat_seance.html";
+                                        $this->Gedooo->createFile($path, "debat_seance.html",  $seance['Seance']['debat_global']);
+                                        $content = $this->Conversion->convertirFichier($filename, "odt");
 
-		 		$oMainPart->addElement(new GDO_ContentType('debat_seance',  $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
-		 	}
-		 	else {
-		 		$urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+                                        $oMainPart->addElement(new GDO_ContentType('debat_seance',  $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                                }
+                                else {
+                                        $urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
 
-		 		if ($seance['Seance']['debat_global_name']== "")
-		 			$nameDSeance = "vide";
-		 		else {
-		 			$oMainPart->addElement(new GDO_ContentType('debat_seance', 'debat_seance.odt', "application/vnd.oasis.opendocument.text" , 'binary', $seance['Seance']['debat_global'] ));
-		 		}
-		 	}
-		 }
+                                        if ($seance['Seance']['debat_global_name']== "")
+                                                $nameDSeance = "vide";
+                                        else {
+                                                $oMainPart->addElement(new GDO_ContentType('debat_seance', 'debat_seance.odt', "application/vnd.oasis.opendocument.text" , 'binary', $seance['Seance']['debat_global'] ));
+                                        }
+                                }
+                        }
 		}
 
 		if ($genereConvocation == false) {
