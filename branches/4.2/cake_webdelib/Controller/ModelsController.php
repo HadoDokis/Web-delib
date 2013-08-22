@@ -177,7 +177,7 @@ class ModelsController extends AppController {
 	 * - Instanciation d'un objet GDO_PartType
          * - Ajout des champs concernants la collectivité et les dates dans la partie principale du modèle de document
 	 * - Si un identifiant de délibération ($delib_id) est renseigné : Génération d'une délibération ou d'un texte de projet
-	 * 	- récupère en base la délibération 
+	 * 	- récuperer en base la délibération 
 	 * 	- fait appel à Deliberation:makeBalisesProjet (NOTE: ?)
 	 * 	- récupère les annexes de la délibération (Annex:getAnnexesFromDelibId)
 	 * 	- pour chaque annexe :
