@@ -349,20 +349,37 @@ class Seance extends AppModel {
      * Contruit l'objet GDO_PartType passé en paramètre, ou en crée un nouveau si celui-ci est null et le rempli avec les valeurs des champs trouvés en base  
      * les dates et heure sont mises en français : @see DateComponent
      * la fonction insère également dans l'objet $oDevPart (GDO_PartType) :
-     *  - les attributs de la séance (passée en paramètre)
-     *  - un bloc comprenant les informations sur les élus convoqués à la séance
-     *  - un bloc président @see President:makeBalise
-     *  - un bloc secrétaire @see Secretaire:makeBalise
-     *  - un bloc concernant les avis des séances
-     *  - un bloc concernant les infos sups
-     *  - un bloc projet concernant les délibérations de la séance (si $include_projets = true)
+     *  - les attributs de la séance (passée en paramètre) :
+     *      - date_seance_lettres/$this->Date->dateLettres(strtotime($seance['Seance']['date']))/text
+     *      - heure.$suffixe/$this->Date->Hour($seance['Seance']['date'])/text
+     *      - date.$suffixe/$this->Date->frDate($seance['Seance']['date'])/date
+     *      - hh.$suffixe/$this->Date->Hour($seance['Seance']['date'], 'hh')/string
+     *      - mm.$suffixe/$this->Date->Hour($seance['Seance']['date']/string
+     *      - date_convocation.$suffixe/$this->Date->frDate($seance['Seance']['date_convocation'])/date
+     *      - identifiant.$suffixe/$seance['Seance']['id']/text
+     *      - commentaire.$suffixe/$seance['Seance']['commentaire']/lines
+     *  - si la liste des acteur convoqués n'est pas vide, un bloc comprenant les informations sur les élus convoqués à la séance :
+     *      - nom_acteur_convoque.$suffixe/Acteur.{n}.nom/text
+     *      - prenom_acteur_convoque.$suffixe/Acteur.{n}.prenom/text
+     *      - salutation_acteur_convoque.$suffixe/Acteur.{n}.salutation/text
+     *      - titre_acteur_convoque.$suffixe/Acteur.{n}.titre/text
+     *      - note_acteur_convoque.$suffixe/Acteur.{n}.note/text
+     *  - type.$suffixe/typeseance.libelle/text
+     *  - un bloc président @see Acteur:makeBalise
+     *  - un bloc secrétaire @see Acteur:makeBalise
+     *  - un bloc concernant les avis des séances :
+     *      - commentaire/Deliberationseance.{n}.commentaire/lines
+     *  - un bloc concernant les infos sups @see Infosup:addField
+     *  - un bloc projet concernant les délibérations de la séance (si $include_projets = true) :
+     *      - pour chaque délibération @see Deliberation:makeBalisesProjet
      * 
      * ATTENTION:
      *  - utilisation de $oDevPart puis de @$oDevPart (@$oDevPart->addElement($aviss);)
      * 
      * @see
-     *  - President:makeBalise
-     *  - Secretaire:makeBalise
+     *  - Acteur:makeBalise
+     *  - Acteur:makeBalise
+     *  - Infosup:addField
      * 
      * @param integer $seance_id l'id de la seance
      * @param GDO_PartType $oDevPart l'objet GDO_PartType dans lequel ajouter les champs
