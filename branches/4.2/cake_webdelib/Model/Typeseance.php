@@ -1,6 +1,13 @@
 <?php
 class Typeseance extends AppModel {
 
+    /**
+     * Définition de constantes nommées pour le champ action.
+     */
+    const actionVote = 0;
+    const actionAvis = 1;
+    const actionSans = 2;
+
 	var $name = 'Typeseance';
 
 	var $displayField = 'libelle';
