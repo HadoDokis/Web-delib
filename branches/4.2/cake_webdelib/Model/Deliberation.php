@@ -430,6 +430,20 @@ class Deliberation extends AppModel {
                 return true;
 	}
 
+        /**
+        *
+        * @see
+        *	- ConversionComponent::convertirFichier()
+        *	- Deliberation::makeBalisesProjet()
+        *	- Modelprojet::find()
+        *  - Seance::makeBalise()
+        *
+        * @param array $projets Un ensemble de projets (résultats de find CakePHP).
+        * @param integer $model_id La clé primaire du modèle de document à utiliser (classe Model)
+        * @param integer $format Le format de sortie, @see Pages/format.ctp array( 0=>'pdf', 1=>'odt' )
+        * @param array $multiSeances La liste des clés primaires des séances.
+        * @param array $conditions Utlisé comme conditions pour les appels à Seance::makeBalise()
+        */
 	function genererRecherche($projets, $model_id=1, $format=0, $multiSeances=array(), $conditions=array() ){
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
