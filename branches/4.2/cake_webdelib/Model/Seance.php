@@ -346,14 +346,14 @@ class Seance extends AppModel {
         }
 
     /**
-     * contruit l'objet GDO_PartType passé en paramètre, ou en crée un nouveau si celui-ci est null et le rempli avec les valeurs des champs trouvés en base  
+     * Contruit l'objet GDO_PartType passé en paramètre, ou en crée un nouveau si celui-ci est null et le rempli avec les valeurs des champs trouvés en base  
      * les dates et heure sont mises en français : @see DateComponent
-     * la fonction insère également 
-     *  - les attributs de la seance (passée en paramètre)
+     * la fonction insère également dans l'objet $oDevPart (GDO_PartType) :
+     *  - les attributs de la séance (passée en paramètre)
      *  - un bloc comprenant les informations sur les élus convoqués à la séance
      *  - un bloc président @see President:makeBalise
      *  - un bloc secrétaire @see Secretaire:makeBalise
-     *  - un bloc concernant les avis des seances
+     *  - un bloc concernant les avis des séances
      *  - un bloc concernant les infos sups
      *  - un bloc projet concernant les délibérations de la séance (si $include_projets = true)
      * 
