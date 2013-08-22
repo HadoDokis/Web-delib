@@ -248,52 +248,80 @@ class Infosup extends AppModel
 		return $resultIds;
 	}
 
-         function addField($champs,  $id, $model='Deliberation') {
-            $champs_def = $this->Infosupdef->read(null, $champs['infosupdef_id']);
-            if(($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']!= "")) {
-                $tmp= $this->Infosupdef->Infosuplistedef->find('first', array('conditions' => array('Infosuplistedef.id' => $champs['text']),
-                                                                              'fields'     => array('Infosuplistedef.nom'),
-                                                                              'recursive'  => -1));
-                $champs['text'] = $tmp['Infosuplistedef']['nom'];
-            }
-            elseif (($champs_def['Infosupdef']['type'] == 'list' )&&($champs['text']== ""))
-                 return (new GDO_FieldType($champs_def['Infosupdef']['code'],  ' ', 'text'));
-            if ($champs['text'] != null) {
-                return (new GDO_FieldType($champs_def['Infosupdef']['code'],  $champs['text'], 'lines'));
-            }
-            elseif ($champs['date'] != null) {
-                include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
-                $this->Date = new DateComponent;
-                return  (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']),   'date'));
-             }
-             elseif ($champs['file_size'] != 0 ) {
-                 $name = str_replace(" ", "_", $champs['file_name']);
-                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name  ,'application/vnd.oasis.opendocument.text',  'binary', $champs['content']));
-             }
-             elseif ((!empty($champs['content'])) && ($champs['file_size']==0) ) {
-                 include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/GedoooComponent.php');
-                 include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/ConversionComponent.php');
-                 $this->Gedooo = new GedoooComponent;
-                 $this->Conversion = new ConversionComponent;
+    /**
+     * Retourne un objet GDO_FieldType
+     * 
+     * Données Gedooo :
+     * 
+     *  - si $champs_def['Infosupdef']['type'] == 'list' ) && ($champs['text'] == "" :
+     *      - $champs_def['Infosupdef']['code']/ /text
+     *  - sinon si $champs['text'] != null
+     *      - $champs_def['Infosupdef']['code']/$champs['text']/lines
+     *  - sinon si $champs['date'] != null
+     *      - $champs_def['Infosupdef']['code']/$this->Date->frDate($champs['date'])/date
+     *  - sinon si $champs['file_size'] != 0
+     *      - GDO_ContentType($champs_def['Infosupdef']['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', $champs['content'])
+     *  - sinon si (!empty($champs['content'])) && ($champs['file_size'] == 0)
+     *      - si model = Deliberation
+     *          - GDO_ContentType($champs_def['Infosupdef']['code'], $champs_def['Infosupdef']['code'] . ".odt", 'application/vnd.oasis.opendocument.text', 'binary', $content)
+     *      - sinon si model = Seance
+     *          - GDO_ContentType($champs_def['Infosupdef']['code'], $champs_def['Infosupdef']['code'] . ".odt", 'application/vnd.oasis.opendocument.text', 'binary', $content)
+     *  - sinon si empty($champs['text']))
+     *      - null
+     * 
+     * @see (employé par) :
+     *  - Deliberation:makeBalisesProjet
+     *  - Seance:makeBalise
+     * 
+     * @see (emploi) :
+     *  - Infosupdef:read
+     *  - Date:frDate
+     *  - Gedooo:createFile
+     *  - Conversion:convertirFichier
+     * 
+     * @param array $champs
+     * @param integer $id identifiant du model
+     * @param string $model nom du model (employé avec Deliberation ou Seance)
+     * @return \GDO_FieldType (peut renvoyer null)
+     */
+    function addField($champs, $id, $model = 'Deliberation') {
+        $champs_def = $this->Infosupdef->read(null, $champs['infosupdef_id']);
+        if (($champs_def['Infosupdef']['type'] == 'list' ) && ($champs['text'] != "")) {
+            $tmp = $this->Infosupdef->Infosuplistedef->find('first', array('conditions' => array('Infosuplistedef.id' => $champs['text']),
+                'fields' => array('Infosuplistedef.nom'),
+                'recursive' => -1));
+            $champs['text'] = $tmp['Infosuplistedef']['nom'];
+        } elseif (($champs_def['Infosupdef']['type'] == 'list' ) && ($champs['text'] == ""))
+            return (new GDO_FieldType($champs_def['Infosupdef']['code'], ' ', 'text'));
+        if ($champs['text'] != null) {
+            return (new GDO_FieldType($champs_def['Infosupdef']['code'], $champs['text'], 'lines'));
+        } elseif ($champs['date'] != null) {
+            include_once (ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
+            $this->Date = new DateComponent;
+            return (new GDO_FieldType($champs_def['Infosupdef']['code'], $this->Date->frDate($champs['date']), 'date'));
+        } elseif ($champs['file_size'] != 0) {
+            $name = str_replace(" ", "_", $champs['file_name']);
+            return (new GDO_ContentType($champs_def['Infosupdef']['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', $champs['content']));
+        } elseif ((!empty($champs['content'])) && ($champs['file_size'] == 0)) {
+            include_once (ROOT . DS . APP_DIR . DS . 'Controller/Component/GedoooComponent.php');
+            include_once (ROOT . DS . APP_DIR . DS . 'Controller/Component/ConversionComponent.php');
+            $this->Gedooo = new GedoooComponent;
+            $this->Conversion = new ConversionComponent;
 
-                 if ( $model == 'Deliberation' ) {
-                     
-                     $filename = WEBROOT_PATH."/files/generee/projet/$id/".$champs_def['Infosupdef']['code'].".html";
-                     $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
-                     $content = $this->Conversion->convertirFichier($filename, "odt");
-                     $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/projet/$id/", $champs_def['Infosupdef']['code'].".odt", $content);
-                     return (new GDO_ContentType($champs_def['Infosupdef']['code'], $champs_def['Infosupdef']['code'].".odt", 'application/vnd.oasis.opendocument.text', 'binary', $content));
-                 }
-                 elseif ( $model == 'Seance' ) {
-                     $filename = WEBROOT_PATH."/files/generee/seance/$id/".$champs_def['Infosupdef']['code'].".html";
-                     $this->Gedooo->createFile(WEBROOT_PATH."/files/generee/seance/$id/", $champs_def['Infosupdef']['code'].".html", $champs['content']);
-                     $content = $this->Conversion->convertirFichier($filename, "odt");
-                     return (new GDO_ContentType($champs_def['Infosupdef']['code'], $champs_def['Infosupdef']['code'].".odt", 'application/vnd.oasis.opendocument.text', 'binary', $content));
-
-                 }
-             }
-            elseif  (empty($champs['text'] ))
-                 return NULL;
-        }
+            if ($model == 'Deliberation') {
+                $filename = WEBROOT_PATH . "/files/generee/projet/$id/" . $champs_def['Infosupdef']['code'] . ".html";
+                $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/projet/$id/", $champs_def['Infosupdef']['code'] . ".html", $champs['content']);
+                $content = $this->Conversion->convertirFichier($filename, "odt");
+                $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/projet/$id/", $champs_def['Infosupdef']['code'] . ".odt", $content);
+                return (new GDO_ContentType($champs_def['Infosupdef']['code'], $champs_def['Infosupdef']['code'] . ".odt", 'application/vnd.oasis.opendocument.text', 'binary', $content));
+            } elseif ($model == 'Seance') {
+                $filename = WEBROOT_PATH . "/files/generee/seance/$id/" . $champs_def['Infosupdef']['code'] . ".html";
+                $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/seance/$id/", $champs_def['Infosupdef']['code'] . ".html", $champs['content']);
+                $content = $this->Conversion->convertirFichier($filename, "odt");
+                return (new GDO_ContentType($champs_def['Infosupdef']['code'], $champs_def['Infosupdef']['code'] . ".odt", 'application/vnd.oasis.opendocument.text', 'binary', $content));
+            }
+        } elseif (empty($champs['text']))
+            return NULL;
+    }
 }
 ?>
