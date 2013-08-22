@@ -141,6 +141,25 @@ class Acteur extends AppModel
 		return ($ordre == 999) ? ($majuscule ? 'En dernier' : 'en dernier') : $ordre;
 	}
   
+        /**
+         * Données Gedooo :
+         * - salutation_$alias/acteur.salutation/text
+         * - prenom_$alias/acteur.prenom/text
+         * - nom_$alias/acteur.nom/text
+         * - titre_$alias/acteur.titre/text
+         * - position_$alias/acteur.position/text
+         * - email_$alias/acteur.email/text
+         * - telmobile_$alias/acteur.telmobile/text
+         * - telfixe_$alias/acteur.telfixe/text
+         * - date_naissance_$alias/acteur.date_naissance/text
+         * - adresse1_$alias/acteur.adresse1/text
+         * - adresse2_$alias/acteur.adresse2/text
+         * - cp_$alias/acteur.cp/text
+         * - ville_$alias/acteur.ville/text
+         * - note_$alias/acteur.note/text
+         * @param GDO_PartType $oMainPart l'objet GDO_PartType à remplir
+         * @param integer $acteur_id, l'identifiant de l'acteur en base
+         */
         function makeBalise(&$oMainPart, $acteur_id) {
                 if ($this->exists($acteur_id)){
                         $acteur = $this->find('first', 
