@@ -57,7 +57,8 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     <body data-spy="scroll" data-target=".subnav" data-offset="50" style="background-position: 0 0;">
         <div id="container">
         <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner navbar-inner"> 
+            <div class="navbar-inner navbar-inner">
             <?php echo $this->Html->image($logo_path, array('align' => 'left','style' => 'margin-left:10px')); ?></div></div>
         <?php echo $content_for_layout; ?>
 <?php echo $this->element('footer'); ?>
+<?php echo $this->element( 'sql_dump' ); ?>

@@ -32,7 +32,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
         echo $this->Html->meta('icon');
         echo $this->fetch('meta');
-        
+
         echo $this->Html->css('webdelib');
         echo $this->Html->css('jquery.jgrowl');
         echo $this->Html->css('bootstrap.min');
@@ -55,11 +55,11 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         <div id="container">
             <div id="content">
                 <div class="navbar navbar-fixed-top">
-                    <div class="navbar-inner"> 
+                    <div class="navbar-inner">
                         <div class='user'>
                             <?php echo $this->Html->image('webdelib_petit.png', array('align' => 'left')); ?>
                             <?php if (isset($infoUser)) { ?>
-                                <form class="navbar-search pull-right" action="/deliberations/quicksearch">
+                                <form class="navbar-search pull-right" action="<?php echo Router::url( array( 'controller' => 'deliberations', 'action' => 'quicksearch' ) ); ?>">
                                     <?php
                                     echo $this->Form->input('field', array('class' => 'search-query span2',
                                         'div' => false, 'label' => false,
@@ -72,18 +72,18 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="user"><?php echo $infoUser; ?></span><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
-                                            <li class="">
-                                                <a href="/pages/format" class="">Changer le format de sortie des éditions</a>
+                                            <li>
+												<?php echo $this->Html->link( 'Changer le format de sortie des éditions', array( 'controller' => 'pages', 'action' => 'format' ) );?>
                                             </li>
-                                            <li class="">
-                                                <a href="/pages/service" class="">Changer le service émetteur</a>
+                                            <li>
+												<?php echo $this->Html->link( 'Changer le service émetteur', array( 'controller' => 'pages', 'action' => 'service' ) );?>
                                             </li>
-                                            <li class="">
-                                                <a href="/users/changeUserMdp" class="">Changer de mot de passe</a>
+                                            <li>
+												<?php echo $this->Html->link( 'Changer de mot de passe', array( 'controller' => 'users', 'action' => 'changeUserMdp' ) );?>
                                             </li>
                                             <li class="divider"></li>
                                             <li>
-                                                <a id="logout" href="/users/logout">Se déconnecter</a>
+												<?php echo $this->Html->link( 'Se déconnecter', array( 'controller' => 'users', 'action' => 'logout' ), array( 'id' => 'logout' ) );?>
                                             </li>
                                         </ul>
                                     </li>
@@ -112,14 +112,14 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                                 $classDropdown = 'class="dropdown"';
                             echo ("<li $classDropdown>");
                             if ($libelle == "Accueil")
-                                echo ("<a href='" . $items['link'] . "'>$libelle</a>");
+                                echo ("<a href='" . Router::url( $items['link'] ) . "'>$libelle</a>");
                             else
                                 echo ("<a class='dropdown-toggle' data-toggle='dropdown' href='" . $items['link'] . "'>$libelle $carret</a>");
                             if (isset($items['subMenu'])) {
                                 echo ('<ul class="dropdown-menu">');
                                 foreach ($items['subMenu'] as $key => $url) {
                                     foreach ($url as $titre => $lien)
-                                        echo ("<li> <a href='" . $lien['link'] . "'> $titre</a></li>");
+                                        echo ("<li> <a href='" . Router::url( $lien['link'] ) . "'> $titre</a></li>");
                                 }
                                 echo ('</ul>');
                             }
@@ -133,3 +133,4 @@ $cakeDescription = __d('webdelib', 'Webdelib');
             </div>
         </div>
 <?php echo $this->element('footer'); ?>
+<?php echo $this->element( 'sql_dump' ); ?>
