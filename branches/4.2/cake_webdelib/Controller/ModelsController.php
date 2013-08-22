@@ -184,7 +184,6 @@ class ModelsController extends AppController {
 	 * 		- récupérer en base de données la valeur de ses attributs 
 	 * 		(ATTENTION: Seul les champs 'id' et 'data_pdf' sont utilisés alors qu'ils sont tous récupérés)
 	 * 		- ajouter au tableau d'annexes le fichier retourné par la fonction  Gedooo:createFile à partir de ses attributs
-	 * 
 	 * - Si un identifiant de séance ($seance_id) est renseigné : Génération d'une convocation, ordre du jour ou PV
 	 *      - récupère en base les délibérations associées à la séance (projets)
 	 *      - instancie un objet GDO_IterationType("Projets")
