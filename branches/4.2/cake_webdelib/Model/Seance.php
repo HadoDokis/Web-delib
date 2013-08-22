@@ -146,7 +146,13 @@ class Seance extends AppModel {
 		$natures = $this->TypeseancesTypeacte->getNaturesParTypeseance($seance['Seance']['type_id']);
 		return in_array($nature_id, $natures);
 	}
-
+        
+        /**
+         * Récupère en base la liste des délibérations pour une séance ainsi que le theme et le rapporteur associé 
+         * TODO: Diviser le nombre de requêtes en utilisant contain + conditions ! (vérifier que valeur != null)
+         * @param integer $seance_id
+         * @return array deliberations liste des délibérations avec libelle du theme et nom, prenom du rapporteur
+         */
 	function getDeliberations($seance_id) {
             $deliberations = $this->Deliberationseance->find(
                     'all',
@@ -339,6 +345,14 @@ class Seance extends AppModel {
             return ($seance['Typeseance']['action'] == 0); 
         }
 
+        /**
+         * 
+         * @param type $seance_id
+         * @param GDO_PartType $oDevPart
+         * @param boolean $include_projets
+         * @param array $conditions
+         * @return \GDO_PartType
+         */
 	function makeBalise($seance_id, $oDevPart=null, $include_projets=false, $conditions = array()) {
 		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
 		$this->Date = new DateComponent;
