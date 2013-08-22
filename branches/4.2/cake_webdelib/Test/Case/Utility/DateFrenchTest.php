@@ -62,6 +62,10 @@
 
         /**
          * Test de la méthode DateFrench::frDate()
+         *
+         * @todo faire les tests pour tous les jours d'août (1-31) et pour toutes
+         * les années entre 2004 et 2015, ensuite refactoriser le code existant
+         * pour utiliser des tableaux de correspondances.
          */
         public function testDateLettres() {
             $result = DateFrench::dateLettres( 1377178200 );
