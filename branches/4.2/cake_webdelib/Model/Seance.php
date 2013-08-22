@@ -149,7 +149,7 @@ class Seance extends AppModel {
         
         /**
          * Récupère en base la liste des délibérations pour une séance ainsi que le theme et le rapporteur associé 
-         * @todo Description: Diviser le nombre de requêtes en utilisant contain + conditions ! (vérifier que valeur != null)
+         * @todo Diviser le nombre de requêtes en utilisant contain + conditions ! (vérifier que valeur != null)
          * @param integer $seance_id
          * @return array deliberations liste des délibérations avec libelle du theme et nom, prenom du rapporteur
          */
