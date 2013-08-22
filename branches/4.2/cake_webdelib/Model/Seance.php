@@ -348,7 +348,7 @@ class Seance extends AppModel {
     /**
      * Contruit l'objet GDO_PartType passé en paramètre, ou en crée un nouveau si celui-ci est null et le rempli avec les valeurs des champs trouvés en base  
      * les dates et heure sont mises en français : @see DateComponent
-     * la fonction insère également dans l'objet $oDevPart (GDO_PartType) :
+     * Données Gedoo :
      *  - les attributs de la séance (passée en paramètre) :
      *      - date_seance_lettres/$this->Date->dateLettres(strtotime($seance['Seance']['date']))/text
      *      - heure.$suffixe/$this->Date->Hour($seance['Seance']['date'])/text
