@@ -1365,10 +1365,33 @@ class SeancesController extends AppController {
         }
 
         /**
-         * Génération de la convocation ou de l'odre du jour
-         * @param $seance_id
-         * @param $model_id
-         */
+        * Génération de la convocation ou de l'ordre du jour.
+        *
+        * @see Session
+        *	- user.format.sortie
+        *
+        * @see
+        *  - Annex::find()
+        *	- Annex::getAnnexesFromDelibId()
+        *  - Collectivite::makeBalise()
+        *  - ConversionComponent::convertirFichier()
+        *  - DateComponent::frenchDate()
+        *  - Deliberation::makeBalisesProjet()
+        *  - GedoooComponent::checkPath()
+        *  - GedoooComponent::createFile()
+        *	- Model::find()
+        *  - PdfComponent::concatener()
+        *	- ProgressComponent
+        *  - Seance::getDeliberations()
+        *  - Seance::getType()
+        *  - Seance::makeBalise()
+        *  - Seance::saveField()
+        *  - Typeseance::acteursConvoquesParTypeSeanceId()
+        *
+        * @param integer $seance_id
+        * @param integer $model_id
+        * @param string $url_retour
+        */
         function _generer($seance_id, $model_id, $url_retour) { 
           
             $this->Seance->id = $seance_id;
@@ -1533,13 +1556,26 @@ class SeancesController extends AppController {
             $this->Progress->end($url_retour);
         }
         
+        /**
+        *
+        * @see SeancesController::_generer()
+        *
+        * @param integer $seance_id
+        * @param integer $model_id
+        */
         function genererConvocation($seance_id, $model_id) { 
             
             $this->_generer($seance_id,$model_id ,"/seances/sendConvocations/$seance_id/$model_id");
             exit;
         }
         
-                
+        /**
+        *
+        * @see SeancesController::_generer()
+        *
+        * @param integer $seance_id
+        * @param integer $model_id
+        */        
         function genererOrdredujour($seance_id, $model_id) {
             $this->Progress->start(200, 100,200, '#FFCC00','#006699');
             $this->_generer($seance_id,$model_id, "/seances/sendOrdredujour/$seance_id/$model_id");
@@ -1580,7 +1616,19 @@ class SeancesController extends AppController {
             header('Content-Disposition: attachment; filename="Convocation.zip"');
             die ($content);
         }
-
+        
+        /**
+        * @see $this->request->data
+        *  - Seance
+        *	- Seance.model_id
+        * @see Session
+        *	- user.format.sortie
+        *
+        * @see
+        *	- ConversionComponent::convertirFichier()
+        *	- Modelprojet::find()
+        *  - Seance::makeBalise()
+        */
         function multiodj () {
             Configure::write('debug', 0);
             $model_id = $this->data['Seance']['model_id'];
