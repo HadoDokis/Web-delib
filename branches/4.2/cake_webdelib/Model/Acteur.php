@@ -162,8 +162,7 @@ class Acteur extends AppModel {
      */
     function makeBalise(&$oMainPart, $acteur_id) {
         if ($this->exists($acteur_id)) {
-            $acteur = $this->find('first', array('conditions' => array($this->alias . '.id' => $acteur_id),
-                'recursive' => -1));
+            $acteur = $this->find('first', array('conditions' => array($this->alias . '.id' => $acteur_id), 'recursive' => -1));
             $alias = trim(strtolower($this->alias));
             $oMainPart->addElement(new GDO_FieldType("salutation_$alias", ($acteur[$this->alias]['salutation']), 'text'));
             $oMainPart->addElement(new GDO_FieldType("prenom_$alias", ($acteur[$this->alias]['prenom']), 'text'));
