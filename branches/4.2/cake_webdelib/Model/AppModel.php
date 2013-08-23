@@ -42,7 +42,7 @@
 App::uses('Model', 'Model');
 class AppModel extends Model{
 
-    //var $actsAs=array('Containable');
+    public $actsAs=array('Containable', 'Database.DatabaseTable');
  /*
  * Equivalent du find('list') mais sur plusieurs champs du model
  * $params permet de passer tous les paramètres à la fonction sous la forme :
@@ -65,14 +65,14 @@ function checkMimetype($field_validation, $content, $allowed_mimetypes) {
         $tmpfname = tempnam(TMP, "CHK_");
         $file = new File($tmpfname, true);
         $file->append($this->data[$this->alias][$content]);
-        
+
         if(array_key_exists($file->mime(), $DOC_TYPE))
                  $result = $DOC_TYPE[$file->mime()]['mime_conversion'];
         else $result=NULL;
-                
+
         $file->delete();
         $file->close();
-        
+
         return (in_array($result, $allowed_mimetypes)) ;
     }
 }
@@ -113,32 +113,32 @@ function listFields($params = array()) {
     function changeBoolean($model, $id, $field) {
         $mod = new $model;
         $data = $mod->find('first', array('conditions' => array("$model.id" => $id),
-                                                   'recursive'  => -1, 
+                                                   'recursive'  => -1,
                                                    'fields'     => array("$field")));
-        $mod->id = $id; 
-        return ($mod->saveField($field, !$data[$model][$field])); 
+        $mod->id = $id;
+        return ($mod->saveField($field, !$data[$model][$field]));
     }
 
 /*function isUnique($field, $value, $id)
     {
         $fields[$this->name.'.'.$field] = $value;
         if (empty($id))
-            // add 
-            $fields[$this->name.'.id'] = "!= NULL"; 
+            // add
+            $fields[$this->name.'.id'] = "!= NULL";
         else
             // edit
-            $fields[$this->name.'.id'] = "!= $id"; 
-        
+            $fields[$this->name.'.id'] = "!= $id";
+
         $this->recursive = -1;
         if ($this->hasAny($fields))
         {
-            $this->invalidate('unique_'.$field); 
+            $this->invalidate('unique_'.$field);
             return false;
         }
-        else 
+        else
             return true;
    }*/
-    
+
     public function isUploadedFile($params) {
         $val = array_shift($params);
         if ((isset($val['error']) && $val['error'] == 0) ||

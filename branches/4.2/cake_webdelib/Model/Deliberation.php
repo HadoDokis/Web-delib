@@ -1756,5 +1756,167 @@ class Deliberation extends AppModel {
             $com['Commentaire']['texte'] = $logdossier['nom'] . " : " . $logdossier['annotation'];
             $this->Commentaire->save($com['Commentaire']);
         }
+
+		/**
+		 * Lecture de l'enregistrement
+		 *
+		 * @return array
+		 */
+		public function gedoooRead( $id ) {
+			$projet = $this->Deliberationseance->find(
+				'first',
+				array(
+					'fields' => array_merge(
+						array(
+							'Deliberationseance.seance_id',
+							'Deliberationseance.deliberation_id',
+							'Deliberationseance.position',
+							'Deliberationseance.commentaire',
+							'Theme.libelle',
+							'Typeseance.action',
+						),
+						$this->fields(),
+						$this->Rapporteur->fields(),
+						$this->Redacteur->fields(),
+						$this->Seance->fields(),
+						$this->Seance->President->fields(),
+						alias_querydata( $this->Seance->President->Suppleant->fields(), array( 'Suppleant' => 'PresidentSuppleant' ) ),
+						$this->Seance->Secretaire->fields(),
+						alias_querydata( $this->Seance->Secretaire->Suppleant->fields(), array( 'Suppleant' => 'SecretaireSuppleant' ) )
+					),
+					'recursive' => -1,
+					'joins' => array(
+						$this->Deliberationseance->join( 'Deliberation', array( 'type' => 'LEFT' ) ),
+						$this->Deliberationseance->join( 'Seance', array( 'type' => 'LEFT' ) ), // FIXME: pas nécessaire ? / la délibérante ?
+						$this->join( 'Rapporteur', array( 'type' => 'LEFT OUTER' ) ),
+						$this->join( 'Redacteur', array( 'type' => 'LEFT OUTER' ) ),
+						$this->join( 'Theme', array( 'type' => 'LEFT OUTER' ) ),
+						$this->Seance->join( 'President', array( 'type' => 'LEFT OUTER' ) ),
+						alias_querydata( $this->Seance->President->join( 'Suppleant' ), array( 'Suppleant' => 'PresidentSuppleant' ) ),
+						$this->Seance->join( 'Secretaire' ),
+						alias_querydata( $this->Seance->Secretaire->join( 'Suppleant' ), array( 'Suppleant' => 'SecretaireSuppleant' ) ),
+						$this->Seance->join( 'Typeseance', array( 'type' => 'LEFT OUTER' ) ),
+					),
+					'conditions' => array(
+						'Deliberationseance.deliberation_id' => $id,
+						'Deliberation.etat >=' => self::enCoursRedaction,
+					),
+					'order' => array( 'Deliberationseance.position ASC' ),
+				)
+			);
+
+			/*foreach( $projets as $i => $projet ) {
+				// Obtention des infosup
+				$infosup = $this->Seance->Infosup->gedoooReadList( 'Deliberation', $projet['Deliberation']['id'] );
+				$infosup = $this->Seance->Infosup->gedoooNormalizeList( 'Deliberation', $infosup );
+
+				// Obtention des historiques
+				$historiques = $this->Historique->find(
+					'all',
+					array(
+						'fields' => array(
+							'Historique.commentaire'
+						),
+						'recursive' => -1,
+						'conditions' => array(
+							'Historique.delib_id' => $projet['Deliberation']['id']
+						),
+						'order' => array( 'Historique.created ASC' )
+					)
+				);
+				$projet['Historiques'] = $historiques;
+
+				// Obtention des acteurs convoqués
+				$type_id = $this->Seance->getType( $projet['Seance']['id'] );
+				$projet['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($type_id);
+
+				// Obtention des votes
+				$projet['Votes'] = $this->Listepresence->Acteur->Vote->gedoooReadList( $projet['Deliberation']['id'] ); // 666
+
+				$projets[$i] = Hash::merge( $projet, $infosup );
+			}*/
+
+            $projet['Commentaires'] = $this->Commentaire->gedoooReadAll( $id );
+
+			return $projet;
+        }
+
+		/**
+		 * Normalisation des enregistrement: ajout des valeurs calculées, ...
+		 *
+		 * @param array $records
+		 * @return array
+		 */
+		public function gedoooNormalize( array $data ) {
+            if( !empty( $data['Commentaires'] ) ) {
+                $data = $this->Commentaire->gedoooNormalizeAll( $data );
+            }
+
+			/*foreach( $data['Projets'] as $i => $projet ) {
+				$data['Projets'][$i]['Votes'] = $this->Listepresence->Acteur->Vote->gedoooNormalizeList( $projet['Votes'] );
+			}*/
+
+			return $data;
+		}
+
+
+		/**
+		 * Retourne une correspondance entre les champs CakePHP (même calculés)
+		 * et les champs Gedooo.
+		 *
+		 * @param array $records
+		 * @return array
+		 */
+		public function gedoooPaths() {
+			$correspondances = array(
+                'identifiant_projet' => 'Deliberation.id',
+                'objet_projet' => 'Deliberation.objet',
+                'libelle_projet' => 'Deliberation.objet',
+                'objet_delib' => 'Deliberation.objet_delib',
+                'libelle_delib' => 'Deliberation.objet_delib',
+                'etat_projet' => 'Deliberation.etat',
+                'position_projet' => 'Deliberationseance.position',
+                'commentaire' => 'Deliberationseance.commentaire',
+                'titre_projet' => 'Deliberation.titre',
+                'numero_deliberation' => 'Deliberation.num_delib',
+                'classification_deliberation' => 'Deliberation.num_pref',
+                'theme_projet' => 'Theme.libelle',
+                'nom_redacteur' => 'Redacteur.nom',
+                'prenom_redacteur' => 'Redacteur.prenom',
+                'email_redacteur' => 'Redacteur.email',
+                'telmobile_redacteur' => 'Redacteur.telmobile',
+                'telfixe_redacteur' => 'Redacteur.telfixe',
+                'note_redacteur' => 'Redacteur.note',
+				// Séance.Projet.Historique
+//				'Historique.commentaire' => 'log',
+			);
+
+			/*foreach( array_keys( $this->Listepresence->Acteur->Vote->gedoooIterations ) as $bar ) {
+				$foo = $this->Listepresence->Acteur->gedoooNormalizeList( $bar, array() );
+				$foo = array_keys( $foo[0] );
+				$foo = array_combine( $foo, $foo );
+				$correspondances = array_merge( $correspondances, $foo );
+			}*/
+
+			return $correspondances;
+		}
+
+		/**
+		 * Retourne une correspondance entre les champs CakePHP (même calculés)
+		 * et les types Gedooo.
+		 *
+		 * @param array $records
+		 * @return array
+		 */
+		public function gedoooTypes() {
+			return array_merge(
+				$this->types(),
+				$this->Deliberationseance->types(),
+				$this->Rapporteur->types(),
+				$this->Theme->types(),
+				$this->Redacteur->types()/*,
+				$this->Historique->types()*/
+			);
+		}
 }
 ?>

@@ -1,7 +1,20 @@
 <?php
-
+/**
+ * Code source de la classe UtilsComponent.
+ *
+ * PHP 5.3
+ *
+ * @package app.Controller.Component
+ * @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
+ */
 App::uses('WebUtils', 'Utility');
 
+/**
+ * Classe UtilsComponent.
+ *
+ * @package app.Controller.Component
+ * @deprecated Utiliser Utility/WebUtils
+ */
 class UtilsComponent extends Component {
 
     /**
@@ -17,7 +30,7 @@ class UtilsComponent extends Component {
      */
 
     /**
-     * Transforme une chaine 
+     * Transforme une chaine
      */
     function decToStringTime($decimal) {
         return WebUtils::decToStringTime($decimal);
@@ -28,7 +41,7 @@ class UtilsComponent extends Component {
     }
 
     /**
-     * Retourne sous la forme " X h Y min" le nombre 
+     * Retourne sous la forme " X h Y min" le nombre
      * d'heures et des minutes que represente une duree .
      * La valeur retournee est arrondie a la minute la plus proche.
      * @param int $nbOfSeconds Une duree exprimee en secondes.

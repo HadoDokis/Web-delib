@@ -42,8 +42,22 @@ class Theme extends AppModel {
 
     /**
      * Données Gedooo :
+     *  Pour le thème passé en paramètre:
      *  - theme_projet/theme.libelle/text
      *  - critere_trie_theme/theme.order/text
+     *
+     *  Pour les thèmes parents du thème passé en paramètre:
+     *  - T1_theme/Theme.libelle/text
+     *  - T2_theme/Theme.libelle/text
+     *  - T3_theme/Theme.libelle/text
+     *  - T4_theme/Theme.libelle/text
+     *  - T5_theme/Theme.libelle/text
+     *  - T6_theme/Theme.libelle/text
+     *  - T7_theme/Theme.libelle/text
+     *  - T8_theme/Theme.libelle/text
+     *  - T9_theme/Theme.libelle/text
+     *  - T10_theme/Theme.libelle/text
+
      * @param GDO_PartType &$oMainPart adresse de l'objet GDO_PartType à remplir
      * @param integer $theme_id, identifiant du theme en base
      */

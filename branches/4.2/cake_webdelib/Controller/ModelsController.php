@@ -4,7 +4,7 @@ class ModelsController extends AppController {
 	var $name = 'Models';
 	var $uses = array('Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'Modeledition');
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
-	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf');
+	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Gedooo2.Gedooo2Debugger');
 
 	// Gestion des droits
 	var $aucunDroit = array(
@@ -127,7 +127,7 @@ class ModelsController extends AppController {
 				}else
                                 {
                                    $this->Session->setFlash('Aucun fichier importé','growl', array('type'=>'erreur'));
-                                    $this->redirect('/models/index'); 
+                                    $this->redirect('/models/index');
                                 }
 			}
 			if ($this->Model->save($this->data))
@@ -177,7 +177,7 @@ class ModelsController extends AppController {
      * - Instanciation d'un objet GDO_PartType
      * - Ajout des champs concernants la collectivité et les dates dans la partie principale du modèle de document
      * - Si un identifiant de délibération ($delib_id) est renseigné : Génération d'une délibération ou d'un texte de projet
-     *      - récuperer en base la délibération 
+     *      - récuperer en base la délibération
      *      - fait appel à Deliberation:makeBalisesProjet (NOTE: ?)
      *      - récupère les annexes de la délibération (Annex:getAnnexesFromDelibId)
      *      - pour chaque annexe :
@@ -192,14 +192,14 @@ class ModelsController extends AppController {
      *              - ajout de la partie créée au bloc projet
      *              - récupération en base des annexes associées au projet
      *              - si des annexes existent pour ce projet, les ajouter au tableau $annexes_id
-     *      - pour chaque annexes ($annexes_id) : (NOTE: utilité de stocker le tableau dans un tableau ?) 
+     *      - pour chaque annexes ($annexes_id) : (NOTE: utilité de stocker le tableau dans un tableau ?)
      *              - récupérer en base les données de l'annexe
      *              - création du fichier annexe en pdf à partir des données de la base (appel de Gedooo:createFile)
      *              - ajout du chemin du fichier créé au tableau d'annexes ($annexes) pour GEDOOO
      *      - ajout du bloc projet à l'objet GDO_PartType ($oMainPart)
      *      - si ce n'est pas un PV (par défaut PV=0)
-     *              - mise à la date et heure du jour du paramètre date_convocation de la séance en base de données 
-     *              - récupérer en base le type de la séance 
+     *              - mise à la date et heure du jour du paramètre date_convocation de la séance en base de données
+     *              - récupérer en base le type de la séance
      *              - récupérer à partir du type de séance, la liste des acteurs convoqués
      *              - si le fichier documents.zip existe dans le repertoire de destination:
      *                      - supprimer le fichier
@@ -222,15 +222,15 @@ class ModelsController extends AppController {
      *                              - conversion du fichier vers le format odt (NOTE: format d'origine?)
      *                              - conversion du fichier vers le format choisi par l'utilisateur ($format) (ATTENTION: si le format choisi est odt, on effectue 2 conversion identiques)
      *                              - création du fichier par Gedooo à partir du contenu retourné par la conversion
-     *                              - si le format choisi est pdf est que la variable joindre_annexe est vrai : 
+     *                              - si le format choisi est pdf est que la variable joindre_annexe est vrai :
      *                                      - concaténer le fichier avec ses annexes
      *                      - si une exception est lancée (catch)
      *                              - rediriger vers la page /seances/listerFuturesSeances avec un message d'erreur
      *                      - si unique = false (par défaut) :
      *                              - ouverture de l'archive zip au chemin $path.'documents.zip' (création si elle n'existe pas encore)
-     *                              - si l'ouverture/création s'est effectuée sans erreur : 
+     *                              - si l'ouverture/création s'est effectuée sans erreur :
      *                                      - ajout du fichier généré à l'archive
-     *                      - sinon (unique = true) : 
+     *                      - sinon (unique = true) :
      *                              - stopper la boucle foreach
      *                      - envoi du document par mail à l'acteur (si le champ mail est renseigné: test interne)
      *              - si unique = false (par défaut) :
@@ -271,7 +271,7 @@ class ModelsController extends AppController {
      * 		- si le format choisi est pdf et que le modèle en base possède l'attribut $joindre_annexe à vrai :
      * 			- concatène les annexes au fichier (appel de Pdf:concatener avec utilisation de pdftk)
      * 		- ouverture dans le navigateur du fichier (passage au navigateur : déclaration headers et die)
-     * 
+     *
      * @see Configure
      * 	- boolean GENERER_DOC_SIMPLE
      * 		@see app/Config/webdelib.inc
@@ -479,6 +479,8 @@ class ModelsController extends AppController {
                     }
 
                     try {
+                        $this->Gedooo2Debugger->toCsv( $oMainPart );
+
                         Configure::write('debug', 0);
                         error_reporting(0);
 

@@ -1,13 +1,22 @@
 <?php
 /**
- * @deprecated
- * @see Utility/DateFrench
+ * Code source de la classe DateComponent.
+ *
+ * PHP 5.3
+ *
+ * @package app.Controller.Component
+ * @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
  */
-
 App::uses('DateFrench', 'Utility');
 
+/**
+ * Classe DateComponent.
+ *
+ * @package app.Controller.Component
+ * @deprecated Utiliser Utility/DateFrench
+ */
 class DateComponent extends Component {
-        
+
 	function DateComponent() {}
 
 	function frenchDateConvocation($timestamp)
