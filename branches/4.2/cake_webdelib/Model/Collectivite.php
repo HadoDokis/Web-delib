@@ -36,6 +36,17 @@ class Collectivite extends AppModel {
 		)
 	);
 
+        /**
+         * Données Gedooo :
+         *  - nom_collectivite/collectivite.nom/text
+         *  - adresse_collectivite/collectivite.adresse/text
+         *  - cp_collectivite/collectivite.CP/text
+         *  - ville_collectivite/collectivite.ville/text
+         *  - telephone_collectivite/collectivite.telephone/text
+         * 
+         * @param &GDO_PartType $oMainPart adresse de l'objet GDO_PartType à remplir
+         * @param type $collectivite_id l'identifiant de la collectivité en base
+         */
        function makeBalise(&$oMainPart, $collectivite_id) {
             $collectivite = $this->find('first',
                                          array('conditions' => array($this->alias.'.id' => $collectivite_id),
