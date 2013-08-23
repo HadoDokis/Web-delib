@@ -169,7 +169,7 @@ class ModelsController extends AppController {
 		return $objCourant['Model']['content'];
 	}
 
-        /**
+    /**
      * ****************************************************************************************
      * Méthode de génération documentaire (délibération, texte de projet, convocation, ODJ, PV)
      * ****************************************************************************************
@@ -326,7 +326,7 @@ class ModelsController extends AppController {
     function generer($delib_id = null, $seance_id = null, $model_id, $editable = -1, $dl = 0, $nomFichier = 'retour', $isPV = 0, $unique = false) {
         $time_start = microtime(true);
 
-        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_Utility.class'); // Jamais utilisé ??!!
         include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
         include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
         include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
@@ -361,7 +361,7 @@ class ModelsController extends AppController {
         //*****************************************
         //Création du model ott
         //*****************************************
-        $u = new GDO_Utility();
+        $u = new GDO_Utility(); // Jamais utilisé ??!!
         $model = $this->Model->find('first', array(
             'conditions' => array('Model.id' => $model_id),
             'recursive' => '-1',
