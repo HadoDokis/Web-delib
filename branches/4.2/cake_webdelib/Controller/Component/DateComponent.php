@@ -3,11 +3,12 @@
  * @deprecated
  * @see Utility/DateFrench
  */
+
+App::uses('DateFrench', 'Utility');
+
 class DateComponent extends Component {
-    
-	function DateComponent() {
-            App::uses('DateFrench', 'Utility');
-        }
+        
+	function DateComponent() {}
 
 	function frenchDateConvocation($timestamp)
 	{
