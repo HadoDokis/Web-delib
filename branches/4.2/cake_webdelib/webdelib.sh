@@ -32,9 +32,12 @@ function __clear() {
 	sudo rm -f app/tmp/sessions/*
 	sudo svn revert app/tmp/sessions/empty > /dev/null 2>&1
 
-    sudo svn revert app/tmp/tests/test
+    sudo svn revert app/tmp/tests/test > /dev/null 2>&1
 
 	sudo rm -rf app/webroot/files/generee/*
+
+    sudo chmod -R 0777 app/tmp/
+    sudo chmod -R 0777 app/webroot/files/
 }
 
 # ------------------------------------------------------------------------------

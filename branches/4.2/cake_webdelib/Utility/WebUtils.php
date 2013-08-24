@@ -47,8 +47,11 @@ abstract class WebUtils {
             return null;
         } else {
             $temp = explode('/', $dateFr);
-            return($temp[2] . '-' . $temp[1] . '-' . $temp[0]);
+            if( is_array( $temp ) && count( $temp ) == 3 ) {
+                return($temp[2] . '-' . $temp[1] . '-' . $temp[0]);
+            }
         }
+        return $dateFr;
     }
 
     /**

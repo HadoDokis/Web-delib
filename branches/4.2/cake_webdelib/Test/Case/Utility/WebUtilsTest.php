@@ -42,6 +42,10 @@
             $expected = '2013-08-22';
             $this->assertEquals($result, $expected, var_export($result, true));
 
+            $result = WebUtils::frDateToUkDate('2013-08-23');
+            $expected = '2013-08-23';
+            $this->assertEquals($result, $expected, var_export($result, true));
+
             $result = WebUtils::frDateToUkDate(null);
             $expected = null;
             $this->assertEquals($result, $expected, var_export($result, true));
