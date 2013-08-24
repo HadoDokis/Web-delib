@@ -26,7 +26,7 @@ class Infosupdef extends AppModel {
 	);
 
        var $hasAndBelongsToMany = array('Profil');
-	
+
        var $validate = array(
 		'nom' => array(
 			array(
@@ -79,14 +79,14 @@ class Infosupdef extends AppModel {
 		'0' => 'décoché',
 		'1' => 'coché'
 	);
-	
+
 	/**
 	* FIXME: faire plus générique, car les règles d'un champ sont soit dans un
 	* 	array (règle unique pour un champ), soit dans un array d'array (règles
 	*	multiples pour un champ).
 	*/
 
-	function beforeValidate() {
+	function beforeValidate($options=array()) {
 		$codepropose = Inflector::variable($this->data['Infosupdef']['code']);
 
 		foreach( $this->validate as $field => $rules ) {
@@ -97,7 +97,7 @@ class Infosupdef extends AppModel {
 			}
 		}
 	}
-	
+
 	function non_conforme_code() {
 		return $this->data['Infosupdef']['code'] == Inflector::variable($this->data['Infosupdef']['code']);
 	}
@@ -173,7 +173,7 @@ class Infosupdef extends AppModel {
 		return;
 	}
 
-	function beforeSave() {
+	function beforeSave($options = array()) {
 		// calcul du n° d'ordre en cas d'ajout
 		if (!array_key_exists('id', $this->data['Infosupdef']) || empty($this->data['Infosupdef']['id']))
 			$this->data['Infosupdef']['ordre'] = $this->find('count',array('recursive'=>-1, 'conditions'=>array('model'=>$this->data['Infosupdef']['model']))) + 1;
@@ -198,7 +198,7 @@ class Infosupdef extends AppModel {
 				'fields' => array('id', 'ordre'),
 				'conditions' => array('model' => $model),
 				'order' => array('ordre')));
-	
+
 			foreach($recs as $n=>$rec) {
 				if (($n+1) != $rec['Infosupdef']['ordre']) {
 					$rec['Infosupdef']['ordre'] = ($n+1);

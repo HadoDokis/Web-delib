@@ -161,7 +161,7 @@
         }
 
         /**
-         * Retourne une heure à partir d'une valeur SQL.
+         * Retourne une (partie d') heure à partir d'une valeur SQL.
          *
          * Si part vaut null, le résultat sera par exemple 15:30
          * Si part vaut 'hh', le résultat sera par exemple 15
@@ -171,19 +171,20 @@
          * @param string $part null, hh ou mm
          * @return string
          */
-        public static function Hour($dateSql, $part = null) {
-            if (empty($dateSql))
-                return null;
-            else {
-                $tmp = explode(' ', $dateSql);
-                if ($part == null) {
-                    return substr($tmp[1], 0, 5);
+        public static function hour($dateSql, $part = null) {
+            $return = null;
+
+            if (preg_match( '/^.* (?<hour>(?<hh>[0-9]+):(?<mm>[0-9]+)).*$/', $dateSql, $matches )) {
+                if (is_null($part)) {
+                    $return = $matches['hour'];
                 } elseif ($part == "hh") {
-                    return substr($tmp[1], 0, 2);
+                    $return = $matches['hh'];
                 } elseif ($part == "mm") {
-                    return substr($tmp[1], 3, 2);
+                    $return = $matches['mm'];
                 }
             }
+
+            return $return;
         }
 
         /**

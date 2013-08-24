@@ -42,7 +42,7 @@ abstract class WebUtils {
      * @param string $dateFr, format attendu : JJ/MM/AAAA
      * @return string format : AAAA/MM/JJ
      */
-    public static function FrDateToUkDate($dateFr) {
+    public static function frDateToUkDate($dateFr) {
         if (empty($dateFr)) {
             return null;
         } else {
@@ -95,7 +95,7 @@ abstract class WebUtils {
     }
 
     /**
-     * exemple d'utilisation : 
+     * exemple d'utilisation :
      *  - entrée : array(array('id'=>'foo','libelle'=>'bar')))
      *  - sortie : array('foo' => 'bar')
      * @param array $complexArray de type array(array('id'=>'foo','libelle'=>'bar')))
@@ -127,18 +127,18 @@ abstract class WebUtils {
      * @return string chaine sans accent
      */
     public static function strSansAccent($str) {
-        $recherche = array(' ', 'á', 'à', 'â', 'ã', 'ª', 'Á', 'À','Â', 'Ã', 
-            'é', 'è', 'ê', 'ë', 'É', 'È', 'Ê', 'Ë', 
+        $recherche = array(' ', 'á', 'à', 'â', 'ã', 'ª', 'Á', 'À','Â', 'Ã',
+            'é', 'è', 'ê', 'ë', 'É', 'È', 'Ê', 'Ë',
             'í', 'ì', 'î', 'ï', 'Í', 'Ì', 'Î', 'Ï',
-            'ò', 'ó', 'ô', 'õ', 'ö', 'º', 'Ó', 'Ò', 'Ô', 'Õ', 'Ö', 
-            'ú', 'ù', 'û', 'ü', 'Ú', 'Ù', 'Û', 'Ü', 
+            'ò', 'ó', 'ô', 'õ', 'ö', 'º', 'Ó', 'Ò', 'Ô', 'Õ', 'Ö',
+            'ú', 'ù', 'û', 'ü', 'Ú', 'Ù', 'Û', 'Ü',
             'ç', 'Ç', 'Ñ', 'ñ');
 
-        $substi = array('-', 'a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A', 
+        $substi = array('-', 'a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A',
             'e', 'e', 'e', 'e', 'E', 'E', 'E', 'E',
-            'i', 'i', 'i', 'i', 'I', 'I', 'I', 'I', 
-            'o', 'o', 'o', 'o', 'o', 'o', 'O', 'O', 'O', 'O', 'O', 
-            'u', 'u', 'u', 'u', 'U', 'U', 'U', 'U', 
+            'i', 'i', 'i', 'i', 'I', 'I', 'I', 'I',
+            'o', 'o', 'o', 'o', 'o', 'o', 'O', 'O', 'O', 'O', 'O',
+            'u', 'u', 'u', 'u', 'U', 'U', 'U', 'U',
             'c', 'C', 'N', 'n');
 
         return(str_replace($recherche, $substi, $str));

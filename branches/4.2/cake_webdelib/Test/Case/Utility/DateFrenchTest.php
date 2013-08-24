@@ -56,19 +56,23 @@
         }
 
         /**
-         * Test de la méthode DateFrench::Hour()
+         * Test de la méthode DateFrench::hour()
          */
         public function testHour() {
-            $result = DateFrench::Hour('2013-08-22 15:30:00');
+            $result = DateFrench::hour('2013-08-22 15:30:00');
             $expected = '15:30';
             $this->assertEquals($result, $expected, var_export($result, true));
 
-            $result = DateFrench::Hour('2013-08-22 15:30:00', 'hh');
+            $result = DateFrench::hour('2013-08-22 15:30:00', 'hh');
             $expected = '15';
             $this->assertEquals($result, $expected, var_export($result, true));
 
-            $result = DateFrench::Hour('2013-08-22 15:30:00', 'mm');
+            $result = DateFrench::hour('2013-08-22 15:30:00', 'mm');
             $expected = '30';
+            $this->assertEquals($result, $expected, var_export($result, true));
+
+            $result = DateFrench::hour(null);
+            $expected = null;
             $this->assertEquals($result, $expected, var_export($result, true));
         }
 

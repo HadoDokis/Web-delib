@@ -66,7 +66,7 @@ function invert($id = null, $following = true) {
 	return;
 }
 
-function beforeSave() {
+function beforeSave($options = array()) {
 	// calcul du n° d'ordre en cas d'ajout
 	if (!array_key_exists('id', $this->data['Infosuplistedef']) || empty($this->data['Infosuplistedef']['id']))
 		$this->data['Infosuplistedef']['ordre'] = $this->find('count', array(

@@ -10,8 +10,7 @@
 	<property name="ignorelist" value="*/Config/sql/*,*/Config/Schema/*,*/docs/*,*/locale/*,*/Test/*,*/tmp/*,*/Vendor/*,*/webroot/*" />
 
 	<!-- Build -->
-	<!--<target name="build" depends="clean,lint,unittest,phpdoc,phpcs,phpmd,pdepend,phpcpd,phpcb"/>-->
-	<target name="build" depends="clean,lint,phpdoc,phpcs,phpmd,pdepend,phpcpd,phpcb"/>
+	<target name="build" depends="clean,lint,unittest,phpdoc,phpcs,phpmd,pdepend,phpcpd,phpcb"/>
 
 	<!-- Nettoyage du répertoire tmp de CakePHP -->
 	<target name="clear">
@@ -40,7 +39,7 @@
 			<fileset
 				dir="${dir.cakephp.app}"
 				includes="**/*.php,**/*.ctp"
-				excludes="**/.*/**,**/Config/sql/**,**/Vendor/Netbeans/Templates/**,**/Vendor/simpletest/**,**/tmp/**" />
+				excludes="**/.*/**,**/Config/sql/**,**/Vendor/**,**/tmp/**" />
 		</apply>
 	</target>
 
@@ -125,13 +124,15 @@
 		-exclude webroot/test.php
 		-exclude webroot/index.php
 	-->
-	<target name="phpcpd" depends="lint">
+	<!--<target name="phpcpd" depends="lint">-->
+    			<!---exclude ${ignorelist}-->
+	<target name="phpcpd">
 		<exec executable="phpcpd"
 			dir="${dir.cakephp.app}"
 			failonerror="false">
 			<arg line="--log-pmd ${dir.ant.logs}/pmd-cpd.xml
-				--min-lines 50
-				--exclude ${ignorelist}
+				--min-lines 10
+				--exclude Config,Vendor,webroot
 				--suffixes php,ctp
 				." />
 		</exec>

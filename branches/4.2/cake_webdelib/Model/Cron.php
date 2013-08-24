@@ -28,7 +28,7 @@ var $belongsTo = array(
 		'foreignKey' => 'modified_user_id')
 	);
 
-function beforeSave() {
+function beforeSave($options = array()) {
 	if (isset($this->data[$this->alias]['execution_duration']) && is_array($this->data[$this->alias]['execution_duration'])) {
 		require_once(APP.'Lib'.DS.'tools.php');
 		$this->data[$this->alias]['execution_duration'] = AppTools::arrayToDuration($this->data[$this->alias]['execution_duration']);

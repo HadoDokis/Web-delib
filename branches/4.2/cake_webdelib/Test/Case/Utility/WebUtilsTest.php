@@ -35,11 +35,15 @@
         }
 
         /**
-         * Test de la méthode WebUtils::FrDateToUkDate()
+         * Test de la méthode WebUtils::frDateToUkDate()
          */
         public function testFrDateToUkDate() {
-            $result = WebUtils::FrDateToUkDate('22/08/2013');
+            $result = WebUtils::frDateToUkDate('22/08/2013');
             $expected = '2013-08-22';
+            $this->assertEquals($result, $expected, var_export($result, true));
+
+            $result = WebUtils::frDateToUkDate(null);
+            $expected = null;
             $this->assertEquals($result, $expected, var_export($result, true));
         }
 
@@ -47,8 +51,24 @@
          * Test de la méthode WebUtils::formattedTime()
          */
         public function testFormattedTime() {
+            $result = WebUtils::formattedTime(0);
+            $expected = 0;
+            $this->assertEquals($result, $expected, var_export($result, true));
+
+            $result = WebUtils::formattedTime(29);
+            $expected = 0;
+            $this->assertEquals($result, $expected, var_export($result, true));
+
+            $result = WebUtils::formattedTime(3599);
+            $expected = "60 min";
+            $this->assertEquals($result, $expected, var_export($result, true));
+
             $result = WebUtils::formattedTime(strtotime('2013-08-22'));
             $expected = '382534 h ';
+            $this->assertEquals($result, $expected, var_export($result, true));
+
+            $result = WebUtils::formattedTime(-strtotime('2013-08-22'));
+            $expected = '- 382534 h ';
             $this->assertEquals($result, $expected, var_export($result, true));
         }
 
@@ -100,7 +120,7 @@
                 array(
                     'Seance' => array(
                         'id' => 6,
-                        'date' => '2013-08-22',
+                        'date' => '2010-08-22',
                         'Typeseance' => array(
                             'libelle' => 'Mon type de séance'
                         )
@@ -116,6 +136,7 @@
                     )
                 ),
             );
+
             $result = WebUtils::listFromArray(
                 $elements,
                 '/Seance/id',
@@ -128,7 +149,55 @@
             );
             $expected = array(
                 32 => '2011-08-22 : Mon autre type de séance',
-                6 => '2013-08-22 : Mon type de séance',
+                6 => '2010-08-22 : Mon type de séance',
+            );
+            $this->assertEquals($result, $expected, var_export($result, true));
+
+            $result = WebUtils::listFromArray(
+                $elements,
+                '/Seance/id',
+                array(
+                    '/Seance/date',
+                    '/Seance/Typeseance/libelle'
+                ),
+                '%s : %s',
+                'DESC'
+            );
+            $expected = array(
+                6 => '2010-08-22 : Mon type de séance',
+                32 => '2011-08-22 : Mon autre type de séance',
+            );
+            $this->assertEquals($result, $expected, var_export($result, true));
+
+            $result = WebUtils::listFromArray(
+                $elements,
+                '/Seance/id',
+                array(
+                    '/Seance/date',
+                    '/Seance/Typeseance/libelle'
+                ),
+                '%s : %s',
+                'KEY_ASC'
+            );
+            $expected = array(
+                6 => '2010-08-22 : Mon type de séance',
+                32 => '2011-08-22 : Mon autre type de séance',
+            );
+            $this->assertEquals($result, $expected, var_export($result, true));
+
+            $result = WebUtils::listFromArray(
+                $elements,
+                '/Seance/id',
+                array(
+                    '/Seance/date',
+                    '/Seance/Typeseance/libelle'
+                ),
+                '%s : %s',
+                'KEY_DESC'
+            );
+            $expected = array(
+                32 => '2011-08-22 : Mon autre type de séance',
+                6 => '2010-08-22 : Mon type de séance',
             );
             $this->assertEquals($result, $expected, var_export($result, true));
         }

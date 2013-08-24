@@ -19,7 +19,7 @@ var $components = array('Session');
 //var $controller = array('Session');
 
 // called before Controller::beforeFilter()
-function initialize(&$controller, $settings = array()) {
+function initialize(Controller $controller) {
 	// saving the controller reference for later use
 	$this->controller = $controller;
 }
@@ -51,7 +51,7 @@ function initialisation($name, $dataFiltre, $options=array()) {
 					// critère de type date
 					$dateVide = array('day'=>'', 'month'=>'', 'year'=>'');
 					// initialisation de la valeur en session
-					$valSessionSelected = $this->Session->read('Filtre.Criteres.'.$nomCritere.'.inputOptions.selected'); 
+					$valSessionSelected = $this->Session->read('Filtre.Criteres.'.$nomCritere.'.inputOptions.selected');
 					if (empty($valSessionSelected))
 						$this->Session->write('Filtre.Criteres.'.$nomCritere.'.inputOptions.selected', $dateVide);
 					// Si la date est incomplete : on garde la valeur précédente en session

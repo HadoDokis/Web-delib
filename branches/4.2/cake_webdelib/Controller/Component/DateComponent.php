@@ -34,7 +34,7 @@ class DateComponent extends Component {
        }
 
        function Hour ($mysqlDate, $part=null) {
-           return DateFrench::Hour($mysqlDate,$part);
+           return DateFrench::hour($mysqlDate,$part);
        }
 
        function dateLettres ($timestamp) {

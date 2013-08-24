@@ -122,13 +122,13 @@ class User extends AppModel {
         return (!($this->data['User']['accept_notif'] && empty($this->data['User']['email'])));
     }
 
-    function beforeSave() {
+    function beforeSave($options = array()) {
         if (array_key_exists('password', $this->data['User']))
             $this->data['User']['password'] = md5($this->data['User']['password']);
         return true;
     }
 
-    function beforeValidate() {
+    function beforeValidate($options=array()) {
         if (empty($this->data['Service']['Service'])) {
             $this->invalidate('Service', true);
         }
@@ -189,7 +189,7 @@ class User extends AppModel {
      *  - telmobile_redacteur/user.telmobile/text
      *  - telfixe_redacteur/user.telfixe/text
      *  - note_redacteur/user.note/text
-     * 
+     *
      * @param &GDO_PartType $oMainPartadresse de l'objet GDO_PartType à remplir
      * @param integer $user_id identifiant de l'utilisateur en base
      */

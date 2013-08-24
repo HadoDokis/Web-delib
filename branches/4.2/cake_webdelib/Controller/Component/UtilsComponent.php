@@ -37,7 +37,7 @@ class UtilsComponent extends Component {
     }
 
     function FrDateToUkDate($dateFr) {
-        return WebUtils::FrDateToUkDate($dateFr);
+        return WebUtils::frDateToUkDate($dateFr);
     }
 
     /**

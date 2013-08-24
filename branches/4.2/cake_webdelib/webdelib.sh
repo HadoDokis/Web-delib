@@ -26,12 +26,13 @@ function __clear() {
 	__clearDir "$dir/tmp/logs/"
 	__clearDir "$dir/tmp/sessions/"
 
-	sudo svn revert app/tmp/logs
+    sudo rm app/tmp/logs/*
+	sudo svn revert app/tmp/logs/{empty,error.log,debug.log} > /dev/null 2>&1
 
-	rm -f app/tmp/sessions/*
-	svn revert app/tmp/sessions
+	sudo rm -f app/tmp/sessions/*
+	sudo svn revert app/tmp/sessions/empty > /dev/null 2>&1
 
-	touch app/tmp/sessions/empty
+    sudo svn revert app/tmp/tests/test
 
 	sudo rm -rf app/webroot/files/generee/*
 }
@@ -94,21 +95,13 @@ case $1 in
 		__clear "$APP_DIR"
 		exit 0
 	;;
-	clearcache)
-		__clearDir "$APP_DIR/tmp/cache/"
-		exit 0
-	;;
-	clearlogs)
-		__clearDir "$APP_DIR/tmp/logs/"
-		exit 0
-	;;
 	svnbackup)
 		__clear "$APP_DIR"
 		__svnbackup "$APP_DIR"
 		exit 0
 	;;
 	*)
-		echo "Usage: $ME {clear|clearcache|clearlogs|clearsessions|svnbackup}"
+		echo "Usage: $ME {clear|svnbackup}"
 		exit 1
 	;;
 esac
