@@ -54,6 +54,22 @@ class Acteur extends AppModel {
     );
     var $belongsTo = array('Suppleant' => array('className' => 'Acteur', 'foreignKey' => 'suppleant_id'),
         'Typeacteur' => array('className' => 'Typeacteur', 'foreignKey' => 'typeacteur_id'));
+
+         public $hasMany = array(
+			'Acteurseance' => array(
+				'className' => 'Acteurseance',
+				'foreignKey' => 'acteur_id'
+			),
+			'Listepresence' => array(
+				'className' => 'Listepresence',
+				'foreignKey' => 'acteur_id'
+			),
+			'Vote' => array(
+				'className' => 'Vote',
+				'foreignKey' => 'acteur_id'
+			),
+		);
+
     var $hasAndBelongsToMany = array(
         'Service' => array(
             'classname' => 'Service',

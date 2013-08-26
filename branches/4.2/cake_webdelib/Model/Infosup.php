@@ -28,7 +28,7 @@ class Infosup extends AppModel
                         'foreignKey'   => 'foreign_key'),
 		'Infosupdef'
 	);
-  
+
         var $validate = array(
                 'file_name' => array(
                         'rule' => array('maxLength', 255),
@@ -44,7 +44,7 @@ class Infosup extends AppModel
 		$ret = array();
 
 		foreach($infosups as $infosup) {
-			$infosupdef = $this->Infosupdef->find( 'first' , array('conditions' => array( "Infosupdef.id" =>$infosup['infosupdef_id']), 
+			$infosupdef = $this->Infosupdef->find( 'first' , array('conditions' => array( "Infosupdef.id" =>$infosup['infosupdef_id']),
                                                                                'fields'     => array('code', 'type'),
                                                                                'recursive'  => -1));
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
@@ -67,8 +67,8 @@ class Infosup extends AppModel
 				if ($retIdEleListe || empty($infosup['text']))
 					$ret[$infosupdef['Infosupdef']['code']] = $infosup['text'];
 				else {
-					$ele = $this->Infosupdef->Infosuplistedef->find('first', array('conditions' => array('id' =>$infosup['text']), 
-                                                                                                        'fields'    => array('nom'), 
+					$ele = $this->Infosupdef->Infosuplistedef->find('first', array('conditions' => array('id' =>$infosup['text']),
+                                                                                                        'fields'    => array('nom'),
                                                                                                         'recursive' => -1));
 					$ret[$infosupdef['Infosupdef']['code']] = $ele['Infosuplistedef']['nom'];
 				}
@@ -87,7 +87,7 @@ class Infosup extends AppModel
                     // Retire la règle 'required' de file_type
                     if(isset($validator['file_type']))
                         unset($validator['file_type']);
-                    
+
 			// lecture de la définition de l'info sup
 			$infosupdef = $this->Infosupdef->find('first', array(
 				'recursive' => -1,
@@ -132,18 +132,18 @@ class Infosup extends AppModel
                                         $DOC_TYPE = Configure::read('DOC_TYPE');
                                         $modelRep = ($model == 'Deliberation') ? 'projet' : 'seance';
                                         $repDest = WWW_ROOT.'files'.DS.'generee'.DS.$modelRep.DS.$foreignKey.DS;
-                                            
+
                                         //Si import d'un nouveau fichier
                                         if (is_array($infosups[$code]) && !empty($infosups[$code]['tmp_name'])) {
-                                                
+
                                                 $file = new File($infosups[$code]['tmp_name'], false);
-                                                
+
                                                 $this->validator()->add('file_type' ,'required', array(
                                                             'rule' => array('checkMimetype', 'content', array('application/vnd.oasis.opendocument.text')),
                                                             'message' => 'Le format de fichier n\'est pas de type odt', 'growl'
                                                           )
                                                 );
-                                                
+
 						$infosup['Infosup']['file_name'] = $infosups[$code]['name'];
 						$infosup['Infosup']['file_size'] = $file->size();
 						$infosup['Infosup']['file_type'] = $DOC_TYPE[$file->mime()]['mime_conversion'];
@@ -161,7 +161,7 @@ class Infosup extends AppModel
                                         else{
                                                 if (isset($infosup['Infosup']['file_name']) && is_file($repDest.$infosup['Infosup']['file_name']))
 							@unlink($repDest.$infosup['Infosup']['file_name']);
-                                                
+
 						$infosup['Infosup']['file_name'] = '';
 						$infosup['Infosup']['file_size'] = '';
                                                 $infosup['Infosup']['file_type'] = '';
@@ -172,7 +172,7 @@ class Infosup extends AppModel
                         //var_dump($infosup);
 			// Sauvegarde de l'info sup
 			$success = $this->save($infosup) && $success;
-                        
+
                         if( !empty( $this->validationErrors ) ) {
                             if( isset( $this->validationErrors['file_type'] ) ) {
                                 $this->validationErrors[$code] = $this->validationErrors['file_type'];
@@ -180,7 +180,7 @@ class Infosup extends AppModel
                             }
                         }
 		}
-                
+
             return $success;
 	}
 
@@ -233,7 +233,7 @@ class Infosup extends AppModel
 			$select .= 'where ' . $jointure . $condition;
 			$repSelect = $this->query($select);
 			if (empty($repSelect[0][0]['foreign_key'])) {
-                                $resultIds[] = 0;                         
+                                $resultIds[] = 0;
 			//	$ret = '-1';
                         }
 			else {
@@ -250,9 +250,9 @@ class Infosup extends AppModel
 
     /**
      * Retourne un objet GDO_FieldType
-     * 
+     *
      * Données Gedooo :
-     * 
+     *
      *  - si $champs_def['Infosupdef']['type'] == 'list' ) && ($champs['text'] == "" :
      *      - $champs_def['Infosupdef']['code']/ /text
      *  - sinon si $champs['text'] != null
@@ -268,17 +268,17 @@ class Infosup extends AppModel
      *          - GDO_ContentType($champs_def['Infosupdef']['code'], $champs_def['Infosupdef']['code'] . ".odt", 'application/vnd.oasis.opendocument.text', 'binary', $content)
      *  - sinon si empty($champs['text']))
      *      - null
-     * 
+     *
      * @see (employé par) :
      *  - Deliberation:makeBalisesProjet
      *  - Seance:makeBalise
-     * 
+     *
      * @see (emploi) :
      *  - Infosupdef:read
      *  - Date:frDate
      *  - Gedooo:createFile
      *  - Conversion:convertirFichier
-     * 
+     *
      * @param array $champs
      * @param integer $id identifiant du model
      * @param string $model nom du model (employé avec Deliberation ou Seance)
@@ -323,5 +323,44 @@ class Infosup extends AppModel
         } elseif (empty($champs['text']))
             return NULL;
     }
+
+    // -------------------------------------------------------------------------
+
+        /**
+		 * Lecture des enregistrements pour un modèle donné et une clé primaire
+         * de ce modèle.
+         *
+         * @param string $modelName 'Deliberation' ou 'Seance'
+         * @param integer $foreignKey
+         * @return array
+         */
+		public function gedoooReadAll( $modelName, $foreignKey ) {
+			$infosups = $this->find(
+				'all',
+				array(
+					'fields' => array_merge(
+						$this->fields(),
+						$this->Infosupdef->fields(),
+						$this->Infosupdef->Infosuplistedef->fields()
+					),
+					'recursive' => -1,
+					'joins' => array(
+						$this->join( 'Infosupdef', array( 'type' => 'LEFT OUTER' ) ),
+                        $this->Infosupdef->join( 'Infosuplistedef', array( 'type' => 'LEFT OUTER' ) )
+					),
+					'conditions' => array(
+						'Infosupdef.actif' => true,
+						'Infosupdef.model' => $modelName,
+						'Infosup.model' => $modelName,
+						'Infosup.foreign_key' => $foreignKey,
+					),
+					'order' => array(
+						'Infosupdef.ordre ASC'
+					)
+				)
+			);
+
+			return $infosups;
+		}
 }
 ?>

@@ -1757,12 +1757,14 @@ class Deliberation extends AppModel {
             $this->Commentaire->save($com['Commentaire']);
         }
 
+        // ---------------------------------------------------------------------
+
 		/**
 		 * Lecture de l'enregistrement
 		 *
 		 * @return array
 		 */
-		public function gedoooRead( $id ) {
+		/*public function gedoooRead( $id ) {
 			$projet = $this->Deliberationseance->find(
 				'first',
 				array(
@@ -1805,40 +1807,136 @@ class Deliberation extends AppModel {
 				)
 			);
 
-			/*foreach( $projets as $i => $projet ) {
-				// Obtention des infosup
-				$infosup = $this->Seance->Infosup->gedoooReadList( 'Deliberation', $projet['Deliberation']['id'] );
-				$infosup = $this->Seance->Infosup->gedoooNormalizeList( 'Deliberation', $infosup );
-
-				// Obtention des historiques
-				$historiques = $this->Historique->find(
-					'all',
-					array(
-						'fields' => array(
-							'Historique.commentaire'
-						),
-						'recursive' => -1,
-						'conditions' => array(
-							'Historique.delib_id' => $projet['Deliberation']['id']
-						),
-						'order' => array( 'Historique.created ASC' )
-					)
-				);
-				$projet['Historiques'] = $historiques;
-
-				// Obtention des acteurs convoqués
-				$type_id = $this->Seance->getType( $projet['Seance']['id'] );
-				$projet['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($type_id);
-
-				// Obtention des votes
-				$projet['Votes'] = $this->Listepresence->Acteur->Vote->gedoooReadList( $projet['Deliberation']['id'] ); // 666
-
-				$projets[$i] = Hash::merge( $projet, $infosup );
-			}*/
+//			foreach( $projets as $i => $projet ) {
+//				// Obtention des infosup
+//				$infosup = $this->Seance->Infosup->gedoooReadAll( 'Deliberation', $projet['Deliberation']['id'] );
+//				$infosup = $this->Seance->Infosup->gedoooNormalizeList( 'Deliberation', $infosup );
+//
+//				// Obtention des historiques
+//				$historiques = $this->Historique->find(
+//					'all',
+//					array(
+//						'fields' => array(
+//							'Historique.commentaire'
+//						),
+//						'recursive' => -1,
+//						'conditions' => array(
+//							'Historique.delib_id' => $projet['Deliberation']['id']
+//						),
+//						'order' => array( 'Historique.created ASC' )
+//					)
+//				);
+//				$projet['Historiques'] = $historiques;
+//
+//				// Obtention des acteurs convoqués
+//				$type_id = $this->Seance->getType( $projet['Seance']['id'] );
+//				$projet['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($type_id);
+//
+//				// Obtention des votes
+//				$projet['Votes'] = $this->Listepresence->Acteur->Vote->gedoooReadAll( $projet['Deliberation']['id'] ); // 666
+//
+//				$projets[$i] = Hash::merge( $projet, $infosup );
+//			}
 
             $projet['Commentaires'] = $this->Commentaire->gedoooReadAll( $id );
 
 			return $projet;
+        }*/
+
+		/**
+		 * Lecture des enregistrements.
+		 *
+         * @param array $conditions
+         * @param boolean $readSeances
+         * @return array
+		 */
+		public function gedoooReadAll( array $conditions, $readSeances = true ) {
+            $projets = $this->find(
+                'all',
+                array(
+                    'fields' => array_merge(
+						$this->fields(),
+						$this->Rapporteur->fields(),
+						$this->Redacteur->fields(),
+						$this->Theme->fields()
+                    ),
+                    'recursive' => -1,
+                    'joins' => array(
+						$this->join( 'Rapporteur', array( 'type' => 'LEFT OUTER' ) ),
+						$this->join( 'Redacteur', array( 'type' => 'LEFT OUTER' ) ),
+						$this->join( 'Theme', array( 'type' => 'LEFT OUTER' ) ),
+                    ),
+					'conditions' => array(
+						'Deliberation.etat >=' => self::enCoursRedaction,
+                        $conditions
+					),
+                )
+            );
+
+            foreach( $projets as $i => $projet ) {
+                // Lecture des séances du projet si nécessaire
+                if( $readSeances ) {
+                    // TODO: séance principale ou délibérante, etc...
+                    $projet['Seances'] = $this->Deliberationseance->gedoooRead( $projet['Deliberation']['id'] );
+                }
+
+                // Obtention des historiques
+                $historiques = $this->Historique->find(
+                    'all',
+                    array(
+                        'fields' => array(
+                            'Historique.commentaire'
+                        ),
+                        'recursive' => -1,
+                        'conditions' => array(
+                            'Historique.delib_id' => $projet['Deliberation']['id']
+                        ),
+                        'order' => array( 'Historique.created ASC' )
+                    )
+                );
+                $projet['Historiques'] = $historiques;
+
+                // TODO: Obtention des acteurs convoqués
+                // $type_id = $this->Seance->getType( $projet['Seance']['id'] );
+                // $projet['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($type_id);
+
+                // Informations supplémentaires du projet
+                $projet['Infossups'] = $this->Infosup->gedoooReadAll( 'Deliberation', $projet['Deliberation']['id'] );
+
+                // Liste de présences du projet
+                $projet['Listespresences'] = $this->Listepresence->gedoooReadAll( $projet['Deliberation']['id'] );
+
+                // Commentaires du projet
+                $projet['Commentaires'] = $this->Commentaire->gedoooReadAll( $projet['Deliberation']['id'] );
+
+                // Projet multi-délibérations ? // TODO: dans le modèle Multidelib, se servir d'un querydata commun ? Fields id, objet ?
+                $projet['Deliberations'] = $this->Multidelib->find(
+                    'all',
+                    array(
+                        'recursive' => -1,
+                        'conditions' => array(
+                            'Multidelib.parent_id' => $projet['Deliberation']['id']
+                        )
+                    )
+                );
+
+                $projets[$i] = $projet;
+            }
+
+			return $projets;
+        }
+
+        /**
+         * Lecture d'un enregistrement.
+         *
+         * @param integer $id
+         * @param boolean $readSeances
+         * @return array
+         */
+        public function gedoooRead( $id, $readSeances = true ) {
+            $results = $this->gedoooReadAll( array( 'Deliberation.id' => $id ), $readSeances );
+
+            return ( isset( $results[0] ) ? $results[0] : array() );
         }
 
 		/**

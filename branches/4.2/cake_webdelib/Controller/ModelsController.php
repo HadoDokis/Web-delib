@@ -479,7 +479,9 @@ class ModelsController extends AppController {
                     }
 
                     try {
+                        Configure::write('debug', 2);
                         $this->Gedooo2Debugger->toCsv( $oMainPart );
+                        return;
 
                         Configure::write('debug', 0);
                         error_reporting(0);
@@ -562,6 +564,10 @@ class ModelsController extends AppController {
         }
 
         if ($genereConvocation == false) {
+            Configure::write('debug', 2);
+            $this->Gedooo2Debugger->toCsv( $oMainPart );
+            return;
+
             //*****************************************
             // Lancement de la fusion
             //*****************************************

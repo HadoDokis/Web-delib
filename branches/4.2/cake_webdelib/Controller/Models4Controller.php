@@ -55,6 +55,21 @@
 		public $aucunDroit = array( 'generer' );
 
         /**
+         * Chemins récoltés:
+         *  - (Collectivite).*
+         *  - (Deliberationseance).position
+         *  - (Deliberationseance).commentaire
+         *  - (Theme).libelle
+         *  - (Typeseance).action
+         *  - Deliberation.*
+         *  - Rapporteur.*
+         *  - Redacteur.*
+         *  - Seance.*
+         *  - President.*
+         *  - PresidentSuppleant.*
+         *  - Secretaire.*
+         *  - SecretaireSuppleant.*
+         *  - Commentaires.{n}.*
          *
          * @param integer $deliberation_id
          * @param integer $model_id
@@ -63,6 +78,10 @@
             // 1°) Lecture des enregistrements
             $data = $this->Collectivite->gedoooRead( 1 );
             $data = Hash::merge( $data, $this->Seance->Deliberation->gedoooRead( $deliberation_id ) );
+echo '<pre>';
+print_r( $data );
+echo '</pre>';
+            return;
 
             // 2°) Normalisation des enregistrements
             $data = $this->Collectivite->gedoooNormalize( $data );
@@ -82,11 +101,11 @@
 			// 4°) Fusion
 			$this->Gedooo2Debugger->toCsv( $Document );
 
-            echo '<pre>';
+            /*echo '<pre>';
             print_r( $data );
             echo '</pre>';
             debug( $paths );
-            debug( $types );
+            debug( $types );*/
         }
 
         /**
