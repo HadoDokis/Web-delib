@@ -1905,10 +1905,12 @@ class Deliberation extends AppModel {
                 }
 
                 // Thème et thèmes parents d'un projet. TODO: Donnera [T1_theme,T10_theme] comme variables Gedooo
-                $projet['Themes'] = $this->Theme->getTree( $projet['Deliberation']['theme_id'], 'libelle' );
+//                $projet['Themes'] = $this->Theme->getTree( $projet['Deliberation']['theme_id'], 'libelle' );
+                $projet['Themes'] = $this->Theme->$this->postgresFindParents( $projet['Deliberation']['theme_id'], array( 'libelle' ) );
 
                 // Service et services parents d'un projet. TODO: Donnera service_emetteur et service_avec_hierarchie comme variables Gedooo
-                $projet['Services'] = $this->Service->getTree( $projet['Deliberation']['service_id'], 'libelle' );
+//                $projet['Services'] = $this->Service->getTree( $projet['Deliberation']['service_id'], 'libelle' );
+                $projet['Services'] = $this->Service->$this->postgresFindParents( $projet['Deliberation']['service_id'], array( 'libelle' ) );
 
                 // Obtention des historiques
                 $historiques = $this->Historique->find(

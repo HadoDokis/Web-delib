@@ -152,35 +152,81 @@ function listFields($params = array()) {
     // -------------------------------------------------------------------------
 
     /**
+     * Retourne l'enregistrement et ses parents, depuis le parent le plus haut
+     * dans la hiérarchie jusqu'à l'enregistrement dont la clé primaire est passée
+     * en paramètre.
+     *
+     * Il s'agit d'une requête PostgreSQL récursive.
+     *
+     * @todo A mettre dans le plugin Postgres
+     * @url http://stackoverflow.com/questions/3307480/postgresql-recursive-with
+     * @url http://stackoverflow.com/questions/3699395/find-parent-recursively-using-query
+     *
+     * @param integer $id
+     * @param array $fields
+     * @param string $parentIdField
+     * @return array
+     */
+    public function postgresFindParents( $id, array $fields = array(), $parentIdField = 'parent_id' ) {
+        if( empty( $fields ) ) {
+            $fields = array_keys( $this->schema() );
+        }
+
+        $innerFields = $fields;
+
+        // On enlève parent_id des champs internes
+        $key = array_search($parentIdField, $innerFields);
+        if( $key !== false ) {
+            unset( $innerFields[$key] );
+        }
+
+        // Pour le remettre au début des champs internes
+        array_unshift( $innerFields, $parentIdField );
+
+        foreach( $innerFields as $field ) {
+            $nodeFields[] = "\"node\".\"{$field}\"";
+            $parentFields[] = "\"parent\".\"{$field}\"";
+        }
+
+        // Pour les champs sélectionnés, on prend exclusivement ceux spécifiés
+        foreach( $fields as $field ) {
+            $selectFields[] = "\"parents\".\"{$field}\" AS \"{$this->alias}__{$field}\"";
+        }
+
+        $Dbo = $this->getDatasource();
+        $tableName = $Dbo->fullTableName( $this );
+
+        $sql = "WITH RECURSIVE
+            \"parents\" AS (
+                SELECT ".implode( ', ', $nodeFields )."
+                    FROM {$tableName} AS \"node\"
+                    WHERE \"node\".\"{$this->primaryKey}\" = {$id}
+                UNION ALL
+                SELECT ".implode( ', ', $parentFields )."
+                    FROM \"parents\" AS \"node\"
+                        JOIN {$tableName} AS \"parent\" ON ( \"parent\".\"{$this->primaryKey}\" = \"node\".\"{$parentIdField}\" )
+            )
+            SELECT ".implode( ', ', $selectFields )." FROM \"parents\";";
+
+        $results = $this->query( $sql );
+
+        return array_reverse( $results );
+    }
+
+
+    /**
      * Retourne la liste des libellés de l'enregistrement et de ses parents.
      * Il s'agit d'une requête récursive "spéciale PostgreSQL".
      *
-     * @todo A mettre dans le plugin Postgres
+     * @deprecated
      *
      * @param integer $id
      * @param string $nameField
      * @param string $parentIdField
      * @return array
      */
-    public function getTree( $id, $nameField = 'name', $parentIdField = 'parent_id' ) {
-        $Dbo = $this->getDatasource();
-        $tableName = $Dbo->fullTableName( $this );
-
-        $sql = "WITH RECURSIVE
-            \"parents\" AS (
-                SELECT \"node\".\"{$this->primaryKey}\", \"node\".\"{$parentIdField}\", \"node\".\"{$nameField}\"
-                    FROM {$tableName} AS \"node\"
-                    WHERE \"node\".\"{$this->primaryKey}\" = {$id}
-                UNION ALL
-                SELECT \"parent\".\"{$this->primaryKey}\", \"parent\".\"{$parentIdField}\", \"parent\".\"{$nameField}\"
-                    FROM \"parents\" AS \"node\"
-                        JOIN {$tableName} AS \"parent\" ON \"parent\".\"{$this->primaryKey}\" = \"node\".\"{$parentIdField}\"
-            )
-            SELECT \"{$nameField}\" AS \"{$this->alias}__libelle\" FROM \"parents\";";
-
-        $results = $this->query( $sql );
-
-        return array_reverse( $results );
-    }
+    /*public function getTree( $id, $nameField = 'name', $parentIdField = 'parent_id' ) {
+        return $this->postgresFindParents( $id, array( 'libelle' ) );
+    }*/
 }
 ?>
