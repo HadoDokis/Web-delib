@@ -48,7 +48,7 @@ class CommentaireFixture extends CakeTestFixture {
             'agent_id' => 10,
             'texte' => 'OK, pris en compte',
             'pris_en_compte' => 0,
-            'commentaire_auto' => false,
+            'commentaire_auto' => true,
             'created' => '2013-06-06 10:47:05',
             'modified' => '2013-06-06 10:47:05'
         ),
