@@ -148,5 +148,39 @@ function listFields($params = array()) {
         }
         return false;
     }
+
+    // -------------------------------------------------------------------------
+
+    /**
+     * Retourne la liste des libellés de l'enregistrement et de ses parents.
+     * Il s'agit d'une requête récursive "spéciale PostgreSQL".
+     *
+     * @todo A mettre dans le plugin Postgres
+     *
+     * @param integer $id
+     * @param string $nameField
+     * @param string $parentIdField
+     * @return array
+     */
+    public function getTree( $id, $nameField = 'name', $parentIdField = 'parent_id' ) {
+        $Dbo = $this->getDatasource();
+        $tableName = $Dbo->fullTableName( $this );
+
+        $sql = "WITH RECURSIVE
+            \"parents\" AS (
+                SELECT \"node\".\"{$this->primaryKey}\", \"node\".\"{$parentIdField}\", \"node\".\"{$nameField}\"
+                    FROM {$tableName} AS \"node\"
+                    WHERE \"node\".\"{$this->primaryKey}\" = {$id}
+                UNION ALL
+                SELECT \"parent\".\"{$this->primaryKey}\", \"parent\".\"{$parentIdField}\", \"parent\".\"{$nameField}\"
+                    FROM \"parents\" AS \"node\"
+                        JOIN {$tableName} AS \"parent\" ON \"parent\".\"{$this->primaryKey}\" = \"node\".\"{$parentIdField}\"
+            )
+            SELECT \"{$nameField}\" AS \"{$this->alias}__libelle\" FROM \"parents\";";
+
+        $results = $this->query( $sql );
+
+        return array_reverse( $results );
+    }
 }
 ?>

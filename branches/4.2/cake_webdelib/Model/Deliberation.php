@@ -1904,6 +1904,12 @@ class Deliberation extends AppModel {
                     }
                 }
 
+                // Thème et thèmes parents d'un projet. TODO: Donnera [T1_theme,T10_theme] comme variables Gedooo
+                $projet['Themes'] = $this->Theme->getTree( $projet['Deliberation']['theme_id'], 'libelle' );
+
+                // Service et services parents d'un projet. TODO: Donnera service_emetteur et service_avec_hierarchie comme variables Gedooo
+                $projet['Services'] = $this->Service->getTree( $projet['Deliberation']['service_id'], 'libelle' );
+
                 // Obtention des historiques
                 $historiques = $this->Historique->find(
                     'all',
@@ -2051,12 +2057,13 @@ class Deliberation extends AppModel {
 //				'Historique.commentaire' => 'log',
 			);
 
-			/*foreach( array_keys( $this->Listepresence->Acteur->Vote->gedoooIterations ) as $bar ) {
-				$foo = $this->Listepresence->Acteur->gedoooNormalizeList( $bar, array() );
-				$foo = array_keys( $foo[0] );
-				$foo = array_combine( $foo, $foo );
-				$correspondances = array_merge( $correspondances, $foo );
-			}*/
+            // Présence des acteurs, ... + votes
+            $foos = $this->Listepresence->gedoooNormalizeList( array() );
+            foreach( $foos as $iterationName => $foo ) {
+                $foo = array_keys( $foo[0] );
+                $foo = array_combine( $foo, $foo );
+                $correspondances = array_merge( $correspondances, $foo );
+            }
 
 			return $correspondances;
 		}

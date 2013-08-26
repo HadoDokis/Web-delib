@@ -78,11 +78,7 @@
             // 1°) Lecture des enregistrements
             $data = $this->Collectivite->gedoooRead( 1 );
             $data = Hash::merge( $data, $this->Seance->Deliberation->gedoooRead( $deliberation_id ) );
-//echo '<pre>';
-//echo '<p><strong>'.sprintf( '%s:%d', __FILE__, __LINE__ ).'</strong></p>';
-//print_r( $data );
-//echo '</pre>';
-//return;
+
             // 2°) Normalisation des enregistrements
             $data = $this->Collectivite->gedoooNormalize( $data );
             $data = $this->Seance->Deliberation->gedoooNormalize( $data );
@@ -101,11 +97,11 @@
 			// 4°) Fusion
 			$this->Gedooo2Debugger->toCsv( $Document );
 
-            echo '<pre>';
-            echo '<p><strong>'.sprintf( '%s:%d', __FILE__, __LINE__ ).'</strong></p>';
-            print_r( $data );
-            echo '</pre>';
-            return;
+echo '<pre>';
+echo '<p><strong>'.sprintf( '%s:%d', __FILE__, __LINE__ ).'</strong></p>';
+print_r( $data );
+echo '</pre>';
+return;
             /*debug( $paths );
             debug( $types );*/
         }
