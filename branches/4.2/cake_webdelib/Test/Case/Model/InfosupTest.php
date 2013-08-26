@@ -50,6 +50,9 @@ class InfosupTest extends CakeTestCase {
         parent::tearDown();
     }
 
+    /**
+     * test de la fonction gedoooReadAll
+     */
     public function testGedoooReadAll() {
         $result = $this->Infosup->gedoooReadAll('Deliberation', 52);
         $expected = array(
@@ -133,6 +136,27 @@ class InfosupTest extends CakeTestCase {
 
         $resultEmpty = $this->Infosup->gedoooReadAll('Deliberation', 1);
         $this->assertEquals($resultEmpty, array(), var_export($resultEmpty, true));
+    }
+
+    /**
+     * test de la fonction gedoooNormalizeAll
+     */
+    public function testGedoooNormalizeAll() {
+        //FIXME: rajouter une donnée de test de type odtFile
+        $records = $this->Infosup->gedoooReadAll('Seance', 1);
+        debug($records);
+        
+        $result = $this->Infosup->gedoooNormalizeAll('Seance', $records);
+        debug($result);
+        $expected = array(
+            'Seance' => array(
+                'booleantest' => '1',
+                'datetest' => '2013-08-26',
+                'listeseance' => 'Cévennes',
+            ),
+        );
+        
+        $this->assertEquals($result, $expected, var_export($result, true));
     }
 
 }

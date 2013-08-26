@@ -56,7 +56,64 @@ class InfosupdefFixture extends CakeTestFixture {
             'created' => '2013-06-11 14:48:57',
             'modified' => '2013-06-21 15:41:23',
             'actif' => true
-        )
+        ),
+        array(
+            'id' => 7,
+            'model' => 'Seance',
+            'nom' => 'booleen',
+            'commentaire' => '',
+            'ordre' => 6,
+            'code' => 'booleantest',
+            'type' => 'boolean',
+            'val_initiale' => '',
+            'recherche' => false,
+            'created' => '2013-06-11 14:48:57',
+            'modified' => '2013-06-21 15:41:23',
+            'actif' => true
+        ),
+        array(
+            'id' => 8,
+            'model' => 'Seance',
+            'nom' => 'datation',
+            'commentaire' => '',
+            'ordre' => 8,
+            'code' => 'datetest',
+            'type' => 'date',
+            'val_initiale' => '',
+            'recherche' => false,
+            'created' => '2013-06-11 14:48:57',
+            'modified' => '2013-06-21 15:41:23',
+            'actif' => true
+        ),
+        array(
+            'id' => 9,
+            'model' => 'Seance',
+            'nom' => 'desactive',
+            'commentaire' => '',
+            'ordre' => 9,
+            'code' => 'nonactive',
+            'type' => 'text',
+            'val_initiale' => '',
+            'recherche' => false,
+            'created' => '2013-06-11 14:48:57',
+            'modified' => '2013-06-21 15:41:23',
+            'actif' => false
+        ),
+        array(
+            'id' => 10,
+            'model' => 'Seance',
+            'nom' => 'liste seance',
+            'commentaire' => '',
+            'ordre' => 10,
+            'code' => 'listeseance',
+            'type' => 'list',
+            'val_initiale' => '',
+            'recherche' => false,
+            'created' => '2013-06-11 14:48:57',
+            'modified' => '2013-06-21 15:41:23',
+            'actif' => true
+        ),
+        
     );
 
 }

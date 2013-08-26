@@ -52,7 +52,55 @@ class InfosupFixture extends CakeTestFixture {
             'file_size' => null,
             'file_type' => null,
             'content' => null
-        )
+        ),
+        array(
+            'id' => 1,
+            'model' => 'Seance',
+            'foreign_key' => 1,
+            'infosupdef_id' => 7,
+            'text' => '1',
+            'date' => null,
+            'file_name' => null,
+            'file_size' => null,
+            'file_type' => null,
+            'content' => null
+        ),
+        array(
+            'id' => 2,
+            'model' => 'Seance',
+            'foreign_key' => 1,
+            'infosupdef_id' => 8,
+            'text' => null,
+            'date' => '2013-08-26',
+            'file_name' => null,
+            'file_size' => null,
+            'file_type' => null,
+            'content' => null
+        ),
+        array(
+            'id' => 3,
+            'model' => 'Seance',
+            'foreign_key' => 1,
+            'infosupdef_id' => 9,
+            'text' => 'nonactif',
+            'date' => null,
+            'file_name' => null,
+            'file_size' => null,
+            'file_type' => null,
+            'content' => null
+        ),
+        array(
+            'id' => 4,
+            'model' => 'Seance',
+            'foreign_key' => 1,
+            'infosupdef_id' => 10,
+            'text' => '3',
+            'date' => null,
+            'file_name' => null,
+            'file_size' => null,
+            'file_type' => null,
+            'content' => null
+        ),
     );
 
 }

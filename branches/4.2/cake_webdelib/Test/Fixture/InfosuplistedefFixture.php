@@ -40,7 +40,7 @@ class InfosuplistedefFixture extends CakeTestFixture {
         ),
         array(
             'id' => 3,
-            'infosupdef_id' => 6,
+            'infosupdef_id' => 10,
             'ordre' => 2,
             'nom' => 'Cévennes',
             'actif' => true,
