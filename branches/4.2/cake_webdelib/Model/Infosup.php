@@ -346,7 +346,7 @@ class Infosup extends AppModel
 					'recursive' => -1,
 					'joins' => array(
 						$this->join( 'Infosupdef', array( 'type' => 'LEFT OUTER' ) ),
-                        $this->Infosupdef->join( 'Infosuplistedef', array( 'type' => 'LEFT OUTER' ) )
+                        $this->Infosupdef->join( 'Infosuplistedef', array( 'type' => 'LEFT OUTER', 'conditions' => array( 'Infosup.text IS NOT NULL', 'TRIM( BOTH \' \' FROM Infosup.text ) <>' => '', 'CAST( Infosup.text AS int ) = Infosuplistedef.id' ) ) )
 					),
 					'conditions' => array(
 						'Infosupdef.actif' => true,
@@ -361,6 +361,55 @@ class Infosup extends AppModel
 			);
 
 			return $infosups;
+		}
+
+		/**
+		 * Normalisation des enregistrement: ajout des valeurs calculées, ...
+		 *
+		 * @param array $records
+		 * @return array
+		 */
+		public function gedoooNormalizeAll( $modelName, array $infosups ) {
+			$return = array();
+			// TODO: tous les champs à vide pour commencer ?
+			foreach( $infosups as $infosup ) {
+				if( !empty( $infosup['Infosupdef']['id'] ) ) {
+
+					$type = $infosup['Infosupdef']['type'];
+					$fieldName = $infosup['Infosupdef']['code'];
+
+					$value = null;
+
+					switch( $type ) {
+						case 'boolean':
+						case 'text':
+							$value = $infosup['Infosup']['text'];
+							break;
+						case 'date':
+							$value = $infosup['Infosup']['date'];
+							break;
+						case 'list':
+                            $value = $infosup['Infosuplistedef']['nom'];
+							break;
+						case 'odtFile':
+                            $value = array(
+                                'name' => $infosup['Infosup']['file_name'],
+                                'size' => $infosup['Infosup']['file_size'],
+                                'type' => $infosup['Infosup']['file_type'],
+                                'content' => $infosup['Infosup']['content'],
+                            );
+							break;
+						default:
+							// FIXME: les autres types
+                            debug( $infosup );
+							die( "{$type} d'Infosupdef non géré" );
+					}
+
+					$return = Hash::insert( $return, "{$modelName}.{$fieldName}", $value );
+				}
+			}
+
+			return $return;
 		}
 }
 ?>

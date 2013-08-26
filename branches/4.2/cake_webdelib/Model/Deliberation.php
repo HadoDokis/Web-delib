@@ -1873,11 +1873,35 @@ class Deliberation extends AppModel {
                 )
             );
 
-            foreach( $projets as $i => $projet ) {
+            foreach( $projets as $indexProjet => $projet ) {
                 // Lecture des séances du projet si nécessaire
                 if( $readSeances ) {
                     // TODO: séance principale ou délibérante, etc...
                     $projet['Seances'] = $this->Deliberationseance->gedoooRead( $projet['Deliberation']['id'] );
+                    if( !empty( $projet['Seances'] ) ) {
+                        foreach( $projet['Seances'] as $indexSeance => $seance ) {
+                            // TODO: Obtention des acteurs convoqués, 5 reqûetes à transformer en une ?
+                            $type_id = $this->Seance->getType( $seance['Seance']['id'] );
+                            $seance['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId( $type_id );
+
+                            // Itération AvisSeance
+                            $seance['AvisSeance'] = $this->Deliberationseance->find(
+                                'all',
+                                array(
+                                    'fields' => array(
+                                        'Deliberationseance.commentaire'
+                                    ),
+                                    'conditions' => array(
+                                        'Deliberationseance.seance_id' => $seance['Seance']['id']
+                                    ),
+                                    'recursive' => -1,
+                                    'order' => array( 'Deliberationseance.position ASC' )
+                                )
+                            );
+
+                            $projet['Seances'][$indexSeance] = $seance;
+                        }
+                    }
                 }
 
                 // Obtention des historiques
@@ -1895,10 +1919,6 @@ class Deliberation extends AppModel {
                     )
                 );
                 $projet['Historiques'] = $historiques;
-
-                // TODO: Obtention des acteurs convoqués
-                // $type_id = $this->Seance->getType( $projet['Seance']['id'] );
-                // $projet['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($type_id);
 
                 // Informations supplémentaires du projet
                 $projet['Infossups'] = $this->Infosup->gedoooReadAll( 'Deliberation', $projet['Deliberation']['id'] );
@@ -1920,7 +1940,19 @@ class Deliberation extends AppModel {
                     )
                 );
 
-                $projets[$i] = $projet;
+                // Annexes
+                $projet['Annexes'] = $this->Annex->find(
+                    'all',
+                    array(
+                        'recursive' => -1,
+                        'conditions' => array(
+                            'Annex.foreign_key' => $projet['Deliberation']['id']
+                        )
+                    )
+                );
+
+                // Fin du traitement
+                $projets[$indexProjet] = $projet;
             }
 
 			return $projets;
@@ -1945,14 +1977,44 @@ class Deliberation extends AppModel {
 		 * @param array $records
 		 * @return array
 		 */
-		public function gedoooNormalize( array $data ) {
+		public function gedoooNormalize( array $data ) { // TODO: gedoooNormalizeAll
             if( !empty( $data['Commentaires'] ) ) {
                 $data = $this->Commentaire->gedoooNormalizeAll( $data );
+            }
+
+            // Normalisation des infosup de la délibération
+            $data = Hash::merge( $data, $this->Infosup->gedoooNormalizeAll( 'Deliberation', $data['Infossups'] ) );
+
+            // Normalisation des infosup des séances
+            if( !empty( $data['Seances'] ) ) {
+                foreach( $data['Seances'] as $indexSeance => $dataSeance ) {
+                    $data['Seances'][$indexSeance] = Hash::merge(
+                        $data['Seances'][$indexSeance],
+                        $this->Infosup->gedoooNormalizeAll( 'Seance', $dataSeance['Infossups'] )
+                    );
+                }
             }
 
 			/*foreach( $data['Projets'] as $i => $projet ) {
 				$data['Projets'][$i]['Votes'] = $this->Listepresence->Acteur->Vote->gedoooNormalizeList( $projet['Votes'] );
 			}*/
+
+            // Normalisation des séances
+            if( !empty( $data['Seances'] ) ) {
+                $seances_keys = array_combine( array_keys( $data['Seances'] ), Hash::extract( $data['Seances'], '{n}.Typeseance.action' ) );
+                if( count( $seances_keys ) == 1 ) {
+                    // TODO: Deliberationseance.position (seance_id/deliberation_id)
+                    // $position = $this->getPosition($delib['Deliberation']['id'], $delibseances[0]);
+                    // $oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
+                    $data = Hash::merge( $data, $data['Seances'][0] );
+                }
+                else if( count( $seances_keys ) >= 1 ) {
+                    $seancedeliberante_key = array_search( 0, $seances_keys, true );
+                    if( $seancedeliberante_key !== false ) {
+                        $data = Hash::merge( $data, $data['Seances'][$seancedeliberante_key] );
+                    }
+                }
+            }
 
 			return $data;
 		}

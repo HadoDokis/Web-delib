@@ -197,6 +197,70 @@ class Acteur extends AppModel {
         }
     }
 
+    // -------------------------------------------------------------------------
+
+		/**
+		 * Normalisation des enregistrements: ajout des valeurs calculées, ...
+		 *
+		 * @param array $records
+		 * @return array
+		 */
+		public function gedoooNormalizeList( $category, array $acteurs ) {
+			$nombre = count( $acteurs );
+			if( $nombre == 0 ) {
+				$acteurs = array( array() );
+			}
+
+			$return = array();
+			foreach( $acteurs as $acteur ) {
+				$suffix = $category;
+				if( $category === 'mandate' ) {
+					$suffix = 'mandataire';
+				}
+				$foo1 = $this->gedoooNormalize( $suffix, $nombre, 'Acteur', array() );
+
+				$foo2 = array();
+				if( $category !== 'present' ) {
+					$suffix = 'mandate';
+					$foo2 = $this->gedoooNormalize( $suffix, false, 'ActeurMandate', array() );
+				}
+
+				$return[] = array_merge( $foo1, $foo2 );
+			}
+
+			return $return;
+		}
+
+		/**
+		 * Normalisation d'un enregistrement: ajout des valeurs calculées, ...
+		 *
+		 * @param array $records
+		 * @return array
+		 */
+		public function gedoooNormalize( $suffix, $nombre, $alias, array $item ) {
+			$return = array(
+				"nombre_acteur_{$suffix}" => $nombre, // Pas tout le temps ?
+				"nom_acteur_{$suffix}" => Hash::get( $item, "{$alias}.nom" ),
+				"prenom_acteur_{$suffix}" => Hash::get( $item, "{$alias}.prenom" ),
+				"salutation_acteur_{$suffix}" => Hash::get( $item, "{$alias}.salutation" ),
+				"titre_acteur_{$suffix}" => Hash::get( $item, "{$alias}.titre" ),
+				"date_naissance_acteur_{$suffix}" => Hash::get( $item, "{$alias}.date_naissance" ),
+				"adresse1_acteur_{$suffix}" => Hash::get( $item, "{$alias}.adresse1" ),
+				"adresse2_acteur_{$suffix}" => Hash::get( $item, "{$alias}.adresse2" ),
+				"cp_acteur_{$suffix}" => Hash::get( $item, "{$alias}.cp" ),
+				"ville_acteur_{$suffix}" => Hash::get( $item, "{$alias}.ville" ),
+				"email_acteur_{$suffix}" => Hash::get( $item, "{$alias}.email" ),
+				"telfixe_acteur_{$suffix}" => Hash::get( $item, "{$alias}.telfixe" ),
+				"telmobile_acteur_{$suffix}" => Hash::get( $item, "{$alias}.telmobile" ),
+				"note_acteur_{$suffix}" => Hash::get( $item, "{$alias}.note" ),
+			);
+
+			if( $nombre === false ) {
+				unset( $return["nombre_acteur_{$suffix}"] );
+			}
+
+			return $return;
+		}
 }
 
 ?>

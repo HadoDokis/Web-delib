@@ -30,26 +30,28 @@ class Commentaire extends AppModel {
      * @return array
      */
     public function gedoooNormalizeAll(array $data) {
-        $commentaires = $data['Commentaires'];
-        unset($data['Commentaires']);
+        if( isset( $data['Commentaires'] ) ) {
+            $commentaires = $data['Commentaires'];
+            unset($data['Commentaires']);
 
-        $listeCommentaires = array();
-        $listeAvisCommission = array();
+            $listeCommentaires = array();
+            $listeAvisCommission = array();
 
-        foreach ($commentaires as $commentaire) {
-            if ($commentaire['Commentaire']['commentaire_auto']) {
-                $listeAvisCommission[] = array('avis' => $commentaire['Commentaire']['texte']);
-            } else {
-                $listeCommentaires[] = array('avis' => $commentaire['Commentaire']['texte']);
+            foreach ($commentaires as $commentaire) {
+                if ($commentaire['Commentaire']['commentaire_auto']) {
+                    $listeAvisCommission[] = array('avis' => $commentaire['Commentaire']['texte']);
+                } else {
+                    $listeCommentaires[] = array('avis' => $commentaire['Commentaire']['texte']);
+                }
             }
-        }
 
-        if (!empty($listeAvisCommission)) {
-            $data['AvisCommission'] = $listeAvisCommission;
-        }
+            if (!empty($listeAvisCommission)) {
+                $data['AvisCommission'] = $listeAvisCommission;
+            }
 
-        if (!empty($listeCommentaires)) {
-            $data['Commentaires'] = $listeCommentaires;
+            if (!empty($listeCommentaires)) {
+                $data['Commentaires'] = $listeCommentaires;
+            }
         }
 
         return $data;
