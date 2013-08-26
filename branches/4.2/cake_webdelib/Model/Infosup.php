@@ -335,33 +335,37 @@ class Infosup extends AppModel
          * @return array
          */
 		public function gedoooReadAll( $modelName, $foreignKey ) {
-                    $quarydata = array(
-                                'fields' => array_merge(
-                                        $this->fields(),
-                                        $this->Infosupdef->fields(),
-                                        $this->Infosupdef->Infosuplistedef->fields()
-                                ),
-                                'recursive' => -1,
-                                'joins' => array(
-                                        $this->join( 'Infosupdef', array( 'type' => 'LEFT OUTER' ) ),
-                                        $this->Infosupdef->join( 'Infosuplistedef', array( 'type' => 'LEFT OUTER', 'conditions' => array(
-                                            'Infosupdef.type' => 'list',
-                                            'Infosup.text IS NOT NULL',
-                                            'TRIM( BOTH \' \' FROM Infosup.text ) <>' => '',
-                                            'TRIM( BOTH \' \' FROM Infosup.text ) ~ \'^[0-9]+$\'',
-                                            'CAST( Infosup.text AS int ) = Infosuplistedef.id'
-                                        ) ) )
-                                ),
-                                'conditions' => array(
-                                        'Infosupdef.actif' => true,
-                                        'Infosupdef.model' => $modelName,
-                                        'Infosup.model' => $modelName,
-                                        'Infosup.foreign_key' => $foreignKey,
-                                ),
-                                'order' => array(
-                                        'Infosupdef.ordre ASC'
-                                )
-                        );
+            $infosuplistedefJoinParams = array(
+                'type' => 'LEFT OUTER',
+                'conditions' => array(
+                    'Infosupdef.type' => 'list',
+                    'Infosup.text IS NOT NULL',
+                    'TRIM( BOTH \' \' FROM Infosup.text ) <>' => '',
+                    '( CASE WHEN TRIM( BOTH \' \' FROM Infosup.text ) ~ \'^[0-9]+$\' THEN CAST( Infosup.text AS int ) ELSE 0 END ) = Infosuplistedef.id'
+                )
+            );
+
+            $quarydata = array(
+                    'fields' => array_merge(
+                            $this->fields(),
+                            $this->Infosupdef->fields(),
+                            $this->Infosupdef->Infosuplistedef->fields()
+                    ),
+                    'recursive' => -1,
+                    'joins' => array(
+                            $this->join( 'Infosupdef', array( 'type' => 'LEFT OUTER' ) ),
+                            $this->Infosupdef->join( 'Infosuplistedef', $infosuplistedefJoinParams )
+                    ),
+                    'conditions' => array(
+                            'Infosupdef.actif' => true,
+                            'Infosupdef.model' => $modelName,
+                            'Infosup.model' => $modelName,
+                            'Infosup.foreign_key' => $foreignKey,
+                    ),
+                    'order' => array(
+                            'Infosupdef.ordre ASC'
+                    )
+            );
 
 			return $this->find( 'all', $quarydata );
 		}
@@ -403,7 +407,7 @@ class Infosup extends AppModel
                             );
 							break;
 						default:
-							// FIXME: les autres types
+							// FIXME: les autres types: richText, file
                             debug( $infosup );
 							die( "{$type} d'Infosupdef non géré" );
 					}
