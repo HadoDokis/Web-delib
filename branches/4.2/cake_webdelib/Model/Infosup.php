@@ -335,32 +335,35 @@ class Infosup extends AppModel
          * @return array
          */
 		public function gedoooReadAll( $modelName, $foreignKey ) {
-			$infosups = $this->find(
-				'all',
-				array(
-					'fields' => array_merge(
-						$this->fields(),
-						$this->Infosupdef->fields(),
-						$this->Infosupdef->Infosuplistedef->fields()
-					),
-					'recursive' => -1,
-					'joins' => array(
-						$this->join( 'Infosupdef', array( 'type' => 'LEFT OUTER' ) ),
-                        $this->Infosupdef->join( 'Infosuplistedef', array( 'type' => 'LEFT OUTER', 'conditions' => array( 'Infosup.text IS NOT NULL', 'TRIM( BOTH \' \' FROM Infosup.text ) <>' => '', 'CAST( Infosup.text AS int ) = Infosuplistedef.id' ) ) )
-					),
-					'conditions' => array(
-						'Infosupdef.actif' => true,
-						'Infosupdef.model' => $modelName,
-						'Infosup.model' => $modelName,
-						'Infosup.foreign_key' => $foreignKey,
-					),
-					'order' => array(
-						'Infosupdef.ordre ASC'
-					)
-				)
-			);
+                    $quarydata = array(
+                                'fields' => array_merge(
+                                        $this->fields(),
+                                        $this->Infosupdef->fields(),
+                                        $this->Infosupdef->Infosuplistedef->fields()
+                                ),
+                                'recursive' => -1,
+                                'joins' => array(
+                                        $this->join( 'Infosupdef', array( 'type' => 'LEFT OUTER' ) ),
+                                        $this->Infosupdef->join( 'Infosuplistedef', array( 'type' => 'LEFT OUTER', 'conditions' => array(
+                                            'Infosupdef.type' => 'list',
+                                            'Infosup.text IS NOT NULL',
+                                            'TRIM( BOTH \' \' FROM Infosup.text ) <>' => '',
+                                            'TRIM( BOTH \' \' FROM Infosup.text ) ~ \'^[0-9]+$\'',
+                                            'CAST( Infosup.text AS int ) = Infosuplistedef.id'
+                                        ) ) )
+                                ),
+                                'conditions' => array(
+                                        'Infosupdef.actif' => true,
+                                        'Infosupdef.model' => $modelName,
+                                        'Infosup.model' => $modelName,
+                                        'Infosup.foreign_key' => $foreignKey,
+                                ),
+                                'order' => array(
+                                        'Infosupdef.ordre ASC'
+                                )
+                        );
 
-			return $infosups;
+			return $this->find( 'all', $quarydata );
 		}
 
 		/**
