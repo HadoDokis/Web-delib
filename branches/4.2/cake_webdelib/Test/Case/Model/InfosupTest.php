@@ -144,10 +144,10 @@ class InfosupTest extends CakeTestCase {
     public function testGedoooNormalizeAll() {
         //FIXME: rajouter une donnée de test de type odtFile
         $records = $this->Infosup->gedoooReadAll('Seance', 1);
-        debug($records);
-        
+        // debug($records);
+
         $result = $this->Infosup->gedoooNormalizeAll('Seance', $records);
-        debug($result);
+        // debug($result);
         $expected = array(
             'Seance' => array(
                 'booleantest' => '1',
@@ -155,7 +155,7 @@ class InfosupTest extends CakeTestCase {
                 'listeseance' => 'Cévennes',
             ),
         );
-        
+
         $this->assertEquals($result, $expected, var_export($result, true));
     }
 
