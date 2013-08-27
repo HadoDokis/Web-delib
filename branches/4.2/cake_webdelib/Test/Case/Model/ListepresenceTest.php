@@ -62,6 +62,15 @@ class ListepresenceTest extends CakeTestCase {
         
         $this->markTestIncomplete('Ce test n\'a pas encoré été terminé.');
     }
+    /**
+     * Test de la méthode Listepresence::gedoooNormalizeAll()
+     */
+    public function testGedoooReadAll() {
+//        $result = $this->Listepresence->gedoooNormalizeAll(  );
+//        debug($result);
+        
+        $this->markTestIncomplete('Ce test n\'a pas encoré été terminé.');
+    }
 
 }
 
