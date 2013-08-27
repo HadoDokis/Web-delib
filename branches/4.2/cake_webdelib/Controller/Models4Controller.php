@@ -94,16 +94,30 @@
 			$Document = new GDO_PartType();
 			$Document = Gedooo2Builder::main( $Document, $data, $types, $paths );
 
+            if( !empty( $data['Historiques'] ) ) {
+                $Document = Gedooo2Builder::iteration( $Document, 'Historique', $data['Historiques'], $types, $paths );
+            }
+
+            foreach( array_keys( $this->Seance->Deliberation->Listepresence->gedoooIterations ) as $iterationName ) {
+                if( isset( $data[$iterationName] ) ) {
+                    $Document = Gedooo2Builder::iteration( $Document, $iterationName, $data[$iterationName], $types, $paths );
+                }
+            }
+
 			// 4°) Fusion
 			$this->Gedooo2Debugger->toCsv( $Document );
+
+            /*debug( $paths );
+            debug( $types );*/
+
+            // debug( Gedooo2Debugger::hashPathsToCsv( $Document ) );
+            debug( Gedooo2Debugger::allPathsToCsv( $Document, true ) );
 
 echo '<pre>';
 echo '<p><strong>'.sprintf( '%s:%d', __FILE__, __LINE__ ).'</strong></p>';
 print_r( $data );
 echo '</pre>';
 return;
-            /*debug( $paths );
-            debug( $types );*/
         }
 
         /**

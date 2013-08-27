@@ -175,5 +175,47 @@ class Listepresence extends AppModel {
 
 			return $return;
 		}
+
+        /**
+		 * Retourne une correspondance entre les champs CakePHP (même calculés)
+		 * et les champs Gedooo.
+         *
+         * @return array
+         */
+        public function gedoooPaths() {
+            $correspondances = array();
+
+            // Présence des acteurs, ... + votes
+            $foos = $this->gedoooNormalizeAll( array() );
+            foreach( $foos as $iterationName => $foo ) {
+                $bar = array_keys( $foo[0] );
+                $foo = array_keys( Hash::flatten( Hash::normalize( $bar ) ) );
+                $foo = array_combine( $bar, $foo );
+                $correspondances = array_merge( $correspondances, $foo );
+            }
+
+            return $correspondances;
+        }
+
+        /**
+		 * Retourne une correspondance entre les champs CakePHP (même calculés)
+		 * et les champs Gedooo.
+         *
+         * @return array
+         */
+        public function gedoooTypes() {
+            $correspondances = array();
+
+            // Présence des acteurs, ... + votes
+            $foos = $this->gedoooNormalizeAll( array() );
+            foreach( $foos as $iterationName => $foo ) {
+                $bar = array_keys( $foo[0] );
+                $foo = array_keys( Hash::flatten( Hash::normalize( $bar ) ) );
+                $foo = array_combine( $foo, array_fill( 0, count( $foo ), 'text') );
+                $correspondances = array_merge( $correspondances, $foo );
+            }
+
+            return $correspondances;
+        }
 }
 ?>

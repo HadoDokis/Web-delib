@@ -1905,11 +1905,9 @@ class Deliberation extends AppModel {
                 }
 
                 // Thème et thèmes parents d'un projet. TODO: Donnera [T1_theme,T10_theme] comme variables Gedooo
-//                $projet['Themes'] = $this->Theme->getTree( $projet['Deliberation']['theme_id'], 'libelle' );
                 $projet['Themes'] = $this->Theme->postgresFindParents( $projet['Deliberation']['theme_id'], array( 'libelle' ) );
 
                 // Service et services parents d'un projet. TODO: Donnera service_emetteur et service_avec_hierarchie comme variables Gedooo
-//                $projet['Services'] = $this->Service->getTree( $projet['Deliberation']['service_id'], 'libelle' );
                 $projet['Services'] = $this->Service->postgresFindParents( $projet['Deliberation']['service_id'], array( 'libelle' ) );
 
                 // Obtention des historiques
@@ -1981,17 +1979,21 @@ class Deliberation extends AppModel {
 
 		/**
 		 * Normalisation des enregistrement: ajout des valeurs calculées, ...
+         *
+         * @todo gedoooNormalizeAll()
+         * @todo 'AvisSeance'
 		 *
 		 * @param array $records
 		 * @return array
 		 */
-		public function gedoooNormalize( array $data ) { // TODO: gedoooNormalizeAll
+		public function gedoooNormalize( array $data ) {
             if( !empty( $data['Commentaires'] ) ) {
                 $data = $this->Commentaire->gedoooNormalizeAll( $data );
             }
 
             // Normalisation des infosup de la délibération
             $data = Hash::merge( $data, $this->Infosup->gedoooNormalizeAll( 'Deliberation', $data['Infossups'] ) );
+            unset( $data['Infossups'] );
 
             // Normalisation des infosup des séances
             if( !empty( $data['Seances'] ) ) {
@@ -2000,8 +2002,21 @@ class Deliberation extends AppModel {
                         $data['Seances'][$indexSeance],
                         $this->Infosup->gedoooNormalizeAll( 'Seance', $dataSeance['Infossups'] )
                     );
+                    unset( $data['Seances'][$indexSeance]['Infossups'] );
                 }
             }
+
+            // Thème et thèmes parents d'un projet. TODO: Donnera [T1_theme,T10_theme] comme variables Gedooo
+            if( !empty( $data['Themes'] ) ) {
+                for( $i = 0 ; $i < 10 ; $i++ ) {
+                    $data["T".( $i + 1 )."_theme"] = Hash::get( $data, "Themes.{$i}.Theme.libelle" );
+                }
+                unset( $data['Themes'] );
+            }
+            // $projet['Themes'] = $this->Theme->postgresFindParents( $projet['Deliberation']['theme_id'], array( 'libelle' ) );
+
+            // Service et services parents d'un projet. TODO: Donnera service_emetteur et service_avec_hierarchie comme variables Gedooo
+            // $projet['Services'] = $this->Service->postgresFindParents( $projet['Deliberation']['service_id'], array( 'libelle' ) );
 
             // Traitement des votes et des présences
             $data = Hash::merge( $data, $this->Listepresence->gedoooNormalizeAll( $data['Listespresences'] ) );
@@ -2032,7 +2047,6 @@ class Deliberation extends AppModel {
 		 * Retourne une correspondance entre les champs CakePHP (même calculés)
 		 * et les champs Gedooo.
 		 *
-		 * @param array $records
 		 * @return array
 		 */
 		public function gedoooPaths() {
@@ -2055,17 +2069,16 @@ class Deliberation extends AppModel {
                 'telmobile_redacteur' => 'Redacteur.telmobile',
                 'telfixe_redacteur' => 'Redacteur.telfixe',
                 'note_redacteur' => 'Redacteur.note',
-				// Séance.Projet.Historique
-//				'Historique.commentaire' => 'log',
+                // Séance.Projet.Historique -> TODO: dans une sorte d'itération ?
+                'log' => 'Historique.commentaire',
 			);
 
-            // Présence des acteurs, ... + votes
-            $foos = $this->Listepresence->gedoooNormalizeAll( array() );
-            foreach( $foos as $iterationName => $foo ) {
-                $foo = array_keys( $foo[0] );
-                $foo = array_combine( $foo, $foo );
-                $correspondances = array_merge( $correspondances, $foo );
+            for( $i = 0 ; $i < 10 ; $i++ ) {
+                $key = "T".( $i + 1 )."_theme";
+                $correspondances[$key] = $key;
             }
+
+            $correspondances = Hash::merge( $correspondances, $this->Listepresence->gedoooPaths() );
 
 			return $correspondances;
 		}
@@ -2078,14 +2091,23 @@ class Deliberation extends AppModel {
 		 * @return array
 		 */
 		public function gedoooTypes() {
-			return array_merge(
+            $types = array_merge(
 				$this->types(),
 				$this->Deliberationseance->types(),
 				$this->Rapporteur->types(),
 				$this->Theme->types(),
-				$this->Redacteur->types()/*,
-				$this->Historique->types()*/
+				$this->Redacteur->types(),
+				$this->Historique->types()
 			);
+
+            for( $i = 0 ; $i < 10 ; $i++ ) {
+                $key = "T".( $i + 1 )."_theme";
+                $correspondances[$key] = 'text';
+            }
+
+            $types = Hash::merge( $types, $this->Listepresence->gedoooTypes() );
+
+            return $types;
 		}
 }
 ?>
