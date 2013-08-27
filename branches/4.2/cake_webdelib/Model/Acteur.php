@@ -222,6 +222,7 @@ class Acteur extends AppModel {
 				$foo2 = array();
 				if( $category !== 'present' ) {
 					$suffix = 'mandate';
+                                        // FIXME : l'indice ActeurMandate n'existe pas !
 					$foo2 = $this->gedoooNormalize( $suffix, false, 'ActeurMandate', $acteur );
 				}
 
