@@ -121,7 +121,7 @@ class Listepresence extends AppModel {
 		 * @param array $records
 		 * @return array
 		 */
-		public function gedoooNormalizeList( array $records ) {
+		public function gedoooNormalizeAll( array $records ) {
 			$votes = array_fill_keys( $this->gedoooIterations, array() );
 			$counts = array();
 
@@ -152,7 +152,7 @@ class Listepresence extends AppModel {
 				}
 
 				// Votes
-				// TODO: les autres si besoin
+				// TODO: les autres si besoin -> FIXME: seulement si elu ?
 				if( $record['VoteActeur']['resultat'] == Vote::voteContre ) {
 					$votes['contre'][] = $item;
 				}
@@ -170,7 +170,7 @@ class Listepresence extends AppModel {
 			// Transformation pour le retour
 			$return = array();
 			foreach( $this->gedoooIterations as $iterationName => $category ) {
-				$return[$iterationName] = $this->Acteur->gedoooNormalizeList( $category, $votes[$category] );
+				$return[$iterationName] = $this->Acteur->gedoooNormalizeAll( $category, $votes[$category] );
 			}
 
 			return $return;

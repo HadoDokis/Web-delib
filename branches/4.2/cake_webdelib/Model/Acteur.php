@@ -205,7 +205,7 @@ class Acteur extends AppModel {
 		 * @param array $records
 		 * @return array
 		 */
-		public function gedoooNormalizeList( $category, array $acteurs ) {
+		public function gedoooNormalizeAll( $category, array $acteurs ) {
 			$nombre = count( $acteurs );
 			if( $nombre == 0 ) {
 				$acteurs = array( array() );
@@ -217,12 +217,12 @@ class Acteur extends AppModel {
 				if( $category === 'mandate' ) {
 					$suffix = 'mandataire';
 				}
-				$foo1 = $this->gedoooNormalize( $suffix, $nombre, 'Acteur', array() );
+				$foo1 = $this->gedoooNormalize( $suffix, $nombre, 'Acteur', $acteur );
 
 				$foo2 = array();
 				if( $category !== 'present' ) {
 					$suffix = 'mandate';
-					$foo2 = $this->gedoooNormalize( $suffix, false, 'ActeurMandate', array() );
+					$foo2 = $this->gedoooNormalize( $suffix, false, 'ActeurMandate', $acteur );
 				}
 
 				$return[] = array_merge( $foo1, $foo2 );

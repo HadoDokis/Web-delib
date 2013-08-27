@@ -1810,7 +1810,7 @@ class Deliberation extends AppModel {
 //			foreach( $projets as $i => $projet ) {
 //				// Obtention des infosup
 //				$infosup = $this->Seance->Infosup->gedoooReadAll( 'Deliberation', $projet['Deliberation']['id'] );
-//				$infosup = $this->Seance->Infosup->gedoooNormalizeList( 'Deliberation', $infosup );
+//				$infosup = $this->Seance->Infosup->gedoooNormalizeAll( 'Deliberation', $infosup );
 //
 //				// Obtention des historiques
 //				$historiques = $this->Historique->find(
@@ -1906,11 +1906,11 @@ class Deliberation extends AppModel {
 
                 // Thème et thèmes parents d'un projet. TODO: Donnera [T1_theme,T10_theme] comme variables Gedooo
 //                $projet['Themes'] = $this->Theme->getTree( $projet['Deliberation']['theme_id'], 'libelle' );
-                $projet['Themes'] = $this->Theme->$this->postgresFindParents( $projet['Deliberation']['theme_id'], array( 'libelle' ) );
+                $projet['Themes'] = $this->Theme->postgresFindParents( $projet['Deliberation']['theme_id'], array( 'libelle' ) );
 
                 // Service et services parents d'un projet. TODO: Donnera service_emetteur et service_avec_hierarchie comme variables Gedooo
 //                $projet['Services'] = $this->Service->getTree( $projet['Deliberation']['service_id'], 'libelle' );
-                $projet['Services'] = $this->Service->$this->postgresFindParents( $projet['Deliberation']['service_id'], array( 'libelle' ) );
+                $projet['Services'] = $this->Service->postgresFindParents( $projet['Deliberation']['service_id'], array( 'libelle' ) );
 
                 // Obtention des historiques
                 $historiques = $this->Historique->find(
@@ -2003,9 +2003,9 @@ class Deliberation extends AppModel {
                 }
             }
 
-			/*foreach( $data['Projets'] as $i => $projet ) {
-				$data['Projets'][$i]['Votes'] = $this->Listepresence->Acteur->Vote->gedoooNormalizeList( $projet['Votes'] );
-			}*/
+            // Traitement des votes et des présences
+            $data = Hash::merge( $data, $this->Listepresence->gedoooNormalizeAll( $data['Listespresences'] ) );
+            unset( $data['Listespresences'] );
 
             // Normalisation des séances
             if( !empty( $data['Seances'] ) ) {
@@ -2060,7 +2060,7 @@ class Deliberation extends AppModel {
 			);
 
             // Présence des acteurs, ... + votes
-            $foos = $this->Listepresence->gedoooNormalizeList( array() );
+            $foos = $this->Listepresence->gedoooNormalizeAll( array() );
             foreach( $foos as $iterationName => $foo ) {
                 $foo = array_keys( $foo[0] );
                 $foo = array_combine( $foo, $foo );
