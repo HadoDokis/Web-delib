@@ -30,14 +30,14 @@ class VoteFixture extends CakeTestFixture {
      * @var array
      */
     public $records = array(
-        array(
-            'id' => 790,
-            'acteur_id' => 1,
-            'delib_id' => 276,
-            'resultat' => 3,
-            'created' => '2013-08-19 17:01:43',
-            'modified' => '2013-08-19 17:01:43',
-        ),
+//        array(
+//            'id' => 790,
+//            'acteur_id' => 1,
+//            'delib_id' => 276,
+//            'resultat' => 3,
+//            'created' => '2013-08-19 17:01:43',
+//            'modified' => '2013-08-19 17:01:43',
+//        ),
         array(
             'id' => 791,
             'acteur_id' => 2,
@@ -49,6 +49,22 @@ class VoteFixture extends CakeTestFixture {
         array(
             'id' => 792,
             'acteur_id' => 3,
+            'delib_id' => 276,
+            'resultat' => 3,
+            'created' => '2013-08-19 17:01:43',
+            'modified' => '2013-08-19 17:01:43',
+        ),
+        array(
+            'id' => 4,
+            'acteur_id' => 4,
+            'delib_id' => 276,
+            'resultat' => 3,
+            'created' => '2013-08-19 17:01:43',
+            'modified' => '2013-08-19 17:01:43',
+        ),
+        array(
+            'id' => 5,
+            'acteur_id' => 5,
             'delib_id' => 276,
             'resultat' => 3,
             'created' => '2013-08-19 17:01:43',
