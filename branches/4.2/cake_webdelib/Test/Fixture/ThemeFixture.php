@@ -1,4 +1,4 @@
-Error reading included file Templates/CakePHP/Test/freemarker_functions.ftl<?php
+<?php
 	/**
 	 * Code source de la classe ThemeFixture.
 	 *
