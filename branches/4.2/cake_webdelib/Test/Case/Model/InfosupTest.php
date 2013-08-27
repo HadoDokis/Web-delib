@@ -151,6 +151,8 @@ class InfosupTest extends CakeTestCase {
         );
 
         $this->assertEquals($result, $expected, var_export($result, true));
+        
+        $this->markTestIncomplete('Ce test n\'a pas encoré été terminé : rajouter une donnée de test de type odtFile.');
     }
 
 }
