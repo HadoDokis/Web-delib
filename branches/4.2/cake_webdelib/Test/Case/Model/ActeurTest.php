@@ -144,6 +144,7 @@ class ActeurTest extends CakeTestCase {
 
     /**
      * Test de la méthode Acteur::gedoooNormalizeList()
+     * FIXME tester avec mandataire
      */
     public function testgedoooNormalizeList() {
         $records = array(
