@@ -1,10 +1,5 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * CakePHP InfosupTest
  * @author Florian Ajir <florian.ajir@adullact.org>
@@ -144,10 +139,9 @@ class InfosupTest extends CakeTestCase {
     public function testGedoooNormalizeAll() {
         //FIXME: rajouter une donnée de test de type odtFile
         $records = $this->Infosup->gedoooReadAll('Seance', 1);
-        // debug($records);
 
         $result = $this->Infosup->gedoooNormalizeAll('Seance', $records);
-        // debug($result);
+        
         $expected = array(
             'Seance' => array(
                 'booleantest' => '1',
