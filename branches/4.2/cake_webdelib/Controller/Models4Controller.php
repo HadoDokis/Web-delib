@@ -104,6 +104,19 @@
                 }
             }
 
+            if( !empty( $data['Convoques'] ) ) {
+                $Document = Gedooo2Builder::iteration( $Document, 'Convoques', $data['Convoques'], $types, $paths );
+            }
+
+            if( !empty( $data['AvisSeance'] ) ) {
+                $Document = Gedooo2Builder::iteration( $Document, 'AvisSeance', $data['AvisSeance'], $types, $paths );
+            }
+
+            // TODO: Seances
+            /*if( !empty( $data['AvisSeance'] ) ) {
+                $Document = Gedooo2Builder::iteration( $Document, 'AvisSeance', $data['AvisSeance'], $types, $paths );
+            }*/
+
 			// 4°) Fusion
 			$this->Gedooo2Debugger->toCsv( $Document );
 

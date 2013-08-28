@@ -20,7 +20,7 @@ class ListepresenceTest extends CakeTestCase {
      * @var Model
      */
     public $Listepresence = null;
-    
+
     /**
      * Fixtures utilisés.
      *
@@ -57,18 +57,18 @@ class ListepresenceTest extends CakeTestCase {
         include_once('../../plugins/Database/Config/bootstrap.php');
         $result = $this->Listepresence->gedoooReadAll( 276 );
 //        debug($result);
-        
-        
-        
+
+
+
         $this->markTestIncomplete('Ce test n\'a pas encoré été terminé.');
     }
     /**
      * Test de la méthode Listepresence::gedoooNormalizeAll()
      */
-    public function testGedoooReadAll() {
+    public function testGedoooNormalizeAll() {
 //        $result = $this->Listepresence->gedoooNormalizeAll(  );
 //        debug($result);
-        
+
         $this->markTestIncomplete('Ce test n\'a pas encoré été terminé.');
     }
 

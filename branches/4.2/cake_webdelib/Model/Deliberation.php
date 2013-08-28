@@ -804,6 +804,7 @@ class Deliberation extends AppModel {
         if (!empty($avisSeances)) {
             $aviss = new GDO_IterationType("AvisProjet");
             foreach ($avisSeances as $avisSeance) {
+                // Les avis sont donnés sur les projets en séance non délibérante
                 if ($avisSeance['Seance']['Typeseance']['action'] == Typeseance::actionAvis) {
                     $oDevPart = new GDO_PartType();
                     $typeseance = $avisSeance['Seance']['Typeseance']['libelle'];
@@ -1760,90 +1761,6 @@ class Deliberation extends AppModel {
         // ---------------------------------------------------------------------
 
 		/**
-		 * Lecture de l'enregistrement
-		 *
-		 * @return array
-		 */
-		/*public function gedoooRead( $id ) {
-			$projet = $this->Deliberationseance->find(
-				'first',
-				array(
-					'fields' => array_merge(
-						array(
-							'Deliberationseance.seance_id',
-							'Deliberationseance.deliberation_id',
-							'Deliberationseance.position',
-							'Deliberationseance.commentaire',
-							'Theme.libelle',
-							'Typeseance.action',
-						),
-						$this->fields(),
-						$this->Rapporteur->fields(),
-						$this->Redacteur->fields(),
-						$this->Seance->fields(),
-						$this->Seance->President->fields(),
-						alias_querydata( $this->Seance->President->Suppleant->fields(), array( 'Suppleant' => 'PresidentSuppleant' ) ),
-						$this->Seance->Secretaire->fields(),
-						alias_querydata( $this->Seance->Secretaire->Suppleant->fields(), array( 'Suppleant' => 'SecretaireSuppleant' ) )
-					),
-					'recursive' => -1,
-					'joins' => array(
-						$this->Deliberationseance->join( 'Deliberation', array( 'type' => 'LEFT' ) ),
-						$this->Deliberationseance->join( 'Seance', array( 'type' => 'LEFT' ) ), // FIXME: pas nécessaire ? / la délibérante ?
-						$this->join( 'Rapporteur', array( 'type' => 'LEFT OUTER' ) ),
-						$this->join( 'Redacteur', array( 'type' => 'LEFT OUTER' ) ),
-						$this->join( 'Theme', array( 'type' => 'LEFT OUTER' ) ),
-						$this->Seance->join( 'President', array( 'type' => 'LEFT OUTER' ) ),
-						alias_querydata( $this->Seance->President->join( 'Suppleant' ), array( 'Suppleant' => 'PresidentSuppleant' ) ),
-						$this->Seance->join( 'Secretaire' ),
-						alias_querydata( $this->Seance->Secretaire->join( 'Suppleant' ), array( 'Suppleant' => 'SecretaireSuppleant' ) ),
-						$this->Seance->join( 'Typeseance', array( 'type' => 'LEFT OUTER' ) ),
-					),
-					'conditions' => array(
-						'Deliberationseance.deliberation_id' => $id,
-						'Deliberation.etat >=' => self::enCoursRedaction,
-					),
-					'order' => array( 'Deliberationseance.position ASC' ),
-				)
-			);
-
-//			foreach( $projets as $i => $projet ) {
-//				// Obtention des infosup
-//				$infosup = $this->Seance->Infosup->gedoooReadAll( 'Deliberation', $projet['Deliberation']['id'] );
-//				$infosup = $this->Seance->Infosup->gedoooNormalizeAll( 'Deliberation', $infosup );
-//
-//				// Obtention des historiques
-//				$historiques = $this->Historique->find(
-//					'all',
-//					array(
-//						'fields' => array(
-//							'Historique.commentaire'
-//						),
-//						'recursive' => -1,
-//						'conditions' => array(
-//							'Historique.delib_id' => $projet['Deliberation']['id']
-//						),
-//						'order' => array( 'Historique.created ASC' )
-//					)
-//				);
-//				$projet['Historiques'] = $historiques;
-//
-//				// Obtention des acteurs convoqués
-//				$type_id = $this->Seance->getType( $projet['Seance']['id'] );
-//				$projet['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($type_id);
-//
-//				// Obtention des votes
-//				$projet['Votes'] = $this->Listepresence->Acteur->Vote->gedoooReadAll( $projet['Deliberation']['id'] ); // 666
-//
-//				$projets[$i] = Hash::merge( $projet, $infosup );
-//			}
-
-            $projet['Commentaires'] = $this->Commentaire->gedoooReadAll( $id );
-
-			return $projet;
-        }*/
-
-		/**
 		 * Lecture des enregistrements.
 		 *
          * @param array $conditions
@@ -1981,12 +1898,19 @@ class Deliberation extends AppModel {
 		 * Normalisation des enregistrement: ajout des valeurs calculées, ...
          *
          * @todo gedoooNormalizeAll()
-         * @todo 'AvisSeance'
 		 *
 		 * @param array $records
 		 * @return array
 		 */
 		public function gedoooNormalize( array $data ) {
+            $data['Deliberation']['acte_adopte'] = ( ( ( $data['Deliberation']['etat'] == self::votePour ) && ( $data['Deliberation']['vote_nb_oui'] == 0 ) ) ? '1' : '0' );
+            if( !$data['Deliberation']['acte_adopte'] ) {
+                $data['Deliberation']['nombre_pour'] = $data['Deliberation']['vote_nb_oui'];
+                $data['Deliberation']['nombre_abstention'] = $data['Deliberation']['vote_nb_abstention'];
+                $data['Deliberation']['nombre_contre'] = $data['Deliberation']['vote_nb_non'];
+                $data['Deliberation']['nombre_sans_participation'] = $data['Deliberation']['vote_nb_retrait'];
+            }
+
             if( !empty( $data['Commentaires'] ) ) {
                 $data = $this->Commentaire->gedoooNormalizeAll( $data );
             }
@@ -1998,8 +1922,9 @@ class Deliberation extends AppModel {
             // Normalisation des infosup des séances
             if( !empty( $data['Seances'] ) ) {
                 foreach( $data['Seances'] as $indexSeance => $dataSeance ) {
+                    // Infossups
                     $data['Seances'][$indexSeance] = Hash::merge(
-                        $data['Seances'][$indexSeance],
+                        $this->Deliberationseance->Seance->gedoooNormalize($data['Seances'][$indexSeance]),
                         $this->Infosup->gedoooNormalizeAll( 'Seance', $dataSeance['Infossups'] )
                     );
                     unset( $data['Seances'][$indexSeance]['Infossups'] );
@@ -2013,12 +1938,33 @@ class Deliberation extends AppModel {
                 }
                 unset( $data['Themes'] );
             }
-            // $projet['Themes'] = $this->Theme->postgresFindParents( $projet['Deliberation']['theme_id'], array( 'libelle' ) );
 
             // Service et services parents d'un projet. TODO: Donnera service_emetteur et service_avec_hierarchie comme variables Gedooo
-            // $projet['Services'] = $this->Service->postgresFindParents( $projet['Deliberation']['service_id'], array( 'libelle' ) );
+            $services = (array)Hash::extract( $data, 'Services.{n}.Service.libelle' );
+            $count = count( $services );
+            $data['service_emetteur'] = @$services[$count-1];
+            $data['service_avec_hierarchie'] = implode( '/', $services );
+            unset( $data['Services'] );
 
-            // Traitement des votes et des présences
+            // TODO: iteration Convoques
+            // $type_id = $this->Seance->getType( $projet['Seance']['id'] );
+            // $projet['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($type_id);
+            /*$data['Convoques'] = array();
+            if( !empty( $data['Listespresences'] ) ) {
+                foreach( $data['Listespresences'] as $listepresence ) {
+                    $data['Convoques'][] = array(
+                        'Acteur' => array(
+                            'nom' => $listepresence['Acteur']['nom'],
+                            'prenom' => $listepresence['Acteur']['prenom'],
+                            'salutation' => $listepresence['Acteur']['salutation'],
+                            'titre' => $listepresence['Acteur']['titre'],
+                            'note' => $listepresence['Acteur']['note'],
+                        )
+                    );
+                }
+            }*/
+
+            // Traitement des votes et des présences ... FIXME: devrait être pour une séance donnée ?, pour AvisSeance
             $data = Hash::merge( $data, $this->Listepresence->gedoooNormalizeAll( $data['Listespresences'] ) );
             unset( $data['Listespresences'] );
 
@@ -2038,6 +1984,9 @@ class Deliberation extends AppModel {
                     }
                 }
             }
+            $data['nombre_seance'] = count((array)@$data['Seances']);
+
+            $data['AvisSeance'] = Hash::extract( $data['AvisSeance'], '{n}.Deliberationseance' );
 
 			return $data;
 		}
@@ -2071,14 +2020,47 @@ class Deliberation extends AppModel {
                 'note_redacteur' => 'Redacteur.note',
                 // Séance.Projet.Historique -> TODO: dans une sorte d'itération ?
                 'log' => 'Historique.commentaire',
+                // Service
+                'service_emetteur' => 'service_emetteur',
+                'service_avec_hierarchie' => 'service_avec_hierarchie',
+                // Champs supplémentaires
+                'acte_adopte' => 'Deliberation.acte_adopte',
+                'nombre_pour' => 'Deliberation.nombre_pour',
+                'nombre_abstention' => 'Deliberation.nombre_abstention',
+                'nombre_contre' => 'Deliberation.nombre_contre',
+                'nombre_sans_participation' => 'Deliberation.nombre_sans_participation',
+                'nombre_seance' => 'nombre_seance',
 			);
 
+            // Thèmes
             for( $i = 0 ; $i < 10 ; $i++ ) {
                 $key = "T".( $i + 1 )."_theme";
                 $correspondances[$key] = $key;
             }
 
-            $correspondances = Hash::merge( $correspondances, $this->Listepresence->gedoooPaths() );
+            $correspondances = Hash::merge(
+                $correspondances,
+                array(
+                    'nom_acteur_convoque_seance' => 'Acteur.nom',
+                    'prenom_acteur_convoque_seance' => 'Acteur.prenom',
+                    'salutation_acteur_convoque_seance' => 'Acteur.salutation',
+                    'titre_acteur_convoque_seance' => 'Acteur.titre',
+                    'note_acteur_convoque_seance' => 'Acteur.note',
+                    'commentaire' => 'commentaire',
+                    'commentaire_vote' => 'Deliberation.vote_commentaire',
+                    'critere_trie_theme' => 'Theme.order',
+                    'numero_acte' => 'Deliberation.num_delib',
+                )
+            );
+
+            $correspondances = Hash::merge(
+                $correspondances,
+                $this->Listepresence->gedoooPaths(),
+                $this->Rapporteur->gedoooPaths( 'rapporteur' ),
+                $this->Seance->Secretaire->gedoooPaths( 'secretaire' ),
+                $this->Seance->President->gedoooPaths( 'president' ),
+                $this->Seance->gedoooPaths()
+            );
 
 			return $correspondances;
 		}
@@ -2094,18 +2076,57 @@ class Deliberation extends AppModel {
             $types = array_merge(
 				$this->types(),
 				$this->Deliberationseance->types(),
-				$this->Rapporteur->types(),
 				$this->Theme->types(),
 				$this->Redacteur->types(),
 				$this->Historique->types()
 			);
 
+            // Thèmes
             for( $i = 0 ; $i < 10 ; $i++ ) {
                 $key = "T".( $i + 1 )."_theme";
-                $correspondances[$key] = 'text';
+                $types[$key] = 'text';
             }
+            $types['critere_trie_theme'] = 'text';
 
-            $types = Hash::merge( $types, $this->Listepresence->gedoooTypes() );
+            // Services
+            $types['service_emetteur'] = 'text';
+            $types['service_avec_hierarchie'] = 'text';
+
+            // Séance
+            $types['nombre_seance'] = 'text';
+
+            // Acteurs convoqués: au singulier pour une delib, au pluriel pour les séances
+            $types = Hash::merge(
+                $types,
+                array(
+                    'Acteur.nom' => 'text',
+                    'Acteur.prenom' => 'text',
+                    'Acteur.salutation' => 'text',
+                    'Acteur.titre' => 'text',
+                    'Acteur.note' => 'text',
+                    'commentaire' => 'text',
+                )
+            );
+
+            // Liste de présence
+            $types = Hash::merge(
+                $types,
+                $this->Listepresence->gedoooTypes(),
+				//$this->Rapporteur->types(),
+                $this->Rapporteur->gedoooPaths( 'rapporteur' ),
+                $this->Seance->Secretaire->gedoooTypes( 'secretaire' ),
+                $this->Seance->President->gedoooTypes( 'president' ),
+                $this->Seance->gedoooTypes(),
+                array(
+                    'Deliberation.acte_adopte' => 'text',
+                    'Deliberation.nombre_pour' => 'text',
+                    'Deliberation.nombre_abstention' => 'text',
+                    'Deliberation.nombre_contre' => 'text',
+                    'Deliberation.nombre_sans_participation' => 'text',
+                    'Deliberation.num_delib' => 'text',
+
+                )
+            );
 
             return $types;
 		}

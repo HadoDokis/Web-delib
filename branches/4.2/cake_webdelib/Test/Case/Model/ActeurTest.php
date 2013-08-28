@@ -77,7 +77,7 @@ class ActeurTest extends CakeTestCase {
                 'modified' => '2013-06-13 17:20:10'
             )
         );
-        $result1 = $this->Acteur->gedoooNormalize('mandate', false, 'President', $record1);
+        $result1 = $this->Acteur->gedoooNormalize('acteur_mandate', false, 'President', $record1);
         $expected1 = array(
             "nom_acteur_mandate" => 'PAILLAT',
             "prenom_acteur_mandate" => 'Jean',
@@ -96,7 +96,7 @@ class ActeurTest extends CakeTestCase {
         $this->assertEquals($result1, $expected1, var_export($result1, true));
 
         /**
-         * Deuxième test 
+         * Deuxième test
          */
         $record2 = array(
             'Secretaire' => array(
@@ -138,7 +138,7 @@ class ActeurTest extends CakeTestCase {
             "telmobile_acteur_mandataire" => '0612345678',
             "note_acteur_mandataire" => 'est l\'adjointe au maire',
         );
-        $result2 = $this->Acteur->gedoooNormalize('mandataire', 20, 'Secretaire', $record2);
+        $result2 = $this->Acteur->gedoooNormalize('acteur_mandataire', 20, 'Secretaire', $record2);
         $this->assertEquals($result2, $expected2, var_export($result2, true));
     }
 
@@ -353,7 +353,7 @@ class ActeurTest extends CakeTestCase {
         //$results1 = $this->Acteur->gedoooNormalizeAll('mandate', $records);
         debug($results1);
 //        $this->assertEquals($results1, $expected1, var_export($results1, true));
-        
+
         $results2 = $this->Acteur->gedoooNormalizeAll('mandate', $records);
         debug($results2);
 //        $this->assertEquals($results2, $expected2, var_export($results2, true));

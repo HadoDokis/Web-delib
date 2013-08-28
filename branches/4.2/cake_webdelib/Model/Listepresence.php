@@ -64,7 +64,7 @@ class Listepresence extends AppModel {
                         alias_querydata( $this->Acteur->Typeacteur->fields(), array( 'Typeacteur' => 'TypeacteurActeur' ) ),
                         alias_querydata( $this->Mandataire->Typeacteur->fields(), array( 'Typeacteur' => 'TypeacteurMandataire' ) ),
                         alias_querydata( $this->Suppleant->Typeacteur->fields(), array( 'Typeacteur' => 'TypeacteurSuppleant' ) ),
-                        // Votes // FIXME: votes de la délibération
+                        // Votes
 						alias_querydata( $this->Acteur->Vote->fields(), array( 'Vote' => 'VoteActeur' ) ),
 						alias_querydata( $this->Mandataire->Vote->fields(), array( 'Vote' => 'VoteMandataire' ) ),
 						alias_querydata( $this->Suppleant->Vote->fields(), array( 'Vote' => 'VoteSuppleant' ) )
@@ -81,7 +81,7 @@ class Listepresence extends AppModel {
                         alias_querydata( $this->Acteur->join( 'Typeacteur' ), array( 'Typeacteur' => 'TypeacteurActeur' ) ),
                         alias_querydata( $this->Mandataire->join( 'Typeacteur' ), array( 'Typeacteur' => 'TypeacteurMandataire' ) ),
                         alias_querydata( $this->Suppleant->join( 'Typeacteur' ), array( 'Typeacteur' => 'TypeacteurSuppleant' ) ),
-                        // Votes // FIXME: votes de la délibération
+                        // Votes
 						alias_querydata( $this->Acteur->join( 'Vote', $joinParamsVote ), array( 'Vote' => 'VoteActeur' ) ),
 						alias_querydata( $this->Mandataire->join( 'Vote', $joinParamsVote ), array( 'Vote' => 'VoteMandataire' ) ),
 						alias_querydata( $this->Suppleant->join( 'Vote', $joinParamsVote ), array( 'Vote' => 'VoteSuppleant' ) ),
@@ -173,6 +173,25 @@ class Listepresence extends AppModel {
 				$return[$iterationName] = $this->Acteur->gedoooNormalizeAll( $category, $votes[$category] );
 			}
 
+            // Champs de comptages
+            $bazs = array(
+                'absent' => 'nombre_abstention',
+                'contre' => 'nombre_contre',
+                'pour' => 'nombre_pour',
+                'sans_participation' => 'nombre_sans_participation',
+            );
+
+            $elus = Hash::extract( $records, '{n}.TypeacteurActeur[elu=true]' );
+            $return['nombre_acteur_seance'] = count($elus);
+            foreach( $this->gedoooIterations as $category => $suffix ) {
+                if( isset( $bazs[$suffix] ) ) {
+                    $nombre = ( isset( $return[$category] ) ? count( $return[$category] ) : 0 );
+//                    $return["nombre_{$suffix}"] = $nombre;
+                    $return[$bazs[$suffix]] = $nombre;
+                }
+            }
+            $return["nombre_votant"] = $return["nombre_pour"] + $return["nombre_contre"];
+
 			return $return;
 		}
 
@@ -183,15 +202,24 @@ class Listepresence extends AppModel {
          * @return array
          */
         public function gedoooPaths() {
-            $correspondances = array();
+            $correspondances = array(
+                'nombre_acteur_seance' => 'nombre_acteur_seance',
+                'nombre_abstention' => 'nombre_abstention',
+                'nombre_contre' => 'nombre_contre',
+                'nombre_pour' => 'nombre_pour',
+                'nombre_sans_participation' => 'nombre_sans_participation',
+                'nombre_votant' => 'nombre_votant',
+            );
 
             // Présence des acteurs, ... + votes
             $foos = $this->gedoooNormalizeAll( array() );
             foreach( $foos as $iterationName => $foo ) {
-                $bar = array_keys( $foo[0] );
-                $foo = array_keys( Hash::flatten( Hash::normalize( $bar ) ) );
-                $foo = array_combine( $bar, $foo );
-                $correspondances = array_merge( $correspondances, $foo );
+                if( is_array( $foo ) ) {
+                    $bar = array_keys( $foo[0] );
+                    $foo = array_keys( Hash::flatten( Hash::normalize( $bar ) ) );
+                    $foo = array_combine( $bar, $foo );
+                    $correspondances = array_merge( $correspondances, $foo );
+                }
             }
 
             return $correspondances;
@@ -206,14 +234,58 @@ class Listepresence extends AppModel {
         public function gedoooTypes() {
             $correspondances = array();
 
+            $types = array(
+                'nom' => 'text',
+                'prenom' => 'text',
+                'salutation' => 'text',
+                'titre' => 'text',
+                'date_naissance' => 'date',
+                'adresse1' => 'text',
+                'adresse2' => 'text',
+                'cp' => 'text',
+                'ville' => 'text',
+                'email' => 'text',
+                'telfixe' => 'text',
+                'telmobile' => 'text',
+                'note' => 'text',
+            );
+
             // Présence des acteurs, ... + votes
             $foos = $this->gedoooNormalizeAll( array() );
             foreach( $foos as $iterationName => $foo ) {
-                $bar = array_keys( $foo[0] );
-                $foo = array_keys( Hash::flatten( Hash::normalize( $bar ) ) );
-                $foo = array_combine( $foo, array_fill( 0, count( $foo ), 'text') );
-                $correspondances = array_merge( $correspondances, $foo );
+
+                if( is_array( $foo ) ) {
+                    $bar = array_keys( $foo[0] );
+                    $foo = array_keys( Hash::flatten( Hash::normalize( $bar ) ) );
+
+                    if( count( $foo ) == count( $types ) ) {
+                        $foo = array_combine( $foo, array_values( $types ) );
+                    }
+                    else if( count( $foo ) == count( $types ) + 1 ) { // + 1
+                        $foo = array_combine( $foo, array( 'nombre' => 'text' ) + array_values( $types ) );
+                    }
+                    else if( count( $foo ) == ( count( $types ) * 2 ) + 1 ) { // * 2 + 1
+                        $foo = array_combine( $foo, array_merge( array( 'nombre' => 'text' ), array_values( $types ), array_values( $types ) ) );
+                    }
+                    else {
+                        throw new InternalErrorException( sprintf( 'Le nombre de champs à traiter (%d) est différent du nombre de champs attendus (%d, %d ou %d)', count( $foo ), count( $types ), ( count( $types ) + 1 ), ( ( count( $types ) * 2 ) + 1 ) ) );
+                    }
+
+                    $correspondances = array_merge( $correspondances, $foo );
+                }
             }
+
+            $correspondances = Hash::merge(
+                $correspondances,
+                array(
+                    'nombre_acteur_seance' => 'text',
+                    'nombre_abstention' => 'text',
+                    'nombre_contre' => 'text',
+                    'nombre_pour' => 'text',
+                    'nombre_sans_participation' => 'text',
+                    'nombre_votant' => 'text',
+                )
+            );
 
             return $correspondances;
         }

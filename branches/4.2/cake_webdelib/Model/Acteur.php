@@ -217,13 +217,13 @@ class Acteur extends AppModel {
 				if( $category === 'mandate' ) {
 					$suffix = 'mandataire';
 				}
-				$foo1 = $this->gedoooNormalize( $suffix, $nombre, 'Acteur', $acteur );
+				$foo1 = $this->gedoooNormalize( "acteur_{$suffix}", $nombre, 'Acteur', $acteur );
 
 				$foo2 = array();
-				if( $category !== 'present' ) {
+				if( !in_array( $category, array( 'present', 'absent', 'pour', 'contre' ) ) ) {
 					$suffix = 'mandate';
-                                        // FIXME : l'indice ActeurMandate n'existe pas ! (remplacer par Suppleant?)
-					$foo2 = $this->gedoooNormalize( $suffix, false, 'ActeurMandate', $acteur );
+                    // FIXME : l'indice ActeurMandate n'existe pas ! (remplacer par Suppleant?)
+					$foo2 = $this->gedoooNormalize( "acteur_{$suffix}", false, 'ActeurMandate', $acteur );
 				}
 
 				$return[] = array_merge( $foo1, $foo2 );
@@ -239,29 +239,84 @@ class Acteur extends AppModel {
 		 * @return array
 		 */
 		public function gedoooNormalize( $suffix, $nombre, $alias, array $item ) {
+            // $suffix = "acteur_{$suffix}";
+            // TODO: utiliser $this->_gedoooFields( $nombre )
 			$return = array(
-				"nombre_acteur_{$suffix}" => $nombre, // Pas tout le temps ?
-				"nom_acteur_{$suffix}" => Hash::get( $item, "{$alias}.nom" ),
-				"prenom_acteur_{$suffix}" => Hash::get( $item, "{$alias}.prenom" ),
-				"salutation_acteur_{$suffix}" => Hash::get( $item, "{$alias}.salutation" ),
-				"titre_acteur_{$suffix}" => Hash::get( $item, "{$alias}.titre" ),
-				"date_naissance_acteur_{$suffix}" => Hash::get( $item, "{$alias}.date_naissance" ),
-				"adresse1_acteur_{$suffix}" => Hash::get( $item, "{$alias}.adresse1" ),
-				"adresse2_acteur_{$suffix}" => Hash::get( $item, "{$alias}.adresse2" ),
-				"cp_acteur_{$suffix}" => Hash::get( $item, "{$alias}.cp" ),
-				"ville_acteur_{$suffix}" => Hash::get( $item, "{$alias}.ville" ),
-				"email_acteur_{$suffix}" => Hash::get( $item, "{$alias}.email" ),
-				"telfixe_acteur_{$suffix}" => Hash::get( $item, "{$alias}.telfixe" ),
-				"telmobile_acteur_{$suffix}" => Hash::get( $item, "{$alias}.telmobile" ),
-				"note_acteur_{$suffix}" => Hash::get( $item, "{$alias}.note" ),
+				"nombre_{$suffix}" => $nombre, // Pas tout le temps ?
+				"nom_{$suffix}" => Hash::get( $item, "{$alias}.nom" ),
+				"prenom_{$suffix}" => Hash::get( $item, "{$alias}.prenom" ),
+				"salutation_{$suffix}" => Hash::get( $item, "{$alias}.salutation" ),
+				"titre_{$suffix}" => Hash::get( $item, "{$alias}.titre" ),
+				"date_naissance_{$suffix}" => Hash::get( $item, "{$alias}.date_naissance" ),
+				"adresse1_{$suffix}" => Hash::get( $item, "{$alias}.adresse1" ),
+				"adresse2_{$suffix}" => Hash::get( $item, "{$alias}.adresse2" ),
+				"cp_{$suffix}" => Hash::get( $item, "{$alias}.cp" ),
+				"ville_{$suffix}" => Hash::get( $item, "{$alias}.ville" ),
+				"email_{$suffix}" => Hash::get( $item, "{$alias}.email" ),
+				"telfixe_{$suffix}" => Hash::get( $item, "{$alias}.telfixe" ),
+				"telmobile_{$suffix}" => Hash::get( $item, "{$alias}.telmobile" ),
+				"note_{$suffix}" => Hash::get( $item, "{$alias}.note" ),
 			);
 
 			if( $nombre === false ) {
-				unset( $return["nombre_acteur_{$suffix}"] );
+				unset( $return["nombre_{$suffix}"] );
 			}
 
 			return $return;
 		}
+
+        public $gedoooFields = array(
+            'nom',
+            'prenom',
+            'salutation',
+            'titre',
+            'date_naissance',
+            'adresse1',
+            'adresse2',
+            'cp',
+            'ville',
+            'email',
+            'telfixe',
+            'telmobile',
+            'note'
+        );
+
+        protected function _gedoooFields( $nombre ) {
+            $fields = $this->gedoooFields;
+
+            if( $nombre ) {
+                array_unshift($fields, 'nombre');
+            }
+
+            return $fields;
+        }
+
+        // TODO: une méthode _gedoooSuffix( $suffix null / false / string )
+
+        public function gedoooPaths( $suffix, $nombre = false ) {
+            $return = array();
+
+            $fields = $this->_gedoooFields( $nombre );
+
+            foreach( $fields as $field ) {
+                $return["{$field}_{$suffix}"] = "{$this->alias}.{$field}";
+            }
+
+            return $return;
+        }
+
+        public function gedoooTypes( $suffix, $nombre = false ) {
+            $return = array();
+
+            $fields = $this->_gedoooFields( $nombre );
+            $types = $this->types();
+
+            foreach( $fields as $field ) {
+                $return["{$this->alias}.{$field}"] = ( isset( $types[$field] ) ? $types[$field] : 'text' );
+            }
+
+            return $return;
+        }
 }
 
 ?>

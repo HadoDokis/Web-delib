@@ -1,4 +1,5 @@
 <?php
+    App::uses( 'DateFrench', 'Utility' );
 class Seance extends AppModel {
 
 	var $name = 'Seance';
@@ -48,8 +49,8 @@ class Seance extends AppModel {
                                         //'conditions' => array('Deliberation.etat >='=>0),
                                         'order'      => 'Deliberationseance.position ASC'
                          ),
-            
-            
+
+
             );
 
 	//    var $hasAndBelongsToMany = array('Deliberation');
@@ -146,9 +147,9 @@ class Seance extends AppModel {
 		$natures = $this->TypeseancesTypeacte->getNaturesParTypeseance($seance['Seance']['type_id']);
 		return in_array($nature_id, $natures);
 	}
-        
+
         /**
-         * Récupère en base la liste des délibérations pour une séance ainsi que le theme et le rapporteur associé 
+         * Récupère en base la liste des délibérations pour une séance ainsi que le theme et le rapporteur associé
          * @todo Diviser le nombre de requêtes en utilisant contain + conditions ! (vérifier que valeur != null)
          * @param integer $seance_id
          * @return array deliberations liste des délibérations avec libelle du theme et nom, prenom du rapporteur
@@ -167,7 +168,7 @@ class Seance extends AppModel {
                         'order'=>'Deliberationseance.position ASC',
                     )
                 );
-                
+
 		for ($i = 0; $i < count($deliberations); $i++) {
 			if (isset($deliberations[$i]['Deliberation']['theme_id'])) {
 				$theme = $this->Deliberation->Theme->find('first',
@@ -252,9 +253,9 @@ class Seance extends AppModel {
                                 'order'      => array( 'Deliberationseance.position ASC' )));
 		foreach ($delibs as $delib)
 			$seances_enregistrees[] = $delib['Seance']['id'];
-                
+
 		$seances_a_retirer = array_diff($seances_enregistrees, $seances_selectionnees);
-                
+
 		foreach($seances_a_retirer as $key => $seance_id) {
                     //$position = 1;
                     $jointure = $this->Deliberationseance->find('first', array('conditions' => array( 'Seance.id'            => $seance_id,
@@ -279,7 +280,7 @@ class Seance extends AppModel {
                                                                     'callbacks' => false));
                     }*/
 		}
-                
+
                 if (is_array($seances_enregistrees) and  (!empty($seances_enregistrees)))  {
 		    $seances_a_ajouter = array_diff($seances_selectionnees, $seances_enregistrees);
                 }
@@ -294,16 +295,16 @@ class Seance extends AppModel {
 			$Deliberationseance['Deliberationseance']['seance_id'] = $seance_id;
 			$this->Deliberationseance->save($Deliberationseance['Deliberationseance']);
 		}
-                
-                
+
+
 
 		$multidelibs = $this->Deliberation->find('all', array('conditions' => array('Deliberation.parent_id' => $delib_id),
 				'recursive'  => -1,
 				'fields' => array('Deliberation.id')));
-                if (isset($multidelibs) && !empty($multidelibs)) 
+                if (isset($multidelibs) && !empty($multidelibs))
 		    foreach ($multidelibs as $multidelib)
 			$this->reOrdonne($multidelib['Deliberation']['id'], $seances_selectionnees);
-                
+
 	}
 
 	function getDate($seance_id) {
@@ -346,11 +347,11 @@ class Seance extends AppModel {
             $seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
                                                  'fields'     => array('Seance.id', 'Seance.type_id'),
                                                  'contain'    => array('Typeseance.action')));
-            return ($seance['Typeseance']['action'] == 0); 
+            return ($seance['Typeseance']['action'] == 0);
         }
 
     /**
-     * Contruit l'objet GDO_PartType passé en paramètre, ou en crée un nouveau si celui-ci est null et le rempli avec les valeurs des champs trouvés en base  
+     * Contruit l'objet GDO_PartType passé en paramètre, ou en crée un nouveau si celui-ci est null et le rempli avec les valeurs des champs trouvés en base
      * les dates et heure sont mises en français : @see DateComponent
      * Données Gedoo :
      *  - les attributs de la séance (passée en paramètre) :
@@ -376,15 +377,15 @@ class Seance extends AppModel {
      *  - un bloc concernant les infos sups @see Infosup:addField
      *  - un bloc projet concernant les délibérations de la séance (si $include_projets = true) :
      *      - pour chaque délibération @see Deliberation:makeBalisesProjet
-     * 
+     *
      * ATTENTION:
      *  - utilisation de $oDevPart puis de @$oDevPart (@$oDevPart->addElement($aviss);)
-     * 
+     *
      * @see
      *  - Acteur:makeBalise
      *  - Acteur:makeBalise
      *  - Infosup:addField
-     * 
+     *
      * @param integer $seance_id l'id de la seance
      * @param GDO_PartType $oDevPart l'objet GDO_PartType dans lequel ajouter les champs
      * - Si ce champ est null, crée un nouveau objet GDO_PartType et met le suffixe seance au pluriel, la variable $return à true (la méthode retournera l'objet GDO_PartType)
@@ -410,7 +411,7 @@ class Seance extends AppModel {
         }
 
         $date_lettres= (!empty($seance['Seance']['date'])) ? $this->Date->dateLettres(strtotime($seance['Seance']['date'])) : '';
-        
+
         //$oDevPart->addElement(new GDO_FieldType('date_seance_lettres'.$suffixe, ($date_lettres), 'text'));
         $oDevPart->addElement(new GDO_FieldType('date_seance_lettres', $date_lettres, 'text'));
         $oDevPart->addElement(new GDO_FieldType("heure" . $suffixe, (!empty($seance['Seance']['date']) ? $this->Date->Hour($seance['Seance']['date']) : ''), 'text'));
@@ -513,5 +514,73 @@ class Seance extends AppModel {
 			$tab_seances[] = $seance['Seance']['id'];
 		return($tab_seances);
 	}
+
+    // -------------------------------------------------------------------------
+
+        /**
+         *
+         * @todo: suffixe
+         *
+         * @param array $seance
+         * @return array
+         */
+		public function gedoooNormalize( array $seance ) {
+			$date_seance = Hash::get( $seance, 'Seance.date' );
+			$seance['Seance']['date_lettres'] = ( empty( $date_seance ) ? null : DateFrench::dateLettres( strtotime( $date_seance ) ) );
+			$seance['Seance']['heure'] = ( empty( $date_seance ) ? null : DateFrench::hour( $date_seance ) );
+			$seance['Seance']['date'] = ( empty( $date_seance ) ? null : DateFrench::frDate( $date_seance ) );
+			$seance['Seance']['hh'] = ( empty( $date_seance ) ? null : DateFrench::hour( $date_seance, 'hh' ) );
+			$seance['Seance']['mm'] = ( empty( $date_seance ) ? null : DateFrench::hour( $date_seance, 'mm' ) );
+
+			$date_convocation = Hash::get( $seance, 'Seance.date_convocation' );
+			$seance['Seance']['date_convocation'] = ( empty( $date_convocation ) ? null : DateFrench::frDate( $date_convocation ) );
+
+			return $seance;
+		}
+
+        /**
+         *
+         * @todo: suffixe
+         *
+         * @return array
+         */
+		public function gedoooPaths() {
+            $types = array(
+                'commentaire_seance' => 'Seance.commentaire',
+				'date_lettres_seance' => 'Seance.date_lettres',
+				'heure_seance' => 'Seance.heure',
+				'date_seance' => 'Seance.date',
+				'hh_seance' => 'Seance.hh',
+				'mm_seance' => 'Seance.mm',
+				'date_convocation_seance' => 'Seance.date_convocation',
+				'identifiant_seance' => 'Seance.id',
+                'type_seance' => 'Typeseance.libelle',
+            );
+
+            $types = Hash::merge( $types, $this->types() );
+
+			return $types;
+		}
+
+        /**
+         * @return array
+         */
+		public function gedoooTypes() {
+            $types = array(
+                'Seance.commentaire' => 'text',
+				'Seance.date_lettres' => 'text',
+				'Seance.heure' => 'text',
+				'Seance.date' => 'date',
+				'Seance.hh' => 'text',
+				'Seance.mm' => 'text',
+				'Seance.date_convocation' => 'date',
+                'Seance.id' => 'text',
+                'Typeseance.libelle' => 'text',
+            );
+
+            $types = Hash::merge( $this->types(), $types );
+
+			return $types;
+		}
 }
 ?>
