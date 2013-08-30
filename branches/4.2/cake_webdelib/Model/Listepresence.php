@@ -239,6 +239,7 @@ class Listepresence extends AppModel {
                 'prenom' => 'text',
                 'salutation' => 'text',
                 'titre' => 'text',
+                'position' => 'text',
                 'date_naissance' => 'date',
                 'adresse1' => 'text',
                 'adresse2' => 'text',

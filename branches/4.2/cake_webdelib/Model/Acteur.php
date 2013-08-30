@@ -201,6 +201,8 @@ class Acteur extends AppModel {
 
 		/**
 		 * Normalisation des enregistrements: ajout des valeurs calculées, ...
+         *
+         * @fixme ne fait pas la même chose que laméthode originale (acteur absent mandaté)
 		 *
 		 * @param array $records
 		 * @return array
@@ -214,6 +216,8 @@ class Acteur extends AppModel {
 			$return = array();
 			foreach( $acteurs as $acteur ) {
 				$suffix = $category;
+
+                $foo1 = array();
 				if( $category === 'mandate' ) {
 					$suffix = 'mandataire';
 				}
@@ -247,6 +251,7 @@ class Acteur extends AppModel {
 				"prenom_{$suffix}" => Hash::get( $item, "{$alias}.prenom" ),
 				"salutation_{$suffix}" => Hash::get( $item, "{$alias}.salutation" ),
 				"titre_{$suffix}" => Hash::get( $item, "{$alias}.titre" ),
+				"position_{$suffix}" => Hash::get( $item, "{$alias}.position" ),
 				"date_naissance_{$suffix}" => Hash::get( $item, "{$alias}.date_naissance" ),
 				"adresse1_{$suffix}" => Hash::get( $item, "{$alias}.adresse1" ),
 				"adresse2_{$suffix}" => Hash::get( $item, "{$alias}.adresse2" ),
@@ -270,6 +275,7 @@ class Acteur extends AppModel {
             'prenom',
             'salutation',
             'titre',
+            'position',
             'date_naissance',
             'adresse1',
             'adresse2',

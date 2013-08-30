@@ -1,4 +1,5 @@
 <?php
+App::uses('DateFrench', 'Utility');
 class Deliberation extends AppModel {
 
 	/**
@@ -1800,7 +1801,7 @@ class Deliberation extends AppModel {
                             // TODO: Obtention des acteurs convoqués, 5 reqûetes à transformer en une ?
                             $type_id = $this->Seance->getType( $seance['Seance']['id'] );
                             $seance['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId( $type_id );
-
+// TODO: AvisSeance
                             // Itération AvisSeance
                             $seance['AvisSeance'] = $this->Deliberationseance->find(
                                 'all',
@@ -1864,15 +1865,7 @@ class Deliberation extends AppModel {
                 );
 
                 // Annexes
-                $projet['Annexes'] = $this->Annex->find(
-                    'all',
-                    array(
-                        'recursive' => -1,
-                        'conditions' => array(
-                            'Annex.foreign_key' => $projet['Deliberation']['id']
-                        )
-                    )
-                );
+                $projet['Annexes'] = $this->Annex->getAnnexesFromDelibId2( $projet['Deliberation']['id'], 0, 1 );
 
                 // Fin du traitement
                 $projets[$indexProjet] = $projet;
@@ -1910,6 +1903,8 @@ class Deliberation extends AppModel {
                 $data['Deliberation']['nombre_contre'] = $data['Deliberation']['vote_nb_non'];
                 $data['Deliberation']['nombre_sans_participation'] = $data['Deliberation']['vote_nb_retrait'];
             }
+
+            $data['Deliberation']['date_envoi_signature'] = DateFrench::frDate( $data['Deliberation']['date_envoi_signature'] );
 
             if( !empty( $data['Commentaires'] ) ) {
                 $data = $this->Commentaire->gedoooNormalizeAll( $data );
@@ -2006,6 +2001,8 @@ class Deliberation extends AppModel {
                 'objet_delib' => 'Deliberation.objet_delib',
                 'libelle_delib' => 'Deliberation.objet_delib',
                 'etat_projet' => 'Deliberation.etat',
+                'date_envoi_signature' => 'Deliberation.date_envoi_signature',
+                'date_reception' => 'Deliberation.dateAR',
                 'position_projet' => 'Deliberationseance.position',
                 'commentaire' => 'Deliberationseance.commentaire',
                 'titre_projet' => 'Deliberation.titre',
@@ -2030,6 +2027,8 @@ class Deliberation extends AppModel {
                 'nombre_contre' => 'Deliberation.nombre_contre',
                 'nombre_sans_participation' => 'Deliberation.nombre_sans_participation',
                 'nombre_seance' => 'nombre_seance',
+                'libelle_multi_delib' => 'Multidelib.objet',
+                'id_multi_delib' => 'Multidelib.id',
 			);
 
             // Thèmes
@@ -2124,7 +2123,10 @@ class Deliberation extends AppModel {
                     'Deliberation.nombre_contre' => 'text',
                     'Deliberation.nombre_sans_participation' => 'text',
                     'Deliberation.num_delib' => 'text',
-
+                    'Deliberation.date_envoi_signature' => 'date',
+                    'Deliberation.dateAR' => 'text',
+                    'Multidelib.objet' => 'text',
+                    'Multidelib.id' => 'text',
                 )
             );
 

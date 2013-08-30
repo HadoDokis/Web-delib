@@ -532,6 +532,8 @@ class Seance extends AppModel {
 			$seance['Seance']['hh'] = ( empty( $date_seance ) ? null : DateFrench::hour( $date_seance, 'hh' ) );
 			$seance['Seance']['mm'] = ( empty( $date_seance ) ? null : DateFrench::hour( $date_seance, 'mm' ) );
 
+            $seance['Seance']['date_seance_lettres'] = ( empty( $date_seance ) ? null : DateFrench::dateLettres( $date_seance ) );
+
 			$date_convocation = Hash::get( $seance, 'Seance.date_convocation' );
 			$seance['Seance']['date_convocation'] = ( empty( $date_convocation ) ? null : DateFrench::frDate( $date_convocation ) );
 
@@ -555,6 +557,7 @@ class Seance extends AppModel {
 				'date_convocation_seance' => 'Seance.date_convocation',
 				'identifiant_seance' => 'Seance.id',
                 'type_seance' => 'Typeseance.libelle',
+                'date_seance_lettres' => 'Seance.date_seance_lettres',
             );
 
             $types = Hash::merge( $types, $this->types() );
@@ -576,6 +579,7 @@ class Seance extends AppModel {
 				'Seance.date_convocation' => 'date',
                 'Seance.id' => 'text',
                 'Typeseance.libelle' => 'text',
+                'Seance.date_seance_lettres' => 'text',
             );
 
             $types = Hash::merge( $this->types(), $types );
