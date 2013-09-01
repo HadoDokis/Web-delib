@@ -1,4 +1,9 @@
 <?php
+    // Temps infini alloué à l'exécution du script
+    @set_time_limit( 0 );
+	// Mémoire maximum allouée à l'exécution du script
+	@ini_set( 'memory_limit', '2G' );
+
 class ModelsController extends AppController {
 
 	var $name = 'Models';
