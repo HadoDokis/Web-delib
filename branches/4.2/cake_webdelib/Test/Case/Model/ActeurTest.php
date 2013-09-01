@@ -79,19 +79,20 @@ class ActeurTest extends CakeTestCase {
         );
         $result1 = $this->Acteur->gedoooNormalize('acteur_mandate', false, 'President', $record1);
         $expected1 = array(
-            "nom_acteur_mandate" => 'PAILLAT',
-            "prenom_acteur_mandate" => 'Jean',
-            "salutation_acteur_mandate" => 'M.',
-            "titre_acteur_mandate" => 'Maire',
-            "date_naissance_acteur_mandate" => '1989-11-10',
-            "adresse1_acteur_mandate" => '2 rue de la Poste',
-            "adresse2_acteur_mandate" => 'chez Bernard',
-            "cp_acteur_mandate" => '33600',
-            "ville_acteur_mandate" => 'PESSAC',
-            "email_acteur_mandate" => 'florian.ajir@adullact-projet.coop',
-            "telfixe_acteur_mandate" => '0123456789',
-            "telmobile_acteur_mandate" => '0612345678',
-            "note_acteur_mandate" => 'cet homme est un élu',
+            'nom_acteur_mandate' => 'PAILLAT',
+            'prenom_acteur_mandate' => 'Jean',
+            'salutation_acteur_mandate' => 'M.',
+            'titre_acteur_mandate' => 'Maire',
+            'position_acteur_mandate' => 1,
+            'date_naissance_acteur_mandate' => '1989-11-10',
+            'adresse1_acteur_mandate' => '2 rue de la Poste',
+            'adresse2_acteur_mandate' => 'chez Bernard',
+            'cp_acteur_mandate' => '33600',
+            'ville_acteur_mandate' => 'PESSAC',
+            'email_acteur_mandate' => 'florian.ajir@adullact-projet.coop',
+            'telfixe_acteur_mandate' => '0123456789',
+            'telmobile_acteur_mandate' => '0612345678',
+            'note_acteur_mandate' => 'cet homme est un élu',
         );
         $this->assertEquals($result1, $expected1, var_export($result1, true));
 
@@ -128,6 +129,7 @@ class ActeurTest extends CakeTestCase {
             "prenom_acteur_mandataire" => 'Amandine',
             "salutation_acteur_mandataire" => 'Mme',
             "titre_acteur_mandataire" => 'Adjointe',
+            'position_acteur_mandataire' => 6,
             "date_naissance_acteur_mandataire" => '1979-11-15',
             "adresse1_acteur_mandataire" => '5 rue de la piscine',
             "adresse2_acteur_mandataire" => 'test',

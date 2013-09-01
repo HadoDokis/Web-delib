@@ -1979,7 +1979,7 @@ class Deliberation extends AppModel {
                     }
                 }
             }
-            $data['nombre_seance'] = count((array)@$data['Seances']);
+            $data['nombre_seance'] = count((array)@$data['Seances']); // FIXE: suffixe ?
 
             $data['AvisSeance'] = Hash::extract( $data['AvisSeance'], '{n}.Deliberationseance' );
 
