@@ -55,15 +55,34 @@ class S2lowComponent extends Component {
             print curl_error($ch);
 
         curl_close($ch);
+        
+        //Passage d'un xml ISO-8859-1 vers utf8
+        {
+            $xml= simplexml_load_string(utf8_encode($reponse));
+            if($xml===false && $sucess)
+                $sucess=false;
+            else{
+                $dom_xml = dom_import_simplexml($xml);
+                if($xml===false && $sucess)
+                    $sucess=false;
+                else{
+                    $dom = new DOMDocument('1.0', 'utf-8');
+                    $dom_xml = $dom->importNode($dom_xml, true);
+                    $dom_xml = $dom->appendChild($dom_xml);
+                    }
+            }
+        }
+        
+        if($sucess){
+            $file = new File(Configure::read('FILE_CLASS'), true);
+            if($file->writable())
+                $file->write($dom->saveXML());
+            else
+                $sucess=false;
 
-        $file = new File(Configure::read('FILE_CLASS'), true);
-        if($file->writable())
-            $file->write(utf8_encode($reponse));
-        else
-            $sucess=false;
-        $file->close();
+            $file->close();
+        }
         //echo "Impossible d'ecrire dans le fichier ($filename)";
-
         return $sucess;
     }
 

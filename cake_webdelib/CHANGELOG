@@ -180,13 +180,13 @@
     *) Ticket 2356 : Correction prise en compte du type d'actes pour la recherche multi-critères
     *) Ticket 2357 : Correction problème d'affichage des boutons "favorable" et "défavorable" sur un avis
 
-4.1.1
+4.1.01
 ======
     *) Multi-modèles et traitement par lot pour la synthèse
     *) Gestion des configurations des connecteurs dans l'administration
     *) Modification d'une info supplémentaire sous condition de profils/droits
 
-4.1.2
+4.1.02
 ======
     *) Prise en compte de la nouvelle version de Gedooo r390
     *) Prise en compte de la nouvelle version de Cloudooo 1.2.4r573
@@ -218,3 +218,8 @@
     *) Correction sur une séance de type non délibérante, prise en compte des avis et commentaires
     *) Correction sur l'affichage de la classification
     *) Correction sur la saisie des débats généraux
+
+4.1.03
+======
+    *) Correction à l'import des annexes pdf avec la mise en place des images en paragraphe dans l'odt
+    *) Correction sur l'affichage de la classification
