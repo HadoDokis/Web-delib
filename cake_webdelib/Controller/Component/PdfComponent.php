@@ -154,7 +154,7 @@
             $XMLStyleI->setAttribute('style:family', 'graphic');
             $XMLStyleI->setAttribute('style:parent-style-name', 'Graphics');
             $XMLStyleIChild = $doc->createElement('style:graphic-properties');
-            $XMLStyleIChild->setAttribute('style:run-through', 'background');
+            $XMLStyleIChild->setAttribute('style:run-through', 'foreground');
             $XMLStyleIChild->setAttribute('style:wrap', 'run-through');
             $XMLStyleIChild->setAttribute('style:number-wrapped-paragraphs', 'no-limit');
             $XMLStyleIChild->setAttribute('style:vertical-pos', 'top');
@@ -173,6 +173,7 @@
             $XMLStyleIChild->setAttribute('draw:image-opacity', '100%');
             $XMLStyleIChild->setAttribute('draw:color-mode', 'standard');
             $XMLStyleIChild->setAttribute('style:flow-with-text', 'false');
+            $XMLStyleIChild->setAttribute('style:number-wrapped-paragraphs', '1');
 
             $XMLStyleI->appendChild($XMLStyleIChild);
             $XMLAutomaticStyles->appendChild($XMLStyleI);
