@@ -506,7 +506,7 @@ class Deliberation extends AppModel {
 
 	}
 
-	function makeBalisesProjet ($delib, &$oMainPart, $exceptSeance=false, $seance_id=null)  {
+	function  makeBalisesProjet ($delib, &$oMainPart, $exceptSeance=false, $seance_id=null)  {
 
 		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/GedoooComponent.php');
 		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
@@ -514,7 +514,6 @@ class Deliberation extends AppModel {
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
 		$isDelib = ($delib['Deliberation']['etat'] >= 3);
 		$u = new GDO_Utility();
-
 		$this->Conversion = new ConversionComponent;
 		$this->Date = new DateComponent;
 		$this->Gedooo = new GedoooComponent;
@@ -528,16 +527,18 @@ class Deliberation extends AppModel {
                         $oMainPart->addElement(new GDO_FieldType('identifiant_projet', $delib['Deliberation']['id'],       'text'));
                         if (count($delibseances) == 1) {
 				$this->Seance->makeBalise($delibseances[0], $oMainPart);
+                                // recupération de la position de la séance délibérante comme position principale
 				$position = $this->getPosition($delib['Deliberation']['id'], $delibseances[0]);
-				$oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
 				$seances = new GDO_IterationType("Seances");
 				$seances->addPart($this->Seance->makeBalise($delibseances[0]));
 				$oMainPart->addElement($seances);
 			}
 			elseif(count($delibseances) >1) {
 				$seance_deliberante = $this->Seance->getSeanceDeliberante($delibseances);
-
-				$this->Seance->makeBalise($seance_deliberante, $oMainPart);
+                                // recupération de la position de la séance délibérante comme position principale
+                                $position = $this->getPosition($delib['Deliberation']['id'], $seance_deliberante);
+                                
+                                $this->Seance->makeBalise($seance_deliberante, $oMainPart);
 
 				$seances = new GDO_IterationType("Seances");
 				foreach($delibseances as $key => $delibseances_seance_id) {
@@ -545,8 +546,6 @@ class Deliberation extends AppModel {
 				}
 				$oMainPart->addElement($seances);
 			}
-                        
-                        
 		}
                /* $this->log('$seance_id->'.$seance_id);
 		if ($seance_id != null) {
@@ -554,7 +553,12 @@ class Deliberation extends AppModel {
                         $this->log($delib['Deliberation']['id'].', '.$seance_id.'=>'.$position);
 			$oMainPart->addElement(new GDO_FieldType('position_projet', $delib['Deliberationseance']['position'], 'text'));
 		}*/
-                $oMainPart->addElement(new GDO_FieldType('position_projet', (isset($delib['Deliberationseance']) && isset($delib['Deliberationseance']['position'])?$delib['Deliberationseance']['position']:''), 'text'));
+                //Pour les multi-projets
+                if(isset($delib['Deliberationseance']) && isset($delib['Deliberationseance']['position']))
+                        $position=$delib['Deliberationseance']['position'];
+                
+                if(isset($position))
+                $oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
 		$oMainPart->addElement(new GDO_FieldType('titre_projet',   ($delib['Deliberation']['titre']),    'lines'));
 		$oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet']),     'lines'));
 		$oMainPart->addElement(new GDO_FieldType('libelle_projet', ($delib['Deliberation']['objet']),      'lines'));
