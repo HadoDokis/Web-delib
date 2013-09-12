@@ -223,3 +223,4 @@
 ======
     *) Correction à l'import des annexes pdf avec la mise en place des images en paragraphe dans l'odt
     *) Correction sur l'affichage de la classification
+    *) Prise en compte de la variable position_projet à la génération d'un projet
