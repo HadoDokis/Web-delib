@@ -295,5 +295,57 @@ class Infosup extends AppModel
             elseif  (empty($champs['text'] ))
                  return NULL;
         }
+        
+    /** Retour les informations supplémentaire sous forme de tableau suivant leur type
+     * 
+     * @param type array $infosups
+     * @return array
+     */
+        function export($id, $model='Deliberation') {
+		
+            $return = array();
+		
+            $infosups = $this->find( 'all' , array(
+                                                        'fields'    => array('Infosup.id','Infosupdef.type','Infosupdef.code',
+                                                                            'Infosup.text','Infosup.date','Infosup.content' ,
+                                                           'Infosup.file_name' ,'Infosup.file_type','Infosup.file_size' ,
+                                                                            ),
+                                                        'conditions' => array( 'Infosup.foreign_key' =>$id,
+                                                                               'Infosup.model' =>$model/*,
+                                                                                'Infosupdef.type <>'=>'odtFile'*/), 
+                                                        'recursive'  => 0));
+
+            //debug($infosups);
+
+            foreach($infosups as $infosup) {
+                if ($infosup['Infosupdef']['type'] == 'text') {
+                        $return[$infosup['Infosupdef']['code']] = array('type'=>'string',
+                                                                        'content'=>$infosup['Infosup']['text']);
+                }elseif($infosup['Infosupdef']['type'] == 'richText') {
+                        $return[$infosupdef['Infosupdef']['code']] = $infosup['content'];
+                }elseif($infosup['Infosupdef']['type'] == 'date') {
+                    include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
+                         $this->Date = new DateComponent;
+                        $return[$infosup['Infosupdef']['code']] = array('type'=>'string', 
+                                                                        'content'=>$this->Date->frDate($infosup['Infosup']['date']));
+                }elseif($infosup['Infosupdef']['type'] == 'file' || $infosup['Infosupdef']['type'] == 'odtFile' ) {
+                    $return[$infosup['Infosupdef']['code']] = array(    'type'=>'file', 
+                                                                        'file_name'=> $infosup['Infosup']['file_name'],
+                                                                        'file_type'=> $infosup['Infosup']['file_type'], 
+                                                                        'content'=> $infosup['Infosup']['content']);
+                }elseif($infosup['Infosupdef']['type'] == 'boolean') {
+                        $return[$infosup['Infosupdef']['code']] = array('type'=>'string',
+                                                                        'content'=>  $infosup['Infosup']['text']);
+                }elseif($infosup['Infosupdef']['type'] == 'list') {
+                        $ele = $this->Infosupdef->Infosuplistedef->find('first', array('conditions' => array('id' =>$infosup['text']), 
+                                                                                        'fields'    => array('nom'), 
+                                                                                        'recursive' => -1));
+                        $return[$infosup['Infosupdef']['code']] = array('type'=>'string',
+                                                                        'content'=>$ele['Infosuplistedef']['nom']);
+                }
+            }
+
+            return $return;
+	}
 }
 ?>
