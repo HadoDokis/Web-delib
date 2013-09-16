@@ -4,7 +4,7 @@ class PostseancesController extends AppController {
 	var $name = 'Postseances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2' );
 	var $components = array('Date', 'Gedooo', 'Cmis', 'Progress', 'Conversion');
-	var $uses = array('Deliberation', 'Seance', 'User',  'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance');
+	var $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance');
 
 	var $demandeDroit = array('index');
 
@@ -182,20 +182,20 @@ class PostseancesController extends AppController {
 
 
         function sendToGed($seance_id) {
-            
+            Configure::write('debug', 1);
+            error_reporting(0);
             //*****************************************
             // Préparation des répertoires pour la création des fichiers
             //*****************************************
-            $dyn_path = "/files/generee/fd/$seance_id/null/";
-            $path = WEBROOT_PATH.$dyn_path;
-                
+            $path = WEBROOT_PATH.DS.'files'.DS.'generee'.DS.'fd'.DS.$seance_id.DS.'null'.DS;
                 
             $this->Progress->start(200, 100,200,'#000000','#FFCC00','#006699');
+            $this->log( 'testSenToGed','debug');
             try {
             $cmis = new CmisComponent();
             $cmis->CmisComponent_Service();
             // Création du répertoire de séance
-            $result = $cmis->client->getFolderTree($cmis->folder->id, 1); 
+            $result = $cmis->client->getFolderTree($cmis->folder->id, 1);
 
 
             $this->Seance->Behaviors->attach('Containable');
@@ -210,7 +210,7 @@ class PostseancesController extends AppController {
             $libelle_seance = $seance['Typeseance']['libelle']." ".$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
            
             $this->Progress->at(0, 'Vidage de la séance dans la GED : '.$libelle_seance);
-            $odre_deletes=array($libelle_seance.'/Rapport', $libelle_seance.'/Annexe', $libelle_seance);
+            $odre_deletes=array(/*$libelle_seance.'/Rapport', $libelle_seance.'/Annexe', */$libelle_seance);
             foreach($odre_deletes as $odre_delete)
             {
             // Règle de gestion on écrase les documents existants
@@ -236,7 +236,7 @@ class PostseancesController extends AppController {
             }
             
             $zip = new ZipArchive;
-            unlink($path.'documents.zip');
+            @unlink($path.'documents.zip');
 	    $zip->open($path.'documents.zip', ZipArchive::CREATE);
             
             
@@ -247,44 +247,45 @@ class PostseancesController extends AppController {
             //$my_seance_folder_rapport = $cmis->client->createFolder($my_seance_folder->id, 'Rapport');
             //$my_seance_folder_annexe = $cmis->client->createFolder($my_seance_folder->id, 'Annexe');
             
-            
             $delibs_id = $this->Seance->getDeliberationsId($seance_id);
             $output = array();
-
             
-                
+            $this->log( 'Génératin du xml','debug');
             $dom = new DOMDocument('1.0', 'utf-8');
             $dom->formatOutput = true;
-            $dom_seance = $this->_createElement($dom, 'seance', null, array('id'=>$seance_id."-".$seance['Seance']['date'],
+            
+            //Fix idDepot correspond a quoi ?
+            $dom_depot = $this->_createElement($dom, 'depot', null, array('idDepot'=>$seance['Seance']['numero_depot']+1,
                                                                       'xmlns:webdelibdossier' => 'http://www.adullact.org/webdelib/infodossier/1.0',
                                                                       'xmlns:xm'  => 'http://www.w3.org/2005/05/xmlmine'));
+           
+            $dom_seance=$this->_createElement($dom, 'seance', null, array('idSeance'=>$seance_id));
             $dom_seance->appendChild($this->_createElement($dom, 'typeSeance', $type_seance));
             $dom_seance->appendChild($this->_createElement($dom, 'dateSeance', $date_seance));
             $dom_seance->appendChild($this->_createElement($dom, 'dateConvocation', $date_convocation));
-
+            
+            {
             $this->Progress->at(20, 'G&eacute;n&eacute;ration du PV Sommaire : '.$seance['Typeseance']['libelle']);
             $dom_seance->appendChild($this->_createElement($dom, 'convocation', 'convocation.pdf'));
             $err = $this->requestAction('/models/generer/null/'.$seance_id.'/'.$seance['Typeseance']['modelconvocation_id'].'/0/0/retour/0/true');
-            $projet_filename =  WEBROOT_PATH."/files/generee/fd/$seance_id/null/Document.pdf"; 
-            
+            $projet_filename =  WEBROOT_PATH.DS.'files'.DS.'generee'.DS.'fd'.DS.$seance_id.DS.'null'.DS.'Document.pdf';
+            $zip->addFromString('convocation.pdf', file_get_contents($projet_filename));
             /*$cmis->client->createDocument($my_seance_folder->id,
                                                       'convocation.pdf',//$projet_filename
                                                       array (),
                                                       file_get_contents($projet_filename),
                                                       "application/pdf");*/
             
-	        $zip->addFromString('convocation.pdf', file_get_contents($projet_filename));
-            
             $this->Progress->at(40, 'G&eacute;n&eacute;ration de l\'ordre du jour : '.$seance['Typeseance']['libelle']);
             $dom_seance->appendChild($this->_createElement($dom, 'ordre_du_jour', 'ordre_du_jour.pdf'));  
             $err = $this->requestAction('/models/generer/null/'.$seance_id.'/'.$seance['Typeseance']['modelordredujour_id'].'/0/0/retour/0/true');
-            $projet_filename =  WEBROOT_PATH."/files/generee/fd/$seance_id/null/Document.pdf";
+            $projet_filename =  WEBROOT_PATH.DS.'files'.DS.'generee'.DS.'fd'.DS.$seance_id.DS.'null'.DS.'Document.pdf';
+            $zip->addFromString('ordre_du_jour.pdf', file_get_contents($projet_filename));
            /* $cmis->client->createDocument($my_seance_folder->id,
                                                       'ordre_du_jour.pdf',//$projet_filename
                                                       array (),
                                                       file_get_contents($projet_filename),
                                                       "application/pdf");*/
-	        $zip->addFromString('ordre_du_jour.pdf', file_get_contents($projet_filename));
                 
             $dom_seance->appendChild($this->_createElement($dom, 'pv_complet', 'pv_complet.pdf'));
             if(!empty($seance['Seance']['pv_complet'])){
@@ -304,9 +305,16 @@ class PostseancesController extends AppController {
                                                       "application/pdf");*/
 	        $zip->addFromString('pv_sommaire.pdf', $seance['Seance']['pv_sommaire']);
             }
+            }
+            
+            $this->_createElementInfosups($zip, $dom,$dom_seance,$seance_id, 'Seance');
+           
+            $dom_depot->appendChild($dom_seance);
+            
             $this->Progress->at(60, 'Ajout des d&eacute;lib&eacute;rations dans la GED : '.$seance['Typeseance']['libelle']);
             foreach ($delibs_id as $delib_id) {
-                $doc = $this->_createElement($dom, 'dossierActe', null,  array('id'=>$delib_id, 'seance' => $seance_id));
+                $this->log( '$delib_id=>'.$delib_id,'debug');
+                $doc = $this->_createElement($dom, 'dossierActe', null,  array('idActe'=>$delib_id, 'refSeance' => $seance_id));
 
 		$this->Deliberation->Behaviors->attach('Containable');
                 $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
@@ -325,10 +333,8 @@ class PostseancesController extends AppController {
                 $doc->appendChild($this->_createElement($dom, 'redacteurACTE', $delib['Redacteur']['prenom'].' '.$delib['Redacteur']['nom']));
                 $doc->appendChild($this->_createElement($dom, 'rapporteurACTE', $delib['Rapporteur']['prenom'].' '.$delib['Rapporteur']['nom']));
                 
-                //TODO
-                $doc->appendChild($this->_createElement($dom, 'cantonACTE', 'Basse ville'));
-                $doc->appendChild($this->_createElement($dom, 'communeACTE', 'Valence'));
-
+                $this->_createElementInfosups($zip, $dom, $doc, $delib_id, 'Deliberation',  $delib_id.'-'.$delib['Deliberation']['num_delib']);
+                
                 $seances_id = $this->Deliberation->getSeancesid($delib_id);
                 $liste_commissions = array();
                 $libelle = '';
@@ -369,15 +375,19 @@ class PostseancesController extends AppController {
                                                       array (),
                                                       $delib['Deliberation']['delib_pdf'],
                                                       "application/pdf");*/
-	        $zip->addFromString('Rapports/'.$delib_filename, $delib['Deliberation']['delib_pdf']);
+	        $zip->addFromString('Rapports'.DS.$delib_filename, $delib['Deliberation']['delib_pdf']);
 
+                
                 $annexes_id =  $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, 1);
+                $this->log( 'Annexes :'.print_r(array_keys($annexes_id),true),'debug');
+                unset($annexes_id);
                 if (isset($annexes_id) && !empty($annexes_id)) {
                     foreach ($annexes_id as $annex_id) {
                         $annex_id = $annex_id['Annex']['id'];
                         $annex = $this->Deliberation->Annex->find('first', array('conditions' => array('Annex.id' => $annex_id),
                                                                    'fields'      => array('Annex.titre', 'Annex.filename', 'Annex.filetype', 'Annex.data_pdf','Annex.data'),
                                                                    'recursive' => -1));
+                        $this->log( $annex['Annex']['filetype'],'debug');
                         switch ( $annex['Annex']['filetype'])
                         {
                             case 'application/pdf':
@@ -385,7 +395,6 @@ class PostseancesController extends AppController {
                                 $annexe_filetype='application/pdf';
                                 $annexe_filename=$annex['Annex']['filename'];
                                 break;
-                            case 'application/vnd.oasis.opendocument.spreadsheet':
                             case 'application/vnd.oasis.opendocument.text':    
                                  $annexe_content=$this->Conversion->convertirFlux($annex['Annex']['data'], 'pdf');
                                  $annexe_filetype='application/pdf';
@@ -411,22 +420,22 @@ class PostseancesController extends AppController {
                                                       $annexe_content     ,
                                                       $annexe_filetype);*/
                         
-                            $zip->addFromString('Annexes/'.$annexe_filename, $annexe_content);
+                        $zip->addFromString('Annexes'.DS.$annexe_filename, $annexe_content);
 
-                        $annexe = $this->Deliberation->Annex->getContent($annex_id);
+                        //$annexe = $this->Deliberation->Annex->getContent($annex_id);
                     }
                 }
+                $this->log( 'Fin Annexes','debug');
 
-
-                $dom_seance->appendChild($doc); 
+                $dom_depot->appendChild($doc); 
                  
             }
-            $dom->appendChild($dom_seance);
+            $dom->appendChild($dom_depot);
             $xmlContent =  $dom->saveXML();
-            
+
             $this->Progress->at(99, 'Envoi du XML');
 
-            $this->log( $xmlContent);
+            
             $objet = $cmis->client->createDocument($my_seance_folder->id,
                                                       "XML_DESC_$seance_id.xml",
                                                       array (),
@@ -441,7 +450,8 @@ class PostseancesController extends AppController {
                                                       "application/zip");
             
             
-            
+            $this->Seance->id = $seance_id;
+            $this->Seance->saveField('numero_depot', $seance['Seance']['numero_depot']+1);
             $this->Session->setFlash('Le dossier \"'.$libelle_seance.'\" a &eacute;t&eacute; ajout&eacute;', 'growl');
             
             } catch (CmisRuntimeException $e) {
@@ -452,9 +462,8 @@ class PostseancesController extends AppController {
                   print($e);
 		}
              
-            $this->Progress->end('/postseances/index');
-            exit;
-           // $this->redirect('/postseances/index');
+           $this->Progress->end('/postseances/index');
+           $this->redirect('/postseances/index');
 
         }
 
@@ -473,6 +482,32 @@ function _createElement($domObj, $tag_name, $value = NULL, $attributes = NULL)
     }
 
     return $element;
+}
+
+function _createElementInfosups(&$zip, &$dom, &$domObj, $id, $model, $serial=NULL)
+{
+    $aInfosup=$this->Infosup->export($id, $model);
+    if (isset($aInfosup) && !empty($aInfosup)) {
+        foreach($aInfosup as  $code=>$value){
+            if($value['type']=='string')
+            $domObj->appendChild($this->_createElement($dom, $code,  $value['content'], array('type' => 'Infosup')));
+            if($value['type']=='file'){
+                $document = $this->_createElement($dom, 'document', null, array('nom'=>$value['file_name']));
+                $document->appendChild($this->_createElement($dom, 'titre', $value['file_name']));
+                $document->appendChild($this->_createElement($dom, 'description', ''));
+                $document->appendChild($this->_createElement($dom, 'mimetype', $value['file_type']));
+                $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
+                ${$code}=$this->_createElement($dom, $code, null, array('type' => 'Infosup'));
+                ${$code}->appendChild($document);
+                $domObj->appendChild(${$code});
+                
+                if($model=='Seance')
+                $zip->addFromString('Infosup'.$model.DS.$value['file_name'], $value['content']);
+                else
+                    $zip->addFromString('Infosup'.$model.DS.$serial.DS.$value['file_name'], $value['content']);
+            }
+        }
+     }
 }
 
 
