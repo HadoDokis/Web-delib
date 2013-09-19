@@ -1447,7 +1447,7 @@ class DeliberationsController extends AppController {
                     'Deliberation.num_pref', 'Deliberation.etat',
                     'Deliberation.titre', 'Deliberation.tdt_id'),
                 'contain' => array('TdtMessage', 'Seance'),
-                'order' => array('Deliberation.id' => 'DESC'),
+                'order' => array('Deliberation.num_delib' => 'ASC'),
                 'conditions' => $conditions,
                 'limit' => 20));
         
