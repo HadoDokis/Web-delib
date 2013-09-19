@@ -1607,7 +1607,7 @@ class DeliberationsController extends AppController {
 		$options['conditions']['Deliberationseance.seance_id'] = $seance_id;
         }  
         else {
-            $options['order']=array('Seance.date ASC');
+            $options['order']=array('Deliberation.num_delib ASC');
         }
         $deliberations = $this->Deliberationseance->find('all', $options);
         
