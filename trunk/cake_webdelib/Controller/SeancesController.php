@@ -1258,14 +1258,14 @@ class SeancesController extends AppController {
             if (empty($this->data) ) {
                 $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true);
                 foreach ($acteurs as &$acteur) {
-                    $dates = $this->Acteurseance->find('first', array('conditions'=> array('Acteurseance.seance_id' => $seance_id,
-                                                                                            'Acteurseance.model' => 'ordredujour',
-                                                                                          'Acteurseance.acteur_id' => $acteur['Acteur']['id']),
-                                                                     'recursive' => -1,
-                                                                     'fields'    => array('Acteurseance.date_envoi', 'Acteurseance.date_reception')));
-                    $acteur['Acteur']['date_envoi'] = $dates['Acteurseance']['date_envoi'];
-                    $acteur['Acteur']['date_reception'] = $dates['Acteurseance']['date_reception'];
-
+                     $dates = $this->Acteurseance->find('first', array( 'recursive' => -1,
+                                                                        'conditions'=> array('seance_id' => $seance_id,
+                                                                                             'model' => 'ordredujour',
+                                                                                             'acteur_id' => $acteur['Acteur']['id']),
+                                                                        'fields'    => array('date_envoi', 'date_reception')));
+                    
+                    $acteur['Acteur']['date_envoi'] = !empty($dates) ? $dates['Acteurseance']['date_envoi'] : null;
+                    $acteur['Acteur']['date_reception'] = !empty($dates) ? $dates['Acteurseance']['date_reception'] : null;
                 }
                 $model   = $this->Model->find('first', array('conditions' => array('Model.id' => $model_id),
                                                              'fields'     => array('modele'),
