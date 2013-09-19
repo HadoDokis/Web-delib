@@ -17,6 +17,10 @@ class ParapheurShell extends Shell {
         App::uses('AppShell', 'Console/Command');
         App::uses('ComponentCollection', 'Controller');
         App::uses('IparapheurComponent', 'Controller/Component');
+        
+        //Si service désactivé ==> quitter
+        if (!Configure::read('USE_PARAPH')) exit("Service i-Parapheur désactivé");
+        
         $collection = new ComponentCollection();
         $this->Parafwebservice = new IparapheurComponent($collection);
         // Controle de l'avancement des délibérations dans le parapheur
