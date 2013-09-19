@@ -8,6 +8,10 @@ class ActeShell extends AppShell {
         App::uses('AppShell', 'Console/Command');
         App::uses('ComponentCollection', 'Controller');
         App::uses('S2lowComponent', 'Controller/Component');
+        
+        //Si service désactivé ==> quitter
+        if (!Configure::read('USE_S2LOW')) exit("Service S2LOW désactivé");
+        
         $collection = new ComponentCollection();
         $this->S2low =new S2lowComponent($collection);
 
