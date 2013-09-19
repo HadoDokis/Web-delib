@@ -10,7 +10,10 @@ class S2lowShell extends AppShell {
         App::uses('S2lowComponent', 'Controller/Component');
         
         //Si service désactivé ==> quitter
-        if (!Configure::read('USE_S2LOW')) exit("Service S2LOW désactivé");
+        if (!Configure::read('USE_S2LOW')) {
+            $this->out("Service S2LOW désactivé");
+            exit;
+        }
         
         $collection = new ComponentCollection();
         $this->S2low =new S2lowComponent($collection);
