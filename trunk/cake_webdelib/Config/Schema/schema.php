@@ -662,15 +662,6 @@ class AppSchema extends CakeSchema {
 		'position' => array('type' => 'integer', 'null' => true),
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
-		'zone_1' => array('type' => 'string', 'null' => true, 'length' => 50),
-		'zone_2' => array('type' => 'string', 'null' => true, 'length' => 50),
-		'zone_3' => array('type' => 'string', 'null' => true, 'length' => 50),
-		'zone_4' => array('type' => 'string', 'null' => true, 'length' => 50),
-		'zone_5' => array('type' => 'string', 'null' => true, 'length' => 50),
-		'zone_6' => array('type' => 'string', 'null' => true, 'length' => 50),
-		'zone_7' => array('type' => 'string', 'null' => true, 'length' => 50),
-		'zone_8' => array('type' => 'string', 'null' => true, 'length' => 50),
-		'zone_9' => array('type' => 'string', 'null' => true, 'length' => 50),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'login' => array('unique' => true, 'column' => 'login')
