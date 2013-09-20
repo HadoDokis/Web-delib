@@ -24,7 +24,9 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        return (curl_exec($ch));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 
     function getClassification() {
@@ -103,6 +105,7 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         $curl_return = curl_exec($ch);
+        curl_close($ch);
         
         return($curl_return);
     }
@@ -125,11 +128,12 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
 
         $curl_return = curl_exec($ch);
+        curl_close($ch);
         header('Content-type: application/pdf');
         header('Content-Length: ' . strlen($curl_return));
         header('Content-Disposition: attachment; filename=Acquittement.pdf');
         echo $curl_return;
-        exit();
+        exit;
     }
 
     function getAR($tdt_id, $toFile = false) {
@@ -150,6 +154,7 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         $curl_return = curl_exec($ch);
+        curl_close($ch);
         if ($toFile == false) {
             header('Content-type: application/pdf');
             header('Content-Length: ' . strlen($curl_return));
@@ -187,6 +192,7 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         $curl_return = curl_exec($ch);
+        curl_close($ch);
         return($curl_return);
     }
 
@@ -207,6 +213,7 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         $curl_return = curl_exec($ch);
+        curl_close($ch);
         return($curl_return);
     }
 

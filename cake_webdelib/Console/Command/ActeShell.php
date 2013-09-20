@@ -86,6 +86,7 @@ class ActeShell extends AppShell {
             curl_setopt($ch, CURLOPT_VERBOSE, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             $curl_return = curl_exec($ch);
+            curl_close($ch);
             return($curl_return);
         }
 
