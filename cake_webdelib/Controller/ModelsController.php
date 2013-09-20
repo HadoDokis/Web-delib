@@ -204,7 +204,11 @@ class ModelsController extends AppController {
 
 		if (!$this->Gedooo->checkPath($path))
 			die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-		$urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+                $protocol = "http://";
+                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
+                        !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
+                    $protocol = "https://";
+		$urlWebroot =  $protocol.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
 
 		//*****************************************
 		//Création du model ott
@@ -403,8 +407,14 @@ class ModelsController extends AppController {
 		 		$oMainPart->addElement(new GDO_ContentType('debat_seance',  $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
 		 	}
 		 	else {
-		 		$urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
-
+                                $protocol = "http://";
+                                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
+                                        !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
+                                    $protocol = "https://";
+		 		$urlWebroot =  $protocol.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+                                /**
+                                 * @todo variable inutilisée !!?
+                                 */
 		 		if ($seance['Seance']['debat_global_name']== "")
 		 			$nameDSeance = "vide";
 		 		else {
