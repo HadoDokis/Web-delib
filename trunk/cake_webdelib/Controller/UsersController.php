@@ -332,7 +332,11 @@ class UsersController extends AppController {
 	function login() {
 		//pas de message d'erreur
 		$this->set('errorMsg',"");
-                $this->set('logo_path',   'http://'.$_SERVER['HTTP_HOST'].$this->base."/files/image/logo.jpg");
+                $protocol = "http://";
+                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
+                        !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
+                    $protocol = "https://";
+                $this->set('logo_path',   $protocol.$_SERVER['HTTP_HOST'].$this->base."/files/image/logo.jpg");
                 
 		//si le formulaire d'authentification a été soumis
 		if (!empty($this->data)) {
