@@ -3,7 +3,7 @@
 <head>
 	<title>Web-Delib</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	
+	<meta name="robots" content="noindex, nofollow" />
 	<?php echo $this->Html->css('webdelib'); ?>
 	<?php echo $this->Html->css('jquery.jgrowl'); ?>
 	<?php echo $this->Html->css('font-awesome.min'); ?>
