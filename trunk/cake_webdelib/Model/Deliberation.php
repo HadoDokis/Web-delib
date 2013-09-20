@@ -739,8 +739,6 @@ class Deliberation extends AppModel {
 
 			if (!$this->Gedooo->checkPath($path))
 				die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-
-			$urlWebroot =  'http://'.$_SERVER['HTTP_HOST'].$dyn_path;
 			if (!empty($delib['Deliberation']['texte_projet'])) {
 				$oMainPart->addElement(new GDO_ContentType('texte_projet',
 						'text_projet.odt' ,
