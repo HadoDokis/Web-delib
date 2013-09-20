@@ -137,8 +137,8 @@ function choixModele(o) {
                                                'alt'=>'Supprimer le projet '.$deliberation['Deliberation']['objet'], 
                                                'escape' => false,
                                                'title'=>'Supprimer le projet '.$deliberation['Deliberation']['objet'],
-                                               'confirm'=>'Confirmez-vous la suppression du projet \''.$deliberation['Deliberation']['objet'].'\'?'), 
-                                         'Etes-vous sur de vouloir supprimer le projet "' . $deliberation['Deliberation']['objet']. '" ?',
+                                             ), 
+                                         'Confirmez-vous la suppression du projet \'' . $deliberation['Deliberation']['objet']. '\' ?',
 					 false);
 
                    if (in_array('traiter', $deliberation['Actions']))
