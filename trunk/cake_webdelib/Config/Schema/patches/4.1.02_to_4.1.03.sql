@@ -5,7 +5,7 @@ BEGIN;
 
 ALTER TABLE seances ADD COLUMN numero_depot integer NOT NULL DEFAULT '0';
 
-ALTER TABLE deliberations ALTER COLUMN num_pref TYPE character varying(255) NOT NULL;
+ALTER TABLE deliberations ALTER COLUMN num_pref TYPE character varying(255);
 
 ALTER TABLE users   DROP COLUMN zone_1, 
                     DROP COLUMN zone_2, 
