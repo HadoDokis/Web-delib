@@ -226,3 +226,7 @@
     *) Prise en compte de la variable position_projet à la génération d'un projet
     *) Mise en place d'un fond noir pour l'étape en cours du circuit de validation dans webdelib
     *) Mise en place des informations supplémentaires, idDepot ->numero_depot dans l'export CMIS
+    *) Fermeture des requêtes curl après connexion externe
+    *) Suppression de la signature d'email "This email was sent using CakePHP Framework"
+    *) Non éxecution des tâches planifiées des services désactivés (Parapheur, S2low)
+    *) Tri des actes pour envoi au controle de légalité désormais par numéro de délibération (ascendant)
