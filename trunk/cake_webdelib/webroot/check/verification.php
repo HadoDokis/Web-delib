@@ -1205,6 +1205,7 @@ function getPastellVersion() {
     curl_setopt($curl, CURLOPT_URL, $api);
 
     $reponse = curl_exec($curl); 
+    curl_close($curl);
     $reponse = json_decode($reponse);
     $reponse = (array)$reponse;
     if (is_array($reponse) and isset($reponse['version']))
