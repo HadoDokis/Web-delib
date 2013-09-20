@@ -33,6 +33,12 @@ class Collectivite extends AppModel {
 				'rule' => 'notEmpty',
 				'message' => 'Entrer le numéro de téléphone.'
 			)
+		),
+		'logo' => array(
+			array(
+				'rule' => array('extension', array('jpeg', 'jpg')),
+				'message' => 'Merci de soumettre une image valide.'
+			)
 		)
 	);
 
@@ -47,7 +53,6 @@ class Collectivite extends AppModel {
             $oMainPart->addElement(new GDO_FieldType('ville_collectivite', $collectivite['Collectivite']['ville'], "text"));
             $oMainPart->addElement(new GDO_FieldType('telephone_collectivite', $collectivite['Collectivite']['telephone'], "text"));
     }
-
       
 }
 ?>
