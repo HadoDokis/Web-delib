@@ -2170,8 +2170,12 @@ class DeliberationsController extends AppController {
     function _paramMails($type, $delib, $acteur) {
         $handle = fopen(CONFIG_PATH . '/emails/' . $type . '.txt', 'r');
         $content = fread($handle, filesize(CONFIG_PATH . '/emails/' . $type . '.txt'));
-        $addr1 = "http://" . $_SERVER['SERVER_NAME'] . $this->base . "/deliberations/traiter/" . $delib['Deliberation']['id'];
-        $addr2 = "http://" . $_SERVER['SERVER_NAME'] . $this->base . "/deliberations/view/" . $delib['Deliberation']['id'];
+        $protocol = "http://";
+        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
+                !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
+            $protocol = "https://";
+        $addr1 = $protocol . $_SERVER['SERVER_NAME'] . $this->base . "/deliberations/traiter/" . $delib['Deliberation']['id'];
+        $addr2 = $protocol . $_SERVER['SERVER_NAME'] . $this->base . "/deliberations/view/" . $delib['Deliberation']['id'];
 
         $searchReplace = array(
             "#NOM#" => $acteur['nom'],
