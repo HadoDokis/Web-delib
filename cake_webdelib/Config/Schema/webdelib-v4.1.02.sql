@@ -466,7 +466,7 @@ CREATE TABLE deliberations (
     objet_delib character varying(1000),
     titre character varying(1000),
     num_delib character varying(15),
-    num_pref character varying(100) NOT NULL,
+    num_pref character varying(255) NOT NULL,
     pastell_id character varying(10),
     tdt_id integer,
     "dateAR" character varying(100),
@@ -538,7 +538,7 @@ CREATE TABLE deliberations_seances (
     seance_id integer NOT NULL,
     "position" integer,
     avis boolean,
-    commentaire character varying(1000),
+    commentaire character varying(1000)
 );
 
 
@@ -740,7 +740,7 @@ CREATE TABLE listepresences (
     acteur_id integer NOT NULL,
     suppleant_id integer,
     present boolean NOT NULL,
-    mandataire integer,
+    mandataire integer
 );
 
 
@@ -1884,7 +1884,7 @@ SELECT pg_catalog.setval('historiques_id_seq', 1, false);
 -- Data for Name: infosupdefs; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY infosupdefs (id, model, nom, commentaire, ordre, code, taille, type, val_initiale, recherche, created, modified, actif) FROM stdin;
+COPY infosupdefs (id, model, nom, commentaire, ordre, code, type, val_initiale, recherche, created, modified, actif) FROM stdin;
 \.
 
 
