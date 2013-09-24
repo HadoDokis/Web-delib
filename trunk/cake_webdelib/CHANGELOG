@@ -230,3 +230,5 @@
     *) Suppression de la signature d'email "This email was sent using CakePHP Framework"
     *) Non éxecution des tâches planifiées des services désactivés (Parapheur, S2low)
     *) Tri des actes pour envoi au controle de légalité désormais par numéro de délibération (ascendant)
+    *) Correction du connecteur Asalae + configuration : webdelib.inc.default
+    *) Mise en place du logo de la collectivité en BDD
