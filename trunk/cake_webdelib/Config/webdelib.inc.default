@@ -14,7 +14,7 @@ Configure::write('AFFICHE_CONVOCS_ANONYME', true);
 Configure::write('CONVOCS_MODIFIABLES', false);
 Configure::write('NOT_UNIQUE_CIRCUIT', true);
 Configure::write('DELIBERATIONS_MULTIPLES', false); //Mode délibérations multiples
-Configure::write('INIT_SEQ', 0); //Initialiser le numéro de séquence
+Configure::write('INIT_SEQ', false); //Initialiser le numéro de séquence
 Configure::write("LIMIT", 5); //limitation du nombre de projets par banette
 Configure::write('GENERER_DOC_SIMPLE', false);
 Configure::write('PROTOCOLE_DL', 'vnd.sun.star.webdav');
@@ -62,7 +62,7 @@ Configure::write('DN', 'dn');
 Configure::write('USE_PARAPH', false);
 Configure::write('WSACTION', 'https://x.x.x.x/alfresco');
 Configure::write('WSTO', 'https://x.x.x.x/ws-iparapheur');
-Configure::write('CACERT',     Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/AC.pem');
+Configure::write('CACERT',     Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/ac.pem');
 Configure::write('CLIENTCERT', Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/cert.pem');
 Configure::write('PASSPHRASE', 'passphrase');
 Configure::write('HTTPAUTH', 'login');
@@ -77,11 +77,11 @@ Configure::write('EMAIL_EMMETEUR', 'parapheur@adullact.org');
 
 /* Configuration ASAL@AE */
 Configure::write('USE_ASALAE', false);
-define("ASALAE_WSDL", "http://x.x.x.x/webservices/wsdl");
-define('SIREN_ARCHIVE', 'DEMO');
-define('NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
-define('IDENTIFIANT_VERSANT', 'WEBDELIBSERVICES_LOGIN');
-define('MOT_DE_PASSE', 'WEBDELIBSERVICES_MDP');
+Configure::write("ASALAE_WSDL", "http://x.x.x.x/webservices/wsdl");
+Configure::write('SIREN_ARCHIVE', 'DEMO');
+Configure::write('NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
+Configure::write('IDENTIFIANT_VERSANT', 'WEBDELIBSERVICES_LOGIN');
+Configure::write('MOT_DE_PASSE', 'WEBDELIBSERVICES_MDP');
 
 /* Configuration CONNECTEUR CMIS GED */
 Configure::write('USE_GED', false);
