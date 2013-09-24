@@ -3,7 +3,7 @@ class UsersController extends AppController {
 
 	var $name = 'Users';
 	var $helpers = array('Form', 'Html', 'Html2', 'Session');
-	var $uses = array( 'User', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
+	var $uses = array( 'User','Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
 	var $components = array('Utils', 'Acl', 'Menu', 'Dbdroits');
 
 	// Gestion des droits
@@ -336,7 +336,22 @@ class UsersController extends AppController {
                 if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
                         !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
                     $protocol = "https://";
-                $this->set('logo_path',   $protocol.$_SERVER['HTTP_HOST'].$this->base."/files/image/logo.jpg");
+                
+                $logo = $this->Collectivite->read('logo', 1);
+                App::uses('File', 'Utility');
+                $file = new File(Configure::read('WEBDELIB_PATH').DS.'files'.DS.'image'.DS.'logo.jpg', false);
+ 
+                if(empty($logo['Collectivite']['logo']))
+                $this->set('logo_path',   $protocol.$_SERVER['HTTP_HOST'].$this->base."/files/image/adullact.jpg");
+                else
+                {
+                    if(!$file->exists())
+                        $file->write($logo['Collectivite']['logo']);
+                        
+                    $file->close();
+                    $this->set('logo_path',   $protocol.$_SERVER['HTTP_HOST'].$this->base."/files/image/logo.jpg");
+                }
+               
                 
 		//si le formulaire d'authentification a été soumis
 		if (!empty($this->data)) {
@@ -372,7 +387,6 @@ class UsersController extends AppController {
 				$this->Session->write('user',$user);
 				// On stock la collectivite de l'utilisateur en cas de PASTELL
 				if (Configure::read('USE_PASTELL')) {
-					$this->loadModel('Collectivite');
 					$coll = $this->Collectivite->find('first', array('conditions' => array('Collectivite.id'=>1),
 							'recursive'  => -1,
 							'fields'     => array('id_entity')));

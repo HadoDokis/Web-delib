@@ -23,8 +23,9 @@ class CollectivitesController extends AppController {
     );
 
     function index() {
-        $this->set('collectivite', $this->Collectivite->find('first', array('conditions' => array('Collectivite.id' => 1),
-                    'recursive' => -1)));
+        $collectivite=$this->Collectivite->find('first', array('conditions' => array('Collectivite.id' => 1),
+                    'recursive' => -1));
+        $this->set('collectivite', $collectivite);
         $protocol = "http://";
         if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ||
                 !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
@@ -65,18 +66,18 @@ class CollectivitesController extends AppController {
                 $content_dir = WWW_ROOT . 'files/image/';
                 $tmp_file = $this->data['Image']['logo']['tmp_name'];
 
-//                App::uses('File', 'Utility');
-//                $file = new File($tmp_file, false);
-//
-//                $collectivite = $this->Collectivite->findById(1);
-//                $collectivite['Collectivite']['logo'] = $file->read(true);
-////                $this->Collectivite->id = 1;
-//                if (!$this->Collectivite->save($collectivite['Collectivite']))
-////                if (!$this->Collectivite->saveField('logo', $file->read()))
-//                    $this->Session->setFlash('Erreur durant la sauvegarde en base de données du logo', 'growl');
-////                $log = $this->Collectivite->getDataSource()->getLog(false, false);
-//                
-//                $file->close();
+                App::uses('File', 'Utility');
+                $file = new File($tmp_file, false);
+
+                $collectivite = $this->Collectivite->findById(1);
+                $collectivite['Collectivite']['logo'] = $file->read(true);
+//                $this->Collectivite->id = 1;
+                if (!$this->Collectivite->save($collectivite['Collectivite']))
+//                if (!$this->Collectivite->saveField('logo', $file->read()))
+                    $this->Session->setFlash('Erreur durant la sauvegarde en base de données du logo', 'growl');
+//                $log = $this->Collectivite->getDataSource()->getLog(false, false);
+                
+                $file->close();
 
                 if (!move_uploaded_file($tmp_file, $content_dir . $name_file))
                     $this->Session->setFlash("Impossible de copier le fichier dans $content_dir (limite de taille du fichier: 1Mo)");
