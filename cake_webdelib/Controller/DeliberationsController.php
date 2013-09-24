@@ -3349,7 +3349,7 @@ class DeliberationsController extends AppController {
                         'Comment' => $delib['Deliberation']['objet_delib'],
                         'Date' => date('c'),
                         'TransferringAgency' => array('Identification' => Configure::read('IDENTIFIANT_VERSANT')),
-                        'ArchivalAgency' => array('Identification' => Configure::read(' SIREN_ARCHIVE')),
+                        'ArchivalAgency' => array('Identification' => Configure::read('SIREN_ARCHIVE')),
                         'Contains' => array(
                             'ArchivalAgreement' => Configure::read('NUMERO_AGREMENT'),
                             'DescriptionLanguage' => array(
@@ -3358,10 +3358,10 @@ class DeliberationsController extends AppController {
                             'DescriptionLevel' => array(
                                 '@attributes' => array('listVersionID' => 'edition 2009'),
                                 '@value' => 'file'),
-                            'Name' => utf8_encode('Déliberation envoyee depuis WebDelib'),
+                            'Name' => 'Déliberation envoyee depuis WebDelib',
                             'ContentDescription' => array(
-                                'CustodialHistory' => utf8_encode("Délibération en provenance de Webdelib"),
-                                'Description' => utf8_encode($delib['Deliberation']['objet_delib']),
+                                'CustodialHistory' => 'Délibération en provenance de Webdelib',
+                                'Description' => $delib['Deliberation']['objet_delib'],
                                 'Language' => array(
                                     '@attributes' => array('listVersionID' => 'edition 2009'),
                                     '@value' => 'fr'),
@@ -3394,8 +3394,7 @@ class DeliberationsController extends AppController {
                     $ret = $client->__soapCall("wsDepot", array("bordereau.xml",
                         base64_encode($seda),
                         "versement.tgz",
-                        base64_encode($document), '
-                                                      TARGZ',
+                        base64_encode($document), 'TARGZ',
                         Configure::read('IDENTIFIANT_VERSANT'),
                         Configure::read('MOT_DE_PASSE')));
                     // Changement d'état de la délibération
