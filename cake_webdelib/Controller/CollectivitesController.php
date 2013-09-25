@@ -63,24 +63,21 @@ class CollectivitesController extends AppController {
                 $this->Session->setFlash("Le fichier n'est pas une image au format jpg/jpeg");
             } else {
                 $name_file = 'logo.jpg';
-                $content_dir = WWW_ROOT . 'files/image/';
+                $content_dir = WWW_ROOT . 'files'.DS.'image'.DS;
                 $tmp_file = $this->data['Image']['logo']['tmp_name'];
 
+                if (!move_uploaded_file($tmp_file, $content_dir . $name_file))
+                    $this->Session->setFlash("Impossible de copier le fichier dans $content_dir (limite de taille du fichier: 1Mo)");
+                                
                 App::uses('File', 'Utility');
                 $file = new File($tmp_file, false);
 
                 $collectivite = $this->Collectivite->findById(1);
                 $collectivite['Collectivite']['logo'] = $file->read(true);
-//                $this->Collectivite->id = 1;
                 if (!$this->Collectivite->save($collectivite['Collectivite']))
-//                if (!$this->Collectivite->saveField('logo', $file->read()))
                     $this->Session->setFlash('Erreur durant la sauvegarde en base de données du logo', 'growl');
-//                $log = $this->Collectivite->getDataSource()->getLog(false, false);
-                
                 $file->close();
 
-                if (!move_uploaded_file($tmp_file, $content_dir . $name_file))
-                    $this->Session->setFlash("Impossible de copier le fichier dans $content_dir (limite de taille du fichier: 1Mo)");
 
                 $this->redirect('/collectivites');
             }
