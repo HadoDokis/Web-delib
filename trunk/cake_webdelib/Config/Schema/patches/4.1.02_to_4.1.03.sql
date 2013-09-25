@@ -19,6 +19,8 @@ ALTER TABLE users   DROP COLUMN IF EXISTS zone_1,
 
 ALTER TABLE collectivites ADD COLUMN logo bytea;
 
+ALTER TABLE infosupdefs ALTER COLUMN val_initiale TYPE character varying(1000);
+
 --
 -- Fin du patch : fin de la transaction
 --
