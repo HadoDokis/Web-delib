@@ -66,6 +66,26 @@ require_once('verification.php');
 <div class="row">
 	<div class="span12">
 <div class="well well-small">
+          <p><i class="icon-code"></i> Librairies PHP</p>
+	<?php php_check_librairies($libs_php); ?>
+</div>
+</div>
+</div>
+<br />
+
+<div class="row">
+	<div class="span12">
+<div class="well well-small">
+          <p><i class="icon-cog"></i> Programmes</p>
+	<?php check_binaires($binaires); ?>
+</div>
+</div>
+</div>
+<br />
+
+<div class="row">
+	<div class="span12">
+<div class="well well-small">
           <p><i class="icon-file"></i> Fichiers de configuration </p>
 <?php verifPresenceFichierIni(); ?>
 </div>
@@ -194,6 +214,9 @@ require_once('verification.php');
 
 
 </div><!--row-->
+<?php
+//phpinfo();
+?>
 </div><!--container-->
 <?php
 require_once('footer.html');
