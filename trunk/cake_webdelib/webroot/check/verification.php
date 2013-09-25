@@ -10,7 +10,9 @@ $versionCakePHPAttendue = "2.2.2";
 $versionPHPAttendue = "5.3";
 $versionAPACHEAttendue = "2.2";
 $mods_apache = array('mod_rewrite', 'mod_ssl', 'mod_dav', 'mod_dav_fs');
-$exts_php    = array('soap', 'pgsql', 'xsl', 'curl', 'dom', 'zlib');
+$exts_php    = array('soap', 'pgsql', 'xsl', 'curl', 'dom', 'zlib', 'gd');
+$libs_php    = array('RPC');
+$binaires    = array('ghostscript', 'pdftk', 'pear');
 $appIniFiles = array('database.php', 'webdelib.inc');
 
 // redéfinition des constantes principales de cake (un rep au dessus par rapport aux constantes cake)
@@ -423,11 +425,13 @@ function infoMails() {
 		d("Fichier de configuration de l'application $fichier_conf non trouvé", 'ko');
 		return false;
 	}
-
+        
+        verif_email();
+        
 	// mailadministrateur
         $useMail = Configure::read('SMTP_USE');
         if ($useMail) {
-            d("Utilisation du SMTP : ".Configure::read('SMTP_USE'), 'ok');
+            d("Utilisation du SMTP : OUI", 'ok');
             d("Serveur du SMTP : ".Configure::read('SMTP_HOST'), 'ok'); 
             d("Port du serveur SMTP : ".Configure::read('SMTP_PORT'), 'ok'); 
             d("Utilisateur du serveur SMTP : ".Configure::read('SMTP_USERNAME'), 'ok'); 
@@ -436,8 +440,6 @@ function infoMails() {
                 d("Password du serveur SMTP : ********", 'ok'); 
    
         }
-        else
-            d("Utilisation du SMTP", 'ko'); 
 
 	$mailAdmin = Configure::read('MAIL_FROM');
 	if ($mailAdmin == NON_TROUVE)
@@ -820,6 +822,18 @@ function verifConversion() {
                              }
                              else
 		                d("Exécutable de l'outil de conversion : $convType", 'ko');
+                             
+                            //IP +PORT
+                            $cloudoooHost = Configure::read('CLOUDOOO_HOST');
+                            $cloudoooPort = Configure::read('CLOUDOOO_PORT');
+                            if ($cloudoooHost !== NON_TROUVE && !empty($cloudoooHost))
+                                    if ($cloudoooPort !== NON_TROUVE && !empty($cloudoooPort))
+                                        d("Url de CLOUDOOO : $cloudoooHost:$cloudoooPort", 'info');
+                                    else 
+                                        d("Url de CLOUDOOO : $cloudoooHost (port non renseigné dans le fichier $fichier_conf)", 'ko');
+                            else
+                                    d("Url de CLOUDOOO : non renseigné dans le fichier $fichier_conf", 'ko');
+                             
                         break;
 			case 'UNOCONV' :
 	                        $convExec = Configure::read('UNOCONV_EXEC');
@@ -1043,10 +1057,18 @@ function testerOdfGedooo() {
 
 			if (empty($gedoooWsdl))
 				return;
+                        
+                        try {
+                            $oService = new SoapClient($gedoooWsdl);
+                            d("Version de l'outil d'édition : ".$oService->__soapCall("Version", array()), 'info');
+                        } catch (Exception $e) {
+                            //Erreur lors de l'initialisation de la connexion : code 001
+                            d("Version de l'outil d'édition : Erreur lors de la connexion au WSDL : " . $e->getMessage(), 'ko');
+                        }
+                        
 			// test d'édition
 			t('h5', "Essai d'édition");
 
-			Configure::write ("GEDOOO_WSDL", $gedoooWsdl);
 			$tmpFile = "/tmp/FILE_RESULT.odt";
 			@unlink( $tmpFile );
 		
@@ -1214,6 +1236,30 @@ function getPastellVersion() {
         d('Impossible de communiquer avec PASTELL : ', 'ko');
 
 
+}
+
+function check_binaires($binaires) {
+    foreach ($binaires as $bin) {
+        $output = exec('whereis -b ' . $bin);
+        $okko = ($output == $bin . ":") ? 'ko' : 'ok';
+        d($bin, $okko);
+    }
+}
+
+function verif_email() {
+    $destinataire = Configure::read("MAIL_FROM");
+    $ok = mail($destinataire, 'Test de la fonction mail', 'Ceci est un message de test de webdelib, veuillez ne pas répondre.');
+    $okko = $ok ? "ok" : "ko";
+    
+    d("Envoi de courrier électronique : $okko", $okko);
+}
+
+function php_check_librairies($libs) {
+    foreach ( $libs as $lib ){
+        $output = exec("locate $lib.php");
+        $okko = !empty($output) ? 'ok' : 'ko';
+        d($lib, $okko);
+    }
 }
 
 ?>
