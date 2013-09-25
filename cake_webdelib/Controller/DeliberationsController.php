@@ -3639,7 +3639,7 @@ class DeliberationsController extends AppController {
     }
 
     function sendActesToSignature() {
-        if (Configure::read('USE_PARAPH')) {
+        if (Configure::read('USE_PARAPH') && $this->data['Parapheur']['circuit_id'] != -1) {
             $this->Parafwebservice = new IparapheurComponent();
             $circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
         }
@@ -3716,13 +3716,14 @@ class DeliberationsController extends AppController {
         $contain = array('Typeacte.libelle',
             'Service.libelle',
             'Circuit.nom');
+        $order = array('Deliberation.num_delib ASC');
 
         if (Configure::read('USE_PARAPH')) {
             $this->Parafwebservice = new IparapheurComponent();
             $circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
         }
 
-        $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
+        $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain, $order);
         $this->_addFiltresAutresActes($actes);
         for ($i = 0; $i < count($actes); $i++){
             $actes[$i]['Deliberation'][$actes[$i]['Deliberation']['id'] . '_num_pref'] = $actes[$i]['Deliberation']['num_pref'];

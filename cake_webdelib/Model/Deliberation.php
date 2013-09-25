@@ -973,6 +973,7 @@ class Deliberation extends AppModel {
 
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents",   $acteurs_presents, false, '_present'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbsents",    $acteurs_absents, false, '_absent'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', count($acteurs_absents), 'text'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursMandates",   $acteurs_remplaces, true, '_mandataire'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre",     $acteurs_contre, false, '_contre'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPour",       $acteurs_pour, false, '_pour'));
@@ -1469,7 +1470,7 @@ class Deliberation extends AppModel {
 		}
 	}
   
-        function getActesExceptDelib($conditions=array(), $fields, $contain) {
+        function getActesExceptDelib($conditions=array(), $fields, $contain, $order=null) {
             $code_delib = 'DE'; 
             if (!isset($conditions['Deliberation.typeacte_id']))  {
                 $nature_ids = $this->Typeacte->Nature->find('all', array('conditions' => array('Nature.code !=' => $code_delib),
@@ -1485,7 +1486,8 @@ class Deliberation extends AppModel {
             $this->Behaviors->attach('Containable');
             $actes = $this->find('all', array('conditions' => $conditions,
                                               'contain'    => $contain,
-                                              'fields'     => $fields));
+                                              'fields'     => $fields,
+                                              'order'      => $order));
             foreach ($actes as &$acte) {
                 $acte['Model']['modeleprojet_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modeleprojet_id');
                 $acte['Model']['modelefinal_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
