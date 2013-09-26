@@ -57,8 +57,8 @@
                                            false);
 			$urlConvoc = '/seances/sendConvocations/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id'];
 			$urlOdj    = '/seances/sendOrdredujour/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id'];
-			$urlConvocUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id']."/$format/0/retour/0/true";
-			$urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id']."/$format/0/retour/0/true";
+			$urlConvocUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelconvocation_id']."/$format/0/retour/0/1/1";
+			$urlOdjUnique = '/models/generer/null/'.$seance['Seance']['id'].'/'.$seance['Typeseance']['modelordredujour_id']."/$format/0/retour/0/1/1";
 			if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
 				echo $this->Html->link(SHY, $urlConvocUnique, array(
 					'class'=>'link_convocation_unique',
@@ -155,13 +155,13 @@
                           }
                       }
 
-			echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id']."/$format/1/retour/1/true", array(
+			echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id']."/$format/1/retour/1/1/1", array(
 				'class'=>'link_pvsommaire',
 				'title'=>'Génération du pv sommaire pour la séance du '.$seance['Seance']['date'],
 				'alt'=>'Génération du pv sommaire pour la séance du '.$seance['Seance']['date'],
                                 'escape' => false,
 				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération des documents ?");'),  false);
-			echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id']."/$format/1/retour/1/true", array(
+			echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id']."/$format/1/retour/1/1/1", array(
 				'class'=>'link_pvcomplet',
                                 'escape' => false,
 				'title'=>'Génération du pv complet pour la séance du '.$seance['Seance']['date'],
