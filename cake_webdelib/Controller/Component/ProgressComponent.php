@@ -5,9 +5,9 @@
         function start ($gauche,$haut,$largeur,$bord_col,$txt_col) {
             $tailletxt=30-10;
             echo '<div id="contTemp" style="position:absolute;top:0;left:0px;';
-            echo 'background-image:url(/theme/Bootstrap/img/grid-18px-masked.png);';
+            echo 'background-image:url(../../../theme/Bootstrap/img/grid-18px-masked.png);';
             echo 'width:100%; height:250px; margin-left: 0px; padding: 0px;">';
-            echo '<img src="/img/webdelib_petit.png" />';
+            echo '<img src="../../../img/webdelib_petit.png" />';
 
             echo '<div id="pourcentage" style="position:absolute;top:'.($haut +1 );
             echo ';left: '.($gauche + $largeur ).'px';
@@ -19,7 +19,7 @@
             echo ';left:'.($gauche+1); //+1
             echo ';width:0px';
             echo ';height: 22px';
-            echo ';background-image:url(/img/pbar-ani.gif) ;z-index:0;"></div>';
+            echo ';background-image:url(../../../img/pbar-ani.gif) ;z-index:0;"></div>';
 
 //            echo ';background-color:'.$bg_col.';z-index:0;"></div>';
 
