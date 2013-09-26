@@ -4,11 +4,12 @@ class ModelsController extends AppController {
 	var $name = 'Models';
 	var $uses = array('Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'Modeledition');
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
-	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf');
+	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress');
 
 	// Gestion des droits
 	var $aucunDroit = array(
 			'generer',
+			'getGeneration',
 			'paramMails',
 			'checkGedooo'
 	);
@@ -170,7 +171,7 @@ class ModelsController extends AppController {
 	}
 
 
-	function generer ($delib_id=null, $seance_id=null,  $model_id, $editable=-1, $dl=0, $nomFichier='retour', $isPV=0, $unique=false) {
+	function generer ($delib_id=null, $seance_id=null,  $model_id, $editable=-1, $dl=0, $nomFichier='retour', $isPV=0, $unique=false, $progress=false) {
 		$time_start = microtime(true);
                 
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
@@ -247,7 +248,7 @@ class ModelsController extends AppController {
 
 		$annexes_id = array();
 		//*****************************************
-		// Génération d'une délibération ou d'un texte de projet
+		// Génération d'un acte
 		//*****************************************
 		if ($delib_id != "null") {
 			$delib = $this->Deliberation->find('first', array(
@@ -269,12 +270,20 @@ class ModelsController extends AppController {
 			}
 		}
 		//*****************************************
-		// Génération d'une convocation, ordre du jour ou PV
+		// Génération d'une convocation, ordre du jour ou PV (séance)
 		//*****************************************
 		if ($seance_id != "null") {
+                        if ($progress) {
+                            $this->Progress->start(200, 100,200, '#FFCC00','#006699');
+                            $this->Progress->at(0, 'Démmarage de la génération');
+                        }
 			$projets  =  $this->Seance->getDeliberations($seance_id);
 			$blocProjets = new GDO_IterationType("Projets");
+                        $cpt = 0;
 			foreach ($projets as $projet) {
+                                $cpt++;
+                                if ($progress)
+                                    $this->Progress->at($cpt*(50/count($projets)), 'Génération des projets...');
 				$oDevPart = new GDO_PartType();
 				$this->Deliberation->makeBalisesProjet($projet,  $oDevPart);
 				$blocProjets->addPart($oDevPart);
@@ -282,18 +291,26 @@ class ModelsController extends AppController {
 				$tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($projet['Deliberation']['id'], 0,1);
 				if (!empty($tmp_annexes))
 					array_push($annexes_id,  $tmp_annexes);
+                                
 			}
 			$path_annexes = $path.'annexes/';
 			$annexes = array();
+                        $cpt = 0;
+                        if ($progress) 
+                            $this->Progress->at(50, 'Démarrage de la génération des annexes...');
 			foreach ($annexes_id as $annex_ids) {
 				foreach($annex_ids as $annex_id) {
+                                        $cpt++;
+                                         if ($progress) 
+                                            $this->Progress->at($cpt*(10/count($annexes_id))+50, 'Génération des annexes...');
 					$annexFile = $this->Deliberation->Annex->find('first', array(
                                                         'conditions' => array('Annex.id' => $annex_id['Annex']['id']),
 							'recursive'  => -1));
                                          array_push($annexes, $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $annexFile['Annex']['data_pdf']));
 				}
 			}
-
+                        if ($progress) 
+                            $this->Progress->at(60, 'Démarrage de la génération du document...');
 			$oMainPart->addElement($blocProjets);
 			$this->Seance->makeBalise($seance_id, $oMainPart);
 			if (!$isPV) { // une convocation ou un ordre du jour
@@ -304,16 +321,17 @@ class ModelsController extends AppController {
 				if (file_exists($path.'documents.zip'))
 					unlink($path.'documents.zip');
 
-				$nbActeurs = count($acteursConvoques);
-				$cpt=0;
 				$model_tmp = $this->Model->read(null, $model_id);
 				$this->set('nom_modele',  $model_tmp['Model']['modele']);
 				if (empty($acteursConvoques))
 					return "";
 				$zip = new ZipArchive;
+                                $cpt=0;
 				foreach ($acteursConvoques as $acteur) {
-					$cpt++;
-					$this->set('unique', $unique);
+					$cpt++; 
+                                        if ($progress)
+                                            $this->Progress->at($cpt*((40/3)/count($acteursConvoques))+60, 'Génération du document : '. $acteur['Acteur']['nom'] .'...');
+                                        $this->set('unique', $unique);
 					if ($unique== false) {
 						$oMainPart->addElement(new GDO_FieldType("nom_acteur", utf8_encode($acteur['Acteur']['nom']), "text"));
 						$oMainPart->addElement(new GDO_FieldType("prenom_acteur", utf8_encode($acteur['Acteur']['prenom']), "text"));
@@ -336,12 +354,14 @@ class ModelsController extends AppController {
 					}
 
 					try {
-						Configure::write('debug', 0);
+						Configure::write('debug', 1);
 						error_reporting(0);
 
 						$time_end = microtime(true);
 						$time = $time_end - $time_start;
 						$this->log("Temps création de requete :". $time );
+                                                if ($progress)
+                                                    $this->Progress->at($cpt*((2*40/3)/count($acteursConvoques))+60, 'Fusion des documents...');
 
 						$time_start = microtime(true);
 						$oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
@@ -349,13 +369,15 @@ class ModelsController extends AppController {
 						$time_end = microtime(true);
 						$time = $time_end - $time_start;
 						$this->log("Temps création de fusion : ". $time );
+                                                if ($progress)
+                                                    $this->Progress->at($cpt*((3*40/3)/count($acteursConvoques))+60, 'Conversion et concaténation...');
 
 						$time_start = microtime(true);
 						$oFusion->SendContentToFile($path.$nomFichier.".odt");
                                                 $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt');
                                                 file_put_contents  ($path.$nomFichier.".odt",   $content);
 
-						$content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
+                                                $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
 						$chemin_fichier = $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
 						if (($format == 'pdf') && ($joindre_annexe))
 							$this->Pdf->concatener($chemin_fichier, $annexes);
@@ -368,6 +390,7 @@ class ModelsController extends AppController {
                                             $this->redirect('/seances/listerFuturesSeances');
                                             die;
 					}
+                                        
 					if ($unique== false) {
 						$res = $zip->open($path.'documents.zip', ZIPARCHIVE::CREATE);
 						if ($res === TRUE) {
@@ -380,24 +403,40 @@ class ModelsController extends AppController {
 					// envoi des mails si le champ est renseigné
 					$this->_sendDocument($acteur['Acteur'], $nomFichier, $path, '');
 				}
+                                if ($progress)
+                                    $this->Progress->at(100, 'Chargement des résultats...');
 				if ($unique== false)
 					$listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
-				$this->set('listFiles', $listFiles);
-				$this->set('format', $format);
-				$this->render('generer');
+                                
+                                $this->Session->write('tmp.listFiles', $listFiles);
+                                $this->Session->write('tmp.format', $format);
+$test=$this->Session->read('user.User');
+$this->log('avant redirect','debug');
+$this->log($test,'debug');
+                                if ($progress)
+                                    $this->Progress->end('/models/getGeneration');
 				$genereConvocation = true;
 			}
 			else {
+                        if ($progress)
+                            $this->Progress->at(65, 'Génération du PV...');
 		 	$seance = $this->Seance->find('first', array(
 		 			'conditions' => array('Seance.id' => $seance_id),
 		 			'recursive'  => -1));
 		 	$dyn_path = "/files/generee/PV/$seance_id/";
 		 	$path = WEBROOT_PATH.$dyn_path;
+                        
 		 	if (!$this->Gedooo->checkPath($path))
 		 		die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-
+                        $protocol = "http://";
+                        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
+                            !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
+                        $protocol = "https://";
+                        $urlWebroot =  $protocol.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
 		 	if (Configure::read('GENERER_DOC_SIMPLE')) {
 		 		include_once ('controllers/components/conversion.php');
+                                if ($progress)
+                                    $this->Progress->at(70, 'Conversion du document...');
 		 		$this->Conversion = new ConversionComponent;
 
 		 		$filename = $path."debat_seance.html";
@@ -407,11 +446,7 @@ class ModelsController extends AppController {
 		 		$oMainPart->addElement(new GDO_ContentType('debat_seance',  $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
 		 	}
 		 	else {
-                                $protocol = "http://";
-                                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
-                                        !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
-                                    $protocol = "https://";
-		 		$urlWebroot =  $protocol.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+                                
                                 /**
                                  * @todo variable inutilisée !!?
                                  */
@@ -423,30 +458,42 @@ class ModelsController extends AppController {
 		 	}
 		 }
 		}
-
+                
 		if ($genereConvocation == false) {
 			//*****************************************
 			// Lancement de la fusion
 			//*****************************************
-				Configure::write('debug', 0);
-				$time_end = microtime(true);
-				$time = $time_end - $time_start;
+                                if ($progress)
+                                    $this->Progress->at(80, 'Fusion du document...');
+				Configure::write('debug', 1);
 				$oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
 				$oFusion->process();
 				$time_end = microtime(true);
 				$time = $time_end - $time_start;
       
 				if ($dl ==1) {
+                                        if ($progress)
+                                            $this->Progress->at(90, 'Conversion et concaténation...');
 					$oFusion->SendContentToFile($path.$nomFichier);
 					$content = $this->Conversion->convertirFichier($path.$nomFichier, $format);
 					$chemin_fichier = $this->Gedooo->createFile($path, "$nomFichier.$format", $content);
 					if (($format == 'pdf') && ($joindre_annexe))
 						$this->Pdf->concatener($chemin_fichier, $annexes);
 					$listFiles[$urlWebroot.$nomFichier] = 'Document généré';
-					$this->set('listFiles', $listFiles);
-					$this->set('format', $format);
+                                        Configure::write('debug', 0);
+                                        if ($progress){
+                                            $this->Progress->at(100, 'Chargement des résultats...');
+                                            $this->Session->write('tmp.listFiles', $listFiles);
+                                            $this->Session->write('tmp.format', $format);
+                                            $this->Progress->end('/models/getGeneration');
+                                        }
+                                        else{
+                                            $this->set('listFiles', $listFiles);
+                                            $this->set('format', $format);
+                                        }
 				}
 				else {
+                                        $nomSansFormat = $nomFichier;
 					$nomFichier = "$nomFichier.$format";
 					$fichier = $this->Gedooo->createFile($path, $nomFichier, '');
 					$oFusion->SendContentToFile($fichier);
@@ -456,19 +503,39 @@ class ModelsController extends AppController {
 					if (($format == 'pdf') && ($joindre_annexe))
 						$this->Pdf->concatener($chemin_fichier, $annexes);
 					$content = file_get_contents($chemin_fichier);
-
+                                        
 					$time_end = microtime(true);
 					$time = $time_end - $time_start;
-                                        
-					header("Content-type: $sMimeType");
-					header("Content-Disposition: attachment; filename=\"$nomFichier\"");
-					header("Content-Length: ".strlen($content));
-					die ($content);
+                                        Configure::write('debug', 0);
+                                        if ($progress){
+                                            $this->Progress->at(100, 'Chargement des résultats...');
+                                            $listFiles[$urlWebroot.$nomSansFormat] = 'Document généré';
+                                            $this->Session->write('tmp.listFiles', $listFiles);
+                                            $this->Session->write('tmp.format', $format.'2');
+                                            $this->Progress->end('/models/getGeneration');
+                                        }else{
+                                            header("Content-type: $sMimeType");
+                                            header("Content-Disposition: attachment; filename=\"$nomFichier\"");
+                                            header("Content-Length: ".strlen($content));
+                                            die ($content);
+                                        }
 				}
 		}
 	}
+        
+        function getGeneration(){
+            $listFiles = $this->Session->read('tmp.listFiles');
+            $this->Session->delete('tmp.listFiles');
+            $format = $this->Session->read('tmp.format');
+            $this->Session->delete('tmp.format');
+            
+            $this->set('listFiles', $listFiles);
+            $this->set('format', $format);
+            $this->set('urlRetour', $this->Session->read('user.User.lasturl'));
+            $this->render('generer');
+        }
 
-	function _sendDocument($acteur, $fichier, $path, $doc) {
+	function _sendDocument($acteur, $fichier, $path) {
 		if (($this->Session->read('user.format.sortie')==0) )
 			$format    = ".pdf";
 		else
