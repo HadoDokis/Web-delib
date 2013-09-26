@@ -28,8 +28,8 @@
                        echo $this->Html->link(SHY,'/postseances/downloadPV/'.$seance['Seance']['id'].'/complet',  array('class'=>'link_pvcomplet',  'escape' => false, 'title'=>'Génération du pv complet'), false);
 		   }
 		   else {
-                       echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id']."/$format/0/retour/1/", array('class'=>'link_pvsommaire', 'escape' => false, 'title'=>'Génération du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?');
-                       echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id']."/$format/0/retour/1/", array('class'=>'link_pvcomplet', 'escape' => false, 'title'=>'Génération du pv détaillé'),  'Etes-vous sur de vouloir lancer la génération des documents ?');
+                       echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvsommaire_id']."/$format/0/retour/1/0/1", array('class'=>'link_pvsommaire', 'escape' => false, 'title'=>'Génération du pv sommaire'),  'Etes-vous sur de vouloir lancer la génération des documents ?');
+                       echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id']."/$format/0/retour/1/0/1", array('class'=>'link_pvcomplet', 'escape' => false, 'title'=>'Génération du pv détaillé'),  'Etes-vous sur de vouloir lancer la génération des documents ?');
 		   }
                    echo $this->Html->link(SHY,'/deliberations/toSend/'.$seance['Seance']['id'], array('class'=>'link_tdt', 'escape' => false, 
                                                                                                    'title'=>'Envoie au TdT'), false);
