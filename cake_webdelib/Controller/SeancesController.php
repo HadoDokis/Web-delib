@@ -1534,14 +1534,12 @@ class SeancesController extends AppController {
         }
         
         function genererConvocation($seance_id, $model_id) { 
-            
             $this->_generer($seance_id,$model_id ,"/seances/sendConvocations/$seance_id/$model_id");
             exit;
         }
         
                 
         function genererOrdredujour($seance_id, $model_id) {
-            $this->Progress->start(200, 100,200, '#FFCC00','#006699');
             $this->_generer($seance_id,$model_id, "/seances/sendOrdredujour/$seance_id/$model_id");
             exit;
         }
