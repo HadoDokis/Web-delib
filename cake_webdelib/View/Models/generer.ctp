@@ -6,11 +6,13 @@
     document.getElementById("contTemp").style.display='none';
 </script>
 <?php
+if (!empty($listFiles))
     foreach ($listFiles as $path=> $name) {
         if ($name != 'Documents.zip') 
 	    echo $this->Html->link($name, $path.".$format")."<br>";
         else
 	    echo $this->Html->link($name, $path)."<br>";
     }
-    echo ("<br /><br /><a href='/seances/listerFuturesSeances'> Retour &agrave; la liste des séances </a>");
+if (!empty($urlRetour)) $urlRetour="javascript:history.back()";
+echo ("<br /><br /><a href='".$urlRetour."'> Retour &agrave; la liste des séances </a>");
 ?>
