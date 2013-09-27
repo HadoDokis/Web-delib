@@ -59,7 +59,7 @@
 
       <?php 
         echo $this->Html->tag("div", null, array("class" => "btn-group", 'style' => 'margin-top:10px;'));
-        if($seance['Seance']['traitee']==0){
+        if(empty($seance['Seance']['traitee'])){
         if($seance['Typeseance']['action']==0)
             echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour aux votes', "/seances/details/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false), 'Etes vous sur de vous quitter cette page ?');
         if($seance['Typeseance']['action']==1)
