@@ -47,8 +47,8 @@ Configure::write('USE_MAIL_SECURISE', false);
 Configure::write('PASSWORD_MAIL_SECURISE', '');
 
 /* Configuration du LDAP */
-Configure::write('USE_OPENLDAP', false); // ne fonctione pas => true false marche
-Configure::write('USE_AD', false); // ne fonctione pas => true false marche
+Configure::write('USE_OPENLDAP', false);
+Configure::write('USE_AD', false);
 Configure::write('LDAP_HOST', 'x.x.x.x');
 Configure::write('LDAP_PORT', '389');
 Configure::write('LDAP_LOGIN', NULL);
@@ -57,6 +57,19 @@ Configure::write('UNIQUE_ID', 'UID');
 Configure::write('BASE_DN', 'OU=Utilisateurs,dc=mairie-xxx,dc=xxx');
 Configure::write('ACCOUNT_SUFFIX', '@mairie-xxx.xxx');
 Configure::write('DN', 'dn');
+
+/**
+ * Pour active directory, utiliser define à la place de Configure::write
+ */
+
+//  define('LDAP_HOST', 'dali');
+//  define('LDAP_PORT', '389');
+//  define('LDAP_LOGIN', 'linux');
+//  define('LDAP_PASSWD', 'polux');
+//  define('UNIQUE_ID', 'samaccountname');
+//  define('BASE_DN', 'OU=Comptes Permanent,DC=cg66,DC=fr');
+//  define('ACCOUNT_SUFFIX', '@cg66.fr');
+//  define('DN', 'distinguishedname');*/
 
 /* Configuration Webservice du parapheur électronique */
 Configure::write('USE_PARAPH', false);
