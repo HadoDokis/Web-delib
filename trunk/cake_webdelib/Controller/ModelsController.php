@@ -410,9 +410,6 @@ class ModelsController extends AppController {
                                 
                                 $this->Session->write('tmp.listFiles', $listFiles);
                                 $this->Session->write('tmp.format', $format);
-$test=$this->Session->read('user.User');
-$this->log('avant redirect','debug');
-$this->log($test,'debug');
                                 if ($progress)
                                     $this->Progress->end('/models/getGeneration');
 				$genereConvocation = true;
