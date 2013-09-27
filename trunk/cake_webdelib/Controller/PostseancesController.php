@@ -349,7 +349,7 @@ class PostseancesController extends AppController {
                 $doc->appendChild($this->_createElement($dom, 'typeseanceACTE', $type_seance));
                 $delib_filename = $delib_id.'-'.$delib['Deliberation']['num_delib'].'.pdf';
 
-                $document = $this->_createElement($dom, 'document', null, array('nom'=>$delib_filename, 'type' => 'Deliberation' ));
+                $document = $this->_createElement($dom, 'document', null, array('nom'=>$delib_filename,'relname'=>$delib_filename,  'type' => 'Deliberation' ));
                 $document->appendChild($this->_createElement($dom, 'titre', $delib['Deliberation']['objet_delib']));
                 $document->appendChild($this->_createElement($dom, 'description', $delib['Deliberation']['titre']));
                 $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
@@ -363,7 +363,7 @@ class PostseancesController extends AppController {
                                                       "application/pdf");*/
 	        $zip->addFromString($delib_filename, $delib['Deliberation']['delib_pdf']);
 
-                $document = $this->_createElement($dom, 'document', null, array('nom'=>$delib_filename, 'type' => 'Rapport' ));
+                $document = $this->_createElement($dom, 'document', null, array('nom'=>$delib_filename,'relname'=>$delib_filename, 'type' => 'Rapport' ));
                 $document->appendChild($this->_createElement($dom, 'titre', $delib['Deliberation']['objet_delib']));
                 $document->appendChild($this->_createElement($dom, 'description', $delib['Deliberation']['titre']));
                 $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));

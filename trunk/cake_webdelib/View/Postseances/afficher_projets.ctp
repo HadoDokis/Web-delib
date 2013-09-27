@@ -21,7 +21,7 @@
 		    <td>
 	           <?php 
 		        if ($pv_figes != 1)
-		            echo $this->Html->link(SHY,'/seances/saisirDebat/' .$projet['Deliberation']['id'], array('class'=>'link_debat', 'escape' => false, 'title'=>'Saisir les debats'));
+		            echo $this->Html->link(SHY,'/seances/saisirDebat/' .$projet['Deliberation']['id'].'/'.$seance_id, array('class'=>'link_debat', 'escape' => false, 'title'=>'Saisir les debats'));
 		    
 		        if ($format == 0) 
 				    echo $this->Html->link(SHY, '/deliberations/downloadDelib/'.$projet['Deliberation']['id'],  array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'));
