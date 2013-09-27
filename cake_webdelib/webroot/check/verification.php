@@ -1269,4 +1269,79 @@ function checkGED(){
     d("Dossier distant : ".$repoGED, 'info');
 }
 
+function checkLDAP(){
+    
+    $ldapInfos = array();
+    if(Configure::read('USE_OPENLDAP')){
+        $ldapInfos["Serveur"] = Configure::read("LDAP_HOST");
+        $ldapInfos["Port"] = Configure::read("LDAP_PORT");
+        $ldapInfos["Login"] = Configure::read("LDAP_LOGIN");
+        $ldapInfos["Password"] = Configure::read("LDAP_PASSWD");
+        $ldapInfos["Unique_ID"] = Configure::read("UNIQUE_ID");
+        $ldapInfos["Base DN"] = Configure::read("BASE_DN");
+        $ldapInfos["Account_suffix"] = Configure::read("ACCOUNT_SUFFIX");
+        $ldapInfos["DN"] = Configure::read("DN");
+    }
+    elseif(Configure::read('USE_AD')){
+        $ldapInfos = array();
+        $ldapInfos["Serveur"] = LDAP_HOST;
+        $ldapInfos["Port"] = LDAP_PORT;
+        $ldapInfos["Login"] = LDAP_LOGIN;
+        $ldapInfos["Password"] = LDAP_PASSWD;
+        $ldapInfos["Unique_ID"] = UNIQUE_ID;
+        $ldapInfos["Base DN"] = BASE_DN;
+        $ldapInfos["Account_suffix"] = ACCOUNT_SUFFIX;
+        $ldapInfos["DN"] = DN;      
+    }
+    
+    // affichage des infos LDAP
+    d('Paramètres de connexion : ', 'info');
+    echo '<ul>';
+    foreach($ldapInfos as $key=>$valeur) {
+            if ($key == 'Password') $valeur = '*******';
+            t('li', $key.' : '.$valeur);
+    }
+    echo '</ul>';
+    
+    // ouverture de la connexion
+    $conn = ldap_connect($ldapInfos["Serveur"], $ldapInfos["Port"]);
+    if ($conn) {
+        if (Configure::read('USE_AD')){
+            ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+            ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
+        }
+        
+        // authentification
+        if(Configure::read('USE_OPENLDAP'))
+            @ldap_bind($conn, $ldapInfos["Unique_ID"].'='.$ldapInfos["Login"].','.$ldapInfos["Base DN"], $ldapInfos["Password"]);
+        else
+            @ldap_bind($conn, $ldapInfos["Login"], $ldapInfos["Password"]);
+        
+        if (ldap_error($conn) == "Can't contact LDAP server"){
+            d('Impossible de se connecter au serveur LDAP \''.$ldapInfos["Serveur"] .':'. $ldapInfos["Port"].'\'', 'ko');
+        }else{
+            d('Connexion au serveur '.$ldapInfos["Serveur"] .':'. $ldapInfos["Port"].' réussie', 'ok');
+            if(ldap_error($conn) == "Success"){
+                d('Authentification à l\'annuaire LDAP réussie', 'ok');
+            } else {
+                d('Echec de l\'authentification à l\'annuaire LDAP : '.ldap_error($conn), 'ko');
+                if(Configure::read('USE_OPENLDAP')){
+                    // recherche de l'utilisateur dans l'annuaire (ne fonctionne que si ldap public)
+                    $result = @ldap_search($conn, $ldapInfos["Base DN"], $ldapInfos["Unique_ID"]."=".$ldapInfos["Login"]);
+                    $info = @ldap_get_entries($conn, $result);
+                    if ($info['count'] > 0){
+                        d('L\'utilisateur \''.$ldapInfos["Login"].'\' est bien présent dans l\'annuaire', 'ok');
+                        d('Le mot de passe de l\'utilisateur \''.$ldapInfos["Login"].'\'doit être incorrect', 'ko');
+                    } else
+                        d('L\'utilisateur \''.$ldapInfos["Login"].'\' est introuvable (ou les droits d\'accès sont insuffisants)', 'ko');
+                }
+            }
+        }
+        
+        // Fermeture de la connexion
+        @ldap_close($conn);
+    } else {
+        d('Connexion au serveur LDAP : échec', 'ko');
+    }
+}
 ?>
