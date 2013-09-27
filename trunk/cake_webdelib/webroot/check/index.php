@@ -224,8 +224,22 @@ require_once('verification.php');
 <br />
 <?php 
     }
+    $useOpenLdap = Configure::read("USE_OPENLDAP");
+    $useAD = Configure::read("USE_AD");
+    if ($useOpenLdap || $useAD){
 ?>
-
+<div class="row">
+	<div class="span12">
+<div class="well well-small">
+          <p><i class="icon-group"></i> Connecteur <?php if ($useOpenLdap) echo "openLDAP"; else echo "Active Directory"; ?></p>
+<?php checkLdap(); ?>
+</div>
+</div>
+</div>
+<br />
+<?php 
+    }
+?>
 </div><!--row-->
 
 </div><!--container-->
