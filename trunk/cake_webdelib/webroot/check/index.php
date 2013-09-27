@@ -210,13 +210,24 @@ require_once('verification.php');
 <br />
 <?php
 } 
+    $useGED = Configure::read("USE_GED");
+    if ($useGED){
 ?>
-
+<div class="row">
+	<div class="span12">
+<div class="well well-small">
+          <p><i class="icon-book"></i> Connecteur CMIS GED</p>
+<?php checkGED(); ?>
+</div>
+</div>
+</div>
+<br />
+<?php 
+    }
+?>
 
 </div><!--row-->
-<?php
-//phpinfo();
-?>
+
 </div><!--container-->
 <?php
 require_once('footer.html');
