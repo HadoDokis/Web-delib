@@ -62,13 +62,13 @@ Configure::write('DN', 'dn');
  * Pour active directory, utiliser define à la place de Configure::write
  */
 
-//  define('LDAP_HOST', 'dali');
+//  define('LDAP_HOST', 'your.active_directory.server');
 //  define('LDAP_PORT', '389');
-//  define('LDAP_LOGIN', 'linux');
-//  define('LDAP_PASSWD', 'polux');
-//  define('UNIQUE_ID', 'samaccountname');
-//  define('BASE_DN', 'OU=Comptes Permanent,DC=cg66,DC=fr');
-//  define('ACCOUNT_SUFFIX', '@cg66.fr');
+//  define('LDAP_LOGIN', 'your_ad_login');
+//  define('LDAP_PASSWD', 'your_ad_password');
+//  define('UNIQUE_ID', 'UID');
+//  define('BASE_DN', 'OU=users,dc=CGxx,dc=fr');
+//  define('ACCOUNT_SUFFIX', '@CG-xx.xx');
 //  define('DN', 'distinguishedname');*/
 
 /* Configuration Webservice du parapheur électronique */
