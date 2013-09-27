@@ -1262,4 +1262,11 @@ function php_check_librairies($libs) {
     }
 }
 
+function checkGED(){
+    $urlGED     = Configure::read("GED_URL");
+    $repoGED    = Configure::read("GED_REPO");
+    d("URL de la GED : ".$urlGED, 'info');
+    d("Dossier distant : ".$repoGED, 'info');
+}
+
 ?>
