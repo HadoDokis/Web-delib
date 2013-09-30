@@ -184,7 +184,6 @@ function choixModele(o) {
 		                echo $this->Html->link(SHY,
 						       '/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'].'/-1/0/retour/0/0/0/', 
                                                       array('class'=>'link_pdf delib_pdf', 
-//                                                          'onclick' => 'pauseWhileDownload(this)',
 	                                               'alt'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'],
                                                        'escape' => false,
                                                        'title'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'] ),
