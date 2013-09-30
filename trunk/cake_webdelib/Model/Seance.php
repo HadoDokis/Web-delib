@@ -219,7 +219,7 @@ class Seance extends AppModel {
 				'Deliberation.etat !='=> -1) ));
 		return($deliberations+1);
 	}
-
+        
 	function reOrdonne($delib_id, $seances_selectionnees) {
 		if (is_int($seances_selectionnees)) {
 			$seance_id = $seances_selectionnees;
@@ -231,8 +231,6 @@ class Seance extends AppModel {
 		    $seances_selectionnees= array();
 
 		$seances_enregistrees = array();
-		App::import('Model', 'Deliberationseance');
-		$this->Deliberationseance = new Deliberationseance();
 
 		$delibs = $this->Deliberationseance->find('all', array(
                                 'conditions' => array('Deliberation.id' => $delib_id),
@@ -246,28 +244,7 @@ class Seance extends AppModel {
 		$seances_a_retirer = array_diff($seances_enregistrees, $seances_selectionnees);
                 
 		foreach($seances_a_retirer as $key => $seance_id) {
-                    //$position = 1;
-                    $jointure = $this->Deliberationseance->find('first', array('conditions' => array( 'Seance.id'            => $seance_id,
-                                    'Deliberation.id'      => $delib_id,
-                                    'Deliberation.etat !=' => -1),
-                                    'fields'     => array( 'Deliberationseance.id')));
-                    $this->Deliberationseance->delete($jointure['Deliberationseance']['id']);
-//On commente le code car on ne veut pas reordonner après une supression
-                   /* $seances = $this->Deliberationseance->find('all', array('conditions' => array( 'Seance.id'            => $seance_id,
-                                    'Deliberation.etat !=' => -1),
-                                    'fields'     => array( 'Deliberationseance.id',
-                                                    'Deliberationseance.position' ),
-                                    'order'      => array( 'Deliberationseance.position ASC' )));
-                    // pour toutes les délibsd
-                    /*foreach($delibs as $delib) {
-                            if ($position != $delib['Deliberationseance']['position'])
-                                    $this->Deliberationseance->save(array( 'id'      => $delib['Deliberationseance']['id'],
-                                            'deliberation_id'      => $delib['Deliberationseance']['deliberation_id'],
-                                            'seance_id'      => $delib['Deliberationseance']['seance_id'],
-                                            'position' => $position++),
-                                                    array( 'validate' => false,
-                                                                    'callbacks' => false));
-                    }*/
+                    $this->Deliberationseance->deleteDeliberationseance($delib_id, $seance_id);
 		}
                 
                 if (is_array($seances_enregistrees) and  (!empty($seances_enregistrees)))  {
@@ -277,23 +254,8 @@ class Seance extends AppModel {
                     $seances_a_ajouter = $seances_selectionnees;
 
 		foreach($seances_a_ajouter as $seance_id) {
-                        $Deliberationseance=array();
-			$this->Deliberationseance->create();
-			$Deliberationseance['Deliberationseance']['position'] = intval($this->getLastPosition($seance_id));
-			$Deliberationseance['Deliberationseance']['deliberation_id'] = $delib_id;
-			$Deliberationseance['Deliberationseance']['seance_id'] = $seance_id;
-			$this->Deliberationseance->save($Deliberationseance['Deliberationseance']);
+                    $this->Deliberationseance->addDeliberationseance($delib_id, $seance_id);
 		}
-                
-                
-
-		$multidelibs = $this->Deliberation->find('all', array('conditions' => array('Deliberation.parent_id' => $delib_id),
-				'recursive'  => -1,
-				'fields' => array('Deliberation.id')));
-                if (isset($multidelibs) && !empty($multidelibs)) 
-		    foreach ($multidelibs as $multidelib)
-			$this->reOrdonne($multidelib['Deliberation']['id'], $seances_selectionnees);
-                
 	}
 
 	function getDate($seance_id) {

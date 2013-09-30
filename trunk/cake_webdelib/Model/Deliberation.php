@@ -776,32 +776,27 @@ class Deliberation extends AppModel {
 			}else $oMainPart->addElement(new GDO_FieldType("debat_commission",      "",    "text"));
 
 		}
-
-		// $annexe_ids = $this->Annex->getAnnexesFromDelibId($delib['Deliberation']['id'], 0, 1);
-		$annexe_ids = array();
+                
 		$anns = $this->Annex->find('all', array('conditions' =>  array(
 				'Annex.foreign_key' => $delib['Deliberation']['id']),
-				'fields' => array('Annex.id', 'Annex.filetype'), 
+				'fields' => array('Annex.id', 'Annex.filetype', 'Annex.filename', 'Annex.titre', 'Annex.data'), 
                                 'order' => array('Annex.id' => 'ASC'),
 				'recursive' => -1));
-		foreach( $anns as $ann )
-			$annexe_ids[] = $ann['Annex']['id'];
-		$oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($annexe_ids), 'text'));
-
-		@$annexes =  new GDO_IterationType("Annexes");
-		foreach($annexe_ids as $key => $annexe_id) {
-                        unset ($annexe);
+                //$this->log('annexes=>'.var_export( $annexes, true),'debug');
+                
+		$oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($anns), 'text'));
+                $this->log('nombre_annexe=>'.count($anns),'debug');
+		//@$annexes =  new GDO_IterationType("Annexes");
+		foreach($anns as $key => $annexe) {
 		        $oDevPart = new GDO_PartType();
-			$annexe = $this->Annex->find('first', array ('conditions' => array('Annex.id' => $annexe_id),
-				                                     'recursive'  => -1));
 			$oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
+                        $this->log('titre_annexe=>'.$annexe['Annex']['titre'],'debug');
 			if (($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {
 			    $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
 			    $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
 			 			'application/vnd.oasis.opendocument.text',
 						'binary',
 						$annexe['Annex']['data']));
-			    $annexes->addPart($oDevPart);
                             //file_put_contents('/tmp/Annexe_'.$annexe_id.'.odt', $annexe['Annex']['data']);
 			}elseif (($annexe['Annex']['filetype'] == "application/pdf") && !empty($annexe['Annex']['data'])) {
 			    $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
@@ -809,10 +804,12 @@ class Deliberation extends AppModel {
 			 			'application/vnd.oasis.opendocument.text',
 						'binary',
 						$annexe['Annex']['data']));
-			    $annexes->addPart($oDevPart);
                             //file_put_contents('/tmp/Annexe_'.$annexe_id.'.odt', $annexe['Annex']['data']);
 			}
+                        $annexes->addPart($oDevPart);
+                        unset ($oDevPart);
 		}
+                unset ($anns);
 		@$oMainPart->addElement($annexes);
 
 		//LISTE DES PRESENCES...
@@ -1452,6 +1449,54 @@ class Deliberation extends AppModel {
 		return ($this->query($requete));
 
 	}
+        
+       /* function getMultidelibs($delib_id){
+            $this->Multidelib->Behaviors->attach('Containable');
+            $multidelib=$this->Multidelib->find('all', array(
+                    'fields' => array('Deliberation.id'),
+                    'contain' => array('Deliberationseance.position'),
+                    'conditions' => array('Deliberation.parent_id'=>$delib_id),
+                    'order' => array('Deliberationseance.position'),
+                    'recursive'   => -1));
+        }*/
+        
+        function getMultidelibs($delib_id) {
+		$deliberations = $this->find(
+                    'all',
+                    array(
+                        'fields' => array('Deliberation.id'),
+                        'recursive' => -1,
+                        'conditions' =>  array(
+                            'Deliberation.parent_id' => $delib_id
+                        ),
+                        'order'=>'Deliberation.id ASC',
+                    )
+                );
+
+		$deliberations = (array)Hash::extract($deliberations, '{n}.Deliberation.id');
+		return $deliberations;
+	}
+        
+        /*  function getMultidelibs($delib_id) {
+                $this->Behaviors->attach('Containable');
+		$deliberations = $this->Deliberationseance->find(
+                    'all',
+                    array(
+                        'fields' => array('Deliberation.parent_id'),
+                         'contain'    => array('Deliberationseance','Deliberation'),
+                        'recursive' => -1,
+                        'conditions' =>  array(
+                            'Deliberation.parent_id' => $delib_id
+                        ),
+                        'order'=>'Deliberationseance.position ASC',
+                    )
+                );
+                debug($deliberations);exit;
+              
+
+		$deliberations = (array)Hash::extract($deliberations, '{n}.Deliberationseance.deliberation_id');
+		return $deliberations;
+	}*/
 
 	function copyPositionsDelibs($delib_id, $new_id) {
 		App::import('Model', 'Deliberationseance');
@@ -1494,7 +1539,7 @@ class Deliberation extends AppModel {
             }
             return $actes;
         }
-
+        
         function  is_delib($acte_id) {
             $this->Behaviors->attach('Containable');
             $acte = $this->find('first', array('conditions' => array('Deliberation.id' => $acte_id),
