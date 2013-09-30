@@ -173,5 +173,24 @@ class AppController extends Controller {
 		return $array;
 	}
 
+        /**
+         * @see: http://stackoverflow.com/a/1459794/59087
+         * @see: http://shiflett.org/blog/2006/mar/server-name-versus-http-host
+         * @see: http://stackoverflow.com/a/3290474/59087
+         * 
+         * @param type $cookieName
+         * @param type $cookieValue
+         * @param type $httpOnly
+         * @param type $secure
+         */
+    public function setCookieToken($cookieName, $cookieValue, $httpOnly = true, $secure = false) {
+        setcookie(
+                $cookieName, $cookieValue, 2147483647, // expires January 1, 2038
+                "/", // your path
+                $_SERVER["HTTP_HOST"], // your domain
+                $secure, // Use true over HTTPS
+                $httpOnly // Set true for $AUTH_COOKIE_NAME
+        );
+    }
 }
 ?>
