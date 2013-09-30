@@ -57,10 +57,14 @@ class AppModel extends Model{
  */
 
 function checkMimetype($field_validation, $content, $allowed_mimetypes) {
+    
     if (empty($this->data[$this->alias][$content])) {
         return true;
     }
     else {
+        if((!in_array($this->data[$this->alias][$content.'_type'], $allowed_mimetypes)))
+           return false;
+                
         $DOC_TYPE = Configure::read('DOC_TYPE');
         $tmpfname = tempnam(TMP, "CHK_");
         $file = new File($tmpfname, true);
