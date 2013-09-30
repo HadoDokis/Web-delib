@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Florian Ajir
  */
 $(document).ready(function() {
-    $("a.link_pdf").attendable({message: 'Veuillez patienter pendant la génération du pdf'});
+    $("a.delib_pdf").attendable({message: 'Veuillez patienter pendant la génération du pdf'});
 });
 
 function pauseWhileDownload(elt) {
