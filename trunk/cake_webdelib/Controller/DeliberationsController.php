@@ -329,8 +329,9 @@ class DeliberationsController extends AppController {
                 $this->request->data['Deliberation']['num_pref_libelle'] =  $this->data['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
             $this->request->data['Deliberation']['num_pref']=$this->data['Deliberation']['num_pref'];
                 
-            }        
-            $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+            } 
+            
+            $this->set('themes',$this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
             $this->set('selectedRapporteur', $this->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
             $this->set('date_seances', $this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
@@ -1228,10 +1229,10 @@ class DeliberationsController extends AppController {
             if ($this->Deliberation->saveField('circuit_id', $circuit_id)) {
                 // cas pour l'editeur en ligne
                 if ((Configure::read('GENERER_DOC_SIMPLE')) && ($this->data['Deliberation']['texte_projet'] == '<br />'))
-                    $this->Session->setFlash('Attention, le texte projet est vide', 'growl', array('type' => 'erreur'));
+                    $this->Session->setFlash('Attention, le texte projet est vide', 'growl', array('type' => 'important'));
                 // Cas pour le mode OpenOffice
                 if ((!Configure::read('GENERER_DOC_SIMPLE')) && ($this->data['Deliberation']['texte_projet'] == ''))
-                    $this->Session->setFlash('Attention, le texte projet est vide', 'growl', array('type' => 'erreur'));
+                    $this->Session->setFlash('Attention, le texte projet est vide', 'growl', array('type' => 'important'));
 
                 $this->redirect('/deliberations/recapitulatif/' . $id);
             }
@@ -2223,7 +2224,7 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.redacteur_id'] = $userId;
         $conditions['Deliberation.parent_id'] = null;
 
-        $ordre = array('Deliberation.created' => 'DESC');
+        $ordre = array('Deliberation.id' => 'DESC');
         $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
         $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
             'limit' => $limit,
@@ -2315,7 +2316,7 @@ class DeliberationsController extends AppController {
         $conditions['OR']['Deliberation.redacteur_id'] = $userId;
         $conditions['Deliberation.parent_id'] = NULL;
 
-        $ordre = array('Deliberation.created' => 'DESC');
+        $ordre = array('Deliberation.id' => 'DESC');
         $projets = $this->Deliberation->find('all', array(
             'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
                 'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
@@ -2362,7 +2363,7 @@ class DeliberationsController extends AppController {
 
         $conditions['Deliberation.parent_id'] = NULL;
 
-        $ordre = 'Deliberation.created DESC';
+        $ordre = 'Deliberation.id DESC';
 
         $projets = $this->Deliberation->find('all', array(
             'conditions' => $conditions,
@@ -2484,7 +2485,7 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.etat !='] = -1;
         $conditions['Deliberation.etat <'] = 3;
         $conditions['Deliberation.parent_id'] = NULL;
-        $ordre = 'Deliberation.created DESC';
+        $ordre = 'Deliberation.id DESC';
         $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
             'order' => array($ordre),
             'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
@@ -2533,7 +2534,7 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.etat'] = 1;
         $conditions['Deliberation.parent_id'] = null;
 
-        $ordre = 'Deliberation.created DESC';
+        $ordre = 'Deliberation.id DESC';
         $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
             'order' => array($ordre),
             'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
@@ -2624,7 +2625,7 @@ class DeliberationsController extends AppController {
         $delibs_sans_seance = $this->Deliberation->getDeliberationsSansSeance('id', array_keys($this->Session->read('user.Nature')));
 
         $projets = $this->Deliberationseance->find('all', array('conditions' => $conditions,
-            'order' => array('Deliberation.created DESC'),
+            'order' => array('Deliberation.id DESC'),
             'fields' => array('Deliberationseance.deliberation_id',
                 'Deliberationseance.seance_id'),
             'contain' => array('Deliberation.id', 'Seance.id')));
@@ -2861,7 +2862,7 @@ class DeliberationsController extends AppController {
                 $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($userId));
                 if (!empty($listeDelibsParticipe))
                     $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
-                $ordre = 'Deliberation.created DESC';
+                $ordre = 'Deliberation.id DESC';
                 
                 //debug($conditions);
                 //TODO on peut voir certain projet mecanique à revoir
