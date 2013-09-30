@@ -232,3 +232,11 @@
     *) Tri des actes pour envoi au controle de légalité désormais par numéro de délibération (ascendant)
     *) Correction du connecteur Asalae + configuration : webdelib.inc.default
     *) Mise en place du logo de la collectivité en BDD
+    *) Le retour à la liste des délibération sur saisie des débats en post-séance ne fonctionnait pas
+    *) L'avertissement pour le le texte de projet "vide" pour l'insertion dans un circuit passe de erreur à important
+    *) Correction lors de l'ajout d'un fichier de débat en post-séance 
+    *) Tri des actes désormais par numéro d'id (decendant) au lieu de la date de création
+    *) Correction sur les imports de document au format docx (reconnu comme des zip)
+    *) Correction sur l'affichage des titres des annexes non odt ou pdf dans une génération
+    *) Correction sur l'ajout d'un acte dans une séance depuis un avis (ajout en fin de séance)
+    *) Correction sur la suppression d'un acte dans une séance (on réordonne la séance)
