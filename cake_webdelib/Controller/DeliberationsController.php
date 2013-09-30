@@ -486,11 +486,25 @@ class DeliberationsController extends AppController {
             //Enregistrement du type mime vérifier
             if(!isset($DOC_TYPE[$file->mime()]['mime_conversion'])){
                 $file->close();
-                $this->Annex->validationErrors['_save_annexe'] = 'Fichier de type inconnu. Veuillez contacter votre administrateur';
+                $this->Annex->validationErrors['_save_annexe'] = 'Fichier de type inconnu. Veuillez contacter votre administrateur ('.$file->mime().')';
                 return false;
             }
-                
+            //Gestion des docx pas de convertion pour les docx reconnu comme des zip
+            $pasdeconvertion=false;
+            if($file->mime()=='application/zip' 
+                   && (!array_key_exists($annexe['file']['type'], $DOC_TYPE) XOR 
+                    (isset($DOC_TYPE[$annexe['file']['type']]['extention']) && $DOC_TYPE[$annexe['file']['type']]['extention']!='odt' )))
+            {
+                $pasdeconvertion=true;
+                $newAnnexe['Annex']['filetype'] = $annexe['file']['type'];
+                if(!isset($DOC_TYPE[$annexe['file']['type']]['mime_conversion'])){
+                $file->close();
+                $this->Annex->validationErrors['_save_annexe'] = 'Fichier de type inconnu. Veuillez contacter votre administrateur ('.$annexe['file']['type'].')';
+                return false;
+                }
+            }else
             $newAnnexe['Annex']['filetype'] = $DOC_TYPE[$file->mime()]['mime_conversion'];
+            
             $newAnnexe['Annex']['size'] = $file->size();
             $newAnnexe['Annex']['data'] = $file->read();
             
@@ -499,7 +513,7 @@ class DeliberationsController extends AppController {
                 $newAnnexe['Annex']['filename_pdf'] =  $annexe['file']['name'];
                 $newAnnexe['Annex']['data'] =   $this->Pdf->toOdt($file->pwd());
                 $newAnnexe['Annex']['filename'] =  $annexe['file']['name'].'.odt';
-            } elseif(array_key_exists($file->mime(), $DOC_TYPE) && $DOC_TYPE[$file->mime()]['extention']=='odt') {
+            } elseif(array_key_exists($file->mime(), $DOC_TYPE) && $DOC_TYPE[$file->mime()]['extention']=='odt' && !$pasdeconvertion) {
                 $newAnnexe['Annex']['data_pdf'] = $this->Conversion->convertirFichier($file->pwd(), 'pdf');
                 $newAnnexe['Annex']['filename_pdf'] = $annexe['file']['name'].'.pdf';
             }
