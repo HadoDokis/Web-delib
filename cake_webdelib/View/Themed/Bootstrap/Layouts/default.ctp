@@ -47,6 +47,8 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->html->script('jquery.jgrowl', true);
         echo $this->Html->script('utils');
         echo $this->Html->script('bootstrap/application');
+        echo $this->html->script('attendable', true); 
+        echo $this->html->script('waitAndBlock', true); 
         echo $this->fetch('script');
         ?>
 
