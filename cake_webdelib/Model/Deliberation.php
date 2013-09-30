@@ -786,7 +786,7 @@ class Deliberation extends AppModel {
                 
 		$oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($anns), 'text'));
                 $this->log('nombre_annexe=>'.count($anns),'debug');
-		//@$annexes =  new GDO_IterationType("Annexes");
+		@$annexes =  new GDO_IterationType("Annexes");
 		foreach($anns as $key => $annexe) {
 		        $oDevPart = new GDO_PartType();
 			$oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
