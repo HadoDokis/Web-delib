@@ -311,12 +311,8 @@ class Infosup extends AppModel
                                                            'Infosup.file_name' ,'Infosup.file_type','Infosup.file_size' ,
                                                                             ),
                                                         'conditions' => array( 'Infosup.foreign_key' =>$id,
-                                                                               'Infosup.model' =>$model/*,
-                                                                                'Infosupdef.type <>'=>'odtFile'*/), 
+                                                                               'Infosup.model' =>$model), 
                                                         'recursive'  => 0));
-
-            //debug($infosups);
-
             foreach($infosups as $infosup) {
                 if ($infosup['Infosupdef']['type'] == 'text') {
                         $return[$infosup['Infosupdef']['code']] = array('type'=>'string',
@@ -330,6 +326,7 @@ class Infosup extends AppModel
                                                                         'content'=>$this->Date->frDate($infosup['Infosup']['date']));
                 }elseif($infosup['Infosupdef']['type'] == 'file' || $infosup['Infosupdef']['type'] == 'odtFile' ) {
                     $return[$infosup['Infosupdef']['code']] = array(    'type'=>'file', 
+                                                                        'id'=> $infosup['Infosup']['id'],
                                                                         'file_name'=> $infosup['Infosup']['file_name'],
                                                                         'file_type'=> $infosup['Infosup']['file_type'], 
                                                                         'content'=> $infosup['Infosup']['content']);
