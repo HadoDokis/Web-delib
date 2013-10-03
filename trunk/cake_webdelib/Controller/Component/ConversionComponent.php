@@ -112,7 +112,7 @@ function convertirFlux($content, $format) {
                      $content_format = 'odt';
                  }
  
-                $params = array( new XML_RPC_Value($content, 'string'),
+                $params = array( new XML_RPC_Value(base64_encode($content), 'string'),
                                  new XML_RPC_Value($content_format,    'string'),
                                  new XML_RPC_Value($format,    'string'),
                                  new XML_RPC_Value(false,      'boolean'),
@@ -124,7 +124,7 @@ function convertirFlux($content, $format) {
                 $cli = new XML_RPC_Client('/', $url);
                 $resp = $cli->send($msg);
                 if (!empty($resp->xv->me['string']))
-                    return ($resp->xv->me['string']);
+                    return (base64_decode($resp->xv->me['string']));
                 else
                     return false;
            	break;       
