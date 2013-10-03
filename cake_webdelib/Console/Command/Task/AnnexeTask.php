@@ -44,7 +44,7 @@ class AnnexeTask extends Shell {
      * @var type array
      */
     private $annexesInError;
-    
+
     /**
      * Chemins fichiers & dossiers
      */
@@ -98,32 +98,34 @@ class AnnexeTask extends Shell {
                 break;
         }
         $nbAnnexes = $this->countAnnexesForDelibs($projets);
-        $this->out("\n<important>Nombre d'annexes à tester : " . $nbAnnexes . ' (' . count($projets) . " délibérations)...</important>\n");
-        $i = 1;
-        //Pour chaque projet
-        foreach ($projets as $projet) {
-            foreach ($projet['Annex'] as $annexe) {
-                
-                $this->out("$i/$nbAnnexes ---> Test de l'annexe ".$annexe['filename'] .' (id: '. $annexe['id'] . ', délibération: '.$projet['Deliberation']['id'] .')... ', 0);
-                
-                // Envoi de l'annexe à gedooo
-                $result = $this->_sendToGedooo($annexe, $projet['Deliberation']['id']);
-                // Log du résultat
-                $this->_ajouterLigneAuRapport($projet['Deliberation']['id'], $annexe['id'], $result);
-                $i++;
-            } // Fin foreach annexe
-        } // Fin foreach projet
-        
-        try {
-            // Création du fichier de rapport
-            $this->_creerRapport();
+        if (!empty($nbAnnexes)) {
+            $this->out("\n<important>Nombre d'annexes à tester : " . $nbAnnexes . ' (' . count($projets) . " délibérations)...</important>\n");
+            $i = 1;
+            //Pour chaque projet
+            foreach ($projets as $projet) {
+                foreach ($projet['Annex'] as $annexe) {
+
+                    $this->out("$i/$nbAnnexes ---> Test de l'annexe " . $annexe['filename'] . ' (id: ' . $annexe['id'] . ', délibération: ' . $projet['Deliberation']['id'] . ')... ', 0);
+
+                    // Envoi de l'annexe à gedooo
+                    $result = $this->_sendToGedooo($annexe, $projet['Deliberation']['id']);
+                    // Log du résultat
+                    $this->_ajouterLigneAuRapport($projet['Deliberation']['id'], $annexe['id'], $result);
+                    $i++;
+                } // Fin foreach annexe
+            } // Fin foreach projet
+
+            try {
+                // Création du fichier de rapport
+                $this->_creerRapport();
+            } catch (Exception $exc) {
+                $this->out('<error>Erreur fichier journal : ' . $exc->getMessage() . '</error>');
+            }
+        } else {
+            $this->out("\n<info>Aucune annexe à tester !</info>\n");
         }
-        catch (Exception $exc) {
-            $this->out('<error>Erreur fichier journal : ' . $exc->getMessage() . '</error>');
-        }
-        
         $this->annexesFolder->delete();
-        
+
         return $this->annexesInError;
     }
 
@@ -292,10 +294,10 @@ class AnnexeTask extends Shell {
             //Conversion et concaténation
             $oFusion->SendContentToFile($this->annexesFolder->path . DS . 'deliberation_' . $delib_id . '-annexe_' . $annexe['id'] . '.odt');
             $retourGedooo = "OK";
-            $this->out('<info>'.$retourGedooo.'</info>');
+            $this->out('<info>' . $retourGedooo . '</info>');
         } catch (Exception $exc) {
             $retourGedooo = "KO";
-            $this->out('<info>'.$retourGedooo.'</info>');
+            $this->out('<info>' . $retourGedooo . '</info>');
             $this->out("<warning>" . $exc->getMessage() . "</warning>");
 //            $this->out("<warning>Problème détecté :\n" . $exc->getTraceAsString() . "</warning>");
             $this->annexesInError[] = array(
@@ -304,7 +306,7 @@ class AnnexeTask extends Shell {
                 'delib_id' => $delib_id
             );
         }
-        
+
         $time_end = microtime(true);
         $this->out("<time>Durée : " . round($time_end - $time_start, 2) . 's</time>', 1, Shell::VERBOSE);
 
