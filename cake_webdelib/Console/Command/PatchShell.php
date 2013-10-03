@@ -15,13 +15,13 @@ class PatchShell extends AppShell {
 
     public function main() {
         $this->out('Script de patch de Webdelib');
-        
+
         // Création de styles perso
         $this->stdout->styles('time', array('text' => 'magenta'));
         $this->stdout->styles('important', array('text' => 'red', 'bold' => true));
         
         // Quelle version installer ? test des arguments
-        switch ($this->args[0]) {
+        switch ($this->command) {
             case "4101to4102":
                 $this->Version_4101to4102();
                 break;
@@ -29,7 +29,22 @@ class PatchShell extends AppShell {
             case "4102to4103":
                 $this->Version_4102to4103();
                 break;
+
+            case null: // Pas de commande
+                $this->out("\n<error>Un numéro de patch est nécessaire, tapez 'Console/cake patch -h' pour afficher l'aide.</error>\n");
+                break;
+
+            default : // Commande inconnue
+                $this->out("\n<error>Numéro de patch '" . $this->command . "' inconnu, tapez 'Console/cake patch -h' pour afficher l'aide.</error>\n");
         }
+        
+        /**
+         * Solution alternative plus élégante mais où il faut correctement nomer les fonctions
+        if (method_exists($this, $this->command))
+            $this->runCommand($this->command, $this->args);
+        else
+            $this->out("erreur");
+        */
     }
 
     /**
@@ -44,7 +59,7 @@ class PatchShell extends AppShell {
             'help' => __('Application du patch de mise à jour de 4.1.02 à 4.1.03.'),
             'parser' => array(
                 'options' => array(
-                     'classification' => array(
+                    'classification' => array(
                         'name' => 'classification',
                         'required' => false,
                         'short' => 'c',
@@ -72,19 +87,19 @@ class PatchShell extends AppShell {
                         'required' => false,
                         'short' => 'o',
                         'boolean' => true
-                        ),
+                    ),
                     'classification' => array(
                         'help' => __('Mise à jour de la classification.'),
                         'required' => false,
                         'short' => 'c',
                         'boolean' => true
-                        ),
+                    ),
                     'num_pref' => array(
                         'help' => __('Mise à jour des num_pref'),
                         'required' => false,
                         'short' => 'n',
                         'boolean' => true
-                        )
+                    )
                 )
             )
         ));
