@@ -31,15 +31,14 @@ class PatchShell extends AppShell {
                 break;
 
             case null: // Pas de commande
-                $this->out("\n<error>Un numéro de patch est nécessaire, tapez 'Console/cake patch -h' pour afficher l'aide.</error>\n");
+                $this->out("\n<error>Un nom de patch est nécessaire, tapez 'Console/cake patch -h' pour afficher l'aide.</error>\n");
                 break;
 
             default : // Commande inconnue
-                $this->out("\n<error>Numéro de patch '" . $this->command . "' inconnu, tapez 'Console/cake patch -h' pour afficher l'aide.</error>\n");
+                $this->out("\n<error>Commande '" . $this->command . "' inconnue, nom de patch attendu, tapez 'Console/cake patch -h' pour afficher l'aide.</error>\n");
         }
         
-        /**
-         * Solution alternative plus élégante mais où il faut correctement nomer les fonctions
+        /* // Solution alternative plus élégante mais où il faut correctement nommer les fonctions
         if (method_exists($this, $this->command))
             $this->runCommand($this->command, $this->args);
         else
