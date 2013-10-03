@@ -135,3 +135,4 @@ $cakeDescription = __d('webdelib', 'Webdelib');
             </div>
         </div>
 <?php echo $this->element('footer'); ?>
+<?php echo $this->element( 'sql_dump' ); ?>
