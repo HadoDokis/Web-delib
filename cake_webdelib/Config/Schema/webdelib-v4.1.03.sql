@@ -105,9 +105,9 @@ CREATE TABLE acteurs_seances (
     seance_id integer NOT NULL,
     mail_id integer NOT NULL,
     date_envoi timestamp without time zone NOT NULL,
-    date_reception timestamp without time zone
+    date_reception timestamp without time zone,
+    model varchar(20) NOT NULL
 );
-
 
 --
 -- Name: acteurs_seances_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -327,7 +327,8 @@ CREATE TABLE collectivites (
     adresse character varying(255) NOT NULL,
     "CP" integer NOT NULL,
     ville character varying(255) NOT NULL,
-    telephone character varying(20) NOT NULL
+    telephone character varying(20) NOT NULL,
+    logo bytea
 );
 
 
@@ -462,10 +463,10 @@ CREATE TABLE deliberations (
     is_multidelib boolean,
     parent_id integer,
     objet character varying(1000) NOT NULL,
-    objet_delib character varying(1000) NOT NULL,
-    titre character varying(1000) NOT NULL,
+    objet_delib character varying(1000),
+    titre character varying(1000),
     num_delib character varying(15),
-    num_pref character varying(100) NOT NULL,
+    num_pref character varying(255) NOT NULL,
     pastell_id character varying(10),
     tdt_id integer,
     "dateAR" character varying(100),
@@ -510,7 +511,8 @@ CREATE TABLE deliberations (
     commission_type character varying(255),
     commission_name character varying(255),
     date_acte timestamp without time zone,
-    date_envoi_signature timestamp without time zone
+    date_envoi_signature timestamp without time zone,
+    id_parapheur varchar(50)
 );
 
 
@@ -535,7 +537,8 @@ CREATE TABLE deliberations_seances (
     deliberation_id integer NOT NULL,
     seance_id integer NOT NULL,
     "position" integer,
-    avis boolean
+    avis boolean,
+    commentaire character varying(1000) NULL
 );
 
 
@@ -619,9 +622,8 @@ CREATE TABLE infosupdefs (
     commentaire character varying(255) NOT NULL,
     ordre integer NOT NULL,
     code character varying(255) NOT NULL,
-    taille integer,
     type character varying(255) NOT NULL,
-    val_initiale character varying(255),
+    val_initiale character varying(1000),
     recherche boolean DEFAULT false NOT NULL,
     created timestamp without time zone NOT NULL,
     modified timestamp without time zone NOT NULL,
@@ -737,9 +739,9 @@ CREATE TABLE listepresences (
     delib_id integer NOT NULL,
     acteur_id integer NOT NULL,
     present boolean NOT NULL,
-    mandataire integer DEFAULT 0 NOT NULL
+    mandataire integer DEFAULT NULL,
+    suppleant_id integer DEFAULT NULL
 );
-
 
 --
 -- Name: models_id_seq; Type: SEQUENCE; Schema: public; Owner: -
@@ -886,7 +888,8 @@ CREATE TABLE seances (
     debat_global_type character varying(255),
     pv_figes smallint,
     pv_sommaire bytea,
-    pv_complet bytea
+    pv_complet bytea,
+    numero_depot integer NOT NULL DEFAULT '0'
 );
 
 
@@ -1226,16 +1229,7 @@ CREATE TABLE users (
     mail_insertion boolean NOT NULL,
     "position" integer,
     created timestamp without time zone NOT NULL,
-    modified timestamp without time zone NOT NULL,
-    zone_1 character varying(50),
-    zone_2 character varying(50),
-    zone_3 character varying(50),
-    zone_4 character varying(50),
-    zone_5 character varying(50),
-    zone_6 character varying(50),
-    zone_7 character varying(50),
-    zone_8 character varying(50),
-    zone_9 character varying(50)
+    modified timestamp without time zone NOT NULL
 );
 
 
@@ -1815,7 +1809,7 @@ SELECT pg_catalog.setval('compteurs_id_seq', 1, true);
 --
 
 COPY crons (id, nom, description, plugin, controller, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id) FROM stdin;
-1	Circuits de traitement : Mise à jour des traitements extérieurs	Lecture de l'état des traitements extérieurs (iParapheur)	cakeflow	traitements	majTraitementsParapheur	f		2013-03-14 17:45:00	PT1H	2013-03-14 17:10:03	2013-03-14 17:10:03		SUCCES	t	2013-03-06 11:01:46.996708	1	2013-03-14 11:44:45	2
+1	Circuits de traitement : Mise à jour des traitements extérieurs	Lecture de l''état des traitements extérieurs (iParapheur)	cakeflow	traitements	majTraitementsParapheur	f		2013-03-14 17:45:00	PT1H	2013-03-14 17:10:03	2013-03-14 17:10:03		SUCCES	t	2013-03-06 11:01:46.996708	1	2013-03-14 11:44:45	2
 \.
 
 
