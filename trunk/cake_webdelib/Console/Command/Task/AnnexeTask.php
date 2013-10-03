@@ -98,13 +98,13 @@ class AnnexeTask extends Shell {
                 break;
         }
         $nbAnnexes = $this->countAnnexesForDelibs($projets);
-        $this->out("<info>Nombre d'annexes à tester : " . $nbAnnexes . ' (' . count($projets) . " délibérations)</info>\n");
+        $this->out("\n<important>Nombre d'annexes à tester : " . $nbAnnexes . ' (' . count($projets) . " délibérations)...</important>\n");
         $i = 1;
         //Pour chaque projet
         foreach ($projets as $projet) {
             foreach ($projet['Annex'] as $annexe) {
                 
-                $this->out("$i/$nbAnnexes ---> Test de l'annexe ".$annexe['filename'] .' (id: '. $annexe['id'] . ', délibération: '.$projet['Deliberation']['id'] .')...');
+                $this->out("$i/$nbAnnexes ---> Test de l'annexe ".$annexe['filename'] .' (id: '. $annexe['id'] . ', délibération: '.$projet['Deliberation']['id'] .')... ', 0);
                 
                 // Envoi de l'annexe à gedooo
                 $result = $this->_sendToGedooo($annexe, $projet['Deliberation']['id']);
@@ -292,17 +292,18 @@ class AnnexeTask extends Shell {
             //Conversion et concaténation
             $oFusion->SendContentToFile($this->annexesFolder->path . DS . 'deliberation_' . $delib_id . '-annexe_' . $annexe['id'] . '.odt');
             $retourGedooo = "OK";
+            $this->out('<info>'.$retourGedooo.'</info>');
         } catch (Exception $exc) {
-            $this->out("<warning>Problème détecté :\n" . $exc->getMessage() . "</warning>");
+            $retourGedooo = "KO";
+            $this->out('<info>'.$retourGedooo.'</info>');
+            $this->out("<warning>" . $exc->getMessage() . "</warning>");
 //            $this->out("<warning>Problème détecté :\n" . $exc->getTraceAsString() . "</warning>");
             $this->annexesInError[] = array(
                 'id' => $annexe['id'],
                 'filename' => $annexe['filename'],
                 'delib_id' => $delib_id
             );
-            $retourGedooo = "KO";
         }
-        $this->out('<info>'.$retourGedooo.'</info>');
         
         $time_end = microtime(true);
         $this->out("<time>Durée : " . round($time_end - $time_start, 2) . 's</time>', 1, Shell::VERBOSE);
