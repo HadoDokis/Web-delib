@@ -183,6 +183,7 @@ class AppSchema extends CakeSchema {
 		'CP' => array('type' => 'integer', 'null' => false),
 		'ville' => array('type' => 'string', 'null' => false),
 		'telephone' => array('type' => 'string', 'null' => false, 'length' => 20),
+		'logo' => array('type' => 'binary', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id')
 		),
@@ -257,7 +258,7 @@ class AppSchema extends CakeSchema {
 		'objet_delib' => array('type' => 'string', 'null' => true, 'length' => 1000),
 		'titre' => array('type' => 'string', 'null' => true, 'length' => 1000),
 		'num_delib' => array('type' => 'string', 'null' => true, 'length' => 15),
-		'num_pref' => array('type' => 'string', 'null' => false, 'length' => 100),
+		'num_pref' => array('type' => 'string', 'null' => false),
 		'pastell_id' => array('type' => 'string', 'null' => true, 'length' => 10),
 		'tdt_id' => array('type' => 'integer', 'null' => true),
 		'dateAR' => array('type' => 'string', 'null' => true, 'length' => 100),
@@ -362,7 +363,7 @@ class AppSchema extends CakeSchema {
 		'ordre' => array('type' => 'integer', 'null' => false),
 		'code' => array('type' => 'string', 'null' => false),
 		'type' => array('type' => 'string', 'null' => false),
-		'val_initiale' => array('type' => 'string', 'null' => true),
+		'val_initiale' => array('type' => 'string', 'null' => true, 'length' => 1000),
 		'recherche' => array('type' => 'boolean', 'null' => false),
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
@@ -501,6 +502,7 @@ class AppSchema extends CakeSchema {
 		'pv_figes' => array('type' => 'integer', 'null' => true),
 		'pv_sommaire' => array('type' => 'binary', 'null' => true),
 		'pv_complet' => array('type' => 'binary', 'null' => true),
+		'numero_depot' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'seances_traitee' => array('unique' => false, 'column' => 'traitee'),
