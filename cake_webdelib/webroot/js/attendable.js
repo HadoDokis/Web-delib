@@ -2,7 +2,7 @@
  * attendable v.2.0
  * Requires: jQuery v1.3+
  * Copyright (c) 2012 Florent Veyrès
- * Modifié par Florian Ajir
+ * Modifié par Florian Ajir pour Webdelib
  */
 
 (function($) {
@@ -62,11 +62,4 @@ $.fn.attendable.defaults = {
     $(window).resize(function() {
         $.fn.attendableResize();
     });
-    
-//    $.fn.attendableStop = function() {
-//       $("#overlay").remove();
-//       $("#attendablePreLoaderImg").remove();
-//        return true;
-//    };
-
 })(jQuery);
