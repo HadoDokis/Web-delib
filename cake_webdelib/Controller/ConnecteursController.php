@@ -129,9 +129,12 @@ class ConnecteursController extends AppController
                     $certs = array();
                     $path_dir_parapheur = Configure::read('WEBDELIB_PATH').DS.'Config'.DS.'cert_parapheur'.DS;
                     $pkcs12 = file_get_contents($this->data['Connecteur']['certificat']['tmp_name']);
-                    openssl_pkcs12_read($pkcs12, $certs, $this->data['Connecteur']['passphrase']);
-                    file_put_contents($path_dir_parapheur.'cert.pem', $certs['pkey'].$certs['cert']);
-                    file_put_contents($path_dir_parapheur.'ac.pem', $certs['extracerts'][0]);
+                    if (openssl_pkcs12_read($pkcs12, $certs, $this->data['Connecteur']['passphrase'])){
+                        file_put_contents($path_dir_parapheur.'cert.pem', $certs['pkey'].$certs['cert']);
+                        file_put_contents($path_dir_parapheur.'ac.pem', $certs['extracerts'][0]);
+                    }else{
+                        $this->Session->setFlash('Le mot de passe du certificat est erroné', 'growl', array('type'=>'erreur') );
+                    }
                 } 
                 break;
             case 'conversion' :
@@ -181,10 +184,14 @@ class ConnecteursController extends AppController
             default :
                 $this->Session->setFlash('Ce connecteur n\'est pas valide', 'growl', array('type'=>'erreur') );
                 $this->redirect('/connecteurs/index');
-        } 
-        $file->open('w+');
-        $file->append($content);
-        $file->close();
+        }
+        if (!$file->writable()){
+            $this->Session->setFlash('Impossible de modifier le fichier de configuration, veuillez donner les droits sur fichier webdelib.inc (chown www-data: webdelib.inc), ', 'growl', array('type'=>'erreur') );
+        }else{
+            $file->open('w+');
+            $file->append($content);
+            $file->close();
+        }
         
         $this->redirect('/connecteurs/index');
     }
