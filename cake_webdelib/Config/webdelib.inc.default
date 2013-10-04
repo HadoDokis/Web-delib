@@ -79,7 +79,7 @@ Configure::write('CACERT',     Configure::read('WEBDELIB_PATH').'/Config/cert_pa
 Configure::write('CLIENTCERT', Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/cert.pem');
 Configure::write('PASSPHRASE', 'passphrase');
 Configure::write('HTTPAUTH', 'login');
-Configure::write('HTTPPASSWD', 'paswwod');
+Configure::write('HTTPPASSWD', 'password');
 Configure::write('HTTPTYPE', 'Basic');
 Configure::write('VERSSOAP', '1.1');
 Configure::write('USEMTOM', true);
