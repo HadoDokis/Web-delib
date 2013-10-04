@@ -29,7 +29,6 @@ $.fn.attendable.defaults = {
     loaderImgSrc: '/img/ajax-loader.gif'
 };
     $.fn.attendableAffiche = function(confirmTxt) {
-        console.log("affichage attendable");
         if ((typeof confirmTxt !== "undefined") && confirmTxt !== '' && !confirm(confirmTxt))
             return false;
         var domModal = $('<div>').attr('id', $.fn.attendable.options.modalDomId);
