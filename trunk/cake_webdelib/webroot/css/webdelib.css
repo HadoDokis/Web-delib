@@ -18,7 +18,7 @@ acronym {
 .info {
     color: #e0ef90;
     font-style: italic;
-    font-style: bold;
+    font-weight: bold;
     text-align: center;
 }
 .pave {
@@ -58,7 +58,7 @@ table.sample tr td {
 
 #attribute_list a {
   text-align: left;
-  font-size: 11px;
+  font-size: 12px;
   text-decoration: none;
 }
 
@@ -87,12 +87,17 @@ label {
         width: 250px;
 }
 
-#login_form {
+.login_form {
 	padding-top: 20px;
-	margin-top: 30px;
+        margin: 30px auto 90px;
+        /*
 	margin-left: 28%;
-	margin-right: 28%;
+	margin-right: 28%;*/
+        max-width: 500px;
 	border: 1px solid;
+}
+.login_form p {
+	margin-left: 1em;
 }
 
 #conteneur {
@@ -190,9 +195,15 @@ body {
 	font-size: 0.8em;
 	margin: 0;
 	padding: 0;
-	background-image: url(../img/wavedelib.png);
-	background-repeat: no-repeat;
+	/*background-image: url(../../../img/wavedelib.png);*/
+	/*background-repeat: no-repeat;*/
 	padding-bottom: 100px;
+        position: relative;
+        padding-top: 90px;
+        background-color: #fff;
+        background-image: url(../img/grid-18px-masked.png);
+        background-repeat: repeat-x;
+        background-position: 0 40px;
 }
 
 #header {
@@ -314,6 +325,7 @@ table.table_action tr td {
 }
 
 #pied {
+        margin-top:60px;
 	height: 10px;
 	text-align: center;
 	border-top: 1px solid #999;
@@ -329,7 +341,7 @@ td.ordre a {
 }
 
 a.link_tablet, a.link_tablet:hover {
-        background-image: url(../img/icons/tablet.png);
+        background-image: url(../../../img/icons/tablet.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 10px 22px;
@@ -338,14 +350,14 @@ a.link_tablet, a.link_tablet:hover {
 
 
 a.link_bool_0, a.link_bool_0:hover {
-        background-image: url(../img/icons/false.png);
+        background-image: url(../../../img/icons/false.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 10px 22px;
         text-decoration: none;
 }
 a.link_bool_1, a.link_bool_1:hover {
-        background-image: url(../img/icons/true.png);
+        background-image: url(../../../img/icons/true.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 10px 22px;
@@ -353,14 +365,14 @@ a.link_bool_1, a.link_bool_1:hover {
 }
 
 a.link_liste, a.link_liste:hover {
-	background-image: url(../img/icons/liste.png);
+	background-image: url(../../../img/icons/liste.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 10px 22px;
         text-decoration: none;
 }
 a.link_clore_seance, a.link_clore_seance:hover {
-        background-image: url(../img/icons/close_seance.png);
+        background-image: url(../../../img/icons/close_seance.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
@@ -368,14 +380,14 @@ a.link_clore_seance, a.link_clore_seance:hover {
 }
 
 a.link_delib {
-	background-image: url(../img/icons/delib.png);
+	background-image: url(../../../img/icons/delib.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 3px 0 10px 22px;
 }
 
 a.link_pvcomplet, a.link_pvcomplet:hover {
-	background-image: url(../img/icons/pvcomplet.png);
+	background-image: url(../../../img/icons/pvcomplet.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
@@ -383,14 +395,14 @@ a.link_pvcomplet, a.link_pvcomplet:hover {
 }
 
 a.link_pvsommaire, a.link_pvsommaire:hover {
-	background-image: url(../img/icons/message.png);
+	background-image: url(../../../img/icons/message.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
         text-decoration: none;
 }
 a.link_signer, a.link_signer:hover {
-        background-image: url(../img/icons/signer.png);
+        background-image: url(../../../img/icons/signer.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
@@ -398,7 +410,7 @@ a.link_signer, a.link_signer:hover {
 }
 
 a.link_sendtoged, a.link_sendtoged:hover {
-        background-image: url(../img/icons/archiver.png);
+        background-image: url(../../../img/icons/archiver.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
@@ -406,7 +418,7 @@ a.link_sendtoged, a.link_sendtoged:hover {
 }
 
 a.link_tdt, a.link_tdt:hover {
-        background-image: url(../img/icons/tdt.png);
+        background-image: url(../../../img/icons/tdt.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
@@ -414,7 +426,7 @@ a.link_tdt, a.link_tdt:hover {
 }
 
 a.link_tdt_transmit, a.link_tdt_transmit:hover {
-        background-image: url(../img/icons/tdt_transmit.png);
+        background-image: url(../../../img/icons/tdt_transmit.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
@@ -422,7 +434,7 @@ a.link_tdt_transmit, a.link_tdt_transmit:hover {
 }
 
 a.link_pdf ,a.link_pdf:hover {
-	background-image: url(../img/icons/acroread.png);
+	background-image: url(../../../img/icons/acroread.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
@@ -430,14 +442,14 @@ a.link_pdf ,a.link_pdf:hover {
 }
 
 a.link_ordre_jour, a.link_ordre_jour:hover {
-	background-image: url(../img/icons/ordre_jour.png);
+	background-image: url(../../../img/icons/ordre_jour.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
         text-decoration: none;
 }
 a.link_ordre_jour_unique, a.link_ordre_jour_unique:hover {
-        background-image: url(../img/icons/ordre_jour2.png);
+        background-image: url(../../../img/icons/ordre_jour2.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
@@ -445,28 +457,28 @@ a.link_ordre_jour_unique, a.link_ordre_jour_unique:hover {
 }
 
 a.link_lister_presents {
-	background-image: url(../img/icons/present.png);
+	background-image: url(../../../img/icons/present.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 10px 22px;
 }
 
 a.link_voter, a.link_voter:hover {
-	background-image: url(../img/icons/vote.png);
+	background-image: url(../../../img/icons/vote.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
         text-decoration: none;
 }
 a.link_classer_odj, a.link_classer_odj:hover {
-        background-image: url(../img/icons/odj.png);
+        background-image: url(../../../img/icons/odj.png);
         background-repeat: no-repeat;
         background-position: top;
         padding: 0 0 32px 32px;
         text-decoration: none;
 }
 a.link_debat, a.link_debat:hover {
-	background-image: url(../img/icons/saisir.png);
+	background-image: url(../../../img/icons/saisir.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
@@ -474,7 +486,7 @@ a.link_debat, a.link_debat:hover {
 }
 
 a.link_commentaire_seance, a.link_commentaire_seance:hover {
-	background-image: url(../img/icons/paper.png);
+	background-image: url(../../../img/icons/paper.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
@@ -482,7 +494,7 @@ a.link_commentaire_seance, a.link_commentaire_seance:hover {
 }
 
 a.link_secretaire, a.link_secretaire:hover {
-	background-image: url(../img/icons/secretaire.png);
+	background-image: url(../../../img/icons/secretaire.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
@@ -490,7 +502,7 @@ a.link_secretaire, a.link_secretaire:hover {
 }
 
 a.link_voir, a.link_voir:hover {
-	background-image: url(../img/icons/find.png);
+	background-image: url(../../../img/icons/find.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0px 0px 32px 32px;
@@ -498,29 +510,30 @@ a.link_voir, a.link_voir:hover {
 }
 
 a.link_modifier, a.link_modifier:hover {
-	background-image: url(../img/icons/klpq.png);
+	background-image: url(../../../img/icons/klpq.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
         text-decoration: none;
 }
 
-a.link_modifier_back {
-	background-image: url(../img/icons/klpq-back.png);
+a.link_modifier_back,a.link_modifier_back:hover {
+	background-image: url(../../../img/icons/klpq-back.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
+        text-decoration: none;
 }
 
 a.link_modifier_left {
-	background-image: url(../img/icons/klpq.png);
+	background-image: url(../../../img/icons/klpq.png);
 	background-repeat: no-repeat;
 	background-position: left top;
 	padding: 0 0 10px 22px;
 }
 
 a.link_supprimer, a.link_supprimer:hover {
-	background-image: url(../img/icons/edittrash.png);
+	background-image: url(../../../img/icons/edittrash.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 38px 38px;
@@ -528,7 +541,7 @@ a.link_supprimer, a.link_supprimer:hover {
 }
 
 a.link_supprimer_back, a.link_supprimer_back:hover {
-	background-image: url(../img/icons/edittrash-back.png);
+	background-image: url(../../../img/icons/edittrash-back.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 38px 38px;
@@ -536,7 +549,7 @@ a.link_supprimer_back, a.link_supprimer_back:hover {
 }
 
 a.link_circuit, a.link_circuit:hover {
-	background-image: url(../img/icons/reload.png);
+	background-image: url(../../../img/icons/reload.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 38px 38px;
@@ -544,7 +557,7 @@ a.link_circuit, a.link_circuit:hover {
 }
 
 a.link_projet,a.link_projet:hover {
-	background-image: url(../img/icons/projet.png);
+	background-image: url(../../../img/icons/projet.png);
 	background-repeat: no-repeat;
 	background-position: top left ;
 	padding: 0 0 10px 22px;
@@ -552,7 +565,7 @@ a.link_projet,a.link_projet:hover {
 }
 
 a.link_synthese,a.link_synthese:hover {
-	background-image: url(../img/icons/synthese.png);
+	background-image: url(../../../img/icons/synthese.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
@@ -560,7 +573,7 @@ a.link_synthese,a.link_synthese:hover {
 }
 
 a.link_deliberation,a.link_deliberation:hover {
-	background-image: url(../img/icons/delibe.png);
+	background-image: url(../../../img/icons/delibe.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
@@ -568,7 +581,7 @@ a.link_deliberation,a.link_deliberation:hover {
 }
 
 a.link_add,a.link_add:hover {
-	background-image: url(../img/icons/edit_add.png);
+	background-image: url(../../../img/icons/edit_add.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
@@ -576,36 +589,36 @@ a.link_add,a.link_add:hover {
 }
 
 a.link_traiter, a.link_traiter:hover {
-	background-image: url(../img/icons/traiter.png);
+	background-image: url(../../../img/icons/traiter.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
         text-decoration: none;
 }
 a.link_validerenurgence, a.link_validerenurgence:hover {
-/*      background-image: url(../img/icons/valider.png); */
-        background-image: url(../img/icons/apply.png); 
+/*      background-image: url(../../../img/icons/valider.png); */
+        background-image: url(../../../img/icons/apply.png); 
         background-repeat: no-repeat;
         background-position: top left;
         padding: 0 0 32px 32px;
         text-decoration: none;
 }
 a.link_addUsers {
-	background-image: url(../img/icons/identity.png);
+	background-image: url(../../../img/icons/identity.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
 }
 
 a.link_convocation, a.link_convocation:hover {
-	background-image: url(../img/icons/mail.png);
+	background-image: url(../../../img/icons/mail.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
         text-decoration: none;
 }
 a.link_convocation_unique, a.link_convocation_unique:hover {
-        background-image: url(../img/icons/mail2.png);
+        background-image: url(../../../img/icons/mail2.png);
         background-repeat: no-repeat;
         background-position: top left;
         padding: 0 0 32px 32px;
@@ -613,14 +626,14 @@ a.link_convocation_unique, a.link_convocation_unique:hover {
 }
 
 a.link_convocation_anonyme {
-	background-image: url(../img/icons/queue.png);
+	background-image: url(../../../img/icons/queue.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 10px 22px;
 }
 
 a.link_jump, a.link_jump:hover {
-        background-image: url(../img/icons/jump.png);
+        background-image: url(../../../img/icons/jump.png);
         background-repeat: no-repeat;
         background-position: top left;
         padding: 0 0 32px 32px;
@@ -628,7 +641,7 @@ a.link_jump, a.link_jump:hover {
 }
 
 a.link_monter, a.link_monter:hover {
-	background-image: url(../img/icons/monter.png);
+	background-image: url(../../../img/icons/monter.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
@@ -636,7 +649,7 @@ a.link_monter, a.link_monter:hover {
 }
 
 a.link_descendre, a.link_descendre:hover {
-	background-image: url(../img/icons/descendre.png);
+	background-image: url(../../../img/icons/descendre.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
@@ -644,21 +657,21 @@ a.link_descendre, a.link_descendre:hover {
 }
 
 a.link_triasc {
-	background-image: url(../img/icons/tri_asc.png);
+	background-image: url(../../../img/icons/tri_asc.png);
 	background-repeat: no-repeat;
 	background-position: center left;
 	padding: 0px 6px 0px 6px;
 }
 
 a.link_tridesc {
-	background-image: url(../img/icons/tri_desc.png);
+	background-image: url(../../../img/icons/tri_desc.png);
 	background-repeat: no-repeat;
 	background-position: center left;
 	padding: 0px 6px 0px 6px;
 }
 
 a.link_calendar {
-	background-image: url(../img/calendar.png);
+	background-image: url(../../../img/calendar.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
@@ -672,7 +685,7 @@ a.link_annuler {
 	border-right: 1px solid #e0ef90;
 	border-left: none;
 	border-bottom: none;
-	background-image: url(../img/icons/back.png);
+	background-image: url(../../../img/icons/back.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
@@ -686,21 +699,21 @@ a.link_clore {
 	border-right: 1px solid #e0ef90;
 	border-left: none;
 	border-bottom: none;
-	background-image: url(../img/icons/seance_finie.png);
+	background-image: url(../../../img/icons/seance_finie.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
 }
 
 a.link_mdp {
-	background-image: url(../img/icons/mdp.png);
+	background-image: url(../../../img/icons/mdp.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
 }
 
 a.link_annuler_sans_border {
-	background-image: url(../img/icons/back.png);
+	background-image: url(../../../img/icons/back.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding-left: 25px;
@@ -708,7 +721,7 @@ a.link_annuler_sans_border {
 }
 
 a.link_inserer_logo, a.link_inserer_logo:hover {
-	background-image: url(../img/icons/insert_logo.png);
+	background-image: url(../../../img/icons/insert_logo.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding-left: 25px;
@@ -717,7 +730,7 @@ a.link_inserer_logo, a.link_inserer_logo:hover {
 }
 
 a.link_param_mail {
-        background-image: url(../img/icons/param_mails.png);
+        background-image: url(../../../img/icons/param_mails.png);
         background-repeat: no-repeat;
         background-position: top left;
         padding-left: 25px;
@@ -725,14 +738,14 @@ a.link_param_mail {
 }
 
 a.link_annexe {
-	background-image: url(../img/icons/bookmark.png);
+	background-image: url(../../../img/icons/bookmark.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
 }
 
 a.link_donnerAvis, a.link_donnerAvis:hover {
-	background-image: url(../img/icons/apply.png);
+	background-image: url(../../../img/icons/apply.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
@@ -740,7 +753,7 @@ a.link_donnerAvis, a.link_donnerAvis:hover {
 }
 
 a.link_actes, a.link_actes:hover {
-        background-image: url(../img/icons/actes.png);
+        background-image: url(../../../img/icons/actes.png);
         background-repeat: no-repeat;
         background-position: top left;
         padding: 0 0 10px 22px;
@@ -755,7 +768,7 @@ a.link_valider_avec_border {
 	border-right: 1px solid #e0ef90;
 	border-left: none;
 	border-bottom: none;
-	background-image: url(../img/icons/go-next.png);
+	background-image: url(../../../img/icons/go-next.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
@@ -769,7 +782,7 @@ a.link_refuser_avec_border {
 	border-right: 1px solid #e0ef90;
 	border-left: none;
 	border-bottom: none;
-	background-image: url(../img/icons/go-back.png);
+	background-image: url(../../../img/icons/go-back.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
@@ -783,7 +796,7 @@ a.link_retour_avec_border {
         border-right: 1px solid #e0ef90;
         border-left: 1px solid #e0ef90;
         border-bottom: none;
-        background-image: url(../img/icons/retour.png);
+        background-image: url(../../../img/icons/retour.png);
         background-repeat: no-repeat;
         background-position: top left;
         padding: 10px 10px 10px 36px;
@@ -797,7 +810,7 @@ a.generer_convocation {
         border-right: 1px solid #e0ef90;
         border-left: 1px solid #e0ef90;
         border-bottom: none;
-        background-image: url(../img/icons/mail.png);
+        background-image: url(../../../img/icons/mail.png);
         background-repeat: no-repeat;
         background-position: top left;
         padding: 10px 10px 10px 36px;
@@ -811,7 +824,7 @@ a.link_commentaire_avec_border {
 	border-right: 1px solid #e0ef90;
 	border-left: none;
 	border-bottom: none;
-	background-image: url(../img/icons/commentaire.png);
+	background-image: url(../../../img/icons/commentaire.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 4px 4px 4px 25px;
@@ -825,7 +838,7 @@ a.link_modifier_avec_border {
 	border-right: 1px solid #e0ef90;
 	border-left: none;
 	border-bottom: none;
-	background-image: url(../img/icons/klpq.png);
+	background-image: url(../../../img/icons/klpq.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 4px 4px 14px 36px;
@@ -839,14 +852,14 @@ a.link_rebond_avec_border {
         border-right: 1px solid #e0ef90;
         border-left: none;
         border-bottom: none;
-        background-image: url(../img/icons/rebond.png);
+        background-image: url(../../../img/icons/rebond.png);
         background-repeat: no-repeat;
         background-position: top left;
         padding: 4px 4px 4px 25px;
 }
 
 .bt_save {
-	background-image: url(../img/icons/filesave.png);
+	background-image: url(../../../img/icons/filesave.png);
 	background-repeat: no-repeat;
 	border: none;
 	width: 22px;
@@ -855,7 +868,7 @@ a.link_rebond_avec_border {
 
 .bt_save_border {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	background-image: url(../img/icons/filesave.png);
+	background-image: url(../../../img/icons/filesave.png);
 	background-color: white;
 	background-repeat: no-repeat;
 	border-top: 1px solid #e0ef90;
@@ -869,7 +882,7 @@ a.link_rebond_avec_border {
 
 .bt_add {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	background-image: url(../img/icons/edit_add.png);
+	background-image: url(../../../img/icons/edit_add.png);
 	background-color: white;
 	background-repeat: no-repeat;
 	border-top: 1px solid #e0ef90;
@@ -883,7 +896,7 @@ a.link_rebond_avec_border {
 
 .bt_annuler {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	background-image: url(../img/icons/edit_cancel.png);
+	background-image: url(../../../img/icons/edit_cancel.png);
 	background-color: white;
 	background-repeat: no-repeat;
 	border-top: 1px solid #e0ef90;
@@ -898,7 +911,7 @@ a.link_rebond_avec_border {
 
 .bt_fin {
 	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	background-image: url(../img/icons/apply.png);
+	background-image: url(../../../img/icons/apply.png);
 	background-color: white;
 	background-repeat: no-repeat;
 	border-top: 1px solid #e0ef90;
@@ -1062,7 +1075,7 @@ ul.actions, .actions ul {
 	border-left: 1px solid #888888;
 	border-right: 1px solid #888888;
 	moz-opacity:0.5;
-	webkit-opacity: 0.5;
+	webkit-opacity:0.5;
 	opacity:0.5;
 
 }
@@ -1163,6 +1176,7 @@ div.fckEditorProjet {
 	float: left;
 	width: 80%;
 	padding: 2px;
+        text-indent: 0;
 }
 
 /* Mise en forme des onglets */
@@ -1203,7 +1217,7 @@ fieldset#info {
 #loading {
     margin-left: 400px;
     margin-top: 60px;
-    background-image: url(../img/loading.gif);
+    background-image: url(../../../img/loading.gif);
     background-repeat: no-repeat;
     height : 200px;
 }
@@ -1368,20 +1382,6 @@ div.aModifier {
         background: orange;
 }
 
-#overlay {
- 	position: absolute;
- 	top: 0;
- 	left: 0;
- 	width: 100%;
- 	height: 100%; 
-	background: lightgrey;
-	opacity: .50;
-	filter:Alpha(Opacity=50);
-    background-image: url(../img/loading.gif);
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-
 /* mise en forme des div ouvrables */
 
 .ouvrable {
@@ -1414,4 +1414,11 @@ div.aModifier {
 .purge_file {
      float: right;
      width: 600px;
+}
+
+input[type="file"]{width: auto}
+
+.nomcourante {
+    color: white;
+    background-color: black;
 }
