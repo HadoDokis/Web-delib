@@ -110,10 +110,13 @@ class ConnecteursController extends AppController
                 if (file_exists($this->data['Connecteur']['certificat']['tmp_name'])) {
                     $path_dir_s2low = Configure::read('WEBDELIB_PATH').DS.'Config'.DS.'cert_s2low'.DS;
                     $pkcs12 = file_get_contents($this->data['Connecteur']['certificat']['tmp_name']);
-                    openssl_pkcs12_read($pkcs12, $certs, $this->data['Connecteur']['password']);
-                    file_put_contents($path_dir_s2low.'key.pem', $certs['pkey']);
-                    file_put_contents($path_dir_s2low.'client.pem', $certs['cert']);
-                    file_put_contents($path_dir_s2low.'ca.pem', $certs['extracerts'][0]);
+                    if (openssl_pkcs12_read($pkcs12, $certs, $this->data['Connecteur']['password'])){
+                        file_put_contents($path_dir_s2low.'key.pem', $certs['pkey']);
+                        file_put_contents($path_dir_s2low.'client.pem', $certs['cert']);
+                        file_put_contents($path_dir_s2low.'ca.pem', $certs['extracerts'][0]);
+                    } 
+                    else
+                        $this->Session->setFlash('Le mot de passe du certificat est erroné', 'growl', array('type'=>'erreur') );
                 // a tester : file_put_contents($path_dir_s2low.'bundle.pem', $certs['extracerts'][1]);
                 }
                 break;
@@ -132,9 +135,9 @@ class ConnecteursController extends AppController
                     if (openssl_pkcs12_read($pkcs12, $certs, $this->data['Connecteur']['passphrase'])){
                         file_put_contents($path_dir_parapheur.'cert.pem', $certs['pkey'].$certs['cert']);
                         file_put_contents($path_dir_parapheur.'ac.pem', $certs['extracerts'][0]);
-                    }else{
+                    } 
+                    else
                         $this->Session->setFlash('Le mot de passe du certificat est erroné', 'growl', array('type'=>'erreur') );
-                    }
                 } 
                 break;
             case 'conversion' :
