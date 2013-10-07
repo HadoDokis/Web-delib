@@ -46,9 +46,10 @@ Configure::write('HOST_PROXY', '');
 Configure::write('USE_MAIL_SECURISE', false);
 Configure::write('PASSWORD_MAIL_SECURISE', '');
 
-/* Configuration du LDAP */
+/*
+ *  Configuration de OpenLDAP (pour Active Directory voir plus bas)
+ */
 Configure::write('USE_OPENLDAP', false);
-Configure::write('USE_AD', false);
 Configure::write('LDAP_HOST', 'x.x.x.x');
 Configure::write('LDAP_PORT', '389');
 Configure::write('LDAP_LOGIN', NULL);
@@ -58,18 +59,21 @@ Configure::write('BASE_DN', 'OU=Utilisateurs,dc=mairie-xxx,dc=xxx');
 Configure::write('ACCOUNT_SUFFIX', '@mairie-xxx.xxx');
 Configure::write('DN', 'dn');
 
-/**
- * Pour active directory, utiliser define à la place de Configure::write
+/*
+ * Pour utiliser un Active Directory, utiliser les instructions "define" (ci-dessous) à la place des "Configure::write" (ci-dessus)
+ * Changez Configure::write('USE_AD', false) => Configure::write('USE_AD', true)
  */
-
-//  define('LDAP_HOST', 'your.active_directory.server');
-//  define('LDAP_PORT', '389');
-//  define('LDAP_LOGIN', 'your_ad_login');
-//  define('LDAP_PASSWD', 'your_ad_password');
-//  define('UNIQUE_ID', 'UID');
-//  define('BASE_DN', 'OU=users,dc=CGxx,dc=fr');
-//  define('ACCOUNT_SUFFIX', '@CG-xx.xx');
-//  define('DN', 'distinguishedname');*/
+Configure::write('USE_AD', false);
+/*
+define('LDAP_HOST', 'your.active_directory.server');
+define('LDAP_PORT', '389');
+define('LDAP_LOGIN', 'your_ad_login');
+define('LDAP_PASSWD', 'your_ad_password');
+define('UNIQUE_ID', 'UID');
+define('BASE_DN', 'OU=users,dc=CGxx,dc=fr');
+define('ACCOUNT_SUFFIX', '@CG-xx.xx');
+define('DN', 'distinguishedname');
+ */
 
 /* Configuration Webservice du parapheur électronique */
 Configure::write('USE_PARAPH', false);
@@ -126,48 +130,59 @@ Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
 Configure::write('GS_EXEC', '/usr/bin/gs');
 
 /* Configuration pour la vérification des mimetypes */
-Configure::write('DOC_TYPE', array('application/pdf' => array('joindre_fusion' => true,
+Configure::write('DOC_TYPE', array(
+    'application/pdf' => array(
+        'joindre_fusion' => true,
         'joindre_ctrl_legalite' => true,
         'mime_conversion' => 'application/pdf',
         'extention' => 'pdf',
     ),
-    'image/pdf' => array('joindre_fusion' => true,
+    'image/pdf' => array(
+        'joindre_fusion' => true,
         'joindre_ctrl_legalite' => true,
         'mime_conversion' => 'application/pdf',
         'extention' => 'pdf',
     ),
-    'x-empty/pdf' => array('joindre_fusion' => true,
+    'x-empty/pdf' => array(
+        'joindre_fusion' => true,
         'joindre_ctrl_legalite' => true,
         'mime_conversion' => 'application/pdf',
         'extention' => 'pdf',
     ),
-    'application/vnd.oasis.opendocument.text' => array('joindre_fusion' => true,
+    'application/vnd.oasis.opendocument.text' => array(
+        'joindre_fusion' => true,
         'joindre_ctrl_legalite' => true,
         'mime_conversion' => 'application/vnd.oasis.opendocument.text',
         'extention' => 'odt',
     ),
-    'application/vnd.oasis.opendocument.spreadsheet' => array('joindre_fusion' => true,
+    'application/vnd.oasis.opendocument.spreadsheet' => array(
+        'joindre_fusion' => true,
         'joindre_ctrl_legalite' => true,
         'mime_conversion' => 'application/vnd.oasis.opendocument.text',
         'extention' => 'odt',
     ),
-    'application/zip' => array('joindre_fusion' => true,
+    'application/zip' => array(
+        'joindre_fusion' => true,
         'joindre_ctrl_legalite' => true,
         'mime_conversion' => 'application/vnd.oasis.opendocument.text',
         'extention' => 'odt',
     ),
-    'application/vnd.ms-office' => array('mime_conversion' => 'application/vnd.ms-office',
+    'application/vnd.ms-office' => array(
+        'mime_conversion' => 'application/vnd.ms-office',
         'extention' => 'doc',
     ),
-    'image/png' => array('joindre_ctrl_legalite' => true,
+    'image/png' => array(
+        'joindre_ctrl_legalite' => true,
         'mime_conversion' => 'image/png',
         'extention' => 'png',
     ),
-    'image/jpg' => array('joindre_ctrl_legalite' => true,
+    'image/jpg' => array(
+        'joindre_ctrl_legalite' => true,
         'mime_conversion' => 'image/jpg',
         'extention' => 'jpg',
     ),
-    'image/jpeg' => array('joindre_ctrl_legalite' => true,
+    'image/jpeg' => array(
+        'joindre_ctrl_legalite' => true,
         'mime_conversion' => 'image/jpeg',
         'extention' => 'jpeg',
     ),
