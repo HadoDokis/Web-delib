@@ -15,19 +15,19 @@ Configure::write('CONVOCS_MODIFIABLES', false);
 Configure::write('NOT_UNIQUE_CIRCUIT', true);
 Configure::write('DELIBERATIONS_MULTIPLES', false); //Mode délibérations multiples
 Configure::write('INIT_SEQ', false); //Initialiser le numéro de séquence
-Configure::write("LIMIT", 5); //limitation du nombre de projets par banette
+Configure::write('LIMIT', 5); //limitation du nombre de projets par banette
 Configure::write('GENERER_DOC_SIMPLE', false);
 Configure::write('PROTOCOLE_DL', 'vnd.sun.star.webdav');
 
 /* Configuration d'envoie de mail */
-Configure::write("MAIL_FROM", 'Webdelib <webdelib@mon-domaine.fr>');
+Configure::write('MAIL_FROM', 'Webdelib <webdelib@mon-domaine.fr>');
 Configure::write('SMTP_USE', false);
 Configure::write('SMTP_PORT', 25);
-Configure::write("SMTP_TIMEOUT", 30);
-Configure::write("SMTP_HOST", 'your.smtp.server');
-Configure::write("SMTP_USERNAME", 'your_smtp_username');
-Configure::write("SMTP_PASSWORD", 'your_smtp_password');
-Configure::write("SMTP_CLIENT", 'smtp_helo_hostname');
+Configure::write('SMTP_TIMEOUT', 30);
+Configure::write('SMTP_HOST', 'your.smtp.server');
+Configure::write('SMTP_USERNAME', 'your_smtp_username');
+Configure::write('SMTP_PASSWORD', 'your_smtp_password');
+Configure::write('SMTP_CLIENT', 'smtp_helo_hostname');
 
 /* Configuration GEDOOo */
 Configure::write('USE_GEDOOO', true);
@@ -90,7 +90,7 @@ Configure::write('EMAIL_EMMETEUR', 'parapheur@adullact.org');
 
 /* Configuration ASAL@AE */
 Configure::write('USE_ASALAE', false);
-Configure::write("ASALAE_WSDL", "http://x.x.x.x/webservices/wsdl");
+Configure::write('ASALAE_WSDL', 'http://x.x.x.x/webservices/wsdl');
 Configure::write('SIREN_ARCHIVE', 'DEMO');
 Configure::write('NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
 Configure::write('IDENTIFIANT_VERSANT', 'WEBDELIBSERVICES_LOGIN');
