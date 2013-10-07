@@ -169,6 +169,7 @@ class ConnecteursController extends AppController {
                 break;
             case 'asalae' :
                 $content = $this->_replaceValue($content, 'USE_ASALAE', $this->data['Connecteur']['use_asalae']);
+                $content = $this->_replaceValue($content, 'ASALAE_WSDL', $this->data['Connecteur']['asalae_wsdl']);
                 $content = $this->_replaceValue($content, 'SIREN_ARCHIVE', $this->data['Connecteur']['siren_archive']);
                 $content = $this->_replaceValue($content, 'NUMERO_AGREMENT', $this->data['Connecteur']['numero_agrement']);
                 $content = $this->_replaceValue($content, 'IDENTIFIANT_VERSANT', $this->data['Connecteur']['identifiant_versant']);
