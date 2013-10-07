@@ -20,7 +20,7 @@
 </div>
 <br/>
 <div class="required">
- 	<?php echo $this->Form->input('Compteur.def_compteur', array('label'=>'Définition du compteur <acronym title="obligatoire">(*)</acronym>','size' => '40'));?>
+ 	<?php echo $this->Form->input('Compteur.def_compteur', array('label'=>'Définition du compteur <acronym title="obligatoire">(*)</acronym>','size' => '45', 'maxlength' => '45'));?>
 
 <select onchange="InsertSelectedValueInToInput(this, 'form_compteur', 'CompteurDefCompteur');">
     <option value="AIDEFORMAT">sélectionner les formats dans la liste</option>
