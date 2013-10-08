@@ -271,7 +271,7 @@ CREATE TABLE "public"."deliberations" (
 	"objet_delib" varchar(1000) DEFAULT NULL,
 	"titre" varchar(1000) DEFAULT NULL,
 	"num_delib" varchar(15) DEFAULT NULL,
-	"num_pref" varchar(255) NOT NULL,
+	"num_pref" varchar(255) DEFAULT NULL,
 	"pastell_id" varchar(10) DEFAULT NULL,
 	"tdt_id" integer DEFAULT NULL,
 	"dateAR" varchar(100) DEFAULT NULL,
