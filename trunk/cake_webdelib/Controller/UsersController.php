@@ -361,7 +361,7 @@ class UsersController extends AppController {
 			unset($user['Historique']);
 			if (empty($user)){
 				$this->set('errorMsg',"L'utilisateur ".$this->data['User']['login']." n'existe pas dans l'application.");
-				$this->layout='connection';
+				$this->layout='connexion';
 				$this->render();
 				//exit;
 			}
@@ -421,11 +421,11 @@ class UsersController extends AppController {
 			else{
 				//sinon on prépare le message d'erreur a afficher dans la vue
 				$this->set('errorMsg','Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
-				$this->layout='connection';
+				$this->layout='connexion';
 			}
 		}
 		else {
-			$this->layout='connection';
+			$this->layout='connexion';
 		}
 	}
 
