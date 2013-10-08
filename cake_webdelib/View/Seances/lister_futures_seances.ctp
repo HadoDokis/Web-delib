@@ -65,33 +65,38 @@
 					'title'=>"Apercu d'une convocation pour la séance du ".$seance['Seance']['date'],
                                         'escape' => false,
 					'alt'=>"Apercu d'une convocation pour la séance du ".$seance['Seance']['date'],
-					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération de l\'apercu ?");'), false);
+//					'onClick'=>"return avantGeneration('Etes-vous sur de vouloir lancer la génération de l\'apercu ?');"
+                                    ), false);
 		    echo $this->Html->link(SHY, $urlConvoc, array(
 				'class'=>'link_convocation',
 				'title'=>'Générer la liste des convocations pour la séance du '.$seance['Seance']['date'],
                                 'escape' => false,
 				'alt'=>'Générer la liste des convocations pour la séance du '.$seance['Seance']['date'],
-				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération des documents ?");'), false);
+//				'onClick'=>"return avantGeneration('Etes-vous sur de vouloir lancer la génération des documents ?');"
+                        ), false);
 			if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
 				echo $this->Html->link(SHY, $urlOdjUnique, array(
 					'class'=>'link_ordre_jour_unique',
                                         'escape' => false,
 					'title'=>"Apercu de l'ordre jour pour la séance du ".$seance['Seance']['date'],
 					'alt'=>"Apercu de l'ordre jour pour la séance du ".$seance['Seance']['date'],
-					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération de l\'apercu ?");'), false);
+//					'onClick'=>"return avantGeneration('Etes-vous sur de vouloir lancer la génération de l\'apercu ?');"
+                                    ), false);
 			echo $this->Html->link(SHY, $urlOdj, array(
 					'class'=>'link_ordre_jour',
 					'title'=>'Générer l\'ordre du jour détaillé pour la séance du '.$seance['Seance']['date'],
                                         'escape' => false,
 					'alt'=>'Générer l\'ordre du jour détaillé pour la séance du '.$seance['Seance']['date'],
-					'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération des documents ?");'), false);
+//					'onClick'=>"return avantGeneration('Etes-vous sur de vouloir lancer la génération des documents ?');"
+                            ), false);
 
                    echo $this->Html->link(SHY, '/seances/sendToIdelibre/'.$seance['Seance']['id'], array(
                                         'class'=>'link_tablet',
                                         'title'=>'Envoyer à Idelibre la séance du '.$seance['Seance']['date'],
                                         'escape' => false,
                                         'alt'=>'Envoyer à Idelibre la séance du '.$seance['Seance']['date'],
-                                        'onClick'=>'return avantGeneration("Etes-vous sur de vouloir envoyer les documents ?");'), false);
+//                                        'onClick'=>"return avantGeneration('Etes-vous sur de vouloir envoyer les documents ?');"
+                       ), false);
 
 ?>
 		</td>
@@ -160,13 +165,15 @@
 				'title'=>'Génération du pv sommaire pour la séance du '.$seance['Seance']['date'],
 				'alt'=>'Génération du pv sommaire pour la séance du '.$seance['Seance']['date'],
                                 'escape' => false,
-				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération des documents ?");'),  false);
+//				'onClick'=>"return avantGeneration('Etes-vous sur de vouloir lancer la génération des documents ?');"
+                            ),  false);
 			echo $this->Html->link(SHY,'/models/generer/null/' . $seance['Seance']['id'].'/'.$seance['Typeseance']['modelpvdetaille_id']."/$format/1/retour/1/1/1", array(
 				'class'=>'link_pvcomplet',
                                 'escape' => false,
 				'title'=>'Génération du pv complet pour la séance du '.$seance['Seance']['date'],
 				'alt'=>'Génération du pv complet pour la séance du '.$seance['Seance']['date'],
-				'onClick'=>'return avantGeneration("Etes-vous sur de vouloir lancer la génération des documents ?");'), false);
+//				'onClick'=>"return avantGeneration('Etes-vous sur de vouloir lancer la génération des documents ?');"
+                            ), false);
 
 		      echo $this->Html->link(SHY,
                                        '/seances/clore/'.$seance['Seance']['id'],  
@@ -198,9 +205,9 @@
 function overlayResize() {
 	var overlayEle = $('#overlay');
 	if (overlayEle.length > 0) {
-		ovPosition = $('#centre').offset();
-		ovHeight = $('#centre').outerHeight();
-		ovWidth = $('#centre').outerWidth();
+		ovPosition = $('#container').offset();
+		ovHeight = $('#container').outerHeight();
+		ovWidth = $('#container').outerWidth();
 		overlayEle
 			.css('left', ovPosition.left)
 			.css('top', ovPosition.top)
@@ -214,11 +221,10 @@ function overlayOn() {
 }
 function avantGeneration(message) {
 	if (confirm(message)) {
-		$('<div></div>').appendTo(document.body).attr('id', 'overlay');
-		overlayResize();
+		overlayOn();
 		return true;
 	} else
-		return false
+		return false;
 }
 
 </script>
