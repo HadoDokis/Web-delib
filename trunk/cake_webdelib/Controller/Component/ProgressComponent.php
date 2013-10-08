@@ -4,6 +4,7 @@
         
         function start ($gauche,$haut,$largeur,$bord_col,$txt_col) {
             $tailletxt=30-10;
+            echo '<script type="text/javascript" src="/theme/Bootstrap/js/libs/jquery.js"></script>';
             echo '<div id="contTemp" style="position:absolute;top:0;left:0px;';
             echo 'background-image:url(/theme/Bootstrap/img/grid-18px-masked.png);';
             echo 'width:100%; height:250px; margin-left: 0px; padding: 0px;">';
@@ -34,22 +35,22 @@
         function at ($indice, $affiche) {
             echo "<script>";
              // affiche l'avancement en %
-            echo "document.getElementById(\"pourcentage\").innerHTML='".round($indice)."%';";
+            echo "$('#pourcentage').html('".round($indice)."%');";
              // affiche le message sous la barre de progression ($affiche)
-            echo "document.getElementById(\"affiche\").innerHTML='".$affiche."';";
+            echo "$('#affiche').html('".$affiche."');";
              // La barre elle-meme
-            echo "document.getElementById('progrbar').style.width=".($indice*2).";";
+            echo "$('#progrbar').css('width','".($indice*2)."px');";
             echo "</script>";
             flush();
         }
  
         function end($redirect) {
-            echo ('<script>');
-            echo ('    document.getElementById("pourcentage").style.display="none"; ');
-            echo ('    document.getElementById("progrbar").style.display="none";');
-            echo ('    document.getElementById("affiche").style.display="none";');
-            echo ('    document.getElementById("contTemp").style.display="none";');
-            echo ('</script>');
+            echo '<script>';
+            echo '$("#pourcentage").hide();';
+            echo '$("#progrbar").hide();';
+            echo '$("#affiche").hide();';
+            echo '$("#contTemp").hide();';
+            echo '</script>';
             echo '<script type="text/javascript">';
             echo "window.location = \"$redirect\"";
             echo '</script>';
@@ -57,8 +58,8 @@
 
         function endPopup($url) {
             echo '<script type="text/javascript">';
-            echo ("window.open('".$url."'); ");
-            echo ('</script>');
+            echo "window.open('".$url."');";
+            echo '</script>';
         }
 
     }
