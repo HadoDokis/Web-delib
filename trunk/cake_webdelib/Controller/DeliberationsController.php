@@ -18,7 +18,7 @@ class DeliberationsController extends AppController {
     var $helpers = array('Javascript', 'Fck');
     var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
     var $components = array('Gedooo', 'Date', 'Utils', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf');
-    var $aucunDroit = array('test', 'getTypeseancesParTypeacteAjax', 'quicksearch');
+    var $aucunDroit = array('getTypeseancesParTypeacteAjax', 'quicksearch');
     // Gestion des droits
     var $demandeDroit = array(
         'add',
