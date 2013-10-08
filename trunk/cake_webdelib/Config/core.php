@@ -181,6 +181,12 @@
 	Configure::write('Security.level', 'medium');
 
 /**
+ * When set to false, HTTP_USER_AGENT will not be checked
+ * in the session
+ */
+        Configure::write('Session.checkAgent', false);
+  
+/**
  * A random string used in security hashing methods.
  */
 	Configure::write('Security.salt', 'Webdelib-2013');
