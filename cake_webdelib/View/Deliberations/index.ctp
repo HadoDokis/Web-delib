@@ -282,20 +282,3 @@ function choixModele(o) {
      if ($endDiv)
          echo ('</div>');
 ?>
-<style>
-    #actions_bottom label{
-        float: none;
-        display: inline;
-    }
-    #actions_bottom #btn_executer{
-        margin-left: 5px;
-        margin-top: -10px;
-    }
-    #actions_bottom {
-        text-align: center;
-    }
-    .checkbox input[type="checkbox"] {
-        float: none;
-    }
-    
-</style>
