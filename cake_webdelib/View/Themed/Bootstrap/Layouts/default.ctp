@@ -28,6 +28,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
             <?php echo $cakeDescription ?>:
             <?php echo $title_for_layout; ?>
         </title>
+	<meta name="robots" content="noindex, nofollow" />
         <?php
         echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
         echo $this->Html->meta('icon');
