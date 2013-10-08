@@ -77,7 +77,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type
 
 	<?php 
         if ($USE_PASTELL)
-                echo $this->Form->input('Deliberation.num_pref_libelle', array('label'=>'Nomenclature <acronym title="obligatoire">(*)</acronym>', 'options'=>$nomenclatures, 'default'=>$this->Html->value('Deliberation.num_pref'), 'empty'=>true, 'escape'=>false)); 
+                echo $this->Form->input('Deliberation.num_pref_libelle', array('label'=>'Nomenclature', 'options'=>$nomenclatures, 'default'=>$this->Html->value('Deliberation.num_pref'), 'empty'=>true, 'escape'=>false)); 
         else {
                 echo $this->Form->input( 'Deliberation.num_pref_libelle',
 				   array('div'      => false,
