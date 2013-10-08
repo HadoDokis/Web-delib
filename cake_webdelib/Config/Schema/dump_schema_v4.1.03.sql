@@ -293,7 +293,7 @@ CREATE TABLE "public"."deliberations" (
 	"etat_parapheur" integer DEFAULT NULL,
 	"commentaire_refus_parapheur" varchar(1000) DEFAULT NULL,
 	"etat_asalae" boolean DEFAULT NULL,
-	"reporte" boolean NOT NULL,
+	"reporte" boolean DEFAULT FALSE,
 	"montant" integer DEFAULT NULL,
 	"debat" bytea DEFAULT NULL,
 	"debat_name" varchar(255) DEFAULT NULL,
