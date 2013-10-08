@@ -14,3 +14,8 @@ body{
     padding-left: 70px;
     padding-right: 70px;
 }
+/* fix le décalage entre les checkboxes */
+div.input.checkbox label{
+    float: none;
+    text-align: left;
+}
