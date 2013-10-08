@@ -118,7 +118,6 @@ Configure::write('PASTELL_HOST', 'http://pastell.x.x.org');
 Configure::write('PASTELL_LOGIN', 'login');
 Configure::write('PASTELL_PWD', 'password');
 Configure::write('PASTELL_TYPE', 'actes');
-Configure::write('REFRESH_PASTELL', '/usr/local/bin/refreshPastell.sh');
 
 /* Configuration pour Idélibre */
 Configure::write('IDELIBRE_HOST', 'http://idelibre-server.dev.adullact.org');
