@@ -28,6 +28,7 @@
     margin: 30px auto 90px;
     max-width: 500px;
     border: 1px solid;
+    box-shadow: 5px 4px #ddd;
 }
 .login_form p {
     margin-left: 1em;
