@@ -31,24 +31,20 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         <?php
         echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
         echo $this->Html->meta('icon');
+        echo $this->fetch('meta');
 
         echo $this->Html->css('webdelib');
         echo $this->Html->css('jquery.jgrowl');
-
         echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('bootstrap-responsive.min');
         echo $this->Html->css('font-awesome.min');
-        // docs.css is only for this exapmple, remove for app dev
-        echo $this->Html->css('docs-connexion');
-        echo $this->fetch('meta');
+        echo $this->Html->css('connexion');
         echo $this->fetch('css');
 
-        echo $this->Html->script('libs/modernizr.min');
-        echo $this->Html->script('libs/jquery');
+        echo $this->Html->script('jquery');
+        echo $this->Html->script('modernizr.min');
         echo $this->Html->script('libs/bootstrap.min');
-        echo $this->Html->script('bootstrap/application');
         echo $this->html->script('jquery.jgrowl', true);
-
         echo $this->Html->script('utils');
 
         echo $this->fetch('script');
@@ -56,8 +52,11 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     </head>
     <body data-spy="scroll" data-target=".subnav" data-offset="50" style="background-position: 0 0;">
         <div id="container">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner navbar-inner"> 
-            <?php echo $this->Html->image($logo_path, array('align' => 'left','style' => 'margin-left:10px')); ?></div></div>
-        <?php echo $content_for_layout; ?>
-<?php echo $this->element('footer'); ?>
+            <div class="navbar navbar-fixed-top">
+                <div class="navbar-inner"> 
+                    <?php echo $this->Html->image($logo_path, array('align' => 'left', 'style' => 'margin-left:10px')); ?>
+                </div>
+            </div>
+            <?php echo $content_for_layout; ?>
+        </div>
+        <?php echo $this->element('footer'); ?>
