@@ -87,19 +87,6 @@ label {
         width: 250px;
 }
 
-.login_form {
-	padding-top: 20px;
-        margin: 30px auto 90px;
-        /*
-	margin-left: 28%;
-	margin-right: 28%;*/
-        max-width: 500px;
-	border: 1px solid;
-}
-.login_form p {
-	margin-left: 1em;
-}
-
 #conteneur {
 /*	position: absolute; */
 	width: 100%;
@@ -1393,10 +1380,6 @@ div.aModifier {
 .ouvrable-corps {
         overflow: auto;
         padding: 5px;
-}
-#login_submit {
-    text-align: center;
-    padding-bottom: 10px;
 }
 
 .autocomplete {
