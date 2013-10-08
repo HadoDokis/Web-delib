@@ -4,16 +4,16 @@
          onchangeCircuitDefault();
     });
 
-function onchangeCircuitDefault() {
-    selected_default_circuit_id = $('#default_circuit').val();
-    if (selected_default_circuit_id == null) 
-        selected_default_circuit_id  = <?php if (is_int($selectedCircuits)) echo $selectedCircuits; else echo 'null';?>;
-    $('#default_circuit').empty();
-    $('#all_circuits').find("option:selected").each(function(index, element) {
-        $(element).clone().appendTo('#default_circuit');
-    }) ; 
-    $('#default_circuit').val(selected_default_circuit_id );   
-}
+    function onchangeCircuitDefault() {
+        var selected_default_circuit_id = $('#default_circuit').val();
+        if (selected_default_circuit_id == null) 
+            selected_default_circuit_id  = <?php if (is_int($selectedCircuits)) echo $selectedCircuits; else echo 'null';?>;
+        $('#default_circuit').empty();
+        $('#all_circuits').find("option:selected").each(function(index, element) {
+            $(element).clone().appendTo('#default_circuit');
+        }) ; 
+        $('#default_circuit').val(selected_default_circuit_id );   
+    }
 </script>
 
 <?php echo $this->element('onglets', array('listeOnglets' => array(
@@ -141,10 +141,8 @@ function onchangeCircuitDefault() {
 
 <div id='tab3' style="display: none;">
     <?php 
-        foreach ($natures as $nature){
-            echo $this->Form->checkbox('Nature.id_'.$nature['Typeacte']['id'], array('checked'=> $nature['Nature']['check']));
-            echo $nature['Typeacte']['libelle'].'<br>';
-        } 
+        foreach ($natures as $nature)
+            echo $this->Form->input('Nature.id_'.$nature['Typeacte']['id'], array('type'=>'checkbox', 'checked'=> $nature['Nature']['check'], 'label'=>$nature['Typeacte']['libelle']));
     ?>
 </div>
 
