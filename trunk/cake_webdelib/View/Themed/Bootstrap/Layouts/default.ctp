@@ -41,6 +41,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->Html->css('font-awesome.min');
         echo $this->Html->css('docs');
         echo $this->Html->css('attendable');
+        echo $this->Html->css('filtre');
         echo $this->Html->css('global');
         echo $this->fetch('css');
 
@@ -61,7 +62,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                 <div class="navbar navbar-fixed-top">
                     <div class="navbar-inner"> 
                         <div class='user'>
-                            <?php echo $this->Html->image('webdelib_petit.png', array('align' => 'left')); ?>
+                            <?php echo $this->Html->image('webdelib_petit.png', array('style'=>'align: left;')); ?>
                             <?php if (isset($infoUser)) { ?>
                                 <form class="navbar-search pull-right" action="/deliberations/quicksearch">
                                     <?php
