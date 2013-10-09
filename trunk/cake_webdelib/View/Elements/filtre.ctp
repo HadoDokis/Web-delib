@@ -8,7 +8,7 @@ $criteres = $this->Session->read('Filtre.Criteres');
 if (empty($criteres)) return;
 
 echo $this->Html->script('filtre.js');
-
+        
 echo $this->Html->div('filtre');
 	echo $this->Form->create(null, array('url' => $this->Session->read('Filtre.url'), 'id'=>'filtreForm'));
 		echo $this->Html->tag('div', null, array('class' => 'filtreFonc'));
@@ -22,29 +22,26 @@ echo $this->Html->div('filtre');
 			}
 			echo $this->Html->image($iconeBoutonBasculeCriteres, array(
 				'id'=>'boutonBasculeCriteres',
-				'border'=>"0", 'height'=>"28", 'width'=>"28",
 				'title'=>__('Afficher-masquer les critères du filtre', true),
 				'onClick'=>"basculeCriteres();",
-				'onMouseOver'=>"this.style.cursor='pointer'"));
+                                'style' => 'cursor: pointer; border: 0; height: 28px; width: 28px;'));
 			// affichage du bouton on/off
 			if ($this->Session->read('Filtre.Fonctionnement.actif'))
 				echo $this->Html->image('icons/filtreOn.png', array(
 					'id'=>'boutonOnOff',
-					'border'=>"0", 'height'=>"28", 'width'=>"28",
 					'title'=>__('Filtre actif, cliquer ici pour annuler le filtre', true),
 					'onClick'=>"razFiltre();",
-					'onMouseOver'=>"this.style.cursor='pointer'"));
+                                        'style' => 'cursor: pointer; border: 0; height: 28px; width: 28px;'));
 			else
 				echo $this->Html->image('icons/filtreOff.png', array(
 					'id'=>'boutonOnOff',
-					'border'=>"0", 'height'=>"28", 'width'=>"28",
-					'title'=>__('Filtre inactif', true)));
+					'title'=>__('Filtre inactif', true),
+                                        'style' => 'border: 0; height: 28px; width: 28px;'));
 			// affichage du bouton pour appliquer le filtre
 			echo $this->Html->image('icons/filtre.png', array(
 				'id'=>'filtreButton',
-				'border'=>"0", 'height'=>"28", 'width'=>"28",
 				'title'=>__('Changer les critères du filtre puis cliquer ici pour appliquer les changements', true),
-				));
+                                'style' => 'border: 0; height: 28px; width: 28px;'));
 		echo $this->Html->tag('/div');
 
 		echo $this->Html->div('filtreCriteres', null, array('id'=>'filtreCriteres'));
@@ -66,11 +63,3 @@ echo $this->Html->div('filtre');
 	echo '<div class="spacer"></div>';
 echo '</div>';
 ?>
-<style>
-.demi select[multiple], .demi filtre.select[size] {
-    width: 220px;
-}
-#filtreCriteres{
-    padding-left: 5px;
-}
-</style>
