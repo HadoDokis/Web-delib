@@ -1,7 +1,7 @@
 <div class="users">
 <h2>Liste des utilisateurs</h2>
 
-<table cellpadding="0" cellspacing="0" width="100%">
+<table style="width:100%;">
 <tr>
 	<th><?php echo $this->Paginator->sort('login', 'Login'); ?></th>
 	<th><?php echo $this->Paginator->sort('nom', 'Nom'); ?></th>
@@ -11,12 +11,12 @@
 	<th>Mobile</th>
 	<th>Service</th>
 	<th>Type d'acte</th>
-	<th width='20%'>Actions</th>
+	<th style="width:20%;">Actions</th>
 </tr>
 <?php
 
 foreach ($users as $user):?>
-<tr height="36px">
+<tr style="height:36px;">
 	<td><?php echo $user['User']['login']; ?></td>
 	<td><?php echo $user['User']['nom']; ?></td>
 	<td><?php echo $user['User']['prenom']; ?></td>
@@ -43,7 +43,7 @@ foreach ($users as $user):?>
 
 		<?php
 		    if ($user['User']['is_deletable'])
-		        echo $this->Html->link(SHY,'/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer','escape' => false, 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer l\'utilisateur "' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'" ?')?>
+		        echo $this->Html->link(SHY,'/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer','escape' => false, 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer cet utilisateur : \'' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'\' ?')?>
 	</td>
 </tr>
 <?php endforeach; ?>
@@ -63,9 +63,4 @@ foreach ($users as $user):?>
 <?php 
 $this->Html2->boutonAdd("Ajouter", "Ajouter un utilisateur");
 ?>
-<!--<ul class="actions">
-    
-	<li><?php // echo $this->Html->link('Ajouter', '/users/add/', array('class'=>'link_add', 'title'=>'Ajouter un utilisateur')); ?></li>
-</ul>-->
 </div>
-
