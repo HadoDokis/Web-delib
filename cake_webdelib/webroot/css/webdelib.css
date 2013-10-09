@@ -1416,6 +1416,7 @@ input[type="file"]{width: auto}
     margin-top: -10px;
 }
 #actions_bottom {
+    margin-top: 18px;
     text-align: center;
 }
 .checkbox input[type="checkbox"] {
