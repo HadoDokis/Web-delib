@@ -1,7 +1,7 @@
 <div class="login_form">    
     <div class="clearfix"  style="margin: 0 auto;max-width: 100%;padding-left:1em;">
     <font style="font-weight: bold">Bienvenue</font><br />
-    <?php echo $this->Html->image('webdelib_petit.png', array('align' => 'left')); ?>
+    <?php echo $this->Html->image('webdelib_petit.png', array('id'=>'logo')); ?>
     </div>
         <p class="error-message"><?php echo $errorMsg; ?></p>
     <p>Veuillez saisir votre identifiant et votre mot de passe. </p>
