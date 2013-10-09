@@ -69,10 +69,15 @@ class PastellComponent extends Component {
         $curl = $this->_initCurl("api/create-document.php?id_e=$id_e&type=$type");
         $result = curl_exec($curl);
 	curl_close($curl);
-
+        
 	$infos = json_decode($result);
 	$infos = (array) $infos;
-        return($infos['id_d']);
+        if (array_key_exists('id_d', $infos))
+            return($infos['id_d']);
+        elseif (array_key_exists('error-message', $infos))
+            throw new Exception($infos['error-message']);
+        else
+            throw new Exception("Une erreur inconnue est survenue");
     }
 
     function modifyDocument($id_e, $id_d, $delib=array(), $annexes=array() ) {
