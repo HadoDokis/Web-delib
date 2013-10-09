@@ -3095,6 +3095,9 @@ class DeliberationsController extends AppController {
         }
     }
 
+    /**
+     * TOFIX
+     */
     function sendToPastell($seance_id) {
         $this->set('seance_id', $seance_id);
         $coll = $this->Session->read('user.Collectivite');
@@ -3102,26 +3105,37 @@ class DeliberationsController extends AppController {
 
         if (empty($this->data)) {
             $circuits['-1'] = 'Signature manuscrite';
-            $tmp_id_d = $this->Pastell->createDocument($id_e);
-            $this->Pastell->insertInParapheur($id_e, $tmp_id_d);
+            try {
+                $tmp_id_d = $this->Pastell->createDocument($id_e);
+                $this->Pastell->insertInParapheur($id_e, $tmp_id_d);
 
-            $circuits[] = $this->Pastell->getInfosField($id_e, $tmp_id_d, 'iparapheur_sous_type');
-            $this->Pastell->action($id_e, $tmp_id_d, 'supression');
+                $circuits[] = $this->Pastell->getInfosField($id_e, $tmp_id_d, 'iparapheur_sous_type');
+                //TOFIX : Pastell comprend-il la faute d'orthographe 'supression' ? TODO: changer en 'suppression'
+                $this->Pastell->action($id_e, $tmp_id_d, 'supression');
 
-            $this->Deliberation->Behaviors->attach('Containable');
-            $conditions["Deliberation.etat >"] = -1;
-            $conditions["Deliberation.seance_id"] = $seance_id;
-            $delibs = $this->Deliberation->find('all', array('conditions' => $conditions,
-                'order' => 'Deliberation.position',
-                'fields' => array('id', 'objet_delib', 'seance_id', 'typeacte_id', 'signee', 'etat_parapheur', 'signature',
-                    'titre', 'num_delib', 'num_pref', 'etat', 'pastell_id', 'commentaire_refus_parapheur'),
-                'contain' => array('Seance.id', 'Seance.type_id')
-            ));
-            for ($i = 0; $i < count($delibs); $i++) {
-                $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delibs[$i]['Seance']['type_id'], 3);
+                $this->Deliberation->Behaviors->attach('Containable');
+
+                $delibs = $this->Deliberationseance->find( 'all',  array(
+                        'fields'    => array('Deliberationseance.seance_id','Deliberationseance.deliberation_id','Deliberationseance.position','Deliberation.*'),
+                        'contain'   => array('Deliberation', 'Seance'),
+                        'recursive' => 1,
+                        'order'     => 'Deliberationseance.position ASC',
+                        'conditions'=>  array(
+                            'Deliberationseance.seance_id' => $seance_id,
+                            'Deliberation.etat >=' => 0,
+                        )
+                    )
+                );
+
+                for ($i = 0; $i < count($delibs); $i++) {
+                    $delibs[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($delibs[$i]['Seance']['type_id'], 3);
+                }
+                $this->set('deliberations', $delibs);
+                $this->set('circuits', $circuits);
+            } catch (Exception $exc) {
+                $this->Session->setFlash("Erreur Pastell :<br>".$exc->getMessage(), 'growl', array('type' => 'erreurTDT'));
+                $this->redirect($this->referer());
             }
-            $this->set('deliberations', $delibs);
-            $this->set('circuits', $circuits);
         } else {
             $message = '';
 
@@ -3135,7 +3149,7 @@ class DeliberationsController extends AppController {
                     $annexes_id = array();
                     $annexes = array();
                     $tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, 1);
-                    $dyn_path = "/files/generee/fd/" . $delib['Deliberation']['seance_id'] . "/$delib_id/";
+                    $dyn_path = "/files/generee/fd/$seance_id/$delib_id/";
                     $path = WEBROOT_PATH . $dyn_path;
                     if (!empty($tmp_annexes))
                         array_push($annexes_id, $tmp_annexes);
