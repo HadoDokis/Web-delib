@@ -32,8 +32,8 @@ function choixModele(o) {
     if (isset($traitement_lot) && ($traitement_lot ==true))
         echo $this->Form->create('Deliberation',array('url'=>'/deliberations/traitementLot','type'=>'post'));
 ?>
-	<table width="100%" cellspacing="0" cellpadding="0" caption="<?php echo $titreVue;?>" summary="<?php echo $titreVue;?>" >
-	<tr>
+	<table cellspacing="0" cellpadding="0" summary="<?php echo $titreVue;?>" >
+        <tr>
 		<th width='72'>
                  <?php if (isset($traitement_lot) && ($traitement_lot ==true)){
                            echo "<input type=\"checkbox\" onclick=\"$('td :checkbox').attr('checked', this.checked);\"/>";
