@@ -54,7 +54,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         <div id="container">
             <div class="navbar navbar-fixed-top">
                 <div class="navbar-inner"> 
-                    <?php echo $this->Html->image($logo_path, array('align' => 'left', 'style' => 'margin-left:10px')); ?>
+                    <?php echo $this->Html->image($logo_path, array('id' => 'logo-adullact', 'style' => 'margin-left:10px')); ?>
                 </div>
             </div>
             <?php echo $content_for_layout; ?>
