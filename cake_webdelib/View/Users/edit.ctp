@@ -98,14 +98,12 @@ if ($this->Html->value('User.id')) {
             else
                 echo ("<fieldset id='mails'");
             ?>
-            
-            <?php echo $this->Form->input('User.mail_insertion', array('before' => '<label class="demi">Insertion</label><br>', 'legend' => false, 'type' => 'radio', 'options' => $notif, 'div' => true, 'label' => true)); ?>
+            <legend>Réception des mails</legend>
+            <?php echo $this->Form->input('User.mail_insertion', array('before' => '<label>Insertion</label><br>', 'legend' => false, 'type' => 'radio', 'options' => $notif, 'div' => array('class'=>'tiers'), 'label' => true)); ?>
+            <?php echo $this->Form->input('User.mail_traitement', array('before' => '<label>Traitement</label><br>', 'legend' => false, 'type' => 'radio', 'options' => $notif, 'div' => array('class'=>'tiers'), 'label' => true)); ?>
+            <?php echo $this->Form->input('User.mail_refus', array('before' => '<label>Refus</label><br>', 'legend' => false, 'type' => 'radio', 'options' => $notif, 'div' => array('class'=>'tiers'), 'label' => true)); ?>
             <div class="spacer"></div>
-            <?php echo $this->Form->input('User.mail_traitement', array('before' => '<label>Traitement</label><br>', 'legend' => false, 'type' => 'radio', 'options' => $notif, 'div' => true, 'label' => true)); ?>
-            <div class="spacer"></div>
-            <?php echo $this->Form->input('User.mail_refus', array('before' => '<label>Refus</label><br>', 'legend' => false, 'type' => 'radio', 'options' => $notif, 'div' => true, 'label' => true)); ?>
-            <div class="spacer"></div>
-
+            <hr/>
             <?php
             echo '</fieldset>';
             echo '<div class="spacer"></div>';
