@@ -21,6 +21,8 @@ ALTER TABLE collectivites ADD COLUMN logo bytea;
 
 ALTER TABLE infosupdefs ALTER COLUMN val_initiale TYPE character varying(1000);
 
+ALTER TABLE infosups ALTER COLUMN text TYPE character varying(1000);
+
 ALTER TABLE deliberations ALTER COLUMN num_pref DROP NOT NULL;
 ALTER TABLE deliberations ALTER COLUMN reporte SET DEFAULT FALSE;
 
