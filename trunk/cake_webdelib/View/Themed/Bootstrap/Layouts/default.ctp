@@ -62,7 +62,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                 <div class="navbar navbar-fixed-top">
                     <div class="navbar-inner"> 
                         <div class='user'>
-                            <?php echo $this->Html->image('webdelib_petit.png', array('style'=>'align: left;')); ?>
+                            <?php echo $this->Html->image('webdelib_petit.png', array('id'=>'logo')); ?>
                             <?php if (isset($infoUser)) { ?>
                                 <form class="navbar-search pull-right" action="/deliberations/quicksearch">
                                     <?php
