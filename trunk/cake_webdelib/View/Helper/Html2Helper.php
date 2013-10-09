@@ -286,19 +286,19 @@ class Html2Helper extends HtmlHelper {
             echo $this->tag('/div', null);
     }
     
-    function boutonSubmitUrl($url = 'edit', $value = 'Modifier', $title = 'Modifier', $style = '', $class = 'btn-primary', $type='', $center = false) {
+    function boutonSubmitUrl($url = 'edit', $value = 'Modifier', $title = 'Modifier', $style = '', $class = 'btn-primary', $type='') {
         echo $this->link("<i class='$type'></i> $value", $url, array('class' => "btn $class", 'escape' => false, 'title' => $title, 'style' => $style));
     }
 
     function boutonsSaveCancel($onclick = '', $urlCancel = "javascript:history.go(-1)", $titleSave = "Sauvegarder", $valueSave = 'Sauvegarder', $center = false) {
         if ($center) {
             echo $this->tag("div", null, array("class" => "btn-group", 'style' => 'text-align:center; margin-top:10px;'));
-            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler', 'style' => 'float:none;'));
+            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'style' => 'float:none;'));
             echo $this->Form->button("<i class='icon-save'></i> $valueSave", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick, 'style' => 'float:none;'));
             echo $this->tag('/div', null);
         } else {
             echo $this->tag("div", null, array("class" => "btn-group", 'style' => 'margin-top:10px;'));
-            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
             echo $this->Form->button("<i class='icon-save'></i> $valueSave", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick));
             echo $this->tag('/div', null);
         }
@@ -307,12 +307,12 @@ class Html2Helper extends HtmlHelper {
     function boutonsSaveCancelUrl($urlCancel="javascript:history.go(-1)", $onclick = '', $titleSave = "Sauvegarder", $valueSave = 'Sauvegarder', $center = false) {
         if ($center) {
             echo $this->tag("div", null, array("class" => "btn-group", 'style' => 'text-align:center; margin-top:10px;'));
-            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler', 'style' => 'float:none;'));
+            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'style' => 'float:none;'));
             echo $this->Form->button("<i class='icon-save'></i> $valueSave", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick, 'style' => 'float:none;'));
             echo $this->tag('/div', null);
         } else {
             echo $this->tag("div", null, array("class" => "btn-group", 'style' => 'margin-top:10px;'));
-            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
             echo $this->Form->button("<i class='icon-save'></i> $valueSave", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick));
             echo $this->tag('/div', null);
         }
@@ -321,12 +321,12 @@ class Html2Helper extends HtmlHelper {
     function boutonsAddCancel($onclick = "", $urlCancel = "javascript:history.go(-1)", $titleSave = "Ajouter", $center = false) {
         if ($center) {
             echo $this->tag("div", null, array("class" => "btn-group", 'style' => 'text-align:center; margin-top:10px;'));
-            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler', 'style' => 'float:none;'));
+            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'style' => 'float:none;'));
             echo $this->Form->button('<i class="icon-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick, 'style' => 'float:none;'));
             echo $this->tag('/div', null);
         } else {
             echo $this->tag("div", null, array("class" => "btn-group", 'style' => 'margin-top:10px;'));
-            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+            echo $this->link('<i class="icon-circle-arrow-left"></i> Annuler', $urlCancel, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
             echo $this->Form->button('<i class="icon-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => $titleSave, 'onclick' => $onclick));
             echo $this->tag('/div', null);
         }
