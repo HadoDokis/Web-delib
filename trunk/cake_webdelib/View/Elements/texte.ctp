@@ -51,12 +51,15 @@
                     $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/$id/$key.odt";
                 else
                     $url = '#';
-   	        echo '<span id="Deliberation'.$key.'InputFichierJoint" style="display: none;"></span>';
+                echo '<div class="input file">';
+                echo "<label class='libelle'>$libelle</label>";
 	        echo '<span id="Deliberation'.$key.'AfficheFichierJoint">'; 
-                echo $libelle .": <a href='$url'>$filename</a>";
+                echo ": <a href='$url'>$filename</a>";
 	        echo '&nbsp;&nbsp;';
 	        echo $this->Html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', '".$key."', '".$libelle."')", null, 'Voulez-vous vraiment supprimer le fichier ?');
                 echo '</span>';
+   	        echo '<span id="Deliberation'.$key.'InputFichierJoint" style="display: none;"></span>';
+                echo '</div>';
 	    }
             if (!empty($validationErrorsArray[$key.'_type'])) {
                 echo("<div class='error-message'>".$validationErrorsArray[$key.'_type'][0].'</div>');
