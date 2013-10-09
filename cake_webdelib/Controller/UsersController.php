@@ -466,8 +466,8 @@ class UsersController extends AppController {
 		$this->Session->delete('user.format.sortie');
 		$this->Session->write('user.format.sortie', $id);
 		//redirection sur la page où on était avant de changer de service
-		$this->redirect($this->Session->read('user.User.myUrl'));
-		//$this->redirect($this->Session->read('user.User.lasturl'));
+//		$this->redirect($this->Session->read('user.User.myUrl'));
+		$this->redirect($this->Session->read('user.User.lasturl'));
 	}
 
 	function _checkLDAP($login, $password) {
