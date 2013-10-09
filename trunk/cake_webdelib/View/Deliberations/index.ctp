@@ -32,28 +32,28 @@ function choixModele(o) {
     if (isset($traitement_lot) && ($traitement_lot ==true))
         echo $this->Form->create('Deliberation',array('url'=>'/deliberations/traitementLot','type'=>'post'));
 ?>
-	<table cellspacing="0" cellpadding="0" summary="<?php echo $titreVue;?>" >
+	<table>
         <tr>
-		<th width='72'>
+		<th style="width:72px">
                  <?php if (isset($traitement_lot) && ($traitement_lot ==true)){
                            echo "<input type=\"checkbox\" onclick=\"$('td :checkbox').attr('checked', this.checked);\"/>";
                  echo '<br/>';
                  
                  }
-                 ?>Vue</th>
-		<th width='15%' align="left">Synthétique</th>
-		<th width='40%'>&nbsp;</th>
-		<th width='30%'>&nbsp;</th>
-		<th width='150'>Actions</th>
+                 ?>Vue
+                </th>
+		<th style="width:15%; text-align: left;">Synthétique</th>
+		<th style="width:40%">&nbsp;</th>
+		<th style="width:30%">&nbsp;</th>
+		<th style="width:150px">Actions</th>
 	</tr>
 	<tr>
-		<td colspan='5' class='Border' height='1' >
-		</td>
+                <td colspan='5' class='Border' style="height: 1px"></td>
 	</tr>
 
 <?php foreach ($this->data as $deliberation){ ?>
 	<tr>
-		<td rowspan=3 style="text-align:center;">
+		<td rowspan="3" style="text-align:center;">
 		    <br />
 		    <?php 
                         echo $this->Html->image($deliberation['iconeEtat']['image'], 
@@ -107,14 +107,13 @@ function choixModele(o) {
                         }
 		?>
 		</td>
-		<td rowspan=3 class="actions">
+		<td rowspan="3" class="actions">
                 <br />
 		<?php
                     if (in_array('view', $deliberation['Actions']))
 			echo $this->Html->link(SHY, 
                                          '/deliberations/view/' . $deliberation['Deliberation']['id'], 
                                          array('class'=>'link_voir', 
-						'alt' => 'Voir le projet '.$deliberation['Deliberation']['objet'],
 						'title' => 'Voir le projet '.$deliberation['Deliberation']['objet'], 
                                                 'escape' => false), 
                                                 false);
@@ -123,7 +122,6 @@ function choixModele(o) {
 			echo $this->Html->link(SHY,
                                          '/deliberations/edit/' . $deliberation['Deliberation']['id'], 
                                          array('class'=>'link_modifier', 
-					       'alt'=>'Modifier le projet '.$deliberation['Deliberation']['objet'],
                                                'title'=>'Modifier le projet '.$deliberation['Deliberation']['objet'],
                                                'escape' => false
                                                ), 
@@ -133,7 +131,6 @@ function choixModele(o) {
 			echo $this->Html->link(SHY,
                                          '/deliberations/delete/'.$deliberation['Deliberation']['id'],  
 					 array('class'=>'link_supprimer', 
-                                               'alt'=>'Supprimer le projet '.$deliberation['Deliberation']['objet'], 
                                                'escape' => false,
                                                'title'=>'Supprimer le projet '.$deliberation['Deliberation']['objet'],
                                              ), 
@@ -144,7 +141,6 @@ function choixModele(o) {
                        echo $this->Html->link(SHY,
                                         "/deliberations/traiter/" . $deliberation['Deliberation']['id'], 
                                         array('class'=>"link_traiter", 
-                                              'alt'=>'Traiter le projet '.$deliberation['Deliberation']['objet'],
                                               'escape' => false,
                                               'title'=>'Traiter le projet '.$deliberation['Deliberation']['objet']),
 					      false);
@@ -153,7 +149,6 @@ function choixModele(o) {
                        echo $this->Html->link(SHY,
                                         "/deliberations/validerEnUrgence/" . $deliberation['Deliberation']['id'], 
                                         array('class'=>"link_validerenurgence", 
-					      'alt'=>'Valider en urgence le projet '.$deliberation['Deliberation']['objet'],
                                               'title'=>'Valider en urgence le projet '.$deliberation['Deliberation']['objet'],
                                               'escape' => false),
                                               'Confirmez-vous la validation en urgence du projet \''.$deliberation['Deliberation']['id'].'\'');
@@ -161,7 +156,6 @@ function choixModele(o) {
 			 if (in_array('goNext', $deliberation['Actions']))
 			     echo $this->Html->link(SHY,"/deliberations/goNext/" . $deliberation['Deliberation']['id'], 
                                                     array('class'=>"link_jump", 
-							 'alt'=>'Sauter une ou des étapes pour le projet '.$deliberation['Deliberation']['objet'],
 							 'title'=>'Sauter une ou des étapes pour le projet '.$deliberation['Deliberation']['objet'],
                                                          'escape' => false), 
                                                     false);
@@ -173,7 +167,6 @@ function choixModele(o) {
 				echo $this->Html->link(SHY, 
 						 $actionAttribuer, 
                                                  array('class'=>'link_circuit', 
-                                                       'alt'=>'Attribuer un circuit pour le projet '.$deliberation['Deliberation']['objet'],
                                                         'escape' => false,
                                                        'title'=>'Attribuer un circuit pour le projet '.$deliberation['Deliberation']['objet']), 
                                                        false);
@@ -184,7 +177,6 @@ function choixModele(o) {
 		                echo $this->Html->link(SHY,
 						       '/models/generer/' . $deliberation['Deliberation']['id'].'/null/'. $deliberation['Model']['id'].'/-1/0/retour/0/0/0/', 
                                                       array('class'=>'link_pdf delib_pdf', 
-	                                               'alt'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'],
                                                        'escape' => false,
                                                        'title'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'] ),
                                                  false);
@@ -192,7 +184,6 @@ function choixModele(o) {
 			        echo $this->Html->link(SHY, 
                                                   '/deliberations/downloadDelib/'.$deliberation['Deliberation']['id'], 
 			  			  array('class'=>'link_pdf', 
-                                                        'alt'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'],
                                                         'title'=>'Visionner PDF pour le projet '.$deliberation['Deliberation']['objet'],
                                                         'escape' => false), 
                                                        false);
@@ -206,7 +197,7 @@ function choixModele(o) {
                               <br /><?php if (isset( $deliberation['last_viseur']) && !empty($deliberation['last_viseur']))
                           echo 'Dernière action de : '. $deliberation['last_viseur'] ?>    
                 </td>
-		<td class='corps' rowspan=1 ><?php echo $deliberation['Deliberation']['titre']; ?></td>
+		<td class='corps' rowspan="1"><?php echo $deliberation['Deliberation']['titre']; ?></td>
 		<td>A traiter avant le :<br /><?php echo $deliberation['Deliberation']['date_limite']; ?></td>
 	</tr>
 	<tr>
@@ -218,7 +209,7 @@ function choixModele(o) {
                 ?>
                 </b>
                 </td>
-		<td class='corps' rowspan=1 >Th&egrave;me : 
+		<td class='corps' rowspan="1">Th&egrave;me : 
                 <?php 
                   if (isset( $deliberation['Theme']['libelle']))
                       echo $deliberation['Theme']['libelle'];
@@ -226,8 +217,7 @@ function choixModele(o) {
 		<td>Classification : <?php echo $deliberation['Deliberation']['num_pref'];  ?></td>
 	</tr>
 	<tr>
-		<td colspan='5' class='Border' height='1' >
-		</td>
+		<td colspan='5' class='Border' style="height: 1px"></td>
 	</tr>
 <?php } ?>
 
@@ -254,31 +244,32 @@ function choixModele(o) {
               echo '<li>'.$this->Html->link('Nouvelle recherche', '/deliberations/tousLesProjetsRecherche', array('class'=>'btn', 'escape' => false, 'alt'=>'Nouvelle recherche parmi tous les projets', 'title'=>'Nouvelle recherche parmi tous les projets')).'</li>';
               echo '</ul>';
           }
-} ?>
+}
+if (isset($traitement_lot) && ($traitement_lot ==true)) {
+        $actions_possibles['generation'] = 'Génération';
+        echo "<div id='actions_bottom'>";
+        echo $this->Form->input('Deliberation.action', array('options' => $actions_possibles, 
+                                                             'div'     => false,
+                                                             'onChange'=> 'javascript:choixModele(this);',
+                                                             'empty'   => 'Selectionner une action'));
+
+        echo $this->Form->input('Deliberation.modele', array('options' => $modeles,
+                                                             'div'     => array('id' => 'divmodeles', 'style' => 'display:none;'),
+                                                             'label'   => false,
+                                                             'empty'   => 'Selectionner un modèle'));
+
+        echo $this->Form->button("<i class='icon-cogs'></i> Executer", 
+                                       array ( 'div'   => false, 
+                                               'class' => 'btn',
+                                               'escape'=> false,
+                                               'id'    => 'btn_executer',
+                                               'type'  => 'submit'));
+        echo '</div>';
+    }
+    echo $this->Form->end();
+?>
 </div>
 <?php 
-     if (isset($traitement_lot) && ($traitement_lot ==true)) {
-         $actions_possibles['generation'] = 'Génération';
-         echo "<div id='actions_bottom'>";
-         echo $this->Form->input('Deliberation.action', array('options' => $actions_possibles, 
-                                                              'div'     => false,
-                                                              'onChange'=> 'javascript:choixModele(this);',
-                                                              'empty'   => 'Selectionner une action'));
-   
-         echo $this->Form->input('Deliberation.modele', array('options' => $modeles,
-							      'div'     => array('id' => 'divmodeles', 'style' => 'display:none;'),
-							      'label'   => false,
-                                                              'empty'   => 'Selectionner un modèle'));
-         
-         echo $this->Form->button("<i class='icon-cogs'></i> Executer", 
-                                        array ( 'div'   => false, 
-                                                'class' => 'btn',
-                                                'escape'=> false,
-                                                'id'    => 'btn_executer',
-                                                'type'  => 'submit'));
-         echo '</div>';
-         echo $this->Form->end(); 
-     }
-     if ($endDiv)
-         echo ('</div>');
+    if ($endDiv)
+        echo ('</div>');
 ?>
