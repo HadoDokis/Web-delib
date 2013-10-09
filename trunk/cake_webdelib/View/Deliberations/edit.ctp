@@ -135,7 +135,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 		else
 			$value = "value=''";
 	?>
-	<input name="date_limite" size="9" <?php echo $value; ?>"/>&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');" alt="" id="afficheCalendrier"><?php echo $this->Html->image("calendar.png", array('style'=>"border='0'")); ?></a>
+	<input name="date_limite" size="9" <?php echo $value; ?> />&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');" alt="" id="afficheCalendrier"><?php echo $this->Html->image("calendar.png", array('style'=>"border='0'")); ?></a>
 	<div class='spacer'></div>
 
 
@@ -197,7 +197,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 </div>
 
 <?php if (!empty($infosupdefs)): ?>
-<div id="tab4" <?php echo isset($lienTab) && $lienTab==4?'':'style="display: none;"'?>">
+<div id="tab4" <?php echo isset($lienTab) && $lienTab==4 ? '' : 'style="display: none;"' ?>>
 	<?php
 	foreach($infosupdefs as $infosupdef) {
 		// Amélioration 4.1 : on ne peut modifier une infosup qu'en fonction du profil
