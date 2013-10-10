@@ -829,6 +829,7 @@ a.link_modifier_avec_border {
 	background-image: url(../../../img/icons/klpq.png);
 	background-repeat: no-repeat;
 	background-position: top left;
+        background-size: 24px;
 	padding: 4px 4px 14px 36px;
 }
 
