@@ -242,3 +242,4 @@
     *) Correction sur la suppression d'un acte dans une séance (on réordonne la séance)
     *) Mise en place d'un htaccess pour ne pas mettre en cache les documents pdf et odt dans le navigateur (dossier app/www_root/files/generee)
     *) Outil de test en batch des annexes sur les séances en cours et en rédaction
+    *) Générération des recueils: trié par numéro (ascendant)
