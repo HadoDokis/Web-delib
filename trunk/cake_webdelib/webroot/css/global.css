@@ -13,12 +13,19 @@ body{
     margin-right: 0;
     padding-left: 70px;
     padding-right: 70px;
+    padding-top: 80px;
 }
+
 /* fix le décalage entre les checkboxes */
 div.input.checkbox label{
     float: none;
     text-align: left;
 }
+
 #logo{
      float: left;
+}
+
+.navbar-fixed-top{
+    position: fixed;
 }
