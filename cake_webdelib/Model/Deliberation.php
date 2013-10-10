@@ -470,24 +470,23 @@ class Deliberation extends AppModel {
 
 		if (empty($multiSeances)) {
 			$nbProjets = count($projets);
-			if ($nbProjets > 1) {
-				$i =0;
-				$blocProjets = new GDO_IterationType("Projets");
-			}
-			foreach ($projets as $projet) {
-				$oDevPart = new GDO_PartType();
-				$this->makeBalisesProjet($projet,  $oDevPart);
-				if ($nbProjets > 1)
-					$blocProjets->addPart($oDevPart);
-			}
-			if ( $nbProjets > 1)
-				$oMainPart->addElement($blocProjets);
-			else
-				$oMainPart =  $oDevPart;
+                        if ($nbProjets > 1) {
+                                $blocProjets = new GDO_IterationType("Projets");
+                        }
+                        foreach ($projets as $projet) {
+                                $oDevPart = new GDO_PartType();
+                                $this->makeBalisesProjet($projet,  $oDevPart);
+                                if ($nbProjets > 1)
+                                        $blocProjets->addPart($oDevPart);
+                        }
+                        if ( $nbProjets > 1)
+                                $oMainPart->addElement($blocProjets);
+                        else
+                                $oMainPart =  $oDevPart;
 		}
 		else {
 			$seances = new GDO_IterationType("Seances");
-			foreach($multiSeances as $key => $seance_id)
+			foreach($multiSeances as $seance_id)
 				$seances->addPart($this->Seance->makeBalise($seance_id, null, true, $conditions));
 			$oMainPart->addElement($seances);
 		}
