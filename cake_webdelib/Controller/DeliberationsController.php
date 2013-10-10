@@ -2976,6 +2976,7 @@ class DeliberationsController extends AppController {
                 $this->Deliberation->Behaviors->attach('Containable');
                 $projets = $this->Deliberation->find('all', array(
                     'conditions' => $conditions,
+                    'order' => 'num_delib',
                     /* 'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
                       'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
                       'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
@@ -3011,7 +3012,12 @@ class DeliberationsController extends AppController {
                         $format = 0;
                     //if (count($multiseances) == 1)
                     $multiseances = array();
-                    $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format, $multiseances, $conditions);
+                    if (!empty($projets) || !empty($multiseances))
+                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format, $multiseances, $conditions);
+                    else{
+                        $this->Session->setFlash('Aucun projet correspondant aux critères de recherche.', 'growl', array('type'=>'erreur'));
+                        $this->redirect('/deliberations/tousLesProjetsRecherche');
+                    }
                 }
             }
         }
