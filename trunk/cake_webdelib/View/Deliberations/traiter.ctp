@@ -34,7 +34,7 @@
     echo $this->Html->tag('h3', 'Valider ou refuser les projets ' . $deliberation['Typeacte']['libelle'] . ' (id : ' . $listeIds . ')');
     echo $linkBarre;
     ?>
-    </br>
+    <br/>
 
     <dl>
         <div class="imbrique">
@@ -94,13 +94,10 @@
 
         <div class="imbrique">
             <dt>Circuit : <?php echo $deliberation['Circuit']['libelle'] ?></dt>
-<?php echo $visu; ?>
-
+            <dd>
+                <?php echo $visu; ?>
             </dd>
         </div>
-        <br/>
-        <br/>
-        <br/>
 
         <div class="imbrique">
             <div class="gauche">
