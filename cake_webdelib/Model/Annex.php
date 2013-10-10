@@ -17,8 +17,8 @@ class Annex extends AppModel {
             'rule' => 'checkFileFusion',
             'message' => 'Le format de fichier est invalide pour le joindre à la fusion'),
         'filename' => array(
-            'rule' => array('maxLength', 70),
-            'message' => 'Le nom du fichier est trop long (70 caract&egrave;res maximum)', 'growl'),
+            'rule' => array('maxLength', 100),
+            'message' => 'Le nom du fichier est trop long (100 caract&egrave;res maximum)', 'growl'),
         'titre' => array(
             'rule' => array('maxLength', 200),
             'message' => 'Le titre du fichier est trop long (200 caract&egrave;res maximum)', 'growl')
