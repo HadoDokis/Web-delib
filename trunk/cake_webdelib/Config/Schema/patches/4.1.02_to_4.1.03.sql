@@ -26,6 +26,8 @@ ALTER TABLE infosups ALTER COLUMN text TYPE character varying(1000);
 ALTER TABLE deliberations ALTER COLUMN num_pref DROP NOT NULL;
 ALTER TABLE deliberations ALTER COLUMN reporte SET DEFAULT FALSE;
 
+ALTER TABLE annexes ALTER COLUMN filename TYPE character varying(100);
+
 --
 -- Fin du patch : fin de la transaction
 --
