@@ -58,7 +58,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 	<div class='spacer'></div>
         <?php echo $this->Form->input('Deliberation.typeacte_id', array('label'    => 'Type d\'acte <acronym title="obligatoire">(*)</acronym>', 
                                                                         'options'  => $this->Session->read('user.Nature'), 
-                                                                        'empty'    => '(sélectionner le type d\'acte)', 
+                                                                        'empty'    => false, 
                                                                         'id'       => 'listeTypeactesId',
                                                                         'onChange' => "updateTypeseances(this);", 
                                                                         'escape'   => false));  ?>
@@ -106,7 +106,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 	<?php echo $this->Form->input('Deliberation.rapporteur_id', array('label'=>'Rapporteur', 'options'=>$rapporteurs, 'empty'=>true)); ?>
 
 	<div class='spacer'></div>
-	<?php echo $this->Form->input('Deliberation.theme_id', array('label'=>'Thème <acronym title="obligatoire">(*)</acronym>', 'options'=>$themes, 'default'=>$this->Html->value('Deliberation.theme_id'), 'empty'=>'(sélectionner le thème)', 'escape'=>false)); ?>
+	<?php echo $this->Form->input('Deliberation.theme_id', array('label'=>'Thème <acronym title="obligatoire">(*)</acronym>', 'options'=>$themes, 'default'=>$this->Html->value('Deliberation.theme_id'), 'empty'=>false, 'escape'=>false)); ?>
 	<div class='spacer'></div>
 
 	<?php 
