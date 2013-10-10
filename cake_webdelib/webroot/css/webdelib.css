@@ -1224,6 +1224,7 @@ div.filtre {
 div.filtreFonc {
         float: left;
         width: 10%;
+        min-width: 84px;
         margin: 0;
         margin-bottom: 10px;
 }
