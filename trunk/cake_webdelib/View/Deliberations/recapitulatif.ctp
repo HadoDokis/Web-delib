@@ -57,12 +57,16 @@
 	<?php if(!empty($annexes)){  ?>
 	<tr>
 		<td><?php echo $this->Form->label('Annexe.titre', 'Annexe(s)');?></td>
-		<td><?php foreach ($annexes as $annexe) :
-				echo 'Titre : '.$annexe['Annex']['titre'];
-				echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
-				echo '<br>Taille : '.$annexe['Annex']['size'].' '.$this->Html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);?><br/><br/>
-				<?php endforeach; } ?></td>
+		<td><?php 
+foreach ($annexes as $annexe) :
+    echo 'Titre : '.$annexe['Annex']['titre'];
+    echo '<br>Nom fichier : '.$annexe['Annex']['filename'];
+    echo '<br>Taille : '.$annexe['Annex']['size'].' '.$this->Html->link('Telecharger','/annexes/download/'.$annexe['Annex']['id']);
+    echo '<br><br>';
+endforeach; 
+                ?></td>
 	</tr>
+<?php } ?>
 	<tr>
 		<td><?php echo $this->Form->label('Annexe.titre', 'Texte ');?></td>
 		<td id="actions_fiche">	<li><?php echo $this->Html->link(SHY,'/deliberations/textprojetvue/' . $deliberation['Deliberation']['id'], array('class'=>'link_projet', 'escape'=>false, 'title'=>'Projet'), false)?></li>
