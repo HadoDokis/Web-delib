@@ -265,8 +265,8 @@ if (isset($traitement_lot) && ($traitement_lot ==true)) {
                                                'id'    => 'btn_executer',
                                                'type'  => 'submit'));
         echo '</div>';
-    }
     echo $this->Form->end();
+}
 ?>
 </div>
 <?php 
