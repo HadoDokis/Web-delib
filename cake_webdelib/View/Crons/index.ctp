@@ -7,7 +7,7 @@
         padding: 5px;
     }
     .table tr td.actions{
-        min-width: 120px;
+        min-width: 130px;
         padding: 0px;
         height: 100%;
         vertical-align: middle;
@@ -23,9 +23,6 @@
         color: inherit;
         font-style: inherit;
     }
-/*    .btn-primary{
-        margin-bottom: 10px;
-    }*/
     .btn-group>.btn{
         float: none;
     }
