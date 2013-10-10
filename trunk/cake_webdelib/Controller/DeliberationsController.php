@@ -517,10 +517,14 @@ class DeliberationsController extends AppController {
             }
             $file->close();
             
-            if(!$this->Annex->save($newAnnexe['Annex']))
-            {
-                $this->Annex->validationErrors['_save_annexe'] = 'Lors de la sauvegarde des annexes :';
-            }else $return=true;
+            if(!$this->Annex->save($newAnnexe['Annex'])){
+                $annexe_errors = "";
+                foreach ($this->Annex->validationErrors as $error_annexe)
+                    $annexe_errors .= "- ".$error_annexe[0]."<br/>";
+                $nomAnnexe = (!empty($newAnnexe['Annex']['titre'])) ? $newAnnexe['Annex']['titre'] : $newAnnexe['Annex']['filename'];
+                $this->Annex->validationErrors['_save_annexe'] = "Un problème est survenu lors de la sauvegarde de l'annexe '".$nomAnnexe."':<br/>".$annexe_errors;
+            }
+            else $return=true;
         }
         else
             $this->Annex->validationErrors['_save_annexe'] = 'Lors de la sauvegarde des annexes : Limite Upload:'.ini_get('upload_max_filesize');
@@ -715,9 +719,9 @@ class DeliberationsController extends AppController {
             }
             $this->render();
             
-        } 
+        }
          else
-        { 
+        {
             $success = true;
             $this->Deliberation->begin();
             
@@ -794,7 +798,7 @@ class DeliberationsController extends AppController {
                     $this->request->data['Deliberation']['objet_delib'] =  $this->data['Deliberation']['objet'];
             
             $this->request->data['Deliberation']['date_limite']=$this->Utils->FrDateToUkDate($this->data['date_limite']);
-            if ($success=$this->Deliberation->save($this->data)) {
+            if ($success=$this->Deliberation->save($this->request->data)) {
                 $this->Historique->enregistre($id, $user['User']['id'], "Modification du projet");
                 $this->Filtre->supprimer();
                 
@@ -2871,7 +2875,6 @@ class DeliberationsController extends AppController {
                     $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
                 $ordre = 'Deliberation.id DESC';
                 
-                //debug($conditions);
                 //TODO on peut voir certain projet mecanique à revoir
                 $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
                     'order' => array($ordre)));
