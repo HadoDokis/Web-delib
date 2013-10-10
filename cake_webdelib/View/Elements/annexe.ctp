@@ -76,6 +76,7 @@ if (isset($annexes)) {
 						'label' => false,
 						'value' => $annexe['titre'],
 						'size' => '200',
+                                                'maxlength' => '200',
 						'disabled'=>'disabled',
 						'style'=>'display:none;'));
 				} else
