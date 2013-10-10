@@ -520,9 +520,9 @@ class DeliberationsController extends AppController {
             if(!$this->Annex->save($newAnnexe['Annex'])){
                 $annexe_errors = "";
                 foreach ($this->Annex->validationErrors as $error_annexe)
-                    $annexe_errors .= "- ".$error_annexe[0]."<br/>";
+                    $annexe_errors .= '- '.implode(',', $error_annexe).'<br/>';
                 $nomAnnexe = (!empty($newAnnexe['Annex']['titre'])) ? $newAnnexe['Annex']['titre'] : $newAnnexe['Annex']['filename'];
-                $this->Annex->validationErrors['_save_annexe'] = "Un problème est survenu lors de la sauvegarde de l'annexe '".$nomAnnexe."':<br/>".$annexe_errors;
+                $this->Annex->validationErrors['_save_annexe'] = 'Un problème est survenu lors de la sauvegarde de l\'annexe \''.$nomAnnexe.'\':<br/>'.$annexe_errors;
             }
             else $return=true;
         }
@@ -921,20 +921,18 @@ class DeliberationsController extends AppController {
                     $this->Deliberation->commit();
                     $this->Session->setFlash("Le projet $id a &eacute;t&eacute; enregistr&eacute;", 'growl' );
                     $sortie = true;
-                    //TODO Retour à l'acceuil car retour incohérant si erreur sur la modification
                     $redirect='/';
-                    
                 } else {
                     $this->Deliberation->rollback();
-                   // $this->Session->
-                   $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
+                    $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
                    if (!empty($this->Annex->validationErrors)) {
-                    $this->Session->setFlash($this->Annex->validationErrors['_save_annexe'].' -'.@implode(',',$this->Annex->validationErrors['joindre_ctrl_legalite']).' -'.
-                    @implode(',',$this->Annex->validationErrors['joindre_fusion'])
-                    , 'growl', array('type'=>'erreur') );
-                   }
-                   
-                   $this->set('errors_Infosup', $this->Deliberation->Infosup->invalidFields());
+                         $error_annexe  = "";
+                         $error_annexe .= !empty($this->Annex->validationErrors['_save_annexe']) ? $this->Annex->validationErrors['_save_annexe'] : '';
+                         $error_annexe .= !empty($this->Annex->validationErrors['joindre_ctrl_legalite']) ? '<br>* ' . implode(',',$this->Annex->validationErrors['joindre_ctrl_legalite']) : '';
+                         $error_annexe .= !empty($this->Annex->validationErrors['joindre_fusion']) ? '<br>* ' . implode(',',$this->Annex->validationErrors['joindre_fusion']) : '';
+                         $this->Session->setFlash($error_annexe, 'growl', array('type'=>'erreur'));
+                    }
+                    $this->set('errors_Infosup', $this->Deliberation->Infosup->invalidFields());
                     $sortie = false;
                 }
          
