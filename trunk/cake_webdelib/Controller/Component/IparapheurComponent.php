@@ -264,6 +264,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
     function traiteXMLMessageRetour() {
         $dom = new DomDocument();
+        //TODO : try/catch avec remontée d'erreur
         $dom->loadXML($this->responseMessageStr);
         $codesretour = $dom->documentElement->getElementsByTagName('codeRetour');
         $coderetour = @$codesretour->item(0)->nodeValue;
