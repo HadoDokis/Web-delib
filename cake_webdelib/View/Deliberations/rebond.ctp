@@ -1,7 +1,7 @@
 <h2>Envoyer le projet à un utilisateur</h2>
 
 <?php
-    $options = array('detour' =>'Envoyer (sans retour) : ', 'retour' => 'Aller-retour :', 'validation'=> 'Validation finale :');
+    $options = array('detour' =>'Envoyer (sans retour)', 'retour' => 'Aller-retour', 'validation'=> 'Validation finale');
     $attributes=array('legend'=>false, 'style'=>'float:right;', 'separator' => '<br/><br/>', 'value' => 'retour');
 
     echo $this->Form->create('Insert', array('url'=>'/deliberations/rebond/'.$delib_id,'type'=>'post'));
@@ -9,8 +9,8 @@
     echo '<br/>';
     if ($typeEtape == CAKEFLOW_COLLABORATIF) {
         echo ('<div style="width: 200px">');
-        echo $this->Form->hidden('retour', array('value'=>1));
-        echo $this->Form->radio('option', $options,   array_merge($attributes, array('readonly'=>'readonly')));
+        echo $this->Form->hidden('option', array('value'=>'retour'));
+        echo $this->Form->radio('option_disabled', $options, array_merge($attributes, array('disabled'=>true)));
         echo ('</div>');
         echo '<br class="clear:both"/>'; echo '<br />';
         echo $this->Html->para('profil', 'Note : pour les étapes collaboratives (ET), l\'aller-retour est obligatoire.',array('style'=>'float: left;text-align: left;'));
