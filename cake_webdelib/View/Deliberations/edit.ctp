@@ -110,9 +110,10 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 	<div class='spacer'></div>
 
 	<?php 
-        if ($USE_PASTELL)
+        if ($USE_PASTELL){
+		if (empty($nomenclatures)) $nomenclatures = array();
                 echo $this->Form->input('Deliberation.num_pref_libelle', array('label'=>'Nomenclature', 'options'=>$nomenclatures, 'default'=>$this->Html->value('Deliberation.num_pref'), 'disabled' =>  empty($nomenclatures), 'empty' => "Aucune", 'escape'=>false)); 
-        else {
+        }else {
                 echo $this->Form->input( 'Deliberation.num_pref_libelle',
 				   array('div'      => false,
                                          'label'    => 'Num Pref',
