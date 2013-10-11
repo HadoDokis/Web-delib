@@ -3507,10 +3507,10 @@ class DeliberationsController extends AppController {
                                 'type_validation' => 'V'
             )))));
             if ($this->data['Insert']['option'] == 'retour') {
-                $action_com = "";
+                $action_com = " avec l'option  de retour";
                 $action = 'IL';
             } elseif ($this->data['Insert']['option'] == 'detour') {
-                $action_com = " avec l'option  de retour ";
+                $action_com = "";
                 $action = 'IP';
             } elseif ($this->data['Insert']['option'] == 'validation') {
                 $action_com = " pour validation finale";
@@ -3518,7 +3518,7 @@ class DeliberationsController extends AppController {
             }
 
             $this->Traitement->execute($action, $user_connecte, $delib_id, $options);
-            $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a  été envoyé à $destinataire $action_com");
+            $this->Historique->enregistre($delib_id, $user_connecte, "Le projet a été envoyé à $destinataire $action_com");
             $this->_notifier($delib_id, $this->data['Insert']['user_id'], 'traiter');
             
             $this->redirect('/');
