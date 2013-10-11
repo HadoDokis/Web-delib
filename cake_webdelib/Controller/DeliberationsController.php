@@ -1329,7 +1329,10 @@ class DeliberationsController extends AppController {
                 $projet['Circuit']['libelle'] = $this->Circuit->getLibelle($projet['Deliberation']['circuit_id']);
                 $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/' . $id, array('return')));
                 $this->set('deliberation', $projet);
-                $this->set('historiques', $this->Historique->find('all', array('conditions' => array("Historique.delib_id" => $id))));
+                $this->set('historiques', $this->Historique->find('all', array(
+                    'conditions' => array("Historique.delib_id" => $id),
+                    'order'=> array('Historique.modified DESC')
+                )));
 
                 // Compactage des informations supplémentaires
                 $this->request->data['Infosup'] = $this->Deliberation->Infosup->compacte($projet['Infosup'], false);
