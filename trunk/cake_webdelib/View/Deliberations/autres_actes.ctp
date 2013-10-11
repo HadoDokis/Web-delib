@@ -70,7 +70,7 @@
                                   array( 'class'  =>'link_pdf', 
                                          'escape' => false, 
                                          'title'  => 'Génération de '.$acte['Deliberation']['objet']));
-            if (($this->action == 'autresActesAValider') && ($peuxValiderEnUrgence)) {
+            if (($this->action == 'autresActesAValider') && ($peuxValiderEnUrgence) && !empty($acte['Circuit']['nom'])) {
                echo $this->Html->link(SHY,
                                         "/deliberations/validerEnUrgence/" . $acte['Deliberation']['id'],
                                         array('class'=>"link_validerenurgence",
