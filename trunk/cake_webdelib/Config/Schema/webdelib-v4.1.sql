@@ -1795,15 +1795,6 @@ SELECT pg_catalog.setval('commentaires_id_seq', 1, false);
 
 
 --
--- Data for Name: compteurs; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY compteurs (id, nom, commentaire, def_compteur, sequence_id, def_reinit, val_reinit, created, modified) FROM stdin;
-1	Conseil Municipal		#s#	1	#AAAA#	\N	2012-11-16 14:59:54	2012-11-16 14:59:54
-\.
-
-
---
 -- Name: compteurs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -2041,15 +2032,6 @@ COPY seances (id, type_id, created, modified, date_convocation, date, traitee, c
 --
 
 SELECT pg_catalog.setval('seances_id_seq', 1, false);
-
-
---
--- Data for Name: sequences; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY sequences (id, nom, commentaire, num_sequence, created, modified) FROM stdin;
-1	Conseil Municipal		1	2012-11-16 14:59:42	2012-11-16 14:59:42
-\.
 
 
 --
