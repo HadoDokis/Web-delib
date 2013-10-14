@@ -96,7 +96,7 @@ if ($this->Html->value('User.id')) {
             if ($this->data['User']['accept_notif'] == 0)
                 echo ("<fieldset id='mails' style='display:none;'>");
             else
-                echo ("<fieldset id='mails'");
+                echo ("<fieldset id='mails'>");
             ?>
             <legend>Réception des mails</legend>
             <?php echo $this->Form->input('User.mail_insertion', array('before' => '<label>Insertion</label><br>', 'legend' => false, 'type' => 'radio', 'options' => $notif, 'div' => array('class'=>'tiers'), 'label' => true)); ?>
