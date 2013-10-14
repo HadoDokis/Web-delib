@@ -18,10 +18,12 @@ if ($this->Html->value('Sequence.id')) {
 <br/>
 <div class="required">
     <?php
-    if (Configure::read('INIT_SEQ'))
+    if (Configure::read('INIT_SEQ') && $this->action == 'add')
         echo $this->Form->input('Sequence.num_sequence', array('label' => 'Num&eacute;ro de s&eacute;quence', 'size' => '10', 'value' => 0));
-    else
-        echo $this->Form->input('Sequence.num_sequence', array('label' => 'Num&eacute;ro de s&eacute;quence', 'size' => '10', 'readonly' => 'readonly', 'value' => 0));
+    elseif ($this->action == 'edit')
+        echo $this->Form->input('Sequence.num_sequence', array('label' => 'Num&eacute;ro de s&eacute;quence', 'size' => '10', 'disabled' => true));
+    elseif ($this->action == 'add')
+        echo $this->Form->input('Sequence.num_sequence', array('label' => 'Num&eacute;ro de s&eacute;quence', 'size' => '10', 'readonly' => true, 'value' => 0));
     ?>
 </div>
 <br/><br/>
