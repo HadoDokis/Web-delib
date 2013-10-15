@@ -50,15 +50,9 @@
          ?></td>
 	<td class="actions">
             <?php echo $this->Html->link(SHY,'/models/view/' . $model['Model']['id'], array('class'=>'link_voir', 'escape' => false,  'title'=>'Voir'), false)?>
-	    <?php
-	      if ($USE_GEDOOO && ($model['Model']['type'] == 'Document'))
-		     echo $this->Html->link(SHY,'/models/import/' . $model['Model']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false);
-              else
-	             echo $this->Html->link(SHY,'/models/edit/' . $model['Model']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false);
-	    ?>
-	    <?php
-	         if ( ($model['Model']['type'] == 'Document') && ($model['Model']['id'] != 1) && ($deletable[$model['Model']['id']]))
-		     	echo $this->Html->link(SHY,'/models/delete/' . $model['Model']['id'], array('class'=>'link_supprimer', 'escape' => false,  'title'=>'Supprimer'), "Confirmer la suppression du modèle d'édition ?");
+	    <?php echo $this->Html->link(SHY,'/models/import/' . $model['Model']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false); ?>
+	    <?php if ( ($model['Model']['type'] == 'Document') && ($model['Model']['id'] != 1) && ($deletable[$model['Model']['id']]))
+                    echo $this->Html->link(SHY,'/models/delete/' . $model['Model']['id'], array('class'=>'link_supprimer', 'escape' => false,  'title'=>'Supprimer'), "Confirmer la suppression du modèle d'édition ?");
             ?>
 	</td>
 </tr>
