@@ -39,10 +39,6 @@ class TypeseancesController extends AppController {
                                                                                                'Modelprojet.modele', 'Modelprojet.id',
                                                                                                'Compteur.id', 'Compteur.nom', 'Acteur',
                                                                                                'Typeacteur', 'Typeacte' )));
-		for($i=0; $i < count($typeseances); $i++) {
-			$typeseances[$i]['Typeseance']['is_deletable'] = $this-> _isDeletable($typeseances[$i], $message);
-			$typeseances[$i]['Typeseance']['action'] = $this->Typeseance->libelleAction($typeseances[$i]['Typeseance']['action'], true);
-		}
 		$this->set('typeseance', $typeseance);
 	}
 
