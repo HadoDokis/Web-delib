@@ -23,7 +23,7 @@ class TypeseancesController extends AppController {
                 'Compteur.id', 'Compteur.nom', 'Acteur',
                 'Typeacteur', 'Typeacte')));
         for ($i = 0; $i < count($typeseances); $i++) {
-            $typeseances[$i]['Typeseance']['is_deletable'] = $this->Typeseance->isDeletable($typeseances[$i]);
+            $typeseances[$i]['Typeseance']['is_deletable'] = $this->Typeseance->isDeletable($typeseances[$i]['Typeseance']['id']);
             $typeseances[$i]['Typeseance']['action'] = $this->Typeseance->libelleAction($typeseances[$i]['Typeseance']['action'], true);
         }
         $this->set('typeseances', $typeseances);
@@ -126,7 +126,7 @@ class TypeseancesController extends AppController {
         $typeseance = $this->Typeseance->read('id, libelle', $id);
         if (empty($typeseance)) {
             $message = 'Type de séance introuvable';
-        } elseif (!$this->Typeseance->isDeletable($typeseance)) {
+        } elseif (!$this->Typeseance->isDeletable($id)) {
             $message = 'Le type de séance \'' . $typeseance['Typeseance']['libelle'] . '\' ne peut pas être supprimé car il est utilisé par une séance';
         } elseif ($this->Typeseance->delete($id)) {
             $message = 'Le type de séance \'' . $typeseance['Typeseance']['libelle'] . '\' a été supprimé';
