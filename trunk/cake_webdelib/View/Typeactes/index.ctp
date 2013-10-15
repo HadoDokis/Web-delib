@@ -3,9 +3,9 @@
 
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
-	<th>Libell&eacute;</th>
+	<th>Libellé</th>
 	<th>Compteur</th>
-	<th>Mod&egrave;les</th>
+	<th>Modèles</th>
 	<th>Nature</th>
 	<th width='90px'>Actions</th>
 </tr>
@@ -22,8 +22,8 @@
 	<?php
 		echo $this->Html->link(SHY,'/typeactes/view/' . $typeacte['Typeacte']['id'], array('class'=>'link_voir', 'escape' => false,  'title'=>'Voir'),false);
 		echo $this->Html->link(SHY,'/typeactes/edit/' . $typeacte['Typeacte']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false);
-	    if ($typeacte['Typeacte']['is_deletable'])
-			echo $this->Html->link(SHY,'/typeactes/delete/' . $typeacte['Typeacte']['id'], array('class'=>'link_supprimer', 'escape' => false,  'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeacte['Typeacte']['libelle'] .'" ?');
+                if ($typeacte['Typeacte']['is_deletable'])
+                    echo $this->Html->link(SHY,'/typeactes/delete/' . $typeacte['Typeacte']['id'], array('class'=>'link_supprimer', 'escape' => false,  'title'=>'Supprimer'), 'Êtes vous sur de vouloir supprimer ' . $typeacte['Typeacte']['libelle'] .' ?');
 	?>
 	</td>
 </tr>
