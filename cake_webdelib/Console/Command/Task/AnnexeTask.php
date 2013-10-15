@@ -79,7 +79,9 @@ class AnnexeTask extends Shell {
      * # seance_id delib_id annex_id result
      * @param string $mode Mode de test des annexes {'all','noseance','nontraitees'}
      */
-    public function testAnnexes($mode = 'all') {
+    public function testAnnexes($mode = 'all', $logPath = null) {
+        if ($logPath != null)  $this->logPath = $logPath;
+        
         // Charge les annexes depuis la base de données
         $delibsWithAnnexes = $this->_getDelibsWithAnnexes();
 
@@ -246,7 +248,7 @@ class AnnexeTask extends Shell {
      */
     private function _creerRapport() {
 
-        $this->out('<info>Création du rapport...</info>');
+        $this->out('<info>Création du rapport ('.$this->logPath.')...</info>');
         $time_start = microtime(true);
 
         if ($this->logFile->writable()) {
@@ -293,21 +295,21 @@ class AnnexeTask extends Shell {
         try {
             //Conversion et concaténation
             $oFusion->SendContentToFile($annexeFile->path);
+            if(!$annexeFile->delete())
+                throw new Exception("Problème lors de la suppression du fichier :\n" . $annexeFile->path); 
             $retourGedooo = "OK";
             $this->out('<info>' . $retourGedooo . '</info>');
         } catch (Exception $exc) {
             $retourGedooo = "KO";
             $this->out('<info>' . $retourGedooo . '</info>');
             $this->out("<warning>" . $exc->getMessage() . "</warning>");
-//            $this->out("<warning>Problème détecté :\n" . $exc->getTraceAsString() . "</warning>");
+//            $this->out("<warning>Trace :\n" . $exc->getTraceAsString() . "</warning>");
             $this->annexesInError[] = array(
                 'id' => $annexe['id'],
                 'filename' => $annexe['filename'],
                 'delib_id' => $delib_id
             );
         }
-        if(!$annexeFile->delete())
-            $this->out("<warning>Problème lors de la suppression du fichier :\n" . $annexeFile->path . "</warning>");
        
         $time_end = microtime(true);
         $this->out("<time>Durée : " . round($time_end - $time_start, 2) . 's</time>', 1, Shell::VERBOSE);
