@@ -110,20 +110,23 @@ class PatchShell extends AppShell {
      * Changement du num préfecture
      */
     public function Version_4102to4103() {
+        $errors = array();
+        $warnings = array();
+        $logPath = Configure::read("WEBDELIB_PATH") . DS . "tmp" . DS . "logs" . DS . "gedooo.log";
         $success = true;
         $this->out("\n<important>Démarrage du patch de mise à jour de Webdelib 4.1.02 vers 4.1.03...</important>\n");
         $time_start = microtime(true);
 
         $this->Annexe->execute();
-
-        $annexesInError = $this->Annexe->testAnnexes($this->params['test']);
+        
+        $annexesInError = $this->Annexe->testAnnexes($this->params['test'], $this->Annexe->logPath);
         if (!empty($annexesInError)) {
             $error_msg = "Annexes non conformes : \n";
             foreach ($annexesInError as $annexe) {
-                $error_msg .= "\t#Délibération " . $annexe['delib_id'] . ' : \'' . $annexe['filename'] . '\' (id: ' . $annexe['id'] . ")\n";
+                $error_msg .= "\t# Délibération " . $annexe['delib_id'] . ' : \'' . $annexe['filename'] . '\' (id: ' . $annexe['id'] . ")\n";
             }
+            $warnings[] = "Des annexes de délibération peuvent causer des problèmes (voir : $logPath).";
             $this->out("\n<error>$error_msg</error>");
-            $success = false;
         } else {
             $this->out("\n<info>Toutes les annexes sont conformes !!</info>");
         }
@@ -132,7 +135,7 @@ class PatchShell extends AppShell {
         $this->out("<time>Temps écoulé durant la phase de test des annexes : " . round($time_end - $time_start) . ' secondes</time>', 1, Shell::VERBOSE);
 
         // Message avertissant l'utilisateur de l'emplacement du fichier log
-        $this->out("\n<important>Emplacement fichier log Gedooo : " . $this->Annexe->logPath . "</important>\n");
+//        $this->out("\n<important>Emplacement fichier log Gedooo : " . $this->Annexe->logPath . "</important>\n");
 
         //Mise à jour de la classification
         if (!empty($this->params['classification'])) {
@@ -145,15 +148,23 @@ class PatchShell extends AppShell {
                     $this->out('<warning>Warning : Problème lors de la mise à jour de la classification !!</warning>');
             }
             else
-                $this->out('<warning>Warning : l\'utilisation de S2LOW est désactivée (voir fichier webdelib.inc), mise à jour de la classification impossible...</warning>');
+                $warnings[] = '<warning>Warning : l\'utilisation de S2LOW est désactivée (voir fichier webdelib.inc), mise à jour de la classification impossible...</warning>';
+        }
+        
+        if (!empty($warnings)){
+            $this->out("\n<warning>Avertissements : </warning>");
+            foreach ($warnings as $warning) {
+                $this->out("\t<warning>* ".$warning.'</warning>');
+            }
         }
 
         if ($success) {
-            $this->footer('<info>Patch de la version 4.1.02 vers la 4.1.03 accompli avec succès !</info>');
-            $this->footer('<comment>Fin de l\'éxecution du patch 4.1.03</comment>');
+            $this->footer('<important>Patch de la version 4.1.02 vers la 4.1.03 accompli avec succès !</important>');
+//            $this->footer('<comment>Fin de l\'éxecution du patch 4.1.03</comment>');
         }
         else
             $this->footer('<error>Erreur : un problème est survenu lors de l\'application du patch !!</error>');
+        
     }
 
     /* Mise à jour de la version 4.1.01 à la version 4.1.02
