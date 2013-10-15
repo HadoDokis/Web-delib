@@ -23,7 +23,6 @@ class ModelsController extends AppController {
 	);
 
 	function index() {
-		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$models=$this->Model->find('all', array('fields'=>array('id'), 'recursive'=>-1));
 		$deletable=array();
 		foreach ($models as $model) {
