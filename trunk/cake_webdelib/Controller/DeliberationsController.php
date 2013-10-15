@@ -1467,7 +1467,6 @@ class DeliberationsController extends AppController {
                 'conditions' => $conditions,
                 'limit' => 20));
         
-        $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
         $this->set('host', Configure::read('HOST'));
         $this->set('dateClassification', $this->S2low->getDateClassification());
         if (Configure::read('USE_PASTELL')) {
@@ -1569,7 +1568,6 @@ class DeliberationsController extends AppController {
 
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
-        $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
         $this->set('host', Configure::read('HOST'));
         $date_classification = $this->S2low->getDateClassification();
         if ($date_classification != false) {
@@ -2466,7 +2464,6 @@ class DeliberationsController extends AppController {
 
         // passage des variables à la vue
         $this->set('titreVue', $titreVue);
-        $this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
         $this->set('listeLiens', $listeLiens);
         if ($nbProjets == null)
             $nbProjets = count($projets);

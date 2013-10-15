@@ -217,7 +217,6 @@ class SeancesController extends AppController {
 
 	function listerFuturesSeances() {
 		$this->set('AFFICHE_CONVOCS_ANONYME', Configure::read('AFFICHE_CONVOCS_ANONYME'));
-		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$this->set('use_pastell', Configure::read('USE_PASTELL'));
 		$this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
 		$format =  $this->Session->read('user.format.sortie');
@@ -492,8 +491,6 @@ class SeancesController extends AppController {
 		$this->set('seance_id', $seance_id);
 		$this->Deliberation->Behaviors->attach('Containable');
 
-		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
-                
                 $this->Seance->Behaviors->attach('Containable');
 		$seance = $this->Seance->find('first', array( 'conditions' => array('Seance.id'=> $seance_id),
 				'fields'     => array('Seance.type_id'),

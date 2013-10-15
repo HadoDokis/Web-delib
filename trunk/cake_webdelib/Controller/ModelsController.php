@@ -92,7 +92,6 @@ class ModelsController extends AppController {
 	function view($id = null) {
 		$data = $this->Model->read(null, $id);
 		if (!empty($data['Model']['name'])) {
-			$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 			header('Content-type: '.$this->_getFileType($id));
 			header('Content-Length: '.$this->_getSize($id));
 			header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
@@ -107,7 +106,6 @@ class ModelsController extends AppController {
 
 
 	function import($model_id) {
-		$this->set('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$this->set('model_id', $model_id);
 		$this->Model->id = $model_id;
 		$Model = $this->Model->find('first', array('conditions'=> array('Model.id'=> $model_id),
