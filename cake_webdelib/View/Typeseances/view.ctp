@@ -1,9 +1,9 @@
 <div id="vue_cadre">
-<h3>Fiche Type de s&eacute;ance</h3>
+<h3>Fiche Type de séance</h3>
 
 <dl>
 	<div class="demi">
-		<dt>Libelle</dt>
+		<dt>Libellé</dt>
 		<dd>&nbsp;<?php echo $typeseance['Typeseance']['libelle']?></dd>
 	</div>
 	<div class="demi">
@@ -22,27 +22,27 @@
 	<div class="spacer"></div>
 
 	<div class="demi">
-		<dt>Mod&eagrave;le de la convocation</dt>
+		<dt>Modèle de la convocation</dt>
 		<dd>&nbsp;<?php echo $typeseance['Modelconvocation']['modele']; ?></dd>
 	</div>
 	<div class="demi">
-		<dt>Model de l'ordre du jour</dt>
+		<dt>Modèle de l'ordre du jour</dt>
 		<dd>&nbsp;<?php echo $typeseance['Modelordredujour']['modele']?></dd>
 	</div>
 	<div class="spacer"></div>
 
 	<div class="demi">
-		<dt>Model du PV sommaire</dt>
+		<dt>Modèle du PV sommaire</dt>
 		<dd>&nbsp;<?php echo $typeseance['Modelpvsommaire']['modele']?></dd>
 	</div>
 	<div class="demi">
-		<dt>Model du PV détaillé</dt>
+		<dt>Modèle du PV détaillé</dt>
 		<dd>&nbsp;<?php echo $typeseance['Modelpvdetaille']['modele']?></dd>
 	</div>
 	<div class="spacer"></div>
 
 	<div class="demi">
-		<dt>Date de cr&eacute;ation</dt>
+		<dt>Date de création</dt>
 		<dd>&nbsp;<?php echo $typeseance['Typeseance']['created']?></dd>
 	</div>
 	<div class="demi">
@@ -54,12 +54,16 @@
 
 <br />
 <ul id="actions_fiche">
-	<li><?php echo $this->Html->link('<i class="icon-arrow-left"></i> Retour', '/typeseances/index', array('class'=>'btn', 
+	<li><?php 
+        echo $this->Html->link('<i class="icon-arrow-left"></i> Retour', '/typeseances/index', array('class'=>'btn', 
                                                                           'title'=>'Retourner à la liste', 
-                                                                          'escape' =>false), false) ?> </li>
-	<li><?php echo $this->Html->link('<i class="icon-edit"></i> Modifier', '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'btn', 
+                                                                          'escape' =>false), false);
+        ?></li>
+	<li><?php 
+        echo $this->Html->link('<i class="icon-edit"></i> Modifier', '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'btn', 
                                                                                                             'title'=>'Modifier', 
-                                                                                                            'escape' => false), false) ?> </li>
+                                                                                                            'escape' => false), false);
+        ?></li>
 </ul>
 
 </div>
