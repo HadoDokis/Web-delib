@@ -289,10 +289,10 @@ class AnnexeTask extends Shell {
         //Fusion
         $oFusion = new GDO_FusionType($oTemplate, $mimetype, $oMainPart);
         $oFusion->process();
-
+        $annexeFile = new File($this->annexesFolder->path . DS . 'deliberation_' . $delib_id . '-annexe_' . $annexe['id'] . '.odt', false);
         try {
             //Conversion et concaténation
-            $oFusion->SendContentToFile($this->annexesFolder->path . DS . 'deliberation_' . $delib_id . '-annexe_' . $annexe['id'] . '.odt');
+            $oFusion->SendContentToFile($annexeFile->path);
             $retourGedooo = "OK";
             $this->out('<info>' . $retourGedooo . '</info>');
         } catch (Exception $exc) {
@@ -306,7 +306,9 @@ class AnnexeTask extends Shell {
                 'delib_id' => $delib_id
             );
         }
-
+        if(!$annexeFile->delete())
+            $this->out("<warning>Problème lors de la suppression du fichier :\n" . $annexeFile->path . "</warning>");
+       
         $time_end = microtime(true);
         $this->out("<time>Durée : " . round($time_end - $time_start, 2) . 's</time>', 1, Shell::VERBOSE);
 
