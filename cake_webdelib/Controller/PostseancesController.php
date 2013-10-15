@@ -28,8 +28,6 @@ class PostseancesController extends AppController {
 			$format =0;
 		$this->set('format', $format);
 
-		$this->set ('USE_GEDOOO', Configure::read('USE_GEDOOO'));
-                
                 $actions=array();
                 if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToGed"))
                     array_push($actions, 'ged');
@@ -58,7 +56,6 @@ class PostseancesController extends AppController {
 		if (empty($format))
 			$format =0;
 		$this->set('format', $format);
-		$this->set ('USE_GEDOOO', Configure::read('USE_GEDOOO'));
 		$delibs = array();
 		$this->Seance->id = $id;
 		$this->set('pv_figes', $this->Seance->field('pv_figes'));
