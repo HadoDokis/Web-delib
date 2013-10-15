@@ -30,7 +30,6 @@ Configure::write('SMTP_PASSWORD', 'your_smtp_password');
 Configure::write('SMTP_CLIENT', 'smtp_helo_hostname');
 
 /* Configuration GEDOOo */
-Configure::write('USE_GEDOOO', true);
 Configure::write('GEDOOO_WSDL', 'http://gedooo.services.adullact.org:8082/ODFgedooo/OfficeService?wsdl');
 
 /* Configuration S2LOW */
