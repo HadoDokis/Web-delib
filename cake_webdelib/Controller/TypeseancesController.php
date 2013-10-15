@@ -123,7 +123,6 @@ class TypeseancesController extends AppController {
     }
 
     function delete($id = null) {
-        $message = '';
         $typeseance = $this->Typeseance->read('id, libelle', $id);
         if (empty($typeseance)) {
             $message = 'Type de séance introuvable';
