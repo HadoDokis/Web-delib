@@ -223,13 +223,13 @@ class Typeseance extends AppModel {
 
     /**
      * Test la possibilité de supprimer un type de séance (le type est il affécté à une séance ?)
-     * @param integer $typeseance identifiant du type séance à éliminer
+     * @param integer $id identifiant du type séance à éliminer
      * @return boolean true si aucune séance n'est associée à ce type de séance, false sinon
      */
-    function isDeletable($typeseance) {
+    function isDeletable($id) {
         $this->Seance = new Seance();
         $nbSeancesEnCours = $this->Seance->find('count', array(
-            'conditions' => array('type_id' => $typeseance['Typeseance']['id'])
+            'conditions' => array('type_id' => $id)
         ));
         return empty($nbSeancesEnCours);
     }
