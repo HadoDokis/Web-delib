@@ -41,8 +41,8 @@
 	<?php
 		echo $this->Html->link(SHY,'/typeseances/view/' . $typeseance['Typeseance']['id'], array('class'=>'link_voir', 'escape' => false,  'title'=>'Voir'),false);
 		echo $this->Html->link(SHY,'/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false);
-	    if ($typeseance['Typeseance']['is_deletable'])
-			echo $this->Html->link(SHY,'/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'escape' => false,  'title'=>'Supprimer'), 'Ete vous sur de vouloir supprimer "' . $typeseance['Typeseance']['libelle'] .'" ?');
+                if ($typeseance['Typeseance']['is_deletable'])
+                    echo $this->Html->link(SHY,'/typeseances/delete/' . $typeseance['Typeseance']['id'], array('class'=>'link_supprimer', 'escape' => false,  'title'=>'Supprimer'), 'Êtes vous sur de vouloir supprimer ' . $typeseance['Typeseance']['libelle'] .' ?');
 	?>
 	</td>
 </tr>
