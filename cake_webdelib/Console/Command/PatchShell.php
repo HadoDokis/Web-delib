@@ -119,7 +119,7 @@ class PatchShell extends AppShell {
 
         $this->Annexe->execute();
         
-        $annexesInError = $this->Annexe->testAnnexes($this->params['test'], $this->Annexe->logPath);
+        $annexesInError = $this->Annexe->testAnnexes($this->params['test']);
         if (!empty($annexesInError)) {
             $error_msg = "Annexes non conformes : \n";
             foreach ($annexesInError as $annexe) {
