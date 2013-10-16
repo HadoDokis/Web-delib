@@ -460,14 +460,15 @@ class DeliberationsController extends AppController {
         exit();
     }
 
-    function _saveAnnexe($delibId, $annexe) {
+    function _saveAnnexe($delibId, $annexe, &$annexesErrors) {
         App::uses('File', 'Utility');
         $return=false;
-        
-        if ($annexe['ref']==  'delibPrincipale')
+        if ($annexe['ref'] ==  'delibPrincipale')
             $Model = 'Projet';
         else
             $Model = 'Deliberation';
+        
+        $titre = !empty($annexe['titre']) ? $annexe['titre'] : $annexe['file']['name'];
         
         if (is_array($annexe) && !empty($annexe['file']['name']) && $this->Annex->isUploadedFile(array('file'=>$annexe['file']))) {
             $newAnnexe = $this->Annex->create();
@@ -484,7 +485,7 @@ class DeliberationsController extends AppController {
             //Enregistrement du type mime vérifier
             if(!isset($DOC_TYPE[$file->mime()]['mime_conversion'])){
                 $file->close();
-                $this->Annex->validationErrors['_save_annexe'] = 'Fichier de type inconnu. Veuillez contacter votre administrateur ('.$file->mime().')';
+                $annexesErrors[$titre][] = 'Fichier de type inconnu. Veuillez contacter votre administrateur ('.$file->mime().')';
                 return false;
             }
             //Gestion des docx pas de convertion pour les docx reconnu comme des zip
@@ -497,7 +498,7 @@ class DeliberationsController extends AppController {
                 $newAnnexe['Annex']['filetype'] = $annexe['file']['type'];
                 if(!isset($DOC_TYPE[$annexe['file']['type']]['mime_conversion'])){
                 $file->close();
-                $this->Annex->validationErrors['_save_annexe'] = 'Fichier de type inconnu. Veuillez contacter votre administrateur ('.$annexe['file']['type'].')';
+                $annexesErrors[$titre][] = 'Fichier de type inconnu. Veuillez contacter votre administrateur ('.$annexe['file']['type'].')';
                 return false;
                 }
             }else
@@ -518,21 +519,20 @@ class DeliberationsController extends AppController {
             $file->close();
             
             if(!$this->Annex->save($newAnnexe['Annex'])){
-                $annexe_errors = "";
                 foreach ($this->Annex->validationErrors as $error_annexe)
-                    $annexe_errors .= '- '.implode(',', $error_annexe).'<br/>';
-                $nomAnnexe = (!empty($newAnnexe['Annex']['titre'])) ? $newAnnexe['Annex']['titre'] : $newAnnexe['Annex']['filename'];
-                $this->Annex->validationErrors['_save_annexe'] = 'Un problème est survenu lors de la sauvegarde de l\'annexe \''.$nomAnnexe.'\':<br/>'.$annexe_errors;
+                    $annexesErrors[$titre][] = implode(',', $error_annexe);
+                $this->Annex->validationErrors = array();
             }
             else $return=true;
         }
         else
-            $this->Annex->validationErrors['_save_annexe'] = 'Lors de la sauvegarde des annexes : Limite Upload:'.ini_get('upload_max_filesize');
+            $annexesErrors[$titre][] = 'Lors de la sauvegarde des annexes : Limite Upload:'.ini_get('upload_max_filesize');
         
         return $return;
     }
 
     function edit($id=null) {
+        $annexesErrors = array();
         $user=$this->Session->read('user');
         /* initialisation du lien de redirection   */
         $redirect = $this->Session->read('user.User.lasturl');
@@ -835,9 +835,9 @@ class DeliberationsController extends AppController {
                 if (array_key_exists('Annex', $this->data))
                 foreach($this->data['Annex'] as $annexe) {
                     if ($annexe['ref'] == 'delibPrincipale')
-                        $success = $this->_saveAnnexe($id, $annexe) && $success;
+                        $success = $this->_saveAnnexe($id, $annexe, $annexesErrors) && $success;
                     if ($annexe['ref'] == 'delibRattachee'.$id)
-                        $success = $this->_saveAnnexe($id, $annexe) && $success;
+                        $success = $this->_saveAnnexe($id, $annexe, $annexesErrors) && $success;
                 }
 
                 if($success){
@@ -871,6 +871,13 @@ class DeliberationsController extends AppController {
 				'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
                                 'joindre_fusion'  => $annexe['joindre_fusion']));
                         }
+                        if (!empty($this->Annex->validationErrors)){
+                            $success = false;
+                            $titre = !empty($annexe['titre']) ? $annexe['titre'] : $annex_filename['Annex']['filename'];
+                            foreach ($this->Annex->validationErrors as $validationError) {
+                                $annexesErrors[$titre][] = implode(',', $validationError);
+                            }
+                        }
                     }
                 }
                }
@@ -891,7 +898,7 @@ class DeliberationsController extends AppController {
                         // sauvegarde des nouvelles annexes pour cette delib rattachée
                         if (array_key_exists('Annex', $this->data))
                             foreach($this->data['Annex'] as $annexe)
-                            if ($annexe['ref'] == 'delibRattachee'.$iref) if(!$this->_saveAnnexe($delibRattacheeId, $annexe))$this->redirect($redirect);
+                            if ($annexe['ref'] == 'delibRattachee'.$iref) if(!$this->_saveAnnexe($delibRattacheeId, $annexe, $annexesErrors))$this->redirect($redirect);
                     }
                 }
                 
@@ -925,8 +932,15 @@ class DeliberationsController extends AppController {
                 } else {
                     $this->Deliberation->rollback();
                     $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-                   if (!empty($this->Annex->validationErrors['_save_annexe'])) {
-                         $this->Session->setFlash($this->Annex->validationErrors['_save_annexe'], 'growl', array('type'=>'erreur'));
+                    if (!empty($annexesErrors)) {
+                        $msg_annexe_error = "";
+                        foreach ($annexesErrors as $annexeName => $annexError) {
+                            $msg_annexe_error .= "<strong>Annexe \'".$annexeName."\' :</strong><br>";
+                            foreach ($annexError as $error) {
+                                $msg_annexe_error .= "- ".$error."<br/>";
+                            }
+                        }
+                        $this->Session->setFlash($msg_annexe_error, 'growl', array('type'=>'erreur'));
                     }
                     $this->set('errors_Infosup', $this->Deliberation->Infosup->invalidFields());
                     $sortie = false;
