@@ -11,7 +11,7 @@
         });
         
 <?php
-if ($etat==2){ //Enlever l'affichage en gras de la derniere étape si le traitement est fdini
+if ($etat>=2){ //Enlever l'affichage en gras de la derniere étape si le traitement est fdini
     echo "$('.nomcourante').attr('class', 'nom');";
 }
 if ($majDeleg) {
