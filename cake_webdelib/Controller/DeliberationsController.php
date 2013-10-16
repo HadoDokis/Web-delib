@@ -925,12 +925,8 @@ class DeliberationsController extends AppController {
                 } else {
                     $this->Deliberation->rollback();
                     $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-                   if (!empty($this->Annex->validationErrors)) {
-                         $error_annexe  = "";
-                         $error_annexe .= !empty($this->Annex->validationErrors['_save_annexe']) ? $this->Annex->validationErrors['_save_annexe'] : '';
-                         $error_annexe .= !empty($this->Annex->validationErrors['joindre_ctrl_legalite']) ? '<br>* ' . implode(',',$this->Annex->validationErrors['joindre_ctrl_legalite']) : '';
-                         $error_annexe .= !empty($this->Annex->validationErrors['joindre_fusion']) ? '<br>* ' . implode(',',$this->Annex->validationErrors['joindre_fusion']) : '';
-                         $this->Session->setFlash($error_annexe, 'growl', array('type'=>'erreur'));
+                   if (!empty($this->Annex->validationErrors['_save_annexe'])) {
+                         $this->Session->setFlash($this->Annex->validationErrors['_save_annexe'], 'growl', array('type'=>'erreur'));
                     }
                     $this->set('errors_Infosup', $this->Deliberation->Infosup->invalidFields());
                     $sortie = false;
