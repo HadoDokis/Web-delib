@@ -19,9 +19,8 @@
        echo $this->Html->tag('tr', null, $rowClass);
        $numLigne++;
 
-		if ((($delib['Deliberation']['etat_parapheur']==null) || ($delib['Deliberation']['etat_parapheur']== -1) ) && 
-                    ($delib['Deliberation']['signee']!=1) &&  
-                     (($delib['Deliberation']['etat']>=3) || ($delib['Deliberation']['typeacte_id']>1 && $delib['Deliberation']['etat']>=2) )) 
+		if ( $delib['Deliberation']['signee']!=1 && $delib['Deliberation']['etat'] == 3 &&
+                        ($delib['Deliberation']['etat_parapheur'] == null || $delib['Deliberation']['etat_parapheur'] == -1) )
 		    echo("<td>".$this->Form->checkbox('Deliberation.id.'.$delib['Deliberation']['id'], array('checked'=> true))."</td>");
 		else
 		    echo("<td></td>");
