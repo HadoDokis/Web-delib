@@ -3675,6 +3675,12 @@ class DeliberationsController extends AppController {
             'Circuit.nom');
         $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
         $this->_addFiltresAutresActes($actes);
+        
+        
+        $userId = $this->Session->read('user.User.id');
+        $editerProjetValide = $this->Droits->check($userId, "Deliberations:editerProjetValide");
+        
+        $this->set('canEdit', $editerProjetValide);
         $this->set('actes', $actes);
         $this->set('circuits', $circuits['soustype']);
         $this->render('autres_actes');
