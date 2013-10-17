@@ -3642,6 +3642,7 @@ class DeliberationsController extends AppController {
         $contain = array('Typeacte.libelle', 'Service.libelle', 'Circuit.nom');
         $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
         $this->_addFiltresAutresActes($actes);
+        $this->set('canGoNext',$this->Droits->check($this->Session->read('user.User.id'), "Deliberations:goNext"));
         $this->set('peuxValiderEnUrgence', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"));
         $this->set('actes', $actes);
 
