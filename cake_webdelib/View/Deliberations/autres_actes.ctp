@@ -53,6 +53,11 @@
            elseif ($acte['Deliberation']['signee'] == 1)  {
                echo("<td>Signé</td>");
            }
+           elseif ($acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['etat_parapheur'] == 1)  {
+               echo("<td>En cours de signature</td>");
+           }else{
+               echo "<td></td>";
+           }
 
            echo ('<td>');
            echo $this->Html->link(SHY, 
