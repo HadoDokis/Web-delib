@@ -3657,13 +3657,15 @@ class DeliberationsController extends AppController {
         }
         $circuits['soustype']['-1'] = 'Signature manuscrite';
         $conditions = $this->Filtre->conditions();
-        $conditions['Deliberation.etat'] = 2;
+        $conditions['Deliberation.etat']['OR'] = '2';
+        $conditions['Deliberation.etat']['OR'] = '3';
         $conditions['Deliberation.signee'] = null;
         $fields = array('Deliberation.id',
             'Deliberation.objet',
             'Deliberation.titre',
             'Deliberation.etat',
             'Deliberation.signee',
+            'Deliberation.etat_parapheur',
             'Deliberation.typeacte_id');
         $contain = array('Typeacte.libelle',
             'Typeacte.modeleprojet_id',
