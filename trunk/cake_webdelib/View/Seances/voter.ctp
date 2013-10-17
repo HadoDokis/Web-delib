@@ -127,7 +127,7 @@
 
 	<br/><br/>
 	<div class="optional">
-		<?php echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire', 'type'=>'textarea', 'rows'=>'5', 'cols' => '60'));?>
+		<?php echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire', 'type'=>'textarea', 'rows'=>'5', 'cols' => '60', 'maxlength' => '500'));?>
 	</div>
 
 	<br/>
