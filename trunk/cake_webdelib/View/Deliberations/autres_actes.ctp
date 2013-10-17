@@ -27,7 +27,7 @@
            echo $this->Html->tag('tr', null, $rowClass);
            $numLigne++;
 
-           if ($this->action != "autresActesAValider") 
+           if ($this->action != "autresActesAValider" && $acte['Deliberation']['etat_parapheur'] == 0 && $acte['Deliberation']['signee'] != 1) 
                echo("<td>".$this->Form->checkbox('Deliberation.id_'.$acte['Deliberation']['id'], array('checked'=> true,'autocomplete'=> 'off'))."</td>");
            else
                 echo("<td></td>");
