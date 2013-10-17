@@ -36,7 +36,7 @@
 		<?php echo ($delib['Deliberation']['titre']); ?>
 		</td>
 	   <?php
-                    if ($delib['Deliberation']['etat_parapheur'] == 1) {
+                    if ($delib['Deliberation']['etat_parapheur'] == 1 && $delib['Deliberation']['etat'] >= 2) {
                         echo '<td>En cours de signature</td>';
                     }
                     elseif ($delib['Deliberation']['etat_parapheur'] == 2 && $delib['Deliberation']['etat'] >= 2) {
@@ -51,7 +51,7 @@
                     elseif ($delib['Deliberation']['etat'] > -1 && $delib['Deliberation']['etat'] < 2 ) {
                         echo "<td>En cours d'élaboration</td>";
                     }
-                    elseif ($delib['Deliberation']['etat'] >= 1 && $delib['Deliberation']['etat'] < 3 ) {
+                    elseif ($delib['Deliberation']['etat'] == 2) {
                         echo '<td>A faire voter</td>';
                     }
                     elseif ($delib['Deliberation']['etat_parapheur'] == -1 ) {
