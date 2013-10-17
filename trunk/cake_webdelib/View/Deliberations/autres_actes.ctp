@@ -85,6 +85,15 @@
                                               'Confirmez-vous la validation en urgence du projet \''.$acte['Deliberation']['id'].'\'');
 
             }
+            if($canEdit){
+                echo $this->Html->link(SHY,
+                                        '/deliberations/edit/' . $acte['Deliberation']['id'],
+                                        array('class'=>'link_modifier',
+                                              'title'=>'Modifier le projet '.$acte['Deliberation']['objet'],
+                                              'escape' => false
+                                              ), 
+                                             false);
+            }
             if ($this->action == 'autreActesValides') {
                 $actionAttribuer = '/deliberations/attribuercircuit/'.$acte['Deliberation']['id'];
                 echo $this->Html->link(SHY,
