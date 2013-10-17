@@ -36,30 +36,32 @@
 		<?php echo ($delib['Deliberation']['titre']); ?>
 		</td>
 	   <?php
-		   if ($delib['Deliberation']['etat_parapheur']==1) {
-		       echo  ("<td>En cours de signature</td>");
-		   }
-		   elseif($delib['Deliberation']['etat_parapheur']==2) {
-			   $delib_id = $delib['Deliberation']['id'];
-                           if ($delib['Deliberation']['signature'] != '')
-			       echo  ("<td><a href='/deliberations/downloadSignature/$delib_id'>Acte signé</a></td>");
-                           else
-			       echo  ("<td>Acte signé</td>");
+                    if ($delib['Deliberation']['etat_parapheur'] == 1) {
+                        echo '<td>En cours de signature</td>';
+                    }
+                    elseif ($delib['Deliberation']['etat_parapheur'] == 2 && $delib['Deliberation']['etat'] >= 2) {
+                        if (!empty($delib['Deliberation']['signature']))
+                            echo '<td><a href="/deliberations/downloadSignature/'.$delib['Deliberation']['id'].'">Acte signé</a></td>';
+                        else
+                            echo '<td>Acte signé</td>';
+                    }
+                    elseif ($delib['Deliberation']['signee'] == 1 && $delib['Deliberation']['etat_parapheur'] == null){
+                        echo  '<td>Acte déclaré signé</td>';
+                    } 
+                    elseif ($delib['Deliberation']['etat'] > -1 && $delib['Deliberation']['etat'] < 2 ) {
+                        echo "<td>En cours d'élaboration</td>";
+                    }
+                    elseif ($delib['Deliberation']['etat'] >= 1 && $delib['Deliberation']['etat'] < 3 ) {
+                        echo '<td>A faire voter</td>';
+                    }
+                    elseif ($delib['Deliberation']['etat_parapheur'] == -1 ) {
+ 		        echo '<td>Acte refusé à la signature</td>';
 		    }
-                   elseif(($delib['Deliberation']['signee'] == 1) && ($delib['Deliberation']['etat_parapheur']==null)){
-                       echo  ("<td>Acte déclaré signé</td>");
-		    } 
-                   elseif (($delib['Deliberation']['etat']>-1) && ($delib['Deliberation']['etat']<2) && ($delib['Deliberation']['typeacte_id']==1) ) {
-                       echo "<td>En cours d'élaboration</td>";
-                   }
-                   elseif (($delib['Deliberation']['etat']>=1) && ($delib['Deliberation']['etat']<3) && ($delib['Deliberation']['typeacte_id']==1) ) {
-                       echo '<td>A faire voter</td>';
-                   }
-		    elseif ($delib['Deliberation']['etat_parapheur']== -1) {
- 		        echo("<td>Acte refusé à la signature</td>");
+                    elseif ($delib['Deliberation']['etat'] == -1) {
+ 		        echo '<td>Acte refusé</td>';
 		    }
                     else {
- 		        echo("<td>A faire signer</td>");
+ 		        echo '<td>A faire signer</td>';
                     }
 		  ?>
 		</tr>
