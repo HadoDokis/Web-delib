@@ -27,7 +27,7 @@
            echo $this->Html->tag('tr', null, $rowClass);
            $numLigne++;
 
-           if ($this->action != "autresActesAValider" && $acte['Deliberation']['etat_parapheur'] == 0 && $acte['Deliberation']['signee'] != 1) 
+           if ($this->action != "autresActesAValider" && $acte['Deliberation']['etat_parapheur'] == 0 && $acte['Deliberation']['signee'] != 1 && $acte['Deliberation']['etat'] == 3) 
                echo("<td>".$this->Form->checkbox('Deliberation.id_'.$acte['Deliberation']['id'], array('checked'=> true,'autocomplete'=> 'off'))."</td>");
            else
                 echo("<td></td>");
@@ -38,7 +38,7 @@
            echo  "<td>".$acte['Deliberation']['titre']."</td>";
            echo  "<td>".$acte['Circuit']['nom']."</td>";
                          
-           if(($acte['Deliberation']['etat']>0) && ($acte['Deliberation']['etat']<2)) {
+           if ($acte['Deliberation']['etat']>0 && $acte['Deliberation']['etat']<2) {
                echo "<td>En cours d'élaboration</td>";
            }
            elseif ($acte['Deliberation']['etat']== 0) {
