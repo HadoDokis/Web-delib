@@ -3270,6 +3270,7 @@ class DeliberationsController extends AppController {
                     $this->Deliberation->saveField('date_envoi_signature', date("Y-m-d H:i:s", strtotime("now")));
                     if ($this->data['Deliberation']['circuit_id'] == -1) {
                         $this->Deliberation->saveField('signee', true);
+                        $this->Deliberation->saveField('etat_parapheur', 0);
                         continue;
                     }
                     $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id)));
