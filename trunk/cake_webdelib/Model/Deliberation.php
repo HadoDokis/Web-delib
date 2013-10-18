@@ -1159,7 +1159,7 @@ class Deliberation extends AppModel {
                 $newDelib['Deliberation']['num_pref'] = '';
                 $newDelib['Deliberation']['objet'] = $delib['objet_delib'];
                 $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
-                $newDelib['Deliberation']['titre'] = $delib['titre'];
+                $newDelib['Deliberation']['titre'] = !empty($delib['titre']) ? $delib['titre'] : null;
 		
 		if (Configure::read('GENERER_DOC_SIMPLE')){
 			$newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
