@@ -2788,6 +2788,7 @@ class DeliberationsController extends AppController {
                 $this->Traitement->execute('ST', $this->Session->read('user.User.id'), $delibId, $options);
                 $this->Deliberation->id = $delibId;
                 $this->Deliberation->saveField('etat', 2);
+                $this->Deliberation->saveField('etat_parapheur', 0);
                 $this->Historique->enregistre($delibId, $this->Session->read('user.User.id'), 'Projet validé en urgence');
             }
         }
