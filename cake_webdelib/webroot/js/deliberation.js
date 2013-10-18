@@ -16,7 +16,8 @@ function updateTypeseances(domObj) {
 }
 
 function updateDatesSeances(domObj) {
-    var ajaxUrl = '/deliberations/getSeancesParTypeseanceAjax/'+$(domObj).val() ;
+    var ajaxUrl = '/deliberations/getSeancesParTypeseanceAjax/'+$(domObj).val();
+    var seancesSelected = $("#SeanceSeance").val();
     $.ajax({
             url: ajaxUrl,
             beforeSend: function() {
@@ -24,6 +25,7 @@ function updateDatesSeances(domObj) {
             },
             success: function(result) {
                    $('#selectDatesSeances').html(result);
+                   $("#SeanceSeance").val(seancesSelected);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                    alert(textStatus);
