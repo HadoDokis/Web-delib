@@ -563,7 +563,10 @@ class Deliberation extends AppModel {
                 if(isset($position))
                 $oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
 		$oMainPart->addElement(new GDO_FieldType('titre_projet',   ($delib['Deliberation']['titre']),    'lines'));
-		$oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet']),     'lines'));
+                if (empty($delib['Deliberation']['is_multidelib']))
+                    $oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet']),     'lines'));
+		else
+                    $oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet_delib']),     'lines'));
 		$oMainPart->addElement(new GDO_FieldType('libelle_projet', ($delib['Deliberation']['objet']),      'lines'));
 		$oMainPart->addElement(new GDO_FieldType('objet_delib',    ($delib['Deliberation']['objet_delib']), 'lines'));
 		$oMainPart->addElement(new GDO_FieldType('libelle_delib',  ($delib['Deliberation']['objet_delib']), 'lines'));
@@ -788,12 +791,10 @@ class Deliberation extends AppModel {
                 //$this->log('annexes=>'.var_export( $annexes, true),'debug');
                 
 		$oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($anns), 'text'));
-                $this->log('nombre_annexe=>'.count($anns),'debug');
 		@$annexes =  new GDO_IterationType("Annexes");
 		foreach($anns as $key => $annexe) {
 		        $oDevPart = new GDO_PartType();
 			$oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
-                        $this->log('titre_annexe=>'.$annexe['Annex']['titre'],'debug');
 			if (($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {
 			    $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
 			    $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
