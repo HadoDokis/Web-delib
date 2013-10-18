@@ -3655,8 +3655,10 @@ class DeliberationsController extends AppController {
 
         $this->set('titreVue', 'Autres actes validés');
         if (Configure::read('USE_PARAPH')) {
-            $this->Parafwebservice = new IparapheurComponent();
-            $circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+                $this->Parafwebservice = new IparapheurComponent();
+                $circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+                if ($circuits==null)
+                    $this->Session->setFlash("Erreur lors de la récupération des circuits du parapheur", 'growl', array('type' => 'warning'));
         }
         $circuits['soustype']['-1'] = 'Signature manuscrite';
         $conditions = $this->Filtre->conditions();
