@@ -574,7 +574,7 @@ class DeliberationsController extends AppController {
                 
                 if($afficherTtesLesSeances)
                     $bSeanceok=true;
-                    
+                
                 if(!$bSeanceok && $seances_selected[0]==$seance['Seance']['id'])
                     $bSeanceok=true;
                     
@@ -3662,8 +3662,7 @@ class DeliberationsController extends AppController {
         }
         $circuits['soustype']['-1'] = 'Signature manuscrite';
         $conditions = $this->Filtre->conditions();
-        $conditions['Deliberation.etat']['OR'] = '2';
-        $conditions['Deliberation.etat']['OR'] = '3';
+        $conditions['Deliberation.etat'] = array('2','3');
         $conditions['Deliberation.signee'] = null;
         $fields = array('Deliberation.id',
             'Deliberation.objet',
