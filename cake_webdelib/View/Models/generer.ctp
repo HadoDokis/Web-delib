@@ -13,6 +13,8 @@ if (!empty($listFiles))
         else
 	    echo $this->Html->link($name, $path)."<br>";
     }
+else
+    echo '<strong>Problème rencontré lors de la génération.</strong>';
 if (empty($urlRetour)) $urlRetour="javascript:history.back()";
 echo ("<br /><br /><a href='".$urlRetour."'> Retour &agrave; la liste des séances </a>");
 ?>
