@@ -3228,7 +3228,7 @@ class DeliberationsController extends AppController {
             $conditions["Deliberation.etat >"] = -1;
             if ($seance_id == null) {
                 $conditions["Deliberation.etat_parapheur != "] = null;
-                $conditions["Deliberation.etat >="] = 2;
+                $conditions["Deliberation.etat >"] = 2;
                 $delibs = $this->Deliberation->find('all', array('conditions' => $conditions));
             } else {
                 $delibs = $this->Seance->getDeliberations($seance_id, array('conditions' => $conditions));
