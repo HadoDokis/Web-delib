@@ -264,18 +264,21 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
     function traiteXMLMessageRetour() {
         $dom = new DomDocument();
-        //TODO : try/catch avec remontée d'erreur
-        $dom->loadXML($this->responseMessageStr);
-        $codesretour = $dom->documentElement->getElementsByTagName('codeRetour');
-        $coderetour = @$codesretour->item(0)->nodeValue;
-        $messages = $dom->documentElement->getElementsByTagName('message');
-        $message = @$messages->item(0)->nodeValue;
-        $severites = $dom->documentElement->getElementsByTagName('severite');
-        $severite = @$severites->item(0)->nodeValue;
-        $dossierIDs = $dom->documentElement->getElementsByTagName('DossierID');
-        $dossierID = @$dossierIDs->item(0)->nodeValue;
-        $response['messageretour'] = array("coderetour" => $coderetour, "message" => $message, "severite" => $severite);
-        $response['dossierID'] = $dossierID;
+        try{
+            $dom->loadXML($this->responseMessageStr);
+            $codesretour = $dom->documentElement->getElementsByTagName('codeRetour');
+            $coderetour = @$codesretour->item(0)->nodeValue;
+            $messages = $dom->documentElement->getElementsByTagName('message');
+            $message = @$messages->item(0)->nodeValue;
+            $severites = $dom->documentElement->getElementsByTagName('severite');
+            $severite = @$severites->item(0)->nodeValue;
+            $dossierIDs = $dom->documentElement->getElementsByTagName('DossierID');
+            $dossierID = @$dossierIDs->item(0)->nodeValue;
+            $response['messageretour'] = array("coderetour" => $coderetour, "message" => $message, "severite" => $severite);
+            $response['dossierID'] = $dossierID;
+        }  catch (Exception $e){
+            $response['messageretour'] = array("coderetour" => -1, "message" => "Erreur de connexion au parapheur: ".$e->getMessage(), "severite" => "grave");
+        }
         return $response;
     }
 
