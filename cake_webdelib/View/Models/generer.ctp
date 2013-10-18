@@ -14,7 +14,7 @@ if (!empty($listFiles))
 	    echo $this->Html->link($name, $path)."<br>";
     }
 else
-    echo '<strong>Problème rencontré lors de la génération.</strong>';
+    echo '<strong>L\'accès au fichier généré a expiré ou une erreur s\'est produite, veuillez recommencer la générération.</strong>';
 if (empty($urlRetour)) $urlRetour="javascript:history.back()";
 echo ("<br /><br /><a href='".$urlRetour."'> Retour &agrave; la liste des séances </a>");
 ?>
