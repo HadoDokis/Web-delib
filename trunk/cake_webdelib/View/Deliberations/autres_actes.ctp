@@ -1,6 +1,3 @@
-<?php //echo $this->Html->script('utils.js'); ?>
-
-
 <div class="deliberations">
 <?php if (isset($message))  echo ($message); ?>
 <?php 
@@ -26,8 +23,7 @@
            $rowClass = ($numLigne & 1)?array('height' => '38px'):array( 'height' => '39px', 'class'=>'altrow');
            echo $this->Html->tag('tr', null, $rowClass);
            $numLigne++;
-
-           if ($this->action != "autresActesAValider" && $acte['Deliberation']['etat_parapheur'] == 0 && $acte['Deliberation']['signee'] != 1 && $acte['Deliberation']['etat'] == 3) 
+           if ($this->action != "autresActesAValider" && $acte['Deliberation']['signee'] != 1 && $acte['Deliberation']['etat'] == 2 && $acte['Deliberation']['etat_parapheur'] == 0) 
                echo("<td>".$this->Form->checkbox('Deliberation.id_'.$acte['Deliberation']['id'], array('checked'=> true,'autocomplete'=> 'off'))."</td>");
            else
                 echo("<td></td>");
