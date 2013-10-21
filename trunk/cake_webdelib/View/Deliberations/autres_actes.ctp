@@ -23,7 +23,10 @@
             $rowClass = ($numLigne & 1) ? array('height' => '38px') : array('height' => '39px', 'class' => 'altrow');
             echo $this->Html->tag('tr', null, $rowClass);
             $numLigne++;
-            if ($this->action != "autresActesAValider" && $acte['Deliberation']['signee'] != 1 && $acte['Deliberation']['etat'] == 2 && empty($acte['Deliberation']['etat_parapheur']))
+            if ($this->action != "autresActesAValider" && 
+                    $acte['Deliberation']['signee'] != 1 && 
+                    ($acte['Deliberation']['etat'] == 3 || $acte['Deliberation']['etat'] == 4) && 
+                    $acte['Deliberation']['etat_parapheur'] <= 0)
                 echo '<td>' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], array('checked' => true, 'autocomplete' => 'off')) . '</td>';
             else
                 echo '<td></td>';
@@ -36,20 +39,24 @@
 
             $enCoursSignature = ($acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['etat_parapheur'] == 1);
             
-            if ($acte['Deliberation']['etat'] > 0 && $acte['Deliberation']['etat'] < 2) {
-                echo "<td>En cours d'élaboration</td>";
+            if ($acte['Deliberation']['signee'] == 1) {
+                echo '<td>Signé</td>';
+            } elseif ($acte['Deliberation']['etat_parapheur'] == -1) {
+                echo '<td>Signature refusée dans le parapheur</td>';
+            } elseif ($enCoursSignature) {
+                echo '<td>En cours de signature</td>';
             } elseif ($acte['Deliberation']['etat'] == 0) {
                 echo '<td>En cours de rédaction</td>';
             } elseif ($acte['Deliberation']['etat'] == 1) {
                 echo "<td>En cours d'élaboration</td>";
             } elseif ($acte['Deliberation']['etat'] == 2) {
                 echo '<td>Validé</td>';
-            } elseif ($acte['Deliberation']['signee'] == 1) {
-                echo '<td>Signé</td>';
-            } elseif ($enCoursSignature) {
-                echo '<td>En cours de signature</td>';
             } elseif ($acte['Deliberation']['etat'] == 3) {
                 echo '<td>Voté et adopté</td>';
+            }  elseif ($acte['Deliberation']['etat'] == 4) {
+                echo '<td>Voté et refusé</td>';
+            }  elseif ($acte['Deliberation']['etat'] == 5) {
+                echo '<td>Voté et envoyé</td>';
             }  else {
                 echo '<td></td>';
             }
