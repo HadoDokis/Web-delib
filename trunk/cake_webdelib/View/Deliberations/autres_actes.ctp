@@ -25,7 +25,7 @@
             $numLigne++;
             if ($this->action != "autresActesAValider" && 
                     $acte['Deliberation']['signee'] != 1 && 
-                    ($acte['Deliberation']['etat'] == 3 || $acte['Deliberation']['etat'] == 4) && 
+                    $acte['Deliberation']['etat'] > 2 && $acte['Deliberation']['etat'] < 5 && 
                     $acte['Deliberation']['etat_parapheur'] <= 0)
                 echo '<td>' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], array('checked' => true, 'autocomplete' => 'off')) . '</td>';
             else
