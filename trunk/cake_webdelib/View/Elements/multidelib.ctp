@@ -10,16 +10,7 @@ $links = array(
         if (isset($this->data['Deliberation']['id'])) {
 	    echo $this->Html->tag('fieldset', null, array('id'=>'delibRattachee'.$this->data['Deliberation']['id']));
 	    echo $this->Html->tag('legend', '&nbsp;Délibération : '.$this->data['Deliberation']['id'].'&nbsp;');
-            $hideAnnexe = true;
-            $hideAnnexe = false;
 	}	
-        else 
-	    $hideAnnexe = false;
-        
-//	for($i =0; $i < count($this->data['Annex']); $i++) {
-//            if ($this->data['Annex'][$i]['model'] == 'Projet')
-//                unset($this->data['Annex'][$i]);
-//        }
 
         echo $this->Form->input('Deliberation.objet_delib', array('type'=>'textarea','label'=>'Libellé<acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));
 	echo $this->Html->tag('div', '', array('class'=>'spacer'));
@@ -38,7 +29,7 @@ $links = array(
 
 // affichage des délibérations rattachées
 if (isset($this->data['Multidelib'])) {
-	foreach($this->data['Multidelib'] as $i=>$delib) {
+	foreach($this->data['Multidelib'] as $delib) {
 		echo $this->Html->tag('fieldset', null, array('id'=>'delibRattachee'.$delib['id']));
 		echo $this->Html->tag('legend', '&nbsp;Délibération rattachée : '.$delib['id'].'&nbsp;');
 			//Pour la modification
@@ -271,7 +262,7 @@ function annulerModifierDelibRattachee(obj, delibId) {
 			var boutonAnnulerModifier = $(this).find('.link_modifier_back');
 			annulerModifierAnnexe(boutonAnnulerModifier, annexeId);
 		}
-	})
+	});
 
 	$(obj).hide();
 	$(obj).prev().show();
@@ -304,6 +295,5 @@ function supprimerTextDelibDelibRattachee(delibId) {
 	$('#MultidelibDeliberationAdd'+delibId)
 		.html('<input type="file" id="Multidelib'+delibId+'Deliberation" value="" title="" size="60" name="data[Multidelib]['+delibId+'][deliberation]"></input>')
 		.show();
-	
 }
 </script>
