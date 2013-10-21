@@ -84,7 +84,7 @@ class Annex extends AppModel {
         return true;
     }
 
-    function getAnnexesFromDelibId($delib_id, $to_send = 0, $to_merge = 0) {
+    function getAnnexesFromDelibId($delib_id, $to_send = 0, $to_merge = 0, $joindreParent = false) {
         $conditions['Annex.foreign_key'] = $delib_id;
         //$conditions['Annex.model'] = 'Deliberation';
         if ($to_send == 1)
@@ -96,18 +96,20 @@ class Annex extends AppModel {
             'recursive' => -1,
             'order' => array('Annex.id' => 'ASC'),
             'fields' => array('id', 'model')));
-        $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
-            'recursive' => -1,
-            'fields' => array('id', 'parent_id')));
-
-        if (isset($delib['Deliberation']['parent_id'])) {
-            $tab = $this->getAnnexesFromDelibId($delib['Deliberation']['parent_id']);
-            if (isset($tab) && !empty($tab)) {
-                for ($i = 0; $i < count($tab); $i++) {
-                    if ($tab[$i]['Annex']['model'] == 'Deliberation')
-                        unset($tab[$i]);
+        
+        if ($joindreParent){
+            $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
+                'recursive' => -1,
+                'fields' => array('id', 'parent_id')));
+            if (isset($delib['Deliberation']['parent_id'])) {
+                $tab = $this->getAnnexesFromDelibId($delib['Deliberation']['parent_id']);
+                if (isset($tab) && !empty($tab)) {
+                    for ($i = 0; $i < count($tab); $i++) {
+                        if ($tab[$i]['Annex']['model'] == 'Deliberation')
+                            unset($tab[$i]);
+                    }
+                    $annexes = array_merge($annexes, $tab);
                 }
-                $annexes = array_merge($annexes, $tab);
             }
         }
         return $annexes;
