@@ -116,21 +116,21 @@ if (isset($annexes)) {
 
 			if ($mode == 'edit') {
 				echo $this->Html->tag('td');
-					echo $this->Html->link(SHY, '#', array('title'=>'Supprimer', 
+					echo $this->Html->link(SHY, 'javascript:void(0);', array('title'=>'Supprimer', 
                                                                                'class'=>"link_supprimer", 
                                                                                'escape' => false, 
                                                                                'onClick'=>'supprimerAnnexe(this, '.$annexe['id'].')'), false);
-					echo $this->Html->link(SHY, '#', array('title'=>'Annuler la suppression', 
+					echo $this->Html->link(SHY, 'javascript:void(0);', array('title'=>'Annuler la suppression', 
                                                                                'class'=>'link_supprimer_back', 
                                                                                'escape' => false, 
                                                                                'onClick'=>"annulerSupprimerAnnexe(this, ".$annexe['id'].")", 
                                                                                'style'=>'display: none;'), false);
 					echo '&nbsp;&nbsp;';
-					echo $this->Html->link(SHY, '#', array('title'=>'Modifier', 
+					echo $this->Html->link(SHY, 'javascript:void(0);', array('title'=>'Modifier', 
                                                                                'escape' => false, 
                                                                                'class'=> 'link_modifier', 
                                                                                'onClick'=>'modifierAnnexe(this, '.$annexe['id'].')'), false);
-					echo $this->Html->link(SHY, '#', array('title'=>'Annuler la modification', 
+					echo $this->Html->link(SHY, 'javascript:void(0);', array('title'=>'Annuler la modification', 
                                                                                'class'=> 'link_modifier_back', 
                                                                                'escape' => false, 
                                                                                'onClick'=>"annulerModifierAnnexe(this, ".$annexe['id'].")", 
