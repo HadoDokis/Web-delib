@@ -428,56 +428,13 @@ class SeancesController extends AppController {
 	   else
 	       return ($this->Seance->getDeliberationsId($id));
 	}
-
+        
         function reportePositionsSeanceDeliberante ($seance_id) {
-            // $seance_id est la séance délibérante.
-            $seances = array();
-            $delib_ids = $this->Seance->getDeliberationsId($seance_id);
-            foreach ( $delib_ids as $delib_id)  {
-                 // On fusionne toutes les seances de chacun des projets et on supprime les doublons
-                $seances_projet = $this->Deliberation->reportePositionToCommissions($delib_id, $seance_id);
-                $seances = array_unique(array_merge($seances, $seances_projet));
-            }
-            // On supprime la seance délibérante : on a recuperé toutes les commissions rattachées à cette séance délibérante.
-            $commissions = array_diff($seances, array($seance_id));
-
-            foreach ($commissions as $commission_id ) {
-                // Pour chaque commission, on récupère les projets qui ne font pas parti de la séance délibérante.
-                $projets_hors_seance_deliberante =$this->Deliberation->Deliberationseance->find('all', array('conditions' => array('Deliberationseance.seance_id' => $commission_id,
-                                                                                                           'NOT' => array('Deliberationseance.deliberation_id' => $delib_ids )),
-                                                                                     'fields'     => array('Deliberationseance.deliberation_id', 'Deliberationseance.id'),
-                                                                                     'recursive'  => -1 ));
-                $nb_projet_hors_seance_delib = count($projets_hors_seance_deliberante );
-
-                // on renumérote chacun des projets pour supprimer les trous mais en conservant l'ordre des projets de la séance délibérante.
-                $projets_ids = $this->Seance->getDeliberationsId($commission_id);
-                $nb_projets_ids = count($projets_ids);
-                $num_position = 1;
-                foreach ( $projets_ids as $projet_id) {
-                    $projet = $this->Deliberation->Deliberationseance->find('first',  array('conditions' => array('Deliberationseance.seance_id' => $commission_id,
-                                                                                                                  'Deliberationseance.deliberation_id' =>  $projet_id),
-                                                                                            'recursive'  => -1,
-                                                                                            'fields'     => array('Deliberationseance.id')));
-                    
-                    $this->Deliberation->Deliberationseance->id = $projet['Deliberationseance']['id'];
-                    $this->Deliberation->Deliberationseance->saveField('position', $num_position - $nb_projet_hors_seance_delib);
-                    $num_position ++;
-                }
-
-                // Pour chaque commission, on récupère les projets qui ne font pas parti de la séance délibérante.
-                $projets =$this->Deliberation->Deliberationseance->find('all', array('conditions' => array('Deliberationseance.seance_id' => $commission_id,
-                                                                                                           'NOT' => array('Deliberationseance.deliberation_id' => $delib_ids )),
-                                                                                     'fields'     => array('Deliberationseance.deliberation_id', 'Deliberationseance.id'),
-                                                                                     'recursive'  => -1 ));
-                // On décale les projets en fin de la commission pour éviter les doublons
-                $decalage = 1;
-                foreach ($projets_hors_seance_deliberante as $projet) {
-                    $this->Deliberation->Deliberationseance->id = $projet['Deliberationseance']['id'];                    
-                    $this->Deliberation->Deliberationseance->saveField('position',  $nb_projets_ids + $decalage -  $nb_projet_hors_seance_delib);
-                    $decalage++;
-                }
-
-            }
+            if ($this->Seance->Deliberationseance->reportePositionsSeanceDeliberante($seance_id))
+                $this->Session->setFlash('Report effectué.', 'growl');
+            else
+                $this->Session->setFlash('Report non effectué.', 'growl', array('type'=>'erreur'));
+                
             $this->redirect('/seances/afficherProjets/'.$seance_id);
         }
 
