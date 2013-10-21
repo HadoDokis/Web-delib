@@ -48,7 +48,9 @@
                 echo '<td>Signé</td>';
             } elseif ($enCoursSignature) {
                 echo '<td>En cours de signature</td>';
-            } else {
+            } elseif ($acte['Deliberation']['etat'] == 3) {
+                echo '<td>Voté et adopté</td>';
+            }  else {
                 echo '<td></td>';
             }
 
