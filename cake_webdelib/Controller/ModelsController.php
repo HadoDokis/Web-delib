@@ -252,7 +252,7 @@ class ModelsController extends AppController {
 					'conditions' => array('Deliberation.id'=>$delib_id),
 					'recursive'  => -1));
 			$this->Deliberation->makeBalisesProjet($delib, $oMainPart);
-			$tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, 0,1);
+			$tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, 0, 1, true);
 			if (!empty($tmp_annexes))
 				array_push($annexes_id,  $tmp_annexes);
 			$path_annexes = $path.'annexes/';
@@ -296,15 +296,15 @@ class ModelsController extends AppController {
                         if ($progress) 
                             $this->Progress->at(50, 'Démarrage de la génération des annexes...');
 			foreach ($annexes_id as $annex_ids) {
-				foreach($annex_ids as $annex_id) {
-                                        $cpt++;
-                                         if ($progress) 
-                                            $this->Progress->at($cpt*(10/count($annexes_id))+50, 'Génération des annexes...');
-					$annexFile = $this->Deliberation->Annex->find('first', array(
-                                                        'conditions' => array('Annex.id' => $annex_id['Annex']['id']),
-							'recursive'  => -1));
-                                         array_push($annexes, $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $annexFile['Annex']['data_pdf']));
-				}
+                            foreach($annex_ids as $annex_id) {
+                                $cpt++;
+                                if ($progress) 
+                                    $this->Progress->at($cpt*(10/count($annexes_id))+50, 'Génération des annexes...');
+                                $annexFile = $this->Deliberation->Annex->find('first', array(
+                                                'conditions' => array('Annex.id' => $annex_id['Annex']['id']),
+                                                'recursive'  => -1));
+                                array_push($annexes, $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $annexFile['Annex']['data_pdf']));
+                            }
 			}
                         if ($progress) 
                             $this->Progress->at(60, 'Démarrage de la génération du document...');
