@@ -200,7 +200,94 @@ class Deliberationseance extends AppModel {
                                                         'callbacks' => false));
             $position++;
         }
-    }                
+    }
     
+    /**
+     * Pour toutes les délibérations d'une séance délibérante donnée, mettre en tête (position/ordre) ces délibs 
+     * dans toutes les autres séances dans lesquels ils sont référencés et repousse l'ordre des autres en fin de liste
+     * 
+     * @param integer $seance_id séance délibérante contenant les projets à reporter
+     * @return boolean true si succès des sauvegarde des nouvelles valeurs position des Deliberationseance, false sinon
+     */
+    function reportePositionsSeanceDeliberante($seance_id) {
+        $success = true;
+        
+        // Récupération des délibérations à reporter (attachée à cette séance)  
+        $delibsToReport = $this->find('all', array(
+            'recursive' => -1,
+            'fields' => array('deliberation_id'),
+            'order' => array('position' => 'ASC'),
+            'conditions' => array('seance_id' => $seance_id)
+        ));
+
+        $delibIdsToReport = Hash::extract($delibsToReport, '{n}.Deliberationseance.deliberation_id');
+        
+        // Récupération des séances dans lesquelles apparaissent les projets à reporter (non délibérantes)
+        $seancesWhichContainDelibs = $this->find('all', array(
+            'recursive' => -1,
+            'fields' => array('DISTINCT seance_id'),
+            'conditions' => array(
+                'deliberation_id' => $delibIdsToReport,
+                'seance_id <>' => $seance_id)));
+        
+        $seanceIdsWhichContainDelibs = Hash::extract($seancesWhichContainDelibs, '{n}.Deliberationseance.seance_id');
+        
+        // Filtrer que les séances non traitées
+        $seancesToReorder = $this->Seance->find('all', array(
+            'recursive' => -1,
+            'fields' => array('id'),
+            'conditions' => array(
+                'id' => $seanceIdsWhichContainDelibs,
+                'traitee' => 0)));
+        
+        $seanceIdsToReorder = Hash::extract($seancesToReorder, '{n}.Seance.id');
+        
+        // Pour chaque séances concernées par le report
+        foreach ($seanceIdsToReorder as $seanceId) {
+            
+            // Récupération des delibs qui font parti de la séance délibérante pour cette séance
+            $delibsToReportThisSeance = $this->find('all', array( 
+                'recursive' => -1,
+                'fields' => array('id','deliberation_id'),
+                'order' => array('position' => 'ASC'),
+                'conditions' => array(
+                    'seance_id' => $seanceId,
+                    'deliberation_id' => $delibIdsToReport)));
+            
+            // Récupération des delibs qui ne font pas parti de la séance délibérante pour cette séance
+            $delibsToPushThisSeance = $this->find('all', array(
+                'recursive' => -1,
+                'fields' => array('id','deliberation_id'),
+                'order' => array('position' => 'ASC'),
+                'conditions' => array(
+                    'seance_id' => $seanceId,
+                    'NOT' => array('deliberation_id' => $delibIdsToReport))));
+
+            $position = 1;
+            
+            // Avance la position des délibs à reporter
+            foreach ($delibIdsToReport as $delibId) {
+                foreach ($delibsToReportThisSeance as $delibToReport) {
+                    if ($delibId == $delibToReport['Deliberationseance']['deliberation_id']){
+                        $delibToReport['Deliberationseance']['position'] = $position;
+                        $success = $success && $this->save($delibToReport);
+                        $position++;
+                        break;
+                    }
+                }
+                if ($position > count($delibsToReportThisSeance)) break;
+            }
+            
+            //Repousse la position des autres délibs
+            foreach ($delibsToPushThisSeance as $delib) {
+                $delib['Deliberationseance']['position'] = $position;
+                $success = $success && $this->save($delib);
+                $position++;
+            }
+        }
+        
+        return $success;
+    }
+        
 }
 ?>
