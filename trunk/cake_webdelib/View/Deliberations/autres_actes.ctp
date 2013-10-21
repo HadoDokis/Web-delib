@@ -34,6 +34,8 @@
             echo '<td>' . $acte['Deliberation']['titre'] . '</td>';
             echo '<td>' . $acte['Circuit']['nom'] . "</td>";
 
+            $enCoursSignature = ($acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['etat_parapheur'] == 1);
+            
             if ($acte['Deliberation']['etat'] > 0 && $acte['Deliberation']['etat'] < 2) {
                 echo "<td>En cours d'élaboration</td>";
             } elseif ($acte['Deliberation']['etat'] == 0) {
@@ -44,7 +46,7 @@
                 echo '<td>Validé</td>';
             } elseif ($acte['Deliberation']['signee'] == 1) {
                 echo '<td>Signé</td>';
-            } elseif ($acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['etat_parapheur'] == 1) {
+            } elseif ($enCoursSignature) {
                 echo '<td>En cours de signature</td>';
             } else {
                 echo '<td></td>';
@@ -74,13 +76,13 @@
                     'title' => 'Valider en urgence le projet ' . $acte['Deliberation']['objet'],
                     'escape' => false), 'Confirmez-vous la validation en urgence du projet \'' . $acte['Deliberation']['id'] . '\'');
             }
-            if ($this->action == 'autreActesValides' && $canEdit) {
+            if ($this->action == 'autreActesValides' && $canEdit && !$enCoursSignature) {
                 echo $this->Html->link(SHY, '/deliberations/edit/' . $acte['Deliberation']['id'], array('class' => 'link_modifier',
                     'title' => 'Modifier le projet ' . $acte['Deliberation']['objet'],
                     'escape' => false
                         ), false);
             }
-            if ($this->action == 'autreActesValides') {
+            if ($this->action == 'autreActesValides' && !$enCoursSignature) {
                 $actionAttribuer = '/deliberations/attribuercircuit/' . $acte['Deliberation']['id'];
                 echo $this->Html->link(SHY, $actionAttribuer, array('class' => 'link_circuit',
                     'alt' => 'Attribuer un circuit pour le projet ' . $acte['Deliberation']['objet'],
