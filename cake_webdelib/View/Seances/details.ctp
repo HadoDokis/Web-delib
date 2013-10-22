@@ -3,6 +3,7 @@
 
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
+    <th>Id. </th>
     <th>Etat</th>
     <th>Résultat</th>
     <th>Thème</th>
@@ -10,8 +11,8 @@
     <th>Rapporteur</th>
     <th>Libellé de l'acte</th>
     <th>Titre</th>
-    <th>Id. </th>
-    <th width='20%'>Actions</th>
+    <th>N° Délibération</th>
+    <th style="min-width: 150px">Actions</th>
 </tr>
 <?php
        $numLigne = 1;
@@ -20,6 +21,7 @@
        echo $this->Html->tag('tr', null, $rowClass);
        $numLigne++;
 ?>
+<td><?php echo $deliberation['Deliberation']['id']; ?></td>
 	<?php
 	    if ($deliberation['Deliberation']['etat']==2){
 	       echo '<td>'.$this->Html->image('/img/icons/non_votee.png',  array('title'=> 'Projet validé')).'</td>';
@@ -42,7 +44,7 @@
 	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['objet_delib']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
-	<td><?php echo $deliberation['Deliberation']['id']; ?></td>
+        <td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
 	<td class="actions" width="80">
             <?php echo $this->Html->link(SHY,'/seances/saisirDebat/' .$deliberation['Deliberation']['id'].'/'.$seance_id, array('class'=>'link_debat', 'escape' => false, 'title'=>'Saisir les debats'), false); ?>
             <?php
