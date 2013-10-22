@@ -95,10 +95,10 @@ class TypeseancesController extends AppController {
             }
         } else {
             if ($this->Typeseance->save($this->data)) {
-                $this->Session->setFlash('Le type de s&eacute;ance \'' . $this->data['Typeseance']['libelle'] . '\' a &eacute;t&eacute; modifi&eacute;');
+                $this->Session->setFlash('Le type de s&eacute;ance \'' . $this->data['Typeseance']['libelle'] . '\' a &eacute;t&eacute; modifi&eacute;','growl');
                 $sortie = true;
             } else {
-                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
                 if (array_key_exists('Typeacteur', $this->data)) {
                     $this->set('selectedTypeacteurs', $this->data['Typeacteur']['Typeacteur']);
                     $this->set('selectedActeurs', $this->data['Acteur']['Acteur']);
