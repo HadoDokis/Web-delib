@@ -28,8 +28,8 @@ class Deliberation extends AppModel {
 					array('rule' => array('checkMimetype', 'commission',  array('application/vnd.oasis.opendocument.text')),
 							'message' => "Ce type de fichier n'est pas autorisé")),
                         'vote_commentaire' => array(
-                            'rule'    => array('maxLength', 500),
-                            'message' => 'Le commentaire de vote ne doit pas dépasser 500 caractères.'
+                            'rule'    => array('maxLength', 1000),
+                            'message' => 'Le commentaire de vote ne doit pas dépasser 1000 caractères.'
                         ));
 
 

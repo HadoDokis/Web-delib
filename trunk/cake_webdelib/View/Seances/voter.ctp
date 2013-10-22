@@ -137,15 +137,15 @@
 		<?php
                 echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire', 
                                                                                 'style'=>'width:50%',
-                                                                                'type'=>'textarea', 'rows'=>'8', 'cols' => '60', 'maxlength' => '500',
-                         'after' => '<div style="display:inline-block">&nbsp;&nbsp;&nbsp;(max. <span style="display:inline-block" id="charLeft"></span>/500 caractères)</div>'));?>
+                                                                                'type'=>'textarea', 'rows'=>'8', 'cols' => '60', 'maxlength' => '1000',
+                         'after' => '<div style="display:inline-block">&nbsp;&nbsp;&nbsp;(max. <span style="display:inline-block" id="charLeft"></span>/1000 caractères)</div>'));?>
 	<script>
                 $(document).ready(function() {
                 $('#charLeft').append($('#DeliberationVoteCommentaire').val().length);
                 $('#DeliberationVoteCommentaire').keyup(function() {
                 var len = this.value.length;
-                if (len >= 500) {
-                    this.value = this.value.substring(0, 500);
+                if (len >= 1000) {
+                    this.value = this.value.substring(0, 1000);
                 }
                 $('#charLeft').text(this.value.length);
             });
