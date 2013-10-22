@@ -3,6 +3,7 @@
     if (isset($message))
         echo '<div id="flashMessage" class="message">'.$message.'</div>	'; 
 ?>
+
 <cake:nocache>
 <h2> Vote pour le projet : "<?php echo $deliberation['Deliberation']['objet_delib']?>"</h2>
 
@@ -11,9 +12,15 @@
 	<?php echo $this->requestAction('/deliberations/listerPresents/'.$deliberation['Deliberation']['id']."/$seance_id", array('return'));?>
 </div>
 
-<?php echo $this->Form->create('Seances',array('url'=>'/seances/voter/'.$deliberation['Deliberation']['id']."/$seance_id",
-                                         'type'=>'post')); ?>
-	<h3>Saisie du vote : <?php echo $this->Form->input('Vote.typeVote', array('label'=>false, 'div'=>false, 'options'=>array(1 => 'Détail des voix', 2 => 'Total des voix', 3 => 'Résultat'), 'default'=>1, 'onchange' => "affichageTypeVote(this);", 'empty'=>false)); ?></h3>
+<?php echo $this->Form->create('Seances',array('type'=>'post', 'url' => array('controller' => 'seances', 'action' => 'voter', $deliberation['Deliberation']['id'], $seance_id))); ?>
+	<h3>Saisie du vote : <?php 
+        $options = array(1 => 'Détail des voix', 2 => 'Total des voix', 3 => 'Résultat');
+        echo $this->Form->select('Vote.typeVote', $options, array('label'=>false, 
+                                                                    'div'=>false, 
+                                                                    //'default'=>1,
+            'autocomplete'=>'off',
+            'value'=>2, 'onchange' => "affichageTypeVote(this);", 'empty'=>false)); ?></h3>
+
 	<div id='voteDetail'>
 		<table id="tableDetailVote" cellpadding="0" cellspacing="0">
 			<tr>
@@ -127,8 +134,24 @@
 
 	<br/><br/>
 	<div class="optional">
-		<?php echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire', 'type'=>'textarea', 'rows'=>'5', 'cols' => '60', 'maxlength' => '500'));?>
-	</div>
+		<?php
+                echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire', 
+                                                                                'style'=>'width:50%',
+                                                                                'type'=>'textarea', 'rows'=>'8', 'cols' => '60', 'maxlength' => '500',
+                         'after' => '<div style="display:inline-block">&nbsp;&nbsp;&nbsp;(max. <span style="display:inline-block" id="charLeft"></span>/500 caractères)</div>'));?>
+	<script>
+                $(document).ready(function() {
+                $('#charLeft').append($('#DeliberationVoteCommentaire').val().length);
+                $('#DeliberationVoteCommentaire').keyup(function() {
+                var len = this.value.length;
+                if (len >= 500) {
+                    this.value = this.value.substring(0, 500);
+                }
+                $('#charLeft').text(this.value.length);
+            });
+            });
+        </script>
+        </div>
 
 	<br/>
 	<div class="submit">
