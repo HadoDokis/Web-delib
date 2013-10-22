@@ -154,9 +154,6 @@ Configure::write('DOC_TYPE', array(
         'extention' => 'odt',
     ),
     'application/vnd.oasis.opendocument.spreadsheet' => array(
-        'joindre_fusion' => true,
-        'joindre_ctrl_legalite' => true,
-        'mime_conversion' => 'application/vnd.oasis.opendocument.text',
         'extention' => 'odt',
     ),
     'application/zip' => array(
