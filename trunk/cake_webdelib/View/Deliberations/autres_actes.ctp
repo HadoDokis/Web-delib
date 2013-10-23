@@ -5,7 +5,7 @@
     echo "<h2>$titreVue</h2>";
     echo $this->Form->create('Deliberation', array('url' => '/deliberations/sendActesToSignature', 'type' => 'file'));
     ?>
-    <table style="width:'100%';">
+    <table style="width: 100%;">
         <tr>
             <th></th>
             <th>Identifiant</th>
@@ -14,13 +14,13 @@
             <th>Titre</th>
             <th>Circuit</th>
             <th>État</th>
-            <th width='65px'>Action</th>
+            <th style='width: 65px;'>Action</th>
         </tr>
 
         <?php
         $numLigne = 1;
         foreach ($actes as $acte) {
-            $rowClass = ($numLigne & 1) ? array('height' => '38px') : array('height' => '39px', 'class' => 'altrow');
+            $rowClass = ($numLigne & 1) ? array('style'=> 'height: 38px') : array('style'=> 'height: 38px', 'class' => 'altrow');
             echo $this->Html->tag('tr', null, $rowClass);
             $numLigne++;
             if ($this->action != "autresActesAValider" && 
@@ -31,7 +31,7 @@
             else
                 echo '<td></td>';
 
-            echo '<td style="width:\'20px\';">' . $acte['Deliberation']['id'] . '</td>';
+            echo '<td style="width: 20px;">' . $acte['Deliberation']['id'] . '</td>';
             echo '<td>' . $acte['Typeacte']['libelle'] . '</td>';
             echo '<td>' . $acte['Deliberation']['objet'] . '</td>';
             echo '<td>' . $acte['Deliberation']['titre'] . '</td>';
