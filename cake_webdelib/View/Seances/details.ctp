@@ -1,7 +1,7 @@
 <div class="deliberations">
 <h2>Détails des projets de la séance du <?php echo $date_seance?></h2>
 
-<table style="width: 100%">
+<table style="width: 100%;">
 <tr>
     <th>Id. </th>
     <th>Etat</th>
@@ -18,10 +18,9 @@
        $numLigne = 1;
        foreach ($deliberations as $deliberation):
           $rowClass = ($numLigne & 1) ? array('style' => 'height: 36px'):array( 'style' => 'height: 36px', 'class'=>'altrow');
-       echo $this->Html->tag('tr', null, $rowClass);
        $numLigne++;
 ?>
-<tr style="height: 36px," <?php if ($numLigne & 1) echo 'class="altrow"'?>>
+<tr style="height: 36px;" <?php if ($numLigne & 1) echo 'class="altrow"'?>>
     <td><?php echo $deliberation['Deliberation']['id']; ?></td>
 	<?php
 	    if ($deliberation['Deliberation']['etat']==2){
