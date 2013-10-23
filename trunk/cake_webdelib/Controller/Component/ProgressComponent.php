@@ -7,7 +7,7 @@
             App::import('Helper', 'Html');
             App::uses('View', 'View');
             $this->View = new View($this->Controller);
-            $html = & new HtmlHelper($this->View);
+            $html = new HtmlHelper($this->View);
 		
             $tailletxt=30-10;
             echo $html->script('jquery');
