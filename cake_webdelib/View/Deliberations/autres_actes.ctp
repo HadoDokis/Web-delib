@@ -5,7 +5,7 @@
     echo "<h2>$titreVue</h2>";
     echo $this->Form->create('Deliberation', array('url' => '/deliberations/sendActesToSignature', 'type' => 'file'));
     ?>
-    <table width='100%'>
+    <table style="width:'100%';">
         <tr>
             <th></th>
             <th>Identifiant</th>
@@ -25,13 +25,13 @@
             $numLigne++;
             if ($this->action != "autresActesAValider" && 
                     $acte['Deliberation']['signee'] != 1 && 
-                    $acte['Deliberation']['etat'] > 2 && $acte['Deliberation']['etat'] < 5 && 
+                    $acte['Deliberation']['etat'] >= 2 && $acte['Deliberation']['etat'] < 5 &&
                     $acte['Deliberation']['etat_parapheur'] <= 0)
                 echo '<td>' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], array('checked' => true, 'autocomplete' => 'off')) . '</td>';
             else
                 echo '<td></td>';
 
-            echo '<td width="20px">' . $acte['Deliberation']['id'] . '</td>';
+            echo '<td style="width:\'20px\';">' . $acte['Deliberation']['id'] . '</td>';
             echo '<td>' . $acte['Typeacte']['libelle'] . '</td>';
             echo '<td>' . $acte['Deliberation']['objet'] . '</td>';
             echo '<td>' . $acte['Deliberation']['titre'] . '</td>';
