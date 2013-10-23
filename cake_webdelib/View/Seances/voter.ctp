@@ -137,7 +137,7 @@
 		<?php
             echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire',
                     'style'=>'width:50%; max-width:90%; padding: 5px; max-height: 200px;',
-                    'type'=>'textarea', 'rows'=>'5', 'cols' => '60', 'maxlength' => '500',
+                    'type'=>'textarea', 'rows'=>'6', 'cols' => '60', 'maxlength' => '500',
                     'after' => '<div style="display:inline-block">&nbsp;&nbsp;&nbsp;(max. <span style="display:inline-block" id="charLeft"></span>/500 caractères)</div>'));
         ?>
         <script>
