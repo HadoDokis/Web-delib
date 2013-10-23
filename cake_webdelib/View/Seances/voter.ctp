@@ -22,7 +22,7 @@
             'value'=>2, 'onchange' => "affichageTypeVote(this);", 'empty'=>false)); ?></h3>
 
 	<div id='voteDetail'>
-		<table id="tableDetailVote" cellpadding="0" cellspacing="0">
+		<table id="tableDetailVote">
 			<tr>
 				<th>Elus</th>
 				<th colspan=4>Vote</th>
@@ -65,13 +65,13 @@
 				</td>
 			</tr>
 			<?php endforeach; ?>
-			<tr  bgcolor='#efefef'>
+			<tr style="background-color: #efefef">
 				<td>Raccourcis pour les votes</td>
 				<td>Oui</td>
 				<td>Non</td>
 				<td>Abstention</td>
 				<td>Pas de participation</td>
-                        </tr>
+            </tr>
 			<tr>
 				<td>Tous les présents</td>
 		   		<td><input type="radio" name="racc_tous" value="3" onclick="vote_global(this, 'tous');"/></td>
@@ -110,7 +110,7 @@
 	</div>
 
 	<div id='voteTotal'>
-		<table cellpadding="0" cellspacing="0">
+		<table>
 			<tr>
 				<th></th>
 				<th>Oui</th>
@@ -135,20 +135,21 @@
 	<br/><br/>
 	<div class="optional">
 		<?php
-                echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire', 
-                                                                                'style'=>'width:50%',
-                                                                                'type'=>'textarea', 'rows'=>'8', 'cols' => '60', 'maxlength' => '1000',
-                         'after' => '<div style="display:inline-block">&nbsp;&nbsp;&nbsp;(max. <span style="display:inline-block" id="charLeft"></span>/1000 caractères)</div>'));?>
-	<script>
-                $(document).ready(function() {
+            echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire',
+                    'style'=>'width:50%; max-width:90%; padding: 5px; max-height: 200px;',
+                    'type'=>'textarea', 'rows'=>'5', 'cols' => '60', 'maxlength' => '500',
+                    'after' => '<div style="display:inline-block">&nbsp;&nbsp;&nbsp;(max. <span style="display:inline-block" id="charLeft"></span>/500 caractères)</div>'));
+        ?>
+        <script>
+            $(document).ready(function() {
                 $('#charLeft').append($('#DeliberationVoteCommentaire').val().length);
                 $('#DeliberationVoteCommentaire').keyup(function() {
-                var len = this.value.length;
-                if (len >= 1000) {
-                    this.value = this.value.substring(0, 1000);
-                }
-                $('#charLeft').text(this.value.length);
-            });
+                    var len = this.value.length;
+                    if (len >= 500) {
+                        this.value = this.value.substring(0, 500);
+                    }
+                    $('#charLeft').text(this.value.length);
+                });
             });
         </script>
         </div>
