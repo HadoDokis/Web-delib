@@ -1,7 +1,7 @@
 <div class="deliberations">
 <h2>Détails des projets de la séance du <?php echo $date_seance?></h2>
 
-<table width="100%" cellpadding="0" cellspacing="0">
+<table style="width: 100%">
 <tr>
     <th>Id. </th>
     <th>Etat</th>
@@ -12,16 +12,17 @@
     <th>Libellé de l'acte</th>
     <th>Titre</th>
     <th>N° Délibération</th>
-    <th style="min-width: 150px">Actions</th>
+    <th style="min-width: 150px;">Actions</th>
 </tr>
 <?php
        $numLigne = 1;
        foreach ($deliberations as $deliberation):
-          $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
+          $rowClass = ($numLigne & 1) ? array('style' => 'height: 36px'):array( 'style' => 'height: 36px', 'class'=>'altrow');
        echo $this->Html->tag('tr', null, $rowClass);
        $numLigne++;
 ?>
-<td><?php echo $deliberation['Deliberation']['id']; ?></td>
+<tr style="height: 36px," <?php if ($numLigne & 1) echo 'class="altrow"'?>>
+    <td><?php echo $deliberation['Deliberation']['id']; ?></td>
 	<?php
 	    if ($deliberation['Deliberation']['etat']==2){
 	       echo '<td>'.$this->Html->image('/img/icons/non_votee.png',  array('title'=> 'Projet validé')).'</td>';
@@ -44,8 +45,8 @@
 	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['objet_delib']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
-        <td><?php echo $deliberation['Deliberation']['num_delib']; ?></td>
-	<td class="actions" width="80">
+    <td><?php if (!empty($deliberation['Deliberation']['num_delib'])) echo $deliberation['Deliberation']['num_delib']; ?></td>
+	<td class="actions" style="width: 80px;">
             <?php echo $this->Html->link(SHY,'/seances/saisirDebat/' .$deliberation['Deliberation']['id'].'/'.$seance_id, array('class'=>'link_debat', 'escape' => false, 'title'=>'Saisir les debats'), false); ?>
             <?php
             if ( $seance['Typeseance']['action']<2 && $deliberation['Deliberation']['is_delib']) 
