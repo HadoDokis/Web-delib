@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<link rel="selenium.base" />
+<title>webdelib</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">webdelib</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/users/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserLogin</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Utilisateurs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/pages/gestion_utilisateurs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Utilisateurs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='menuPrincipal']/ul[2]/li[4]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/users/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserLogin</td>
+	<td>redac</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword</td>
+	<td>redac</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword2</td>
+	<td>redac</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserNom</td>
+	<td>Rédacteur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPrenom</td>
+	<td>Selenium</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>UserProfilId</td>
+	<td>label=Rédacteur</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>ServiceService</td>
+	<td>label=Défaut</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Ajouter</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/users/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserLogin</td>
+	<td>assemblee</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword</td>
+	<td>assemblee</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword2</td>
+	<td>assemblee</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserNom</td>
+	<td>Assemblee</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPrenom</td>
+	<td>Selenium</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>UserProfilId</td>
+	<td>label=Service assemblée</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>ServiceService</td>
+	<td>label=Défaut</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Ajouter</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Déconnexion</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserLogin</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword</td>
+	<td>admin</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/pages/gestion_acteurs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/typeacteurs/index</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/typeacteurs/add/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>TypeacteurNom</td>
+	<td>Elu(s) majorité</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>elu_1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Sauvegarder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/pages/gestion_acteurs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/acteurs/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>ActeurSalutation</td>
+	<td>Monsieur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>ActeurNom</td>
+	<td>Selenium</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>ActeurPrenom</td>
+	<td>Test</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>ServiceService</td>
+	<td>label=Défaut</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Sauvegarder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/pages/administration</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/themes/index</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/themes/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>ThemeLibelle</td>
+	<td>Défaut</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Ajouter</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/themes/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>ThemeLibelle</td>
+	<td>Sous - Défaut</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>ThemeParentId</td>
+	<td>label=Défaut</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Ajouter</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/sequences/index</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/sequences/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>SequenceNom</td>
+	<td>Sequence</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Sauvegarder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/compteurs/index</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/compteurs/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>CompteurNom</td>
+	<td>Compteur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>CompteurDefCompteur</td>
+	<td>#s#</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>CompteurDefReinit</td>
+	<td>#AAAA#</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>//form[@id='form_compteur']/div[3]/select</td>
+	<td>label=sélectionner les formats dans la liste</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Sauvegarder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/typeseances/index</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/typeseances/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>TypeseanceLibelle</td>
+	<td>Type de Test</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>TypeseanceModelprojetId</td>
+	<td>label=Modèle défaut</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>TypeseanceModeldeliberationId</td>
+	<td>label=Modèle défaut</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>TypeseanceModelconvocationId</td>
+	<td>label=Modèle défaut</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>TypeseanceModelordredujourId</td>
+	<td>label=Modèle défaut</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>TypeseanceModelpvsommaireId</td>
+	<td>label=Modèle défaut</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>TypeseanceModelpvdetailleId</td>
+	<td>label=Modèle défaut</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>TypeacteurTypeacteur</td>
+	<td>label=Elu(s) majorité</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>TypeseanceAction</td>
+	<td>label=Voter</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Sauvegarder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/users/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserLogin</td>
+	<td>redac</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword</td>
+	<td>redac</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/deliberations/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>DeliberationObjet</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>DeliberationObjet</td>
+	<td>Libelle de mon projet pour le test</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>DeliberationTitre</td>
+	<td>Titre de mon projet pour le test</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Sauvegarder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/deliberations/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>DeliberationObjet</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>DeliberationObjet</td>
+	<td>Libellé numéro 2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>DeliberationTitre</td>
+	<td>Ttire Numéro 2</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>DeliberationThemeId</td>
+	<td>label=Sous - Défaut</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Sauvegarder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>20000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='content']/div/table/tbody/tr[3]/td[5]/a[5]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='content']/div/table/tbody/tr[7]/td[5]/a[5]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/users/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/users/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserLogin</td>
+	<td>assemblee</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword</td>
+	<td>assemblee</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/seances/listerFuturesSeances</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/seances/add</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=date</td>
+	<td>11/07/2015</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>SeanceDateHour</td>
+	<td>label=22</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>SeanceDateMin</td>
+	<td>label=20</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>SeanceDateHour</td>
+	<td>label=00</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>SeanceTypeId</td>
+	<td>label=Type de Test</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Ajouter</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/pages/tous_les_projets</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/users/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/users/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserLogin</td>
+	<td>redac</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword</td>
+	<td>redac</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/deliberations/edit/1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>DeliberationSeanceId</td>
+	<td>label=Type de Test du Samedi 11 Juillet 2015 - 00:20</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Sauvegarder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/deliberations/edit/2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>DeliberationSeanceId</td>
+	<td>label=Type de Test du Samedi 11 Juillet 2015 - 00:20</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Sauvegarder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/users/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/users/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserLogin</td>
+	<td>assemblee</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>UserPassword</td>
+	<td>assemblee</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='OK']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/seances/listerFuturesSeances</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/models/generer/null/1/1</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
