@@ -279,6 +279,9 @@ class CronsController extends AppController {
      * @param integer $id id du cron a exécuter
      */
     function _runCronId($id) {
+        /**
+         * TODO déplacer dans un composant pour s'affranchir de curl dans le CronShell
+         */
         // initialisations
         require_once(APP . 'Lib' . DS . 'tools.php');
         $lastExecutionStartTime = null;
