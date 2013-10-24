@@ -70,7 +70,7 @@ class CollectivitesController extends AppController {
                     $this->Session->setFlash("Impossible de copier le fichier dans $content_dir (limite de taille du fichier: 1Mo)");
 
                 App::uses('File', 'Utility');
-                $file = new File($tmp_file, false);
+                $file = new File($content_dir . $name_file, false);
                 $this->Collectivite->id = 1;
                 if (!$this->Collectivite->saveField('logo', $file->read(true), false))
                     $this->Session->setFlash('Erreur durant la sauvegarde en base de données du logo', 'growl');
