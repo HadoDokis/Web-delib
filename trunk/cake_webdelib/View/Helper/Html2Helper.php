@@ -228,11 +228,11 @@ class Html2Helper extends HtmlHelper {
         echo $this->link(SHY, $urlChampTri . '/' . ($inverse ? 'ASC' : 'DESC'), array('class' => 'link_tridesc', 'title' => 'Trier par ordre décroissant'), false, false);
     }
 
-    function boutonAdd($value = "Ajouter", $title = "Ajouter", $action = 'add', $class = 'btn-primary', $center = true) {
+    function boutonAdd($value = "Ajouter", $title = "Ajouter", $action = 'add', $class = 'btn-primary', $center = true, $id='bouton_ajouter') {
         if ($center)
             echo $this->tag('div', null, array('style' => 'text-align:center; margin-top:10px;'));
 
-        echo $this->link("<i class='icon-plus-sign icon-large'></i> $value", array("action" => $action), array('class' => "btn $class", 'escape' => false, 'title' => $title));
+        echo $this->link("<i class='icon-plus-sign icon-large'></i> $value", array("action" => $action), array('id' => $id, 'class' => "btn $class", 'escape' => false, 'title' => $title));
 
         if ($center)
             echo $this->tag('/div', null);
