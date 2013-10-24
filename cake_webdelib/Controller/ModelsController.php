@@ -612,7 +612,7 @@ class ModelsController extends AppController {
              elseif($data['Modeledition'][$field] == 1)
                  $this->Modeledition->saveField($field, 0);
 
-            $this->Session->setFlash('Modification effectuée...', 'growl');
+            $this->Session->setFlash('Modification prise en compte', 'growl');
 	    $this->redirect('/models/index');
 
 	}
