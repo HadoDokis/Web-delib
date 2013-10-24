@@ -22,25 +22,25 @@
                               '/models/changeStatus/recherche/'.$model['Model']['id'], 
                               array('class'=>'link_bool_'.$model['Model']['recherche'], 
                             	    'escape' => false, 
-                                    'title'=>'Voir'),
+                                    'title'=>'Inclure dans la recherche'),
                               false);
          ?></td>
-         <td style="text-align: center;"><?php  
+         <td style="text-align: center;"><?php
              if ($model['Model']['joindre_annexe'] == '') $model['Model']['joindre_annexe'] = 0;
              echo $this->Html->link(SHY, 
                               '/models/changeStatus/joindre_annexe/'.$model['Model']['id'], 
                               array('class'=>'link_bool_'.$model['Model']['joindre_annexe'], 
                        		       'escape' => false, 
-                                    'title'=>'Voir'),  
+                                    'title'=>'Ajouter les annexes en fin de document (export PDF)'),
                               false);
          ?></td>
-           <td style="text-align: center;"><?php  
+           <td style="text-align: center;"><?php
              if ($model['Model']['multiodj'] == '') $model['Model']['multiodj'] = 0;
-             echo $this->Html->link(SHY, 
+             echo $this->Html->link(SHY,
                               '/models/changeStatus/multiodj/'.$model['Model']['id'], 
                               array('class'=>'link_bool_'.$model['Model']['multiodj'], 
                                     'escape' => false, 
-                                    'title'=>'Voir'),  
+                                    'title'=>'Multi-séances'),
                               false);
          ?></td>
 
