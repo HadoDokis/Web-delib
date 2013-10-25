@@ -189,11 +189,15 @@ class ConnecteursController extends AppController {
                 $this->redirect('/connecteurs/index');
         }
         if (!$file->writable()) {
-            $this->Session->setFlash('Impossible de modifier le fichier de configuration, veuillez donner les droits sur fichier webdelib.inc (chown www-data: webdelib.inc), ', 'growl', array('type' => 'erreur'));
+            $this->Session->setFlash('Impossible de modifier le fichier de configuration, veuillez donner les droits sur fichier webdelib.inc', 'growl', array('type' => 'erreur'));
         } else {
-            $file->open('w+');
-            $file->append($content);
-            $file->close();
+            $success = $file->open('w+');
+            $success = $success && $file->append($content);
+            $success = $success && $file->close();
+            if ($success)
+                $this->Session->setFlash('La configuration du module &quot;'.$type.'&quot; a été enregistrée', 'growl');
+            else
+                $this->Session->setFlash('Un problème est survenu lors de la modification du fichier de configuration webdelib.inc', 'growl', array('type' => 'erreur'));
         }
 
         $this->redirect('/connecteurs/index');
