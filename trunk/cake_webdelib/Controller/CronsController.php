@@ -7,6 +7,7 @@ class CronsController extends AppController {
     var $components = array('VueDetaillee', 'Applist');
     // Gestion des droits
     var $libelleControleurDroit = 'Tâches planifiées';
+
     var $commeDroit = array('view' => 'Crons:index');
     var $aucunDroit = array('delete','edit','add');
     var $libellesActionsDroit = array(
