@@ -85,7 +85,6 @@ foreach ($this->data as $rownum => $rowElement) {
 //    echo $this->Html->link($this->Html->tag("i", "", array("class" => "icon-edit icon-large")), '/crons/edit/' . $rowElement['Cron']['id'], array('class' => 'btn', 'title' => 'Modifier', 'escape' => false), false, false);
 //    echo $this->Html->link($this->Html->tag("i", "", array("class" => "icon-trash icon-large")), '/crons/delete/' . $rowElement['Cron']['id'], array('class' => 'btn suppr_cron', 'title' => 'Supprimer', 'escape' => false), false, false);
 //    echo $this->Html->tag('/div', null);
-//
 //    echo $this->Html->tag('div', null, array("class" => 'btn-group'));
     echo $this->Html->link($this->Html->tag("i", "", array("class" => "icon-time icon-large")), '/crons/planifier/' . $rowElement['Cron']['id'], array('class' => 'btn', 'title' => 'Planifier', 'escape' => false), false, false);
     echo $this->Html->link($this->Html->tag("i", "", array("class" => "icon-cog icon-large")), '/crons/executer/' . $rowElement['Cron']['id'], array("class" => "btn", 'title' => 'Exécuter maintenant', 'escape' => false), false, false);
@@ -98,7 +97,7 @@ foreach ($this->data as $rownum => $rowElement) {
 }
 echo $this->Html->tag('/table');
 echo $this->Html->tag('div', null, array('id' => 'run_crons', 'style' => 'text-align:center; margin-top:10px;'));
-echo $this->Html->link('<i class="icon-cogs icon-large"></i> Exécuter toutes les tâches', array("action" => "runCrons"), array('class' => 'btn btn-primary', 'escape' => false, 'title' => 'Exécuter toutes les tâches planifiées maintenant'));
+echo $this->Html->link('<i class="icon-cogs icon-large"></i> Exécuter toutes les tâches', array("action" => "runCrons"), array('id' => 'run-crons', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Exécuter toutes les tâches planifiées maintenant'));
 
 echo $this->Html->tag('br');
 //echo $this->Html2->boutonAdd("Nouvelle tâche", "Créer une nouvelle tâche planifiée");
