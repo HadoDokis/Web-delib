@@ -6,9 +6,6 @@
 
 <br/><br/>
 
-
 <div class="submit">
-	<?php $this->Html2->boutonRetour('index', 'float:none;');
-//        echo $this->Html->link(SHY, '/models/index', array('class'=>'link_annuler_sans_border', 'title'=>'Retour fiche'), false, false);
-        ?>
+	<?php $this->Html2->boutonRetour('index', 'float:none;'); ?>
 </div>
