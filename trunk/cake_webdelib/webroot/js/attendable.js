@@ -21,7 +21,7 @@
         return this.each(function () {
             var patt = new RegExp(/confirm\((.+)\)/);
             //Si onclick présent sur l'élément
-            if ( patt.test($(this).attr('onclick').toLowerCase())){
+            if ( $(this).attr('onclick') && patt.test($(this).attr('onclick').toLowerCase())){
                 var onclick = $(this).attr('onclick');
                 var mesg = patt.exec(onclick);
                 mesg = (mesg[1]).replace(/'/g, "");
