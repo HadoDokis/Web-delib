@@ -2,7 +2,7 @@
 
 fieldset {
 	border: 1px solid #e0ef90;
-	padding: 10px 0px 10px 0px;
+	padding: 10px 0 10px 0;
 }
 fieldset legend {
 	font-weight: normal;
@@ -50,7 +50,7 @@ table.sample {
 }
 
 table.sample tr td {
-	border: 0px;
+	border: 0;
 	padding: 9px 9px 4px 9px ;
 	vertical-align: top;
 	text-align: left;
@@ -144,7 +144,7 @@ label {
 	color: #f00;
 	/*background-color: #fff;*/
 	background-color: transparent;
-	margin: 8px 0px;
+	margin: 8px 0;
 	text-align: center;
 }
 
@@ -181,16 +181,14 @@ body {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 0.8em;
 	margin: 0;
-	padding: 0;
 	/*background-image: url(../../../img/wavedelib.png);*/
 	/*background-repeat: no-repeat;*/
-	padding-bottom: 100px;
-        position: relative;
-        padding-top: 90px;
-        background-color: #fff;
-        background-image: url(/img/grid-18px-masked.png);
-        background-repeat: repeat-x;
-        background-position: 0 40px;
+    position: relative;
+    padding: 90px 0 100px 0;
+    background-color: #fff;
+    background-image: url(/img/grid-18px-masked.png);
+    background-repeat: repeat-x;
+    background-position: 0 40px;
 }
 
 #header {
@@ -208,7 +206,7 @@ body {
 	padding-right: 10px;
 	padding-bottom: 5px;
 	background-color: transparent;
-        border-bottom: 1px solid #888888;
+    border-bottom: 1px solid #888888;
 }
 
 #formatEdition {
@@ -237,25 +235,25 @@ body {
 }
 
 h1 {
-        -moz-border-radius : 12px;
-        font: normal normal 22px/26px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-        color:#444444;
-        /* couleur NON-web 
-        border-left: 1px solid #e0ef90;
-        border-bottom: 1px solid #e0ef90; */
-        padding-left: 1%;
-        padding-bottom: 5px;
+    -moz-border-radius : 12px;
+    font: normal normal 22px/26px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+    color:#444444;
+    /* couleur NON-web
+    border-left: 1px solid #e0ef90;
+    border-bottom: 1px solid #e0ef90; */
+    padding-left: 1%;
+    padding-bottom: 5px;
 }
 
 h2 {
-        -moz-border-radius : 12px;	
+    -moz-border-radius : 12px;
 	font: normal normal 20px/24px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	color:#444444;
 	/* couleur NON-web */
 	border-left: 1px solid #e0ef90;
 	border-bottom: 1px solid #e0ef90;
 	padding-left: 1%;
-        margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 h3 {
@@ -312,7 +310,7 @@ table.table_action tr td {
 }
 
 #pied {
-        margin-top:60px;
+    margin-top:60px;
 	height: 10px;
 	text-align: center;
 	border-top: 1px solid #999;
@@ -329,27 +327,27 @@ td.ordre a {
 }
 
 a.link_tablet, a.link_tablet:hover {
-        background-image: url(../../../img/icons/tablet.png);
-        background-repeat: no-repeat;
-        background-position: top;
-        padding: 0 0 10px 22px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/tablet.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    padding: 0 0 10px 22px;
+    text-decoration: none;
 }
 
 
 a.link_bool_0, a.link_bool_0:hover {
-        background-image: url(../../../img/icons/false.png);
-        background-repeat: no-repeat;
-        background-position: top;
-        padding: 0 0 10px 22px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/false.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    padding: 0 0 10px 22px;
+    text-decoration: none;
 }
 a.link_bool_1, a.link_bool_1:hover {
-        background-image: url(../../../img/icons/true.png);
-        background-repeat: no-repeat;
-        background-position: top;
-        padding: 0 0 10px 22px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/true.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    padding: 0 0 10px 22px;
+    text-decoration: none;
 }
 
 a.link_liste, a.link_liste:hover {
@@ -357,14 +355,14 @@ a.link_liste, a.link_liste:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 10px 22px;
-        text-decoration: none;
+    text-decoration: none;
 }
 a.link_clore_seance, a.link_clore_seance:hover {
-        background-image: url(../../../img/icons/close_seance.png);
-        background-repeat: no-repeat;
-        background-position: top;
-        padding: 0 0 32px 32px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/close_seance.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    padding: 0 0 32px 32px;
+    text-decoration: none;
 }
 
 a.link_delib {
@@ -379,7 +377,7 @@ a.link_pvcomplet, a.link_pvcomplet:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_pvsommaire, a.link_pvsommaire:hover {
@@ -387,38 +385,38 @@ a.link_pvsommaire, a.link_pvsommaire:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 a.link_signer, a.link_signer:hover {
-        background-image: url(../../../img/icons/signer.png);
-        background-repeat: no-repeat;
-        background-position: top;
-        padding: 0 0 32px 32px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/signer.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    padding: 0 0 32px 32px;
+    text-decoration: none;
 }
 
 a.link_sendtoged, a.link_sendtoged:hover {
-        background-image: url(../../../img/icons/archiver.png);
-        background-repeat: no-repeat;
-        background-position: top;
-        padding: 0 0 32px 32px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/archiver.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    padding: 0 0 32px 32px;
+    text-decoration: none;
 }
 
 a.link_tdt, a.link_tdt:hover {
-        background-image: url(../../../img/icons/tdt.png);
-        background-repeat: no-repeat;
-        background-position: top;
-        padding: 0 0 32px 32px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/tdt.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    padding: 0 0 32px 32px;
+    text-decoration: none;
 }
 
 a.link_tdt_transmit, a.link_tdt_transmit:hover {
-        background-image: url(../../../img/icons/tdt_transmit.png);
-        background-repeat: no-repeat;
-        background-position: top;
-        padding: 0 0 32px 32px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/tdt_transmit.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    padding: 0 0 32px 32px;
+    text-decoration: none;
 }
 
 a.link_pdf ,a.link_pdf:hover {
@@ -426,7 +424,7 @@ a.link_pdf ,a.link_pdf:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_ordre_jour, a.link_ordre_jour:hover {
@@ -437,11 +435,11 @@ a.link_ordre_jour, a.link_ordre_jour:hover {
         text-decoration: none;
 }
 a.link_ordre_jour_unique, a.link_ordre_jour_unique:hover {
-        background-image: url(../../../img/icons/ordre_jour2.png);
-        background-repeat: no-repeat;
-        background-position: top;
-        padding: 0 0 32px 32px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/ordre_jour2.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    padding: 0 0 32px 32px;
+    text-decoration: none;
 }
 
 a.link_lister_presents {
@@ -456,21 +454,21 @@ a.link_voter, a.link_voter:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 a.link_classer_odj, a.link_classer_odj:hover {
-        background-image: url(../../../img/icons/odj.png);
-        background-repeat: no-repeat;
-        background-position: top;
-        padding: 0 0 32px 32px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/odj.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    padding: 0 0 32px 32px;
+    text-decoration: none;
 }
 a.link_debat, a.link_debat:hover {
 	background-image: url(../../../img/icons/saisir.png);
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_commentaire_seance, a.link_commentaire_seance:hover {
@@ -478,7 +476,7 @@ a.link_commentaire_seance, a.link_commentaire_seance:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_secretaire, a.link_secretaire:hover {
@@ -486,7 +484,7 @@ a.link_secretaire, a.link_secretaire:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_voir, a.link_voir:hover {
@@ -494,7 +492,7 @@ a.link_voir, a.link_voir:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0px 0px 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_modifier, a.link_modifier:hover {
@@ -502,7 +500,7 @@ a.link_modifier, a.link_modifier:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_modifier_back,a.link_modifier_back:hover {
@@ -510,7 +508,7 @@ a.link_modifier_back,a.link_modifier_back:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_modifier_left {
@@ -525,7 +523,7 @@ a.link_supprimer, a.link_supprimer:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 6px 0 14px 29px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_supprimer_back, a.link_supprimer_back:hover {
@@ -533,7 +531,7 @@ a.link_supprimer_back, a.link_supprimer_back:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 38px 38px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_circuit, a.link_circuit:hover {
@@ -541,7 +539,7 @@ a.link_circuit, a.link_circuit:hover {
 	background-repeat: no-repeat;
 	background-position: top;
 	padding: 0 0 38px 38px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_projet,a.link_projet:hover {
@@ -549,7 +547,7 @@ a.link_projet,a.link_projet:hover {
 	background-repeat: no-repeat;
 	background-position: top left ;
 	padding: 0 0 10px 22px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_synthese,a.link_synthese:hover {
@@ -557,7 +555,7 @@ a.link_synthese,a.link_synthese:hover {
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_deliberation,a.link_deliberation:hover {
@@ -565,7 +563,7 @@ a.link_deliberation,a.link_deliberation:hover {
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_add,a.link_add:hover {
@@ -573,7 +571,7 @@ a.link_add,a.link_add:hover {
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_traiter, a.link_traiter:hover {
@@ -581,15 +579,15 @@ a.link_traiter, a.link_traiter:hover {
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 a.link_validerenurgence, a.link_validerenurgence:hover {
 /*      background-image: url(../../../img/icons/valider.png); */
-        background-image: url(../../../img/icons/apply.png); 
-        background-repeat: no-repeat;
-        background-position: top left;
-        padding: 0 0 32px 32px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/apply.png);
+    background-repeat: no-repeat;
+    background-position: top left;
+    padding: 0 0 32px 32px;
+    text-decoration: none;
 }
 a.link_addUsers {
 	background-image: url(../../../img/icons/identity.png);
@@ -603,14 +601,14 @@ a.link_convocation, a.link_convocation:hover {
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 a.link_convocation_unique, a.link_convocation_unique:hover {
-        background-image: url(../../../img/icons/mail2.png);
-        background-repeat: no-repeat;
-        background-position: top left;
-        padding: 0 0 32px 32px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/mail2.png);
+    background-repeat: no-repeat;
+    background-position: top left;
+    padding: 0 0 32px 32px;
+    text-decoration: none;
 }
 
 a.link_convocation_anonyme {
@@ -621,11 +619,11 @@ a.link_convocation_anonyme {
 }
 
 a.link_jump, a.link_jump:hover {
-        background-image: url(../../../img/icons/jump.png);
-        background-repeat: no-repeat;
-        background-position: top left;
-        padding: 0 0 32px 32px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/jump.png);
+    background-repeat: no-repeat;
+    background-position: top left;
+    padding: 0 0 32px 32px;
+    text-decoration: none;
 }
 
 a.link_monter, a.link_monter:hover {
@@ -633,7 +631,7 @@ a.link_monter, a.link_monter:hover {
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_descendre, a.link_descendre:hover {
@@ -641,7 +639,7 @@ a.link_descendre, a.link_descendre:hover {
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 10px 22px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_triasc {
@@ -714,15 +712,15 @@ a.link_inserer_logo, a.link_inserer_logo:hover {
 	background-position: top left;
 	padding-left: 25px;
 	padding-bottom: 10px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_param_mail {
-        background-image: url(../../../img/icons/param_mails.png);
-        background-repeat: no-repeat;
-        background-position: top left;
-        padding-left: 25px;
-        padding-bottom: 10px;
+    background-image: url(../../../img/icons/param_mails.png);
+    background-repeat: no-repeat;
+    background-position: top left;
+    padding-left: 25px;
+    padding-bottom: 10px;
 }
 
 a.link_annexe {
@@ -737,15 +735,15 @@ a.link_donnerAvis, a.link_donnerAvis:hover {
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
-        text-decoration: none;
+    text-decoration: none;
 }
 
 a.link_actes, a.link_actes:hover {
-        background-image: url(../../../img/icons/actes.png);
-        background-repeat: no-repeat;
-        background-position: top left;
-        padding: 0 0 10px 22px;
-        text-decoration: none;
+    background-image: url(../../../img/icons/actes.png);
+    background-repeat: no-repeat;
+    background-position: top left;
+    padding: 0 0 10px 22px;
+    text-decoration: none;
 }
 
 a.link_valider_avec_border {
@@ -777,31 +775,31 @@ a.link_refuser_avec_border {
 }
 
 a.link_retour_avec_border {
-        color: black;
-        text-decoration: none;
-        font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-        border-top: 1px solid #e0ef90;
-        border-right: 1px solid #e0ef90;
-        border-left: 1px solid #e0ef90;
-        border-bottom: none;
-        background-image: url(../../../img/icons/retour.png);
-        background-repeat: no-repeat;
-        background-position: top left;
-        padding: 10px 10px 10px 36px;
+    color: black;
+    text-decoration: none;
+    font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+    border-top: 1px solid #e0ef90;
+    border-right: 1px solid #e0ef90;
+    border-left: 1px solid #e0ef90;
+    border-bottom: none;
+    background-image: url(../../../img/icons/retour.png);
+    background-repeat: no-repeat;
+    background-position: top left;
+    padding: 10px 10px 10px 36px;
 }
 
 a.generer_convocation {
-        color: black;
-        text-decoration: none;
-        font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-        border-top: 1px solid #e0ef90;
-        border-right: 1px solid #e0ef90;
-        border-left: 1px solid #e0ef90;
-        border-bottom: none;
-        background-image: url(../../../img/icons/mail.png);
-        background-repeat: no-repeat;
-        background-position: top left;
-        padding: 10px 10px 10px 36px;
+    color: black;
+    text-decoration: none;
+    font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+    border-top: 1px solid #e0ef90;
+    border-right: 1px solid #e0ef90;
+    border-left: 1px solid #e0ef90;
+    border-bottom: none;
+    background-image: url(../../../img/icons/mail.png);
+    background-repeat: no-repeat;
+    background-position: top left;
+    padding: 10px 10px 10px 36px;
 }
 
 a.link_commentaire_avec_border {
@@ -829,22 +827,22 @@ a.link_modifier_avec_border {
 	background-image: url(../../../img/icons/klpq.png);
 	background-repeat: no-repeat;
 	background-position: top left;
-        background-size: 24px;
+    background-size: 24px;
 	padding: 4px 4px 14px 36px;
 }
 
 a.link_rebond_avec_border {
-        color: black;
-        text-decoration: none;
-        font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-        border-top: 1px solid #e0ef90;
-        border-right: 1px solid #e0ef90;
-        border-left: none;
-        border-bottom: none;
-        background-image: url(../../../img/icons/rebond.png);
-        background-repeat: no-repeat;
-        background-position: top left;
-        padding: 4px 4px 4px 25px;
+    color: black;
+    text-decoration: none;
+    font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+    border-top: 1px solid #e0ef90;
+    border-right: 1px solid #e0ef90;
+    border-left: none;
+    border-bottom: none;
+    background-image: url(../../../img/icons/rebond.png);
+    background-repeat: no-repeat;
+    background-position: top left;
+    padding: 4px 4px 4px 25px;
 }
 
 .bt_save {
@@ -940,7 +938,7 @@ a.link_rebond_avec_border {
 
 }
 .actions {
-		text-align: center;
+    text-align: center;
 }
 
 .imbrique {
@@ -1010,7 +1008,7 @@ ul.actions, .actions ul {
 	text-align: center;
 }
 #actions_fiche .btn {
-        margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 #actions_fiche li {
@@ -1060,7 +1058,7 @@ ul.actions, .actions ul {
 }
 
 #menuPrincipal li.menuCourant {
-        background-color: #efefef;
+    background-color: #efefef;
 	border-left: 1px solid #888888;
 	border-right: 1px solid #888888;
 	-moz-opacity:0.5;
@@ -1165,13 +1163,13 @@ div.fckEditorProjet {
 	float: left;
 	width: 80%;
 	padding: 2px;
-        text-indent: 0;
+    text-indent: 0;
 }
 
 /* Mise en forme des onglets */
 .onglet {
 	font: normal normal 14px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-        background : #f8fddd;
+    background : #f8fddd;
 	border-bottom:  3px solid #e0ef90;
 	margin-top: 5px;
 	margin-bottom: 20px;
@@ -1182,7 +1180,7 @@ div.fckEditorProjet {
 	text-decoration: none;
 }
 .onglet a.ongletCourant{
-        font: 16px  "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+    font: 16px  "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	background: #fff;
 	padding-bottom: 4px;
@@ -1216,149 +1214,149 @@ fieldset#info {
 }
 /* Filtre */
 #filtreForm div {
-        margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 div.filtre {
-        margin: 0;
+    margin: 0;
 }
 div.filtreFonc {
-        float: left;
-        width: 10%;
-        min-width: 84px;
-        margin: 0;
-        margin-bottom: 10px;
+    float: left;
+    width: 10%;
+    min-width: 84px;
+    margin: 0;
+    margin-bottom: 10px;
 }
 div.filtreCriteres {
-      float: right;
-      background: #e0ef90;
-      width: 88%;
-      margin: 0;
-      border-bottom: 2px solid grey;
-      border-left: 1px solid grey;
-      border-right: 1px solid grey;
+  float: right;
+  background: #ddd;
+  width: 88%;
+  margin: 0;
+    border: 1px solid grey;
+    border-top: 0;
+    border-radius: 0 0 5px 5px;
 }
 
 /* Debugging */
 
 .cake-sql-log table {
 	background: #f4f4f4;
-        position: fixed;
+    position: fixed;
 }
 .cake-sql-log td {
 	padding: 4px 8px;
 	text-align: left;
 }
 pre {
-        color: #000;
-        background: #f0f0f0;
-        padding: 1em;
+    color: #000;
+    background: #f0f0f0;
+    padding: 1em;
 }
 pre.cake-debug {
-        background: #ffcc00;
-        font-size: 120%;
-        line-height: 140%;
-        margin-top: 1em;
-        overflow: auto;
-        position: relative;
+    background: #ffcc00;
+    font-size: 120%;
+    line-height: 140%;
+    margin-top: 1em;
+    overflow: auto;
+    position: relative;
 }
 div.cake-stack-trace {
-        background: #fff;
-        border: 4px dotted #ffcc00;
-        color: #333;
-        margin: 0px;
-        padding: 6px;
-        font-size: 120%;
-        line-height: 140%;
-        overflow: auto;
-        position: relative;
+    background: #fff;
+    border: 4px dotted #ffcc00;
+    color: #333;
+    margin: 0px;
+    padding: 6px;
+    font-size: 120%;
+    line-height: 140%;
+    overflow: auto;
+    position: relative;
 }
 div.cake-code-dump pre {
-        position: relative;
-        overflow: auto;
+    position: relative;
+    overflow: auto;
 }
 div.cake-stack-trace pre, div.cake-code-dump pre {
-        color: #000;
-        background-color: #F0F0F0;
-        margin: 0px;
-        padding: 1em;
-        overflow: auto;
+    color: #000;
+    background-color: #F0F0F0;
+    margin: 0px;
+    padding: 1em;
+    overflow: auto;
 }
 div.cake-code-dump pre, div.cake-code-dump pre code {
-        clear: both;
-        font-size: 12px;
-        line-height: 15px;
-        margin: 4px 2px;
-        padding: 4px;
-        overflow: auto;
+    clear: both;
+    font-size: 12px;
+    line-height: 15px;
+    margin: 4px 2px;
+    padding: 4px;
+    overflow: auto;
 }
 div.cake-code-dump span.code-highlight {
-        background-color: #ff0;
-        padding: 4px;
+    background-color: #ff0;
+    padding: 4px;
 }
 div.code-coverage-results div.code-line {
-        padding-left:5px;
-        display:block;
-        margin-left:10px;
+    padding-left:5px;
+    display:block;
+    margin-left:10px;
 }
 div.code-coverage-results div.uncovered span.content {
-        background:#ecc;
+    background:#ecc;
 }
 div.code-coverage-results div.covered span.content {
-        background:#cec;
+    background:#cec;
 }
 div.code-coverage-results div.ignored span.content {
-        color:#aaa;
+    color:#aaa;
 }
 div.code-coverage-results span.line-num {
-        color:#666;
-        display:block;
-        float:left;
-        width:20px;
-        text-align:right;
-        margin-right:5px;
+    color:#666;
+    display:block;
+    float:left;
+    width:20px;
+    text-align:right;
+    margin-right:5px;
 }
 div.code-coverage-results span.line-num strong {
-        color:#666;
+    color:#666;
 }
 div.code-coverage-results div.start {
-        border:1px solid #aaa;
-        border-width:1px 1px 0px 1px;
-        margin-top:30px;
-        padding-top:5px;
+    border:1px solid #aaa;
+    border-width:1px 1px 0px 1px;
+    margin-top:30px;
+    padding-top:5px;
 }
 div.code-coverage-results div.end {
-        border:1px solid #aaa;
-        border-width:0px 1px 1px 1px;
-        margin-bottom:30px;
-        padding-bottom:5px;
+    border:1px solid #aaa;
+    border-width:0px 1px 1px 1px;
+    margin-bottom:30px;
+    padding-bottom:5px;
 }
 div.code-coverage-results div.realstart {
-        margin-top:0px;
+    margin-top:0px;
 }
 div.code-coverage-results p.note {
-        color:#bbb;
-        padding:5px;
-        margin:5px 0 10px;
-        font-size:10px;
+    color:#bbb;
+    padding:5px;
+    margin:5px 0 10px;
+    font-size:10px;
 }
 div.code-coverage-results span.result-bad {
-        color: #a00;
+    color: #a00;
 }
 div.code-coverage-results span.result-ok {
-        color: #fa0;
+    color: #fa0;
 }
 div.code-coverage-results span.result-good {
-        color: #0a0;
+    color: #0a0;
 }
 tr.altrow {
-        background: #d5d5d5;
+    background: #d5d5d5;
 }
 tr.aSupprimer {
-        background: red;
+    background: red;
 }
 tr.aModifier {
-        background: orange;
+    background: orange;
 }
 div.action {
 	padding:5px;
@@ -1366,23 +1364,15 @@ div.action {
 	height: 25px;
 }
 div.aSupprimer {
-        background: red;
+    background: red;
 }
 div.aModifier {
-        background: orange;
+    background: orange;
 }
 
 /* mise en forme des div ouvrables */
 
-.ouvrable {
-        margin-bottom : 15px;
-}
-.ouvrable-entete img {
-        padding-right : 10px;
-}
-.ouvrable-corps {
-        overflow: auto;
-        padding: 5px;
+.ouvrable { 5px;
 }
 
 .autocomplete {
