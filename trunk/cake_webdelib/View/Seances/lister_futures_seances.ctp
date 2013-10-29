@@ -28,7 +28,7 @@
        echo $this->Html->tag('tr', null, $rowClass); 
        $numLigne++;
 ?>
-<?php     if (!$endDiv) echo("<td>".$this->Form->checkbox('Seance.id_'.$seance['Seance']['id'], array('checked'=> false))."</td>"); ?>
+<?php     if (!$endDiv) echo("<td>".$this->Form->checkbox('Seance.id_'.$seance['Seance']['id'], array('checked'=> false, 'class' => 'choix_seance_generer'))."</td>"); ?>
 
                 <td>
 <?php
@@ -182,8 +182,6 @@
                                              'escape' => false,
                                              'alt'=>'Clôture de la séance du '.$seance['Seance']['date']),  
                                        'Etes-vous sur de vouloir clôturer la séance ?', false);
-
-
 			?>
 		</td>
 	</tr>
@@ -195,7 +193,7 @@
     if (!$endDiv)  {
         if(isset($models) && !empty($models)){
         echo $this->Form->input('Seance.model_id', array('options' => $models, 'label' => 'Modèle')); 
-        echo $this->Form->button('<i class="icon-cogs"></i> Générer', array('type'=>'submit', 'class'=>'btn btn-primary')); 
+        echo $this->Form->button('<i class="icon-cogs"></i> Générer', array('type'=>'submit', 'class'=>'btn btn-primary', 'title' => "Lancer la génération multi-séances (Attention : l'exécution peut être longue)", 'id' => 'generer_multi_seance'));
         }
     }    
 ?>
@@ -226,6 +224,23 @@ function avantGeneration(message) {
 	} else
 		return false;
 }
+
+$( document ).ready(function(){
+    $('input.choix_seance_generer').change(function(){
+        if (!$('input.choix_seance_generer').prop('checked')){
+            $('#generer_multi_seance').addClass('disabled');
+            $('#generer_multi_seance').click(function(){
+                return false;
+            })
+        }else{
+            $('#generer_multi_seance').removeClass('disabled');
+            $('#generer_multi_seance').click(function(){
+                $('form#SeanceListerFuturesSeancesForm').submit();
+            })
+        }
+    });
+    $('input.choix_seance_generer').change();
+});
 
 </script>
 <?php
