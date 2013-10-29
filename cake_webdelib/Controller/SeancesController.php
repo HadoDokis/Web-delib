@@ -274,7 +274,7 @@ class SeancesController extends AppController {
 			}
 			$result = $this->_stockDelibs($seance_id,  $isArrete, $compteur_id);
 		}
-		if ($result || $this->data['Typeseance']['action']== 1) {
+		if ($result || $this->data['Typeseance']['action'] == 1) {
 			$result = $this->_stockDelibs($seance_id,  $isArrete, $compteur_id);
 			$this->Seance->id = $seance_id;
 			if ($this->Seance->saveField('traitee', 1)){
@@ -459,12 +459,15 @@ class SeancesController extends AppController {
 		foreach ($delibs as $delib_id) {
 			$deliberations[] = $this->Deliberation->find('first',
 					array('conditions' => array('Deliberation.id'=>$delib_id),
-							'contain'    => array('Theme.libelle', 'Rapporteur.nom', 'Rapporteur.prenom', 'Service.libelle'),
-							'fields'    => array( 'Deliberation.objet_delib',
-									'Deliberation.titre',
-									'Deliberation.id',
-									'Deliberation.etat',
-									'Deliberation.typeacte_id') ));
+							'contain' => array('Theme.libelle', 'Rapporteur.nom', 'Rapporteur.prenom', 'Service.libelle'),
+							'fields' => array(
+                                'Deliberation.objet_delib',
+                                'Deliberation.titre',
+                                'Deliberation.id',
+                                'Deliberation.etat',
+                                'Deliberation.typeacte_id',
+                                'Deliberation.num_delib'
+                            )));
 
 		}
 		for ($i=0; $i<count($deliberations); $i++){
