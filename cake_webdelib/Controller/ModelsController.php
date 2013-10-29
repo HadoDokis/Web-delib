@@ -272,7 +272,7 @@ class ModelsController extends AppController {
 		if ($seance_id != "null") {
                         if ($progress) {
                             $this->Progress->start(200, 100,200, '#FFCC00','#006699');
-                            $this->Progress->at(0, 'Démmarage de la génération');
+                            $this->Progress->at(0, 'Démarrage de la génération');
                         }
 			$projets  =  $this->Seance->getDeliberations($seance_id);
 			$blocProjets = new GDO_IterationType("Projets");
