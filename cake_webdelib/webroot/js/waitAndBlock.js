@@ -5,11 +5,15 @@
  */
 $(document).ready(function() {
     $("a.delib_pdf").attendable({message: 'Veuillez patienter pendant la génération du document'});
+    $("a.link_clore_seance").attendable({message: 'Veuillez patienter pendant la clotûre de la séance'});
 });
 
 function pauseWhileDownload(elt) {
     var token = setToken();
-    $(elt).attr('href', $(elt).attr('href') + token);
+    //Ajout du num de cookie en dernier argument url
+    if ($(elt).attr('href')){
+        $(elt).attr('href', $(elt).attr('href')+ "/" + token);
+    }
     blockUI(elt, token); //Veuillez patienter pendant la génération du document
 }
 
@@ -26,6 +30,10 @@ function expireCookie(cName) {
             new Date(0).toUTCString();
 }
 
+/**
+ * génère un numéro unique (token) à partir du temps courant
+ * @returns {number} Token
+ */
 function setToken() {
     var downloadToken = new Date().getTime();
     return downloadToken;
@@ -48,9 +56,11 @@ function blockUI(elt, downloadToken) {
 function unblockUI(elt, token) {
     window.clearInterval(downloadTimer);
     expireCookie("downloadToken");
-    //Suppression du token
-    var href = $(elt).attr('href');
-    $(elt).attr('href', href.replace(token, ''));
+    //Suppression du token de la fin d'url
+    if ($(elt).attr('href')){
+        var href = $(elt).attr('href');
+        $(elt).attr('href', href.replace(token, ''));
+    }
     $("#overlay").remove();
     $("#modalAttendable").remove();
 }
