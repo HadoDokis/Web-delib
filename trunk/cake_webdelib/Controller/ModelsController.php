@@ -527,10 +527,8 @@ class ModelsController extends AppController {
             $this->set('listFiles', $listFiles);
             $this->set('format', $format);
             $lastUrl = $this->Session->read('user.User.lasturl');
-            $this->log($lastUrl, 'debug');
             if (strpos($lastUrl, 'getGeneration'))
                 $lastUrl = $this->Session->read('user.User.myUrl');
-
             $this->set('urlRetour', $lastUrl);
             $this->render('generer');
         }
