@@ -1,4 +1,8 @@
 <?php
+/**
+ * Class Deliberation
+ * @property Deliberation $Deliberation
+ */
 class Deliberation extends AppModel {
 
 	var $name = 'Deliberation';
@@ -434,7 +438,15 @@ class Deliberation extends AppModel {
                 return true;
 	}
 
-	function genererRecherche($projets, $model_id=1, $format=0, $multiSeances=array(), $conditions=array() ){
+    /**
+     * Transforme le résultat d'une recherche des projets en document par gedooo à partir d'un modèle
+     * @param $projets
+     * @param int $model_id
+     * @param int $format
+     * @param array $multiSeances
+     * @param array $conditions
+     */
+    function genererRecherche($projets, $model_id=1, $format=0, $multiSeances=array(), $conditions=array() ){
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
@@ -452,7 +464,7 @@ class Deliberation extends AppModel {
 			$sMimeType = "application/pdf";
 			$format    = "pdf";
 		}
-		elseif ($format ==1) {
+		elseif ($format == 1) {
 			$sMimeType = "application/vnd.oasis.opendocument.text";
 			$format    = "odt";
 		}
@@ -474,23 +486,25 @@ class Deliberation extends AppModel {
 
 		if (empty($multiSeances)) {
 			$nbProjets = count($projets);
-                        if ($nbProjets > 1) {
-                                $blocProjets = new GDO_IterationType("Projets");
-                        }
-                        foreach ($projets as $projet) {
-                                $oDevPart = new GDO_PartType();
-                                $this->makeBalisesProjet($projet,  $oDevPart);
-                                if ($nbProjets > 1)
-                                        $blocProjets->addPart($oDevPart);
-                        }
-                        if ( $nbProjets > 1)
-                                $oMainPart->addElement($blocProjets);
-                        else
-                                $oMainPart =  $oDevPart;
+
+            if ($nbProjets > 1)
+                $blocProjets = new GDO_IterationType("Projets");
+
+            foreach ($projets as $projet) {
+                $oDevPart = new GDO_PartType();
+                $this->makeBalisesProjet($projet, $oDevPart);
+                if ($nbProjets > 1)
+                    $blocProjets->addPart($oDevPart);
+            }
+
+            if ($nbProjets > 1)
+                $oMainPart->addElement($blocProjets);
+            else
+                $oMainPart =  $oDevPart;
 		}
 		else {
 			$seances = new GDO_IterationType("Seances");
-			foreach($multiSeances as $seance_id)
+			foreach ($multiSeances as $seance_id)
 				$seances->addPart($this->Seance->makeBalise($seance_id, null, true, $conditions));
 			$oMainPart->addElement($seances);
 		}
@@ -504,13 +518,10 @@ class Deliberation extends AppModel {
 		header("Content-type: $sMimeType");
 		header("Content-Disposition: attachment; filename=recherche.$format");
 		die($content);
-
-		 
-
 	}
 
-	function  makeBalisesProjet ($delib, &$oMainPart, $exceptSeance=false, $seance_id=null)  {
-
+	function makeBalisesProjet ($delib, &$oMainPart, $exceptSeance=false)
+    {
 		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/GedoooComponent.php');
 		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
 		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/ConversionComponent.php');
@@ -527,21 +538,21 @@ class Deliberation extends AppModel {
 		if (!$exceptSeance) {
 			$delibseances = $this->getSeancesid($delib['Deliberation']['id']);
 			$oMainPart->addElement(new GDO_FieldType('nombre_seance', count($delibseances), 'text'));
-                        $oMainPart->addElement(new GDO_FieldType('identifiant_projet', $delib['Deliberation']['id'],       'text'));
-                        if (count($delibseances) == 1) {
+            $oMainPart->addElement(new GDO_FieldType('identifiant_projet', $delib['Deliberation']['id'], 'text'));
+            if (count($delibseances) == 1) {
 				$this->Seance->makeBalise($delibseances[0], $oMainPart);
-                                // recupération de la position de la séance délibérante comme position principale
+                // recupération de la position de la séance délibérante comme position principale
 				$position = $this->getPosition($delib['Deliberation']['id'], $delibseances[0]);
 				$seances = new GDO_IterationType("Seances");
 				$seances->addPart($this->Seance->makeBalise($delibseances[0]));
 				$oMainPart->addElement($seances);
 			}
-			elseif(count($delibseances) >1) {
+			elseif (count($delibseances) > 1) {
 				$seance_deliberante = $this->Seance->getSeanceDeliberante($delibseances);
-                                // recupération de la position de la séance délibérante comme position principale
-                                $position = $this->getPosition($delib['Deliberation']['id'], $seance_deliberante);
-                                
-                                $this->Seance->makeBalise($seance_deliberante, $oMainPart);
+                // recupération de la position de la séance délibérante comme position principale
+                $position = $this->getPosition($delib['Deliberation']['id'], $seance_deliberante);
+
+                $this->Seance->makeBalise($seance_deliberante, $oMainPart);
 
 				$seances = new GDO_IterationType("Seances");
 				foreach($delibseances as $key => $delibseances_seance_id) {
@@ -557,16 +568,16 @@ class Deliberation extends AppModel {
 			$oMainPart->addElement(new GDO_FieldType('position_projet', $delib['Deliberationseance']['position'], 'text'));
 		}*/
                 //Pour les multi-projets
-                if(isset($delib['Deliberationseance']) && isset($delib['Deliberationseance']['position']))
-                        $position=$delib['Deliberationseance']['position'];
-                
-                if(isset($position))
-                $oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
-		$oMainPart->addElement(new GDO_FieldType('titre_projet',   ($delib['Deliberation']['titre']),    'lines'));
-                if (empty($delib['Deliberation']['is_multidelib']))
-                    $oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet']),     'lines'));
+        if(isset($delib['Deliberationseance']) && isset($delib['Deliberationseance']['position']))
+            $position=$delib['Deliberationseance']['position'];
+
+        if(isset($position))
+            $oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
+        $oMainPart->addElement(new GDO_FieldType('titre_projet',   ($delib['Deliberation']['titre']),    'lines'));
+        if (empty($delib['Deliberation']['is_multidelib']))
+            $oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet']),     'lines'));
 		else
-                    $oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet_delib']),     'lines'));
+            $oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet_delib']),     'lines'));
 		$oMainPart->addElement(new GDO_FieldType('libelle_projet', ($delib['Deliberation']['objet']),      'lines'));
 		$oMainPart->addElement(new GDO_FieldType('objet_delib',    ($delib['Deliberation']['objet_delib']), 'lines'));
 		$oMainPart->addElement(new GDO_FieldType('libelle_delib',  ($delib['Deliberation']['objet_delib']), 'lines'));
@@ -574,8 +585,8 @@ class Deliberation extends AppModel {
 		$oMainPart->addElement(new GDO_FieldType('etat_projet',                 $delib['Deliberation']['etat'],       'text'));
 		$oMainPart->addElement(new GDO_FieldType('numero_deliberation',         $delib['Deliberation']['num_delib'],'text'));
 		$oMainPart->addElement(new GDO_FieldType('numero_acte',         $delib['Deliberation']['num_delib'],'text'));
-                $oMainPart->addElement(new GDO_FieldType('classification_deliberation', $delib['Deliberation']['num_pref'], 'text'));
-                $oMainPart->addElement(new GDO_FieldType("date_envoi_signature", $this->Date->frDate($delib['Deliberation']['date_envoi_signature']), 'date'));
+        $oMainPart->addElement(new GDO_FieldType('classification_deliberation', $delib['Deliberation']['num_pref'], 'text'));
+        $oMainPart->addElement(new GDO_FieldType("date_envoi_signature", $this->Date->frDate($delib['Deliberation']['date_envoi_signature']), 'date'));
 
 		$this->Service->makeBalise($oMainPart, $delib['Deliberation']['service_id']);
 		// Informations sur la nature
@@ -604,9 +615,9 @@ class Deliberation extends AppModel {
 		$oMainPart->addElement(new GDO_FieldType('commentaire_vote', $delib['Deliberation']['vote_commentaire'], 'lines'));
 
 		$coms = $this->Commentaire->find('all',
-				array('conditions' => array('Commentaire.delib_id' => $delib['Deliberation']['id']),
-						'fields'     => array('texte', 'commentaire_auto'),
-						'recursive'  => -1));
+				array( 'conditions' => array('Commentaire.delib_id' => $delib['Deliberation']['id']),
+						'fields'    => array('texte', 'commentaire_auto'),
+						'recursive' => -1));
 
 		if (!empty($coms)) {
 			$commentaires = new GDO_IterationType("Commentaires");
@@ -751,69 +762,74 @@ class Deliberation extends AppModel {
 						'application/vnd.oasis.opendocument.text',
 						'binary',
 						$delib['Deliberation']['texte_projet']));
-                        }else $oMainPart->addElement(new GDO_FieldType("texte_projet",      "",    "text"));
+                        }else $oMainPart->addElement(new GDO_FieldType("texte_projet", "",    "text"));
 			if (!empty($delib['Deliberation']['deliberation'])) {
 				$oMainPart->addElement(new GDO_ContentType('texte_deliberation',
 						'td.odt',
 						'application/vnd.oasis.opendocument.text' ,
 						'binary',
 						$delib['Deliberation']['deliberation']));
-			}else $oMainPart->addElement(new GDO_FieldType("texte_deliberation",      "",    "text"));
+			}else $oMainPart->addElement(new GDO_FieldType("texte_deliberation", "",    "text"));
 			if (!empty($delib['Deliberation']['texte_synthese'])) {
 				$oMainPart->addElement(new GDO_ContentType('note_synthese',
 						'ns.odt',
 						'application/vnd.oasis.opendocument.text' ,
 						'binary',
 						$delib['Deliberation']['texte_synthese']));
-			}else $oMainPart->addElement(new GDO_FieldType("note_synthese",      "",    "text"));
+			}else $oMainPart->addElement(new GDO_FieldType("note_synthese", "",    "text"));
 			if (!empty($delib['Deliberation']['debat'])) {
 				$oMainPart->addElement(new GDO_ContentType('debat_deliberation',
 						'debat.odt',
 						'application/vnd.oasis.opendocument.text' ,
 						'binary',
 						$delib['Deliberation']['debat']));
-			}else $oMainPart->addElement(new GDO_FieldType("debat_deliberation",      "",    "text"));
+			}else $oMainPart->addElement(new GDO_FieldType("debat_deliberation", "", "text"));
 			if (!empty($delib['Deliberation']['commission'])) {
 				$oMainPart->addElement(new GDO_ContentType('debat_commission',
 						'debat_commission.odt',
 						'application/vnd.oasis.opendocument.text',
 						'binary',
 						$delib['Deliberation']['commission']));
-			}else $oMainPart->addElement(new GDO_FieldType("debat_commission",      "",    "text"));
+			}else $oMainPart->addElement(new GDO_FieldType("debat_commission", "", "text"));
 
 		}
-                
-		$anns = $this->Annex->find('all', array('conditions' =>  array(
-				'Annex.foreign_key' => $delib['Deliberation']['id']),
-				'fields' => array('Annex.id', 'Annex.filetype', 'Annex.filename', 'Annex.titre', 'Annex.data'), 
-                                'order' => array('Annex.id' => 'ASC'),
-				'recursive' => -1));
-                //$this->log('annexes=>'.var_export( $annexes, true),'debug');
+
+		$anns = $this->Annex->find('all', array(
+            'conditions' =>  array (
+				'Annex.foreign_key' => $delib['Deliberation']['id']
+            ),
+            'fields' => array('Annex.id', 'Annex.filetype', 'Annex.filename', 'Annex.titre', 'Annex.data'),
+                            'order' => array('Annex.id' => 'ASC'),
+            'recursive' => -1));
+            //$this->log('annexes=>'.var_export( $annexes, true),'debug');
                 
 		$oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($anns), 'text'));
+
 		@$annexes =  new GDO_IterationType("Annexes");
-		foreach($anns as $key => $annexe) {
-		        $oDevPart = new GDO_PartType();
-			$oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
-			if (($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {
-			    $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
-			    $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
-			 			'application/vnd.oasis.opendocument.text',
-						'binary',
-						$annexe['Annex']['data']));
+
+        foreach($anns as $key => $annexe) {
+            $oDevPart = new GDO_PartType();
+            $oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
+            if (($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {
+                $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
+                $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
+                        'application/vnd.oasis.opendocument.text',
+                        'binary',
+                        $annexe['Annex']['data']));
                             //file_put_contents('/tmp/Annexe_'.$annexe_id.'.odt', $annexe['Annex']['data']);
-			}elseif (($annexe['Annex']['filetype'] == "application/pdf") && !empty($annexe['Annex']['data'])) {
-			    $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
-			    $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
-			 			'application/vnd.oasis.opendocument.text',
-						'binary',
-						$annexe['Annex']['data']));
+            } elseif (($annexe['Annex']['filetype'] == "application/pdf") && !empty($annexe['Annex']['data'])) {
+                $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
+                $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
+                        'application/vnd.oasis.opendocument.text',
+                        'binary',
+                        $annexe['Annex']['data']));
                             //file_put_contents('/tmp/Annexe_'.$annexe_id.'.odt', $annexe['Annex']['data']);
-			}
-                        $annexes->addPart($oDevPart);
-                        unset ($oDevPart);
-		}
-                unset ($anns);
+            }
+            $annexes->addPart($oDevPart);
+            unset ($oDevPart);
+        }
+
+        unset ($anns);
 		@$oMainPart->addElement($annexes);
 
 		//LISTE DES PRESENCES...
@@ -828,7 +844,7 @@ class Deliberation extends AppModel {
 		$acteurs_sans_participation = array();
 
 		$acteurs = $this->Listepresence->find('all',
-				array ('conditions' => array("delib_id" => $delib['Deliberation']['id']),
+				array ( 'conditions' => array("delib_id" => $delib['Deliberation']['id']),
 						'contain'   => array('Acteur', 'Mandataire', 'Suppleant'),
 						'order' => 'Acteur.position ASC'));
 		if (!empty($acteurs)) {
@@ -848,10 +864,10 @@ class Deliberation extends AppModel {
 							'note_acteur' => $acteur['Acteur']['note']);
                                 
 				if ( $acteur['Listepresence']['present'] == true && empty($acteur['Listepresence']['suppleant_id'])){
-                                    $acteurs_presents[] = $aActeur;
+                    $acteurs_presents[] = $aActeur;
 				}
-                                elseif(($acteur['Listepresence']['present'] == true) && !empty($acteur['Listepresence']['suppleant_id'])) {
-                                    $aSuppleant=array('nom_acteur' => $acteur['Suppleant']['nom'],
+                elseif(($acteur['Listepresence']['present'] == true) && !empty($acteur['Listepresence']['suppleant_id'])) {
+                    $aSuppleant=array('nom_acteur' => $acteur['Suppleant']['nom'],
 							'prenom_acteur' => $acteur['Suppleant']['prenom'],
 							'salutation_acteur'=> $acteur['Suppleant']['salutation'],
 							'titre_acteur'=> $acteur['Suppleant']['titre'],
@@ -864,27 +880,27 @@ class Deliberation extends AppModel {
 							'telfixe_acteur' => $acteur['Suppleant']['telfixe'],
 							'telmobile_acteur' => $acteur['Suppleant']['telmobile'],
 							'note_acteur' => $acteur['Suppleant']['note']);
-                                    $acteurs_presents[]=$aSuppleant;
+                    $acteurs_presents[]=$aSuppleant;
 				}
-				elseif(($acteur['Listepresence']['present'] == false) && !empty($acteur['Listepresence']['mandataire'])) {
-                                    $acteur_mandataire = array(
-                                                    'nom_mandate' => $acteur['Mandataire']['nom'],
-                                                    'prenom_mandate' => $acteur['Mandataire']['prenom'],
-                                                    'salutation_mandate'=> $acteur['Mandataire']['salutation'],
-                                                    'titre_mandate'=> $acteur['Mandataire']['titre'],
-                                                    'date_naissance_mandate' => $acteur['Mandataire']['date_naissance'],
-                                                    'adresse1_mandate' => $acteur['Mandataire']['adresse1'],
-                                                    'adresse2_mandate' => $acteur['Mandataire']['adresse2'],
-                                                    'cp_mandate' => $acteur['Mandataire']['cp'],
-                                                    'ville_mandate' => $acteur['Mandataire']['ville'],
-                                                    'email_mandate' => $acteur['Mandataire']['email'],
-                                                    'telfixe_mandate' => $acteur['Mandataire']['telfixe'],
-                                                    'telmobile_mandate' => $acteur['Mandataire']['telmobile'],
-                                                    'note_mandate' => $acteur['Mandataire']['note']);
-                                    $acteurs_remplaces[]=Hash::merge($aActeur, $acteur_mandataire);
+				elseif (($acteur['Listepresence']['present'] == false) && !empty($acteur['Listepresence']['mandataire'])) {
+                    $acteur_mandataire = array(
+                                    'nom_mandate' => $acteur['Mandataire']['nom'],
+                                    'prenom_mandate' => $acteur['Mandataire']['prenom'],
+                                    'salutation_mandate'=> $acteur['Mandataire']['salutation'],
+                                    'titre_mandate'=> $acteur['Mandataire']['titre'],
+                                    'date_naissance_mandate' => $acteur['Mandataire']['date_naissance'],
+                                    'adresse1_mandate' => $acteur['Mandataire']['adresse1'],
+                                    'adresse2_mandate' => $acteur['Mandataire']['adresse2'],
+                                    'cp_mandate' => $acteur['Mandataire']['cp'],
+                                    'ville_mandate' => $acteur['Mandataire']['ville'],
+                                    'email_mandate' => $acteur['Mandataire']['email'],
+                                    'telfixe_mandate' => $acteur['Mandataire']['telfixe'],
+                                    'telmobile_mandate' => $acteur['Mandataire']['telmobile'],
+                                    'note_mandate' => $acteur['Mandataire']['note']);
+                    $acteurs_remplaces[]=Hash::merge($aActeur, $acteur_mandataire);
 				}
-                                elseif(($acteur['Listepresence']['present'] == false) && empty($acteur['Listepresence']['mandataire'])) {
-                                    $acteurs_absents[] = $aActeur;
+                elseif(($acteur['Listepresence']['present'] == false) && empty($acteur['Listepresence']['mandataire'])) {
+                    $acteurs_absents[] = $aActeur;
 				}
 			}
 		}
@@ -932,7 +948,7 @@ class Deliberation extends AppModel {
 		}
 		 
 		$acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
-				"Vote.resultat"=> 4),
+				'Vote.resultat' => 4),
 				'contain'   => array('Acteur'),
 				'order' => 'Acteur.position ASC'));
 
@@ -974,7 +990,7 @@ class Deliberation extends AppModel {
 
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents",   $acteurs_presents, false, '_present'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbsents",    $acteurs_absents, false, '_absent'));
-                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', count($acteurs_absents), 'text'));
+        $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', count($acteurs_absents), 'text'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursMandates",   $acteurs_remplaces, true, '_mandataire'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre",     $acteurs_contre, false, '_contre'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPour",       $acteurs_pour, false, '_pour'));
