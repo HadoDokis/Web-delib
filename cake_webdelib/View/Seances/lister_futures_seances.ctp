@@ -194,14 +194,15 @@
         //Lors d'action sur une checkbox :
         $('input.choix_seance_generer').change(function () {
             //Apposer ou non la class disabled au bouton selon si des checkbox sont cochées (style)
-            if (!$('input.choix_seance_generer').prop('checked')) {
+            if (!$('input[type=checkbox].choix_seance_generer:checked').length) {
                 $('#generer_multi_seance').addClass('disabled');
             } else {
                 $('#generer_multi_seance').removeClass('disabled');
             }
             //Désactiver le bouton si aucune checkbox séance cochée (impossible à cliquer)
-            $("#generer_multi_seance").prop("disabled", !$('input.choix_seance_generer').prop('checked'));
+            $("#generer_multi_seance").prop("disabled", !$('input[type=checkbox].choix_seance_generer:checked').length);
         });
+        $('input.choix_seance_generer').change();
     });
 </script>
 <?php
