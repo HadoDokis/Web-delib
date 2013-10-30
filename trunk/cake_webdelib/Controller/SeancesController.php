@@ -282,7 +282,7 @@ class SeancesController extends AppController {
 			}
 		}
 		else
-	            return false;
+            return false;
 	}
 
 	function _stockDelibs($seance_id, $isArrete=false, $compteur_id=null) {
@@ -1477,6 +1477,8 @@ class SeancesController extends AppController {
         }
 
         function multiodj () {
+            $this->Progress->start(200, 100,200, '#FFCC00','#006699');
+            $this->Progress->at(0, 'Démarrage de la génération');
             Configure::write('debug', 0);
             $model_id = $this->data['Seance']['model_id'];
             include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
@@ -1505,6 +1507,7 @@ class SeancesController extends AppController {
                 $sMimeType = "application/vnd.oasis.opendocument.text";
                 $format    = "odt";
             }
+            $this->Progress->at(5, 'Recherche en base de données');
             $content = $this->Typeseance->Modelprojet->find('first', array('conditions' => array('id' => $model_id),
                                                                            'fields'     => array('content'),
                                                                            'recursive'  => -1));
@@ -1516,21 +1519,38 @@ class SeancesController extends AppController {
             $oMainPart = new GDO_PartType();
 
             $seances = new GDO_IterationType("Seances");
+            $cpt=1;
             foreach ($this->data['Seance'] as $id => $bool ) {
+                $this->Progress->at(5+$cpt*(50/count($this->data['Seance'])), 'Envoi les informations des séances à Gedooo...');
                 if ($bool == 1) {
                     $seance_id = substr($id, 3, strlen($id));
                     $seances->addPart($this->Seance->makeBalise($seance_id, null, true, array('Deliberation.etat >=' => 0)));
-                }  
+                }
+                $cpt++;
             }
             $oMainPart->addElement($seances);
+            $this->Progress->at(60, 'Fusion en cours...');
             $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
             $oFusion->process();
             $oFusion->SendContentToFile($path.$nomFichier.".odt");
+            $this->Progress->at(80, 'Conversion du fichier au bon format...');
             $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
+            $this->Gedooo->createFile($path,  $nomFichier.'.'.$format, $content);
 
-            header("Content-type: $sMimeType");
-            header("Content-Disposition: attachment; filename=recherche.$format");
-            die($content);
+            $this->Progress->at(100, 'Chargement des résultats...');
+
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 ) ? "https://" : "http://";
+            $urlWebroot =  $protocol.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+
+            $listFiles[$urlWebroot.$nomFichier] = 'Document généré';
+            $this->Session->write('user.User.lasturl', '/seances/listerFuturesSeances');
+            $this->Session->write('tmp.listFiles', $listFiles);
+            $this->Session->write('tmp.format', $format);
+            $this->Progress->end('/models/getGeneration');
+
+//            header("Content-type: $sMimeType");
+//            header("Content-Disposition: attachment; filename=recherche.$format");
+//            die($content);
         }
 
     function sendToIdelibre($seance_id) {
