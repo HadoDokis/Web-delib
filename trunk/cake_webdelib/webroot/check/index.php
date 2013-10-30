@@ -7,7 +7,7 @@ require_once('verification.php');
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
         <h2>Webdelib check</h2>
-        <p>Vérification de l'environenemt Webdelib.</p>
+        <p>Vérification de l'environement Webdelib.</p>
         <p><a class="btn btn-primary btn-large" href="index.php">Relancer la vérification <i class="icon-white icon-repeat"></i></a></p>
 </div>
 
