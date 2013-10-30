@@ -120,7 +120,7 @@ class GedoooTask extends Shell
             $p = 1;
             //Pour chaque projet
             foreach ($projets as $projet) {
-                $this->out("<info>$p/$nbProjets -> Test du projet ".$projet['Deliberation']['id'].' "' . $projet['Deliberation']['objet_delib'] . "...</info>\n", 0);
+                $this->out("<info>$p/$nbProjets -> Test du projet ".$projet['Deliberation']['id'].' "' . $projet['Deliberation']['objet_delib'] . "\"...</info>\n", 0);
                 // Envoi des textes à gedooo
                 if (!empty($projet['Deliberation']['texte_projet'])) {
                     $this->out("* Texte de projet " . $projet['Deliberation']['texte_projet_name'] . ' ... ', 0);
