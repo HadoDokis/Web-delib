@@ -9,7 +9,7 @@ class PatchShell extends AppShell {
 
     public $tasks = array(
         'Tdt',
-        'Annexe' // Version_4102to4103()
+        'Gedooo' // Version_4102to4103()
     );
     public $uses = array('Annex', 'Deliberation');
 
@@ -48,9 +48,11 @@ class PatchShell extends AppShell {
 
     /**
      * Options d'éxecution et validation des arguments
-     * @return parser $parser
+     *
+     * @return Parser $parser
      */
-    public function getOptionParser() {
+    public function getOptionParser()
+    {
         $parser = parent::getOptionParser();
         $parser->description(__('Commandes de mise à jour de webdelib.'));
 
@@ -65,11 +67,11 @@ class PatchShell extends AppShell {
                         'help' => 'Mise à jour de classification.',
                         'boolean' => true
                     ),
-                    'test' => array(
-                        'name' => 'test',
+                    'textes' => array(
+                        'name' => 'textes',
                         'required' => false,
                         'short' => 't',
-                        'help' => 'Tests à effectuer.',
+                        'help' => 'Tests à effectuer (projets et annexes)',
                         'choices' => array('all', 'noseance', 'nontraitees'),
                         'default' => 'all'
                     )
@@ -109,7 +111,8 @@ class PatchShell extends AppShell {
      * Génération des annexes en odt valide, Mise à jour de classification, 
      * Changement du num préfecture
      */
-    public function Version_4102to4103() {
+    public function Version_4102to4103()
+    {
         $errors = array();
         $warnings = array();
         $logPath = Configure::read("WEBDELIB_PATH") . DS . "tmp" . DS . "logs" . DS . "gedooo.log";
@@ -117,25 +120,25 @@ class PatchShell extends AppShell {
         $this->out("\n<important>Démarrage du patch de mise à jour de Webdelib 4.1.02 vers 4.1.03...</important>\n");
         $time_start = microtime(true);
 
-        $this->Annexe->execute();
+        $this->Gedooo->execute();
         
-        $annexesInError = $this->Annexe->testAnnexes($this->params['test']);
-        if (!empty($annexesInError)) {
-            $error_msg = "Annexes non conformes : \n";
-            foreach ($annexesInError as $annexe) {
-                $error_msg .= "\t# Délibération " . $annexe['delib_id'] . ' : \'' . $annexe['filename'] . '\' (id: ' . $annexe['id'] . ")\n";
+        $textesInError = $this->Gedooo->testTextes($this->params['test']);
+        if (!empty($textesInError)) {
+            $error_msg = "Textes non conformes : \n";
+            foreach ($textesInError as $texte) {
+                $error_msg .= "\t# ". $texte['model']." " . $texte['id'] . ' : \'' . $texte['filename'] . '\' (colonne: ' . $texte['column'] . ")\n";
             }
-            $warnings[] = "Des annexes de délibération peuvent causer des problèmes (voir : $logPath).";
+            $warnings[] = "Des textes de projet peuvent causer des problèmes (voir : $logPath).";
             $this->out("\n<error>$error_msg</error>");
         } else {
-            $this->out("\n<info>Toutes les annexes sont conformes !!</info>");
+            $this->out("\n<info>Tous les textes sont conformes !!</info>");
         }
 
         $time_end = microtime(true);
-        $this->out("<time>Temps écoulé durant la phase de test des annexes : " . round($time_end - $time_start) . ' secondes</time>', 1, Shell::VERBOSE);
+        $this->out("<time>Temps écoulé durant la phase de test des textes : " . round($time_end - $time_start) . ' secondes</time>', 1, Shell::VERBOSE);
 
         // Message avertissant l'utilisateur de l'emplacement du fichier log
-//        $this->out("\n<important>Emplacement fichier log Gedooo : " . $this->Annexe->logPath . "</important>\n");
+        //$this->out("\n<important>Emplacement fichier log Gedooo : " . $this->Gedooo->logPath . "</important>\n");
 
         //Mise à jour de la classification
         if (!empty($this->params['classification'])) {
