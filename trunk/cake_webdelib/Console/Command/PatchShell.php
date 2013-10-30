@@ -122,7 +122,7 @@ class PatchShell extends AppShell {
 
         $this->Gedooo->execute();
         
-        $textesInError = $this->Gedooo->testTextes($this->params['test']);
+        $textesInError = $this->Gedooo->testTextes($this->params['textes']);
         if (!empty($textesInError)) {
             $error_msg = "Textes non conformes : \n";
             foreach ($textesInError as $texte) {
