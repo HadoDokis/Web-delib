@@ -1,4 +1,8 @@
 <?php
+/**
+ * Class DeliberationsController
+ * @property Deliberation $Deliberation
+ */
 class DeliberationsController extends AppController {
     /*
      * Deliberation.etat = -1 : refusé
@@ -2407,10 +2411,9 @@ class DeliberationsController extends AppController {
                 $projets, 'Mes projets valid&eacute;s', array('view', 'generer'));
     }
 
-    /*
+    /**
      * fonction générique pour afficher les projets sour forme d'index
      */
-
     function _afficheProjets(&$projets, $titreVue, $listeActions, $listeLiens = array(), $nbProjets = null) {
         // initialisation de l'utilisateur connecté et des droits
         $this->set('typeseances', $this->Seance->Typeseance->find('list', array('recursive' => -1)));
