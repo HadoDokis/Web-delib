@@ -357,8 +357,8 @@ class ModelsController extends AppController {
 						$time_end = microtime(true);
 						$time = $time_end - $time_start;
 						$this->log("Temps création de requete :". $time );
-                                                if ($progress)
-                                                    $this->Progress->at($cpt*((2*40/3)/count($acteursConvoques))+60, 'Fusion des documents...');
+                        if ($progress)
+                            $this->Progress->at($cpt*((2*40/3)/count($acteursConvoques))+60, 'Fusion des documents...');
 
 						$time_start = microtime(true);
 						$oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
@@ -366,15 +366,14 @@ class ModelsController extends AppController {
 						$time_end = microtime(true);
 						$time = $time_end - $time_start;
 						$this->log("Temps création de fusion : ". $time );
-                                                if ($progress)
-                                                    $this->Progress->at($cpt*((3*40/3)/count($acteursConvoques))+60, 'Conversion et concaténation...');
-
+                        if ($progress)
+                            $this->Progress->at($cpt*((3*40/3)/count($acteursConvoques))+60, 'Conversion et concaténation...');
 						$time_start = microtime(true);
-						$oFusion->SendContentToFile($path.$nomFichier.".odt");
-                                                $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt');
-                                                file_put_contents  ($path.$nomFichier.".odt",   $content);
+                        $oFusion->SendContentToFile($path.$nomFichier.".odt");
+                        $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt');
+                        file_put_contents  ($path.$nomFichier.".odt", $content);
 
-                                                $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
+                        $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
 						$chemin_fichier = $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
 						if (($format == 'pdf') && ($joindre_annexe))
 							$this->Pdf->concatener($chemin_fichier, $annexes);
@@ -383,9 +382,9 @@ class ModelsController extends AppController {
 						$this->log("Temps conversion et concaténation : ". $time );
 					}
 					catch (Exception $e){
-                                            $this->Session->setFlash($e, 'growl', array('type' => 'erreur'));
-                                            $this->redirect('/seances/listerFuturesSeances');
-                                            die;
+                        $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'erreur'));
+                        $this->redirect('/seances/listerFuturesSeances');
+                        die;
 					}
                                         
 					if ($unique== false) {
