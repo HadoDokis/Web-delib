@@ -3,7 +3,7 @@ class DroitsController extends AppController
 {
 	var $name = 'Droits';
 	var $uses = array('Profil', 'User');
-	var $components = array('Menu', 'Acl', 'Droits');
+	var $components = array('Menu', 'Acl', 'Droits','Progress');
 	var $helpers = array('Droits');
 
 	var $tabDroits = array();
@@ -350,18 +350,18 @@ class DroitsController extends AppController
 	function _chargeDroits($profilsUsersTree, $menuControllersTree) {
 		$cpt = 0;
                 $nbUsers = count($this->User->findAll(null, 'id'));
+                $this->Progress->start(200, 100, 200, '#FFCC00', '#006699');
 		// Parcours des profils
 		foreach($profilsUsersTree as $profilUsers) {
 			$this->iProfil++;
 			$this->iMenu = -1;
 			$this->_chargeDroitsMenuControllers($profilUsers['arosAlias'], $menuControllersTree);
-
 			// Traitement des utilisateurs du profil courant
 			if (array_key_exists('users', $profilUsers)) {
 				foreach($profilUsers['users'] as $user) {
 					$cpt++;
 					$indice = $cpt*(100/$nbUsers);
-				        ProgressBar($indice, 'Lecture des droits pour ' . $user['login']);
+                                        $this->Progress->at($indice, 'Lecture des droits pour : <b>' . $user['login']. '</b>...');
 					$this->iProfil++;
 					$this->iMenu = -1;
 					$this->_chargeDroitsMenuControllers($user['id'], $menuControllersTree, $indice, $user['login']);
@@ -373,6 +373,8 @@ class DroitsController extends AppController
 				$this->_chargeDroits($profilUsers['sousProfils'], $menuControllersTree);
 			}
 		}
+                
+                $this->Progress->end('/profils/index');
 	}
 
 /* Fonction récursive sur les menus et actions des controleurs pour le chargement des droits */
@@ -383,7 +385,7 @@ class DroitsController extends AppController
 			// lecture des droits
 			$this->tabDroits[$this->iProfil][$this->iMenu] = $this->Acl->check($aro, $menuController['acosAlias']);
 			if ($indice != null)
-			    ProgressBar($indice, 'Lecture des droits '. $menuController['title']. ' pour '.$user);
+                            $this->Progress->at($indice, 'Lecture des droits : <b>' . $menuController['title']. '</b>...');
 			// Traitement des sous-menus
 			if (array_key_exists('subMenu', $menuController) and !empty($menuController['subMenu']))
 				$this->_chargeDroitsMenuControllers($aro, $menuController['subMenu']);
