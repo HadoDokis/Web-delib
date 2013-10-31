@@ -378,6 +378,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         $typetech = $typestech->item(0)->nodeValue;
         $soustypes = $dom->documentElement->getElementsByTagName('SousType');
         $soustype = $soustypes->item(0)->nodeValue;
+        // FIXME Ce noeud n'existe pas 'EmailEmetteur'
         $emailsemetteur = $dom->documentElement->getElementsByTagName('EmailEmetteur');
         $emailemetteur = $emailsemetteur->item(0)->nodeValue;
         $dossiersid = $dom->documentElement->getElementsByTagName('DossierID');
