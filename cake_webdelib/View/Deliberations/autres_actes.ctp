@@ -23,10 +23,10 @@
             $rowClass = ($numLigne & 1) ? array('style'=> 'height: 38px') : array('style'=> 'height: 38px', 'class' => 'altrow');
             echo $this->Html->tag('tr', null, $rowClass);
             $numLigne++;
-            if ($this->action != "autresActesAValider" && 
-                    $acte['Deliberation']['signee'] != 1 && 
-                    $acte['Deliberation']['etat'] >= 2 && $acte['Deliberation']['etat'] < 5 &&
-                    $acte['Deliberation']['etat_parapheur'] <= 0)
+            if ( $this->action != "autresActesAValider"
+                && $acte['Deliberation']['signee'] != 1
+                && $acte['Deliberation']['etat'] >= 2 && $acte['Deliberation']['etat'] < 5
+                && $acte['Deliberation']['etat_parapheur'] <= 0 )
                 echo '<td>' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], array('checked' => true, 'autocomplete' => 'off')) . '</td>';
             else
                 echo '<td></td>';
@@ -37,34 +37,43 @@
             echo '<td>' . $acte['Deliberation']['titre'] . '</td>';
             echo '<td>' . $acte['Circuit']['nom'] . "</td>";
 
-            $enCoursSignature = ($acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['etat_parapheur'] == 1);
-            
-            if ($acte['Deliberation']['signee'] == 1) {
-                echo '<td>Signé</td>';
-            } elseif ($acte['Deliberation']['etat_parapheur'] == -1) {
-                echo '<td>Signature refusée dans le parapheur</td>';
-            } elseif ($enCoursSignature) {
-                echo '<td>En cours de signature</td>';
-            } elseif ($acte['Deliberation']['etat'] == 0) {
-                echo '<td>En cours de rédaction</td>';
-            } elseif ($acte['Deliberation']['etat'] == 1) {
-                echo "<td>En cours d'élaboration</td>";
-            } elseif ($acte['Deliberation']['etat'] == 2) {
-                echo '<td>Validé</td>';
-            } elseif ($acte['Deliberation']['etat'] == 3) {
-                echo '<td>Voté et adopté</td>';
-            }  elseif ($acte['Deliberation']['etat'] == 4) {
-                echo '<td>Voté et refusé</td>';
-            }  elseif ($acte['Deliberation']['etat'] == 5) {
-                echo '<td>Voté et envoyé</td>';
-            }  else {
-                echo '<td></td>';
+            echo '<td>'; // Début de la cellule "Etat"
+            switch ($acte['Deliberation']['etat']) {
+                case 0:
+                    echo "En cours de rédaction";
+                    break;
+                case 1:
+                    echo "Dans un circuit";
+                    break;
+                case 2:
+                    echo "Validé";
+                    break;
+                case 3:
+                    echo "Voté et adopté";
+                    break;
+                case 4:
+                    echo "Voté et refusé";
+                    break;
+                case 5:
+                    echo "Voté et envoyé";
+                    break;
             }
+            $enCoursSignature = ($acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['etat_parapheur'] == 1);
+            if ($acte['Deliberation']['signee'] == 1) {
+                echo ' / Signé';
+            } elseif ($acte['Deliberation']['etat_parapheur'] == -1) {
+                echo ' / Signature refusée';
+            } elseif ($enCoursSignature) {
+                echo ' / En cours de signature';
+            }
+            echo '</td>'; // Fin de la cellule "Etat"
 
             echo ('<td>');
-            echo $this->Html->link(SHY, '/deliberations/view/' . $acte['Deliberation']['id'], array('class' => 'link_voir',
-                'escape' => false,
-                'title' => 'voir le projet de ' . $acte['Deliberation']['objet']));
+            echo $this->Html->link(SHY, '/deliberations/view/' . $acte['Deliberation']['id'], array(
+                    'class' => 'link_voir',
+                    'escape' => false,
+                    'title' => 'voir le projet de ' . $acte['Deliberation']['objet']
+                ));
             if (($acte['Deliberation']['etat'] >= 2) && ($acte['Deliberation']['signee'] == 1))
                 $model_id = $acte['Model']['modelefinal_id'];
             else
