@@ -20,9 +20,14 @@
     *) Correction sur l'ajout d'un acte dans une séance depuis un avis (ajout en fin de séance)
     *) Correction sur la suppression d'un acte dans une séance (on réordonne la séance)
     *) Mise en place d'un htaccess pour ne pas mettre en cache les documents pdf et odt dans le navigateur (dossier app/www_root/files/generee)
-    *) Outil de test en batch des annexes sur les séances en cours et en rédaction
+    *) Outil de test en batch des documents des actes sur les séances en cours et en rédaction pour gedooo
     *) Générération des recueils: trié par numéro (ascendant)
-    *) Mise en place d'une limite pour le commentaire de vote 1000 max
+    *) Mise en place d'une limite  maximum de vote 1000 caractères pour le commentaire d'une seance
+    *) Mise en place de la progress bar pour la gestion des profils, des génération d'odre du jour, pv ...
+    *) Mise en place d'une attente lors de la génération de projet
+    *) Correction sur l'affichage du label de texte projet qui disparaissait à la création d'un acte
+    *) Mise en place d'une limite maximun de 200 caractères pour le titre d'une annexe et 100 pour le nom de fichier de l'annexe
+    *) Corrections des entrées historiques de cakeflow
 
 4.1.02
 ======
