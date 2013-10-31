@@ -3304,7 +3304,6 @@ class DeliberationsController extends AppController {
                             $annexes);
                     $delib['Deliberation']['etat_parapheur'] = 1;
                     if ($creerdos['messageretour']['coderetour'] == 'OK') {
-                        $this->Deliberation->id = $delib_id;
                         $this->Deliberation->saveField('etat_parapheur', 1);
                         $this->Deliberation->saveField('id_parapheur', $creerdos['dossierID']);
                     } else {
@@ -3709,17 +3708,16 @@ class DeliberationsController extends AppController {
                 $num = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
                 $this->Deliberation->saveField('num_delib', $num);
                 $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
-                    
-                
+
                 $model_id = $this->Deliberation->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
                 $this->requestAction("/models/generer/$acte_id/null/$model_id/0/1/D_$acte_id.odt");
                 $filename = WEBROOT_PATH . "/files/generee/fd/null/$acte_id/D_$acte_id.odt.pdf";
                 $content = file_get_contents($filename);
                 $this->Deliberation->saveField('delib_pdf', $content);
-                
                 if ($this->data['Parapheur']['circuit_id'] == -1) {
                     $this->Deliberation->saveField('signee', 1);
                     $this->Deliberation->saveField('etat', 3);
+                    $this->Deliberation->saveField('date_envoi_signature', date("Y-m-d H:i:s", strtotime("now")));
                 } else {
                     $this->Parafwebservice = new IparapheurComponent();
                     $objetDossier = $this->Parafwebservice->handleObject($acte['Deliberation']['objet']);
@@ -3746,6 +3744,7 @@ class DeliberationsController extends AppController {
                     if ($creerdos['messageretour']['coderetour'] == 'OK') {
                         $this->Deliberation->saveField('etat_parapheur', 1);
                         $this->Deliberation->saveField('etat', 3);
+                        $this->Deliberation->saveField('date_envoi_signature', date("Y-m-d H:i:s", strtotime("now")));
                         $this->Deliberation->saveField('id_parapheur', $creerdos['dossierID']);
                     } else {
                         $this->Session->setFlash($creerdos['messageretour']['coderetour'], 'growl', array('type' => 'erreur'));
