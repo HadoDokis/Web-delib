@@ -3462,8 +3462,10 @@ class DeliberationsController extends AppController {
 
         if (empty($this->data)) {
             $etapes = $this->Traitement->listeEtapes($delib['Deliberation']['id'], array('selection' => 'APRES'));
-            if (empty($etapes))
+            if (empty($etapes)){
+                $this->Session->setFlash("Le projet n'a pas d'étape suivante", 'growl', array('type' => 'erreur'));
                 $this->redirect($this->referer());
+            }
             $this->set('delib_id', $delib_id);
             $this->set('etapes', $etapes);
         } else {
