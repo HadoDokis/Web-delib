@@ -3642,7 +3642,7 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.etat <'] = 2;
         $conditions['Deliberation.etat >'] = -1;
         $fields = array('Deliberation.id', 'Deliberation.objet', 'Deliberation.titre',
-            'Deliberation.etat', 'Deliberation.signee', 'Deliberation.typeacte_id');
+            'Deliberation.etat', 'Deliberation.signee', 'Deliberation.typeacte_id', 'Deliberation.etat_parapheur');
         $contain = array('Typeacte.libelle', 'Service.libelle', 'Circuit.nom');
         $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
         $this->_addFiltresAutresActes($actes);
@@ -3681,8 +3681,7 @@ class DeliberationsController extends AppController {
             'Circuit.nom');
         $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
         $this->_addFiltresAutresActes($actes);
-        
-        
+
         $userId = $this->Session->read('user.User.id');
         $editerProjetValide = $this->Droits->check($userId, "Deliberations:editerProjetValide");
         
@@ -3782,8 +3781,8 @@ class DeliberationsController extends AppController {
         for ($i = 0; $i < count($actes); $i++){
             $actes[$i]['Deliberation'][$actes[$i]['Deliberation']['id'] . '_num_pref'] = $actes[$i]['Deliberation']['num_pref'];
             $actes[$i]['Deliberation']['num_pref_libelle']=$this->_getMatiereByKey($actes[$i]['Deliberation']['num_pref']);
-        }         
-            
+        }
+
         $circuits['soustype']['-1'] = 'Signature manuscrite';
         $this->set('deliberations', $actes);
         $this->set('circuits', $circuits['soustype']);
