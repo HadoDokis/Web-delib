@@ -34,14 +34,14 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type
 	</div>
         </fieldset>
 	<div class='spacer'></div>
-        <?php echo $this->Form->input('Deliberation.typeacte_id', array('label'    => 'Type d\'acte <acronym title="obligatoire">(*)</acronym>', 
+        <?php echo $this->Form->input('Deliberation.typeacte_id', array('label'    => 'Type d\'acte <abbr title="obligatoire">(*)</abbr>',
                                                                         'options'  => $this->Session->read('user.Nature'), 
                                                                         'empty'    => '(sélectionner le type d\'acte)', 
                                                                         'id'       => 'listeTypeactesId',
                                                                         'onChange' => "updateTypeseances(this);", 
                                                                         'escape'   => false));  ?>
 	<div class='spacer'></div>
- 	<?php echo $this->Form->input('Deliberation.objet', array('type'=>'textarea','label'=>'Libellé <acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));?>
+ 	<?php echo $this->Form->input('Deliberation.objet', array('type'=>'textarea','label'=>'Libellé <abbr title="obligatoire">(*)</abbr>','cols' => '60','rows'=> '2'));?>
 
 	<div class='spacer'></div>
  	<?php echo $this->Form->input('Deliberation.titre', array('type'=>'textarea','label'=>'Titre','cols' => '60','rows'=> '2'));?>
