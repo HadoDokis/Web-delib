@@ -72,7 +72,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type
 	<?php echo $this->Form->input('Deliberation.rapporteur_id', array('label'=>'Rapporteur', 'options'=>$rapporteurs, 'empty'=>true)); ?>
 
 	<div class='spacer'></div>
-	<?php echo $this->Form->input('Deliberation.theme_id', array('label'=>'Thème <acronym title="obligatoire">(*)</acronym>', 'empty'=>'(sélectionner le thème)', 'escape'=>false)); ?>
+	<?php echo $this->Form->input('Deliberation.theme_id', array('label'=>'Thème <abbr title="obligatoire">(*)</abbr>', 'empty'=>'(sélectionner le thème)', 'escape'=>false)); ?>
 	<div class='spacer'></div>
 
 	<?php 
@@ -137,17 +137,18 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type
 			if ($infosupdef['Infosupdef']['type'] == 'text') {
 				echo $this->Form->input($fieldName, array('label' => false, 'type'=> 'textarea', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'readonly'=> $disabled  ));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
-                            if (!$disabled)
-				echo $this->Form->input($fieldName, array('label' => false, 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'div'=>array('class'=>'input')));
-                            else{
-                                echo $this->Form->input($fieldName, array('label' => false, 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=>$disabled, 'div'=>array('class'=>'input')));
-                                echo $this->Form->input($fieldName, array('type'=>'hidden', 'id'=>false));
-                            }
-                        } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
-				echo $this->Form->input($fieldName, array('type'=>'text',  'readonly'=> $disabled,  'div' => false, 'label' => false, 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+                if (!$disabled)
+				    echo $this->Form->input($fieldName, array('label' => false, 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'div'=>array('class'=>'input')));
+                else {
+                    echo $this->Form->input($fieldName, array('label' => false, 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=>$disabled, 'div'=>array('class'=>'input')));
+                    echo $this->Form->input($fieldName, array('type'=>'hidden', 'id'=>false));
+                }
+            } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
+                $fieldSelector = preg_replace("#[^a-zA-Z]#", "", $fieldId);
+				echo $this->Form->input($fieldName, array('type'=>'text',  'readonly'=> $disabled,  'div' => false, 'label' => false, 'size'=>'9', 'id'=>$fieldSelector, 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				echo '&nbsp;';
 				if (!$disabled)
-					echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('Deliberation.$fieldId', 'f');", array('escape' =>false), false); 
+					echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('Deliberation.$fieldSelector', 'f');", array('escape' =>false), false);
 				else
 					echo($this->Html->image("calendar.png", array('style'=>"border='0'")));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
