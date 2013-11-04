@@ -1232,9 +1232,7 @@ div.filtreCriteres {
   background: #ddd;
   width: 88%;
   margin: 0;
-    border: 1px solid grey;
-    border-top: 0;
-    border-radius: 0 0 5px 5px;
+  border: 1px solid grey;
 }
 
 /* Debugging */
