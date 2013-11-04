@@ -28,6 +28,7 @@
     *) Correction sur l'affichage du label de texte projet qui disparaissait à la création d'un acte
     *) Mise en place d'une limite maximun de 200 caractères pour le titre d'une annexe et 100 pour le nom de fichier de l'annexe
     *) Corrections des entrées historiques de cakeflow
+    *) Correction des valeurs intial des informations supplémentaires à la création d'un projet
 
 4.1.02
 ======

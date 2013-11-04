@@ -292,6 +292,11 @@ class DeliberationsController extends AppController {
                         }
                     }
                 }
+                
+                 if (array_key_exists('Infosup', $this->data)) {
+                    $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $delibId, 'Deliberation');
+                }
+                
                 $this->Seance->reOrdonne($delibId, $seances);
                 unset($this->request->data['Seance']);
 
