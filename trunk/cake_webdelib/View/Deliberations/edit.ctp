@@ -218,11 +218,12 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
                                 echo $this->Form->input($fieldName, array('label' => false, 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=>$disabled, 'div'=>array('class'=>'input')));
                                 echo $this->Form->input($fieldName, array('type'=>'hidden', 'id'=>false));
                             }
-                        } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
-				echo $this->Form->input($fieldName, array('type'=>'text',  'readonly'=> $disabled,  'div' => false, 'label' => false, 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+            } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
+                $fieldSelector = preg_replace("#[^a-zA-Z]#", "", $fieldId);
+				echo $this->Form->input($fieldName, array('type'=>'text',  'readonly'=> $disabled,  'div' => false, 'label' => false, 'size'=>'9', 'id'=>$fieldSelector, 'title'=>$infosupdef['Infosupdef']['commentaire']));
 				echo '&nbsp;';
 				if (!$disabled)
-					echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('Deliberation.$fieldId', 'f');", array('escape' =>false), false); 
+					echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('Deliberation.$fieldSelector', 'f');", array('escape' =>false), false);
 				else
 					echo($this->Html->image("calendar.png", array('style'=>"border='0'")));
 			} elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
