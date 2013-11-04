@@ -15,7 +15,6 @@ $(document).ready(function() {
     
     $('.file-texte').each(function() {
         file_input_index++;
-        
         $(this).wrap('<div id="file_input_container_'+file_input_index+'"></div>');
         $(this).after('<input type="button" value="Effacer" class="purge_file"  onclick="javascript: reset_html(\'file_input_container_'+file_input_index+'\')" />');
     });
@@ -56,14 +55,14 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 	</div>
         </fieldset>
 	<div class='spacer'></div>
-        <?php echo $this->Form->input('Deliberation.typeacte_id', array('label'    => 'Type d\'acte <acronym title="obligatoire">(*)</acronym>', 
+        <?php echo $this->Form->input('Deliberation.typeacte_id', array('label'    => 'Type d\'acte <abbr title="obligatoire">(*)</abbr>',
                                                                         'options'  => $this->Session->read('user.Nature'), 
                                                                         'empty'    => false, 
                                                                         'id'       => 'listeTypeactesId',
                                                                         'onChange' => "updateTypeseances(this);", 
                                                                         'escape'   => false));  ?>
 	<div class='spacer'></div>
- 	<?php echo $this->Form->input('Deliberation.objet', array('type'=>'textarea','label'=>'Libellé <acronym title="obligatoire">(*)</acronym>','cols' => '60','rows'=> '2'));?>
+ 	<?php echo $this->Form->input('Deliberation.objet', array('type'=>'textarea','label'=>'Libellé <abbr title="obligatoire">(*)</abbr>','cols' => '60','rows'=> '2'));?>
 
 	<div class='spacer'></div>
  	<?php echo $this->Form->input('Deliberation.titre', array('type'=>'textarea','label'=>'Titre','cols' => '60','rows'=> '2'));?>
@@ -72,18 +71,15 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 
         <div id='selectTypeseances' class='gauche'>
         <?php
-        /*debug($typeseances);
-        debug($typeseances_selected);*/
-        
           if (!empty( $typeseances))
              echo $this->Form->input('Typeseance', array('options'  => $typeseances,
-                                                        'type'=>'select',
-                                                      'label'    => 'Types de séance',
-                                                     'autocomplete' => 'off',
-                                                      'size'     => 10,
-                                                      'onchange' => "updateDatesSeances(this);",
-                                                      'multiple' => true,
-                                                      'selected' =>isset($typeseances_selected)?$typeseances_selected:''));
+                    'type'     =>'select',
+                    'label'    => 'Types de séance',
+                    'autocomplete' => 'off',
+                    'size'     => 10,
+                    'onchange' => "updateDatesSeances(this);",
+                    'multiple' => true,
+                    'selected' => isset($typeseances_selected)?$typeseances_selected:''));
         ?>
         </div>
         <div id='selectDatesSeances' class='droite'>
@@ -106,7 +102,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 	<?php echo $this->Form->input('Deliberation.rapporteur_id', array('label'=>'Rapporteur', 'options'=>$rapporteurs, 'empty'=>true)); ?>
 
 	<div class='spacer'></div>
-	<?php echo $this->Form->input('Deliberation.theme_id', array('label'=>'Thème <acronym title="obligatoire">(*)</acronym>', 'options'=>$themes, 'default'=>$this->Html->value('Deliberation.theme_id'), 'empty'=>false, 'escape'=>false)); ?>
+	<?php echo $this->Form->input('Deliberation.theme_id', array('label'=>'Thème <abbr title="obligatoire">(*)</abbr>', 'options'=>$themes, 'default'=>$this->Html->value('Deliberation.theme_id'), 'empty'=>false, 'escape'=>false)); ?>
 	<div class='spacer'></div>
 
 	<?php 
@@ -245,9 +241,11 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
 					echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'],  'readonly'=> $disabled));
 				else {
+                    $name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
+                    if (is_array($name)) $name = $name['name'];
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
-					echo '['.$this->Html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
+					echo '['.$this->Html->link($name, '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
 					echo '&nbsp;&nbsp;';
 					if (!$disabled)
 						echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
@@ -267,11 +265,11 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 						$name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']] ;
 						if (!$disabled){
 						    $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name"; 
-                                                    echo $this->Form->hidden($fieldName);
-                                                }
-                                              else 
-                                                    $url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name";
-						echo "<a href='$url'>$name</a> ";
+                            echo $this->Form->hidden($fieldName);
+                        }
+                        else
+                            $url = "http://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$this->data['Deliberation']['id']."/$name";
+						echo "[<a href='$url'>$name</a>]";
 					}
 					echo '&nbsp;&nbsp;';
 					if (!$disabled)
