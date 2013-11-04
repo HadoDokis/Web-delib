@@ -55,23 +55,24 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 	    echo "<div class='required'>";
 	            echo $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'], array('name'=>'label'.$infosupdef['Infosupdef']['code']));
 	            if ($infosupdef['Infosupdef']['type'] == 'text') {
-	                    echo $this->Form->input($fieldName, array('label'=>'', 'type' => 'textarea', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+	                    echo $this->Form->input($fieldName, array('label'=>false, 'type' => 'textarea', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
-	                    echo $this->Form->input($fieldName, array('label'=>'', 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+	                    echo $this->Form->input($fieldName, array('label'=>false, 'type'=>'checkbox', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
-	                    echo $this->Form->input($fieldName, array('type'=>'text', 'div'=>false, 'label'=>'', 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+                        $fieldSelector =  preg_replace("#[^a-zA-Z]#", "", $fieldId);
+	                    echo $this->Form->input($fieldName, array('type'=>'text', 'id'=>$fieldSelector, 'div'=>false, 'label'=>false, 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	                    echo '&nbsp;';
-	                    echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('seanceForm.$fieldId', 'f');", array('escape'=> false), false);
+	                    echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('seanceForm.$fieldSelector', 'f');", array('escape'=> false), false);
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
 	                    echo '<div class="annexesGauche"></div>';
 	                    echo '<div class="fckEditorProjet">';
-	                            echo $this->Form->input($fieldName, array('label'=>'', 'type'=>'textarea'));
+	                            echo $this->Form->input($fieldName, array('label'=>false, 'type'=>'textarea'));
 	                            echo $this->Fck->load($fieldId);
 	                    echo '</div>';
 	                    echo '<div class="spacer"></div>';
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'file') {
 	                    if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
-	                            echo  $this->Form->input($fieldName, array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+	                            echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	                    else {
 	                            echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
 	                            echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
@@ -84,7 +85,7 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 	                    if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]) 
                                     || empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]['tmp_name'])
                                     || isset($errors_Infosup[$infosupdef['Infosupdef']['code']]))
-	                            echo  $this->Form->input($fieldName, array('label'=>'', 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire']));
+	                            echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	                    else {
 	                            echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
 	                            echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
@@ -101,7 +102,7 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 	                            echo '</span>';
 	                    }
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'list') {
-	                    echo $this->Form->input($fieldName, array('label'=>'', 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true, 'title'=>$infosupdef['Infosupdef']['commentaire']));
+	                    echo $this->Form->input($fieldName, array('label'=>false, 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true, 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	            }
 	    echo '</div>';
 	    echo '<br>';
@@ -123,3 +124,13 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 </div>
 
 <?php echo $this->Form->end(); ?>
+<style>
+    /*fix css de la page*/
+    radio input[type="radio"], .checkbox input[type="checkbox"]{
+        float:none;
+        margin: 0;
+    }
+    #tab2 div.required{
+        margin-top: 10px;
+    }
+</style>
