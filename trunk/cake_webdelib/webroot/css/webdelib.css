@@ -11,7 +11,7 @@ fieldset legend {
 
 /* ----------- modif marine ----------- */
 
-acronym {
+acronym, abbr {
 	color : red;
 }
 
