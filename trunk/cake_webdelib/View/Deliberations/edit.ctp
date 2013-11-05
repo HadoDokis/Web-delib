@@ -240,7 +240,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
                                 }
 			} elseif ($infosupdef['Infosupdef']['type'] == 'file') {
 				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
-					echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'],  'readonly'=> $disabled));
+					echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'],  'disabled'=> $disabled));
 				else {
                     $name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
                     if (is_array($name)) $name = $name['name'];
@@ -256,7 +256,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 				if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']])
                                     || empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]['tmp_name'])
                                     || isset($errors_Infosup[$infosupdef['Infosupdef']['code']]))
-					echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'readonly'=> $disabled));
+					echo  $this->Form->input($fieldName, array('label'=>false, 'type'=>'file', 'size'=>'60', 'title'=>$infosupdef['Infosupdef']['commentaire'], 'disabled'=> $disabled));
 				else {
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
 					echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
