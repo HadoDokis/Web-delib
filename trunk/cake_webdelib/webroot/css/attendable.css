@@ -14,7 +14,7 @@
     height: 100%; 
     background: lightgrey;
     opacity: .50;
-    filter:Alpha(Opacity=50);
+    filter: Alpha(Opacity=50); /* For IE8 and earlier */
     z-index: 1500;
 }
 
@@ -29,8 +29,7 @@ div#modalAttendable{
     border-radius: 5px 5px 5px 5px;
     padding: 20px;
     text-align: center;
-    -moz-box-shadow:    3px 3px 5px 6px #ccc;
-    -webkit-box-shadow: 3px 3px 5px 6px #ccc;
-    box-shadow:         3px 3px 5px 6px #ccc;
+    box-shadow: 3px 3px 5px 6px #ccc;
     z-index: 2000;
+    min-width: 310px;
 }
