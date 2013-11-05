@@ -148,6 +148,12 @@ label {
 	text-align: center;
 }
 
+#DeliberationAddForm #tab1 .error-message{
+    margin: 0;
+    margin-left: 110px;
+    text-align: left;
+}
+
 .centre {
 	text-align: center;
 }
