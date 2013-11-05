@@ -101,7 +101,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type
 		else
 			$value = "value=''";
 	?>
-	<input name="date_limite" size="9" <?php echo $value; ?> />&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');" title="Sélectionner une date à l'aide du calendrier" id="afficheCalendrier"><?php echo $this->Html->image("calendar.png", array('alt' => "afficher le calendrier")); ?></a>
+	<input name="date_limite" size="9" id="DeliberationDateLimite" <?php echo $value; ?> />&nbsp;<a href="javascript:show_calendar('Deliberation.date_limite','f');" title="Sélectionner une date à l'aide du calendrier" id="afficheCalendrier"><?php echo $this->Html->image("calendar.png", array('alt' => "afficher le calendrier")); ?></a>
 	<div class='spacer'></div>
 
 
