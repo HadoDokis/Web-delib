@@ -1,11 +1,11 @@
 /**
  * waitAndBlock v.1.0
- * Requires: jQuery v1.3+
+ * Requires: jQuery v1.3+ & attendable.js
  * Copyright (c) 2013 Florian Ajir
  */
 $(document).ready(function() {
-    $("a.delib_pdf").attendable({message: 'Veuillez patienter pendant la génération du document'});
-    $("a.link_clore_seance").attendable({message: 'Veuillez patienter pendant la clotûre de la séance'});
+    $("a.delib_pdf").attendable();
+    $("a.link_clore_seance").attendable();
 });
 
 function pauseWhileDownload(elt) {
@@ -40,16 +40,14 @@ function setToken() {
 }
 
 var downloadTimer;
-var attempts = 120;
 
 // Prevents double-submits by waiting for a cookie from the server.
 function blockUI(elt, downloadToken) {
     downloadTimer = window.setInterval(function() {
         var token = getCookie("downloadToken");
-        if ((token == downloadToken) || (attempts === 0)) {
+        if (token == downloadToken) {
             unblockUI(elt, downloadToken);
         }
-        attempts--;
     }, 1000);
 }
 
