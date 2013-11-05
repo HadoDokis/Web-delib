@@ -16,8 +16,6 @@
         if ($.fn.attendable.options.loaderImgSrc && $("#attendablePreLoaderImg").length === 0)
             $(document.body).append($('<img>').attr('id', 'attendablePreLoaderImg').attr('src', $.fn.attendable.options.loaderImgSrc).hide());
 
-
-
         return this.each(function () {
             var patt = new RegExp(/confirm\((.+)\)/);
             //Si onclick présent sur l'élément
@@ -48,7 +46,7 @@
         toOverlayDomId: 'container',
         overlayDomId: 'overlay',
         modalDomId: 'modalAttendable',
-        message: 'veuillez patienter',
+        message: 'Veuillez patienter...',
         loaderImgSrc: '/img/ajax-loader.gif'
     };
 
