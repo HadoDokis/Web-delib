@@ -1,21 +1,19 @@
 <h2>Saisie des débats généraux</h2>
-<?php echo $this->Html->script('ckeditor/ckeditor'); ?>
+<?php //echo $this->Html->script('ckeditor/ckeditor'); ?>
 <?php echo ('<div class="optional">');
-
-echo $this->Form->create('Seances',array('url'=>'/seances/saisirDebatGlobal/'.$seance['Seance']['id'],'type'=>'file'));
+echo $this->Form->create('Seances', array('url'=>'/seances/saisirDebatGlobal/'.$seance['Seance']['id'],'type'=>'file'));
 if (!Configure::read('GENERER_DOC_SIMPLE')){
-    echo '<br>Nom fichier : '.$seance['Seance']['debat_global_name'];
-    echo '<br>Taille : '.$seance['Seance']['debat_global_size'];
-    if ($seance['Seance']['debat_global_size']>0) { 
-        echo '<br>'.$this->Html->link('Telecharger',"/seances/download/$seance_id/debat_global");
-        echo ' '.$this->Html->link('Supprimer', "/seances/deleteDebatGlobal/$seance_id");
+    if ($seance['Seance']['debat_global_size'] > 0) {
+        echo '<br>Nom fichier : '.$seance['Seance']['debat_global_name'];
+        echo '<br>Taille : '. round($seance['Seance']['debat_global_size']/1000, 2). 'ko';
+        echo '<br>'.$this->Html->link('[Telecharger]',"/seances/download/$seance_id/debat_global");
+        echo ' '.$this->Html->link('[Supprimer]', "/seances/deleteDebatGlobal/$seance_id");
+        echo '<br><br>';
     }
-    echo '<br><br><br>';
-    echo $this->Form->input("Seance.texte_doc", array('label'=>'', 'type'=>'file'));
-//    echo $this->Form->submit('Importer', array('class'=>'bt_add', 'name'=>'importer', 'div'=>false));
-    echo '<br><br>';
+    echo $this->Form->input("Seance.texte_doc", array('label'=>'Nouveau fichier : ', 'type'=>'file'));
 }
-else {          ?>
+else {
+?>
     <div class="optional">
         <?php echo $this->Form->input('Seance.debat_global', array('label'=>'', 'type'=>'textarea', 'cols' => '10', 'rows' => '20'));?>
         <?php echo $this->Fck->load('SeanceDebatGlobal'); ?>
