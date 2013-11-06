@@ -10,7 +10,6 @@
             'fieldset'=>false,
             'legend'=>false,
             'label'=>false,
-            'fieldset' => false,
             'div' => false,
             'options'=>$avis,
             'type'=>'radio',
