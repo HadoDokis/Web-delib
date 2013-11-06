@@ -1164,8 +1164,24 @@ class DeliberationsController extends AppController {
                     $this->Traitement->Visa->replaceDynamicTrigger($id);
                     $members = $this->Traitement->whoIsNext($id);
                     if (empty($members)) {
-                        $this->Historique->enregistre($id, $user_connecte, 'Projet valide');
+                        $this->Historique->enregistre($id, $user_connecte, 'Projet valid&eacute;');
                         $this->Deliberation->saveField('etat', 2);
+                    } else {
+                        while ($members[0] == $user_connecte) {
+                            $traitementTermine = $this->Traitement->execute('OK', $user_connecte, $id);
+                            $this->Historique->enregistre($id, $user_connecte, 'Projet vis&eacute; (auto)');
+                            if ($traitementTermine) {
+                                $this->Historique->enregistre($id, $user_connecte, 'Projet valid&eacute;');
+                                $this->Deliberation->saveField('etat', 2);
+                                $this->Session->setFlash('Projet inséré dans le circuit et validé', 'growl');
+                                $this->redirect('/deliberations/mesProjetsValides');
+                            }
+                            $members = $this->Traitement->whoIsNext($id);
+                        }
+                        foreach ($members as $destinataire_id)
+                            $this->_notifier($id, $destinataire_id, 'traiter');
+                        $this->Session->setFlash('Projet inséré dans le circuit et visé', 'growl');
+                        $this->redirect('/deliberations/mesProjetsRedaction');
                     }
                 } else {
                     $this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
@@ -1188,7 +1204,7 @@ class DeliberationsController extends AppController {
                     $traitementTermine = $this->Traitement->execute('IN', $user_connecte, $id, $options);
                     
                     if ($traitementTermine) {
-                        $this->Historique->enregistre($id, $user_connecte, 'Projet valide');
+                        $this->Historique->enregistre($id, $user_connecte, 'Projet valid&eacute;');
                         $this->Deliberation->id = $id;
                         $this->Deliberation->saveField('etat', 2);
                     }
