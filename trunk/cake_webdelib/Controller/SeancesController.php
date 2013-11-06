@@ -730,78 +730,74 @@ class SeancesController extends AppController {
 		$this->set('canClose', (($date_tmpstp <= strtotime(date('Y-m-d H:i:s'))) && $toutesVisees));
 	}
         
-        function donnerAvis ($deliberation_id, $seance_id) {
-                // Initialisations
-                $deliberation = $this->Deliberation->find(  'first', array('conditions' => array('Deliberation.id' => $deliberation_id),
-                                                            'fields'     => array('Deliberation.id', 'Deliberation.typeacte_id', 
-                                                                                  'Deliberation.objet','Deliberation.objet_delib',
-                                                                                  'Deliberation.etat')));
-                $delib_seance=$this->Deliberation->Deliberationseance->find('first', 
-                                array('conditions' => array(    
-                                                                'Deliberationseance.seance_id' => $seance_id,
-                                                                'Deliberationseance.deliberation_id' => $deliberation_id,
-                                                            ),
-                             'recursive'  => -1 ));
+    function donnerAvis ($deliberation_id, $seance_id) {
+        // Initialisations
+        $deliberation = $this->Deliberation->find('first', array(
+            'conditions' => array('Deliberation.id' => $deliberation_id),
+            'fields'     => array('Deliberation.id', 'Deliberation.typeacte_id', 'Deliberation.objet','Deliberation.objet_delib', 'Deliberation.etat')));
+        $delib_seance=$this->Deliberation->Deliberationseance->find('first', array( 'recursive' => -1,
+            'conditions' => array(
+                'Deliberationseance.seance_id' => $seance_id,
+                'Deliberationseance.deliberation_id' => $deliberation_id
+            )));
 
-                if (!empty($this->data)) {
-                        if (!array_key_exists('avis', $this->data['Deliberation'])) {
-                                $this->Seance->invalidate('avis');
-                        } else {
-                                $this->Deliberation->Deliberationseance->id = $delib_seance['Deliberationseance']['id'];
-                                $this->Deliberation->Deliberationseance->set('deliberation_id', $deliberation_id);
-                                $this->Deliberation->Deliberationseance->set('seance_id', $seance_id);
-				$this->Deliberation->Deliberationseance->set('avis', $this->data['Deliberation']['avis']==1?true:false);
-				$this->Deliberation->Deliberationseance->set('commentaire', $this->data['Deliberation']['commentaire']);
-                                $this->Deliberation->Deliberationseance->save();
-                                
-                                foreach($this->data['Deliberation']['seance_id'] as $seance )
-                                {
-                                    $this->Deliberation->Deliberationseance->addDeliberationseance($deliberation_id, $seance);
-                                }
-
-                                // ajout du commentaire
-				$this->request->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
-				$this->request->data['Commentaire']['texte'] = 'A reçu un avis ';
-				$this->request->data['Commentaire']['texte'].= ($this->data['Deliberation']['avis'] == 1) ? 'favorable' : 'défavorable';
-				$this->request->data['Commentaire']['texte'].= ' en '. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$this->Seance->getType($this->data['Deliberation']['seance_id'][0]));
-				$this->request->data['Commentaire']['texte'].= ' du ' .$this->Date->frenchDate(strtotime($this->Seance->getDate($this->data['Deliberation']['seance_id'][0])));
-				$this->request->data['Commentaire']['commentaire_auto'] = 1;
-				$this->Deliberation->Commentaire->save($this->data);
-
-                                $this->redirect('/seances/detailsAvis/'.$seance_id);
-                        }
+        if (!empty($this->data)) {
+            if (!array_key_exists('avis', $this->data['Deliberation'])) {
+                    $this->Seance->invalidate('avis');
+            } else {
+                $this->Deliberation->Deliberationseance->id = $delib_seance['Deliberationseance']['id'];
+                $this->Deliberation->Deliberationseance->set('deliberation_id', $deliberation_id);
+                $this->Deliberation->Deliberationseance->set('seance_id', $seance_id);
+                $this->Deliberation->Deliberationseance->set('avis', $this->data['Deliberation']['avis']==1?true:false);
+                $this->Deliberation->Deliberationseance->set('commentaire', $this->data['Deliberation']['commentaire']);
+                $this->Deliberation->Deliberationseance->save();
+                if (!empty($this->data['Deliberation']['seance_id'])) {
+                    foreach($this->data['Deliberation']['seance_id'] as $seance )
+                        $this->Deliberation->Deliberationseance->addDeliberationseance($deliberation_id, $seance);
                 }
-                
-                $this->request->data = $deliberation;
 
-                $user = $this->Session->read('user');
-                if ($this->Droits->check($user['User']['id'], "Deliberations:editerProjetValide"))
-                        $afficherTtesLesSeances = true;
+                // ajout du commentaire
+                $this->request->data['Commentaire']['delib_id'] = $this->data['Deliberation']['id'];
+                $this->request->data['Commentaire']['texte'] = 'A reçu un avis ';
+                $this->request->data['Commentaire']['texte'].= ($this->data['Deliberation']['avis'] == 1) ? 'favorable' : 'défavorable';
+                if (!empty($this->data['Deliberation']['seance_id']))
+                    $this->request->data['Commentaire']['texte'].= ' en '. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$this->Seance->getType($this->data['Deliberation']['seance_id'][0]));
                 else
-                        $afficherTtesLesSeances = false;
-                
-                //On retire les séances ou le projet est déja inclus
-                $deliberationseance=$this->Deliberation->Deliberationseance->find('all',
-                                array(
-                                        'fields'=> array('Deliberationseance.seance_id'),
-                                        'conditions' => array(    
-                                                                'Deliberationseance.deliberation_id' => $deliberation_id,
-                                                            ),
-                             'recursive'  => -1 ));//$seance_id
-                foreach($deliberationseance as $seance)
-                    $seance_notinclude[]=array('Seance.id <>'=> $seance['Deliberationseance']['seance_id']);
-                
-                //$this->set('seances', $this->Seance->generateList(array('Seance.id <>'=> $seance_id),
-                $this->set('seances',   $this->Seance->generateList($seance_notinclude,
-                                        $afficherTtesLesSeances,
-                                        array_keys($this->Session->read('user.Nature')))
-                            );
-                $this->set('avis', array(true => 'Favorable', false => 'Défavorable'));
-                $this->set('avis_selected', $delib_seance['Deliberationseance']['avis']);
-                $this->set('commentaire', $delib_seance['Deliberationseance']['commentaire']);
-                $this->set('seances_selected', $this->Deliberation->getCurrentSeances($deliberation_id, false));
-                $this->set('seance_id', $seance_id);
+                    $this->request->data['Commentaire']['texte'].= ' en '. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$this->Seance->getType($seance_id));
+                if (!empty($this->data['Deliberation']['seance_id']))
+                    $this->request->data['Commentaire']['texte'].= ' du ' .$this->Date->frenchDate(strtotime($this->Seance->getDate($this->data['Deliberation']['seance_id'][0])));
+                else
+                    $this->request->data['Commentaire']['texte'].= ' du ' .$this->Date->frenchDate(strtotime($this->Seance->getDate($seance_id)));
+                $this->request->data['Commentaire']['commentaire_auto'] = 1;
+                $this->Deliberation->Commentaire->save($this->data);
+
+                $this->redirect('/seances/detailsAvis/'.$seance_id);
+            }
         }
+
+        $this->request->data = $deliberation;
+
+        $user = $this->Session->read('user');
+        if ($this->Droits->check($user['User']['id'], "Deliberations:editerProjetValide"))
+            $afficherTtesLesSeances = true;
+        else
+            $afficherTtesLesSeances = false;
+
+        //On retire les séances ou le projet est déja inclus
+        $deliberationseance=$this->Deliberation->Deliberationseance->find('all', array(
+            'fields'=> array('Deliberationseance.seance_id'),
+            'conditions' => array( 'Deliberationseance.deliberation_id' => $deliberation_id ),
+            'recursive'  => -1 ));
+        foreach($deliberationseance as $seance)
+            $seance_notinclude[] = array('Seance.id <>'=> $seance['Deliberationseance']['seance_id']);
+
+        $this->set('seances', $this->Seance->generateList($seance_notinclude, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
+        $this->set('avis', array(true => 'Favorable', false => 'Défavorable'));
+        $this->set('avis_selected', $delib_seance['Deliberationseance']['avis']);
+        $this->set('commentaire', $delib_seance['Deliberationseance']['commentaire']);
+        $this->set('seances_selected', $this->Deliberation->getCurrentSeances($deliberation_id, false));
+        $this->set('seance_id', $seance_id);
+    }
 
 	function saisirSecretaire($seance_id) {
 		$this->set('seance_id', $seance_id);
