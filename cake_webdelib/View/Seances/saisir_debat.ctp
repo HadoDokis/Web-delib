@@ -5,30 +5,23 @@
 <?php
     if (!Configure::read('GENERER_DOC_SIMPLE')){
         if ($isCommission) {
-            echo '<br>Nom fichier : '.$delib['Deliberation']['commission_name'];
-            echo '<br>Taille : '.$delib['Deliberation']['commission_size'];
-            if ($delib['Deliberation']['commission_size'] >0){
-                echo '<br>'.$this->Html->link('Telecharger le débat','/deliberations/download/'.$delib['Deliberation']['id'].'/commission');
-                echo ' '.$this->Html->link('Supprimer le débat','/deliberations/deleteDebat/'.$delib['Deliberation']['id']."/$isCommission/$seance_id");
-            }
-            echo '<br><br><br>';
-            echo  $this->Form->input("Deliberation.texte_doc",array('label'=>'', 'type'=>'file'));
-           // echo $this->Form->submit('Importer', array('class'=>'bt_add', 'name'=>'importer', 'div'=>false));
-            echo '<br><br>';
+            $size = $delib['Deliberation']['commission_size'];
+            $name = $delib['Deliberation']['commission_name'];
+            $nature = 'commission';
         }
         else {
-            echo '<br>Nom fichier : '.$delib['Deliberation']['debat_name'];
-            echo '<br>Taille : '.$delib['Deliberation']['debat_size'];
-            if ($delib['Deliberation']['debat_size'] >0) {
-                echo '<br>'.$this->Html->link('Télécharger le débat','/deliberations/download/'.$delib['Deliberation']['id'].'/debat');
-                echo ' '.$this->Html->link('Supprimer le débat','/deliberations/deleteDebat/'.$delib['Deliberation']['id']."/$isCommission/$seance_id");
-            }
-            echo '<br><br><br>';
-            echo  $this->Form->input("Deliberation.texte_doc",array('label'=>'', 'type'=>'file'));
-          //  echo $this->Form->submit('Importer', array('class'=>'bt_add', 'name'=>'importer', 'div'=>false));
+            $size = $delib['Deliberation']['debat_size'];
+            $name = $delib['Deliberation']['debat_name'];
+            $nature = 'debat';
+        }
+        if ($size >0) {
+            echo '<br>Nom fichier : ' . $name;
+            echo '<br>Taille : '. round($size/1000, 2) .'ko';
+            echo '<br>'.$this->Html->link('[Télécharger le débat]','/deliberations/download/'.$delib['Deliberation']['id'].'/'.$nature);
+            echo ' '.$this->Html->link('Supprimer le débat','/deliberations/deleteDebat/'.$delib['Deliberation']['id']."/$isCommission/$seance_id");
             echo '<br><br>';
         }
-       
+        echo  $this->Form->input('Deliberation.texte_doc', array('label'=>'Nouveau fichier : ', 'type'=>'file'));
     }
     if (Configure::read('GENERER_DOC_SIMPLE')) {
       if (!$isCommission) {
@@ -40,24 +33,17 @@
     <?php echo $this->Fck->load('DeliberationDebat'); ?>
 </div>
 
-<?php   } 
-        else {
-?>
+<?php } else { ?>
    <div class="optional">
     <?php echo $this->Form->input('Deliberation.commission', array('type'=>'textarea', 'label'=>''));?>
     <?php echo $this->Fck->load('DeliberationCommission'); ?>
 </div>
 
+<?php } } // fin du if ?>
 
-
-<?php   } 
-     } // fin du if ?>
-
-
-
+<br>
 <div class="submit">
-
-      <?php 
+      <?php
         echo $this->Html->tag("div", null, array("class" => "btn-group", 'style' => 'margin-top:10px;'));
         if(empty($seance['Seance']['traitee'])){
         if($seance['Typeseance']['action']==0)
