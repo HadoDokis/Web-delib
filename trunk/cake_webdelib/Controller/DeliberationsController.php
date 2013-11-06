@@ -1176,6 +1176,7 @@ class DeliberationsController extends AppController {
                                 $this->Session->setFlash('Projet inséré dans le circuit et validé', 'growl');
                                 $this->redirect('/deliberations/mesProjetsValides');
                             }
+
                             $members = $this->Traitement->whoIsNext($id);
                         }
                         foreach ($members as $destinataire_id)
