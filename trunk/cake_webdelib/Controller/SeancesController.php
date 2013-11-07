@@ -1138,10 +1138,10 @@ class SeancesController extends AppController {
                         sleep(5);
                     }
                 }
-                if($i==0) {
+
+                if ($i==0)
                     $this->Session->setFlash('Veuillez s&eacute;lectionner un acteur au minimum.', 'growl', array('type' => 'erreur'));
-                }
-                elseif (!empty($message)) 
+                elseif (!empty($message))
                     $this->Session->setFlash($message, 'growl', array('type'=>'error'));
                 else
                     $this->Session->setFlash('Envoi des convocations effectué avec succès', 'growl');
