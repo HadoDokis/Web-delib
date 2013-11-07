@@ -32,7 +32,7 @@ $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Ré
         if (empty($acteur['Acteur']['email']))
             echo $this->Form->checkbox('Acteur.id_'.$acteur['Acteur']['id'], array(
                         'disabled' => true,
-                        'title' => 'Envoi impossible, email de l\'acteur n\'est pas renseigné'));
+                        'title' => 'Envoi impossible, l\'adresse mail de l\'acteur n\'est pas renseigné'));
         elseif ($acteur['Acteur']['date_envoi'] == null)
             echo $this->Form->checkbox('Acteur.id_'.$acteur['Acteur']['id']);
         else
