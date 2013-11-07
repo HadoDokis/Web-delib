@@ -13,7 +13,7 @@ echo $this->Html->tag('/div', null);
 $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Récupérer une archive contenant les convocations','Récupérer une archive contenant les convocations',null,'btn-inverse','icon-download');
 ?>
 <br /><br />
-<table width='100%'>
+<table style='width:100%'>
     <caption>Liste des acteurs</caption>
     <tr>
         <th></th>
@@ -28,10 +28,18 @@ $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Ré
         $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
         echo $this->Html->tag('tr', null, $rowClass);
         $numLigne++;
-        if ($acteur['Acteur']['date_envoi'] == null)
-            echo ('<td>'.$this->Form->checkbox('Acteur.id_'.$acteur['Acteur']['id']).'</td>');
+        echo '<td style="text-align: center; vertical-align: middle;">';
+        if (empty($acteur['Acteur']['email']))
+            echo $this->Form->checkbox('Acteur.id_'.$acteur['Acteur']['id'], array(
+                        'disabled' => true,
+                        'title' => 'Envoi impossible, email de l\'acteur n\'est pas renseigné'));
+        elseif ($acteur['Acteur']['date_envoi'] == null)
+            echo $this->Form->checkbox('Acteur.id_'.$acteur['Acteur']['id']);
         else
-            echo ('<td> </td>');
+            echo '<i class="icon-ok" title="Convocation déjà envoyée"></i>';
+
+        echo '</td>';
+
         echo ('<td>'.$acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].'</td>'); 
         
         if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf')){
@@ -73,3 +81,9 @@ $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Ré
 
 <?php echo $this->Form->end(); ?>
 </div>
+
+<style>
+    table tr td, table tr th{
+        vertical-align: middle;
+    }
+</style>
