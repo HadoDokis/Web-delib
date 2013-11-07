@@ -12,7 +12,7 @@ $this->Html2->boutonSubmitUrl("/seances/genererConvocation/$seance_id/$model_id"
 echo $this->Html->tag('/div', null);
 $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Récupérer une archive contenant les convocations','Récupérer une archive contenant les convocations',null,'btn-inverse','icon-download');
 ?>
-<br /><br />
+<br>
 <table style='width:100%'>
     <caption>Liste des acteurs</caption>
     <tr>
