@@ -500,7 +500,9 @@ class ModelsController extends AppController {
 					$time_end = microtime(true);
 					$time = $time_end - $time_start;
                                         Configure::write('debug', 0);
-                                        if ($progress){
+                                        if ($dl ==2) {//Pour l'export CMIS
+                                            $this->log($dl,'debug');
+                                        }elseif ($progress==true){
                                             $this->Progress->at(100, 'Chargement des résultats...');
                                             $listFiles[$urlWebroot.$nomSansFormat] = 'Document généré';
                                             $this->Session->write('tmp.listFiles', $listFiles);
