@@ -4,7 +4,7 @@ class PostseancesController extends AppController {
 	var $name = 'Postseances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2' );
 	var $components = array('Date', 'Gedooo', 'Cmis', 'Progress', 'Conversion');
-	var $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance');
+	var $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance', 'Typeacte', 'Nature');
 
 	var $demandeDroit = array('index');
 
@@ -198,7 +198,7 @@ class PostseancesController extends AppController {
 
             $this->Seance->Behaviors->attach('Containable');
             $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
-                                                         'contain'    => array('Typeseance.libelle','Typeseance.modelconvocation_id',
+                                                         'contain'    => array('Typeseance.libelle','Typeseance.modelconvocation_id','Typeseance.modelprojet_id',
                                                             'Typeseance.modelordredujour_id' ) ));
 
             $date_seance = $seance['Seance']['date'];
@@ -245,7 +245,7 @@ class PostseancesController extends AppController {
             $delibs_id = $this->Seance->getDeliberationsId($seance_id);
             $output = array();
 
-            $this->log( 'Génératin du xml','debug');
+            $this->log( 'Génération du xml','debug');
             $dom = new DOMDocument('1.0', 'utf-8');
             $dom->formatOutput = true;
             $idDepot=$seance['Seance']['numero_depot']+1;
@@ -290,18 +290,23 @@ class PostseancesController extends AppController {
 
             $this->Progress->at(60, 'Ajout des d&eacute;lib&eacute;rations...');
             foreach ($delibs_id as $delib_id) {
-                $this->log( '$delib_id=>'.$delib_id,'debug');
                 $doc = $this->_createElement($dom, 'dossierActe', null,  array('idActe'=>$delib_id, 'refSeance' => $seance_id));
 
                 $this->Deliberation->Behaviors->attach('Containable');
-                $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
-                                                                  'fields'     => array('Deliberation.num_delib', 'Deliberation.objet_delib',
-                                                                                        'Deliberation.titre','Deliberation.delib_pdf', 'deliberation'),
-                                                                  'contain'  => array('Service.libelle', 'Theme.libelle', 'Typeacte.libelle', 
-                                                                                      'Redacteur.nom', 'Redacteur.prenom',
-                                                                                      'Rapporteur.nom', 'Rapporteur.prenom')));
-
-                $doc->appendChild($this->_createElement($dom, 'natureACTE', $delib['Typeacte']['libelle'] ));
+                $delib = $this->Deliberation->find('first', array('fields'     => array('Deliberation.num_delib', 'Deliberation.objet_delib',
+                                                                                        'Deliberation.titre',/*'Deliberation.delib_pdf', 'deliberation'*/),
+                                                                  'contain'  => array('Service'=>array('fields' => array('libelle')),
+                                                                                        'Theme'=>array('fields' => array('libelle')),
+                                                                                        'Typeacte'=>array(  'fields' => array('libelle'),
+                                                                                                            'Nature'=>array('fields' => 'libelle')),
+                                                                                        'Redacteur'=>array('fields' => array('nom','prenom')),),
+                                                                  'conditions' => array('Deliberation.id' => $delib_id),
+                                                                ));
+                
+                 $nature = $this->Nature->find('first', array(  'fields'     => array('libelle'),
+                                                                'conditions' => array('Nature.id' => $delib['Typeacte']['nature_id']),
+                                                      ));
+                $doc->appendChild($this->_createElement($dom, 'natureACTE', $nature['Nature']['libelle'] ));
                 $doc->appendChild($this->_createElement($dom, 'dateACTE',  $date_seance ));
                 if (isset( $delib['Deliberation']['dateAR']))  $doc->appendChild($this->_createElement($dom, 'dateAR',  $delib['Deliberation']['dateAR']));
                 $doc->appendChild($this->_createElement($dom, 'numeroACTE', $delib['Deliberation']['num_delib']));
@@ -332,7 +337,6 @@ class PostseancesController extends AppController {
                 $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
                 $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                 $doc->appendChild($document);
-
                 $zip->addFromString($delib_filename, $delib['Deliberation']['delib_pdf']);
 
                 $document = $this->_createElement($dom, 'document', null, array('nom'=>$delib_filename,'relname'=>$delib_filename, 'type' => 'Rapport' ));
@@ -341,13 +345,14 @@ class PostseancesController extends AppController {
                 $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
                 $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                 $doc->appendChild($document);
-
-                $zip->addFromString('Rapports'.DS.$delib_filename, $delib['Deliberation']['delib_pdf']);
+                $err = $this->requestAction('/models/generer/'.$delib_id.'/null/'.$seance['Typeseance']['modelprojet_id'].'/0/2/retour/0/true/false');
+                $projet_filename =  WEBROOT_PATH.DS.'files'.DS.'generee'.DS.'fd'.DS.'null'.DS.$delib_id.DS.'retour.pdf2';
+                    
+                $zip->addFromString('Rapports'.DS.$delib_filename, file_get_contents($projet_filename));
 
 
                 $annexes_id =  $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, 1);
-                $this->log( 'Annexes :'.print_r(array_keys($annexes_id),true),'debug');
-                unset($annexes_id);
+                
                 if (isset($annexes_id) && !empty($annexes_id)) {
                     foreach ($annexes_id as $annex_id) {
                         $annex_id = $annex_id['Annex']['id'];
@@ -383,8 +388,6 @@ class PostseancesController extends AppController {
 
                     }
                 }
-                $this->log( 'Fin Annexes','debug');
-
                 $dom_depot->appendChild($doc); 
 
             }
