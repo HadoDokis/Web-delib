@@ -134,21 +134,21 @@ class GedoooTask extends Shell
                     $this->out("* Texte de projet " . $projet['Deliberation']['texte_projet_name'] . ' ... ', 0);
                     $result = $this->_sendToGedooo($projet['Deliberation']['texte_projet'], $projet['Deliberation']['texte_projet_name'], $projet['Deliberation']['id'], 'Deliberation', 'texte_projet');
                     // Log du résultat
-                    $this->_ajouterLigneAuRapport($projet['Deliberation']['id'], 'Deliberation', 'texte_projet', $result);
+                    $this->_ajouterLigneAuRapport($projet['Deliberation']['id'],$projet['Deliberation']['id'], 'Deliberation', 'texte_projet', $result);
                 }
                 if (!empty($projet['Deliberation']['texte_synthese'])) {
                     $hasTexte = true;
                     $this->out("* Texte de synthèse " . $projet['Deliberation']['texte_synthese_name'] . ' ... ', 0);
                     $result = $this->_sendToGedooo($projet['Deliberation']['texte_synthese'], $projet['Deliberation']['texte_synthese_name'], $projet['Deliberation']['id'], 'Deliberation', 'texte_synthese');
                     // Log du résultat
-                    $this->_ajouterLigneAuRapport($projet['Deliberation']['id'], 'Deliberation', 'texte_synthese', $result);
+                    $this->_ajouterLigneAuRapport($projet['Deliberation']['id'],$projet['Deliberation']['id'], 'Deliberation', 'texte_synthese', $result);
                 }
                 if (!empty($projet['Deliberation']['deliberation'])) {
                     $hasTexte = true;
                     $this->out("* Texte de délibération " . $projet['Deliberation']['deliberation_name'] . ' ... ', 0);
                     $result = $this->_sendToGedooo($projet['Deliberation']['deliberation'], $projet['Deliberation']['deliberation_name'], $projet['Deliberation']['id'], 'Deliberation', 'deliberation');
                     // Log du résultat
-                    $this->_ajouterLigneAuRapport($projet['Deliberation']['id'], 'Deliberation', 'deliberation', $result);
+                    $this->_ajouterLigneAuRapport($projet['Deliberation']['id'],$projet['Deliberation']['id'], 'Deliberation', 'deliberation', $result);
 
                 }
                 foreach ($projet['Annex'] as $annexe) {
@@ -157,7 +157,7 @@ class GedoooTask extends Shell
                     // Envoi de l'annexe à gedooo
                     $result = $this->_sendToGedooo($annexe['data'], $annexe['filename'], $annexe['id'], 'Annexe', 'data');
                     // Log du résultat
-                    $this->_ajouterLigneAuRapport($annexe['id'], 'Annexe', 'data', $result);
+                    $this->_ajouterLigneAuRapport($annexe['id'], $projet['Deliberation']['id'], 'Annexe', 'data', $result);
                 } // Fin foreach annexe
                 if (!$hasTexte)
                     $this->out("Aucun texte associé !\n", 0);
@@ -351,11 +351,12 @@ class GedoooTask extends Shell
      *
      * @return void
      */
-    private function _ajouterLigneAuRapport($id, $model, $column, $retourGedooo)
+    private function _ajouterLigneAuRapport($id, $delibId , $model, $column, $retourGedooo)
     {
         $this->_rapport .=
                 date("d-m-Y H:i:s") . "\t"
                 . $id . "\t"
+                . $delibId . "\t"
                 . $model . "\t"
                 . $column . "\t"
                 . $retourGedooo . "\n";
