@@ -501,7 +501,6 @@ class ModelsController extends AppController {
 					$time = $time_end - $time_start;
                                         Configure::write('debug', 0);
                                         if ($dl ==2) {//Pour l'export CMIS
-                                            $this->log($dl,'debug');
                                         }elseif ($progress==true){
                                             $this->Progress->at(100, 'Chargement des résultats...');
                                             $listFiles[$urlWebroot.$nomSansFormat] = 'Document généré';
