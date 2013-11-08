@@ -15,7 +15,7 @@ App::uses('File', 'Utility');
 class GedoooTask extends Shell
 {
 
-    public $uses = array('Annex', 'Deliberation', 'Collectivite');
+    public $uses = array('Annex', 'Deliberation', 'Collectivite', 'Seance', 'Deliberationseance');
 
     /**
      * variable contenant le log de génération des annexes par Gedooo
@@ -90,12 +90,13 @@ class GedoooTask extends Shell
      * @param string $logPath Chemin du fichier de log personnalisable
      *
      */
-    public function testTextes($mode = 'all', $logPath = null)
+    public function testTextes($mode = 'all', $id = 'null' , $logPath = null)
     {
         if ($logPath != null)  $this->logPath = $logPath;
-        
-        // Charge les annexes depuis la base de données
-        $delibsWithAnnexes = $this->_getDelibsWithAnnexes();
+
+        if ($mode != 'id')
+            // Charge les délibs et annexes depuis la base de données
+            $delibsWithAnnexes = $this->_getDelibsWithAnnexes();
 
         // filtre les annexes (scope selon argument $mode)
         switch ($mode) {
@@ -107,6 +108,10 @@ class GedoooTask extends Shell
                 $projets = $this->_getProjetsSansSeance($delibsWithAnnexes);
                 break;
 
+            case 'id':
+                $projets = $this->_getProjetsParSeanceId($id);
+                break;
+
             default: // case 'all'
                 $projets = array_merge($this->_getProjetsSeanceEnCours($delibsWithAnnexes), $this->_getProjetsSansSeance($delibsWithAnnexes));
                 break;
@@ -114,8 +119,8 @@ class GedoooTask extends Shell
         $nbProjets = count($projets);
         $nbAnnexes = $this->countAnnexesForDelibs($projets);
         if (!empty($nbProjets) || !empty($nbAnnexes)) {
-            $this->out("\n<important>Nombre de projets à tester : $nbProjets ...</important>\n");
-            $this->out("\n<important>Nombre d'annexes à tester : $nbAnnexes ...</important>\n");
+            $this->out("\n<important>Nombre de projets à tester : $nbProjets ...</important>");
+            $this->out("<important>Nombre d'annexes à tester : $nbAnnexes ...</important>\n");
             $p = 0;
             //Pour chaque projet
             foreach ($projets as $projet) {
@@ -165,9 +170,9 @@ class GedoooTask extends Shell
             } catch (Exception $exc) {
                 $this->out('<error>Erreur fichier journal : ' . $exc->getMessage() . '</error>');
             }
-        } else {
-            $this->out("\n<info>Aucune annexe à tester !</info>\n");
-        }
+        } else
+            $this->out("\n<info>Aucun texte à tester !</info>\n");
+
         $this->_textesFolder->delete();
 
         return $this->_textesInError;
@@ -183,7 +188,7 @@ class GedoooTask extends Shell
      */
     private function _getDelibsWithAnnexes()
     {
-        $this->out("<info>Chargement des annexes depuis la base de données...</info>");
+        $this->out("<info>Chargement des projets depuis la base de données...</info>");
         $time_start = microtime(true);
 
         $this->Deliberation->Behaviors->attach('Containable');
@@ -274,6 +279,61 @@ class GedoooTask extends Shell
             if (empty($delib['Deliberationseance']))
             // Ajouter toutes les annexes au tableau d'annexes à tester
                 $projets[] = $delib;
+
+        $time_end = microtime(true);
+        $this->out('<time>Durée : ' . round($time_end - $time_start, 2) . 's</time>', 1, Shell::VERBOSE);
+
+        return $projets;
+    }
+
+
+    /**
+     * @params $seanceId id de la séance contenant les textes à tester
+     *
+     * @return array projets
+     */
+    private function _getProjetsParSeanceId($seanceId)
+    {
+        $this->out("<info>Sélection des projets de la séance $seanceId...</info>");
+        $time_start = microtime(true);
+
+        $options = array(
+            'recursive' => -1,
+            'fields' => array('deliberation_id'),
+            'conditions' => array('seance_id' => $seanceId)
+        );
+
+        $delibseance = $this->Deliberationseance->find('all', $options);
+        $delibsid = array();
+        foreach ($delibseance as $delibid)
+            $delibsid[] = $delibid['Deliberationseance']['deliberation_id'];
+
+        $this->Deliberation->Behaviors->attach('Containable');
+        $delibs = $this->Deliberation->find('all', array(
+            'conditions' => array('Deliberation.id' => $delibsid),
+            'fields' => array(
+                'Deliberation.id',
+                'Deliberation.objet_delib',
+                'Deliberation.texte_projet',
+                'Deliberation.texte_projet_name',
+                'Deliberation.texte_synthese',
+                'Deliberation.texte_synthese_name',
+                'Deliberation.deliberation',
+                'Deliberation.deliberation_name'),
+            'contain' => array(
+                'Annex' => array(
+                    'fields' => array(
+                        'Annex.id',
+                        'Annex.filename',
+                        'Annex.filetype',
+                        'Annex.data'
+                    ),
+                    'conditions' => array('filetype' => array("application/vnd.oasis.opendocument.text", "application/pdf"))
+        ))));
+
+        $projets = array();
+        foreach ($delibs as $delib)
+            $projets[] = $delib;
 
         $time_end = microtime(true);
         $this->out('<time>Durée : ' . round($time_end - $time_start, 2) . 's</time>', 1, Shell::VERBOSE);
