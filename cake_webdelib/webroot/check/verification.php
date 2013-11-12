@@ -33,6 +33,7 @@ define ('COMPONENTS', CONTROLLERS.'Component'.DS);
 define ('VIEWS', APP.'View'.DS);
 define ('HELPERS', VIEWS.'Helper'.DS);
 define ('VENDORS', APP.'Vendor'.DS);
+define ('CONSOLE', APP.'Console'.DS);
 
 define('TMP', APP.'tmp'.DS);
 define('CACHE', TMP.'cache'.DS);
@@ -1040,67 +1041,67 @@ function testerOdfGedooo() {
 
 	// vérification de la présence du fichier .ini
 	if (!file_exists(CONFIGS.$fichier_conf)) {
-                include_once(CONFIGS.$fichier_conf);
+        include_once(CONFIGS.$fichier_conf);
 		d("Fichier de configuration de l'application $fichier_conf non trouvé", 'ko');
 		return false;
 	}
 
 	// type outil d'édition
-			// initialisations
-			$gedoooWsdl = Configure::read('GEDOOO_WSDL');
-			if ($gedoooWsdl == NON_TROUVE)
-				d("Url wsdl de l'outil d'édition : déclaration de ['Edition']['GEDOOO_WSDL'] non trouvée dans le fichier $fichier_conf", 'ko');
-			elseif (empty($gedoooWsdl))
-				d("Url wsdl de l'outil d'édition : ['Edition']['GEDOOO_WSDL'] non renseigné dans le fichier $fichier_conf", 'ko');
-			else
-				d("Url wsdl de l'outil d'édition : $gedoooWsdl", 'info');
+    // initialisations
+    $gedoooWsdl = Configure::read('GEDOOO_WSDL');
+    if ($gedoooWsdl == NON_TROUVE)
+        d("Url wsdl de l'outil d'édition : déclaration de ['Edition']['GEDOOO_WSDL'] non trouvée dans le fichier $fichier_conf", 'ko');
+    elseif (empty($gedoooWsdl))
+        d("Url wsdl de l'outil d'édition : ['Edition']['GEDOOO_WSDL'] non renseigné dans le fichier $fichier_conf", 'ko');
+    else
+        d("Url wsdl de l'outil d'édition : $gedoooWsdl", 'info');
 
-			if (empty($gedoooWsdl))
-				return;
-                        
-                        try {
-                            $oService = new SoapClient($gedoooWsdl);
-                            d("Version de l'outil d'édition : ".$oService->__soapCall("Version", array()), 'info');
-                        } catch (Exception $e) {
-                            //Erreur lors de l'initialisation de la connexion : code 001
-                            d("Version de l'outil d'édition : Erreur lors de la connexion au WSDL : " . $e->getMessage(), 'ko');
-                        }
-                        
-			// test d'édition
-			t('h5', "Essai d'édition");
+    if (empty($gedoooWsdl))
+        return;
 
-			$tmpFile = "/tmp/FILE_RESULT.odt";
-			@unlink( $tmpFile );
-		
-			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_Utility.class');
-			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_FieldType.class');
-			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_ContentType.class');
-			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_IterationType.class');
-			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_PartType.class');
-			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_FusionType.class');
-			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_MatrixType.class');
-			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_AxisTitleType.class');
-		
-			$fichierSource = APP.WEBROOT_DIR.DS.'files'.DS.'empty.odt';
-			$oTemplate = new GDO_ContentType("", "modele.odt", "application/vnd.oasis.opendocument.text", "binary", file_get_contents($fichierSource));
-		
-			$time_start = microtime(true);
-			$oMainPart = new GDO_PartType();
-			$oMainPart->addElement(new GDO_FieldType('ma_variable', 'OK', 'text'));
-			$oFusion = new GDO_FusionType($oTemplate, "application/vnd.oasis.opendocument.text", $oMainPart);
-			try {
-				$oFusion->process();
-				$oFusion->SendContentToFile($tmpFile);
-				$time_end = microtime(true);
-				$time = round($time_end - $time_start, 2);
-				if (file_exists($tmpFile))  {
-					d("Fusion réussie avec ODFGEDOOo en $time secondes", 'ok');
-				} else
-					d('Fusion échouée avec ODFGEDOOo', 'ko');
-			} catch(Exception $e) {
-				d("Fusion échouée avec ODFGEDOOo : ".$e->getMessage(), 'ko');
-			}
+    try {
+        $oService = new SoapClient($gedoooWsdl);
+        d("Version de l'outil d'édition : ".$oService->__soapCall("Version", array()), 'info');
+    } catch (Exception $e) {
+        //Erreur lors de l'initialisation de la connexion : code 001
+        d("Version de l'outil d'édition : Erreur lors de la connexion au WSDL : " . $e->getMessage(), 'ko');
+    }
+
+    // test d'édition
+    t('h5', "Essai d'édition");
+
+    $tmpFile = "/tmp/FILE_RESULT.odt";
+    @unlink( $tmpFile );
+
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_Utility.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_FieldType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_ContentType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_IterationType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_PartType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_FusionType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_MatrixType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_MatrixRowType.class');
+    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+
+    $fichierSource = APP.WEBROOT_DIR.DS.'files'.DS.'empty.odt';
+    $oTemplate = new GDO_ContentType("", "modele.odt", "application/vnd.oasis.opendocument.text", "binary", file_get_contents($fichierSource));
+
+    $time_start = microtime(true);
+    $oMainPart = new GDO_PartType();
+    $oMainPart->addElement(new GDO_FieldType('ma_variable', 'OK', 'text'));
+    $oFusion = new GDO_FusionType($oTemplate, "application/vnd.oasis.opendocument.text", $oMainPart);
+    try {
+        $oFusion->process();
+        $oFusion->SendContentToFile($tmpFile);
+        $time_end = microtime(true);
+        $time = round($time_end - $time_start, 2);
+        if (file_exists($tmpFile))  {
+            d("Fusion réussie avec ODFGEDOOo en $time secondes", 'ok');
+        } else
+            d('Fusion échouée avec ODFGEDOOo', 'ko');
+    } catch(Exception $e) {
+        d("Fusion échouée avec ODFGEDOOo : ".$e->getMessage(), 'ko');
+    }
 
 }
 
@@ -1278,7 +1279,7 @@ function checkLDAP(){
         $ldapInfos["Login"] = Configure::read("LDAP_LOGIN");
         $ldapInfos["Password"] = Configure::read("LDAP_PASSWD");
         $ldapInfos["Unique_ID"] = Configure::read("UNIQUE_ID");
-        $ldapInfos["Base DN"] = Configure::read("BASE_DN");
+        $ldapInfos["Base_DN"] = Configure::read("BASE_DN");
         $ldapInfos["Account_suffix"] = Configure::read("ACCOUNT_SUFFIX");
         $ldapInfos["DN"] = Configure::read("DN");
     }
@@ -1289,7 +1290,7 @@ function checkLDAP(){
         $ldapInfos["Login"] = LDAP_LOGIN;
         $ldapInfos["Password"] = LDAP_PASSWD;
         $ldapInfos["Unique_ID"] = UNIQUE_ID;
-        $ldapInfos["Base DN"] = BASE_DN;
+        $ldapInfos["Base_DN"] = BASE_DN;
         $ldapInfos["Account_suffix"] = ACCOUNT_SUFFIX;
         $ldapInfos["DN"] = DN;      
     }
@@ -1313,7 +1314,7 @@ function checkLDAP(){
         
         // authentification
         if(Configure::read('USE_OPENLDAP'))
-            @ldap_bind($conn, $ldapInfos["Unique_ID"].'='.$ldapInfos["Login"].','.$ldapInfos["Base DN"], $ldapInfos["Password"]);
+            @ldap_bind($conn, $ldapInfos["Unique_ID"].'='.$ldapInfos["Login"].','.$ldapInfos["Base_DN"], $ldapInfos["Password"]);
         else
             @ldap_bind($conn, $ldapInfos["Login"], $ldapInfos["Password"]);
         
@@ -1327,7 +1328,7 @@ function checkLDAP(){
                 d('Echec de l\'authentification à l\'annuaire LDAP : '.ldap_error($conn), 'ko');
                 if(Configure::read('USE_OPENLDAP')){
                     // recherche de l'utilisateur dans l'annuaire (ne fonctionne que si ldap public)
-                    $result = @ldap_search($conn, $ldapInfos["Base DN"], $ldapInfos["Unique_ID"]."=".$ldapInfos["Login"]);
+                    $result = @ldap_search($conn, $ldapInfos["Base_DN"], $ldapInfos["Unique_ID"]."=".$ldapInfos["Login"]);
                     $info = @ldap_get_entries($conn, $result);
                     if ($info['count'] > 0){
                         d('L\'utilisateur \''.$ldapInfos["Login"].'\' est bien présent dans l\'annuaire', 'ok');
@@ -1344,4 +1345,19 @@ function checkLDAP(){
         d('Connexion au serveur LDAP : échec', 'ko');
     }
 }
+
+/**
+ * Vérifie l'intégrité du schéma de la base de données
+ */
+function checkSchema(){
+    $command = CONSOLE.'cake schema update --dry';
+    $retour = exec($command);
+    t('h5', "Test d'intégrité du schéma");
+    if ($retour == 'Schema is up to date.') {
+        d('Schéma de la base de données : Valide !', 'ok');
+    } else {
+        d('Schéma de la base de données : Problème d\'intégrité !!', 'ko');
+    }
+}
+
 ?>
