@@ -262,7 +262,7 @@ class PostseancesController extends AppController {
 
 
             {
-                $this->Progress->at(20, 'G&eacute;n&eacute;ration du PV Sommaire...');
+                $this->Progress->at(20, 'G&eacute;n&eacute;ration de la convocation...');
                 $dom_seance->appendChild($this->_createElement($dom, 'convocation', 'convocation.pdf'));
                 $err = $this->requestAction('/models/generer/null/'.$seance_id.'/'.$seance['Typeseance']['modelconvocation_id'].'/0/0/retour/0/true');
                 $projet_filename =  WEBROOT_PATH.DS.'files'.DS.'generee'.DS.'fd'.DS.$seance_id.DS.'null'.DS.'Document.pdf';
@@ -293,8 +293,8 @@ class PostseancesController extends AppController {
                 $doc = $this->_createElement($dom, 'dossierActe', null,  array('idActe'=>$delib_id, 'refSeance' => $seance_id));
 
                 $this->Deliberation->Behaviors->attach('Containable');
-                $delib = $this->Deliberation->find('first', array('fields'     => array('Deliberation.num_delib', 'Deliberation.objet_delib',
-                                                                                        'Deliberation.titre',/*'Deliberation.delib_pdf', 'deliberation'*/),
+                $delib = $this->Deliberation->find('first', array('fields'     => array('Deliberation.id','Deliberation.num_delib', 'Deliberation.objet_delib',
+                                                                                        'Deliberation.titre', 'Deliberation.delib_pdf', 'deliberation'),
                                                                   'contain'  => array('Service'=>array('fields' => array('libelle')),
                                                                                         'Theme'=>array('fields' => array('libelle')),
                                                                                         'Typeacte'=>array(  'fields' => array('libelle'),
@@ -329,7 +329,7 @@ class PostseancesController extends AppController {
                 }
                 $doc->appendChild($this->_createElement($dom, 'listeCommissions', $libelle));
                 $doc->appendChild($this->_createElement($dom, 'typeseanceACTE', $type_seance));
-                $delib_filename = $delib_id.'-'.$delib['Deliberation']['id'].'.pdf';
+                $delib_filename = $delib_id.'-'.$delib['Deliberation']['num_delib'].'.pdf';
 
                 $document = $this->_createElement($dom, 'document', null, array('nom'=>$delib_filename,'relname'=>$delib_filename,  'type' => 'Deliberation' ));
                 $document->appendChild($this->_createElement($dom, 'titre', $delib['Deliberation']['objet_delib']));
@@ -357,7 +357,7 @@ class PostseancesController extends AppController {
                     foreach ($annexes_id as $annex_id) {
                         $annex_id = $annex_id['Annex']['id'];
                         $annex = $this->Deliberation->Annex->find('first', array('conditions' => array('Annex.id' => $annex_id),
-                                                                   'fields'      => array('Annex.titre', 'Annex.filename', 'Annex.filetype', 'Annex.data_pdf','Annex.data'),
+                                                                   'fields'      => array('Annex.id','Annex.titre', 'Annex.filename', 'Annex.filetype', 'Annex.data_pdf','Annex.data'),
                                                                    'recursive' => -1));
                         $this->log( $annex['Annex']['filetype'],'debug');
                         switch ( $annex['Annex']['filetype']) {
@@ -384,7 +384,7 @@ class PostseancesController extends AppController {
                         $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                         $doc->appendChild($document);
 
-                        $zip->addFromString('Annexes'.DS.$annex['Annex']['id'].'pdf', $annexe_content);
+                        $zip->addFromString('Annexes'.DS.$annex['Annex']['id'].'.pdf', $annexe_content);
 
                     }
                 }
