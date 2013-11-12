@@ -26,7 +26,7 @@ class ParapheurShell extends Shell {
         $collection = new ComponentCollection();
         $this->Parafwebservice = new IparapheurComponent($collection);
         // Controle de l'avancement des délibérations dans le parapheur
-        $delibs = $this->Deliberation->find('all', array('conditions' => array('Deliberation.etat >' => 0,
+        $delibs = $this->Deliberation->find('all', array('conditions' => array('Deliberation.etat >' => 2,
                 'Deliberation.etat_parapheur' => 1),
             'recursive' => -1,
             'fields' => array('id', 'objet', 'typeacte_id')));
@@ -56,7 +56,7 @@ class ParapheurShell extends Shell {
                 $id_dossier = $delib['Deliberation']['id_parapheur'];
         else //DEPRECATED (rétro-compatibilité vieux dossiers parapheur)
                 $id_dossier = "$delib_id $objet";
-            
+
         $histo = $this->Parafwebservice->getHistoDossierWebservice($id_dossier);
         if (isset($histo['logdossier'])){
         for ($i = 0; $i < count($histo['logdossier']); $i++) {
@@ -80,12 +80,13 @@ class ParapheurShell extends Shell {
                                 $this->Deliberation->saveField('signature', base64_decode($dossier['getdossier'][10]));
                             }
                             $this->Deliberation->saveField('signee', 1);
+                            /*
                             if ($compteur_id != 0) {
-                                /* 
-                                 * $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
+                                $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
                                 $num = $this->Deliberation->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
-                                $this->Deliberation->saveField('num_delib', $num);*/
+                                $this->Deliberation->saveField('num_delib', $num);
                             }
+                            */
                         }
                         // etat_paraph à 1, donc, nous sommes en post_seance, on ne supprime pas le projet
                         $this->Deliberation->saveField('etat_parapheur', 2);
