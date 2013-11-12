@@ -1147,16 +1147,15 @@ function verifPresenceModelesOdt() {
         $resultMessage = $repModels.$modelFileName;
  	$okko = 'ok';
     } else {
-        $resultMessage = "$repModels$modelFileName non trouvé : renommer ou copier le fichier $modelDefaultFileName en $modelFileName";
+        $resultMessage = "$repModels$modelFileName non trouvé";
         $okko = 'ko';
     }
     d($resultMessage, $okko);
 }
 
-function getClassification($id=null){
+function getClassification(){
     $time_start = microtime(true);
     $pos =  strrpos ( getcwd(), 'webroot');
-    $path = substr(getcwd(), 0, $pos);
     $url = 'https://'.Configure::read('HOST').'/modules/actes/actes_classification_fetch.php';
     $data = array('api' => '1' );
     $url .= '?'.http_build_query($data);
@@ -1192,7 +1191,6 @@ function getCircuitsParapheur() {
     $time_start = microtime(true);
     $circuits = array();
     if (Configure::read('USE_PARAPH')) {
-        
         include_once(COMPONENTS.'IparapheurComponent.php');
         $Parafwebservice = new IparapheurComponent();
         $circuits = $Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
