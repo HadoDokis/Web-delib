@@ -19,7 +19,7 @@
        echo $this->Html->tag('tr', null, $rowClass);
        $numLigne++;
 
-		if ( $delib['Deliberation']['signee']!=1 && $delib['Deliberation']['etat'] == 3 &&
+		if ( $delib['Deliberation']['signee'] != 1 && $delib['Deliberation']['etat'] >= 3 && $delib['Deliberation']['etat'] <= 4 &&
                         ($delib['Deliberation']['etat_parapheur'] == null || $delib['Deliberation']['etat_parapheur'] == -1) )
 		    echo("<td>".$this->Form->checkbox('Deliberation.id.'.$delib['Deliberation']['id'], array('checked'=> true))."</td>");
 		else
