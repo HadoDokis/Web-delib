@@ -73,8 +73,13 @@ function d($textContent, $classAttribute=null) {
 	t('div', $textContent, $classAttribute);
 }
 function t($tagName, $textContent, $classAttribute=null) {
-	$classAttr = (empty($classAttribute)) ? "" : " class='$classAttribute'";
-	echo "<$tagName$classAttr>$textContent</$tagName>";
+    $classAttr = (empty($classAttribute)) ? "" : " class='$classAttribute'";
+    echo "<$tagName$classAttr>$textContent</$tagName>";
+}
+function depliant($textTitle, $linkTitle,$textContent, $id, $classAttribute=null) {
+    $classAttr = (empty($classAttribute)) ? "" : " class='$classAttribute'";
+    d("$textTitle <a style='cursor: pointer;' onclick='javascript:$(\"#$id\").toggle();'>$linkTitle</a>", $classAttribute);
+    echo "<div style='display:none;' id='$id'>$textContent</div>";
 }
 
 function getValueFromIniFile($iniFileURI, $searchDeb, $searchFin=';') {
@@ -1351,12 +1356,32 @@ function checkLDAP(){
  */
 function checkSchema(){
     $command = CONSOLE.'cake schema update --dry';
-    $retour = exec($command);
-    t('h5', "Test d'intégrité du schéma");
-    if ($retour == 'Schema is up to date.') {
-        d('Schéma de la base de données : Valide !', 'ok');
-    } else {
-        d('Schéma de la base de données : Problème d\'intégrité !!', 'ko');
+    try{
+        $retour = exec($command, $message);
+        t('h5', "Test d'intégrité du schéma");
+        if ($retour == 'Schema is up to date.') {
+            d('Schéma de la base de données : Valide !', 'ok');
+        } else {
+            //Supprime les 12 premières et les deux dernieres lignes du tableau constituant le message de retour de l'éxécution (infos inutiles)
+            removeFromArray($message, 12, 2);
+            throw new Exception(implode('<br>', $message));
+        }
+    } catch (Exception $e) {
+        depliant('Schéma de la base de données : Problème d\'intégrité !!', 'Afficher/Masquer les différences..', $e->getMessage(), 'databaseIntegrity','ko');
+    }
+}
+
+/**
+ * @param $array    le tableau à redimmensionner
+ * @param $begin    nouvel indice de début de tableau (nombre d'éléments à supprimer en début du tableau)
+ * @param $nbToPop  nouvel indice de fin de tableau (nombre d'éléments à supprimer en fin du tableau)
+ */
+function removeFromArray(&$array, $begin, $end){
+    for($i = 0; $i<$begin; $i++){
+        array_shift($array);
+    }
+    for($i = 0; $i<$end; $i++){
+        array_pop($array);
     }
 }
 
