@@ -185,7 +185,7 @@ class ModelsController extends AppController {
 		// Choix du format de sortie
 		//*****************************************
 			
-		if (($this->Session->read('user.format.sortie')==0) || ($editable == 0)) {
+		if ($this->Session->read('user.format.sortie') == 0 || $editable == 0) {
 			$sMimeType = "application/pdf";
 			$format    = "pdf";
 		}
@@ -326,9 +326,9 @@ class ModelsController extends AppController {
                                 $cpt=0;
 				foreach ($acteursConvoques as $acteur) {
 					$cpt++; 
-                                        if ($progress)
-                                            $this->Progress->at($cpt*((40/3)/count($acteursConvoques))+60, 'Génération du document : '. $acteur['Acteur']['nom'] .'...');
-                                        $this->set('unique', $unique);
+                    if ($progress)
+                        $this->Progress->at($cpt*((40/3)/count($acteursConvoques))+60, 'Génération du document : '. $acteur['Acteur']['nom'] .'...');
+                    $this->set('unique', $unique);
 					if ($unique== false) {
 						$oMainPart->addElement(new GDO_FieldType("nom_acteur", utf8_encode($acteur['Acteur']['nom']), "text"));
 						$oMainPart->addElement(new GDO_FieldType("prenom_acteur", utf8_encode($acteur['Acteur']['prenom']), "text"));
@@ -399,20 +399,20 @@ class ModelsController extends AppController {
 					// envoi des mails si le champ est renseigné
 					$this->_sendDocument($acteur['Acteur'], $nomFichier, $path, '');
 				}
-                                if ($progress)
-                                    $this->Progress->at(100, 'Chargement des résultats...');
+                if ($progress)
+                    $this->Progress->at(100, 'Chargement des résultats...');
 				if ($unique== false)
 					$listFiles[$urlWebroot.'documents.zip'] = 'Documents.zip';
                                 
-                                $this->Session->write('tmp.listFiles', $listFiles);
-                                $this->Session->write('tmp.format', $format);
-                                if ($progress)
-                                    $this->Progress->end('/models/getGeneration');
+                $this->Session->write('tmp.listFiles', $listFiles);
+                $this->Session->write('tmp.format', $format);
+                if ($progress)
+                    $this->Progress->end('/models/getGeneration');
 				$genereConvocation = true;
 			}
 			else {
-                        if ($progress)
-                            $this->Progress->at(65, 'Génération du PV...');
+            if ($progress)
+                $this->Progress->at(65, 'Génération du PV...');
 		 	$seance = $this->Seance->find('first', array(
 		 			'conditions' => array('Seance.id' => $seance_id),
 		 			'recursive'  => -1));
@@ -428,8 +428,8 @@ class ModelsController extends AppController {
                         $urlWebroot =  $protocol.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
 		 	if (Configure::read('GENERER_DOC_SIMPLE')) {
 		 		include_once ('controllers/components/conversion.php');
-                                if ($progress)
-                                    $this->Progress->at(70, 'Conversion du document...');
+                if ($progress)
+                    $this->Progress->at(70, 'Conversion du document...');
 		 		$this->Conversion = new ConversionComponent;
 
 		 		$filename = $path."debat_seance.html";
@@ -440,9 +440,9 @@ class ModelsController extends AppController {
 		 	}
 		 	else {
                                 
-                                /**
-                                 * @todo variable inutilisée !!?
-                                 */
+                /**
+                 * FIXME variable inutilisée !!?
+                 */
 		 		if ($seance['Seance']['debat_global_name']== "")
 		 			$nameDSeance = "vide";
 		 		else {
@@ -456,64 +456,65 @@ class ModelsController extends AppController {
 			//*****************************************
 			// Lancement de la fusion
 			//*****************************************
-                                if ($progress)
-                                    $this->Progress->at(80, 'Fusion du document...');
+                if ($progress)
+                    $this->Progress->at(80, 'Fusion du document...');
 				Configure::write('debug', 1);
 				$oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
 				$oFusion->process();
 				$time_end = microtime(true);
 				$time = $time_end - $time_start;
       
-				if ($dl ==1) {
-                                        if ($progress)
-                                            $this->Progress->at(90, 'Conversion et concaténation...');
+				if ($dl == 1) {
+                    if ($progress)
+                        $this->Progress->at(90, 'Conversion et concaténation...');
 					$oFusion->SendContentToFile($path.$nomFichier);
 					$content = $this->Conversion->convertirFichier($path.$nomFichier, $format);
 					$chemin_fichier = $this->Gedooo->createFile($path, "$nomFichier.$format", $content);
 					if (($format == 'pdf') && ($joindre_annexe))
 						$this->Pdf->concatener($chemin_fichier, $annexes);
 					$listFiles[$urlWebroot.$nomFichier] = 'Document généré';
-                                        Configure::write('debug', 0);
-                                        if ($progress){
-                                            $this->Progress->at(100, 'Chargement des résultats...');
-                                            $this->Session->write('tmp.listFiles', $listFiles);
-                                            $this->Session->write('tmp.format', $format);
-                                            $this->Progress->end('/models/getGeneration');
-                                        }
-                                        else{
-                                            $this->set('listFiles', $listFiles);
-                                            $this->set('format', $format);
-                                        }
+                    Configure::write('debug', 0);
+                    if ($progress){
+                        $this->Progress->at(100, 'Chargement des résultats...');
+                        $this->Session->write('tmp.listFiles', $listFiles);
+                        $this->Session->write('tmp.format', $format);
+                        $this->Progress->end('/models/getGeneration');
+                    }
+                    else{
+                        $this->set('listFiles', $listFiles);
+                        $this->set('format', $format);
+                    }
 				}
 				else {
-                                        $nomSansFormat = $nomFichier;
+                    $nomSansFormat = $nomFichier;
 					$nomFichier = "$nomFichier.$format";
 					$fichier = $this->Gedooo->createFile($path, $nomFichier, '');
 					$oFusion->SendContentToFile($fichier);
 					$content = $this->Conversion->convertirFichier($fichier, $format );
 
-					$chemin_fichier = $this->Gedooo->createFile($path,  $nomFichier."2", $content);
+					$chemin_fichier = $this->Gedooo->createFile($path,  $nomFichier.'2', $content);
 					if (($format == 'pdf') && ($joindre_annexe))
 						$this->Pdf->concatener($chemin_fichier, $annexes);
 					$content = file_get_contents($chemin_fichier);
                                         
 					$time_end = microtime(true);
 					$time = $time_end - $time_start;
-                                        Configure::write('debug', 0);
-                                        if ($dl ==2) {//Pour l'export CMIS
-                                        }elseif ($progress==true){
-                                            $this->Progress->at(100, 'Chargement des résultats...');
-                                            $listFiles[$urlWebroot.$nomSansFormat] = 'Document généré';
-                                            $this->Session->write('tmp.listFiles', $listFiles);
-                                            $this->Session->write('tmp.format', $format.'2');
-                                            $this->Progress->end('/models/getGeneration');
-                                        } else {
-                                            $this->setCookieToken( "downloadToken", $token, false );
-                                            header("Content-type: $sMimeType");
-                                            header("Content-Disposition: attachment; filename=\"$nomFichier\"");
-                                            header("Content-Length: ".strlen($content));
-                                            die ($content);
-                                        }
+                    Configure::write('debug', 0);
+                    if ($dl == 2) { //Pour l'export CMIS
+                    }elseif ($progress){
+                        $this->Progress->at(100, 'Chargement des résultats...');
+                        $listFiles[$urlWebroot.$nomSansFormat] = 'Document généré';
+                        $this->Session->write('tmp.listFiles', $listFiles);
+                        $this->Session->write('tmp.format', $format.'2');
+                        $this->Progress->end('/models/getGeneration');
+                    } else {
+                        $this->setCookieToken( "downloadToken", $token, false );
+                        header("Content-type: $sMimeType");
+                        $nomFichier = str_replace(array('pdf2','odt2'), array('pdf','odt'), $nomFichier);
+                        header("Content-Disposition: attachment; filename=\"$nomFichier\"");
+                        header("Content-Length: ".strlen($content));
+                        die ($content);
+                    }
 				}
 		}
 	}
