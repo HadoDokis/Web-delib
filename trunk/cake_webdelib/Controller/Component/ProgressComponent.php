@@ -32,7 +32,7 @@
              // affiche l'avancement en %
             echo "$('#pourcentage').html('".round($indice)."%');";
              // affiche le message sous la barre de progression ($affiche)
-            echo "$('#affiche').html('".$affiche."');";
+            echo "$('#affiche').html('".htmlentities($affiche, ENT_QUOTES,'UTF-8')."');";
              // La barre elle-meme
             echo "$('#progrbar').css('width','".($indice*2)."px');";
             echo "</script>";
