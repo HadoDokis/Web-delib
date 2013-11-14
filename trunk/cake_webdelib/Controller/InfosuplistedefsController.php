@@ -43,7 +43,6 @@ function index($infosupdefId) {
 		$this->Filtre->initialisation($this->name.':'.$this->request->action, $this->request->data, array(
 			'url'=>array('controller'=> $this->params['controller'], 'action'=>$this->action, $infosupdefId)));
 		$conditions =  $this->Filtre->conditions();
-		if (!$this->Filtre->critereExists('Actif')) $conditions['actif'] = 1;
 		$conditions['infosupdef_id'] = $infosupdefId;
 		$this->request->data = $this->{$this->modelClass}->find('all', array(
 			'recursive' => -1,
@@ -53,9 +52,9 @@ function index($infosupdefId) {
 			$this->Filtre->addCritere('Actif', array('field' => 'Infosuplistedef.actif',
 				'inputOptions' => array(
 					'label'=>__('Actif', true),
-					'empty' =>'tous',
+					'empty' =>'Tous',
 					'options' => array(1 => 'Oui', 0 => 'Non'))));
-			$this->Filtre->setCritere('Actif', 1);
+			$this->Filtre->setCritere('Actif', '');
 		}
 	}
 }
