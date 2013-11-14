@@ -123,6 +123,7 @@ Configure::write('USE_IDELIBRE', false);
 Configure::write('IDELIBRE_HOST', 'https://idelibre.adullact.org');
 Configure::write('IDELIBRE_LOGIN', 'login');
 Configure::write('IDELIBRE_PWD', 'password');
+Configure::write('IDELIBRE_CONN', 'adullact'); //Collectivité
 
 /* Configuration pour la manipulation des pdf */
 Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
