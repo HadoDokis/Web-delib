@@ -655,10 +655,10 @@ class Deliberation extends AppModel {
 			    $oDevPart = new GDO_PartType();
                             $typeseance = $avisSeance['Seance']['Typeseance']['libelle'];
                             $dateSeance =  $this->Date->frenchDate(strtotime($avisSeance['Seance']['date']));  
-                            if  ($avisSeance['Deliberationseance']['avis'] == 1) {
+                            if  ($avisSeance['Deliberationseance']['avis'] === true) {
                                 $message = "A reçu un avis favorable  en $typeseance du $dateSeance";
                             } 
-                            else {
+                            elseif($avisSeance['Deliberationseance']['avis'] === false) {
                                 $message = "A reçu un avis défavorable  en $typeseance du $dateSeance";
                             }
 		            $oDevPart->addElement(new GDO_FieldType("avis", $message, "text"));
@@ -756,41 +756,36 @@ class Deliberation extends AppModel {
 
 			if (!$this->Gedooo->checkPath($path))
 				die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-			if (!empty($delib['Deliberation']['texte_projet'])) {
+			
 				$oMainPart->addElement(new GDO_ContentType('texte_projet',
 						'text_projet.odt' ,
 						'application/vnd.oasis.opendocument.text',
 						'binary',
 						$delib['Deliberation']['texte_projet']));
-                        }else $oMainPart->addElement(new GDO_FieldType("texte_projet", "",    "text"));
-			if (!empty($delib['Deliberation']['deliberation'])) {
+			
 				$oMainPart->addElement(new GDO_ContentType('texte_deliberation',
 						'td.odt',
 						'application/vnd.oasis.opendocument.text' ,
 						'binary',
 						$delib['Deliberation']['deliberation']));
-			}else $oMainPart->addElement(new GDO_FieldType("texte_deliberation", "",    "text"));
-			if (!empty($delib['Deliberation']['texte_synthese'])) {
+			
 				$oMainPart->addElement(new GDO_ContentType('note_synthese',
 						'ns.odt',
 						'application/vnd.oasis.opendocument.text' ,
 						'binary',
 						$delib['Deliberation']['texte_synthese']));
-			}else $oMainPart->addElement(new GDO_FieldType("note_synthese", "",    "text"));
-			if (!empty($delib['Deliberation']['debat'])) {
+			
 				$oMainPart->addElement(new GDO_ContentType('debat_deliberation',
 						'debat.odt',
 						'application/vnd.oasis.opendocument.text' ,
 						'binary',
 						$delib['Deliberation']['debat']));
-			}else $oMainPart->addElement(new GDO_FieldType("debat_deliberation", "", "text"));
-			if (!empty($delib['Deliberation']['commission'])) {
+			
 				$oMainPart->addElement(new GDO_ContentType('debat_commission',
 						'debat_commission.odt',
 						'application/vnd.oasis.opendocument.text',
 						'binary',
 						$delib['Deliberation']['commission']));
-			}else $oMainPart->addElement(new GDO_FieldType("debat_commission", "", "text"));
 
 		}
 
