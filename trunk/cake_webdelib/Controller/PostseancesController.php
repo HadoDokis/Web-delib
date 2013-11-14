@@ -24,30 +24,34 @@ class PostseancesController extends AppController {
 
 	function index() {
 		$format =  $this->Session->read('user.format.sortie');
+
 		if (empty($format))
-			$format =0;
+			$format = 0;
+
 		$this->set('format', $format);
 
-                $actions=array();
-                if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToGed"))
-                    array_push($actions, 'ged');
+        $actions=array();
+        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToGed") && Configure::read('USE_GED'))
+            array_push($actions, 'ged');
 
 		$this->Seance->Behaviors->attach('Containable');
-		$seances = $this->Seance->find('all', array('conditions'=> array('Seance.traitee'=> 1),
-				'order'     => 'Seance.date DESC',
-				'fields'    => array('Seance.id', 'Seance.date', 'Seance.type_id', 'Seance.pv_figes'),
-				'contain'   => array('Typeseance.libelle', 'Typeseance.action',
-									  'Typeseance.modelconvocation_id',
-									  'Typeseance.modelordredujour_id',
-									  'Typeseance.modelpvsommaire_id',
-									  'Typeseance.modelpvdetaille_id')));
+		$seances = $this->Seance->find('all', array(
+            'conditions'=> array('Seance.traitee'=> 1),
+            'order'     => 'Seance.date DESC',
+            'fields'    => array('Seance.id', 'Seance.date', 'Seance.type_id', 'Seance.pv_figes'),
+            'contain'   => array(
+                'Typeseance.libelle',
+                'Typeseance.action',
+                'Typeseance.modelconvocation_id',
+                'Typeseance.modelordredujour_id',
+                'Typeseance.modelpvsommaire_id',
+                'Typeseance.modelpvdetaille_id')));
 
 		for ($i=0; $i<count($seances); $i++){
 			$seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
-                        $seances[$i]['Seance']['Actions']=$actions;
-                        
-                }
-                
+            $seances[$i]['Seance']['Actions']=$actions;
+        }
+        $this->set('use_s2low', Configure::read('USE_S2LOW'));
 		$this->set('seances', $seances);
 	}
 
