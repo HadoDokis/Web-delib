@@ -119,7 +119,10 @@ Configure::write('PASTELL_PWD', 'password');
 Configure::write('PASTELL_TYPE', 'actes');
 
 /* Configuration pour Idélibre */
-Configure::write('IDELIBRE_HOST', 'http://idelibre-server.dev.adullact.org');
+Configure::write('USE_IDELIBRE', false);
+Configure::write('IDELIBRE_HOST', 'https://idelibre.adullact.org');
+Configure::write('IDELIBRE_LOGIN', 'login');
+Configure::write('IDELIBRE_PWD', 'password');
 
 /* Configuration pour la manipulation des pdf */
 Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
