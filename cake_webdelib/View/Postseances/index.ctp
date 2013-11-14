@@ -40,7 +40,7 @@
                             'escape' => false,
                             'title' => 'délibérations envoyees au TdT'), false);
                 }
-                if (in_array('ged', $seance['Seance']['Actions']) && $use_ged)
+                if (in_array('ged', $seance['Seance']['Actions']))
                     echo $this->Html->link(SHY, '/postseances/sendToGed/' . $seance['Seance']['id'], array(
                             'class' => 'link_sendtoged',
                             'escape' => false,
