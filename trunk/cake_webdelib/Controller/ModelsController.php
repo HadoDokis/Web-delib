@@ -10,8 +10,7 @@ class ModelsController extends AppController {
 	var $aucunDroit = array(
 			'generer',
 			'getGeneration',
-			'paramMails',
-			'checkGedooo'
+			'paramMails'
 	);
 	var $commeDroit = array(
 			'add'          => 'Models:index',
@@ -19,7 +18,7 @@ class ModelsController extends AppController {
 			'view'         => 'Models:index',
 			'import'       => 'Models:index',
 			'getFileData'  => 'Models:index',
-			'changeStatus'=> 'Models:index'
+			'changeStatus' => 'Models:index'
 	);
 
 	function index() {
@@ -577,32 +576,6 @@ class ModelsController extends AppController {
 				"#PRENOM#" => $acteur['prenom'],
 		);
 		return utf8_encode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $content))));
-	}
-
-	function checkGedooo() {
-		$name = tempnam ("/tmp/" , "testGedooo" ).".pdf";
-		@unlink($name);
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_PartType.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_FieldType.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_ContentType.class');
-		include_once ('vendors/GEDOOo/phpgedooo/GDO_FusionType.class');
-
-		$oTemplate = new GDO_ContentType("", "empty.odt", "application/vnd.oasis.opendocument.text",
-				"binary", file_get_contents(WEBROOT_PATH."/files/empty.odt"));
-		$oMainPart = new GDO_PartType();
-		$oMainPart->addElement(new GDO_FieldType('ma_variable', 'OK', 'text'));
-
-
-
-
-		$oFusion = new GDO_FusionType($oTemplate, "application/pdf", $oMainPart);
-		$oFusion->process();
-		$oFusion->SendContentToFile($name);
-
-		if (file_exists($name))
-			die ('OK');
-		else
-			die ('OK');
 	}
 
 	function changeStatus($field, $id) {
