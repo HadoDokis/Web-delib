@@ -1555,64 +1555,76 @@ class SeancesController extends AppController {
         }
 
     function sendToIdelibre($seance_id) {
+        if (!(Configure::read('USE_IDELIBRE'))){
+            $this->Session->setFlash('Le connecteur Idélibre n&apos;est pas activé.<br>Veuillez contacter l&apos;administrateur pour plus d&apos;infos.', 'growl');
+            $this->redirect(array('controller' => 'seances', 'action' => 'listerFuturesSeances'));
+        }
+
         $this->Progress->start(200, 100,200, '#FFCC00','#006699');
-        $this->Progress->at(0, "Initialisation");
+        $this->Progress->at(0, 'Initialisation');
         
         $this->Seance->Behaviors->attach('Containable');
         $this->Deliberation->Behaviors->attach('Containable');
 
-        $url = Configure::read('IDELIBRE_HOST').'convocations.json';
+        $this->Progress->at(1, 'Récupération des données de la séance...');
 
-        $projets = array();
-        $seance = $this->Seance->find('first', array('conditions'=> array('Seance.id'=>$seance_id),
-                                      'fields'    => array('id', 'date', 'type_id'),
-                                      'contain'   => array('Typeseance.libelle', 'Typeseance.action', 'Typeseance.id',
-                                                           'Typeseance.modelconvocation_id', 'Typeseance.action')));
+        $seance = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id' => $seance_id),
+            'fields'     => array('id', 'date', 'type_id'),
+            'contain'    => array('Typeseance.libelle', 'Typeseance.action', 'Typeseance.id', 'Typeseance.modelconvocation_id', 'Typeseance.action')));
 
         $acteurs_convoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Typeseance']['id'], true);
 
         $model_seance_id =  $seance['Typeseance']['modelconvocation_id'];
-        $this->Progress->at(0, "G&eacute;n&eacute;ration de la convocation");
 
-        $delibs = $this->Seance->getDeliberationsId($seance_id, array('Deliberation.etat >' =>0 ));
-        $err = $this->requestAction("/models/generer/null/$seance_id/$model_seance_id/0/0/retour/0/true");
+        $this->Progress->at(5, "Génération de l'ordre du jour de la séance...");
+
+        $this->requestAction("/models/generer/null/$seance_id/$model_seance_id/0/0/retour/0/true");
         $filename = WEBROOT_PATH."/files/generee/fd/$seance_id/null/Document.pdf";
-        $data = array(  'username' => "idelibre_user",
-                        'password' => "idelibre_user",
-                        'date_seance' => $seance['Seance']['date'],
-                        'type_seance' => $seance['Typeseance']['libelle'],
+
+        $data = array(  'username'          => Configure::read('IDELIBRE_LOGIN'),
+                        'password'          => Configure::read('IDELIBRE_PWD'),
+                        'conn'              => Configure::read('IDELIBRE_CONN'),
+                        'date_seance'       => $seance['Seance']['date'],
+                        'type_seance'       => $seance['Typeseance']['libelle'],
                         'acteurs_convoques' => json_encode($acteurs_convoques),
-                        'convocation' => "@$filename" );
+                        'convocation'       => "@$filename" );
+
+        $this->Progress->at(10, 'Récupération des délibérations de la séance...');
         $i = 0;
+        $delibs = $this->Seance->getDeliberationsId($seance_id, array('Deliberation.etat >' =>0 ));
         $num_delib = count($delibs );
         foreach ($delibs as $delib_id) {
-            $this->Progress->at($i*(100/$num_delib), "G&eacute;n&eacute;ration du projet $i/$num_delib");
+            $this->Progress->at(10+($i+1)*(50/$num_delib), 'Génération du projet '.($i+1).'/'.$num_delib.'...');
             $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
                                                               'contain'    => array('Theme.libelle'),
                                                               'fields'     => array('Deliberation.objet', 'Deliberation.typeacte_id', 
                                                                                     'Deliberation.theme_id',
                                                                                     'Deliberation.etat')));
 
-            if ( $seance['Typeseance']['action'] == 0) {
+            if ($seance['Typeseance']['action'] == 0) {
                 $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'], $delib['Deliberation']['etat']);
             }
             else {
-                $model_id = $this->Deliberation->Typeacte->getModelId($delib['Deliberation']['typeacte_id'],  'modeleprojet_id');
+                $model_id = $this->Deliberation->Typeacte->getModelId($delib['Deliberation']['typeacte_id'], 'modeleprojet_id');
             }
-            $err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/P_$delib_id.pdf");
-            $projet_filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/P_$delib_id.pdf.pdf"; 
+
+            $this->requestAction("/models/generer/$delib_id/null/$model_id/0/2/P_$delib_id");
+
+            $projet_filename = WEBROOT_PATH."/files/generee/fd/null/$delib_id/P_$delib_id.pdf";
             $data['projet_'.$i.'_libelle'] = $delib['Deliberation']['objet'];
             //TODO --- POUR Stéphance + ardoressence getLibelleParent
-            $data['projet_'.$i.'_theme']  = implode(',', $this->Theme->getLibelleParent($delib['Deliberation']['theme_id']));
-            $data['projet_'.$i.'_rapport']  = "@$projet_filename";
-            $i++;  
-       }
-       $j=0;
-       $points = array('.', '..');
-       if (is_dir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {
-           if ($dh = opendir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {
+            $data['projet_'.$i.'_theme'] = implode(',', $this->Deliberation->Theme->getLibelleParent($delib['Deliberation']['theme_id']));
+            $data['projet_'.$i.'_rapport'] = "@$projet_filename";
+            $i++;
+        }
+        $this->Progress->at(90, 'Récupération des annexes...');
+        $j=0;
+        $points = array('.', '..');
+        if (is_dir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {
+            if ($dh = opendir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {
                 while (($file = readdir($dh)) !== false) {
-                    if (!in_array($file,   $points)) {
+                    if (!in_array($file, $points)) {
                         $annex_filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/".$file;
                         $data['projet_'.$i.'_'.$j.'_annexe']  = "@$annex_filename";
                         $j++;
@@ -1620,15 +1632,27 @@ class SeancesController extends AppController {
                 }
                 closedir($dh);
             }
-       }
+        }
 
-       $request = curl_init();
-       curl_setopt($request, CURLOPT_URL, $url);
-       curl_setopt($request, CURLOPT_POST, 1);
-       curl_setopt($request, CURLOPT_POSTFIELDS, $data);
-       $result = curl_exec($request);
-       curl_close($request);
-       $this->Progress->end("/seances/listerFuturesSeances");
+        $this->Progress->at(85, 'Envoi des informations à i-DelibRE...');
+        $url = Configure::read('IDELIBRE_HOST').'seances.json';
+
+        $request = curl_init();
+        curl_setopt($request, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($request, CURLOPT_SSL_VERIFYHOST, 0);
+        // TODO : implémenter l'utilisation de certificat
+//        curl_setopt($request, CURLOPT_CAINFO, getcwd() . Configure::read('IDELIBRE_CERT'));
+        curl_setopt($request, CURLOPT_URL, $url);
+        curl_setopt($request, CURLOPT_POST, 1);
+        curl_setopt($request, CURLOPT_POSTFIELDS, $data);
+        $success = curl_exec($request);
+        curl_close($request);
+        // FIXME : le message n'apparait pas à cause du Progress->end !
+        if (!$success)
+            $this->Session->setFlash('Une erreur est survenue lors de l&apos;envoi à i-DelibRE.', 'growl', array('error'));
+        else
+            $this->Session->setFlash('Convocations envoyés avec succès à i-DelibRE.', 'growl');
+        $this->Progress->end('/seances/listerFuturesSeances');
     }
 }
 ?>
