@@ -300,8 +300,12 @@ Cache::config('_cake_model_', array(
     Configure::write('WEBDELIB_PATH', ROOT.DS.APP_DIR.DS);
 
     define('CRON_DISPATCHER', false);
+    //FIXME Pour la date de séance
+    //setlocale(LC_ALL, 'fr_FR.utf8');
+    //Configure::write('Config.language', 'fra');
+    
     require_once ('webdelib.inc');
-    define('VERSION', '4.1.03');
+    define('VERSION', '4.1.03-beta8');
     //appVersion
     //dbVersion
     include_once(ROOT.DS.APP_DIR.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'cakeflow.conf.php');
