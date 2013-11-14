@@ -651,11 +651,11 @@ class Deliberation extends AppModel {
                   if (!empty($avisSeances)) {
                     $aviss =  new GDO_IterationType("AvisProjet");
                     foreach($avisSeances as $avisSeance) {
-                        if ( $avisSeance['Seance']['Typeseance']['action'] == 1 && !empty($avisSeance['Deliberationseance']['avis'])) {
+                        if ( $avisSeance['Seance']['Typeseance']['action'] == 1 && is_bool($avisSeance['Deliberationseance']['avis'])) {
 			    $oDevPart = new GDO_PartType();
                             $typeseance = $avisSeance['Seance']['Typeseance']['libelle'];
                             $dateSeance =  $this->Date->frenchDate(strtotime($avisSeance['Seance']['date']));  
-                            if  ($avisSeance['Deliberationseance']['avis'] == 1) {
+                            if  ($avisSeance['Deliberationseance']['avis'] == true) {
                                 $message = "A reçu un avis favorable  en $typeseance du $dateSeance";
                             } 
                             else {
