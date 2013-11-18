@@ -1,7 +1,22 @@
 <?php
+
+/**
+ * Code source de la classe S2lowComponent.
+ *
+ * PHP 5.3
+ *
+ * @package app.Controller.Component
+ * @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
+ */
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 
+/**
+ * Classe S2lowComponent.
+ *
+ * @package app.Controller.Component
+ * 
+ */
 class S2lowComponent extends Component {
 
     var $components = array('Date');
@@ -16,8 +31,6 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $acte);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        //curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
-        curl_setopt($ch, CURLOPT_CAINFO, Configure::read('WEBDELIB_PATH') . DS . 'Config' . DS . 'cert_s2low' . DS . 'bundle.pem');
         curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
         curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
@@ -30,7 +43,7 @@ class S2lowComponent extends Component {
     }
 
     function getClassification() {
-        $sucess=true;
+        $sucess = true;
         $pos = strrpos(getcwd(), 'webroot');
         $path = substr(getcwd(), 0, $pos);
 
@@ -44,8 +57,6 @@ class S2lowComponent extends Component {
         if (Configure::read('USE_PROXY'))
             curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        //    curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
-        curl_setopt($ch, CURLOPT_CAINFO, Configure::read('WEBDELIB_PATH') . DS . 'Config' . DS . 'cert_s2low' . DS . 'bundle.pem');
         curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
         curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
@@ -57,30 +68,34 @@ class S2lowComponent extends Component {
             print curl_error($ch);
 
         curl_close($ch);
-        
         //Passage d'un xml ISO-8859-1 vers utf8
         {
-            $xml= simplexml_load_string(utf8_encode($reponse));
-            if($xml===false && $sucess)
-                $sucess=false;
-            else{
+            $reponse = str_replace('ISO-8859-1', 'UTF-8', $reponse);
+            $xml = simplexml_load_string(utf8_encode($reponse));
+
+            if ($xml === false && $sucess)
+                $sucess = false;
+            else {
                 $dom_xml = dom_import_simplexml($xml);
-                if($xml===false && $sucess)
-                    $sucess=false;
-                else{
-                    $dom = new DOMDocument('1.0', 'utf-8');
+                if ($xml === false && $sucess)
+                    $sucess = false;
+                else {
+                    $dom = new DOMDocument('1.0', 'UTF-8');
                     $dom_xml = $dom->importNode($dom_xml, true);
                     $dom_xml = $dom->appendChild($dom_xml);
-                    }
+                }
             }
         }
-        
-        if($sucess){
+
+        if ($sucess) {
             $file = new File(Configure::read('FILE_CLASS'), true);
-            if($file->writable())
+            $file->delete();
+            $file->create();
+            $xml = $dom->saveXML();
+            if ($file->writable())
                 $file->write($dom->saveXML());
             else
-                $sucess=false;
+                $sucess = false;
 
             $file->close();
         }
@@ -96,8 +111,6 @@ class S2lowComponent extends Component {
             curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
         curl_setopt($ch, CURLOPT_POST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-//            curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
-        curl_setopt($ch, CURLOPT_CAINFO, Configure::read('WEBDELIB_PATH') . DS . 'Config' . DS . 'cert_s2low' . DS . 'bundle.pem');
         curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
         curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
@@ -106,7 +119,7 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         $curl_return = curl_exec($ch);
         curl_close($ch);
-        
+
         return($curl_return);
     }
 
@@ -118,8 +131,6 @@ class S2lowComponent extends Component {
             curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
         curl_setopt($ch, CURLOPT_POST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        //curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
-        curl_setopt($ch, CURLOPT_CAINFO, Configure::read('WEBDELIB_PATH') . DS . 'Config' . DS . 'cert_s2low' . DS . 'bundle.pem');
         curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
         curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
@@ -145,8 +156,6 @@ class S2lowComponent extends Component {
             curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
         curl_setopt($ch, CURLOPT_POST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        //curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
-        curl_setopt($ch, CURLOPT_CAINFO, Configure::read('WEBDELIB_PATH') . DS . 'Config' . DS . 'cert_s2low' . DS . 'bundle.pem');
         curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
         curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
