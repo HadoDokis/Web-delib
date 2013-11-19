@@ -8,11 +8,6 @@
 class odfTool{
 
     /**
-     * @var string chemin du fichier odf
-     */
-    private $file;
-
-    /**
      * @var string contenu xml du fichier content.xml
      */
     private $content;
@@ -32,27 +27,27 @@ class odfTool{
 
     /**
      * Initialisation
-     * @param $file
-     * @param $tmp
+     * @param string $file chemin du fichier sur le disque
      */
-    public function odfTool($file, $tmp = '/tmp'){
-        //Enregistrement du chemin du fichier odf
-        $this->file = $file;
-        //Copie dans un repertoire temporaire pour extraction
-        copy($file,$tmp.'/'.basename($file));
-        $path = $tmp.'/'.basename($file);
-        $uid = uniqid();
-        mkdir($tmp.'/'.$uid);
+    public function odfTool($file){
         //Dézipage de l'odf
-        shell_exec('unzip '.escapeshellarg($path).' -d '.escapeshellarg($tmp.'/'.$uid));
-        //Chargement du fichier xml (descripteur odf)
-        $this->content = file_get_contents($tmp.'/'.$uid.'/content.xml');
+        $zip = zip_open($file);
+        // find entry
+        do {
+            $entry = zip_read($zip);
+        } while ($entry && zip_entry_name($entry) != "content.xml");
+        // open entry
+        zip_entry_open($zip, $entry, "r");
+        // read entry (Chargement du fichier xml/descripteur odf)
+        $this->content = zip_entry_read($entry, zip_entry_filesize($entry));
+        // close entry
+        zip_entry_close($entry);
+        // close zip
+        zip_close($zip);
         //Initialisation de DOMDocument
         $this->dom = new DOMDocument;
         //Chargement du contenu dans DOMDocument
         $this->dom->loadXML($this->content);
-        //Alternative
-        //$dom->load($tmp.'/'.$uid.'/content.xml');
     }
 
     /**
