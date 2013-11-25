@@ -2830,7 +2830,7 @@ class DeliberationsController extends AppController {
             $this->set('rapporteurs', $this->Acteur->generateListElus());
             //  $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
             $this->set('date_seances', $this->Seance->generateAllList());
-            $this->set('services', $this->Deliberation->Service->generateTreeList(null, null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
+            $this->set('services', $this->Deliberation->Service->generateTreeList(array('actif'=>1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('themes', $this->Deliberation->Theme->find('list', array('order' => array('libelle asc'),
                         'recursive' => -1,
                         'fields' => array('Theme.id', 'Theme.libelle'))));
@@ -2940,7 +2940,7 @@ class DeliberationsController extends AppController {
             $this->set('rapporteurs', $this->Acteur->generateListElus());
             //    $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
             $this->set('date_seances', $this->Seance->generateAllList());
-            $this->set('services', $this->Deliberation->Service->generateTreeList(null, null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
+            $this->set('services', $this->Deliberation->Service->generateTreeList(array('actif'=>1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('themes', $this->Deliberation->Theme->find('list', array('order' => array('libelle asc'),
                         'recursive' => -1,
                         'fields' => array('Theme.id', 'Theme.libelle'))));

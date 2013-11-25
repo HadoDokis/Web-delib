@@ -1,3 +1,7 @@
+4.1.04
+======
+   *) Correction pour ne prendre en compte que les actifs dans la liste des services emetteurs
+
 4.1.03
 ======
     *) Correction à l'import des annexes pdf avec la mise en place des images en paragraphe dans l'odt
