@@ -1,23 +1,16 @@
 <?php
 class Modeledition extends AppModel {
-
-	var $name = 'Modeledition';
-	var $displayField = 'modele';
-        var $useTable = 'models';
-	
-	var $validate = array(
+    public $name = 'Modeledition';
+//    public $actsAs = array('Containable');
+//    public $hasOne = 'ModelValidator.Modeltype';
+    public $displayField = 'modele';
+    //Validations
+    public $validate = array(
 		'modele' => array(
 			array(
 				'rule' => 'notEmpty',
-				'message' => 'Entrer le libellé.'
-			)
-		),
-		'content' => array(
-			array(
-				'rule' => 'notEmpty',
-				'message' => 'Entrer la délibération.'
+				'message' => 'Veuillez attribuer un nom au modèle.'
 			)
 		)
 	);
 }
-?>
