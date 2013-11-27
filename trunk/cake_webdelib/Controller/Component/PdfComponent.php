@@ -24,7 +24,9 @@
 
             //Preparation de la commande ghostscript
             $GS_EXEC =  Configure::read('GS_EXEC');
-            $GS_OPTS = ' -dNOPAUSE -dBATCH -sDEVICE=pngalpha -r150 -sPAPERSIZE=a4 -sOutputFile="'.$outputDir.'/%d.png"';
+            $GS_RESOLUTION =  Configure::read('GS_RESOLUTION');
+
+            $GS_OPTS = ' -dNOPAUSE -dBATCH -sDEVICE=pngalpha -r'.$GS_RESOLUTION.' -sPAPERSIZE=a4 -sOutputFile="'.$outputDir.'/%d.png"';
 
             $output = array();
 

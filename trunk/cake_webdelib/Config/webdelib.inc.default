@@ -131,3 +131,10 @@ Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
 
 /* Configuration pour GhostScript */
 Configure::write('GS_EXEC', '/usr/bin/gs');
+
+/*
+ * GhostScript: Résolution d'image
+ * Qualité d'image (résolution en pixels)
+ * Agit sur la rapidité de génération des annexes (Conversion pdf et doc en image)
+ */
+Configure::write('GS_RESOLUTION', '150');
