@@ -1,18 +1,22 @@
 <?php
 class ModelsController extends AppController {
 
-	var $name = 'Models';
-	var $uses = array('Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'Modeledition');
-	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
-	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress');
+    public $name = 'Models';
+	public $uses = array( 'Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire',
+        'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'Model',
+//        'Modeltype',
+    );
+    public $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
+    public $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress', 'Fido');
 
 	// Gestion des droits
-	var $aucunDroit = array(
+    public $aucunDroit = array(
 			'generer',
 			'getGeneration',
 			'paramMails'
 	);
-	var $commeDroit = array(
+
+    public $commeDroit = array(
 			'add'          => 'Models:index',
 			'delete'       => 'Models:index',
 			'view'         => 'Models:index',
@@ -22,10 +26,10 @@ class ModelsController extends AppController {
 	);
 
 	function index() {
-		$models=$this->Model->find('all', array('fields'=>array('id'), 'recursive'=>-1));
-		$deletable=array();
+		$models = $this->Model->find('all', array('fields'=>array('id'), 'recursive'=>-1));
+		$deletable = array();
 		foreach ($models as $model) {
-			$id=$model['Model']['id'];
+			$id = $model['Model']['id'];
 			if ($this->Typeseance->find('first',array('conditions'=>array(
 					'OR'=>array(
 							'Typeseance.modelprojet_id'=>$id,
@@ -45,16 +49,81 @@ class ModelsController extends AppController {
 				'recursive' => -1)));
 	}
 
-	function add() {
-		if (empty($this->data)) {
-			$this->render();
-		} else{
-			$this->request->data['Model']['type']='Document';
-			if ($this->Model->save($this->data)) {
-				$this->redirect('/models/index');
-			}
-		}
-	}
+    function add() {
+        if (!empty($this->data)) {
+            $this->request->data['Model']['type']='Document';
+            $this->_add_edit();
+        }
+        $this->render('edit');
+    }
+
+    function edit($id = null) {
+        if (empty($id)){
+            $this->Session->setFlash('Id invalide.','growl', array('type'=>'erreur'));
+            return $this->redirect('/models/index');
+        }
+        if (!empty($this->data)) {
+            $this->_add_edit($id);
+        }
+        else{
+            $this->request->data = $this->Model->find('first', array(
+                'recursive' => -1,
+                'conditions' => array('id' => $id)
+            ));
+        }
+        $this->render('edit');
+    }
+
+    private function _add_edit($id = null){
+        if (!empty($this->data)){
+            if (!empty($id)){
+                $action = 'edit';
+                $this->Model->id = $id;
+            }else{
+                $action = 'add';
+                $this->Model->create();
+            }
+
+            $erreur = '';
+            //Test du fichier si remplacement
+            if (!empty($this->data['Model']['template']['name'])){
+
+                if ($this->request->data['Model']['template']['error'] != 0 && $this->request->data['Model']['template']['size'] == 0){
+                    $erreur = 'Problème survenu lors de la récupération du fichier. Veuillez contacter votre administrateur.';
+                }else{
+                    $this->Fido = new FidoComponent();
+                    $allowed = $this->Fido->checkFile($this->data['Model']['template']['tmp_name']);
+                    $results = $this->Fido->lastResults;
+                    if ($results['result'] == 'KO'){
+                        $erreur = 'Format de fichier non reconnu. Veuillez contacter votre administrateur';
+                    }elseif (!$allowed){
+                        if (!empty($results['version']))
+                            $erreur = 'Fichiers '.$results['formatname'].' v'.$results['version'].' non autorisés. Veuillez contacter votre administrateur';
+                        else
+                            $erreur = 'Fichiers '.$results['formatname'].' non autorisés. Veuillez contacter votre administrateur';
+                    }elseif($results['extension'] != 'odt'){
+                        $erreur = 'Format de fichier attendu : Fichier ODT';
+                    }
+                    $this->request->data['Model']['name']      = $this->data['Model']['template']['name'];
+                    $this->request->data['Model']['size']      = $this->data['Model']['template']['size'];
+                    $this->request->data['Model']['extension'] = $this->data['Model']['template']['type'];
+                    $this->request->data['Model']['content']   = file_get_contents($this->data['Model']['template']['tmp_name']);
+                }
+            }elseif($action == 'add'){
+                $erreur = 'Vous devez selectionner un fichier.';
+            }
+
+            if (empty($erreur)){
+                if ($this->Model->save($this->request->data)) {
+                    $this->redirect('/models/index');
+                }else{
+                    $this->Session->setFlash('Problème de sauvegarde en base de données.','growl', array('type'=>'erreur'));
+                }
+            }else{
+                $this->Session->setFlash($erreur,'growl', array('type'=>'erreur'));
+            }
+        }
+    }
 
 	function delete($id = null) {
 		if (!$id) {
@@ -100,37 +169,6 @@ class ModelsController extends AppController {
 		else {
 			$this->Session->setFlash('Aucun fichier li&eacute; &agrave; ce mod&egrave;le','growl', array('type'=>'erreur'));
 			$this->redirect('/models/index');
-		}
-	}
-
-
-	function import($model_id) {
-		$this->set('model_id', $model_id);
-		$this->Model->id = $model_id;
-		$Model = $this->Model->find('first', array('conditions'=> array('Model.id'=> $model_id),
-				'recursive' => -1,
-				'fields'    => array('modele', 'recherche','joindre_annexe', 'name')));
-		$this->set('libelle', $Model['Model']['modele']);
-		$this->set('filename', $Model['Model']['name']);
-
-		if (!empty($this->data)){
-			if (isset($this->data['Model']['template'])){
-				if ($this->request->data['Model']['template']['size']!=0){
-					$this->request->data['Model']['id']        = $model_id;
-					$this->request->data['Model']['name']      = $this->data['Model']['template']['name'];
-					$this->request->data['Model']['size']      = $this->data['Model']['template']['size'];
-					$this->request->data['Model']['extension'] = $this->data['Model']['template']['type'];
-					$this->request->data['Model']['content']   = file_get_contents($this->data['Model']['template']['tmp_name']);
-				}else
-                                {
-                                   $this->Session->setFlash('Aucun fichier importé','growl', array('type'=>'erreur'));
-                                    $this->redirect('/models/index'); 
-                                }
-			}
-			if ($this->Model->save($this->data))
-				$this->redirect('/models/index');
-		} else {
-			$this->data = $Model;
 		}
 	}
 
@@ -495,7 +533,7 @@ class ModelsController extends AppController {
 					if (($format == 'pdf') && ($joindre_annexe))
 						$this->Pdf->concatener($chemin_fichier, $annexes);
 					$content = file_get_contents($chemin_fichier);
-                                        
+
 					$time_end = microtime(true);
 					$time = $time_end - $time_start;
                     Configure::write('debug', 0);
