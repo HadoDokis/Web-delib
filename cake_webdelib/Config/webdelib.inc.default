@@ -124,66 +124,10 @@ Configure::write('IDELIBRE_HOST', 'https://idelibre.adullact.org');
 Configure::write('IDELIBRE_LOGIN', 'login');
 Configure::write('IDELIBRE_PWD', 'password');
 Configure::write('IDELIBRE_CONN', 'adullact'); //Collectivité
+//Configure::write('IDELIBRE_CERT', Configure::read('WEBDELIB_PATH').'/Config/cert_idelibre/cert.pem');
 
 /* Configuration pour la manipulation des pdf */
 Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
 
 /* Configuration pour GhostScript */
 Configure::write('GS_EXEC', '/usr/bin/gs');
-
-/* Configuration pour la vérification des mimetypes */
-Configure::write('DOC_TYPE', array(
-    'application/pdf' => array(
-        'joindre_fusion' => true,
-        'joindre_ctrl_legalite' => true,
-        'mime_conversion' => 'application/pdf',
-        'extention' => 'pdf',
-    ),
-    'image/pdf' => array(
-        'joindre_fusion' => true,
-        'joindre_ctrl_legalite' => true,
-        'mime_conversion' => 'application/pdf',
-        'extention' => 'pdf',
-    ),
-    'x-empty/pdf' => array(
-        'joindre_fusion' => true,
-        'joindre_ctrl_legalite' => true,
-        'mime_conversion' => 'application/pdf',
-        'extention' => 'pdf',
-    ),
-    'application/vnd.oasis.opendocument.text' => array(
-        'joindre_fusion' => true,
-        'joindre_ctrl_legalite' => true,
-        'mime_conversion' => 'application/vnd.oasis.opendocument.text',
-        'extention' => 'odt',
-    ),
-    'application/vnd.oasis.opendocument.spreadsheet' => array(
-        'extention' => 'odt',
-    ),
-    'application/zip' => array(
-        'joindre_fusion' => true,
-        'joindre_ctrl_legalite' => true,
-        'mime_conversion' => 'application/vnd.oasis.opendocument.text',
-        'extention' => 'odt',
-    ),
-    'application/vnd.ms-office' => array(
-        'mime_conversion' => 'application/vnd.ms-office',
-        'extention' => 'doc',
-    ),
-    'image/png' => array(
-        'joindre_ctrl_legalite' => true,
-        'mime_conversion' => 'image/png',
-        'extention' => 'png',
-    ),
-    'image/jpg' => array(
-        'joindre_ctrl_legalite' => true,
-        'mime_conversion' => 'image/jpg',
-        'extention' => 'jpg',
-    ),
-    'image/jpeg' => array(
-        'joindre_ctrl_legalite' => true,
-        'mime_conversion' => 'image/jpeg',
-        'extention' => 'jpeg',
-    ),
-));
-?>
