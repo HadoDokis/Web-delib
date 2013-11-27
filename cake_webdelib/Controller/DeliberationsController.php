@@ -582,7 +582,7 @@ class DeliberationsController extends AppController {
                 if($canEditAll)
                     $bSeanceok=true;
                 
-                if(!$bSeanceok && $seances_selected[0]==$seance['Seance']['id'])
+                if(!$bSeanceok && !empty($seances_selected) && $seances_selected[0]==$seance['Seance']['id'])
                     $bSeanceok=true;
                     
                 if(!$bSeanceok){
@@ -1424,12 +1424,12 @@ class DeliberationsController extends AppController {
     }
 
     function _refuseDossier($id) {
-        $this->Deliberation->refusDossier($id);
+        $nouvelId = $this->Deliberation->refusDossier($id);
         $this->Traitement->execute('KO', $this->Session->read('user.User.id'), $id);
         // TODO notifier par mail toutes les personnes qui ont deja vise le projet
         $destinataires = $this->Traitement->whoIsPrevious($id);
         foreach ($destinataires as $destinataire_id)
-            $this->_notifier($id, $destinataire_id, 'refus');
+            $this->_notifier($nouvelId, $destinataire_id, 'refus');
 
         $this->Historique->enregistre($id, $this->Session->read('user.User.id'), 'Projet refusé');
     }
@@ -2060,7 +2060,12 @@ class DeliberationsController extends AppController {
                 $this->Email->sendAs = 'text';
                 $this->Email->charset = 'UTF-8';
 
-                $delib = $this->Deliberation->read(null, $delib_id);
+                $delib = $this->Deliberation->find('first', array(
+                    'conditions' => array('Deliberation.id' => $delib_id),
+                    'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.titre'),
+                    'contain' => array('Circuit.id')
+                ));
+
                 $this->Email->layout = 'default';
                 $this->Email->attachments = null;
                 if ($type == 'insertion') {
@@ -2077,7 +2082,7 @@ class DeliberationsController extends AppController {
                 }
                 if ($type == 'refus') {
                     if ($user['User']['mail_refus']) {
-                        $this->Email->subject = "Le projet (id : $delib_id) a été refusé";
+                        $this->Email->subject = "Le projet << ".$delib['Deliberation']['objet']." >> a été refusé";
                         $this->Email->send($this->_paramMails('refus', $delib, $user['User']));
                     }
                 }
@@ -2218,12 +2223,10 @@ class DeliberationsController extends AppController {
     function _paramMails($type, $delib, $acteur) {
         $handle = fopen(CONFIG_PATH . '/emails/' . $type . '.txt', 'r');
         $content = fread($handle, filesize(CONFIG_PATH . '/emails/' . $type . '.txt'));
-        $protocol = "http://";
-        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
-                !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
-            $protocol = "https://";
-        $addr1 = $protocol . $_SERVER['SERVER_NAME'] . $this->base . "/deliberations/traiter/" . $delib['Deliberation']['id'];
-        $addr2 = $protocol . $_SERVER['SERVER_NAME'] . $this->base . "/deliberations/view/" . $delib['Deliberation']['id'];
+
+        $addrTraiter = FULL_BASE_URL . "/deliberations/traiter/" . $delib['Deliberation']['id'];
+        $addrView = FULL_BASE_URL . "/deliberations/view/" . $delib['Deliberation']['id'];
+        $addrEdit = FULL_BASE_URL . "/deliberations/edit/" . $delib['Deliberation']['id'];
 
         $searchReplace = array(
             "#NOM#" => $acteur['nom'],
@@ -2232,8 +2235,9 @@ class DeliberationsController extends AppController {
             "#OBJET_PROJET#" => $delib['Deliberation']['objet'],
             "#TITRE_PROJET#" => $delib['Deliberation']['titre'],
             "#LIBELLE_CIRCUIT#" => $this->Circuit->getLibelle($delib['Circuit']['id']),
-            "#ADRESSE_A_TRAITER#" => $addr1,
-            "#ADRESSE_A_VISUALISER#" => $addr2
+            "#ADRESSE_A_TRAITER#" => $addrTraiter,
+            "#ADRESSE_A_VISUALISER#" => $addrView,
+            "#ADRESSE_A_MODIFIER#" => $addrEdit,
         );
 
         return (str_replace(array_keys($searchReplace), array_values($searchReplace), $content));
