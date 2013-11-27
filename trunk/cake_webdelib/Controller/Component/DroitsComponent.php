@@ -36,7 +36,7 @@
 */
 class DroitsComponent extends Component
 {
-	var $components = array('Acl');
+	public $components = array('Acl');
 
 	/* vérifie si l'utilisateur $userId est autorisée à exécuter l'action $controllerAction */
 	/* vérifie les droits si l'action est dans la liste des actions soumises aux droits */
@@ -88,20 +88,18 @@ class DroitsComponent extends Component
 		$file = APP."Controller".DS.$controllerName.'Controller.php';
 		if (file_exists($file)){
 			require_once($file);
-			$ok = 0;
 		}
-		else{
-			$plugins = App::objects('plugin');	 
-			foreach  ($plugins as $plugin){
-				$pluginName = ucfirst(strtolower($plugin));
-				$file = APP."Plugin".DS.ucfirst(strtolower($plugin)).DS."Controller".DS.$controllerName."Controller.php";
-				if (file_exists($file)) {
-					$ok = 1;
-					require_once(APP."Plugin".DS.ucfirst(strtolower($plugin)).DS.'Controller'.DS.ucfirst(strtolower($plugin)).'AppController.php');
-					require_once($file);
-				}
-			}
-		}
+//		else{
+//			$plugins = App::objects('plugin');
+//			foreach  ($plugins as $plugin){
+//				$pluginName = ucfirst($plugin);
+//				$file = APP."Plugin".DS.ucfirst($plugin).DS."Controller".DS.$controllerName."Controller.php";
+//				if (file_exists($file)) {
+//					require_once(APP."Plugin".DS.ucfirst($plugin).DS.'Controller'.DS.ucfirst($plugin).'AppController.php');
+//					require_once($file);
+//				}
+//			}
+//		}
 		$subClassVars = get_class_vars($controllerName.'Controller');
 		if ( $subClassVars === FALSE)
 			$subClassVars=array();
@@ -181,15 +179,15 @@ class DroitsComponent extends Component
 		if (file_exists($file)){
 			require_once($file);
 		}
-		else{
-			$plugins = App::objects('plugin');
-			foreach  ($plugins as $plugin){
-                require_once(APP."Plugin".DS.ucfirst($plugin).DS.'Controller'.DS.ucfirst($plugin).'AppController.php');
-				$file = APP."Plugin".DS.ucfirst($plugin).DS."Controller".DS.$controllerName."Controller.php";
-				if (file_exists($file))
-					require_once($file);
-			}
-		}
+//		else{
+//			$plugins = App::objects('plugin');
+//			foreach  ($plugins as $plugin){
+//                require_once(APP."Plugin".DS.ucfirst($plugin).DS.'Controller'.DS.ucfirst($plugin).'AppController.php');
+//				$file = APP."Plugin".DS.ucfirst($plugin).DS."Controller".DS.$controllerName."Controller.php";
+//				if (file_exists($file))
+//					require_once($file);
+//			}
+//		}
 		$subClassVars = get_class_vars($controllerName."Controller");
 
 		// initialisation du tableau des libelles
@@ -216,19 +214,19 @@ class DroitsComponent extends Component
 	/* Retourne le libellé défini dans $libelleControleurDroit */
 	function libelleControleur($controllerName) {
 		// chargement du controleur
-                $file = APP."Controller".DS.$controllerName.'Controller.php';
+        $file = APP."Controller".DS.$controllerName.'Controller.php';
 		if (file_exists($file)){
 			require_once($file);
 		}
-		else{
-			$plugins = App::objects('plugin');
-			foreach  ($plugins as $plugin){
-                             require_once(APP."Plugin".DS.ucfirst(strtolower($plugin)).DS.'Controller'.DS.ucfirst(strtolower($plugin)).'AppController.php');
-				$file = APP."Plugin".DS.ucfirst(strtolower($plugin)).DS."Controller".DS.$controllerName."Controller.php";
-				if (file_exists($file))
-					require_once($file);
-			}
-		}
+//		else{
+//			$plugins = App::objects('plugin');
+//            foreach ($plugins as $plugin) {
+//                require_once(APP . "Plugin" . DS . ucfirst($plugin) . DS . 'Controller' . DS . ucfirst($plugin) . 'AppController.php');
+//                $file = APP . "Plugin" . DS . ucfirst($plugin) . DS . "Controller" . DS . $controllerName . "Controller.php";
+//                if (file_exists($file))
+//                    require_once($file);
+//            }
+//        }
 		$subClassVars = get_class_vars($controllerName.'Controller');
 		// teste si $libelleControleurDroit est défini et non vide
 		if(array_key_exists('libelleControleurDroit', $subClassVars) and !empty($subClassVars['libelleControleurDroit']))
@@ -246,21 +244,21 @@ class DroitsComponent extends Component
 
 	/* retourne la liste $commeDroit si elle est définie et non vide */
 	function _listeActionsCommeControleur($controllerName) {
-		// chargement du controleur^M
-                $file = APP."Controller".DS.$controllerName.'Controller.php';
+		// chargement du controleur
+        $file = APP."Controller".DS.$controllerName.'Controller.php';
 		if (file_exists($file)){
 			require_once($file);
 		}
 		else{
-                    $plugins = App::objects('plugin');
-		    foreach  ($plugins as $plugin){
-                        if (file_exists(APP."Plugin".DS.ucfirst(strtolower($plugin)).DS.'Controller'.DS.ucfirst(strtolower($plugin)).'AppController.php'))
-                            require_once(APP."Plugin".DS.ucfirst(strtolower($plugin)).DS.'Controller'.DS.ucfirst(strtolower($plugin)).'AppController.php');
-                        $file = APP."Plugin".DS.ucfirst(strtolower($plugin)).DS."Controller".DS.$controllerName."Controller.php";
-                        if (file_exists($file))
-                            require_once($file);
-                    }
-		}
+            $plugins = App::objects('plugin');
+            foreach ($plugins as $plugin) {
+                if (file_exists(APP . "Plugin" . DS . ucfirst($plugin) . DS . 'Controller' . DS . ucfirst($plugin) . 'AppController.php'))
+                    require_once(APP . "Plugin" . DS . ucfirst($plugin) . DS . 'Controller' . DS . ucfirst($plugin) . 'AppController.php');
+                $file = APP . "Plugin" . DS . ucfirst($plugin) . DS . "Controller" . DS . $controllerName . "Controller.php";
+                if (file_exists($file))
+                    require_once($file);
+            }
+        }
 		$subClassVars = get_class_vars($controllerName.'Controller');
 		if ($subClassVars === false)
 			$subClassVars = array();
@@ -272,4 +270,3 @@ class DroitsComponent extends Component
 
 	}
 }
-?>
