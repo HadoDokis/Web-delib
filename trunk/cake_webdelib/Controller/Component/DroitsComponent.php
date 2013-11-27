@@ -184,8 +184,8 @@ class DroitsComponent extends Component
 		else{
 			$plugins = App::objects('plugin');
 			foreach  ($plugins as $plugin){
-                                require_once(APP."Plugin".DS.ucfirst(strtolower($plugin)).DS.'Controller'.DS.ucfirst(strtolower($plugin)).'AppController.php');
-				$file = APP."Plugin".DS.ucfirst(strtolower($plugin)).DS."Controller".DS.$controllerName."Controller.php";
+                require_once(APP."Plugin".DS.ucfirst($plugin).DS.'Controller'.DS.ucfirst($plugin).'AppController.php');
+				$file = APP."Plugin".DS.ucfirst($plugin).DS."Controller".DS.$controllerName."Controller.php";
 				if (file_exists($file))
 					require_once($file);
 			}
