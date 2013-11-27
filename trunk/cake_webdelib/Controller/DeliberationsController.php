@@ -21,7 +21,7 @@ class DeliberationsController extends AppController {
     var $name = 'Deliberations';
     var $helpers = array('Javascript', 'Fck');
     var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
-    var $components = array('Gedooo', 'Date', 'Utils', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf');
+    var $components = array('Fido', 'Gedooo', 'Date', 'Utils', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf');
     var $aucunDroit = array('getTypeseancesParTypeacteAjax', 'quicksearch');
     // Gestion des droits
     var $demandeDroit = array(
@@ -471,6 +471,7 @@ class DeliberationsController extends AppController {
 
     function _saveAnnexe($delibId, $annexe, &$annexesErrors) {
         App::uses('File', 'Utility');
+        $this->Fido = new FidoComponent();
         $return=false;
         if ($annexe['ref'] ==  'delibPrincipale')
             $Model = 'Projet';
@@ -478,8 +479,12 @@ class DeliberationsController extends AppController {
             $Model = 'Deliberation';
         
         $titre = !empty($annexe['titre']) ? $annexe['titre'] : $annexe['file']['name'];
-        
-        if (is_array($annexe) && !empty($annexe['file']['name']) && $this->Annex->isUploadedFile(array('file'=>$annexe['file']))) {
+
+        if (ini_get('upload_max_filesize') > $annexe['file']['size'])
+            $annexesErrors[$titre][] = 'Limite de taille par fichier : '.ini_get('upload_max_filesize');
+        elseif ($annexe['file']['error'] != 0)
+            $annexesErrors[$titre][] = 'Erreur lors de l&apos;envoi';
+        elseif (is_array($annexe) && $this->Annex->isUploadedFile(array('file'=>$annexe['file']))) {
             $newAnnexe = $this->Annex->create();
             $newAnnexe['Annex']['model'] = $Model;
             $newAnnexe['Annex']['foreign_key'] = $delibId;
@@ -487,41 +492,33 @@ class DeliberationsController extends AppController {
             $newAnnexe['Annex']['joindre_ctrl_legalite'] = $annexe['ctrl'];
             $newAnnexe['Annex']['joindre_fusion'] = $annexe['fusion'];
             
-            $DOC_TYPE = Configure::read('DOC_TYPE');
-            
             $file = new File($annexe['file']['tmp_name'], false);
+
+            //scan FIDO
+            $allowed = $this->Fido->checkFile($file->path);
+            $results = $this->Fido->lastResults;
             $newAnnexe['Annex']['filename'] = $annexe['file']['name'];
-            //Enregistrement du type mime vérifier
-            if(!isset($DOC_TYPE[$file->mime()]['mime_conversion'])){
+            if ($results['result'] == 'KO'){
+                $annexesErrors[$titre][] = 'Format de fichier non reconnu. Veuillez contacter votre administrateur';
                 $file->close();
-                $annexesErrors[$titre][] = 'Fichier de type inconnu. Veuillez contacter votre administrateur ('.$file->mime().')';
+                return false;
+            }elseif (!$allowed){
+                $annexesErrors[$titre][] = 'Fichiers '.$results['formatname'].' non autorisés. Veuillez contacter votre administrateur';
+                $file->close();
                 return false;
             }
-            //Gestion des docx pas de convertion pour les docx reconnu comme des zip
-            $pasdeconvertion=false;
-            if($file->mime()=='application/zip' 
-                   && (!array_key_exists($annexe['file']['type'], $DOC_TYPE) XOR 
-                    (isset($DOC_TYPE[$annexe['file']['type']]['extention']) && $DOC_TYPE[$annexe['file']['type']]['extention']!='odt' )))
-            {
-                $pasdeconvertion=true;
-                $newAnnexe['Annex']['filetype'] = $annexe['file']['type'];
-                if(!isset($DOC_TYPE[$annexe['file']['type']]['mime_conversion'])){
-                $file->close();
-                $annexesErrors[$titre][] = 'Fichier de type inconnu. Veuillez contacter votre administrateur ('.$annexe['file']['type'].')';
-                return false;
-                }
-            }else
-            $newAnnexe['Annex']['filetype'] = $DOC_TYPE[$file->mime()]['mime_conversion'];
-            
+
+            $newAnnexe['Annex']['filetype'] = $results['mimetype'];
+
             $newAnnexe['Annex']['size'] = $file->size();
             $newAnnexe['Annex']['data'] = $file->read();
             
-            if(array_key_exists($file->mime(), $DOC_TYPE) && $DOC_TYPE[$file->mime()]['extention']=='pdf') {
+            if ( $results['extension'] == 'pdf' ) {
                 $newAnnexe['Annex']['data_pdf'] = $file->read();
                 $newAnnexe['Annex']['filename_pdf'] =  $annexe['file']['name'];
                 $newAnnexe['Annex']['data'] =   $this->Pdf->toOdt($file->pwd());
                 $newAnnexe['Annex']['filename'] =  $annexe['file']['name'].'.odt';
-            } elseif(array_key_exists($file->mime(), $DOC_TYPE) && $DOC_TYPE[$file->mime()]['extention']=='odt' && !$pasdeconvertion) {
+            } elseif( $results['extension'] == 'odt') {
                 $newAnnexe['Annex']['data_pdf'] = $this->Conversion->convertirFichier($file->pwd(), 'pdf');
                 $newAnnexe['Annex']['filename_pdf'] = $annexe['file']['name'].'.pdf';
             }
@@ -535,7 +532,7 @@ class DeliberationsController extends AppController {
             else $return=true;
         }
         else
-            $annexesErrors[$titre][] = 'Lors de la sauvegarde des annexes : Limite Upload:'.ini_get('upload_max_filesize');
+            $annexesErrors[$titre][] = 'Erreur inconnue';
         
         return $return;
     }
@@ -571,11 +568,14 @@ class DeliberationsController extends AppController {
             foreach ( $this->request->data['Typeseance'] as $typeseance) 
                 $typeseances_selected[] = $typeseance['id'];
 
-            $seances_tmp = $this->Seance->find('all', array('conditions' => array('Seance.type_id' => $typeseances_selected,
-                                                                              'Seance.traitee' => 0),
-                                                        'order'      => array('Typeseance.libelle' => 'ASC','Seance.date' => 'ASC'),
-                                                        'contain'    => array('Typeseance.libelle','Typeseance.retard'),
-                                                        'fields'     => array('Seance.id', 'Seance.type_id', 'Seance.date')));
+            $seances_tmp = $this->Seance->find('all', array(
+                'conditions' => array(
+                    'Seance.type_id' => $typeseances_selected,
+                    'Seance.traitee' => 0
+                ),
+                'order'      => array('Typeseance.libelle' => 'ASC','Seance.date' => 'ASC'),
+                'contain'    => array('Typeseance.libelle','Typeseance.retard'),
+                'fields'     => array('Seance.id', 'Seance.type_id', 'Seance.date')));
             
             $seances_selected = $this->Deliberation->getCurrentSeances($id, false);
             foreach ($seances_tmp as $seance){
@@ -728,12 +728,10 @@ class DeliberationsController extends AppController {
             }
             $this->render();
             
-        }
-         else
-        {
+        } else {
             $success = true;
             $this->Deliberation->begin();
-            
+
             $oldDelib = $this->Deliberation->find('first', array('conditions' =>array('Deliberation.id'=> $id)));
             // Si on definit une seance a une delib, on la place en derniere position de la seance
             if (isset($this->data['Seance'])) {
@@ -843,12 +841,14 @@ class DeliberationsController extends AppController {
                if($success)
                 if (array_key_exists('Annex', $this->data))
                 foreach($this->data['Annex'] as $annexe) {
+                    //Cas bloc annexe vide
+                    if (empty($annexe['file']['name']))
+                        continue;
                     if ($annexe['ref'] == 'delibPrincipale')
                         $success = $this->_saveAnnexe($id, $annexe, $annexesErrors) && $success;
                     if ($annexe['ref'] == 'delibRattachee'.$id)
                         $success = $this->_saveAnnexe($id, $annexe, $annexesErrors) && $success;
                 }
-
                 if($success){
                 // suppression des annexes
                 if (array_key_exists('AnnexesASupprimer', $this->data))
@@ -2255,6 +2255,7 @@ class DeliberationsController extends AppController {
         // Gestion par lot
         $this->set('traitement_lot', true);
         $this->set('actions_possibles', array('suppression' => 'Suppression'));
+        //TODO: filtrer uniquement les modèles de type recherche
         $this->set('modeles', $this->Model->find('list', array('recursive' => -1,
                     'fields' => array('modele'),
                     'conditions' => array('Model.recherche' => 1))));
@@ -2302,6 +2303,7 @@ class DeliberationsController extends AppController {
 
         $this->set('traitement_lot', true);
         $this->set('actions_possibles', array('valider' => 'Valider', 'refuser' => 'Refuser'));
+        //TODO : récupérer les modèles de type recherche
         $this->set('modeles', $this->Model->find('list', array('recursive' => -1,
                     'fields' => array('Model.modele'),
                     'conditions' => array('Model.recherche' => 1))));
@@ -3153,8 +3155,7 @@ class DeliberationsController extends AppController {
                 $this->Pastell->insertInParapheur($id_e, $tmp_id_d);
 
                 $circuits[] = $this->Pastell->getInfosField($id_e, $tmp_id_d, 'iparapheur_sous_type');
-                //TOFIX : Pastell comprend-il la faute d'orthographe 'supression' ? TODO: changer en 'suppression'
-                $this->Pastell->action($id_e, $tmp_id_d, 'supression');
+                $this->Pastell->action($id_e, $tmp_id_d, 'suppression');
 
                 $this->Deliberation->Behaviors->attach('Containable');
 
