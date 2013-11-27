@@ -7,47 +7,39 @@ class Deliberation extends AppModel {
 
 	var $name = 'Deliberation';
 
-	var $validate = array( 'objet'     => array(
-			array( 'rule'    => 'notEmpty',
-					'message' => 'L\'objet est obligatoire')),
-			'typeacte_id' => array(
-					array( 'rule'    => array('canSaveNature', 'notEmpty'),
-						'message' => "Type d'acte invalide")),
-                        'theme_id' => array(
-					array( 'rule'    => array('notEmpty'),
-						'message' => "Theme invalide")),
-			'texte_projet_type'   => array(
-					array('rule' => array('checkMimetype', 'texte_projet', array('application/vnd.oasis.opendocument.text')),
-							'message' => "Ce type de fichier n'est pas autorisé")),
-			'texte_synthese_type' => array(
-					array('rule' => array('checkMimetype', 'texte_synthese',  array('application/vnd.oasis.opendocument.text')),
-							'message' => "Ce type de fichier n'est pas autorisé")),
-			'deliberation_type'   => array(
-					array('rule' => array('checkMimetype', 'deliberation',  array('application/vnd.oasis.opendocument.text')),
-							'message' => "Ce type de fichier n'est pas autorisé")),
-			'debat_type'           => array(
-					array('rule' => array('checkMimetype', 'debat',  array('application/vnd.oasis.opendocument.text')),
-							'message' => "Ce type de fichier n'est pas autorisé")),
-			'commission_type'      => array(
-					array('rule' => array('checkMimetype', 'commission',  array('application/vnd.oasis.opendocument.text')),
-							'message' => "Ce type de fichier n'est pas autorisé")),
-                        'vote_commentaire' => array(
-                            'rule'    => array('maxLength', 1000),
-                            'message' => 'Le commentaire de vote ne doit pas dépasser 1000 caractères.'
-                        ));
+    var $validate = array(
+        'objet' => array(
+            array('rule' => 'notEmpty',
+                'message' => 'L\'objet est obligatoire')),
+        'typeacte_id' => array(
+            array('rule' => array('canSaveNature', 'notEmpty'),
+                'message' => "Type d'acte invalide")),
+        'theme_id' => array(
+            array('rule' => array('notEmpty'),
+                'message' => "Theme invalide")),
+        'texte_projet_type' => array(
+            array('rule' => array('checkMimetype', 'texte_projet', array('application/vnd.oasis.opendocument.text')),
+                'message' => "Ce type de fichier n'est pas autorisé")),
+        'texte_synthese_type' => array(
+            array('rule' => array('checkMimetype', 'texte_synthese', array('application/vnd.oasis.opendocument.text')),
+                'message' => "Ce type de fichier n'est pas autorisé")),
+        'deliberation_type' => array(
+            array('rule' => array('checkMimetype', 'deliberation', array('application/vnd.oasis.opendocument.text')),
+                'message' => "Ce type de fichier n'est pas autorisé")),
+        'debat_type' => array(
+            array('rule' => array('checkMimetype', 'debat', array('application/vnd.oasis.opendocument.text')),
+                'message' => "Ce type de fichier n'est pas autorisé")),
+        'commission_type' => array(
+            array('rule' => array('checkMimetype', 'commission', array('application/vnd.oasis.opendocument.text')),
+                'message' => "Ce type de fichier n'est pas autorisé")),
+        'vote_commentaire' => array(
+            'rule' => array('maxLength', 1000),
+            'message' => 'Le commentaire de vote ne doit pas dépasser 1000 caractères.'
+        ));
 
 
-
-	//dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
+    //dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
 	var $belongsTo = array(
-	/*                'Nomenclature'=>array(
-	 'className'    => 'Nomenclature',
-			'conditions'   => '',
-			'order'        => '',
-			'dependent'    => false,
-			'foreignKey'   => 'num_pref'
-         * ),
-	*/
 			'Service'=>array(
 					'className'    => 'Service',
 					'conditions'   => '',
@@ -388,6 +380,7 @@ class Deliberation extends AppModel {
 				$this->Annex->save( $tmp, false);
 			}
 		}
+        return $delib['Deliberation']['id'];
 	}
 
 	function canSaveSeances($seances_id){
