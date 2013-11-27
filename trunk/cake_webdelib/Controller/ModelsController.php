@@ -17,7 +17,9 @@ class ModelsController extends AppController {
 	);
 
     public $commeDroit = array(
-			'add'          => 'Models:index',
+            'add'          => 'Models:index',
+            'edit'         => 'Models:index',
+            '_add_edit'    => 'Models:index',
 			'delete'       => 'Models:index',
 			'view'         => 'Models:index',
 			'import'       => 'Models:index',
