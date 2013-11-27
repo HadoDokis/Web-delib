@@ -220,7 +220,10 @@ class SeancesController extends AppController {
 		$this->set('use_pastell', Configure::read('USE_PASTELL'));
 		$this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
 		$format =  $this->Session->read('user.format.sortie');
-                $this->set('models', $this->Model->find('list', array('conditions' => array('Model.multiodj'  => true), 'fields' => array('modele'))));
+        //TODO filtrer uniquement les modèles de type Multi-séance
+        $this->set('models', $this->Model->find('list', array(
+            'conditions' => array('Model.multiodj'  => true),
+            'fields' => array('modele'))));
 		if (empty($format))
 			$format =0;
 		$this->set('format', $format);
@@ -778,7 +781,7 @@ class SeancesController extends AppController {
         $this->request->data = $deliberation;
 
         $user = $this->Session->read('user');
-        if ($this->Droits->check($user['User']['id'], "Deliberations:editerProjetValide"))
+        if ($this->Droits->check($user['User']['id'], "Deliberations:editerTous"))
             $afficherTtesLesSeances = true;
         else
             $afficherTtesLesSeances = false;

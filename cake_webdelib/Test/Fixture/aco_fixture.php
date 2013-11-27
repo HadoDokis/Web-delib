@@ -379,7 +379,7 @@
 				'parent_id' => '41',
 				'model' => null,
 				'foreign_key' => '0',
-				'alias' => 'Deliberations:editerProjetValide',
+				'alias' => 'Deliberations:editerTous',
 				'lft' => '82',
 				'rght' => '83',
 			),
