@@ -38,7 +38,6 @@ class DeliberationsController extends AppController {
         'tousLesProjetsValidation',
         'tousLesProjetsAFaireVoter',
         'tousLesProjetsRecherche',
-        'editerProjetValide',
         'goNext',
         'validerEnUrgence',
         'rebond',
@@ -49,7 +48,8 @@ class DeliberationsController extends AppController {
         'transmit',
         'verserAsalae',
         'autreActesAEnvoyer',
-        'autreActesEnvoyes'
+        'autreActesEnvoyes',
+        'editerTous',
     );
     var $commeDroit = array(
         'view' => array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
@@ -67,21 +67,22 @@ class DeliberationsController extends AppController {
     );
     var $libelleControleurDroit = 'Projets';
     var $ajouteDroit = array(
-        'edit', 'delete',
-        'editerProjetValide',
+        'edit',
+        'delete',
         'goNext',
         'validerEnUrgence',
-        'rebond'
+        'rebond',
+        'editerTous',
     );
     var $libellesActionsDroit = array(
         'edit' => "Modification d'un projet",
         'delete' => "Suppression d'un projet",
-        'editerProjetValide' => 'Editer projets valid&eacute;s',
         'goNext' => 'Sauter une &eacute;tape',
         'validerEnUrgence' => 'Valider un projet en urgence',
         'rebond' => 'Effectuer un rebond',
         'sendToParapheur' => 'Envoie à la signature',
-        'sendToGed' => 'Envoie &agrave; une GED'
+        'sendToGed' => 'Envoie à une GED',
+        'editerTous' => 'Editer tous les projets',
     );
 
     function view($id = null) {
@@ -251,10 +252,7 @@ class DeliberationsController extends AppController {
         $redirect = '/deliberations/mesProjetsRedaction';
         /* initialisation du rédateur et du service emetteur */
         $user = $this->Session->read('user');
-        if ($this->Droits->check($user['User']['id'], "Deliberations:editerProjetValide"))
-            $afficherTtesLesSeances = true;
-        else
-            $afficherTtesLesSeances = false;
+        $canEditAll = $this->Droits->check($user['User']['id'], "Deliberations:editerTous");
 
         $this->set('USE_PASTELL', Configure::read('USE_PASTELL'));
         if (Configure::read('USE_PASTELL')) {
@@ -341,7 +339,7 @@ class DeliberationsController extends AppController {
             $this->set('themes',$this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('rapporteurs', $this->Acteur->generateListElus('Acteur.nom'));
             $this->set('selectedRapporteur', $this->Acteur->selectActeurEluIdParDelegationId($user['User']['service']));
-            $this->set('date_seances', $this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
+            $this->set('date_seances', $this->Seance->generateList(null, $canEditAll, array_keys($this->Session->read('user.Nature'))));
             
             if(!empty($this->request->data['Deliberation']['date_limite'])){
                 App::uses('CakeTime', 'Utility');
@@ -387,7 +385,7 @@ class DeliberationsController extends AppController {
                 foreach ($seances_tmp as $seance){
                     $bSeanceok=false;
 
-                    if($afficherTtesLesSeances)
+                    if($canEditAll)
                         $bSeanceok=true;
 
                     if(!$bSeanceok){
@@ -542,8 +540,8 @@ class DeliberationsController extends AppController {
         $user=$this->Session->read('user');
         /* initialisation du lien de redirection   */
         $redirect = $this->Session->read('user.User.lasturl');
-        $afficherTtesLesSeances = $this->Droits->check($user['User']['id'], "Deliberations:editerProjetValide");
-        
+        $canEditAll = $this->Droits->check($user['User']['id'], "Deliberations:editerTous");
+
         $pos  =  strrpos ( getcwd(), 'webroot');
         $path = substr(getcwd(), 0, $pos);
         $path_projet = $path."webroot/files/generee/projet/$id/";
@@ -581,7 +579,7 @@ class DeliberationsController extends AppController {
             foreach ($seances_tmp as $seance){
                 $bSeanceok=false;
                 
-                if($afficherTtesLesSeances)
+                if($canEditAll)
                     $bSeanceok=true;
                 
                 if(!$bSeanceok && $seances_selected[0]==$seance['Seance']['id'])
@@ -618,21 +616,18 @@ class DeliberationsController extends AppController {
                 }
             }
             $natures =  array_keys($this->Session->read('user.Nature'));
+
             if (!in_array($this->data['Deliberation']['typeacte_id'], $natures)){
-                $this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
+                $this->Session->setFlash("Vous ne pouvez pas editer le projet '$id' en raison de son type d'acte.", 'growl', array('type'=>'erreur'));
                 $this->redirect($redirect);
             }
- 
-           if ($this->data['Deliberation']['etat']== -1 || $this->data['Deliberation']['etat'] >= 4) {
-                $this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
-                $this->redirect($redirect);
-           }
-       
+
             // teste si le projet est modifiable par l'utilisateur connecté
-            if (!$this->Deliberation->estModifiable($id, $user['User']['id'], $this->Droits->check($user['User']['id'], "Deliberations:editerProjetValide"))) {
+            if (!$this->Deliberation->estModifiable($id, $user['User']['id'], $this->Droits->check($user['User']['id'], "Deliberations:editerTous"))) {
                 $this->Session->setFlash("Vous ne pouvez pas editer le projet '$id'.", 'growl', array('type'=>'erreur'));
                 $this->redirect($redirect);
             }
+
             // initialisation des fichiers des textes
             if (!Configure::read('GENERER_DOC_SIMPLE')) {
                 $this->Gedooo->createFile($path_projet, 'texte_projet.odt',  $this->data['Deliberation']['texte_projet']);
@@ -810,10 +805,14 @@ class DeliberationsController extends AppController {
                 $this->Filtre->supprimer();
                 
                 // sauvegarde des informations supplémentaires
-		$infossupDefs = $this->Infosupdef->find('all', array(
-                                                        'recursive' => -1,
-                                                        'fields' => array('id', 'code'),
-                                                        'conditions' => array('type' => 'odtFile', 'model' => 'Deliberation', 'actif' => true)));
+                $infossupDefs = $this->Infosupdef->find('all', array(
+                    'recursive' => -1,
+                    'fields' => array('id', 'code'),
+                    'conditions' => array(
+                        'type' => 'odtFile',
+                        'model' => 'Deliberation',
+                        'actif' => true
+                    )));
                 foreach ( $infossupDefs as $infossupDef) {
                     $infosup = $this->Infosup->find('first', array(
                     	'recursive' => -1,
@@ -821,14 +820,14 @@ class DeliberationsController extends AppController {
                     	'conditions' => array('foreign_key'=>$id, 'model'=>'Deliberation', 'infosupdef_id'=>$infossupDef['Infosupdef']['id'])));
                     if (empty($infosup) || empty($infosup['Infosup']['file_name']))
                     	continue;
-		    $odtFileUri = $path_projet.$infosup['Infosup']['file_name'];
+		            $odtFileUri = $path_projet.$infosup['Infosup']['file_name'];
 
                     if (file_exists($odtFileUri)){
                         $stat = stat($odtFileUri);
                         if ($stat > 0) {
-			        $infosup['Infosup']['content'] = file_get_contents($odtFileUri);
-			        $infosup['Infosup']['file_size'] = $stat['size'];
-			        $this->Infosup->save($infosup);
+                            $infosup['Infosup']['content'] = file_get_contents($odtFileUri);
+                            $infosup['Infosup']['file_size'] = $stat['size'];
+                            $this->Infosup->save($infosup);
                         }
                     }
                 }
@@ -838,8 +837,7 @@ class DeliberationsController extends AppController {
                 }
                 
                 // sauvegarde des nouvelles annexes
-               if($success)
-                if (array_key_exists('Annex', $this->data))
+                if ($success && array_key_exists('Annex', $this->data))
                 foreach($this->data['Annex'] as $annexe) {
                     //Cas bloc annexe vide
                     if (empty($annexe['file']['name']))
@@ -863,7 +861,7 @@ class DeliberationsController extends AppController {
                         $pos = strpos($annex_filename['Annex']['filetype'], 'vnd.oasis.opendocument');
                         if ($pos !== false) {
                             $path = WEBROOT_PATH."/files/generee/projet/".$id."/". $annex_filename['Annex']['filename'];
-			    $data_pdf = $this->Conversion->convertirFichier($path, 'pdf');
+			                $data_pdf = $this->Conversion->convertirFichier($path, 'pdf');
                                
                             if (is_array($data_pdf)) $data_pdf = null;
                             $this->Annex->save(array(
@@ -877,7 +875,7 @@ class DeliberationsController extends AppController {
                             $this->Annex->save(array(
                                 'id' => $annexeId,
                                 'titre' => $annexe['titre'],
-				'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
+				                'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
                                 'joindre_fusion'  => $annexe['joindre_fusion']));
                         }
                         if (!empty($this->Annex->validationErrors)){
@@ -999,7 +997,7 @@ class DeliberationsController extends AppController {
             foreach ($seances_tmp as $seance){
                 $bSeanceok=false;
                 
-                if($afficherTtesLesSeances)
+                if($canEditAll)
                     $bSeanceok=true;
                     
                 if(!$bSeanceok && $seances_selected[0]==$seance['Seance']['id'])
@@ -1085,7 +1083,7 @@ class DeliberationsController extends AppController {
             $this->set('redirect', $redirect);
             
             $this->set('profil_id', $user['User']['profil_id']);
-            //$this->set('date_seances', $this->Seance->generateList(null, $afficherTtesLesSeances, array_keys($this->Session->read('user.Nature'))));
+            //$this->set('date_seances', $this->Seance->generateList(null, $canEditAll, array_keys($this->Session->read('user.Nature'))));
              $this->set('infosupdefs', $this->Infosupdef->find('all', array('conditions'=> array('model'=>'Deliberation', 'actif' => true),
                 'order'     => 'ordre',
 		'contain' => array('Profil.id'))));
@@ -2443,7 +2441,7 @@ class DeliberationsController extends AppController {
         $this->set('typeseances', $this->Seance->Typeseance->find('list', array('recursive' => -1)));
 
         $userId = $this->Session->read('user.User.id');
-        $editerProjetValide = $this->Droits->check($userId, "Deliberations:editerProjetValide");
+        $editerTous = $this->Droits->check($userId, "Deliberations:editerTous");
         $this->request->data = $projets;
 
         /* initialisation pour chaque projet ou délibération */
@@ -2462,7 +2460,7 @@ class DeliberationsController extends AppController {
                 $estRedacteur = ($userId == $projet['Deliberation']['redacteur_id']);
                 $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat(1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
             } else {
-                $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['etat'], $editerProjetValide);
+                $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['etat'], $editerTous);
             }
             // initialisation des actions
             $this->request->data[$i]['Actions'] = $listeActions;
@@ -2472,7 +2470,7 @@ class DeliberationsController extends AppController {
                 unset($projet['Actions']['validerEnUrgence']);
                 $this->request->data[$i]['Actions'] = array_flip($this->data[$i]['Actions']);
             }
-            if ($projet['Deliberation']['etat'] == 2 && $editerProjetValide) {
+            if ($projet['Deliberation']['etat'] == 2 && $editerTous) {
                 $this->request->data[$i]['Actions'][] = 'edit';
                 $this->request->data[$i]['Actions'][] = 'attribuerCircuit';
             }
@@ -2604,11 +2602,11 @@ class DeliberationsController extends AppController {
 
     /*
      * Affiche la liste de tous les projets en cours de redaction, validation, validés sans séance
-     * Permet de modifier un projet validé si l'utilisateur à les droits editerProjetValide
+     * Permet de modifier un projet validé si l'utilisateur à les droits editerTous
      */
 
     function tousLesProjetsSansSeance() {
-        $afficherTtesLesSeances = $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:editerProjetValide");
+        $canEditAll = $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:editerTous");
 
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
         $this->Deliberation->Behaviors->attach('Containable');
@@ -2635,12 +2633,12 @@ class DeliberationsController extends AppController {
                     'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
                     'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                     'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id')));
-            $acte['Seances'] = $this->Seance->generateList(null, $afficherTtesLesSeances, $acte['Deliberation']['typeacte_id']);
+            $acte['Seances'] = $this->Seance->generateList(null, $canEditAll, $acte['Deliberation']['typeacte_id']);
             if (!empty($acte['Seances']))
                 $delibs[] = $acte;
         }
 
-        //  $this->set('date_seances',$this->Seance->generateList(null, $afficherTtesLesSeances,  array_keys($this->Session->read('user.Nature'))));
+        //  $this->set('date_seances',$this->Seance->generateList(null, $canEditAll,  array_keys($this->Session->read('user.Nature'))));
         $this->_ajouterFiltre($delibs, false);
         $this->Filtre->delCritere('DeliberationseanceId');
         $this->Filtre->delCritere('DeliberationtypeseanceId');
@@ -3037,7 +3035,7 @@ class DeliberationsController extends AppController {
                     if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
                         array_push($actions, 'delete');
 
-                    if ($this->Droits->check($userId, "Deliberations:editerProjetValide"))
+                    if ($this->Droits->check($userId, "Deliberations:editerTous"))
                         $actions[] = 'edit';
                     $this->_afficheProjets($projets, 'R&eacute;sultat de la recherche parmi tous les projets', $actions, array('tousLesProjetsRecherche'));
                 }
@@ -3065,11 +3063,11 @@ class DeliberationsController extends AppController {
     /*
      * retourne un tableau array('image'=>, 'titre'=>) pour l'affichage de l'icône dans les listes en fonction de :
      *  $etat : état du projet ou de la délibération
-     *  $editerProjetValide : droit d'éditer les projets validés
+     *  $editerTous : droit d'éditer les projets validés
      *
      */
 
-    function _iconeEtat($etat, $editerProjetValide = false, $estDansCircuit = false, $estRedacteur = false, $tourDansCircuit = 0) {
+    function _iconeEtat($etat, $editerTous = false, $estDansCircuit = false, $estRedacteur = false, $tourDansCircuit = 0) {
         switch ($etat) {
             case -2 : // refusé
                 return array(
@@ -3113,7 +3111,7 @@ class DeliberationsController extends AppController {
                 }
                 break;
             case 2: // validé
-                if ($editerProjetValide)
+                if ($editerTous)
                     return array(
                         'image' => '/img/icons/valide_editable.png',
                         'titre' => $this->Deliberation->libelleEtat($etat));
@@ -3707,9 +3705,9 @@ class DeliberationsController extends AppController {
         $this->_addFiltresAutresActes($actes);
 
         $userId = $this->Session->read('user.User.id');
-        $editerProjetValide = $this->Droits->check($userId, "Deliberations:editerProjetValide");
+        $editerTous = $this->Droits->check($userId, "Deliberations:editerTous");
         
-        $this->set('canEdit', $editerProjetValide);
+        $this->set('canEdit', $editerTous);
         $this->set('actes', $actes);
         $this->set('circuits', $circuits['soustype']);
         $this->render('autres_actes');
@@ -3875,7 +3873,7 @@ class DeliberationsController extends AppController {
 
         //Gestion des droits : editer des projets Validés
         $user = $this->Session->read('user');
-        $afficherTtesLesSeances = $this->Droits->check($user['User']['id'], "Deliberations:editerProjetValide");
+        $canEditAll = $this->Droits->check($user['User']['id'], "Deliberations:editerTous");
 
         if (strpos($typeseances_id, ',') !== false) {
             $typeseances_id = explode(',', $typeseances_id);
@@ -3891,7 +3889,7 @@ class DeliberationsController extends AppController {
             foreach ($seances as $seance) {
                 $iTime = strtotime($seance['Seance']['date']);
                 //Voir tous les projets ou tous les futurs dates avec un delais respecté
-                if ($afficherTtesLesSeances || time() < mktime(0, 0, 0, date('m', $iTime), date('d', $iTime) - $seance['Typeseance']['retard'], date('Y', $iTime)))
+                if ($canEditAll || time() < mktime(0, 0, 0, date('m', $iTime), date('d', $iTime) - $seance['Typeseance']['retard'], date('Y', $iTime)))
                     $result[$seance['Seance']['id']] = $seance['Typeseance']['libelle'] . ' : ' . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
             }
         }

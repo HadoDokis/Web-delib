@@ -1553,7 +1553,7 @@ COPY acos (id, alias, lft, rght, parent_id, model, foreign_key) FROM stdin;
 49	Infosupdefs:index_seance	96	97	40	\N	0
 51	Deliberations:edit	100	101	50	\N	0
 52	Deliberations:delete	102	103	50	\N	0
-53	Deliberations:editerProjetValide	104	105	50	\N	0
+53	Deliberations:editerTous	104	105	50	\N	0
 54	Deliberations:goNext	106	107	50	\N	0
 55	Deliberations:validerEnUrgence	108	109	50	\N	0
 56	Deliberations:rebond	110	111	50	\N	0

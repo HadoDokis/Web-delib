@@ -184,37 +184,27 @@ class Deliberation extends AppModel {
 	*/
 	function estModifiable($delibId, $userId, $canEdit=false) {
 		/* lecture en base */
-		$delib = $this->find('first', array('conditions' => array('Deliberation.id' => $delibId),
-				'recursive'  => '-1',
-				'fields'     => array('etat', 'redacteur_id', 'signee')));
-		if (empty($delib)) return false;
-		if ($delib['Deliberation']['signee'] == 1)
-			return false;
+		$delib = $this->find('first', array(
+            'conditions' => array('Deliberation.id' => $delibId),
+            'recursive'  => '-1',
+            'fields'     => array('etat', 'redacteur_id', 'signee')));
 
-		/* traitement en fonction de l'état */
-		switch($delib['Deliberation']['etat']) {
-			case -1 :
-			case 2 :
-				$ret =  $canEdit;
-				break;
+		if (!empty($delib))
+		if ($delib['Deliberation']['signee'] != 1)
+		switch($delib['Deliberation']['etat']) { /* traitement en fonction de l'état */
+            case 0 :
+                return ($canEdit || $delib['Deliberation']['redacteur_id'] == $userId);
+            case 1 :
+                return ($canEdit || $this->Traitement->positionTrigger($userId, $delibId) > -1);
+            case 2 :
+                return  $canEdit;
 			case 3 :
-				$ret =  $canEdit;
-				break;
+                return  $canEdit;
 			case 4 :
-				$ret =  $canEdit;
-				break;
-			case 5 :
-				$ret = false;
-				break;
-			case 0 :
-				$ret = ($delib['Deliberation']['redacteur_id'] == $userId);
-				break;
-			case 1 :
-				$ret = ($this->Traitement->positionTrigger($userId, $delibId) > -1);
-				break;
+                return  $canEdit;
 		}
 
-		return $ret;
+        return false;
 	}
 	/*
 	 function saveSeances($delib_id, $seances) {
