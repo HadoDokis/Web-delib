@@ -32,7 +32,7 @@
  * In production mode, flash messages redirect after a time interval.
  * In development mode, you need to click the flash message to continue.
  */
-	Configure::write('debug', 0);
+	Configure::write('debug', 2);
 /**
  * Configure the Error handler used to handle errors for your application.  By default
  * ErrorHandler::handleError() is used.  It will display errors using Debugger, when debug > 0
@@ -49,7 +49,7 @@
  */
 	Configure::write('Error', array(
 		'handler' => 'ErrorHandler::handleError',
-		'level' => E_ALL & ~E_DEPRECATED,
+		'level' => E_ALL,
 		'trace' => true
 	));
 
@@ -115,7 +115,7 @@
  * Turn off all caching application-wide.
  *
  */
-	Configure::write('Cache.disable', false);
+	Configure::write('Cache.disable', true);
 
 /**
  * Enable cache checking.
@@ -184,8 +184,8 @@
  * When set to false, HTTP_USER_AGENT will not be checked
  * in the session
  */
-        Configure::write('Session.checkAgent', false);
-  
+    Configure::write('Session.checkAgent', false);
+
 /**
  * A random string used in security hashing methods.
  */
@@ -303,11 +303,10 @@ Cache::config('_cake_model_', array(
     //FIXME Pour la date de séance
     //setlocale(LC_ALL, 'fr_FR.utf8');
     //Configure::write('Config.language', 'fra');
-    
+
     require_once ('webdelib.inc');
+    require_once ('formats.inc');
     define('VERSION', '4.1.03');
     //appVersion
     //dbVersion
     include_once(ROOT.DS.APP_DIR.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'cakeflow.conf.php');
-
-?>
