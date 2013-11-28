@@ -39,19 +39,20 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('bootstrap-responsive.min');
         echo $this->Html->css('font-awesome.min');
-        echo $this->Html->css('docs');
         echo $this->Html->css('attendable');
         echo $this->Html->css('filtres');
         echo $this->Html->css('global');
         echo $this->fetch('css');
 
         echo $this->Html->script('modernizr.min');
-        echo $this->Html->script('jquery');
+//        echo $this->Html->script('jquery');
+        echo $this->Html->script('jquery-1.10.2.min.js');
         echo $this->Html->script('libs/bootstrap.min');
         echo $this->html->script('jquery.jgrowl', true);
         echo $this->Html->script('utils');
-        echo $this->html->script('attendable', true); 
-        echo $this->html->script('waitAndBlock', true); 
+        echo $this->html->script('attendable', true);
+        echo $this->html->script('waitAndBlock', true);
+        echo $this->html->script('masterCheckbox', true);
         echo $this->fetch('script');
         ?>
 
