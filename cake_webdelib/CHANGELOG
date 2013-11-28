@@ -8,6 +8,8 @@
     *) Amélioration de la notification de refus, contient désormais un lien vers la page d'édition du nouveau projet et indique le nouvel id
     *) Ajout d'un bouton génération dans la page de traitement d'un projet
     *) Refonte graphique de la page de traitement et vue de projet (boutons bootstrap avec icones font-awesome, et changement couleurs)
+    *) Migration vers Font-Awesome 4.0.3 (plus d'icones, nouvelles conventions de nommage des classes)
+    *)
 
 4.1.03
 ======

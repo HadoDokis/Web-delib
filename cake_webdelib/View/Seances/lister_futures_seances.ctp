@@ -12,7 +12,7 @@
     ?>
     <table style="width:100%;">
         <tr>
-            <?php if (!$endDiv) echo("<th style='width:2px;'>&nbsp;</th>"); ?>
+            <?php if (!$endDiv) echo("<th style='width:2px;'><input type='checkbox' id='masterCheckbox' /></th>"); ?>
             <th style="width:22px;"></th>
             <th style="width:150px;">Type</th>
             <th style="width:190px;">Date S&eacute;ance</th>
@@ -28,7 +28,11 @@
             $numLigne++;
 
             if (!$endDiv)
-                echo("<td>" . $this->Form->checkbox('Seance.id_' . $seance['Seance']['id'], array('checked' => false, 'class' => 'choix_seance_generer')) . "</td>");
+                echo("<td style='text-align:center; vertical-align: middle;'>"
+                    . $this->Form->checkbox(
+                        'Seance.id_' . $seance['Seance']['id'],
+                        array('checked' => false, 'class' => 'choix_seance_generer'))
+                    . "</td>");
             ?>
             <td>
                 <?php
