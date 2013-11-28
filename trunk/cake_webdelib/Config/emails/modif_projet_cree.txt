@@ -1,0 +1,11 @@
+Bonjour #PRENOM# #NOM#,
+
+Votre dossier "#OBJET_PROJET#" vient d'être modifié.
+
+Vous pouvez le visualiser à l'adresse : #ADRESSE_A_VISUALISER#
+
+Très cordialement.
+
+Webdelib
+
+Ce mail de notification a été envoyé par webdelib pour votre information. Merci de ne pas répondre.

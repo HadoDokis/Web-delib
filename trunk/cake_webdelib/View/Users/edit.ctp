@@ -1,28 +1,3 @@
-<script>
-
-    $(document).ready(function() {
-        onchangeCircuitDefault();
-    });
-
-    function onchangeCircuitDefault() {
-        var selected_default_circuit_id = $('#default_circuit').val();
-        if (selected_default_circuit_id == null)
-            selected_default_circuit_id = <?php if (is_int($selectedCircuits)) echo $selectedCircuits; else echo 'null'; ?>;
-        $('#default_circuit').empty();
-        $('#all_circuits').find("option:selected").each(function(index, element) {
-            $(element).clone().appendTo('#default_circuit');
-        });
-        $('#default_circuit').val(selected_default_circuit_id);
-    }
-</script>
-<style>
-    .input.radio label, .input.radio input{
-padding: 0;
-margin:0;
-width: auto;
-    }
-    
-</style>
 <?php
 echo $this->element('onglets', array('listeOnglets' => array(
         'Informations principales',
@@ -98,10 +73,17 @@ if ($this->Html->value('User.id')) {
             else
                 echo ("<fieldset id='mails'>");
             ?>
-            <legend>Réception des mails</legend>
-            <?php echo $this->Form->input('User.mail_insertion', array('before' => '<label>Insertion</label><br>', 'legend' => false, 'type' => 'radio', 'options' => $notif, 'div' => array('class'=>'tiers'), 'label' => true)); ?>
-            <?php echo $this->Form->input('User.mail_traitement', array('before' => '<label>Traitement</label><br>', 'legend' => false, 'type' => 'radio', 'options' => $notif, 'div' => array('class'=>'tiers'), 'label' => true)); ?>
-            <?php echo $this->Form->input('User.mail_refus', array('before' => '<label>Refus</label><br>', 'legend' => false, 'type' => 'radio', 'options' => $notif, 'div' => array('class'=>'tiers'), 'label' => true)); ?>
+            <legend>Notifications</legend>
+            <?php echo $this->Form->input('User.mail_insertion',
+                array('type' => 'radio', 'legend' => false, 'options' => $notif, 'before' => '<strong>Insertion</strong>')); ?>
+            <?php echo $this->Form->input('User.mail_traitement',
+                array('type' => 'radio', 'legend' => false, 'options' => $notif, 'before' => '<strong>Traitement</strong>')); ?>
+            <?php echo $this->Form->input('User.mail_refus',
+                array('type' => 'radio', 'legend' => false, 'options' => $notif, 'before' => '<strong>Refus</strong>')); ?>
+            <?php echo $this->Form->input('User.mail_modif_projet_cree',
+                array('type' => 'radio', 'legend' => false, 'options' => $notif, 'before' => '<strong>Mon projet est modifié</strong>')); ?>
+            <?php echo $this->Form->input('User.mail_modif_projet_valide',
+                array('type' => 'radio', 'legend' => false, 'options' => $notif, 'before' => '<strong>Un projet que j&apos;ai visé est modifié</strong>')); ?>
             <div class="spacer"></div>
             <hr/>
             <?php
@@ -153,8 +135,6 @@ if ($this->Html->value('User.id')) {
     ?>
 </div>
 
-
-
 <div id='tab3' style="display: none;">
     <?php
     foreach ($natures as $nature)
@@ -176,3 +156,26 @@ if ($this->Html->value('User.id')) {
 <?php // echo $this->Html->link('Annuler', '/users/index', array('class'=>'link_annuler', 'name'=>'Annuler')) ?>
 </div>
 <?php echo $this->Form->end(); ?>
+<script>
+    $(document).ready(function() {
+        onchangeCircuitDefault();
+    });
+    function onchangeCircuitDefault() {
+        var selected_default_circuit_id = $('#default_circuit').val();
+        if (selected_default_circuit_id == null)
+            selected_default_circuit_id = <?php if (is_int($selectedCircuits)) echo $selectedCircuits; else echo 'null'; ?>;
+        $('#default_circuit').empty();
+        $('#all_circuits').find("option:selected").each(function(index, element) {
+            $(element).clone().appendTo('#default_circuit');
+        });
+        $('#default_circuit').val(selected_default_circuit_id);
+    }
+</script>
+<style>
+    .input.radio label, .input.radio input{
+        padding-left: 2px;
+        padding-right: 5px;
+        margin:0;
+        width: auto;
+    }
+</style>

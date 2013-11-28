@@ -10,6 +10,7 @@
     *) Refonte graphique de la page de traitement et vue de projet (boutons bootstrap avec icones font-awesome, et changement couleurs)
     *) Migration de Font-Awesome v3.0.2 vers v4.0.3 (plus d'icones, nouvelles conventions de nommage des classes)
     *) Migration de jQuery v1.7.1 vers v1.10.2
+    *) Ajout de deux nouvelles notifications utilisateur : "Un projet dont je suis le rédacteur a été modifié" et "Un projet que j'ai visé a été modifié"
     *)
 
 4.1.03
