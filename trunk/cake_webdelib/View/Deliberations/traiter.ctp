@@ -23,7 +23,7 @@ if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
 $linkBarre .= $this->Html->link(
     '<i class="fa fa-file"></i> Générer',
     array('controller' => 'models', 'action' => 'generer', $deliberation['Deliberation']['id'], 'null', $deliberation['Model']['id'], '-1', '0', 'retour', '0', '0', '0'),
-    array('escape' => false, 'class' => 'btn', 'title' => 'Générer le document du projet')
+    array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document du projet')
 );
 $linkBarre .= $this->Html->link(
     '<i class="fa fa-comment"></i> Commenter',
