@@ -67,5 +67,5 @@
 </div>
 <br/>
 <div class="submit">
-<?php echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', '/seances/listerFuturesSeances', array('class'=>'btn', 'name'=>'Retour','escape'=>false))?>
+<?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/seances/listerFuturesSeances', array('class'=>'btn', 'name'=>'Retour','escape'=>false))?>
 </div>

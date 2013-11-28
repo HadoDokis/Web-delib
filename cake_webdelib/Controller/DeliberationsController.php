@@ -1314,7 +1314,7 @@ class DeliberationsController extends AppController {
             'fields' => array(
                 'id', 'anterieure_id', 'service_id', 'circuit_id',
                 'etat', 'num_delib', 'titre', 'objet', 'objet_delib', 'num_pref',
-                'texte_projet', 'texte_projet_name',
+                'texte_projet', 'texte_projet_name', 'typeacte_id',
                 'texte_synthese', 'texte_synthese_name',
                 'deliberation', 'deliberation_name',
                 'created', 'modified'),
@@ -1327,12 +1327,13 @@ class DeliberationsController extends AppController {
                 'Rapporteur.nom', 'Rapporteur.prenom',
                 'Annex',
                 'Infosup',
-                'Multidelib.id', 'Multidelib.objet', 'Multidelib.objet_delib', 'Multidelib.num_delib',
+                'Multidelib.id', 'Multidelib.objet', 'Multidelib.objet_delib', 'Multidelib.num_delib', 'Multidelib.Annex',
                 'Multidelib.etat', 'Multidelib.deliberation', 'Multidelib.deliberation_name', 'Multidelib.Typeacte.libelle',
-                'Multidelib.Annex'),
+            ),
             'conditions' => array('Deliberation.id' => $id)));
-        
-          $projet['Deliberation']['num_pref'] =  $projet['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($projet['Deliberation']['num_pref']);
+
+        $projet['Model']['id'] = $this->Deliberation->Typeacte->getModelId($projet['Deliberation']['typeacte_id'], 'modeleprojet_id');
+        $projet['Deliberation']['num_pref'] = $projet['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($projet['Deliberation']['num_pref']);
             
         if (empty($projet)) {
             $this->Session->setFlash('identifiant invalide pour le projet : ' . $id, 'growl', array('type' => 'erreur'));

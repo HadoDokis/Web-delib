@@ -55,12 +55,12 @@
 <br />
 <ul id="actions_fiche">
 	<li><?php 
-        echo $this->Html->link('<i class="icon-arrow-left"></i> Retour', '/typeseances/index', array('class'=>'btn', 
+        echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/typeseances/index', array('class'=>'btn',
                                                                           'title'=>'Retourner à la liste', 
                                                                           'escape' =>false), false);
         ?></li>
 	<li><?php 
-        echo $this->Html->link('<i class="icon-edit"></i> Modifier', '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'btn', 
+        echo $this->Html->link('<i class="fa fa-edit"></i> Modifier', '/typeseances/edit/' . $typeseance['Typeseance']['id'], array('class'=>'btn',
                                                                                                             'title'=>'Modifier', 
                                                                                                             'escape' => false), false);
         ?></li>

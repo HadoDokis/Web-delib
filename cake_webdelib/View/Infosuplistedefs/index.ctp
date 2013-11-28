@@ -36,8 +36,8 @@
 </table>
 
 <ul class="actions">
-    <?php echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', '/infosupdefs/index/', array('class'=>'btn',  'escape' => false), false); ?>
-    <?php echo $this->Html->link('<i class="icon-plus-sign"></i> Ajouter un élément', '/infosuplistedefs/add/'.$infosupdef['Infosupdef']['id'], array('class'=>'btn btn-primary',  'escape' => false,  'title'=>'Ajouter un élément'), false); ?>
+    <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/infosupdefs/index/', array('class'=>'btn',  'escape' => false), false); ?>
+    <?php echo $this->Html->link('<i class="fa fa-plus"></i> Ajouter un élément', '/infosuplistedefs/add/'.$infosupdef['Infosupdef']['id'], array('class'=>'btn btn-primary',  'escape' => false,  'title'=>'Ajouter un élément'), false); ?>
 </ul>
 
 </div>

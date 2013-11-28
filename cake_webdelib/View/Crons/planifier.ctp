@@ -28,8 +28,8 @@ echo $this->DurationPicker->picker('Cron.execution_duration', array('label' => '
 echo $this->Form->input('active', array('label' => __('Activation', true)));
 echo $this->Form->hidden('id');
 echo $this->Html->tag("div", null, array("class" => "btn-group btn-group-vertical", 'style'=>'clear: both; left: 210px;'));
-echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Annuler', array('action' => 'index'), array('class' => 'btn', 'escape' => false));
-echo $this->Form->button('<i class="icon-ok"></i> Valider', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false));
+echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'index'), array('class' => 'btn', 'escape' => false));
+echo $this->Form->button('<i class="fa fa-check"></i> Valider', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false));
 echo $this->Html->tag('/div', null);
 echo $this->Form->end();
 ?>

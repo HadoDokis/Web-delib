@@ -35,13 +35,13 @@
     <br/>
     <div style="text-align: left; float: left">
     <?php
-        echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', '/postseances/index', array('class'=>'btn', 'escape' => false, 'name'=>'Retour'));
+        echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/postseances/index', array('class'=>'btn', 'escape' => false, 'name'=>'Retour'));
     ?>
     </div>
     <div style="text-align: right; float: right">
     <?php
         if ($pv_figes != 1){
-            echo $this->Html->link('<i class="icon-ok-sign"></i> Figer les débats','/postseances/changeStatus/' . $seance_id, array('class'=>'btn btn-primary', 'escape' => false, 'name'=>'Clore', 'title'=>'Figer les débats'), 'Etes-vous sur de vouloir figer les débats ?', false);
+            echo $this->Html->link('<i class="fa fa-check"></i> Figer les débats','/postseances/changeStatus/' . $seance_id, array('class'=>'btn btn-primary', 'escape' => false, 'name'=>'Clore', 'title'=>'Figer les débats'), 'Etes-vous sur de vouloir figer les débats ?', false);
         }
     ?>
     </div>

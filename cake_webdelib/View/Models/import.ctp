@@ -10,7 +10,7 @@
 </div>
 <div class="submit">
 <?php 
-    echo $this->Form->button('<i class="icon-upload"></i> Importer', array('div'=>false, 'class'=>'btn btn-primary', 'name'=>'importer', 'type'=>'submit'));
+    echo $this->Form->button('<i class="fa fa-upload"></i> Importer', array('div'=>false, 'class'=>'btn btn-primary', 'name'=>'importer', 'type'=>'submit'));
 ?>
 </div>
 <?php echo $this->Form->end(); ?>

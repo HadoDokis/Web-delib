@@ -19,7 +19,7 @@ if ($majDeleg) {
             function afficheMAJ() {
                 $("div.nomcourante").parent().append('<?php
     echo $this->Html->tag('div', $this->Html->link(
-                    $this->Html->tag("i", "", array("class" => "icon-repeat")) . " Mise à jour", "/deliberations/majEtatParapheur/" . $this->data['Deliberation']['id'], array('escape' => false, "class" => "btn btn-inverse")), array('class' => 'majDeleg', 'title'=>'Mettre à jour le statut des étapes de délégations'));
+                    $this->Html->tag("i", "", array("class" => "fa fa-repeat")) . " Mise à jour", "/deliberations/majEtatParapheur/" . $this->data['Deliberation']['id'], array('escape' => false, "class" => "btn btn-inverse")), array('class' => 'majDeleg', 'title'=>'Mettre à jour le statut des étapes de délégations'));
     ?>')
             }
             afficheMAJ();
@@ -31,7 +31,7 @@ if (isset($visas_retard) && !empty($visas_retard)) {
         ?>
                 $('#etape_<?php echo $visa["Visa"]['numero_traitement']; ?> .delegation').before('<?php
         echo $this->Html->link(
-                $this->Html->tag("i", "", array("class" => "icon-repeat")), "/cakeflow/traitements/traiterDelegationsPassees/" . $visa["Visa"]['traitement_id'] . "/" . $visa["Visa"]['numero_traitement'], array('escape' => false, "style" => "text-decoration:none;margin-right:5px;", 'title'=> 'Mettre à jour le statut de cette étape'));
+                $this->Html->tag("i", "", array("class" => "fa fa-repeat")), "/cakeflow/traitements/traiterDelegationsPassees/" . $visa["Visa"]['traitement_id'] . "/" . $visa["Visa"]['numero_traitement'], array('escape' => false, "style" => "text-decoration:none;margin-right:5px;", 'title'=> 'Mettre à jour le statut de cette étape'));
         ?>');
     <?php
     }
@@ -249,7 +249,7 @@ if (!empty($historiques)) {
 
 </dl>
 <div id="actions_fiche">
-    <?php echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', 'javascript:history.go(-1)', array('class' => 'btn', 'escape' => false, 'title' => 'Retour fiche')); ?>
+    <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', 'javascript:history.go(-1)', array('class' => 'btn', 'escape' => false, 'title' => 'Retour fiche')); ?>
 </div>
     
 </div>

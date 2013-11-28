@@ -23,8 +23,8 @@
 <br/> <br/> <br/>
 <?php
         echo '<div class="submit btn-group">';
-        echo $this->Html->link('<i class=" icon-circle-arrow-left"></i> Annuler', array('action' => 'traiter', $delib_id), array('class' => 'btn', 'name' => 'Annuler', 'escape' => false));
-        echo $this->Form->button('<i class="icon-ok-sign"></i> Valider', array('div' => false, 'class' => 'btn btn-primary', 'name' => 'Valider', 'type' => 'submit'));
+        echo $this->Html->link('<i class=" fa fa-arrow-left"></i> Annuler', array('action' => 'traiter', $delib_id), array('class' => 'btn', 'name' => 'Annuler', 'escape' => false));
+        echo $this->Form->button('<i class="fa fa-check"></i> Valider', array('div' => false, 'class' => 'btn btn-primary', 'name' => 'Valider', 'type' => 'submit'));
         echo '</div>';
         
     echo $this->Form->end();

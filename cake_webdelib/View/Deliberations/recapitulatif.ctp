@@ -104,7 +104,7 @@ endforeach;
 <div class="centre">
 <!--	<?php // echo $this->Html->link('Modifier', '/deliberations/edit/'.$deliberation['Deliberation']['id'], array('class'=>'link_add', 'title'=>'Modifier le projet de délibération')); ?><br/><br/>-->
 		<?php // echo $this->Html->link('Insérer le projet de délibération dans le circuit', '/deliberations/addIntoCircuit/'.$deliberation['Deliberation']['id'], array('class'=>'link_add', 'title'=>'Insérer la délibération dans le circuit')); ?>
-<?php echo $this->Html->link('<i class="icon-edit"></i> Modifier', '/deliberations/edit/'.$deliberation['Deliberation']['id'], array('escape'=> false, 'class'=>'btn', 'title'=>'Modifier le projet de délibération')); ?><br/><br/>
-	<?php echo $this->Html->link('<i class="icon-cogs"></i> Insérer le projet de délibération dans le circuit', '/deliberations/addIntoCircuit/'.$deliberation['Deliberation']['id'], array('escape'=> false, 'class'=>'btn btn-primary', 'title'=>'Insérer la délibération dans le circuit')); ?>
+<?php echo $this->Html->link('<i class="fa fa-edit"></i> Modifier', '/deliberations/edit/'.$deliberation['Deliberation']['id'], array('escape'=> false, 'class'=>'btn', 'title'=>'Modifier le projet de délibération')); ?><br/><br/>
+	<?php echo $this->Html->link('<i class="fa fa-cogs"></i> Insérer le projet de délibération dans le circuit', '/deliberations/addIntoCircuit/'.$deliberation['Deliberation']['id'], array('escape'=> false, 'class'=>'btn btn-primary', 'title'=>'Insérer la délibération dans le circuit')); ?>
 </div>
 </div>

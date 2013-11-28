@@ -47,15 +47,15 @@
         echo $this->Html->tag("div", null, array("class" => "btn-group", 'style' => 'margin-top:10px;'));
         if(empty($seance['Seance']['traitee'])){
         if($seance['Typeseance']['action']==0)
-            echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour aux votes', "/seances/details/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false));
+            echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour aux votes', "/seances/details/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false));
         if($seance['Typeseance']['action']==1)
-            echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour aux avis', "/seances/detailsAvis/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false));
+            echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour aux avis', "/seances/detailsAvis/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false));
         if($seance['Typeseance']['action']==2)
-            echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour aux délibérations', "/seances/detailsAvis/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false));
+            echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour aux délibérations', "/seances/detailsAvis/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false));
         }else
-            echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour aux délibérations', "/postseances/afficherProjets/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false));
+            echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour aux délibérations', "/postseances/afficherProjets/$seance_id", array('class'=>'btn', 'name'=>'Annuler','escape'=>false));
 	   
-        echo $this->Form->button('<i class="icon-save"></i> Enregistrer', array('class'=>'btn btn-primary', 'name'=>'saisir','escape'=>false, 'title' => 'Enregistrer'));
+        echo $this->Form->button('<i class="fa fa-save"></i> Enregistrer', array('class'=>'btn btn-primary', 'name'=>'saisir','escape'=>false, 'title' => 'Enregistrer'));
         echo $this->Html->tag('/div', null);
         echo $this->Form->end(); 
         ?>

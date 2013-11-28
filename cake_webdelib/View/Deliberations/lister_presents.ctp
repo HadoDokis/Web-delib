@@ -61,9 +61,9 @@ foreach ($presents as $present):
 </table>
 <br />
 <div class="submit">
-	<?php echo $this->Form->button('<i class="icon-circle-arrow-down"></i> Enregistrer la liste des présents', array('div'=>false, 'class'=>'btn btn-primary', 'name'=>'modifier'));   ?>
+	<?php echo $this->Form->button('<i class="fa fa-save"></i> Enregistrer la liste des présents', array('div'=>false, 'class'=>'btn btn-primary', 'name'=>'modifier'));   ?>
     <?php 
-        echo $this->Html->link('<i class="icon-flag"></i> Récupérer la liste des présents de la délibération précédente', 
+        echo $this->Html->link('<i class="fa fa-flag"></i> Récupérer la liste des présents de la délibération précédente',
                                  "/deliberations/copyFromPrevious/$delib_id/$seance_id",
                                  array('escape' => false, 'class' => 'btn btn-inverse')); 
     ?>

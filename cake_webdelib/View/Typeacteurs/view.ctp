@@ -37,9 +37,9 @@
 
 <br />
 <ul id="actions_fiche">
-	<li><?php echo $this->Html->link('<i class="icon-arrow-left"></i> Retour', '/typeacteurs/index', array('class'=>'btn', 'title'=>'Retourner à la liste', 'escape' =>false), false); ?>
+	<li><?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/typeacteurs/index', array('class'=>'btn', 'title'=>'Retourner à la liste', 'escape' =>false), false); ?>
 	<?php if ($Droits->check($this->Session->read('user.User.id'), 'Typeacteurs:edit'))
-		echo '<li>'.$this->Html->link('<i class="icon-edit"></i> Modifier', '/typeacteurs/edit/' . $typeacteur['Typeacteur']['id'], array('class'=>'btn', 'title'=>'Modifier', 
+		echo '<li>'.$this->Html->link('<i class="fa fa-edit"></i> Modifier', '/typeacteurs/edit/' . $typeacteur['Typeacteur']['id'], array('class'=>'btn', 'title'=>'Modifier',
                                                                                                      'escape' =>false), false).'</li>';
 	?>
 </ul>

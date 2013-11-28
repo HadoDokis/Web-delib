@@ -11,8 +11,8 @@ if (isset($visu))
     echo ($visu);
 echo $this->Html->tag('div', '', array('class' => 'spacer', 'style'=>'heigth:0px;'));
 echo $this->Html->tag('div', null, array('class' => 'submit btn-group', 'style'=>'margin-left:38px;'));
-echo $this->Html->link('<i class="icon-arrow-left"></i> Annuler', $lien_retour, array('class' => 'btn', 'escape' => false, 'name' => 'Annuler'));
-echo $this->Form->button('<i class="icon-ok-sign"></i> Attribuer', array('div' => false, 'class' => 'btn btn-primary', 'type' => 'submit', 'name' => 'ajouter'));
+echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $lien_retour, array('class' => 'btn', 'escape' => false, 'name' => 'Annuler'));
+echo $this->Form->button('<i class="fa fa-check"></i> Attribuer', array('div' => false, 'class' => 'btn btn-primary', 'type' => 'submit', 'name' => 'ajouter'));
 echo $this->Html->tag('/div', null);
 echo $this->Html->tag('/div', null);
 echo $this->Form->end();

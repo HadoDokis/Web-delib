@@ -42,16 +42,16 @@ function beforeSave() {
 function libelleStatus($status) {
 	switch ($status) {
 	    case self::EXECUTION_STATUS_SUCCES:
-    	    $libelle = '<span class="label label-success" title="Opération exécutée avec succès"><i class="icon-ok-sign"></i> '.__('Exécutée avec succès', true).'</span>';
+    	    $libelle = '<span class="label label-success" title="Opération exécutée avec succès"><i class="fa fa-check"></i> '.__('Exécutée avec succès', true).'</span>';
         	break;
 	    case self::EXECUTION_STATUS_WARNING:
-    	    $libelle = '<span class="label label-warning" title="Avertissement(s) détecté(s) lors de l\'exécution, voir les détails de la tâche"><i class="icon-info-sign"></i> '.__('Exécutée, en alerte', true).'</span>';
+    	    $libelle = '<span class="label label-warning" title="Avertissement(s) détecté(s) lors de l\'exécution, voir les détails de la tâche"><i class="fa fa-info"></i> '.__('Exécutée, en alerte', true).'</span>';
         	break;
 	    case self::EXECUTION_STATUS_FAILED:
-    	    $libelle = '<span class="label label-important" title="Erreur(s) détectée(s) lors de l\'exécution, voir les détails de la tâche"><i class="icon-warning-sign"></i> '.__('Non exécutée : erreur', true).'</span>';
+    	    $libelle = '<span class="label label-important" title="Erreur(s) détectée(s) lors de l\'exécution, voir les détails de la tâche"><i class="fa fa-warning"></i> '.__('Non exécutée : erreur', true).'</span>';
         	break;
         default:
-    	    $libelle = '<span class="label" title="Statut indéfini, la tâche a t-elle déjà été exécutée ?"><i class="icon-question-sign"></i> '.__('Indéfini', true).'</span>';
+    	    $libelle = '<span class="label" title="Statut indéfini, la tâche a t-elle déjà été exécutée ?"><i class="fa fa-question"></i> '.__('Indéfini', true).'</span>';
 	}
 	return $libelle;
 }

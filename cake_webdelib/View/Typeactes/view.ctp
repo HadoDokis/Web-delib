@@ -36,10 +36,10 @@
 
 <br />
 <ul id="actions_fiche">
-	<li><?php echo $this->Html->link('<i class="icon-arrow-left"></i> Retour', '/typeactes/index', array('class'=>'btn', 
+	<li><?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/typeactes/index', array('class'=>'btn',
                                                                        'title'=>'Retourner à la liste',
                                                                        'escape' => false), false) ?> </li>
-	<li><?php echo $this->Html->link('<i class="icon-edit"></i> Modifier', '/typeactes/edit/' . $typeacte['Typeacte']['id'], array('class'=>'btn', 
+	<li><?php echo $this->Html->link('<i class="fa fa-edit"></i> Modifier', '/typeactes/edit/' . $typeacte['Typeacte']['id'], array('class'=>'btn',
                                                                                                      'title'=>'Modifier', 
                                                                                                      'escape' =>false), false) ?> </li>
 </ul>
