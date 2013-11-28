@@ -75,7 +75,7 @@
 	<br />
 
 	<div class="submit">
-            <?php echo $this->Form->button('<i class="icon-cloud-upload"></i> Envoyer',array('escape'=>false, 'type'=>'submit','class'=>'btn btn-primary'));
+            <?php echo $this->Form->button('<i class="fa fa-cloud-upload"></i> Envoyer',array('escape'=>false, 'type'=>'submit','class'=>'btn btn-primary'));
             if(isset($seance_id))  
             echo $this->Form->hidden('Seance.id',array('value' => $seance_id));
             ?>

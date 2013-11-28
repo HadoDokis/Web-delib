@@ -85,7 +85,7 @@
 </table>
 <br />
 <?php
-echo $this->Form->button('<i class="icon-search"></i> Rechercher', array('type' => 'submit', 'div' => false, 'class'=>'btn btn-primary', 'name'=>'Rechercher')); 
+echo $this->Form->button('<i class="fa fa-search"></i> Rechercher', array('type' => 'submit', 'div' => false, 'class'=>'btn btn-primary', 'name'=>'Rechercher'));
 ?>
 </div>
 <br />

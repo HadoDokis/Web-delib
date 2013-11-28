@@ -181,7 +181,7 @@
     if (!$endDiv) {
         if (isset($models) && !empty($models)) {
             echo $this->Form->input('Seance.model_id', array('options' => $models, 'label' => 'Modèle'));
-            echo $this->Form->button('<i class="icon-cogs"></i> Générer', array('type' => 'submit', 'class' => 'btn btn-primary', 'title' => "Lancer la génération multi-séances (Attention : l'exécution peut être longue)", 'id' => 'generer_multi_seance'));
+            echo $this->Form->button('<i class="fa fa-cogs"></i> Générer', array('type' => 'submit', 'class' => 'btn btn-primary', 'title' => "Lancer la génération multi-séances (Attention : l'exécution peut être longue)", 'id' => 'generer_multi_seance'));
         }
     }
     echo $this->Form->end();

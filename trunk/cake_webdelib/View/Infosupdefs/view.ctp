@@ -33,10 +33,10 @@
 </dl>
 <div id="actions_fiche" class="btn-toolbar pagination-centered">
     <div class="btn-group">
-<?php echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', $lienRetour, array('class'=>'btn', 'name'=>'Retour','escape'=>false))?>
+<?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $lienRetour, array('class'=>'btn', 'name'=>'Retour','escape'=>false))?>
 	<?php
         if ($Droits->check($this->Session->read('user.User.id'), 'Infosupdefs:edit'))
-         echo $this->Html->link('<i class="icon-edit"></i> Modifier', 
+         echo $this->Html->link('<i class="fa fa-edit"></i> Modifier',
                            '/infosupdefs/edit/' . $this->data['Infosupdef']['id'], 
                            array('class'=>'btn  btn-primary', 'escape' => false,
                                  'name'=>'Modifier'))

@@ -266,9 +266,9 @@ h3 {
 	font: normal normal 16px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	color:#444444;
 	/* couleur NON-web */
-	border-bottom: 1px solid #e0ef90;
-	padding-left: 1%;
-	width: 80%;
+	/*border-bottom: 1px solid #e0ef90;*/
+	/*padding-left: 1%;*/
+	/*width: 80%;*/
 }
 
 a {
@@ -978,7 +978,8 @@ a.link_rebond_avec_border {
 }
 
 #vue_cadre{
-	background-color: #EAEFCE;
+	background-color: #eee;
+    box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7), -1px 2px 20px rgba(255, 255, 255, 0.6) inset;
 }
 
 #vue_cadre h3 {
@@ -987,11 +988,11 @@ a.link_rebond_avec_border {
 }
 
 #vue_cadre dt{
-	font: italic normal 15px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	/*font: italic normal 15px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;*/
 	margin: 5px 20px 0 20px;
 	padding: 2px 0 0 20px;
 	border-top: 1px solid #FFFFFF;
-	border-right: 1px solid #FFFFFF;
+	/*border-right: 1px solid #FFFFFF;*/
 	text-decoration: underline;
 }
 

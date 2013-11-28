@@ -31,7 +31,7 @@ foreach ($contenuVue['onglets'] as $i => $onglet) {
 }
 // Affichage du lien de retour
 echo $this->Html->tag('div', null, array('class' => 'submit'));
-echo $this->Html->link('<i class="icon-circle-arrow-left"></i> ' . $contenuVue['lienRetour']['title'], $contenuVue['lienRetour']['url'], array('class' => 'btn', 'escape' => false));
+echo $this->Html->link('<i class="fa fa-arrow-left"></i> ' . $contenuVue['lienRetour']['title'], $contenuVue['lienRetour']['url'], array('class' => 'btn', 'escape' => false));
 echo $this->Html->tag('/div');
 ?>
 <style>

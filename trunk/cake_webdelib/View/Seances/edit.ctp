@@ -112,8 +112,8 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 <?php endif; ?>
 
 <!--<div class="actions btn-group">
-    <?php echo $this->Html->link('<i class="icon-arrow-left"></i> Annuler', '/seances/index', array('escape'=>false, 'class'=>'btn'))?>
-    <?php echo $this->Html->link('<i class="icon-trash icon-large"></i> Supprimer','/seances/delete/' . $this->Html->value('Seance.id'), array('escape'=>false, 'class'=>'btn btn-danger'), 'Etes-vous sur de vouloir supprimer la seance du "' . $this->Html->value('Seance.date').'" ?');?> 
+    <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', '/seances/index', array('escape'=>false, 'class'=>'btn'))?>
+    <?php echo $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer','/seances/delete/' . $this->Html->value('Seance.id'), array('escape'=>false, 'class'=>'btn btn-danger'), 'Etes-vous sur de vouloir supprimer la seance du "' . $this->Html->value('Seance.date').'" ?');?>
 </div>-->
 
 <div class="submit">

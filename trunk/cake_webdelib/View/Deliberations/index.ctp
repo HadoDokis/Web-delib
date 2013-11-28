@@ -94,7 +94,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                         )
                     );
                     echo $this->Form->hidden('Deliberation.id', array('value' => $deliberation['Deliberation']['id']));
-                    echo $this->Form->button("<i class='icon-save'></i> Sauvegarder", array('type' => 'submit', 'div' => false, 'class' => 'btn', 'escape' => false, 'name' => 'sauvegarder'));
+                    echo $this->Form->button("<i class='fa fa-save'></i> Sauvegarder", array('type' => 'submit', 'div' => false, 'class' => 'btn', 'escape' => false, 'name' => 'sauvegarder'));
                     echo $this->Form->end();
                 } else {
                     $listTypeseanceId = array();
@@ -234,7 +234,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
 <?php if (!empty($listeLiens)) {
     if (in_array('add', $listeLiens)) {
         echo "<div style='text-align:center;'>";
-        echo $this->Html->link('<i class=" icon-plus-sign"></i> Ajouter un projet',
+        echo $this->Html->link('<i class=" fa fa-plus"></i> Ajouter un projet',
             array("action" => "add"),
             array('class' => 'btn btn-primary',
                 'escape' => false,
@@ -266,7 +266,7 @@ if (isset($traitement_lot) && ($traitement_lot == true)) {
         'label' => false,
         'empty' => 'Selectionner un modèle'));
 
-    echo $this->Form->button("<i class='icon-cogs'></i> Executer",
+    echo $this->Form->button("<i class='fa fa-cogs'></i> Executer",
         array('div' => false,
             'class' => 'btn',
             'escape' => false,

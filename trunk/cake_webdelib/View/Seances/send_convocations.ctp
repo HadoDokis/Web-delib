@@ -8,9 +8,9 @@
                                        'url'=>"/seances/sendConvocations/$seance_id/$model_id")); ?>
 <?php 
 echo $this->Html->tag('div', null, array('style' => 'padding-right:1em;float:left;'));
-$this->Html2->boutonSubmitUrl("/seances/genererConvocation/$seance_id/$model_id",'Générer les convocations','Générer les convocations', null, null,'icon-cogs');
+$this->Html2->boutonSubmitUrl("/seances/genererConvocation/$seance_id/$model_id",'Générer les convocations','Générer les convocations', null, null,'fa fa-cogs');
 echo $this->Html->tag('/div', null);
-$this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Récupérer une archive contenant les convocations','Récupérer une archive contenant les convocations',null,'btn-inverse','icon-download');
+$this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Récupérer une archive contenant les convocations','Récupérer une archive contenant les convocations',null,'btn-inverse','fa fa-download');
 ?>
 <br>
 <table style='width:100%'>
@@ -36,7 +36,7 @@ $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Ré
         elseif ($acteur['Acteur']['date_envoi'] == null)
             echo $this->Form->checkbox('Acteur.id_'.$acteur['Acteur']['id']);
         else
-            echo '<i class="icon-ok" title="Convocation déjà envoyée"></i>';
+            echo '<i class="fa fa-check" title="Convocation déjà envoyée"></i>';
 
         echo '</td>';
 

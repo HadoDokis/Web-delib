@@ -40,8 +40,8 @@ else {
 <div class="submit">
 <?php
      echo $this->Html->tag("div", null, array("class" => "btn-group"));
-     echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour aux seances', "/seances/listerFuturesSeances", array('class'=>'btn', 'name'=>'Annuler','escape'=>false));
-     echo $this->Form->button('<i class="icon-save"></i> Enregistrer', array('class'=>'btn btn-primary', 'name'=>'saisir','escape'=>false));
+     echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour aux seances', "/seances/listerFuturesSeances", array('class'=>'btn', 'name'=>'Annuler','escape'=>false));
+     echo $this->Form->button('<i class="fa fa-save"></i> Enregistrer', array('class'=>'btn btn-primary', 'name'=>'saisir','escape'=>false));
      echo $this->Form->end();
      echo $this->Html->tag('/div', null);
  ?>

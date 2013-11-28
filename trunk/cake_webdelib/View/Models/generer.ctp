@@ -28,7 +28,7 @@ if (!empty($listFiles)){
 
 echo '<br><br>';
 if (empty($urlRetour) || strpos($urlRetour, "multiodj"))
-    echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', '/', array('class'=>'btn', 'escape' => false));
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/', array('class'=>'btn', 'escape' => false));
 else
-    echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', $urlRetour, array('class'=>'btn', 'escape' => false));
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $urlRetour, array('class'=>'btn', 'escape' => false));
 ?>

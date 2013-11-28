@@ -158,8 +158,8 @@
 	<div class="submit">
             <?php
             echo $this->Html->tag('div', null, array("class" => "btn-group"));
-            echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Annuler', '/seances/details/'.$seance_id, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
-            echo $this->Form->button('<i class="icon-save"></i> Enregistrer le vote', array('type' => 'submit', 'name' => 'modifier', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le vote'));
+            echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', '/seances/details/'.$seance_id, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+            echo $this->Form->button('<i class="fa fa-save"></i> Enregistrer le vote', array('type' => 'submit', 'name' => 'modifier', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le vote'));
             echo $this->Html->tag('/div', null);
             ?>
 	</div>
