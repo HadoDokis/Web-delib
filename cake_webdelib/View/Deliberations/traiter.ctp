@@ -17,7 +17,7 @@ $linkBarre .= $this->Html->link(
 if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
     $linkBarre .= $this->Html->link(
         '<i class="fa fa-edit"></i> Modifier',
-        array('action' => 'rebond', $deliberation['Deliberation']['id']),
+        array('action' => 'edit', $deliberation['Deliberation']['id']),
         array('escape' => false, 'class' => 'btn')
     );
 $linkBarre .= $this->Html->link(
