@@ -137,9 +137,8 @@ if (empty($this->data['Multidelib'])) {
                 <dd>
                     <ul class="fix">                     
                         <?php
-foreach ($this->data['Seance'] as $seance) {
-    echo '<li><b>&nbsp;' . $seance['Typeseance']['libelle'] . '</b> : ' . $this->Form2->ukToFrenchDateWithHour($seance['date']) . "</li>";
-}
+                        foreach ($this->data['listeSeances'] as $seance)
+                            echo '<li><b>&nbsp;' .$seance['libelle']  . '</b>' . (isset($seance['date']) && !empty($seance['date'])?' : ' .$this->Html2->ukToFrenchDateWithHour($seance['date']):''). '</li>';
                         ?>
                     </ul>
                 </dd>

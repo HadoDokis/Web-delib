@@ -94,15 +94,27 @@ class DeliberationsController extends AppController {
                 'etat', 'num_delib', 'titre', 'objet', 'objet_delib', 'num_pref',
                 'texte_projet_name', 'texte_synthese_name', 'deliberation_name',
                 'created', 'modified', 'deliberation', 'texte_projet', 'texte_synthese'),
-            'contain' => array('Typeacte.libelle', 'Theme.libelle', 'Service.libelle',
-                'Seance.date', 'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom', 'Seance.Typeseance.libelle',
-                'Rapporteur.nom', 'Rapporteur.prenom', 'Annex', 'Seance.type_id',
-                'Infosup', 'Multidelib.id', 'Multidelib.objet', 'Multidelib.objet_delib',
-                'Multidelib.num_delib', 'Multidelib.etat', 'Multidelib.deliberation',
-                'Multidelib.deliberation_name', 'Multidelib.Annex','Deliberationseance.id'),
-            'conditions' => array('Deliberation.id' => $id)
-        ));
-        
+            'contain' => array(
+                'Multidelib'=>array('fields'=>array('id', 'objet', 'objet_delib', 'num_delib', 'etat', 'deliberation','deliberation_name')),
+                'Redacteur'=>array('fields'=>array('id','nom', 'prenom')),
+                'Rapporteur'=>array('fields'=>array('id','nom', 'prenom')),
+                'Infosup',
+                'Annex'=>array('fields'=>array('id','titre','joindre_ctrl_legalite','filename')),
+                'Service'=>array('fields'=>array('libelle')),
+                                            'Theme'=>array('fields'=>array('libelle')),
+                                            'Typeacte'=>array('fields'=>array('libelle')),
+                                            'Circuit'=>array('fields'=>array('nom')),
+                                            'Deliberationtypeseance'=>array('fields'=>array('id'),
+                                                               'Typeseance'=>array('fields'=>array('id','libelle','action'),
+                                                                                   'order' => 'Typeseance.action ASC')),
+                                            'Deliberationseance'=>array('fields'=>array('id'),
+                                                                        'Seance'=>array('fields'=>array('id','date','type_id'),
+                                                                                        'order' => 'Seance.date ASC',
+                                                                                        'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
+                        'conditions' => array('Deliberation.id' => $id)
+                    ));
+        $this->request->data['Deliberationseance'] = Hash::sort($this->request->data['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
+
         $this->request->data['Deliberation']['num_pref']=$this->data['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
         
         if (empty($this->data)) {
@@ -178,8 +190,35 @@ class DeliberationsController extends AppController {
 
         // Mise en forme des données du projet ou de la délibération
         $this->request->data['Deliberation']['libelleEtat'] = $this->Deliberation->libelleEtat($this->data['Deliberation']['etat']);
-        if (!empty($this->data['Seance']['date']))
-            $this->request->data['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data['Seance']['date']));
+    /*    if (!empty($this->data['Seance']['date']))
+            $this->request->data['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data['Seance']['date']));*/
+
+        // initialisation des séances
+            $listeTypeSeance=array();
+            $this->request->data['listeSeances']=array();
+            if (isset($this->request->data['Deliberationseance']) && !empty($this->request->data['Deliberationseance'])) {
+                foreach ($this->request->data['Deliberationseance'] as $keySeance => $seance) {
+                    $this->request->data['listeSeances'][]=array('seance_id' => $seance['Seance']['id'],
+                                                                    'type_id' => $seance['Seance']['type_id'],
+                                                                    'action' => $seance['Seance']['Typeseance']['action'],
+                                                                    'libelle' => $seance['Seance']['Typeseance']['libelle'],
+                                                                    'date' => $seance['Seance']['date']);
+                    $listeTypeSeance[]=$seance['Seance']['type_id'];
+                }
+            }
+
+            if (isset($this->request->data['Deliberationtypeseance']) && !empty($this->request->data['Deliberationtypeseance'])) {
+                foreach ($this->request->data['Deliberationtypeseance'] as $keyType => $typeseance) {
+                    if(!in_array($typeseance['Typeseance']['id'],$listeTypeSeance))
+                    $this->request->data['listeSeances'][]=array('seance_id' => NULL,
+                                                                    'type_id' => $typeseance['Typeseance']['id'],
+                                                                    'action' => $typeseance['Typeseance']['action'],
+                                                                    'libelle' => $typeseance['Typeseance']['libelle'],
+                                                                    'date' => NULL);
+                    
+                }
+            }
+            $this->request->data['listeSeances'] = Hash::sort($this->request->data['listeSeances'], '{n}.action', 'asc');
 
         $this->request->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->data['Deliberation']['service_id']);
         $this->request->data['Circuit']['libelle'] = $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
