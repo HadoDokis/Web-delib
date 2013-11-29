@@ -4,6 +4,7 @@
    *) Suppression de la limite de mémoire pour le composant i-Parapheur
    *) Correction les projets des sous-services n'apparaissaient pas dans les recherches (Service Emetteur)
    *) Correction sur l'ordre d'affichage des séances : type d'acte > date de séance
+   *) Correction sur la recherche rapide pour les projets visés par un utilisateur
 
 4.1.03
 ======
