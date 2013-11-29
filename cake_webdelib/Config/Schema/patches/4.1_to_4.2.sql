@@ -14,5 +14,8 @@ BEGIN;
 ALTER TABLE users ADD COLUMN mail_modif_projet_cree BOOLEAN default false;
 ALTER TABLE users ADD COLUMN mail_modif_projet_valide BOOLEAN default false;
 
+-- Mise à jour : joindre les annexes par défaut
+UPDATE annexes SET joindre_fusion=true;
+
 
 COMMIT;
