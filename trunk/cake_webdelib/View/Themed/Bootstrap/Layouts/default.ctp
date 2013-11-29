@@ -35,7 +35,8 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->fetch('meta');
         
         echo $this->Html->css('webdelib');
-        echo $this->Html->css('jquery.jgrowl');
+//        echo $this->Html->css('jquery.jgrowl');
+        echo $this->Html->css('jquery.jgrowl.min');
         echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('bootstrap-responsive.min');
         echo $this->Html->css('font-awesome.min');
@@ -48,7 +49,8 @@ $cakeDescription = __d('webdelib', 'Webdelib');
 //        echo $this->Html->script('jquery');
         echo $this->Html->script('jquery-1.10.2.min.js');
         echo $this->Html->script('libs/bootstrap.min');
-        echo $this->html->script('jquery.jgrowl', true);
+//        echo $this->html->script('jquery.jgrowl', true);
+        echo $this->html->script('jquery.jgrowl.min', true);
         echo $this->Html->script('utils');
         echo $this->html->script('attendable', true);
         echo $this->html->script('waitAndBlock', true);
@@ -78,14 +80,14 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="user"><?php echo $infoUser; ?></span><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
-                                            <li class="">
-                                                <a href="/pages/format" class="">Changer le format de sortie des éditions</a>
+                                            <li>
+                                                <a href="/pages/format">Changer le format de sortie des éditions</a>
                                             </li>
-                                            <li class="">
-                                                <a href="/pages/service" class="">Changer le service émetteur</a>
+                                            <li>
+                                                <a href="/pages/service">Changer le service émetteur</a>
                                             </li>
-                                            <li class="">
-                                                <a href="/users/changeUserMdp" class="">Changer de mot de passe</a>
+                                            <li>
+                                                <a href="/users/changeUserMdp">Changer de mot de passe</a>
                                             </li>
                                             <li class="divider"></li>
                                             <li>
