@@ -144,11 +144,6 @@ label {
 	color: #f00;
 	/*background-color: #fff;*/
 	background-color: transparent;
-	margin: 8px 0;
-	text-align: center;
-}
-
-#DeliberationAddForm #tab1 .error-message{
     margin: 0;
     margin-left: 110px;
     text-align: left;
