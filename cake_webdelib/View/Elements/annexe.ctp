@@ -151,17 +151,17 @@ if ($affichage == 'complet')
 
 // template pour l'ajout des annexes
 if ($affichage == 'complet') {
-	echo $this->Html->tag('div', null, array('id'=>'ajouteAnnexeTemplate', 'style'=>'width:800px; display:none;'));
+	echo $this->Html->tag('div', null, array('id'=>'ajouteAnnexeTemplate', 'style'=>'width:800px; display:none; margin-bottom: 20px;'));
 		echo $this->Html->tag('fieldset');
 		echo $this->Html->tag('legend', 'Nouvelle annexe');
 			echo $this->Form->hidden('Annex.0.ref', array('disabled'=>'disabled'));
-			echo $this->Form->input('Annex.0.file', array('label'=>'Annexe<acronym title="obligatoire">(*)</acronym>', 'type'=>'file', 'size' => '80', 'disabled'=>'disabled'));
+			echo $this->Form->input('Annex.0.file', array('label'=>'Annexe<abbr title="obligatoire">(*)</abbr>', 'type'=>'file', 'size' => '80', 'disabled'=>'disabled'));
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
 			echo $this->Form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '200', 'disabled'=>'disabled'));
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
-			echo $this->Form->input('Annex.0.ctrl', array('label'=>'Joindre&nbsp;ctrl&nbsp;légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
+			echo $this->Form->input('Annex.0.ctrl', array('label'=>array('text' => 'Joindre au controle de légalité', 'style'=>'width:auto'), 'type'=>'checkbox', 'checked'=>false, 'disabled'=>'disabled'));
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
-			echo $this->Form->input('Annex.0.fusion', array('label'=>'Joindre&nbsp;fusion', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
+			echo $this->Form->input('Annex.0.fusion', array('label'=>array('text' => 'Joindre à la fusion', 'style'=>'width:auto'), 'type'=>'checkbox', 'checked'=>true, 'disabled'=>'disabled'));
 			echo $this->Html->tag('div', '', array('class'=>'spacer'));
 			echo $this->Html->link('Annuler', '#self', array('class'=>'btn btn-link', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
 		echo $this->Html->tag('/fieldset');
@@ -188,11 +188,15 @@ function ajouterAnnexe(ref) {
 	var newTemplate = $('#ajouteAnnexeTemplate').clone();
 	newTemplate.attr('id', newTemplate.attr('id').replace('Template', nbAnnexeAAjouter));
 	newTemplate.find('#Annex0Ref').val(ref);
-	newTemplate.find('input').each(function(){
-		$(this).removeAttr('disabled');
-		$(this).attr('id', $(this).attr('id').replace('0', nbAnnexeAAjouter));
-		$(this).attr('name', $(this).attr('name').replace('0', nbAnnexeAAjouter));
-	});
+    newTemplate.find('input').each(function(){
+        $(this).removeAttr('disabled');
+        $(this).attr('id', $(this).attr('id').replace('0', nbAnnexeAAjouter));
+        $(this).attr('name', $(this).attr('name').replace('0', nbAnnexeAAjouter));
+    });
+    newTemplate.find('label').each(function(){
+        $(this).attr('for', $(this).attr('for').replace('0', nbAnnexeAAjouter));
+    });
+    newTemplate.find('legend').text('Nouvelle annexe');
 	addDiv.append(newTemplate);
 	newTemplate.show();
 }
