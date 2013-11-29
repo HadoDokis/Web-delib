@@ -1,6 +1,8 @@
 4.1.04
 ======
    *) Correction pour ne prendre en compte que les actifs dans la liste des services emetteurs
+   *) Suppression de la limite de mémoire pour le composant i-Parapheur
+   *) Correction les projets des sous-services n'apparaissaient pas dans les recherches (Service Emetteur)
 
 4.1.03
 ======
@@ -11,7 +13,7 @@
     *) Mise en place des informations supplémentaires, idDepot ->numero_depot dans l'export CMIS
     *) Fermeture des requêtes curl après connexion externe
     *) Suppression de la signature d'email "This email was sent using CakePHP Framework"
-    *) Non éxecution des tâches planifiées des services désactivés (Parapheur, S2low)
+    *) Non éxecution des tâches planifiées des services désactivés (i-Parapheur, S2low)
     *) Tri des actes pour envoi au controle de légalité désormais par numéro de délibération (ascendant)
     *) Correction du connecteur Asalae + configuration : webdelib.inc.default
     *) Mise en place du logo de la collectivité en BDD
@@ -183,9 +185,9 @@
     *) Possibilité de saisir les débats de délib en postseances 
     *) Enregistrement des PVs au format PDF
     *) Possibilité de choisir directement la position d'un projet
-    *) Insertion dans le parapheur électronique avec le libellé du projet.
-    *) Insertion des pièces jointes dans le parapheur électronique
-    *) Récupération de la signature des dossiers envoyés dans le parapheur électronique
+    *) Insertion dans le i-Parapheur électronique avec le libellé du projet.
+    *) Insertion des pièces jointes dans le i-Parapheur électronique
+    *) Récupération de la signature des dossiers envoyés dans le i-Parapheur électronique
     *) Export vers AS@LAE 
 
 2.1
@@ -198,7 +200,7 @@
     *) Informations supplémentaires: Ajout du type "Fichier ODT"
     *) Informations supplémentaires: Ajout du type "Liste déroulante"
     *) Possibilité de changer le contenu des mails envoyés par l'application (BUG N°340)
-    *) Connexion au parapheur électronique (pour la validation en préparation et pour la signature en post-séance)
+    *) Connexion au i-Parapheur électronique (pour la validation en préparation et pour la signature en post-séance)
     *) Ajout d'un bouton "Retourner à ..." qui permet de returner le projet à n'importe quel membre du circuit avant la personne qui traite le projet
     *) Possibilité de recherche sur un circuit 
     *) Amélioration des tris des projets

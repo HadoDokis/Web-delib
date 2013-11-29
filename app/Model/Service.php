@@ -95,7 +95,7 @@
                                        'recursive'  => -1));
                 
                 if (!empty($service)) {
-                    $aArray[]=$id;
+                    $aArray[]=(int)$id;
                     
                     foreach($service as $champs)
                     {
@@ -108,7 +108,7 @@
                     }
                 }
                 else
-                   $aArray[]=$id;
+                   $aArray[]=(int)$id;
                     
                 
                 return $aArray;
