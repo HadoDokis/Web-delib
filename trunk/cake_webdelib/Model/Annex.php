@@ -3,7 +3,7 @@
 class Annex extends AppModel {
 
     var $name = 'Annex';
-    var $displayField = "titre";
+    var $displayField = 'titre';
     var $belongsTo = array(
         'Deliberation' => array(
             'foreignKey' => 'foreign_key'
@@ -25,61 +25,34 @@ class Annex extends AppModel {
     );
 
     function checkFileControlLegalite() {
-        //$formats = array('application/pdf', 'image/png', 'image/jpg', 'image/jpeg', 'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet');
-
         if ($this->data['Annex']['joindre_ctrl_legalite'] == 1) {
             $DOC_TYPE = Configure::read('DOC_TYPE');
-
             if (!empty($this->data['Annex']['filename'])) {
-                $file = new File(TMP . time() . '.' . $DOC_TYPE[$this->data["Annex"]['filetype']]['extention'], true);
-                $file->append($this->data["Annex"]['data']);
+                $mime = $this->data['Annex']['filetype'];
             } else {
-                $annex = $this->find('first', array('conditions' => array('Annex.id' => $this->data['Annex']['id']),
+                $annex = $this->find('first', array(
+                    'conditions' => array('Annex.id' => $this->data['Annex']['id']),
                     'recursive' => -1,
-                    'fields' => array('Annex.filename', 'Annex.filetype', 'Annex.data')));
-
-                $file = new File(TMP . time() . '.' . $annex["Annex"]['filetype'], true);
-                $file->append($annex["Annex"]['data']);
+                    'fields' => array('Annex.filetype')));
+                $mime = $annex['Annex']['filetype'];
             }
-
-            if (array_key_exists($file->mime(), $DOC_TYPE))
-                if (isset($DOC_TYPE[$file->mime()]['joindre_ctrl_legalite']) && $DOC_TYPE[$file->mime()]['joindre_ctrl_legalite'] == true)
-                    $return = true;
-
-            $file->delete();
-            $file->close();
-
-            return isset($return) && $return == true ? $return : false;
+            return !empty($DOC_TYPE[$mime]['joindre_ctrl_legalite']);
         }
-
         return true;
     }
 
     function checkFileFusion() {
-        //$formats = array('application/pdf', 'image/png', 'image/jpg', 'image/jpeg', 'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet');
-
         if ($this->data['Annex']['joindre_fusion'] == 1) {
             $DOC_TYPE = Configure::read('DOC_TYPE');
-
             if (!empty($this->data['Annex']['filename'])) {
-                $file = new File(TMP . time() . '.' . $DOC_TYPE[$this->data["Annex"]['filetype']]['extention'], true);
-                $file->append($this->data["Annex"]['data']);
+                $mime = $this->data['Annex']['filetype'];
             } else {
                 $annex = $this->find('first', array('conditions' => array('Annex.id' => $this->data['Annex']['id']),
                     'recursive' => -1,
-                    'fields' => array('Annex.filename', 'Annex.filetype', 'Annex.data')));
-
-                $file = new File(TMP . time() . '.' . $annex["Annex"]['filetype'], true);
-                $file->append($annex["Annex"]['data']);
+                    'fields' => array('Annex.filetype')));
+                $mime = $annex['Annex']['filetype'];
             }
-
-            if (array_key_exists($file->mime(), $DOC_TYPE))
-                if (isset($DOC_TYPE[$file->mime()]['joindre_fusion']) && $DOC_TYPE[$file->mime()]['joindre_fusion'] == true)
-                    $return = true;
-
-            $file->delete();
-            $file->close();
-            return isset($return) && $return == true ? $return : false;
+            return !empty($DOC_TYPE[$mime]['joindre_ctrl_legalite']);
         }
         return true;
     }
@@ -124,26 +97,18 @@ class Annex extends AppModel {
         )));
     }
 
-    function getContentToTdT($annex_id) {
-        $DOC_TYPE = Configure::read('DOC_TYPE');
-
-        $annex = $this->find('first', array('conditions' => array('Annex.id' => $annex_id),
+    function getContentToTdT($annex_id)
+    {
+        $annex = $this->find('first', array(
+            'conditions' => array('Annex.id' => $annex_id),
             'recursive' => -1,
-            'fields' => array('filetype', 'data', 'data_pdf')));
+            'fields' => array('data_pdf')
+        ));
 
-        if ($annex['Annex']['filetype'] === 'application/pdf')
-            return array('type' => $DOC_TYPE[$annex['Annex']['filetype']]['extention'],
-                'data' => $annex['Annex']['data_pdf']);
-
-        $pos = strpos($annex['Annex']['filetype'], 'application/vnd.oasis.opendocument');
-        if ($pos !== false)
-            return array('type' => 'pdf',
-                'data' => $annex['Annex']['data_pdf']);
-
-        return array('type' => $DOC_TYPE[$annex['Annex']['filetype']]['extention'],
-            'data' => $annex['Annex']['data']);
+        return array(
+            'type' => 'pdf',
+            'data' => $annex['Annex']['data_pdf']
+        );
     }
 
 }
-
-?>
