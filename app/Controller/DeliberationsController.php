@@ -4137,8 +4137,8 @@ class DeliberationsController extends AppController {
 
     function quicksearch() {
         $field = trim($this->params->query['data']['field']);
-        if (empty($field)) {
-            $this->Session->setFlash('Action effectu&eacute;e avec succ&egrave;s', 'growl');
+        if (empty($field) OR strlen($field)<4) {
+            $this->Session->setFlash('Vous devez saisir au moins un mot. (plus de 3 caractères)', 'growl',array('type' => 'erreur'));
             $this->redirect($this->referer());
         }
         $conditions = array();
@@ -4148,9 +4148,15 @@ class DeliberationsController extends AppController {
             if (!empty($listeCircuits))
                 $conditions['AND']['OR']['Deliberation.circuit_id'] = $listeCircuits;
             $conditions['AND']['OR']['Deliberation.redacteur_id'] = $userId;
-        }
+       
+            //Récupère la liste des délib que l'utilisateur a visé (résolution bug changement circuit non visible)
+            $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($userId));
+            if (!empty($listeDelibsParticipe))
+                $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
+         }
+                
         if (ctype_digit($field)) {
-            $conditions['OR']['Deliberation.id'] = $field;
+            $conditions['OR']['Deliberation.id'][] = $field;
         }
         $conditions['OR']['Deliberation.objet ILIKE'] = "%$field%";
         $conditions['OR']['Deliberation.titre ILIKE'] = "%$field%";
