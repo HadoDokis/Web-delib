@@ -22,15 +22,9 @@ class GedoooComponent extends Component
     {
         //TODO Pourquoi supprimer le dossier
         $this->checkPath($path);
-
-        $file = new File($path . $name, false, 0644);
-        if ($file->exists())
-            $file->delete();
-
-        $file->create();
-        $file->write($content);
+        $file = new File($path . $name, true, 0644);
+        $file->write($content, 'w', true);
         $file->close();
-
         return ($path . $name);
     }
 
