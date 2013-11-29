@@ -117,7 +117,7 @@ class Seance extends AppModel {
 	function generateAllList() {
 		$this->Behaviors->attach('Containable');
 		$generateList = array();
-		$seances = $this->find('all', array('order'   => 'date ASC',
+		$seances = $this->find('all', array('order'   => 'date DESC',
 											'fields'  => array('Seance.id', 'Seance.type_id', 'Seance.date'),
 											'contain' => array('Typeseance.libelle', 'Typeseance.action')));
 
