@@ -17,8 +17,15 @@ class Annex extends AppModel {
             'rule' => 'checkFileFusion',
             'message' => 'Le format de fichier est invalide pour le joindre à la fusion'),
         'filename' => array(
-            'rule' => array('maxLength', 100),
-            'message' => 'Le nom du fichier est trop long (100 caract&egrave;res maximum)', 'growl'),
+            'regleFilename-1' => array(
+                'rule' => array('maxLength', 100),
+                'message' => 'Le nom du fichier est trop long (100 caract&egrave;res maximum)', 'growl'
+            ),
+            'regleFilename-2' => array(
+                'rule' => '/^[a-zA-Z0-9-_.&]{6,}$/i',
+                'message' => 'Seulement les lettres, les entiers et les caractères spéciaux (-_.&) sont autorisés. Minimum de 6 caractères', 'growl'
+            )
+        ),
         'titre' => array(
             'rule' => array('maxLength', 200),
             'message' => 'Le titre du fichier est trop long (200 caract&egrave;res maximum)', 'growl')
@@ -129,18 +136,25 @@ class Annex extends AppModel {
 
         $annex = $this->find('first', array('conditions' => array('Annex.id' => $annex_id),
             'recursive' => -1,
-            'fields' => array('filetype', 'data', 'data_pdf')));
+            'fields' => array('filetype', 'data', 'data_pdf','filename','filename_pdf')));
 
         if ($annex['Annex']['filetype'] === 'application/pdf')
             return array('type' => $DOC_TYPE[$annex['Annex']['filetype']]['extention'],
+                'filetype' => 'application/pdf',
+                'filename' => $annex['Annex']['filename_pdf'],
                 'data' => $annex['Annex']['data_pdf']);
 
         $pos = strpos($annex['Annex']['filetype'], 'application/vnd.oasis.opendocument');
         if ($pos !== false)
             return array('type' => 'pdf',
-                'data' => $annex['Annex']['data_pdf']);
-
+                'filetype' => 'application/pdf',
+                'filename' => $annex['Annex']['filename_pdf'],
+                'data' => $annex['Annex']['data_pdf']
+                );
+        
         return array('type' => $DOC_TYPE[$annex['Annex']['filetype']]['extention'],
+            'filetype' => $annex['Annex']['filetype'],
+            'filename' => $annex['Annex']['filename'],
             'data' => $annex['Annex']['data']);
     }
 

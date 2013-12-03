@@ -2371,7 +2371,6 @@ class DeliberationsController extends AppController {
         $conditions['Deliberation.parent_id'] = NULL;
         $projets = $this->Deliberation->find('all', array(
             'conditions' => $conditions,
-            'order' => array('Deliberation.id' => 'DESC'),
             'limit' => $limit,
             'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
                 'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
@@ -2388,7 +2387,7 @@ class DeliberationsController extends AppController {
                                                                 'Seance'=>array('fields'=>array('id','date','type_id'),
                                             'order' => 'Seance.date ASC',
                                             'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
-                 'order' => $ordre));
+                 'order' => array('Deliberation.id' => 'DESC')));
         foreach ($projets as $keyProjet=>$projet) {
             $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
         }
@@ -3486,9 +3485,12 @@ class DeliberationsController extends AppController {
                     $soustype = $circuits['soustype'][$this->data['Deliberation']['circuit_id']];
                     $objetDossier = $this->Parafwebservice->handleObject($delib['Deliberation']['objet']);
                     $annexes = array();
+                    
+                    $annexes_id = $this->Annex->getAnnexesFromDelibId($delib_id, 1);
                     $tmp1 = 0;
-                    foreach ($delib['Annex'] as $annex) {
-                        if ($annex['joindre_ctrl_legalite']) {
+                    if (isset($annexes_id) && !empty($annexes_id)) {
+                        foreach ($annexes_id as $annex_id) {
+                            $annex = $this->Annex->getContentToTdT($annex_id['Annex']['id']);
                             $annexes[$tmp1][3] = $annex['filename'];
                             $annexes[$tmp1][2] = 'UTF-8';
                             $annexes[$tmp1][1] = $annex['filetype'];
@@ -4137,7 +4139,7 @@ class DeliberationsController extends AppController {
 
     function quicksearch() {
         $field = trim($this->params->query['data']['field']);
-        if (empty($field) OR strlen($field)<4) {
+        if (empty($field) OR (is_numeric($field) XOR strlen($field)<4)) {
             $this->Session->setFlash('Vous devez saisir au moins un mot. (plus de 3 caractères)', 'growl',array('type' => 'erreur'));
             $this->redirect($this->referer());
         }
