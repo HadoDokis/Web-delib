@@ -18,7 +18,7 @@
     La Classification enregistrée date du <?php echo $this->Html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
 	<table width='100%'>
 <tr>
-	<th></th>
+	<th><?php echo $this->Form->checkbox(NULL, array('hiddenField' => false,'id'=>'allCheck','onclick'=>'javascript:allChecked(this);'))?></th>
  	<th>Numéro Généré</th>
  	<th>Libellé de l'acte</th>
  	<th>Titre</th>
@@ -33,7 +33,7 @@
 	          $numLigne++;
 
 		if ($delib['Deliberation']['etat']!= 5)
-			echo("<td>".$this->Form->checkbox('Deliberation.id.'.$delib['Deliberation']['id'], array('hiddenField' => false))."</td>");
+			echo("<td>".$this->Form->checkbox('Deliberation.id.'.$delib['Deliberation']['id'], array('hiddenField' => false, 'class'=>'check','autocomplete'=>'off'))."</td>");
 		else
 		    echo("<td></td>");
 
@@ -84,3 +84,11 @@
 
 <?php echo $this->Form->end(); ?>
 </div>
+<script>
+function allChecked(checkbox){
+    if(checkbox.checked)
+        $('.check').prop('checked', true);
+    else
+        $('.check').prop('checked', false);
+}
+</script>
