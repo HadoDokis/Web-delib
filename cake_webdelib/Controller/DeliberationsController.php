@@ -1268,23 +1268,30 @@ class DeliberationsController extends AppController
 
     function retour($delib_id)
     {
-        $delib = $this->Deliberation->read(null, $delib_id);
+        $delib = $this->Deliberation->find('first', array(
+            'recursive'=> -1,
+            'conditions'=> array('Deliberation.id'=> $delib_id)
+        ));
+
         if (empty($delib))
             $this->redirect($this->referer());
 
         if (empty($this->data)) {
-            $etapes = $this->Traitement->listeEtapes($delib['Deliberation']['id'], array('debut' => 2));
-            if (empty($etapes))
+            $etapes = $this->Traitement->listeEtapesPrecedentes($delib['Deliberation']['id']);
+            if (empty($etapes)){
+                $this->Session->setFlash('Opération impossible, l&apos;étape courante est la première du circuit.', 'growl', array('type' => 'erreur'));
                 $this->redirect($this->referer());
+            }
             $this->set('delib_id', $delib_id);
             $this->set('etapes', $etapes);
         } else {
-            $this->Traitement->execute('JP', $this->Session->read('user.User.id'), $delib_id, array('numero_traitement' => $this->data['Traitement']['etape']));
+            $this->Traitement->execute('JP', $this->Session->read('user.User.id'), $delib_id, array('etape_id' => $this->data['Traitement']['etape']));
             $destinataires = $this->Traitement->whoIsNext($delib_id);
             foreach ($destinataires as $destinataire_id)
                 $this->_notifier($delib_id, $destinataire_id, 'traiter');
 
             $this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Projet retourné");
+            $this->Session->setFlash('Opération effectuée !', 'growl');
             $this->redirect('/');
         }
     }
