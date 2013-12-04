@@ -232,7 +232,7 @@ class Html2Helper extends HtmlHelper {
         if ($center)
             echo $this->tag('div', null, array('style' => 'text-align:center; margin-top:10px;'));
 
-        echo $this->link("<i class='fa fa-plus-sign fa fa-large'></i> $value", array("action" => $action), array('id' => $id, 'class' => "btn $class", 'escape' => false, 'title' => $title));
+        echo $this->link("<i class='fa fa-plus'></i> $value", array("action" => $action), array('id' => $id, 'class' => "btn $class", 'escape' => false, 'title' => $title));
 
         if ($center)
             echo $this->tag('/div', null);
