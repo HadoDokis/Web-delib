@@ -182,12 +182,10 @@ body {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 0.8em;
 	margin: 0;
-	/*background-image: url(../../../img/wavedelib.png);*/
-	/*background-repeat: no-repeat;*/
     position: relative;
     padding: 90px 0 100px 0;
     background-color: #fff;
-    background-image: url(/img/grid-18px-masked.png);
+    background-image: url(../../../img/grid-18px-masked.png);
     background-repeat: repeat-x;
     background-position: 0 40px;
 }
@@ -1372,7 +1370,15 @@ div.aModifier {
 
 /* mise en forme des div ouvrables */
 
-.ouvrable { 5px;
+.ouvrable {
+    margin-bottom : 15px;
+}
+.ouvrable-entete img {
+    padding-right : 10px;
+}
+.ouvrable-corps {
+    overflow: auto;
+    padding: 5px;
 }
 
 .autocomplete {
