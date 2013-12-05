@@ -135,7 +135,7 @@ $webDelib = array(
 				'items' => array(
 					'Collectivité' => array('link' => '/collectivites/index'),
 					'Thèmes' => array('link' => '/themes/index'),
-                    'Modèles d\'édition' => array('link' => '/model_odt_validator/templates'),
+                    'Modèles d\'édition' => array('link' => '/model_odt_validator/modeltemplates'),
 					'Séquences' => array('link' => '/sequences/index'),
 					'Compteurs' => array('link' => '/compteurs/index'),
 					'Types d\'acte' => array('link' => '/typeactes/index'),
