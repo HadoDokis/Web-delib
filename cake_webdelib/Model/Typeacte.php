@@ -1,10 +1,28 @@
 <?php
 
-class Typeacte extends AppModel {
+class Typeacte extends AppModel
+{
 
-    var $name = 'Typeacte';
-    var $displayField = 'libelle';
-    var $validate = array(
+    public $name = 'Typeacte';
+    public $displayField = 'libelle';
+    public $belongsTo = array(
+        'Compteur' => array(
+            'className' => 'Compteur',
+            'foreignKey' => 'compteur_id'),
+        'Nature' => array(
+            'className' => 'Nature',
+            'foreignKey' => 'nature_id'),
+        'Modelprojet' => array(
+            'className' => 'ModelOdtValidator.Modeltemplate',
+            'foreignKey' => 'modeleprojet_id'),
+        'Modeldeliberation' => array(
+            'className' => 'ModelOdtValidator.Modeltemplate',
+            'foreignKey' => 'modelefinal_id'),
+    );
+    public $hasMany = array('Deliberation');
+
+
+    public $validate = array(
         'libelle' => array(
             array(
                 'rule' => 'notEmpty',
@@ -18,63 +36,73 @@ class Typeacte extends AppModel {
         'compteur_id' => array(
             array(
                 'rule' => 'notEmpty',
-                'message' => 'Sélectionner un compteur'
+                'message' => 'Sélectionner un compteur.'
             )
         ),
         'modelprojet_id' => array(
             array(
                 'rule' => 'notEmpty',
-                'message' => 'Sélectionner le modèle de la projet'
+                'message' => 'Sélectionner le modèle de la projet.'
             )
         ),
         'modeldeliberation_id' => array(
             array(
                 'rule' => 'notEmpty',
-                'message' => 'Sélectionner le modèle de délibération'
+                'message' => 'Sélectionner le modèle de délibération.'
             )
         ),
         'nature' => array(
             array(
                 'rule' => 'notEmpty',
-                'message' => 'Selectionnez au moins une nature'
+                'message' => 'Selectionnez au moins une nature.'
             )
+        ),
+        'gabarit_projet_upload' => array(
+            'rule' => array('checkFormat','odt', false),
+            'required' => false,
+            'allowEmpty' => true,
+            'message' => 'Le gabarit doit être au format ODT.'
+        ),
+        'gabarit_synthese_upload' => array(
+            'rule' => array('checkFormat','odt', false),
+            'required' => false,
+            'allowEmpty' => true,
+            'message' => 'Le gabarit doit être au format ODT.'
+        ),
+        'gabarit_acte_upload' => array(
+            'rule' => array('checkFormat','odt', false),
+            'required' => false,
+            'allowEmpty' => true,
+            'message' => 'Le gabarit doit être au format ODT.'
         )
     );
-    var $belongsTo = array(
-        'Compteur' => array(
-            'className' => 'Compteur',
-            'foreignKey' => 'compteur_id'),
-        'Nature' => array(
-            'className' => 'Nature',
-            'foreignKey' => 'nature_id'),
-        'Modelprojet' => array(
-            'className' => 'Model',
-            'foreignKey' => 'modeleprojet_id'),
-        'Modeldeliberation' => array(
-            'className' => 'Model',
-            'foreignKey' => 'modelefinal_id'),
-    );
-    var $hasMany = array('Deliberation');
 
-    function getLibelle($type_id) {
-        $libelle = $this->find('first', array('conditions' => array('Typeacte.id' => $type_id),
+    public function getLibelle($type_id)
+    {
+        $libelle = $this->find('first', array(
+            'conditions' => array('Typeacte.id' => $type_id),
             'recursive' => -1,
             'fields' => array('Typeacte.libelle')));
         return $libelle['Typeacte']['libelle'];
     }
 
-    function getModelId($type_id, $field) {
-        $libelle = $this->find('first', array('conditions' => array('Typeacte.id' => $type_id),
+    public function getModelId($type_id, $field)
+    {
+        $libelle = $this->find('first', array(
+            'conditions' => array('Typeacte.id' => $type_id),
             'recursive' => -1,
             'fields' => array($field)));
         return $libelle['Typeacte'][$field];
     }
 
-    function getIdDesNaturesDelib() {
-        $natures = $this->Nature->find('all', array('conditions' => array('Nature.code' => 'DE'),
+    public function getIdDesNaturesDelib()
+    {
+        $natures = $this->Nature->find('all', array(
+            'conditions' => array('Nature.code' => 'DE'),
             'fields' => array('Nature.id'),
             'recursive' => -1));
-        $typeactes = $this->find('all', array('conditions' => array('Typeacte.nature_id' => Set::extract('/Nature/id', $natures)),
+        $typeactes = $this->find('all', array(
+            'conditions' => array('Typeacte.nature_id' => Set::extract('/Nature/id', $natures)),
             'fields' => array('Typeacte.id'),
             'recursive' => -1));
         return Set::extract('/Typeacte/id', $typeactes);
@@ -85,7 +113,8 @@ class Typeacte extends AppModel {
      * @param integer $id identifiant du type d'acte à éliminer
      * @return boolean true si aucun acte n'est associée à ce type d'acte, false sinon
      */
-    function isDeletable($id) {
+    public function isDeletable($id)
+    {
         $nbSeancesEnCours = $this->Deliberation->find('count', array(
             'conditions' => array('typeacte_id' => $id)
         ));
@@ -93,5 +122,3 @@ class Typeacte extends AppModel {
     }
 
 }
-
-?>
