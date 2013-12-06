@@ -36,12 +36,17 @@
  * @package        cake
  * @subpackage    cake.cake
  */
-App::uses('Model', 'Model');
 class AppModel extends Model
 {
-
     //var $actsAs=array('Containable');
 
+    /**
+     * @deprecated au profit de la fonction checkFormat
+     * @param $field_validation
+     * @param $content
+     * @param $allowed_mimetypes
+     * @return bool
+     */
     function checkMimetype($field_validation, $content, $allowed_mimetypes)
     {
         if (empty($this->data[$this->alias][$content]))
@@ -50,7 +55,7 @@ class AppModel extends Model
         if ((!in_array($this->data[$this->alias][$content . '_type'], $allowed_mimetypes)))
             return false;
 
-        require_once(APP.DS.'Lib'.DS.'fido.php');
+        App::uses('Fido', 'Lib');
         $DOC_TYPE = Configure::read('DOC_TYPE');
         $tmpfname = tempnam(TMP, "CHK_");
         $file = new File($tmpfname, true);
@@ -62,6 +67,29 @@ class AppModel extends Model
             return (in_array($details['mimetype'], $allowed_mimetypes));
 
         return false;
+    }
+
+    /**
+     * Validation du format de fichier par FIDO
+     */
+    public function checkFormat($data, $extension, $required = false)
+    {
+        $data = array_shift($data);
+        if(!$required && $data['error'] == 4){
+            return true;
+        }
+        if($required && $data['error'] !== 0){
+            return false;
+        }
+        if ($data['size'] == 0 || $data['error'] != 0) {
+            $this->validate['content']['message'] = 'Erreur dans le document ou lors de l&apos;envoi.';
+            return false;
+        }
+        App::import('Component','Fido');
+        $this->Fido = new FidoComponent();
+        $allowed = $this->Fido->checkFile($data['tmp_name']);
+
+        return ($allowed && $this->Fido->lastResults['extension'] == $extension);
     }
 
     function listFields($params = array())
