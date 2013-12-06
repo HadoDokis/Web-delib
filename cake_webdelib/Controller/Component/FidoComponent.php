@@ -5,7 +5,7 @@
  * @author: Florian Ajir <florian.ajir@adullact.org>
  * @license CeCiLL V2 <http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html>
  */
-
+App::uses('Fido','Lib');
 class FidoComponent extends Component{
 
     public $formats;
@@ -13,7 +13,6 @@ class FidoComponent extends Component{
     public $lastResults;
 
     function FidoComponent() {
-        require_once(APP.DS.'Lib'.DS.'fido.php');
         $this->formats = Configure::read("DOC_TYPE");
         $this->lastResults = array();
     }
