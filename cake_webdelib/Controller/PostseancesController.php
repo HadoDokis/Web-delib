@@ -4,7 +4,7 @@ class PostseancesController extends AppController {
 	var $name = 'Postseances';
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2' );
 	var $components = array('Date', 'Gedooo', 'Cmis', 'Progress', 'Conversion');
-	var $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance', 'Typeacte', 'Nature');
+	var $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Typeseance', 'Typeacte', 'Nature');
 
 	var $demandeDroit = array('index');
 
@@ -76,7 +76,7 @@ class PostseancesController extends AppController {
 						                              	  'contain'  =>array('Theme.libelle', 'Rapporteur.nom', 'Rapporteur.prenom'),
 						                                  'fields'     => array('objet_delib', 'titre', 'etat', 'Deliberation.id', 'num_delib') ));
 				$delibs[ $num_delib ] = $delib;
-				$delibs[ $num_delib ]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($typeseance_id, $delib['Deliberation']['etat']);
+				$delibs[ $num_delib ]['Modeltemplate']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($typeseance_id, $delib['Deliberation']['etat']);
 				$num_delib++;
 			}
 			$this->set('seance_id', $id);

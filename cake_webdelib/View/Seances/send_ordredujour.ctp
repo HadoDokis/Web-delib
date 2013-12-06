@@ -46,7 +46,7 @@ $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Ré
             
         
         if ($filepath != '')
-            echo ('<td>'.$this->Html->link($model['Model']['modele'].$ext, $filepath).' : ['.$date_convocation.']</td>');
+            echo ('<td>'.$this->Html->link($model['Modeltemplate']['name'].$ext, $filepath).' : ['.$date_convocation.']</td>');
         else
             echo ('<td></td>');
         if ($acteur['Acteur']['date_envoi'] == null)

@@ -1,7 +1,6 @@
 <?php
 
 App::uses('Seance', 'Model');
-
 class Typeseance extends AppModel {
 
     var $name = 'Typeseance';
@@ -90,22 +89,22 @@ class Typeseance extends AppModel {
             'className' => 'Compteur',
             'foreignKey' => 'compteur_id'),
         'Modelprojet' => array(
-            'className' => 'Model',
+            'className' => 'ModelOdtValidator.Modeltemplate',
             'foreignKey' => 'modelprojet_id'),
         'Modeldeliberation' => array(
-            'className' => 'Model',
+            'className' => 'ModelOdtValidator.Modeltemplate',
             'foreignKey' => 'modeldeliberation_id'),
         'Modelconvocation' => array(
-            'className' => 'Model',
+            'className' => 'ModelOdtValidator.Modeltemplate',
             'foreignKey' => 'modelconvocation_id'),
         'Modelordredujour' => array(
-            'className' => 'Model',
+            'className' => 'ModelOdtValidator.Modeltemplate',
             'foreignKey' => 'modelordredujour_id'),
         'Modelpvsommaire' => array(
-            'className' => 'Model',
+            'className' => 'ModelOdtValidator.Modeltemplate',
             'foreignKey' => 'modelpvsommaire_id'),
         'Modelpvdetaille' => array(
-            'className' => 'Model',
+            'className' => 'ModelOdtValidator.Modeltemplate',
             'foreignKey' => 'modelpvdetaille_id')
     );
     var $hasAndBelongsToMany = array(

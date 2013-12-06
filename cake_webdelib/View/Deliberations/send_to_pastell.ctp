@@ -31,9 +31,9 @@
 
                 echo "<td>";
                 if ($delib['Deliberation']['nature_id']==1)
-                   echo $this->Html->link($delib['Deliberation']['num_delib'],'/models/generer/' .$delib['Deliberation']['id'].'/null/'.$delib['Model']['id']);
+                   echo $this->Html->link($delib['Deliberation']['num_delib'],'/models/generer/' .$delib['Deliberation']['id'].'/null/'.$delib['Modeltemplate']['id']);
                 else
-                   echo $this->Html->link('Acte : '.$delib['Deliberation']['id'],'/models/generer/' .$delib['Deliberation']['id'].'/null/'.$delib['Model']['id']);
+                   echo $this->Html->link('Acte : '.$delib['Deliberation']['id'],'/models/generer/' .$delib['Deliberation']['id'].'/null/'.$delib['Modeltemplate']['id']);
 		?>
 		</td>
 		<td>

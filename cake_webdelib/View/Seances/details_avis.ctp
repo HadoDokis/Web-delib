@@ -43,7 +43,7 @@
                                      'title'=>'Donner un avis'), 
                                false);
         echo $this->Html->link(SHY,
-                         '/models/generer/'.$deliberation['Deliberation']['id'].'/null/'.$deliberation['Model']['id'], 
+                         '/models/generer/'.$deliberation['Deliberation']['id'].'/null/'.$deliberation['Modeltemplate']['id'],
                          array('class'=>'link_pdf', 
                                'escape' => false,
                                'title'=>'Visionner PDF'), 

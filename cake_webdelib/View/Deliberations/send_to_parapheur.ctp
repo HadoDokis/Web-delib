@@ -25,7 +25,7 @@
 		else
 		    echo("<td></td>");
                     echo "<td>";
-                    echo $this->Html->link($delib['Deliberation']['num_delib'],'/models/generer/' .$delib['Deliberation']['id'].'/null/'.$delib['Model']['id']);
+                    echo $this->Html->link($delib['Deliberation']['num_delib'],'/models/generer/' .$delib['Deliberation']['id'].'/null/'.$delib['Modeltemplate']['id']);
                     
 		?>
 		</td>
