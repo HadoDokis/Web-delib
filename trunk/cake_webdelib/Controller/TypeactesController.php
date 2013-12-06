@@ -1,36 +1,41 @@
 <?php
 
-class TypeactesController extends AppController {
+class TypeactesController extends AppController
+{
 
     var $name = 'Typeactes';
-    var $uses = array('Typeacte', 'Model', 'Compteur', 'Nature', 'Ado');
+    var $uses = array('Typeacte', 'ModelOdtValidator.Modeltemplate', 'Compteur', 'Nature', 'Ado');
     // Gestion des droits
     var $commeDroit = array(
         'edit' => 'Typeactes:index',
         'add' => 'Typeactes:index',
         'delete' => 'Typeactes:index',
-        'view' => 'Typeactes:index'
+        'view' => 'Typeactes:index',
+        'downloadgabarit' => 'Typeactes:index'
     );
 
-    function index() {
+    function index()
+    {
         $this->Typeacte->Behaviors->attach('Containable');
-        $typeactes = $this->Typeacte->find('all', array('contain' => array('Nature.libelle',
+        $typeactes = $this->Typeacte->find('all', array(
+            'contain' => array('Nature.libelle',
                 'Compteur.nom',
-                'Modelprojet.modele',
-                'Modeldeliberation.modele'),
+                'Modelprojet.name',
+                'Modeldeliberation.name'),
             'order' => array('Typeacte.libelle' => 'ASC')));
         for ($i = 0; $i < count($typeactes); $i++)
             $typeactes[$i]['Typeacte']['is_deletable'] = $this->Typeacte->isDeletable($typeactes[$i]['Typeacte']['id']);
         $this->set('typeactes', $typeactes);
     }
 
-    function view($id = null) {
+    function view($id = null)
+    {
         $this->Typeacte->Behaviors->attach('Containable');
         $typeacte = $this->Typeacte->find('first', array('conditions' => array('Typeacte.id' => $id),
             'contain' => array('Nature.libelle',
                 'Compteur.nom',
-                'Modelprojet.modele',
-                'Modeldeliberation.modele')));
+                'Modelprojet.name',
+                'Modeldeliberation.name')));
         if (empty($typeacte)) {
             $this->Session->setFlash('Invalide id pour le type de acte.', 'growl', array('type' => 'erreur'));
             $this->redirect('/typeactes/index');
@@ -38,65 +43,95 @@ class TypeactesController extends AppController {
         $this->set('typeacte', $typeacte);
     }
 
-    function add() {
+    function add()
+    {
         $sortie = false;
         if (!empty($this->data)) {
-            if ($this->Typeacte->save($this->data)) {
-                $this->Ado->create();
-                $this->Ado->save(array('model' => 'Typeacte',
-                    'foreign_key' => $this->Typeacte->id,
-                    'parent_id' => 0,
-                    'alias' => 'Typeacte:' . $this->data['Typeacte']['libelle']));
-                $this->Session->setFlash('Le type de acte \'' . $this->data['Typeacte']['libelle'] . '\' a &eacute;t&eacute; sauvegard&eacute;', 'growl');
-                $sortie = true;
-            } else {
-                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
+            $this->Typeacte->set($this->request->data);
+            if ($this->Typeacte->validates()) {
+
+                if (!empty($this->request->data['Typeacte']['gabarit_projet_upload']) && $this->request->data['Typeacte']['gabarit_projet_upload']['error'] != 4)
+                    $this->request->data['Typeacte']['gabarit_projet'] = file_get_contents($this->request->data['Typeacte']['gabarit_projet_upload']['tmp_name']);
+
+                if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4)
+                    $this->request->data['Typeacte']['gabarit_synthese'] = file_get_contents($this->request->data['Typeacte']['gabarit_synthese_upload']['tmp_name']);
+
+                if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4)
+                    $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
+
+                if ($this->Typeacte->save($this->data)) {
+                    $this->Ado->create();
+                    $this->Ado->save(array(
+                        'model' => 'Typeacte',
+                        'foreign_key' => $this->Typeacte->id,
+                        'parent_id' => 0,
+                        'alias' => 'Typeacte:' . $this->data['Typeacte']['libelle']));
+                    $this->Session->setFlash('Le type de acte \'' . $this->data['Typeacte']['libelle'] . '\' a été sauvegardé', 'growl');
+                    $sortie = true;
+                } else {
+                    $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
+                }
             }
         }
+
         if ($sortie)
             $this->redirect('/typeactes/index');
         else {
             $this->set('compteurs', $this->Typeacte->Compteur->find('list'));
-            $this->set('models', $this->Model->find('list', array('conditions' => array('type' => 'Document'),
-                        'fields' => array('Model.id', 'Model.modele'))));
+            $this->set('models', $this->Modeltemplate->find('list'));
             $this->set('natures', $this->Typeacte->Nature->generateList('Nature.libelle'));
             $this->set('selectedNatures', null);
             $this->render('edit');
         }
     }
 
-    function edit($id = null) {
+    function edit($id = null)
+    {
         $sortie = false;
         $this->Typeacte->Behaviors->attach('Containable');
 
         if (empty($this->data)) {
 
-            $this->request->data = $this->Typeacte->find('first', array('conditions' => array('Typeacte.id' => $id),
+            $this->request->data = $this->Typeacte->find('first', array(
+                'conditions' => array('Typeacte.id' => $id),
                 'contain' => array('Nature')));
             if (empty($this->data)) {
-                $this->Session->setFlash('Invalide id pour le type de s&eacute;ance', 'growl', array('type' => 'erreur'));
+                $this->Session->setFlash('Invalide id pour le type de séance', 'growl', array('type' => 'erreur'));
                 $sortie = true;
             } else {
                 $this->set('selectedNatures', $this->data['Nature']['id']);
             }
         } else {
-            $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
+            $this->Typeacte->set($this->request->data);
+            if ($this->Typeacte->validates()) {
+
+                if (!empty($this->request->data['Typeacte']['gabarit_projet_upload']) && $this->request->data['Typeacte']['gabarit_projet_upload']['error'] != 4)
+                    $this->request->data['Typeacte']['gabarit_projet'] = file_get_contents($this->request->data['Typeacte']['gabarit_projet_upload']['tmp_name']);
+
+                if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4)
+                    $this->request->data['Typeacte']['gabarit_synthese'] = file_get_contents($this->request->data['Typeacte']['gabarit_synthese_upload']['tmp_name']);
+
+                if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4)
+                    $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
+
+                $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
                     'Ado.foreign_key' => $this->data['Typeacte']['id']),
-                'fields' => array('Ado.id'),
-                'recursive' => -1));
-            if ($this->Typeacte->save($this->data)) {
-                $this->Ado->id = $ado['Ado']['id'];
-                $this->Ado->saveField('alias', 'Typeacte:' . $this->data['Typeacte']['libelle']);
-                $this->Session->setFlash('Le type de s&eacute;ance \'' . $this->data['Typeacte']['libelle'] . '\' a &eacute;t&eacute; modifi&eacute;', 'growl');
-                $sortie = true;
-            } else {
-                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
-                if (array_key_exists('Typeacteur', $this->data)) {
-                    $this->set('selectedTypeacteurs', $this->data['Typeacteur']['Typeacteur']);
-                    $this->set('selectedActeurs', $this->data['Acteur']['Acteur']);
+                    'fields' => array('Ado.id'),
+                    'recursive' => -1));
+                if ($this->Typeacte->save($this->data)) {
+                    $this->Ado->id = $ado['Ado']['id'];
+                    $this->Ado->saveField('alias', 'Typeacte:' . $this->data['Typeacte']['libelle']);
+                    $this->Session->setFlash('Le type de séance \'' . $this->data['Typeacte']['libelle'] . '\' a été modifié', 'growl');
+                    $sortie = true;
                 } else {
-                    $this->set('selectedTypeacteurs', null);
-                    $this->set('selectedActeurs', null);
+                    $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
+                    if (array_key_exists('Typeacteur', $this->data)) {
+                        $this->set('selectedTypeacteurs', $this->data['Typeacteur']['Typeacteur']);
+                        $this->set('selectedActeurs', $this->data['Acteur']['Acteur']);
+                    } else {
+                        $this->set('selectedTypeacteurs', null);
+                        $this->set('selectedActeurs', null);
+                    }
                 }
             }
         }
@@ -104,7 +139,7 @@ class TypeactesController extends AppController {
             $this->redirect('/typeactes/index');
         else {
             $this->set('compteurs', $this->Typeacte->Compteur->find('list'));
-            $this->set('models', $this->Model->find('list', array('conditions' => array('type' => 'Document'), 'fields' => array('Model.id', 'Model.modele'))));
+            $this->set('models', $this->Modeltemplate->find('list'));
             $this->set('actions', array(0 => $this->Typeacte->libelleAction(0, true),
                 1 => $this->Typeacte->libelleAction(1, true),
                 2 => $this->Typeacte->libelleAction(2, true)));
@@ -112,7 +147,8 @@ class TypeactesController extends AppController {
         }
     }
 
-    function delete($id = null) {
+    function delete($id = null)
+    {
         $typeacte = $this->Typeacte->read('id, libelle', $id);
         if (empty($typeacte)) {
             $message = 'Type d\'acte introuvable';
@@ -124,9 +160,33 @@ class TypeactesController extends AppController {
             $message = 'Erreur lors de la tentative de suppression du type d\'acte ' . $typeacte['Typeacte']['libelle'];
         }
         $this->Session->setFlash($message, 'growl');
-        $this->redirect('/typeactes/index');
+        $this->redirect(array('action'=>'index'));
+    }
+
+    function downloadgabarit($id = null, $type = null){
+        if (empty($id)){
+            $this->Session->setFlash('identifiant incorrect', 'growl');
+            return $this->redirect(array('action'=>'index'));
+        }
+        if (empty($type) || !in_array($type,array('projet','synthese','acte'))){
+            $this->Session->setFlash('Type de gabarit incorrect. Types de gabarit disponibles : projet, synthese, acte', 'growl');
+            return $this->redirect(array('action'=>'index'));
+        }
+
+        $typeacte = $this->Typeacte->find('first', array(
+            'recursive' => -1,
+            'conditions' => array('Typeacte.id' => $id),
+            'fields' => array('Typeacte.gabarit_' . $type)
+        ));
+
+        if (!empty($typeacte)) {
+            header('Content-type: application/vnd.oasis.opendocument.text');
+            header('Content-Disposition: attachment; filename=gabarit_' . $type . '.odt');
+            exit($typeacte['Typeacte']['gabarit_' . $type]);
+        } else {
+            $this->Session->setFlash('Type d\'acte introuvable', 'growl');
+            $this->redirect(array('action'=>'index'));
+        }
     }
 
 }
-
-?>
