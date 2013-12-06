@@ -7,7 +7,7 @@ class SeancesController extends AppController {
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Form2', 'Javascript', 'Fck', 'Html2');
 	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low','Pdf');
-	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'Model', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
+	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
 	var $cacheAction = 0;
 
 	// Gestion des droits
@@ -220,10 +220,10 @@ class SeancesController extends AppController {
 		$this->set('use_pastell', Configure::read('USE_PASTELL'));
 		$this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
 		$format =  $this->Session->read('user.format.sortie');
-        //TODO filtrer uniquement les modèles de type Multi-séance
-        $this->set('models', $this->Model->find('list', array(
-            'conditions' => array('Model.multiodj'  => true),
-            'fields' => array('modele'))));
+        $this->set('models', $this->Modeltemplate->find('list', array(
+            'recursive' => -1,
+            'conditions' => array('modeltype_id' => array(MODEL_TYPE_TOUTES,MODEL_TYPE_MULTISEANCE)),
+            'fields' => array('name'))));
 		if (empty($format))
 			$format =0;
 		$this->set('format', $format);
@@ -477,7 +477,7 @@ class SeancesController extends AppController {
 			$id_service = $deliberations[$i]['Service']['id'];
                         $deliberations[$i]['Deliberation']['is_delib'] = $this->Deliberation->is_delib($deliberations[$i]['Deliberation']['id']);
 			$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-			$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'],
+			$deliberations[$i]['Modeltemplate']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'],
 	                                                                                                        $deliberations[$i]['Deliberation']['etat']);
 		}
                 $this->set('seance',$seance);
@@ -722,7 +722,7 @@ class SeancesController extends AppController {
 			$deliberations[$i]['Deliberation']['avis'] = $delib_seance['Deliberationseance']['avis'];
 			$id_service = $deliberations[$i]['Service']['id'];
 			$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-			$deliberations[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($type_id, $deliberations[$i]['Deliberation']['etat']);
+			$deliberations[$i]['Modeltemplate']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($type_id, $deliberations[$i]['Deliberation']['etat']);
 			if (empty($deliberations[$i]['Deliberation']['avis']))
 				$toutesVisees = false;
 		}
@@ -1042,10 +1042,10 @@ class SeancesController extends AppController {
                     $acteur['Acteur']['date_reception'] = $dates['Acteurseance']['date_reception'];
                 }
 
-                $model = $this->Model->find('first', array(
+                $model = $this->Modeltemplate->find('first', array(
                     'recursive' => -1,
-                    'conditions' => array('Model.id' => $model_id),
-                    'fields' => array('modele')));
+                    'conditions' => array('Modeltemplate.id' => $model_id),
+                    'fields' => array('name')));
 
                 $this->set('model',     $model);
                 $this->set('acteurs',   $acteurs);
@@ -1177,8 +1177,8 @@ class SeancesController extends AppController {
                     $acteur['Acteur']['date_envoi'] = !empty($dates) ? $dates['Acteurseance']['date_envoi'] : null;
                     $acteur['Acteur']['date_reception'] = !empty($dates) ? $dates['Acteurseance']['date_reception'] : null;
                 }
-                $model   = $this->Model->find('first', array('conditions' => array('Model.id' => $model_id),
-                                                             'fields'     => array('modele'),
+                $model   = $this->Modeltemplate->find('first', array('conditions' => array('Modeltemplate.id' => $model_id),
+                                                             'fields'     => array('name'),
                                                              'recursive'  => -1));
                 $this->set('model',     $model);
                 $this->set('acteurs',   $acteurs);
@@ -1325,17 +1325,15 @@ class SeancesController extends AppController {
             //*****************************************
             //Création du model ott
             //*****************************************
-            $model = $this->Model->find('first', array(
-                                        'conditions'=> array('Model.id'=> $model_id),
+            $model = $this->Modeltemplate->find('first', array(
+                                        'conditions'=> array('Modeltemplate.id'=> $model_id),
                                         'recursive' => '-1',
-                                        'fields'    => array('content', 'joindre_annexe', 'modele')));
-
-            $joindre_annexe = $model['Model']['joindre_annexe'];
+                                        'fields'    => array('content', 'name')));
             $oTemplate = new GDO_ContentType("",
-                                             $model['Model']['modele'],
+                                             $model['Modeltemplate']['name'],
                                              "application/vnd.oasis.opendocument.text",
                                              "binary",
-                                             $model['Model']['content']);
+                                             $model['Modeltemplate']['content']);
 
             $oMainPart = new GDO_PartType();
 
@@ -1422,13 +1420,7 @@ class SeancesController extends AppController {
                     $time_start = microtime(true);
                     $oFusion->SendContentToFile($dirpath.$nomFichier.".odt");
 
-                    $content = $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", $format);
-                    $chemin_fichier = $this->Gedooo->createFile($dirpath, $nomFichier.".$format", $content);
-                    
-                    if (($format == 'pdf') && ($joindre_annexe)) {
-                        if (!empty($annexes)) 
-                            $this->Pdf->concatener($chemin_fichier, $annexes);
-                    }
+                    $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", $format);
 
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
