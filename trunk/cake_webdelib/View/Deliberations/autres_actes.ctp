@@ -75,9 +75,9 @@
                     'title' => 'voir le projet de ' . $acte['Deliberation']['objet']
                 ));
             if (($acte['Deliberation']['etat'] >= 2) && ($acte['Deliberation']['signee'] == 1))
-                $model_id = $acte['Model']['modelefinal_id'];
+                $model_id = $acte['Modeltemplate']['modelefinal_id'];
             else
-                $model_id = $acte['Model']['modeleprojet_id'];
+                $model_id = $acte['Modeltemplate']['modeleprojet_id'];
 
             echo $this->Html->link(SHY, '/models/generer/' . $acte['Deliberation']['id'] . '/null/' . $model_id, array('class' => 'link_pdf',
                 'escape' => false,

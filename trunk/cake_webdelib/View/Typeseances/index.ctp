@@ -18,12 +18,12 @@
 	<td><?php echo $typeseance['Typeseance']['action']; ?></td>
 	<td><?php echo $typeseance['Compteur']['nom']; ?></td>
 	<td><?php
-		echo 'projet : ' .       $typeseance['Modelprojet']['modele'] . '<br/>';
-		echo 'd&eacute;lib&eacute;ration : ' .  $typeseance['Modeldeliberation']['modele'] . '<br/>';
-		echo 'convocation : ' .  $typeseance['Modelconvocation']['modele'] . '<br/>';
-		echo 'orde du jour : ' . $typeseance['Modelordredujour']['modele'] . '<br/>';
-		echo 'PV sommaire : ' .  $typeseance['Modelpvsommaire']['modele'] . '<br/>';
-		echo 'PV d&eacute;taill&eacute; : ' .  $typeseance['Modelpvdetaille']['modele'] . '<br/>';
+		echo 'projet : ' .       $typeseance['Modelprojet']['name'] . '<br/>';
+		echo 'd&eacute;lib&eacute;ration : ' .  $typeseance['Modeldeliberation']['name'] . '<br/>';
+		echo 'convocation : ' .  $typeseance['Modelconvocation']['name'] . '<br/>';
+		echo 'orde du jour : ' . $typeseance['Modelordredujour']['name'] . '<br/>';
+		echo 'PV sommaire : ' .  $typeseance['Modelpvsommaire']['name'] . '<br/>';
+		echo 'PV d&eacute;taill&eacute; : ' .  $typeseance['Modelpvdetaille']['name'] . '<br/>';
 	?></td>
 	<td><?php
 		if (!empty($typeseance['Typeacteur'])) {

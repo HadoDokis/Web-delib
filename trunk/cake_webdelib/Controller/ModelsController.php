@@ -1,10 +1,9 @@
 <?php
 class ModelsController extends AppController {
 
-    public $name = 'Models';
-	public $uses = array( 'Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire',
-        'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'Model',
-//        'Modeltype',
+	public $uses = array(
+        'Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire',
+        'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'ModelOdtValidator.Modeltemplate'
     );
     public $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
     public $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress', 'Fido');
@@ -17,193 +16,32 @@ class ModelsController extends AppController {
 	);
 
     public $commeDroit = array(
-            'add'          => 'Models:index',
-            'edit'         => 'Models:index',
-            '_add_edit'    => 'Models:index',
-			'delete'       => 'Models:index',
-			'view'         => 'Models:index',
-			'import'       => 'Models:index',
 			'getFileData'  => 'Models:index',
 			'changeStatus' => 'Models:index'
 	);
 
-	function index() {
-		$models = $this->Model->find('all', array('fields'=>array('id'), 'recursive'=>-1));
-		$deletable = array();
-		foreach ($models as $model) {
-			$id = $model['Model']['id'];
-			if ($this->Typeseance->find('first',array('conditions'=>array(
-					'OR'=>array(
-							'Typeseance.modelprojet_id'=>$id,
-							'Typeseance.modeldeliberation_id'=>$id,
-							'Typeseance.modelconvocation_id'=>$id,
-							'Typeseance.modelordredujour_id'=>$id,
-							'Typeseance.modelpvsommaire_id'=>$id,
-							'Typeseance.modelpvdetaille_id'=>$id)),
-					'recursive' => -1)))
-				$deletable[$id]=false;
-			else
-				$deletable[$id]=true;
-		}
-		$this->set('deletable',$deletable);
-		$this->set('models', $this->Model->find('all', array('fields' => array('modele', 'multiodj', 'type', 'name', 'recherche', 'joindre_annexe', 'modified', 'id'),
-				'order'=>array('Model.modele' => 'ASC'),
-				'recursive' => -1)));
-	}
-
-    function add() {
-        if (!empty($this->data)) {
-            $this->request->data['Model']['type']='Document';
-            $this->_add_edit();
-        }
-        $this->render('edit');
-    }
-
-    function edit($id = null) {
-        if (empty($id)){
-            $this->Session->setFlash('Id invalide.','growl', array('type'=>'erreur'));
-            return $this->redirect('/models/index');
-        }
-        if (!empty($this->data)) {
-            $this->_add_edit($id);
-        }
-        else{
-            $this->request->data = $this->Model->find('first', array(
-                'recursive' => -1,
-                'conditions' => array('id' => $id)
-            ));
-        }
-        $this->render('edit');
-    }
-
-    private function _add_edit($id = null){
-        if (!empty($this->data)){
-            if (!empty($id)){
-                $action = 'edit';
-                $this->Model->id = $id;
-            }else{
-                $action = 'add';
-                $this->Model->create();
-            }
-
-            $erreur = '';
-            //Test du fichier si remplacement
-            if (!empty($this->data['Model']['template']['name'])){
-
-                if ($this->request->data['Model']['template']['error'] != 0 && $this->request->data['Model']['template']['size'] == 0){
-                    $erreur = 'Problème survenu lors de la récupération du fichier. Veuillez contacter votre administrateur.';
-                }else{
-                    $this->Fido = new FidoComponent();
-                    $allowed = $this->Fido->checkFile($this->data['Model']['template']['tmp_name']);
-                    $results = $this->Fido->lastResults;
-                    if ($results['result'] == 'KO'){
-                        $erreur = 'Format de fichier non reconnu. Veuillez contacter votre administrateur';
-                    }elseif (!$allowed){
-                        if (!empty($results['version']))
-                            $erreur = 'Fichiers '.$results['formatname'].' v'.$results['version'].' non autorisés. Veuillez contacter votre administrateur';
-                        else
-                            $erreur = 'Fichiers '.$results['formatname'].' non autorisés. Veuillez contacter votre administrateur';
-                    }elseif($results['extension'] != 'odt'){
-                        $erreur = 'Format de fichier attendu : Fichier ODT';
-                    }
-                    $this->request->data['Model']['name']      = $this->data['Model']['template']['name'];
-                    $this->request->data['Model']['size']      = $this->data['Model']['template']['size'];
-                    $this->request->data['Model']['extension'] = $this->data['Model']['template']['type'];
-                    $this->request->data['Model']['content']   = file_get_contents($this->data['Model']['template']['tmp_name']);
-                }
-            }elseif($action == 'add'){
-                $erreur = 'Vous devez selectionner un fichier.';
-            }
-
-            if (empty($erreur)){
-                if ($this->Model->save($this->request->data)) {
-                    $this->redirect('/models/index');
-                }else{
-                    $this->Session->setFlash('Problème de sauvegarde en base de données.','growl', array('type'=>'erreur'));
-                }
-            }else{
-                $this->Session->setFlash($erreur,'growl', array('type'=>'erreur'));
-            }
-        }
-    }
-
-	function delete($id = null) {
-		if (!$id) {
-			$this->Session->setFlash('id invalide pour le modèle de  délibération','growl', array('type'=>'erreur'));
-			$this->redirect('/models/index');
-		}
-		$data = $this->Model->read(null, $id);
-		if (($data['Model']['type'] == 'Document')&&(!$this->Typeseance->find('first',array('conditions'=>array(
-				'OR'=>array(
-						'Typeseance.modelprojet_id'=>$id,
-						'Typeseance.modeldeliberation_id'=>$id,
-						'Typeseance.modelconvocation_id'=>$id,
-						'Typeseance.modelordredujour_id'=>$id,
-						'Typeseance.modelpvsommaire_id'=>$id,
-						'Typeseance.modelpvdetaille_id'=>$id
-				)
-		)
-		)))) {
-			if ($this->Model->delete($id)) {
-				$this->Session->setFlash('Le modèle a été supprimé.', 'growl');
-				$this->redirect('/models/index');
-			}
-			else{
-				$this->Session->setFlash('Impossible de supprimer ce type de modele','growl', array('type'=>'erreur'));
-				$this->redirect('/models/index');
-			}
-		}
-		else{
-			$this->Session->setFlash('Impossible de supprimer ce type de modele','growl', array('type'=>'erreur'));
-			$this->redirect('/models/index');
-		}
-	}
-
-	function view($id = null) {
-		$data = $this->Model->read(null, $id);
-		if (!empty($data['Model']['name'])) {
-			header('Content-type: '.$this->_getFileType($id));
-			header('Content-Length: '.$this->_getSize($id));
-			header('Content-Disposition: attachment; filename='.$this->_getFileName($id));
-			echo $this->_getModel($id);
-			exit();
-		}
-		else {
-			$this->Session->setFlash('Aucun fichier li&eacute; &agrave; ce mod&egrave;le','growl', array('type'=>'erreur'));
-			$this->redirect('/models/index');
-		}
-	}
-
-	function _getFileType($id=null) {
-		$objCourant = $this->Model->find('first', array(
-				'conditions'=> array('Model.id'=> $id),
-				'recursive' => '-1',
-				'fields'    => 'extension'));
-		return $objCourant['Model']['extension'];
-	}
-
 	function _getFileName($id=null) {
-		$objCourant = $this->Model->find('first', array(
-				'conditions'=> array('Model.id'=> $id),
+		$objCourant = $this->Modeltemplate->find('first', array(
+				'conditions'=> array('Modeltemplate.id'=> $id),
 				'recursive' => '-1',
-				'fields'    => 'name'));
-		return utf8_encode($objCourant['Model']['name']);
+				'fields'    => 'filename'));
+		return utf8_encode($objCourant['Modeltemplate']['filename']);
 	}
 
 	function _getSize($id=null) {
-		$objCourant = $this->Model->find('first', array(
-				'conditions'=> array('Model.id'=> $id),
+		$objCourant = $this->Modeltemplate->find('first', array(
+				'conditions'=> array('Modeltemplate.id'=> $id),
 				'recursive' => '-1',
-				'fields'    => 'size'));
-		return $objCourant['Model']['size'];
+				'fields'    => 'filesize'));
+		return $objCourant['Modeltemplate']['filesize'];
 	}
 
 	function _getModel($id=null) {
-		$objCourant = $this->Model->find('first', array(
-				'conditions'=> array('Model.id'=> $id),
+		$objCourant = $this->Modeltemplate->find('first', array(
+				'conditions'=> array('Modeltemplate.id'=> $id),
 				'recursive' => '-1',
 				'fields'    => 'content'));
-		return $objCourant['Model']['content'];
+		return $objCourant['Modeltemplate']['content'];
 	}
 
 
@@ -251,13 +89,13 @@ class ModelsController extends AppController {
 		//Création du model ott
 		//*****************************************
 		$u = new GDO_Utility();
-		$model = $this->Model->find('first', array(
-				'conditions'=> array('Model.id'=> $model_id),
+		$model = $this->Modeltemplate->find('first', array(
+				'conditions'=> array('Modeltemplate.id'=> $model_id),
 				'recursive' => '-1',
 				'fields'    => array('content', 'joindre_annexe')));
 
-		$content = $model['Model']['content'];
-		$joindre_annexe = $model['Model']['joindre_annexe'];
+		$content = $model['Modeltemplate']['content'];
+		$joindre_annexe = $model['Modeltemplate']['joindre_annexe'];
 
 		$oTemplate = new GDO_ContentType("",
 				$this->_getFileName($model_id),
@@ -357,8 +195,8 @@ class ModelsController extends AppController {
 				if (file_exists($path.'documents.zip'))
 					unlink($path.'documents.zip');
 
-				$model_tmp = $this->Model->read(null, $model_id);
-				$this->set('nom_modele',  $model_tmp['Model']['modele']);
+				$model_tmp = $this->Modeltemplate->read(null, $model_id);
+				$this->set('nom_modele',  $model_tmp['Modeltemplate']['name']);
 				if (empty($acteursConvoques))
 					return "";
 				$zip = new ZipArchive;
@@ -635,4 +473,3 @@ class ModelsController extends AppController {
 	}
 
 }
-?>

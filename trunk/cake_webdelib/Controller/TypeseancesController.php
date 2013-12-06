@@ -3,7 +3,7 @@
 class TypeseancesController extends AppController {
 
     var $name = 'Typeseances';
-    var $uses = array('Typeseance', 'Typeacte', 'Model', 'Compteur');
+    var $uses = array('Typeseance', 'Typeacte', 'ModelOdtValidator.Modeltemplate', 'Compteur');
     // Gestion des droits
     var $commeDroit = array(
         'edit' => 'Typeseances:index',
@@ -14,12 +14,12 @@ class TypeseancesController extends AppController {
 
     function index() {
         $this->Typeseance->Behaviors->attach('Containable');
-        $typeseances = $this->Typeseance->find('all', array('contain' => array('Modelpvdetaille.modele', 'Modelpvdetaille.id',
-                'Modelpvsommaire.modele', 'Modelpvsommaire.id',
-                'Modelordredujour.modele', 'Modelordredujour.id',
-                'Modelconvocation.modele', 'Modelconvocation.id',
-                'Modeldeliberation.modele', 'Modeldeliberation.id',
-                'Modelprojet.modele', 'Modelprojet.id',
+        $typeseances = $this->Typeseance->find('all', array('contain' => array('Modelpvdetaille.name', 'Modelpvdetaille.id',
+                'Modelpvsommaire.name', 'Modelpvsommaire.id',
+                'Modelordredujour.name', 'Modelordredujour.id',
+                'Modelconvocation.name', 'Modelconvocation.id',
+                'Modeldeliberation.name', 'Modeldeliberation.id',
+                'Modelprojet.name', 'Modelprojet.id',
                 'Compteur.id', 'Compteur.nom', 'Acteur',
                 'Typeacteur', 'Typeacte')));
         for ($i = 0; $i < count($typeseances); $i++) {
@@ -31,12 +31,12 @@ class TypeseancesController extends AppController {
 
     function view($id = null) {
         $typeseance = $this->Typeseance->find('first', array('conditions' => array('Typeseance.id' => $id),
-            'contain' => array('Modelpvdetaille.modele', 'Modelpvdetaille.id',
-                'Modelpvsommaire.modele', 'Modelpvsommaire.id',
-                'Modelordredujour.modele', 'Modelordredujour.id',
-                'Modelconvocation.modele', 'Modelconvocation.id',
-                'Modeldeliberation.modele', 'Modeldeliberation.id',
-                'Modelprojet.modele', 'Modelprojet.id',
+            'contain' => array('Modelpvdetaille.name', 'Modelpvdetaille.id',
+                'Modelpvsommaire.name', 'Modelpvsommaire.id',
+                'Modelordredujour.name', 'Modelordredujour.id',
+                'Modelconvocation.name', 'Modelconvocation.id',
+                'Modeldeliberation.name', 'Modeldeliberation.id',
+                'Modelprojet.name', 'Modelprojet.id',
                 'Compteur.id', 'Compteur.nom', 'Acteur',
                 'Typeacteur', 'Typeacte')));
         $this->set('typeseance', $typeseance);
@@ -46,7 +46,7 @@ class TypeseancesController extends AppController {
         $sortie = false;
         if (!empty($this->data)) {
             if ($this->Typeseance->save($this->data)) {
-                $this->Session->setFlash('Le type de seance \'' . $this->data['Typeseance']['libelle'] . '\' a &eacute;t&eacute; sauvegard&eacute;', 'growl');
+                $this->Session->setFlash('Le type de seance \'' . $this->data['Typeseance']['libelle'] . '\' a été sauvegardé', 'growl');
                 $sortie = true;
             }
             else
@@ -56,8 +56,9 @@ class TypeseancesController extends AppController {
             $this->redirect('/typeseances/index');
         else {
             $this->set('compteurs', $this->Typeseance->Compteur->find('list'));
-            $this->set('models', $this->Model->find('list', array('conditions' => array('type' => 'Document'),
-                        'fields' => array('Model.id', 'Model.modele'))));
+            $this->set('models', $this->Modeltemplate->find('list', array(
+                'fields' => array('Modeltemplate.id', 'Modeltemplate.name')
+            )));
             $this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true),
                 1 => $this->Typeseance->libelleAction(1, true),
                 2 => $this->Typeseance->libelleAction(2, true)));
@@ -77,16 +78,17 @@ class TypeseancesController extends AppController {
 
         if (empty($this->data)) {
             $this->data = $this->Typeseance->find('first', array('conditions' => array('Typeseance.id' => $id),
-                'contain' => array('Modelpvdetaille.modele', 'Modelpvdetaille.id',
-                    'Modelpvsommaire.modele', 'Modelpvsommaire.id',
-                    'Modelordredujour.modele', 'Modelordredujour.id',
-                    'Modelconvocation.modele', 'Modelconvocation.id',
-                    'Modeldeliberation.modele', 'Modeldeliberation.id',
-                    'Modelprojet.modele', 'Modelprojet.id',
+                'contain' => array(
+                    'Modelpvdetaille.name', 'Modelpvdetaille.id',
+                    'Modelpvsommaire.name', 'Modelpvsommaire.id',
+                    'Modelordredujour.name', 'Modelordredujour.id',
+                    'Modelconvocation.name', 'Modelconvocation.id',
+                    'Modeldeliberation.name', 'Modeldeliberation.id',
+                    'Modelprojet.name', 'Modelprojet.id',
                     'Compteur.id', 'Compteur.nom', 'Acteur',
                     'Typeacteur', 'Typeacte')));
             if (empty($this->data)) {
-                $this->Session->setFlash('Invalide id pour le type de s&eacute;ance');
+                $this->Session->setFlash('Invalide id pour le type de séance');
                 $sortie = true;
             } else {
                 $this->set('selectedTypeacteurs', $this->_selectedArray($this->data['Typeacteur']));
@@ -95,7 +97,7 @@ class TypeseancesController extends AppController {
             }
         } else {
             if ($this->Typeseance->save($this->data)) {
-                $this->Session->setFlash('Le type de s&eacute;ance \'' . $this->data['Typeseance']['libelle'] . '\' a &eacute;t&eacute; modifi&eacute;','growl');
+                $this->Session->setFlash('Le type de séance \'' . $this->data['Typeseance']['libelle'] . '\' a été modifié','growl');
                 $sortie = true;
             } else {
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
@@ -112,7 +114,7 @@ class TypeseancesController extends AppController {
             $this->redirect('/typeseances/index');
         else {
             $this->set('compteurs', $this->Typeseance->Compteur->find('list'));
-            $this->set('models', $this->Model->find('list', array('conditions' => array('type' => 'Document'), 'fields' => array('Model.id', 'Model.modele'))));
+            $this->set('models', $this->Modeltemplate->find('list', array('fields' => array('Modeltemplate.id', 'Modeltemplate.name'))));
             $this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true),
                 1 => $this->Typeseance->libelleAction(1, true),
                 2 => $this->Typeseance->libelleAction(2, true)));
@@ -138,5 +140,3 @@ class TypeseancesController extends AppController {
     }
 
 }
-
-?>

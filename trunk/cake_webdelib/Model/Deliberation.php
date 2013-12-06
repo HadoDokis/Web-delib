@@ -1537,8 +1537,8 @@ class Deliberation extends AppModel {
                                               'fields'     => $fields,
                                               'order'      => $order));
             foreach ($actes as &$acte) {
-                $acte['Model']['modeleprojet_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modeleprojet_id');
-                $acte['Model']['modelefinal_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
+                $acte['Modeltemplate']['modeleprojet_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modeleprojet_id');
+                $acte['Modeltemplate']['modelefinal_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
             }
             return $actes;
         }

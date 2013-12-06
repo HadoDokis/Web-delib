@@ -25,7 +25,7 @@
                     if ($format == 0)
                         echo $this->Html->link(SHY, '/deliberations/downloadDelib/'.$projet['Deliberation']['id'],  array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'));
                     else
-                        echo $this->Html->link(SHY,'/models/generer/' .$projet['Deliberation']['id'].'/null/'.$projet['Model']['id']."/$format", array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'));
+                        echo $this->Html->link(SHY,'/models/generer/' .$projet['Deliberation']['id'].'/null/'.$projet['Modeltemplate']['id']."/$format", array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'));
                 ?>
 
                  </td>
