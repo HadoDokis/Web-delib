@@ -92,10 +92,9 @@ class ModelsController extends AppController {
 		$model = $this->Modeltemplate->find('first', array(
 				'conditions'=> array('Modeltemplate.id'=> $model_id),
 				'recursive' => '-1',
-				'fields'    => array('content', 'joindre_annexe')));
+				'fields'    => array('content')));
 
 		$content = $model['Modeltemplate']['content'];
-		$joindre_annexe = $model['Modeltemplate']['joindre_annexe'];
 
 		$oTemplate = new GDO_ContentType("",
 				$this->_getFileName($model_id),
@@ -252,8 +251,6 @@ class ModelsController extends AppController {
 
                         $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
 						$chemin_fichier = $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
-						if (($format == 'pdf') && ($joindre_annexe))
-							$this->Pdf->concatener($chemin_fichier, $annexes);
 						$time_end = microtime(true);
 						$time = $time_end - $time_start;
 						$this->log("Temps conversion et concaténation : ". $time );
@@ -347,8 +344,6 @@ class ModelsController extends AppController {
 					$oFusion->SendContentToFile($path.$nomFichier);
 					$content = $this->Conversion->convertirFichier($path.$nomFichier, $format);
 					$chemin_fichier = $this->Gedooo->createFile($path, "$nomFichier.$format", $content);
-					if (($format == 'pdf') && ($joindre_annexe))
-						$this->Pdf->concatener($chemin_fichier, $annexes);
 					$listFiles[$urlWebroot.$nomFichier] = 'Document généré';
                     Configure::write('debug', 0);
                     if ($progress){
@@ -370,8 +365,6 @@ class ModelsController extends AppController {
 					$content = $this->Conversion->convertirFichier($fichier, $format );
 
 					$chemin_fichier = $this->Gedooo->createFile($path,  $nomFichier.'2', $content);
-					if (($format == 'pdf') && ($joindre_annexe))
-						$this->Pdf->concatener($chemin_fichier, $annexes);
 					$content = file_get_contents($chemin_fichier);
 
 					$time_end = microtime(true);
