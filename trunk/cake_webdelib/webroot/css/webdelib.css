@@ -978,6 +978,7 @@ a.link_rebond_avec_border {
 #vue_cadre h3 {
 	text-align: center;
 	font: normal small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+    padding-top: 10px;
 }
 
 #vue_cadre dt{
