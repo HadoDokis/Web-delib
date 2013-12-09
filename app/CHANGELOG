@@ -6,6 +6,9 @@
    *) Correction sur l'ordre d'affichage des séances : type d'acte > date de séance
    *) Correction sur la recherche rapide pour les projets visés par un utilisateur
    *) Modification sur l'upload des annexes, les caractères autorisés pour les nom de fichier sont les alphanumériques et -_.&
+   *) Correction du "retourné à" : prise en compte du circuit d'origine et pas du circuit deroulé
+   *) Modification pour enregistrer les délibérations taponnées et les bordereaux en retour du tdt
+   *) Modification de l'export CMIS pour prendre en compte les délibérations taponnées et les bordereaux de télétransmission
 
 4.1.03
 ======

@@ -233,14 +233,15 @@ class PostseancesController extends AppController {
             } catch (CmisObjectNotFoundException $e) {
                 // L'objet n'existe pas encore : ne rien faire
             }
-
+            
             $zip = new ZipArchive;
             @unlink($path.'documents.zip');
             $zip->open($path.'documents.zip', ZipArchive::CREATE);
-
+            
             $this->Progress->at(15, 'Création des dossiers...');
             // Création des dossiers
             $my_seance_folder = $cmis->client->createFolder($cmis->folder->id, $libelle_seance);
+            if(false){
             // Création des dossiers vides
             $zip->addEmptyDir('Rapports');
             $zip->addEmptyDir('Annexes');
@@ -264,7 +265,7 @@ class PostseancesController extends AppController {
             $dom_seance->appendChild($this->_createElement($dom, 'dateSeance', $date_seance));
             $dom_seance->appendChild($this->_createElement($dom, 'dateConvocation', $date_convocation));
 
-            {
+            
                 //Noeud document[convocation]
                 $this->Progress->at(25, 'Génération de la convocation...');
                 $document = $this->_createElement($dom, 'document', null, array('nom'=>'convocation.pdf', 'type' => 'convocation' ));
@@ -308,6 +309,7 @@ class PostseancesController extends AppController {
 
             }
 
+            if(false){
             //Infos supps
             $this->Progress->at(60, 'Ajout des informations supplémentaires de séance...');
             $this->_createElementInfosups($zip, $dom, $dom_seance, $seance_id, 'Seance');
@@ -322,7 +324,8 @@ class PostseancesController extends AppController {
                 $this->Deliberation->Behaviors->attach('Containable');
                 $delib = $this->Deliberation->find('first', array(
                     'conditions' => array('Deliberation.id' => $delib_id),
-                    'fields'     => array('Deliberation.id', 'Deliberation.num_delib', 'Deliberation.objet_delib', 'Deliberation.titre', 'Deliberation.delib_pdf', 'Deliberation.deliberation', 'Deliberation.signature'),
+                    'fields'     => array('Deliberation.id', 'Deliberation.num_delib', 'Deliberation.objet_delib', 'Deliberation.titre',
+                        'Deliberation.delib_pdf','Deliberation.tdt_data_pdf','Deliberation.tdt_data_bordereau_pdf', 'Deliberation.deliberation', 'Deliberation.signature'),
                     'contain'    => array(
                         'Service'   => array('fields' => array('libelle')),
                         'Theme'     => array('fields' => array('libelle')),
@@ -369,7 +372,7 @@ class PostseancesController extends AppController {
                 $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                 $doc->appendChild($document);
                 //Ajout au zip
-                $zip->addFromString($delib_filename, $delib['Deliberation']['delib_pdf']);
+                $zip->addFromString($delib_filename, (!empty($delib['Deliberation']['tdt_data_pdf'])?$delib['Deliberation']['tdt_data_pdf']:$delib['Deliberation']['delib_pdf']));
 
                 //Noeud document[Rapport]
                 $document = $this->_createElement($dom, 'document', null, array('nom' => $delib_filename, 'relname' => $delib_filename, 'type' => 'Rapport'));
@@ -392,6 +395,16 @@ class PostseancesController extends AppController {
                 $doc->appendChild($document);
                 //Ajout à l'archive
                 $zip->addFromString('Annexes'.DS.$signatureName, $delib['Deliberation']['signature']);
+                
+                //Ajout du bordereau (XML+ZIP)
+                $bordereauName = $delib['Deliberation']['id'].'-bordereau.pdf';
+                //Création du noeud XML
+                $document = $this->_createElement($dom, 'document', null, array('nom' => $bordereauName, 'relname' => $bordereauName, 'type' => 'Bordereau'));
+                $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
+                $doc->appendChild($document);
+                //Ajout à l'archive
+                $zip->addFromString('Annexes'.DS.$bordereauName, $delib['Deliberation']['tdt_data_bordereau_pdf']);
+
 
                 //Ajout des annexes
                 $annexes_id =  $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, 1);
@@ -447,12 +460,13 @@ class PostseancesController extends AppController {
                 array (),
                 $xmlContent,
                 'application/xml');
+            }
 
             $cmis->client->createDocument(
                 $my_seance_folder->id,
                 'documents.zip',
                 array (),
-                file_get_contents($path.'documents.zip'),
+                file_get_contents(/*$path*/'/var/www/splaza/branches/'.'documents.zip'),
                 'application/zip');
 
             $this->Progress->at(100, 'Opération terminée. Redirection...');

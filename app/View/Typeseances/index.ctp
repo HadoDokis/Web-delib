@@ -21,7 +21,7 @@
 		echo 'projet : ' .       $typeseance['Modelprojet']['modele'] . '<br/>';
 		echo 'd&eacute;lib&eacute;ration : ' .  $typeseance['Modeldeliberation']['modele'] . '<br/>';
 		echo 'convocation : ' .  $typeseance['Modelconvocation']['modele'] . '<br/>';
-		echo 'orde du jour : ' . $typeseance['Modelordredujour']['modele'] . '<br/>';
+		echo 'ordre du jour : ' . $typeseance['Modelordredujour']['modele'] . '<br/>';
 		echo 'PV sommaire : ' .  $typeseance['Modelpvsommaire']['modele'] . '<br/>';
 		echo 'PV d&eacute;taill&eacute; : ' .  $typeseance['Modelpvdetaille']['modele'] . '<br/>';
 	?></td>

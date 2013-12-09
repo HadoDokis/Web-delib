@@ -192,5 +192,22 @@ class AppController extends Controller {
                 $httpOnly // Set true for $AUTH_COOKIE_NAME
         );
     }
+    
+     /**
+     *    Send the headers necessary to ensure the page is
+     *    reloaded on every request. Otherwise you could be
+     *    scratching your head over out of date test data.
+     *    @access public
+     *    @static
+     */
+    public function sendNoCacheHeaders() {
+        if (! headers_sent()) {
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+            header("Cache-Control: no-store, no-cache, must-revalidate");
+            header("Cache-Control: post-check=0, pre-check=0", false);
+            header("Pragma: no-cache");
+        }
+    }
 }
 ?>
