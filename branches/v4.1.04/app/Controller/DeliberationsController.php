@@ -1327,24 +1327,32 @@ class DeliberationsController extends AppController {
         }
     }
 
-    function retour($delib_id) {
-        $delib = $this->Deliberation->read(null, $delib_id);
+    function retour($delib_id)
+    {
+        $delib = $this->Deliberation->find('first', array(
+            'recursive'=> -1,
+            'conditions'=> array('Deliberation.id'=> $delib_id)
+        ));
+
         if (empty($delib))
             $this->redirect($this->referer());
 
         if (empty($this->data)) {
-            $etapes = $this->Traitement->listeEtapes($delib['Deliberation']['id'], array('debut' => 2));
-            if (empty($etapes))
+            $etapes = $this->Traitement->listeEtapesPrecedentes($delib['Deliberation']['id']);
+            if (empty($etapes)){
+                $this->Session->setFlash('Opération impossible, l&apos;étape courante est la première du circuit.', 'growl', array('type' => 'erreur'));
                 $this->redirect($this->referer());
+            }
             $this->set('delib_id', $delib_id);
             $this->set('etapes', $etapes);
         } else {
-            $this->Traitement->execute('JP', $this->Session->read('user.User.id'), $delib_id, array('numero_traitement' => $this->data['Traitement']['etape']));
+            $this->Traitement->execute('JP', $this->Session->read('user.User.id'), $delib_id, array('etape_id' => $this->data['Traitement']['etape']));
             $destinataires = $this->Traitement->whoIsNext($delib_id);
             foreach ($destinataires as $destinataire_id)
                 $this->_notifier($delib_id, $destinataire_id, 'traiter');
 
             $this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Projet retourné");
+            $this->Session->setFlash('Opération effectuée !', 'growl');
             $this->redirect('/');
         }
     }
@@ -1598,7 +1606,7 @@ class DeliberationsController extends AppController {
                     $deliberations[$i]['Deliberation']['code_retour'] = $codeRetour;
 
                     if ($codeRetour == 4) {
-                        $dateAR = $this->_getDateAR($res = mb_substr($flux, strpos($flux, '<actes:ARActe'), strlen($flux)));
+                        $dateAR = $this->S2low->getDateAR($res = mb_substr($flux, strpos($flux, '<actes:ARActe'), strlen($flux)));
                         $this->Deliberation->changeDateAR($deliberations[$i]['Deliberation']['id'], $dateAR);
                         $deliberations[$i]['Deliberation']['DateAR'] = $dateAR;
                     }
@@ -1620,18 +1628,34 @@ class DeliberationsController extends AppController {
         $this->set('deliberations', $deliberations);
     }
 
-    function getAR($tdt_id) {
-        return $this->S2low->getAR($tdt_id);
+    function getAR($delib_id) {
+         $delib = $this->Deliberation->read(array('num_delib','tdt_id','tdt_data_bordereau_pdf'), $delib_id);
+        
+        if(empty($delib['Deliberation']['tdt_data_bordereau_pdf']))
+            $flux=$this->S2low->getAR($delib['Deliberation']['tdt_id']);
+        else
+            $flux=$delib['Deliberation']['tdt_data_bordereau_pdf'];
+        
+        parent::sendNoCacheHeaders();
+        header('Content-type: application/pdf');
+        header('Content-Length: ' . strlen($flux));
+        header('Content-Disposition: attachment; filename=bordereau_acquittement_'.$delib['Deliberation']['num_delib'].'.pdf');
+        die($flux);
     }
 
-    function getTampon($tdt_id) {
-        return ($this->S2low->getActeTampon($tdt_id));
-    }
-
-    function _getDateAR($fluxRetour) {
-        // +21 Correspond a la longueur du string : actes:DateReception"
-        $date = substr($fluxRetour, strpos($fluxRetour, 'actes:DateReception') + 21, 10);
-        return ($this->Date->frenchDate(strtotime($date)));
+    function getTampon($delib_id) {
+        $delib = $this->Deliberation->read(array('num_delib','tdt_id','tdt_data_pdf'), $delib_id);
+        
+        if(empty($delib['Deliberation']['tdt_data_pdf']))
+            $flux=$this->S2low->getActeTampon($delib['Deliberation']['tdt_id']);
+        else
+            $flux=$delib['Deliberation']['tdt_data_pdf'];
+        
+        parent::sendNoCacheHeaders();
+        header('Content-type: application/pdf');
+        header('Content-Length: ' . strlen($flux));
+        header('Content-Disposition: attachment; filename=Acte_'.$delib['Deliberation']['num_delib'].'.pdf');
+        die($flux);
     }
 
     function toSend($seance_id = null) {
@@ -3574,7 +3598,7 @@ class DeliberationsController extends AppController {
                             );
 
                     if ($delib['Deliberation']['tdt_id'] != null) {
-                        $AR = $this->S2low->getAR($delib['Deliberation']['tdt_id'], true);
+                        $AR = $this->S2low->getAR($delib['Deliberation']['tdt_id']);
                         $this->Gedooo->createFile($path, "bordereau.pdf", $AR, '.', $path);
                         // Ajout du fichier de bordereau
                         @PclTarAddList($path . "versement.tgz", $path . "bordereau.pdf", '.', $path);
