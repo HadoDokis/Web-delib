@@ -220,7 +220,9 @@ class SeancesController extends AppController {
 		$this->set('use_pastell', Configure::read('USE_PASTELL'));
 		$this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
 		$format =  $this->Session->read('user.format.sortie');
-                $this->set('models', $this->Model->find('list', array('conditions' => array('Model.multiodj'  => true), 'fields' => array('modele'))));
+                $this->set('models', $this->Model->find('list', array('fields' => array('modele'),
+                                                                            'conditions' => array('Model.multiodj'  => true),
+                                                                               'order' => array('modele ASC'), )));
 		if (empty($format))
 			$format =0;
 		$this->set('format', $format);
