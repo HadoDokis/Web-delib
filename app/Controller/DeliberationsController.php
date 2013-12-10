@@ -1237,9 +1237,10 @@ class DeliberationsController extends AppController {
                                         'trigger_id' => $user_connecte,
                                         'type_validation' => 'V'
                                     )
-                                )
+                                ),
                             )
-                        )
+                        ),
+                        'optimisation'=> configure::read('Cakeflow.optimisation')
                     );
                     $traitementTermine = $this->Traitement->execute('IN', $user_connecte, $id, $options);
                     

@@ -241,7 +241,6 @@ class PostseancesController extends AppController {
             $this->Progress->at(15, 'Création des dossiers...');
             // Création des dossiers
             $my_seance_folder = $cmis->client->createFolder($cmis->folder->id, $libelle_seance);
-            if(false){
             // Création des dossiers vides
             $zip->addEmptyDir('Rapports');
             $zip->addEmptyDir('Annexes');
@@ -307,9 +306,6 @@ class PostseancesController extends AppController {
                 if(!empty($seance['Seance']['pv_complet']))
                     $zip->addFromString('pvcomplet.pdf', $seance['Seance']['pv_complet']);
 
-            }
-
-            if(false){
             //Infos supps
             $this->Progress->at(60, 'Ajout des informations supplémentaires de séance...');
             $this->_createElementInfosups($zip, $dom, $dom_seance, $seance_id, 'Seance');
@@ -460,13 +456,12 @@ class PostseancesController extends AppController {
                 array (),
                 $xmlContent,
                 'application/xml');
-            }
 
             $cmis->client->createDocument(
                 $my_seance_folder->id,
                 'documents.zip',
                 array (),
-                file_get_contents(/*$path*/'/var/www/splaza/branches/'.'documents.zip'),
+                file_get_contents($path.'documents.zip'),
                 'application/zip');
 
             $this->Progress->at(100, 'Opération terminée. Redirection...');
