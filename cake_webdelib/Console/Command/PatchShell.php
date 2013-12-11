@@ -8,14 +8,16 @@ App::uses('File', 'Utility');
 class PatchShell extends AppShell {
 
     public $tasks = array(
-        'Tdt',
-        'Gedooo' // Version_4102to4103()
+        'Tdt', // 4.1.01 => 4.1.02
+        'Gedooo', // 4.1.02 => 4.1.03
+        'AjouteSectionAnnexe' // 4.1.xx => 4.2
     );
     public $uses = array('Annex', 'Deliberation');
 
     public function main() {
         $this->out('Script de patch de Webdelib');
-
+        // Désactivation du cache
+        Configure::write('Cache.disable', true);
         // Création de styles perso
         $this->stdout->styles('time', array('text' => 'magenta'));
         $this->stdout->styles('important', array('text' => 'red', 'bold' => true));
@@ -30,6 +32,10 @@ class PatchShell extends AppShell {
                 $this->Version_4102to4103();
                 break;
 
+            case "41to42": //Modification des modèles, ajout de la section Annexes avec variable fichier
+                $this->Version_41to42();
+                break;
+
             case null: // Pas de commande
                 $this->out("\n<error>Un nom de patch est nécessaire, tapez 'Console/cake patch -h' pour afficher l'aide.</error>\n");
                 break;
@@ -37,13 +43,6 @@ class PatchShell extends AppShell {
             default : // Commande inconnue
                 $this->out("\n<error>Commande '" . $this->command . "' inconnue, nom de patch attendu, tapez 'Console/cake patch -h' pour afficher l'aide.</error>\n");
         }
-        
-        /* // Solution alternative plus élégante mais où il faut correctement nommer les fonctions
-        if (method_exists($this, $this->command))
-            $this->runCommand($this->command, $this->args);
-        else
-            $this->out("erreur");
-        */
     }
 
     /**
@@ -55,6 +54,10 @@ class PatchShell extends AppShell {
     {
         $parser = parent::getOptionParser();
         $parser->description(__('Commandes de mise à jour de webdelib.'));
+
+        $parser->addSubcommand('41to42', array(
+            'help' => __('Ajoute une section annexe à la fin des modèles d\'édition si ils ont l\'attribut joindre_annexe.')
+        ));
 
         $parser->addSubcommand('4102to4103', array(
             'help' => __('Application du patch de mise à jour de 4.1.02 à 4.1.03.'),
@@ -106,7 +109,46 @@ class PatchShell extends AppShell {
         ));
         return $parser;
     }
+    public function Version_41to42()
+    {
+        $this->out("<important>Mise à jour de Webdelib 4.1.xx => 4.2</important>\n");
+        $this->out('Recherche des modèles avec jointure des annexes...');
+        $this->AjouteSectionAnnexe->execute();
+        //Passage du script sql de migration
+        $db = ConnectionManager::getDataSource('default');
+        $this->out('Mise à jour de la base de données..');
 
+        $newpluginsql = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
+        $migratesql = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
+
+        $newpluginfile = new File($newpluginsql);
+        $migratefile = new File($migratesql);
+
+        if ($migratefile->exists() && $newpluginfile->exists()){
+            $db->begin();
+            try{
+                $sql = explode(';', $newpluginfile->read());
+                foreach ($sql as $sqlline){
+                    $line = trim($sqlline);
+                    if (!empty($line) && !in_array(strtolower($line), array('begin', 'commit')))
+                        $db->rawQuery($line);
+                }
+                $sql = explode(';', $migratefile->read());
+                foreach ($sql as $sqlline){
+                    $line = trim($sqlline);
+                    if (!empty($line) && !in_array(strtolower($line), array('begin', 'commit')))
+                        $db->rawQuery($line);
+                }
+                $db->commit();
+            }catch (Exception $e){
+                $this->out("<error>Erreur sql (ligne ".$e->getLine().")</error>");
+                $this->out($e->getMessage());
+                $db->rollback();
+            }
+        }
+        else
+            $this->out("<error>sql de mise à jour introuvable</error>");
+    }
     /** Mise à jour de la version 4.1.02 à la version 4.1.03
      * Génération des annexes en odt valide, Mise à jour de classification, 
      * Changement du num préfecture
@@ -284,5 +326,3 @@ class PatchShell extends AppShell {
     }
 
 }
-
-?>
