@@ -143,10 +143,10 @@
  - Gestion des suppléants,
  - Ajout du droit de suppression d'un projet pour les administrateurs fonctionnels.
 
-3.5.2
+3.5.02
 =====
 
-3.5.1
+3.5.01
 =====
 
 3.5
@@ -167,7 +167,7 @@
  - Ajout des critères de filtre par banette
  - Enrichissement de l'historique
 
-2.1.2
+2.1.02
 =====
  - Correction d'un bug lors de l'enregistrement des PVs (en mode editeur en ligne).
  - Correction d'encodage des caractères spéciaux (CP1252).
@@ -178,7 +178,7 @@
  - Désactivation du bouton précédent du navigateur pour eviter les effets de bords (exemple, je clique sur précédent apres avoir validé un projet...) 
  - Patch pour les navigateurs IE 6 : le message jgrowl empeche l'ouverture de la page avec ce navigateur.
 
-2.1.1
+2.1.01
 =====
  - Correction des short_open_tag
  - Correction d'un bug lors de la saisie des débats de projets en commission
@@ -225,18 +225,18 @@
  - Compatibilité avec le navigateur Chrome pour Windows
  - Ajout des variables : avisCommission, date_reception, commentaire_seance, total_votant, acteur_sans_participation
 
-2.0.3
+2.0.03
 =====
  - Conservation des informations supplémentaires, annexes et commentaires suite à un refus de dossier. 
  - Ré-ajout des styles : ActeursPour, ActeursContre et ActeursAbstenu
 
-2.0.2
+2.0.02
 =====
  - Correction faute d'orthographe (mois de septembre mal orthographié)
  - Correction bug lors d'un refus de dossier : le rédacteur ne recevait pas de mail
  - Mise en place des boutons d'aperçu pour la génération des convocations et de l'ordre du jour
 
-2.0.1
+2.0.01
 =====
  - Ajout des Styles ActeursContre, ActeursPour, ActeursAbstention qui permet de lister les élus qui ont votés contre, pour ou se sont abstenus au vote d'un projet.
  - Correction d'un bug dans l'affichage des services et des thèmes. 
@@ -253,11 +253,11 @@
  - Possibilité de valider un projet en urgence.
  - Ajout de champ dynamique à la création d'un rapport de projet.
 
-1.1-2
+1.1.02
 =====
  - Uniformisation de l'encodage des fichiers : tous sont encodés en ISO-8859-15
 
-1.1-1
+1.1.01
 =====
  - Ajout de balises pour la generation des documents.
  - Validation des commentaires.
