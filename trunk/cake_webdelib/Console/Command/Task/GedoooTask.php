@@ -85,10 +85,10 @@ class GedoooTask extends Shell
      * Pour les annexes des délibérations de séances en cours et sans séance
      * Génère un fichier texte avec les colonnes suivantes :
      * # seance_id delib_id annex_id result
-     *
      * @param string $mode Mode de test des annexes {'all','noseance','nontraitees'}
+     * @param string $id
      * @param string $logPath Chemin du fichier de log personnalisable
-     *
+     * @return string
      */
     public function testTextes($mode = 'all', $id = 'null' , $logPath = null)
     {

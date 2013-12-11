@@ -1,7 +1,7 @@
 BEGIN;
 
 -- Mise à jour de la table models
-ALTER TABLE models ADD COLUMN modeltype_id INTEGER REFERENCES modeltypes(id);
+ALTER TABLE models ADD COLUMN modeltype_id INTEGER REFERENCES modeltypes(id) DEFAULT 1;
 ALTER TABLE models RENAME COLUMN name TO filename;
 ALTER TABLE models RENAME COLUMN modele TO name;
 ALTER TABLE models RENAME COLUMN size TO filesize;
@@ -9,7 +9,9 @@ ALTER TABLE models DROP COLUMN type;
 ALTER TABLE models DROP COLUMN extension;
 ALTER TABLE models DROP COLUMN recherche;
 ALTER TABLE models DROP COLUMN multiodj;
-
+ALTER TABLE models DROP COLUMN joindre_annexe;
+-- Drop important quand le script sql du plugin ModelOdtValidator passe avant (ex: PatchShell)
+DROP TABLE IF EXISTS modeltemplates;
 ALTER TABLE models RENAME TO modeltemplates;
 
 -- Nouvelles notifications utilisateur
