@@ -1,5 +1,5 @@
 <div id="vue_seance">
-<h3>S&eacute;ance du <?php echo $seance['Seance']['date']?></h3>
+<h3>Séance du <?php echo $seance['Seance']['date']?></h3>
 
 <dl>
 <!--	<dt>Id</dt>

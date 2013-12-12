@@ -10,6 +10,7 @@ ALTER TABLE models DROP COLUMN extension;
 ALTER TABLE models DROP COLUMN recherche;
 ALTER TABLE models DROP COLUMN multiodj;
 ALTER TABLE models DROP COLUMN joindre_annexe;
+
 -- Drop important quand le script sql du plugin ModelOdtValidator passe avant (ex: PatchShell)
 DROP TABLE IF EXISTS modeltemplates;
 ALTER TABLE models RENAME TO modeltemplates;
@@ -25,5 +26,8 @@ UPDATE annexes SET joindre_fusion=TRUE;
 ALTER TABLE typeactes ADD COLUMN gabarit_projet BYTEA DEFAULT NULL;
 ALTER TABLE typeactes ADD COLUMN gabarit_synthese BYTEA DEFAULT NULL;
 ALTER TABLE typeactes ADD COLUMN gabarit_acte BYTEA DEFAULT NULL;
+
+-- Président d'affaire
+ALTER TABLE deliberations ADD COLUMN president_id INTEGER DEFAULT NULL;
 
 COMMIT;

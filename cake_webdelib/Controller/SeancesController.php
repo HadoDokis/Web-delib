@@ -441,46 +441,55 @@ class SeancesController extends AppController {
             $this->redirect('/seances/afficherProjets/'.$seance_id);
         }
 
-	function changeRapporteur($seance_id, $newRapporteur,$delib_id) {
-            $this->Deliberation->id = $delib_id;
-            if ($this->Deliberation->saveField('rapporteur_id', $newRapporteur))
-                $this->redirect('/seances/afficherProjets/'.$seance_id);
-	}
+	function changeRapporteur($seance_id, $newRapporteur, $delib_id)
+    {
+        $this->Deliberation->id = $delib_id;
+        if ($this->Deliberation->saveField('rapporteur_id', $newRapporteur))
+            $this->redirect(array('action' => 'afficherProjets', $seance_id));
+    }
 
-	function details ($seance_id=null) {
+	function details ($seance_id = null) {
 		$this->set('seance_id', $seance_id);
 		$this->Deliberation->Behaviors->attach('Containable');
 
-                $this->Seance->Behaviors->attach('Containable');
-		$seance = $this->Seance->find('first', array( 'conditions' => array('Seance.id'=> $seance_id),
-				'fields'     => array('Seance.type_id'),
-                                'contain'   => array('Typeseance.libelle', 'Typeseance.action')));
-                
-		$delibs = $this->Seance->getDeliberationsId($seance_id);
-                
-		$deliberations = array();
-		foreach ($delibs as $delib_id) {
-			$deliberations[] = $this->Deliberation->find('first',
-					array('conditions' => array('Deliberation.id'=>$delib_id),
-							'contain' => array('Theme.libelle', 'Rapporteur.nom', 'Rapporteur.prenom', 'Service.libelle'),
-							'fields' => array(
-                                'Deliberation.objet_delib',
-                                'Deliberation.titre',
-                                'Deliberation.id',
-                                'Deliberation.etat',
-                                'Deliberation.typeacte_id',
-                                'Deliberation.num_delib'
-                            )));
+        $this->Seance->Behaviors->attach('Containable');
+		$seance = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id'=> $seance_id),
+            'fields' => array('Seance.type_id'),
+            'contain' => array('Typeseance.libelle', 'Typeseance.action'))
+        );
 
-		}
-		for ($i=0; $i<count($deliberations); $i++){
-			$id_service = $deliberations[$i]['Service']['id'];
-                        $deliberations[$i]['Deliberation']['is_delib'] = $this->Deliberation->is_delib($deliberations[$i]['Deliberation']['id']);
-			$deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
-			$deliberations[$i]['Modeltemplate']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'],
+		$delibs = $this->Seance->getDeliberationsId($seance_id);
+		$deliberations = array();
+        foreach ($delibs as $delib_id) {
+            $deliberations[] = $this->Deliberation->find('first',
+                array(
+                    'conditions' => array('Deliberation.id' => $delib_id),
+                    'contain' => array(
+                        'Theme.libelle',
+                        'Rapporteur.nom',
+                        'Rapporteur.prenom',
+                        'President.nom',
+                        'President.prenom',
+                        'Service.libelle'
+                    ),
+                    'fields' => array(
+                        'Deliberation.objet_delib',
+                        'Deliberation.titre',
+                        'Deliberation.id',
+                        'Deliberation.etat',
+                        'Deliberation.typeacte_id',
+                        'Deliberation.num_delib'
+                    )));
+        }
+		for ($i=0; $i<count($deliberations); $i++) {
+            $id_service = $deliberations[$i]['Service']['id'];
+            $deliberations[$i]['Deliberation']['is_delib'] = $this->Deliberation->is_delib($deliberations[$i]['Deliberation']['id']);
+            $deliberations[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($id_service);
+            $deliberations[$i]['Modeltemplate']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'],
 	                                                                                                        $deliberations[$i]['Deliberation']['etat']);
 		}
-                $this->set('seance',$seance);
+        $this->set('seance',$seance);
 		$this->set('deliberations',$deliberations);
 		$date_tmpstp = strtotime($this->Seance->getDate($seance_id));
 		$this->set('date_tmpstp', $date_tmpstp);
@@ -489,124 +498,138 @@ class SeancesController extends AppController {
 	}
 
 	function effacerVote($deliberation_id=null) {
-		$votes = $this->Vote->find('all', array('conditions' => array('Vote.delib_id' => $deliberation_id),
-				'fields'     => array('Vote.id'),
-				'recursive'  => -1));
+		$votes = $this->Vote->find('all', array(
+            'conditions' => array('Vote.delib_id' => $deliberation_id),
+            'fields'     => array('Vote.id'),
+            'recursive'  => -1));
 		foreach($votes as $vote)
 			$this->Vote->delete($vote['Vote']['id']);
 	}
 
-	function voter($deliberation_id, $seance_id) {
-		$this->Seance->Behaviors->attach('Containable');
-		$deliberation = $this->Deliberation->find('first',
-				array('conditions' => array('Deliberation.id' =>$deliberation_id)));
-		$seance = $this->Seance->find('first',
-				array('conditions' => array('Seance.id' =>$seance_id),
-                                    'fields'     => array('Seance.date'),
-                                    'contain'    =>array('Typeseance.compteur_id')));
-//		$position =  $this->Deliberation->getPosition($deliberation_id, $seance_id);
-		if (empty($this->data)) {
-			$nbAbsent = 0;
-			// Initialisation du détail du vote
-			$donnees = $this->Vote->find('all', array('conditions' => array("Vote.delib_id" => $deliberation_id)));
-			foreach($donnees as $donnee){
-				$this->request->data['detailVote'][$donnee['Vote']['acteur_id']]=$donnee['Vote']['resultat'];
-			}
-			// Initialisation du total des voix
-			$this->request->data['Deliberation']['vote_nb_oui'] = $deliberation['Deliberation']['vote_nb_oui'];
-			$this->request->data['Deliberation']['vote_nb_non'] = $deliberation['Deliberation']['vote_nb_non'];
-			$this->request->data['Deliberation']['vote_nb_abstention'] = $deliberation['Deliberation']['vote_nb_abstention'];
-			$this->request->data['Deliberation']['vote_nb_retrait'] = $deliberation['Deliberation']['vote_nb_retrait'];
-			// Initialisation du resultat
-			$this->request->data['Deliberation']['etat'] = $deliberation['Deliberation']['etat'];
-			// Initialisation du commentaire
-			$this->request->data['Deliberation']['vote_commentaire'] = $deliberation['Deliberation']['vote_commentaire'];
+    function voter($deliberation_id, $seance_id)
+    {
+        $this->Seance->Behaviors->attach('Containable');
+        $deliberation = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $deliberation_id)));
+        $seance = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id' => $seance_id),
+            'fields' => array('Seance.date', 'Seance.president_id', 'Seance.type_id'),
+            'contain' => array('Typeseance.compteur_id')));
+        if (empty($this->data)) {
+            //Initialisation président de séance
+            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+            $tab = array();
+            if (!empty($acteursConvoques)) {
+                foreach ($acteursConvoques as $acteurConvoque)
+                    $tab[$acteurConvoque['Acteur']['id']] = $acteurConvoque['Acteur']['prenom'] . ' ' . $acteurConvoque['Acteur']['nom'];
+            }
+            $this->set('acteurs', $tab);
 
-			$this->set('seance_id', $seance_id);
-			$this->set('deliberation' , $deliberation);
-			
-                        $listPresents =  $this->Deliberation->afficherListePresents($deliberation_id, $seance_id);
-                        $typeacteurs = array();
-                        foreach ( $listPresents as $present ) {
-                            $typeacteurs[$present['Acteur']['Typeacteur']['id']] = $present['Acteur']['Typeacteur']['nom'];
+            if (empty($deliberation['Deliberation']['president_id']))
+                $this->set('selectedPresident', $seance['Seance']['president_id']);
+            else
+                $this->set('selectedPresident', $deliberation['Deliberation']['president_id']);
+
+            $nbAbsent = 0;
+            // Initialisation du détail du vote
+            $donnees = $this->Vote->find('all', array('conditions' => array("Vote.delib_id" => $deliberation_id)));
+            foreach ($donnees as $donnee) {
+                $this->request->data['detailVote'][$donnee['Vote']['acteur_id']] = $donnee['Vote']['resultat'];
+            }
+            // Initialisation du total des voix
+            $this->request->data['Deliberation']['vote_nb_oui'] = $deliberation['Deliberation']['vote_nb_oui'];
+            $this->request->data['Deliberation']['vote_nb_non'] = $deliberation['Deliberation']['vote_nb_non'];
+            $this->request->data['Deliberation']['vote_nb_abstention'] = $deliberation['Deliberation']['vote_nb_abstention'];
+            $this->request->data['Deliberation']['vote_nb_retrait'] = $deliberation['Deliberation']['vote_nb_retrait'];
+            // Initialisation du resultat
+            $this->request->data['Deliberation']['etat'] = $deliberation['Deliberation']['etat'];
+            // Initialisation du commentaire
+            $this->request->data['Deliberation']['vote_commentaire'] = $deliberation['Deliberation']['vote_commentaire'];
+
+            $this->set('seance_id', $seance_id);
+            $this->set('deliberation', $deliberation);
+
+            $listPresents = $this->Deliberation->afficherListePresents($deliberation_id, $seance_id);
+            $typeacteurs = array();
+            foreach ($listPresents as $present) {
+                $typeacteurs[$present['Acteur']['Typeacteur']['id']] = $present['Acteur']['Typeacteur']['nom'];
+            }
+            $this->set('typeacteurs', $typeacteurs);
+            $this->set('presents', $listPresents);
+
+            $nbPresent = count($listPresents);
+            foreach ($listPresents as $present)
+                if (empty($present['Listepresence']['present']) && empty($present['Listepresence']['mandataire']))
+                    $nbAbsent++;
+                else
+                    $nbPresent++;
+            if ($nbPresent / 2 < $nbAbsent)
+                $this->set('message', 'Attention, le quorum n\'est plus atteint...');
+        } else {
+            $this->request->data['Deliberation']['id'] = $deliberation_id;
+
+            $this->Deliberation->id = $deliberation_id;
+            $this->effacerVote($deliberation_id);
+            switch ($this->data['Vote']['typeVote']) {
+                case 1:
+                    // Saisie du détail du vote
+                    $this->request->data['Deliberation']['vote_nb_oui'] = 0;
+                    $this->request->data['Deliberation']['vote_nb_non'] = 0;
+                    $this->request->data['Deliberation']['vote_nb_abstention'] = 0;
+                    $this->request->data['Deliberation']['vote_nb_retrait'] = 0;
+                    if (!empty($this->data['detailVote'])) {
+                        foreach ($this->data['detailVote'] as $acteur_id => $vote) {
+                            $this->Vote->create();
+                            $this->request->data['Vote']['acteur_id'] = $acteur_id;
+                            $this->request->data['Vote']['delib_id'] = $deliberation_id;
+                            $this->request->data['Vote']['resultat'] = $vote;
+                            $this->Vote->save($this->data['Vote']);
+                            if ($vote == 3)
+                                $this->request->data['Deliberation']['vote_nb_oui']++;
+                            elseif ($vote == 2)
+                                $this->request->data['Deliberation']['vote_nb_non']++;
+                            elseif ($vote == 4)
+                                $this->request->data['Deliberation']['vote_nb_abstention']++;
+                            elseif ($vote == 5)
+                                $this->request->data['Deliberation']['vote_nb_retrait']++;
                         }
-                        $this->set('typeacteurs', $typeacteurs);
-			$this->set('presents', $listPresents);
+                    }
+                    if ($this->data['Deliberation']['vote_nb_oui'] > $this->data['Deliberation']['vote_nb_non'])
+                        $this->request->data['Deliberation']['etat'] = 3;
+                    else
+                        $this->request->data['Deliberation']['etat'] = 4;
+                    break;
+                case 2:
+                    // Saisie du total du vote
+                    if ($this->data['Deliberation']['vote_nb_oui'] > $this->data['Deliberation']['vote_nb_non'])
+                        $this->request->data['Deliberation']['etat'] = 3;
+                    else
+                        $this->request->data['Deliberation']['etat'] = 4;
+                    break;
+                case 3:
+                    // Saisie du resultat global
+                    $this->request->data['Deliberation']['vote_nb_oui'] = 0;
+                    $this->request->data['Deliberation']['vote_nb_non'] = 0;
+                    $this->request->data['Deliberation']['vote_nb_abstention'] = 0;
+                    $this->request->data['Deliberation']['vote_nb_retrait'] = 0;
+                    break;
+            }
 
-			$nbPresent = count ($listPresents);
-			foreach ( $listPresents as $present) 
-			    if(empty($present['Listepresence']['present']) && empty($present['Listepresence']['mandataire']))
-				$nbAbsent++;
-                            else
-                               $nbPresent ++;
-			if ($nbPresent/2 < $nbAbsent)
-				$this->set('message', 'Attention, le quorum n\'est plus atteint...');
-
-		} else {
-			$this->request->data['Deliberation']['id'] = $deliberation_id;
-			$this->Deliberation->id = $deliberation_id;
-			$this->effacerVote($deliberation_id);
-			switch ($this->data['Vote']['typeVote']) {
-				case 1:
-					// Saisie du détail du vote
-					$this->request->data['Deliberation']['vote_nb_oui'] = 0;
-					$this->request->data['Deliberation']['vote_nb_non'] = 0;
-					$this->request->data['Deliberation']['vote_nb_abstention'] = 0;
-					$this->request->data['Deliberation']['vote_nb_retrait'] = 0;
-					if (!empty($this->data['detailVote'])) {
-						foreach($this->data['detailVote'] as $acteur_id => $vote){
-							$this->Vote->create();
-							$this->request->data['Vote']['acteur_id']=$acteur_id;
-							$this->request->data['Vote']['delib_id']=$deliberation_id;
-							$this->request->data['Vote']['resultat']=$vote;
-							$this->Vote->save($this->data['Vote']);
-							if ($vote == 3)
-								$this->request->data['Deliberation']['vote_nb_oui']++;
-							elseif ($vote == 2)
-							$this->request->data['Deliberation']['vote_nb_non']++;
-							elseif ($vote == 4)
-							$this->request->data['Deliberation']['vote_nb_abstention']++;
-							elseif ($vote == 5)
-							$this->request->data['Deliberation']['vote_nb_retrait']++;
-						}
-					}
-					if ($this->data['Deliberation']['vote_nb_oui']>$this->data['Deliberation']['vote_nb_non'])
-						$this->request->data['Deliberation']['etat'] = 3;
-					else
-						$this->request->data['Deliberation']['etat'] = 4;
-					break;
-				case 2:
-					// Saisie du total du vote
-					if ($this->data['Deliberation']['vote_nb_oui']>$this->data['Deliberation']['vote_nb_non'])
-						$this->request->data['Deliberation']['etat'] = 3;
-					else
-						$this->request->data['Deliberation']['etat'] = 4;
-					break;
-				case 3:
-					// Saisie du resultat global
-					$this->request->data['Deliberation']['vote_nb_oui'] = 0;
-					$this->request->data['Deliberation']['vote_nb_non'] = 0;
-					$this->request->data['Deliberation']['vote_nb_abstention'] = 0;
-					$this->request->data['Deliberation']['vote_nb_retrait'] = 0;
-					break;
-			}
-
-			// Attribution du numéro de la délibération si adoptée et si pas déjà attribué
-			if ( ($this->data['Deliberation']['etat'] == 3)
-					&& empty($deliberation['Deliberation']['num_delib']) ) {
-				$this->request->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id'], $seance['Seance']['date']);
-				$this->request->data['Deliberation']['num_delib'] = str_replace('#p#',
-						$this->Deliberation->getPosition($deliberation_id, $seance_id),
-						$this->data['Deliberation']['num_delib'] );
-			}
-			if ($this->Deliberation->save($this->data['Deliberation'])) {
-				$this->redirect("/seances/details/".$seance_id);
-			}
-		}
-	}
+            // Attribution du numéro de la délibération si adoptée et si pas déjà attribué
+            if ($this->data['Deliberation']['etat'] == 3 && empty($deliberation['Deliberation']['num_delib'])){
+                $this->request->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id'], $seance['Seance']['date']);
+                $this->request->data['Deliberation']['num_delib'] = str_replace(
+                    '#p#',
+                    $this->Deliberation->getPosition($deliberation_id, $seance_id),
+                    $this->data['Deliberation']['num_delib']);
+            }
+            if ($this->Deliberation->save($this->data['Deliberation'])){
+                $this->redirect(array('action' => 'details', $seance_id));
+            }
+        }
+    }
 
 
-	function saisirDebat ($delib_id = null, $seance_id = null)	{
+    function saisirDebat ($delib_id = null, $seance_id = null)	{
 		$this->set('seance_id',  $seance_id);
 		$this->set('delib_id',  $delib_id);
 		$this->Seance->Behaviors->attach('Containable');
@@ -791,6 +814,7 @@ class SeancesController extends AppController {
             'fields'=> array('Deliberationseance.seance_id'),
             'conditions' => array( 'Deliberationseance.deliberation_id' => $deliberation_id ),
             'recursive'  => -1 ));
+        $seance_notinclude = array();
         foreach($deliberationseance as $seance)
             $seance_notinclude[] = array('Seance.id <>'=> $seance['Deliberationseance']['seance_id']);
 
@@ -804,12 +828,19 @@ class SeancesController extends AppController {
 
 	function saisirSecretaire($seance_id) {
 		$this->set('seance_id', $seance_id);
-		$seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
-				'recursive'  => -1,
-				'fields'     => array('id', 'type_id', 'president_id', 'secretaire_id')));
+		$seance = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id' => $seance_id),
+            'recursive'  => -1,
+            'fields'     => array('id', 'type_id', 'president_id', 'secretaire_id')));
 		$acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+        if (empty($acteursConvoques)){
+            $this->Session->setFlash('Aucun acteur convoqué.', 'growl', array('type'=>'erreur'));
+            $this->redirect(array('action' => 'listerFuturesSeances'));
+        }
+        $tab = array();
 		foreach( $acteursConvoques as  $acteurConvoque)
 			$tab[$acteurConvoque['Acteur']['id']] =  $acteurConvoque['Acteur']['prenom'].' '. $acteurConvoque['Acteur']['nom'];
+
 		$this->set('acteurs', $tab);
 			
 		if (empty($this->data)) {
@@ -820,7 +851,7 @@ class SeancesController extends AppController {
 			$this->Seance->id = $seance_id;
 			$this->Seance->saveField('president_id',$this->data['Acteur']['president_id']);
 			if ($this->Seance->saveField('secretaire_id',$this->data['Acteur']['secretaire_id']))
-				$this->redirect('/seances/listerFuturesSeances');
+				$this->redirect(array('action' => 'listerFuturesSeances'));
 		}
 	}
 

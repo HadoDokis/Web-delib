@@ -9,6 +9,7 @@
     <th>Thème</th>
     <th>Service émetteur</th>
     <th>Rapporteur</th>
+    <th>Président</th>
     <th>Libellé de l'acte</th>
     <th>Titre</th>
     <th>N° Délibération</th>
@@ -41,7 +42,8 @@
 	?>
 	<td><?php echo $deliberation['Theme']['libelle']; ?></td>
 	<td><?php echo $deliberation['Service']['libelle']; ?></td>
-	<td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
+    <td><?php echo $deliberation['Rapporteur']['nom'].' '.$deliberation['Rapporteur']['prenom']; ?></td>
+    <td><?php echo $deliberation['President']['nom'].' '.$deliberation['President']['prenom']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['objet_delib']; ?></td>
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
     <td><?php if (!empty($deliberation['Deliberation']['num_delib'])) echo $deliberation['Deliberation']['num_delib']; ?></td>

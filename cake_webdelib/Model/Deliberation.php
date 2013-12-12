@@ -39,50 +39,56 @@ class Deliberation extends AppModel {
 
 
     //dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
-	var $belongsTo = array(
-			'Service'=>array(
-					'className'    => 'Service',
-					'conditions'   => '',
-					'order'        => '',
-					'dependent'    => false,
-					'foreignKey'   => 'service_id'
-                            ),
-			'Theme'=>array(
-					'className'    => 'Theme',
-					'conditions'   => '',
-					'order'        => '',
-					'dependent'    => false,
-					'foreignKey'   => 'theme_id'
-                            ),
-			'Circuit'=>array(
-					'className'    => 'Cakeflow.Circuit',
-					'conditions'   => '',
-					'order'        => '',
-					'dependent'    => false,
-					'foreignKey'   => 'circuit_id'
-                            ),
-			'Redacteur' =>array(
-					'className'    => 'User',
-					'conditions'   => '',
-					'order'        => '',
-					'dependent'    =>  true,
-					'foreignKey'   => 'redacteur_id'
-                            ),
-			'Rapporteur'=> array(
-					'className'    => 'Acteur',
-					'conditions'   => '',
-					'order'        => '',
-					'dependent'    =>  true,
-					'foreignKey'   => 'rapporteur_id'
-                            ),
-			'Typeacte'=> array(
-					'className'    => 'Typeacte',
-					'conditions'   => '',
-					'order'        => '',
-					'dependent'    =>  true,
-					'foreignKey'   => 'typeacte_id'
-                            )
-	);
+    var $belongsTo = array(
+        'Service' => array(
+            'className' => 'Service',
+            'conditions' => '',
+            'order' => '',
+            'dependent' => false,
+            'foreignKey' => 'service_id'
+        ),
+        'Theme' => array(
+            'className' => 'Theme',
+            'conditions' => '',
+            'order' => '',
+            'dependent' => false,
+            'foreignKey' => 'theme_id'
+        ),
+        'Circuit' => array(
+            'className' => 'Cakeflow.Circuit',
+            'conditions' => '',
+            'order' => '',
+            'dependent' => false,
+            'foreignKey' => 'circuit_id'
+        ),
+        'Redacteur' => array(
+            'className' => 'User',
+            'conditions' => '',
+            'order' => '',
+            'dependent' => true,
+            'foreignKey' => 'redacteur_id'
+        ),
+        'Rapporteur' => array(
+            'className' => 'Acteur',
+            'conditions' => '',
+            'order' => '',
+            'dependent' => true,
+            'foreignKey' => 'rapporteur_id'
+        ),
+        'President' => array(
+            'className' => 'Acteur',
+            'conditions' => '',
+            'order' => '',
+            'dependent' => false,
+            'foreignKey' => 'president_id'),
+        'Typeacte' => array(
+            'className' => 'Typeacte',
+            'conditions' => '',
+            'order' => '',
+            'dependent' => true,
+            'foreignKey' => 'typeacte_id'
+        )
+    );
 
 	var $hasMany = array(
 			'TdtMessage' => array (
