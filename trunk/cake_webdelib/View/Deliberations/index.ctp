@@ -182,7 +182,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                 if (in_array('generer', $deliberation['Actions'])) {
                     if (empty($deliberation['Deliberation']['delib_pdf']))
                         echo $this->Html->link(SHY,
-                            '/models/generer/' . $deliberation['Deliberation']['id'] . '/null/' . $deliberation['Modeltemplate']['id'] . '/-1/0/retour/0/0/0/',
+                            '/models/generer/' . $deliberation['Deliberation']['id'] . '/null/' . $deliberation['Modeltemplate']['id'] . '/-1/0/projet'.$deliberation['Deliberation']['id'].'/0/0/0/',
                             array(
                                 'class' => 'link_pdf delib_pdf',
                                 'escape' => false,

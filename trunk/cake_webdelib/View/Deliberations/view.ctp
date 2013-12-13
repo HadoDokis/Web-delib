@@ -19,7 +19,7 @@ if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
     );
 $linkBarre .= $this->Html->link(
     '<i class="fa fa-file"></i> Générer',
-    array('controller' => 'models', 'action' => 'generer', $this->data['Deliberation']['id'], 'null', $this->data['Modeltemplate']['id'], '-1', '0', 'retour', '0', '0', '0'),
+    array('controller' => 'models', 'action' => 'generer', $this->data['Deliberation']['id'], 'null', $this->data['Modeltemplate']['id'], '-1', '0', 'projet'.$this->data['Deliberation']['id'], '0', '0', '0'),
     array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document du projet')
 );
 $linkBarre .= $this->Html->link(
@@ -35,14 +35,14 @@ $linkBarre .= "</div>";
 <?php
 if (empty($this->data['Multidelib'])) {
     if ($this->data['Deliberation']['etat'] == 3 || $this->data['Deliberation']['etat'] == 5)
-        echo '<h3>D&eacute;lib&eacute;ration n&deg; ' . $this->data['Deliberation']['num_delib'] . '</h3>';
+        echo '<h3>Délibération n&deg; ' . $this->data['Deliberation']['num_delib'] . '</h3>';
     else
         echo '<h3>Projet "' . $this->data['Deliberation']['objet'] . '" (Id: ' . $this->data['Deliberation']['id'] . ', Type: "'.$this->data['Typeacte']['libelle'].'")</h3>';
 } else {
     if ($this->data['Deliberation']['etat'] == 3 || $this->data['Deliberation']['etat'] == 5)
-        echo '<h3>Multi-D&eacute;lib&eacute;rations</h3>';
+        echo '<h3>Multi-Délibérations</h3>';
     else
-        echo '<h3>Projet Multi-D&eacute;lib&eacute;rations</h3>';
+        echo '<h3>Projet Multi-Délibérations</h3>';
 }
 echo $linkBarre;
 ?>
@@ -148,7 +148,7 @@ echo ('</div>');
 <?php
 if (!empty($infosupdefs)) {
     echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'Infosupps'));
-    echo $this->Html->tag('dt', "Informations Suppl&eacute;mentaires");
+    echo $this->Html->tag('dt', "Informations Supplémentaires");
     echo '<dd><br>';
     foreach ($infosupdefs as $infosupdef) {
         echo $infosupdef['Infosupdef']['nom'] . ' : ';

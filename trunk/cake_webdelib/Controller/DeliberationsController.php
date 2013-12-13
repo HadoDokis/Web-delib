@@ -3863,15 +3863,22 @@ class DeliberationsController extends AppController
         $this->set('titreVue', 'Autres actes à envoyer au contrôle de légalité');
         $conditions['Deliberation.etat'] = 3;
         $conditions['Deliberation.signee'] = 1;
-        $fields = array('Deliberation.id', 'Deliberation.num_delib',
-            'Deliberation.objet', 'Deliberation.objet_delib',
-            'Deliberation.titre', 'Deliberation.num_pref',
+        $fields = array(
+            'Deliberation.id',
+            'Deliberation.num_delib',
+            'Deliberation.objet',
+            'Deliberation.objet_delib',
+            'Deliberation.titre',
+            'Deliberation.num_pref',
             'Deliberation.signee',
             'Deliberation.etat',
-            'Deliberation.typeacte_id');
-        $contain = array('Typeacte.libelle',
+            'Deliberation.typeacte_id'
+        );
+        $contain = array(
+            'Typeacte.libelle',
             'Service.libelle',
-            'Circuit.nom');
+            'Circuit.nom'
+        );
         $order = array('Deliberation.num_delib ASC');
 
         if (Configure::read('USE_PARAPH')) {
@@ -3879,7 +3886,7 @@ class DeliberationsController extends AppController
             $circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
         }
 
-        $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain, $order);
+        $actes = $this->Deliberation->getActesATeletransmettre($conditions, $fields, $contain, $order);
         $this->_addFiltresAutresActes($actes);
         for ($i = 0; $i < count($actes); $i++) {
             $actes[$i]['Deliberation'][$actes[$i]['Deliberation']['id'] . '_num_pref'] = $actes[$i]['Deliberation']['num_pref'];
@@ -3892,6 +3899,37 @@ class DeliberationsController extends AppController
         $this->set('dateClassification', $this->S2low->getDateClassification());
 
         $this->render('to_send');
+    }
+
+    public function nonTransmis()
+    {
+        $typeacte_ids = $this->Deliberation->Typeacte->find('all', array(
+            'recursive' => -1,
+            'conditions' => array('Typeacte.teletransmettre' => false),
+            'fields' => array('Typeacte.id')));
+        $this->Deliberation->Behaviors->attach('Containable');
+        $this->request->data = $this->Deliberation->find('all', array(
+            'conditions' => array(
+                'Deliberation.etat' => 3,
+                'Deliberation.signee' => 1,
+                'Deliberation.typeacte_id' => Set::extract('/Typeacte/id', $typeacte_ids)
+            ),
+            'contain' => array(
+                'Typeacte.libelle',
+                'Service.libelle',
+            ),
+            'fields' => array(
+                'Deliberation.id',
+                'Deliberation.num_delib',
+                'Deliberation.objet',
+                'Deliberation.objet_delib',
+                'Deliberation.titre',
+                'Deliberation.num_pref',
+                'Deliberation.signee',
+                'Deliberation.etat',
+                'Deliberation.typeacte_id'
+            ),
+            'order' => array('Deliberation.num_delib ASC')));
     }
 
     function autreActesEnvoyes()

@@ -74,6 +74,10 @@ class Typeacte extends AppModel
             'required' => false,
             'allowEmpty' => true,
             'message' => 'Le gabarit doit être au format ODT.'
+        ),
+        'teletransmettre' => array(
+            'rule' => array('boolean'),
+            'message' => 'Valeur incorrecte pour l\'attribut "Télétransmettre".'
         )
     );
 

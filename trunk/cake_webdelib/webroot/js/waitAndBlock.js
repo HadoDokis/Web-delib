@@ -57,7 +57,7 @@ function unblockUI(elt, token) {
     //Suppression du token de la fin d'url
     if ($(elt).attr('href')){
         var href = $(elt).attr('href');
-        $(elt).attr('href', href.replace(token, ''));
+        $(elt).attr('href', href.replace('/'+token, ''));
     }
     $("#overlay").remove();
     $("#modalAttendable").remove();

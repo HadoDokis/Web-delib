@@ -30,4 +30,7 @@ ALTER TABLE typeactes ADD COLUMN gabarit_acte BYTEA DEFAULT NULL;
 -- Président d'affaire
 ALTER TABLE deliberations ADD COLUMN president_id INTEGER DEFAULT NULL;
 
+-- Télé-transmissible
+ALTER TABLE typeactes ADD COLUMN teletransmettre BOOL DEFAULT TRUE;
+
 COMMIT;
