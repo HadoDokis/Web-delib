@@ -1,6 +1,5 @@
 4.1.04
 ======
-- Correction pour ne prendre en compte que les actifs dans la liste des services emetteurs
 - Suppression de la limite de mémoire pour le composant i-Parapheur
 - Correction les projets des sous-services n'apparaissaient pas dans les recherches (Service Emetteur)
 - Correction sur l'ordre d'affichage des séances : type d'acte > date de séance

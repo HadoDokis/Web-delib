@@ -10,7 +10,6 @@
  */
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
-
 /**
  * Classe S2lowComponent.
  *
@@ -140,18 +139,13 @@ class S2lowComponent extends Component {
 
         $curl_return = curl_exec($ch);
         curl_close($ch);
-        header('Content-type: application/pdf');
-        header('Content-Length: ' . strlen($curl_return));
-        header('Content-Disposition: attachment; filename=Acquittement.pdf');
-        echo $curl_return;
-        exit;
+        return $curl_return;
     }
 
-    function getAR($tdt_id, $toFile = false) {
-        $toFile = (boolean) $toFile;
+    function getAR($tdt_id) {
         $url = 'https://' . Configure::read('HOST') . "/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_URL, trim($url));
         if (Configure::read('USE_PROXY'))
             curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
         curl_setopt($ch, CURLOPT_POST, FALSE);
@@ -160,19 +154,14 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
         curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+        //curl_setopt($ch, CURLOPT_VERBOSE, true);
+        
         $curl_return = curl_exec($ch);
         curl_close($ch);
-        if ($toFile == false) {
-            header('Content-type: application/pdf');
-            header('Content-Length: ' . strlen($curl_return));
-            header('Content-Disposition: attachment; filename=Acquittement.pdf');
-            echo $curl_return;
-            exit();
-        } else {
-            return $curl_return;
-        }
+        
+        return $curl_return;
     }
 
     function getDateClassification() {
@@ -224,6 +213,41 @@ class S2lowComponent extends Component {
         $curl_return = curl_exec($ch);
         curl_close($ch);
         return($curl_return);
+    }
+    
+     function getDateAR($fluxRetour) {
+        // +21 Correspond a la longueur du string : actes:DateReception"
+        $date = substr($fluxRetour, strpos($fluxRetour, 'actes:DateReception') + 21, 10);
+        return ($this->Date->frenchDate(strtotime($date)));
+    }
+
+    function getNewFlux($tdt_id) {
+        $url = 'https://' . Configure::read('HOST') . "/modules/actes/actes_transac_get_document.php?id=$tdt_id";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+        curl_setopt($ch, CURLOPT_POST, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        // curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+        curl_setopt($ch, CURLOPT_CAINFO, Configure::read('WEBDELIB_PATH') . 'Config/cert_s2low/bundle.pem');
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
+        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_VERBOSE, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        $curl_return = curl_exec($ch);
+        curl_close($ch);
+        return($curl_return);
+    }
+
+    function isNewMessage($delib_id, $type, $reponse, $message_id) {
+        $message = $this->TdtMessage->find('first', array('conditions' =>
+            array('TdtMessage.delib_id' => $delib_id,
+                'TdtMessage.type_message' => $type,
+                'TdtMessage.reponse' => $reponse,
+                'TdtMessage.message_id' => $message_id)));
+        return (empty($message));
     }
 
 }
