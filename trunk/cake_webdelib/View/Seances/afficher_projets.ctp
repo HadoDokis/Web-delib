@@ -9,15 +9,15 @@ echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 <h2>Liste des projets pour la séance du <?php echo $date_seance; ?></h2>
 <table  class="table table-hover">
 	<tr>
-		<th width='4%'>Ordre</th>
+		<th style='width:4%'>Ordre</th>
 		<?php echo ('<th width="13%">'.$this->Html->link('Thème', "/deliberations/sortby/$seance_id/theme_id",null,'Etes-vous sur de vouloir trier par theme ?'). "</th>"); ?>
 		<?php echo ('<th width="13%">'.$this->Html->link('Service émetteur', "/deliberations/sortby/$seance_id/service_id",null,'Etes-vous sur de vouloir trier par service ?'). "</th>"); ?>
 		<?php echo ('<th width="5%">'.$this->Html->link('Rapporteur', "/deliberations/sortby/$seance_id/rapporteur_id", null,'Etes-vous sur de vouloir trier par rapporteur ?'). "</th>"); ?>
 		<?php echo ('<th>'.$this->Html->link("Libellé de l'acte", "/deliberations/sortby/$seance_id/objet",null,'Etes-vous sur de vouloir trier par libelle ?'). "</th>"); ?>
 		<?php echo ('<th width="10%">'.$this->Html->link('Titre', "/deliberations/sortby/$seance_id/titre",null,'Etes-vous sur de vouloir trier par titre ?'). "</th>"); ?>
-		<th width='4%'>Id.</th>
-		<th width='2%'>&nbsp;&nbsp;</th>
-		<th width='2%'>&nbsp;&nbsp;</th>
+		<th style='width:4%'>Id.</th>
+		<th style='width:2%'>&nbsp;</th>
+		<th style='width:2%'>&nbsp;</th>
 	</tr>
 
 	<?php foreach($projets as $projet):
@@ -28,32 +28,32 @@ echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 	<tr height='36px'>
 		<td><?php echo $this->Html->link($delibPosition, "javascript:onClickLinkOrdre(".$delibPosition.", ".$delibId.");", array('id'=>'linkOrdre'.$delibPosition)); ?></td>
 		<td><?php echo '['.$projet['Theme']['order'].'] '.$projet['Theme']['libelle']; ?></td>
-	    <td><?php echo $projet['Service']['libelle']; ?></td>
-	    <td>
+        <td><?php echo $projet['Service']['libelle']; ?></td>
+        <td>
             <?php
-                if (empty($projet['Deliberation']['rapporteur_id']) || !array_key_exists($projet['Deliberation']['rapporteur_id'], $rapporteurs))
-                    echo $this->Html->link(" [sélectionner_un_rapporteur] ", 
-                                           "javascript:onClickLinkRapporteur(0, ".$delibId.");", 
-                                           array('id'=>'linkRapporteur'.$delibId));
-		else
-                    echo $this->Html->link($rapporteurs[$projet['Deliberation']['rapporteur_id']], 
-                                           "javascript:onClickLinkRapporteur(".$projet['Deliberation']['rapporteur_id'].", ".$delibId.");", 
-                                           array('id'=>'linkRapporteur'.$delibId));
-	     ?>
-		</td>
+            if (empty($projet['Deliberation']['rapporteur_id']) || !array_key_exists($projet['Deliberation']['rapporteur_id'], $rapporteurs))
+                echo $this->Html->link(" [sélectionner_un_rapporteur] ",
+                    "javascript:onClickLinkRapporteur(0, " . $delibId . ");",
+                    array('id' => 'linkRapporteur' . $delibId));
+            else
+                echo $this->Html->link($rapporteurs[$projet['Deliberation']['rapporteur_id']],
+                    "javascript:onClickLinkRapporteur(" . $projet['Deliberation']['rapporteur_id'] . ", " . $delibId . ");",
+                    array('id' => 'linkRapporteur' . $delibId));
+            ?>
+        </td>
 	    <td><?php echo $projet['Deliberation']['objet_delib']; ?></td>
-	    <td><?php echo $projet['Deliberation']['titre']; ?></td>
-	    <td><?php echo $projet['Deliberation']['id']; ?></td>
-	    <?php
-	        if($delibPosition!= 1)
-	            echo ('<td>'.$this->Html->link(SHY, '/deliberations/positionner/'.$seance_id.'/'.$projet['Deliberation']['id'].'/-1', array('class'=>'link_monter', 'title'=>'Monter', 'escape' => false), false).'</td>');
-	        else
-	           echo("<td>&nbsp;</td>");
-			if($delibPosition!= $lastPosition)
-	                    echo ('<td>'.$this->Html->link(SHY, '/deliberations/positionner/'.$seance_id.'/'.$projet['Deliberation']['id'].'/1', array('class'=>'link_descendre', 'title'=>'Descendre', 'escape' => false),  false).'</td>');
-		        else
-		            echo("<td>&nbsp;</td>");
-             ?>
+        <td><?php echo $projet['Deliberation']['titre']; ?></td>
+        <td><?php echo $this->Html->link($projet['Deliberation']['id'], array('controller'=>'deliberations', 'action'=>'edit',$projet['Deliberation']['id'])); ?></td>
+        <?php
+        if ($delibPosition != 1)
+            echo('<td>' . $this->Html->link(SHY, '/deliberations/positionner/' . $seance_id . '/' . $projet['Deliberation']['id'] . '/-1', array('class' => 'link_monter', 'title' => 'Monter', 'escape' => false), false) . '</td>');
+        else
+            echo("<td>&nbsp;</td>");
+        if ($delibPosition != $lastPosition)
+            echo('<td>' . $this->Html->link(SHY, '/deliberations/positionner/' . $seance_id . '/' . $projet['Deliberation']['id'] . '/1', array('class' => 'link_descendre', 'title' => 'Descendre', 'escape' => false), false) . '</td>');
+        else
+            echo("<td>&nbsp;</td>");
+        ?>
 	</tr>
 	<?php endforeach; ?>
 </table>
