@@ -52,10 +52,8 @@ class TypeactesController extends AppController
 
                 if (!empty($this->request->data['Typeacte']['gabarit_projet_upload']) && $this->request->data['Typeacte']['gabarit_projet_upload']['error'] != 4)
                     $this->request->data['Typeacte']['gabarit_projet'] = file_get_contents($this->request->data['Typeacte']['gabarit_projet_upload']['tmp_name']);
-
                 if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4)
                     $this->request->data['Typeacte']['gabarit_synthese'] = file_get_contents($this->request->data['Typeacte']['gabarit_synthese_upload']['tmp_name']);
-
                 if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4)
                     $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
 
@@ -91,16 +89,14 @@ class TypeactesController extends AppController
         $this->Typeacte->Behaviors->attach('Containable');
 
         if (empty($this->data)) {
-
             $this->request->data = $this->Typeacte->find('first', array(
                 'conditions' => array('Typeacte.id' => $id),
                 'contain' => array('Nature')));
             if (empty($this->data)) {
                 $this->Session->setFlash('Invalide id pour le type de séance', 'growl', array('type' => 'erreur'));
                 $sortie = true;
-            } else {
+            } else
                 $this->set('selectedNatures', $this->data['Nature']['id']);
-            }
         } else {
             $this->Typeacte->set($this->request->data);
             if ($this->Typeacte->validates()) {
@@ -114,7 +110,8 @@ class TypeactesController extends AppController
                 if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4)
                     $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
 
-                $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
+                $ado = $this->Ado->find('first', array('conditions' => array(
+                    'Ado.model' => 'Typeacte',
                     'Ado.foreign_key' => $this->data['Typeacte']['id']),
                     'fields' => array('Ado.id'),
                     'recursive' => -1));

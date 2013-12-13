@@ -16,6 +16,13 @@ if ($this->Html->value('Typeacte.id')) {
         <?php echo $this->Form->input('Typeacte.compteur_id', array('label' => 'Compteur <abbr title="obligatoire">*</abbr>', 'options' => $compteurs, 'default' => $this->Html->value('Typeacte.compteur_id'), 'empty' => (count($compteurs) > 1) && (!$this->Html->value('Typeacte.id')))); ?>
         <br/>
         <?php echo $this->Form->input('Typeacte.nature_id', array('label' => 'Nature <abbr title="obligatoire">*</abbr>', 'options' => $natures, 'default' => $selectedNatures, 'empty' => false)); ?>
+        <br/>
+        <?php
+        if ($this->action == 'add')
+            echo $this->Form->input('Typeacte.teletransmettre', array('label' => 'Télétransmettre', 'div'=>false, 'checked'=>true));
+        else
+            echo $this->Form->input('Typeacte.teletransmettre', array('label' => 'Télétransmettre', 'div'=>false));
+        ?>
     </fieldset>
 </div>
 
@@ -24,7 +31,7 @@ if ($this->Html->value('Typeacte.id')) {
         <legend>Modèles pour les éditions</legend>
         <?php echo $this->Form->input('Typeacte.modeleprojet_id', array('label' => 'projet <abbr title="obligatoire">*</abbr>', 'options' => $models, 'default' => $this->Html->value('Typeacte.modelprojet_id'), 'empty' => false)); ?>
         <br/>
-        <?php echo $this->Form->input('Typeacte.modelefinal_id', array('label' => 'document final<abbr title="obligatoire">*</abbr>', 'options' => $models, 'default' => $this->Html->value('Typeacte.modeldeliberation_id'), 'empty' => false)); ?>
+        <?php echo $this->Form->input('Typeacte.modelefinal_id', array('label' => 'document final <abbr title="obligatoire">*</abbr>', 'options' => $models, 'default' => $this->Html->value('Typeacte.modeldeliberation_id'), 'empty' => false)); ?>
     </fieldset>
 </div>
 <div class="spacer"></div>

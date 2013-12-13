@@ -1524,92 +1524,113 @@ class Deliberation extends AppModel {
 		}
 	}
   
-        function getActesExceptDelib($conditions=array(), $fields, $contain, $order=null) {
-            $code_delib = 'DE'; 
-            if (!isset($conditions['Deliberation.typeacte_id']))  {
-                $nature_ids = $this->Typeacte->Nature->find('all', array('conditions' => array('Nature.code !=' => $code_delib),
-                                                                         'recursive'  => -1,
-                                                                         'fields'     => array('Nature.id')));
+    function getActesExceptDelib($conditions=array(), $fields, $contain, $order=null) {
+        $code_delib = 'DE';
+        if (!isset($conditions['Deliberation.typeacte_id']))  {
+            $nature_ids = $this->Typeacte->Nature->find('all', array('conditions' => array('Nature.code !=' => $code_delib),
+                                                                     'recursive'  => -1,
+                                                                     'fields'     => array('Nature.id')));
 
-                $typeacte_ids = $this->Typeacte->find('all', array('conditions' => array('Typeacte.nature_id' => Set::extract('/Nature/id', $nature_ids)),
-                                                            'recursive'  => -1,
-                                                            'fields'     => array('Typeacte.id')));
-            
-                $conditions = array_merge($conditions,  array('Deliberation.typeacte_id' =>Set::extract('/Typeacte/id', $typeacte_ids)));
-            }
-            $this->Behaviors->attach('Containable');
-            $actes = $this->find('all', array('conditions' => $conditions,
-                                              'contain'    => $contain,
-                                              'fields'     => $fields,
-                                              'order'      => $order));
-            foreach ($actes as &$acte) {
-                $acte['Modeltemplate']['modeleprojet_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modeleprojet_id');
-                $acte['Modeltemplate']['modelefinal_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
-            }
-            return $actes;
-        }
-        
-        function  is_delib($acte_id) {
-            $this->Behaviors->attach('Containable');
-            $acte = $this->find('first', array('conditions' => array('Deliberation.id' => $acte_id),
-                                               'contain'    => array('Typeacte.nature_id'),
-                                               'fields'     => array('Deliberation.typeacte_id'))); 
-            $nature = $this->Typeacte->Nature->find('first', array('conditions' => array('Nature.id' => $acte['Typeacte']['nature_id']),
-                                                                   'fields'     => array('Nature.code'),
-                                                                   'recursive'  => -1));
-            return ($nature['Nature']['code'] == 'DE');
-        }
+            $typeacte_ids = $this->Typeacte->find('all', array('conditions' => array('Typeacte.nature_id' => Set::extract('/Nature/id', $nature_ids)),
+                                                        'recursive'  => -1,
+                                                        'fields'     => array('Typeacte.id')));
 
-        function is_arrete($acte_id) {
-            return !($this->is_delib($acte_id));
+            $conditions = array_merge($conditions,  array('Deliberation.typeacte_id' =>Set::extract('/Typeacte/id', $typeacte_ids)));
         }
+        $this->Behaviors->attach('Containable');
+        $actes = $this->find('all', array('conditions' => $conditions,
+                                          'contain'    => $contain,
+                                          'fields'     => $fields,
+                                          'order'      => $order));
+        foreach ($actes as &$acte) {
+            $acte['Modeltemplate']['modeleprojet_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modeleprojet_id');
+            $acte['Modeltemplate']['modelefinal_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
+        }
+        return $actes;
+    }
 
-        function reportePositionToCommissions($delib_id, $seance_deliberante_id) {
-            $position = $this->getPosition($delib_id, $seance_deliberante_id);
-            $seances = $this->getSeancesid($delib_id);
+    function getActesATeletransmettre($conditions=array(), $fields, $contain, $order=null) {
+        if (!isset($conditions['Deliberation.typeacte_id'])){
+            $typeacte_ids = $this->Typeacte->find('all', array(
+                'recursive'  => -1,
+                'conditions' => array('Typeacte.teletransmettre' => true),
+                'fields'     => array('Typeacte.id')));
+            $conditions = array_merge($conditions,  array('Deliberation.typeacte_id' => Set::extract('/Typeacte/id', $typeacte_ids)));
+        }
+        $this->Behaviors->attach('Containable');
+        $actes = $this->find('all', array(
+            'conditions' => $conditions,
+            'contain' => $contain,
+            'fields' => $fields,
+            'order' => $order));
+        foreach ($actes as &$acte) {
+            $acte['Modeltemplate']['modeleprojet_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modeleprojet_id');
+            $acte['Modeltemplate']['modelefinal_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
+        }
+        return $actes;
+    }
 
-            App::import('Model', 'Deliberationseance');
-            $this->Deliberationseance = new Deliberationseance();
+    function is_delib($acte_id) {
+        $this->Behaviors->attach('Containable');
+        $acte = $this->find('first', array('conditions' => array('Deliberation.id' => $acte_id),
+                                           'contain'    => array('Typeacte.nature_id'),
+                                           'fields'     => array('Deliberation.typeacte_id')));
+        $nature = $this->Typeacte->Nature->find('first', array('conditions' => array('Nature.id' => $acte['Typeacte']['nature_id']),
+                                                               'fields'     => array('Nature.code'),
+                                                               'recursive'  => -1));
+        return ($nature['Nature']['code'] == 'DE');
+    }
 
-            foreach ($seances as $seance_id) {
-                $Deliberationseance = $this->Deliberationseance->find('first',
-                    array('conditions' => array('Deliberationseance.deliberation_id' => $delib_id,
-                                                'Deliberationseance.seance_id'       => $seance_id),
-                          'fields'     => array('Deliberationseance.id'),
-                          'recursive'  => -1));
-                $this->Deliberationseance->id =  $Deliberationseance['Deliberationseance']['id'];
-                $this->Deliberationseance->saveField('position',  $position);
-            }
-            return $seances;
+    function is_arrete($acte_id) {
+        return !($this->is_delib($acte_id));
+    }
+
+    function reportePositionToCommissions($delib_id, $seance_deliberante_id) {
+        $position = $this->getPosition($delib_id, $seance_deliberante_id);
+        $seances = $this->getSeancesid($delib_id);
+
+        App::import('Model', 'Deliberationseance');
+        $this->Deliberationseance = new Deliberationseance();
+
+        foreach ($seances as $seance_id) {
+            $Deliberationseance = $this->Deliberationseance->find('first', array(
+                'conditions' => array(
+                    'Deliberationseance.deliberation_id' => $delib_id,
+                    'Deliberationseance.seance_id' => $seance_id
+                ),
+                'fields' => array('Deliberationseance.id'),
+                'recursive' => -1));
+            $this->Deliberationseance->id = $Deliberationseance['Deliberationseance']['id'];
+            $this->Deliberationseance->saveField('position', $position);
         }
-        
-        /**
-         * 
-         * @param type $parafhisto
-         * @param type $delib_id
-         * @param type $circuit_id
-         */
-        function setHistorique($parafhisto,$delib_id, $circuit_id){
-            $histo = $this->Historique->create();
-            $histo['Historique']['delib_id'] = $delib_id;
-            $histo['Historique']['user_id'] = -1;
-            $histo['Historique']['commentaire'] = $parafhisto;
-            $histo['Historique']['circuit_id'] = $circuit_id;
-            $this->Historique->save($histo['Historique']);
-        }
-        /**
-         * 
-         * @param type $delib_id
-         * @param type $logdossier
-         */
-        function setCommentaire($delib_id, $logdossier){
-            $com = $this->Commentaire->create();
-            $com['Commentaire']['delib_id'] = $delib_id;
-            $com['Commentaire']['agent_id'] = -1;
-            $com['Commentaire']['pris_en_compte'] = 0;
-            $com['Commentaire']['commentaire_auto'] = false;
-            $com['Commentaire']['texte'] = $logdossier['nom'] . " : " . $logdossier['annotation'];
-            $this->Commentaire->save($com['Commentaire']);
-        }
+        return $seances;
+    }
+
+    /**
+     * @param string $parafhisto
+     * @param integer $delib_id
+     * @param integer $circuit_id
+     */
+    function setHistorique($parafhisto,$delib_id, $circuit_id){
+        $histo = $this->Historique->create();
+        $histo['Historique']['delib_id'] = $delib_id;
+        $histo['Historique']['user_id'] = -1;
+        $histo['Historique']['commentaire'] = $parafhisto;
+        $histo['Historique']['circuit_id'] = $circuit_id;
+        $this->Historique->save($histo['Historique']);
+    }
+
+    /**
+     * @param integer $delib_id
+     * @param string $logdossier
+     */
+    function setCommentaire($delib_id, $logdossier){
+        $com = $this->Commentaire->create();
+        $com['Commentaire']['delib_id'] = $delib_id;
+        $com['Commentaire']['agent_id'] = -1;
+        $com['Commentaire']['pris_en_compte'] = 0;
+        $com['Commentaire']['commentaire_auto'] = false;
+        $com['Commentaire']['texte'] = $logdossier['nom'] . " : " . $logdossier['annotation'];
+        $this->Commentaire->save($com['Commentaire']);
+    }
 }
-?>
