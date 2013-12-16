@@ -13,6 +13,7 @@
 - Correction ie 7-8-9 palceholder avec jquery plugin
 - Correction ie 7-8-9 bandeau bleu de connexion
 - Modification de  pour la fonction attendable et prise en compte dans la page séances>A taiter>Liste des projets
+- Suppression de la section AvisSeance
 
 4.1.03
 ======
