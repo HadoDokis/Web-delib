@@ -34,17 +34,17 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->fetch('meta');
 
         echo $this->Html->css('webdelib');
-        echo $this->Html->css('jquery.jgrowl');
+        echo $this->Html->css('jquery.jgrowl.min');
         echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('bootstrap-responsive.min');
         echo $this->Html->css('font-awesome.min');
         echo $this->Html->css('connexion');
         echo $this->fetch('css');
 
-        echo $this->Html->script('jquery');
+        echo $this->Html->script('jquery-1.10.2.min');
         echo $this->Html->script('modernizr.min');
         echo $this->Html->script('libs/bootstrap.min');
-        echo $this->html->script('jquery.jgrowl', true);
+        echo $this->html->script('jquery.jgrowl.min');
         echo $this->Html->script('utils');
 
         echo $this->fetch('script');
