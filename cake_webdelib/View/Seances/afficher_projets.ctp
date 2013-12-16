@@ -62,7 +62,7 @@ echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 <?php 
     $this->Html2->boutonRetour("listerFuturesSeances");
     if ($is_deliberante) 
-        echo $this->Html->link('Reporter l\'ordre du jour', "/seances/reportePositionsSeanceDeliberante/$seance_id", array('class'=>'btn btn-inverse', 'name'=>'Retour','style'=>'float:right;'));
+        echo $this->Html->link('<i class="fa fa-clock-o"></i> Reporter l\'ordre du jour', array('action'=>'reportePositionsSeanceDeliberante', $seance_id), array('class'=>'btn btn-inverse', 'name'=>'Retour', 'escape'=>false, 'style'=>'float:right;'));
 ?>
 </div>
 
@@ -90,7 +90,7 @@ function onClickLinkOrdre(ordre, delibId) {
 }
 
 function onChangeSelectOrdre(ordre) {
-        var seanceid = $('#AplicationSeanceid').val();
+    var seanceid = $('#AplicationSeanceid').val();
 	var url = $('#AplicationUrl').val()+"seances/changePosition/"+seanceid+"/"+ordre+"/"+curdelibIdOrdre;
 	document.location=url;
 }
