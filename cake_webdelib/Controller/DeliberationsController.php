@@ -969,6 +969,7 @@ class DeliberationsController extends AppController
                 $this->Deliberation->commit();
                 $this->Session->setFlash("Le projet $id a été enregistré", 'growl');
                 $sortie = true;
+                //FIXME Rediriger vers la page de provenance
                 $redirect = '/';
 
                 //Envoi d'une notification de modification au rédacteur
