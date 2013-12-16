@@ -10,6 +10,8 @@
 - Modification de l'export CMIS pour prendre en compte les délibérations taponnées et les bordereaux de télétransmission
 - Modification de la liste des modèles multiséances par ordre alphabétique dans le menu "Séances à traiter"
 - Correction sur l'écrasement des avis de projet pour les projets multi-séances
+- Correction ie 7-8-9 palceholder avec jquery plugin
+- Correction ie 7-8-9 bandeau bleu de connexion
 
 4.1.03
 ======
