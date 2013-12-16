@@ -6,7 +6,7 @@
 <?php echo $this->Html->script('multidelib.js'); ?>
 
 <?php
-echo "<h1>Modification du projet : " . $this->Html->value('Deliberation.id') . "</h1>";
+echo $this->Html->tag('h1', "Modification du projet : " . $this->Html->value('Deliberation.id'));
 echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' . $this->Html->value('Deliberation.id'), 'type' => 'file', 'name' => 'Deliberation'));
 ?>
 
@@ -45,7 +45,8 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
         </div>
     </fieldset>
     <div class='spacer'></div>
-    <?php echo $this->Form->input('Deliberation.typeacte_id', array('label' => 'Type d\'acte <abbr title="obligatoire">(*)</abbr>',
+    <?php echo $this->Form->input('Deliberation.typeacte_id', array(
+        'label' => 'Type d\'acte <abbr title="obligatoire">(*)</abbr>',
         'options' => $this->Session->read('user.Nature'),
         'empty' => false,
         'id' => 'listeTypeactesId',
