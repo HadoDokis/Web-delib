@@ -45,7 +45,7 @@ var downloadTimer;
 function blockUI(elt, downloadToken) {
     downloadTimer = window.setInterval(function() {
         var token = getCookie("downloadToken");
-        if (token == downloadToken) {
+        if (token == downloadToken || typeof token == 'undefined') {
             unblockUI(elt, downloadToken);
         }
     }, 1000);

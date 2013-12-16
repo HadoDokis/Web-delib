@@ -12,6 +12,7 @@
 - Correction sur l'écrasement des avis de projet pour les projets multi-séances
 - Correction ie 7-8-9 palceholder avec jquery plugin
 - Correction ie 7-8-9 bandeau bleu de connexion
+- Modification de  pour la fonction attendable et prise en compte dans la page séances>A taiter>Liste des projets
 
 4.1.03
 ======

@@ -56,7 +56,7 @@
                                         'escape' => false),
                                         false)?>
             <?php 
-                echo $this->Html->link(SHY,'/models/generer/' .$deliberation['Deliberation']['id'].'/null/'.$deliberation['Model']['id'], array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'), false);
+                echo $this->Html->link(SHY,'/models/generer/' .$deliberation['Deliberation']['id'].'/null/'.$deliberation['Model']['id'].'/-1/0/delib_'.(isset($deliberation['Deliberation']['num_delib']) && !empty($deliberation['Deliberation']['num_delib'])?$deliberation['Deliberation']['num_delib']:$deliberation['Deliberation']['id']).'/0/0/0/', array('class'=>'link_pdf delib_pdf', 'escape' => false, 'title'=>'PDF'), false);
             ?>
 
     </td>
