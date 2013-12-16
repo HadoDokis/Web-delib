@@ -356,21 +356,6 @@ class Seance extends AppModel {
 		$this->President->makeBalise($oDevPart, $seance['Seance']['president_id']);
 		$this->Secretaire->makeBalise($oDevPart, $seance['Seance']['secretaire_id']);
 
-                App::import('Model', 'Deliberationseance');
-                $this->Deliberationseance = new Deliberationseance();
-                $avisSeances =  $this->Deliberationseance->find('all', array(
-                                'conditions' => array('seance_id' => $seance['Seance']['id']),
-                                'recursive'  => -1));
-                if (!empty($avisSeances)) {
-                    $aviss =  new GDO_IterationType("AvisSeance");
-                    foreach($avisSeances as $avisSeance) {
-                        $Part = new GDO_PartType();
-                        $Part->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
-                        $aviss->addPart($Part);
-                    }
-                    @$oDevPart->addElement($aviss);
-                }
-
 		$infosups = $this->Infosup->find( 'all',
                                                   array('conditions' => array('Infosup.foreign_key' => $seance['Seance']['id'],
                                                                               'Infosup.model'        => 'Seance'),
