@@ -26,5 +26,6 @@
     </div></div>
     <?php echo $this->Form->end(); ?>
 </div>
+<script>$('input, text').placeholder();</script>
 
 
