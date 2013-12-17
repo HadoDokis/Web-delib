@@ -1,6 +1,8 @@
 <div class="users">
 <h2>Liste des utilisateurs</h2>
-
+<p>
+<?php echo $this->Html->link('<i class="fa fa-search"></i> Trouver un utilisateur par son nom', array('action'=>'chercher'), array('class'=>'btn', 'escape'=>false)); ?>
+</p>
 <table style="width:100%;">
 <tr>
 	<th><?php echo $this->Paginator->sort('login', 'Login'); ?></th>
