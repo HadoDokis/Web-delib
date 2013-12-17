@@ -1,8 +1,5 @@
 <div class="users">
 <h2>Liste des utilisateurs</h2>
-<p>
-<?php echo $this->Html->link('<i class="fa fa-search"></i> Trouver un utilisateur par son nom', array('action'=>'chercher'), array('class'=>'btn', 'escape'=>false)); ?>
-</p>
 <table style="width:100%;">
 <tr>
 	<th><?php echo $this->Paginator->sort('login', 'Login'); ?></th>
@@ -25,27 +22,30 @@ foreach ($users as $user):?>
 	<td><?php echo $user['Profil']['libelle']; ?></td>
 	<td><?php echo $user['User']['telfixe']; ?></td>
 	<td><?php echo $user['User']['telmobile']; ?></td>
-	<td><?php
-	        foreach ($user['Service'] as $service)
-                    if (is_array($service))
-		        echo $service['libelle'].'<br/>';
-	?></td>
-       <td><?php
-                if ( isset($user['Natures']) && (!empty($user['Natures']))  ) {
-                    foreach ($user['Natures'] as $nature)
-                        echo("$nature<br />");
-                }
-        ?></td>
-
+	<td>
+        <?php
+        foreach ($user['Service'] as $service)
+            if (is_array($service))
+                echo $service['libelle'].'<br/>';
+        ?>
+    </td>
+    <td>
+        <?php
+        if (isset($user['Natures']) && !empty($user['Natures'])) {
+            foreach ($user['Natures'] as $nature)
+                echo("$nature<br />");
+        }
+        ?>
+    </td>
 
 	<td class="actions">
 		<?php echo $this->Html->link(SHY,'/users/view/' . $user['User']['id'], array('class'=>'link_voir',	'escape' => false, 'title'=>'Voir'), false)?>
 		<?php echo $this->Html->link(SHY,'/users/edit/' . $user['User']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false)?>
 		<?php echo $this->Html->link(SHY,'/users/changeMdp/' . $user['User']['id'], array('class'=>'link_mdp', 'escape' => false, 'title'=>'Nouveau mot de passe'), false)?>
-
 		<?php
-		    if ($user['User']['is_deletable'])
-		        echo $this->Html->link(SHY,'/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer','escape' => false, 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer cet utilisateur : \'' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'\' ?')?>
+        if ($user['User']['is_deletable'])
+            echo $this->Html->link(SHY,'/users/delete/' . $user['User']['id'], array('class'=>'link_supprimer','escape' => false, 'title'=>'Supprimer'), 'Etes-vous sur de vouloir supprimer cet utilisateur : \'' . $user['User']['prenom'] . ' ' . $user['User']['nom'] .'\' ?');
+        ?>
 	</td>
 </tr>
 <?php endforeach; ?>

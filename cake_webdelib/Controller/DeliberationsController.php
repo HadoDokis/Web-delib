@@ -20,7 +20,7 @@ class DeliberationsController extends AppController
      */
 
     var $name = 'Deliberations';
-    var $helpers = array('Javascript', 'Fck');
+    var $helpers = array('Fck');
     var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
     var $components = array('Fido', 'Gedooo', 'Date', 'Utils', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf');
     var $aucunDroit = array('getTypeseancesParTypeacteAjax', 'quicksearch');

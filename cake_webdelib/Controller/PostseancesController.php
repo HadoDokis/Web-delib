@@ -2,7 +2,7 @@
 
 class PostseancesController extends AppController {
 	var $name = 'Postseances';
-	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2' );
+	var $helpers = array('Html', 'Form', 'Fck', 'Html2' );
 	var $components = array('Date', 'Gedooo', 'Cmis', 'Progress', 'Conversion');
 	var $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Typeseance', 'Typeacte', 'Nature');
 

@@ -5,7 +5,7 @@ App::uses('File', 'Utility');
 class SeancesController extends AppController {
 
 	var $name = 'Seances';
-	var $helpers = array('Html', 'Form', 'Form2', 'Javascript', 'Fck', 'Html2');
+	var $helpers = array('Html', 'Form', 'Form2', 'Fck', 'Html2');
 	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low','Pdf');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
 	var $cacheAction = 0;
