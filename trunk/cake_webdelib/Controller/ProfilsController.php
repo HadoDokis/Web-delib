@@ -3,7 +3,7 @@
 class ProfilsController extends AppController {
 
     var $name = 'Profils';
-    var $helpers = array('Html', 'Form', 'Javascript', 'Html2', 'Session', 'Tree', 'Fck');
+    var $helpers = array('Html', 'Form', 'Html2', 'Session', 'Tree', 'Fck');
     var $components = array('Dbdroits', 'Menu', 'Progress', 'Email');
     var $uses = array('Profil', 'Aro');
     // Gestion des droits

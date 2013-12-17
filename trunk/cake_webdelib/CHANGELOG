@@ -19,7 +19,7 @@
     *) Affectation d'un président par affaire de séance (par défaut: président de séance)
     *) Gestion différenciée des actes pour la télétransmission au contrôle de légalité. Un attribut est placé au niveau du type d'acte.
     *) Dans la page de traitement d'une séance, ajout d'un lien cliquable sur le N° d'ID du projet. Ce lien redirige vers le formulaire de modification du projet.
-    *) Ajout d'une fonction de recherche d'utilisateur
+    *) Dans la pages des utilisateurs, on peut désormais chercher un utilisateur par son nom, prénom ou login (autocomplete)
 
 4.1.03
 ======

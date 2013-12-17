@@ -8,7 +8,7 @@
 
 class FckHelper extends Helper { 
 
-    var $helpers = Array('Html', 'Javascript'); 
+    var $helpers = Array('Html');
 
     function load($id) { 
         $did = ''; 

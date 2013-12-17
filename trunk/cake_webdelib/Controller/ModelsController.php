@@ -5,7 +5,7 @@ class ModelsController extends AppController {
         'Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire',
         'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'ModelOdtValidator.Modeltemplate'
     );
-    public $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
+    public $helpers = array('Html', 'Form', 'Fck', 'Html2', 'Session');
     public $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress', 'Fido');
 
 	// Gestion des droits

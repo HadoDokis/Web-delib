@@ -11,13 +11,13 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type
 ?>
 <div class='onglet'>
        <a href="#" id="emptylink" alt=""></a>
- <?php      echo $this->HTML->link('Informations principales', '#',array('class'=>'ongletCourant','id'=>'lienTab1','onClick' => 'javascript:afficheOngletNew(document.Deliberation,1);'));
-            echo $this->HTML->link('Textes', '#',array('id'=>'lienTab2','onClick' => 'javascript:afficheOngletNew(document.Deliberation,2);'));
-            echo $this->HTML->link('Annexe(s)', '#',array('id'=>'lienTab3','onClick' => 'javascript:afficheOngletNew(document.Deliberation,3);'));
+ <?php      echo $this->Html->link('Informations principales', '#',array('class'=>'ongletCourant','id'=>'lienTab1','onClick' => 'javascript:afficheOngletNew(document.Deliberation,1);'));
+            echo $this->Html->link('Textes', '#',array('id'=>'lienTab2','onClick' => 'javascript:afficheOngletNew(document.Deliberation,2);'));
+            echo $this->Html->link('Annexe(s)', '#',array('id'=>'lienTab3','onClick' => 'javascript:afficheOngletNew(document.Deliberation,3);'));
             if (!empty($infosupdefs))
-            echo $this->HTML->link('Informations supplémentaires', '#',array('id'=>'lienTab4','onClick' => 'javascript:afficheOngletNew(document.Deliberation,4);'));
+            echo $this->Html->link('Informations supplémentaires', '#',array('id'=>'lienTab4','onClick' => 'javascript:afficheOngletNew(document.Deliberation,4);'));
             if (Configure::read('DELIBERATIONS_MULTIPLES'))
-            echo $this->HTML->link('Délibérations rattachées', '#',array('id'=>'lienTab5','onClick' => 'javascript:afficheOngletNew(document.Deliberation,5);','style'=>'display: none'));
+            echo $this->Html->link('Délibérations rattachées', '#',array('id'=>'lienTab5','onClick' => 'javascript:afficheOngletNew(document.Deliberation,5);','style'=>'display: none'));
             echo $this->Html->useTag('tagend', 'div'); 
 ?>
 
@@ -211,7 +211,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type
                         }
 		echo '</div>';
 		echo '<br>';
-                echo "<div class='spacer'> </div>";
+        echo "<div class='spacer'> </div>";
 	};?>
 </div>
 <?php endif; ?>
