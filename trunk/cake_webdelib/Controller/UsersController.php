@@ -1,13 +1,13 @@
 <?php
 class UsersController extends AppController {
 
-	var $name = 'Users';
-	var $helpers = array('Form', 'Html', 'Html2', 'Session');
-	var $uses = array( 'User','Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
-	var $components = array('Utils', 'Acl', 'Menu', 'Dbdroits');
+	public $name = 'Users';
+	public $helpers = array('Form', 'Html', 'Html2', 'Session');
+	public $uses = array( 'User','Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
+	public $components = array('Utils', 'Acl', 'Menu', 'Dbdroits');
 
 	// Gestion des droits
-	var $aucunDroit = array(
+	public $aucunDroit = array(
 			'login',
 			'logout',
 			'getAdresse',
@@ -20,12 +20,13 @@ class UsersController extends AppController {
 			'changeUserMdp',
 	);
 
-	var $commeDroit = array(
-			'add'=>'Users:index',
-			'delete'=>'Users:index',
-			'edit'=>'Users:index',
-			'changeMdp'=>'Users:index'
-	);
+	public $commeDroit = array(
+        'add' => 'Users:index',
+        'delete' => 'Users:index',
+        'edit' => 'Users:index',
+        'chercher' => 'Users:index',
+        'changeMdp' => 'Users:index'
+    );
 
 	function index() {
                 $this->User->Behaviors->attach('Containable');
@@ -103,7 +104,7 @@ class UsersController extends AppController {
 				}
 
 				//$this->_setNewPermissions( $this->data['User']['profil_id'], $user_id, $this->data['User']['login'] );
-				$this->Session->setFlash('L\'utilisateur \''.$this->data['User']['login'].'\' a &eacute;t&eacute; ajout&eacute;', 'growl');
+				$this->Session->setFlash('L\'utilisateur \''.$this->data['User']['login'].'\' a été ajouté', 'growl');
 				$sortie = true;
 			} else
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
@@ -181,7 +182,7 @@ class UsersController extends AppController {
 						$this->request->data['Droits']
 				);
 
-				$this->Session->setFlash('L\'utilisateur \''.$this->data['User']['login'].'\' a &eacute;t&eacute; modifi&eacute;', 'growl');
+				$this->Session->setFlash('L\'utilisateur \''.$this->data['User']['login'].'\' a été modifié', 'growl');
 				$sortie = true;
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
@@ -274,7 +275,7 @@ class UsersController extends AppController {
 			$aro = new Aro();
 			$aro_id = $aro->find('first',array('conditions'=>array('model'=>'User', 'foreign_key'=>$id),'fields'=>array('id')));
 			$aro->delete($aro_id['Aro']['id']);
-			$this->Session->setFlash('L\'utilisateur \''.$user['User']['login'].'\' a &eacute;t&eacute; supprim&eacute;', 'growl');
+			$this->Session->setFlash('L\'utilisateur \''.$user['User']['login'].'\' a été supprimé', 'growl');
 		}
 		$this->redirect('/users/index');
 	}
@@ -329,144 +330,132 @@ class UsersController extends AppController {
 			return '';
 	}
 
-	function login() {
-		//pas de message d'erreur
-		$this->set('errorMsg',"");
-                $protocol = "http://";
-                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
-                        !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
-                    $protocol = "https://";
-                
-                $logo = $this->Collectivite->read('logo', 1);
-                App::uses('File', 'Utility');
-                $file = new File(Configure::read('WEBDELIB_PATH').DS.'files'.DS.'image'.DS.'logo.jpg', false);
- 
-                if(empty($logo['Collectivite']['logo']))
-                $this->set('logo_path',   $protocol.$_SERVER['HTTP_HOST'].$this->base."/files/image/adullact.jpg");
+    function login()
+    {
+        //pas de message d'erreur
+        $this->set('errorMsg', '');
+        $logo = $this->Collectivite->read('logo', 1);
+        App::uses('File', 'Utility');
+        $file = new File(Configure::read('WEBDELIB_PATH') . DS . 'files' . DS . 'image' . DS . 'logo.jpg', false);
+
+        if (empty($logo['Collectivite']['logo']))
+            $this->set('logo_path',  $this->base . "/files/image/adullact.jpg");
+        else {
+            if (!$file->exists())
+                $file->write($logo['Collectivite']['logo']);
+
+            $file->close();
+            $this->set('logo_path',  $this->base . "/files/image/logo.jpg");
+        }
+
+        //si le formulaire d'authentification a été soumis
+        if (!empty($this->data)) {
+            //cherche si utilisateur enregistré possede ce login
+            $user = $this->User->findByLogin($this->data['User']['login']);
+            unset($user['Historique']);
+            if (empty($user)) {
+                $this->set('errorMsg', "L'utilisateur " . $this->data['User']['login'] . " n'existe pas dans l'application.");
+                $this->layout = 'connexion';
+                $this->render();
+                //exit;
+            }
+            if ($user['User']['id'] == 1) {
+                $isAuthentif = ($user['User']['password'] == md5($this->data['User']['password']));
+            } else {
+                if (Configure::read('USE_AD')) {
+                    include(ROOT . DS . APP_DIR . DS . "Vendor/adLDAP.php");
+                    $ldap = new adLDAP();
+                    $isAuthentif = $ldap->authenticate($this->data['User']['login'], $this->data['User']['password']);
+                } elseif (Configure::read('USE_OPENLDAP'))
+                    $isAuthentif = $this->_checkLDAP($this->data['User']['login'], $this->data['User']['password']);
                 else
-                {
-                    if(!$file->exists())
-                        $file->write($logo['Collectivite']['logo']);
-                        
-                    $file->close();
-                    $this->set('logo_path',   $protocol.$_SERVER['HTTP_HOST'].$this->base."/files/image/logo.jpg");
+                    $isAuthentif = ($user['User']['password'] == md5($this->data['User']['password']));
+            }
+
+            if ($isAuthentif) {
+                //on stocke l'utilisateur en session
+                $this->Session->write('user', $user);
+                // On stock la collectivite de l'utilisateur en cas de PASTELL
+                if (Configure::read('USE_PASTELL')) {
+                    $coll = $this->Collectivite->find('first', array(
+                        'recursive' => -1,
+                        'conditions' => array('Collectivite.id' => 1),
+                        'fields' => array('id_entity')));
+                    $this->Session->write('user.Collectivite', $coll);
                 }
-               
-                
-		//si le formulaire d'authentification a été soumis
-		if (!empty($this->data)) {
-			$isAuthentif = false;
-			//cherche si utilisateur enregistré possede ce login
-			$user = $this->User->findByLogin($this->data['User']['login']);
-			unset($user['Historique']);
-			if (empty($user)){
-				$this->set('errorMsg',"L'utilisateur ".$this->data['User']['login']." n'existe pas dans l'application.");
-				$this->layout='connexion';
-				$this->render();
-				//exit;
-			}
-			if ($user['User']['id']==1){
-				$isAuthentif =  ($user['User']['password'] == md5($this->data['User']['password']));
-			}
-			else {
-				if (Configure::read('USE_AD')){
-					include (ROOT.DS.APP_DIR.DS."Vendor/adLDAP.php");
-					$ldap=new adLDAP();
-					$isAuthentif = $ldap->authenticate($this->data['User']['login'], $this->data['User']['password']);
-				}
-				elseif (Configure::read('USE_OPENLDAP'))
-				$isAuthentif = $this->_checkLDAP($this->data['User']['login'], $this->data['User']['password']);
-				else
-					$isAuthentif =  ($user['User']['password'] == md5($this->data['User']['password']));
+                // On stock les natures qu'il peut traiter
+                $aro = $this->Aro->find('first', array(
+                    'conditions' => array(
+                        'Aro.model' => 'User',
+                        'Aro.foreign_key' => $user['User']['id']
+                    ),
+                    'recursive' => -1,
+                    'fields' => array('Aro.id')));
+                $natures = array();
+                $droits = $this->ArosAdo->find('all', array('conditions' => array('aro_id' => $aro['Aro']['id'], '_read' => 1)));
+                foreach ($droits as $droit) {
+                    if ($droit['Ado']['foreign_key'] != '')
+                        $natures[$droit['Ado']['foreign_key']] = substr($droit['Ado']['alias'], 9, strlen($droit['Ado']['alias']));
+                }
+                $this->Session->write('user.Nature', $natures);
 
-			}
+                //services auquels appartient l'agent
+                $services = array();
+                foreach ($user['Service'] as $service)
+                    $services[$service['id']] = $this->Service->doList($service['id']);
 
-			if ($isAuthentif) {
+                $this->Session->write('user.Service', $services);
+                $this->Session->write('user.User.service', key($services));
 
-				//on stocke l'utilisateur en session
-				$this->Session->write('user',$user);
-				// On stock la collectivite de l'utilisateur en cas de PASTELL
-				if (Configure::read('USE_PASTELL')) {
-					$coll = $this->Collectivite->find('first', array('conditions' => array('Collectivite.id'=>1),
-							'recursive'  => -1,
-							'fields'     => array('id_entity')));
-					$this->Session->write('user.Collectivite', $coll);
-				}
-				// On stock les natures qu'il peut traiter
-                                $aro = $this->Aro->find('first', array('conditions' => array('Aro.model'       => 'User', 
-                                                                                             'Aro.foreign_key' => $user['User']['id']),
-                                                                        'recursive' => -1,
-                                                                        'fields'    => array('Aro.id')));
-				$natures = array();
-				$droits = $this->ArosAdo->find('all', array('conditions'=> array('aro_id'=>$aro['Aro']['id'], '_read'=>1)));
-				foreach ($droits as $droit) {
-                                   if ($droit['Ado']['foreign_key'] != '') 
-					$natures[$droit['Ado']['foreign_key']] = substr($droit['Ado']['alias'], 9, strlen($droit['Ado']['alias']));
-                                }
-				$this->Session->write('user.Nature', $natures);
+                // Chargement du menu dans la session
+                $this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
+                $this->Session->setFlash('Bienvenue sur Webdelib', 'growl');
+                $this->redirect('/');
+            } else {
+                //sinon on prépare le message d'erreur a afficher dans la vue
+                $this->set('errorMsg', 'Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
+                $this->layout = 'connexion';
+            }
+        } else {
+            $this->layout = 'connexion';
+        }
+    }
 
-				//services auquels appartient l'agent
-				$services = array();
-				foreach ($user['Service'] as $service)
-					$services[$service['id']] = $this->Service->doList($service['id']);
-
-				$this->Session->write('user.Service', $services);
-				$this->Session->write('user.User.service', key($services));
-
-				// Chargement du menu dans la session
-				$this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
-				$this->Session->setFlash('Bienvenue sur Webdelib', 'growl');
-				$this->redirect('/');
-			}
-			else{
-				//sinon on prépare le message d'erreur a afficher dans la vue
-				$this->set('errorMsg','Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
-				$this->layout='connexion';
-			}
-		}
-		else {
-			$this->layout='connexion';
-		}
-	}
-
-
-	function logout() {
+    function logout() {
 		//on supprime les infos utilisateur de la session
 		$this->Session->destroy();
-		$this->redirect('/users/login');
+		$this->redirect(array('action' => 'login'));
 	}
 
-	function changeMdp($id) {
-		if (empty($this->data)) {
-			$this->request->data = $this->User->read(null, $id);
-			if (empty($this->data)) {
-				$this->Session->setFlash('Invalide id pour l\'utilisateur');
-				$this->redirect('/users/index');
-			}
-			else
-				$this->request->data['User']['password'] = '';
-		} else {
-			if ($this->User->validatesPassword($this->data)) {
-                        $this->User->id = $id;
-				$user = $this->User->find('first', array('conditions'=>array('User.id'=> $id),
-						'recursive' => -1) );
-				if ($this->User->saveField('password', $this->data['User']['password'])) {
-					$this->Session->setFlash('Le mot de passe de l\'utilisateur \''.$user['User']['login'].'\' a &eacute;t&eacute; modifi&eacute;');
-					$this->redirect('/users/index');
-				}
-				else
-					$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
-			}
-			else
-				$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
-		}
-	}
+    function changeMdp($id)
+    {
+        if (empty($this->data)) {
+            $this->request->data = $this->User->read(null, $id);
+            if (empty($this->data)) {
+                $this->Session->setFlash('Invalide id pour l\'utilisateur');
+                $this->redirect(array('action' => 'index'));
+            } else
+                $this->request->data['User']['password'] = '';
+        } else {
+            if ($this->User->validatesPassword($this->data)) {
+                $this->User->id = $id;
+                $user = $this->User->find('first', array(
+                    'conditions' => array('User.id' => $id),
+                    'recursive' => -1));
+                if ($this->User->saveField('password', $this->data['User']['password'])) {
+                    $this->Session->setFlash('Le mot de passe de l\'utilisateur \'' . $user['User']['login'] . '\' a été modifié');
+                    $this->redirect(array('action' => 'index'));
+                } else
+                    $this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
+            } else
+                $this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
+        }
+    }
 
-	function changeFormat($id) {
+    function changeFormat($id) {
 		$this->Session->delete('user.format.sortie');
 		$this->Session->write('user.format.sortie', $id);
 		//redirection sur la page où on était avant de changer de service
-//		$this->redirect($this->Session->read('user.User.myUrl'));
 		$this->redirect($this->Session->read('user.User.lasturl'));
 	}
 
@@ -474,7 +463,7 @@ class UsersController extends AppController {
 		//  $DN = Configure::read('UNIQUE_ID')."=$login, ".BASE_DN;
 		$conn=ldap_connect(Configure::read('LDAP_HOST'), Configure::read('LDAP_PORT')) or  die("connexion impossible au serveur LDAP");
 		@ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-		@ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // required for AD
+		@ldap_set_option($conn, LDAP_OPT_REFERRALS, 0); // required for AD
 
 
 		$bind_attr = 'dn';
@@ -495,7 +484,6 @@ class UsersController extends AppController {
 		} else {
 			return false;
 		}
-
 	}
 
 	function changeUserMdp() {
@@ -503,16 +491,16 @@ class UsersController extends AppController {
 			$this->request->data = $this->User->read(null, $this->Session->read('user.User.id'));
 			if (empty($this->data)) {
 				$this->Session->setFlash('Invalide id pour l\'utilisateur');
-				$this->redirect('/');
+				$this->redirect(array('action'=>'index'));
 			}
 			else
 				$this->request->data['User']['password'] = '';
 		} else {
-			if (($this->User->validatesPassword($this->data)) && ($this->User->validOldPassword($this->data))) {
-				$user = $this->User->read(null, $this->Session->read('user.User.id'));
+			if ($this->User->validatesPassword($this->data) && $this->User->validOldPassword($this->data)) {
+                $this->User->id = $this->Session->read('user.User.id');
 				if ($this->User->saveField('password', $this->data['User']['password'])) {
-					$this->Session->setFlash('Votre mot de passe a &eacute;t&eacute; modifi&eacute;');
-					$this->redirect('/');
+					$this->Session->setFlash('Le mot de passe a été modifié');
+                    $this->redirect(array('action'=>'index'));
 				}
 				else
 					$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
@@ -521,5 +509,21 @@ class UsersController extends AppController {
 				$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
 		}
 	}
+
+    public function chercher(){
+        if (!empty($this->request->data)){
+            $this->redirect(array(
+                'action'=>$this->request->data['action'],
+                $this->request->data['User']['id']
+            ));
+        }
+        //Définition d'un champ virtuel pour affichage complet des informations
+        $this->User->virtualFields['name'] = 'User.prenom || \' \' || User.nom || \' (\' || User.login || \')\'';
+
+        $users = $this->User->find('list', array(
+            'fields'=> array('id', 'name'),
+            'order' => 'login'
+        ));
+        $this->set('options', $users);
+    }
 }
-?>
