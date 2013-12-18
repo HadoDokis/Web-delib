@@ -1244,6 +1244,7 @@ class DeliberationsController extends AppController {
                     );
                     $traitementTermine = $this->Traitement->execute('IN', $user_connecte, $id, $options);
                     
+                    //FIX Devrait enregistrer un historique des actions effectés en optimisation et autre mais pas que sur l'état final
                     if ($traitementTermine) {
                         $this->Historique->enregistre($id, $user_connecte, 'Projet valid&eacute;');
                         $this->Deliberation->id = $id;
@@ -2440,14 +2441,12 @@ class DeliberationsController extends AppController {
 
         $conditions = $this->_handleConditions($this->Filtre->conditions());
         $conditions['Deliberation.etat'] = 1;
-
         $delibs_ids = $this->Traitement->listeTargetId($this->Session->read('user.User.id'), array('etat' => 'NONTRAITE', 'traitement' => 'NONAFAIRE'));
         if (isset($conditions['Deliberation.id'])) {
             $conditions['OR']['Deliberation.id'] = array_intersect($conditions['Deliberation.id'], $delibs_ids);
         } else {
             $conditions['OR']['Deliberation.id'] = $delibs_ids;
         }
-        $conditions['OR']['Deliberation.redacteur_id'] = $userId;
         $conditions['Deliberation.parent_id'] = NULL;
 
         $ordre = array('Deliberation.id' => 'DESC');
@@ -4163,8 +4162,8 @@ class DeliberationsController extends AppController {
     }
 
     function quicksearch() {
-        $field = trim($this->params->query['data']['field']);
-        if (empty($field) OR (is_numeric($field) XOR strlen($field)<4)) {
+        $field = trim($this->request->data['User']['search']);
+        if (empty($field) OR (ctype_digit($field) XOR strlen($field)<4)) {
             $this->Session->setFlash('Vous devez saisir au moins un mot. (plus de 3 caractères)', 'growl',array('type' => 'erreur'));
             $this->redirect($this->referer());
         }
