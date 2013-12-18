@@ -29,3 +29,7 @@ div.input.checkbox label{
 .navbar-fixed-top{
     position: fixed;
 }
+
+.no-width-limit{
+    width: auto;
+}

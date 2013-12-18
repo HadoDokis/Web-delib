@@ -59,14 +59,13 @@ class MenuComponent extends Component
 	 * Retourne la valeur $key du menu $menu si elle existe et si elle et non null,
 	 * et retourne $default dans le cas contraire.
 	 *
-	 * @return
-	 *
-	 * @param array &$menu Données du menu
-	 * @param str $key Nom de la valeur à traiter
-	 * @param str $default Valeur par défaut
+	 * @param array $menu Données du menu
+	 * @param string $key Nom de la valeur à traiter
+	 * @param string $default Valeur par défaut
 	 * @access private
+     * @return null
 	 */
-	function _getArrayValue($menu, $key, $default=null) {
+    function _getArrayValue($menu, $key, $default=null) {
 		if (!array_key_exists($key, $menu)) return $default;
 
 		if (is_array($menu[$key])) {
@@ -143,9 +142,11 @@ class MenuComponent extends Component
 	 * Returns an array of filenames of PHP files in given directory.
 	 *
 	 * @param  string $path Path to scan for files
+     * @param string $filtre
+     * @param array $excluded
 	 * @return array  List of files in directory
 	 */
-	function _listClasses($path, $filtre='*.php', $excluded=array()) {
+    function _listClasses($path, $filtre='*.php', $excluded=array()) {
 		$ret = array();
 		$dir = glob($path.$filtre);
 		foreach($dir as $fileUri) {
@@ -182,14 +183,15 @@ class MenuComponent extends Component
 		return $ret;
 	}
 
-	/**
-	 * construit l'arborescence du menu et des controleurs dans le tableau $menuCtrlTree
-	 * retourne le nombre d'éléments du menu
-	 *
-	 * @param  string $path Path to scan for files
-	 * @return array  Liste des action du menu
-	 */
-	function _chargeMenuControllers(&$menuCtrlTree, $menu, $cru=null, $niveau=0) {
+    /**
+     * construit l'arborescence du menu et des controleurs dans le tableau $menuCtrlTree
+     * @param $menuCtrlTree
+     * @param $menu
+     * @param null $cru
+     * @param int $niveau
+     * @return int nombre d'éléments du menu
+     */
+    function _chargeMenuControllers(&$menuCtrlTree, $menu, $cru=null, $niveau=0) {
 		// Initialisations
 		$nbTotElement = 0;
 
@@ -288,4 +290,3 @@ class MenuComponent extends Component
 	}
 
 }
-?>
