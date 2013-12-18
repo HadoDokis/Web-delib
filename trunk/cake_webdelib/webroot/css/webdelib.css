@@ -519,10 +519,10 @@ a.link_modifier_left {
 
 a.link_supprimer, a.link_supprimer:hover {
 	background-image: url(../../../img/icons/edittrash.png);
-	background-repeat: no-repeat;
-	background-position: top;
-	padding: 6px 0 14px 29px;
     text-decoration: none;
+    background-repeat: no-repeat;
+    background-position: top left;
+    padding: 0 0 32px 32px;
 }
 
 a.link_supprimer_back, a.link_supprimer_back:hover {

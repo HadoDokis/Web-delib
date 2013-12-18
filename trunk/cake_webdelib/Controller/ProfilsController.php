@@ -35,7 +35,7 @@ class ProfilsController extends AppController {
     function view($id = null) {
         if (!$id) {
             $this->Session->setFlash('Invalide id pour le profil.');
-            $this->redirect('/profils/index');
+            $this->redirect(array('action'=>'index'));
         }
         $this->set('profil', $this->Profil->read(null, $id));
     }
@@ -67,14 +67,14 @@ class ProfilsController extends AppController {
                             ), null
                     );
                 }
-                $this->Session->setFlash('Le profil a &eacute;t&eacute; sauvegard&eacute;');
+                $this->Session->setFlash('Le profil a été sauvegardé', 'growl');
                 $sortie = true;
             }
             else
-                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
         }
         if ($sortie)
-            $this->redirect('/profils/index');
+            $this->redirect(array('action'=>'index'));
         else {
             $this->set('profils', $this->Profil->find('list', array('order' => array('Profil.libelle ASC'))));
         }
@@ -125,7 +125,7 @@ class ProfilsController extends AppController {
                         'model' => 'Profil', 'foreign_key' => $User['User']['profil_id']), $this->data['Droits']
                     );
                 }
-                $this->Session->setFlash('Le profil a &eacute;t&eacute; modifi&eacute;', 'growl');
+                $this->Session->setFlash('Le profil a été modifié', 'growl');
                 $sortie = true;
             }
             else
@@ -146,24 +146,29 @@ class ProfilsController extends AppController {
     function delete($id = null) {
         if (!$id) {
             $tab = $this->Profil->findAll("Profil.id=$id");
-            $this->Session->setFlash('Invalide id pour le profil');
-            $this->redirect('/profils/index');
+            $this->Session->setFlash('Invalide id pour le profil', 'growl');
+            $this->redirect(array('action'=>'index'));
         }
         if (!$this->Profil->User->find('first', array('conditions' => array('User.profil_id' => $id)))) {
             if ($this->Profil->delete($id)) {
-                $aro_id = $this->Aro->find('first', array('conditions' => array('model' => 'Profil', 'foreign_key' => $id), 'fields' => array('id')));
+                $aro_id = $this->Aro->find('first', array(
+                    'conditions' => array(
+                        'model' => 'Profil',
+                        'foreign_key' => $id
+                    ),
+                    'fields' => array('id')));
                 if (!empty($aro_id))
                     $this->Aro->delete($aro_id['Aro']['id']);
-                $this->Session->setFlash('Le profil a &eacute;t&eacute; supprim&eacute;');
-                $this->redirect('/profils/index');
+                $this->Session->setFlash('Le profil a été supprimé', 'growl');
+                $this->redirect(array('action'=>'index'));
             }
             else {
-                $this->Session->setFlash('Impossible de supprimer ce profil');
-                $this->redirect('/profils/index');
+                $this->Session->setFlash('Impossible de supprimer ce profil', 'growl', array('type'=>'erreur'));
+                $this->redirect(array('action'=>'index'));
             }
         } else {
-            $this->Session->setFlash('Impossible de supprimer ce profil car il est attribué.');
-            $this->redirect('/profils/index');
+            $this->Session->setFlash('Impossible de supprimer ce profil car il est attribué.', 'growl', array('type'=>'erreur'));
+            $this->redirect(array('action'=>'index'));
         }
     }
 
@@ -216,5 +221,3 @@ class ProfilsController extends AppController {
     }
 
 }
-
-?>

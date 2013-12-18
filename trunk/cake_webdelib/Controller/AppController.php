@@ -4,7 +4,7 @@ class AppController extends Controller
 {
     public $theme = "Bootstrap";
     public $components = array('Utils', 'Acl', 'Droits', 'Session');
-    public $helpers = array('Html', 'Form', 'Js', 'Session', 'Menu', 'DatePicker', 'Html2');
+    public $helpers = array('Html', 'Form', 'Session', 'DatePicker', 'Html2');
     public $aucunDroit = array('Pages:format', 'Pages:service');
 
     function beforeFilter()
@@ -18,6 +18,11 @@ class AppController extends Controller
         $this->set('lienDeconnexion', true);
         $this->set('session_service_id', $this->Session->read('user.User.service'));
         $this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
+        if ($this->Session->check('user.User')){
+            $this->Session->write('user.User.url.current', $this->params->here);
+            if (strpos($this->referer(), $this->params->here) === false)
+                $this->Session->write('user.User.url.previous', $this->referer());
+        }
 
         // ????
         if (CRON_DISPATCHER) return true;
@@ -55,7 +60,6 @@ class AppController extends Controller
         //Navigation (lien de retour)
         if ($this->Session->check('user.User')) {
             $this->Session->write('user.User.myUrl', $this->here);
-
             // Attention au cas de elements
             if (   $this->here != $this->referer()
                 && $this->here != '/deliberations/classification'

@@ -4,7 +4,7 @@ class UsersController extends AppController {
 	public $name = 'Users';
 	public $helpers = array('Form', 'Html', 'Html2', 'Session');
 	public $uses = array( 'User','Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
-	public $components = array('Utils', 'Acl', 'Menu', 'Dbdroits');
+	public $components = array('Utils', 'Acl', 'Menu', 'Dbdroits', 'Filtre', 'Paginator');
 
 	// Gestion des droits
 	public $aucunDroit = array(
@@ -24,35 +24,90 @@ class UsersController extends AppController {
         'add' => 'Users:index',
         'delete' => 'Users:index',
         'edit' => 'Users:index',
-        'chercher' => 'Users:index',
         'changeMdp' => 'Users:index'
     );
 
-	function index() {
-                $this->User->Behaviors->attach('Containable');
-                $this->ArosAdo->Behaviors->attach('Containable');
-                $this->paginate = array('User' => array(
-                                        'fields' => array('DISTINCT User.id', 'User.login', 'User.nom', 'User.prenom', 'User.telfixe', 'User.telmobile' ),
-                                        'limit' => 20,
-                                        'contain' => array('Profil.libelle', 'Service.libelle'),
-                                        'order' => array( 'User.login' => 'asc')));
+    function index()
+    {
+        $this->Filtre->initialisation($this->name.':'.$this->request->action, $this->request->data);
+        $conditions =  $this->Filtre->conditions();
+        if (!$this->Filtre->critereExists()) {
 
-		$users = $this->paginate('User');
-		foreach ($users as &$user) {
-                        $aro    = $this->Aro->find('first',array('conditions'=>array('model'=>'User', 'foreign_key'=>$user['User']['id']),
-                                                           'fields'=>array('id'),
-                                                           'recursive' => -1));
-                        $aros_ados = $this->ArosAdo->find('all', array('conditions' => array('ArosAdo.aro_id' => $aro['Aro']['id'],
-                                                                                             'ArosAdo._create' => 1),
-                                                                       'contain'    => array('Ado.alias'),
-                                                                       'fields'     => array('Ado.id')));
-                        foreach( $aros_ados as  $aros_ado)
-			     $user['Natures'][] = substr($aros_ado['Ado']['alias'], strlen('Typeacte:'), strlen($aros_ado['Ado']['alias']));
+            //Définition d'un champ virtuel pour affichage complet des informations
+            $this->User->virtualFields['name'] = 'User.prenom || \' \' || User.nom || \' (\' || User.login || \')\'';
+            $users = $this->User->find('list', array(
+                'fields'=> array('id', 'name'),
+                'order' => 'login'
+            ));
+            $this->Filtre->addCritere('Utilisateur', array(
+                'field' => 'User.id',
+                'retourLigne' => true,
+                'inputOptions' => array(
+                    'empty' => true,
+                    'label' =>__('Nom complet', true),
+                    'title' => 'Recherche sur par nom, prénom et login',
+                    'class' => 'select2',
+                    'data-placeholder' => 'Filtre désactivé',
+                    'options' => $users)));
+            $profils = $this->Profil->find('list', array('fields'=>array('id','libelle')));
+            $this->Filtre->addCritere('Profil', array(
+                'field' => 'User.profil_id',
+                'retourLigne' => true,
+                'inputOptions' => array(
+                    'label' =>__('Profil', true),
+                    'title' => __('Profil', true)." du(des) utilisateur(s) recherché(s)",
+                    'options' => $profils),
+                'classeDiv' => 'spacer'));
+            $this->Filtre->addCritere('Login', array(
+                'field' => 'User.login',
+                'inputOptions' => array(
+                    'label' => __('Login', true),
+                    'type'  => 'text',
+                    'title' => 'Filtre sur les logins des utilisateurs'),
+                'classeDiv' => 'tiers'));
+            $this->Filtre->addCritere('Nom', array(
+                'field' => 'User.nom',
+                'inputOptions' => array(
+                    'label' => __('Nom', true),
+                    'type'  => 'text',
+                    'title' => 'Filtre sur les noms des utilisateurs'),
+                'classeDiv' => 'tiers'));
+            $this->Filtre->addCritere('Prenom', array(
+                'field' => 'User.prenom',
+                'retourLigne' => true,
+                'inputOptions' => array(
+                    'label' => __('Prénom', true),
+                    'type'  => 'text',
+                    'title' => 'Filtre sur les prénoms des utilisateurs'),
+                'classeDiv' => 'tiers'));
+        }
+        $this->User->Behaviors->attach('Containable');
+        $this->ArosAdo->Behaviors->attach('Containable');
+        $this->paginate = array('User' => array(
+            'conditions' => $conditions,
+            'fields' => array('DISTINCT User.id', 'User.login', 'User.nom', 'User.prenom', 'User.telfixe', 'User.telmobile'),
+            'limit' => 20,
+            'contain' => array('Profil.libelle', 'Service.libelle'),
+            'order' => array('User.login' => 'asc')));
 
-			$user['User']['is_deletable'] = $this->_isDeletable($user, $message);
-		}
-		$this->set('users', $users);
-	}
+        $users = $this->Paginator->paginate('User');
+        foreach ($users as &$user) {
+            $aro = $this->Aro->find('first', array(
+                'conditions' => array('model' => 'User', 'foreign_key' => $user['User']['id']),
+                'fields' => array('id'),
+                'recursive' => -1));
+            $aros_ados = $this->ArosAdo->find('all', array('conditions' => array(
+                'ArosAdo.aro_id' => $aro['Aro']['id'],
+                'ArosAdo._create' => 1),
+                'contain' => array('Ado.alias'),
+                'fields' => array('Ado.id')));
+            foreach ($aros_ados as $aros_ado)
+                $user['Natures'][] = substr($aros_ado['Ado']['alias'], strlen('Typeacte:'), strlen($aros_ado['Ado']['alias']));
+
+            $user['User']['is_deletable'] = $this->_isDeletable($user, $message);
+        }
+        $this->set('users', $users);
+    }
 
 	function view($id = null) {
 		$user = $this->User->read(null, $id);
@@ -509,21 +564,4 @@ class UsersController extends AppController {
 				$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
 		}
 	}
-
-    public function chercher(){
-        if (!empty($this->request->data)){
-            $this->redirect(array(
-                'action'=>$this->request->data['action'],
-                $this->request->data['User']['id']
-            ));
-        }
-        //Définition d'un champ virtuel pour affichage complet des informations
-        $this->User->virtualFields['name'] = 'User.prenom || \' \' || User.nom || \' (\' || User.login || \')\'';
-
-        $users = $this->User->find('list', array(
-            'fields'=> array('id', 'name'),
-            'order' => 'login'
-        ));
-        $this->set('options', $users);
-    }
 }

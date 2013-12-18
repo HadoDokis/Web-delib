@@ -138,7 +138,13 @@ if ($this->Html->value('User.id')) {
 <div id='tab3' style="display: none;">
     <?php
     foreach ($natures as $nature)
-        echo $this->Form->input('Nature.id_' . $nature['Typeacte']['id'], array('type' => 'checkbox', 'checked' => $nature['Nature']['check'], 'label' => $nature['Typeacte']['libelle']));
+        echo $this->Form->input('Nature.id_' . $nature['Typeacte']['id'], array(
+                'type' => 'checkbox',
+                'checked' => $nature['Nature']['check'],
+                'label' => array(
+                    'text'  => $nature['Typeacte']['libelle'],
+                    'class' => 'no-width-limit'
+                )));
     ?>
 </div>
 
