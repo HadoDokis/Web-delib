@@ -49,7 +49,9 @@ class DeliberationFixture extends CakeTestFixture
             array( 'id' =>7, 'parent_id' => NULL, 'etat'=>1),
             array( 'id' =>8, 'parent_id' => NULL, 'etat'=>1),
             array( 'id' =>9, 'parent_id' => NULL, 'etat'=>1),
-            array( 'id' =>10, 'parent_id' => NULL, 'etat'=>1)
+            array( 'id' =>10, 'parent_id' => NULL, 'etat'=>1),
+            array( 'id' =>99100, 'parent_id' => NULL, 'etat'=>1),
+            array( 'id' =>99101, 'parent_id' => NULL, 'etat'=>1)
         );
         
         parent::init();
