@@ -1,7 +1,0 @@
-AuthUserFile /var/www/webdelib/app/webroot/check/.htpasswd
-AuthGroupFile /dev/null
-AuthName "Restricted Access"
-AuthType Basic
-<limit GET>
-require valid-user
-</Limit> 
