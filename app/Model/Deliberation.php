@@ -663,7 +663,7 @@ class Deliberation extends AppModel {
                             }
 		            $oDevPart->addElement(new GDO_FieldType("avis", $message, "text"));
 			    $oDevPart->addElement(new GDO_FieldType("avis_favorable",  $avisSeance['Deliberationseance']['avis'], "text"));
-		            $oDevPart->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
+                            $oDevPart->addElement(new GDO_FieldType("commentaire", $avisSeance['Deliberationseance']['commentaire'], "lines"));
 			    $aviss->addPart($oDevPart);
                         }
                     }
@@ -988,14 +988,20 @@ class Deliberation extends AppModel {
 					'note_acteur' => $acteur['Acteur']['note']);
 		}
 
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents",   $acteurs_presents, false, '_present'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbsents",    $acteurs_absents, false, '_absent'));
-        $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', count($acteurs_absents), 'text'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursMandates",   $acteurs_remplaces, true, '_mandataire'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre",     $acteurs_contre, false, '_contre'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPour",       $acteurs_pour, false, '_pour'));
+		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, '_present'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_present', count($acteurs_presents), 'text'));    
+		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbsents", $acteurs_absents, false, '_absent'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', count($acteurs_absents), 'text'));
+		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursMandates", $acteurs_remplaces, true, '_mandataire'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_mandataire', count($acteurs_remplaces), 'text'));
+		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre", $acteurs_contre, false, '_contre'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_contre', count($acteurs_contre), 'text'));
+		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPour", $acteurs_pour, false, '_pour'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_pour', count($acteurs_pour), 'text'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbstention", $acteurs_abstention, false, '_abstention'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_abstention', count($acteurs_abstention), 'text'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursSansParticipation", $acteurs_sans_participation, false, '_sans_participation'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_sans_participation', count($acteurs_sans_participation), 'text'));
 	}
 
 	function _makeBlocsActeurs ($nomBloc, $listActeur, $isMandate, $type) {
@@ -1003,8 +1009,6 @@ class Deliberation extends AppModel {
 
 		if ( count($listActeur) == 0 ) {
 			$oDevPart = new GDO_PartType();
-			$oDevPart->addElement(new GDO_FieldType("nombre_acteur".$type,        '0', "text"));
-			 
 			$oDevPart->addElement(new GDO_FieldType("nom_acteur".$type,            ' ', "text"));
 			$oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type,         ' ', "text"));
 			$oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,     ' ', "text"));
@@ -1036,10 +1040,9 @@ class Deliberation extends AppModel {
 			return $acteurs;
 		}
 		else {
-			$nbre_acteurs = count($listActeur);
+			//$nbre_acteurs = count($listActeur);
 			foreach($listActeur as $acteur) {
 				$oDevPart = new GDO_PartType();
-				$oDevPart->addElement(new GDO_FieldType("nombre_acteur".$type, $nbre_acteurs , "text"));
 				$oDevPart->addElement(new GDO_FieldType("nom_acteur".$type, ($acteur['nom_acteur']), "text"));
 				$oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type, ($acteur['prenom_acteur']), "text"));
 				$oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,($acteur['salutation_acteur']), "text"));
