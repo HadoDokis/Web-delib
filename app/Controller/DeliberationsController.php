@@ -106,10 +106,10 @@ class DeliberationsController extends AppController {
                                             'Circuit'=>array('fields'=>array('nom')),
                                             'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                                'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                                   'order' => 'Typeseance.action ASC')),
+                                                                                   )),
                                             'Deliberationseance'=>array('fields'=>array('id'),
                                                                         'Seance'=>array('fields'=>array('id','date','type_id'),
-                                                                                        'order' => 'Seance.date ASC',
+                                                                                        
                                                                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
                         'conditions' => array('Deliberation.id' => $id)
                     ));
@@ -1743,6 +1743,17 @@ class DeliberationsController extends AppController {
             $this->set('seance_id', $seance_id);
         $this->set('deliberations', $deliberations);
     }
+    
+    /* Tri pour les dates de séance
+     * 
+     */
+    function _sortProjetSeanceDate(&$projets){
+        foreach ($projets as $keyProjet=>$projet) {
+            $projets[$keyProjet]['Deliberationtypeseance'] = Hash::sort($projet['Deliberationtypeseance'], '{n}.Typeseance.action', 'asc');
+            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.date', 'asc');
+            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projets[$keyProjet]['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
+        }
+    }
 
     function _getNatureListe() {
         $tab = array();
@@ -2352,15 +2363,12 @@ class DeliberationsController extends AppController {
                                 'Circuit'=>array('fields'=>array('nom')),
                                 'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                    'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                       'order' => 'Typeseance.action ASC')),
+                                                                       )),
                                 'Deliberationseance'=>array('fields'=>array('id'),
                                                             'Seance'=>array('fields'=>array('id','date','type_id'),
-                                        'order' => 'Seance.date ASC',
                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
             'order' => $ordre));
-        foreach ($projets as $keyProjet=>$projet) {
-            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
-        }
+        $this->_sortProjetSeanceDate($projets);
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets(
                 $projets, 'Mes projets en cours de rédaction', array('view', 'edit', 'delete', 'attribuerCircuit', 'generer'), $listeLiens, $nbProjets);
@@ -2408,15 +2416,13 @@ class DeliberationsController extends AppController {
                                     'Circuit'=>array('fields'=>array('nom')),
                                     'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                        'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                           'order' => 'Typeseance.action ASC')),
+                                                                           )),
                                     'Deliberationseance'=>array('fields'=>array('id'),
                                                                 'Seance'=>array('fields'=>array('id','date','type_id'),
-                                            'order' => 'Seance.date ASC',
+                                            
                                             'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
                  'order' => array('Deliberation.id' => 'DESC')));
-        foreach ($projets as $keyProjet=>$projet) {
-            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
-        }
+        $this->_sortProjetSeanceDate($projets);
         $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets($projets, 'Mes projets &agrave; traiter', array('view', 'traiter', 'generer'), array(), $nbProjets);
@@ -2464,15 +2470,13 @@ class DeliberationsController extends AppController {
                                 'Circuit'=>array('fields'=>array('nom')),
                                 'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                    'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                       'order' => 'Typeseance.action ASC')),
+                                                                       )),
                                 'Deliberationseance'=>array('fields'=>array('id'),
                                                             'Seance'=>array('fields'=>array('id','date','type_id'),
-                                        'order' => 'Seance.date ASC',
+                                        
                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
             'order' => $ordre));
-        foreach ($projets as $keyProjet=>$projet) {
-            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
-        }
+        $this->_sortProjetSeanceDate($projets);
         $this->_ajouterFiltre($projets);
         $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
 
@@ -2521,16 +2525,13 @@ class DeliberationsController extends AppController {
                                    'Circuit'=>array('fields'=>array('nom')),
                                    'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                       'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                          'order' => 'Typeseance.action ASC')),
+                                                                          )),
                                    'Deliberationseance'=>array('fields'=>array('id'),
                                                                'Seance'=>array('fields'=>array('id','date','type_id'),
-                                           'order' => 'Seance.date ASC',
+                                           
                                            'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
             'order' => $ordre));
-        foreach ($projets as $keyProjet=>$projet) {
-            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
-        }
-
+        $this->_sortProjetSeanceDate($projets);
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets(
                 $projets, 'Mes projets valid&eacute;s', array('view', 'generer'));
@@ -2545,6 +2546,7 @@ class DeliberationsController extends AppController {
 
         $userId = $this->Session->read('user.User.id');
         $editerProjetValide = $this->Droits->check($userId, "Deliberations:editerProjetValide");
+        
         $this->request->data = $projets;
 
         /* initialisation pour chaque projet ou délibération */
@@ -2674,15 +2676,13 @@ class DeliberationsController extends AppController {
                                 'Circuit'=>array('fields'=>array('nom')),
                                 'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                    'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                       'order' => 'Typeseance.action ASC')),
+                                                                       )),
                                 'Deliberationseance'=>array('fields'=>array('id'),
                                                             'Seance'=>array('fields'=>array('id','date','type_id'),
-                                        'order' => 'Seance.date ASC',
+                                        
                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
                   'order' => array($ordre)));
-        foreach ($projets as $keyProjet=>$projet) {
-            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
-        }
+        $this->_sortProjetSeanceDate($projets);
         $actions = array('view', 'generer');
         if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"))
             array_push($actions, 'validerEnUrgence');
@@ -2729,15 +2729,13 @@ class DeliberationsController extends AppController {
                                 'Circuit'=>array('fields'=>array('nom')),
                                 'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                    'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                       'order' => 'Typeseance.action ASC')),
+                                                                       )),
                                 'Deliberationseance'=>array('fields'=>array('id'),
                                                             'Seance'=>array('fields'=>array('id','date','type_id'),
-                                        'order' => 'Seance.date ASC',
+                                        
                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
                  'order' => array($ordre)));
-        foreach ($projets as $keyProjet=>$projet) {
-            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
-        }
+        $this->_sortProjetSeanceDate($projets);
         $actions = array('view', 'generer');
         if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"))
             array_push($actions, 'validerEnUrgence');
@@ -2787,10 +2785,10 @@ class DeliberationsController extends AppController {
                                 'Circuit'=>array('fields'=>array('nom')),
                                 'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                    'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                       'order' => 'Typeseance.action ASC')),
+                                                                       )),
                                 'Deliberationseance'=>array('fields'=>array('id'),
                                                             'Seance'=>array('fields'=>array('id','date','type_id'),
-                                        'order' => 'Seance.date ASC',
+                                        
                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
                    'conditions' => $conditions,
                   'order' => array('Deliberation.created DESC')));
@@ -2852,16 +2850,13 @@ class DeliberationsController extends AppController {
                                 'Circuit'=>array('fields'=>array('nom')),
                                 'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                    'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                       'order' => 'Typeseance.action ASC')),
+                                                                       )),
                                 'Deliberationseance'=>array('fields'=>array('id'),
                                                             'Seance'=>array('fields'=>array('id','date','type_id'),
-                                        'order' => 'Seance.date ASC',
+                                        
                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
                   'order' => array('Deliberation.created DESC')));
-        foreach ($projets as $keyProjet=>$projet) {
-            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
-        }
-
+        $this->_sortProjetSeanceDate($projets);
         $this->_ajouterFiltre($projets);
         $actions = array('view', 'generer');
         if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
@@ -3098,15 +3093,13 @@ class DeliberationsController extends AppController {
                                 'Circuit'=>array('fields'=>array('nom')),
                                 'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                    'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                       'order' => 'Typeseance.action ASC')),
+                                                                       )),
                                 'Deliberationseance'=>array('fields'=>array('id'),
                                                             'Seance'=>array('fields'=>array('id','date','type_id'),
-                                        'order' => 'Seance.date ASC',
+                                        
                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
                   'order' => array($ordre)));
-                    foreach ($projets as $keyProjet=>$projet) {
-                        $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
-                    }
+                    $this->_sortProjetSeanceDate($projets);
 
                 if ($this->data['Deliberation']['generer'] == 0) {
                     $this->_afficheProjets($projets, 'R&eacute;sultat de la recherche parmi mes projets', array('view', 'generer'), array('mesProjetsRecherche'));
@@ -3223,17 +3216,15 @@ class DeliberationsController extends AppController {
                                         'Circuit'=>array('fields'=>array('nom')),
                                         'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                            'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                               'order' => 'Typeseance.action ASC')),
+                                                                               )),
                                         'Deliberationseance'=>array('fields'=>array('id'),
                                                                     'Seance'=>array('fields'=>array('id','date','type_id'),
-                                                                                    'order' => 'Seance.date ASC',
+                                                                                    
                                                                                     'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
                     'conditions' => $conditions,
                     'order' => 'num_delib'
                     ));
-                foreach ($projets as $keyProjet=>$projet) {
-                    $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
-                }
+               $this->_sortProjetSeanceDate($projets);
                 if ($this->data['Deliberation']['generer'] == 0) {
                     $userId = $this->Session->read('user.User.id');
 
@@ -4201,16 +4192,13 @@ class DeliberationsController extends AppController {
                                 'Circuit'=>array('fields'=>array('nom')),
                                 'Deliberationtypeseance'=>array('fields'=>array('id'),
                                                    'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                       'order' => 'Typeseance.action ASC')),
+                                                                       )),
                                 'Deliberationseance'=>array('fields'=>array('id'),
                                                             'Seance'=>array('fields'=>array('id','date','type_id'),
-                                        'order' => 'Seance.date ASC',
+                                        
                                         'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
             'order' => $ordre));
-        foreach ($projets as $keyProjet=>$projet) {
-            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
-        }
-
+        $this->_sortProjetSeanceDate($projets);
         $this->_afficheProjets($projets, 'R&eacute;sultat de la recherche parmi mes projets', array('view', 'generer'), array());
     }
 
