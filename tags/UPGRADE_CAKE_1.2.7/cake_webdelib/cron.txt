@@ -1,2 +1,0 @@
-/usr/local/php5/bin/php cron_dispatcher.php /circuits/listDelibsDansParapheur
-
