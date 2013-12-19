@@ -485,13 +485,11 @@ class ModelsController extends AppController {
                     }
 				}
 				else {
-                    $nomSansFormat = $nomFichier;
-					$nomFichier = "$nomFichier.$format";
-					$fichier = $this->Gedooo->createFile($path, $nomFichier, '');
+					$fichier = $this->Gedooo->createFile($path, $nomFichier.$format, '');
 					$oFusion->SendContentToFile($fichier);
 					$content = $this->Conversion->convertirFichier($fichier, $format );
-
-					$chemin_fichier = $this->Gedooo->createFile($path,  $nomFichier.'2', $content);
+					$chemin_fichier = $this->Gedooo->createFile($path,  $nomFichier.'.'.$format, $content);
+                                        
 					if (($format == 'pdf') && ($joindre_annexe))
 						$this->Pdf->concatener($chemin_fichier, $annexes);
 					$content = file_get_contents($chemin_fichier);
@@ -502,15 +500,14 @@ class ModelsController extends AppController {
                     if ($dl == 2) { //Pour l'export CMIS
                     }elseif ($progress){
                         $this->Progress->at(100, 'Chargement des résultats...');
-                        $listFiles[$urlWebroot.$nomSansFormat] = 'Document généré';
+                        $listFiles[$urlWebroot.$nomFichier] = 'Document généré';
                         $this->Session->write('tmp.listFiles', $listFiles);
-                        $this->Session->write('tmp.format', $format.'2');
+                        $this->Session->write('tmp.format', $format);
                         $this->Progress->end('/models/getGeneration');
                     } else {
                         $this->setCookieToken( "downloadToken", $token, false );
                         header("Content-type: $sMimeType");
-                        $nomFichier = str_replace(array('pdf2','odt2'), array('pdf','odt'), $nomFichier);
-                        header("Content-Disposition: attachment; filename=\"$nomFichier\"");
+                        header("Content-Disposition: attachment; filename=\"$nomFichier.$format\"");
                         header("Content-Length: ".strlen($content));
                         die ($content);
                     }
