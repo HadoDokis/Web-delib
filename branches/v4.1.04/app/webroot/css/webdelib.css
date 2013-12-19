@@ -697,11 +697,12 @@ a.link_clore {
 	padding: 4px 4px 4px 25px;
 }
 
-a.link_mdp {
+a.link_mdp, a.link_mdp:hover {
 	background-image: url(../../../img/icons/mdp.png);
 	background-repeat: no-repeat;
 	background-position: top left;
 	padding: 0 0 32px 32px;
+            text-decoration: none;
 }
 
 a.link_annuler_sans_border {
@@ -1376,7 +1377,7 @@ div.aModifier {
 
 /* mise en forme des div ouvrables */
 
-.ouvrable { 5px;
+.ouvrable { padding-bottom: 2em;
 }
 
 .autocomplete {
