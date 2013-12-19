@@ -144,16 +144,13 @@ if (empty($this->data['Multidelib'])) {
                 </dd>
             </div>
         </div>
-
-
-        <div class="imbrique">
-<?php echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'Circuit', 'initHeight' => 'MIN'));
+<?php
+echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'Circuit'));
+//echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'Circuit', 'initHeight' => 'MIN'));
 echo $this->Html->tag('dt', "Circuit " . $this->data['Circuit']['libelle']);
 ?>
             <dd><?php echo $visu; ?></dd>
         </div>
-</div>
-
 <?php
 echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'textes'));
 echo $this->Html->tag('dt', "Textes");

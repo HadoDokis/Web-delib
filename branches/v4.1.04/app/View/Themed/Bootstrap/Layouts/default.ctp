@@ -65,10 +65,12 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                         <div class='user'>
                             <?php echo $this->Html->image('webdelib_petit.png', array('id'=>'logo')); ?>
                             <?php if (isset($infoUser)) {
-                            echo $this->Form->create(null, array('class' => 'navbar-search form-search pull-right',
+                            echo $this->Form->create('User', array(
+                                    'id' => 'quickSearch',
+                                    'class' => 'navbar-search form-search pull-right',
                                     'url' => array('controller' => 'deliberations', 'action' => 'quicksearch')
                                                         ));
-                            echo $this->Form->input('field', array('class' => 'search-query span2',
+                            echo $this->Form->input('User.search', array('class' => 'search-query span2',
                                 'div' => false, 'label' => false,
                                 'id' => 'searchInput',
                                 'placeholder' => 'Rechercher',
