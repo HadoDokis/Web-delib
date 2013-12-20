@@ -114,7 +114,6 @@ $webDelib = array(
             'subMenu' => array(
                 'items' => array(
                     'Profils' => array('link' => '/profils/index'),
-                    //'Droits' => array('link' => '/droits/edit'),
                     'Services' => array('link' => '/services/index'),
                     'Utilisateurs' => array('link' => '/users/index'),
                     'Circuits' => array('link' => '/cakeflow/circuits/index')
@@ -139,10 +138,17 @@ $webDelib = array(
                     'Modèles d\'édition' => array('link' => '/model_odt_validator/modeltemplates'),
                     'Séquences' => array('link' => '/sequences/index'),
                     'Compteurs' => array('link' => '/compteurs/index'),
-                    'Types d\'acte' => array('link' => '/typeactes/index'),
-                    'Types de séance' => array('link' => '/typeseances/index'),
                     'Informations sup. projet' => array('link' => '/infosupdefs/index'),
                     'Informations sup. séance' => array('link' => '/infosupdefs/index_seance'),
+                    'Types d\'acte' => array('link' => '/typeactes/index'),
+                    'Types de séance' => array('link' => '/typeseances/index'),
+                )
+            )
+        ),
+        'Maintenance' => array(
+            'link' => 'connecteurs',
+            'subMenu' => array(
+                'items' => array(
                     'Gestion des connecteurs' => array('link' => '/connecteurs/index'),
                     'Gestion des crons' => array('link' => '/crons/index')
                 )
@@ -150,4 +156,3 @@ $webDelib = array(
         )
     )
 );
-?>

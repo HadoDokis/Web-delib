@@ -8,17 +8,25 @@ echo $this->Html->script('droits', true);
 echo $this->Html->tag('table', null, array('cellspacing'=>'0', 'cellpadding'=>'0', 'id'=>'tableDroits'));
 foreach($listeCtrlAction as $rownum => $ctrlAction) {
 	$classTd = 'niveau'.$ctrlAction['niveau'];
-	if ($ctrlAction['niveau']==0) $ctrlAction['title']='<b>'.$ctrlAction['title'].'</b>';
-	$indentation = str_repeat('&nbsp;&nbsp;&nbsp;', $ctrlAction['niveau']);
+    $icon = '';
+    if ($ctrlAction['niveau']==0)
+        $icon = '<i class="fa fa-angle-down"></i>&nbsp;&nbsp;';
+    if ($ctrlAction['niveau']==1)
+        $icon = '<i class="fa fa-angle-right"></i>&nbsp;&nbsp;';
+
+    $ctrlAction['title']='<label for="chkBoxDroits'.$rownum.'">'.$icon.$ctrlAction['title'].'</label>';
+
 	$optionsCheckBox = array(
-		'label' => '',
+		'label' => false,
 		'type' => 'checkbox',
-		'id' => 'chkBoxDroits'.$rownum);
+		'id' => 'chkBoxDroits'.$rownum
+    );
+
 	if ($ctrlAction['nbSousElements']>0)
 		$optionsCheckBox['onclick'] = 'toggleCheckBoxDroits('.$rownum.', '.$ctrlAction['nbSousElements'].');';
 
 	echo $this->Html->tag('tr');
-		echo $this->Html->tag('td', $indentation.$ctrlAction['title'].'&nbsp;&nbsp;&nbsp;', array('class'=>$classTd));
+		echo $this->Html->tag('td', $ctrlAction['title'], array('class'=>$classTd.' td-droit'));
 		if ($ctrlAction['modifiable'])
 			echo $this->Html->tag('td', $this->Form->input('Droits.'.$ctrlAction['acosAlias'], $optionsCheckBox), array('class'=>$classTd));
 		else
@@ -26,4 +34,3 @@ foreach($listeCtrlAction as $rownum => $ctrlAction) {
 	echo $this->Html->tag('/tr');
 }
 echo $this->Html->tag('/table');
-?>

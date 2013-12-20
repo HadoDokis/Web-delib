@@ -146,6 +146,7 @@ label {
 	background-color: transparent;
     margin: 0;
     margin-left: 110px;
+    font-weight: bold;
     text-align: left;
 }
 
@@ -1012,7 +1013,7 @@ ul.actions, .actions ul {
 }
 
 #actions_fiche {
-	text-align: center;
+	text-align: left;
 }
 #actions_fiche .btn {
     margin-bottom: 10px;
@@ -1446,4 +1447,24 @@ fieldset#mails strong{
     width: 220px;
     display: block;
     /*margin-bottom: 10px;*/
+}
+
+#InsertRebondForm label{
+    width: 150px;
+    margin-right: 10px;
+}
+#tableDroits td.td-droit label{
+    float: none;
+    text-align: left;
+    font-size: 1em;
+    width: auto;
+}
+#tableDroits td.td-droit.niveau0 label{
+    font-weight: bold;
+}
+#tableDroits td.td-droit.niveau0{
+    padding-left: 10px;
+}
+#tableDroits td.td-droit.niveau1{
+    padding-left: 25px;
 }

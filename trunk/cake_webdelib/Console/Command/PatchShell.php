@@ -118,8 +118,16 @@ class PatchShell extends AppShell {
         $db = ConnectionManager::getDataSource('default');
         $this->out('Mise à jour de la base de données..');
 
-        $newpluginsql = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
         $migratesql = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
+        if (!file_exists($migratesql)){
+            $this->out("<error>Patch sql 4.1=>4.2 introuvable, veuillez vous assurer d'avoir la dernière version des sources de Webdelib</error>");
+            return;
+        }
+        $newpluginsql = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
+        if (!file_exists($newpluginsql)){
+            $this->out("<error>Script sql du plugin ModelOdtValidator introuvable, veuillez vous assurer d'avoir installé le plugin</error>");
+            return;
+        }
 
         $newpluginfile = new File($newpluginsql);
         $migratefile = new File($migratesql);

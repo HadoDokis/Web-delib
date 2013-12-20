@@ -1,7 +1,6 @@
 <?php
 class UsersController extends AppController {
 
-	public $name = 'Users';
 	public $helpers = array('Form', 'Html', 'Html2', 'Session');
 	public $uses = array( 'User','Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
 	public $components = array('Utils', 'Acl', 'Menu', 'Dbdroits', 'Filtre', 'Paginator');
@@ -27,18 +26,20 @@ class UsersController extends AppController {
         'changeMdp' => 'Users:index'
     );
 
+    //FIXME -- optimisation
     function index()
     {
         $this->Filtre->initialisation($this->name.':'.$this->request->action, $this->request->data);
         $conditions =  $this->Filtre->conditions();
         if (!$this->Filtre->critereExists()) {
-
             //Définition d'un champ virtuel pour affichage complet des informations
             $this->User->virtualFields['name'] = 'User.prenom || \' \' || User.nom || \' (\' || User.login || \')\'';
             $users = $this->User->find('list', array(
+                'recursive' => -1,
                 'fields'=> array('id', 'name'),
                 'order' => 'login'
             ));
+            //FIXME -- optimisation : ne pas fournir les options mais utiliser ajax pour alléger le navigateur (chargement page)
             $this->Filtre->addCritere('Utilisateur', array(
                 'field' => 'User.id',
                 'retourLigne' => true,
@@ -91,21 +92,24 @@ class UsersController extends AppController {
             'order' => array('User.login' => 'asc')));
 
         $users = $this->Paginator->paginate('User');
+        /*
         foreach ($users as &$user) {
             $aro = $this->Aro->find('first', array(
                 'conditions' => array('model' => 'User', 'foreign_key' => $user['User']['id']),
                 'fields' => array('id'),
                 'recursive' => -1));
-            $aros_ados = $this->ArosAdo->find('all', array('conditions' => array(
-                'ArosAdo.aro_id' => $aro['Aro']['id'],
-                'ArosAdo._create' => 1),
+            $aros_ados = $this->ArosAdo->find('all', array(
+                'conditions' => array(
+                    'ArosAdo.aro_id' => $aro['Aro']['id'],
+                    'ArosAdo._create' => 1
+                ),
                 'contain' => array('Ado.alias'),
                 'fields' => array('Ado.id')));
             foreach ($aros_ados as $aros_ado)
                 $user['Natures'][] = substr($aros_ado['Ado']['alias'], strlen('Typeacte:'), strlen($aros_ado['Ado']['alias']));
-
+            // FIXME Optimiser pour diminuer le nombre de requêtes quand grosse bdd!!
             $user['User']['is_deletable'] = $this->_isDeletable($user, $message);
-        }
+        }*/
         $this->set('users', $users);
     }
 
@@ -181,151 +185,152 @@ class UsersController extends AppController {
 		}
 	}
 
-	function edit($id = null) {
-		$sortie = false;
-		if (empty($this->data)) {
-			$this->request->data = $this->User->find('first', array('conditions' => array('User.id' =>$id)));
-			if (empty($this->data)) {
-				$this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
-				$sortie = true;
-  			} else {
-                                $aro    = $this->Aro->find('first',array('conditions'=>array('model'=>'User', 'foreign_key'=>$id),
-                                                           'fields'=>array('id'),
-                                                           'recursive' => -1));
+    function edit($id = null)
+    {
+        $sortie = false;
+        if (empty($this->data)) {
+            $this->request->data = $this->User->find('first', array('conditions' => array('User.id' => $id)));
+            if (empty($this->data)) {
+                $this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
+                $sortie = true;
+            } else {
+                $aro = $this->Aro->find('first', array(
+                    'conditions' => array('model' => 'User', 'foreign_key' => $id),
+                    'fields' => array('id'),
+                    'recursive' => -1));
 
-				$this->set('selectedCircuits', $this->data['User']['circuit_defaut_id']);
-				$this->set('selectedServices', $this->_selectedArray($this->data['Service']));
-				$this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'User','foreign_key'=>$id));
-				$natures = $this->Typeacte->find('all', array('recursive' => -1));
-                
-				foreach ($natures as &$nature) {
-                                        $ado    = $this->Ado->find('first',array('conditions'=>array('Ado.model'       => 'Typeacte',
-                                                                                                     'Ado.foreign_key' => $nature['Typeacte']['id']),
-                                                                                 'fields'=>array('Ado.id'),
-                                                                                 'recursive' => -1));
+                $this->set('selectedCircuits', $this->data['User']['circuit_defaut_id']);
+                $this->set('selectedServices', $this->_selectedArray($this->data['Service']));
+                $this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'User', 'foreign_key' => $id));
+                $natures = $this->Typeacte->find('all', array('recursive' => -1));
 
-					$nature['Nature']['check'] = $this->ArosAdo->check($aro['Aro']['id'], $ado['Ado']['id']);
-                                }
-				$this->set('natures', $natures);
-			}
-		} else {
-			$userDb = $this->User->find('first', array('conditions'=>array('id'=>$id), 'recursive'=>-1));
-                        $aro    = $this->Aro->find('first',array('conditions'=>array('model'=>'User', 'foreign_key'=>$id),
-                                                                 'fields'=>array('id'),
-                                                                  'recursive' => -1));
-			if ($this->User->save($this->data)) {
-				foreach ($this->data['Nature'] as $nature_id => $can) {
-					$nature_id = substr($nature_id, 3, strlen($nature_id));
-                                        $ado    = $this->Ado->find('first',array('conditions'=>array('Ado.model'       => 'Typeacte', 
-                                                                                                     'Ado.foreign_key' => $nature_id),
-                                                                                 'fields'=>array('Ado.id'),
-                                                                                 'recursive' => -1));
-                           
-                                        
-					if ($can)
-						$this->ArosAdo->allow($aro['Aro']['id'], $ado['Ado']['id']);
-					else
-						$this->ArosAdo->deny($aro['Aro']['id'],  $ado['Ado']['id']);
-				}
-				if ($userDb['User']['profil_id']!=$this->data['User']['profil_id']) {
-				    $this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']));
-				}
+                foreach ($natures as &$nature) {
+                    $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
+                        'Ado.foreign_key' => $nature['Typeacte']['id']),
+                        'fields' => array('Ado.id'),
+                        'recursive' => -1));
 
-				$this->Dbdroits->MajCruDroits(
-						array('model'=>'User', 'foreign_key'=>$id, 'alias'=>$this->data['User']['login']),
-						array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']),
-						$this->request->data['Droits']
-				);
-
-				$this->Session->setFlash('L\'utilisateur \''.$this->data['User']['login'].'\' a été modifié', 'growl');
-				$sortie = true;
-			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
-				$this->set('selectedServices', $this->data['Service']['Service']);
-			}
-		}
-		if ($sortie)
-			$this->redirect('/users/index');
-		else {
-			$this->set('services', $this->User->Service->generateTreeList(array('Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
-			$this->set('profils', $this->User->Profil->find('list'));
-			$this->set('notif',array('1'=>'oui','0'=>'non'));
-			$this->set('circuits', $this->Circuit->getList());
-			$this->set('listeCtrlAction', $this->Menu->menuCtrlActionAffichage());
-                        $aro    = $this->Aro->find('first',array('conditions'=>array('model'=>'User', 'foreign_key'=>$id),
-                                                           'fields'=>array('id'),
-                                                           'recursive' => -1));
-
-			$natures = $this->Typeacte->find('all', array('recursive' => -1));
-			foreach ($natures as &$nature) {
-                            $ado    = $this->Ado->find('first',array('conditions'=>array('Ado.model'       => 'Typeacte',
-                                                                                          'Ado.foreign_key' => $nature['Typeacte']['id']),
-                                                                                 'fields'=>array('Ado.id'),
-                                                                                 'recursive' => -1));
-
-			    $nature['Nature']['check'] = $this->ArosAdo->check($aro['Aro']['id'], $ado['Ado']['id']);
-                        }
-			$this->set('natures', $natures);
-		}
-	}
-
-	/* dans le controleur car utilisé dans la vue index pour l'affichage */
-	function _isDeletable($user, &$message) {
-		$this->loadModel('Deliberation');
-		if ($user['User']['id'] == 1) {
-			$message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est protégé';
-			return false;
-		} elseif ($user['User']['id'] == $this->Session->read('user.User.id')) {
-			$message = 'L\'utilisateur courant \''.$user['User']['login'].'\' ne peut pas être supprimé';
-			return false;
-		} elseif ($this->Deliberation->find('count', array('conditions' => array('Deliberation.redacteur_id'=>$user['User']['id']),
-				'recursive' => -1))) {
-                        $message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il est l\'auteur de délibérations';
-                        return false;
-		}else{ //Si l'utilisateur à des projets A traiter, ne pas permettre la suppression
-                    $this->loadModel('Cakeflow.Traitement');
-                    //A traiter
-                    $conditions=array();
-                    $conditions['Deliberation.id'] = $this->Traitement->listeTargetId( $user['User']['id'], 
-                                                        array('etat'       => 'NONTRAITE',
-                                                              'traitement' => 'AFAIRE'));
-                    $conditions['Deliberation.etat'] =  1;
-                    $conditions['Deliberation.parent_id'] =  NULL;
-                    $nbProjetsATraiter = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1 ));
-                    
-                    //En cours de validation
-                    $conditions=array();
-                    $conditions['Deliberation.etat'] =  1;
-                    $conditions['Deliberation.parent_id'] =  NULL;
-                    $conditions['OR']['Deliberation.id'] = $this->Traitement->listeTargetId($user['User']['id'], 
-                                                        array('etat'=>'NONTRAITE', 
-                                                              'traitement'=>'NONAFAIRE'));
-                    $conditions['OR']['Deliberation.redacteur_id'] = $user['User']['id'];
-                    $nbProjetsValidation = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
-                    
-                    $nbProjets = $nbProjetsATraiter+$nbProjetsValidation;
-                    
-                    if ($nbProjets > 0){
-                        $message = 'L\'utilisateur \''.$user['User']['login'].'\' ne peut pas être supprimé car il a des projets en cours';
-                        return false;
-                    }
-                    
-
-                    
-                    
+                    $nature['Nature']['check'] = $this->ArosAdo->check($aro['Aro']['id'], $ado['Ado']['id']);
                 }
-		return true;
-	}
+                $this->set('natures', $natures);
+            }
+        } else {
+            $userDb = $this->User->find('first', array('conditions' => array('id' => $id), 'recursive' => -1));
+            $aro = $this->Aro->find('first', array('conditions' => array('model' => 'User', 'foreign_key' => $id),
+                'fields' => array('id'),
+                'recursive' => -1));
+            if ($this->User->save($this->data)) {
+                foreach ($this->data['Nature'] as $nature_id => $can) {
+                    $nature_id = substr($nature_id, 3, strlen($nature_id));
+                    $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
+                        'Ado.foreign_key' => $nature_id),
+                        'fields' => array('Ado.id'),
+                        'recursive' => -1));
 
-	function delete($id = null) {
+                    if ($can)
+                        $this->ArosAdo->allow($aro['Aro']['id'], $ado['Ado']['id']);
+                    else
+                        $this->ArosAdo->deny($aro['Aro']['id'], $ado['Ado']['id']);
+                }
+                if ($userDb['User']['profil_id'] != $this->data['User']['profil_id']) {
+                    $this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']));
+                }
+
+                $this->Dbdroits->MajCruDroits(
+                    array('model' => 'User', 'foreign_key' => $id, 'alias' => $this->data['User']['login']),
+                    array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']),
+                    $this->request->data['Droits']
+                );
+
+                $this->Session->setFlash('L\'utilisateur \'' . $this->data['User']['login'] . '\' a été modifié', 'growl');
+                $sortie = true;
+            } else {
+                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
+                $this->set('selectedServices', $this->data['Service']['Service']);
+            }
+        }
+        if ($sortie)
+            $this->redirect('/users/index');
+        else {
+            $this->set('services', $this->User->Service->generateTreeList(array('Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+            $this->set('profils', $this->User->Profil->find('list'));
+            $this->set('notif', array('1' => 'oui', '0' => 'non'));
+            $this->set('circuits', $this->Circuit->getList());
+            $this->set('listeCtrlAction', $this->Menu->menuCtrlActionAffichage());
+            $aro = $this->Aro->find('first', array(
+                'conditions' => array('model' => 'User', 'foreign_key' => $id),
+                'fields' => array('id'),
+                'recursive' => -1));
+
+            $natures = $this->Typeacte->find('all', array('recursive' => -1));
+            foreach ($natures as &$nature) {
+                $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
+                    'Ado.foreign_key' => $nature['Typeacte']['id']),
+                    'fields' => array('Ado.id'),
+                    'recursive' => -1));
+
+                $nature['Nature']['check'] = $this->ArosAdo->check($aro['Aro']['id'], $ado['Ado']['id']);
+            }
+            $this->set('natures', $natures);
+        }
+    }
+
+    /* dans le controleur car utilisé dans la vue index pour l'affichage */
+    function _isDeletable($user, &$message)
+    {
+        $this->loadModel('Deliberation');
+        if ($user['User']['id'] == 1) {
+            $message = 'L\'utilisateur \'' . $user['User']['login'] . '\' ne peut pas être supprimé car il est protégé';
+            return false;
+        } elseif ($user['User']['id'] == $this->Session->read('user.User.id')) {
+            $message = 'L\'utilisateur courant \'' . $user['User']['login'] . '\' ne peut pas être supprimé';
+            return false;
+        } elseif ($this->Deliberation->find('count', array('conditions' => array('Deliberation.redacteur_id' => $user['User']['id']),
+            'recursive' => -1))
+        ) {
+            $message = 'L\'utilisateur \'' . $user['User']['login'] . '\' ne peut pas être supprimé car il est l\'auteur de délibérations';
+            return false;
+        } else { //Si l'utilisateur à des projets A traiter, ne pas permettre la suppression
+            $this->loadModel('Cakeflow.Traitement');
+            //A traiter
+            $conditions = array();
+            $conditions['Deliberation.id'] = $this->Traitement->listeTargetId($user['User']['id'],
+                array('etat' => 'NONTRAITE',
+                    'traitement' => 'AFAIRE'));
+            $conditions['Deliberation.etat'] = 1;
+            $conditions['Deliberation.parent_id'] = NULL;
+            $nbProjetsATraiter = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
+
+            //En cours de validation
+            $conditions = array();
+            $conditions['Deliberation.etat'] = 1;
+            $conditions['Deliberation.parent_id'] = NULL;
+            $conditions['OR']['Deliberation.id'] = $this->Traitement->listeTargetId($user['User']['id'], array(
+                'etat' => 'NONTRAITE',
+                'traitement' => 'NONAFAIRE'));
+            $conditions['OR']['Deliberation.redacteur_id'] = $user['User']['id'];
+            $nbProjetsValidation = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
+
+            $nbProjets = $nbProjetsATraiter + $nbProjetsValidation;
+
+            if ($nbProjets > 0) {
+                $message = 'L\'utilisateur \'' . $user['User']['login'] . '\' ne peut pas être supprimé car il a des projets en cours';
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function delete($id = null) {
 		$messageErreur = '';
-		$user = $this->User->find('first' , array('conditions' => array('User.id' => $id),
-                                                          'fields'     => array('id', 'login'),
-                                                          'recursive'  => -1));
+		$user = $this->User->find('first' , array(
+            'conditions' => array('User.id' => $id),
+            'fields'     => array('id', 'login'),
+            'recursive'  => -1));
 		if (empty($user))
 			$this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
 		elseif (!$this->_isDeletable($user, $messageErreur)) {
-			$this->Session->setFlash($messageErreur);
+			$this->Session->setFlash($messageErreur, 'growl', array('type'=>'erreur'));
 		} elseif ($this->User->delete($id)) {
 			$aro = new Aro();
 			$aro_id = $aro->find('first',array('conditions'=>array('model'=>'User', 'foreign_key'=>$id),'fields'=>array('id')));
@@ -411,8 +416,7 @@ class UsersController extends AppController {
             if (empty($user)) {
                 $this->set('errorMsg', "L'utilisateur " . $this->data['User']['login'] . " n'existe pas dans l'application.");
                 $this->layout = 'connexion';
-                $this->render();
-                //exit;
+                return $this->render();
             }
             if ($user['User']['id'] == 1) {
                 $isAuthentif = ($user['User']['password'] == md5($this->data['User']['password']));
