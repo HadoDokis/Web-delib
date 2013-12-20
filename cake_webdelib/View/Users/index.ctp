@@ -45,7 +45,7 @@
                     <?php echo $this->Html->link(SHY, '/users/edit/' . $user['User']['id'], array('class' => 'link_modifier', 'escape' => false, 'title' => 'Modifier'), false) ?>
                     <?php echo $this->Html->link(SHY, '/users/changeMdp/' . $user['User']['id'], array('class' => 'link_mdp', 'escape' => false, 'title' => 'Nouveau mot de passe'), false) ?>
                     <?php
-                    if ($user['User']['is_deletable'])
+//                    if ($user['User']['is_deletable'])
                         echo $this->Html->link(SHY, '/users/delete/' . $user['User']['id'], array('class' => 'link_supprimer', 'escape' => false, 'title' => 'Supprimer'), 'Etes-vous sur de vouloir supprimer cet utilisateur : \'' . $user['User']['prenom'] . ' ' . $user['User']['nom'] . '\' ?');
                     ?>
                 </td>

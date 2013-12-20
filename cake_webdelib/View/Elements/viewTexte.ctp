@@ -29,9 +29,9 @@ switch ($type) {
 
 if (Configure::read('GENERER_DOC_SIMPLE')) {
     if (!empty($delib[$textKey])) {
-        echo $this->Html->tag('dd', null);
-        echo $this->Html->tag('br');
-        echo $this->Html->tag('strong', $libelle . ' : ');
+        echo $this->Html->tag('dd', null, array('style'=>'text-indent:0;'));
+        echo $this->Html->tag('strong', $libelle , array('style'=>'text-decoration: underline;'));
+        echo ' : ';
         echo $this->Html->link('[Afficher le texte]', 'javascript:afficheMasqueTexteEnrichi(\'afficheMasque' . $type . $delib['id'] . '\', \'' . $type . $delib['id'] . '\')', array('id' => 'afficheMasque' . $type . $delib['id'], 'affiche' => 'masque'));
         echo '<div class="annexesGauche"></div>';
         echo '<div class="fckEditorProjet">';
@@ -42,9 +42,9 @@ if (Configure::read('GENERER_DOC_SIMPLE')) {
     }
 } else {
     if (!empty($delib[$textKey])) {
-        echo $this->Html->tag('dd', null);
-        echo $this->Html->tag('br');
-        echo $this->Html->tag('strong', $libelle . ' : ');
+        echo $this->Html->tag('dd', null, array('style'=>'text-indent:0;'));
+        echo $this->Html->tag('strong', $libelle , array('style'=>'text-decoration: underline;'));
+        echo ' : ';
         echo $this->Html->link($filename, array('action' => 'download', $delib['id'], $textKey));
         echo $this->Html->tag('/dd');
     }

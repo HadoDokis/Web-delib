@@ -109,7 +109,7 @@ class DeliberationsController extends AppController
 
         if (empty($this->data)) {
             $this->Session->setFlash('Invalide id pour la délibération : affichage de la vue impossible.', 'growl');
-            $this->redirect('/deliberations/mesProjetsRedaction');
+            $this->redirect(array('action'=>'mesProjetsRedaction'));
         }
         $userId = $this->Session->read('user.User.id');
 
@@ -1362,7 +1362,8 @@ class DeliberationsController extends AppController
                 $listeAnterieure = array();
                 $tab_anterieure = $this->_chercherVersionAnterieure($projet, $nb_recursion, $listeAnterieure, $action);
                 $this->set('tab_anterieure', $tab_anterieure);
-                $commentaires = $this->Commentaire->find('all', array('conditions' => array('Commentaire.delib_id' => $id,
+                $commentaires = $this->Commentaire->find('all', array('conditions' => array(
+                    'Commentaire.delib_id' => $id,
                     'Commentaire.pris_en_compte' => 0),
                     'order' => 'created ASC'));
                 for ($i = 0; $i < count($commentaires); $i++) {
@@ -1370,6 +1371,8 @@ class DeliberationsController extends AppController
                         'User.id' => $commentaires[$i]['Commentaire']['agent_id']),
                         'recursive' => -1,
                         'fields' => array('nom', 'prenom')));
+                    if (empty($agent))
+                        $this->Session->setFlash('Identité de l\'auteur de(s) commentaire(s) inconnue.', 'growl');
                     $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
                     $commentaires[$i]['Commentaire']['prenomAgent'] = $agent['User']['prenom'];
                 }
@@ -2095,8 +2098,7 @@ class DeliberationsController extends AppController
 
                 $delib = $this->Deliberation->find('first', array(
                     'conditions' => array('Deliberation.id' => $delib_id),
-                    'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.titre'),
-                    'contain' => array('Circuit.id')
+                    'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.titre', 'Deliberation.circuit_id')
                 ));
 
                 $this->Email->layout = 'default';
@@ -2274,14 +2276,13 @@ class DeliberationsController extends AppController
         $addrTraiter = FULL_BASE_URL . "/deliberations/traiter/" . $delib['Deliberation']['id'];
         $addrView = FULL_BASE_URL . "/deliberations/view/" . $delib['Deliberation']['id'];
         $addrEdit = FULL_BASE_URL . "/deliberations/edit/" . $delib['Deliberation']['id'];
-
         $searchReplace = array(
             "#NOM#" => $acteur['nom'],
             "#PRENOM#" => $acteur['prenom'],
             "#IDENTIFIANT_PROJET#" => $delib['Deliberation']['id'],
             "#OBJET_PROJET#" => $delib['Deliberation']['objet'],
             "#TITRE_PROJET#" => $delib['Deliberation']['titre'],
-            "#LIBELLE_CIRCUIT#" => $this->Circuit->getLibelle($delib['Circuit']['id']),
+            "#LIBELLE_CIRCUIT#" => $this->Circuit->getLibelle($delib['Deliberation']['circuit_id']),
             "#ADRESSE_A_TRAITER#" => $addrTraiter,
             "#ADRESSE_A_VISUALISER#" => $addrView,
             "#ADRESSE_A_MODIFIER#" => $addrEdit,
