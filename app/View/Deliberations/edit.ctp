@@ -306,7 +306,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 echo $this->Form->hidden('Deliberation.id');
 
 echo $this->Html->tag("div", null, array("class" => "btn-group"));
-echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Annuler', array('action' => 'mesProjetsRedaction'), array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name'=>'Annuler'));
+echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Annuler', array('action' => 'mesProjetsRedaction'), array('id' => 'boutonAnnuler','class' => 'btn noWarn', 'escape' => false, 'title' => 'Annuler', 'name'=>'Annuler'));
 echo $this->Form->button('<i class="icon-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le projet'));
 echo $this->Html->tag('/div', null);
 ?>
@@ -314,7 +314,7 @@ echo $this->Html->tag('/div', null);
 </div>
 
 <?php echo $this->Form->end(); ?>
-<script>
+<script type="text/javascript">
 // variables globales
 
 // affichage de l'éditeur de texte intégré ckEditor
@@ -323,4 +323,21 @@ function editerTexte(obj, textId, afficheTextId) {
 	$('#'+afficheTextId).hide();
 	$(obj).hide();
 }
+//Gestion des sorties du formulaire
+function onUnloadEditForm(){
+    $(window).bind('beforeunload', function(){
+        return "Attention!! des données saisies pourraient ne pas être enregistrées dans webdelib.";
+    });
+}
+$(document).ready(onUnloadEditForm);
+$("#DeliberationEditForm").submit(function(){
+    $(window).unbind("beforeunload");
+});
+$(".noWarn").on('click', function(){
+                                                $(window).unbind('beforeunload');
+                                                objMenuTimeout = setTimeout(function(){
+                                                    onUnloadEditForm();
+                                                }, 2000); // 2000 millisecondes = 2 secondes
+                                            }
+);
 </script>

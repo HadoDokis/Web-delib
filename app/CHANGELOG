@@ -1,5 +1,7 @@
 4.1.04
 ======
+- Message d'avertissement lors de la sortie en modification d'un projet d'acte
+- Modification de la sortie des documents générés, modification des extentions de fichiers non valides
 - Mise ne place d'un place d'un script js placeholder pour les navigateurs non supporté 
 - Prendre en compte que lorsqu'un projet et dans "mes projets à traiter" qu'il ne s'affiche pas dans "mes projets en cours d'élaboration et de validation"
 - Suppression de la limite de mémoire pour le composant i-Parapheur
