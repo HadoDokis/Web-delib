@@ -1197,6 +1197,7 @@ class DeliberationsController extends AppController
                         'insertion' => array(
                             '0' => array(
                                 'Etape' => array(
+                                    'etape_id' => null,
                                     'etape_nom' => 'Rédacteur',
                                     'etape_type' => 1
                                 ),
@@ -2870,6 +2871,7 @@ class DeliberationsController extends AppController
                     'insertion' => array(
                         '0' => array(
                             'Etape' => array(
+                                'etape_id' => null,
                                 'etape_nom' => 'Validation en urgence',
                                 'etape_type' => 1
                             ),
@@ -3567,6 +3569,7 @@ class DeliberationsController extends AppController
             $insertion = array(
                 '0' => array(
                     'Etape' => array(
+                        'etape_id' => null,
                         'etape_nom' => 'Aller à une étape suivante',
                         'etape_type' => 1
                     ),
@@ -3575,8 +3578,10 @@ class DeliberationsController extends AppController
                             'trigger_id' => $this->Session->read('user.User.id'),
                             'type_validation' => 'V'
                         ))));
-            $this->Traitement->execute('JS', $this->Session->read('user.User.id'), $delib_id, array('insertion' => $insertion,
-                'numero_traitement' => $this->data['Traitement']['etape']));
+            $this->Traitement->execute('JS', $this->Session->read('user.User.id'), $delib_id, array(
+                'insertion' => $insertion,
+                'numero_traitement' => $this->data['Traitement']['etape']
+            ));
 
             $destinataires = $this->Traitement->whoIsNext($delib_id);
             foreach ($destinataires as $destinataire_id)
@@ -3591,7 +3596,8 @@ class DeliberationsController extends AppController
     function rebond($delib_id)
     {
         $this->set('delib_id', $delib_id);
-        $acte = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
+        $acte = $this->Deliberation->find('first', array(
+            'conditions' => array('Deliberation.id' => $delib_id),
             'fields' => array('Deliberation.redacteur_id'),
             'recursive' => -1));
         $redacteur_id = $acte['Deliberation']['redacteur_id'];
@@ -3611,6 +3617,7 @@ class DeliberationsController extends AppController
                 'insertion' => array(
                     '0' => array(
                         'Etape' => array(
+                            'etape_id' => null,
                             'etape_nom' => $user['User']['prenom'] . ' ' . $user['User']['nom'],
                             'etape_type' => 1
                         ),
