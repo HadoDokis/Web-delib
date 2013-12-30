@@ -79,7 +79,7 @@
             else
                 $model_id = $acte['Model']['modeleprojet_id'];
 
-            echo $this->Html->link(SHY, '/models/generer/' . $acte['Deliberation']['id'] . '/null/' . $model_id, array('class' => 'link_pdf',
+            echo $this->Html->link(SHY, '/models/generer/' . $acte['Deliberation']['id'] . '/null/' . $model_id, array('class' => 'link_pdf delib_pdf',
                 'escape' => false,
                 'title' => 'Génération de ' . $acte['Deliberation']['objet']));
 
