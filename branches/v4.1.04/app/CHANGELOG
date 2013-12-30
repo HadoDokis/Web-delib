@@ -1,5 +1,6 @@
 4.1.04
 ======
+- Numérotation hiérarchisée par code des matières de la Classification
 - Message d'avertissement lors de la sortie en modification d'un projet d'acte
 - Modification de la sortie des documents générés, modification des extentions de fichiers non valides
 - Mise ne place d'un place d'un script js placeholder pour les navigateurs non supporté 
