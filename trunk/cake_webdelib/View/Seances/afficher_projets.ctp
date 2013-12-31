@@ -1,13 +1,13 @@
 <?php
 // select masqués utilisés par le javascript
-echo $this->Form->input('Deliberation.position', array('options'=>$lst_pos, 'id'=>'selectOrdre', 'label'=>false, 'div'=>false, 'style'=>"display:none;", 'onChange'=>"onChangeSelectOrdre(this.value);"));
+echo $this->Form->input('Deliberation.position', array('options'=>$lst_pos, 'id'=>'selectOrdre', 'label'=>false, 'div'=>false, 'style'=>"display:none; width: auto;", 'onChange'=>"onChangeSelectOrdre(this.value);"));
 echo $this->Form->input('Deliberation.rapporteur_id', array('options'=>$rapporteurs, 'empty'=>true, 'id'=>'selectRapporteur', 'label'=>false, 'div'=>false, 'style'=>"display:none;", 'onChange'=>"onChangeSelectRapporteur(this.value);"));
 echo $this->Form->hidden('Aplication.url', array('value'=>FULL_BASE_URL.$this->webroot));
 echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 ?>
 
 <h2>Liste des projets pour la séance du <?php echo $date_seance; ?></h2>
-<table  class="table table-hover">
+<table class="table-projets-seance">
 	<tr>
 		<th style='width:4%'>Ordre</th>
 		<?php echo ('<th width="13%">'.$this->Html->link('Thème', "/deliberations/sortby/$seance_id/theme_id",null,'Etes-vous sur de vouloir trier par theme ?'). "</th>"); ?>
@@ -25,7 +25,7 @@ echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
 		$delibPosition = $projet['Deliberationseance']['position'];
 	?>
 
-	<tr height='36px'>
+	<tr style='height:36px'>
 		<td><?php echo $this->Html->link($delibPosition, "javascript:onClickLinkOrdre(".$delibPosition.", ".$delibId.");", array('id'=>'linkOrdre'.$delibPosition)); ?></td>
 		<td><?php echo '['.$projet['Theme']['order'].'] '.$projet['Theme']['libelle']; ?></td>
         <td><?php echo $projet['Service']['libelle']; ?></td>
@@ -43,7 +43,7 @@ echo $this->Form->hidden('Aplication.seanceid', array('value'=>$seance_id));
         </td>
 	    <td><?php echo $projet['Deliberation']['objet_delib']; ?></td>
         <td><?php echo $projet['Deliberation']['titre']; ?></td>
-        <td><?php echo $this->Html->link($projet['Deliberation']['id'], array('controller'=>'deliberations', 'action'=>'edit',$projet['Deliberation']['id'])); ?></td>
+        <td><?php echo $this->Html->link($projet['Deliberation']['id'], array('controller'=>'deliberations', 'action'=>'edit',$projet['Deliberation']['id']), array('title' => 'Modifier le projet '.$projet['Deliberation']['id'])); ?></td>
         <?php
         if ($delibPosition != 1)
             echo('<td>' . $this->Html->link(SHY, '/deliberations/positionner/' . $seance_id . '/' . $projet['Deliberation']['id'] . '/-1', array('class' => 'link_monter', 'title' => 'Monter', 'escape' => false), false) . '</td>');
@@ -118,3 +118,6 @@ function onChangeSelectRapporteur(rapporteurId) {
 	document.location=url;
 }
 </script>
+<style>
+
+</style>
