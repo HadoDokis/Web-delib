@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 // initalisations
 $fichier_conf = 'webdelib.inc';
 
-$versionCakePHPAttendue = "2.2.2";
+$versionCakePHPAttendue = "2.2.9";
 $versionPHPAttendue = "5.3";
 $versionAPACHEAttendue = "2.2";
 $mods_apache = array('mod_rewrite', 'mod_ssl', 'mod_dav', 'mod_dav_fs');
