@@ -113,11 +113,8 @@ function onClickLinkRapporteur(rapporteurId, delibId) {
 }
 
 function onChangeSelectRapporteur(rapporteurId) {
-        var seanceid = $('#AplicationSeanceid').val();
+    var seanceid = $('#AplicationSeanceid').val();
 	var url = $('#AplicationUrl').val()+"seances/changeRapporteur/"+seanceid+"/"+rapporteurId+"/"+curdelibIdRapporteur;
 	document.location=url;
 }
 </script>
-<style>
-
-</style>
