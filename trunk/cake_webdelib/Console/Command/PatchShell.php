@@ -1,13 +1,13 @@
 <?php
-
 App::uses('ComponentCollection', 'Controller');
 App::uses('Component', 'Controller');
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
-
 class PatchShell extends AppShell {
 
     public $tasks = array(
+        'Sql',
+        'Cakeflow',
         'Tdt', // 4.1.01 => 4.1.02
         'Gedooo', // 4.1.02 => 4.1.03
         'AjouteSectionAnnexe' // 4.1.xx => 4.2
@@ -109,53 +109,39 @@ class PatchShell extends AppShell {
         ));
         return $parser;
     }
+
     public function Version_41to42()
     {
         $this->out("<important>Mise à jour de Webdelib 4.1.xx => 4.2</important>\n");
         $this->out('Recherche des modèles avec jointure des annexes...');
+        $success = true;
         $this->AjouteSectionAnnexe->execute();
-        //Passage du script sql de migration
-        $db = ConnectionManager::getDataSource('default');
-        $this->out('Mise à jour de la base de données..');
+        //Passage des scripts sql de migration
+        $webdelibSql = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
+        $modelOdtValidatorSql = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
+        $cakeflowSql = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
 
-        $migratesql = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
-        if (!file_exists($migratesql)){
-            $this->out("<error>Patch sql 4.1=>4.2 introuvable, veuillez vous assurer d'avoir la dernière version des sources de Webdelib</error>");
-            return;
+        $this->out("\nMise à jour de la base de données...");
+
+        $this->Sql->execute();
+        $this->Sql->begin();
+
+        $success = $success && $this->Sql->run($webdelibSql);
+        $success = $success && $this->Sql->run($modelOdtValidatorSql);
+        $success = $success && $this->Sql->run($cakeflowSql);
+
+        if ($success){
+            //Commit
+            $this->Sql->commit();
+            //trouver l'attribut etape_id des visas en cours
+            $this->out('Mise à jour des données CakeFlow...');
+            $this->Cakeflow->findVisaEtapeId();
         }
-        $newpluginsql = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
-        if (!file_exists($newpluginsql)){
-            $this->out("<error>Script sql du plugin ModelOdtValidator introuvable, veuillez vous assurer d'avoir installé le plugin</error>");
-            return;
+        else{
+            $this->out("\n<error>Une erreur s'est produite pendant l'installation des mises à jours (Erreur SQL) !!</error>");
+            $this->Sql->rollback();
         }
 
-        $newpluginfile = new File($newpluginsql);
-        $migratefile = new File($migratesql);
-
-        if ($migratefile->exists() && $newpluginfile->exists()){
-            $db->begin();
-            try{
-                $sql = explode(';', $newpluginfile->read());
-                foreach ($sql as $sqlline){
-                    $line = trim($sqlline);
-                    if (!empty($line) && !in_array(strtolower($line), array('begin', 'commit')))
-                        $db->rawQuery($line);
-                }
-                $sql = explode(';', $migratefile->read());
-                foreach ($sql as $sqlline){
-                    $line = trim($sqlline);
-                    if (!empty($line) && !in_array(strtolower($line), array('begin', 'commit')))
-                        $db->rawQuery($line);
-                }
-                $db->commit();
-            }catch (Exception $e){
-                $this->out("<error>Erreur sql (ligne ".$e->getLine().")</error>");
-                $this->out($e->getMessage());
-                $db->rollback();
-            }
-        }
-        else
-            $this->out("<error>sql de mise à jour introuvable</error>");
     }
     /** Mise à jour de la version 4.1.02 à la version 4.1.03
      * Génération des annexes en odt valide, Mise à jour de classification, 
