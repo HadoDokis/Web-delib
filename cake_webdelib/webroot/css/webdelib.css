@@ -1468,3 +1468,14 @@ fieldset#mails strong{
 #tableDroits td.td-droit.niveau1{
     padding-left: 25px;
 }
+table.table-projets-seance tr td{
+    vertical-align: middle;
+}
+table.table-projets-seance tr td select{
+    margin-bottom: 0;
+    width: auto;
+    max-width: 220px;
+}
+table.table-projets-seance tr td:first-child{
+    text-align: center;
+}
