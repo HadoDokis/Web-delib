@@ -36,24 +36,25 @@ function expireCookie(cName) {
  */
 function setToken() {
     var downloadToken = new Date().getTime();
-    return downloadToken;
+    return downloadToken.toString();
 }
 
 var downloadTimer;
 
 // Prevents double-submits by waiting for a cookie from the server.
-function blockUI(elt, downloadToken) {
+function blockUI(elt, token) {
     downloadTimer = window.setInterval(function() {
-        var token = getCookie("downloadToken");
-        if (token == downloadToken || typeof token == 'undefined') {
-            unblockUI(elt, downloadToken);
+        var downloadToken = getCookie("Generer[downloadToken]");
+        if (token === downloadToken) {
+            unblockUI(elt, token);
+            console.log("Suppression du cookie");
         }
     }, 1000);
 }
 
 function unblockUI(elt, token) {
     window.clearInterval(downloadTimer);
-    expireCookie("downloadToken");
+    expireCookie("Generer[downloadToken]");
     //Suppression du token de la fin d'url
     if ($(elt).attr('href')){
         var href = $(elt).attr('href');

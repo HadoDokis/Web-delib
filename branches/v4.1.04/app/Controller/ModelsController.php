@@ -4,7 +4,7 @@ class ModelsController extends AppController {
 	var $name = 'Models';
 	var $uses = array('Deliberation', 'User',  'Annex', 'Typeseance', 'Seance', 'Service', 'Commentaire', 'Model', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'Modeledition');
 	var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2', 'Session');
-	var $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress');
+	var $components = array('Cookie','Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress');
 
 	// Gestion des droits
 	var $aucunDroit = array(
@@ -20,6 +20,17 @@ class ModelsController extends AppController {
 			'getFileData'  => 'Models:index',
 			'changeStatus' => 'Models:index'
 	);
+        
+        public function beforeFilter() {
+            parent::beforeFilter();
+            //Pour la fonction generer réglage du cookie
+            $this->Cookie->name = 'Generer';
+            $this->Cookie->time = 3600;  // ou '1 hour'
+            $this->Cookie->path = '/';
+            $this->Cookie->domain = $_SERVER["HTTP_HOST"];
+            $this->Cookie->secure = false;  // HTTPS sécurisé seulement (NON)
+            $this->Cookie->httpOnly = false; // Pour accès javascript
+        }
 
 	function index() {
 		$models=$this->Model->find('all', array('fields'=>array('id'), 'recursive'=>-1));
@@ -168,7 +179,7 @@ class ModelsController extends AppController {
 
 
 	function generer ($delib_id=null, $seance_id=null,  $model_id, $editable=-1, $dl=0, $nomFichier='retour', $isPV=0, $unique=false, $progress=false, $token=null) {
-		$time_start = microtime(true);
+                $time_start = microtime(true);
                 
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
@@ -350,7 +361,7 @@ class ModelsController extends AppController {
 					}
 
 					try {
-						Configure::write('debug', 1);
+						Configure::write('debug', 0);
 						error_reporting(0);
 
 						$time_end = microtime(true);
@@ -457,7 +468,7 @@ class ModelsController extends AppController {
 			//*****************************************
                 if ($progress)
                     $this->Progress->at(80, 'Fusion du document...');
-				Configure::write('debug', 1);
+				Configure::write('debug', 0);
 				$oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
 				$oFusion->process();
 				$time_end = microtime(true);
@@ -472,7 +483,7 @@ class ModelsController extends AppController {
 					if (($format == 'pdf') && ($joindre_annexe))
 						$this->Pdf->concatener($chemin_fichier, $annexes);
 					$listFiles[$urlWebroot.$nomFichier] = 'Document généré';
-                    Configure::write('debug', 0);
+                    Configure::write('debug', 1);
                     if ($progress){
                         $this->Progress->at(100, 'Chargement des résultats...');
                         $this->Session->write('tmp.listFiles', $listFiles);
@@ -496,22 +507,23 @@ class ModelsController extends AppController {
                                         
 					$time_end = microtime(true);
 					$time = $time_end - $time_start;
-                    Configure::write('debug', 0);
-                    if ($dl == 2) { //Pour l'export CMIS
-                    }elseif ($progress){
-                        $this->Progress->at(100, 'Chargement des résultats...');
-                        $listFiles[$urlWebroot.$nomFichier] = 'Document généré';
-                        $this->Session->write('tmp.listFiles', $listFiles);
-                        $this->Session->write('tmp.format', $format);
-                        $this->Progress->end('/models/getGeneration');
-                    } else {
-                        $this->setCookieToken( "downloadToken", $token, false );
-                        header("Content-type: $sMimeType");
-                        header("Content-Disposition: attachment; filename=\"$nomFichier.$format\"");
-                        header("Content-Length: ".strlen($content));
-                        die ($content);
-                    }
-				}
+                                        Configure::write('debug', 1);
+                                        if ($dl == 2) { //Pour l'export CMIS
+                                        }elseif ($progress){
+                                            $this->Progress->at(100, 'Chargement des résultats...');
+                                            $listFiles[$urlWebroot.$nomFichier] = 'Document généré';
+                                            $this->Session->write('tmp.listFiles', $listFiles);
+                                            $this->Session->write('tmp.format', $format);
+                                            $this->Progress->end('/models/getGeneration');
+                                        } else {
+                                            $this->Cookie->destroy();
+                                            $this->Cookie->write('downloadToken', $token, false, 3600);
+                                            $this->response->body($content);
+                                            $this->response->type($format);
+                                            $this->response->download($nomFichier.'.'.$format);
+                                            return $this->response;
+                                        }
+                                    }
 		}
 	}
         
