@@ -2,14 +2,14 @@
 
 class IparapheurComponent extends Component {
 
-    var $requestPayloadString;
-    var $responseMessage;
-    var $responseMessageStr;
-    var $wsto;
-    var $clientcert;
-    var $passphrase;
-    var $userpwd;
-    var $boundary;
+    public $requestPayloadString;
+    public $responseMessage;
+    public $responseMessageStr;
+    public $wsto;
+    public $clientcert;
+    public $passphrase;
+    public $userpwd;
+    public $boundary;
 
     function IparapheurComponent() {
         ini_set('memory_limit', '512M');
@@ -379,8 +379,6 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         $soustypes = $dom->documentElement->getElementsByTagName('SousType');
         $soustype = $soustypes->item(0)->nodeValue;
         // FIXME Ce noeud n'existe pas 'EmailEmetteur'
-        $emailsemetteur = $dom->documentElement->getElementsByTagName('EmailEmetteur');
-        $emailemetteur = $emailsemetteur->item(0)->nodeValue;
         $dossiersid = $dom->documentElement->getElementsByTagName('DossierID');
         $dossierid = $dossiersid->item(0)->nodeValue;
         $annotspub = $dom->documentElement->getElementsByTagName('AnnotationPublique');
@@ -402,9 +400,18 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             $signdocprinc = $signsdocprinc->item(0)->nodeValue;
         }
 
-        $response['getdossier'] = array($typetech, $soustype, $emailemetteur, $dossierid,
-            $annotpub, $annotpriv, $visu, $datelim,
-            $docprinc, $nomdocprinc, $signdocprinc);
+        $response['getdossier'] = array(
+            'type'=>$typetech,
+            'soustype'=>$soustype,
+            'dossierid'=>$dossierid,
+            'annotpub'=>$annotpub,
+            'annotpriv'=>$annotpriv,
+            'visu'=>$visu,
+            'datelim'=>$datelim,
+            'docprinc'=>$docprinc,
+            'nomdocprinc'=>$nomdocprinc,
+            'signature'=>$signdocprinc
+        );
 
         return $response;
     }
