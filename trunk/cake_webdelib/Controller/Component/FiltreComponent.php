@@ -225,7 +225,7 @@ class FiltreComponent extends Component
                     $conditions[$critere['field']] = $critere['inputOptions']['selected'];
             } else {
                 // select : cas ou la valeur sélectionnée commence par '>|', '>=|', '<|', '<=|'
-                if (strpos($critere['inputOptions']['selected'], '|') !== false) {
+                if (!is_array($critere['inputOptions']['selected']) && strpos($critere['inputOptions']['selected'], '|') !== false) {
                     $tabCritere = explode('|', $critere['inputOptions']['selected']);
                     $conditions[$critere['field'] . ' ' . $tabCritere[0]] = $tabCritere[1];
                 } else
