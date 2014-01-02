@@ -35,8 +35,10 @@ class FiltreComponent extends Component
     {
         // Initilisations
         $filtreActif = false;
-        $defaultOptions = array(
-            'url' => array('controller' => $this->controller->request->params['controller'], 'action' => $this->controller->request->params['action']));
+        $defaultOptions = array('url' => array(
+            'controller' => $this->controller->request->params['controller'],
+            'action' => $this->controller->request->params['action']
+        ));
         $options = array_merge($defaultOptions, $options);
 
         // Si on a déjà un filtre en session et qu'il est différent alors on supprime l'ancien filtre
