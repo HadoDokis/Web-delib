@@ -5,9 +5,7 @@
  */
 class Deliberation extends AppModel {
 
-	var $name = 'Deliberation';
-
-    var $validate = array(
+    public $validate = array(
         'objet' => array(
             array('rule' => 'notEmpty',
                 'message' => 'L\'objet est obligatoire')),
@@ -39,7 +37,7 @@ class Deliberation extends AppModel {
 
 
     //dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
-    var $belongsTo = array(
+    public $belongsTo = array(
         'Service' => array(
             'className' => 'Service',
             'conditions' => '',
@@ -90,7 +88,7 @@ class Deliberation extends AppModel {
         )
     );
 
-	var $hasMany = array(
+	public $hasMany = array(
 			'TdtMessage' => array (
 					'className'    => 'TdtMessage',
 					'foreignKey'   => 'delib_id'
@@ -143,7 +141,7 @@ class Deliberation extends AppModel {
 
                  );
 
-	var $hasAndBelongsToMany = array(
+	public $hasAndBelongsToMany = array(
             'Seance' => array( 'className' => 'Seance',
 			'joinTable' => 'deliberations_seances',
 			'foreignKey' => 'deliberation_id',
@@ -1292,19 +1290,18 @@ class Deliberation extends AppModel {
 	}
 
 	function getSeancesFromArray($projets) {
-	       $typeseances = $this->Seance->Typeseance->find('list', array('recursive'=> -1, 'fields' => array('libelle')));	
-                $seances = array();
-		if (isset($projets) && !empty($projets))
-			foreach ($projets as $projet)
-			if (isset($projet['Seance']) && (!empty($projet['Seance']))) {
-			foreach($projet['Seance'] as $seance) {
-	                   $typeseance=$typeseances[$seance['type_id']]; 
-
-              $seances[$seance['id']] = $typeseance.' : '.$seance['date'];
-			}
-		}
-		return $seances;
-	}
+        $typeseances = $this->Seance->Typeseance->find('list', array('recursive' => -1, 'fields' => array('libelle')));
+        $seances = array();
+        if (!empty($projets))
+            foreach ($projets as $projet)
+                if (!empty($projet['Seance'])) {
+                    foreach ($projet['Seance'] as $seance) {
+                        $typeseance = $typeseances[$seance['type_id']];
+                        $seances[$seance['id']] = $typeseance . ' : ' . $seance['date'];
+                    }
+                }
+        return $seances;
+    }
 
 	function getTypeseancesFromArray($projets) {
 	
