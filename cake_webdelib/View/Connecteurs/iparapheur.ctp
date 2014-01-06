@@ -31,31 +31,39 @@
 
         </fieldset>
         <fieldset>
-            <legend>Récupération des informations pour l'authentification</legend>
+            <legend>Certificat d'authentification</legend>
             <?php
-            echo $this->Form->input('certificat', array('type' => 'file'));
+            echo $this->Form->input('certificat', array(
+                'type' => 'file',
+                'label' => 'Certificat (p12)'
+            ));
 
             echo $this->Form->input('passphrase', array(
                 'type' => 'text',
-                "placeholder" => "fourni avec votre certificat",
+                'placeholder' => "Mot de passe du certificat",
                 'value' => Configure::read('PASSPHRASE'),
                 'label' => 'Mot de passe'));
-
+            ?>
+        </fieldset>
+        <fieldset>
+            <legend>Informations d'authentification</legend>
+            <?php
             echo $this->Form->input('login', array(
                 'type' => 'text',
-                'placeholder' => 'Exemple : www.parapheur.org',
+                'placeholder' => 'Nom d\'utilisateur du parapheur',
                 'label' => 'Nom d\'utilisateur',
                 'value' => Configure::read('HTTPAUTH')));
 
             echo $this->Form->input('pass', array(
                 'type' => 'text',
-                'placeholder' => 'mot de passe du certificat',
+                'placeholder' => 'Mot de passe de l\'utilisateur',
                 'label' => "Mot de passe",
                 'value' => Configure::read('HTTPPASSWD')));
 
             echo $this->Form->input('typetech', array(
                 'type' => 'text',
-                'label' => "Type technique",
+                'label' => 'Type technique',
+                'placeholder' => 'Type de circuit du parapheur',
                 'value' => Configure::read('TYPETECH'),
             ));
             ?>
