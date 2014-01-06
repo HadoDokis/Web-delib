@@ -285,7 +285,8 @@ class UsersController extends AppController {
         } elseif ($user['User']['id'] == $this->Session->read('user.User.id')) {
             $message = 'L\'utilisateur courant \'' . $user['User']['login'] . '\' ne peut pas être supprimé';
             return false;
-        } elseif ($this->Deliberation->find('count', array('conditions' => array('Deliberation.redacteur_id' => $user['User']['id']),
+        } elseif ($this->Deliberation->find('count', array(
+            'conditions' => array('Deliberation.redacteur_id' => $user['User']['id']),
             'recursive' => -1))
         ) {
             $message = 'L\'utilisateur \'' . $user['User']['login'] . '\' ne peut pas être supprimé car il est l\'auteur de délibérations';
@@ -294,23 +295,24 @@ class UsersController extends AppController {
             $this->loadModel('Cakeflow.Traitement');
             //A traiter
             $conditions = array();
-            $conditions['Deliberation.id'] = $this->Traitement->listeTargetId($user['User']['id'],
+            $conditions['Deliberation.id'] = $this->Traitement->listeTargetId(
+                $user['User']['id'],
                 array('etat' => 'NONTRAITE',
                     'traitement' => 'AFAIRE'));
             $conditions['Deliberation.etat'] = 1;
             $conditions['Deliberation.parent_id'] = NULL;
             $nbProjetsATraiter = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
-
             //En cours de validation
             $conditions = array();
             $conditions['Deliberation.etat'] = 1;
             $conditions['Deliberation.parent_id'] = NULL;
-            $conditions['OR']['Deliberation.id'] = $this->Traitement->listeTargetId($user['User']['id'], array(
-                'etat' => 'NONTRAITE',
-                'traitement' => 'NONAFAIRE'));
+            $conditions['OR']['Deliberation.id'] = $this->Traitement->listeTargetId(
+                $user['User']['id'],
+                array(
+                    'etat' => 'NONTRAITE',
+                    'traitement' => 'NONAFAIRE'));
             $conditions['OR']['Deliberation.redacteur_id'] = $user['User']['id'];
             $nbProjetsValidation = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
-
             $nbProjets = $nbProjetsATraiter + $nbProjetsValidation;
 
             if ($nbProjets > 0) {

@@ -76,6 +76,7 @@ class ParapheurShell extends Shell {
                         if ($histo['logdossier'][$i]['status'] == 'Signe') {
                             $dossier = $this->Parafwebservice->GetDossierWebservice($id_dossier);
                             if (!empty($dossier['getdossier']['signature'])) {
+//                                FIXME : ne pas écraser le doc principal, ajouter une colonne pour le document avec bordereau (docprinc?)
                                 $this->Deliberation->saveField('delib_pdf', base64_decode($dossier['getdossier']['docprinc']));
                                 $this->Deliberation->saveField('signature', base64_decode($dossier['getdossier']['signature']));
                             }
