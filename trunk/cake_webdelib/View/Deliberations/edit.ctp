@@ -271,17 +271,34 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'list') {
                 if (!$disabled) {
-                    echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled));
+                    echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'class'=>'select2'));
                 } else {
                     echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
                     echo $this->Form->input($fieldName, array('id' => false, 'type' => 'hidden'));
                 }
+            } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
+                if (!$disabled) {
+                    echo $this->Form->input($fieldName, array('selected'=>$this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'multiple' => true, 'class'=>'select2'));
+                } else {
+                    echo $this->Form->input($fieldName, array('selected'=>$this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
+                    echo $this->Form->input($fieldName, array('value'=>implode(',', $selected_values), 'id' => false, 'type' => 'hidden'));
+                }
+
             }
             echo '</div>';
             echo '<br>';
             echo "<div class='spacer'> </div>";
         };?>
     </div>
+    <script type="application/javascript">
+        $(document).ready(function(){
+            $(".select2").select2({
+                width: "resolve",
+                allowClear: true,
+                placeholder: 'Sélection d\'info sup'
+            });
+        });
+    </script>
 <?php endif; ?>
 
 <?php if (Configure::read('DELIBERATIONS_MULTIPLES')) : ?>
