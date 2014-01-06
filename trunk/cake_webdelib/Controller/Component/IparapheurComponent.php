@@ -369,6 +369,8 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function traiteXMLGetDossier() {
+//        FIXME : récupérer le document avec bordereau de signature
+//        debug($this->responseMessageStr);
         $dom = new DomDocument();
         $dom->loadXML($this->responseMessageStr);
         $signdocprinc = '';
