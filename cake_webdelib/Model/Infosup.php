@@ -8,12 +8,11 @@
  * @lastmodified    $Date: 2007-10-14
  */
 App::uses('File', 'Utility');
-
 class Infosup extends AppModel
 {
-    var $name = 'Infosup';
+    public $name = 'Infosup';
 
-    var $belongsTo = array(
+    public $belongsTo = array(
         'Deliberation' => array('className' => 'Deliberation',
             'conditions' => '',
             'order' => '',
@@ -22,7 +21,7 @@ class Infosup extends AppModel
         'Infosupdef'
     );
 
-    var $validate = array(
+    public $validate = array(
         'file_name' => array(
             'rule' => array('maxLength', 255),
             'message' => 'Nom de fichier trop long (255 caract&eageave;res maximum)', 'growl'
@@ -52,9 +51,7 @@ class Infosup extends AppModel
                     $date = explode('-', $infosup['date']);
                     $ret[$infosupdef['Infosupdef']['code']] = $date[2] . '/' . $date[1] . '/' . $date[0];
                 }
-            } elseif ($infosupdef['Infosupdef']['type'] == 'file' ||
-                $infosupdef['Infosupdef']['type'] == 'odtFile'
-            ) {
+            } elseif ($infosupdef['Infosupdef']['type'] == 'file' || $infosupdef['Infosupdef']['type'] == 'odtFile' ) {
                 $ret[$infosupdef['Infosupdef']['code']] = $infosup['file_name'];
             } elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
                 $ret[$infosupdef['Infosupdef']['code']] = $infosup['text'];
@@ -67,17 +64,37 @@ class Infosup extends AppModel
                         'recursive' => -1));
                     $ret[$infosupdef['Infosupdef']['code']] = $ele['Infosuplistedef']['nom'];
                 }
+            } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
+                if ($retIdEleListe || empty($infosup['text'])){
+                    foreach (explode(',', str_replace("'",'',$infosup['text'])) as $elt){
+                        $ret[$infosupdef['Infosupdef']['code']][] = $elt;
+                    }
+                } else {
+                    $ids =  explode(',', str_replace("'",'',$infosup['text']));
+                    $elts = $this->Infosupdef->Infosuplistedef->find('all', array(
+                        'conditions' => array('id' => $ids),
+                        'fields' => array('nom'),
+                        'recursive' => -1));
+                    foreach ($elts as $elt){
+                        $ret[$infosupdef['Infosupdef']['code']][] = $elt['Infosuplistedef']['nom'];
+                    }
+                }
             }
         }
 
         return $ret;
     }
 
-    /* sauvegarde les info sup. recues sous la forme ['code_infosup']=>valeur, ... */
+    /**
+     * sauvegarde les info sup. recues sous la forme ['code_infosup']=>valeur, ...
+     * @param $infosups
+     * @param $foreignKey
+     * @param $model
+     * @return bool
+     */
     function saveCompacted($infosups, $foreignKey, $model)
     {
         $success = true;
-
         foreach ($infosups as $code => $valeur) {
             $validator = $this->validator();
             // Retire la règle 'required' de file_type
@@ -112,6 +129,16 @@ class Infosup extends AppModel
                 case 'boolean' :
                 case 'list' :
                     $infosup['Infosup']['text'] = $valeur;
+                    break;
+                case 'listmulti' :
+                    if (!empty($valeur)){
+                        //Ajout de quotes
+                        foreach ($valeur as &$val)
+                            $val = "'$val'";
+                        $infosup['Infosup']['text'] = implode(',', $valeur);
+                    }else{
+                        $infosup['Infosup']['text'] = '';
+                    }
                     break;
                 case 'richText' :
                     $infosup['Infosup']['content'] = $valeur;
@@ -186,18 +213,32 @@ class Infosup extends AppModel
      * Retourne la liste des deliberation_id sous la forme 'delib_id1, delib_id2, ...'
      * correspondant à $recherches qui est sous la forme array('infosupdef_id'=>'valeur')
      */
-    function selectInfosup($recherches)
-    {
+    function selectInfosup($recherches) {
         // initialisations
-        $ret = '';
         $iAlias = 0;
         $from = '';
         $condition = '';
         $jointure = '';
-        $repSelect = array();
         // construction des différentes clauses
         foreach ($recherches as $infosupdefId => $recherche) {
-            if (strlen(trim($recherche))) {
+            if (is_array($recherche)){
+                $infosupType = $this->Infosupdef->field('type', "id = $infosupdefId");
+                if ($infosupType == 'listmulti') {
+                    $iAlias++;
+                    $alias = 'infosups' . $iAlias;
+                    $from .= (empty($from) ? '' : ', ') . 'infosups ' . $alias;
+                    $jointure .= ($iAlias > 1) ? "infosups1.foreign_key = $alias.foreign_key AND " : '';
+                    $champRecherche = $alias . '.text';
+                    $rechercheValues = '';
+                    foreach($recherche as $idInfoSup){
+                        if (!empty($rechercheValues))
+                            $rechercheValues .= ' AND';
+                        $rechercheValues .= " $champRecherche LIKE '%''$idInfoSup''%'";
+                    }
+                    $condition .= (empty($condition) ? '' : ' AND ') . "($alias.infosupdef_id = $infosupdefId AND ($rechercheValues))";
+                }
+            }
+            elseif (strlen(trim($recherche))) {
                 $infosupType = $this->Infosupdef->field('type', "id = $infosupdefId");
                 $iAlias++;
                 $alias = 'infosups' . $iAlias;
@@ -233,13 +274,10 @@ class Infosup extends AppModel
             $repSelect = $this->query($select);
             if (empty($repSelect[0][0]['foreign_key'])) {
                 $resultIds[] = 0;
-                //	$ret = '-1';
             } else {
                 foreach ($repSelect as $infosup)
                     if (!empty($infosup['0']['foreign_key']))
                         $resultIds[] = $infosup['0']['foreign_key'];
-
-                //		$ret .= (empty($ret) ? '' : ', ') .$infosup['0']['foreign_key'];
             }
         }
 
@@ -249,12 +287,24 @@ class Infosup extends AppModel
     function addField($champs, $id, $model = 'Deliberation')
     {
         $champs_def = $this->Infosupdef->read(null, $champs['infosupdef_id']);
-        if (($champs_def['Infosupdef']['type'] == 'list') && ($champs['text'] != "")) {
+        if ($champs_def['Infosupdef']['type'] == 'list' && $champs['text'] != '') {
             $tmp = $this->Infosupdef->Infosuplistedef->find('first', array('conditions' => array('Infosuplistedef.id' => $champs['text']),
                 'fields' => array('Infosuplistedef.nom'),
                 'recursive' => -1));
             $champs['text'] = $tmp['Infosuplistedef']['nom'];
-        } elseif (($champs_def['Infosupdef']['type'] == 'list') && ($champs['text'] == ""))
+        } elseif ($champs_def['Infosupdef']['type'] == 'list' && $champs['text'] == '')
+            return (new GDO_FieldType($champs_def['Infosupdef']['code'], ' ', 'text'));
+
+        if ($champs_def['Infosupdef']['type'] == 'listmulti' && $champs['text'] != '') {
+            $tmp = $this->Infosupdef->Infosuplistedef->find('all', array(
+                'conditions' => array('Infosuplistedef.id' => explode(',', str_replace("'",'',$champs['text']))),
+                'fields'     => array('Infosuplistedef.nom'),
+                'recursive'  => -1));
+            $content = array();
+            foreach ($tmp as $elt)
+                $content[] = $elt['Infosuplistedef']['nom'];
+            $champs['text'] = implode(', ', $content);
+        } elseif ($champs_def['Infosupdef']['type'] == 'listmulti' && $champs['text'] == '')
             return (new GDO_FieldType($champs_def['Infosupdef']['code'], ' ', 'text'));
         if ($champs['text'] != null) {
             return (new GDO_FieldType($champs_def['Infosupdef']['code'], $champs['text'], 'lines'));
@@ -272,7 +322,6 @@ class Infosup extends AppModel
             $this->Conversion = new ConversionComponent;
 
             if ($model == 'Deliberation') {
-
                 $filename = WEBROOT_PATH . "/files/generee/projet/$id/" . $champs_def['Infosupdef']['code'] . ".html";
                 $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/projet/$id/", $champs_def['Infosupdef']['code'] . ".html", $champs['content']);
                 $content = $this->Conversion->convertirFichier($filename, "odt");
@@ -283,22 +332,20 @@ class Infosup extends AppModel
                 $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/seance/$id/", $champs_def['Infosupdef']['code'] . ".html", $champs['content']);
                 $content = $this->Conversion->convertirFichier($filename, "odt");
                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $champs_def['Infosupdef']['code'] . ".odt", 'application/vnd.oasis.opendocument.text', 'binary', $content));
-
             }
         } elseif (empty($champs['text']))
             return NULL;
     }
 
-    /** Retour les informations supplémentaire sous forme de tableau suivant leur type
-     *
-     * @param type array $infosups
+    /**
+     * Retourne les informations supplémentaire sous forme de tableau suivant leur type
+     * @param $id
+     * @param string $model
      * @return array
      */
     function export($id, $model = 'Deliberation')
     {
-
         $return = array();
-
         $infosups = $this->find('all', array(
             'fields' => array('Infosup.id', 'Infosupdef.type', 'Infosupdef.code',
                 'Infosup.text', 'Infosup.date', 'Infosup.content',
@@ -312,7 +359,7 @@ class Infosup extends AppModel
                 $return[$infosup['Infosupdef']['code']] = array('type' => 'string',
                     'content' => $infosup['Infosup']['text']);
             } elseif ($infosup['Infosupdef']['type'] == 'richText') {
-                $return[$infosupdef['Infosupdef']['code']] = $infosup['content'];
+                $return[$infosup['Infosupdef']['code']] = $infosup['content'];
             } elseif ($infosup['Infosupdef']['type'] == 'date') {
                 include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
                 $this->Date = new DateComponent;
@@ -325,19 +372,33 @@ class Infosup extends AppModel
                     'file_type' => $infosup['Infosup']['file_type'],
                     'content' => $infosup['Infosup']['content']);
             } elseif ($infosup['Infosupdef']['type'] == 'boolean') {
-                $return[$infosup['Infosupdef']['code']] = array('type' => 'string',
+                $return[$infosup['Infosupdef']['code']] = array(
+                    'type' => 'string',
                     'content' => $infosup['Infosup']['text']);
             } elseif ($infosup['Infosupdef']['type'] == 'list') {
-                $ele = $this->Infosupdef->Infosuplistedef->find('first', array('conditions' => array('id' => $infosup['text']),
+                $ele = $this->Infosupdef->Infosuplistedef->find('first', array(
+                    'conditions' => array('id' => $infosup['text']),
                     'fields' => array('nom'),
                     'recursive' => -1));
-                $return[$infosup['Infosupdef']['code']] = array('type' => 'string',
+                $return[$infosup['Infosupdef']['code']] = array(
+                    'type' => 'string',
                     'content' => $ele['Infosuplistedef']['nom']);
+            } elseif ($infosup['Infosupdef']['type'] == 'listmulti') {
+                $elts = $this->Infosupdef->Infosuplistedef->find('all', array(
+                    'conditions' => array('id' =>  explode(',', str_replace("'",'', $infosup['text']))),
+                    'fields' => array('nom'),
+                    'recursive' => -1
+                ));
+                $content = array();
+                foreach ($elts as $elt){
+                    $content[] = $elt['Infosuplistedef']['nom'];
+                }
+                $return[$infosup['Infosupdef']['code']] = array(
+                    'type' => 'string',
+                    'content' => implode(', ', $content)
+                );
             }
         }
-
         return $return;
     }
 }
-
-?>

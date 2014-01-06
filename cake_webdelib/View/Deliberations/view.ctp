@@ -165,6 +165,9 @@ if (!empty($infosupdefs)) {
                     echo '<div class="spacer"></div>';
                 }
             }
+            elseif($infosupdef['Infosupdef']['type'] == 'listmulti'){
+                echo implode(', ', $this->data['Infosup'][$infosupdef['Infosupdef']['code']]);
+            }
             else
                 echo $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
         }
