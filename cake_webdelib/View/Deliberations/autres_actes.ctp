@@ -7,7 +7,11 @@
     ?>
     <table style="width: 100%;">
         <tr>
+            <?php if (!empty($actes) && $this->action != "autresActesAValider") : ?>
+            <th style="width: 2px;"><input type='checkbox' id='masterCheckbox' /></th>
+            <?php else : ?>
             <th></th>
+            <?php endif; ?>
             <th>Identifiant</th>
             <th>Type d'acte</th>
             <th>Libellé de l'acte</th>
