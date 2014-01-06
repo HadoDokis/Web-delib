@@ -54,7 +54,7 @@
                 echo '<div class="input file">';
                 echo "<label class='libelle'>$libelle</label>";
 	        echo '<span id="Deliberation'.$key.'AfficheFichierJoint">'; 
-                echo ": <a href='$url'>$filename</a>";
+                echo ": <a href='$url' class=\"noWarn\">$filename</a>";
 	        echo '&nbsp;&nbsp;';
 	        echo $this->Html->link('Supprimer', "javascript:supprimerFichierJoint('Deliberation', '".$key."', '".$libelle."')", null, 'Voulez-vous vraiment supprimer le fichier ?');
                 echo '</span>';
