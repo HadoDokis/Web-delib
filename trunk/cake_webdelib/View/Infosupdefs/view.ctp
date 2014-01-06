@@ -31,8 +31,7 @@
 	<dd class="compact"><?php echo $this->data['Infosupdef']['libelleActif']; ?></dd>
 
 </dl>
-<div id="actions_fiche" class="btn-toolbar pagination-centered">
-    <div class="btn-group">
+<div class="btn-group actions">
 <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $lienRetour, array('class'=>'btn', 'name'=>'Retour','escape'=>false))?>
 	<?php
         if ($Droits->check($this->Session->read('user.User.id'), 'Infosupdefs:edit'))
@@ -41,7 +40,6 @@
                            array('class'=>'btn  btn-primary', 'escape' => false,
                                  'name'=>'Modifier'))
 	?>
-        </div>
 </div>
 </div>
 
