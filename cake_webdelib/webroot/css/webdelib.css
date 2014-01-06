@@ -1008,8 +1008,13 @@ a.link_rebond_avec_border {
 }
 
 ul.actions, .actions ul {
-        margin-top: 10px;
+    margin-top: 10px;
 	list-style: none;
+}
+.actions.btn-group>.btn {
+    float: none;
+    margin-left: -4px;
+    margin-bottom: 10px;
 }
 
 #actions_fiche {
@@ -1478,4 +1483,7 @@ table.table-projets-seance tr td select{
 }
 table.table-projets-seance tr td:first-child{
     text-align: center;
+}
+div#connecteurIparapheur input[type='text']{
+    width: 500px;
 }

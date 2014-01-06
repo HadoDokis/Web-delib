@@ -1,8 +1,7 @@
-/* 
-    Document   : global
+/*
+    Document   : global.css
     Created on : 4 oct. 2013, 16:47:57
     Author     : Florian Ajir
-    Version WD : 4.1.03 
     Description:
         Feuille de style webdelib destinée à être chargée après les autres feuilles de style (bootstrap,...)
 */
@@ -32,4 +31,16 @@ div.input.checkbox label{
 
 .no-width-limit{
     width: auto;
+}
+
+label {
+    line-height: 28px;
+}
+
+div.input.file{
+    margin-bottom: 5px;
+}
+
+legend{
+    margin-bottom: 10px;
 }
