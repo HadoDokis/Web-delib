@@ -24,7 +24,7 @@
                 'value' => Configure::read('WSACTION')));
             echo $this->Form->input('wsto', array(
                 'type' => 'text',
-                "placeholder" => "Exemple : https://parapheur.demonstrations.adullact.org/ws-iparapheur",
+                "placeholder" => "Exemple : https://parapheur.demonstrations.adullact.org/ws-iparapheur?wsdl",
                 'label' => 'WsTo',
                 'value' => Configure::read('WSTO')));
             ?>
@@ -63,7 +63,7 @@
             echo $this->Form->input('typetech', array(
                 'type' => 'text',
                 'label' => 'Type technique',
-                'placeholder' => 'Type de circuit du parapheur',
+                'placeholder' => 'Type technique défini dans le parapheur, Exemple : Actes',
                 'value' => Configure::read('TYPETECH'),
             ));
             ?>
