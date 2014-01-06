@@ -19,7 +19,7 @@
     <br/><br/>
     <table style='width:100%'>
         <tr>
-            <th></th>
+            <th style="width: 2px;"><input type='checkbox' id='masterCheckbox' /></th>
             <th>Numéro Généré</th>
             <th>Libellé de l'acte</th>
             <th>Titre</th>

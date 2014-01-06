@@ -21,7 +21,7 @@ $(document).ready(function () {
     });
     // Si toutes les checkboxes (sauf masterCheckbox) sont cochées, cocher masterCheckbox
     $("#masterCheckbox").prop('checked', $("input[type=checkbox]").not("#masterCheckbox").prop('checked'));
-
+    $("#masterCheckbox").prop('disabled', !$("input[type=checkbox]").not(':disabled').not("#masterCheckbox").length);
 });
 
 function selectAll() {
