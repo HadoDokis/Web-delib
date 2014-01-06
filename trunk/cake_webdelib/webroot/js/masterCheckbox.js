@@ -3,7 +3,6 @@
  */
 
 $(document).ready(function () {
-
     // masterCheckbox -> Checkbox
     // La master checkbox coche/décoche tout d'un coup
     $("#masterCheckbox").change(function () {
@@ -20,6 +19,8 @@ $(document).ready(function () {
         else
             $('#masterCheckbox').prop('checked', false);
     });
+    // Si toutes les checkboxes (sauf masterCheckbox) sont cochées, cocher masterCheckbox
+    $("#masterCheckbox").prop('checked', $("input[type=checkbox]").not("#masterCheckbox").prop('checked'));
 
 });
 
