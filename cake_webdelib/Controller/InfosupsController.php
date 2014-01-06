@@ -1,10 +1,8 @@
 <?php
 class InfosupsController extends AppController
 {
-	var $name = 'Infosups';
-
 	// Gestion des droits ?
-	var $aucunDroit;
+	public $aucunDroit;
 
 	function download($foreignKey = 0, $infosupdef_id = 0) {
 		/* lecture en base */
@@ -24,4 +22,3 @@ class InfosupsController extends AppController
 		}
 	}
 }
-?>

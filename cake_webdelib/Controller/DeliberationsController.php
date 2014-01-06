@@ -352,7 +352,6 @@ class DeliberationsController extends AppController
                 $this->Seance->rollback();
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
             }
-
         }
 
         if ($sortie) {
@@ -596,7 +595,6 @@ class DeliberationsController extends AppController
                     'Annex.titre', 'Annex.joindre_ctrl_legalite', 'Annex.joindre_fusion',
                     'Infosup', 'Seance', 'Typeseance', 'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom'),
                 'conditions' => array('Deliberation.id' => $id)));
-
             App::import('Model', 'TypeseancesTypeacte');
             $TypeseancesTypeacte = new TypeseancesTypeacte();
             $typeseance_ids = $TypeseancesTypeacte->getTypeseanceParNature($this->request->data['Deliberation']['typeacte_id']);
@@ -768,7 +766,7 @@ class DeliberationsController extends AppController
             if (isset($this->data['Seance'])) {
                 if (!$this->Deliberation->canSaveSeances($this->data['Seance']['Seance'])) {
                     $this->Session->setFlash("Vous ne pouvez enregistrer une seule séance délibérante", 'growl', array('type' => 'erreur'));
-                    $this->redirect("/deliberations/edit/$id");
+                    $this->redirect(array('action'=>'edit', $id));
                 }
             }
 
@@ -2897,7 +2895,7 @@ class DeliberationsController extends AppController
     function mesProjetsRecherche()
     {
         if (empty($this->data)) {
-            $this->set('action', '/deliberations/mesProjetsRecherche/');
+            $this->set('action', array('controller'=>'deliberations', 'action'=>'mesProjetsRecherche'));
             $this->set('titreVue', 'Recherche multi-critères parmi mes projets');
 
             $this->set('rapporteurs', $this->Acteur->generateListElus());
@@ -2922,8 +2920,7 @@ class DeliberationsController extends AppController
                 'conditions' => array('modeltype_id' => array(MODEL_TYPE_TOUTES,MODEL_TYPE_RECHERCHE)),
                 'fields' => array('Modeltemplate.id', 'Modeltemplate.name'))));
 
-
-            $this->render('rechercheMutliCriteres');
+            $this->render('rechercheMultiCriteres');
         } else {
             $conditions = array();
             $multiseances = array();
@@ -2947,7 +2944,6 @@ class DeliberationsController extends AppController
                 $conditions["Deliberation.circuit_id"] = $this->data['Deliberation']['circuit_id'];
             if ($this->data['Deliberation']['etat'] != '')
                 $conditions["Deliberation.etat"] = $this->data['Deliberation']['etat'];
-
 
             if (!empty($this->data['Deliberation']['texte'])) {
                 $texte = $this->data['Deliberation']['texte'];
@@ -3009,7 +3005,7 @@ class DeliberationsController extends AppController
     function tousLesProjetsRecherche()
     {
         if (empty($this->data)) {
-            $this->set('action', '/deliberations/tousLesProjetsRecherche/');
+            $this->set('action', array('controller'=>'deliberations', 'action'=>'tousLesProjetsRecherche'));
             $this->set('titreVue', 'Recherche multi-critères parmi tous les projets');
 
             $this->set('rapporteurs', $this->Acteur->generateListElus());
@@ -3033,7 +3029,7 @@ class DeliberationsController extends AppController
                 'fields' => array('Modeltemplate.id', 'Modeltemplate.name'))));
             $this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
 
-            $this->render('rechercheMutliCriteres');
+            $this->render('rechercheMultiCriteres');
         } else {
             $conditions = array();
 

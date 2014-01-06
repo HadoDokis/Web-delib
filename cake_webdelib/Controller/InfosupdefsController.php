@@ -1,13 +1,12 @@
 <?php
 class InfosupdefsController extends AppController
 {
-	var $name = 'Infosupdefs';
-	var $uses = array( 'Infosupdef', 'Profil');
-	var $helpers = array('Html', 'Html2');
-    var $components = array('Filtre');
+	public $uses = array( 'Infosupdef', 'Profil');
+	public $helpers = array('Html', 'Html2');
+    public $components = array('Filtre');
 
 	// Gestion des droits : identiques aux droits de l'index
-	var $commeDroit = array(
+	public $commeDroit = array(
 		'add' => 'Infosupdefs:index',
 		'edit' => 'Infosupdefs:index',
 		'delete' => 'Infosupdefs:index',
@@ -105,7 +104,7 @@ class InfosupdefsController extends AppController
 		}
 		$lienRetour = '/infosupdefs/'.($this->request->data['Infosupdef']['model']=='Deliberation'?'index':'index_seance');
 		if ($sortie)
-			$this->redirect($lienRetour);
+			return $this->redirect($lienRetour);
 		else {
 			$this->set('titre', 'Ajout d\'une information supplémentaire de '.($this->request->data['Infosupdef']['model']=='Deliberation'?'délibération':'séance'));
 			$this->set('types', $this->{$this->modelClass}->generateListType());
@@ -198,4 +197,3 @@ class InfosupdefsController extends AppController
 	}
 
 }
-?>
