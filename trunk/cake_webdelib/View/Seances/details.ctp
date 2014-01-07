@@ -22,22 +22,22 @@
        $numLigne++;
 ?>
 <tr style="height: 36px;" <?php if ($numLigne & 1) echo 'class="altrow"'?>>
-    <td><?php echo $deliberation['Deliberation']['id']; ?></td>
+    <td style="text-align: center;"><?php echo $deliberation['Deliberation']['id']; ?></td>
 	<?php
 	    if ($deliberation['Deliberation']['etat']==2){
-	       echo '<td>'.$this->Html->image('/img/icons/non_votee.png',  array('title'=> 'Projet validé')).'</td>';
+	       echo '<td style="text-align: center;">'.$this->Html->image('/img/icons/non_votee.png',  array('title'=> 'Projet validé')).'</td>';
 	  		echo '<td>&nbsp;</td>';
 	    }
 		elseif (($deliberation['Deliberation']['etat']==0) || ($deliberation['Deliberation']['etat']==1)){
-		 	echo '<td>'.$this->Html->image('/img/icons/bloque.png', array('title'=>'Projet en cours d\'élaboration')).'</td>';
+		 	echo '<td style="text-align: center;">'.$this->Html->image('/img/icons/bloque.png', array('title'=>'Projet en cours d\'élaboration')).'</td>';
 			echo '<td>&nbsp;</td>';
 		}
 	    elseif (($deliberation['Deliberation']['etat']==3) || ($deliberation['Deliberation']['etat']==4)  || ($deliberation['Deliberation']['etat']==5)    ){
-	        echo '<td>'.$this->Html->image('/img/icons/votee.png', array('title'=>'Deliberation votée')).'</td>';
+	        echo '<td style="text-align: center;">'.$this->Html->image('/img/icons/votee.png', array('title'=>'Deliberation votée')).'</td>';
 	        if (($deliberation['Deliberation']['etat']==3) || ($deliberation['Deliberation']['etat']==5))
-	            echo '<td>'.$this->Html->image('/img/icons/thumbs_up.png', array('title'=>'Adopté')).'</td>';
+	            echo '<td style="text-align: center;">'.$this->Html->image('/img/icons/thumbs_up.png', array('title'=>'Adopté')).'</td>';
 	  	    else
-	    	    echo '<td>'.$this->Html->image('/img/icons/thumbs_down.png', array('title'=>'Non adopté')).'</td>';
+	    	    echo '<td style="text-align: center;">'.$this->Html->image('/img/icons/thumbs_down.png', array('title'=>'Non adopté')).'</td>';
 	    }
 	?>
 	<td><?php echo $deliberation['Theme']['libelle']; ?></td>
