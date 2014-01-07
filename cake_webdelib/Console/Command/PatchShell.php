@@ -114,19 +114,18 @@ class PatchShell extends AppShell {
     {
         $this->out("<important>Mise à jour de Webdelib 4.1.xx => 4.2</important>\n");
         $this->out('Recherche des modèles avec jointure des annexes...');
-        $success = true;
         $this->AjouteSectionAnnexe->execute();
         //Passage des scripts sql de migration
-        $webdelibSql = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
-        $modelOdtValidatorSql = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
-        $cakeflowSql = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
+        $webdelibSql            = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
+        $modelOdtValidatorSql   = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
+        $cakeflowSql            = APP.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'cakeflow_v3.0_to_v3.1.sql';
 
         $this->out("\nMise à jour de la base de données...");
 
         $this->Sql->execute();
         $this->Sql->begin();
 
-        $success = $success && $this->Sql->run($webdelibSql);
+        $success = $this->Sql->run($webdelibSql);
         $success = $success && $this->Sql->run($modelOdtValidatorSql);
         $success = $success && $this->Sql->run($cakeflowSql);
 
