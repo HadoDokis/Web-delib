@@ -34,7 +34,7 @@ $linkBarre .= "</div>";
 <div id="vue_cadre">
 <?php
 if (empty($this->data['Multidelib'])) {
-    if ($this->data['Deliberation']['etat'] == 3 || $this->data['Deliberation']['etat'] == 5)
+    if ($this->data['Deliberation']['etat'] >= 3)
         echo '<h3>Délibération n&deg; ' . $this->data['Deliberation']['num_delib'] . '</h3>';
     else
         echo '<h3>Projet "' . $this->data['Deliberation']['objet'] . '" (Id: ' . $this->data['Deliberation']['id'] . ', Type: "'.$this->data['Typeacte']['libelle'].'")</h3>';
