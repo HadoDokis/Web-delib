@@ -2621,20 +2621,15 @@ class DeliberationsController extends AppController {
             // initialisation des dates, modèle et service
             $seances_id = array();
 
-            if (isset($projet['Seance']) && !empty($projet['Seance']))
-                foreach ($projet['Seance'] as &$seance) {
-                    $seances_id[] = $seance['id'];
+            if (isset($this->request->data[$i]['listeSeances']) && !empty($this->request->data[$i]['listeSeances']))
+                foreach ($this->request->data[$i]['listeSeances'] as &$seance) {
+                    if($seance['action']===0){
+                    $this->request->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['type_id'], $projet['Deliberation']['etat']);
+                    break;
+                    }
                 }
-            //Choix du modèle    
-            $typeseance_id = $this->Seance->getSeanceDeliberante($seances_id);
-            if ($typeseance_id != null) {
-                $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $typeseance_id),
-                    'recursive' => -1,
-                    'fields' => array('type_id')));
-                $this->request->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'], $projet['Deliberation']['etat']);
-            } else {
-                $model_id = $this->Deliberation->Typeacte->getModelId($projet['Deliberation']['typeacte_id'], 'modeleprojet_id');
-                $this->request->data[$i]['Model']['id'] = $model_id;
+            if(!isset($this->request->data[$i]['Model']['id'])) {
+                $this->request->data[$i]['Model']['id'] = $this->Deliberation->Typeacte->getModelId($projet['Deliberation']['typeacte_id'], 'modeleprojet_id');
             }
             
             if (isset($this->data[$i]['Service']['id']))
