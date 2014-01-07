@@ -1646,24 +1646,12 @@ class DeliberationsController extends AppController
             'order' => array('Deliberationseance.position ASC'),
             'conditions' => array());
 
-        // On affiche que les delibs vote pour.
         $conditions = $this->_handleConditions($this->Filtre->conditions());
-        //$conditions =  $this->Filtre->conditions();
-        /*  Deliberation.etat = -1 : refusé
-        * Deliberation.etat = 0 : en cours de rédaction
-        * Deliberation.etat = 1 : dans un circuit
-        * Deliberation.etat = 2 : validé
-        * Deliberation.etat = 3 : Voté pour
-        * Deliberation.etat = 4 : Voté contre
-        * Deliberation.etat = 5 : envoyé*/
 
         if (empty($seance_id))
             $conditions['Deliberation.etat <'] = 5;
 
-
         $conditions['Deliberation.etat >='] = 3;
-        //$conditions['Deliberation.etat >='] = 2;
-        $conditions['Deliberation.etat <>'] = 4;
         //$conditions['Deliberation.signee'] = true;
         $conditions['Deliberation.delib_pdf <>'] = '';
         if (isset($conditions['Seance.id'])) {
@@ -3933,7 +3921,7 @@ class DeliberationsController extends AppController
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
-        $conditions['Deliberation.etat'] = 3;
+        $conditions['Deliberation.etat'] = array(3, 4);
         $conditions['Deliberation.signee'] = 1;
         $fields = array(
             'Deliberation.id',
@@ -3990,7 +3978,7 @@ class DeliberationsController extends AppController
         $this->Deliberation->Behaviors->attach('Containable');
         $this->request->data = $this->Deliberation->find('all', array(
             'conditions' => array(
-                'Deliberation.etat' => 3,
+                'Deliberation.etat' => array(3, 4),
                 'Deliberation.signee' => 1,
                 'Deliberation.typeacte_id' => Set::extract('/Typeacte/id', $typeacte_ids)
             ),
@@ -4132,7 +4120,6 @@ class DeliberationsController extends AppController
 
     function traitementLot()
     {
-
         $ids = array();
         //$redirect = $this->Session->read('user.User.lasturl');
         $redirect = $this->referer();

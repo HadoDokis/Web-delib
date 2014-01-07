@@ -1,5 +1,5 @@
 <div class="deliberations">
-<h2>Détails des projets de la séance du <?php echo $date_seance?></h2>
+<h2>Détails des projets de la séance du <?php echo $date_seance; ?></h2>
 
 <table style="width: 100%;">
 <tr>
@@ -24,17 +24,17 @@
 <tr style="height: 36px;" <?php if ($numLigne & 1) echo 'class="altrow"'?>>
     <td style="text-align: center;"><?php echo $deliberation['Deliberation']['id']; ?></td>
 	<?php
-	    if ($deliberation['Deliberation']['etat']==2){
+	    if ($deliberation['Deliberation']['etat'] == 2){
 	       echo '<td style="text-align: center;">'.$this->Html->image('/img/icons/non_votee.png',  array('title'=> 'Projet validé')).'</td>';
 	  		echo '<td>&nbsp;</td>';
 	    }
-		elseif (($deliberation['Deliberation']['etat']==0) || ($deliberation['Deliberation']['etat']==1)){
+		elseif ($deliberation['Deliberation']['etat'] < 2){
 		 	echo '<td style="text-align: center;">'.$this->Html->image('/img/icons/bloque.png', array('title'=>'Projet en cours d\'élaboration')).'</td>';
 			echo '<td>&nbsp;</td>';
 		}
-	    elseif (($deliberation['Deliberation']['etat']==3) || ($deliberation['Deliberation']['etat']==4)  || ($deliberation['Deliberation']['etat']==5)    ){
+	    elseif ($deliberation['Deliberation']['etat'] > 2 ){
 	        echo '<td style="text-align: center;">'.$this->Html->image('/img/icons/votee.png', array('title'=>'Deliberation votée')).'</td>';
-	        if (($deliberation['Deliberation']['etat']==3) || ($deliberation['Deliberation']['etat']==5))
+	        if ($deliberation['Deliberation']['etat'] != 4)
 	            echo '<td style="text-align: center;">'.$this->Html->image('/img/icons/thumbs_up.png', array('title'=>'Adopté')).'</td>';
 	  	    else
 	    	    echo '<td style="text-align: center;">'.$this->Html->image('/img/icons/thumbs_down.png', array('title'=>'Non adopté')).'</td>';
@@ -48,17 +48,22 @@
 	<td><?php echo $deliberation['Deliberation']['titre']; ?></td>
     <td><?php if (!empty($deliberation['Deliberation']['num_delib'])) echo $deliberation['Deliberation']['num_delib']; ?></td>
 	<td class="actions" style="width: 80px;">
-            <?php echo $this->Html->link(SHY,'/seances/saisirDebat/' .$deliberation['Deliberation']['id'].'/'.$seance_id, array('class'=>'link_debat', 'escape' => false, 'title'=>'Saisir les debats'), false); ?>
+            <?php echo $this->Html->link(SHY, array('controller'=>'seances', 'action'=>'saisirDebat', $deliberation['Deliberation']['id'], $seance_id), array('class'=>'link_debat', 'escape' => false, 'title'=>'Saisir les debats'), false); ?>
             <?php
             if ( $seance['Typeseance']['action']<2 && $deliberation['Deliberation']['is_delib']) 
-                echo $this->Html->link( SHY,
-                                        '/seances/voter/' .$deliberation['Deliberation']['id'].'/'.$seance_id, 
-                                        array('class' => 'link_voter', 
-                                        'title' => 'Voter les projets',
-                                        'escape' => false),
-                                        false)?>
+                echo $this->Html->link(
+                    SHY,
+                    array('controller'=>'seances', 'action'=>'voter', $deliberation['Deliberation']['id'], $seance_id),
+                    array(
+                        'class' => 'link_voter',
+                        'title' => 'Voter les projets',
+                        'escape' => false
+                    ),
+                    false
+                );
+            ?>
             <?php 
-                echo $this->Html->link(SHY,'/models/generer/' .$deliberation['Deliberation']['id'].'/null/'.$deliberation['Modeltemplate']['id'], array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'), false);
+                echo $this->Html->link(SHY, array('controller'=>'models', 'action'=>'generer', $deliberation['Deliberation']['id'], 'null', $deliberation['Modeltemplate']['id']), array('class'=>'link_pdf', 'escape' => false, 'title'=>'PDF'), false);
             ?>
 
     </td>
@@ -69,5 +74,5 @@
 </div>
 <br/>
 <div class="submit">
-<?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/seances/listerFuturesSeances', array('class'=>'btn', 'name'=>'Retour','escape'=>false))?>
+<?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', array('controller'=>'seances', 'action'=>'listerFuturesSeances'), array('class'=>'btn', 'name'=>'Retour','escape'=>false))?>
 </div>
