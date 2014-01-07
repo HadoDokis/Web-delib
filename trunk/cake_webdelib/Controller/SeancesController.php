@@ -614,8 +614,8 @@ class SeancesController extends AppController {
                     break;
             }
 
-            // Attribution du numéro de la délibération si adoptée et si pas déjà attribué
-            if ($this->data['Deliberation']['etat'] == 3 && empty($deliberation['Deliberation']['num_delib'])){
+            // Attribution du numéro de la délibération si pas déjà attribué
+            if (empty($deliberation['Deliberation']['num_delib'])){
                 $this->request->data['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($seance['Typeseance']['compteur_id'], $seance['Seance']['date']);
                 $this->request->data['Deliberation']['num_delib'] = str_replace(
                     '#p#',
