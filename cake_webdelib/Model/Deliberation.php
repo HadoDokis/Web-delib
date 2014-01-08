@@ -88,60 +88,58 @@ class Deliberation extends AppModel {
         )
     );
 
-	public $hasMany = array(
-			'TdtMessage' => array (
-					'className'    => 'TdtMessage',
-					'foreignKey'   => 'delib_id'
-                            ),
-			'Historique' =>array(
-					'className'    => 'Historique',
-					'foreignKey'   => 'delib_id'
-                            ),
-			'Traitement'=>array(
-					'className'    => 'Cakeflow.Traitement',
-					'foreignKey'   => 'target_id'
-                            ),
-			'Annex'=>array(	'className'    => 'Annex',
-					'foreignKey'   => 'foreign_key',
-                                        'order'        => array('Annex.id' => 'ASC'),
-					'dependent'    => true
-                            ),
-			'Commentaire'=>array(
-					'className'    => 'Commentaire',
-					'foreignKey'   => 'delib_id'
-                            ),
-			'Listepresence'=>array(
-					'className'    => 'Listepresence',
-					'foreignKey'   => 'delib_id'
-                            ),
-			'Vote'=>array(
-					'className'    => 'Vote',
-					'foreignKey'   => 'delib_id'
-                            ),
-			'Infosup'=>array(
-					'dependent' => true,
-					'foreignKey' => 'foreign_key',
-					'conditions' => array('Infosup.model' => 'Deliberation')
-                            ),
-			'Multidelib'=>array(
-					'className'    => 'Deliberation',
-					'foreignKey'   => 'parent_id',
-					'order' => 'id ASC',
-					'dependent' => false),
-			'Deliberationseance' =>array(
-					'className'    => 'Deliberationseance',
-					'foreignKey'   => 'deliberation_id',
-                                        'order'      => 'Deliberationseance.position ASC'
-                         ),
-                       'Deliberationtypeseance' =>array(
-                                        'className'    => 'Deliberationtypeseance',
-                                        'foreignKey'   => 'deliberation_id'
-                           ),
+    public $hasMany = array(
+        'TdtMessage' => array(
+            'className' => 'TdtMessage',
+            'foreignKey' => 'delib_id'
+        ),
+        'Historique' => array(
+            'className' => 'Historique',
+            'foreignKey' => 'delib_id'
+        ),
+        'Traitement' => array(
+            'className' => 'Cakeflow.Traitement',
+            'foreignKey' => 'target_id'
+        ),
+        'Annex' => array('className' => 'Annex',
+            'foreignKey' => 'foreign_key',
+            'order' => array('Annex.id' => 'ASC'),
+            'dependent' => true
+        ),
+        'Commentaire' => array(
+            'className' => 'Commentaire',
+            'foreignKey' => 'delib_id'
+        ),
+        'Listepresence' => array(
+            'className' => 'Listepresence',
+            'foreignKey' => 'delib_id'
+        ),
+        'Vote' => array(
+            'className' => 'Vote',
+            'foreignKey' => 'delib_id'
+        ),
+        'Infosup' => array(
+            'dependent' => true,
+            'foreignKey' => 'foreign_key',
+            'conditions' => array('Infosup.model' => 'Deliberation')
+        ),
+        'Multidelib' => array(
+            'className' => 'Deliberation',
+            'foreignKey' => 'parent_id',
+            'order' => 'id ASC',
+            'dependent' => false),
+        'Deliberationseance' => array(
+            'className' => 'Deliberationseance',
+            'foreignKey' => 'deliberation_id',
+            'order' => 'Deliberationseance.position ASC'
+        ),
+        'Deliberationtypeseance' => array(
+            'className' => 'Deliberationtypeseance',
+            'foreignKey' => 'deliberation_id'
+        )
+    );
 
-
-                 );
-
-	public $hasAndBelongsToMany = array(
+    public $hasAndBelongsToMany = array(
             'Seance' => array( 'className' => 'Seance',
 			'joinTable' => 'deliberations_seances',
 			'foreignKey' => 'deliberation_id',
@@ -1147,65 +1145,66 @@ class Deliberation extends AppModel {
 		}
 	}
 
-	/**
-	 * sauvergarde des délibérations attachées
-	 * @param integer $parentId id de la délibération principale
-	 * @param array $delib délibération rattachée retourné par le formulaire 'edit'
-	 */
-	function saveDelibRattachees($parentId, $delib, $objet_projet) {
-		// initialisations
-		$newDelib = array();
-                
-		if (isset($delib['id'])) {
-                    // modification
-                    $this->id =  $delib['id'];
-                    $newDelib['Deliberation']['id'] = $delib['id'];
-		 } else {
-                    // ajout
-                    $newDelib = $this->create();
-                    $newDelib['Deliberation']['parent_id'] = $parentId;
-                }
-                $newDelib['Deliberation']['num_pref'] = '';
-                $newDelib['Deliberation']['objet'] = $delib['objet_delib'];
-                $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
-                $newDelib['Deliberation']['titre'] = !empty($delib['titre']) ? $delib['titre'] : null;
-		
-		if (Configure::read('GENERER_DOC_SIMPLE')){
-			$newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
-		} else {
-			if (isset($delib['deliberation'])) {
-                            $newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
-                            $newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'];
-                            $newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
-                            if (empty($delib['deliberation']['tmp_name']))
-                                    $newDelib['Deliberation']['deliberation'] = '';
-                            else
-                                    $newDelib['Deliberation']['deliberation'] = file_get_contents($delib['deliberation']['tmp_name']);
-                        }else{
-                                $pos  =  strrpos ( getcwd(), 'webroot');
-                                $path = substr(getcwd(), 0, $pos);
-                                $path_projet = $path.'webroot/files/generee/projet/'.$this->id.'/';
-                                if(file_exists($path_projet.'deliberation.odt'))
-                                    $newDelib['Deliberation']['deliberation'] = file_get_contents($path_projet.'deliberation.odt');
-                            
-                        }
-		}
+    /**
+     * sauvegarde des délibérations attachées
+     * @param integer $parentId id de la délibération principale
+     * @param array $delib délibération rattachée retourné par le formulaire 'edit'
+     * @return bool
+     */
+    function saveDelibRattachees($parentId, $delib)
+    {
+        // initialisations
+        $newDelib = array();
 
-		if(!$this->save($newDelib['Deliberation'], false)) {
-			$this->Session->setFlash('Erreur lors de la sauvegarde des délibérations rattachées.', 'growl', array('type'=>'erreur'));
-			return false;
-		}
-		$tabs = array();
-		$seances = $this->Deliberationseance->find('all', array(
-				'conditions' => array('Deliberationseance.deliberation_id' => $parentId),
-				'recursive'  => -1));
-		foreach($seances as $seance)
-			$tabs[] = $seance['Deliberationseance']['seance_id'];
-		$this->Seance->reOrdonne($this->id, $tabs);
-		return $this->id;
-	}
+        if (isset($delib['id'])) {
+            // modification
+            $this->id = $delib['id'];
+            $newDelib['Deliberation']['id'] = $delib['id'];
+        } else {
+            // ajout
+            $newDelib = $this->create();
+            $newDelib['Deliberation']['parent_id'] = $parentId;
+        }
+        $newDelib['Deliberation']['num_pref'] = '';
+        $newDelib['Deliberation']['objet'] = $delib['objet_delib'];
+        $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
+        $newDelib['Deliberation']['titre'] = !empty($delib['titre']) ? $delib['titre'] : null;
 
-	/**
+        if (Configure::read('GENERER_DOC_SIMPLE')) {
+            $newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
+        } else {
+            if (isset($delib['deliberation'])) {
+                $newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
+                $newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'];
+                $newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
+                if (empty($delib['deliberation']['tmp_name']))
+                    $newDelib['Deliberation']['deliberation'] = '';
+                else
+                    $newDelib['Deliberation']['deliberation'] = file_get_contents($delib['deliberation']['tmp_name']);
+            } else {
+                $pos = strrpos(getcwd(), 'webroot');
+                $path = substr(getcwd(), 0, $pos);
+                $path_projet = $path . 'webroot/files/generee/projet/' . $this->id . '/';
+                if (file_exists($path_projet . 'deliberation.odt'))
+                    $newDelib['Deliberation']['deliberation'] = file_get_contents($path_projet . 'deliberation.odt');
+            }
+        }
+
+        if (!$this->save($newDelib['Deliberation'], false)) {
+            $this->Session->setFlash('Erreur lors de la sauvegarde des délibérations rattachées.', 'growl', array('type' => 'erreur'));
+            return false;
+        }
+        $tabs = array();
+        $seances = $this->Deliberationseance->find('all', array(
+            'conditions' => array('Deliberationseance.deliberation_id' => $parentId),
+            'recursive' => -1));
+        foreach ($seances as $seance)
+            $tabs[] = $seance['Deliberationseance']['seance_id'];
+        $this->Seance->reOrdonne($this->id, $tabs);
+        return $this->id;
+    }
+
+    /**
 	 * fonction récursive de suppression de la délibération $delib8d, de ses versions antérieures et de ses délibérations rattachées
 	 * @param integer $delibId id de la délib à supprimer
 	 */
@@ -1247,8 +1246,9 @@ class Deliberation extends AppModel {
 	/**
 	 * Supprime un répertoire et son contenu
 	 * @param string $dossier chemin du répertoire à supprimer
-	 */
-	function rmDir($dossier) {
+     * @return bool
+     */
+    function rmDir($dossier) {
 		$ouverture=@opendir($dossier);
 		if (!$ouverture) return;
 		while($fichier=readdir($ouverture)) {
@@ -1270,20 +1270,20 @@ class Deliberation extends AppModel {
         //function Erroné
 	function getSeancesid($deliberation_id) {
 		$seances = $this->Deliberationseance->find(
-                    'all',
-                    array(
-                        'fields' => array('Deliberationseance.seance_id'),
-                        'recursive' => -1,
-                        'conditions' =>  array(
-                            'Deliberationseance.deliberation_id' => $deliberation_id
-                        ),
-                        'order'=>'Deliberationseance.position ASC',
-                    )
-                );
+            'all',
+            array(
+                'fields' => array('Deliberationseance.seance_id'),
+                'recursive' => -1,
+                'conditions' => array(
+                    'Deliberationseance.deliberation_id' => $deliberation_id
+                ),
+                'order' => 'Deliberationseance.position ASC',
+            )
+        );
 
-		$seances = (array)Hash::extract($seances, '{n}.Deliberationseance.seance_id');
-		return $seances;
-	}
+        $seances = (array)Hash::extract($seances, '{n}.Deliberationseance.seance_id');
+        return $seances;
+    }
 
 	function getSeanceDeliberanteId($deliberation_id) {
 		$seances = $this->getSeancesid($deliberation_id);
@@ -1308,130 +1308,137 @@ class Deliberation extends AppModel {
         return $seances;
     }
 
-	function getTypeseancesFromArray($projets) {
-	
-	       $list = $this->Seance->Typeseance->find('list', array('recursive'=> -1, 'fields' => array('libelle')));	
+    function getTypeseancesFromArray($projets)
+    {
 
-                 $typeseances = array();
-		if  (isset($projets) && !empty($projets))
-			foreach ($projets as $projet) {
-			if  (isset($projet['Seance']) && !empty($projet['Seance']))
-				foreach($projet['Seance'] as $seance)
-	                           if (isset($seance['type_id'])) { 
-                                    $typeseance=$list[$seance['type_id']]; 
-				$typeseances[$seance['type_id']] = $typeseance;
-	                      }	
+        $list = $this->Seance->Typeseance->find('list', array('recursive' => -1, 'fields' => array('libelle')));
+
+        $typeseances = array();
+        if (isset($projets) && !empty($projets))
+            foreach ($projets as $projet) {
+                if (isset($projet['Seance']) && !empty($projet['Seance']))
+                    foreach ($projet['Seance'] as $seance)
+                        if (isset($seance['type_id'])) {
+                            $typeseance = $list[$seance['type_id']];
+                            $typeseances[$seance['type_id']] = $typeseance;
+                        }
+            }
+        return $typeseances;
+    }
+
+    function getPosition($deliberation_id, $seance_id)
+    {
+        $deliberationseance = $this->Deliberationseance->find(
+            'first',
+            array(
+                'fields' => array('Deliberationseance.position'),
+                'recursive' => -1,
+                'conditions' => array(
+                    'Deliberationseance.seance_id' => $seance_id,
+                    'Deliberationseance.deliberation_id' => $deliberation_id
+                ),
+                'order' => array('Deliberationseance.position ASC'),
+            )
+        );
+
+        return $deliberationseance['Deliberationseance']['position'];
+    }
+
+    function afficherListePresents($delib_id = null, $seance_id)
+    {
+        $this->Listepresence->Behaviors->attach('Containable');
+        $presents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
+            'order' => array("Acteur.position ASC"),
+            'contain' => array('Acteur', 'Acteur.Typeacteur')));
+        if (empty($presents) && $this->isFirstDelib($delib_id, $seance_id)) {
+            $presents = $this->_buildFirstList($delib_id, $seance_id);
+        }
+
+        // Si la liste est vide, on recupere la liste des present lors de la derbiere deliberation.
+        // Verifier que la liste precedente n'est pas vide...
+        if (empty($presents))
+            $presents = $this->_copyFromPreviousList($delib_id, $seance_id);
+
+        if (!empty($presents))
+            foreach ($presents as &$acteur) {
+                if (!empty($acteur['Listepresence']['mandataire'])) {
+                    $mandataire = $this->Seance->Typeseance->Acteur->read('nom, prenom', $acteur['Listepresence']['mandataire']);
+                    $acteur['Listepresence']['mandataire'] = $mandataire['Acteur']['prenom'] . " " . $mandataire['Acteur']['nom'];
+                } elseif (!empty($acteur['Listepresence']['suppleant_id'])) {
+                    $suppleant = $this->Seance->Typeseance->Acteur->read('nom, prenom', $acteur['Listepresence']['suppleant_id']);
+                    $acteur['Listepresence']['suppleant'] = $suppleant['Acteur']['prenom'] . " " . $suppleant['Acteur']['nom'];
                 }
-		return $typeseances;
-	}
+            }
+        return $presents;
+    }
 
-	function getPosition($deliberation_id, $seance_id) {
-		$deliberationseance = $this->Deliberationseance->find(
-                    'first',
-                    array(
-                        'fields' => array( 'Deliberationseance.position' ),
-                        'recursive' => -1,
-                        'conditions' => array(
-                            'Deliberationseance.seance_id' => $seance_id,
-                            'Deliberationseance.deliberation_id' => $deliberation_id
-                        ),
-                        'order' => array( 'Deliberationseance.position ASC' ),
-                    )
-                );
-                
-		return $deliberationseance['Deliberationseance']['position'];
-	}
+    function _buildFirstList($delib_id, $seance_id)
+    {
+        $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
+            'recursive' => -1,
+            'fields' => array('Seance.type_id')));
+        $elus = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+        foreach ($elus as $elu) {
+            $this->Listepresence->create();
+            $params['data']['Listepresence']['acteur_id'] = $elu['Acteur']['id'];
+            $params['data']['Listepresence']['present'] = 1;
+            $params['data']['Listepresence']['delib_id'] = $delib_id;
+            $this->Listepresence->save($params['data']);
+        }
 
-	function afficherListePresents($delib_id=null, $seance_id)      {
-                $this->Listepresence->Behaviors->attach('Containable');
-		$presents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
-		                                         	    'order'      => array("Acteur.position ASC"),
-                                                                    'contain'    => array('Acteur', 'Acteur.Typeacteur')));
-		if (empty($presents) && $this->isFirstDelib($delib_id, $seance_id)) {
-			$presents = $this->_buildFirstList($delib_id, $seance_id);
-		}
+        return $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
+            'order' => array("Acteur.position ASC"),
+            'contain' => array('Acteur', 'Acteur.Typeacteur')));
+    }
 
-		// Si la liste est vide, on recupere la liste des present lors de la derbiere deliberation.
-		// Verifier que la liste precedente n'est pas vide...
-		if (empty($presents))
-			$presents = $this->_copyFromPreviousList($delib_id, $seance_id);
-                
-                if (!empty($presents))
-		foreach($presents as &$acteur){
-                    if (!empty($acteur['Listepresence']['mandataire'])) {
-                        $mandataire = $this->Seance->Typeseance->Acteur->read('nom, prenom', $acteur['Listepresence']['mandataire']);
-                            $acteur['Listepresence']['mandataire'] = $mandataire['Acteur']['prenom']." ".$mandataire['Acteur']['nom'];
-                    }elseif (!empty($acteur['Listepresence']['suppleant_id'])) {
-                        $suppleant= $this->Seance->Typeseance->Acteur->read('nom, prenom', $acteur['Listepresence']['suppleant_id']);
-                            $acteur['Listepresence']['suppleant'] = $suppleant['Acteur']['prenom']." ".$suppleant['Acteur']['nom'];
-                    }
-		}
-		return $presents;
-	}
+    function _copyFromPreviousList($delib_id, $seance_id)
+    {
+        $this->Listepresence->Behaviors->attach('Containable');
 
-	function _buildFirstList($delib_id, $seance_id) {
-		$seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
-		                                             'recursive'  => -1,
-				                             'fields'     => array('Seance.type_id')));
-		$elus = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
-		foreach ($elus as $elu){
-			$this->Listepresence->create();
-			$params['data']['Listepresence']['acteur_id']=$elu['Acteur']['id'];
-			$params['data']['Listepresence']['present']= 1;
-			$params['data']['Listepresence']['delib_id']= $delib_id;
-			$this->Listepresence->save($params['data']);
-		}
-                
-		return  $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
-		                                       	        'order'      => array("Acteur.position ASC"),
-                                                                'contain'    => array('Acteur', 'Acteur.Typeacteur')));
-	}
+        $position = $this->getPosition($delib_id, $seance_id);
+        if ($position == 1) return NULL;
+        $previousDelibId = $this->_getDelibIdByPosition($seance_id, $position);
+        $previousPresents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $previousDelibId),
+            'recursive' => -1));
 
-	function _copyFromPreviousList($delib_id, $seance_id){
-		$this->Listepresence->Behaviors->attach('Containable');
+        foreach ($previousPresents as $present) {
+            $this->Listepresence->create();
+            $params['data']['Listepresence']['acteur_id'] = $present['Listepresence']['acteur_id'];
+            $params['data']['Listepresence']['mandataire'] = $present['Listepresence']['mandataire'];
+            $params['data']['Listepresence']['suppleant_id'] = $present['Listepresence']['suppleant_id'];
+            $params['data']['Listepresence']['present'] = $present['Listepresence']['present'];
+            $params['data']['Listepresence']['delib_id'] = $delib_id;
+            $this->Listepresence->save($params['data']);
+        }
+        $liste = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
+            'order' => array("Acteur.position ASC"),
+            'contain' => array('Acteur', 'Acteur.Typeacteur')));
+        if (!empty($liste))
+            return $liste;
+        else
+            return ($this->_buildFirstList($delib_id, $seance_id));
+    }
 
-		$position = $this->getPosition($delib_id, $seance_id);
-                if($position==1)return NULL;
-		$previousDelibId= $this->_getDelibIdByPosition($seance_id, $position);
-		$previousPresents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $previousDelibId),
-		                                                            'recursive'  => -1));
+    function _effacerListePresence($delib_id)
+    {
+        $this->Listepresence->deleteAll(array("delib_id" => $delib_id));
+    }
 
-		foreach ($previousPresents as $present){
-                    $this->Listepresence->create();
-		    $params['data']['Listepresence']['acteur_id']=$present['Listepresence']['acteur_id'];
-                    $params['data']['Listepresence']['mandataire'] = $present['Listepresence']['mandataire'];
-		    $params['data']['Listepresence']['suppleant_id'] = $present['Listepresence']['suppleant_id'];
-		    $params['data']['Listepresence']['present']= $present['Listepresence']['present'];
-		    $params['data']['Listepresence']['delib_id']= $delib_id;
-		    $this->Listepresence->save($params['data']);
-		}
-                $liste = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
-                                                                 'order'      => array("Acteur.position ASC"),
-                                                                 'contain'    => array('Acteur', 'Acteur.Typeacteur')));
-		if (!empty($liste))
-			return  $liste;
-		else
-			return ($this->_buildFirstList($delib_id, $seance_id));
-	}
+    function _getDelibIdByPosition($seance_id, $position)
+    {
+        App::import('Model', 'Deliberationseance');
+        $this->Deliberationseance = new Deliberationseance();
+        $delib = $this->Deliberationseance->find('first', array('conditions' => array('Deliberationseance.position' => $position - 1,
+            'Seance.id' => $seance_id),
+            'fields' => array('Deliberation.id')));
 
-	function _effacerListePresence($delib_id) {
-		$this->Listepresence->deleteAll(array("delib_id" => $delib_id));
-	}
+        if (isset($delib['Deliberation']['id']))
+            return $delib['Deliberation']['id'];
+        else
+            return 0;
+    }
 
-	function _getDelibIdByPosition ($seance_id, $position){
-		App::import('Model', 'Deliberationseance');
-		$this->Deliberationseance = new Deliberationseance();
-		$delib = $this->Deliberationseance->find('first', array('conditions' => array('Deliberationseance.position'  =>  $position-1,
-				'Seance.id' => $seance_id),
-				'fields'    => array('Deliberation.id')));
-
-		if (isset($delib['Deliberation']['id']))
-			return $delib['Deliberation']['id'];
-		else
-			return 0;
-	}
-
-	function getDeliberationsSansSeance($fields=array(), $natures_id=array()) {
+    function getDeliberationsSansSeance($fields=array(), $natures_id=array()) {
 		if (empty($fields))
 			$fields = 'Deliberation.id, Deliberation.objet, Deliberation.circuit_id,
 					Deliberation.etat, Deliberation.anterieure_id, Deliberation.etat,
@@ -1470,23 +1477,24 @@ class Deliberation extends AppModel {
                     'order' => array('Deliberationseance.position'),
                     'recursive'   => -1));
         }*/
-        
-        function getMultidelibs($delib_id) {
-		$deliberations = $this->find(
-                    'all',
-                    array(
-                        'fields' => array('Deliberation.id'),
-                        'recursive' => -1,
-                        'conditions' =>  array(
-                            'Deliberation.parent_id' => $delib_id
-                        ),
-                        'order'=>'Deliberation.id ASC',
-                    )
-                );
 
-		$deliberations = (array)Hash::extract($deliberations, '{n}.Deliberation.id');
-		return $deliberations;
-	}
+    function getMultidelibs($delib_id)
+    {
+        $deliberations = $this->find(
+            'all',
+            array(
+                'fields' => array('Deliberation.id'),
+                'recursive' => -1,
+                'conditions' => array(
+                    'Deliberation.parent_id' => $delib_id
+                ),
+                'order' => 'Deliberation.id ASC',
+            )
+        );
+
+        $deliberations = (array)Hash::extract($deliberations, '{n}.Deliberation.id');
+        return $deliberations;
+    }
         
         /*  function getMultidelibs($delib_id) {
                 $this->Behaviors->attach('Containable');
