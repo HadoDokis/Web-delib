@@ -1327,23 +1327,48 @@ class DeliberationsController extends AppController
         $this->Deliberation->Behaviors->attach('Containable');
         $projet = $this->Deliberation->find('first', array(
             'fields' => array(
-                'id', 'anterieure_id', 'service_id', 'circuit_id',
-                'etat', 'num_delib', 'titre', 'objet', 'objet_delib', 'num_pref',
-                'texte_projet', 'texte_projet_name', 'typeacte_id',
-                'texte_synthese', 'texte_synthese_name',
-                'deliberation', 'deliberation_name',
-                'created', 'modified'),
+                'id',
+                'anterieure_id',
+                'service_id',
+                'circuit_id',
+                'etat',
+                'num_delib',
+                'titre',
+                'objet',
+                'objet_delib',
+                'num_pref',
+                'texte_projet',
+                'texte_projet_name',
+                'typeacte_id',
+                'texte_synthese',
+                'texte_synthese_name',
+                'deliberation',
+                'deliberation_name',
+                'created',
+                'modified'
+            ),
             'contain' => array(
                 'Typeacte.libelle',
                 'Theme.libelle',
                 'Service.libelle',
-                'Seance.date', 'Seance.Typeseance.libelle',
-                'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom',
-                'Rapporteur.nom', 'Rapporteur.prenom',
+                'Seance.date',
+                'Seance.Typeseance.libelle',
+                'Redacteur.id',
+                'Redacteur.nom',
+                'Redacteur.prenom',
+                'Rapporteur.nom',
+                'Rapporteur.prenom',
                 'Annex',
                 'Infosup',
-                'Multidelib.id', 'Multidelib.objet', 'Multidelib.objet_delib', 'Multidelib.num_delib', 'Multidelib.Annex',
-                'Multidelib.etat', 'Multidelib.deliberation', 'Multidelib.deliberation_name', 'Multidelib.Typeacte.libelle',
+                'Multidelib.id',
+                'Multidelib.objet',
+                'Multidelib.objet_delib',
+                'Multidelib.num_delib',
+                'Multidelib.Annex',
+                'Multidelib.etat',
+                'Multidelib.deliberation',
+                'Multidelib.deliberation_name',
+                'Multidelib.Typeacte.libelle',
             ),
             'conditions' => array('Deliberation.id' => $id)));
 
@@ -1514,11 +1539,34 @@ class DeliberationsController extends AppController
         $conditions['Deliberation.etat'] = 5;
 
         $this->paginate = array('Deliberation' => array(
-            'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.objet_delib',
-                'Deliberation.num_delib', 'Deliberation.dateAR', 'Deliberation.pastell_id',
-                'Deliberation.num_pref', 'Deliberation.etat',
-                'Deliberation.titre', 'Deliberation.tdt_id'),
-            'contain' => array('TdtMessage', 'Seance'),
+            'fields' => array(
+                'Deliberation.id',
+                'Deliberation.objet',
+                'Deliberation.objet_delib',
+                'Deliberation.num_delib',
+                'Deliberation.dateAR',
+                'Deliberation.pastell_id',
+                'Deliberation.num_pref',
+                'Deliberation.etat',
+                'Deliberation.titre',
+                'Deliberation.tdt_id',
+                'Deliberation.typeacte_id',
+                'Deliberation.theme_id',
+                'Deliberation.service_id',
+                'Deliberation.circuit_id',
+            ),
+            'contain' => array(
+                'TdtMessage',
+                'Seance.id',
+                'Seance.type_id',
+                'Seance.date',
+                'Typeseance.id',
+                'Typeseance.libelle',
+                'Typeacte.libelle',
+                'Service.libelle',
+                'Circuit.nom',
+                'Theme.libelle',
+            ),
             'order' => array('Deliberation.num_delib' => 'ASC'),
             'conditions' => $conditions,
             'limit' => 20));
@@ -1592,13 +1640,9 @@ class DeliberationsController extends AppController
             'fields' => array('Seance.id', 'Seance.date')));
         foreach ($seances as $seance)
             $toutes_seances[$seance['Seance']['id']] = $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
-        if (!$this->Filtre->critereExists()) {
-            $this->Filtre->addCritere('SeanceId', array('field' => 'Seance.id',
-                'inputOptions' => array(
-                    'label' => __('Séances', true),
-                    'empty' => 'toutes',
-                    'options' => $toutes_seances)));
-        }
+
+        $this->_ajouterFiltre($deliberations);
+
         $this->set('deliberations', $deliberations);
     }
 
@@ -1621,7 +1665,10 @@ class DeliberationsController extends AppController
 
     function toSend($seance_id = null)
     {
-        $this->Deliberationseance->Behaviors->attach('Containable');
+        //si l'utilisateur parcourt toSend(id) => toSent(null)
+        if (empty($seance_id) && !$this->Filtre->critereExists('DeliberationseanceId') && $this->Filtre->critereExists('Typeacte')){
+            $this->Filtre->supprimer();
+        }
 
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
@@ -1635,54 +1682,62 @@ class DeliberationsController extends AppController
             $this->set('dateClassification', "Récupérer la classification");
 
         $defaut = array(
-            'fields' => array('Deliberationseance.seance_id', 'Deliberationseance.deliberation_id',
-                'Deliberationseance.position'),
-            'contain' => array('Deliberation.id', 'Deliberation.objet_delib'
-            , 'Deliberation.num_delib'
-            , 'Deliberation.titre'
-            , 'Deliberation.etat'
-            , 'Deliberation.tdt_id', 'Deliberation.num_pref',
-                'Seance' => array('fields' => array('id', 'date'), 'Typeseance' => array('libelle'))),
-            'order' => array('Deliberationseance.position ASC'),
-            'conditions' => array());
+            'fields' => array(
+                'Deliberation.id',
+                'Deliberation.objet_delib',
+                'Deliberation.num_delib',
+                'Deliberation.titre',
+                'Deliberation.etat',
+                'Deliberation.tdt_id',
+                'Deliberation.num_pref',
+                'Deliberation.typeacte_id',
+                'Deliberation.theme_id',
+                'Deliberation.service_id',
+            ),
+            'contain' => array(
+                'Seance.id',
+                'Seance.type_id',
+                'Seance.date',
+                'Typeseance.id',
+                'Typeseance.libelle',
+                'Typeacte.libelle',
+                'Service.libelle',
+                'Circuit.nom',
+                'Theme.libelle',
+            ),
+            'order' => array('Deliberation.num_delib ASC'),
+            'conditions' => array()
+        );
 
-        $conditions = $this->_handleConditions($this->Filtre->conditions());
-
-        if (empty($seance_id))
+        if (empty($seance_id)){
+            $conditions = $this->_handleConditions($this->Filtre->conditions());
             $conditions['Deliberation.etat <'] = 5;
+        }else {
+            //Ajout de la condition sur séance par le filtre
+            $conditions = $this->Filtre->conditions();
+            $conditions['Deliberationseance.seance_id'] = $seance_id;
+            $conditions = $this->_handleConditions($conditions);
+        }
 
         $conditions['Deliberation.etat >='] = 3;
-        //$conditions['Deliberation.signee'] = true;
         $conditions['Deliberation.delib_pdf <>'] = '';
-        if (isset($conditions['Seance.id'])) {
-            $seance_id = $conditions['Seance.id'];
-            unset($conditions['Seance.id']);
-        }
 
         $options = array_merge($defaut, array('conditions' => $conditions));
 
-        if (!empty($seance_id)) {
-            $options['conditions']['Deliberationseance.seance_id'] = $seance_id;
-        } else {
-            $options['order'] = array('Deliberation.num_delib ASC');
-        }
-        $deliberations = $this->Deliberationseance->find('all', $options);
+        $deliberations = $this->Deliberation->find('all', $options);
 
         for ($i = 0; $i < count($deliberations); $i++) {
             $deliberations[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($deliberations[$i]['Deliberation']['num_pref']);
-
-        }
-        if (!$this->Filtre->critereExists()) {
-            $this->Filtre->addCritere('SeanceId', array('field' => 'Seance.id',
-                'inputOptions' => array(
-                    'label' => __('Séances', true),
-                    'empty' => 'toutes',
-                    'options' => $this->Utils->listFromArray($deliberations, '/Seance/id', array('/Seance/date',
-                            '/Seance/Typeseance/libelle'), '%s : %s'))));
         }
 
-        if (!empty($seance_id))
+        $this->_ajouterFiltre($deliberations);
+
+        if (!empty($seance_id)) {
+            $this->Filtre->delCritere('DeliberationseanceId');
+            $this->Filtre->delCritere('DeliberationtypeseanceId');
             $this->set('seance_id', $seance_id);
+        }
+
         $this->set('deliberations', $deliberations);
     }
 
@@ -2314,15 +2369,45 @@ class DeliberationsController extends AppController
         $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
         $projets = $this->Deliberation->find('all', array('conditions' => $conditions,
             'limit' => $limit,
-            'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
-                'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
-                'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
-                'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
+            'fields' => array(
+                'Deliberation.id',
+                'Deliberation.objet',
+                'Deliberation.etat',
+                'Deliberation.signee',
+                'Deliberation.titre',
+                'Deliberation.date_limite',
+                'Deliberation.anterieure_id',
+                'Deliberation.num_pref',
+                'Deliberation.redacteur_id',
+                'Deliberation.circuit_id',
+                'Deliberation.typeacte_id',
+                'Deliberation.theme_id',
+                'Deliberation.service_id'
+            ),
             'order' => $ordre,
-            'contain' => array('Service.libelle', 'Theme.libelle', 'Typeacte.libelle', 'Deliberationseance.seance_id', 'Seance.date', 'Seance.id', 'Seance.type_id', 'Circuit.nom', 'Deliberationtypeseance.typeseance_id', 'Typeseance.libelle', 'Typeseance.id')));
+            'contain' => array(
+                'Service.libelle',
+                'Theme.libelle',
+                'Typeacte.libelle',
+                'Deliberationseance.seance_id',
+                'Seance.date',
+                'Seance.id',
+                'Seance.type_id',
+                'Circuit.nom',
+                'Deliberationtypeseance.typeseance_id',
+                'Typeseance.libelle',
+                'Typeseance.id'
+            )));
+
         $this->_ajouterFiltre($projets);
+
         $this->_afficheProjets(
-            $projets, 'Mes projets en cours de rédaction', array('view', 'edit', 'delete', 'attribuerCircuit', 'generer'), $listeLiens, $nbProjets);
+            $projets,
+            'Mes projets en cours de rédaction',
+            array('view', 'edit', 'delete', 'attribuerCircuit', 'generer'),
+            $listeLiens,
+            $nbProjets
+        );
     }
 
     /*
@@ -2361,16 +2446,33 @@ class DeliberationsController extends AppController
             'conditions' => $conditions,
             'order' => array('Deliberation.id' => 'DESC'),
             'limit' => $limit,
-            'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
-                'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
-                'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
-                'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
+            'fields' => array(
+                'Deliberation.id',
+                'Deliberation.objet',
+                'Deliberation.etat',
+                'Deliberation.signee',
+                'Deliberation.titre',
+                'Deliberation.date_limite',
+                'Deliberation.anterieure_id',
+                'Deliberation.num_pref',
+                'Deliberation.redacteur_id',
+                'Deliberation.circuit_id',
+                'Deliberation.typeacte_id',
+                'Deliberation.theme_id',
+                'Deliberation.service_id'
+            ),
             'contain' => array(
-                'Seance.id', 'Seance.traitee', 'Seance.date', 'Seance.type_id', 'Circuit.nom',
+                'Seance.id',
+                'Seance.traitee',
+                'Seance.date',
+                'Seance.type_id',
+                'Circuit.nom',
                 'Service.libelle',
                 'Theme.libelle',
                 'Typeacte.libelle',
-                'Typeseance.id', 'Typeseance.libelle')));
+                'Typeseance.id',
+                'Typeseance.libelle'
+            )));
         $nbProjets = $this->Deliberation->find('count', array('conditions' => $conditions, 'recursive' => -1));
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets($projets, 'Mes projets &agrave; traiter', array('view', 'traiter', 'generer'), array(), $nbProjets);
@@ -2664,7 +2766,6 @@ class DeliberationsController extends AppController
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
         $this->Deliberation->Behaviors->attach('Containable');
         $conditions = $this->_handleConditions($this->Filtre->conditions());
-        //$conditions =  $this->Filtre->conditions();
         if (!isset($conditions['Deliberation.typeacte_id']))
             $natures_id = array_keys($this->Session->read('user.Nature'));
         else
@@ -2679,20 +2780,33 @@ class DeliberationsController extends AppController
             $conditions['Deliberation.id'] = $delib_id;
 
             $acte = $this->Deliberation->find('first', array('conditions' => $conditions,
-                'contain' => array('Service.libelle', 'Theme.libelle', 'Circuit.nom',
-                    'Typeacte.libelle'),
-                'fields' => array('Deliberation.id', 'Deliberation.objet',
-                    'Deliberation.etat', 'Deliberation.signee',
-                    'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
-                    'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
-                    'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id')));
+                'contain' => array(
+                    'Service.libelle',
+                    'Theme.libelle',
+                    'Circuit.nom',
+                    'Typeacte.libelle'
+                ),
+                'fields' => array(
+                    'Deliberation.id',
+                    'Deliberation.objet',
+                    'Deliberation.etat',
+                    'Deliberation.signee',
+                    'Deliberation.titre',
+                    'Deliberation.date_limite',
+                    'Deliberation.anterieure_id',
+                    'Deliberation.num_pref',
+                    'Deliberation.redacteur_id',
+                    'Deliberation.circuit_id',
+                    'Deliberation.typeacte_id',
+                    'Deliberation.theme_id',
+                    'Deliberation.service_id'
+                )));
             $acte['Seances'] = $this->Seance->generateList(null, $canEditAll, $acte['Deliberation']['typeacte_id']);
             if (!empty($acte['Seances']))
                 $delibs[] = $acte;
         }
 
-        //  $this->set('date_seances',$this->Seance->generateList(null, $canEditAll,  array_keys($this->Session->read('user.Nature'))));
-        $this->_ajouterFiltre($delibs, false);
+        $this->_ajouterFiltre($delibs);
         $this->Filtre->delCritere('DeliberationseanceId');
         $this->Filtre->delCritere('DeliberationtypeseanceId');
         $actions = array('view', 'generer', 'attribuerSeance');
@@ -2757,12 +2871,6 @@ class DeliberationsController extends AppController
     function _ajouterFiltre(&$projets)
     {
         if (!$this->Filtre->critereExists()) {
-            $this->Filtre->addCritere('DeliberationseanceId', array('field' => 'Deliberationseance.seance_id',
-                'classeDiv' => 'demi',
-                'inputOptions' => array(
-                    'label' => __('Séances', true),
-                    'empty' => 'toutes',
-                    'options' => $this->Deliberation->getSeancesFromArray($projets))));
             $typeseances = array();
             foreach ($projets as $projet) {
                 if (isset($projet['Typeseance']) && (!empty($projet['Typeseance']))) {
@@ -2773,10 +2881,18 @@ class DeliberationsController extends AppController
             $this->Filtre->addCritere('DeliberationtypeseanceId', array(
                 'field' => 'Deliberationtypeseance.typeseance_id',
                 'classeDiv' => 'demi',
-                'retourLigne' => true,
                 'inputOptions' => array(
                     'label' => __('Type de séance', true),
                     'options' => $typeseances)));
+
+            $this->Filtre->addCritere('DeliberationseanceId', array('field' => 'Deliberationseance.seance_id',
+                'classeDiv' => 'demi',
+                'retourLigne' => true,
+                'inputOptions' => array(
+                    'label' => __('Séances', true),
+                    'empty' => 'toutes',
+                    'options' => $this->Deliberation->getSeancesFromArray($projets))));
+
             $this->Filtre->addCritere('Typeacte', array(
                 'field' => 'Deliberation.typeacte_id',
                 'classeDiv' => 'demi',
@@ -2794,11 +2910,19 @@ class DeliberationsController extends AppController
             $this->Filtre->addCritere('ServiceId', array(
                 'field' => 'Deliberation.service_id',
                 'classeDiv' => 'demi',
-                'retourLigne' => true,
                 'inputOptions' => array(
                     'label' => __('Service émetteur', true),
                     'multiple' => true,
                     'options' => $this->Utils->listFromArray($projets, '/Deliberation/service_id', array('/Service/libelle'), '%s'))));
+
+            $this->Filtre->addCritere('CircuitId', array(
+                'field' => 'Deliberation.circuit_id',
+                'classeDiv' => 'demi',
+                'retourLigne' => true,
+                'inputOptions' => array(
+                    'label' => __('Circuit de validation', true),
+                    'empty' => 'Tous',
+                    'options' => $this->Utils->listFromArray($projets, '/Deliberation/circuit_id', array('/Circuit/nom'), ' %s'))));
         }
     }
 
@@ -3703,59 +3827,6 @@ class DeliberationsController extends AppController
         return ($conditions);
     }
 
-    function _addFiltresAutresActes($actes)
-    {
-        if (!$this->Filtre->critereExists()) {
-            $this->Filtre->addCritere('DeliberationseanceId', array('field' => 'Deliberationseance.seance_id',
-                'classeDiv' => 'demi',
-                'inputOptions' => array(
-                    'label' => __('Séances', true),
-                    'empty' => 'toutes',
-                    'options' => $this->Deliberation->getSeancesFromArray($actes))));
-            $typeseances = array();
-            foreach ($actes as $projet) {
-                if (isset($projet['Typeseance']) && (!empty($projet['Typeseance']))) {
-                    foreach ($projet['Typeseance'] as $typeseance)
-                        $typeseances[$typeseance['id']] = $typeseance['libelle'];
-                }
-            }
-            $this->Filtre->addCritere('DeliberationtypeseanceId', array(
-                'field' => 'Deliberationtypeseance.typeseance_id',
-                'classeDiv' => 'demi',
-                'retourLigne' => true,
-                'inputOptions' => array(
-                    'label' => __('Type de séance', true),
-                    'options' => $typeseances)));
-            $this->Filtre->addCritere('Typeacte', array(
-                'field' => 'Deliberation.typeacte_id',
-                'classeDiv' => 'demi',
-                'inputOptions' => array(
-                    'label' => __('Type d\'acte', true),
-                    'empty' => 'tous',
-                    'options' => $this->Utils->listFromArray($actes, '/Deliberation/typeacte_id', array('/Typeacte/libelle'), '%s'))));
-            $this->Filtre->addCritere('ThemeId', array(
-                'field' => 'Deliberation.theme_id',
-                'classeDiv' => 'demi',
-                'retourLigne' => true,
-                'inputOptions' => array(
-                    'label' => __('Thème', true),
-                    'options' => $this->Utils->listFromArray($actes, '/Deliberation/theme_id', array('/Theme/libelle'), '%s'))));
-            $this->Filtre->addCritere('ServiceId', array(
-                'field' => 'Deliberation.service_id',
-                'classeDiv' => 'demi',
-                'retourLigne' => true,
-                'inputOptions' => array(
-                    'label' => __('Service émetteur', true),
-                    'multiple' => true,
-                    'options' => $this->Utils->listFromArray($actes, '/Deliberation/service_id', array('/Service/libelle'), '%s'))));
-            $this->Filtre->addCritere('CircuitId', array('field' => 'Deliberation.circuit_id',
-                'inputOptions' => array(
-                    'label' => __('Circuit de validation', true),
-                    'empty' => 'Tous',
-                    'options' => $this->Utils->listFromArray($actes, '/Circuit/id', array('/Circuit/nom'), ' %s'))));
-        }
-    }
-
     function autresActesAValider()
     {
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
@@ -3774,6 +3845,7 @@ class DeliberationsController extends AppController
             'Deliberation.typeacte_id',
             'Deliberation.etat_parapheur',
             'Deliberation.theme_id',
+            'Deliberation.circuit_id',
             'Deliberation.service_id'
         );
         $contain = array(
@@ -3788,7 +3860,7 @@ class DeliberationsController extends AppController
             'Typeseance.libelle',
         );
         $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
-        $this->_addFiltresAutresActes($actes);
+        $this->_ajouterFiltre($actes);
         $this->set('canGoNext', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:goNext"));
         $this->set('peuxValiderEnUrgence', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"));
         $this->set('actes', $actes);
@@ -3808,11 +3880,15 @@ class DeliberationsController extends AppController
                 $this->Session->setFlash("Erreur lors de la récupération des circuits du parapheur", 'growl', array('type' => 'warning'));
         }
         $circuits['soustype']['-1'] = 'Signature manuscrite';
-        $conditions = $this->Filtre->conditions();
+        $conditions = $this->_handleConditions($this->Filtre->conditions());
+
         $conditions['Deliberation.etat'] = array('2', '3', '4');
         $conditions['Deliberation.signee'] = null;
+
         $fields = array(
             'Deliberation.id',
+            'Deliberation.num_delib',
+            'Deliberation.num_pref',
             'Deliberation.objet',
             'Deliberation.titre',
             'Deliberation.etat',
@@ -3820,7 +3896,8 @@ class DeliberationsController extends AppController
             'Deliberation.etat_parapheur',
             'Deliberation.typeacte_id',
             'Deliberation.theme_id',
-            'Deliberation.service_id'
+            'Deliberation.service_id',
+            'Deliberation.circuit_id',
         );
         $contain = array(
             'Typeacte.libelle',
@@ -3837,7 +3914,8 @@ class DeliberationsController extends AppController
         );
 
         $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
-        $this->_addFiltresAutresActes($actes);
+
+        $this->_ajouterFiltre($actes);
 
         $userId = $this->Session->read('user.User.id');
         $editerTous = $this->Droits->check($userId, "Deliberations:editerTous");
@@ -3934,7 +4012,8 @@ class DeliberationsController extends AppController
             'Deliberation.etat',
             'Deliberation.typeacte_id',
             'Deliberation.theme_id',
-            'Deliberation.service_id'
+            'Deliberation.service_id',
+            'Deliberation.circuit_id',
         );
         $contain = array(
             'Typeacte.libelle',
@@ -3955,7 +4034,9 @@ class DeliberationsController extends AppController
         }
 
         $actes = $this->Deliberation->getActesATeletransmettre($conditions, $fields, $contain, $order);
-        $this->_addFiltresAutresActes($actes);
+
+        $this->_ajouterFiltre($actes);
+
         for ($i = 0; $i < count($actes); $i++) {
             $actes[$i]['Deliberation'][$actes[$i]['Deliberation']['id'] . '_num_pref'] = $actes[$i]['Deliberation']['num_pref'];
             $actes[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($actes[$i]['Deliberation']['num_pref']);
@@ -4028,6 +4109,7 @@ class DeliberationsController extends AppController
             'Deliberation.typeacte_id',
             'Deliberation.date_acte',
             'Deliberation.theme_id',
+            'Deliberation.circuit_id',
             'Deliberation.service_id'
         );
         $contain = array(
@@ -4047,7 +4129,8 @@ class DeliberationsController extends AppController
             'contain' => $contain,
             'limit' => 20));
         $deliberations = $this->Paginator->paginate('Deliberation');
-        $this->_addFiltresAutresActes($deliberations);
+
+        $this->_ajouterFiltre($deliberations);
 
         $this->set('dateClassification', $this->S2low->getDateClassification());
         for ($i = 0; $i < count($deliberations); $i++) {
