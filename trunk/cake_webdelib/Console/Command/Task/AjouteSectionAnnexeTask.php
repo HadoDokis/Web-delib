@@ -16,10 +16,17 @@ class AjouteSectionAnnexeTask extends Shell {
     
     public function execute() {
         $this->Model = new Model;
+
         $models = $this->Model->find('all', array(
             'recursive' => -1,
             'conditions' => array('joindre_annexe' => true),
         ));
+
+        //Cocher Annexes.joindre_fusion si aucun modèle n'a joindre annexe
+        if (!empty($models)){
+            $this->Annex->updateAll( array('joindre_fusion' => true), array() );
+        }
+
         foreach ($models as $model){
             $lib = new phpOdtApi();
             $lib->loadFromOdtBin($model['Model']['content'], 'w', true);
