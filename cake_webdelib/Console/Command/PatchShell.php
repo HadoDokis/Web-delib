@@ -115,6 +115,7 @@ class PatchShell extends AppShell {
         $this->out("<important>Mise à jour de Webdelib 4.1.xx => 4.2</important>\n");
         $this->out('Recherche des modèles avec jointure des annexes...');
         $this->AjouteSectionAnnexe->execute();
+
         //Passage des scripts sql de migration
         $webdelibSql            = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
         $modelOdtValidatorSql   = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
