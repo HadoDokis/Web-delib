@@ -262,7 +262,12 @@ class SeancesController extends AppController {
 		}
 	}
 
-	function changeStatus ($seance_id) {
+    /**
+     * FIXME $result non utilisé en retour
+     * @param $seance_id
+     * @return bool
+     */
+    function changeStatus ($seance_id) {
 		$result = false;
 		$isArrete = false;
 		$compteur_id = null;
@@ -292,7 +297,6 @@ class SeancesController extends AppController {
 		$result = true;
 		$ids = $this->Seance->getDeliberationsId($seance_id);
 		$delibs = $this->Deliberation->find("all", array('conditions' => array("Deliberation.id"=>$ids)));
-		$nbDelibs = count($delibs );
 		foreach ($delibs as $delib) {
 			$delib_id = $delib['Deliberation']['id'];
 			$this->Deliberation->id =  $delib_id;
@@ -307,11 +311,11 @@ class SeancesController extends AppController {
 					$this->Deliberation->saveField('num_delib', $num);
 				}
 			}
-			if (($delib['Deliberation']['etat_parapheur'] == 2) && (!empty($delib['Deliberation']['delib_pdf'])))
+			if ($delib['Deliberation']['etat_parapheur'] == 2 && !empty($delib['Deliberation']['delib_pdf']))
 				continue;
 			// On génère la délibération au format PDF
-			$model_id = $this->Deliberation->getModelId($delib_id, $seance_id);
-			$err = $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.odt");
+			$model_id = $this->Deliberation->getModelForSeance($delib_id, $seance_id);
+			$this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.odt");
 			$filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.odt.pdf";
 			$content = file_get_contents($filename);
 
@@ -320,7 +324,7 @@ class SeancesController extends AppController {
 			// On stock le fichier en base de données.
 			$this->Deliberation->saveField('delib_pdf', $content);
 		}
-		return  $result;
+		return $result;
 	}
 
 	function afficherCalendrier ($annee=null){
@@ -1622,11 +1626,15 @@ class SeancesController extends AppController {
         $num_delib = count($delibs );
         foreach ($delibs as $delib_id) {
             $this->Progress->at(10+($i+1)*(50/$num_delib), 'Génération du projet '.($i+1).'/'.$num_delib.'...');
-            $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
-                                                              'contain'    => array('Theme.libelle'),
-                                                              'fields'     => array('Deliberation.objet', 'Deliberation.typeacte_id', 
-                                                                                    'Deliberation.theme_id',
-                                                                                    'Deliberation.etat')));
+            $delib = $this->Deliberation->find('first', array(
+                'conditions' => array('Deliberation.id' => $delib_id),
+                'contain'    => array('Theme.libelle'),
+                'fields'     => array(
+                    'Deliberation.objet',
+                    'Deliberation.typeacte_id',
+                    'Deliberation.theme_id',
+                    'Deliberation.etat'
+                )));
 
             if ($seance['Typeseance']['action'] == 0) {
                 $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'], $delib['Deliberation']['etat']);

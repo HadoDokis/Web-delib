@@ -205,10 +205,10 @@ class Typeseance extends AppModel {
     /* retourne d'id du modèle d 'édition du type de séance $typeseance_id en sonction de l'état du projet de délibération */
 
     function modeleProjetDelibParTypeSeanceId($typeseance_id, $etat) {
-        $typeseance = $this->find('first', array('conditions' => array("Typeseance.id" => $typeseance_id),
+        $typeseance = $this->find('first', array(
+            'conditions' => array('Typeseance.id' => $typeseance_id),
             'fields' => array('modelprojet_id', 'modeldeliberation_id'),
             'recursive' => -1));
-        //if ($etat==3 || $etat==5)
         if ($etat >= 3)
             return $typeseance['Typeseance']['modeldeliberation_id'];
         else

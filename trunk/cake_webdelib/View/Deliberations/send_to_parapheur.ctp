@@ -2,14 +2,17 @@
 <div class="deliberations">
     <?php if (isset($message)) echo($message); ?>
     <h2>Actes envoyés à la signature</h2>
-    <?php echo $this->Form->create('Deliberation', array('url' => '/deliberations/sendToParapheur/' . $seance_id, 'type' => 'file')); ?>
+    <?php
+    echo $this->element('filtre');
+    echo $this->Form->create('Deliberation', array('url' => array('action'=>'sendToParapheur', $seance_id), 'type' => 'file'));
+    ?>
     <table style='width:100%'>
         <tr>
             <th style="width: 2px;"><input type='checkbox' id='masterCheckbox'/></th>
             <th>Numéro D&eacute;lib&eacute;ration</th>
             <th>Libellé de l'acte</th>
-            <th>Titre</th>
-            <th style='width:65px'>statut</th>
+            <th>Bordereau</th>
+            <th style='width:65px'>Statut</th>
         </tr>
         <?php
         $numLigne = 1;
@@ -19,11 +22,8 @@
             $numLigne++;
 
             if ($delib['Deliberation']['signee'] != 1
-                && $delib['Deliberation']['etat'] >= 3
-                && $delib['Deliberation']['etat'] <= 4
-                && ($delib['Deliberation']['etat_parapheur'] == null
-                    || $delib['Deliberation']['etat_parapheur'] == -1)
-            )
+                && in_array($delib['Deliberation']['etat'], array(3, 4))
+                && in_array($delib['Deliberation']['etat_parapheur'], array(null, -1)))
                 echo "<td>" . $this->Form->checkbox('Deliberation.id.' . $delib['Deliberation']['id'], array('checked' => true)) . "</td>";
             else
                 echo "<td>" . $this->Form->checkbox('Deliberation.id.' . $delib['Deliberation']['id'], array('checked' => false, 'disabled'=>true)) . "</td>";
@@ -36,24 +36,24 @@
                 <?php echo($delib['Deliberation']['objet_delib']); ?>
             </td>
             <td>
-                <?php echo($delib['Deliberation']['titre']); ?>
+                <?php echo($delib['Deliberation']['bordereau']); ?>
             </td>
             <?php
             if ($delib['Deliberation']['etat_parapheur'] == 1 && $delib['Deliberation']['etat'] >= 2) {
                 echo '<td>En cours de signature</td>';
             } elseif ($delib['Deliberation']['etat_parapheur'] == 2 && $delib['Deliberation']['etat'] >= 2) {
                 if (!empty($delib['Deliberation']['signature']))
-                    echo '<td><a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '">Acte signé</a></td>';
+                    echo '<td><a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '">Signé</a></td>';
                 else
-                    echo '<td>Acte signé</td>';
+                    echo '<td>Signé</td>';
             } elseif ($delib['Deliberation']['signee'] == 1 && $delib['Deliberation']['etat_parapheur'] == null) {
-                echo '<td>Acte déclaré signé</td>';
+                echo '<td>Déclaré signé</td>';
             } elseif ($delib['Deliberation']['etat'] > -1 && $delib['Deliberation']['etat'] < 2) {
                 echo "<td>En cours d'élaboration</td>";
             } elseif ($delib['Deliberation']['etat'] == 2) {
                 echo '<td>A faire voter</td>';
             } elseif ($delib['Deliberation']['etat_parapheur'] == -1) {
-                echo '<td>Acte refusé à la signature</td>';
+                echo '<td>Signature refusée</td>';
             } elseif ($delib['Deliberation']['etat'] == -1) {
                 echo '<td>Acte refusé</td>';
             } else {

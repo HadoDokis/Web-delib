@@ -137,7 +137,7 @@ class DeliberationsController extends AppController
             $estDansCircuit = $this->Traitement->triggerDansTraitementCible($userId, $id);
             if (empty($acte) && ($estDansCircuit == false)) {
                 $this->Session->setFlash("Vous n'avez pas les droits pour visualiser cet acte", 'growl');
-                $this->redirect('/deliberations/mesProjetsRedaction');
+                $this->redirect(array('action'=>'mesProjetsRedaction'));
             }
         }
 
@@ -179,7 +179,7 @@ class DeliberationsController extends AppController
             'order' => 'Historique.created ASC')));
 
         //Récupération du model_id (pour lien bouton generer)
-        $model_id = $this->Deliberation->Typeacte->getModelId($this->data['Deliberation']['typeacte_id'], 'modeleprojet_id');
+        $model_id = $this->Deliberation->getModel($id);
         $this->request->data['Modeltemplate']['id'] = $model_id;
 
 
@@ -1372,7 +1372,7 @@ class DeliberationsController extends AppController
             ),
             'conditions' => array('Deliberation.id' => $id)));
 
-        $projet['Modeltemplate']['id'] = $this->Deliberation->Typeacte->getModelId($projet['Deliberation']['typeacte_id'], 'modeleprojet_id');
+        $projet['Modeltemplate']['id'] = $this->Deliberation->getModel($id);
         $projet['Deliberation']['num_pref'] = $projet['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($projet['Deliberation']['num_pref']);
 
         if (empty($projet)) {
@@ -2638,7 +2638,7 @@ class DeliberationsController extends AppController
                     'fields' => array('type_id')));
                 $this->request->data[$i]['Modeltemplate']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'], $projet['Deliberation']['etat']);
             } else {
-                $model_id = $this->Deliberation->Typeacte->getModelId($projet['Deliberation']['typeacte_id'], 'modeleprojet_id');
+                $model_id = $this->Deliberation->getModel($projet['Deliberation']['id']);
                 $this->request->data[$i]['Modeltemplate']['id'] = $model_id;
             }
             if (isset($this->data[$i]['Service']['id']))
@@ -2826,10 +2826,10 @@ class DeliberationsController extends AppController
 
         $this->Deliberationseance->Behaviors->attach('Containable');
         $this->Deliberation->Behaviors->attach('Containable');
-        $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
+        $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
         $conditions = $this->_handleConditions($this->Filtre->conditions());
-        //$conditions =  $this->Filtre->conditions();
+
         if (!isset($conditions['Deliberation.typeacte_id']))
             $conditions['Deliberation.typeacte_id'] = array_keys($this->Session->read('user.Nature'));
         $conditions['Deliberation.etat'] = 2;
@@ -3424,6 +3424,9 @@ class DeliberationsController extends AppController
 
     function sendToParapheur($seance_id = null)
     {
+        $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
+        $conditions = $this->_handleConditions($this->Filtre->conditions());
+
         $erreur = false;
         $message = '';
         $this->set('seance_id', $seance_id);
@@ -3432,12 +3435,12 @@ class DeliberationsController extends AppController
             $circuits = $this->Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
         }
         $circuits['soustype']['-1'] = 'Signature manuscrite';
-        if (empty($this->data)) {
+        if (empty($this->data['Deliberation'])) {
             $this->Deliberation->Behaviors->attach('Containable');
-            $conditions["Deliberation.etat >"] = -1;
+            $conditions['Deliberation.etat >'] = -1;
             if ($seance_id == null) {
-                $conditions["Deliberation.etat_parapheur != "] = null;
-                $conditions["Deliberation.etat >"] = 2;
+                $conditions['Deliberation.etat_parapheur != '] = null;
+                $conditions['Deliberation.etat >'] = 2;
                 $delibs = $this->Deliberation->find('all', array('conditions' => $conditions));
             } else {
                 $delibs = $this->Seance->getDeliberations($seance_id, array('conditions' => $conditions));
@@ -3456,17 +3459,18 @@ class DeliberationsController extends AppController
 
                 $delibs[$i]['Modeltemplate']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($type_id, 3);
             }
+            $this->_ajouterFiltre($delibs);
             $this->set('deliberations', $delibs);
             $this->set('circuits', $circuits['soustype']);
         } else {
             if ($this->data['Deliberation']['circuit_id'] == '') {
                 $this->Session->setFlash("Vous devez saisir un circuit avant l'envoi.", 'growl', array('type' => 'erreur'));
-                $this->redirect('/deliberations/sendToParapheur');
+                $this->redirect(array('action'=>'sendToParapheur'));
                 exit;
             }
             if (!isset($this->data['Deliberation']['id'])) {
                 $this->Session->setFlash("Vous devez sélectionner un acte à envoyer.", 'growl', array('type' => 'erreur'));
-                $this->redirect('/deliberations/sendToParapheur/' . $seance_id);
+                $this->redirect(array('action' => 'sendToParapheur', $seance_id));
                 exit;
             }
             foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
@@ -3525,8 +3529,7 @@ class DeliberationsController extends AppController
                     $this->Session->setFlash("Les documents ont été envoyés au parapheur électronique.", 'growl');
                 }
             }
-            $this->redirect('/deliberations/sendToParapheur/' . $seance_id);
-            exit;
+            return $this->redirect(array('action' => 'sendToParapheur', $seance_id));
         }
     }
 
@@ -3938,15 +3941,17 @@ class DeliberationsController extends AppController
             if ($bool) {
                 $acte_id = substr($tmp_id, 3, strlen($tmp_id));
                 $this->Deliberation->id = $acte_id;
-                $acte = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $acte_id),
-                    'contain' => array('Annex', 'Typeacte.compteur_id')));
+
+                $acte = $this->Deliberation->find('first', array(
+                    'conditions' => array('Deliberation.id' => $acte_id),
+                    'contain' => array('Annex', 'Typeacte.compteur_id')
+                ));
 
                 //On génére le numéro de l'acte lors de l'envoi a signature
                 $num = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
                 $this->Deliberation->saveField('num_delib', $num);
                 $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
-
-                $model_id = $this->Deliberation->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
+                $model_id = $this->Deliberation->getModel($acte['Deliberation']['id']);
                 $this->requestAction("/models/generer/$acte_id/null/$model_id/0/1/D_$acte_id.odt");
                 $filename = WEBROOT_PATH . "/files/generee/fd/null/$acte_id/D_$acte_id.odt.pdf";
                 $content = file_get_contents($filename);

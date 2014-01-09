@@ -33,8 +33,8 @@ div.input.checkbox label{
     width: auto;
 }
 
-label {
-    line-height: 28px;
+label { /* TODO préciser quels labels */
+    /*line-height: 28px;*/
 }
 
 div.input.file{
