@@ -26,12 +26,15 @@ class ParapheurShell extends Shell {
         $collection = new ComponentCollection();
         $this->Parafwebservice = new IparapheurComponent($collection);
         // Controle de l'avancement des délibérations dans le parapheur
-        $delibs = $this->Deliberation->find('all', array('conditions' => array('Deliberation.etat >' => 2,
+        $delibs = $this->Deliberation->find('all', array(
+            'conditions' => array(
+                'Deliberation.etat >' => 2,
                 'Deliberation.etat_parapheur' => 1),
             'recursive' => -1,
             'fields' => array('id', 'objet', 'typeacte_id')));
 
         foreach ($delibs as $delib) {
+            //FIXME : pourquoi aller chercher compteur_id ?
             $compteur_id = 0;
             $typeacte = $this->Deliberation->Typeacte->find('first', array('conditions' => array('Typeacte.id' => $delib['Deliberation']['typeacte_id'])));
             if ($typeacte['Nature']['code'] != 'DE')
@@ -51,7 +54,6 @@ class ParapheurShell extends Shell {
         $this->Deliberation->id = $delib_id;
         $delib = $this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $delib_id), 'recursive' => -1));
         
-        $id_dossier = $delib['Deliberation']['id_parapheur'];
         if ($delib['Deliberation']['id_parapheur'] != "")
                 $id_dossier = $delib['Deliberation']['id_parapheur'];
         else //DEPRECATED (rétro-compatibilité vieux dossiers parapheur)
@@ -59,60 +61,60 @@ class ParapheurShell extends Shell {
 
         $histo = $this->Parafwebservice->getHistoDossierWebservice($id_dossier);
         if (isset($histo['logdossier'])){
-        for ($i = 0; $i < count($histo['logdossier']); $i++) {
-            if (!$tdt) {
-                if (($histo['logdossier'][$i]['status'] == 'Signe') ||
-                        ($histo['logdossier'][$i]['status'] == 'Archive')) {
+            for ($i = 0; $i < count($histo['logdossier']); $i++) {
+                if (!$tdt) {
+                    if ($histo['logdossier'][$i]['status'] == 'Signe'
+                        || $histo['logdossier'][$i]['status'] == 'Archive') {
 
-                    // TODO LIST : Récupère la date et heure de signature  + QUi l'a signé (annotation)
-                    $this->Commentaire->create();
-                    $comm ['Commentaire']['delib_id'] = $delib_id;
-                    $comm ['Commentaire']['agent_id'] = -1;
-                    $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
-                    $comm ['Commentaire']['commentaire_auto'] = 0;
-                    $this->Commentaire->save($comm['Commentaire']);
+                        // TODO LIST : Récupère la date et heure de signature  + QUi l'a signé (annotation)
+                        $this->Commentaire->create();
+                        $comm ['Commentaire']['delib_id'] = $delib_id;
+                        $comm ['Commentaire']['agent_id'] = -1;
+                        $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
+                        $comm ['Commentaire']['commentaire_auto'] = 0;
+                        $this->Commentaire->save($comm['Commentaire']);
 
-                    if ($delib['Deliberation']['etat_parapheur'] == 1) {
-                        if ($histo['logdossier'][$i]['status'] == 'Signe') {
-                            $dossier = $this->Parafwebservice->GetDossierWebservice($id_dossier);
-                            if (!empty($dossier['getdossier']['signature'])) {
-//                                FIXME : ne pas écraser le doc principal, ajouter une colonne pour le document avec bordereau (docprinc?)
-                                $this->Deliberation->saveField('delib_pdf', base64_decode($dossier['getdossier']['docprinc']));
-                                $this->Deliberation->saveField('signature', base64_decode($dossier['getdossier']['signature']));
+                        if ($delib['Deliberation']['etat_parapheur'] == 1) {
+                            if ($histo['logdossier'][$i]['status'] == 'Signe') {
+                                $dossier = $this->Parafwebservice->GetDossierWebservice($id_dossier);
+                                if (!empty($dossier['getdossier']['signature'])) {
+                                //FIXME : ne pas écraser le doc principal, ajouter une colonne pour le document avec bordereau (docprinc?)
+                                    $this->Deliberation->saveField('bordereau', base64_decode($dossier['getdossier']['bordereau']));
+                                    $this->Deliberation->saveField('signature', base64_decode($dossier['getdossier']['signature']));
+                                }
+                                $this->Deliberation->saveField('signee', 1);
+                                /*
+                                if ($compteur_id != 0) {
+                                    $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
+                                    $num = $this->Deliberation->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
+                                    $this->Deliberation->saveField('num_delib', $num);
+                                }
+                                */
                             }
-                            $this->Deliberation->saveField('signee', 1);
-                            /*
-                            if ($compteur_id != 0) {
-                                $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
-                                $num = $this->Deliberation->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
-                                $this->Deliberation->saveField('num_delib', $num);
+                            if ($histo['logdossier'][$i]['status'] == 'Archive'){
+                                $this->Deliberation->saveField('etat_parapheur', 2);
+                                $this->Parafwebservice->archiverDossierWebservice($id_dossier, "EFFACER");
                             }
-                            */
                         }
-                        // etat_paraph à 1, donc, nous sommes en post_seance, on ne supprime pas le projet
-                        $this->Deliberation->saveField('etat_parapheur', 2);
-                        $this->Parafwebservice->archiverDossierWebservice($id_dossier, "EFFACER");
+                    } elseif ($histo['logdossier'][$i]['status'] == 'RejetSignataire'
+                        || $histo['logdossier'][$i]['status'] == 'RejetVisa') { // Cas de refus dans le parapheur
+                        $this->Commentaire->create();
+                        $comm ['Commentaire']['delib_id'] = $delib_id;
+                        $comm ['Commentaire']['agent_id'] = -1;
+                        $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
+                        $comm ['Commentaire']['commentaire_auto'] = 0;
+                        $this->Commentaire->save($comm['Commentaire']);
+                        $this->Deliberation->saveField('etat_parapheur', -1);
+                        // Supprimer le dossier du parapheur
+                        $this->Parafwebservice->effacerDossierRejeteWebservice($id_dossier);
                     }
-                } elseif (($histo['logdossier'][$i]['status'] == 'RejetSignataire') ||
-                        ($histo['logdossier'][$i]['status'] == 'RejetVisa')) { // Cas de refus dans le parapheur
-                    $this->Commentaire->create();
-                    $comm ['Commentaire']['delib_id'] = $delib_id;
-                    $comm ['Commentaire']['agent_id'] = -1;
-                    $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
-                    $comm ['Commentaire']['commentaire_auto'] = 0;
-                    $this->Commentaire->save($comm['Commentaire']);
-                    $this->Deliberation->saveField('etat_parapheur', -1);
-                    // Supprimer le dossier du parapheur
-                    $this->Parafwebservice->effacerDossierRejeteWebservice($id_dossier);
+                } else {
+                    if ($histo['logdossier'][$i]['status'] == 'EnCoursTransmission')
+                        return true;
                 }
-            } else {
-                if ($histo['logdossier'][$i]['status'] == 'EnCoursTransmission')
-                    return true;
             }
-        }}
+        }
         return false;
     }
 
 }
-
-?>

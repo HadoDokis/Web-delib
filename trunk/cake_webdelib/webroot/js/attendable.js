@@ -17,24 +17,30 @@
             $(document.body).append($('<img>').attr('id', 'attendablePreLoaderImg').attr('src', $.fn.attendable.options.loaderImgSrc).hide());
 
         return this.each(function () {
-            var patt = new RegExp(/confirm\((.+)\)/);
-            //Si onclick présent sur l'élément
-            if ( $(this).attr('onclick') && patt.test($(this).attr('onclick').toLowerCase())){
-                var onclick = $(this).attr('onclick');
-                var mesg = patt.exec(onclick);
-                mesg = (mesg[1]).replace(/'/g, "");
-                $(this).removeAttr('onclick');
-                $(this).click(function () {
-                    if (confirm(mesg)){
+            if (this.tagName == 'A') {
+                var patt = new RegExp(/confirm\((.+)\)/);
+                //Si onclick présent sur l'élément
+                if ($(this).attr('onclick') && patt.test($(this).attr('onclick').toLowerCase())) {
+                    var onclick = $(this).attr('onclick');
+                    var mesg = patt.exec(onclick);
+                    mesg = (mesg[1]).replace(/'/g, "");
+                    $(this).removeAttr('onclick');
+                    $(this).click(function () {
+                        if (confirm(mesg)) {
+                            $(this).attendableAffiche();
+                            pauseWhileDownload($(this));
+                        }
+                        else return false;
+                    });
+                } else {
+                    $(this).click(function () {
                         $(this).attendableAffiche();
-                        pauseWhileDownload(this);
-                    }
-                    else return false;
-                });
-            }else{
-                $(this).click(function () {
+                        pauseWhileDownload($(this));
+                    });
+                }
+            } else if (this.tagName == 'FORM') {
+                $(this).on('submit', function () {
                     $(this).attendableAffiche();
-                    pauseWhileDownload(this);
                 });
             }
         });

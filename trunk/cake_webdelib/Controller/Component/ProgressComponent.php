@@ -10,7 +10,9 @@
             $html = new HtmlHelper($this->View);
 		
             $tailletxt=30-10;
-            echo $html->script('jquery');
+            echo $html->script('jquery-1.10.2.min');
+            echo $html->script('jquery-1.10.2.min.map', false);
+
             echo $html->css('progressbar');
             echo '<div id="contTemp">';
             echo $html->image('webdelib_petit.png', array('alt' => 'Webdelib'));

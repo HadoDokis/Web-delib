@@ -31,23 +31,26 @@
 	<td class="actions">
         <?php 
         echo $this->Html->link(SHY,
-                               '/seances/saisirDebat/'.$deliberation['Deliberation']['id']."/$seance_id", 
-                               array('class'=>'link_debat', 
-                                     'escape' => false,
-                                     'title'=>'Saisir les debats'), 
-                               false);
+            '/seances/saisirDebat/' . $deliberation['Deliberation']['id'] . "/$seance_id",
+            array(
+                'class' => 'link_debat',
+                'escape' => false,
+                'title' => 'Saisir les debats'),
+            false);
          echo $this->Html->link(SHY,
-                               '/seances/donnerAvis/'.$deliberation['Deliberation']['id']."/$seance_id", 
-                               array('class'=>'link_donnerAvis', 
-                                     'escape' => false,
-                                     'title'=>'Donner un avis'), 
-                               false);
+             '/seances/donnerAvis/' . $deliberation['Deliberation']['id'] . "/$seance_id",
+             array(
+                 'class' => 'link_donnerAvis',
+                 'escape' => false,
+                 'title' => 'Donner un avis'),
+             false);
         echo $this->Html->link(SHY,
-                         '/models/generer/'.$deliberation['Deliberation']['id'].'/null/'.$deliberation['Modeltemplate']['id'],
-                         array('class'=>'link_pdf', 
-                               'escape' => false,
-                               'title'=>'Visionner PDF'), 
-                         false);
+            array('controller'=>'models', 'action'=>'generer', $deliberation['Deliberation']['id'], 'null', $deliberation['Modeltemplate']['id'], '-1', '0', 'deliberation_'.$projet['Deliberation']['num_delib'], '0', '0', '0'),
+            array(
+                'class' => 'link_pdf waiter',
+                'escape' => false,
+                'title' => 'Visionner PDF'),
+            false);
         ?>
 
 </td>

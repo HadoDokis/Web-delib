@@ -179,10 +179,11 @@ class TypeactesController extends AppController
         if (!empty($typeacte)) {
             header('Content-type: application/vnd.oasis.opendocument.text');
             header('Content-Disposition: attachment; filename=gabarit_' . $type . '.odt');
-            exit($typeacte['Typeacte']['gabarit_' . $type]);
+            echo $typeacte['Typeacte']['gabarit_' . $type];
+            exit();
         } else {
             $this->Session->setFlash('Type d\'acte introuvable', 'growl');
-            $this->redirect(array('action'=>'index'));
+            return $this->redirect(array('action'=>'index'));
         }
     }
 
