@@ -23,7 +23,7 @@ class AjouteSectionAnnexeTask extends Shell {
         ));
 
         //Cocher Annexes.joindre_fusion si aucun modèle n'a joindre annexe
-        if (!empty($models)){
+        if (empty($models)){
             $this->Annex->updateAll( array('joindre_fusion' => true), array() );
         }
 
