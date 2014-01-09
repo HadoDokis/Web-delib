@@ -37,8 +37,8 @@ class SeancesController extends AppController {
 			'donnerAvis'       => 'Seances:listerFuturesSeances',
 			'saisirSecretaire' => 'Seances:listerFuturesSeances',
 			'getListActeurs'   => 'Seances:listerFuturesSeances',
-                        'sendConvocations' => 'Seances:listerFuturesSeances',
-                        'sendToIdelibre' => 'Seances:listerFuturesSeances',
+            'sendConvocations' => 'Seances:listerFuturesSeances',
+            'sendToIdelibre' => 'Seances:listerFuturesSeances',
 			'saisirCommentaire'=>'Seances:listerFuturesSeances');
 
 
@@ -70,7 +70,7 @@ class SeancesController extends AppController {
 					// sauvegarde des informations supplémentaires
 					if (array_key_exists('Infosup', $this->data))
 						$this->Infosup->saveCompacted($this->data['Infosup'], $seanceId, 'Seance');
-					$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
+					$this->Session->setFlash('La séance a été sauvegardée', 'growl');
 					$sortie = true;
 				} else {
 					$this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
@@ -164,7 +164,7 @@ class SeancesController extends AppController {
                                 
                                 if( $success ) {
                                     $this->Seance->commit();
-                                    $this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; sauvegard&eacute;e', 'growl');
+                                    $this->Session->setFlash('La séance a été sauvegardée', 'growl');
                                     $sortie = true;
                                 } else {
                                     $this->Seance->rollback();
@@ -206,7 +206,7 @@ class SeancesController extends AppController {
 			$this->redirect('/seances/listerFuturesSeances');
 		}
 		if ($this->Seance->delete($id)) {
-			$this->Session->setFlash('La s&eacute;ance a &eacute;t&eacute; suprim&eacute;e');
+			$this->Session->setFlash('La séance a été suprimée');
 			$this->redirect('/seances/listerFuturesSeances');
 		}
 		else {
@@ -1071,10 +1071,12 @@ class SeancesController extends AppController {
                             'Acteurseance.model' => 'convocation',
                             'Acteurseance.acteur_id' => $acteur['Acteur']['id']),
                             'recursive' => -1,
-                        'fields' => array('Acteurseance.date_envoi', 'Acteurseance.date_reception')));
-
-                    $acteur['Acteur']['date_envoi'] = $dates['Acteurseance']['date_envoi'];
-                    $acteur['Acteur']['date_reception'] = $dates['Acteurseance']['date_reception'];
+                        'fields' => array(
+                            'Acteurseance.date_envoi',
+                            'Acteurseance.date_reception'
+                        )));
+                    $acteur['Acteur']['date_envoi'] = !empty($dates['Acteurseance']['date_envoi']) ? $dates['Acteurseance']['date_envoi'] : null;
+                    $acteur['Acteur']['date_reception'] = !empty($dates['Acteurseance']['date_reception']) ? $dates['Acteurseance']['date_reception'] : null;
                 }
 
                 $model = $this->Modeltemplate->find('first', array(
@@ -1178,7 +1180,7 @@ class SeancesController extends AppController {
                 }
 
                 if ($i==0)
-                    $this->Session->setFlash('Veuillez s&eacute;lectionner un acteur au minimum.', 'growl', array('type' => 'erreur'));
+                    $this->Session->setFlash('Veuillez sélectionner un acteur au minimum.', 'growl', array('type' => 'erreur'));
                 elseif (!empty($message))
                     $this->Session->setFlash($message, 'growl', array('type'=>'error'));
                 else
@@ -1300,7 +1302,7 @@ class SeancesController extends AppController {
                     }
                 }
                if($i==0) {
-                    $this->Session->setFlash('Veuillez s&eacute;lectionner un acteur au minimum.', 'growl', array('type' => 'erreur'));
+                    $this->Session->setFlash('Veuillez sélectionner un acteur au minimum.', 'growl', array('type' => 'erreur'));
                 }
                 elseif (!empty($message)) 
                     $this->Session->setFlash($message, 'growl', array('type'=>'error'));
@@ -1355,7 +1357,7 @@ class SeancesController extends AppController {
             if (!$this->Gedooo->checkPath($dirpath))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $dirpath");
             
-            $this->Progress->at(5, 'D&eacute;but de pr&eacute;paration du document');
+            $this->Progress->at(5, 'Début de préparation du document');
 
             //*****************************************
             //Création du model ott
@@ -1409,7 +1411,7 @@ class SeancesController extends AppController {
                     array_push($annexes, $fichierAnnex);
                 }
             }
-            $this->Progress->at(20, 'Fin de pr&eacute;paration du document');
+            $this->Progress->at(20, 'Fin de préparation du document');
             $oMainPart->addElement($blocProjets);
             $this->Seance->makeBalise($seance_id, $oMainPart);
             $this->Seance->saveField('date_convocation',  date("Y-m-d H:i:s", strtotime("now")));   
@@ -1420,7 +1422,7 @@ class SeancesController extends AppController {
             foreach ($acteursConvoques as $acteur) {
     
                 $cpt++;
-                $this->Progress->at($cpt*(100/$nbActeurs), 'G&eacute;n&eacute;ration du document : '.$acteur['Acteur']['nom']." ".$acteur['Acteur']['prenom']);
+                $this->Progress->at($cpt*(100/$nbActeurs), 'Génération du document : '.$acteur['Acteur']['nom']." ".$acteur['Acteur']['prenom']);
                 
                 $oMainPart->addElement(new GDO_FieldType("nom_acteur", ($acteur['Acteur']['nom']), "text"));
                 $oMainPart->addElement(new GDO_FieldType("prenom_acteur", ($acteur['Acteur']['prenom']), "text"));
@@ -1465,7 +1467,7 @@ class SeancesController extends AppController {
                     $this->cakeError('gedooo', array('error'=>$e, 'url'=> $this->Session->read('user.User.lasturl')));
                 }
             }
-            $this->Progress->at(100, 'Fin de G&eacute;n&eacute;ration des documents');
+            $this->Progress->at(100, 'Fin de Génération des documents');
             sleep(1);
             $this->Progress->end($url_retour);
         }

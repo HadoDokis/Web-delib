@@ -501,7 +501,18 @@ class DeliberationsController extends AppController
         header('Content-Length: ' . strlen($delib['Deliberation']['signature']));
         header('Content-Disposition: attachment; filename=signature_acte.zip');
         echo $delib['Deliberation']['signature'];
-        exit();
+        exit;
+    }
+
+    function downloadBordereau($delib_id)
+    {
+        $this->Deliberation->id = $delib_id;
+        $bordereau = $this->Deliberation->field('bordereau');
+        header('Content-type: application/pdf');
+        header('Content-Length: ' . strlen($bordereau));
+        header('Content-Disposition: attachment; filename=bordereau_'.$this->Deliberation->field('num_delib').'.pdf');
+        echo $bordereau;
+        exit;
     }
 
     function _saveAnnexe($delibId, $annexe, &$annexesErrors)
@@ -3424,7 +3435,7 @@ class DeliberationsController extends AppController
 
     function sendToParapheur($seance_id = null)
     {
-        $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
+        $this->Filtre->initialisation($this->name . ':' . $this->action . ':' . $seance_id, $this->data, array('url' => $this->here));
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
         $erreur = false;
@@ -3441,9 +3452,16 @@ class DeliberationsController extends AppController
             if ($seance_id == null) {
                 $conditions['Deliberation.etat_parapheur != '] = null;
                 $conditions['Deliberation.etat >'] = 2;
+                //FIXME : Limiter les champs retournés par la requête
                 $delibs = $this->Deliberation->find('all', array('conditions' => $conditions));
             } else {
                 $delibs = $this->Seance->getDeliberations($seance_id, array('conditions' => $conditions));
+            }
+
+            $this->_ajouterFiltre($delibs);
+            if (!empty($seance_id)) {
+                $this->Filtre->delCritere('DeliberationseanceId');
+                $this->Filtre->delCritere('DeliberationtypeseanceId');
             }
 
             for ($i = 0; $i < count($delibs); $i++) {
@@ -3459,7 +3477,7 @@ class DeliberationsController extends AppController
 
                 $delibs[$i]['Modeltemplate']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($type_id, 3);
             }
-            $this->_ajouterFiltre($delibs);
+
             $this->set('deliberations', $delibs);
             $this->set('circuits', $circuits['soustype']);
         } else {

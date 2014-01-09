@@ -5,14 +5,22 @@
  */
 $(document).ready(function() {
     $("a.delib_pdf").attendable();
+    $(".waiter").attendable();
     $("a.link_clore_seance").attendable();
+    $('form#DeliberationSendToParapheurForm').attendable();
+    $('form#DeliberationAutreActesValidesForm').attendable();
+//    $("a.link_pdf").attendable();
 });
 
 function pauseWhileDownload(elt) {
+    console.log('pause');
+    console.log($(elt).attr('href'));
     var token = setToken();
     //Ajout du num de cookie en dernier argument url
     if ($(elt).attr('href')){
         $(elt).attr('href', $(elt).attr('href')+ "/" + token);
+
+        console.log($(elt).attr('href'));
     }
     blockUI(elt, token); //Veuillez patienter pendant la génération du document
 }

@@ -286,6 +286,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         $response = array();
         $dom = new DomDocument();
         $dom->loadXML($this->responseMessageStr);
+//        $this->log($this->responseMessageStr, 'debug');
         $dataset = $dom->getElementsByTagName("LogDossier");
         foreach ($dataset as $row) {
             $timestamps = $row->getElementsByTagName("timestamp");
@@ -370,8 +371,8 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
     function traiteXMLGetDossier() {
 //        FIXME : récupérer le document avec bordereau de signature
-//        debug($this->responseMessageStr);
         $dom = new DomDocument();
+//        $this->log($this->responseMessageStr,'debug');
         $dom->loadXML($this->responseMessageStr);
         $signdocprinc = '';
         $datelim = '';
@@ -401,7 +402,12 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         if ($signsdocprinc->length > 0) {
             $signdocprinc = $signsdocprinc->item(0)->nodeValue;
         }
-
+        $bordereau = $dom->documentElement->getElementsByTagName('fichier');
+        $this->log($bordereau->item(0)->parentNode->nodeName, 'debug');
+        if ($bordereau->length > 0 && $bordereau->item(0)->parentNode->nodeName == 'DocAnnexe') {
+            $bordereau = $bordereau->item(0)->nodeValue;
+        }
+        $this->log($bordereau, 'debug');
         $response['getdossier'] = array(
             'type'=>$typetech,
             'soustype'=>$soustype,
@@ -412,7 +418,8 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             'datelim'=>$datelim,
             'docprinc'=>$docprinc,
             'nomdocprinc'=>$nomdocprinc,
-            'signature'=>$signdocprinc
+            'signature'=>$signdocprinc,
+            'bordereau'=>$bordereau
         );
 
         return $response;

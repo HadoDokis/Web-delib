@@ -78,14 +78,15 @@
                     'escape' => false,
                     'title' => 'voir le projet de ' . $acte['Deliberation']['objet']
                 ));
-            if (($acte['Deliberation']['etat'] >= 2) && ($acte['Deliberation']['signee'] == 1))
+            if ($acte['Deliberation']['etat'] >= 2 && $acte['Deliberation']['signee'] == 1)
                 $model_id = $acte['Modeltemplate']['modelefinal_id'];
             else
                 $model_id = $acte['Modeltemplate']['modeleprojet_id'];
 
-            echo $this->Html->link(SHY, '/models/generer/' . $acte['Deliberation']['id'] . '/null/' . $model_id, array('class' => 'link_pdf',
-                'escape' => false,
-                'title' => 'Génération de ' . $acte['Deliberation']['objet']));
+            echo $this->Html->link(SHY, array('controller'=>'models','action'=>'generer',$acte['Deliberation']['id'],'null',$model_id,'-1','0','acte_'.$acte['Deliberation']['id'],'0','0','0'), array(
+                    'class' => 'link_pdf waiter',
+                    'escape' => false,
+                    'title' => 'Génération de ' . $acte['Deliberation']['objet']));
 
             if ($this->action == 'autresActesAValider' && $canGoNext && !empty($acte['Circuit']['nom'])) {
                 echo $this->Html->link(SHY, "/deliberations/goNext/" . $acte['Deliberation']['id'], array('class' => "link_jump",

@@ -47,7 +47,7 @@ class FiltreComponent extends Component
         }
         // Initialisation
         if ($this->Session->check('Filtre')) {
-            if (!empty($dataFiltre)) {
+            if (!empty($dataFiltre['Critere'])) {
                 // Sauvegarde des valeurs des critères sélectionnés dans la vue
                 foreach ($dataFiltre['Critere'] as $nomCritere => $valCritere) {
                     if ($this->Session->read('Filtre.Criteres.' . $nomCritere . '.inputOptions.type') == 'date') {
