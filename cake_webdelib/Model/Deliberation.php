@@ -200,23 +200,16 @@ class Deliberation extends AppModel {
 
         return false;
 	}
-	/*
-	 function saveSeances($delib_id, $seances) {
-	foreach($seances as $key=>$seance_id) {
-	$this->Seance->DeliberationsSeance->deliberation_id = $delib_id;
-	$this->Seance->DeliberationsSeance->seance_id = $seance_id;
-	if (!$this->Seance->DeliberationsSeance->save())
-		die('toto');
-	}
-	}
-	*/
 
-	/*
+	/**
 	 * retourne le libellé correspondant à l'état $etat des projets et délibérations
-	* si $codesSpeciaux = true, retourne les libellés avec les codes spéciaux des accents
-	* si $codesSpeciaux = false, retourne les libellés sans les accents (listes)
-	*/
-	function libelleEtat($etat, $codesSpeciaux=false) {
+	 * si $codesSpeciaux = true, retourne les libellés avec les codes spéciaux des accents
+	 * si $codesSpeciaux = false, retourne les libellés sans les accents (listes)
+     * @param  $etat
+     * @param  bool $codesSpeciaux
+     * @return string
+     */
+    function libelleEtat($etat, $codesSpeciaux = false) {
 		switch($etat) {
 			case -1 :
 				return $codesSpeciaux ? 'Version&eacute;' : 'Versionné';
@@ -242,6 +235,8 @@ class Deliberation extends AppModel {
 			case 5:
 				return $codesSpeciaux ? 'Transmis au contr&ocirc;le de l&eacute;galit&eacute;' : 'Transmis au contrôle de légalité';
 				break;
+            default:
+                return $codesSpeciaux ? 'Code Erron&eacute;' : 'Code Erroné';
 		}
 	}
 
@@ -288,24 +283,71 @@ class Deliberation extends AppModel {
 		$this->saveField('dateAR', $dateAR);
 	}
 
-	function getModelId($delib_id, $seance_id) {
-		$this->Seance->Behaviors->attach('Containable');
-		$data = $this->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
-				'recursive'  => -1,
-				'fields'     => array('Deliberation.id', 'Deliberation.etat')));
-		$seance = $this->Seance->find('first', array(
-				'conditions' => array('Seance.id' => $seance_id),
-				'fields'     => array('Seance.id'),
-				'contain'    => array('Typeseance.modelprojet_id', 'Typeseance.modeldeliberation_id') ));
+    /**
+     * Retourne l'identifiant du modèle à utiliser selon le projet
+     * @param $delib_id identifiant du projet
+     * @return integer identifiant du modèle
+     */
+    function getModel($delib_id){
+        $this->id = $delib_id;
+        $etat = $this->field('etat');
+        $seances = $this->Deliberationseance->find('all', array(
+            'recursive' => -1,
+            'fields' => array('seance_id'),
+            'conditions' => array('deliberation_id' => $delib_id)
+        ));
+        if (!empty($seances)){
+            //Recherche de séance délibérante
+            $tab_seances = Hash::extract($seances, '{n}.Deliberationseance.seance_id');
+            $seance_id = $this->Seance->getSeanceDeliberante($tab_seances);
+            $seance = $this->Seance->find('first', array(
+                'conditions' => array('Seance.id' => $seance_id),
+                'fields' => array('type_id'),
+                'contain' => array('Typeseance.modelprojet_id','Typeseance.modeldeliberation_id')
+            ));
 
-		if (!empty($seance)){
-			if ($data['Deliberation']['etat']<3)
-				return $seance['Typeseance']['modelprojet_id'];
-			else
-				return $seance['Typeseance']['modeldeliberation_id'];
-		}
-		else {
-			return 1;
+            if ($etat < 3)
+                return $seance['Typeseance']['modelprojet_id'];
+            else
+                return $seance['Typeseance']['modeldeliberation_id'];
+        } else {
+            $typeacte_id = $this->field('typeacte_id');
+            $typeacte = $this->Typeacte->find('first', array(
+                'recursive' => -1,
+                'conditions' => array('id' => $typeacte_id),
+                'fields' => array('modeleprojet_id','modelefinal_id')
+            ));
+
+            if ($etat < 3)
+                return $typeacte['Typeacte']['modeleprojet_id'];
+            else
+                return $typeacte['Typeacte']['modelefinal_id'];
+        }
+    }
+
+	function getModelForSeance($delib_id, $seance_id) {
+		$this->Seance->Behaviors->attach('Containable');
+		$delib = $this->find('first', array(
+            'conditions' => array('Deliberation.id' => $delib_id),
+				'recursive'  => -1,
+				'fields'     => array('Deliberation.id', 'Deliberation.etat', 'Deliberation.typeacte_id')
+        ));
+        $seance = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id' => $seance_id),
+            'fields'     => array('Seance.id'),
+            'contain'    => array('Typeseance.modelprojet_id', 'Typeseance.modeldeliberation_id') ));
+
+        if (!empty($seance)){
+            if ($delib['Deliberation']['etat']<3)
+                return $seance['Typeseance']['modelprojet_id'];
+            else
+                return $seance['Typeseance']['modeldeliberation_id'];
+        }
+		else { // Pas de séance associée, chercher le model du type d'acte
+            if ($delib['Deliberation']['etat']<3)
+                return $this->Typeacte->getModelId($delib['Deliberation']['typeacte_id'], 'modeleprojet_id');
+            else
+                return $this->Typeacte->getModelId($delib['Deliberation']['typeacte_id'], 'modelefinal_id');
 		}
 	}
 
@@ -1537,21 +1579,29 @@ class Deliberation extends AppModel {
     function getActesExceptDelib($conditions=array(), $fields, $contain, $order=null) {
         $code_delib = 'DE';
         if (!isset($conditions['Deliberation.typeacte_id']))  {
-            $nature_ids = $this->Typeacte->Nature->find('all', array('conditions' => array('Nature.code !=' => $code_delib),
-                                                                     'recursive'  => -1,
-                                                                     'fields'     => array('Nature.id')));
+            $nature_ids = $this->Typeacte->Nature->find('all', array(
+                'conditions' => array('Nature.code !=' => $code_delib),
+                'recursive'  => -1,
+                'fields'     => array('Nature.id')
+            ));
 
-            $typeacte_ids = $this->Typeacte->find('all', array('conditions' => array('Typeacte.nature_id' => Set::extract('/Nature/id', $nature_ids)),
-                                                        'recursive'  => -1,
-                                                        'fields'     => array('Typeacte.id')));
+            $typeacte_ids = $this->Typeacte->find('all', array(
+                'conditions' => array('Typeacte.nature_id' => Set::extract('/Nature/id', $nature_ids)),
+                'recursive'  => -1,
+                'fields'     => array('Typeacte.id')
+            ));
 
-            $conditions = array_merge($conditions,  array('Deliberation.typeacte_id' =>Set::extract('/Typeacte/id', $typeacte_ids)));
+            $conditions = array_merge($conditions,  array('Deliberation.typeacte_id' => Set::extract('/Typeacte/id', $typeacte_ids)));
         }
+
         $this->Behaviors->attach('Containable');
-        $actes = $this->find('all', array('conditions' => $conditions,
-                                          'contain'    => $contain,
-                                          'fields'     => $fields,
-                                          'order'      => $order));
+        $actes = $this->find('all', array(
+            'conditions' => $conditions,
+            'contain'    => $contain,
+            'fields'     => $fields,
+            'order'      => $order
+        ));
+
         foreach ($actes as &$acte) {
             $acte['Modeltemplate']['modeleprojet_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modeleprojet_id');
             $acte['Modeltemplate']['modelefinal_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
