@@ -35,9 +35,9 @@ class AppController extends Controller
             && $this->action != 'writeSession'
             && substr(substr($_SERVER['REQUEST_URI'], strlen($this->base)), 0, strlen('/cakeflow/traitements/traiter_mail')) != '/cakeflow/traitements/traiter_mail') {
 
-            //s'il n'y a pas d'utilisateur connecte en session
+            //si il n'y a pas d'utilisateur connecte en session
             if (!$this->Session->Check('user')) {
-                $this->redirect(array('controller' => 'users', 'action' => 'login'));
+                $this->redirect(array('controller' => 'users', 'action' => 'login', 'plugin'=>''));
             } else {
                 // Contrôle des droits
                 $Pages = array('Pages:format', 'Pages:service');
