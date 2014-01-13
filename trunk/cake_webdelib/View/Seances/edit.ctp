@@ -50,6 +50,7 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 <div id="tab2"  style="display: none;">
 <?php
 	foreach($infosupdefs as $infosupdef) {
+        $disabled = $infosupdef['Infosupdef']['actif'] == false;
 	    $fieldName = 'Infosup.'.$infosupdef['Infosupdef']['code'];
 	    $fieldId = 'Infosup'.Inflector::camelize($infosupdef['Infosupdef']['code']);
 	    echo "<div class='required'>";
@@ -102,13 +103,30 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 	                            echo '</span>';
 	                    }
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'list') {
-	                    echo $this->Form->input($fieldName, array('label'=>false, 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true, 'title'=>$infosupdef['Infosupdef']['commentaire']));
-	            }
+                    echo $this->Form->input($fieldName, array('label'=>false, 'options'=>$infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty'=>true, 'title'=>$infosupdef['Infosupdef']['commentaire']));
+	            } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
+                    if (!$disabled) {
+                        echo $this->Form->input($fieldName, array('selected'=>$this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'multiple' => true, 'class'=>'select2'));
+                    } else {
+                        echo $this->Form->input($fieldName, array('selected'=>$this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
+                        echo $this->Form->input($fieldName, array('value'=>implode(',', $selected_values), 'id' => false, 'type' => 'hidden'));
+                    }
+
+                }
 	    echo '</div>';
 	    echo '<br>';
 	};
 ?>
 </div>
+<script type="application/javascript">
+    $(document).ready(function(){
+        $(".select2").select2({
+            width: "resolve",
+            allowClear: true,
+            placeholder: "Liste à choix multiples"
+        });
+    });
+</script>
 <?php endif; ?>
 
 <!--<div class="actions btn-group">

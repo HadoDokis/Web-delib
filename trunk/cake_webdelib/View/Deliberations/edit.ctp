@@ -295,7 +295,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
             $(".select2").select2({
                 width: "resolve",
                 allowClear: true,
-                placeholder: 'Sélection d\'info sup'
+                placeholder: "Liste à choix multiples"
             });
         });
     </script>
