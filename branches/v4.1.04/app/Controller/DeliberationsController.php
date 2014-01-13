@@ -2560,7 +2560,6 @@ class DeliberationsController extends AppController {
         $editerProjetValide = $this->Droits->check($userId, "Deliberations:editerProjetValide");
         
         $this->request->data = $projets;
-        //debug($this->request->data[0]);exit;
         /* initialisation pour chaque projet ou délibération */
         foreach ($this->request->data as $i => $projet) {
             // initialisation des icônes
