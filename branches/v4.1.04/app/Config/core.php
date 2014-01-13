@@ -305,7 +305,7 @@ Cache::config('_cake_model_', array(
     //Configure::write('Config.language', 'fra');
     
     require_once ('webdelib.inc');
-    define('VERSION', '4.1.04-beta4');
+    define('VERSION', '4.1.04-beta5');
     //appVersion
     //dbVersion
     include_once(ROOT.DS.APP_DIR.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'cakeflow.conf.php');
