@@ -2560,7 +2560,7 @@ class DeliberationsController extends AppController {
         $editerProjetValide = $this->Droits->check($userId, "Deliberations:editerProjetValide");
         
         $this->request->data = $projets;
-
+        //debug($this->request->data[0]);exit;
         /* initialisation pour chaque projet ou délibération */
         foreach ($this->request->data as $i => $projet) {
             // initialisation des icônes
@@ -2579,6 +2579,7 @@ class DeliberationsController extends AppController {
             } else {
                 $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['etat'], $editerProjetValide);
             }
+            
             // initialisation des séances
             $listeTypeSeance=array();
             $this->request->data[$i]['listeSeances']=array();
@@ -2592,10 +2593,9 @@ class DeliberationsController extends AppController {
                     $listeTypeSeance[]=$seance['Seance']['type_id'];
                 }
             }
-
             if (isset($projet['Deliberationtypeseance']) && !empty($projet['Deliberationtypeseance'])) {
                 foreach ($projet['Deliberationtypeseance'] as $keyType => $typeseance) {
-                    if(!in_array($typeseance['Typeseance']['id'],$listeTypeSeance))
+                    if(!in_array($typeseance['Typeseance']['id'], $listeTypeSeance))
                     $this->request->data[$i]['listeSeances'][]=array('seance_id' => NULL,
                                                                     'type_id' => $typeseance['Typeseance']['id'],
                                                                     'action' => $typeseance['Typeseance']['action'],
@@ -2604,9 +2604,9 @@ class DeliberationsController extends AppController {
                     
                 }
             }
+            
             $this->request->data[$i]['listeSeances'] = Hash::sort($this->request->data[$i]['listeSeances'], '{n}.action', 'asc');
-
-            // initialisation des actions
+        // initialisation des actions
             $this->request->data[$i]['Actions'] = $listeActions;
             if ($projet['Deliberation']['etat'] != 1) {
                 $this->request->data[$i]['Actions'] = array_flip($this->data[$i]['Actions']);
@@ -2622,12 +2622,12 @@ class DeliberationsController extends AppController {
             $seances_id = array();
 
             if (isset($this->request->data[$i]['listeSeances']) && !empty($this->request->data[$i]['listeSeances']))
-                foreach ($this->request->data[$i]['listeSeances'] as &$seance) {
+                foreach ($this->request->data[$i]['listeSeances'] as $seance) {
                     if($seance['action']===0){
                     $this->request->data[$i]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['type_id'], $projet['Deliberation']['etat']);
                     break;
                     }
-                }
+            }
             if(!isset($this->request->data[$i]['Model']['id'])) {
                 $this->request->data[$i]['Model']['id'] = $this->Deliberation->Typeacte->getModelId($projet['Deliberation']['typeacte_id'], 'modeleprojet_id');
             }
@@ -2636,7 +2636,8 @@ class DeliberationsController extends AppController {
                 $this->request->data[$i]['Service']['libelle'] = $this->Deliberation->Service->doList($projet['Service']['id']);
             if (isset($this->data[$i]['Deliberation']['date_limite']))
                 $this->request->data[$i]['Deliberation']['date_limite'] = $this->Date->frenchDate(strtotime($projet['Deliberation']['date_limite']));
-        }
+       
+            }
 
         // passage des variables à la vue
         $this->set('titreVue', $titreVue);
