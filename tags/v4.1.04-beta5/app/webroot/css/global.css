@@ -1,0 +1,31 @@
+/* 
+    Document   : global
+    Created on : 4 oct. 2013, 16:47:57
+    Author     : Florian Ajir
+    Version WD : 4.1.03 
+    Description:
+        Feuille de style webdelib destinée à être chargée après les autres feuilles de style (bootstrap,...)
+*/
+
+/* Ecrase les valeurs bootstrap (fix hauteur attendable overlay) */
+body{
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 70px;
+    padding-right: 70px;
+    padding-top: 80px;
+}
+
+/* fix le décalage entre les checkboxes */
+div.input.checkbox label{
+    float: none;
+    text-align: left;
+}
+
+#logo{
+     float: left;
+}
+
+.navbar-fixed-top{
+    position: fixed;
+}
