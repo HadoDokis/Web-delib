@@ -8,14 +8,17 @@ App::uses('File', 'Utility');
 class PatchShell extends AppShell {
 
     public $tasks = array(
-        'Tdt',
-        'Gedooo' // Version_4102to4103()
+        'Sql',
+        'Cakeflow',
+        'Tdt', // 4.1.01 => 4.1.02
+        'Gedooo', // 4.1.02 => 4.1.03
     );
     public $uses = array('Annex', 'Deliberation');
 
     public function main() {
         $this->out('Script de patch de Webdelib');
-
+        // Désactivation du cache
+        Configure::write('Cache.disable', true);
         // Création de styles perso
         $this->stdout->styles('time', array('text' => 'magenta'));
         $this->stdout->styles('important', array('text' => 'red', 'bold' => true));
@@ -28,6 +31,10 @@ class PatchShell extends AppShell {
 
             case "4102to4103":
                 $this->Version_4102to4103();
+                break;
+            
+            case "4103to4104":
+                $this->Version_4103to4104();
                 break;
 
             case null: // Pas de commande
@@ -56,29 +63,6 @@ class PatchShell extends AppShell {
         $parser = parent::getOptionParser();
         $parser->description(__('Commandes de mise à jour de webdelib.'));
 
-        $parser->addSubcommand('4102to4103', array(
-            'help' => __('Application du patch de mise à jour de 4.1.02 à 4.1.03.'),
-            'parser' => array(
-                'options' => array(
-                    'classification' => array(
-                        'name' => 'classification',
-                        'required' => false,
-                        'short' => 'c',
-                        'help' => 'Mise à jour de classification.',
-                        'boolean' => true
-                    ),
-                    'textes' => array(
-                        'name' => 'textes',
-                        'required' => false,
-                        'short' => 't',
-                        'help' => 'Tests à effectuer (projets et annexes)',
-                        'choices' => array('all', 'noseance', 'nontraitees'),
-                        'default' => 'all'
-                    )
-                )
-            )
-        ));
-
         $parser->addSubcommand('4101to4102', array(
             'help' => __('Application du patch de mise à jour de 4.1.01 à 4.1.02.'),
             'parser' => array(
@@ -104,6 +88,52 @@ class PatchShell extends AppShell {
                 )
             )
         ));
+        
+        $parser->addSubcommand('4102to4103', array(
+            'help' => __('Application du patch de mise à jour de 4.1.02 à 4.1.03.'),
+            'parser' => array(
+                'options' => array(
+                    'classification' => array(
+                        'name' => 'classification',
+                        'required' => false,
+                        'short' => 'c',
+                        'help' => 'Mise à jour de classification.',
+                        'boolean' => true
+                    ),
+                    'textes' => array(
+                        'name' => 'textes',
+                        'required' => false,
+                        'short' => 't',
+                        'help' => 'Tests à effectuer (projets et annexes)',
+                        'choices' => array('all', 'noseance', 'nontraitees'),
+                        'default' => 'all'
+                    )
+                )
+            )
+        ));
+        
+        $parser->addSubcommand('4102to4103', array(
+            'help' => __('Application du patch de mise à jour de 4.1.03 à 4.1.04.'),
+            'parser' => array(
+                'options' => array(
+                    'classification' => array(
+                        'name' => 'classification',
+                        'required' => false,
+                        'short' => 'c',
+                        'help' => 'Mise à jour de classification.',
+                        'boolean' => true
+                    ),
+                    'Cakeflow3001to3002' => array(
+                        'name' => 'Cakeflow3001to3002',
+                        'required' => false,
+                        'short' => 'u',
+                        'help' => 'Mise à jour de Cakeflow',
+                        'boolean' => true
+                    )
+                )
+            )
+        ));
+        
         return $parser;
     }
 
@@ -271,6 +301,66 @@ class PatchShell extends AppShell {
             $this->footer('<info>patch complete<info>');
         else
             $this->footer('<warning>patch incomplete !!</warning>');
+    }
+    
+    /** Mise à jour de la version 4.1.03 à la version 4.1.04
+     * Upgrade de Cakeflow, Mise à jour de classification
+     */
+    public function Version_4103to4104()
+    {
+        $errors = array();
+        $warnings = array();
+        $success = true;
+        $this->out("\n<important>Démarrage du patch de mise à jour de Webdelib 4.1.03 vers 4.1.04...</important>\n");
+        
+        if (!empty($this->params['Cakeflow3001to3002'])) {
+            $cakeflowSql = APP.DS.'Plugin'.DS.'CakeFlow'.DS.'Config'.DS.'sql'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
+            $this->out("\nMise à jour de la base de données...");
+            $this->Sql->execute();
+            $this->Sql->begin();
+
+            $success = $success && $this->Sql->run($cakeflowSql);
+
+            if ($success){
+                //Commit
+                $this->Sql->commit();
+                //trouver l'attribut etape_id des visas en cours
+                $this->out('Mise à jour des données CakeFlow...');
+                $this->Cakeflow->findVisaEtapeId();
+            }
+            else{
+                $this->out("\n<error>Une erreur s'est produite pendant l'installation de la mise à jour (Erreur SQL) !!</error>");
+                $this->Sql->rollback();
+            }
+        }
+
+        //Mise à jour de la classification
+        if (!empty($this->params['classification'])) {
+            if (Configure::read("USE_S2LOW")) {
+                $this->out('<info>Mise à jour classification...</info>');
+                $success = $this->Tdt->classification() && $success;
+                if ($success)
+                    $this->out('<info>Mise à jour de la classification Terminée</info>');
+                else
+                    $this->out('<warning>Warning : Problème lors de la mise à jour de la classification !!</warning>');
+            }
+            else
+                $warnings[] = '<warning>Warning : l\'utilisation de S2LOW est désactivée (voir fichier webdelib.inc), mise à jour de la classification impossible...</warning>';
+        }
+        
+        if (!empty($warnings)){
+            $this->out("\n<warning>Avertissements : </warning>");
+            foreach ($warnings as $warning) {
+                $this->out("\t<warning>* ".$warning.'</warning>');
+            }
+        }
+
+        if ($success) {
+            $this->footer('<important>Patch de la version 4.1.03 vers la 4.1.04 accompli avec succès !</important>');
+        }
+        else
+            $this->footer('<error>Erreur : un problème est survenu lors de l\'application du patch !!</error>');
+        
     }
 
     /**
