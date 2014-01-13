@@ -271,14 +271,14 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'list') {
                 if (!$disabled) {
-                    echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'class'=>'select2'));
+                    echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'class'=>'select2 selectone'));
                 } else {
                     echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
                     echo $this->Form->input($fieldName, array('id' => false, 'type' => 'hidden'));
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
                 if (!$disabled) {
-                    echo $this->Form->input($fieldName, array('selected'=>$this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'multiple' => true, 'class'=>'select2'));
+                    echo $this->Form->input($fieldName, array('selected'=>$this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'multiple' => true, 'class'=>'select2 selectmultiple'));
                 } else {
                     echo $this->Form->input($fieldName, array('selected'=>$this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
                     echo $this->Form->input($fieldName, array('value'=>implode(',', $selected_values), 'id' => false, 'type' => 'hidden'));
@@ -292,10 +292,15 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
     </div>
     <script type="application/javascript">
         $(document).ready(function(){
-            $(".select2").select2({
+            $(".select2.selectmultiple").select2({
                 width: "resolve",
                 allowClear: true,
                 placeholder: "Liste à choix multiples"
+            });
+            $(".select2.selectone").select2({
+                width: "resolve",
+                allowClear: true,
+                placeholder: "Selectionnez un élément"
             });
         });
     </script>
