@@ -123,11 +123,11 @@ class PatchShell extends AppShell {
                         'help' => 'Mise à jour de classification.',
                         'boolean' => true
                     ),
-                    'Cakeflow3001to3002' => array(
-                        'name' => 'Cakeflow3001to3002',
+                    'Schema' => array(
+                        'name' => 'Schema',
                         'required' => false,
                         'short' => 'u',
-                        'help' => 'Mise à jour de Cakeflow',
+                        'help' => 'Mise à jour du schema de bdd',
                         'boolean' => true
                     )
                 )
@@ -313,25 +313,27 @@ class PatchShell extends AppShell {
         $success = true;
         $this->out("\n<important>Démarrage du patch de mise à jour de Webdelib 4.1.03 vers 4.1.04...</important>\n");
         
-        if (!empty($this->params['Cakeflow3001to3002'])) {
-            $cakeflowSql = APP.DS.'Plugin'.DS.'CakeFlow'.DS.'Config'.DS.'sql'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
-            $this->out("\nMise à jour de la base de données...");
-            $this->Sql->execute();
-            $this->Sql->begin();
+        if (!empty($this->params['Schema'])) {
+        $webdelibSql = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1.03_to_4.1.04.sql';
+        $cakeflowSql = APP.DS.'Plugin'.DS.'CakeFlow'.DS.'Config'.DS.'sql'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
+        $this->out("\nMise à jour de la base de données...");
+        $this->Sql->execute();
+        $this->Sql->begin();
 
-            $success = $success && $this->Sql->run($cakeflowSql);
+        $success = $this->Sql->run($webdelibSql);
+        $success = $success && $this->Sql->run($cakeflowSql);
 
-            if ($success){
-                //Commit
-                $this->Sql->commit();
-                //trouver l'attribut etape_id des visas en cours
-                $this->out('Mise à jour des données CakeFlow...');
-                $this->Cakeflow->findVisaEtapeId();
-            }
-            else{
-                $this->out("\n<error>Une erreur s'est produite pendant l'installation de la mise à jour (Erreur SQL) !!</error>");
-                $this->Sql->rollback();
-            }
+        if ($success){
+            //Commit
+            $this->Sql->commit();
+            //trouver l'attribut etape_id des visas en cours
+            $this->out('Mise à jour des données yCakeFlow...');
+            $this->Cakeflow->findVisaEtapeId();
+        }
+        else{
+            $this->out("\n<error>Une erreur s'est produite pendant l'installation de la mise à jour (Erreur SQL) !!</error>");
+            $this->Sql->rollback();
+        }
         }
 
         //Mise à jour de la classification
