@@ -36,8 +36,8 @@ if (isset($traitement_lot) && ($traitement_lot == true))
     <tr>
         <th style="width:72px">
             <?php
-            if (isset($traitement_lot) && ($traitement_lot == true)) {
-                echo "<input type=\"checkbox\" onclick=\"$('td :checkbox').attr('checked', this.checked);\"/>";
+            if (!empty($traitement_lot)) {
+                echo '<input type="checkbox" id="masterCheckbox" />';
                 echo '<br/>';
             }
             ?>Vue
