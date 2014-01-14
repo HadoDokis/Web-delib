@@ -114,7 +114,7 @@ class PatchShell extends AppShell {
     {
         $this->out("<important>Mise à jour de Webdelib 4.1.xx => 4.2</important>\n");
 
-        //1° Modification des modèles
+        //1° Modification des modèles le necessitant
         $this->out('Recherche des modèles avec jointure des annexes...');
         $this->AjouteSectionAnnexe->execute();
 
@@ -137,12 +137,12 @@ class PatchShell extends AppShell {
                 break;
             }
         }
-        if ($success)
+        if ($success){
             $this->Sql->commit();
-
-        //3° Trouver l'attribut etape_id des visas en cours
-        $this->out('Mise à jour des données CakeFlow...');
-        $this->Cakeflow->findVisaEtapeId();
+            //3° Trouver l'attribut etape_id des visas en cours
+            $this->out('Mise à jour des données CakeFlow...');
+            $this->Cakeflow->findVisaEtapeId();
+        }
 
     }
     /** Mise à jour de la version 4.1.02 à la version 4.1.03
