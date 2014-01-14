@@ -28,8 +28,7 @@
             else
                 echo "<td>" . $this->Form->checkbox('Deliberation.id.' . $delib['Deliberation']['id'], array('checked' => false, 'disabled'=>true)) . "</td>";
             echo "<td>";
-            echo $this->Html->link($delib['Deliberation']['num_delib'], '/models/generer/' . $delib['Deliberation']['id'] . '/null/' . $delib['Modeltemplate']['id']);
-
+            echo $this->Html->link($delib['Deliberation']['num_delib'], array('controller'=>'models','action'=>'generer', $delib['Deliberation']['id'], 'null', $delib['Modeltemplate']['id'],'-1','0',$delib['Deliberation']['num_delib'],'0','0','0'), array('class'=>'delib_pdf'));
             ?>
             </td>
             <td>
