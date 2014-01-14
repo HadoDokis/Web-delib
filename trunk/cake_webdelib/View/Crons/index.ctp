@@ -1,47 +1,5 @@
-<style>
-    .table{
-        font-size: 0.9em;
-    }
-    .table tr td, .table tr th{
-        vertical-align: middle;
-        padding: 5px;
-    }
-    .table tr td.actions{
-        min-width: 130px;
-        padding: 0px;
-        height: 100%;
-        vertical-align: middle;
-    }
-    .table th{
-        text-align: center;
-        vertical-align: middle;
-    }
-    tr:hover th, tr th{
-        background-color: whitesmoke;
-    }
-    .info{
-        color: inherit;
-        font-style: inherit;
-    }
-    .btn-group>.btn{
-        float: none;
-    }
-    .btn-toolbar{
-        text-align: center;
-    }
-</style>
-<script type="text/javascript">
-    $(document).ready(function() {
-        $('.suppr_cron').click(function(e) {
-            if (!confirm("Vous confirmez vouloir supprimer cette tâche ?")) {
-                e.preventDefault();
-                return false;
-            }
-        });
-    });
-</script>
 <?php
-echo $this->Html->css('font-awesome.min');
+echo $this->Html->css('crons');
 echo $this->Html->tag('h1', __('Liste des tâches planifiées', true));
 
 echo $this->Html->tag('table', null, array('cellpadding' => '0', 'cellspacing' => '0', 'class' => "table table-bordered table-hover"));
@@ -74,20 +32,20 @@ foreach ($this->data as $rownum => $rowElement) {
     if ($rowElement['Cron']['last_execution_start_time'] != null)
         echo $this->Html->tag('td', $this->Time->format("d-m-Y à H:i:s", $rowElement['Cron']['last_execution_start_time']));
     else
-        echo $this->Html->tag('td', "Jamais");
+        echo $this->Html->tag('td', 'Jamais');
     echo $this->Html->tag('td', $rowElement['Cron']['activeLibelle']);
     echo $this->Html->tag('td', null, array('class' => 'actions'));
 
     echo $this->Html->tag('div', null, array('class' => 'btn-toolbar'));
 
     echo $this->Html->tag('div', null, array("class" => 'btn-group'));
-    echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-info-circle fa-lg")), '/crons/view/' . $rowElement['Cron']['id'], array('class' => 'btn', 'title' => 'Voir les détails', 'escape' => false), false, false);
+    echo $this->Html->link($this->Html->tag('i', '', array("class" => "fa fa-info-circle fa-lg")), array('action'=>'view', $rowElement['Cron']['id']), array('class' => 'btn', 'title' => 'Voir les détails', 'escape' => false), false, false);
 //    echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-edit fa-lg")), '/crons/edit/' . $rowElement['Cron']['id'], array('class' => 'btn', 'title' => 'Modifier', 'escape' => false), false, false);
-//    echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-trash-o fa-lg")), '/crons/delete/' . $rowElement['Cron']['id'], array('class' => 'btn suppr_cron', 'title' => 'Supprimer', 'escape' => false), false, false);
+//    echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-trash-o fa-lg")), '/crons/delete/' . $rowElement['Cron']['id'], array('class' => 'btn suppr_cron', 'title' => 'Supprimer', 'escape' => false), false, 'Vous confirmez vouloir supprimer cette tâche ?');
 //    echo $this->Html->tag('/div', null);
 //    echo $this->Html->tag('div', null, array("class" => 'btn-group'));
-    echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-clock-o fa-lg")), '/crons/planifier/' . $rowElement['Cron']['id'], array('class' => 'btn', 'title' => 'Planifier', 'escape' => false), false, false);
-    echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-cog fa-lg")), '/crons/executer/' . $rowElement['Cron']['id'], array("class" => "btn", 'title' => 'Exécuter maintenant', 'escape' => false), false, false);
+    echo $this->Html->link($this->Html->tag('i', '', array('class' => 'fa fa-clock-o fa-lg')), array('action'=>'planifier', $rowElement['Cron']['id']), array('class' => 'btn', 'title' => 'Planifier', 'escape' => false), false, false);
+    echo $this->Html->link($this->Html->tag('i', '', array('class' => 'fa fa-cog fa-lg')), array('action'=>'executer', $rowElement['Cron']['id']), array('class' => 'btn', 'title' => 'Exécuter maintenant', 'escape' => false), false, false);
     echo $this->Html->tag('/div', null);
 
     echo $this->Html->tag('/div', null);
@@ -96,11 +54,9 @@ foreach ($this->data as $rownum => $rowElement) {
     echo $this->Html->tag('/tr');
 }
 echo $this->Html->tag('/table');
-echo $this->Html->tag('div', null, array('id' => 'run_crons', 'style' => 'text-align:center; margin-top:10px;'));
-echo $this->Html->link('<i class="fa fa-cogs fa-lg"></i> Exécuter toutes les tâches', array("action" => "runCrons"), array('id' => 'run-crons', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Exécuter toutes les tâches planifiées maintenant'));
 
-echo $this->Html->tag('br');
-//echo $this->Html2->boutonAdd("Nouvelle tâche", "Créer une nouvelle tâche planifiée");
+echo $this->Html->tag('div', null, array('style' => 'text-align:center; margin-top:10px;'));
+//echo $this->Html->link('<i class="fa fa-plus-circle fa-lg"></i> Nouvelle tâche', array('action'=>'add'), array('title'=>'Créer une nouvelle tâche planifiée', 'class'=>'btn', 'escape' => false));
+echo $this->Html->link('<i class="fa fa-cogs fa-lg"></i> Exécuter toutes les tâches', array("action" => "runCrons"), array('id' => 'run-crons', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Exécuter toutes les tâches planifiées maintenant'));
 echo $this->Html->tag('/div');
 //echo $this->element('indexPageNavigation');
-?>
