@@ -117,9 +117,10 @@ class PatchShell extends AppShell {
         $this->AjouteSectionAnnexe->execute();
 
         //Passage des scripts sql de migration
-        $webdelibSql            = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
-        $modelOdtValidatorSql   = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
-        $cakeflowSql            = APP.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'cakeflow_v3.0_to_v3.1.sql';
+        $webdelibSql          = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
+        $modelOdtValidatorSql = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
+        $cakeflow3002Sql      = APP.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'cakeflow_v3.0.01_to_v3.0.02.sql';
+        $cakeflow31Sql        = APP.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'cakeflow_v3.0_to_v3.1.sql';
 
         $this->out("\nMise à jour de la base de données...");
 
@@ -128,7 +129,8 @@ class PatchShell extends AppShell {
 
         $success = $this->Sql->run($webdelibSql);
         $success = $success && $this->Sql->run($modelOdtValidatorSql);
-        $success = $success && $this->Sql->run($cakeflowSql);
+        $success = $success && $this->Sql->run($cakeflow3002Sql);
+        $success = $success && $this->Sql->run($cakeflow31Sql);
 
         if ($success){
             //Commit
