@@ -113,36 +113,36 @@ class PatchShell extends AppShell {
     public function Version_41to42()
     {
         $this->out("<important>Mise à jour de Webdelib 4.1.xx => 4.2</important>\n");
+
+        //1° Modification des modèles
         $this->out('Recherche des modèles avec jointure des annexes...');
         $this->AjouteSectionAnnexe->execute();
 
-        //Passage des scripts sql de migration
-        $webdelibSql          = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
-        $modelOdtValidatorSql = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
-        $cakeflow3002Sql      = APP.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'cakeflow_v3.0.01_to_v3.0.02.sql';
-        $cakeflow31Sql        = APP.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'cakeflow_v3.0_to_v3.1.sql';
-
-        $this->out("\nMise à jour de la base de données...");
+        //2° Passage des scripts sql de migration
+        $this->out("\nPassage des patchs de mise à jour de la base de données...");
+        $sql_files = array();
+        $sql_files['Webdelib42'] = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
+        $sql_files['Plugin.ModelOdtValidator'] = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
+        $sql_files['Plugin.Cakeflow3002'] = APP.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'cakeflow_v3.0.01_to_v3.0.02.sql';
+        $sql_files['Plugin.Cakeflow31'] = APP.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'cakeflow_v3.0_to_v3.1.sql';
 
         $this->Sql->execute();
         $this->Sql->begin();
-
-        $success = $this->Sql->run($webdelibSql);
-        $success = $success && $this->Sql->run($modelOdtValidatorSql);
-        $success = $success && $this->Sql->run($cakeflow3002Sql);
-        $success = $success && $this->Sql->run($cakeflow31Sql);
-
-        if ($success){
-            //Commit
+        $success = true;
+        foreach ($sql_files as $id => $sql){
+            if (!$this->Sql->run($sql)){
+                $this->out("\n<error>Erreur lors du lancement du fichier sql de $id</error>");
+                $this->Sql->rollback();
+                $success = false;
+                break;
+            }
+        }
+        if ($success)
             $this->Sql->commit();
-            //trouver l'attribut etape_id des visas en cours
-            $this->out('Mise à jour des données CakeFlow...');
-            $this->Cakeflow->findVisaEtapeId();
-        }
-        else{
-            $this->out("\n<error>Une erreur s'est produite pendant l'installation des mises à jours (Erreur SQL) !!</error>");
-            $this->Sql->rollback();
-        }
+
+        //3° Trouver l'attribut etape_id des visas en cours
+        $this->out('Mise à jour des données CakeFlow...');
+        $this->Cakeflow->findVisaEtapeId();
 
     }
     /** Mise à jour de la version 4.1.02 à la version 4.1.03
