@@ -25,18 +25,17 @@ class AjouteSectionAnnexeTask extends Shell {
         //Cocher Annexes.joindre_fusion si aucun modèle n'a joindre annexe
         if (empty($models)){
             $this->Annex->updateAll( array('joindre_fusion' => true), array() );
-        }
-
-        foreach ($models as $model){
-            $lib = new phpOdtApi();
-            $lib->loadFromOdtBin($model['Model']['content'], 'w', true);
-            if (!$lib->hasUserFieldsInSection('fichier', 'Annexes')){
-                $this->out('<info>Modification du model '.$model['Model']['id'].' ('. $model['Model']['name'] .")</info>\n", 0);
-                $lib->appendUserField('fichier', 'string', 'Annexes');
-                $this->Model->id = $model['Model']['id'];
-                $this->Model->saveField('content', $lib->save(true));
-                $this->Model->saveField('joindre_annexe', 0);
+        }else
+            foreach ($models as $model){
+                $lib = new phpOdtApi();
+                $lib->loadFromOdtBin($model['Model']['content'], 'w', true);
+                if (!$lib->hasUserFieldsInSection('fichier', 'Annexes')){
+                    $this->out('<info>Modification du model '.$model['Model']['id'].' ('. $model['Model']['name'] .")</info>\n", 0);
+                    $lib->appendUserField('fichier', 'string', 'Annexes');
+                    $this->Model->id = $model['Model']['id'];
+                    $this->Model->saveField('content', $lib->save(true));
+                    $this->Model->saveField('joindre_annexe', 0);
+                }
             }
-        }
     }
 }

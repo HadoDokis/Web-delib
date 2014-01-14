@@ -24,7 +24,10 @@ class CakeflowTask extends Shell
             $visas = $this->Visa->find('all', array(
                 'recursive' => -1,
                 'fields' => array('id', 'etape_nom', 'etape_type'),
-                'conditions' => array('traitement_id' => $traitement['Traitement']['id'])
+                'conditions' => array(
+                    'traitement_id' => $traitement['Traitement']['id'],
+                    'etape_id' => null
+                )
             ));
             //Parcours des visas du traitement
             foreach ($visas as $visa){
