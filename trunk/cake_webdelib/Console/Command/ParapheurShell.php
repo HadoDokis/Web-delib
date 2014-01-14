@@ -3,7 +3,10 @@
 App::import(array('Model', 'AppModel', 'File'));
 App::import(array('Model', 'Deliberation', 'File'));
 App::import(array('Model', 'Commentaire', 'File'));
-
+/**
+ * @deprecated au profit des méthodes de même nom dans Deliberation (Model)
+ * Class ParapheurShell
+ */
 class ParapheurShell extends Shell {
 
     var $uses = array('Deliberation', 'Commentaire');
