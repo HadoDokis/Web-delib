@@ -56,7 +56,7 @@ class PatchShell extends AppShell {
         $parser->description(__('Commandes de mise à jour de webdelib.'));
 
         $parser->addSubcommand('41to42', array(
-            'help' => __('Ajoute une section annexe à la fin des modèles d\'édition si ils ont l\'attribut joindre_annexe.')
+            'help' => __('Migre Webdelib de la version 4.1.xx à la version 4.2 (modifs: modèles, sql, cakeflow).')
         ));
 
         $parser->addSubcommand('4102to4103', array(
