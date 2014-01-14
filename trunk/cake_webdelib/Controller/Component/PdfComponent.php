@@ -20,7 +20,11 @@
         }  
 
         function toOdt($filename){
-            $outputDir =  tempdir();
+            $outputDir = tempnam(TMP,'');
+            if (file_exists($outputDir)) {
+                unlink($outputDir);
+            }
+            mkdir($outputDir);
 
             //Preparation de la commande ghostscript
             $GS_EXEC =  Configure::read('GS_EXEC');

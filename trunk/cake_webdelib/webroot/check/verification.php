@@ -40,7 +40,6 @@ define('CACHE', TMP.'cache'.DS);
 define('LOGS', TMP.'logs'.DS);
 
 // initalisations
-include_once(LIBS.'basics.php');
 include_once(LIBS.'Core'.DS.'App.php');
 include_once(LIBS.'Core'.DS.'Object.php');
 include_once(LIBS.'Controller/Component.php');

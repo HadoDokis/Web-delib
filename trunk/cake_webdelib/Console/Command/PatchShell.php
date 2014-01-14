@@ -237,8 +237,12 @@ class PatchShell extends AppShell {
 
                 $i++;
                 $newAnnexe['Annex']['id'] = $annexe['Annex']['id'];
-                $outputDir = tempdir();
-                $folder = new Folder($outputDir);
+
+                $outputDir = tempnam(TMP,'');
+                if (file_exists($outputDir))
+                    unlink($outputDir);
+
+                $folder = new Folder($outputDir, true);
                 $file = new File($outputDir . $annexe['Annex']['id'] . '.pdf', false);
                 $file->write($annexe['Annex']['data_pdf']);
                 $newAnnexe['Annex']['data'] = $this->Pdf->toOdt($file->pwd());
