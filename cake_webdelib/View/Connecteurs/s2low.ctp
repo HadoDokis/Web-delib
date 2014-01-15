@@ -26,7 +26,7 @@
                                 array('type' => 'text', 
                                       "placeholder"=>"Exemple : www.s2low.org", 
                                       'label' => false , 
-                                      'value' => Configure::read('HOST'),
+                                      'value' => Configure::read('S2LOW_HOST'),
                                       'before' => 'https://')); ?>
     </fieldset>
     <fieldset>

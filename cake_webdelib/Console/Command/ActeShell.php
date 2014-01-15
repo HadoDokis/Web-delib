@@ -71,7 +71,7 @@ class ActeShell extends AppShell {
     }
 
      function _getNewFlux ($tdt_id) {
-            $url = 'https://'.Configure::read('HOST')."/modules/actes/actes_transac_get_document.php?id=$tdt_id";
+            $url = 'https://'.Configure::read('S2LOW_HOST')."/modules/actes/actes_transac_get_document.php?id=$tdt_id";
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');

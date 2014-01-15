@@ -22,7 +22,7 @@ class S2lowComponent extends Component {
     var $components = array('Date');
 
     function send($acte) {
-        $url = 'https://' . Configure::read('HOST') . '/modules/actes/actes_transac_create.php';
+        $url = 'https://' . Configure::read('S2LOW_HOST') . '/modules/actes/actes_transac_create.php';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('USE_PROXY'))
@@ -47,7 +47,7 @@ class S2lowComponent extends Component {
         $pos = strrpos(getcwd(), 'webroot');
         $path = substr(getcwd(), 0, $pos);
 
-        $url = 'https://' . Configure::read('HOST') . '/modules/actes/actes_classification_fetch.php';
+        $url = 'https://' . Configure::read('S2LOW_HOST') . '/modules/actes/actes_classification_fetch.php';
         $data = array(
             'api' => '1',
         );
@@ -104,7 +104,7 @@ class S2lowComponent extends Component {
     }
 
     function getFluxRetour($tdt_id) {
-        $url = 'https://' . Configure::read('HOST') . "/modules/actes/actes_transac_get_status.php?transaction=$tdt_id";
+        $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/actes/actes_transac_get_status.php?transaction=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('USE_PROXY'))
@@ -124,7 +124,7 @@ class S2lowComponent extends Component {
     }
 
     function getActeTampon($tdt_id) {
-        $url = 'https://' . Configure::read('HOST') . "/modules/actes/actes_transac_get_tampon.php?transaction=$tdt_id";
+        $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/actes/actes_transac_get_tampon.php?transaction=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, trim($url));
         if (Configure::read('USE_PROXY'))
@@ -149,7 +149,7 @@ class S2lowComponent extends Component {
 
     function getAR($tdt_id, $toFile = false) {
         $toFile = (boolean) $toFile;
-        $url = 'https://' . Configure::read('HOST') . "/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
+        $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('USE_PROXY'))
@@ -184,7 +184,7 @@ class S2lowComponent extends Component {
     }
 
     function sendMail($data) {
-        $url = 'https://' . Configure::read('HOST') . "/modules/mail/api/send-mail.php";
+        $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/mail/api/send-mail.php";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('USE_PROXY'))
@@ -206,7 +206,7 @@ class S2lowComponent extends Component {
     }
 
     function checkMail($mail_id) {
-        $url = 'https://' . Configure::read('HOST') . "/modules/mail/api/detail-mail.php?id=$mail_id";
+        $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/mail/api/detail-mail.php?id=$mail_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('USE_PROXY'))
