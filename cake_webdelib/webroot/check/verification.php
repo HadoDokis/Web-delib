@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 // initalisations
 $fichier_conf = 'webdelib.inc';
 
-$versionCakePHPAttendue = "2.2.2";
+$versionCakePHPAttendue = "2.2.9";
 $versionPHPAttendue = "5.3";
 $versionAPACHEAttendue = "2.2";
 $mods_apache = array('mod_rewrite', 'mod_ssl', 'mod_dav', 'mod_dav_fs');
@@ -40,6 +40,7 @@ define('CACHE', TMP.'cache'.DS);
 define('LOGS', TMP.'logs'.DS);
 
 // initalisations
+include_once(LIBS.'basics.php');
 include_once(LIBS.'Core'.DS.'App.php');
 include_once(LIBS.'Core'.DS.'Object.php');
 include_once(LIBS.'Controller/Component.php');
@@ -215,9 +216,8 @@ function php_can_access_applis($prefs, $wsdls=array()) {
 function verifVersions() {
 	// initialisations
 	global $appli_path, $versionCakePHPAttendue, $versionPHPAttendue, $versionAPACHEAttendue;
-	$verAsalae = '';
 
-	// affichage de la version de asalae
+	// affichage de la version de webdelib
 	if (file_exists(CONFIGS.'core.php')) {
             include_once(CONFIGS.'core.php');
             if (!defined('VERSION')) 
