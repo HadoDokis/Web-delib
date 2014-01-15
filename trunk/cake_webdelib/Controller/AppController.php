@@ -19,9 +19,13 @@ class AppController extends Controller
         $this->set('session_service_id', $this->Session->read('user.User.service'));
         $this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
         if ($this->Session->check('user.User')){
-            $this->Session->write('user.User.url.current', $this->params->here);
+            $historique = $this->Session->check('user.User.history') ? $this->Session->read('user.User.history') : array();
+            if (end($historique) != $this->params->here)
+                $historique[] = $this->params->here;
+            $this->Session->write('user.User.history', $historique);
             if (strpos($this->referer(), $this->params->here) === false)
-                $this->Session->write('user.User.url.previous', $this->referer());
+                $this->Session->write('user.User.history.previous', $this->referer());
+            $this->log($this->Session->read('user.User.history'), 'history');
         }
 
         // ????
