@@ -18,7 +18,8 @@ class CronsController extends AppController
         'view' => 'Afficher les informations détaillées',
         'planifier' => 'Planifier une tâche',
         'executer' => 'Exécuter une tâche manuellement',
-        'runCrons' => 'Exécuter les tâches simultanément'
+        'runCrons' => 'Exécuter les tâches simultanément',
+        'unlock' => 'Déverrouiller une tâche',
     );
 
     const FORMAT_DATE = 'Y-m-d H:i:s';
@@ -196,10 +197,7 @@ class CronsController extends AppController
         ));
         // mise en forme pour la vue
         foreach ($this->request->data as &$cron) {
-            if ($cron['Cron']['lock'])
-                $cron['Cron']['statusLibelle'] = $this->{$this->modelClass}->libelleStatus(Cron::EXECUTION_STATUS_LOCKED);
-            else
-                $cron['Cron']['statusLibelle'] = $this->{$this->modelClass}->libelleStatus($cron['Cron']['last_execution_status']);
+            $cron['Cron']['statusLibelle'] = $this->{$this->modelClass}->libelleStatus($cron['Cron']['last_execution_status']);
             $cron['Cron']['activeLibelle'] = $this->{$this->modelClass}->libelleActive($cron['Cron']['active']);
             $cron['Cron']['durationLibelle'] = $this->{$this->modelClass}->libelleDuration($cron['Cron']['execution_duration']);
         }
@@ -214,6 +212,18 @@ class CronsController extends AppController
             $this->Session->setFlash(__('Tâche planifiée numéro ', true) . $id . __(' introuvable !', true), 'growl', array('type' => 'erreur'));
         }
         $this->redirect(array('action' => 'index'));
+    }
+
+    function unlock($id)
+    {
+        if ($id != null) {
+            $this->Cron->id = $id;
+            $this->Cron->saveField('lock', false);
+            $this->Session->setFlash(__('Tâche planifiée numéro ', true) . $id . __(' dévérrouillée !', true), 'growl', array('type' => 'important'));
+        } else {
+            $this->Session->setFlash(__('Tâche planifiée numéro ', true) . $id . __(' introuvable !', true), 'growl', array('type' => 'erreur'));
+        }
+        $this->redirect($this->referer());
     }
 
     /**
