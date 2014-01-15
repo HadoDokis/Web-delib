@@ -1582,7 +1582,7 @@ class DeliberationsController extends AppController
             'conditions' => $conditions,
             'limit' => 20));
 
-        $this->set('host', Configure::read('HOST'));
+        $this->set('host', Configure::read('S2LOW_HOST'));
         $this->set('dateClassification', $this->S2low->getDateClassification());
         $id_e=null;
         if (Configure::read('USE_PASTELL')) {
@@ -1683,7 +1683,7 @@ class DeliberationsController extends AppController
 
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
-        $this->set('host', Configure::read('HOST'));
+        $this->set('host', Configure::read('S2LOW_HOST'));
         $date_classification = $this->S2low->getDateClassification();
         if ($date_classification != false) {
             $this->set('dateClassification', $date_classification);
