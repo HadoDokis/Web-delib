@@ -18,6 +18,7 @@ class Cron extends AppModel
     const EXECUTION_STATUS_SUCCES = 'SUCCES';
     const EXECUTION_STATUS_WARNING = 'WARNING';
     const EXECUTION_STATUS_FAILED = 'FAILED';
+    const EXECUTION_STATUS_LOCKED = 'LOCKED';
     // status sous forme de chaines de caractères a insérer dans le rapport d'exécution des procédures appelées par les crons
     const MESSAGE_FIN_EXEC_SUCCES = 'TRAITEMENT_TERMINE_OK';
     const MESSAGE_FIN_EXEC_WARNING = 'TRAITEMENT_TERMINE_ALERTE';
@@ -40,6 +41,9 @@ class Cron extends AppModel
     function libelleStatus($status)
     {
         switch ($status) {
+            case self::EXECUTION_STATUS_LOCKED:
+                $libelle = '<span class="label label-important" title="La tâche est vérrouillée, ce qui signifie qu\'elle est en cours d\'exécution ou dans un état bloqué suite à une erreur"><i class="fa fa-lock"></i> ' . __('Vérrouillée', true) . '</span>';
+                break;
             case self::EXECUTION_STATUS_SUCCES:
                 $libelle = '<span class="label label-success" title="Opération exécutée avec succès"><i class="fa fa-check"></i> ' . __('Exécutée avec succès', true) . '</span>';
                 break;

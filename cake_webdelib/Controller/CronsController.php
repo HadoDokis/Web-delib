@@ -196,7 +196,10 @@ class CronsController extends AppController
         ));
         // mise en forme pour la vue
         foreach ($this->request->data as &$cron) {
-            $cron['Cron']['statusLibelle'] = $this->{$this->modelClass}->libelleStatus($cron['Cron']['last_execution_status']);
+            if ($cron['Cron']['lock'])
+                $cron['Cron']['statusLibelle'] = $this->{$this->modelClass}->libelleStatus(Cron::EXECUTION_STATUS_LOCKED);
+            else
+                $cron['Cron']['statusLibelle'] = $this->{$this->modelClass}->libelleStatus($cron['Cron']['last_execution_status']);
             $cron['Cron']['activeLibelle'] = $this->{$this->modelClass}->libelleActive($cron['Cron']['active']);
             $cron['Cron']['durationLibelle'] = $this->{$this->modelClass}->libelleDuration($cron['Cron']['execution_duration']);
         }

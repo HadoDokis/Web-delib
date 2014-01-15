@@ -44,7 +44,7 @@ class CronsComponent extends Component
             $this->Cron->id = $id;
 
             //Verrouille la tâche pour éviter les exécutions parallèles
-//            $this->Cron->saveField('lock', true);
+            $this->Cron->saveField('lock', true);
 
             // Chargement de la classe
             $caller = ucfirst($cron['Cron']['model']);
