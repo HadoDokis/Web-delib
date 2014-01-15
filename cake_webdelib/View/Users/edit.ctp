@@ -19,14 +19,14 @@ if ($this->Html->value('User.id')) {
     <fieldset>
         <legend>Identification de connexion</legend>
         <?php 
-        echo $this->Form->input('User.login', array('label' => 'Login <acronym title="obligatoire">*</acronym>')); 
+        echo $this->Form->input('User.login', array('label' => 'Login <abbr title="obligatoire">*</abbr>')); 
         
         if (!$this->Html->value('User.id')) {
             echo "<div class='tiers'>";
-            echo $this->Form->input('User.password', array('type' => 'password', 'label' => 'Password <acronym title="obligatoire">*</acronym>'));
+            echo $this->Form->input('User.password', array('type' => 'password', 'label' => 'Password <abbr title="obligatoire">*</abbr>'));
             echo "</div>";
             echo "<div class='tiers'>";
-            echo $this->Form->input('User.password2', array('type' => 'password', 'label' => 'Confirmez le password <acronym title="obligatoire">*</acronym>'));
+            echo $this->Form->input('User.password2', array('type' => 'password', 'label' => 'Confirmez le password <abbr title="obligatoire">*</abbr>'));
             echo "</div>";
         }
         ?>
@@ -37,15 +37,15 @@ if ($this->Html->value('User.id')) {
     <fieldset>
         <legend>Identité et contacts</legend>
         <div class="demi">
-            <?php echo $this->Form->input('User.nom', array('label' => 'Nom <acronym title="obligatoire">*</acronym>', 'size' => '30')); ?> <br />
-<?php echo $this->Form->input('User.prenom', array('label' => 'Prénom <acronym title="obligatoire">*</acronym>', 'size' => '30')); ?>
+            <?php echo $this->Form->input('User.nom', array('label' => 'Nom <abbr title="obligatoire">*</abbr>', 'size' => '30')); ?> <br />
+            <?php echo $this->Form->input('User.prenom', array('label' => 'Prénom <abbr title="obligatoire">*</abbr>', 'size' => '30')); ?>
         </div>
         <div class="demi">
             <?php echo $this->Form->input('User.telfixe', array('label' => 'Tel fixe')); ?>
             <br />
             <?php echo $this->Form->input('User.telmobile', array('label' => 'Tel mobile')); ?>
             <br />
-<?php echo $this->Form->input('User.email', array('label' => 'Email', 'size' => '30')); ?>
+            <?php echo $this->Form->input('User.email', array('label' => 'Email', 'size' => '30')); ?>
         </div>
     </fieldset>
 
@@ -55,7 +55,7 @@ if ($this->Html->value('User.id')) {
     <fieldset>
         <legend>Autres informations</legend>
         <div class="demi">
-            <?php echo $this->Form->input('User.profil_id', array('label' => 'Profil utilisateur <acronym title="obligatoire">*</acronym>', 'options' => $profils, 'empty' => false)); ?>
+            <?php echo $this->Form->input('User.profil_id', array('label' => 'Profil utilisateur <abbr title="obligatoire">*</abbr>', 'options' => $profils, 'empty' => false)); ?>
             <br />
             <label>Notification email</label>
             <?php
@@ -84,6 +84,8 @@ if ($this->Html->value('User.id')) {
                 array('type' => 'radio', 'legend' => false, 'options' => $notif, 'before' => '<strong>Mon projet est modifié</strong>')); ?>
             <?php echo $this->Form->input('User.mail_modif_projet_valide',
                 array('type' => 'radio', 'legend' => false, 'options' => $notif, 'before' => '<strong>Un projet que j&apos;ai visé est modifié</strong>')); ?>
+            <?php echo $this->Form->input('User.mail_retard_validation',
+                array('type' => 'radio', 'legend' => false, 'options' => $notif, 'before' => '<strong>Retard sur la validation d\'un projet</strong>')); ?>
             <div class="spacer"></div>
             <hr/>
             <?php
@@ -109,7 +111,7 @@ if ($this->Html->value('User.id')) {
             <?php
             if (!isset($selectedServices) && empty($selectedServices))
                 $selectedServices = false;
-            echo $this->Form->input('Service.Service', array('label' => 'Service(s) <acronym title="obligatoire">*</acronym>',
+            echo $this->Form->input('Service.Service', array('label' => 'Service(s) <abbr title="obligatoire">*</abbr>',
                 'options' => $services,
                 'default' => $selectedServices,
                 'multiple' => 'multiple',
