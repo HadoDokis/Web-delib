@@ -1171,10 +1171,10 @@ class DeliberationsController extends AppController
             $this->Historique->enregistre($id, $user_connecte, $message);
             $this->request->data['Deliberation']['date_envoi'] = date('Y-m-d H:i:s', time());
             $this->request->data['Deliberation']['etat'] = '1';
+            $this->Deliberation->id = $id;
             if ($this->Deliberation->save($this->request->data)) {
                 // insertion dans le circuit de traitement
-                $this->Deliberation->id = $id;
-                if ($this->Traitement->targetExists($id)) {
+                if ($this->Traitement->targetExists($id)) { // Un traitement est déjà associé au projet
                     $this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
                     $this->Traitement->Visa->replaceDynamicTrigger($id);
                     $members = $this->Traitement->whoIsNext($id);
@@ -1189,15 +1189,14 @@ class DeliberationsController extends AppController
                                 $this->Historique->enregistre($id, $user_connecte, 'Projet validé');
                                 $this->Deliberation->saveField('etat', 2);
                                 $this->Session->setFlash('Projet inséré dans le circuit et validé', 'growl');
-                                $this->redirect('/deliberations/mesProjetsValides');
+                                $this->redirect(array('action'=>'mesProjetsValides'));
                             }
-
                             $members = $this->Traitement->whoIsNext($id);
                         }
                         foreach ($members as $destinataire_id)
                             $this->_notifier($id, $destinataire_id, 'traiter');
                         $this->Session->setFlash('Projet inséré dans le circuit et visé', 'growl');
-                        $this->redirect('/deliberations/mesProjetsRedaction');
+                        $this->redirect(array('action'=>'mesProjetsRedaction'));
                     }
                 } else {
                     $this->Circuit->insertDansCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
@@ -1207,7 +1206,8 @@ class DeliberationsController extends AppController
                                 'Etape' => array(
                                     'etape_id' => null,
                                     'etape_nom' => 'Rédacteur',
-                                    'etape_type' => 1
+                                    'etape_type' => 1,
+                                    'cpt_retard' => null
                                 ),
                                 'Visa' => array(
                                     '0' => array(
@@ -1243,14 +1243,14 @@ class DeliberationsController extends AppController
                     }
                 }
                 $this->Session->setFlash('Projet inséré dans le circuit', 'growl');
-                $this->redirect('/deliberations/mesProjetsRedaction');
+                $this->redirect(array('action'=>'mesProjetsRedaction'));
             } else {
                 $this->Session->setFlash('Problème de sauvegarde.', 'growl', array('type' => 'erreur'));
-                $this->redirect('/deliberations/attribuercircuit/' . $id);
+                $this->redirect(array('action'=>'attribuercircuit', $id));
             }
         } else {
             $this->Session->setFlash('Vous devez assigner un circuit au projet de délibération.', 'growl', array('type' => 'erreur'));
-            $this->redirect('/deliberations/recapitulatif/' . $id);
+            $this->redirect(array('action'=>'recapitulatif', $id));
         }
     }
 
@@ -2131,7 +2131,8 @@ class DeliberationsController extends AppController
             // Si l'utilisateur accepte les mails
             if ($user['User']['accept_notif']) {
                 if (Configure::read("SMTP_USE")) {
-                    $this->Email->smtpOptions = array('port' => Configure::read("SMTP_PORT"),
+                    $this->Email->smtpOptions = array(
+                        'port' => Configure::read("SMTP_PORT"),
                         'timeout' => Configure::read("SMTP_TIMEOUT"),
                         'host' => Configure::read("SMTP_HOST"),
                         'username' => Configure::read("SMTP_USERNAME"),

@@ -1693,4 +1693,113 @@ class Deliberation extends AppModel {
         $com['Commentaire']['texte'] = $logdossier['nom'] . " : " . $logdossier['annotation'];
         $this->Commentaire->save($com['Commentaire']);
     }
+
+    /**
+     * @return string status d'exécution et rapport
+     */
+    function majActesParapheur() {
+        // status sous forme de chaines de caractères a insérer dans le rapport d'exécution des procédures appelées par les crons
+        $ret_success = 'TRAITEMENT_TERMINE_OK';
+        $ret_error = 'TRAITEMENT_TERMINE_ERREUR';
+        try{
+            //Si service désactivé ==> quitter
+            if (!Configure::read('USE_PARAPH')) {
+                return $ret_error.'i-Parapheur désactivé';
+            }
+            App::import('Component', 'Iparapheur');
+            $this->Iparapheur = new IparapheurComponent();
+
+            // Controle de l'avancement des délibérations dans le parapheur
+            $delibs = $this->find('all', array(
+                'conditions' => array(
+                    'Deliberation.etat >' => 2,
+                    'Deliberation.etat_parapheur' => 1),
+                'recursive' => -1,
+                'fields' => array('id', 'objet')));
+
+            $rapport = '';
+            foreach ($delibs as $delib) {
+                $objetDossier = $this->Iparapheur->handleObject($delib['Deliberation']['objet']);
+                $rapport .= 'Projet "['.$delib['Deliberation']['id'].'] - '.$delib['Deliberation']['objet'].'" : ';
+                $success_dos = $this->majActeParapheur($delib['Deliberation']['id'], $objetDossier, false);
+                if (!$success_dos)
+                    $rapport .= "En attente de fin de circuit\n";
+                else
+                    $rapport .= "Circuit terminé, dossier effacé du i-Parapheur\n";
+            }
+            return $ret_success.$rapport;
+        }catch (Exception $e){
+            return $ret_error.$e->getTraceAsString();
+        }
+    }
+
+    /**
+     * @param integer $delib_id identifiant du projet à mettre à jour
+     * @param string $objet
+     * @param bool $tdt
+     * @return bool true si le dossier à terminé son circuit
+     */
+    function majActeParapheur($delib_id, $objet, $tdt = false) {
+        $this->id = $delib_id;
+        $delib = $this->find('first', array(
+            'conditions' => array("Deliberation.id" => $delib_id), 'recursive' => -1)
+        );
+        if ($delib['Deliberation']['id_parapheur'] != "")
+            $id_dossier = $delib['Deliberation']['id_parapheur'];
+        else //@DEPRECATED (rétro-compatibilité vieux dossiers parapheur)
+            $id_dossier = "$delib_id $objet";
+
+        App::import('Component', 'Iparapheur');
+        $this->Iparapheur = new IparapheurComponent();
+
+        $histo = $this->Iparapheur->getHistoDossierWebservice($id_dossier);
+        if (isset($histo['logdossier'])){
+            for ($i = 0; $i < count($histo['logdossier']); $i++) {
+                if (!$tdt) {
+                    if ($histo['logdossier'][$i]['status'] == 'Signe'
+                        || $histo['logdossier'][$i]['status'] == 'Archive') {
+                        // Récupère infos circuit i-parapheur (annotation)
+                        $this->Commentaire->create();
+                        $comm ['Commentaire']['delib_id'] = $delib_id;
+                        $comm ['Commentaire']['agent_id'] = -1;
+                        $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
+                        $comm ['Commentaire']['commentaire_auto'] = 0;
+                        $this->Commentaire->save($comm['Commentaire']);
+
+                        if ($delib['Deliberation']['etat_parapheur'] == 1) {
+                            if ($histo['logdossier'][$i]['status'] == 'Signe') {
+                                $dossier = $this->Iparapheur->GetDossierWebservice($id_dossier);
+                                if (!empty($dossier['getdossier']['signature'])) {
+                                    $this->saveField('bordereau', base64_decode($dossier['getdossier']['bordereau']));
+                                    $this->saveField('signature', base64_decode($dossier['getdossier']['signature']));
+                                }
+                                $this->saveField('signee', 1);
+                            }
+                            if ($histo['logdossier'][$i]['status'] == 'Archive'){
+                                $this->saveField('etat_parapheur', 2);
+                                $this->Iparapheur->archiverDossierWebservice($id_dossier, "EFFACER");
+                                return true;
+                            }
+                        }
+                    } elseif ($histo['logdossier'][$i]['status'] == 'RejetSignataire'
+                        || $histo['logdossier'][$i]['status'] == 'RejetVisa') { // Cas de refus dans le parapheur
+                        $this->Commentaire->create();
+                        $comm ['Commentaire']['delib_id'] = $delib_id;
+                        $comm ['Commentaire']['agent_id'] = -1;
+                        $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
+                        $comm ['Commentaire']['commentaire_auto'] = 0;
+                        $this->Commentaire->save($comm['Commentaire']);
+                        $this->saveField('etat_parapheur', -1);
+                        // Supprimer le dossier du parapheur
+                        $this->Iparapheur->effacerDossierRejeteWebservice($id_dossier);
+                        return true;
+                    }
+                } else {
+                    if ($histo['logdossier'][$i]['status'] == 'EnCoursTransmission')
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
 }
