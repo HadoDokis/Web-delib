@@ -121,10 +121,11 @@ class PatchShell extends AppShell {
         //2° Passage des scripts sql de migration
         $this->out("\nPassage des patchs de mise à jour de la base de données...");
         $sql_files = array();
-        $sql_files['Webdelib42'] = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
-        $sql_files['Plugin.ModelOdtValidator'] = APP.DS.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
-        $sql_files['Plugin.Cakeflow3002'] = APP.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'cakeflow_v3.0.01_to_v3.0.02.sql';
-        $sql_files['Plugin.Cakeflow31'] = APP.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'cakeflow_v3.0_to_v3.1.sql';
+
+        $sql_files['Webdelib42'] = APP.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1_to_4.2.sql';
+        $sql_files['Plugin.ModelOdtValidator'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
+        $sql_files['Plugin.Cakeflow3002'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'patchs'.DS.'cakeflow_v3.0.01_to_v3.0.02.sql';
+        $sql_files['Plugin.Cakeflow31'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
 
         $this->Sql->execute();
         $this->Sql->begin();
@@ -142,7 +143,11 @@ class PatchShell extends AppShell {
             //3° Trouver l'attribut etape_id des visas en cours
             $this->out('Mise à jour des données CakeFlow...');
             $this->Cakeflow->findVisaEtapeId();
-        }
+
+            $this->footer('<important>Patch de la version 4.1.xx vers la 4.2 accompli avec succès !</important>');
+        }else
+            $this->footer('<error>Erreur : un problème est survenu lors de l\'application du patch !!</error>');
+
 
     }
     /** Mise à jour de la version 4.1.02 à la version 4.1.03
