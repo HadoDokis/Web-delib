@@ -10,14 +10,16 @@ App::uses('ComponentCollection', 'Controller');
 App::uses('Component', 'Controller');
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
-App::uses('Model', 'Model');
+App::uses('Modeltemplate', 'ModelOdtValidator.Model');
 App::uses('phpOdtApi', 'ModelOdtValidator.Lib');
 class AjouteSectionAnnexeTask extends Shell {
     
     public function execute() {
-        $this->Model = new Model;
 
-        $models = $this->Model->find('all', array(
+        $this->Modeltemplate = new Modeltemplate;
+        $this->Modeltemplate->useTable = 'models';
+
+        $models = $this->Modeltemplate->find('all', array(
             'recursive' => -1,
             'conditions' => array('joindre_annexe' => true),
         ));
@@ -28,13 +30,13 @@ class AjouteSectionAnnexeTask extends Shell {
         }else
             foreach ($models as $model){
                 $lib = new phpOdtApi();
-                $lib->loadFromOdtBin($model['Model']['content'], 'w', true);
+                $lib->loadFromOdtBin($model['Modeltemplate']['content'], 'w', true);
                 if (!$lib->hasUserFieldsInSection('fichier', 'Annexes')){
-                    $this->out('<info>Modification du model '.$model['Model']['id'].' ('. $model['Model']['name'] .")</info>\n", 0);
+                    $this->out('<info>Modification du model '.$model['Modeltemplate']['id'].' ('. $model['Modeltemplate']['name'] .")</info>\n", 0);
                     $lib->appendUserField('fichier', 'string', 'Annexes');
-                    $this->Model->id = $model['Model']['id'];
-                    $this->Model->saveField('content', $lib->save(true));
-                    $this->Model->saveField('joindre_annexe', 0);
+                    $this->Modeltemplate->id = $model['Modeltemplate']['id'];
+                    $this->Modeltemplate->saveField('content', $lib->save(true));
+                    $this->Modeltemplate->saveField('joindre_annexe', 0);
                 }
             }
     }
