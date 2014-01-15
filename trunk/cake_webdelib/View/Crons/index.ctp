@@ -15,7 +15,9 @@ $listeColonnes[] = __('Actions', true);
 
 echo $this->Html->tableHeaders($listeColonnes);
 foreach ($this->data as $rownum => $rowElement) {
-    if ($rowElement['Cron']['last_execution_status'] == Cron::EXECUTION_STATUS_FAILED)
+    if ($rowElement['Cron']['lock'])
+        $rowClass = array('class' => 'error');
+    elseif ($rowElement['Cron']['last_execution_status'] == Cron::EXECUTION_STATUS_FAILED)
         $rowClass = array('class' => 'error');
     elseif ($rowElement['Cron']['last_execution_status'] == Cron::EXECUTION_STATUS_WARNING)
         $rowClass = array('class' => 'warning');

@@ -114,8 +114,6 @@ class CronJob extends AppModel
                         $this->Email = new CakeEmail($config_mail);
                         $this->Email->to($user['User']['email']);
                         $this->Email->subject("Retard sur le projet : $delib_id");
-//                        $this->Email->emailFormat = 'text';
-//                        $this->Email->layout = 'default';
                         $this->Email->send($mail_content);
                     }
                 }
@@ -149,6 +147,8 @@ class CronJob extends AppModel
 
             $mails = $this->Acteurseance->find('all', array(
                 'recursive' => -1,
+// TODO: inclure dans le rapport : les acteurs concernés
+// 'contain' => array('Acteur'),
                 'conditions' => array(
                     'date_envoi !=' => null,
                     'date_reception' => null
