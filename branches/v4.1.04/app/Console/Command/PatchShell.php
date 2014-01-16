@@ -112,7 +112,7 @@ class PatchShell extends AppShell {
             )
         ));
         
-        $parser->addSubcommand('4102to4103', array(
+        $parser->addSubcommand('4103to4104', array(
             'help' => __('Application du patch de mise à jour de 4.1.03 à 4.1.04.'),
             'parser' => array(
                 'options' => array(
@@ -314,8 +314,8 @@ class PatchShell extends AppShell {
         $this->out("\n<important>Démarrage du patch de mise à jour de Webdelib 4.1.03 vers 4.1.04...</important>\n");
         
         if (!empty($this->params['Schema'])) {
-        $webdelibSql = APP.DS.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1.03_to_4.1.04.sql';
-        $cakeflowSql = APP.DS.'Plugin'.DS.'CakeFlow'.DS.'Config'.DS.'sql'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
+        $webdelibSql = APP.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1.03_to_4.1.04.sql';
+        $cakeflowSql = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
         $this->out("\nMise à jour de la base de données...");
         $this->Sql->execute();
         $this->Sql->begin();
