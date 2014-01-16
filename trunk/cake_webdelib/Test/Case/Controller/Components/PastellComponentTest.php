@@ -56,18 +56,97 @@ class PastellComponentTest extends CakeTestCase {
      * Test getDocumentsType()
      * @return void
      */
-    public function testGetDocumentsType(){
-        return ($this->PastellComponent->getDocumentsType());
+    public function testGetDocumentTypes(){
+//        debug ($this->PastellComponent->getDocumentTypes());
+        return ($this->PastellComponent->getDocumentTypes());
     }
 
     /**
      * Test getInfosType()
      * @return void
      */
-    public function testGetInfosType(){
-        $types = $this->PastellComponent->getDocumentsType();
-        debug($types);
-        debug ($this->PastellComponent->getInfosType($types[0]));
+    public function testGetDocumentTypeInfos(){
+        return ($this->PastellComponent->getDocumentTypeInfos('actes-generique'));
+    }
+
+    /**
+     * Test getInfosType()
+     * @return void
+     */
+    public function testGetDocumentTypeActions(){
+        return ($this->PastellComponent->getDocumentTypeActions('actes-generique'));
+    }
+
+    /**
+     * Test listEntities()
+     * @return void
+     */
+    public function testListEntities(){
+//        debug ($this->PastellComponent->listEntities());
+        return ($this->PastellComponent->listEntities(true));
+    }
+
+    /**
+     * Test listEntities()
+     * @return void
+     */
+    public function testListDocuments(){
+//        debug ($this->PastellComponent->listDocuments(48,'actes-generique'));
+        return ($this->PastellComponent->listDocuments(48,'actes-generique'));
+    }
+
+    /**
+     * Test rechercheDocument()
+     * @return void
+     */
+    public function testRechercheDocument(){
+        $options = array(
+            'id_e' => 48,
+            'type' => 'actes-generique',
+            'search' => 'test sans sources'
+        );
+
+//        debug ($this->PastellComponent->rechercheDocument($options));
+        return ($this->PastellComponent->rechercheDocument($options));
+    }
+
+    /**
+     * Test detailDocument()
+     * @return void
+     */
+    public function testDetailDocument(){
+//        debug ($this->PastellComponent->detailDocument(48,'elRx6ID'));
+        return ($this->PastellComponent->detailDocument(48,'elRx6ID'));
+    }
+
+    /**
+     * FIXME
+     * Test detailDocuments()
+     * @return void
+     */
+    public function testDetailDocuments(){
+//        debug ($this->PastellComponent->detailDocuments(48,array('id_d: elRx6ID', 'id_d: dfsfsdf')));
+//        return ($this->PastellComponent->detailDocuments(48,array('elRx6ID')));
+    }
+
+    /**
+     * OK en v1.3
+     * Test createDocument()
+     * @return void
+     */
+    public function testCreateDocument(){
+//        debug ($this->PastellComponent->createDocument(48,'actes-generique'));
+//        return ($this->PastellComponent->createDocument(48,'actes-generique'));
+    }
+
+    /**
+     * FIXME
+     * Test getInfosField()
+     * @return void
+     */
+    public function testGetInfosField(){
+//        debug ($this->PastellComponent->getInfosField(48,'elRx6ID','action-possible'));
+//        return ($this->PastellComponent->getInfosField(48,'actes-generique'));
     }
 
 
