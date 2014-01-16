@@ -1535,7 +1535,7 @@ class DeliberationsController extends AppController
 
     function transmit($seance_id = null)
     {
-        $this->Deliberation->Behaviors->attach('Containable');
+        $this->Deliberation->Behaviors->load('Containable');
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
         $conditions = $this->_handleConditions($this->Filtre->conditions());
