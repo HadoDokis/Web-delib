@@ -1,6 +1,6 @@
 Bonjour #PRENOM# #NOM#,
 
-Votre dossier "#OBJET_PROJET#" a été refusé.
+Votre projet "#OBJET_PROJET#" a été refusé.
 
 Le projet peut à nouveau être édité à cette adresse : #ADRESSE_A_MODIFIER#
 

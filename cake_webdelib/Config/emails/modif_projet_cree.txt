@@ -1,6 +1,6 @@
 Bonjour #PRENOM# #NOM#,
 
-Votre dossier "#OBJET_PROJET#" vient d'être modifié.
+Votre projet #IDENTIFIANT_PROJET# - "#OBJET_PROJET#" a été modifié.
 
 Vous pouvez le visualiser à l'adresse : #ADRESSE_A_VISUALISER#
 
