@@ -2,13 +2,18 @@
 
 class PastellComponent extends Component
 {
-    function _initCurl($api, $data = array())
+    /**
+     * @param string $page script php
+     * @param array $data
+     * @return resource
+     */
+    function _initCurl($page, $data = array())
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN") . ":" . Configure::read("PASTELL_PWD"));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $api = Configure::read("PASTELL_HOST") . '/web/' . $api;
+        $api = Configure::read("PASTELL_HOST") . "/api/$page";
         curl_setopt($curl, CURLOPT_URL, $api);
         if (!empty($data)) {
             curl_setopt($curl, CURLOPT_POST, TRUE);
@@ -17,18 +22,84 @@ class PastellComponent extends Component
         return $curl;
     }
 
-    function getInfosField($id_e, $id_d, $type)
-    {
-        $curl = $this->_initCurl("api/external-data.php?id_e=$id_e&id_d=$id_d&field=$type");
+    /**
+     * @param $curl
+     * @return mixed
+     */
+    function _exec($curl){
         $result = curl_exec($curl);
         curl_close($curl);
         return json_decode($result);
     }
 
+    /**
+     * Permet d'obtenir la version de la plateforme. Pastell assure une compatibilité ascendante entre les différents numéro de révision.
+     * @return array(
+     *      version => Numéro de version commerciale,
+     *      revision => Numéro de révision du dépôt de source officiel de Pastell  (https://adullact.net/scm/viewvc.php/?root=pastell),
+     *      version_complete => Version affiché sur la l'interface web de la plateforme
+     * )
+     */
+    public function getVersion()
+    {
+        $curl = $this->_initCurl('version.php');
+        return $this->_exec($curl);
+    }
+
+    /**
+     * Liste l'ensemble des flux (types de documents) disponible sur Pastell
+     * comme par exemple, les actes, les mails sécurisées, les flux citoyen, etc...
+     *
+     * @return array (type => nom)
+     * type : Groupe de type de document (exemple : Flux généraux)
+     * nom : Nom à afficher pour l'utilisateur (exemple : Actes, Message du centre de gestion)
+     */
+    function getDocumentsType()
+    {
+        $documents = array();
+        $curl = $this->_initCurl('document-type.php');
+        $result = curl_exec($curl);
+        curl_close($curl);
+        $natures = json_decode($result, true);
+        foreach ($natures as $nature) {
+            $type = $nature['type'];
+            $nom = $nature['nom'];
+            $documents[$type][] = $nom;
+        }
+        return $documents;
+    }
+
+    /**
+     * Liste l'ensemble des champs d'un type document ainsi que les informations sur chaque champs
+     * (type de champs, valeur par défaut, script de choix, ...)
+     *
+     * @param $type Type de document (retourné par document-type.php). Exemple : actes, mailsec, ...
+     * @return mixed
+     */
+    function getInfosType($type)
+    {
+        $curl = $this->_initCurl("document-type-info.php?type=$type");
+        $result = curl_exec($curl);
+        curl_close($curl);
+
+        $infos = json_decode($result);
+        return ($infos);
+    }
+
+    /**
+     * Liste l'ensemble des entités sur lesquelles l'utilisateur a des droits. Liste également les entités filles.
+     *
+     * @return array
+     * id_e => Identifiant numérique de l'entité
+     * denomination => Libellé de l'entité (ex : Saint-Amand-les-Eaux)
+     * siren => Numéro SIREN de l'entité (si c'est une collectivité ou un centre de gestion)
+     * centre_de_gestion => Identifiant numérique du CDG de la collectivité
+     * entite_mere => Identifiant numérique de l'entité mère de l'entité (par exemple pour un service)
+     */
     function listEntities()
     {
         $collectivites = array();
-        $curl = $this->_initCurl('api/list-entite.php');
+        $curl = $this->_initCurl('list-entite.php');
         $result = curl_exec($curl);
         curl_close($curl);
         $entities = json_decode($result);
@@ -40,35 +111,45 @@ class PastellComponent extends Component
         return ($collectivites);
     }
 
-    function getDocumentsType()
+    /**
+     * Liste l'ensemble des documents d'une entité Liste également les entités filles.
+     * @param integer $id_e Identifiant numérique de l'entité
+     * @param string $type Type de document
+     * @param integer $offset (facultatif) numéro de la première ligne à retourner
+     * @param integer $limit (facultatif, 100 par défaut) nombre de document à retourner
+     * @return array (
+     *                  id_e => Identifiant numérique de l'entité (identique à l'entrée),
+     *                  id_d => Identifiant unique du document,
+     *                  role => Rôle de l'entité sur le document (exemple : éditeur)
+     * )
+     */
+    function listDocuments($id_e, $type, $offset=null, $limit=100)
     {
         $documents = array();
-        $curl = $this->_initCurl('api/document-type.php');
+        $curl = $this->_initCurl('list-document.php');
         $result = curl_exec($curl);
         curl_close($curl);
+        $entities = json_decode($result);
 
-        $natures = (json_decode($result));
-        foreach ($natures as $nature) {
-            $type = utf8_decode($nature->type);
-            $nom = utf8_decode($nature->nom);
-            $documents[$type][] = $nom;
+        foreach ($entities as $entity) {
+            $entity = (array)$entity;
+            $documents[$entity['id_e']] = $entity['denomination'];
+            $documents[$entity['id_d ']] = $entity['denomination'];
         }
-        return $documents;
+        return ($documents);
     }
 
-    function getInfosType($type)
+    function getInfosField($id_e, $id_d, $type)
     {
-        $curl = $this->_initCurl("api/document-type-info.php?type=$type");
+        $curl = $this->_initCurl("external-data.php?id_e=$id_e&id_d=$id_d&field=$type");
         $result = curl_exec($curl);
         curl_close($curl);
-
-        $infos = json_decode($result);
-        return ($infos);
+        return json_decode($result);
     }
 
     function createDocument($id_e, $type = 'actes')
     {
-        $curl = $this->_initCurl("api/create-document.php?id_e=$id_e&type=$type");
+        $curl = $this->_initCurl("create-document.php?id_e=$id_e&type=$type");
         $result = curl_exec($curl);
         curl_close($curl);
 
@@ -96,7 +177,7 @@ class PastellComponent extends Component
             'arrete' => "@$file",
             'acte_nature' => $delib['Deliberation']['nature_id'],
         );
-        $curl = $this->_initCurl('api/modif-document.php', $acte);
+        $curl = $this->_initCurl('modif-document.php', $acte);
         curl_exec($curl);
         curl_close($curl);
         foreach ($annexes as $annex)
@@ -116,7 +197,7 @@ class PastellComponent extends Component
 
     function insertInParapheur($id_e, $id_d, $sous_type = null)
     {
-        $curl = $this->_initCurl("api/modif-document.php?id_e=$id_e&id_d=$id_d&envoi_iparapheur=true");
+        $curl = $this->_initCurl("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_iparapheur=true");
         $result = curl_exec($curl);
         curl_close($curl);
     }
@@ -126,7 +207,7 @@ class PastellComponent extends Component
         $infos = array('id_e' => $id_e,
             'id_d' => $id_d,
             'iparapheur_sous_type' => $sous_type);
-        $curl = $this->_initCurl("api/modif-document.php", $infos);
+        $curl = $this->_initCurl("modif-document.php", $infos);
         $result = curl_exec($curl);
         curl_close($curl);
     }
@@ -136,7 +217,7 @@ class PastellComponent extends Component
         $acte = array('id_e' => $id_e,
             'id_d' => $id_d
         );
-        $curl = $this->_initCurl('api/detail-document.php', $acte);
+        $curl = $this->_initCurl('detail-document.php', $acte);
         $result = curl_exec($curl);
         curl_close($curl);
         return json_decode($result);
@@ -148,7 +229,7 @@ class PastellComponent extends Component
             'id_d' => $id_d,
             'action' => $action
         );
-        $curl = $this->_initCurl('api/action.php', $acte);
+        $curl = $this->_initCurl('action.php', $acte);
         $result = curl_exec($curl);
         curl_close($curl);
         return json_decode($result);
@@ -160,7 +241,7 @@ class PastellComponent extends Component
             'id_d' => $id_d,
             'autre_document_attache' => "@$annex"
         );
-        $curl = $this->_initCurl('api/modif-document.php', $acte);
+        $curl = $this->_initCurl('modif-document.php', $acte);
         $result = curl_exec($curl);
         curl_close($curl);
     }
@@ -186,7 +267,7 @@ class PastellComponent extends Component
 
     function refresh()
     {
-        $refresh_exec = Configure::read('REFRESH_PASTELL');
+        $refresh_exec = Configure::read('REFRESH_PASTELL'); //FIXME n'existe pas
         if (!file_exists($refresh_exec)) {
             $result['code'] = 'KO';
             $result['message'] = "L'éxecutable n'a pas été trouvé";
@@ -201,7 +282,7 @@ class PastellComponent extends Component
         $acte = array('id_e' => $id_e,
             'id_d' => $id_d
         );
-        $curl = $this->_initCurl('api/journal.php', $acte);
+        $curl = $this->_initCurl('journal.php', $acte);
         $result = curl_exec($curl);
         curl_close($curl);
         return json_decode($result);
