@@ -823,10 +823,10 @@ function verifConversion() {
                              if (!empty($resp->xv->me['string'])) {
                                  $return = base64_decode($resp->xv->me['string']);
                                  if (!empty($return))
-		                     d("Exécutable de l'outil de conversion : $convType", 'ok');
+		                            d("Communication avec l'outil de conversion : $convType", 'ok');
                              }
                              else
-		                d("Exécutable de l'outil de conversion : $convType", 'ko');
+		                        d("Communication avec l'outil de conversion : $convType", 'ko');
                              
                             //IP +PORT
                             $cloudoooHost = Configure::read('CLOUDOOO_HOST');
@@ -1223,16 +1223,14 @@ function getVersionAsalae() {
 
 function getPastellVersion() {
     $curl = curl_init();
-    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC) ;
-    curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN").":".Configure::read("PASTELL_PWD"));
+    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN") . ":" . Configure::read("PASTELL_PWD"));
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $api = Configure::read("PASTELL_HOST").'/web/api/version.php';
+    $api = Configure::read("PASTELL_HOST") . "/api/version.php";
     curl_setopt($curl, CURLOPT_URL, $api);
-
-    $reponse = curl_exec($curl); 
+    $reponse = curl_exec($curl);
     curl_close($curl);
-    $reponse = json_decode($reponse);
-    $reponse = (array)$reponse;
+    $reponse = json_decode($reponse, true);
     if (is_array($reponse) and isset($reponse['version']))
         d('Version de PASTELL : '.$reponse['version'], 'ok');
     else
