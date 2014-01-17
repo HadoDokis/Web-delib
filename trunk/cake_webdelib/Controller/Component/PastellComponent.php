@@ -532,7 +532,7 @@ class PastellComponent extends Component
         $curl = $this->_initCurl('journal.php', $acte);
         $result = curl_exec($curl);
         curl_close($curl);
-        return json_decode($result);
+        return json_decode($result, true);
     }
 
     public function insertInParapheur($id_e, $id_d, $sous_type = null)
@@ -541,6 +541,7 @@ class PastellComponent extends Component
         $curl = $this->_initCurl("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_iparapheur=true");
         $result = curl_exec($curl);
         curl_close($curl);
+        return json_decode($result, true);
     }
 
     public function insertInCircuit($id_e, $id_d, $sous_type)
@@ -552,6 +553,7 @@ class PastellComponent extends Component
         $curl = $this->_initCurl("modif-document.php", $infos);
         $result = curl_exec($curl);
         curl_close($curl);
+        return json_decode($result, true);
     }
 
     public function sendAnnex($id_e, $id_d, $annex)
@@ -564,6 +566,7 @@ class PastellComponent extends Component
         $curl = $this->_initCurl('modif-document.php', $acte);
         $result = curl_exec($curl);
         curl_close($curl);
+        return json_decode($result, true);
     }
 
 }
