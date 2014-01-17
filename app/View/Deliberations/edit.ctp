@@ -29,15 +29,15 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/edit/'.$th
 ?>
 
 <div class='onglet'>
-	<a href="#" id="emptylink" alt=""></a>
+	<a href="#" id="emptylink"></a>
         <a href="javascript:afficheOnglet(1)" id='lienTab1' <?php echo !isset($lienTab) || (isset($lienTab) && ($lienTab==1 || empty($lienTab)))?'class="ongletCourant noWarn"':''?>>Informations principales</a>
-	<a href="javascript:afficheOnglet(2)" id='lienTab2' <?php echo isset($lienTab) &&  $lienTab==2?'class="ongletCourant noWarn"':''?>>Textes</a>
-	<a href="javascript:afficheOnglet(3)" id='lienTab3' <?php echo isset($lienTab) &&  $lienTab==3?'class="ongletCourant noWarn"':''?>>Annexe(s)</a>
+	<a href="javascript:afficheOnglet(2)" id='lienTab2' <?php echo isset($lienTab) &&  $lienTab==2?'class="ongletCourant noWarn"':'class="noWarn"'?>>Textes</a>
+	<a href="javascript:afficheOnglet(3)" id='lienTab3' <?php echo isset($lienTab) &&  $lienTab==3?'class="ongletCourant noWarn"':'class="noWarn"'?>>Annexe(s)</a>
 <?php if (!empty($infosupdefs)): ?>
-	<a href="javascript:afficheOnglet(4)" id='lienTab4' <?php echo isset($lienTab) &&  $lienTab==4?'class="ongletCourant noWarn"':''?>>Informations suppl&eacute;mentaires</a>
+	<a href="javascript:afficheOnglet(4)" id='lienTab4' <?php echo isset($lienTab) &&  $lienTab==4?'class="ongletCourant noWarn"':'class="noWarn"'?>>Informations suppl&eacute;mentaires</a>
 <?php endif; ?>
 <?php if (Configure::read('DELIBERATIONS_MULTIPLES')): ?>
-	<a href="javascript:afficheOnglet(5)" id='lienTab5' style="display: none" <?php echo isset($lienTab) && $lienTab==5?'class="ongletCourant noWarn"':''?>>D&eacute;lib&eacute;rations rattach&eacute;es</a>
+	<a href="javascript:afficheOnglet(5)" id='lienTab5' style="display: none" <?php echo isset($lienTab) && $lienTab==5?'class="ongletCourant noWarn"':'class="noWarn"'?>>D&eacute;lib&eacute;rations rattach&eacute;es</a>
 <?php endif; ?>
 </div>
 
