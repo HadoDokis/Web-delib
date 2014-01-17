@@ -53,12 +53,17 @@ class TypeseancesController extends AppController {
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
         }
         if ($sortie)
-            $this->redirect('/typeseances/index');
+            $this->redirect(array('action'=>'index'));
         else {
             $this->set('compteurs', $this->Typeseance->Compteur->find('list'));
-            $this->set('models', $this->Modeltemplate->find('list', array(
-                'fields' => array('Modeltemplate.id', 'Modeltemplate.name')
-            )));
+
+            $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
+            $this->set('models_delib', $this->Modeltemplate->getModels(MODEL_TYPE_DELIBERATION));
+            $this->set('models_convoc', $this->Modeltemplate->getModels(MODEL_TYPE_CONVOCATION));
+            $this->set('models_odj', $this->Modeltemplate->getModels(MODEL_TYPE_ODJ));
+            $this->set('models_pvdetaille', $this->Modeltemplate->getModels(MODEL_TYPE_PVDETAILLE));
+            $this->set('models_pvsommaire', $this->Modeltemplate->getModels(MODEL_TYPE_PVSOMMAIRE));
+
             $this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true),
                 1 => $this->Typeseance->libelleAction(1, true),
                 2 => $this->Typeseance->libelleAction(2, true)));
@@ -114,13 +119,20 @@ class TypeseancesController extends AppController {
             $this->redirect('/typeseances/index');
         else {
             $this->set('compteurs', $this->Typeseance->Compteur->find('list'));
-            $this->set('models', $this->Modeltemplate->find('list', array('fields' => array('Modeltemplate.id', 'Modeltemplate.name'))));
-            $this->set('actions', array(0 => $this->Typeseance->libelleAction(0, true),
+            $this->set('actions', array(
+                0 => $this->Typeseance->libelleAction(0, true),
                 1 => $this->Typeseance->libelleAction(1, true),
                 2 => $this->Typeseance->libelleAction(2, true)));
             $this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
             $this->set('acteurs', $this->Typeseance->Acteur->generateList('Acteur.nom'));
             $this->set('natures', $this->Typeacte->find('list', array('fields' => array('Typeacte.libelle'))));
+
+            $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
+            $this->set('models_delib', $this->Modeltemplate->getModels(MODEL_TYPE_DELIBERATION));
+            $this->set('models_convoc', $this->Modeltemplate->getModels(MODEL_TYPE_CONVOCATION));
+            $this->set('models_odj', $this->Modeltemplate->getModels(MODEL_TYPE_ODJ));
+            $this->set('models_pvdetaille', $this->Modeltemplate->getModels(MODEL_TYPE_PVDETAILLE));
+            $this->set('models_pvsommaire', $this->Modeltemplate->getModels(MODEL_TYPE_PVSOMMAIRE));
         }
     }
 
