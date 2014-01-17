@@ -73,10 +73,15 @@ class TypeactesController extends AppController
         }
 
         if ($sortie)
-            $this->redirect('/typeactes/index');
+            $this->redirect(array('action'=>'index'));
         else {
             $this->set('compteurs', $this->Typeacte->Compteur->find('list'));
-            $this->set('models', $this->Modeltemplate->find('list'));
+            $this->set('models_projet', $this->Modeltemplate->find('list', array(
+                'conditions' => array('Modeltemplate.modeltype_id' => array(MODEL_TYPE_TOUTES,MODEL_TYPE_PROJET))
+            )));
+            $this->set('models_delib', $this->Modeltemplate->find('list', array(
+                'conditions' => array('Modeltemplate.modeltype_id' => array(MODEL_TYPE_TOUTES,MODEL_TYPE_DELIBERATION))
+            )));
             $this->set('natures', $this->Typeacte->Nature->generateList('Nature.libelle'));
             $this->set('selectedNatures', null);
             $this->render('edit');
@@ -133,11 +138,17 @@ class TypeactesController extends AppController
             }
         }
         if ($sortie)
-            $this->redirect('/typeactes/index');
+            $this->redirect(array('action'=>'index'));
         else {
             $this->set('compteurs', $this->Typeacte->Compteur->find('list'));
-            $this->set('models', $this->Modeltemplate->find('list'));
-            $this->set('actions', array(0 => $this->Typeacte->libelleAction(0, true),
+            $this->set('models_projet', $this->Modeltemplate->find('list', array(
+                'conditions' => array('Modeltemplate.modeltype_id' => array(MODEL_TYPE_TOUTES,MODEL_TYPE_PROJET))
+            )));
+            $this->set('models_delib', $this->Modeltemplate->find('list', array(
+                'conditions' => array('Modeltemplate.modeltype_id' => array(MODEL_TYPE_TOUTES,MODEL_TYPE_DELIBERATION))
+            )));
+            $this->set('actions', array(
+                0 => $this->Typeacte->libelleAction(0, true),
                 1 => $this->Typeacte->libelleAction(1, true),
                 2 => $this->Typeacte->libelleAction(2, true)));
             $this->set('natures', $this->Typeacte->Nature->generateList('Nature.libelle'));
