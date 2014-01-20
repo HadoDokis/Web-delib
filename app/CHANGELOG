@@ -1,5 +1,6 @@
 4.1.04
 ======
+- Correction de la notification par mail lors d'un projet à traiter lors de l'insertion dans un circuit  
 - Numérotation hiérarchisée par code des matières de la Classification
 - Message d'avertissement lors de la sortie en modification d'un projet d'acte
 - Modification de la sortie des documents générés, modification des extentions de fichiers non valides
