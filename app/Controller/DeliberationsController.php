@@ -1189,6 +1189,7 @@ class DeliberationsController extends AppController {
     function addIntoCircuit($id = null) {
         $this->request->data = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
         $user_connecte = $this->Session->read('user.User.id');
+        // envoi un mail a tous les membres du circuit
         if ($this->request->data['Deliberation']['circuit_id'] != 0) {
             // enregistrement de l'historique
             $message = "Projet injecté au circuit : " . $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
@@ -1252,19 +1253,20 @@ class DeliberationsController extends AppController {
                     }
                     $this->Traitement->Visa->replaceDynamicTrigger($id);
                }
-
+                
                 // envoi un mail a tous les membres du circuit
                 $listeUsers = $this->Circuit->getAllMembers($this->data['Deliberation']['circuit_id']);
-
                 $prem = true;
-                foreach ($listeUsers as $etape) {
-                    if ($prem) {
+                $this->Etape->recursive = -1;
+                $etape_courante=$this->Etape->findById($this->Traitement->getEtapeCouranteId($id));
+                foreach ($listeUsers as $ordre=>$etape) {
+                    if ($prem && $ordre==$etape_courante['Etape']['ordre']) {
                         foreach ($etape as $user_id)
-                            $this->_notifier($id, $user_id, 'traiter');
+                            $this->_notifier($id, empty($user_id)?$user_connecte:$user_id, 'traiter');
                         $prem = false;
                     } else {
                         foreach ($etape as $user_id)
-                            $this->_notifier($id, $user_id, 'insertion');
+                            $this->_notifier($id, empty($user_id)?$user_connecte:$user_id, 'insertion');
                     }
                 }
                 $this->Session->setFlash('Projet inséré dans le circuit', 'growl');
