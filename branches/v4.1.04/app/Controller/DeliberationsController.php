@@ -2877,17 +2877,24 @@ class DeliberationsController extends AppController {
 
     function _ajouterFiltre(&$projets) {
         if (!$this->Filtre->critereExists()) {
+            $Deliberationseances = array();
+            foreach ($projets as $projet) {
+                if (isset($projet['Deliberationseance']) && (!empty($projet['Deliberationseance']))) {
+                    foreach ($projet['Deliberationseance'] as $Deliberationseance)
+                        $Deliberationseances[$Deliberationseance['Seance']['id']] =$Deliberationseance['Seance']['Typeseance']['libelle'].' : '.$Deliberationseance['Seance']['date'];
+                }
+            }
             $this->Filtre->addCritere('DeliberationseanceId', array('field' => 'Deliberationseance.seance_id',
                 'classeDiv' => 'demi',
                 'inputOptions' => array(
                     'label' => __('Séances', true),
                     'empty' => 'toutes',
-                    'options' => $this->Deliberation->getSeancesFromArray($projets))));
+                    'options' => $Deliberationseances)));
             $typeseances = array();
             foreach ($projets as $projet) {
-                if (isset($projet['Typeseance']) && (!empty($projet['Typeseance']))) {
-                    foreach ($projet['Typeseance'] as $typeseance)
-                        $typeseances[$typeseance['id']] = $typeseance['libelle'];
+                if (isset($projet['Deliberationtypeseance']) && (!empty($projet['Deliberationtypeseance']))) {
+                    foreach ($projet['Deliberationtypeseance'] as $typeseance)
+                        $typeseances[$typeseance['id']] = $typeseance['Typeseance']['libelle'];
                 }
             }
             $this->Filtre->addCritere('DeliberationtypeseanceId', array(
