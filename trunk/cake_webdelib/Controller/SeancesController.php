@@ -1390,7 +1390,7 @@ class SeancesController extends AppController {
                 $blocProjets->addPart($oDevPart);
 
                 $annexes = array();
-                $tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($projet['Deliberation']['id'], 0,1);
+                $tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($projet['Deliberation']['id'], false, true);
                 if (!empty($tmp_annexes))
                     array_push($annexes_id,  $tmp_annexes);
 

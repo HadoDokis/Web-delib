@@ -394,7 +394,7 @@ class PostseancesController extends AppController {
                 $zip->addFromString('Annexes'.DS.$signatureName, $delib['Deliberation']['signature']);
 
                 //Ajout des annexes
-                $annexes_id =  $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, 1);
+                $annexes_id =  $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, true);
                 if (!empty($annexes_id)) {
                     foreach ($annexes_id as $annex_id) {
                         $annex_id = $annex_id['Annex']['id'];
