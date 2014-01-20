@@ -23,7 +23,7 @@ class Annex extends AppModel {
             ),
             'regleFilename-2' => array(
                 'rule' => '/^[a-zA-Z0-9-_.&]{6,}$/i',
-                'message' => 'Seulement les lettres, les entiers et les caractères spéciaux (-_.&) sont autorisés. Minimum de 6 caractères', 'growl'
+                'message' => 'Seulement les lettres, les entiers et les caractères spéciaux (-_.&) sont autorisés dans le nom du fichier. Minimum de 6 caractères', 'growl'
             )
         ),
         'titre' => array(
