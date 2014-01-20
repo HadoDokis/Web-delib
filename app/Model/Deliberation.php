@@ -1305,21 +1305,6 @@ class Deliberation extends AppModel {
 		return count($this->getSeancesid($deliberation_id));
 	}
 
-	function getSeancesFromArray($projets) {
-	       $typeseances = $this->Seance->Typeseance->find('list', array('recursive'=> -1, 'fields' => array('libelle')));	
-                $seances = array();
-		if (isset($projets) && !empty($projets))
-			foreach ($projets as $projet)
-			if (isset($projet['Seance']) && (!empty($projet['Seance']))) {
-			foreach($projet['Seance'] as $seance) {
-	                   $typeseance=$typeseances[$seance['type_id']]; 
-
-              $seances[$seance['id']] = $typeseance.' : '.$seance['date'];
-			}
-		}
-		return $seances;
-	}
-
 	function getTypeseancesFromArray($projets) {
 	
 	       $list = $this->Seance->Typeseance->find('list', array('recursive'=> -1, 'fields' => array('libelle')));	
