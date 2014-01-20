@@ -285,10 +285,10 @@ class Deliberation extends AppModel {
 
     /**
      * Retourne l'identifiant du modèle à utiliser selon le projet
-     * @param $delib_id identifiant du projet
+     * @param string $delib_id identifiant du projet
      * @return integer identifiant du modèle
      */
-    function getModel($delib_id){
+    function getModelId($delib_id){
         $this->id = $delib_id;
         $etat = $this->field('etat');
         $seances = $this->Deliberationseance->find('all', array(

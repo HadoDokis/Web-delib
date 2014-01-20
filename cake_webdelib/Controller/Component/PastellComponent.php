@@ -266,7 +266,6 @@ class PastellComponent extends Component
     }
 
     /**
-     * FIXME
      * Détail sur plusieurs documents
      *
      * Récupère l'ensemble des informations sur un document Liste également les entités filles.
@@ -283,12 +282,9 @@ class PastellComponent extends Component
      */
     public function detailDocuments($id_e, $id_d)
     {
-        $acte = array(
-            'id_e' => $id_e,
-            'id_d' => json_encode($id_d) //FIXME format id_d attendu
-        );
-
-        $curl = $this->_initCurl('detail-several-document.php', $acte);
+        $args = "id_e=$id_e";
+        foreach ($id_d as $d) $args .= "&id_d=$d";
+        $curl = $this->_initCurl('detail-several-document.php?'.$args);
         $result = curl_exec($curl);
         curl_close($curl);
         return json_decode($result, true);
@@ -360,7 +356,7 @@ class PastellComponent extends Component
         if (empty($delib)) return -1;
         App::uses('Deliberation', 'Model');
         $this->Deliberation = new Deliberation();
-        $model_id = $this->Deliberation->getModel($delib['Deliberation']['id']);
+        $model_id = $this->Deliberation->getModelId($delib['Deliberation']['id']);
         //Génération du fichier et ajout au zip
 //        $this->requestAction('/models/generer/'.$delib['Deliberation']['id'].'/null/'.$model_id.'/0/0/Document/0/1');
         $file_name = WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/Document.pdf";
@@ -384,7 +380,7 @@ class PastellComponent extends Component
         foreach ($annexes as $annex)
             $this->sendAnnex($id_e, $id_d, $annex);
 //        debug($result_modif);
-        $resultat = $this->getInfosDocument($id_e, $id_d);
+        $resultat = $this->detailDocument($id_e, $id_d);
         $pos = strpos($resultat['data']['classification'], "existe");
         if ($pos !== false && $resultat['data']['envoi_tdt']) {
             $result = utf8_decode($resultat['data']['classification']);
@@ -538,7 +534,8 @@ class PastellComponent extends Component
     public function insertInParapheur($id_e, $id_d, $sous_type = null)
     {
         //FIXME propriété envoi_signature au lieu de envoi_iparapheur?
-        $curl = $this->_initCurl("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_iparapheur=true");
+//        $curl = $this->_initCurl("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_iparapheur=true");
+        $curl = $this->_initCurl("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_signature=true");
         $result = curl_exec($curl);
         curl_close($curl);
         return json_decode($result, true);

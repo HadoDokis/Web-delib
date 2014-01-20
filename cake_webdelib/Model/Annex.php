@@ -57,12 +57,21 @@ class Annex extends AppModel {
         return true;
     }
 
-    function getAnnexesFromDelibId($delib_id, $to_send = 0, $to_merge = 0, $joindreParent = false) {
+    /**
+     * Cherche les annexes d'une Deliberation
+     *
+     * @param string $delib_id identifiant de la Deliberation
+     * @param bool $to_send ne chercher que les annexes avec la propriété joindre_ctrl_legalite
+     * @param bool $to_merge ne chercher que les annexes avec la propriété joindre_fusion
+     * @param bool $joindreParent inclure les Annexe de la Deliberation parente
+     * @return array
+     */
+    function getAnnexesFromDelibId($delib_id, $to_send = false, $to_merge = false, $joindreParent = false) {
         $conditions['Annex.foreign_key'] = $delib_id;
         //$conditions['Annex.model'] = 'Deliberation';
-        if ($to_send == 1)
+        if ($to_send)
             $conditions['Annex.joindre_ctrl_legalite'] = true;
-        if ($to_merge == 1)
+        if ($to_merge)
             $conditions['Annex.joindre_fusion'] = true;
 
         $annexes = $this->find('all', array('conditions' => $conditions,
@@ -71,15 +80,16 @@ class Annex extends AppModel {
             'fields' => array('id', 'model')));
         
         if ($joindreParent){
-            $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
+            $delib = $this->Deliberation->find('first', array(
+                'conditions' => array('Deliberation.id' => $delib_id),
                 'recursive' => -1,
-                'fields' => array('id', 'parent_id')));
-            if (isset($delib['Deliberation']['parent_id'])) {
-                $tab = $this->getAnnexesFromDelibId($delib['Deliberation']['parent_id']);
-                if (isset($tab) && !empty($tab)) {
-                    for ($i = 0; $i < count($tab); $i++) {
-                        if ($tab[$i]['Annex']['model'] == 'Deliberation')
-                            unset($tab[$i]);
+                'fields' => array('parent_id')));
+            if (!empty($delib['Deliberation']['parent_id'])) {
+                $parent_annexes = $this->getAnnexesFromDelibId($delib['Deliberation']['parent_id'], $to_send, $to_merge, $joindreParent);
+                if (!empty($tab)) {
+                    foreach ($parent_annexes as $i => $parent_annexe){
+                        if ($parent_annexe['Annex']['model'] == 'Deliberation')
+                            unset($parent_annexes[$i]);
                     }
                     $annexes = array_merge($annexes, $tab);
                 }
