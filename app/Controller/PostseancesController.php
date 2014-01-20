@@ -320,7 +320,8 @@ class PostseancesController extends AppController {
                 $delib = $this->Deliberation->find('first', array(
                     'conditions' => array('Deliberation.id' => $delib_id),
                     'fields'     => array('Deliberation.id', 'Deliberation.num_delib', 'Deliberation.objet_delib', 'Deliberation.titre',
-                        'Deliberation.delib_pdf','Deliberation.tdt_data_pdf','Deliberation.tdt_data_bordereau_pdf', 'Deliberation.deliberation', 'Deliberation.signature','Deliberation.dateAR'),
+                        'Deliberation.delib_pdf','Deliberation.tdt_data_pdf','Deliberation.tdt_data_bordereau_pdf', 'Deliberation.deliberation', 
+                        'Deliberation.deliberation_size','Deliberation.signature','Deliberation.dateAR'),
                     'contain'    => array(
                         'Service'   => array('fields' => array('libelle')),
                         'Theme'     => array('fields' => array('libelle')),
@@ -372,17 +373,19 @@ class PostseancesController extends AppController {
                 $zip->addFromString($delib_filename, (!empty($delib['Deliberation']['tdt_data_pdf'])?$delib['Deliberation']['tdt_data_pdf']:$delib['Deliberation']['delib_pdf']));
 
                 //Noeud document[Rapport]
-                $document = $this->_createElement($dom, 'document', null, array('nom' => $delib_filename, 'relname' => $delib_filename, 'type' => 'Rapport'));
-                $document->appendChild($this->_createElement($dom, 'titre', $delib['Deliberation']['objet_delib']));
-                $document->appendChild($this->_createElement($dom, 'description', $delib['Deliberation']['titre']));
-                $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
-                $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
-                $doc->appendChild($document);
-                //Génération du rapport et ajout au zip
-                $this->requestAction('/models/generer/'.$delib_id.'/null/'.$seance['Typeseance']['modelprojet_id'].'/0/2/retour/0/true/false');
-                $projet_filename =  WEBROOT_PATH.DS.'files'.DS.'generee'.DS.'fd'.DS.'null'.DS.$delib_id.DS.'retour.pdf2';
-                //Ajout au zip
-                $zip->addFromString('Rapports'.DS.$delib_filename, file_get_contents($projet_filename));
+                if(!empty($delib['Deliberation']['deliberation_size'])){
+                    $document = $this->_createElement($dom, 'document', null, array('nom' => $delib_filename, 'relname' => $delib_filename, 'type' => 'Rapport'));
+                    $document->appendChild($this->_createElement($dom, 'titre', $delib['Deliberation']['objet_delib']));
+                    $document->appendChild($this->_createElement($dom, 'description', $delib['Deliberation']['titre']));
+                    $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
+                    $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
+                    $doc->appendChild($document);
+                    //Génération du rapport et ajout au zip
+                    $this->requestAction('/models/generer/'.$delib_id.'/null/'.$seance['Typeseance']['modelprojet_id'].'/0/2/retour/0/true/false');
+                    $projet_filename =  WEBROOT_PATH.DS.'files'.DS.'generee'.DS.'fd'.DS.'null'.DS.$delib_id.DS.'retour.pdf2';
+                    //Ajout au zip
+                    $zip->addFromString('Rapports'.DS.$delib_filename, file_get_contents($projet_filename));
+                }
 
                 //Ajout de la signature (XML+ZIP)
                 $signatureName = $delib['Deliberation']['id'].'-signature.zip';
