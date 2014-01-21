@@ -2881,6 +2881,7 @@ class DeliberationsController extends AppController {
             foreach ($projets as $projet) {
                 if (isset($projet['Deliberationseance']) && (!empty($projet['Deliberationseance']))) {
                     foreach ($projet['Deliberationseance'] as $Deliberationseance)
+                        if(!array_key_exists($Deliberationseance['Seance']['id'], $Deliberationseances))
                         $Deliberationseances[$Deliberationseance['Seance']['id']] =$Deliberationseance['Seance']['Typeseance']['libelle'].' : '.$Deliberationseance['Seance']['date'];
                 }
             }
@@ -2894,7 +2895,8 @@ class DeliberationsController extends AppController {
             foreach ($projets as $projet) {
                 if (isset($projet['Deliberationtypeseance']) && (!empty($projet['Deliberationtypeseance']))) {
                     foreach ($projet['Deliberationtypeseance'] as $typeseance)
-                        $typeseances[$typeseance['id']] = $typeseance['Typeseance']['libelle'];
+                        if(!array_key_exists($typeseance['id'], $typeseances))
+                        $typeseances[$typeseance['Typeseance']['id']] = $typeseance['Typeseance']['libelle'];
                 }
             }
             $this->Filtre->addCritere('DeliberationtypeseanceId', array(
