@@ -7,7 +7,7 @@ Configure::write('WEBDELIB_PATH', realpath($currentDir . '/..'));
 
 /* Configuration du debug */
 Configure::write('debug', 0);
-Configure::write('Cache.disable', true);
+Configure::write('Cache.disable', false);
 
 /* Options d'affichage */
 Configure::write('AFFICHE_HIERARCHIE_SERVICE', true);
@@ -20,7 +20,21 @@ Configure::write('LIMIT', 5); //limitation du nombre de projets par banette
 Configure::write('GENERER_DOC_SIMPLE', false);
 Configure::write('PROTOCOLE_DL', 'vnd.sun.star.webdav');
 
-/* Configuration d'envoie de mail */
+/* Configuration pour la conversion de format des documents */
+Configure::write('CONVERSION_TYPE', 'CLOUDOOO');
+Configure::write('CLOUDOOO_HOST', '127.0.0.1');
+Configure::write('CLOUDOOO_PORT', '8011');
+
+/* Configuration pour la manipulation des pdf */
+Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
+
+/* Configuration GhostScript */
+// Chemin vers l'executable
+Configure::write('GS_EXEC', '/usr/bin/gs');
+// Résolution d'image (pixels) : Agit sur la rapidité de génération des annexes (Conversion pdf et doc en image)
+Configure::write('GS_RESOLUTION', '150');
+
+/* Configuration mail */
 Configure::write('MAIL_FROM', 'Webdelib <webdelib@mon-domaine.fr>');
 Configure::write('SMTP_USE', false);
 Configure::write('SMTP_PORT', 25);
@@ -32,6 +46,39 @@ Configure::write('SMTP_CLIENT', 'smtp_helo_hostname');
 
 /* Configuration GEDOOo */
 Configure::write('GEDOOO_WSDL', 'http://gedooo.services.adullact.org:8082/ODFgedooo/OfficeService?wsdl');
+
+/* Activer la signature electronique */
+Configure::write('USE_SIGNATURE', false);
+/* Activer le TDT (tiers de télétransmission) */
+Configure::write('USE_TDT', false);
+
+/**
+ * Configuration des connecteurs
+ */
+
+/* Configuration connexion PASTELL */
+Configure::write('USE_PASTELL', false);
+Configure::write('PASTELL_HOST', 'http://pastell.x.x.org');
+Configure::write('PASTELL_LOGIN', 'login');
+Configure::write('PASTELL_PWD', 'password');
+Configure::write('PASTELL_TYPE', 'actes');
+
+/* Configuration Webservice du parapheur électronique */
+Configure::write('USE_PARAPH', false);
+Configure::write('WSACTION', 'https://x.x.x.x/alfresco');
+Configure::write('WSTO', 'https://x.x.x.x/ws-iparapheur');
+Configure::write('CACERT',     Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/ac.pem');
+Configure::write('CLIENTCERT', Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/cert.pem');
+Configure::write('PASSPHRASE', 'passphrase');
+Configure::write('HTTPAUTH', 'login');
+Configure::write('HTTPPASSWD', 'password');
+Configure::write('HTTPTYPE', 'Basic');
+Configure::write('VERSSOAP', '1.1');
+Configure::write('USEMTOM', true);
+Configure::write('WSDL', 'ws-iparapheur.wsdl');
+Configure::write('TYPETECH', 'ACTES');
+Configure::write('VISIBILITY', 'PUBLIC');
+Configure::write('EMAIL_EMMETEUR', 'parapheur@adullact.org');
 
 /* Configuration S2LOW */
 Configure::write('USE_S2LOW', false);
@@ -46,9 +93,34 @@ Configure::write('HOST_PROXY', '');
 Configure::write('USE_MAIL_SECURISE', false);
 Configure::write('PASSWORD_MAIL_SECURISE', '');
 
-/*
- *  Configuration de OpenLDAP (pour Active Directory voir plus bas)
+/* Configuration CONNECTEUR CMIS GED */
+Configure::write('USE_GED', false);
+Configure::write('GED_URL', 'http://x.x.x.x/alfresco/service/api/cmis');
+Configure::write('GED_LOGIN', 'login');
+Configure::write('GED_PASSWD', 'password');
+Configure::write('GED_REPO', '/Sites/Web-delib');
+
+/* Configuration pour Idélibre */
+Configure::write('USE_IDELIBRE', false);
+Configure::write('IDELIBRE_HOST', 'https://idelibre.adullact.org');
+Configure::write('IDELIBRE_LOGIN', 'login');
+Configure::write('IDELIBRE_PWD', 'password');
+Configure::write('IDELIBRE_CONN', 'adullact'); //Collectivité
+//Configure::write('IDELIBRE_CERT', Configure::read('WEBDELIB_PATH').'/Config/cert_idelibre/cert.pem');
+
+/* Configuration ASAL@AE */
+Configure::write('USE_ASALAE', false);
+Configure::write('ASALAE_WSDL', 'http://x.x.x.x/webservices/wsdl');
+Configure::write('SIREN_ARCHIVE', 'DEMO');
+Configure::write('NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
+Configure::write('IDENTIFIANT_VERSANT', 'WEBDELIBSERVICES_LOGIN');
+Configure::write('MOT_DE_PASSE', 'WEBDELIBSERVICES_MDP');
+
+/**
+ * Configuration des annuaires (AD ou OpenLDAP)
  */
+
+/* Configuration de OpenLDAP (pour Active Directory voir plus bas) */
 Configure::write('USE_OPENLDAP', false);
 Configure::write('LDAP_HOST', 'x.x.x.x');
 Configure::write('LDAP_PORT', '389');
@@ -74,68 +146,3 @@ define('BASE_DN', 'OU=users,dc=CGxx,dc=fr');
 define('ACCOUNT_SUFFIX', '@CG-xx.xx');
 define('DN', 'distinguishedname');
  */
-
-/* Configuration Webservice du parapheur électronique */
-Configure::write('USE_PARAPH', false);
-Configure::write('WSACTION', 'https://x.x.x.x/alfresco');
-Configure::write('WSTO', 'https://x.x.x.x/ws-iparapheur');
-Configure::write('CACERT',     Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/ac.pem');
-Configure::write('CLIENTCERT', Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/cert.pem');
-Configure::write('PASSPHRASE', 'passphrase');
-Configure::write('HTTPAUTH', 'login');
-Configure::write('HTTPPASSWD', 'password');
-Configure::write('HTTPTYPE', 'Basic');
-Configure::write('VERSSOAP', '1.1');
-Configure::write('USEMTOM', true);
-Configure::write('WSDL', 'ws-iparapheur.wsdl');
-Configure::write('TYPETECH', 'ACTES');
-Configure::write('VISIBILITY', 'PUBLIC');
-Configure::write('EMAIL_EMMETEUR', 'parapheur@adullact.org');
-
-/* Configuration ASAL@AE */
-Configure::write('USE_ASALAE', false);
-Configure::write('ASALAE_WSDL', 'http://x.x.x.x/webservices/wsdl');
-Configure::write('SIREN_ARCHIVE', 'DEMO');
-Configure::write('NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
-Configure::write('IDENTIFIANT_VERSANT', 'WEBDELIBSERVICES_LOGIN');
-Configure::write('MOT_DE_PASSE', 'WEBDELIBSERVICES_MDP');
-
-/* Configuration CONNECTEUR CMIS GED */
-Configure::write('USE_GED', false);
-Configure::write('GED_URL', 'http://x.x.x.x/alfresco/service/api/cmis');
-Configure::write('GED_LOGIN', 'login');
-Configure::write('GED_PASSWD', 'password');
-Configure::write('GED_REPO', '/Sites/Web-delib');
-
-/* Configuration pour la conversion de format des documents */
-Configure::write('CONVERSION_TYPE', 'CLOUDOOO');
-Configure::write('CLOUDOOO_HOST', '127.0.0.1');
-Configure::write('CLOUDOOO_PORT', '8011');
-
-/* Configuration connexion PASTELL */
-Configure::write('USE_PASTELL', false);
-Configure::write('PASTELL_HOST', 'http://pastell.x.x.org');
-Configure::write('PASTELL_LOGIN', 'login');
-Configure::write('PASTELL_PWD', 'password');
-Configure::write('PASTELL_TYPE', 'actes');
-
-/* Configuration pour Idélibre */
-Configure::write('USE_IDELIBRE', false);
-Configure::write('IDELIBRE_HOST', 'https://idelibre.adullact.org');
-Configure::write('IDELIBRE_LOGIN', 'login');
-Configure::write('IDELIBRE_PWD', 'password');
-Configure::write('IDELIBRE_CONN', 'adullact'); //Collectivité
-//Configure::write('IDELIBRE_CERT', Configure::read('WEBDELIB_PATH').'/Config/cert_idelibre/cert.pem');
-
-/* Configuration pour la manipulation des pdf */
-Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
-
-/* Configuration pour GhostScript */
-Configure::write('GS_EXEC', '/usr/bin/gs');
-
-/*
- * GhostScript: Résolution d'image
- * Qualité d'image (résolution en pixels)
- * Agit sur la rapidité de génération des annexes (Conversion pdf et doc en image)
- */
-Configure::write('GS_RESOLUTION', '150');
