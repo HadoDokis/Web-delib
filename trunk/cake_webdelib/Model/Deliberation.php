@@ -1594,7 +1594,7 @@ class Deliberation extends AppModel {
             $conditions = array_merge($conditions,  array('Deliberation.typeacte_id' => Set::extract('/Typeacte/id', $typeacte_ids)));
         }
 
-        $this->Behaviors->attach('Containable');
+        $this->Behaviors->load('Containable');
         $actes = $this->find('all', array(
             'conditions' => $conditions,
             'contain'    => $contain,

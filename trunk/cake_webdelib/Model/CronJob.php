@@ -12,6 +12,7 @@ class CronJob extends AppModel
     public $useTable = false;
 
     /**
+     * TODO : si Pastell / sinon si i-Parapheur
      * Mise à jour des dossiers en attente de signature dans le i-parapheur connecté
      * @return string
      */

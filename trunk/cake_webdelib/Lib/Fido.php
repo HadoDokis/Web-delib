@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @author Florian Ajir <florianajir@gmail.com>
+ * @author Florian Ajir <florian.ajir@adullact.org>
+ * @editor Adullact
  *
  * @created 3 sept. 2013
- * @modified 26 nov. 2013
- * 
+ *
  * Librairie PHP permettant l'identification de document électronique 
  * en faisant appel au programme FIDO 
  * 	@link Fido <http://www.openplanetsfoundation.org/software/fido>
