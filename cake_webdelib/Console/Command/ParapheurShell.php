@@ -82,17 +82,11 @@ class ParapheurShell extends Shell {
                                 $dossier = $this->Parafwebservice->GetDossierWebservice($id_dossier);
                                 if (!empty($dossier['getdossier']['signature'])) {
                                 //FIXME : ne pas écraser le doc principal, ajouter une colonne pour le document avec bordereau (docprinc?)
+                                    $this->Deliberation->saveField('delib_pdf', base64_decode($dossier['getdossier'][8]));
                                     $this->Deliberation->saveField('bordereau', base64_decode($dossier['getdossier']['bordereau']));
                                     $this->Deliberation->saveField('signature', base64_decode($dossier['getdossier']['signature']));
                                 }
                                 $this->Deliberation->saveField('signee', 1);
-                                /*
-                                if ($compteur_id != 0) {
-                                    $this->Deliberation->saveField('date_acte', date("Y-m-d H:i:s", strtotime("now")));
-                                    $num = $this->Deliberation->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
-                                    $this->Deliberation->saveField('num_delib', $num);
-                                }
-                                */
                             }
                             if ($histo['logdossier'][$i]['status'] == 'Archive'){
                                 $this->Deliberation->saveField('etat_parapheur', 2);
