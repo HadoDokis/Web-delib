@@ -7,7 +7,9 @@ Configure::write('WEBDELIB_PATH', realpath($currentDir . '/..'));
 
 /* Configuration du debug */
 Configure::write('debug', 0);
-Configure::write('Cache.disable', false);
+/* Configuration session default 600 */
+Configure::write('Session.timeout', 600);
+Configure::write('Cakeflow.optimisation', true);
 
 /* Options d'affichage */
 Configure::write('AFFICHE_HIERARCHIE_SERVICE', true);
