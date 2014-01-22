@@ -20,7 +20,7 @@ ALTER TABLE users ADD COLUMN mail_modif_projet_valide BOOLEAN DEFAULT FALSE;
 ALTER TABLE users ADD COLUMN mail_retard_validation BOOLEAN DEFAULT FALSE;
 
 -- Mise à jour : joindre les annexes par défaut
-UPDATE annexes SET joindre_fusion=TRUE;
+UPDATE annexes SET joindre_fusion=1;
 
 -- Gabarits textes
 ALTER TABLE typeactes ADD COLUMN gabarit_projet BYTEA DEFAULT NULL;
