@@ -7,7 +7,7 @@
 * @package app.Test.Case.Model
 * @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
 */
-App::uses('Circuit', 'Cakeflow.Controller');
+App::uses('Traitement', 'Cakeflow.Model');
 
 /**
 * Classe DeliberationsTest.
@@ -15,12 +15,19 @@ App::uses('Circuit', 'Cakeflow.Controller');
 * @package app.Test.Case.Controller
 * 
 */
-class DeliberationsTest extends DeliberationsController {
+class DeliberationsTest extends CakeTestCase {
        
-    // Les fixtures de plugin localisé dans /app/Plugin/Blog/Test/Fixture/
-    public $fixtures = array('plugin.cakeflow.circuit');
+    // Les fixtures de plugin localisé dans /app/Plugin/Cakeflow/Test/Fixture/
+    public $fixtures = array('plugin.cakeflow.traitement');
     public $Circuit;
+    
+    public function testaddIntoCircuit() {
+        // ClassRegistry dit au model d'utiliser la connexion à la base de données test
+        $this->Circuit = ClassRegistry::init('Cakeflow.traitement');
 
+        // faire des tests utiles ici
+        $this->assertTrue(is_object($this->Circuit));
+    }
 }
 
 class DeliberationsControllerTest extends CakeAppControllerTestCase {
