@@ -59,6 +59,7 @@ ALTER TABLE deliberations RENAME COLUMN etat_asalae TO sae_etat;
 ALTER TABLE deliberations RENAME COLUMN etat_parapheur TO parapheur_etat;
 ALTER TABLE deliberations RENAME COLUMN id_parapheur TO parapheur_id;
 ALTER TABLE deliberations RENAME COLUMN commentaire_refus_parapheur TO parapheur_commentaire;
+ALTER TABLE deliberations RENAME COLUMN "dateAR" TO "tdt_dateAR";
 ALTER TABLE deliberations DROP COLUMN pastell_id;
 
 COMMIT;
