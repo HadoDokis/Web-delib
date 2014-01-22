@@ -359,7 +359,8 @@ class Infosup extends AppModel
                 $return[$infosup['Infosupdef']['code']] = array('type' => 'string',
                     'content' => $infosup['Infosup']['text']);
             } elseif ($infosup['Infosupdef']['type'] == 'richText') {
-                $return[$infosup['Infosupdef']['code']] = $infosup['content'];
+                $return[$infosup['Infosupdef']['code']] = array('type' => 'string',
+                    'content' => $infosup['Infosup']['content']);
             } elseif ($infosup['Infosupdef']['type'] == 'date') {
                 include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
                 $this->Date = new DateComponent;
@@ -376,10 +377,9 @@ class Infosup extends AppModel
                     'type' => 'string',
                     'content' => $infosup['Infosup']['text']);
             } elseif ($infosup['Infosupdef']['type'] == 'list') {
-                $ele = $this->Infosupdef->Infosuplistedef->find('first', array(
-                    'conditions' => array('id' => $infosup['text']),
-                    'fields' => array('nom'),
-                    'recursive' => -1));
+                $ele = $this->Infosupdef->Infosuplistedef->find('first', array( 'fields' => array('nom'),
+                                                                                'conditions' => array('id' => $infosup['Infosup']['text']),
+                                                                                'recursive' => -1));
                 $return[$infosup['Infosupdef']['code']] = array(
                     'type' => 'string',
                     'content' => $ele['Infosuplistedef']['nom']);

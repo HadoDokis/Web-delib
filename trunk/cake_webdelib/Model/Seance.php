@@ -343,33 +343,13 @@ class Seance extends AppModel
             $oDevPart->addElement($blocConvoque);
         }
 
+        $this->President->makeBalise($oDevPart, $seance['Seance']['president_id']);
+        $this->Secretaire->makeBalise($oDevPart, $seance['Seance']['secretaire_id']);
+                
         $typeSeance = $this->Typeseance->find('first',
             array('conditions' => array('Typeseance.id' => $seance['Seance']['type_id']),
                 'recursive' => -1));
         $oDevPart->addElement(new GDO_FieldType('type' . $suffixe, (!empty($typeSeance['Typeseance']['libelle']) ? $typeSeance['Typeseance']['libelle'] : ''), 'text'));
-
-        $this->President->makeBalise($oDevPart, $seance['Seance']['president_id']);
-        $this->Secretaire->makeBalise($oDevPart, $seance['Seance']['secretaire_id']);
-
-        App::import('Model', 'Deliberationseance');
-        $this->Deliberationseance = new Deliberationseance();
-        $avisSeances = $this->Deliberationseance->find('all', array(
-            'conditions' => array('seance_id' => $seance['Seance']['id']),
-            'recursive' => -1));
-        if (!empty($avisSeances)) {
-            $aviss = new GDO_IterationType("AvisSeance");
-            foreach ($avisSeances as $avisSeance) {
-                $Part = new GDO_PartType();
-                $Part->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
-                $aviss->addPart($Part);
-            }
-            @$oDevPart->addElement($aviss);
-        }
-
-        $infosups = $this->Infosup->find('all',
-            array('conditions' => array('Infosup.foreign_key' => $seance['Seance']['id'],
-                'Infosup.model' => 'Seance'),
-                'recursive' => -1));
 
         if (isset($infosups) && !empty($infosups)) {
             foreach ($infosups as $champs) {
