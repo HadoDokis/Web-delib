@@ -1,0 +1,10 @@
+label{
+    float: none;
+    padding: 0;
+    text-align: left;
+    width: auto;
+}
+#configSignature fieldset{
+    width: 33%;
+    float: left;
+}
