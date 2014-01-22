@@ -5,7 +5,7 @@ App::uses('Component', 'Controller');
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 
-class TestShell extends AppShell {
+class MaintenanceShell extends AppShell {
 
     public $tasks = array(
         'Tdt',
