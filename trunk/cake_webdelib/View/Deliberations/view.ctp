@@ -117,24 +117,20 @@ if (empty($this->data['Multidelib'])) {
                 <dd>
                     <ul class="fix">
                         <?php
-foreach ($this->data['Seance'] as $seance) {
-    echo '<li><b>&nbsp;' . $seance['Typeseance']['libelle'] . '</b> : ' . $this->Form2->ukToFrenchDateWithHour($seance['date']) . "</li>";
-}
+                        foreach ($this->data['listeSeances'] as $seance)
+                            echo '<li><b>&nbsp;' .$seance['libelle']  . '</b>' . (isset($seance['date']) && !empty($seance['date'])?' : ' .$this->Html2->ukToFrenchDateWithHour($seance['date']):''). '</li>';
                         ?>
                     </ul>
                 </dd>
             </div>
         </div>
-
-
-        <div class="imbrique">
-<?php echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'Circuit', 'initHeight' => 'MIN'));
+<?php
+echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'Circuit'));
+//echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'Circuit', 'initHeight' => 'MIN'));
 echo $this->Html->tag('dt', "Circuit " . $this->data['Circuit']['libelle']);
 ?>
             <dd><?php echo $visu; ?></dd>
         </div>
-</div>
-
 <?php
 echo $this->Html->tag('div', null, array('class' => 'ouvrable', 'id' => 'textes'));
 echo $this->Html->tag('dt', "Textes");

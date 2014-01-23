@@ -11,27 +11,30 @@
     if ($this->action == 'autreActesAEnvoyer')
         echo('<h2>Télétransmission des actes</h2>');
     elseif ($this->action == 'toSend')
-        echo('<h2>Télétransmission des délibérations</h2>');
-    ?>
-    <?php echo $this->Form->create('Deliberation', array('type' => 'file', 'url' => '/deliberations/sendActe')); ?>
-    La Classification enregistrée date
-    du <?php echo $this->Html->link($dateClassification, '/deliberations/getClassification/', array('title' => 'Date classification')) ?>
-    <br/><br/>
-    <table style='width:100%'>
-        <tr>
-            <th style="width: 2px;"><input type='checkbox' id='masterCheckbox' /></th>
-            <th>Numéro Généré</th>
-            <th>Libellé de l'acte</th>
-            <th>Titre</th>
-            <th>Classification</th>
-            <th>statut</th>
-        </tr>
-        <?php
-        $numLigne = 1;
-        foreach ($deliberations as $delib) {
-            $rowClass = ($numLigne & 1) ? array('height' => '36px') : array('height' => '36px', 'class' => 'altrow');
-            echo $this->Html->tag('tr', null, $rowClass);
-            $numLigne++;
+        echo ('<h2>Télétransmission des délibérations</h2>');
+?>
+<?php echo $this->Form->create('Deliberation',array('type'=>'file','url'=>'/deliberations/sendActe')); ?>
+    La Classification enregistrée date du <?php echo $this->Html->link($dateClassification,'/deliberations/getClassification/', array('title'=>'Date classification'))?><br /><br />
+	<table width='100%'>
+<tr>
+	<th><?php echo $this->Form->checkbox(NULL, array('hiddenField' => false,'id'=>'allCheck','onclick'=>'javascript:allChecked(this);'))?></th>
+ 	<th>Numéro Généré</th>
+ 	<th>Libellé de l'acte</th>
+ 	<th>Titre</th>
+ 	<th>Classification</th>
+ 	<th>statut</th>
+</tr>
+<?php
+           $numLigne = 1;
+           foreach ($deliberations as $delib) {
+		             $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
+	          echo $this->Html->tag('tr', null, $rowClass);
+	          $numLigne++;
+
+		if ($delib['Deliberation']['etat']!= 5)
+			echo("<td>".$this->Form->checkbox('Deliberation.id.'.$delib['Deliberation']['id'], array('hiddenField' => false, 'class'=>'check','autocomplete'=>'off'))."</td>");
+		else
+		    echo("<td></td>");
 
             if ($delib['Deliberation']['etat'] != 5)
                 echo("<td>" . $this->Form->checkbox('Deliberation.id.' . $delib['Deliberation']['id'], array('hiddenField' => false)) . "</td>");
@@ -86,3 +89,11 @@
 
     <?php echo $this->Form->end(); ?>
 </div>
+<script>
+function allChecked(checkbox){
+    if(checkbox.checked)
+        $('.check').prop('checked', true);
+    else
+        $('.check').prop('checked', false);
+}
+</script>

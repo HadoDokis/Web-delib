@@ -38,12 +38,12 @@ if (isset($annexes)) {
 				if ($mode == 'edit') {
                                         // lien de téléchargement de la version pdf de l'annexe
 					if ($annexe['filetype']=='application/pdf'){
-                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename_pdf'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
-                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu odt)', '/annexes/download/'.$annexe['id'].'/odt', array('title'=>'Télécharger le fichier')));
+                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename_pdf'], '/annexes/download/'.$annexe['id'], array('class'=>'noWarn', 'title'=>'Télécharger le fichier')));
+                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu odt)', '/annexes/download/'.$annexe['id'].'/odt', array('class'=>'noWarn', 'title'=>'Télécharger le fichier')));
                                         }
                                         elseif ($annexe['filetype']=='application/vnd.oasis.opendocument.text'){
-                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
-                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/pdf', array('title'=>'Télécharger le fichier')));
+                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('class'=>'noWarn', 'title'=>'Télécharger le fichier')));
+                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/pdf', array('class'=>'noWarn', 'title'=>'Télécharger le fichier')));
                                         }
                                         else
                                         {
