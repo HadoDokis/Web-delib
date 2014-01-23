@@ -1,5 +1,45 @@
 <?php
+/* SVN FILE: $Id: app_controller.php 4409 2007-02-02 13:20:59Z phpnut $ */
+/**
+ * Short description for file.
+ *
+ * This file is application-wide controller file. You can put all
+ * application-wide controller-related methods here.
+ *
+ * PHP versions 4 and 5
+ *
+ * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
+ * Copyright 2005-2007, Cake Software Foundation, Inc.
+ *								1785 E. Sahara Avenue, Suite 490-204
+ *								Las Vegas, Nevada 89104
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
+ * @package			cake
+ * @subpackage		cake.cake
+ * @since			CakePHP(tm) v 0.2.9
+ * @version			$Revision: 4409 $
+ * @modifiedby		$LastChangedBy: phpnut $
+ * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+*/
+/**
+ * This is a placeholder class.
+* Create the same file in app/app_controller.php
+*
+* Add your application-wide methods in the class below, your controllers
+* will inherit them.
+*
+* @package		cake
+* @subpackage	cake.cake
+*/
+
 App::uses('Controller', 'Controller');
+
 class AppController extends Controller
 {
     public $theme = "Bootstrap";
@@ -143,24 +183,20 @@ class AppController extends Controller
         return $array;
     }
 
-    /**
-     * @see: http://stackoverflow.com/a/1459794/59087
-     * @see: http://shiflett.org/blog/2006/mar/server-name-versus-http-host
-     * @see: http://stackoverflow.com/a/3290474/59087
-     *
-     * @param string $cookieName
-     * @param string $cookieValue
-     * @param bool $httpOnly
-     * @param bool $secure
+     /**
+     *    Send the headers necessary to ensure the page is
+     *    reloaded on every request. Otherwise you could be
+     *    scratching your head over out of date test data.
+     *    @access public
+     *    @static
      */
-    public function setCookieToken($cookieName, $cookieValue, $httpOnly = true, $secure = false)
-    {
-        setcookie(
-            $cookieName, $cookieValue, 2147483647, // expires January 1, 2038
-            "/", // your path
-            $_SERVER["HTTP_HOST"], // your domain
-            $secure, // Use true over HTTPS
-            $httpOnly // Set true for $AUTH_COOKIE_NAME
-        );
+    public function sendNoCacheHeaders() {
+        if (! headers_sent()) {
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+            header("Cache-Control: no-store, no-cache, must-revalidate");
+            header("Cache-Control: post-check=0, pre-check=0", false);
+            header("Pragma: no-cache");
+        }
     }
 }
