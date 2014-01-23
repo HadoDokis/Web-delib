@@ -8,7 +8,7 @@ require_once('verification.php');
 <div class="hero-unit">
     <h2>Webdelib check</h2>
 
-    <p>Vérification de l'environement Webdelib.</p>
+    <p>Vérification de l'environnement Webdelib.</p>
 
     <p>
         <a class="btn btn-primary btn-large" href="index.php">
@@ -135,7 +135,7 @@ require_once('verification.php');
 <div class="row">
     <div class="span12">
         <div class="well well-small">
-            <p><i class="icon-resize-small"></i> Outil de convertion</p> </a>
+            <p><i class="icon-resize-small"></i> Outil de conversion</p> </a>
             <?php verifConversion(); ?>
         </div>
     </div>
