@@ -6,18 +6,12 @@ $(document).ready(function () {
     // masterCheckbox -> Checkbox
     // La master checkbox coche/décoche tout d'un coup
     $("#masterCheckbox").change(function () {
-        if ($(this).prop('checked') === true) {
-            $("input[type=checkbox]").prop('checked', true);
-        } else {
-            $("input[type=checkbox]").prop('checked', false);
-        }
+        $("input[type=checkbox]").not(":disabled").prop('checked', $(this).prop('checked'));
     });
     //Checkbox -> masterCheckbox
     $('input[type="checkbox"]').change(function () {
-        if ($('input[type="checkbox"]').not('#masterCheckbox').filter(':not(:checked)').length === 0)
-            $('#masterCheckbox').prop('checked', true);
-        else
-            $('#masterCheckbox').prop('checked', false);
+        var checked = ($('input[type="checkbox"]').not('#masterCheckbox').filter(':not(:checked)').length === 0);
+        $('#masterCheckbox').prop('checked', checked);
     });
     // Si toutes les checkboxes (sauf masterCheckbox) sont cochées, cocher masterCheckbox
     $("#masterCheckbox").prop('checked', $("input[type=checkbox]").not("#masterCheckbox").prop('checked'));
