@@ -59,6 +59,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->html->script('attendable', true);
         echo $this->html->script('waitAndBlock', true);
         echo $this->html->script('masterCheckbox', true);
+        echo $this->Html->script('webdelib_init', true);
 		echo $this->html->script('jquery.placeholder.js', true);
         echo $this->fetch('script');
         ?>
@@ -75,10 +76,14 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                             echo $this->Form->create('User', array(
                                     'id' => 'quickSearch',
                                     'class' => 'navbar-search form-search pull-right',
-                                    'url' => array('controller' => 'deliberations', 'action' => 'quicksearch')
-                                                        ));
-                            echo $this->Form->input('User.search', array('class' => 'search-query span2',
-                                'div' => false, 'label' => false,
+                                    'url' => array(
+                                        'plugin' => null,
+                                        'controller' => 'deliberations',
+                                        'action' => 'quicksearch')));
+                            echo $this->Form->input('User.search', array(
+                                'class' => 'search-query span2',
+                                'div' => false,
+                                'label' => false,
                                 'id' => 'searchInput',
                                 'placeholder' => 'Rechercher',
                                 'autocomplete' => 'off'));
@@ -91,17 +96,17 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                                             class="user"><?php echo $infoUser; ?></span><b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <?php echo $this->Html->link('Changer le format de sortie des éditions', array('controller'=>'pages','action'=>'format')); ?>
+                                            <?php echo $this->Html->link('Changer le format de sortie des éditions', array('plugin'=>null, 'controller'=>'pages','action'=>'format')); ?>
                                         </li>
                                         <li>
-                                            <?php echo $this->Html->link('Changer le service émetteur', array('controller'=>'pages','action'=>'service')); ?>
+                                            <?php echo $this->Html->link('Changer le service émetteur', array('plugin'=>null, 'controller'=>'pages','action'=>'service')); ?>
                                         </li>
                                         <li>
-                                            <?php echo $this->Html->link('Changer de mot de passe', array('controller'=>'users','action'=>'changeUserMdp')); ?>
+                                            <?php echo $this->Html->link('Changer de mot de passe', array('plugin'=>null, 'controller'=>'users','action'=>'changeUserMdp')); ?>
                                         </li>
                                         <li class="divider"></li>
                                         <li>
-                                            <?php echo $this->Html->link('Se déconnecter', array('controller'=>'users','action'=>'logout')); ?>
+                                            <?php echo $this->Html->link('Se déconnecter', array('plugin'=>null, 'controller'=>'users','action'=>'logout')); ?>
                                         </li>
                                     </ul>
                                 </li>
@@ -146,10 +151,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                             foreach ($items['subMenu'] as $key => $url) {
                                 foreach ($url as $titre => $lien){
                                     echo $this->Html->tag('li', null);
-//                                    if (!empty($lien['title']))
-//                                        echo $this->Html->link($titre, $lien['link'], array('title'=>$lien['title']));
-//                                    else
-                                        echo $this->Html->link($titre, $lien['link'], array('escape'=>false));
+                                    echo $this->Html->link($titre, $lien['link'], array('escape'=>false));
                                     echo $this->Html->tag('/li', null);
                                 }
                             }
