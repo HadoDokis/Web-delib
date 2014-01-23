@@ -1,5 +1,5 @@
 <?php echo $this->Html->script('utils'); ?>
-<h2>S&eacute;ances </h2>
+<h2>Post-s&eacute;ances </h2>
 <div class="seances">
 
     <table width='100%' cellpadding="0" cellspacing="0" border="0">

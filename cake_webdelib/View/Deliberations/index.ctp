@@ -97,20 +97,8 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                     echo $this->Form->button("<i class='fa fa-save'></i> Sauvegarder", array('type' => 'submit', 'div' => false, 'class' => 'btn', 'escape' => false, 'name' => 'sauvegarder'));
                     echo $this->Form->end();
                 } else {
-                    $listTypeseanceId = array();
-                    if (isset($deliberation['Seance'][0])) {
-                        foreach ($deliberation['Seance'] as $seance) {
-                            echo($typeseances[$seance['type_id']] . " : ");
-                            echo($this->Html2->ukToFrenchDateWithHour($seance['date']) . '<br>');
-                            $listTypeseanceId[] = $seance['type_id'];
-                        }
-                    }
-                    if (isset($deliberation['Typeseance']) && !empty($deliberation['Typeseance']))
-                        foreach ($deliberation['Typeseance'] as $typeseance) {
-                            if (!in_array($typeseance['id'], $listTypeseanceId))
-                                echo($typeseance['libelle'] . "<br>");
-                        }
-
+                    foreach ($deliberation['listeSeances'] as $seance)
+                            echo $seance['libelle'] . (isset($seance['date']) && !empty($seance['date'])?' : ' .$this->Html2->ukToFrenchDateWithHour($seance['date']):''). '<br/>';
                 }
                 ?>
             </td>

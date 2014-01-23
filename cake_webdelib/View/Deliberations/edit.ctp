@@ -11,24 +11,16 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
 ?>
 
 <div class='onglet'>
-    <a href="#" id="emptylink" alt=""></a>
-    <a href="javascript:afficheOnglet(1)"
-       id='lienTab1' <?php echo !isset($lienTab) || (isset($lienTab) && ($lienTab == 1 || empty($lienTab))) ? 'class="ongletCourant"' : '' ?>>Informations
-        principales</a>
-    <a href="javascript:afficheOnglet(2)"
-       id='lienTab2' <?php echo isset($lienTab) && $lienTab == 2 ? 'class="ongletCourant"' : '' ?>>Textes</a>
-    <a href="javascript:afficheOnglet(3)"
-       id='lienTab3' <?php echo isset($lienTab) && $lienTab == 3 ? 'class="ongletCourant"' : '' ?>>Annexe(s)</a>
-    <?php if (!empty($infosupdefs)): ?>
-        <a href="javascript:afficheOnglet(4)"
-           id='lienTab4' <?php echo isset($lienTab) && $lienTab == 4 ? 'class="ongletCourant"' : '' ?>>Informations
-            supplémentaires</a>
-    <?php endif; ?>
-    <?php if (Configure::read('DELIBERATIONS_MULTIPLES')): ?>
-        <a href="javascript:afficheOnglet(5)" id='lienTab5'
-           style="display: none" <?php echo isset($lienTab) && $lienTab == 5 ? 'class="ongletCourant"' : '' ?>>Délibérations
-            rattachées</a>
-    <?php endif; ?>
+	<a href="#" id="emptylink"></a>
+        <a href="javascript:afficheOnglet(1)" id='lienTab1' <?php echo !isset($lienTab) || (isset($lienTab) && ($lienTab==1 || empty($lienTab)))?'class="ongletCourant noWarn"':''?>>Informations principales</a>
+	<a href="javascript:afficheOnglet(2)" id='lienTab2' <?php echo isset($lienTab) &&  $lienTab==2?'class="ongletCourant noWarn"':'class="noWarn"'?>>Textes</a>
+	<a href="javascript:afficheOnglet(3)" id='lienTab3' <?php echo isset($lienTab) &&  $lienTab==3?'class="ongletCourant noWarn"':'class="noWarn"'?>>Annexe(s)</a>
+<?php if (!empty($infosupdefs)): ?>
+	<a href="javascript:afficheOnglet(4)" id='lienTab4' <?php echo isset($lienTab) &&  $lienTab==4?'class="ongletCourant noWarn"':'class="noWarn"'?>>Informations suppl&eacute;mentaires</a>
+<?php endif; ?>
+<?php if (Configure::read('DELIBERATIONS_MULTIPLES')): ?>
+	<a href="javascript:afficheOnglet(5)" id='lienTab5' style="display: none" <?php echo isset($lienTab) && $lienTab==5?'class="ongletCourant noWarn"':'class="noWarn"'?>>D&eacute;lib&eacute;rations rattach&eacute;es</a>
+<?php endif; ?>
 </div>
 
 <div id="tab1"  <?php echo isset($lienTab) && $lienTab != 1 ? 'style="display:none"' : '' ?>>
@@ -319,7 +311,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
     echo $this->Form->hidden('Deliberation.id');
 
     echo $this->Html->tag("div", null, array("class" => "btn-group"));
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'mesProjetsRedaction'), array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'mesProjetsRedaction'), array('class' => 'btn noWarn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
     echo $this->Form->button('<i class="fa fa-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le projet'));
     echo $this->Html->tag('/div', null);
     ?>
@@ -327,7 +319,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
 </div>
 
 <?php echo $this->Form->end(); ?>
-<script>
+<script type="text/javascript">
     // affichage de l'éditeur de texte intégré ckEditor
     function editerTexte(obj, textId, afficheTextId) {
         $('#' + textId).ckeditor();
@@ -350,4 +342,21 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
         });
     });
 
+//Gestion des sorties du formulaire
+function onUnloadEditForm(){
+    $(window).bind('beforeunload', function(){
+        return "Attention!! des données saisies pourraient ne pas être enregistrées dans webdelib.";
+    });
+}
+$(document).ready(onUnloadEditForm);
+$("#DeliberationEditForm").submit(function(){
+    $(window).unbind("beforeunload");
+});
+$(".noWarn").on('click', function(){
+                                                $(window).unbind('beforeunload');
+                                                objMenuTimeout = setTimeout(function(){
+                                                    onUnloadEditForm();
+                                                }, 2000); // 2000 millisecondes = 2 secondes
+                                            }
+);
 </script>

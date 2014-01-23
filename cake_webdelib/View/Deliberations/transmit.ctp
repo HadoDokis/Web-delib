@@ -46,7 +46,7 @@
                $rowClass = ($numLigne & 1)?array('height' => '36px'):array( 'height' => '36px', 'class'=>'altrow');
 	       echo $this->Html->tag('tr', null, $rowClass);
 	       $numLigne++;
-	       echo "<td>".$this->Html->link($delib['Deliberation']['num_delib'], '/deliberations/getTampon/'.$delib['Deliberation']['tdt_id']);
+	       echo "<td>".$this->Html->link($delib['Deliberation']['num_delib'], '/deliberations/getTampon/'.$delib['Deliberation']['id']);
 ?>
 		</td>
 		<td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
@@ -64,7 +64,7 @@
 		   <?php 
                     if (isset($delib['Deliberation']['code_retour'])) {
 		       if ($delib['Deliberation']['code_retour'] ==4)
-		           echo $this->Html->link("Acquitement reçu le ".$delib['Deliberation']['dateAR'], '/deliberations/getAR/'.$delib['Deliberation']['tdt_id']); 
+		           echo $this->Html->link("Acquitement reçu le ".$delib['Deliberation']['dateAR'], '/deliberations/getAR/'.$delib['Deliberation']['id']); 
 		       elseif($delib['Deliberation']['code_retour']==3)
 		           echo 'Transmis';
 		       elseif ($delib['Deliberation']['code_retour']==2)

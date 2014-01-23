@@ -59,6 +59,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->html->script('attendable', true);
         echo $this->html->script('waitAndBlock', true);
         echo $this->html->script('masterCheckbox', true);
+		echo $this->html->script('jquery.placeholder.js', true);
         echo $this->fetch('script');
         ?>
 
@@ -70,16 +71,20 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                 <div class="navbar-inner">
                     <div class='user'>
                         <?php echo $this->Html->image('webdelib_petit.png', array('id' => 'logo')); ?>
-                        <?php if (isset($infoUser)) { ?>
-                            <form class="navbar-search pull-right" action="/deliberations/quicksearch">
-                                <?php
-                                echo $this->Form->input('field', array('class' => 'search-query span2',
-                                    'div' => false, 'label' => false,
-                                    'id' => 'searchInput',
-                                    'placeholder' => 'Rechercher',
-                                    'autocomplete' => 'off'));
-                                ?>
-                            </form>
+                           <?php if (isset($infoUser)) {
+                            echo $this->Form->create('User', array(
+                                    'id' => 'quickSearch',
+                                    'class' => 'navbar-search form-search pull-right',
+                                    'url' => array('controller' => 'deliberations', 'action' => 'quicksearch')
+                                                        ));
+                            echo $this->Form->input('User.search', array('class' => 'search-query span2',
+                                'div' => false, 'label' => false,
+                                'id' => 'searchInput',
+                                'placeholder' => 'Rechercher',
+                                'autocomplete' => 'off'));
+                            echo $this->Form->end();
+                           ?>
+                            <script>$('#searchInput').placeholder();</script>
                             <ul class="nav pull-right">
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
