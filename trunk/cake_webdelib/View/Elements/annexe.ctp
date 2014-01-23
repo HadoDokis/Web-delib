@@ -173,7 +173,7 @@ echo $this->Html->tag('div', '', array('id'=>'ajouteAnnexes'.$ref));
 
 // lien pour ajouter une nouvelle annexes
 echo $this->Html->tag('div', '', array('class'=>'spacer'));
-echo $this->Html->link('Ajouter une annexe', 'javascript:ajouterAnnexe(\''.$ref.'\')', array('class'=>'link_annexe'));
+echo $this->Html->link('Ajouter une annexe', 'javascript:ajouterAnnexe(\''.$ref.'\')', array('class'=>'link_annexe noWarn'));
 
 if ($affichage != 'complet') return;
 ?>
