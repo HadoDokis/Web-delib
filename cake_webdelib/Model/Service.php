@@ -67,6 +67,8 @@ class Service extends AppModel
             'conditions' => array('Service.id' => $service_id),
             'fields' => array('libelle'),
             'recursive' => -1));
+        
+        if(empty($service))return;
         $oMainPart->addElement(new GDO_FieldType('service_emetteur', $service['Service']['libelle'], 'text'));
         $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->_doList($service_id), 'text'));
     }
