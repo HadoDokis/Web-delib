@@ -4,12 +4,11 @@
  * Copyright (c) 2013 Florian Ajir
  */
 $(document).ready(function() {
-    $("a.delib_pdf").attendable();
     $(".waiter").attendable();
+    $("a.delib_pdf").attendable();
     $("a.link_clore_seance").attendable();
     $('form#DeliberationSendToParapheurForm').attendable();
     $('form#DeliberationAutreActesValidesForm').attendable();
-//    $("a.link_pdf").attendable();
 });
 
 function pauseWhileDownload(elt) {
@@ -19,8 +18,6 @@ function pauseWhileDownload(elt) {
     //Ajout du num de cookie en dernier argument url
     if ($(elt).attr('href')){
         $(elt).attr('href', $(elt).attr('href')+ "/" + token);
-
-        console.log($(elt).attr('href'));
     }
     blockUI(elt, token); //Veuillez patienter pendant la génération du document
 }
@@ -55,7 +52,6 @@ function blockUI(elt, token) {
         var downloadToken = getCookie("Generer[downloadToken]");
         if (token === downloadToken) {
             unblockUI(elt, token);
-            console.log("Suppression du cookie");
         }
     }, 1000);
 }
