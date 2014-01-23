@@ -6,7 +6,7 @@ class ModelsController extends AppController {
         'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'ModelOdtValidator.Modeltemplate'
     );
     public $helpers = array('Html', 'Form', 'Fck', 'Html2', 'Session');
-    public $components = array('Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress', 'Fido');
+    public $components = array('Cookie','Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress', 'Fido');
 
 	// Gestion des droits
     public $aucunDroit = array(
@@ -238,8 +238,8 @@ class ModelsController extends AppController {
 					}
 
 					try {
-						Configure::write('debug', 0);
-						error_reporting(0);
+						Configure::write('debug', 1);
+						error_reporting(1);
 
 						$time_end = microtime(true);
 						$time = $time_end - $time_start;
@@ -343,7 +343,7 @@ class ModelsController extends AppController {
 			//*****************************************
                 if ($progress)
                     $this->Progress->at(80, 'Fusion du document...');
-				Configure::write('debug', 0);
+				Configure::write('debug', 1);
 				$oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
 				$oFusion->process();
 				$time_end = microtime(true);
