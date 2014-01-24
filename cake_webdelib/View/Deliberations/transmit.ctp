@@ -32,7 +32,7 @@
             if ($this->action == 'autreActesEnvoyes')
                 echo  $this->Paginator->sort('Deliberation.date_acte', 'Date de décision'); 
             else
-                echo  $this->Paginator->sort('Seance.date', 'Date de séance'); 
+                echo  'Date de séance'; 
         ?>
         </th>
  	<th><?php echo  $this->Paginator->sort('titre', 'Titre'); ?></th>
@@ -47,8 +47,8 @@
 	       echo $this->Html->tag('tr', null, $rowClass);
 	       $numLigne++;
 	       echo "<td>".$this->Html->link($delib['Deliberation']['num_delib'], '/deliberations/getTampon/'.$delib['Deliberation']['id']);
-?>
-		</td>
+               echo '</td>';
+               ?>
 		<td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
 		<td>
                 <?php 
