@@ -396,19 +396,12 @@ class UsersController extends AppController {
     {
         //pas de message d'erreur
         $this->set('errorMsg', '');
-        $logo = $this->Collectivite->read('logo', 1);
-        App::uses('File', 'Utility');
-        $file = new File(Configure::read('WEBDELIB_PATH') . DS . 'files' . DS . 'image' . DS . 'logo.jpg', false);
-
-        if (empty($logo['Collectivite']['logo']))
-            $this->set('logo_path',  $this->base . "/files/image/adullact.jpg");
-        else {
-            if (!$file->exists())
-                $file->write($logo['Collectivite']['logo']);
-
-            $file->close();
-            $this->set('logo_path',  $this->base . "/files/image/logo.jpg");
-        }
+        $protocol = "http://";
+                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
+                        !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
+                    $protocol = "https://";
+                
+        $this->set('logo_path',   $protocol.$this->Collectivite->pathLogo());
 
         //si le formulaire d'authentification a été soumis
         if (!empty($this->data)) {
