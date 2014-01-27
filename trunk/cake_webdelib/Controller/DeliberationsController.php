@@ -1585,9 +1585,10 @@ class DeliberationsController extends AppController
         $conditions[] = 'Deliberation.id IN ('
             . 'SELECT deliberations_seances.deliberation_id'
                 . ' FROM deliberations_seances '
-                . 'INNER JOIN seances  ON ( seances.id=deliberations_seances.seance_id )'
+                . ' INNER JOIN seances  ON ( seances.id=deliberations_seances.seance_id )'
                 . ' INNER JOIN typeseances ON ( typeseances.id=seances.type_id )'
-                . ' WHERE typeseances.action = 0'
+                . ' INNER JOIN typeactes  ON ( typeactes.id=Deliberation.typeacte_id )'
+                . ' WHERE typeseances.action = 0 AND Typeacte.teletransmettre = TRUE'
         . ' )';
        
         
@@ -1737,39 +1738,6 @@ class DeliberationsController extends AppController
         } else
             $this->set('dateClassification', "Récupérer la classification");
 
-           /*     
-                
-        $defaut = array(
-            'fields' => array(
-                'Deliberation.id',
-                'Deliberation.objet_delib',
-                'Deliberation.num_delib',
-                'Deliberation.titre',
-                'Deliberation.etat',
-                'Deliberation.tdt_id',
-                'Deliberation.num_pref',
-                'Deliberation.typeacte_id',
-                'Deliberation.theme_id',
-                'Deliberation.service_id',
-            ),
-            'contain' => array(
-                'Seance.id',
-                'Seance.type_id',
-                'Seance.date',
-                'Typeseance.id',
-                'Typeseance.libelle',
-                'Typeacte.libelle',
-                'Service.libelle',
-                'Circuit.nom',
-                'Theme.libelle',
-                'Deliberationseance'=>array(
-                'Seance'=>array('fields' => array('id', 'date'),
-                'Typeseance'=>array('libelle'))),
-            ),
-            'order' => array('Deliberation.num_delib ASC'),
-            'conditions' => array()
-        );*/
-        
         if (empty($seance_id)){
             $conditions = $this->_handleConditions($this->Filtre->conditions());
             $conditions['Deliberation.etat <'] = 5;
@@ -1782,6 +1750,14 @@ class DeliberationsController extends AppController
 
         $conditions['Deliberation.etat >='] = 3;
         $conditions['Deliberation.delib_pdf <>'] = '';
+        $conditions[] = 'Deliberation.id IN ('
+            . 'SELECT deliberations_seances.deliberation_id'
+                . ' FROM deliberations_seances '
+                . ' INNER JOIN seances  ON ( seances.id=deliberations_seances.seance_id )'
+                . ' INNER JOIN typeseances ON ( typeseances.id=seances.type_id )'
+                . ' INNER JOIN typeactes  ON ( typeactes.id=Deliberation.typeacte_id )'
+                . ' WHERE typeseances.action = 0 AND Typeacte.teletransmettre = TRUE'
+        . ' )';
         
         $order= array('Deliberation.num_delib ASC');
 
