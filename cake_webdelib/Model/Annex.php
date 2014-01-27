@@ -31,6 +31,7 @@ class Annex extends AppModel {
             'message' => 'Le titre du fichier est trop long (200 caract&egrave;res maximum)', 'growl')
     );
 
+    //FIX
     function checkFileControlLegalite() {
         if ($this->data['Annex']['joindre_ctrl_legalite'] == 1) {
             $DOC_TYPE = Configure::read('DOC_TYPE');
@@ -48,6 +49,7 @@ class Annex extends AppModel {
         return true;
     }
 
+    //FIX
     function checkFileFusion() {
         if ($this->data['Annex']['joindre_fusion'] == 1) {
             $DOC_TYPE = Configure::read('DOC_TYPE');

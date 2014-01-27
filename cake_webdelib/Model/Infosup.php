@@ -160,15 +160,18 @@ class Infosup extends AppModel
 
                         $file = new File($infosups[$code]['tmp_name'], false);
                         if ($infosupdef['Infosupdef']['type'] != 'file')
-                            $this->validator()->add('file_type', 'required', array(
-                                    'rule' => array('checkMimetype', array('application/vnd.oasis.opendocument.text')),
+                            $this->validator()->add('file_upload', 'required', array(
+                                    'rule' => array('checkMimetype', array('checkFormat','odt', false)),
                                     'message' => 'Le format de fichier n\'est pas de type odt', 'growl'
                                 )
                             );
+                        App::import('Component','Fido');
+                        $this->Fido = new FidoComponent();
+                        $allowed = $this->Fido->checkFile($infosups[$code]['tmp_name']);
 
                         $infosup['Infosup']['file_name'] = $infosups[$code]['name'];
                         $infosup['Infosup']['file_size'] = $file->size();
-                        $infosup['Infosup']['file_type'] = $DOC_TYPE[$file->mime()]['mime_conversion'];
+                        $infosup['Infosup']['file_type'] = $this->Fido->lastResults['mimetype'];
                         $infosup['Infosup']['content'] = $file->read();
                         $file->close();
                     } //On sauvegarde le fichier déjà present avec les modifications apportées

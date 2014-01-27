@@ -41,35 +41,6 @@ class AppModel extends Model
     //var $actsAs=array('Containable');
 
     /**
-     * @deprecated au profit de la fonction checkFormat
-     * @param $field_validation
-     * @param $content
-     * @param $allowed_mimetypes
-     * @return bool
-     */
-    function checkMimetype($field_validation, $content, $allowed_mimetypes)
-    {
-        if (empty($this->data[$this->alias][$content]))
-            return true;
-
-        if ((!in_array($this->data[$this->alias][$content . '_type'], $allowed_mimetypes)))
-            return false;
-
-        App::uses('Fido', 'Lib');
-        $DOC_TYPE = Configure::read('DOC_TYPE');
-        $tmpfname = tempnam(TMP, "CHK_");
-        $file = new File($tmpfname, true);
-        $file->write($this->data[$this->alias][$content]);
-        $details = Fido::analyzeFile($file->path);
-        $file->delete();
-
-        if (array_key_exists($details['mimetype'], $DOC_TYPE))
-            return (in_array($details['mimetype'], $allowed_mimetypes));
-
-        return false;
-    }
-
-    /**
      * Validation du format de fichier par FIDO
      */
     public function checkFormat($data, $extension, $required = false)
