@@ -180,10 +180,11 @@ class TypeactesController extends AppController
         ));
 
         if (!empty($typeacte)) {
-            header('Content-type: application/vnd.oasis.opendocument.text');
-            header('Content-Disposition: attachment; filename=gabarit_' . $type . '.odt');
-            echo $typeacte['Typeacte']['gabarit_' . $type];
-            exit();
+            $this->response->disableCache();
+            $this->response->body($typeacte['Typeacte']['gabarit_' . $type]);
+            $this->response->type('application/vnd.oasis.opendocument.text');
+            $this->response->download('gabarit_' . $type . '.odt');
+            return $this->response;
         } else {
             $this->Session->setFlash('Type d\'acte introuvable', 'growl');
             return $this->redirect(array('action'=>'index'));

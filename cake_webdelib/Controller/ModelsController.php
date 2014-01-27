@@ -389,6 +389,7 @@ class ModelsController extends AppController {
                                         } else {
                                             $this->Cookie->destroy();
                                             $this->Cookie->write('downloadToken', $token, false, 3600);
+                                            $this->response->disableCache();
                                             $this->response->body($content);
                                             $this->response->type($format);
                                             $this->response->download($nomFichier.'.'.$format);
