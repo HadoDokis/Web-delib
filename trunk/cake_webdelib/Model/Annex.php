@@ -11,10 +11,10 @@ class Annex extends AppModel {
     );
     var $validate = array(
         'joindre_ctrl_legalite' => array(
-            'rule' => 'checkFileControlLegalite',
+            'rule' => 'checkFormatControlLegalite',
             'message' => 'Le format de fichier est invalide pour joindre au contrôle de légalité'),
         'joindre_fusion' => array(
-            'rule' => 'checkFileFusion',
+            'rule' => 'checkFormatFusion',
             'message' => 'Le format de fichier est invalide pour le joindre à la fusion'),
         'filename' => array(
             'regleFilename-1' => array(
@@ -31,8 +31,7 @@ class Annex extends AppModel {
             'message' => 'Le titre du fichier est trop long (200 caract&egrave;res maximum)', 'growl')
     );
 
-    //FIX
-    function checkFileControlLegalite() {
+    function checkFormatControlLegalite() {
         if ($this->data['Annex']['joindre_ctrl_legalite'] == 1) {
             $DOC_TYPE = Configure::read('DOC_TYPE');
             if (!empty($this->data['Annex']['filename'])) {
@@ -49,8 +48,7 @@ class Annex extends AppModel {
         return true;
     }
 
-    //FIX
-    function checkFileFusion() {
+    function checkFormatFusion() {
         if ($this->data['Annex']['joindre_fusion'] == 1) {
             $DOC_TYPE = Configure::read('DOC_TYPE');
             if (!empty($this->data['Annex']['filename'])) {
