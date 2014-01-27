@@ -7,7 +7,7 @@
 $linkBarre  = "<div class='btn-toolbar' id='traiterActions' role='toolbar'>";
 $linkBarre .= "<div class='btn-group'>";
 $linkBarre .= $this->Html->link(
-    '<i class="fa fa-arrow-left"></i> Revenir',
+    '<i class="fa fa-arrow-left"></i> Retour',
     'javascript:history.go(-1);',
     array('escape' => false, 'class' => 'btn')
 );
