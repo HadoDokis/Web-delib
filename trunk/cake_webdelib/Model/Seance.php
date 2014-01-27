@@ -15,7 +15,7 @@ class Seance extends AppModel
             'message' => 'Entrer une date valide.')),
         'commission' => array(array('rule' => 'notEmpty',
             'message' => 'Entrer le texte de débat.')),
-        'debat_global_type' => array(array('rule' => array('checkMimetype', 'debat_global', array('application/vnd.oasis.opendocument.text')),
+        'debat_global_upload' => array(array('rule' => array('checkFormat','odt', false),
             'message' => "Ce type de fichier n'est pas autorisé")),
     );
 
