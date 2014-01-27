@@ -385,6 +385,8 @@ class DeliberationsController extends AppController
                 $this->Deliberation->commit();
                 $sortie = true;
             } else {
+                
+                $this->log($this->Deliberation->invalidFields(),'debug');
                 $this->Seance->rollback();
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
             }
