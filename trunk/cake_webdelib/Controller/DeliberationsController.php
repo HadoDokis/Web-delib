@@ -1788,6 +1788,7 @@ class DeliberationsController extends AppController
                 'Deliberation.etat',
                 'Deliberation.tdt_id',
                 'Deliberation.num_pref',
+                'Deliberation.circuit_id',
                 'Deliberation.typeacte_id',
                 'Deliberation.theme_id',
                 'Deliberation.service_id'),
@@ -1811,7 +1812,6 @@ class DeliberationsController extends AppController
                             'fields'=>array('id','libelle','action')
                         )))),
           'order' => array($order)));
-
         for ($i = 0; $i < count($projets); $i++) {
             $projets[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($projets[$i]['Deliberation']['num_pref']);
         }
@@ -3628,8 +3628,52 @@ class DeliberationsController extends AppController
             if ($seance_id == null) {
                 $conditions['Deliberation.parapheur_etat != '] = null;
                 $conditions['Deliberation.etat >'] = 2;
-                //FIXME : Limiter les champs retournés par la requête
-                $delibs = $this->Deliberation->find('all', array('conditions' => $conditions));
+                
+                $conditions[] = 'Deliberation.id IN ('
+                                . 'SELECT deliberations_seances.deliberation_id'
+                                    . ' FROM deliberations_seances '
+                                    . ' INNER JOIN seances  ON ( seances.id=deliberations_seances.seance_id )'
+                                    . ' INNER JOIN typeseances ON ( typeseances.id=seances.type_id )'
+                                    . ' INNER JOIN typeactes  ON ( typeactes.id=Deliberation.typeacte_id )'
+                                    . ' WHERE typeseances.action = 0 AND Typeacte.teletransmettre = TRUE'
+                                    . ' )';
+        
+                $order= array('Deliberation.num_delib ASC');
+
+                $this->Deliberation->Behaviors->attach('Containable');
+                $delibs = $this->Deliberation->find('all', array(
+                     'fields' => array('Deliberation.id',
+                        'Deliberation.objet_delib',
+                        'Deliberation.num_delib',
+                        'Deliberation.titre',
+                        'Deliberation.etat',
+                        'Deliberation.circuit_id',
+                        'Deliberation.parapheur_etat',
+                        'Deliberation.signee',
+                        'Deliberation.typeacte_id',
+                        'Deliberation.theme_id',
+                        'Deliberation.service_id'),
+                    'conditions' => $conditions,
+                    'contain' => array(
+                        'Service.libelle',
+                        'Theme.libelle',
+                        'Typeacte.libelle',
+                        'Circuit.nom',
+                        'Deliberationtypeseance'=>array(
+                            'fields'=>array('id'),
+                            'Typeseance'=>array(
+                                'fields'=>array('id','libelle','action'),
+                            )
+                        ),
+                        'Deliberationseance'=>array(
+                            'fields'=>array('id'),
+                            'Seance'=>array(
+                                'fields'=>array('id','date','type_id'),
+                                'Typeseance'=>array(
+                                    'fields'=>array('id','libelle','action')
+                                )))),
+                  'order' => array($order)));
+                
                 $this->_ajouterFiltre($delibs);
             } else {
                 $delibs = $this->Seance->getDeliberations($seance_id, $conditions);
@@ -3649,6 +3693,7 @@ class DeliberationsController extends AppController
             }
 
             $this->set('deliberations', $delibs);
+            if(!empty($circuits))
             $this->set('circuits', $circuits);
         } else {
             if ($this->data['Deliberation']['circuit_id'] == '') {
