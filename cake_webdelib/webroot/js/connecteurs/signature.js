@@ -9,9 +9,9 @@ function changeActivation(element) {
 function changeProtocol() {
     var protocol = $('#ConnecteurSignatureProtocol').val();
     if (protocol == 'pastell') {
-        $('#ConnecteurPastelltype').closest('div').show();
-    }else{
-        $('#ConnecteurPastelltype').closest('div').hide();
+        $('#pastell_type').show();
+    } else {
+        $('#pastell_type').hide();
     }
     if (protocol == 'iparapheur') {
         $('#infos_certificat').show();
