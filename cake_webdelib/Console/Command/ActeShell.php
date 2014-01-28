@@ -33,8 +33,10 @@ class ActeShell extends AppShell {
         $collection = new ComponentCollection();
         $this->S2low = new S2lowComponent($collection);
 
-        $delibs = $this->Deliberation->find('all', array('conditions' => array('Deliberation.tdt_id !=' => null,
-                'Deliberation.dateAR' => null),
+        $delibs = $this->Deliberation->find('all', array(
+            'conditions' => array(
+                'Deliberation.tdt_id !=' => null,
+                'Deliberation.tdt_dateAR' => null),
             'fields' => array('Deliberation.id', 'Deliberation.tdt_id'),
             'recursive' => -1));
 
@@ -76,7 +78,7 @@ class ActeShell extends AppShell {
         }
         
         //Recupération des délibérations tanponné et des bodereaux de télétransmissions
-        $delibs = $this->Deliberation->find('all', array('fields' => array('Deliberation.id', 'Deliberation.tdt_id', 'Deliberation.dateAR'),
+        $delibs = $this->Deliberation->find('all', array('fields' => array('Deliberation.id', 'Deliberation.tdt_id', 'Deliberation.tdt_dateAR'),
             'conditions' => array('Deliberation.tdt_id !=' => null,
                 'OR' => array('Deliberation.tdt_data_pdf =' => null,
                     'Deliberation.tdt_data_bordereau_pdf =' => null)),
@@ -90,7 +92,7 @@ class ActeShell extends AppShell {
                 $flux = $this->S2low->getActeTampon($delib['Deliberation']['tdt_id']);
                 $this->Deliberation->saveField('tdt_data_pdf', $flux);
             }
-            if (!empty($delib['Deliberation']['dateAR']) && empty($delib['Deliberation']['tdt_data_bordereau_pdf'])) {
+            if (!empty($delib['Deliberation']['tdt_dateAR']) && empty($delib['Deliberation']['tdt_data_bordereau_pdf'])) {
                 $flux = $this->S2low->getAR($delib['Deliberation']['tdt_id']);
                 $this->Deliberation->saveField('tdt_data_bordereau_pdf', $flux);
             }

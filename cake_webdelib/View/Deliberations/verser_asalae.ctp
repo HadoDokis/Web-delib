@@ -18,7 +18,7 @@
             echo $this->Html->tag('tr', null, $rowClass);
             $numLigne++;
 
-            if ($delib['Deliberation']['etat_asalae'] == null)
+            if ($delib['Deliberation']['sae_etat'] == null)
                 echo("<td>" . $this->Form->checkbox('Deliberation.id_' . $delib['Deliberation']['id']) . "</td>");
             else
                 echo("<td></td>");
@@ -34,7 +34,7 @@
             </td>
 
             <?php
-            if ($delib['Deliberation']['etat_asalae'] == 1) {
+            if ($delib['Deliberation']['sae_etat'] == 1) {
                 echo("<td>Délibération archivée dans AS@LAE</td>");
             } else {
                 echo("<td>&nbsp;</td>");

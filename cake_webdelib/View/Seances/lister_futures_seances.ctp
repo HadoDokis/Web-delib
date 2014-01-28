@@ -156,9 +156,9 @@
                             ));
                     } else {
                         echo $this->Html->link(SHY,
-                            array('controller'=>'deliberations','action' => 'sendToPastell', $seance['Seance']['id']),
+                            array('controller'=>'deliberations','action' => 'sendToSignature', $seance['Seance']['id']),
                             array('class' => 'link_signer',
-                                'title' => 'Envoi des actes à Pastell pour la séance du ' . $seance['Seance']['date'],
+                                'title' => 'Envoi des actes actes à la signature pour la séance du ' . $seance['Seance']['date'],
                                 'escape' => false,
                             ));
                     }

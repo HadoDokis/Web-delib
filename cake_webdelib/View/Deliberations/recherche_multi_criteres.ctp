@@ -4,7 +4,7 @@
 <h2><?php echo $titreVue; ?></h2>
 <?php echo $this->Form->create('Deliberation', array('type' => 'file', 'url' => $action, 'name' => 'Deliberation')); ?>
 
-<div id="add_form">
+<div id="add_form" class="recherchediv">
     <table class="sample">
         <tr>
             <td>
@@ -156,7 +156,7 @@
 
 <script type="application/javascript">
     $(document).ready(function(){
-        $(".select2").select2({
+        $(".recherchediv .select2").select2({
             width: "resolve",
             allowClear: true,
             placeholder: 'Sélection d\'info sup'

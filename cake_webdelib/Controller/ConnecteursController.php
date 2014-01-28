@@ -1,25 +1,30 @@
 <?php
 
 App::uses('File', 'Utility');
-
 class ConnecteursController extends AppController {
 
-    var $name = 'Connecteurs';
     // Gestion des droits : identiques aux droits des compteurs
-    var $commeDroit = array('edit' => 'Connecteurs:index',
-        'makeconf' => 'Connecteurs:index');
+    public $commeDroit = array(
+        'edit' => 'Connecteurs:index',
+        'makeconf' => 'Connecteurs:index'
+    );
 
     function index() {
-        $connecteurs = array(-1 => 'Fichier webdelib.inc',
-            0 => 'Génération des documents',
-            1 => 'S2LOW',
-            2 => 'IParapheur',
-            3 => 'Pastell',
-            4 => 'CMIS Alfresco',
-            5 => 'AS@LAE',
-            6 => 'SMTP',
-//                             7 => 'I-Délibre',
-            8 => 'Mode debug');
+        $connecteurs = array(
+            -1 => 'Mode debug',
+            0 => 'Editer le fichier webdelib.inc',
+            1 => 'Génération des documents',
+            2 => 'Configuration des mails',
+            3 => 'Signature électronique (i-Parapheur, Pastell)',
+            4 => 'Tiers de télétransmission (S²LOW)',
+            5 => 'CMIS (Alfresco, ...)',
+            6 => 'Service d\'archivage électronique (As@lae)',
+            7 => 'I-delibRE',
+//            10 => 'Pastell',
+//            11 => 'S²LOW',
+//            12 => 'IParapheur',
+//            13 => 'AS@LAE',
+        );
 
         $this->set('connecteurs', $connecteurs);
         return true;
@@ -27,50 +32,58 @@ class ConnecteursController extends AppController {
 
     function edit($id) {
         switch ($id) {
+            case -1:
+                // Mode Debug
+                $this->render('debug');
+                break;
             case 0:
+                // Mode Config (texte)
+                $this->set('content', APP . 'Config' . DS . 'webdelib.inc');
+                $this->render('all');
+                break;
+            case 1:
                 // Connecteur ODFGEDOOo et CLOUDOOo
                 $this->render('conversion');
                 break;
-            case 1:
-                // Connecteur S2LOW
-                $this->render('s2low');
-                break;
             case 2:
-                // Connecteur IParapheur
-                $this->render('iparapheur');
+                // Connecteur mails
+                $this->render('mail');
                 break;
             case 3:
+                // Configuration signature
+                $protocoles = array('pastell' => 'Pastell', 'iparapheur' => 'i-Parapheur');
+                $this->set('protocoles', $protocoles);
+                $this->render('signature');
+                break;
+//            case 4:
+//                // Configuration tdt
+//                $this->render('tdt');
+//                break;
+            case 5:
+                // Connecteur CMIS
+                $this->render('cmis');
+                break;
+            case 7:
+                // Connecteur idelibre
+                $this->render('idelibre');
+                break;
+            case 6:
+            case 13:
+                // Connecteur AS@LAE
+                $this->render('asalae');
+                break;
+            case 10:
                 // Connecteur Pastell
                 $this->render('pastell');
                 break;
             case 4:
-                // Connecteur CMIS 
-                $this->render('cmis');
-                break;
-            case 5:
-                // Connecteur AS@LAE
-                $this->render('asalae');
-                break;
-            case 6:
-                // Connecteur AS@LAE
-                $this->render('mail');
-                break;
-            case 7:
-                // Connecteur AS@LAE
-                $this->render('idelibre');
-                break;
-            case 8:
-                // Mode Debug
-                $this->render('debug');
-                break;
-            case '-1':
-                // Mode Debug
-                $this->set('content', file_get_contents(Configure::read('WEBDELIB_PATH') . DS . 'Config' . DS . 'webdelib.inc'));
-                $this->render('all');
+            case 11:
+                // Connecteur S2LOW
+                $this->render('s2low');
                 break;
             default:
                 $this->Session->setFlash('Ce connecteur n\'est pas valide', 'growl', array('type' => 'erreur'));
-                $this->redirect('/connecteurs/index');
+                return $this->redirect(array('action'=>'index'));
         }
     }
 
@@ -95,19 +108,47 @@ class ConnecteursController extends AppController {
 
     function makeconf($type) {
         $certs = array();
-        $file = new File(Configure::read('WEBDELIB_PATH') . DS . 'Config' . DS . 'webdelib.inc', true);
+        $file = new File(APP . 'Config' . DS . 'webdelib.inc', true);
         $content = $file->read();
         switch ($type) {
+            case 'signature' :
+                $protocol = strtoupper($this->data['Connecteur']['signature_protocol']);
+                $content = $this->_replaceValue($content, 'PARAPHEUR', $protocol);
+                $content = $this->_replaceValue($content, 'USE_PARAPHEUR', $this->data['Connecteur']['use_signature']);
+                if ($protocol != Configure::read('PARAPHEUR'))
+                    $content = $this->_replaceValue($content, "USE_".Configure::read('PARAPHEUR'), 'false');
+                if ($this->data['Connecteur']['use_signature'] == 'true')
+                    $content = $this->_replaceValue($content, "USE_$protocol", 'true');
+                $content = $this->_replaceValue($content, 'PARAPHEUR_HOST', $this->data['Connecteur']['host']);
+                $content = $this->_replaceValue($content, 'PARAPHEUR_LOGIN', $this->data['Connecteur']['login']);
+                $content = $this->_replaceValue($content, 'PARAPHEUR_PWD', $this->data['Connecteur']['pwd']);
+                $content = $this->_replaceValue($content, 'PARAPHEUR_CERTPWD', $this->data['Connecteur']['certpwd']);
+                $content = $this->_replaceValue($content, 'PARAPHEUR_TYPE', $this->data['Connecteur']['type']);
+                if ($protocol == 'PASTELL' && !empty($this->data['Connecteur']['pastelltype']))
+                    $content = $this->_replaceValue($content, 'PASTELL_TYPE', $this->data['Connecteur']['pastelltype']);
+                if (file_exists($this->data['Connecteur']['clientcert']['tmp_name'])) {
+                    $certs = array();
+                    $path_dir_parapheur = APP . DS . 'Config' . DS . 'cert_parapheur' . DS;
+                    $pkcs12 = file_get_contents($this->data['Connecteur']['clientcert']['tmp_name']);
+                    if (openssl_pkcs12_read($pkcs12, $certs, $this->data['Connecteur']['certpwd'])) {
+                        file_put_contents($path_dir_parapheur . 'cert.pem', $certs['pkey'] . $certs['cert']);
+                        file_put_contents($path_dir_parapheur . 'ac.pem', $certs['extracerts'][0]);
+                    }
+                    else
+                        $this->Session->setFlash('Le mot de passe du certificat est erroné', 'growl', array('type' => 'erreur'));
+                }
+                break;
             case 's2low' :
                 $content = $this->_replaceValue($content, 'USE_S2LOW', $this->data['Connecteur']['use_s2low']);
                 $content = $this->_replaceValue($content, 'HOST', $this->data['Connecteur']['hostname']);
-                $content = $this->_replaceValue($content, 'PASSWORD', $this->data['Connecteur']['password']);
-                $content = $this->_replaceValue($content, 'USE_PROXY', $this->data['Connecteur']['use_proxy']);
-                $content = $this->_replaceValue($content, 'HOST_PROXY', $this->data['Connecteur']['proxy_host']);
-                $content = $this->_replaceValue($content, 'USE_MAIL_SECURISE', $this->data['Connecteur']['use_mails']);
-                $content = $this->_replaceValue($content, 'PASSWORD_MAIL_SECURISE', $this->data['Connecteur']['mails_password']);
+                $content = $this->_replaceValue($content, 'S2LOW_CERTPWD', $this->data['Connecteur']['password']);
+                $content = $this->_replaceValue($content, 'S2LOW_USEPROXY', $this->data['Connecteur']['use_proxy']);
+                $content = $this->_replaceValue($content, 'S2LOW_PROXYHOST', $this->data['Connecteur']['proxy_host']);
+                $content = $this->_replaceValue($content, 'S2LOW_MAILSEC', $this->data['Connecteur']['use_mails']);
+                $content = $this->_replaceValue($content, 'S2LOW_MAILSECPWD', $this->data['Connecteur']['mails_password']);
                 if (file_exists($this->data['Connecteur']['certificat']['tmp_name'])) {
-                    $path_dir_s2low = Configure::read('WEBDELIB_PATH') . DS . 'Config' . DS . 'cert_s2low' . DS;
+                    $certs = array();
+                    $path_dir_s2low = APP . 'Config' . DS . 'cert_s2low' . DS;
                     $pkcs12 = file_get_contents($this->data['Connecteur']['certificat']['tmp_name']);
                     if (openssl_pkcs12_read($pkcs12, $certs, $this->data['Connecteur']['password'])) {
                         file_put_contents($path_dir_s2low . 'key.pem', $certs['pkey']);
@@ -119,43 +160,16 @@ class ConnecteursController extends AppController {
                     // a tester : file_put_contents($path_dir_s2low.'bundle.pem', $certs['extracerts'][1]);
                 }
                 break;
-            case 'iparapheur' :
-                $content = $this->_replaceValue($content, 'WSACTION', $this->data['Connecteur']['wsaction']);
-                $content = $this->_replaceValue($content, 'WSTO', $this->data['Connecteur']['wsto']);
-                $content = $this->_replaceValue($content, 'USE_PARAPH', $this->data['Connecteur']['use_paraph']);
-                $content = $this->_replaceValue($content, 'PASSPHRASE', $this->data['Connecteur']['passphrase']);
-                $content = $this->_replaceValue($content, 'HTTPAUTH', $this->data['Connecteur']['login']);
-                $content = $this->_replaceValue($content, 'HTTPPASSWD', $this->data['Connecteur']['pass']);
-                $content = $this->_replaceValue($content, 'TYPETECH', $this->data['Connecteur']['typetech']);
-                if (file_exists($this->data['Connecteur']['certificat']['tmp_name'])) {
-                    $certs = array();
-                    $path_dir_parapheur = Configure::read('WEBDELIB_PATH') . DS . 'Config' . DS . 'cert_parapheur' . DS;
-                    $pkcs12 = file_get_contents($this->data['Connecteur']['certificat']['tmp_name']);
-                    if (openssl_pkcs12_read($pkcs12, $certs, $this->data['Connecteur']['passphrase'])) {
-                        file_put_contents($path_dir_parapheur . 'cert.pem', $certs['pkey'] . $certs['cert']);
-                        file_put_contents($path_dir_parapheur . 'ac.pem', $certs['extracerts'][0]);
-                    }
-                    else
-                        $this->Session->setFlash('Le mot de passe du certificat est erroné', 'growl', array('type' => 'erreur'));
-                }
-                break;
             case 'conversion' :
                 $content = $this->_replaceValue($content, 'GEDOOO_WSDL', $this->data['Connecteur']['gedooo_url']);
                 $content = $this->_replaceValue($content, 'CLOUDOOO_HOST', $this->data['Connecteur']['cloudooo_url']);
                 $content = $this->_replaceValue($content, 'CLOUDOOO_PORT', $this->data['Connecteur']['cloudooo_port']);
                 break;
-            case 'pastell' :
-                $content = $this->_replaceValue($content, 'USE_PASTELL', $this->data['Connecteur']['use_pastell']);
-                $content = $this->_replaceValue($content, 'PASTELL_HOST', $this->data['Connecteur']['pastell_host']);
-                $content = $this->_replaceValue($content, 'PASTELL_LOGIN', $this->data['Connecteur']['pastell_login']);
-                $content = $this->_replaceValue($content, 'PASTELL_PWD', $this->data['Connecteur']['pastell_pwd']);
-                $content = $this->_replaceValue($content, 'PASTELL_TYPE', $this->data['Connecteur']['pastell_type']);
-                break;
             case 'cmis' :
                 $content = $this->_replaceValue($content, 'USE_GED', $this->data['Connecteur']['use_ged']);
-                $content = $this->_replaceValue($content, 'GED_URL', $this->data['Connecteur']['ged_url']);
+                $content = $this->_replaceValue($content, 'GED_HOST', $this->data['Connecteur']['ged_url']);
                 $content = $this->_replaceValue($content, 'GED_LOGIN', $this->data['Connecteur']['ged_login']);
-                $content = $this->_replaceValue($content, 'GED_PASSWD', $this->data['Connecteur']['ged_passwd']);
+                $content = $this->_replaceValue($content, 'GED_PWD', $this->data['Connecteur']['ged_passwd']);
                 $content = $this->_replaceValue($content, 'GED_REPO', $this->data['Connecteur']['ged_repo']);
                 break;
             case 'mail' :
@@ -170,10 +184,10 @@ class ConnecteursController extends AppController {
             case 'asalae' :
                 $content = $this->_replaceValue($content, 'USE_ASALAE', $this->data['Connecteur']['use_asalae']);
                 $content = $this->_replaceValue($content, 'ASALAE_WSDL', $this->data['Connecteur']['asalae_wsdl']);
-                $content = $this->_replaceValue($content, 'SIREN_ARCHIVE', $this->data['Connecteur']['siren_archive']);
-                $content = $this->_replaceValue($content, 'NUMERO_AGREMENT', $this->data['Connecteur']['numero_agrement']);
-                $content = $this->_replaceValue($content, 'IDENTIFIANT_VERSANT', $this->data['Connecteur']['identifiant_versant']);
-                $content = $this->_replaceValue($content, 'MOT_DE_PASSE', $this->data['Connecteur']['mot_de_passe']);
+                $content = $this->_replaceValue($content, 'ASALAE_SIREN_ARCHIVE', $this->data['Connecteur']['siren_archive']);
+                $content = $this->_replaceValue($content, 'ASALAE_NUMERO_AGREMENT', $this->data['Connecteur']['numero_agrement']);
+                $content = $this->_replaceValue($content, 'ASALAE_IDVERSANT', $this->data['Connecteur']['identifiant_versant']);
+                $content = $this->_replaceValue($content, 'ASALAE_PWD', $this->data['Connecteur']['mot_de_passe']);
                 break;
             case 'debug' :
                 $content = $this->_replaceValue($content, 'debug', $this->data['Connecteur']['debug']);
@@ -186,7 +200,7 @@ class ConnecteursController extends AppController {
                 break;
             default :
                 $this->Session->setFlash('Ce connecteur n\'est pas valide', 'growl', array('type' => 'erreur'));
-                $this->redirect('/connecteurs/index');
+                return $this->redirect(array('action'=>'index'));
         }
         if (!$file->writable()) {
             $this->Session->setFlash('Impossible de modifier le fichier de configuration, veuillez donner les droits sur fichier webdelib.inc', 'growl', array('type' => 'erreur'));
@@ -200,9 +214,7 @@ class ConnecteursController extends AppController {
                 $this->Session->setFlash('Un problème est survenu lors de la modification du fichier de configuration webdelib.inc', 'growl', array('type' => 'erreur'));
         }
 
-        $this->redirect('/connecteurs/index');
+        return $this->redirect(array('action'=>'index'));
     }
 
 }
-
-?>

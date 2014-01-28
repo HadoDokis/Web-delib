@@ -51,7 +51,7 @@ class adLDAP {
 
 	// You can set your default variables here, or when you invoke the class
 	var $_account_suffix = ACCOUNT_SUFFIX;
-	var $_base_dn = BASE_DN; 
+	var $_base_dn = LDAP_BASE_DN;
 	
 	// An array of domain controllers. Specify multiple controllers if you 
 	// would like the class to balance the LDAP queries amongst multiple servers
@@ -671,5 +671,3 @@ class adLDAP {
 	}
 	
 } 
-
-?>

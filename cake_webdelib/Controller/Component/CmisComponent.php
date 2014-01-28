@@ -14,7 +14,7 @@ class CmisComponent extends Component {
             require_once(ROOT.DS.APP_DIR.DS.'Vendor'.DS.'cmis_repository_wrapper.php');
             
             if (Configure::read('USE_GED')) {
-                    $this->client = new CMISService(Configure::read('GED_URL'), Configure::read('GED_LOGIN'), Configure::read('GED_PASSWD'));
+                    $this->client = new CMISService(Configure::read('GED_HOST'), Configure::read('GED_LOGIN'), Configure::read('GED_PWD'));
                     $this->folder = $this->client->getObjectByPath(Configure::read('GED_REPO'));
 		}
         }

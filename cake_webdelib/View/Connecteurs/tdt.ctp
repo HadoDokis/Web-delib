@@ -1,29 +1,29 @@
 <div class='spacer'></div>
-<div id="configSignature">
+<div id="configTdt">
     <?php
-    $protocol = Configure::read('PARAPHEUR');
+    $protocol = Configure::read('TDT');
     $true_false = array('true' => 'Oui', 'false' => 'Non');
     echo $this->Form->create('Connecteur', array('url' => array('controller' => 'connecteurs', 'action' => 'makeconf', 'signature'), 'type' => 'file'));
     ?>
     <fieldset>
-        <legend>Activation de la signature électronique</legend>
+        <legend>Activation du TDT</legend>
         <?php
-        echo $this->Form->input('use_signature', array(
+        echo $this->Form->input('use_tdt', array(
             'legend' => false,
             'type' => 'radio',
             'options' => $true_false,
-            'value' => Configure::read('USE_PARAPHEUR') ? 'true' : 'false',
+            'value' => Configure::read('USE_TDT') ? 'true' : 'false',
             'div' => true,
             'label' => true,
             'onChange' => 'changeActivation(this)'));
         ?>
     </fieldset>
     <div class='spacer'></div>
-    <div id='config_content' <?php echo Configure::read('USE_PARAPHEUR') === false ? 'style="display: none;"' : ''; ?>>
+    <div id='config_content' <?php echo Configure::read('USE_TDT') === false ? 'style="display: none;"' : ''; ?>>
         <fieldset>
             <legend>Connecteur de signature</legend>
             <?php
-            echo $this->Form->input('signature_protocol', array(
+            echo $this->Form->input('tdt_protocol', array(
                 'type' => 'select',
                 'options' => $protocoles,
                 'label' => 'Protocole',
@@ -37,43 +37,32 @@
             <?php
             echo $this->Form->input('host', array(
                 'type' => 'text',
-                'placeholder' => 'http://'.strtolower($protocol).'.x.x.org',
+                'placeholder' => 'http://x.x.x.org',
                 'label' => 'URL',
-                'value' => Configure::read('PARAPHEUR_HOST')));
+                'value' => Configure::read($protocol . '_HOST')));
 
             echo $this->Form->input('login', array(
                 'type' => 'text',
                 'placeholder' => 'Nom d\'utilisateur',
                 'label' => 'Login',
-                'value' => Configure::read('PARAPHEUR_LOGIN')));
+                'value' => Configure::read($protocol . '_LOGIN')));
 
             echo $this->Form->input('pwd', array(
                 'type' => 'text',
                 'placeholder' => 'Mot de passe utilisateur',
                 'label' => 'Mot de passe',
-                'value' => Configure::read('PARAPHEUR_PWD')));
+                'value' => Configure::read($protocol . '_PWD')));
 
-            ?>
-        </fieldset>
-        <fieldset>
-            <legend>Configuration des flux</legend>
-            <?php
-            echo $this->Form->input('pastelltype', array(
-                'type' => 'text',
-                'placeholder' => 'Exemple : actes-generique',
-                'value' => Configure::read('PASTELL_TYPE'),
-                'label' => 'Type de flux (Pastell)',
-                'style' => ($protocol != 'PASTELL') ? 'display: none;' : ''
-            ));
             echo $this->Form->input('type', array(
                 'type' => 'text',
-                'label' => 'Type technique (Parapheur)',
-                'placeholder' => 'Exemple : Actes',
-                'value' => Configure::read('PARAPHEUR_TYPE'),
+                'label' => 'Type technique',
+                'placeholder' => 'Exemple : Actes, actes-generique...',
+                'value' => Configure::read($protocol . '_TYPE'),
             ));
             ?>
         </fieldset>
-        <fieldset id='infos_certificat'<?php if ($protocol != 'IPARAPHEUR') echo ' style="display: none;"'; ?>>
+        <fieldset
+            id='infos_certificat'<?php if ($protocol != 'IPARAPHEUR') echo ' style="display: none;"'; ?>>
             <legend>Certificat d'authentification</legend>
             <?php
             echo $this->Form->input('clientcert', array(
@@ -87,9 +76,15 @@
                 'label' => 'Mot de passe'));
             ?>
         </fieldset>
+        <div class='spacer'></div>
     </div>
-    <div class='spacer'></div>
     <?php
+    foreach ($protocoles as $id_p => $p) {
+        echo $this->Form->hidden($id_p . '_host', array('value' => Configure::read(strtoupper($id_p) . '_HOST')));
+        echo $this->Form->hidden($id_p . '_login', array('value' => Configure::read(strtoupper($id_p) . '_LOGIN')));
+        echo $this->Form->hidden($id_p . '_pwd', array('value' => Configure::read(strtoupper($id_p) . '_PWD')));
+        echo $this->Form->hidden($id_p . '_type', array('value' => Configure::read(strtoupper($id_p) . '_TYPE')));
+    }
     echo $this->Html->tag('div', null, array('class' => 'btn-group', 'style' => 'margin-top:10px;'));
     echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('controller' => 'connecteurs', 'action' => 'index'), array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
     echo $this->Form->button("<i class='fa fa-save'></i> Enregistrer", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Modifier la configuration'));

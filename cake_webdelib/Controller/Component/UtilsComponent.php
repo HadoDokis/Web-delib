@@ -133,29 +133,34 @@ class UtilsComponent extends Component
 
 
     /**
- * Equivalent du find('list') mais extrait les informations d'un tableau d'éléments et non en base
- * @param array $elements tableau des données à utiliser pour constituer la liste
- * @param string $key nom de la clé de la liste
- * @param array $values nom des champs a utiliser comme valeur de la liste
- * @param string $format format pour la mise en forme des valeurs de la liste
- */
-function listFromArray($elements, $keyPath, $valuePaths, $format, $ordre='ASC') {
+     * Equivalent du find('list') mais extrait les informations d'un tableau d'éléments et non en base
+     * @param array $elements tableau des données à utiliser pour constituer la liste
+     * @param string $keyPath nom de la clé de la liste
+     * @param array $valuePaths nom des champs a utiliser comme valeur de la liste
+     * @param string $format format pour la mise en forme des valeurs de la liste
+     * @param string $ordre
+     * @return array
+     */
+    function listFromArray($elements, $keyPath, $valuePaths, $format, $ordre = 'ASC')
+    {
         // Initialisation
         $ret = array();
-        foreach($elements as $element) {
-                // Extraction de la clé
-                $key = Set::extract($element, $keyPath);
-                // Si la clé existe déjà on passe au suivant
+        foreach ($elements as $element) {
+            // Extraction de la clé
+            $key = Set::extract($element, $keyPath);
+            // Si la clé existe déjà on passe au suivant
             if (isset($key[0])) {
                 if (!array_key_exists($key[0], $ret)) {
-                        // Extraction de la ou des valeurs
-                        $values = array();
-                        foreach($valuePaths as $valuePath) {
-                                $value = set::extract($element, $valuePath);
-                                @$values[] = $value[0];
-                        }
-                        // Mise en forme
-                        $ret[$key[0]] = vsprintf($format, $values);
+                    // Extraction de la ou des valeurs
+                    $values = array();
+                    foreach ($valuePaths as $valuePath) {
+                        $value = set::extract($element, $valuePath);
+                        if (empty($value[0]))
+                            $value[0] = '-- Aucune valeur --';
+                        @$values[] = $value[0];
+                    }
+                    // Mise en forme
+                    $ret[$key[0]] = vsprintf($format, $values);
                 }
             }
         }
@@ -166,7 +171,6 @@ function listFromArray($elements, $keyPath, $valuePaths, $format, $ordre='ASC') 
         elseif ($ordre === 'KEY_DESC') krsort($ret);
 
         return $ret;
-}
+    }
 
 }
-?>

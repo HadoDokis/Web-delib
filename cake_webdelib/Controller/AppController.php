@@ -60,7 +60,7 @@ class AppController extends Controller
         $this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
         if ($this->Session->check('user.User')){
             $historique = $this->Session->check('user.User.history') ? $this->Session->read('user.User.history') : array();
-            if (end($historique) != $this->params->here)
+            if (end($historique) != $this->params->here && stripos(end($historique), 'ajax')===false)
                 $historique[] = $this->params->here;
             $this->Session->write('user.User.history', $historique);
             if (strpos($this->referer(), $this->params->here) === false)

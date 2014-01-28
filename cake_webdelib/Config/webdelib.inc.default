@@ -3,7 +3,6 @@ $currentDir = dirname(__FILE__);
 
 /* Bases */
 Configure::write('WEBDELIB_URL', 'http://webdelib.adullact.org');
-Configure::write('WEBDELIB_PATH', realpath($currentDir . '/..'));
 
 /* Configuration du debug */
 Configure::write('debug', 0);
@@ -49,57 +48,59 @@ Configure::write('SMTP_CLIENT', 'smtp_helo_hostname');
 /* Configuration GEDOOo */
 Configure::write('GEDOOO_WSDL', 'http://gedooo.services.adullact.org:8082/ODFgedooo/OfficeService?wsdl');
 
-/* Activer la signature electronique */
-Configure::write('USE_SIGNATURE', false);
+/* Configuration de PASTELL */
+Configure::write('USE_PASTELL', false);
+Configure::write('PASTELL_TYPE', 'actes-generique');
+
+/**
+ * Parapheur (Signature électronique, délégation)
+ */
+/* Activer un parapheur distant */
+Configure::write('USE_PARAPHEUR', false);
+/* logiciel utilisé pour la signature ('PASTELL', 'IPARAPHEUR', ...) */
+Configure::write('PARAPHEUR', 'PASTELL');
+Configure::write('PARAPHEUR_HOST', 'http://pastell.x.x.org');
+Configure::write('PARAPHEUR_LOGIN', 'login');
+Configure::write('PARAPHEUR_PWD', 'password');
+Configure::write('PARAPHEUR_TYPE', 'Actes');
+
+/**
+ * Tiers de télétransmission
+ */
 /* Activer le TDT (tiers de télétransmission) */
 Configure::write('USE_TDT', false);
+/* logiciel utilisé pour la télétransmission ('PASTELL', 'S2LOW', ...) */
+Configure::write('TDT', 'PASTELL');
 
 /**
  * Configuration des connecteurs
  */
-
-/* Configuration connexion PASTELL */
-Configure::write('USE_PASTELL', false);
-Configure::write('PASTELL_HOST', 'http://pastell.x.x.org');
-Configure::write('PASTELL_LOGIN', 'login');
-Configure::write('PASTELL_PWD', 'password');
-Configure::write('PASTELL_TYPE', 'actes');
-
-/* Configuration Webservice du parapheur électronique */
-Configure::write('USE_PARAPH', false);
-Configure::write('WSACTION', 'https://x.x.x.x/alfresco');
-Configure::write('WSTO', 'https://x.x.x.x/ws-iparapheur');
-Configure::write('CACERT',     Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/ac.pem');
-Configure::write('CLIENTCERT', Configure::read('WEBDELIB_PATH').'/Config/cert_parapheur/cert.pem');
-Configure::write('PASSPHRASE', 'passphrase');
-Configure::write('HTTPAUTH', 'login');
-Configure::write('HTTPPASSWD', 'password');
-Configure::write('HTTPTYPE', 'Basic');
-Configure::write('VERSSOAP', '1.1');
-Configure::write('USEMTOM', true);
-Configure::write('WSDL', 'ws-iparapheur.wsdl');
-Configure::write('TYPETECH', 'ACTES');
-Configure::write('VISIBILITY', 'PUBLIC');
-Configure::write('EMAIL_EMMETEUR', 'parapheur@adullact.org');
+/* Configuration Webservice du i-Parapheur */
+Configure::write('USE_IPARAPHEUR', false);
+Configure::write('IPARAPHEUR_VISIBILITY', 'PUBLIC');
+Configure::write('IPARAPHEUR_WSDL', 'ws-iparapheur.wsdl');
+Configure::write('IPARAPHEUR_CACERT', APP . 'Config/cert_parapheur/ac.pem');
+Configure::write('IPARAPHEUR_CLIENTCERT', APP . 'Config/cert_parapheur/cert.pem');
+Configure::write('IPARAPHEUR_CERTPWD', 'passphrase');
 
 /* Configuration S2LOW */
 Configure::write('USE_S2LOW', false);
-Configure::write('PEM',        Configure::read('WEBDELIB_PATH').'/Config/cert_s2low/client.pem');
-Configure::write('SSLKEY',     Configure::read('WEBDELIB_PATH').'/Config/cert_s2low/key.pem');
-Configure::write('CA_PATH',    Configure::read('WEBDELIB_PATH').'/Config/cert_s2low/');
-Configure::write('FILE_CLASS', Configure::read('WEBDELIB_PATH').'/webroot/files/actes/classification.xml');
-Configure::write('PASSWORD', 'password');
+Configure::write('S2LOW_PEM',        APP . 'Config/cert_s2low/client.pem');
+Configure::write('S2LOW_SSLKEY',     APP . 'Config/cert_s2low/key.pem');
+Configure::write('S2LOW_CAPATH',    APP . 'Config/cert_s2low/');
+Configure::write('S2LOW_CLASSIFICATION', WEBROOT_PATH . '/files/actes/classification.xml');
+Configure::write('S2LOW_CERTPWD', 'password');
 Configure::write('S2LOW_HOST', 'www.s2low.org');
-Configure::write('USE_PROXY', false);
-Configure::write('HOST_PROXY', '');
-Configure::write('USE_MAIL_SECURISE', false);
-Configure::write('PASSWORD_MAIL_SECURISE', '');
+Configure::write('S2LOW_USEPROXY', false);
+Configure::write('S2LOW_PROXYHOST', '');
+Configure::write('S2LOW_MAILSEC', false);
+Configure::write('S2LOW_MAILSECPWD', '');
 
 /* Configuration CONNECTEUR CMIS GED */
 Configure::write('USE_GED', false);
-Configure::write('GED_URL', 'http://x.x.x.x/alfresco/service/api/cmis');
+Configure::write('GED_HOST', 'http://x.x.x.x/alfresco/service/api/cmis');
 Configure::write('GED_LOGIN', 'login');
-Configure::write('GED_PASSWD', 'password');
+Configure::write('GED_PWD', 'password');
 Configure::write('GED_REPO', '/Sites/Web-delib');
 
 /* Configuration pour Idélibre */
@@ -108,15 +109,15 @@ Configure::write('IDELIBRE_HOST', 'https://idelibre.adullact.org');
 Configure::write('IDELIBRE_LOGIN', 'login');
 Configure::write('IDELIBRE_PWD', 'password');
 Configure::write('IDELIBRE_CONN', 'adullact'); //Collectivité
-//Configure::write('IDELIBRE_CERT', Configure::read('WEBDELIB_PATH').'/Config/cert_idelibre/cert.pem');
+//Configure::write('IDELIBRE_CERT', APP . 'Config/cert_idelibre/cert.pem');
 
 /* Configuration ASAL@AE */
 Configure::write('USE_ASALAE', false);
 Configure::write('ASALAE_WSDL', 'http://x.x.x.x/webservices/wsdl');
-Configure::write('SIREN_ARCHIVE', 'DEMO');
-Configure::write('NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
-Configure::write('IDENTIFIANT_VERSANT', 'WEBDELIBSERVICES_LOGIN');
-Configure::write('MOT_DE_PASSE', 'WEBDELIBSERVICES_MDP');
+Configure::write('ASALAE_SIREN_ARCHIVE', 'DEMO');
+Configure::write('ASALAE_NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
+Configure::write('ASALAE_IDVERSANT', 'WEBDELIBSERVICES_LOGIN');
+Configure::write('ASALAE_PWD', 'WEBDELIBSERVICES_MDP');
 
 /**
  * Configuration des annuaires (AD ou OpenLDAP)
@@ -128,10 +129,10 @@ Configure::write('LDAP_HOST', 'x.x.x.x');
 Configure::write('LDAP_PORT', '389');
 Configure::write('LDAP_LOGIN', NULL);
 Configure::write('LDAP_PASSWD', NULL);
-Configure::write('UNIQUE_ID', 'UID');
-Configure::write('BASE_DN', 'OU=Utilisateurs,dc=mairie-xxx,dc=xxx');
-Configure::write('ACCOUNT_SUFFIX', '@mairie-xxx.xxx');
-Configure::write('DN', 'dn');
+Configure::write('LDAP_UID', 'UID');
+Configure::write('LDAP_BASE_DN', 'OU=Utilisateurs,dc=mairie-xxx,dc=xxx');
+Configure::write('LDAP_ACCOUNT_SUFFIX', '@mairie-xxx.xxx');
+Configure::write('LDAP_DN', 'dn');
 
 /*
  * Pour utiliser un Active Directory, utiliser les instructions "define" (ci-dessous) à la place des "Configure::write" (ci-dessus)
@@ -143,8 +144,8 @@ define('LDAP_HOST', 'your.active_directory.server');
 define('LDAP_PORT', '389');
 define('LDAP_LOGIN', 'your_ad_login');
 define('LDAP_PASSWD', 'your_ad_password');
-define('UNIQUE_ID', 'UID');
-define('BASE_DN', 'OU=users,dc=CGxx,dc=fr');
-define('ACCOUNT_SUFFIX', '@CG-xx.xx');
-define('DN', 'distinguishedname');
+define('LDAP_UID', 'UID');
+define('LDAP_BASE_DN', 'OU=users,dc=CGxx,dc=fr');
+define('LDAP_ACCOUNT_SUFFIX', '@CG-xx.xx');
+define('LDAP_DN', 'distinguishedname');
  */

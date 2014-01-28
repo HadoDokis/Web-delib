@@ -8,19 +8,17 @@
 App::uses('Cron', 'Model');
 class CronJob extends AppModel
 {
-
     public $useTable = false;
 
     /**
-     * TODO : si Pastell / sinon si i-Parapheur
      * Mise à jour des dossiers en attente de signature dans le i-parapheur connecté
      * @return string
      */
     public function signatureJob()
     {
-        App::uses('Deliberation', 'Model');
-        $this->Deliberation = new Deliberation();
-        return $this->Deliberation->majActesParapheur();
+        App::uses('Signature', 'Lib');
+        $this->Signature = new Signature;
+        return $this->Signature->updateAll();
     }
 
     /**

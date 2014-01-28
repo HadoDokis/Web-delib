@@ -297,7 +297,6 @@ Cache::config('_cake_model_', array(
 
     define('WEBROOT_PATH', $path2."webroot");
     define('CONFIG_PATH', $path2."Config/");
-    Configure::write('WEBDELIB_PATH', ROOT.DS.APP_DIR.DS);
 
     define('CRON_DISPATCHER', false);
 

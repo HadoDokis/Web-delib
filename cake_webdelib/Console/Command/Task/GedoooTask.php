@@ -62,17 +62,17 @@ class GedoooTask extends Shell
     public function execute()
     {
         // Inclusion des librairies Gedooo
-        include_once Configure::read("WEBDELIB_PATH") . DS . 'Vendor' . DS . 'GEDOOo' . DS . 'phpgedooo' . DS . 'GDO_PartType.class';
-        include_once Configure::read("WEBDELIB_PATH") . DS . 'Vendor' . DS . 'GEDOOo' . DS . 'phpgedooo' . DS . 'GDO_ContentType.class';
-        include_once Configure::read("WEBDELIB_PATH") . DS . 'Vendor' . DS . 'GEDOOo' . DS . 'phpgedooo' . DS . 'GDO_FusionType.class';
+        include_once APP . DS . 'Vendor' . DS . 'GEDOOo' . DS . 'phpgedooo' . DS . 'GDO_PartType.class';
+        include_once APP . DS . 'Vendor' . DS . 'GEDOOo' . DS . 'phpgedooo' . DS . 'GDO_ContentType.class';
+        include_once APP . DS . 'Vendor' . DS . 'GEDOOo' . DS . 'phpgedooo' . DS . 'GDO_FusionType.class';
 
         // Initialisations
         $this->_textesInError = array();
 
         // Chemins fichiers & dossiers
-        $this->textePath = Configure::read("WEBDELIB_PATH") . DS . 'tmp' . DS . 'files' . DS . 'textes';
-        $this->logPath = Configure::read("WEBDELIB_PATH") . DS . "tmp" . DS . "logs" . DS . "gedooo.log";
-        $this->modelPath = Configure::read("WEBDELIB_PATH") . DS . WEBROOT_DIR . DS . 'files' . DS . 'model_annexe_test.odt';
+        $this->textePath = APP . DS . 'tmp' . DS . 'files' . DS . 'textes';
+        $this->logPath = APP . DS . "tmp" . DS . "logs" . DS . "gedooo.log";
+        $this->modelPath = APP . DS . WEBROOT_DIR . DS . 'files' . DS . 'model_annexe_test.odt';
 
         // Instanciations
         $this->_textesFolder = new Folder($this->textePath, true);
