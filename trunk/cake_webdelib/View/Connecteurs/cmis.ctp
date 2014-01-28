@@ -23,7 +23,7 @@
                              array('type' => 'text', 
                                    "placeholder"=>"Exemple : pastell.maville.fr", 
                                    'label' => 'Serveur de la GED : ' , 
-                                   'value' => Configure::read('GED_URL'))).'<br>';
+                                   'value' => Configure::read('GED_HOST'))).'<br>';
     echo $this->Form->input('ged_login',
                             array('type' => 'text',
                                   "placeholder"=>"nom d'utilisateur",
@@ -34,7 +34,7 @@
                             array('type' => 'text',
                                   "placeholder"=>"mot de passe",
                                   'label' => false,
-                                  'value' => Configure::read('GED_PASSWD'),
+                                  'value' => Configure::read('GED_PWD'),
                                   'before' => '<label>Mot de passe</label>')).'<br>'; 
     echo $this->Form->input('ged_repo',
                             array('type' => 'text',

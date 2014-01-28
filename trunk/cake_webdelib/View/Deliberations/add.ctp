@@ -76,9 +76,9 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type
 	<div class='spacer'></div>
 
 	<?php 
-        if ($USE_PASTELL)
+        /*if ($USE_PASTELL)
                 echo $this->Form->input('Deliberation.num_pref_libelle', array('label'=>'Nomenclature', 'options'=>$nomenclatures, 'default'=>$this->Html->value('Deliberation.num_pref'), 'disabled' =>  empty($nomenclatures), 'empty' => "Aucune", 'escape'=>false)); 
-        else {
+        else {*/
                 echo $this->Form->input( 'Deliberation.num_pref_libelle',
 				   array('div'      => false,
                                          'label'    => 'Num Pref',
@@ -90,7 +90,7 @@ echo $this->Form->create('Deliberation', array('url'=>'/deliberations/add','type
                 <a class="list_form" href="#add" onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification', 'Select_attribut', 'scrollbars=yes,width=570,height=450');" id="classification_text">[Choisir la classification]</a>
         <?php 
                echo $this->Form->hidden('Deliberation.num_pref',array('id'=>'num_pref'));
-        }
+//        }
         ?>
 	<div class='spacer'></div>
 

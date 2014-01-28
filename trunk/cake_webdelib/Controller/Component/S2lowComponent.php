@@ -24,15 +24,15 @@ class S2lowComponent extends Component {
         $url = 'https://' . Configure::read('S2LOW_HOST') . '/modules/actes/actes_transac_create.php';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        if (Configure::read('USE_PROXY'))
-            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+        if (Configure::read('S2LOW_USEPROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
 
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $acte);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
+        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -53,12 +53,12 @@ class S2lowComponent extends Component {
         $url .= '?' . http_build_query($data);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        if (Configure::read('USE_PROXY'))
-            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+        if (Configure::read('S2LOW_USEPROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
+        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $reponse = curl_exec($ch);
@@ -87,7 +87,7 @@ class S2lowComponent extends Component {
         }
 
         if ($sucess) {
-            $file = new File(Configure::read('FILE_CLASS'), true);
+            $file = new File(Configure::read('S2LOW_CLASSIFICATION'), true);
             $file->delete();
             $file->create();
             $xml = $dom->saveXML();
@@ -106,13 +106,13 @@ class S2lowComponent extends Component {
         $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/actes/actes_transac_get_status.php?transaction=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        if (Configure::read('USE_PROXY'))
-            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+        if (Configure::read('S2LOW_USEPROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
         curl_setopt($ch, CURLOPT_POST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
+        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -126,13 +126,13 @@ class S2lowComponent extends Component {
         $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/actes/actes_transac_get_tampon.php?transaction=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, trim($url));
-        if (Configure::read('USE_PROXY'))
-            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+        if (Configure::read('S2LOW_USEPROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
         curl_setopt($ch, CURLOPT_POST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
+        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
@@ -146,13 +146,13 @@ class S2lowComponent extends Component {
         $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, trim($url));
-        if (Configure::read('USE_PROXY'))
-            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+        if (Configure::read('S2LOW_USEPROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
         curl_setopt($ch, CURLOPT_POST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
+        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
@@ -166,7 +166,7 @@ class S2lowComponent extends Component {
 
     function getDateClassification() {
         $doc = new DOMDocument();
-        if (!@$doc->load(Configure::read('FILE_CLASS')))
+        if (!@$doc->load(Configure::read('S2LOW_CLASSIFICATION')))
             return false;
         $date = $doc->getElementsByTagName('DateClassification')->item(0)->nodeValue;
         return ($this->Date->frenchDate(strtotime($date)));
@@ -176,16 +176,16 @@ class S2lowComponent extends Component {
         $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/mail/api/send-mail.php";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        if (Configure::read('USE_PROXY'))
-            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+        if (Configure::read('S2LOW_USEPROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
 
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
-        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+        curl_setopt($ch, CURLOPT_CAPATH, Configure::read('S2LOW_CAPATH'));
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
+        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -198,15 +198,15 @@ class S2lowComponent extends Component {
         $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/mail/api/detail-mail.php?id=$mail_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        if (Configure::read('USE_PROXY'))
-            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+        if (Configure::read('S2LOW_USEPROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
 
         curl_setopt($ch, CURLOPT_POST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
-        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+        curl_setopt($ch, CURLOPT_CAPATH, Configure::read('S2LOW_CAPATH'));
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
+        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);

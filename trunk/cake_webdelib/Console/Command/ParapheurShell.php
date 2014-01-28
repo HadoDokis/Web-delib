@@ -22,7 +22,7 @@ class ParapheurShell extends Shell {
         App::uses('IparapheurComponent', 'Controller/Component');
         
         //Si service désactivé ==> quitter
-        if (!Configure::read('USE_PARAPH')) {
+        if (!Configure::read('USE_PARAPHEUR')) {
             $this->out("Service i-Parapheur désactivé");
             exit;
         }
@@ -32,7 +32,7 @@ class ParapheurShell extends Shell {
         $delibs = $this->Deliberation->find('all', array(
             'conditions' => array(
                 'Deliberation.etat >' => 2,
-                'Deliberation.etat_parapheur' => 1),
+                'Deliberation.parapheur_etat' => 1),
             'recursive' => -1,
             'fields' => array('id', 'objet', 'typeacte_id')));
 
@@ -57,8 +57,8 @@ class ParapheurShell extends Shell {
         $this->Deliberation->id = $delib_id;
         $delib = $this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $delib_id), 'recursive' => -1));
         
-        if ($delib['Deliberation']['id_parapheur'] != "")
-                $id_dossier = $delib['Deliberation']['id_parapheur'];
+        if ($delib['Deliberation']['parapheur_id'] != "")
+                $id_dossier = $delib['Deliberation']['parapheur_id'];
         else //DEPRECATED (rétro-compatibilité vieux dossiers parapheur)
                 $id_dossier = "$delib_id $objet";
 
@@ -77,7 +77,7 @@ class ParapheurShell extends Shell {
                         $comm ['Commentaire']['commentaire_auto'] = 0;
                         $this->Commentaire->save($comm['Commentaire']);
 
-                        if ($delib['Deliberation']['etat_parapheur'] == 1) {
+                        if ($delib['Deliberation']['parapheur_etat'] == 1) {
                             if ($histo['logdossier'][$i]['status'] == 'Signe') {
                                 $dossier = $this->Parafwebservice->GetDossierWebservice($id_dossier);
                                 if (!empty($dossier['getdossier']['signature'])) {
@@ -89,7 +89,7 @@ class ParapheurShell extends Shell {
                                 $this->Deliberation->saveField('signee', 1);
                             }
                             if ($histo['logdossier'][$i]['status'] == 'Archive'){
-                                $this->Deliberation->saveField('etat_parapheur', 2);
+                                $this->Deliberation->saveField('parapheur_etat', 2);
                                 $this->Parafwebservice->archiverDossierWebservice($id_dossier, "EFFACER");
                             }
                         }
@@ -101,7 +101,7 @@ class ParapheurShell extends Shell {
                         $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
                         $comm ['Commentaire']['commentaire_auto'] = 0;
                         $this->Commentaire->save($comm['Commentaire']);
-                        $this->Deliberation->saveField('etat_parapheur', -1);
+                        $this->Deliberation->saveField('parapheur_etat', -1);
                         // Supprimer le dossier du parapheur
                         $this->Parafwebservice->effacerDossierRejeteWebservice($id_dossier);
                     }

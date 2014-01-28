@@ -83,7 +83,7 @@ echo $this->Html->div('filtre');
 echo '</div>';
 echo $this->Html->scriptBlock('
 $(document).ready(function(){
-    $(".select2").select2({
+    $("#filtreCriteres .select2").select2({
         width: "resolve",
         allowClear: true,
         minimumInputLength: 2

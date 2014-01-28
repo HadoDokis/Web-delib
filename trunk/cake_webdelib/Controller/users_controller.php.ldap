@@ -288,8 +288,8 @@ var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'
 
             $bind_attr = 'dn';
             $r=ldap_bind($conn, LDAP_LOGIN, LDAP_PASSWD);
-            $search_filter = "(" .UNIQUE_ID."=" . strtoupper($login) . ")";
-            $result = ldap_search($conn, BASE_DN , $search_filter, array('dn', $bind_attr));
+            $search_filter = "(" .LDAP_UID."=" . strtoupper($login) . ")";
+            $result = ldap_search($conn, LDAP_BASE_DN , $search_filter, array('dn', $bind_attr));
 
             $info = ldap_get_entries($conn, $result);
             if($info['count'] == 0)
@@ -319,7 +319,7 @@ var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'
              // bind with appropriate dn to give update access
             $r=ldap_bind($conn, LDAP_LOGIN, LDAP_PASSWD);
             if(!$r) die("ldap_bind failed<br>");
-            $result = ldap_search($conn, BASE_DN, "(cn=*)") or die ("Error in query");
+            $result = ldap_search($conn, LDAP_BASE_DN, "(cn=*)") or die ("Error in query");
             $data = ldap_get_entries($conn, $result); 
             
             foreach ($data as $person) {
@@ -380,7 +380,7 @@ var $commeDroit = array('add'=>'Users:index', 'delete'=>'Users:index', 'edit'=>'
              // bind with appropriate dn to give update access
             $r=ldap_bind($conn, LDAP_LOGIN, LDAP_PASSWD);
             if(!$r) die("ldap_bind failed<br>");
-            $result = ldap_search($conn, BASE_DN, "(cn=$login)") or die ("Error in query");
+            $result = ldap_search($conn, LDAP_BASE_DN, "(cn=$login)") or die ("Error in query");
             $data = ldap_get_entries($conn, $result);
             foreach ($data as $person) {
                  if ((isset($person['displayname']))&&($person['displayname'][0] != "")) {

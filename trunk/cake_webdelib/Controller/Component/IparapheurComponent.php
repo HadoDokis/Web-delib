@@ -12,10 +12,10 @@ class IparapheurComponent extends Component {
     public $boundary;
 
     function IparapheurComponent() {
-        $this->wsto = configure::read('WSTO');
-        $this->clientcert = configure::read('CLIENTCERT');
-        $this->passphrase = configure::read('PASSPHRASE');
-        $this->userpwd = configure::read('HTTPAUTH') . ":" . configure::read('HTTPPASSWD');
+        $this->wsto = configure::read('PARAPHEUR_HOST');
+        $this->clientcert = configure::read('IPARAPHEUR_CLIENTCERT');
+        $this->passphrase = configure::read('IPARAPHEUR_CERTPWD');
+        $this->userpwd = configure::read('PARAPHEUR_LOGIN') . ":" . configure::read('PARAPHEUR_PWD');
         $this->boundary = "5eca3d4a-35d8-1e01-32da-005056b32ce6";
     }
 
@@ -30,9 +30,6 @@ class IparapheurComponent extends Component {
     }
 
     function SOAPMessage($requestPayloadString, $params) {
-
-        $soap = "";
-
         if (!isset($params["attachments"])) {
             $soap = '<?xml version="1.0" encoding="utf-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
@@ -42,13 +39,8 @@ class IparapheurComponent extends Component {
             $soap .= '</soapenv:Body></soapenv:Envelope>';
         } else {
             //
-            // Le message contien des pièces jointes
+            // Le message contient des pièces jointes
             //
-			$soap = "MIME-Version: 1.0
-Content-Type: Multipart/Related; boundary=MIMEBoundary" . $this->boundary . "; type=text/xml;
-        start=\"<i-Parapheur-query@adullact.org>\"
-Content-Description: This is the optional message description.";
-
             $soap = "\n--MIMEBoundary" . $this->boundary . "
 Content-Type: application/xop+xml;charset=UTF-8;type=\"text/xml\"
 Content-Transfer-Encoding: 8bit
@@ -61,14 +53,14 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             //
             // Ajout des pieces jointes
             //
-			$soap .= $this->requestPayloadString;
+            $soap .= $this->requestPayloadString;
             $soap .= "</SOAP-ENV:Body></SOAP-ENV:Envelope>\n\n--MIMEBoundary" . $this->boundary . "\n";
 
             $attachments = $params["attachments"];
             foreach ($attachments as $key => $content) {
                 $soap .= "Content-Type: " . $content[1] .
-                        "\nContent-Transfer-Encoding: " . $content[2] .
-                        "\nContent-id: <" . $key . ">\n\n";
+                    "\nContent-Transfer-Encoding: " . $content[2] .
+                    "\nContent-id: <" . $key . ">\n\n";
                 $soap .= $content[0] . "\n--MIMEBoundary" . $this->boundary . "\n";
             }
         }
@@ -76,7 +68,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function LancerRequeteCurl($attachments = null) {
-        $ch = curl_init(configure::read('WSTO'));
+        $ch = curl_init(configure::read('PARAPHEUR_HOST'));
 
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -90,9 +82,9 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
         if ($attachments != null) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type:  Multipart/Related; boundary=MIMEBoundary" . $this->boundary . "; type=\"application/xop+xml\"; charset=utf-8; start=\"<i-Parapheur-query@adullact.org>\"", 'SOAPAction: ""'));
-            $params = array("to" => configure::read('WSTO'), "attachments" => $attachments);
+            $params = array("to" => configure::read('PARAPHEUR_HOST'), "attachments" => $attachments);
         } else {
-            $params = array("to" => configure::read('WSTO'));
+            $params = array("to" => configure::read('PARAPHEUR_HOST'));
             curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type:text/xml; charset=utf-8", 'SOAPAction: ""'));
         }
         $soap = $this->SOAPMessage($this->requestPayloadString, $params);
@@ -167,9 +159,9 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             return array_merge($this->traiteXMLLogDossier(), $this->traiteXMLMessageRetour());
     }
 
-    function archiverDossierWebservice($id_dossier, $typearchivage = "ARCHIVER") {
+    function archiverDossierWebservice($nom_dossier, $typearchivage = "ARCHIVER") {
         $this->requestPayloadString = '<ns:ArchiverDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
-								         <ns:DossierID>' . $id_dossier . '</ns:DossierID>
+								         <ns:DossierID>' . $nom_dossier . '</ns:DossierID>
 								         <ns:ArchivageAction>' . $typearchivage . '</ns:ArchivageAction>
 								      </ns:ArchiverDossierRequest>';
         $this->lancerRequeteCurl();
@@ -188,7 +180,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         //return $this->responseMessageStr;
         return $this->traiteXMLMessageRetour();
     }
-    
+
     function creerDossierWebservice($titre, $typetech, $soustype, $visibilite, $pdf, $docsannexes = array(), $datelim = '', $annotpub = '', $annotpriv = '', $metas = array()) {
         $attachments = array('fichierPDF' => array($pdf, "application/pdf", "binary", "document.pdf"));
         $this->requestPayloadString = '<ns:CreerDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
@@ -287,8 +279,8 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             $dossierID = @$dossierIDs->item(0)->nodeValue;
             $response['messageretour'] = array("coderetour" => $coderetour, "message" => $message, "severite" => $severite);
             $response['dossierID'] = $dossierID;
-        }  catch (Exception $e){
-            $response['messageretour'] = array("coderetour" => -1, "message" => "Erreur de connexion au parapheur: ".$e->getMessage(), "severite" => "grave");
+        } catch (Exception $e) {
+            $response['messageretour'] = array("coderetour" => -1, "message" => "Erreur de connexion au parapheur: " . $e->getMessage(), "severite" => "grave");
         }
         return $response;
     }
@@ -420,17 +412,17 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         }
         $this->log($bordereau, 'debug');
         $response['getdossier'] = array(
-            'type'=>$typetech,
-            'soustype'=>$soustype,
-            'dossierid'=>$dossierid,
-            'annotpub'=>$annotpub,
-            'annotpriv'=>$annotpriv,
-            'visu'=>$visu,
-            'datelim'=>$datelim,
-            'docprinc'=>$docprinc,
-            'nomdocprinc'=>$nomdocprinc,
-            'signature'=>$signdocprinc,
-            'bordereau'=>$bordereau
+            'type' => $typetech,
+            'soustype' => $soustype,
+            'dossierid' => $dossierid,
+            'annotpub' => $annotpub,
+            'annotpriv' => $annotpriv,
+            'visu' => $visu,
+            'datelim' => $datelim,
+            'docprinc' => $docprinc,
+            'nomdocprinc' => $nomdocprinc,
+            'signature' => $signdocprinc,
+            'bordereau' => $bordereau
         );
 
         return $response;

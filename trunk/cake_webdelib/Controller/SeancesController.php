@@ -311,7 +311,7 @@ class SeancesController extends AppController {
 					$this->Deliberation->saveField('num_delib', $num);
 				}
 			}
-			if ($delib['Deliberation']['etat_parapheur'] == 2 && !empty($delib['Deliberation']['delib_pdf']))
+			if ($delib['Deliberation']['parapheur_etat'] == 2 && !empty($delib['Deliberation']['delib_pdf']))
 				continue;
 			// On génère la délibération au format PDF
 			$model_id = $this->Deliberation->getModelForSeance($delib_id, $seance_id);
@@ -1060,7 +1060,7 @@ class SeancesController extends AppController {
                                                                                'Typeseance.modelordredujour_id',
                                                                                'Typeseance.modelpvsommaire_id',
                                                                                'Typeseance.modelpvdetaille_id')));
-            $this->set('use_mail_securise', Configure::read('USE_MAIL_SECURISE') );
+            $this->set('use_mail_securise', Configure::read('S2LOW_MAILSEC') );
 
             if (empty($this->data) ) {
                 $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true);
@@ -1114,7 +1114,7 @@ class SeancesController extends AppController {
                         $searchReplace = array("#NOM#" => $acteur['Acteur']['nom'], "#PRENOM#" => $acteur['Acteur']['prenom'] );
                         $template = file_get_contents(CONFIG_PATH.DS.'emails'.DS.'convocation.txt');
 
-                        if (Configure::read('USE_MAIL_SECURISE')) {
+                        if (Configure::read('S2LOW_MAILSEC')) {
                             //S2low est encodé en iso
                             $content = utf8_decode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $template))));
                             $subject = utf8_decode('Convocation à la séance \''.$seance['Typeseance']['libelle'].'\' du : '
@@ -1125,7 +1125,7 @@ class SeancesController extends AppController {
                             $data['message'] = $content;
                             $data['uploadFile1']  = "@$filepath";
                             
-                            $password=Configure::read('PASSWORD_MAIL_SECURISE');
+                            $password=Configure::read('S2LOW_MAILSECPWD');
                             if (!empty($password))  {
                                 $data['send_password'] = 1;
                                 $data['password'] = $password;
@@ -1201,7 +1201,7 @@ class SeancesController extends AppController {
                                                                                'Typeseance.modelordredujour_id',
                                                                                'Typeseance.modelpvsommaire_id',
                                                                                'Typeseance.modelpvdetaille_id')));
-            $this->set('use_mail_securise', Configure::read('USE_MAIL_SECURISE') );
+            $this->set('use_mail_securise', Configure::read('S2LOW_MAILSEC') );
             if (empty($this->data) ) {
                 $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true);
                 foreach ($acteurs as &$acteur) {
@@ -1248,14 +1248,14 @@ class SeancesController extends AppController {
                         $content = utf8_decode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $template))));
                         $subject = utf8_decode('Ordre du jour de la séance \''.$seance['Typeseance']['libelle'].'\' du : '
                                               .$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date'])));
-                        if (Configure::read('USE_MAIL_SECURISE')) {
+                        if (Configure::read('S2LOW_MAILSEC')) {
                             $data['mailto']  = $acteur['Acteur']['email'];
                             $data['objet']   = $subject;
                             $data['message'] = $content;
                             $data['uploadFile1']  = "@$filepath";
-                            if (Configure::read('PASSWORD_MAIL_SECURISE') != '')  {
+                            if (Configure::read('S2LOW_MAILSECPWD') != '')  {
                                 $data['send_password'] = 1;
-                                $data['password'] = Configure::read('PASSWORD_MAIL_SECURISE');
+                                $data['password'] = Configure::read('S2LOW_MAILSECPWD');
                             }
                             $retour = $this->S2low->sendMail($data);
                         }

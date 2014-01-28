@@ -396,12 +396,19 @@ class UsersController extends AppController {
     {
         //pas de message d'erreur
         $this->set('errorMsg', '');
-        $protocol = "http://";
-                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
-                        !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
-                    $protocol = "https://";
-                
-        $this->set('logo_path',   $protocol.$this->Collectivite->pathLogo());
+        $logo = $this->Collectivite->read('logo', 1);
+        App::uses('File', 'Utility');
+        $file = new File(WEBROOT_PATH . DS . 'files' . DS . 'image' . DS . 'logo.jpg', false);
+
+        if (empty($logo['Collectivite']['logo']))
+            $this->set('logo_path',  $this->base . "/files/image/adullact.jpg");
+        else {
+            if (!$file->exists())
+                $file->write($logo['Collectivite']['logo']);
+
+            $file->close();
+            $this->set('logo_path',  $this->base . "/files/image/logo.jpg");
+        }
 
         //si le formulaire d'authentification a été soumis
         if (!empty($this->data)) {
@@ -514,15 +521,15 @@ class UsersController extends AppController {
 	}
 
 	function _checkLDAP($login, $password) {
-		//  $DN = Configure::read('UNIQUE_ID')."=$login, ".BASE_DN;
+		//  $DN = Configure::read('LDAP_UID')."=$login, ".LDAP_BASE_DN;
 		$conn=ldap_connect(Configure::read('LDAP_HOST'), Configure::read('LDAP_PORT')) or  die("connexion impossible au serveur LDAP");
 		@ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
 		@ldap_set_option($conn, LDAP_OPT_REFERRALS, 0); // required for AD
 
 
 		$bind_attr = 'dn';
-		$search_filter = "(" .Configure::read('UNIQUE_ID')."=" . $login . ")";
-		$result = @ldap_search($conn, Configure::read('BASE_DN') , $search_filter, array("dn", $bind_attr));
+		$search_filter = "(" .Configure::read('LDAP_UID')."=" . $login . ")";
+		$result = @ldap_search($conn, Configure::read('LDAP_BASE_DN') , $search_filter, array("dn", $bind_attr));
 
 		$info = ldap_get_entries($conn, $result);
 		if($info['count'] == 0)

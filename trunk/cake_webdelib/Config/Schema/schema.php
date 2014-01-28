@@ -261,7 +261,7 @@ class AppSchema extends CakeSchema {
 		'num_delib' => array('type' => 'string', 'null' => true, 'length' => 15),
 		'num_pref' => array('type' => 'string', 'null' => true),
 		'tdt_id' => array('type' => 'integer', 'null' => true),
-		'dateAR' => array('type' => 'string', 'null' => true, 'length' => 100),
+		'tdt_dateAR' => array('type' => 'string', 'null' => true, 'length' => 100),
 		'texte_projet' => array('type' => 'binary', 'null' => true),
 		'texte_projet_name' => array('type' => 'string', 'null' => true, 'length' => 75),
 		'texte_projet_type' => array('type' => 'string', 'null' => true),

@@ -87,10 +87,10 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
     <div class='spacer'></div>
 
     <?php
-    if ($USE_PASTELL) {
+    /*if ($USE_PASTELL) {
         if (empty($nomenclatures)) $nomenclatures = array();
         echo $this->Form->input('Deliberation.num_pref_libelle', array('label' => 'Nomenclature', 'options' => $nomenclatures, 'default' => $this->Html->value('Deliberation.num_pref'), 'disabled' => empty($nomenclatures), 'empty' => "Aucune", 'escape' => false));
-    } else {
+    } else {*/
         echo $this->Form->input('Deliberation.num_pref_libelle',
             array('div' => false,
                 'label' => 'Num Pref',
@@ -104,7 +104,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
            id="classification_text">[Choisir la classification]</a>
         <?php
         echo $this->Form->hidden('Deliberation.num_pref', array('id' => 'num_pref'));
-    }
+//    }
     ?>
     <div class='spacer'></div>
 
@@ -309,9 +309,11 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
 <div class="submit">
     <?php
     echo $this->Form->hidden('Deliberation.id');
+    echo $this->Form->hidden('redirect', array('value'=>$redirect));
 
     echo $this->Html->tag("div", null, array("class" => "btn-group"));
     echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'mesProjetsRedaction'), array('class' => 'btn noWarn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $redirect, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
     echo $this->Form->button('<i class="fa fa-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le projet'));
     echo $this->Html->tag('/div', null);
     ?>
@@ -353,10 +355,10 @@ $("#DeliberationEditForm").submit(function(){
     $(window).unbind("beforeunload");
 });
 $(".noWarn").on('click', function(){
-                                                $(window).unbind('beforeunload');
-                                                objMenuTimeout = setTimeout(function(){
-                                                    onUnloadEditForm();
-                                                }, 2000); // 2000 millisecondes = 2 secondes
-                                            }
+        $(window).unbind('beforeunload');
+        objMenuTimeout = setTimeout(function(){
+            onUnloadEditForm();
+        }, 2000); // 2000 millisecondes = 2 secondes
+        // }
 );
 </script>

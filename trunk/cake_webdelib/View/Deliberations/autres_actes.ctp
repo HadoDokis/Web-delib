@@ -30,7 +30,7 @@
             if ( $this->action != "autresActesAValider"
                 && $acte['Deliberation']['signee'] != 1
                 && $acte['Deliberation']['etat'] >= 2 && $acte['Deliberation']['etat'] < 5
-                && $acte['Deliberation']['etat_parapheur'] <= 0 )
+                && $acte['Deliberation']['parapheur_etat'] <= 0 )
                 echo '<td>' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], array('checked' => true, 'autocomplete' => 'off')) . '</td>';
             else
                 echo '<td></td>';
@@ -62,10 +62,10 @@
                     echo "Voté et envoyé";
                     break;
             }
-            $enCoursSignature = ($acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['etat_parapheur'] == 1);
+            $enCoursSignature = ($acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['parapheur_etat'] == 1);
             if ($acte['Deliberation']['signee'] == 1) {
                 echo ' / Signé';
-            } elseif ($acte['Deliberation']['etat_parapheur'] == -1) {
+            } elseif ($acte['Deliberation']['parapheur_etat'] == -1) {
                 echo ' / Signature refusée';
             } elseif ($enCoursSignature) {
                 echo ' / En cours de signature';

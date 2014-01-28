@@ -150,22 +150,32 @@ class Seance extends AppModel
         return in_array($nature_id, $natures);
     }
 
-    function getDeliberations($seance_id)
+    function getDeliberations($seance_id, $conditions = array())
     {
+        $conditions['Deliberationseance.seance_id'] = $seance_id;
+
         $deliberations = $this->Deliberationseance->find(
             'all',
             array(
-                'fields' => array('Deliberationseance.seance_id', 'Deliberationseance.deliberation_id', 'Deliberationseance.position', 'Deliberation.*'),
-                'contain' => 'Deliberation',
-                'recursive' => 1,
-                'conditions' => array(
-                    'Deliberationseance.seance_id' => $seance_id,
-                    'Deliberation.etat >=' => 0,
+                'fields' => array(
+                    'Deliberationseance.seance_id',
+                    'Deliberationseance.deliberation_id',
+                    'Deliberationseance.position',
+                    'Deliberation.*',
                 ),
+                'contain' => array(
+                    'Deliberation'=>array(
+                        'Typeacte.nature_id','Typeacte.libelle',
+                        'Service.libelle',
+                        'Theme.libelle',
+                        'Circuit.nom'
+                    ),
+                ),
+                'recursive' => 2,
+                'conditions' => $conditions,
                 'order' => 'Deliberationseance.position ASC',
             )
         );
-
         for ($i = 0; $i < count($deliberations); $i++) {
             if (isset($deliberations[$i]['Deliberation']['theme_id'])) {
                 $theme = $this->Deliberation->Theme->find('first',
@@ -192,7 +202,7 @@ class Seance extends AppModel
         App::import('Model', 'Deliberationseance');
         $this->Deliberationseance = new Deliberationseance();
 
-        $this->Deliberationseance->Behaviors->attach('Containable');
+        $this->Deliberationseance->Behaviors->load('Containable');
         $deliberations = $this->Deliberationseance->find('all', array(
             'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
             'fields' => array('Deliberationseance.deliberation_id'),

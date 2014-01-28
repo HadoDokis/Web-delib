@@ -169,16 +169,15 @@ if ($use_s2low) {
 <?php
 }
 
-$use_parapheur = Configure::read('USE_PARAPH');
-if ($use_parapheur) {
+if (Configure::read('USE_PARAPHEUR') && Configure::read('PARAPHEUR') == 'IPARAPHEUR') {
     ?>
 
     <a name="iparapheur"> <br/> </a> <br/>
     <div class="row">
         <div class="span12">
             <div class="well well-small">
-                <i class="icon-edit"></i><a href="#top" rel="popover" title="I-Parapheur"
-                                            data-content="Utilisation du i-Parapheur électronique">i-Parapheur</a></p>
+                <i class="icon-edit"></i>
+                <a href="#top" rel="popover" title="I-Parapheur" data-content="Utilisation du Parapheur électronique">i-Parapheur</a></p>
                 <?php getCircuitsParapheur(); ?>
             </div>
         </div>
@@ -207,12 +206,12 @@ if ($use_asalae) {
 
 $use_pastell = Configure::read('USE_PASTELL');
 if ($use_pastell) {
-?>
+    ?>
     <a name="pastell"> <br/> </a> <br/>
     <div class="row">
         <div class="span12">
             <div class="well well-small">
-                <i class="icon-edit"></i><a href="#top" rel="popover" title="ASALAE"
+                <i class="icon-edit"></i><a href="#top" rel="popover" title="Pastell"
                                             data-content="Utilisation de Pastell">PASTELL</a></p>
                 <?php getPastellVersion(); ?>
             </div>
@@ -227,7 +226,8 @@ if ($useGED) {
     <div class="row">
         <div class="span12">
             <div class="well well-small">
-                <p><i class="icon-book"></i> Connecteur CMIS GED</p>
+                <i class="icon-book"></i><a href="#top" rel="popover" title="Connecteur CMIS"
+                                            data-content="Utilisation d'une GED">Connecteur CMIS GED</a></p>
                 <?php checkGED(); ?>
             </div>
         </div>
@@ -238,7 +238,7 @@ if ($useGED) {
 $useOpenLdap = Configure::read("USE_OPENLDAP");
 $useAD = Configure::read("USE_AD");
 if ($useOpenLdap || $useAD) {
-?>
+    ?>
     <div class="row">
         <div class="span12">
             <div class="well well-small">

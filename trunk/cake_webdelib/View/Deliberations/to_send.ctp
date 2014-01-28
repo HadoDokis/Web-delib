@@ -15,11 +15,12 @@
     ?>
     <?php echo $this->Form->create('Deliberation', array('type' => 'file', 'url' => '/deliberations/sendActe')); ?>
     La Classification enregistrée date
-    du <?php echo $this->Html->link($dateClassification, '/deliberations/getClassification/', array('title' => 'Date classification')) ?>
+    du <?php echo $dateClassification.'&nbsp;'; echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'getClassification'), array('title' => 'Télécharger les données de classification', 'escape'=>false)) ?>
     <br/><br/>
     <table style='width:100%'>
         <tr>
             <th style="width: 2px;"><input type='checkbox' id='masterCheckbox' /></th>
+            <th style="width: 20px;">Id</th>
             <th>Numéro Délibération</th>
             <th>Libellé de l'acte</th>
             <th>Titre</th>
@@ -33,14 +34,17 @@
             echo $this->Html->tag('tr', null, $rowClass);
             $numLigne++;
 
-            if ($delib['Deliberation']['etat'] != 5)
-                echo("<td>" . $this->Form->checkbox('Deliberation.id.' . $delib['Deliberation']['id'], array('hiddenField' => false)) . "</td>");
+            $options = array('hiddenField' => false);
+            if ($delib['Deliberation']['etat'] < 5)
+                $options['checked'] = true;
             else
-                echo("<td></td>");
+                $options['disabled'] = true;
 
-            echo "<td>" . $this->Html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/' . $delib['Deliberation']['id']);
-            echo '</td>';
+            echo '<td style="text-align:center;">' . $this->Form->checkbox('Deliberation.id.' . $delib['Deliberation']['id'], $options) . '</td>';
             ?>
+            <td style="text-align:center"><?php echo $this->Html->link($delib['Deliberation']['id'], array('action'=>'view', $delib['Deliberation']['id'])); ?></td>
+            <?php echo "<td>" . $this->Html->link($delib['Deliberation']['num_delib'], '/deliberations/downloadDelib/' . $delib['Deliberation']['id']); ?>
+            </td>
             <td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
             <td><?php echo $delib['Deliberation']['titre']; ?></td>
 
@@ -67,9 +71,9 @@
             <?php
             if ($delib['Deliberation']['etat'] == 5) {
                 $tdt_id = $delib['Deliberation']['tdt_id'];
-                echo("<td><a href='https://$host/modules/actes/actes_transac_get_status.php?transaction=$tdt_id'>envoye</a></td>");
+                echo "<td><a href='https://$host/modules/actes/actes_transac_get_status.php?transaction=$tdt_id'><i class='fa fa-check-circle'></i> Envoyé</a></td>";
             } else
-                echo("<td>non envoyé</td>");
+                echo "<td><i class='fa fa-exclamation-circle'></i> Non envoyé</td>";
             ?>
             </tr>
         <?php } ?>

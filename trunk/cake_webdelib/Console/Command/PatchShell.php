@@ -214,7 +214,7 @@ class PatchShell extends AppShell {
     {
         $errors = array();
         $warnings = array();
-        $logPath = Configure::read("WEBDELIB_PATH") . DS . "tmp" . DS . "logs" . DS . "gedooo.log";
+        $logPath = APP . "tmp" . DS . "logs" . DS . "gedooo.log";
         $success = true;
         $this->out("\n<important>Démarrage du patch de mise à jour de Webdelib 4.1.02 vers 4.1.03...</important>\n");
         $time_start = microtime(true);

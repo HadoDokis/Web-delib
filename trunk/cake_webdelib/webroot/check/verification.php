@@ -27,6 +27,7 @@ define('WWW_ROOT', dirname(dirname(__FILE__)) . DS);
 
 define('LIBS', ROOT.DS.'lib'.DS.'Cake'.DS);
 define ('MODELS', APP.'Model'.DS);
+define ('LIB', APP.'Lib'.DS);
 define ('BEHAVIORS', MODELS.'Behavior'.DS);
 define ('CONTROLLERS', APP.'Controller'.DS);
 define ('COMPONENTS', CONTROLLERS.'Component'.DS);
@@ -1161,13 +1162,13 @@ function getClassification(){
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    if (Configure::read('USE_PROXY'))
-        curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+    if (Configure::read('S2LOW_USEPROXY'))
+        curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
-    curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-    curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-    curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+    curl_setopt($ch, CURLOPT_CAPATH, Configure::read('S2LOW_CAPATH'));
+    curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
+    curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
+    curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $reponse = curl_exec($ch);
@@ -1188,30 +1189,29 @@ function getClassification(){
 
 function getCircuitsParapheur() {
     $time_start = microtime(true);
-    $circuits = array();
-    if (Configure::read('USE_PARAPH')) {
+    if (!Configure::read('USE_PARAPHEUR')){
+        d('Utilisation du parapheur désactivé', 'info');
+        return;
+    }
+    if (Configure::read('PARAPHEUR') == 'IPARAPHEUR') {
         include_once(COMPONENTS.'IparapheurComponent.php');
         $Parafwebservice = new IparapheurComponent();
-        $circuits = $Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
+        $circuits = $Parafwebservice->getListeSousTypesWebservice(Configure::read('PARAPHEUR_TYPE'));
         $time_end = microtime(true);
         if (!empty($circuits)) {
-            d(Configure::read('WSTO'), 'info');
+            d(Configure::read('PARAPHEUR_HOST'), 'info');
             $time = round($time_end - $time_start, 2);
-            d(count($circuits)." circuits du iparapheur récupéré en $time secondes", 'ok');
+            d(count($circuits)." circuits du i-parapheur récupéré en $time secondes", 'ok');
         }
         else
-            d('liste de circuit du iparapheur vide', 'ko');
-    }
-    else {
-        d('Utilisation du i-parapheur désactivé', 'info');
-
+            d('liste de circuit du i-parapheur vide', 'ko');
     }
 }
 
 function getVersionAsalae() {
 
     $client = new SoapClient(Configure::read('ASALAE_WSDL'));
-    $version = $client->__soapCall("wsGetVersion", array(Configure::read('IDENTIFIANT_VERSANT'), Configure::read('MOT_DE_PASSE')));
+    $version = $client->__soapCall("wsGetVersion", array(Configure::read('ASALAE_IDVERSANT'), Configure::read('ASALAE_PWD')));
     if (is_int( $version)) {
         d("Echec d'authentification", 'ko');
     }
@@ -1222,11 +1222,12 @@ function getVersionAsalae() {
 }
 
 function getPastellVersion() {
+//    if (Configure::read('USE_PASTELL'))
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN") . ":" . Configure::read("PASTELL_PWD"));
+    curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PARAPHEUR_LOGIN") . ":" . Configure::read("PARAPHEUR_PWD"));
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $api = Configure::read("PASTELL_HOST") . "/api/version.php";
+    $api = Configure::read("PARAPHEUR_HOST") . "/api/version.php";
     curl_setopt($curl, CURLOPT_URL, $api);
     $reponse = curl_exec($curl);
     curl_close($curl);
@@ -1278,10 +1279,10 @@ function checkLDAP(){
         $ldapInfos["Port"] = Configure::read("LDAP_PORT");
         $ldapInfos["Login"] = Configure::read("LDAP_LOGIN");
         $ldapInfos["Password"] = Configure::read("LDAP_PASSWD");
-        $ldapInfos["Unique_ID"] = Configure::read("UNIQUE_ID");
-        $ldapInfos["Base_DN"] = Configure::read("BASE_DN");
-        $ldapInfos["Account_suffix"] = Configure::read("ACCOUNT_SUFFIX");
-        $ldapInfos["DN"] = Configure::read("DN");
+        $ldapInfos["Unique_ID"] = Configure::read("LDAP_UID");
+        $ldapInfos["Base_DN"] = Configure::read("LDAP_BASE_DN");
+        $ldapInfos["Account_suffix"] = Configure::read("LDAP_ACCOUNT_SUFFIX");
+        $ldapInfos["DN"] = Configure::read("LDAP_DN");
     }
     elseif(Configure::read('USE_AD')){
         $ldapInfos = array();
@@ -1289,10 +1290,10 @@ function checkLDAP(){
         $ldapInfos["Port"] = LDAP_PORT;
         $ldapInfos["Login"] = LDAP_LOGIN;
         $ldapInfos["Password"] = LDAP_PASSWD;
-        $ldapInfos["Unique_ID"] = UNIQUE_ID;
-        $ldapInfos["Base_DN"] = BASE_DN;
-        $ldapInfos["Account_suffix"] = ACCOUNT_SUFFIX;
-        $ldapInfos["DN"] = DN;      
+        $ldapInfos["Unique_ID"] = LDAP_UID;
+        $ldapInfos["Base_DN"] = LDAP_BASE_DN;
+        $ldapInfos["Account_suffix"] = LDAP_ACCOUNT_SUFFIX;
+        $ldapInfos["DN"] = LDAP_DN;
     }
     
     // affichage des infos LDAP

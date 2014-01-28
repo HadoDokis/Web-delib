@@ -6,7 +6,7 @@ class ModelsController extends AppController {
         'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'ModelOdtValidator.Modeltemplate'
     );
     public $helpers = array('Html', 'Form', 'Fck', 'Html2', 'Session');
-    public $components = array('Cookie','Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress', 'Fido');
+    public $components = array('Cookie','Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress');
 
 	// Gestion des droits
     public $aucunDroit = array(
@@ -57,7 +57,7 @@ class ModelsController extends AppController {
 
 
 	function generer ($delib_id=null, $seance_id=null,  $model_id, $editable=-1, $dl=0, $nomFichier='retour', $isPV=0, $unique=false, $progress=false, $token=null) {
-                $time_start = microtime(true);
+		$time_start = microtime(true);
                 
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
 		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');

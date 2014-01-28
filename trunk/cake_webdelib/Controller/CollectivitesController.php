@@ -6,14 +6,14 @@
 
 class CollectivitesController extends AppController {
 
-    var $uses = array('Collectivite', 'User');
-    var $components = array('Pastell');
+    public $uses = array('Collectivite', 'User');
+    public $components = array('Pastell');
     // Gestion des droits
-    var $aucunDroit = array(
+    public $aucunDroit = array(
         'synchronize',
         'setMails'
     );
-    var $commeDroit = array(
+    public $commeDroit = array(
         'edit' => 'Collectivites:index',
         'setLogo' => 'Collectivites:index'
         //FIXME: ajout gd mais à vérifier
@@ -50,7 +50,7 @@ class CollectivitesController extends AppController {
             if (!$this->Collectivite->save($this->data['Collectivite']))
                 $this->Session->setFlash('Erreur durant la sauvegarde', 'growl');
 
-            $this->redirect('/collectivites');
+            return $this->redirect(array('action'=>'index'));
         }
     }
 
@@ -76,8 +76,7 @@ class CollectivitesController extends AppController {
                     $this->Session->setFlash('Erreur durant la sauvegarde en base de données du logo', 'growl');
                 $file->close();
 
-
-                $this->redirect('/collectivites');
+                return $this->redirect(array('action'=>'index'));
             }
         } else {
             $this->Session->setFlash('Erreur durant la sauvegarde du logo', 'growl');
@@ -97,7 +96,7 @@ class CollectivitesController extends AppController {
                     $name_file = 'refus';
                     $tmp_file = $mail['tmp_name'];
                     if (!move_uploaded_file($tmp_file, $path . $name_file))
-                        exit("Impossible de copier le fichier dans $content_dir");
+                        exit("Impossible de copier le fichier");
                 }
                 if ($cpt == 2) {
                     if ($mail['name'] == '')
@@ -105,7 +104,7 @@ class CollectivitesController extends AppController {
                     $name_file = 'traiter';
                     $tmp_file = $mail['tmp_name'];
                     if (!move_uploaded_file($tmp_file, $path . $name_file))
-                        exit("Impossible de copier le fichier dans $content_dir");
+                        exit("Impossible de copier le fichier");
                 }
                 if ($cpt == 3) {
                     if ($mail['name'] == '')
@@ -113,7 +112,7 @@ class CollectivitesController extends AppController {
                     $name_file = 'insertion';
                     $tmp_file = $mail['tmp_name'];
                     if (!move_uploaded_file($tmp_file, $path . $name_file))
-                        exit("Impossible de copier le fichier dans $content_dir");
+                        exit("Impossible de copier le fichier");
                 }
                 if ($cpt == 4) {
                     if ($mail['name'] == '')
@@ -121,11 +120,11 @@ class CollectivitesController extends AppController {
                     $name_file = 'convocation';
                     $tmp_file = $mail['tmp_name'];
                     if (!move_uploaded_file($tmp_file, $path . $name_file))
-                        exit("Impossible de copier le fichier dans $content_dir");
+                        exit("Impossible de copier le fichier");
                 }
                 $cpt++;
             }
-            $this->redirect('/collectivites/');
+            return $this->redirect(array('action'=>'index'));
         }
     }
 
@@ -139,13 +138,13 @@ class CollectivitesController extends AppController {
 
             $dn = "ou=users,dc=adullact,dc=org";
             $filter = "(|(sn=*))";
-            $justthese = array(MAIL, COMMON_NAME, UNIQUE_ID, PASSWORD_USER);
+            $justthese = array(MAIL, COMMON_NAME, LDAP_UID, PASSWORD_USER);
             $sr = ldap_search($ldapconn, $dn, $filter, $justthese);
             $users = ldap_get_entries($ldapconn, $sr);
 
             foreach ($users as $user) {
-                if (isset($user[UNIQUE_ID][0]))
-                    $login = $user[UNIQUE_ID][0];
+                if (isset($user[LDAP_UID][0]))
+                    $login = $user[LDAP_UID][0];
 
                 if (isset($user[PASSWORD_USER][0]))
                     $password = $user[PASSWORD_USER][0];
@@ -188,5 +187,3 @@ class CollectivitesController extends AppController {
     }
 
 }
-
-?>

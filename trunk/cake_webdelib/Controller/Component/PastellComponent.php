@@ -15,37 +15,118 @@
 /**
  * Class PastellComponent
  */
+App::uses('Component', 'Controller');
+App::uses('ComponentCollection', 'Controller');
+App::uses('SessionComponent', 'Controller/Component');
+App::uses('File', 'Utility');
 class PastellComponent extends Component
 {
+    public $components = array('Session');
+
+    private $host;
+    private $login;
+    private $pwd;
+    private $parapheur_type;
+    private $pastell_type;
+    private $Session;
+    private $circuits;
+
+//    function PastellComponent()
+//    {
+//    }
+
+    function __construct(){
+        $collection = new ComponentCollection();
+        $this->Session = new SessionComponent($collection);
+        $this->host = Configure::read('PARAPHEUR_HOST');
+        $this->login = Configure::read('PARAPHEUR_LOGIN');
+        $this->pwd = Configure::read('PARAPHEUR_PWD');
+        $this->parapheur_type = Configure::read('PARAPHEUR_TYPE');
+        $this->pastell_type = Configure::read('PASTELL_TYPE');
+    }
+    /**
+     * Retourne la liste des circuits du PASTELL
+     * La liste est enregistrée en Session
+     * pour économiser du traffic réseau entre WD et Pastell lors des appels suivants
+     *
+     * @param int|string $id_e identifiant de la collectivité
+     * @return array
+     */
+    public function getCircuits($id_e){
+        if (!$this->Session->check('user.Pastell.circuits')){
+            $tmp_id_d = $this->createDocument($id_e);
+            $circuits = $this->getInfosField($id_e, $tmp_id_d, 'iparapheur_sous_type');
+            $this->Session->write('user.Pastell.circuits', $circuits);
+            $this->action($id_e, $tmp_id_d, 'supression');
+        }else{
+            $circuits = $this->Session->read('user.Pastell.circuits');
+        }
+        return $circuits;
+    }
 
     /**
      * @param string $page script php
      * @param array $data
-     * @return resource
+     * @param bool $file_transfert attente d'un fichier en retour ?
+     * @return array retour du webservice
      */
-    protected function _initCurl($page, $data = array())
-    {
+    protected function _execute($page, $data = array(), $file_transfert = false){
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN") . ":" . Configure::read("PASTELL_PWD"));
+        curl_setopt($curl, CURLOPT_USERPWD, $this->login . ":" . $this->pwd);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $api = Configure::read("PASTELL_HOST") . "/api/$page";
+        $api = $this->host . "/api/$page";
         curl_setopt($curl, CURLOPT_URL, $api);
         if (!empty($data)) {
             curl_setopt($curl, CURLOPT_POST, TRUE);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
-        return $curl;
+        if ($file_transfert){
+            $path = tempnam('/tmp/','WD_BRDR_');
+            $fp = fopen($path, 'w');
+            curl_setopt($curl, CURLOPT_FILE, $fp);
+        }
+        $response = curl_exec($curl);
+        curl_close($curl);
+        if ($file_transfert){
+            fclose($fp);
+            $content = file_get_contents($path);
+            unlink($path);
+            return $content;
+        }
+        $result = json_decode($response, true);
+        if ($this->_log($page, $data, $result))
+            return $result;
+        else
+            return false;
     }
 
     /**
-     * @param $curl
-     * @return mixed
+     * Fonction de log des réponses pastell
+     * @param string $page script ws
+     * @param array $data paramètres
+     * @param array $retourWS reponse ws
+     * @return bool false si en erreur
      */
-    protected function _exec($curl){
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result);
+    protected function _log($page, $data, $retourWS){
+//        if (Configure::read('debug'))
+//            $this->log($retourWS, 'debug');
+
+        $this->log('Request : '.$page, 'pastell');
+        if (!empty($data))
+            $this->log('Data : '.print_r($data,true), 'pastell');
+        if (empty($retourWS)){
+            $this->log('Error : Aucune réponse du serveur distant', 'pastell');
+            return false;
+        }
+        if (!empty($retourWS['message']))
+            $this->log('Message : '.$retourWS['message'], 'pastell');
+        if (!empty($retourWS['error-message'])){
+            $this->log('Error : '.$retourWS['error-message'], 'pastell');
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -73,8 +154,7 @@ class PastellComponent extends Component
      */
     public function getVersion()
     {
-        $curl = $this->_initCurl('version.php');
-        return $this->_exec($curl);
+        return $this->_execute('version.php');
     }
 
     /**
@@ -91,10 +171,7 @@ class PastellComponent extends Component
     public function getDocumentTypes()
     {
         $documents = array();
-        $curl = $this->_initCurl('document-type.php');
-        $result = curl_exec($curl);
-        curl_close($curl);
-        $natures = json_decode($result, true);
+        $natures = $this->_execute('document-type.php');
         foreach ($natures as $id => $nature) {
             $documents[$nature['type']][$id] = $nature['nom'];
         }
@@ -112,10 +189,7 @@ class PastellComponent extends Component
      */
     public function getDocumentTypeInfos($type)
     {
-        $curl = $this->_initCurl("document-type-info.php?type=$type");
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
+        return $this->_execute("document-type-info.php?type=$type");
     }
 
     /**
@@ -128,10 +202,7 @@ class PastellComponent extends Component
      */
     public function getDocumentTypeActions($type){
 
-        $curl = $this->_initCurl("document-type-action.php?type=$type");
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return (json_decode($result, true));
+        return $this->_execute("document-type-action.php?type=$type");
     }
 
     /**
@@ -153,10 +224,7 @@ class PastellComponent extends Component
      */
     public function listEntities($details=false)
     {
-        $curl = $this->_initCurl('list-entite.php');
-        $result = curl_exec($curl);
-        curl_close($curl);
-        $entities = json_decode($result, true);
+        $entities = $this->_execute('list-entite.php');
         if ($details)
             return $entities;
         else{
@@ -191,11 +259,7 @@ class PastellComponent extends Component
      */
     public function listDocuments($id_e, $type, $offset=0, $limit=100)
     {
-        $curl = $this->_initCurl("list-document.php?id_e=$id_e&type=$type&offset=$offset&limit=$limit");
-        $result = curl_exec($curl);
-        curl_close($curl);
-        $documents = json_decode($result, true);
-        return $documents;
+        return $this->_execute("list-document.php?id_e=$id_e&type=$type&offset=$offset&limit=$limit");
     }
 
     /**
@@ -231,11 +295,7 @@ class PastellComponent extends Component
             'search' => null, //l'objet du document doit contenir la chaine indiquée
         );
         $options = array_merge($default_options,$options);
-        $curl = $this->_initCurl('list-document.php?'.$this->_paramsArray2String($options));
-        $result = curl_exec($curl);
-        curl_close($curl);
-        $documents = json_decode($result, true);
-        return $documents;
+        return $this->_execute('list-document.php?'.$this->_paramsArray2String($options));
     }
 
     /**
@@ -259,10 +319,7 @@ class PastellComponent extends Component
             'id_e' => $id_e,
             'id_d' => $id_d
         );
-        $curl = $this->_initCurl('detail-document.php', $acte);
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
+        return $this->_execute('detail-document.php', $acte);
     }
 
     /**
@@ -284,25 +341,22 @@ class PastellComponent extends Component
     {
         $args = "id_e=$id_e";
         foreach ($id_d as $d) $args .= "&id_d=$d";
-        $curl = $this->_initCurl('detail-several-document.php?'.$args);
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
+        return $this->_execute('detail-several-document.php?'.$args);
     }
 
     /**
      * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
-     * @param string $type Type de document (retourné par document-type)
+     * @param string $type
      * @return integer id_d	Identifiant unique du document crée.
      * @throws Exception Si erreur lors de la création
      */
-    public function createDocument($id_e, $type)
+    public function createDocument($id_e, $type = null)
     {
-        $curl = $this->_initCurl("create-document.php?id_e=$id_e&type=$type");
-        $result = curl_exec($curl);
-        curl_close($curl);
-
-        $infos = json_decode($result, true);
+        if ($type == null)
+            $type = $this->pastell_type;
+        $infos = $this->_execute("create-document.php?id_e=$id_e&type=$type");
+        if (empty($infos))
+            throw new Exception("Echec de connexion avec le serveur Pastell");
         if (array_key_exists('id_d', $infos))
             return ($infos['id_d']);
         elseif (array_key_exists('error-message', $infos))
@@ -329,10 +383,7 @@ class PastellComponent extends Component
      */
     public function getInfosField($id_e, $id_d, $field)
     {
-        $curl = $this->_initCurl("external-data.php?id_e=$id_e&id_d=$id_d&field=$field");
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
+        return $this->_execute("external-data.php?id_e=$id_e&id_d=$id_d&field=$field");
     }
 
     /**
@@ -356,38 +407,30 @@ class PastellComponent extends Component
         if (empty($delib)) return -1;
         App::uses('Deliberation', 'Model');
         $this->Deliberation = new Deliberation();
-        $model_id = $this->Deliberation->getModelId($delib['Deliberation']['id']);
-        //Génération du fichier et ajout au zip
-//        $this->requestAction('/models/generer/'.$delib['Deliberation']['id'].'/null/'.$model_id.'/0/0/Document/0/1');
-        $file_name = WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/Document.pdf";
-        //FIXME caractères spéciaux
-//        $delib['Deliberation']['objet_delib'] = str_replace(array("'",'"','&','#'), "_", $delib['Deliberation']['objet_delib']);
-
+        $file_name = WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/Pastell.pdf";
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
             'objet' => $delib['Deliberation']['objet_delib'],
             'date_de_lacte' => $delib['Seance']['date'],
             'numero_de_lacte' => $delib['Deliberation']['num_delib'],
-            'type' => $delib['Nomenclature']['code'],
+            'type' => $this->parapheur_type,
             'arrete' => "@$file_name",
-            'acte_nature' => $delib['Deliberation']['nature_id'],
+            'acte_nature' => $delib['Typeacte']['nature_id'],
         );
 
-        $curl = $this->_initCurl('modif-document.php', $acte);
-        $result_modif = curl_exec($curl);
-        curl_close($curl);
+
+        $this->_execute('modif-document.php', $acte);
         foreach ($annexes as $annex)
             $this->sendAnnex($id_e, $id_d, $annex);
-//        debug($result_modif);
         $resultat = $this->detailDocument($id_e, $id_d);
-        $pos = strpos($resultat['data']['classification'], "existe");
-        if ($pos !== false && $resultat['data']['envoi_tdt']) {
-            $result = utf8_decode($resultat['data']['classification']);
-        } else
-            $result = 1;
-
-        return $result;
+        $this->log($resultat, 'debug');
+        if (!empty($resultat['data']['classification'])){
+            $pos = strpos($resultat['data']['classification'], "existe");
+            if ($pos !== false && $resultat['data']['envoi_tdt'])
+                return utf8_decode($resultat['data']['classification']);
+        }
+        return 1;
     }
 
     /**
@@ -418,11 +461,7 @@ class PastellComponent extends Component
             'file_content' => null, //le contenu du fichier
         );
         $options = array_merge($default_options,$options);
-        $curl = $this->_initCurl('list-document.php?'.$this->_paramsArray2String($options));
-        $result = curl_exec($curl);
-        curl_close($curl);
-        $documents = json_decode($result, true);
-        return $documents;
+        return $this->_execute('list-document.php?'.$this->_paramsArray2String($options));
     }
 
     /**
@@ -444,10 +483,7 @@ class PastellComponent extends Component
             'field_name' => $field_name, //le nom du champs
             'file_number' => $file_number, //le numéro du fichier (pour les fichier multiple)
         );
-        $curl = $this->_initCurl('receive-file.php?'.$this->_paramsArray2String($options));
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
+        return $this->_execute('receive-file.php?'.$this->_paramsArray2String($options));
     }
 
     /**
@@ -456,31 +492,27 @@ class PastellComponent extends Component
      * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
      * @param integer $id_d Identifiant unique du document (retourné par list-document)
      * @param string $action Nom de l'action (retourné par detail-document, champs action-possible)
-     * @param array $destinataire tableau contenant l'identifiant des destinataires pour les actions qui le requièrent
+     * @param array $options
      * @return array
      * [] =>
      *  result : 1 si l'action a été correctement exécute. Sinon, une erreur est envoyé
      *  message : Message complémentaire en cas de réussite
      *
      */
-    public function action($id_e, $id_d, $action, $destinataire = array())
+    public function action($id_e, $id_d, $action, $options = array())
     {
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
             'action' => $action
         );
-        //FIXME : à tester
-        if (!empty($destinataire))
-            $acte['destinataire'] = $destinataire;
+        $acte = array_merge($acte, $options);
 
-        $curl = $this->_initCurl('action.php', $acte);
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
+        return $this->_execute('action.php', $acte);
     }
 
     /**
+     * FIXME
      * Récupère le contenu d'un fichier
      *
      * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
@@ -491,24 +523,16 @@ class PastellComponent extends Component
      */
     public function getFile($id_e, $id_d, $field, $num = 0)
     {
-        //FIXME url api?  https://pastell.test.adullact.org/api/recuperation-fichier.php
-        $url = Configure::read("PASTELL_HOST") . "/web/document/recuperation-fichier.php?id_e=$id_e&id_d=$id_d&field=$field";
+        $data = array(
+            'id_e' => $id_e,
+            'id_d' => $id_d,
+            'field' => $field,
+        );
+        $page = 'recuperation-fichier.php';
         if ($num)
-            $url .= '&num='.$num;
-        $hostfile = fopen($url, 'r');
-        $filename = tempnam("/tmp/", $field . "_");
-        $fh = fopen($filename, 'w');
+            $data['num'] = $num;
 
-        while (!feof($hostfile)) {
-            $output = fread($hostfile, 8192);
-            fwrite($fh, $output);
-        }
-
-        fclose($hostfile);
-        fclose($fh);
-        $content = file_get_contents($filename);
-        unlink($filename);
-        return ($content);
+        return $this->_execute($page, $data, true);
     }
 
     /**
@@ -525,32 +549,32 @@ class PastellComponent extends Component
             'id_e' => $id_e,
             'id_d' => $id_d
         );
-        $curl = $this->_initCurl('journal.php', $acte);
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
+        return $this->_execute('journal.php', $acte);
     }
 
-    public function insertInParapheur($id_e, $id_d, $sous_type = null)
+    /**
+     * Envoi l'acte au PASTELL pour signature
+     * Attention: le document doit être inséré dans un circuit avant !
+     *
+     * @param int|string $id_e
+     * @param int|string $id_d
+     * @return array
+     */
+    public function envoiSignature($id_e, $id_d)
     {
-        //FIXME propriété envoi_signature au lieu de envoi_iparapheur?
-//        $curl = $this->_initCurl("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_iparapheur=true");
-        $curl = $this->_initCurl("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_signature=true");
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
+        return $this->_execute("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_signature=true");
     }
 
-    public function insertInCircuit($id_e, $id_d, $sous_type)
+    public function selectCircuit($id_e, $id_d, $sous_type)
     {
         $infos = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
-            'iparapheur_sous_type' => $sous_type);
-        $curl = $this->_initCurl("modif-document.php", $infos);
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
+            'classification' => '1',
+            'iparapheur_type' => $this->parapheur_type,
+            'iparapheur_sous_type' => utf8_decode($sous_type)
+        );
+        return $this->_execute('modif-document.php', $infos);
     }
 
     public function sendAnnex($id_e, $id_d, $annex)
@@ -560,10 +584,7 @@ class PastellComponent extends Component
             'id_d' => $id_d,
             'autre_document_attache' => "@$annex"
         );
-        $curl = $this->_initCurl('modif-document.php', $acte);
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result, true);
+        return $this->_execute('modif-document.php', $acte);
     }
 
 }

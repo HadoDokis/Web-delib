@@ -66,6 +66,7 @@ class PastellComponentTest extends CakeTestCase {
      * @return void
      */
     public function testGetDocumentTypeInfos(){
+//        debug ($this->PastellComponent->getDocumentTypeInfos('actes-generique'));
         return ($this->PastellComponent->getDocumentTypeInfos('actes-generique'));
     }
 
@@ -74,6 +75,7 @@ class PastellComponentTest extends CakeTestCase {
      * @return void
      */
     public function testGetDocumentTypeActions(){
+        debug ($this->PastellComponent->getDocumentTypeActions('actes-generique'));
         return ($this->PastellComponent->getDocumentTypeActions('actes-generique'));
     }
 
@@ -115,8 +117,10 @@ class PastellComponentTest extends CakeTestCase {
      * @return void
      */
     public function testDetailDocument(){
-//        debug ($this->PastellComponent->detailDocument(48,'elRx6ID'));
-        return ($this->PastellComponent->detailDocument(48,'elRx6ID'));
+        debug ($this->PastellComponent->detailDocument(3,'Hb63sCE'));
+        debug ($this->PastellComponent->detailDocument(3,'FjZWMlC'));
+
+//        return ($this->PastellComponent->detailDocument(48,'elRx6ID'));
     }
 
     /**
@@ -145,7 +149,7 @@ class PastellComponentTest extends CakeTestCase {
      * @return void
      */
     public function testGetInfosField(){
-//        debug ($this->PastellComponent->getInfosField(48,'elRx6ID','action-possible'));
+        debug ($this->PastellComponent->getInfosField(3,'L4iaPx6', null));
 //        return ($this->PastellComponent->getInfosField(48,'actes-generique'));
     }
 
