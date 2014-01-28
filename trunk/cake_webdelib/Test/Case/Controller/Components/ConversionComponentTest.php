@@ -8,7 +8,8 @@
 * @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
 */
 App::uses('ComponentCollection', 'Controller');
-App::uses( 'ConversionComponent', 'Controller/Component' );
+App::uses('ConversionComponent', 'Controller/Component' );
+App::uses('File', 'Utility');
 
 /**
 * Classe Histochoixcer93Test.
