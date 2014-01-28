@@ -96,7 +96,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             $this->log(curl_error($ch),'parafError');
             return false;
         }
-        
+
         $lines = explode("\n", $respons);
         $ideb = 0;
         foreach ($lines as $line) {
@@ -106,9 +106,9 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         }
         $xmlLines = array_slice($lines, $ideb, count($lines) - $ideb - 1, true);
         $this->responseMessageStr = implode("\n", $xmlLines);
-        
+
         curl_close($ch);
-        
+
         return true;
     }
 
@@ -198,7 +198,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             }
             $this->requestPayloadString .= '</ns:MetaData>';
         }
- 
+
         $this->requestPayloadString .= '<ns:DocumentsAnnexes>';
         for ($i = 0; $i < count($docsannexes); $i++) {
             $this->requestPayloadString .= '<ns:DocAnnexe>
@@ -219,8 +219,8 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 								         <ns:DateLimite>' . $datelim . '</ns:DateLimite>
 									   </ns:CreerDossierRequest>';
         $this->LancerRequeteCurl($attachments);
-        
-        
+
+
         return $this->traiteXMLMessageRetour();
     }
 
@@ -255,7 +255,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function traiteXMLMessageRetour() {
-        
+
         $xml = simplexml_load_string($this->responseMessageStr);
         if($xml!==false){
             $result = $xml->xpath('S:Body/S:Fault');
@@ -265,7 +265,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
                 return $response;
             }
         }
-        
+
         $dom = new DomDocument();
         try{
             $dom->loadXML($this->responseMessageStr);
@@ -289,7 +289,6 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         $response = array();
         $dom = new DomDocument();
         $dom->loadXML($this->responseMessageStr);
-//        $this->log($this->responseMessageStr, 'debug');
         $dataset = $dom->getElementsByTagName("LogDossier");
         foreach ($dataset as $row) {
             $timestamps = $row->getElementsByTagName("timestamp");
@@ -439,13 +438,13 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             $objetDossier[strlen($objetDossier) - 1] = " ";
         return (trim($objetDossier));
     }
-    
-     function _xml_entity_encode($_string) {
-    // Set up XML translation table
-    $_xml=array();
-    $_xl8=get_html_translation_table(HTML_ENTITIES,ENT_COMPAT);
-    while (list($_key,)=each($_xl8))
-        $_xml[$_key]='&#'.ord($_key).';';
-    return strtr($_string,$_xml);
-}
+
+    function _xml_entity_encode($_string) {
+        // Set up XML translation table
+        $_xml = array();
+        $_xl8 = get_html_translation_table(HTML_ENTITIES, ENT_COMPAT);
+        while (list($_key,) = each($_xl8))
+            $_xml[$_key] = '&#' . ord($_key) . ';';
+        return strtr($_string, $_xml);
+    }
 }
