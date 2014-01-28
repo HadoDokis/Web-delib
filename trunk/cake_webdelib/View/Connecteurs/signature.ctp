@@ -63,7 +63,7 @@
                 'placeholder' => 'Exemple : actes-generique',
                 'value' => Configure::read('PASTELL_TYPE'),
                 'label' => 'Type de flux (Pastell)',
-                'style' => ($protocol != 'PASTELL') ? 'display: none;' : ''
+                'div' => array('id'=> 'pastell_type','style' => ($protocol != 'PASTELL') ? 'display: none;' : '')
             ));
             echo $this->Form->input('type', array(
                 'type' => 'text',
