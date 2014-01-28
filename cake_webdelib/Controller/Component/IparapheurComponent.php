@@ -93,7 +93,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
         $respons = curl_exec($ch);
         if ($respons === false) {
-            $this->log(curl_error($ch),'parafError');
+            $this->log(curl_error($ch), 'parafError');
             return false;
         }
 
@@ -257,17 +257,17 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     function traiteXMLMessageRetour() {
 
         $xml = simplexml_load_string($this->responseMessageStr);
-        if($xml!==false){
+        if ($xml !== false) {
             $result = $xml->xpath('S:Body/S:Fault');
-            if(!empty($result)){
+            if (!empty($result)) {
                 $response['messageretour'] = array('coderetour' => -1, 'message' => 'Erreur soap : Veuillez contacter votre administrateur', 'severite' => 'grave');
-                $this->log($result[0]->faultstring,'parafError');
+                $this->log($result[0]->faultstring, 'parafError');
                 return $response;
             }
         }
 
         $dom = new DomDocument();
-        try{
+        try {
             $dom->loadXML($this->responseMessageStr);
             $codesretour = $dom->documentElement->getElementsByTagName('codeRetour');
             $coderetour = @$codesretour->item(0)->nodeValue;
