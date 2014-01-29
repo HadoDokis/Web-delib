@@ -13,7 +13,8 @@ class Infosup extends AppModel
     public $name = 'Infosup';
 
     public $belongsTo = array(
-        'Deliberation' => array('className' => 'Deliberation',
+        'Deliberation' => array(
+            'className' => 'Deliberation',
             'conditions' => '',
             'order' => '',
             'dependent' => false,
@@ -165,7 +166,7 @@ class Infosup extends AppModel
                                     'message' => 'Le format de fichier n\'est pas de type odt', 'growl'
                                 )
                             );
-                        App::import('Component','Fido');
+                        App::uses('Fido','ModelOdtValidator.Controller');
                         $this->Fido = new FidoComponent();
                         $allowed = $this->Fido->checkFile($infosups[$code]['tmp_name']);
 

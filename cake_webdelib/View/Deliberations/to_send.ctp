@@ -13,7 +13,7 @@
     elseif ($this->action == 'toSend')
         echo('<h2>Télétransmission des délibérations</h2>');
     ?>
-    <?php echo $this->Form->create('Deliberation', array('type' => 'file', 'url' => '/deliberations/sendActe')); ?>
+    <?php echo $this->Form->create('Deliberation', array('type' => 'file', 'url' => array('controller'=>'deliberations','action'=>'sendToTdt'))); ?>
     La Classification enregistrée date
     du <?php echo $dateClassification.'&nbsp;'; echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'getClassification'), array('title' => 'Télécharger les données de classification', 'escape'=>false)) ?>
     <br/><br/>

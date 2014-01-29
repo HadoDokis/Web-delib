@@ -37,7 +37,7 @@
                     echo "<td>" . $this->Form->checkbox('Deliberation.id.' . $delib['Deliberation']['id'], array('checked' => false, 'disabled'=>true)) . "</td>";
             ?>
 
-            <td style="text-align:center"><?php echo $delib['Deliberation']['id']; ?></td>
+            <td style="text-align:center"><?php echo $this->Html->link($delib['Deliberation']['id'], array('action'=>'view', $delib['Deliberation']['id'])); ?></td>
             <td>
             <?php
             echo $this->Html->link($delib['Deliberation']['num_delib'], array('controller'=>'models','action'=>'generer', $delib['Deliberation']['id'], 'null', $delib['Modeltemplate']['id'],'-1','0',$delib['Deliberation']['num_delib'],'0','0','0'), array('class'=>'delib_pdf'));

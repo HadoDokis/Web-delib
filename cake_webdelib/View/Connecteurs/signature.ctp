@@ -39,19 +39,19 @@
                 'type' => 'text',
                 'placeholder' => 'http://'.strtolower($protocol).'.x.x.org',
                 'label' => 'URL',
-                'value' => Configure::read('PARAPHEUR_HOST')));
+                'value' => Configure::read($protocol.'_HOST')));
 
             echo $this->Form->input('login', array(
                 'type' => 'text',
                 'placeholder' => 'Nom d\'utilisateur',
                 'label' => 'Login',
-                'value' => Configure::read('PARAPHEUR_LOGIN')));
+                'value' => Configure::read($protocol.'_LOGIN')));
 
             echo $this->Form->input('pwd', array(
                 'type' => 'text',
                 'placeholder' => 'Mot de passe utilisateur',
                 'label' => 'Mot de passe',
-                'value' => Configure::read('PARAPHEUR_PWD')));
+                'value' => Configure::read($protocol.'_PWD')));
 
             ?>
         </fieldset>
@@ -69,7 +69,7 @@
                 'type' => 'text',
                 'label' => 'Type technique (Parapheur)',
                 'placeholder' => 'Exemple : Actes',
-                'value' => Configure::read('PARAPHEUR_TYPE'),
+                'value' => Configure::read('IPARAPHEUR_TYPE'),
             ));
             ?>
         </fieldset>
@@ -94,9 +94,7 @@
     echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('controller' => 'connecteurs', 'action' => 'index'), array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
     echo $this->Form->button("<i class='fa fa-save'></i> Enregistrer", array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Modifier la configuration'));
     echo $this->Html->tag('/div', null);
-
     echo $this->Form->end();
-
     echo $this->Html->script('connecteurs/signature');
     echo $this->Html->css('connecteurs');
     ?>

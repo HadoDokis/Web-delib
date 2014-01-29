@@ -89,7 +89,7 @@ class Signature {
             $this->Iparapheur = new IparapheurComponent($collection);
         }
         $this->Deliberation = new Deliberation;
-        $this->parapheur_type = Configure::read('PARAPHEUR_TYPE');
+        $this->parapheur_type = Configure::read('IPARAPHEUR_TYPE');
 
     }
 
@@ -212,10 +212,10 @@ class Signature {
     }
 
     public function printCircuits(){
-        $circuits = array(
-            'Standard' => array('-1' => 'Signature manuscrite'),
-            'Parapheur' => $this->listCircuits()
-        );
+        $circuits = array('Standard' => array('-1' => 'Signature manuscrite'));
+        $circuits_parapheur = $this->listCircuits();
+        if ($circuits_parapheur)
+            $circuits['Parapheur'] = $circuits_parapheur;
         return $circuits;
     }
 

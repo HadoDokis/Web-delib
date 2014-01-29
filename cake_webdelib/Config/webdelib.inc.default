@@ -49,44 +49,46 @@ Configure::write('SMTP_CLIENT', 'smtp_helo_hostname');
 Configure::write('GEDOOO_WSDL', 'http://gedooo.services.adullact.org:8082/ODFgedooo/OfficeService?wsdl');
 
 /**
+ * Parapheur (Signature électronique, délégation)
+ */
+/* Activer le parapheur */
+Configure::write('USE_PARAPHEUR', false);
+/* Service utilisé pour le parapheur ('PASTELL', 'IPARAPHEUR', ...) */
+Configure::write('PARAPHEUR', 'IPARAPHEUR');
+
+/**
+ * TDT (Tiers de télétransmission)
+ */
+/* Activer le TDT (tiers de télétransmission) */
+Configure::write('USE_TDT', false);
+/* Service utilisé pour le TDT ('PASTELL', 'S2LOW', ...) */
+Configure::write('TDT', 'S2LOW');
+
+/**
  * Configuration des connecteurs
  */
-
 /* Configuration de PASTELL */
 Configure::write('USE_PASTELL', false);
 Configure::write('PASTELL_TYPE', 'actes-generique');
-
-/*
- * Parapheur (Signature électronique, délégation)
- */
-/* Activer un parapheur distant */
-Configure::write('USE_PARAPHEUR', false);
-/* logiciel utilisé pour la signature ('PASTELL', 'IPARAPHEUR', ...) */
-Configure::write('PARAPHEUR', 'PASTELL');
-Configure::write('PARAPHEUR_HOST', 'http://pastell.x.x.org');
-Configure::write('PARAPHEUR_LOGIN', 'login');
-Configure::write('PARAPHEUR_PWD', 'password');
-Configure::write('PARAPHEUR_TYPE', 'Actes');
+Configure::write('PASTELL_LOGIN', 'login');
+Configure::write('PASTELL_PWD', 'password');
 
 /* Configuration Webservice du i-Parapheur */
 Configure::write('USE_IPARAPHEUR', false);
+Configure::write('IPARAPHEUR_HOST', 'https://iparapheur.x.x.org');
+Configure::write('IPARAPHEUR_LOGIN', 'login');
+Configure::write('IPARAPHEUR_PWD', 'password');
+Configure::write('IPARAPHEUR_TYPE', 'Actes');
 Configure::write('IPARAPHEUR_VISIBILITY', 'PUBLIC');
 Configure::write('IPARAPHEUR_WSDL', 'ws-iparapheur.wsdl');
 Configure::write('IPARAPHEUR_CACERT', APP . 'Config/cert_parapheur/ac.pem');
 Configure::write('IPARAPHEUR_CLIENTCERT', APP . 'Config/cert_parapheur/cert.pem');
 Configure::write('IPARAPHEUR_CERTPWD', 'passphrase');
 
-/*
- * Tiers de télétransmission
- */
-/* Activer le TDT (tiers de télétransmission) */
-Configure::write('USE_TDT', false);
-/* logiciel utilisé pour la télétransmission ('PASTELL', 'S2LOW', ...) */
-Configure::write('TDT', 'PASTELL');
 
 /* Configuration S2LOW */
 Configure::write('USE_S2LOW', false);
-Configure::write('S2LOW_HOST', 'https://www.s2low.org');
+Configure::write('S2LOW_HOST', 'https://s2low.x.x.org');
 Configure::write('S2LOW_PEM', APP . 'Config/cert_s2low/client.pem');
 Configure::write('S2LOW_SSLKEY', APP . 'Config/cert_s2low/key.pem');
 Configure::write('S2LOW_CAPATH', APP . 'Config/cert_s2low/');
@@ -99,14 +101,14 @@ Configure::write('S2LOW_MAILSECPWD', '');
 
 /* Configuration CONNECTEUR CMIS GED */
 Configure::write('USE_GED', false);
-Configure::write('GED_HOST', 'http://x.x.x.x/alfresco/service/api/cmis');
+Configure::write('GED_HOST', 'https://ged.x.x.x/alfresco/service/api/cmis');
 Configure::write('GED_LOGIN', 'login');
 Configure::write('GED_PWD', 'password');
 Configure::write('GED_REPO', '/Sites/Web-delib');
 
 /* Configuration pour Idélibre */
 Configure::write('USE_IDELIBRE', false);
-Configure::write('IDELIBRE_HOST', 'https://idelibre.adullact.org');
+Configure::write('IDELIBRE_HOST', 'https://idelibre.x.x.org');
 Configure::write('IDELIBRE_LOGIN', 'login');
 Configure::write('IDELIBRE_PWD', 'password');
 Configure::write('IDELIBRE_CONN', 'adullact'); //Collectivité
@@ -114,11 +116,12 @@ Configure::write('IDELIBRE_CONN', 'adullact'); //Collectivité
 
 /* Configuration ASAL@AE */
 Configure::write('USE_ASALAE', false);
-Configure::write('ASALAE_WSDL', 'http://x.x.x.x/webservices/wsdl');
+Configure::write('ASALAE_HOST', 'https://asalae.x.x.org');
+Configure::write('ASALAE_LOGIN', 'WEBDELIBSERVICES_LOGIN');
+Configure::write('ASALAE_PWD', 'WEBDELIBSERVICES_MDP');
+Configure::write('ASALAE_WSDL', '/webservices/wsdl');
 Configure::write('ASALAE_SIREN_ARCHIVE', 'DEMO');
 Configure::write('ASALAE_NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
-Configure::write('ASALAE_IDVERSANT', 'WEBDELIBSERVICES_LOGIN');
-Configure::write('ASALAE_PWD', 'WEBDELIBSERVICES_MDP');
 
 /**
  * Configuration des annuaires (AD ou OpenLDAP)
@@ -126,7 +129,7 @@ Configure::write('ASALAE_PWD', 'WEBDELIBSERVICES_MDP');
 
 /* Configuration de OpenLDAP (pour Active Directory voir plus bas) */
 Configure::write('USE_OPENLDAP', false);
-Configure::write('LDAP_HOST', 'x.x.x.x');
+Configure::write('LDAP_HOST', 'ldap.x.x.x');
 Configure::write('LDAP_PORT', '389');
 Configure::write('LDAP_LOGIN', NULL);
 Configure::write('LDAP_PASSWD', NULL);

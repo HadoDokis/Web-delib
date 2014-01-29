@@ -19,8 +19,8 @@ App::uses('Component', 'Controller');
 App::uses('ComponentCollection', 'Controller');
 App::uses('SessionComponent', 'Controller/Component');
 App::uses('File', 'Utility');
-class PastellComponent extends Component
-{
+
+class PastellComponent extends Component {
     public $components = array('Session');
 
     private $host;
@@ -29,21 +29,17 @@ class PastellComponent extends Component
     private $parapheur_type;
     private $pastell_type;
     private $Session;
-    private $circuits;
 
-//    function PastellComponent()
-//    {
-//    }
-
-    function __construct(){
+    function __construct() {
         $collection = new ComponentCollection();
         $this->Session = new SessionComponent($collection);
-        $this->host = Configure::read('PARAPHEUR_HOST');
-        $this->login = Configure::read('PARAPHEUR_LOGIN');
-        $this->pwd = Configure::read('PARAPHEUR_PWD');
-        $this->parapheur_type = Configure::read('PARAPHEUR_TYPE');
+        $this->host = Configure::read('PASTELL_HOST');
+        $this->login = Configure::read('PASTELL_LOGIN');
+        $this->pwd = Configure::read('PASTELL_PWD');
+        $this->parapheur_type = Configure::read('IPARAPHEUR_TYPE');
         $this->pastell_type = Configure::read('PASTELL_TYPE');
     }
+
     /**
      * Retourne la liste des circuits du PASTELL
      * La liste est enregistrée en Session
@@ -52,13 +48,14 @@ class PastellComponent extends Component
      * @param int|string $id_e identifiant de la collectivité
      * @return array
      */
-    public function getCircuits($id_e){
-        if (!$this->Session->check('user.Pastell.circuits')){
+    public function getCircuits($id_e) {
+        if (!$this->Session->check('user.Pastell.circuits')) {
             $tmp_id_d = $this->createDocument($id_e);
             $circuits = $this->getInfosField($id_e, $tmp_id_d, 'iparapheur_sous_type');
-            $this->Session->write('user.Pastell.circuits', $circuits);
+            if (!empty($circuits))
+                $this->Session->write('user.Pastell.circuits', $circuits);
             $this->action($id_e, $tmp_id_d, 'supression');
-        }else{
+        } else {
             $circuits = $this->Session->read('user.Pastell.circuits');
         }
         return $circuits;
@@ -70,7 +67,7 @@ class PastellComponent extends Component
      * @param bool $file_transfert attente d'un fichier en retour ?
      * @return array retour du webservice
      */
-    protected function _execute($page, $data = array(), $file_transfert = false){
+    protected function _execute($page, $data = array(), $file_transfert = false) {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, $this->login . ":" . $this->pwd);
@@ -81,14 +78,14 @@ class PastellComponent extends Component
             curl_setopt($curl, CURLOPT_POST, TRUE);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
-        if ($file_transfert){
-            $path = tempnam('/tmp/','WD_BRDR_');
+        if ($file_transfert) {
+            $path = tempnam('/tmp/', 'WD_BRDR_');
             $fp = fopen($path, 'w');
             curl_setopt($curl, CURLOPT_FILE, $fp);
         }
         $response = curl_exec($curl);
         curl_close($curl);
-        if ($file_transfert){
+        if ($file_transfert) {
             fclose($fp);
             $content = file_get_contents($path);
             unlink($path);
@@ -108,21 +105,18 @@ class PastellComponent extends Component
      * @param array $retourWS reponse ws
      * @return bool false si en erreur
      */
-    protected function _log($page, $data, $retourWS){
-//        if (Configure::read('debug'))
-//            $this->log($retourWS, 'debug');
-
-        $this->log('Request : '.$page, 'pastell');
+    protected function _log($page, $data, $retourWS) {
+        $this->log('Request : ' . $page, 'pastell');
         if (!empty($data))
-            $this->log('Data : '.print_r($data,true), 'pastell');
-        if (empty($retourWS)){
+            $this->log('Data : ' . print_r($data, true), 'pastell');
+        if (empty($retourWS)) {
             $this->log('Error : Aucune réponse du serveur distant', 'pastell');
             return false;
         }
         if (!empty($retourWS['message']))
-            $this->log('Message : '.$retourWS['message'], 'pastell');
-        if (!empty($retourWS['error-message'])){
-            $this->log('Error : '.$retourWS['error-message'], 'pastell');
+            $this->log('Message : ' . $retourWS['message'], 'pastell');
+        if (!empty($retourWS['error-message'])) {
+            $this->log('Error : ' . $retourWS['error-message'], 'pastell');
             return false;
         }
 
@@ -135,13 +129,13 @@ class PastellComponent extends Component
      * @param array $params tableau de paramètres
      * @return string chaine de paramètres
      */
-    protected function _paramsArray2String($params = array()){
+    protected function _paramsArray2String($params = array()) {
         $target = '';
-        foreach ($params as $opt => $val){
+        foreach ($params as $opt => $val) {
             if (!empty($val))
-                $target.= $opt.'='.urlencode($val).'&';
+                $target .= $opt . '=' . urlencode($val) . '&';
         }
-        return substr($target,0,strlen($target)-1);
+        return substr($target, 0, strlen($target) - 1);
     }
 
     /**
@@ -152,8 +146,7 @@ class PastellComponent extends Component
      *      version_complete => Version affiché sur la l'interface web de la plateforme
      * )
      */
-    public function getVersion()
-    {
+    public function getVersion() {
         return $this->_execute('version.php');
     }
 
@@ -168,8 +161,7 @@ class PastellComponent extends Component
      * id : Identifiant du type
      * nom : Nom à afficher pour l'utilisateur (exemple : Actes, Message du centre de gestion)
      */
-    public function getDocumentTypes()
-    {
+    public function getDocumentTypes() {
         $documents = array();
         $natures = $this->_execute('document-type.php');
         foreach ($natures as $id => $nature) {
@@ -187,8 +179,7 @@ class PastellComponent extends Component
      * @param string $type Type de document (retourné par document-type.php). Exemple : actes, mailsec, ...
      * @return array propriete * : Couple clé/valeur de la propriété
      */
-    public function getDocumentTypeInfos($type)
-    {
+    public function getDocumentTypeInfos($type) {
         return $this->_execute("document-type-info.php?type=$type");
     }
 
@@ -200,7 +191,7 @@ class PastellComponent extends Component
      * @param string $type Type de document (retourné par document-type.php)
      * @return array propriete * : Couple clé/valeur de la propriété
      */
-    public function getDocumentTypeActions($type){
+    public function getDocumentTypeActions($type) {
 
         return $this->_execute("document-type-action.php?type=$type");
     }
@@ -222,14 +213,13 @@ class PastellComponent extends Component
      * sinon
      * @return array( id_e => denomination )
      */
-    public function listEntities($details=false)
-    {
+    public function listEntities($details = false) {
         $entities = $this->_execute('list-entite.php');
         if ($details)
             return $entities;
-        else{
+        else {
             $collectivites = array();
-            foreach ($entities as $entity){
+            foreach ($entities as $entity) {
                 $collectivites[$entity['id_e']] = $entity['denomination'];
             }
             return $collectivites;
@@ -241,7 +231,7 @@ class PastellComponent extends Component
      *
      * Liste l'ensemble des documents d'une entité Liste également les entités filles.
      *
-     * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
+     * @param int|string $id_e Identifiant de l'entité (retourné par list-entite)
      * @param string $type Type de document (retourné par document-type)
      * @param integer $offset (facultatif, 0 par défaut) Numéro de la première ligne à retourner
      * @param integer $limit (facultatif, 100 par défaut) Nombre maximum de lignes à retourner
@@ -257,8 +247,7 @@ class PastellComponent extends Component
      *                  entite * => Liste des identifiant (id_e) des autres entités qui ont des droits sur ce document
      * )
      */
-    public function listDocuments($id_e, $type, $offset=0, $limit=100)
-    {
+    public function listDocuments($id_e, $type, $offset = 0, $limit = 100) {
         return $this->_execute("list-document.php?id_e=$id_e&type=$type&offset=$offset&limit=$limit");
     }
 
@@ -280,7 +269,7 @@ class PastellComponent extends Component
      *  entite * =>         Liste des identifiant (id_e) des autres entités qui ont des droits sur ce document.
      * }
      */
-    public function rechercheDocument($options = array()){
+    public function rechercheDocument($options = array()) {
         $default_options = array(
             'id_e' => null, //Identifiant de l'entité (retourné par list-entite)
             'type' => null, //Type de document (retourné par document-type.php)
@@ -294,8 +283,8 @@ class PastellComponent extends Component
             'tri' => null, //critère de tri parmi last_action_date, title et entite
             'search' => null, //l'objet du document doit contenir la chaine indiquée
         );
-        $options = array_merge($default_options,$options);
-        return $this->_execute('list-document.php?'.$this->_paramsArray2String($options));
+        $options = array_merge($default_options, $options);
+        return $this->_execute('list-document.php?' . $this->_paramsArray2String($options));
     }
 
     /**
@@ -303,8 +292,8 @@ class PastellComponent extends Component
      *
      * Récupère l'ensemble des informations sur un document Liste également les entités filles.
      *
-     * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
-     * @param integer $id_d Identifiant unique du document (retourné par list-document)
+     * @param int|string $id_e Identifiant de l'entité (retourné par list-entite)
+     * @param int|string $id_d Identifiant unique du document (retourné par list-document)
      * @return array
      * Format de sortie :
      * [] => {
@@ -313,8 +302,7 @@ class PastellComponent extends Component
      *  action_possible * => Liste des actions possible (exemple : modification, envoie-tdt, ...)
      * }
      */
-    public function detailDocument($id_e, $id_d)
-    {
+    public function detailDocument($id_e, $id_d) {
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d
@@ -327,7 +315,7 @@ class PastellComponent extends Component
      *
      * Récupère l'ensemble des informations sur un document Liste également les entités filles.
      *
-     * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
+     * @param int|string $id_e Identifiant de l'entité (retourné par list-entite)
      * @param array $id_d Tableau d'identifiants uniques de documents (retourné par list-document)
      * @return array
      * Format de sortie :
@@ -337,21 +325,19 @@ class PastellComponent extends Component
      *  action_possible * => Liste des actions possible (exemple : modification, envoie-tdt, ...)
      * }
      */
-    public function detailDocuments($id_e, $id_d)
-    {
+    public function detailDocuments($id_e, $id_d) {
         $args = "id_e=$id_e";
         foreach ($id_d as $d) $args .= "&id_d=$d";
-        return $this->_execute('detail-several-document.php?'.$args);
+        return $this->_execute('detail-several-document.php?' . $args);
     }
 
     /**
-     * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
-     * @param string $type
-     * @return integer id_d	Identifiant unique du document crée.
+     * @param int|string $id_e identifiant de la collectivité
+     * @param string $type type de flux (pastell)
+     * @return integer id_d Identifiant unique du document crée.
      * @throws Exception Si erreur lors de la création
      */
-    public function createDocument($id_e, $type = null)
-    {
+    public function createDocument($id_e, $type = null) {
         if ($type == null)
             $type = $this->pastell_type;
         $infos = $this->_execute("create-document.php?id_e=$id_e&type=$type");
@@ -375,23 +361,21 @@ class PastellComponent extends Component
      * Ce script permet de récupérer l'ensemble de ces valeurs.
      * Ce script est utilisable sur tous les champs qui dispose d'une propriétés « controler »
      *
-     * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
-     * @param integer $id_d Identifiant unique du document (retourné par list-document)
+     * @param int|string $id_e identifiant de la collectivité
+     * @param int|string $id_d identifiant du dossier pastell
      * @param string $field le nom d'un champ du document
      * @return array
      * valeur_possible * => Information supplémentaire sur la valeur possible (éventuellement sous forme de tableau associatif)
      */
-    public function getInfosField($id_e, $id_d, $field)
-    {
+    public function getInfosField($id_e, $id_d, $field) {
         return $this->_execute("external-data.php?id_e=$id_e&id_d=$id_d&field=$field");
     }
 
     /**
      * FIXME
      * Modification d'un document
-     *
-     * @param $id_e
-     * @param $id_d
+     * @param int|string $id_e identifiant de la collectivité
+     * @param int|string $id_d identifiant du dossier pastell
      * @param array $delib
      * @param array $annexes
      * @return int|string
@@ -402,8 +386,7 @@ class PastellComponent extends Component
      * A noter que pour connaître la liste et les intitulés exacts des champs modifiables,
      * il convient d'utiliser la fonction document-type-info.php, en lui précisant le type concerné.
      */
-    public function modifDocument($id_e, $id_d, $delib = array(), $annexes = array())
-    {
+    public function modifDocument($id_e, $id_d, $delib = array(), $annexes = array()) {
         if (empty($delib)) return -1;
         App::uses('Deliberation', 'Model');
         $this->Deliberation = new Deliberation();
@@ -419,13 +402,12 @@ class PastellComponent extends Component
             'acte_nature' => $delib['Typeacte']['nature_id'],
         );
 
-
         $this->_execute('modif-document.php', $acte);
         foreach ($annexes as $annex)
             $this->sendAnnex($id_e, $id_d, $annex);
         $resultat = $this->detailDocument($id_e, $id_d);
         $this->log($resultat, 'debug');
-        if (!empty($resultat['data']['classification'])){
+        if (!empty($resultat['data']['classification'])) {
             $pos = strpos($resultat['data']['classification'], "existe");
             if ($pos !== false && $resultat['data']['envoi_tdt'])
                 return utf8_decode($resultat['data']['classification']);
@@ -435,9 +417,8 @@ class PastellComponent extends Component
 
     /**
      * Envoie d'un fichier pour modifier un document
-     *
-     * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
-     * @param integer $id_d Identifiant unique du document (retourné par list-document)
+     * @param int|string $id_e identifiant de la collectivité
+     * @param int|string $id_d identifiant du dossier pastell
      * @param array $options
      * [] =>
      *  string field_name le nom du champs
@@ -451,7 +432,7 @@ class PastellComponent extends Component
      *  formulaire_ok : 1 si le formulaire est valide, 0 sinon
      *  message : Message complémentaire
      */
-    public function sendFile($id_e, $id_d, $options = array()){
+    public function sendFile($id_e, $id_d, $options = array()) {
         $default_options = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
@@ -460,15 +441,14 @@ class PastellComponent extends Component
             'file_number' => null, //le numéro du fichier (pour les fichier multiple)
             'file_content' => null, //le contenu du fichier
         );
-        $options = array_merge($default_options,$options);
-        return $this->_execute('list-document.php?'.$this->_paramsArray2String($options));
+        $options = array_merge($default_options, $options);
+        return $this->_execute('list-document.php?' . $this->_paramsArray2String($options));
     }
 
     /**
      * Réception d'un fichier
-     *
-     * @param integer $id_e
-     * @param integer $id_d
+     * @param int|string $id_e identifiant de la collectivité
+     * @param int|string $id_d identifiant du dossier pastell
      * @param string $field_name le nom du champs
      * @param integer $file_number le numéro du fichier (pour les fichiers multiple)
      * @return array
@@ -476,21 +456,21 @@ class PastellComponent extends Component
      *  file_name : le nom du fichier
      *  file_content : le contenu du fichier
      */
-    public function receiveFile($id_e, $id_d, $field_name = null, $file_number = null){
+    public function receiveFile($id_e, $id_d, $field_name = null, $file_number = null) {
         $options = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
             'field_name' => $field_name, //le nom du champs
             'file_number' => $file_number, //le numéro du fichier (pour les fichier multiple)
         );
-        return $this->_execute('receive-file.php?'.$this->_paramsArray2String($options));
+        return $this->_execute('receive-file.php?' . $this->_paramsArray2String($options));
     }
 
     /**
      * Execute une action sur un document
      *
-     * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
-     * @param integer $id_d Identifiant unique du document (retourné par list-document)
+     * @param int|string $id_e Identifiant de l'entité (retourné par list-entite)
+     * @param int|string $id_d Identifiant unique du document (retourné par list-document)
      * @param string $action Nom de l'action (retourné par detail-document, champs action-possible)
      * @param array $options
      * @return array
@@ -499,8 +479,7 @@ class PastellComponent extends Component
      *  message : Message complémentaire en cas de réussite
      *
      */
-    public function action($id_e, $id_d, $action, $options = array())
-    {
+    public function action($id_e, $id_d, $action, $options = array()) {
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
@@ -512,17 +491,14 @@ class PastellComponent extends Component
     }
 
     /**
-     * FIXME
      * Récupère le contenu d'un fichier
-     *
-     * @param integer $id_e Identifiant de l'entité (retourné par list-entite)
-     * @param integer $id_d Identifiant unique du document (retourné par list-document)
+     * @param int|string $id_e Identifiant de l'entité (retourné par list-entite)
+     * @param int|string $id_d Identifiant unique du document (retourné par list-document)
      * @param string $field le nom d'un champ du document
      * @param int $num le numéro du fichier, s'il s'agit d'un champ fichier multiple
      * @return string fichier c'est le fichier qui est renvoyé directement
      */
-    public function getFile($id_e, $id_d, $field, $num = 0)
-    {
+    public function getFile($id_e, $id_d, $field, $num = 0) {
         $data = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
@@ -538,13 +514,11 @@ class PastellComponent extends Component
     /**
      * TODO ajouter les autres paramètres d'entrée
      * Récupérer le journal
-     *
-     * @param $id_e
-     * @param $id_d
-     * @return mixed
+     * @param int|string $id_e identifiant de la collectivité
+     * @param int|string $id_d identifiant du dossier pastell
+     * @return bool|array résultat
      */
-    public function journal($id_e, $id_d)
-    {
+    public function journal($id_e, $id_d) {
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d
@@ -555,18 +529,22 @@ class PastellComponent extends Component
     /**
      * Envoi l'acte au PASTELL pour signature
      * Attention: le document doit être inséré dans un circuit avant !
-     *
-     * @param int|string $id_e
-     * @param int|string $id_d
-     * @return array
+     * @param int|string $id_e identifiant de la collectivité
+     * @param int|string $id_d identifiant du dossier pastell
+     * @return bool|array résultat
      */
-    public function envoiSignature($id_e, $id_d)
-    {
+    public function envoiSignature($id_e, $id_d) {
         return $this->_execute("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_signature=true");
     }
 
-    public function selectCircuit($id_e, $id_d, $sous_type)
-    {
+    /**
+     * Envoi à Pastell l'information sur le circuit du parapheur à emprunter
+     * @param int|string $id_e identifiant de la collectivité
+     * @param int|string $id_d identifiant du dossier pastell
+     * @param string $sous_type
+     * @return bool|array résultat
+     */
+    public function selectCircuit($id_e, $id_d, $sous_type) {
         $infos = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
@@ -577,8 +555,14 @@ class PastellComponent extends Component
         return $this->_execute('modif-document.php', $infos);
     }
 
-    public function sendAnnex($id_e, $id_d, $annex)
-    {
+    /**
+     * Joint ses annexes à un document dans Pastell
+     * @param $id_e identifiant de la collectivité
+     * @param $id_d identifiant du dossier pastell
+     * @param $annex chemin de l'annexe à attacher
+     * @return bool|array résultat
+     */
+    public function sendAnnex($id_e, $id_d, $annex) {
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
