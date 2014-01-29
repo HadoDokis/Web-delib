@@ -48,11 +48,15 @@ Configure::write('SMTP_CLIENT', 'smtp_helo_hostname');
 /* Configuration GEDOOo */
 Configure::write('GEDOOO_WSDL', 'http://gedooo.services.adullact.org:8082/ODFgedooo/OfficeService?wsdl');
 
+/**
+ * Configuration des connecteurs
+ */
+
 /* Configuration de PASTELL */
 Configure::write('USE_PASTELL', false);
 Configure::write('PASTELL_TYPE', 'actes-generique');
 
-/**
+/*
  * Parapheur (Signature électronique, délégation)
  */
 /* Activer un parapheur distant */
@@ -64,17 +68,6 @@ Configure::write('PARAPHEUR_LOGIN', 'login');
 Configure::write('PARAPHEUR_PWD', 'password');
 Configure::write('PARAPHEUR_TYPE', 'Actes');
 
-/**
- * Tiers de télétransmission
- */
-/* Activer le TDT (tiers de télétransmission) */
-Configure::write('USE_TDT', false);
-/* logiciel utilisé pour la télétransmission ('PASTELL', 'S2LOW', ...) */
-Configure::write('TDT', 'PASTELL');
-
-/**
- * Configuration des connecteurs
- */
 /* Configuration Webservice du i-Parapheur */
 Configure::write('USE_IPARAPHEUR', false);
 Configure::write('IPARAPHEUR_VISIBILITY', 'PUBLIC');
@@ -83,14 +76,22 @@ Configure::write('IPARAPHEUR_CACERT', APP . 'Config/cert_parapheur/ac.pem');
 Configure::write('IPARAPHEUR_CLIENTCERT', APP . 'Config/cert_parapheur/cert.pem');
 Configure::write('IPARAPHEUR_CERTPWD', 'passphrase');
 
+/*
+ * Tiers de télétransmission
+ */
+/* Activer le TDT (tiers de télétransmission) */
+Configure::write('USE_TDT', false);
+/* logiciel utilisé pour la télétransmission ('PASTELL', 'S2LOW', ...) */
+Configure::write('TDT', 'PASTELL');
+
 /* Configuration S2LOW */
 Configure::write('USE_S2LOW', false);
-Configure::write('S2LOW_PEM',        APP . 'Config/cert_s2low/client.pem');
-Configure::write('S2LOW_SSLKEY',     APP . 'Config/cert_s2low/key.pem');
-Configure::write('S2LOW_CAPATH',    APP . 'Config/cert_s2low/');
+Configure::write('S2LOW_HOST', 'https://www.s2low.org');
+Configure::write('S2LOW_PEM', APP . 'Config/cert_s2low/client.pem');
+Configure::write('S2LOW_SSLKEY', APP . 'Config/cert_s2low/key.pem');
+Configure::write('S2LOW_CAPATH', APP . 'Config/cert_s2low/');
 Configure::write('S2LOW_CLASSIFICATION', WEBROOT_PATH . '/files/actes/classification.xml');
 Configure::write('S2LOW_CERTPWD', 'password');
-Configure::write('S2LOW_HOST', 'www.s2low.org');
 Configure::write('S2LOW_USEPROXY', false);
 Configure::write('S2LOW_PROXYHOST', '');
 Configure::write('S2LOW_MAILSEC', false);
