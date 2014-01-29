@@ -46,7 +46,7 @@ INSERT INTO crons (id, nom, description, plugin, model, action, has_params, para
 
 -- Tâche planifiée de mise à jour du status des actes envoyés au i-parapheur
 INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
-  VALUES ('3', 'Signature : Mise à jour de l''etat des dossiers envoyés au i-Parapheur', 'Met à jour l''état des projets envoyés au i-Parapheur pour signature et rapatrie les informations de ceux en fin de circuit.', null, 'CronJob',	'signatureJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
+  VALUES ('3', 'Signature : Mise à jour de l''etat des dossiers envoyés au Parapheur', 'Met à jour l''état des projets envoyés au Parapheur pour signature et rapatrie les informations de ceux en fin de circuit.', null, 'CronJob',	'signatureJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
 
 -- Tâche planifiée de mise à jour du status des actes envoyés au i-parapheur
 INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
