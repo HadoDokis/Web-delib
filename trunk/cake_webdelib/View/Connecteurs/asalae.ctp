@@ -42,7 +42,7 @@ echo $this->Form->input('use_asalae', array(
                 'type' => 'text',
                 'placeholder' => '',
                 'label' => false,
-                'value' => Configure::read('ASALAE_IDVERSANT'),
+                'value' => Configure::read('ASALAE_LOGIN'),
                 'before' => '<label>Identifiant du versant</label>')) . '<br>';
         echo $this->Form->input('mot_de_passe', array(
                 'type' => 'text',

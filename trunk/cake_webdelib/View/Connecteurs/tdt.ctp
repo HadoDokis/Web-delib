@@ -3,7 +3,7 @@
     <?php
     $protocol = Configure::read('TDT');
     $true_false = array('true' => 'Oui', 'false' => 'Non');
-    echo $this->Form->create('Connecteur', array('url' => array('controller' => 'connecteurs', 'action' => 'makeconf', 'signature'), 'type' => 'file'));
+    echo $this->Form->create('Connecteur', array('url' => array('controller' => 'connecteurs', 'action' => 'makeconf', 'tdt'), 'type' => 'file'));
     ?>
     <fieldset>
         <legend>Activation du TDT</legend>
@@ -21,7 +21,7 @@
     <div class='spacer'></div>
     <div id='config_content' <?php echo Configure::read('USE_TDT') === false ? 'style="display: none;"' : ''; ?>>
         <fieldset>
-            <legend>Connecteur de signature</legend>
+            <legend>Tiers de Télétransmission</legend>
             <?php
             echo $this->Form->input('tdt_protocol', array(
                 'type' => 'select',
@@ -33,36 +33,38 @@
         </fieldset>
         <div class='spacer'></div>
         <fieldset>
-            <legend>Informations d'authentification</legend>
+            <legend>Informations de connexion</legend>
             <?php
             echo $this->Form->input('host', array(
                 'type' => 'text',
-                'placeholder' => 'http://x.x.x.org',
-                'label' => 'URL',
+                'placeholder' => 'https://' . strtolower($protocol) . '.x.x.org',
+                'label' => 'URL du serveur',
                 'value' => Configure::read($protocol . '_HOST')));
-
+            echo $this->Form->hidden('pastell_host', array('value' => Configure::read('PASTELL_HOST')));
+            echo $this->Form->hidden('s2low_host', array('value' => Configure::read('S2LOW_HOST')));
+            ?>
+            <span class="pastell-infos">
+            <?php
             echo $this->Form->input('login', array(
                 'type' => 'text',
                 'placeholder' => 'Nom d\'utilisateur',
                 'label' => 'Login',
-                'value' => Configure::read($protocol . '_LOGIN')));
-
+                'value' => Configure::read('PASTELL_LOGIN')));
             echo $this->Form->input('pwd', array(
                 'type' => 'text',
                 'placeholder' => 'Mot de passe utilisateur',
                 'label' => 'Mot de passe',
-                'value' => Configure::read($protocol . '_PWD')));
-
+                'value' => Configure::read('PASTELL_PWD')));
             echo $this->Form->input('type', array(
                 'type' => 'text',
-                'label' => 'Type technique',
-                'placeholder' => 'Exemple : Actes, actes-generique...',
-                'value' => Configure::read($protocol . '_TYPE'),
+                'label' => 'Type de flux',
+                'placeholder' => 'Exemple : actes-generique',
+                'value' => Configure::read('PASTELL_TYPE'),
             ));
             ?>
-        </fieldset>
-        <fieldset
-            id='infos_certificat'<?php if ($protocol != 'IPARAPHEUR') echo ' style="display: none;"'; ?>>
+            </span>
+            </fieldset>
+        <fieldset class="s2low-infos">
             <legend>Certificat d'authentification</legend>
             <?php
             echo $this->Form->input('clientcert', array(
@@ -71,11 +73,60 @@
             ));
             echo $this->Form->input('certpwd', array(
                 'type' => 'text',
-                'placeholder' => "Mot de passe du certificat",
-                'value' => Configure::read('IPARAPHEUR_CERTPWD'),
+                'placeholder' => "Fourni avec votre certificat",
+                'value' => Configure::read('S2LOW_CERTPWD'),
                 'label' => 'Mot de passe'));
             ?>
         </fieldset>
+        <div class="s2low-infos"<?php if ($protocol != 'S2LOW') echo ' style="display: none;"'; ?>>
+            <fieldset>
+                <legend>Proxy</legend>
+                <?php
+                echo $this->Form->input('use_proxy', array(
+                    'legend' => false,
+                    'type' => 'radio',
+                    'options' => $true_false,
+                    'value' => Configure::read('S2LOW_USEPROXY') ? 'true' : 'false',
+                    'default' => 'false',
+                    'label' => true,
+                    'onClick' => "if(this.value=='true') $('#proxy_host').show(); else $('#proxy_host').hide(); "));
+                ?>
+                <div class='spacer'></div>
+                <div id="proxy_host" <?php if (!Configure::read('S2LOW_USEPROXY')) echo ' style="display: none;"'; ?>>
+                    <?php
+                    echo $this->Form->input('proxy_host', array(
+                        'type' => 'text',
+                        'placeholder' => 'Exemple : http://x.x.x.x:8080',
+                        'value' => Configure::read('S2LOW_PROXYHOST'),
+                        'label' => 'Adresse du proxy'));
+                    ?> </div>
+                <div class='spacer'></div>
+                <legend>Mail sécurisé</legend>
+                <?php
+                echo $this->Form->input('use_mails', array(
+                    'legend' => false,
+                    'type' => 'radio',
+                    'options' => $true_false,
+                    'value' => Configure::read('S2LOW_MAILSEC') ? 'true' : 'false',
+                    'default' => 'false',
+                    'onClick' => "if(this.value=='true') $('#mails_password').show(); else $('#mails_password').hide(); ",
+                    'label' => true
+                ));
+                ?>
+                <div class='spacer'></div>
+                <div
+                    id="mails_password" <?php if (!Configure::read('S2LOW_MAILSEC')) echo ' style="display: none;"'; ?>>
+                    <?php
+                    echo $this->Form->input('mails_password', array(
+                        'type' => 'text',
+                        'placeholder' => 'Mot de passe mail sécurisé',
+                        'value' => Configure::read('S2LOW_MAILSECPWD'),
+                        'label' => 'Mot de passe'
+                    ));
+                    ?>
+                </div>
+            </fieldset>
+        </div>
         <div class='spacer'></div>
     </div>
     <?php
@@ -92,7 +143,7 @@
 
     echo $this->Form->end();
 
-    echo $this->Html->script('connecteurs/signature');
+    echo $this->Html->script('connecteurs/tdt');
     echo $this->Html->css('connecteurs');
     ?>
 </div>

@@ -1196,7 +1196,7 @@ function getCircuitsParapheur() {
     if (Configure::read('PARAPHEUR') == 'IPARAPHEUR') {
         include_once(COMPONENTS.'IparapheurComponent.php');
         $Parafwebservice = new IparapheurComponent();
-        $circuits = $Parafwebservice->getListeSousTypesWebservice(Configure::read('PARAPHEUR_TYPE'));
+        $circuits = $Parafwebservice->getListeSousTypesWebservice(Configure::read('IPARAPHEUR_TYPE'));
         $time_end = microtime(true);
         if (!empty($circuits)) {
             d(Configure::read('PARAPHEUR_HOST'), 'info');
@@ -1211,7 +1211,7 @@ function getCircuitsParapheur() {
 function getVersionAsalae() {
 
     $client = new SoapClient(Configure::read('ASALAE_WSDL'));
-    $version = $client->__soapCall("wsGetVersion", array(Configure::read('ASALAE_IDVERSANT'), Configure::read('ASALAE_PWD')));
+    $version = $client->__soapCall("wsGetVersion", array(Configure::read('ASALAE_LOGIN'), Configure::read('ASALAE_PWD')));
     if (is_int( $version)) {
         d("Echec d'authentification", 'ko');
     }

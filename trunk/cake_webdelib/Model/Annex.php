@@ -109,9 +109,8 @@ class Annex extends AppModel {
         $conditions = array('foreign_key' => $delib_id);
         $conditions['joindre_ctrl_legalite'] = 1;
         return $this->find('all', array(
-                    'conditions' => $conditions,
-                    'fields' => array('filename', 'filetype', 'data'
-        )));
+            'conditions' => $conditions,
+            'fields' => array('filename', 'filetype', 'data')));
     }
 
     function getContentToTdT($annex_id)

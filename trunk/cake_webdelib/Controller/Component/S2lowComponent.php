@@ -44,9 +44,8 @@ class S2lowComponent extends Component {
     function getClassification() {
         $sucess = true;
         $pos = strrpos(getcwd(), 'webroot');
-        $path = substr(getcwd(), 0, $pos);
 
-        $url = 'https://' . Configure::read('S2LOW_HOST') . '/modules/actes/actes_classification_fetch.php';
+        $url = Configure::read('S2LOW_HOST') . '/modules/actes/actes_classification_fetch.php';
         $data = array(
             'api' => '1',
         );
@@ -71,7 +70,6 @@ class S2lowComponent extends Component {
         {
             $reponse = str_replace('ISO-8859-1', 'UTF-8', $reponse);
             $xml = simplexml_load_string(utf8_encode($reponse));
-
             if ($xml === false && $sucess)
                 $sucess = false;
             else {
@@ -81,21 +79,19 @@ class S2lowComponent extends Component {
                 else {
                     $dom = new DOMDocument('1.0', 'UTF-8');
                     $dom_xml = $dom->importNode($dom_xml, true);
-                    $dom_xml = $dom->appendChild($dom_xml);
+                    $dom->appendChild($dom_xml);
                 }
             }
         }
-
         if ($sucess) {
             $file = new File(Configure::read('S2LOW_CLASSIFICATION'), true);
             $file->delete();
             $file->create();
-            $xml = $dom->saveXML();
+            $dom->saveXML();
             if ($file->writable())
                 $file->write($dom->saveXML());
             else
                 $sucess = false;
-
             $file->close();
         }
         //echo "Impossible d'ecrire dans le fichier ($filename)";
@@ -118,7 +114,6 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         $curl_return = curl_exec($ch);
         curl_close($ch);
-
         return($curl_return);
     }
 
@@ -136,7 +131,6 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-
         $curl_return = curl_exec($ch);
         curl_close($ch);
         return $curl_return;
@@ -157,7 +151,6 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
         //curl_setopt($ch, CURLOPT_VERBOSE, true);
-        
         $curl_return = curl_exec($ch);
         curl_close($ch);
         
@@ -178,7 +171,6 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('S2LOW_USEPROXY'))
             curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
-
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -200,7 +192,6 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('S2LOW_USEPROXY'))
             curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
-
         curl_setopt($ch, CURLOPT_POST, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_CAPATH, Configure::read('S2LOW_CAPATH'));
@@ -242,14 +233,14 @@ class S2lowComponent extends Component {
     }
 
     function isNewMessage($delib_id, $type, $reponse, $message_id) {
-        $message = $this->TdtMessage->find('first', array('conditions' =>
-            array('TdtMessage.delib_id' => $delib_id,
+        $message = $this->TdtMessage->find('first', array(
+            'conditions' => array(
+                'TdtMessage.delib_id' => $delib_id,
                 'TdtMessage.type_message' => $type,
                 'TdtMessage.reponse' => $reponse,
-                'TdtMessage.message_id' => $message_id)));
+                'TdtMessage.message_id' => $message_id
+            )));
         return (empty($message));
     }
 
 }
-
-?>
