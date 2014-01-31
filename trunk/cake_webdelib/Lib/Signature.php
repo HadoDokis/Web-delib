@@ -77,12 +77,8 @@ class Signature {
             $this->Pastell = new PastellComponent($collection);
             //Enregistrement de la collectivité (pour pastell)
             $Collectivite = new Collectivite();
-            $coll = $Collectivite->find('first', array(
-                'conditions' => array('id'=>1),
-                'fields' => array('id_entity'),
-                'recursive' => -1
-            ));
-            $this->collectivite = $coll['Collectivite']['id_entity'];
+            $Collectivite->id = 1;
+            $this->collectivite = $Collectivite->field('id_entity');
             $this->pastell_type = Configure::read('PASTELL_TYPE');
         }
         if ($protocol == 'IPARAPHEUR'){

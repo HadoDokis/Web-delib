@@ -75,7 +75,7 @@ class PastellComponentTest extends CakeTestCase {
      * @return void
      */
     public function testGetDocumentTypeActions(){
-        debug ($this->PastellComponent->getDocumentTypeActions('actes-generique'));
+//        debug ($this->PastellComponent->getDocumentTypeActions('actes-generique'));
         return ($this->PastellComponent->getDocumentTypeActions('actes-generique'));
     }
 
@@ -112,13 +112,25 @@ class PastellComponentTest extends CakeTestCase {
         return ($this->PastellComponent->rechercheDocument($options));
     }
 
+    public function testGetInfosField(){
+        debug ($this->PastellComponent->getInfosField('3','E43dLMG','classification'));
+    }
+
     /**
      * Test detailDocument()
      * @return void
      */
     public function testDetailDocument(){
-        debug ($this->PastellComponent->detailDocument(3,'Hb63sCE'));
-        debug ($this->PastellComponent->detailDocument(3,'FjZWMlC'));
+
+//        $data = array(
+//            'id_e' => 3,
+//            'id_d' => 'nNZ1gt6'
+//        );
+//        if (Configure::read('USE_TDT') && Configure::read('TDT') == 'PASTELL')
+//            $data['envoi_tdt'] = 'true';
+//        $this->PastellComponent->execute("modif-document.php", $data);
+        debug ($this->PastellComponent->detailDocument(3,'E43dLMG'));
+//        debug ($this->PastellComponent->detailDocument(3,'FjZWMlC'));
 
 //        return ($this->PastellComponent->detailDocument(48,'elRx6ID'));
     }
@@ -148,10 +160,10 @@ class PastellComponentTest extends CakeTestCase {
      * Test getInfosField()
      * @return void
      */
-    public function testGetInfosField(){
-        debug ($this->PastellComponent->getInfosField(3,'L4iaPx6', null));
+//    public function testGetInfosField(){
+//        debug ($this->PastellComponent->getInfosField(3,'L4iaPx6', null));
 //        return ($this->PastellComponent->getInfosField(48,'actes-generique'));
-    }
+//    }
 
 
 }
