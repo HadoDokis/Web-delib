@@ -6,16 +6,15 @@
  * @license CeCiLL V2 <http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html>
  */
 App::uses('Cron', 'Model');
-class CronJob extends AppModel
-{
+
+class CronJob extends AppModel {
     public $useTable = false;
 
     /**
      * Mise à jour des dossiers en attente de signature dans le i-parapheur connecté
      * @return string
      */
-    public function signatureJob()
-    {
+    public function signatureJob() {
         App::uses('Signature', 'Lib');
         $this->Signature = new Signature;
         return $this->Signature->updateAll();
@@ -25,8 +24,7 @@ class CronJob extends AppModel
      * Mise à jour des projets en délégation dans le i-parapheur connecté
      * @return string
      */
-    public function delegationJob()
-    {
+    public function delegationJob() {
         App::uses('Traitement', 'Cakeflow.Model');
         $this->Traitement = new Traitement();
         return $this->Traitement->majTraitementsParapheur();
@@ -35,8 +33,7 @@ class CronJob extends AppModel
     /**
      * @return string
      */
-    public function retardCakeflowJob()
-    {
+    public function retardCakeflowJob() {
         try {
             $users = array();
             //Import des modèles
@@ -87,10 +84,9 @@ class CronJob extends AppModel
     }
 
     /**
-     * Tâche planifiée S2low
+     * Tâche planifiée mise à jour des mail Sec S2low
      */
-    public function s2lowJob()
-    {
+    public function mailSecJob() {
         //Si service désactivé ==> quitter
         if (!Configure::read('USE_S2LOW')) {
             return Cron::MESSAGE_FIN_EXEC_ERROR . "\nService S2LOW désactivé";
@@ -107,7 +103,7 @@ class CronJob extends AppModel
             $mails = $this->Acteurseance->find('all', array(
                 'recursive' => -1,
 // TODO: inclure dans le rapport : les acteurs concernés
-// 'contain' => array('Acteur'),
+//                'contain' => array('Acteur'),
                 'conditions' => array(
                     'date_envoi !=' => null,
                     'date_reception' => null

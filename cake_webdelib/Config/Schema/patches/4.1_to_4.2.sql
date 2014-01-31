@@ -50,7 +50,15 @@ INSERT INTO crons (id, nom, description, plugin, model, action, has_params, para
 
 -- Tâche planifiée de mise à jour du status des actes envoyés au i-parapheur
 INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
-  VALUES ('4', 'S2low : mise à jours des échanges', 'Envoi/Réception des courriers S2low', null, 'CronJob',	's2lowJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
+VALUES ('4', 'TDT : Mise à jours des mails sécurisés', 'Envoi/Réception des mails sécurisés', null, 'CronJob',	'mailSecJob',	'f', null, now(), 'P5M', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
+
+-- Tâche planifiée de mise à jour es accusés de reception
+INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
+VALUES ('5', 'TDT : Mise à jour des accusés de réception', 'Vérifie la réception par la prefecture des dossiers envoyés via le TDT et dans le cas échéant, enregistre la date de l''accusé de réception', null, 'CronJob',	'mailSecJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
+
+-- Tâche planifiée de mise à jour es accusés de reception
+INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
+VALUES ('6', 'TDT : Mise à jour des échanges de courriers', 'Met à jour les échanges de courriers entre la préfecture et le TDT', null, 'CronJob',	'mailSecJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
 
 ALTER TABLE crons ADD COLUMN lock BOOL DEFAULT FALSE;
 
@@ -61,5 +69,17 @@ ALTER TABLE deliberations RENAME COLUMN id_parapheur TO parapheur_id;
 ALTER TABLE deliberations RENAME COLUMN commentaire_refus_parapheur TO parapheur_commentaire;
 ALTER TABLE deliberations RENAME COLUMN "dateAR" TO "tdt_dateAR";
 ALTER TABLE deliberations ADD COLUMN parapheur_cible VARCHAR DEFAULT NULL;
+
+-- Table Nomenclatures
+DROP TABLE nomenclatures;
+CREATE TABLE public.nomenclatures (
+  id varchar PRIMARY KEY NOT NULL,
+  parent_id varchar NOT NULL DEFAULT 0,
+  libelle varchar NOT NULL,
+  lft integer DEFAULT 0,
+  rght integer DEFAULT 0,
+  created timestamp without time zone NOT NULL,
+  modified timestamp without time zone NOT NULL
+);
 
 COMMIT;

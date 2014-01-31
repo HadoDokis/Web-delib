@@ -11,16 +11,24 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
 ?>
 
 <div class='onglet'>
-	<a href="#" id="emptylink"></a>
-        <a href="javascript:afficheOnglet(1)" id='lienTab1' <?php echo !isset($lienTab) || (isset($lienTab) && ($lienTab==1 || empty($lienTab)))?'class="ongletCourant noWarn"':''?>>Informations principales</a>
-	<a href="javascript:afficheOnglet(2)" id='lienTab2' <?php echo isset($lienTab) &&  $lienTab==2?'class="ongletCourant noWarn"':'class="noWarn"'?>>Textes</a>
-	<a href="javascript:afficheOnglet(3)" id='lienTab3' <?php echo isset($lienTab) &&  $lienTab==3?'class="ongletCourant noWarn"':'class="noWarn"'?>>Annexe(s)</a>
-<?php if (!empty($infosupdefs)): ?>
-	<a href="javascript:afficheOnglet(4)" id='lienTab4' <?php echo isset($lienTab) &&  $lienTab==4?'class="ongletCourant noWarn"':'class="noWarn"'?>>Informations suppl&eacute;mentaires</a>
-<?php endif; ?>
-<?php if (Configure::read('DELIBERATIONS_MULTIPLES')): ?>
-	<a href="javascript:afficheOnglet(5)" id='lienTab5' style="display: none" <?php echo isset($lienTab) && $lienTab==5?'class="ongletCourant noWarn"':'class="noWarn"'?>>D&eacute;lib&eacute;rations rattach&eacute;es</a>
-<?php endif; ?>
+    <a href="#" id="emptylink"></a>
+    <a href="javascript:afficheOnglet(1)"
+       id='lienTab1' <?php echo !isset($lienTab) || (isset($lienTab) && ($lienTab == 1 || empty($lienTab))) ? 'class="ongletCourant noWarn"' : '' ?>>Informations
+        principales</a>
+    <a href="javascript:afficheOnglet(2)"
+       id='lienTab2' <?php echo isset($lienTab) && $lienTab == 2 ? 'class="ongletCourant noWarn"' : 'class="noWarn"' ?>>Textes</a>
+    <a href="javascript:afficheOnglet(3)"
+       id='lienTab3' <?php echo isset($lienTab) && $lienTab == 3 ? 'class="ongletCourant noWarn"' : 'class="noWarn"' ?>>Annexe(s)</a>
+    <?php if (!empty($infosupdefs)): ?>
+        <a href="javascript:afficheOnglet(4)"
+           id='lienTab4' <?php echo isset($lienTab) && $lienTab == 4 ? 'class="ongletCourant noWarn"' : 'class="noWarn"' ?>>Informations
+            suppl&eacute;mentaires</a>
+    <?php endif; ?>
+    <?php if (Configure::read('DELIBERATIONS_MULTIPLES')): ?>
+        <a href="javascript:afficheOnglet(5)" id='lienTab5'
+           style="display: none" <?php echo isset($lienTab) && $lienTab == 5 ? 'class="ongletCourant noWarn"' : 'class="noWarn"' ?>>D&eacute;lib&eacute;rations
+            rattach&eacute;es</a>
+    <?php endif; ?>
 </div>
 
 <div id="tab1"  <?php echo isset($lienTab) && $lienTab != 1 ? 'style="display:none"' : '' ?>>
@@ -87,16 +95,24 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
     <div class='spacer'></div>
 
     <?php
-    /*if ($USE_PASTELL) {
+    if ($USE_PASTELL) {
         if (empty($nomenclatures)) $nomenclatures = array();
-        echo $this->Form->input('Deliberation.num_pref_libelle', array('label' => 'Nomenclature', 'options' => $nomenclatures, 'default' => $this->Html->value('Deliberation.num_pref'), 'disabled' => empty($nomenclatures), 'empty' => "Aucune", 'escape' => false));
-    } else {*/
-        echo $this->Form->input('Deliberation.num_pref_libelle',
-            array('div' => false,
-                'label' => 'Num Pref',
-                'id' => 'classif1',
-                'size' => '60',
-                'readonly' => 'readonly'));
+        echo $this->Form->input('Deliberation.num_pref', array(
+            'label' => 'Classification',
+            'options' => $nomenclatures,
+            'default' => $this->Html->value('Deliberation.num_pref'),
+            'disabled' => empty($nomenclatures),
+            'empty' => 'Aucune',
+            'class' => 'select2 selectone',
+            'escape' => false
+        ));
+    } else {
+        echo $this->Form->input('Deliberation.num_pref_libelle', array(
+            'div' => false,
+            'label' => 'Classification',
+            'id' => 'classif1',
+            'size' => '60',
+            'readonly' => 'readonly'));
         ?>
 
         <a class="list_form" href="#add"
@@ -104,7 +120,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
            id="classification_text">[Choisir la classification]</a>
         <?php
         echo $this->Form->hidden('Deliberation.num_pref', array('id' => 'num_pref'));
-//    }
+    }
     ?>
     <div class='spacer'></div>
 
@@ -263,17 +279,17 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'list') {
                 if (!$disabled) {
-                    echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'class'=>'select2 selectone'));
+                    echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'class' => 'select2 selectone'));
                 } else {
                     echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
                     echo $this->Form->input($fieldName, array('id' => false, 'type' => 'hidden'));
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
                 if (!$disabled) {
-                    echo $this->Form->input($fieldName, array('selected'=>$this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'multiple' => true, 'class'=>'select2 selectmultiple'));
+                    echo $this->Form->input($fieldName, array('selected' => $this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'multiple' => true, 'class' => 'select2 selectmultiple'));
                 } else {
-                    echo $this->Form->input($fieldName, array('selected'=>$this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
-                    echo $this->Form->input($fieldName, array('value'=>implode(',', $selected_values), 'id' => false, 'type' => 'hidden'));
+                    echo $this->Form->input($fieldName, array('selected' => $this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
+                    echo $this->Form->input($fieldName, array('value' => implode(',', $selected_values), 'id' => false, 'type' => 'hidden'));
                 }
 
             }
@@ -283,7 +299,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
         };?>
     </div>
     <script type="application/javascript">
-        $(document).ready(function(){
+        $(document).ready(function () {
             $(".select2.selectmultiple").select2({
                 width: "resolve",
                 allowClear: true,
@@ -309,7 +325,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
 <div class="submit">
     <?php
     echo $this->Form->hidden('Deliberation.id');
-    echo $this->Form->hidden('redirect', array('value'=>$redirect));
+    echo $this->Form->hidden('redirect', array('value' => $redirect));
 
     echo $this->Html->tag("div", null, array("class" => "btn-group"));
     echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $redirect, array('class' => 'btn noWarn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
@@ -329,11 +345,11 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
     }
 
     function reset_html(id) {
-        $('#' + id+ ' input[type=file]').val(null);
-        $('#' + id+ ' a').remove();
+        $('#' + id + ' input[type=file]').val(null);
+        $('#' + id + ' a').remove();
     }
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         var file_input_index = 0;
 
         $('.file-texte').each(function () {
@@ -343,21 +359,21 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
         });
     });
 
-//Gestion des sorties du formulaire
-function onUnloadEditForm(){
-    $(window).bind('beforeunload', function(){
-        return "Attention!! des données saisies pourraient ne pas être enregistrées dans webdelib.";
-    });
-}
-$(document).ready(onUnloadEditForm);
-$("#DeliberationEditForm").submit(function(){
-    $(window).unbind("beforeunload");
-});
-$(".noWarn").on('click', function(){
-        $(window).unbind('beforeunload');
-        objMenuTimeout = setTimeout(function(){
-            onUnloadEditForm();
-        }, 2000); // 2000 millisecondes = 2 secondes
+    //Gestion des sorties du formulaire
+    function onUnloadEditForm() {
+        $(window).bind('beforeunload', function () {
+            return "Attention!! des données saisies pourraient ne pas être enregistrées dans webdelib.";
+        });
     }
-);
+    $(document).ready(onUnloadEditForm);
+    $("#DeliberationEditForm").submit(function () {
+        $(window).unbind("beforeunload");
+    });
+    $(".noWarn").on('click', function () {
+            $(window).unbind('beforeunload');
+            objMenuTimeout = setTimeout(function () {
+                onUnloadEditForm();
+            }, 2000); // 2000 millisecondes = 2 secondes
+        }
+    );
 </script>
