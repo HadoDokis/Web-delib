@@ -65,6 +65,22 @@ Configure::write('USE_TDT', false);
 Configure::write('TDT', 'S2LOW');
 
 /**
+ * SAE (Service d'archivage électronique)
+ */
+/* Activer le SAE */
+Configure::write('USE_SAE', false);
+/* Service utilisé pour le TDT ('PASTELL', 'ASALAE', ...) */
+Configure::write('SAE', 'ASALAE');
+
+/**
+ * GED (Gestion électronique documentaire)
+ */
+/* Activer la GED */
+Configure::write('USE_GED', false);
+/* Service utilisé pour la GED ('PASTELL' ou 'GED') */
+Configure::write('GED_PASTELL', false);
+
+/**
  * Configuration des connecteurs
  */
 /* Configuration de PASTELL */
@@ -85,7 +101,6 @@ Configure::write('IPARAPHEUR_CACERT', APP . 'Config/cert_parapheur/ac.pem');
 Configure::write('IPARAPHEUR_CLIENTCERT', APP . 'Config/cert_parapheur/cert.pem');
 Configure::write('IPARAPHEUR_CERTPWD', 'passphrase');
 
-
 /* Configuration S2LOW */
 Configure::write('USE_S2LOW', false);
 Configure::write('S2LOW_HOST', 'https://s2low.x.x.org');
@@ -100,7 +115,6 @@ Configure::write('S2LOW_MAILSEC', false);
 Configure::write('S2LOW_MAILSECPWD', '');
 
 /* Configuration CONNECTEUR CMIS GED */
-Configure::write('USE_GED', false);
 Configure::write('GED_HOST', 'https://ged.x.x.x/alfresco/service/api/cmis');
 Configure::write('GED_LOGIN', 'login');
 Configure::write('GED_PWD', 'password');
