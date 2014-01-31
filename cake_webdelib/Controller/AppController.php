@@ -46,6 +46,7 @@ class AppController extends Controller
     public $components = array('Utils', 'Acl', 'Droits', 'Session');
     public $helpers = array('Html', 'Form', 'Session', 'DatePicker', 'Html2');
     public $aucunDroit = array('Pages:format', 'Pages:service');
+    public $previous;
 
     function beforeFilter()
     {
@@ -58,14 +59,21 @@ class AppController extends Controller
         $this->set('lienDeconnexion', true);
         $this->set('session_service_id', $this->Session->read('user.User.service'));
         $this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
-        if ($this->Session->check('user.User')){
-            $historique = $this->Session->check('user.User.history') ? $this->Session->read('user.User.history') : array();
-            if (end($historique) != $this->params->here && stripos(end($historique), 'ajax')===false)
-                $historique[] = $this->params->here;
-            $this->Session->write('user.User.history', $historique);
+        //Si utilisateur connecté
+        if ($this->Session->check('user')){
+            $historique = $this->Session->check('user.history') ? $this->Session->read('user.history') : array();
+            if (current($historique) != $this->params->here && stripos(current($historique), 'ajax')===false){
+                //Ajoute l'url courante au début du tableau
+                $nbHistorique = array_unshift($historique, $this->params->here);
+                //Si ne garder que 10 éléments dans l'historique
+                if ($nbHistorique > 10)
+                    array_pop($historique);
+                $this->Session->write('user.history', $historique);
+            }
             if (strpos($this->referer(), $this->params->here) === false)
-                $this->Session->write('user.User.history.previous', $this->referer());
-            $this->log($this->Session->read('user.User.history'), 'history');
+                $this->Session->write('previous_url', $this->referer());
+            $this->previous = $this->Session->read('previous_url');
+//            debug($this->Session->read('User.Nature'));
         }
 
         // ????

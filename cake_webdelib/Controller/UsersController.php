@@ -250,7 +250,7 @@ class UsersController extends AppController {
             }
         }
         if ($sortie)
-            $this->redirect('/users/index');
+            $this->redirect(array('action'=>'index'));
         else {
             $this->set('services', $this->User->Service->generateTreeList(array('Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('profils', $this->User->Profil->find('list'));
@@ -471,7 +471,10 @@ class UsersController extends AppController {
                 // Chargement du menu dans la session
                 $this->Session->write('menuPrincipal', $this->Menu->load('webDelib', $user['User']['id']));
                 $this->Session->setFlash('Bienvenue sur Webdelib', 'growl');
-                $this->redirect('/');
+                if (!empty($this->previous))
+                    $this->redirect($this->previous);
+                else
+                    $this->redirect('/');
             } else {
                 //sinon on prépare le message d'erreur a afficher dans la vue
                 $this->set('errorMsg', 'Mauvais identifiant ou  mot de passe.Veuillez recommencer.');
@@ -484,7 +487,7 @@ class UsersController extends AppController {
 
     function logout() {
 		//on supprime les infos utilisateur de la session
-		$this->Session->destroy();
+        $this->Session->delete('user');
 		$this->redirect(array('action' => 'login'));
 	}
 
