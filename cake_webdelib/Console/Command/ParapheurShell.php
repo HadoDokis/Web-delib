@@ -69,7 +69,6 @@ class ParapheurShell extends Shell {
                     if ($histo['logdossier'][$i]['status'] == 'Signe'
                         || $histo['logdossier'][$i]['status'] == 'Archive') {
 
-                        // TODO LIST : Récupère la date et heure de signature  + QUi l'a signé (annotation)
                         $this->Commentaire->create();
                         $comm ['Commentaire']['delib_id'] = $delib_id;
                         $comm ['Commentaire']['agent_id'] = -1;
@@ -81,9 +80,8 @@ class ParapheurShell extends Shell {
                             if ($histo['logdossier'][$i]['status'] == 'Signe') {
                                 $dossier = $this->Parafwebservice->GetDossierWebservice($id_dossier);
                                 if (!empty($dossier['getdossier']['signature'])) {
-                                //FIXME : ne pas écraser le doc principal, ajouter une colonne pour le document avec bordereau (docprinc?)
-                                    $this->Deliberation->saveField('delib_pdf', base64_decode($dossier['getdossier'][8]));
-                                    $this->Deliberation->saveField('bordereau', base64_decode($dossier['getdossier']['bordereau']));
+                                    //$this->Deliberation->saveField('delib_pdf', base64_decode($dossier['getdossier'][8]));
+                                    $this->Deliberation->saveField('parapheur_bordereau', base64_decode($dossier['getdossier']['bordereau']));
                                     $this->Deliberation->saveField('signature', base64_decode($dossier['getdossier']['signature']));
                                 }
                                 $this->Deliberation->saveField('signee', 1);
