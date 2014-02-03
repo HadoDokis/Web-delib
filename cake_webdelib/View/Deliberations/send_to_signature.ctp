@@ -64,7 +64,7 @@
             </td>
             <td style="text-align: center">
                 <?php
-                if (!empty($delib['Deliberation']['bordereau']))
+                if (!empty($delib['Deliberation']['parapheur_bordereau']))
                     echo $this->Html->link('[Bordereau de signature]&nbsp;<i class="fa fa-download"></i>', array('action' => 'downloadBordereau', $delib['Deliberation']['id']), array('escape' => false, 'title' => 'Télécharger le bordereau de signature', 'style' => 'text-decoration: none'));
                 ?>
             </td>
