@@ -6,6 +6,12 @@
 echo $this->Html->script('droits', true);
 
 echo $this->Html->tag('table', null, array('cellspacing'=>'0', 'cellpadding'=>'0', 'id'=>'tableDroits'));
+?>
+<tr>
+    <td><em><label for="masterCheckbox" style="width: auto; font-size: 11px;">Tout cocher / décocher</label></em></td>
+    <td><input type="checkbox" id="masterCheckbox" /></td>
+</tr>
+<?php
 foreach($listeCtrlAction as $rownum => $ctrlAction) {
 	$classTd = 'niveau'.$ctrlAction['niveau'];
     $icon = '';
