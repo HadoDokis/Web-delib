@@ -13,29 +13,29 @@
  * Classe TdtMessage.
  *
  * @package app.Model.TdtMessage
- * 
+ *
  */
 class TdtMessage extends AppModel {
 
-    var $name = 'TdtMessage';
-    var $useTable = "tdt_messages";
-    var $belongsTo = array('Deliberation' =>
-        array('className' => 'Deliberation',
+    public $name = 'TdtMessage';
+    public $useTable = "tdt_messages";
+    public $belongsTo = array(
+        'Deliberation' => array(
+            'className' => 'Deliberation',
             'foreignKey' => 'delib_id',
             'conditions' => '',
             'fields' => '',
-            'order' => '',
+            'order' => 'date_message',
             'counterCache' => ''
         )
     );
 
-    public function isNewMessage($delib_id, $type, $reponse, $message_id) {
-        $message = $this->find('first', array('conditions' =>
-            array('TdtMessage.delib_id' => $delib_id,
-                'TdtMessage.type_message' => $type,
-                'TdtMessage.reponse' => $reponse,
-                'TdtMessage.message_id' => $message_id)));
-        return (empty($message));
+    public function existe($message_id) {
+        $message = $this->find('count', array(
+            'conditions' => array(
+                'TdtMessage.message_id' => $message_id
+            )));
+        return !empty($message);
     }
 
 }

@@ -52,7 +52,8 @@ class ActeShell extends AppShell {
             }
         }
 
-        $delibs = $this->Deliberation->find('all', array('conditions' => array('Deliberation.etat' => 5),
+        $delibs = $this->Deliberation->find('all', array(
+            'conditions' => array('Deliberation.etat' => 5),
             'recursive' => -1));
         foreach ($delibs as $delib) {
             $result = $this->S2low->getNewFlux($delib['Deliberation']['tdt_id']);
@@ -63,7 +64,7 @@ class ActeShell extends AppShell {
                     $type = substr($result, 0, 1);
                     $reponse = substr($result, 2, 1);
                     $message_id = substr($result, 4, strlen($result));
-                    if ($this->TdtMessage->isNewMessage($delib['Deliberation']['id'], $type, $reponse, $message_id)) {
+                    if (!$this->TdtMessage->existe($message_id)) {
                         $this->TdtMessage->create();
                         $message['TdtMessage']['delib_id'] = $delib['Deliberation']['id'];
                         $message['TdtMessage']['type_message'] = $type;

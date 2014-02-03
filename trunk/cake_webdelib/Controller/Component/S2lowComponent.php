@@ -21,7 +21,7 @@ class S2lowComponent extends Component {
     var $components = array('Date');
 
     function send($acte) {
-        $url = 'https://' . Configure::read('S2LOW_HOST') . '/modules/actes/actes_transac_create.php';
+        $url = Configure::read('S2LOW_HOST') . '/modules/actes/actes_transac_create.php';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('S2LOW_USEPROXY'))
@@ -99,7 +99,7 @@ class S2lowComponent extends Component {
     }
 
     function getFluxRetour($tdt_id) {
-        $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/actes/actes_transac_get_status.php?transaction=$tdt_id";
+        $url = Configure::read('S2LOW_HOST') . "/modules/actes/actes_transac_get_status.php?transaction=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('S2LOW_USEPROXY'))
@@ -118,7 +118,7 @@ class S2lowComponent extends Component {
     }
 
     function getActeTampon($tdt_id) {
-        $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/actes/actes_transac_get_tampon.php?transaction=$tdt_id";
+        $url = Configure::read('S2LOW_HOST') . "/modules/actes/actes_transac_get_tampon.php?transaction=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, trim($url));
         if (Configure::read('S2LOW_USEPROXY'))
@@ -137,7 +137,7 @@ class S2lowComponent extends Component {
     }
 
     function getAR($tdt_id) {
-        $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
+        $url = Configure::read('S2LOW_HOST') . "/modules/actes/actes_create_pdf.php?trans_id=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, trim($url));
         if (Configure::read('S2LOW_USEPROXY'))
@@ -166,7 +166,7 @@ class S2lowComponent extends Component {
     }
 
     function sendMail($data) {
-        $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/mail/api/send-mail.php";
+        $url = Configure::read('S2LOW_HOST') . "/modules/mail/api/send-mail.php";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('S2LOW_USEPROXY'))
@@ -187,7 +187,7 @@ class S2lowComponent extends Component {
     }
 
     function checkMail($mail_id) {
-        $url = 'https://' . Configure::read('S2LOW_HOST') . "/modules/mail/api/detail-mail.php?id=$mail_id";
+        $url = Configure::read('S2LOW_HOST') . "/modules/mail/api/detail-mail.php?id=$mail_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if (Configure::read('S2LOW_USEPROXY'))
@@ -213,7 +213,7 @@ class S2lowComponent extends Component {
     }
 
     function getNewFlux($tdt_id) {
-        $url = 'https://' . Configure::read('HOST') . "/modules/actes/actes_transac_get_document.php?id=$tdt_id";
+        $url = Configure::read('HOST') . "/modules/actes/actes_transac_get_document.php?id=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
@@ -231,16 +231,4 @@ class S2lowComponent extends Component {
         curl_close($ch);
         return($curl_return);
     }
-
-    function isNewMessage($delib_id, $type, $reponse, $message_id) {
-        $message = $this->TdtMessage->find('first', array(
-            'conditions' => array(
-                'TdtMessage.delib_id' => $delib_id,
-                'TdtMessage.type_message' => $type,
-                'TdtMessage.reponse' => $reponse,
-                'TdtMessage.message_id' => $message_id
-            )));
-        return (empty($message));
-    }
-
 }
