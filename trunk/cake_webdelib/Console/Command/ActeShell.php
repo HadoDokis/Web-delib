@@ -61,15 +61,16 @@ class ActeShell extends AppShell {
             if($result_array[0]!='KO')
             foreach ($result_array as $result) {
                 if (!empty($result)) {
-                    $type = substr($result, 0, 1);
-                    $reponse = substr($result, 2, 1);
-                    $message_id = substr($result, 4, strlen($result));
+                    $infos = explode('-', $result);
+                    $type = $infos[0];
+                    $reponse = $infos[1];
+                    $message_id = $infos[2];
                     if (!$this->TdtMessage->existe($message_id)) {
                         $this->TdtMessage->create();
                         $message['TdtMessage']['delib_id'] = $delib['Deliberation']['id'];
                         $message['TdtMessage']['type_message'] = $type;
                         $message['TdtMessage']['message_id'] = $message_id;
-                        $message['TdtMessage']['reponse'] = $reponse;
+                        $message['TdtMessage']['type_reponse'] = $reponse;
                         $this->TdtMessage->save($message);
                     }
                 }
@@ -79,10 +80,13 @@ class ActeShell extends AppShell {
         }
         
         //Recupération des délibérations tanponné et des bodereaux de télétransmissions
-        $delibs = $this->Deliberation->find('all', array('fields' => array('Deliberation.id', 'Deliberation.tdt_id', 'Deliberation.tdt_dateAR'),
-            'conditions' => array('Deliberation.tdt_id !=' => null,
+        $delibs = $this->Deliberation->find('all', array(
+            'fields' => array('Deliberation.id', 'Deliberation.tdt_id', 'Deliberation.tdt_dateAR'),
+            'conditions' => array(
+                'Deliberation.tdt_id !=' => null,
                 'OR' => array('Deliberation.tdt_data_pdf =' => null,
-                    'Deliberation.tdt_data_bordereau_pdf =' => null)),
+                    'Deliberation.tdt_data_bordereau_pdf =' => null
+                )),
             'order' => array('Deliberation.id DESC'),
             'limit' => 50,
             'recursive' => -1));
