@@ -1223,22 +1223,21 @@ function getVersionAsalae() {
 }
 
 function getPastellVersion() {
-//    if (Configure::read('USE_PASTELL'))
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PARAPHEUR_LOGIN") . ":" . Configure::read("PARAPHEUR_PWD"));
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $api = Configure::read("PARAPHEUR_HOST") . "/api/version.php";
-    curl_setopt($curl, CURLOPT_URL, $api);
-    $reponse = curl_exec($curl);
-    curl_close($curl);
-    $reponse = json_decode($reponse, true);
-    if (is_array($reponse) and isset($reponse['version']))
-        d('Version de PASTELL : '.$reponse['version'], 'ok');
-    else
-        d('Impossible de communiquer avec PASTELL : ', 'ko');
-
-
+    if (Configure::read('USE_PASTELL')) {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN") . ":" . Configure::read("PASTELL_PWD"));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $api = Configure::read("PASTELL_HOST") . "/api/version.php";
+        curl_setopt($curl, CURLOPT_URL, $api);
+        $reponse = curl_exec($curl);
+        curl_close($curl);
+        $reponse = json_decode($reponse, true);
+        if (is_array($reponse) and isset($reponse['version']))
+            d('Version de PASTELL : ' . $reponse['version'], 'ok');
+        else
+            d('Impossible de communiquer avec PASTELL : ', 'ko');
+    }
 }
 
 function check_binaires($binaires) {
