@@ -1155,8 +1155,7 @@ function verifPresenceModelesOdt() {
 
 function getClassification(){
     $time_start = microtime(true);
-    $pos =  strrpos ( getcwd(), 'webroot');
-    $url = 'https://'.Configure::read('S2LOW_HOST').'/modules/actes/actes_classification_fetch.php';
+    $url = Configure::read('S2LOW_HOST').'/modules/actes/actes_classification_fetch.php';
     $data = array('api' => '1' );
     $url .= '?'.http_build_query($data);
 
@@ -1177,14 +1176,16 @@ function getClassification(){
 
     curl_close($ch);
     $time_end = microtime(true);
-    if (stripos($reponse, 'DateClassification' ) !== false)  {
+    if (stripos($reponse, 'DateClassification') !== false) {
         $time = round($time_end - $time_start, 2);
         d(Configure::read('S2LOW_HOST'), 'info');
         d("Fichier de classification S2LOW récupéré en $time secondes", 'ok');
-     }
-     else {
+    } else {
+        if (stripos($reponse, 'KO') !== false) {
+            d(utf8_encode($reponse), 'ko');
+        }
         d('Echec de récupération du fichier de classification', 'ko');
-     }
+    }
 }
 
 function getCircuitsParapheur() {
