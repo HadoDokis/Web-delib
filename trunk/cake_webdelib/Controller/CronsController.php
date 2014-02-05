@@ -1,7 +1,6 @@
 <?php
 
-class CronsController extends AppController
-{
+class CronsController extends AppController {
 
     public $helpers = array('DurationPicker');
     public $components = array(
@@ -27,8 +26,7 @@ class CronsController extends AppController
     /**
      * Vue détaillée des crons (tâches planifiées)
      */
-    function view($id = null)
-    {
+    function view($id = null) {
         // initialisations
         $this->request->data = $this->{$this->modelClass}->find('first', array(
             'recursive' => 1,
@@ -71,8 +69,7 @@ class CronsController extends AppController
     /**
      * Planification d'une tâche
      */
-    function planifier($id = null)
-    {
+    function planifier($id = null) {
         $sortie = false;
         if (empty($this->request->data)) {
             // Initialisations
@@ -112,8 +109,7 @@ class CronsController extends AppController
     /**
      * Ajout d'une tâche planifiée
      */
-    function add()
-    {
+    function add() {
         if (!empty($this->request->data)) {
             // Initialisations avant sauvegarde
             $this->request->data[$this->modelClass]['next_execution_time'] = array_merge($this->request->data[$this->modelClass]['next_execution_date'], $this->request->data[$this->modelClass]['next_execution_heure']);
@@ -141,8 +137,7 @@ class CronsController extends AppController
     /**
      * Edition d'une tâche planifiée
      */
-    function edit($id)
-    {
+    function edit($id) {
         $sortie = false;
         if (empty($this->request->data)) {
             // Initialisations
@@ -180,7 +175,7 @@ class CronsController extends AppController
                 $this->Session->setFlash(__('Veuillez corriger les erreurs du formulaire.', true), 'growl', array('type' => 'erreur'));
         }
         if ($sortie)
-            return $this->redirect(array('action' => 'index'));
+            return $this->redirect($this->previous);
         else {
             $this->pageTitle = Configure::read('appName') . ' : ' . __('Tâche planifiée', true) . ' : ' . __('Modification', true);
         }
@@ -189,8 +184,7 @@ class CronsController extends AppController
     /**
      * Liste des crons
      */
-    function index()
-    {
+    function index() {
         $this->pageTitle = Configure::read('appName') . ' : ' . __('Tâches planifiées', true);
         $this->request->data = $this->Cron->find('all', array(
             'order' => array('Cron.next_execution_time ASC'),
@@ -203,19 +197,17 @@ class CronsController extends AppController
         }
     }
 
-    function delete($id)
-    {
+    function delete($id) {
         if ($id != null) {
             $this->Cron->delete($id);
             $this->Session->setFlash(__('Tâche planifiée numéro ', true) . $id . __(' supprimée !', true), 'growl', array('type' => 'important'));
         } else {
             $this->Session->setFlash(__('Tâche planifiée numéro ', true) . $id . __(' introuvable !', true), 'growl', array('type' => 'erreur'));
         }
-        $this->redirect(array('action' => 'index'));
+        $this->redirect($this->referer());
     }
 
-    function unlock($id)
-    {
+    function unlock($id) {
         if ($id != null) {
             $this->Cron->id = $id;
             $this->Cron->saveField('lock', false);
@@ -231,20 +223,21 @@ class CronsController extends AppController
      * @param integer $id id de la tâche a exécuter
      * @return redirect
      */
-    function executer($id)
-    {
+    function executer($id) {
         // lecture du crons à exécuter
         $cron = $this->Cron->find('first', array(
             'recursive' => -1,
-            'fields' => array('id', 'nom'),
+            'fields' => array('id', 'nom', 'lock'),
             'conditions' => array('id' => $id)));
 
         // excécutions
         if (empty($cron))
             $this->Session->setFlash(__('Invalide id pour la', true) . ' ' . __('tâche planifiée', true) . ' : ' . __('exécution impossible.', true), 'growl', array('type' => 'important'));
-        else {
-            $this->Session->setFlash(__('Tâche planifiée', true) . ' \'' . $cron['Cron']['nom'] . '\' ' . __('exécutée.', true), 'growl');
+        elseif ($cron['Cron']['lock']) {
+            $this->Session->setFlash(__('Tâche', true) . ' \'' . $cron['Cron']['nom'] . '\' ' . __('vérrouillée !', true), 'growl');
+        } else {
             $this->Crons->runCronId($id);
+            $this->Session->setFlash(__('Tâche', true) . ' \'' . $cron['Cron']['nom'] . '\' ' . __('exécutée.', true), 'growl');
         }
         return $this->redirect($this->referer());
     }
@@ -252,8 +245,7 @@ class CronsController extends AppController
     /**
      * fonction d'exécution de tous les crons actifs (appelée par le shell 'cron')
      */
-    function runCrons()
-    {
+    function runCrons() {
         $this->Crons->runAll();
 
         $errors = $this->Cron->find('count', array(
