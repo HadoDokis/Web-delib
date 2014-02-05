@@ -5,8 +5,8 @@
  * @author: Florian Ajir <florian.ajir@adullact.org>
  * @license CeCiLL V2 <http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html>
  */
+App::uses('AppModel', 'Model');
 App::uses('Cron', 'Model');
-
 class CronJob extends AppModel {
     public $useTable = false;
 
@@ -128,4 +128,31 @@ class CronJob extends AppModel {
         }
     }
 
+    /**
+     * Met à jour les ar et bordereau des dossiers envoyés en tdt
+     */
+    public function majArTdt(){
+        App::uses('Deliberation', 'Model');
+        $this->Deliberation = new Deliberation();
+        try{
+            $rapport = $this->Deliberation->majArAll();
+            return Cron::MESSAGE_FIN_EXEC_SUCCES.$rapport;
+        }catch (Exception $e){
+            return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage();
+        }
+    }
+
+    /**
+     * Met à jour les echanges (TdtMessages) des dossiers envoyés en tdt
+     */
+    public function majCourriersTdt(){
+        App::uses('Deliberation', 'Model');
+        $this->Deliberation = new Deliberation();
+        try{
+            $rapport = $this->Deliberation->majEchangesTdtAll();
+            return Cron::MESSAGE_FIN_EXEC_SUCCES . $rapport;
+        }catch (Exception $e){
+            return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage();
+        }
+    }
 }
