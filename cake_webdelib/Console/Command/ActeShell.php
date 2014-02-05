@@ -84,7 +84,8 @@ class ActeShell extends AppShell {
             'fields' => array('Deliberation.id', 'Deliberation.tdt_id', 'Deliberation.tdt_dateAR'),
             'conditions' => array(
                 'Deliberation.tdt_id !=' => null,
-                'OR' => array('Deliberation.tdt_data_pdf =' => null,
+                'OR' => array(
+                    'Deliberation.tdt_data_pdf =' => null,
                     'Deliberation.tdt_data_bordereau_pdf =' => null
                 )),
             'order' => array('Deliberation.id DESC'),
