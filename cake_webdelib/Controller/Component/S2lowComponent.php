@@ -213,17 +213,18 @@ class S2lowComponent extends Component {
     }
 
     function getNewFlux($tdt_id) {
-        $url = Configure::read('HOST') . "/modules/actes/actes_transac_get_document.php?id=$tdt_id";
+        $url = Configure::read('S2LOW_HOST') . "/modules/actes/actes_transac_get_document.php?id=$tdt_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        // curl_setopt($ch, CURLOPT_PROXY, '138.239.254.17:8080');
+        if (Configure::read('S2LOW_USEPROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
         curl_setopt($ch, CURLOPT_POST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        // curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
-        curl_setopt($ch, CURLOPT_CAINFO, Configure::read('WEBDELIB_PATH') . 'Config/cert_s2low/bundle.pem');
-        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
-        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
-        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+        curl_setopt($ch, CURLOPT_CAPATH, Configure::read('S2LOW_CAPATH'));
+        curl_setopt($ch, CURLOPT_CAINFO, APP . 'Config/cert_s2low/bundle.pem');
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
+        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
