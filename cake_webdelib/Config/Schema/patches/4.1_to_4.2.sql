@@ -20,7 +20,8 @@ ALTER TABLE users ADD COLUMN mail_modif_projet_valide BOOLEAN DEFAULT FALSE;
 ALTER TABLE users ADD COLUMN mail_retard_validation BOOLEAN DEFAULT FALSE;
 
 -- Mise à jour : joindre les annexes par défaut
-UPDATE annexes SET joindre_fusion=1;
+UPDATE annexes
+SET joindre_fusion = 1;
 
 -- Gabarits textes
 ALTER TABLE typeactes ADD COLUMN gabarit_projet BYTEA DEFAULT NULL;
@@ -38,27 +39,43 @@ ALTER TABLE crons DROP COLUMN controller;
 ALTER TABLE crons ADD COLUMN model VARCHAR DEFAULT 'CronJob';
 
 -- Tâche planifiée de mise à jour des délégations
-UPDATE crons set action='delegationJob', plugin=null WHERE id=1;
+UPDATE crons
+SET action = 'delegationJob', plugin = NULL
+WHERE id = 1;
 
 -- Tâche planifiée de déclenchement des alertes de retard (workflow)
 INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
-  VALUES ('2', 'Circuits de traitement : Déclenchement des alertes de retard', 'Relance les utilisateurs devant valider un projet en retard', null, 'CronJob',	'retardCakeflowJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
+VALUES ('2', 'Circuits de traitement : Déclenchement des alertes de retard',
+        'Relance les utilisateurs devant valider un projet en retard', NULL, 'CronJob', 'retardCakeflowJob', 'f', NULL,
+        now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', NULL, TRUE, now(), '1', now(), '1');
 
 -- Tâche planifiée de mise à jour du status des actes envoyés au i-parapheur
 INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
-  VALUES ('3', 'Signature : Mise à jour de l''etat des dossiers envoyés au Parapheur', 'Met à jour l''état des projets envoyés au Parapheur pour signature et rapatrie les informations de ceux en fin de circuit.', null, 'CronJob',	'signatureJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
+VALUES ('3', 'Signature : Mise à jour de l''etat des dossiers envoyés au Parapheur',
+        'Met à jour l''état des projets envoyés au Parapheur pour signature et rapatrie les informations de ceux en fin de circuit.',
+        NULL, 'CronJob', 'signatureJob', 'f', NULL, now(), 'P1D', now(), now(),
+        'Cette tâche n''a encore jamais été exécutée.', NULL, TRUE, now(), '1', now(), '1');
 
 -- Tâche planifiée de mise à jour du status des actes envoyés au i-parapheur
 INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
-VALUES ('4', 'TDT : Mise à jours des mails sécurisés', 'Envoi/Réception des mails sécurisés', null, 'CronJob',	'mailSecJob',	'f', null, now(), 'P5M', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
+VALUES
+  ('4', 'TDT : Mise à jours des mails sécurisés', 'Envoi/Réception des mails sécurisés', NULL, 'CronJob', 'mailSecJob',
+   'f', NULL, now(), 'PT5M', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', NULL, TRUE, now(), '1',
+   now(), '1');
 
 -- Tâche planifiée de mise à jour es accusés de reception
 INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
-VALUES ('5', 'TDT : Mise à jour des accusés de réception', 'Vérifie la réception par la prefecture des dossiers envoyés via le TDT et dans le cas échéant, enregistre la date de l''accusé de réception', null, 'CronJob',	'mailSecJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
+VALUES ('5', 'TDT : Mise à jour des accusés de réception',
+        'Vérifie la réception par la prefecture des dossiers envoyés via le TDT et dans le cas échéant, enregistre la date de l''accusé de réception et le bordereau',
+        NULL, 'CronJob', 'majArTdt', 'f', NULL, now(), 'PT5M', now(), now(),
+        'Cette tâche n''a encore jamais été exécutée.', NULL, TRUE, now(), '1', now(), '1');
 
 -- Tâche planifiée de mise à jour es accusés de reception
 INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
-VALUES ('6', 'TDT : Mise à jour des échanges de courriers', 'Met à jour les échanges de courriers entre la préfecture et le TDT', null, 'CronJob',	'mailSecJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
+VALUES ('6', 'TDT : Mise à jour des échanges de courriers',
+        'Met à jour les échanges de courriers entre la préfecture et le TDT', NULL, 'CronJob', 'majCourriersTdt', 'f',
+        NULL, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', NULL, TRUE, now(), '1', now(),
+        '1');
 
 ALTER TABLE crons ADD COLUMN lock BOOL DEFAULT FALSE;
 
@@ -69,17 +86,24 @@ ALTER TABLE deliberations RENAME COLUMN id_parapheur TO parapheur_id;
 ALTER TABLE deliberations RENAME COLUMN commentaire_refus_parapheur TO parapheur_commentaire;
 ALTER TABLE deliberations RENAME COLUMN "dateAR" TO "tdt_dateAR";
 ALTER TABLE deliberations ADD COLUMN parapheur_cible VARCHAR DEFAULT NULL;
+ALTER TABLE deliberations ALTER COLUMN tdt_id TYPE VARCHAR;
+ALTER TABLE deliberations ADD COLUMN parapheur_bordereau BYTEA DEFAULT NULL;
 
 -- Table Nomenclatures
 DROP TABLE nomenclatures;
-CREATE TABLE public.nomenclatures (
-  id varchar PRIMARY KEY NOT NULL,
-  parent_id varchar NOT NULL DEFAULT 0,
-  libelle varchar NOT NULL,
-  lft integer DEFAULT 0,
-  rght integer DEFAULT 0,
-  created timestamp without time zone NOT NULL,
-  modified timestamp without time zone NOT NULL
+CREATE TABLE nomenclatures (
+  id        VARCHAR PRIMARY KEY         NOT NULL,
+  parent_id VARCHAR                     NOT NULL DEFAULT 0,
+  libelle   VARCHAR                     NOT NULL,
+  lft       INTEGER DEFAULT 0,
+  rght      INTEGER DEFAULT 0,
+  created   TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  modified  TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
+
+ALTER TABLE tdt_messages ADD COLUMN date_message DATE DEFAULT NULL;
+ALTER TABLE tdt_messages ADD COLUMN data BYTEA DEFAULT NULL;
+ALTER TABLE tdt_messages RENAME COLUMN reponse TO type_reponse;
+ALTER TABLE tdt_messages ALTER COLUMN type_reponse DROP NOT NULL;
 
 COMMIT;
