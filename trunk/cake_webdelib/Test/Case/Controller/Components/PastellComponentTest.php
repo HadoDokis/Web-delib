@@ -94,7 +94,7 @@ class PastellComponentTest extends CakeTestCase {
      */
     public function testListDocuments(){
 //        debug ($this->PastellComponent->listDocuments(48,'actes-generique'));
-        return ($this->PastellComponent->listDocuments(48,'actes-generique'));
+        return ($this->PastellComponent->listDocuments(3,'actes-generique'));
     }
 
     /**
@@ -103,17 +103,15 @@ class PastellComponentTest extends CakeTestCase {
      */
     public function testRechercheDocument(){
         $options = array(
-            'id_e' => 48,
+            'id_e' => 3,
             'type' => 'actes-generique',
             'search' => 'test sans sources'
         );
-
-//        debug ($this->PastellComponent->rechercheDocument($options));
         return ($this->PastellComponent->rechercheDocument($options));
     }
 
     public function testGetInfosField(){
-        debug ($this->PastellComponent->getInfosField('3','E43dLMG','classification'));
+        return ($this->PastellComponent->getInfosField('3','E43dLMG','classification'));
     }
 
     /**
@@ -121,18 +119,7 @@ class PastellComponentTest extends CakeTestCase {
      * @return void
      */
     public function testDetailDocument(){
-
-//        $data = array(
-//            'id_e' => 3,
-//            'id_d' => 'nNZ1gt6'
-//        );
-//        if (Configure::read('USE_TDT') && Configure::read('TDT') == 'PASTELL')
-//            $data['envoi_tdt'] = 'true';
-//        $this->PastellComponent->execute("modif-document.php", $data);
-        debug ($this->PastellComponent->detailDocument(3,'E43dLMG'));
-//        debug ($this->PastellComponent->detailDocument(3,'FjZWMlC'));
-
-//        return ($this->PastellComponent->detailDocument(48,'elRx6ID'));
+        return ($this->PastellComponent->detailDocument(3,'USQI7k1'));
     }
 
     /**
@@ -152,7 +139,7 @@ class PastellComponentTest extends CakeTestCase {
      */
     public function testCreateDocument(){
 //        debug ($this->PastellComponent->createDocument(48,'actes-generique'));
-//        return ($this->PastellComponent->createDocument(48,'actes-generique'));
+        return ($this->PastellComponent->createDocument(48,'actes-generique'));
     }
 
     /**
