@@ -17,16 +17,10 @@
  */
 class TdtMessage extends AppModel {
 
-    public $name = 'TdtMessage';
     public $useTable = "tdt_messages";
     public $belongsTo = array(
         'Deliberation' => array(
-            'className' => 'Deliberation',
             'foreignKey' => 'delib_id',
-            'conditions' => '',
-            'fields' => '',
-            'order' => 'date_message',
-            'counterCache' => ''
         )
     );
 
