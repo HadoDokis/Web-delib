@@ -36,8 +36,8 @@ class PastellComponent extends Component {
         $this->host = Configure::read('PASTELL_HOST');
         $this->login = Configure::read('PASTELL_LOGIN');
         $this->pwd = Configure::read('PASTELL_PWD');
-        $this->parapheur_type = Configure::read('IPARAPHEUR_TYPE');
         $this->pastell_type = Configure::read('PASTELL_TYPE');
+        $this->parapheur_type = Configure::read('IPARAPHEUR_TYPE');
     }
 
     /**
@@ -119,7 +119,6 @@ class PastellComponent extends Component {
             $this->log('Error : ' . $retourWS['error-message'], 'pastell');
             return false;
         }
-
         return true;
     }
 
@@ -407,7 +406,6 @@ class PastellComponent extends Component {
         foreach ($annexes as $annex)
             $this->sendAnnex($id_e, $id_d, $annex);
         $resultat = $this->detailDocument($id_e, $id_d);
-        $this->log($resultat, 'debug');
         if (!empty($resultat['data']['classification'])) {
             $pos = strpos($resultat['data']['classification'], "existe");
             if ($pos !== false && $resultat['data']['envoi_tdt'])
@@ -497,8 +495,8 @@ class PastellComponent extends Component {
      * @param int|string $id_d identifiant de dossier
      * @return bool|array
      */
-    public function delete($id_e, $id_d){
-        return $this->action($id_e,$id_d, 'supression');
+    public function delete($id_e, $id_d) {
+        return $this->action($id_e, $id_d, 'supression');
     }
 
     /**
@@ -643,8 +641,8 @@ class PastellComponent extends Component {
 
     /**
      * Joint ses annexes à un document dans Pastell
-     * @param $id_e identifiant de la collectivité
-     * @param $id_d identifiant du dossier pastell
+     * @param int|string $id_e identifiant de la collectivité
+     * @param int|string $id_d identifiant du dossier pastell
      * @param $annex chemin de l'annexe à attacher
      * @return bool|array résultat
      */
@@ -657,7 +655,13 @@ class PastellComponent extends Component {
         return $this->execute('modif-document.php', $acte);
     }
 
-    public function getClassification($id_e, $id_d){
+    /**
+     * Récupère le tableau de classifications
+     * @param int|string $id_e identifiant de la collectivité
+     * @param int|string $id_d identifiant du dossier pastell
+     * @return array
+     */
+    public function getClassification($id_e, $id_d) {
         return $this->getInfosField($id_e, $id_d, 'classification');
     }
 }
