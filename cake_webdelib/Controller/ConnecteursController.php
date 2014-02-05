@@ -144,9 +144,9 @@ class ConnecteursController extends AppController {
                 $protocol = strtoupper($this->data['Connecteur']['tdt_protocol']);
                 $content = $this->_replaceValue($content, 'TDT', $protocol);
                 $content = $this->_replaceValue($content, 'USE_TDT', $this->data['Connecteur']['use_tdt']);
-                if (Configure::read('TDT') == 'PASTELL')
+                if ($protocol == 'PASTELL')
                     $content = $this->_replaceValue($content, "USE_S2LOW", 'false');
-                $content = $this->_replaceValue($content, "USE_$protocol", $this->data['Connecteur']['use_tdt']);
+                $content = $this->_replaceValue($content, "USE_$protocol", 'true');
                 $content = $this->_replaceValue($content, $protocol.'_LOGIN', $this->data['Connecteur']['login']);
                 $content = $this->_replaceValue($content, $protocol.'_PWD', $this->data['Connecteur']['pwd']);
                 if ($protocol == 'S2LOW'){
