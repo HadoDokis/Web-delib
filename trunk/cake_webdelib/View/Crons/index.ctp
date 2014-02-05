@@ -1,4 +1,5 @@
 <?php
+$superadmin = false;
 echo $this->Html->css('crons');
 echo $this->Html->tag('h1', __('Liste des tâches planifiées', true));
 
@@ -47,12 +48,14 @@ foreach ($this->data as $rownum => $rowElement) {
 
     echo $this->Html->tag('div', null, array("class" => 'btn-group'));
     echo $this->Html->link($this->Html->tag('i', '', array("class" => "fa fa-info-circle fa-lg")), array('action'=>'view', $rowElement['Cron']['id']), array('class' => 'btn', 'title' => 'Voir les détails', 'escape' => false), false, false);
-//    echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-edit fa-lg")), '/crons/edit/' . $rowElement['Cron']['id'], array('class' => 'btn', 'title' => 'Modifier', 'escape' => false), false, false);
-//    echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-trash-o fa-lg")), '/crons/delete/' . $rowElement['Cron']['id'], array('class' => 'btn suppr_cron', 'title' => 'Supprimer', 'escape' => false), false, 'Vous confirmez vouloir supprimer cette tâche ?');
-//    echo $this->Html->tag('/div', null);
-//    echo $this->Html->tag('div', null, array("class" => 'btn-group'));
+    if ($superadmin){
+        echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-edit fa-lg")), '/crons/edit/' . $rowElement['Cron']['id'], array('class' => 'btn', 'title' => 'Modifier', 'escape' => false), false, false);
+        echo $this->Html->link($this->Html->tag("i", "", array("class" => "fa fa-trash-o fa-lg")), '/crons/delete/' . $rowElement['Cron']['id'], array('class' => 'btn suppr_cron', 'title' => 'Supprimer', 'escape' => false), false, 'Vous confirmez vouloir supprimer cette tâche ?');
+        echo $this->Html->tag('/div', null);
+        echo $this->Html->tag('div', null, array("class" => 'btn-group'));
+    }
     echo $this->Html->link($this->Html->tag('i', '', array('class' => 'fa fa-clock-o fa-lg')), array('action'=>'planifier', $rowElement['Cron']['id']), array('class' => 'btn', 'title' => 'Planifier', 'escape' => false), false, false);
-    echo $this->Html->link($this->Html->tag('i', '', array('class' => 'fa fa-cog fa-lg')), array('action'=>'executer', $rowElement['Cron']['id']), array('class' => 'btn', 'title' => 'Exécuter maintenant', 'escape' => false), false, false);
+    echo $this->Html->link($this->Html->tag('i', '', array('class' => 'fa fa-cog fa-lg')), array('action'=>'executer', $rowElement['Cron']['id']), array('class' => 'btn waiter', 'title' => 'Exécuter maintenant', 'escape' => false), false, false);
     echo $this->Html->tag('/div', null);
 
     echo $this->Html->tag('/div', null);
@@ -63,7 +66,7 @@ foreach ($this->data as $rownum => $rowElement) {
 echo $this->Html->tag('/table');
 
 echo $this->Html->tag('div', null, array('style' => 'text-align:center; margin-top:10px;'));
-//echo $this->Html->link('<i class="fa fa-plus-circle fa-lg"></i> Nouvelle tâche', array('action'=>'add'), array('title'=>'Créer une nouvelle tâche planifiée', 'class'=>'btn', 'escape' => false));
-echo $this->Html->link('<i class="fa fa-cogs fa-lg"></i> Exécuter toutes les tâches', array("action" => "runCrons"), array('id' => 'run-crons', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Exécuter toutes les tâches planifiées maintenant'));
+if ($superadmin)
+    echo $this->Html->link('<i class="fa fa-plus-circle fa-lg"></i> Nouvelle tâche', array('action'=>'add'), array('title'=>'Créer une nouvelle tâche planifiée', 'class'=>'btn', 'escape' => false));
+echo $this->Html->link('<i class="fa fa-cogs fa-lg"></i> Exécuter toutes les tâches', array("action" => "runCrons"), array('id' => 'run-crons', 'class' => 'btn btn-primary waiter', 'escape' => false, 'title' => 'Exécuter toutes les tâches planifiées maintenant'));
 echo $this->Html->tag('/div');
-//echo $this->element('indexPageNavigation');
