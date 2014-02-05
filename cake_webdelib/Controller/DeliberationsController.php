@@ -19,12 +19,12 @@ class DeliberationsController extends AppController
      * Deliberation.avis = 2 : avis défavorable
      */
 
-    var $helpers = array('Fck');
-    var $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
-    var $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Date', 'Utils', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf', 'Paginator', 'Pastell');
-    var $aucunDroit = array('getTypeseancesParTypeacteAjax', 'quicksearch');
+    public $helpers = array('Fck');
+    public $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
+    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Date', 'Utils', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf', 'Paginator', 'Pastell');
+    public $aucunDroit = array('getTypeseancesParTypeacteAjax', 'quicksearch');
     // Gestion des droits
-    var $demandeDroit = array(
+    public $demandeDroit = array(
         'add',
         'edit',
         'delete',
@@ -51,7 +51,7 @@ class DeliberationsController extends AppController
         'autreActesEnvoyes',
         'editerTous',
     );
-    var $commeDroit = array(
+    public $commeDroit = array(
         'view' => array('Pages:mes_projets', 'Pages:tous_les_projets', 'downloadDelib'),
         'attribuercircuit' => 'Deliberations:mesProjetsRedaction',
         'addIntoCircuit' => 'Deliberations:mesProjetsRedaction',
@@ -65,8 +65,8 @@ class DeliberationsController extends AppController
         'autresActesEnvoyes' => 'Deliberations:autresActesAValider',
         'getTampon' => 'Deliberations:transmit'
     );
-    var $libelleControleurDroit = 'Projets';
-    var $ajouteDroit = array(
+    public $libelleControleurDroit = 'Projets';
+    public $ajouteDroit = array(
         'edit',
         'delete',
         'goNext',
@@ -74,7 +74,7 @@ class DeliberationsController extends AppController
         'rebond',
         'editerTous',
     );
-    var $libellesActionsDroit = array(
+    public $libellesActionsDroit = array(
         'edit' => "Modification d'un projet",
         'delete' => "Suppression d'un projet",
         'goNext' => 'Sauter une étape',
@@ -544,7 +544,7 @@ class DeliberationsController extends AppController
     function downloadBordereau($delib_id)
     {
         $this->Deliberation->id = $delib_id;
-        $bordereau = $this->Deliberation->field('bordereau');
+        $bordereau = $this->Deliberation->field('parapheur_bordereau');
         header('Content-type: application/pdf');
         header('Content-Length: ' . strlen($bordereau));
         header('Content-Disposition: attachment; filename=bordereau_'.$this->Deliberation->field('num_delib').'.pdf');
@@ -1592,7 +1592,6 @@ class DeliberationsController extends AppController
             $this->Session->setFlash('Le tiers de télétransmission est désactivé. Veuillez contacter votre administrateur','growl');
             return $this->redirect($this->previous);
         }
-
         $this->Deliberation->Behaviors->load('Containable');
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
@@ -1631,6 +1630,7 @@ class DeliberationsController extends AppController
                  'Deliberation.etat',
                  'Deliberation.titre',
                  'Deliberation.tdt_id',
+                 'Deliberation.pastell_id',
                  'Deliberation.typeacte_id',
                  'Deliberation.theme_id',
                  'Deliberation.service_id',
@@ -1653,12 +1653,8 @@ class DeliberationsController extends AppController
             'order' => array($order),
             'limit' => 20));
 
-        $this->set('host', Configure::read('S2LOW_HOST'));
+        $this->set('host', Configure::read(Configure::read('TDT').'_HOST'));
         $this->set('dateClassification', $this->S2low->getDateClassification());
-        if (Configure::read('USE_PASTELL')) {
-            $coll = $this->Session->read('user.Collectivite');
-            $id_e = $coll['Collectivite']['id_entity'];
-        }
 
         // On affiche que les delibs vote pour.
         $deliberations = $this->Paginator->paginate('Deliberation');
@@ -1669,91 +1665,32 @@ class DeliberationsController extends AppController
             $deliberations[$i]['Deliberation']['num_pref'] = $deliberations[$i]['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($deliberations[$i]['Deliberation']['num_pref']);
             
             foreach ($deliberations[$i]['Deliberationseance'] as $Deliberationseance){
-                    // debug($Deliberationseance);
-                    $deliberations[$i]['Seance']['id'] = $Deliberationseance['Seance']['id'];
-                    $deliberations[$i]['Seance']['date'] = $Deliberationseance['Seance']['date'];
-                    $deliberations[$i]['Seance']['type_id'] = $Deliberationseance['Seance']['type_id'];
+                $deliberations[$i]['Seance']['id'] = $Deliberationseance['Seance']['id'];
+                $deliberations[$i]['Seance']['date'] = $Deliberationseance['Seance']['date'];
+                $deliberations[$i]['Seance']['type_id'] = $Deliberationseance['Seance']['type_id'];
                 break;
             }
-            
-            if (empty($deliberations[$i]['Deliberation']['tdt_dateAR'])) {
-                if (Configure::read('USE_PASTELL')) {
-                    if (isset($deliberations[$i]['Deliberation']['parapheur_id']))
-                        $id_d = $deliberations[$i]['Deliberation']['parapheur_id'];
-                    if (isset($id_d)) {
-                        $result = $this->Pastell->action($id_e, $id_d, 'verif-reponse-tdt');
-                        $result = (array)$result;
-                        if (isset($result['result']) && ($result['result'] == 1)) {
-                            $infos = $this->Pastell->getInfosDocument($id_e, $id_d);
-                            $infos = (array)$infos;
-                            $infos['data'] = (array)$infos['data'];
-                            $this->Deliberation->id = $deliberations[$i]['Deliberation']['id'];
-                            $this->Deliberation->saveField('tdt_id', $infos['data']['tedetis_transaction_id']);
-                            $this->Deliberation->saveField('tdt_dateAR', $infos['data']['date_ar']);
-                            $this->Deliberation->saveField('bordereau', $this->Pastell->getFile($id_e, $id_d, 'bordereau'));
-                        }
-                    }
-                }
-                if (isset($deliberations[$i]['Deliberation']['tdt_id'])) {
-                    $flux = $this->S2low->getFluxRetour($deliberations[$i]['Deliberation']['tdt_id']);
-                    $codeRetour = substr($flux, 3, 1);
-                    $deliberations[$i]['Deliberation']['code_retour'] = $codeRetour;
-
-                    if ($codeRetour == 4) {
-                        $dateAR = $this->S2low->getDateAR($res = mb_substr($flux, strpos($flux, '<actes:ARActe'), strlen($flux)));
-                        $this->Deliberation->changeDateAR($deliberations[$i]['Deliberation']['id'], $dateAR);
-                        $deliberations[$i]['Deliberation']['DateAR'] = $dateAR;
-                    }
-                }
-            }
         }
-        $seances = $this->Seance->find('all', array('conditions' => array('Seance.traitee' => 1),
+
+        $seances = $this->Seance->find('all', array(
+            'conditions' => array('Seance.traitee' => 1),
             'recursive' => -1,
             'fields' => array('Seance.id', 'Seance.date')));
+
         foreach ($seances as $seance)
             $toutes_seances[$seance['Seance']['id']] = $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
 
         $this->_ajouterFiltre($deliberations);
 
+        if(!empty($seance_id)){
+            $this->Filtre->delCritere('DeliberationseanceId');
+            $this->Filtre->delCritere('DeliberationtypeseanceId');
+        }
+
         $this->set('deliberations', $deliberations);
     }
 
-    function getAR($delib_id) {
-         $delib = $this->Deliberation->read(array('num_delib','tdt_id','tdt_data_bordereau_pdf'), $delib_id);
-        
-        if(empty($delib['Deliberation']['tdt_data_bordereau_pdf']))
-            $flux=$this->S2low->getAR($delib['Deliberation']['tdt_id']);
-        else
-            $flux=$delib['Deliberation']['tdt_data_bordereau_pdf'];
-        
-        parent::sendNoCacheHeaders();
-        header('Content-type: application/pdf');
-        header('Content-Length: ' . strlen($flux));
-        header('Content-Disposition: attachment; filename=bordereau_acquittement_'.$delib['Deliberation']['num_delib'].'.pdf');
-        die($flux);
-    }
-
-    function getTampon($delib_id) {
-        $delib = $this->Deliberation->read(array('num_delib','tdt_id','tdt_data_pdf'), $delib_id);
-        
-        if(empty($delib['Deliberation']['tdt_data_pdf']))
-            $flux=$this->S2low->getActeTampon($delib['Deliberation']['tdt_id']);
-        else
-            $flux=$delib['Deliberation']['tdt_data_pdf'];
-        
-        parent::sendNoCacheHeaders();
-        header('Content-type: application/pdf');
-        header('Content-Length: ' . strlen($flux));
-        header('Content-Disposition: attachment; filename=Acte_'.$delib['Deliberation']['num_delib'].'.pdf');
-        die($flux);
-    }
-
     function toSend($seance_id = null) {
-//        if (isset($this->params['filtre']) && ($this->params['filtre'] == 'hide'))
-//            $limit = Configure::read('LIMIT');
-//        else
-//            $limit = null;
-
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
         $this->set('host', Configure::read('S2LOW_HOST'));
@@ -1879,45 +1816,48 @@ class DeliberationsController extends AppController
     }
 
     function _getMatiereListe() {
-
         $tab = array();
-        try {
-            $xmlObject = Xml::build(Configure::read('S2LOW_CLASSIFICATION'));
-        } catch (XmlException $e) {
-            //throw new InternalErrorException();
-            return false;
-        }
-        
-        $xmlArray = Xml::toArray($xmlObject);
-        foreach ($xmlArray['RetourClassification']['actes:Matieres'] as $matiere)
-            foreach ($matiere as $matiere1) {
-                $tab[$matiere1['@actes:CodeMatiere']] = $matiere1['@actes:Libelle'];
-                if(isset($matiere1['actes:Matiere2'])){
-                    $matiere1['actes:Matiere2'] = Hash::sort($matiere1['actes:Matiere2'], '{n}.@actes:CodeMatiere', 'asc');
-                    foreach ($matiere1['actes:Matiere2'] as $matiere2) {
-                        $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere']] = $matiere2['@actes:Libelle'];
-                        if(isset($matiere1['actes:Matiere3'])){
-                            $matiere1['actes:Matiere3'] = Hash::sort($matiere1['actes:Matiere3'], '{n}.@actes:CodeMatiere', 'asc');    
-                            foreach ($matiere2['actes:Matiere3'] as $matiere3) {
-                                $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere'] . '.' . $matiere3['@actes:CodeMatiere']] = $matiere3['@actes:Libelle'];
-                                if(isset($matiere1['actes:Matiere4'])){
-                                    $matiere1['actes:Matiere4'] = Hash::sort($matiere1['actes:Matiere4'], '{n}.@actes:CodeMatiere', 'asc');    
-                                    foreach ($matiere3['actes:Matiere4'] as $matiere4) {
-                                        $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere'] . '.' . $matiere3['@actes:CodeMatiere'] . '.' . $matiere4['@actes:CodeMatiere']] = $matiere4['@actes:Libelle'];
-                                         if(isset($matiere1['actes:Matiere5'])){
-                                            $matiere1['actes:Matiere5'] = Hash::sort($matiere1['actes:Matiere5'], '{n}.@actes:CodeMatiere', 'asc');    
-                                            foreach ($matiere1['actes:Matiere5'] as $matiere5) {
-                                                $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere'] . '.' . $matiere3['@actes:CodeMatiere'] . '.' . $matiere4['@actes:CodeMatiere'] . '.' . $matiere5['@actes:CodeMatiere']] = $matiere2['@actes:Libelle'];
-                                            }
-                                         }
+        if (Configure::read('TDT') == 'S2LOW'){
+            try {
+                $xmlObject = Xml::build(Configure::read('S2LOW_CLASSIFICATION'));
+            } catch (XmlException $e) {
+                //throw new InternalErrorException();
+                return false;
+            }
+
+            $xmlArray = Xml::toArray($xmlObject);
+            foreach ($xmlArray['RetourClassification']['actes:Matieres'] as $matiere)
+                foreach ($matiere as $matiere1) {
+                    $tab[$matiere1['@actes:CodeMatiere']] = $matiere1['@actes:Libelle'];
+                    if(isset($matiere1['actes:Matiere2'])){
+                        $matiere1['actes:Matiere2'] = Hash::sort($matiere1['actes:Matiere2'], '{n}.@actes:CodeMatiere', 'asc');
+                        foreach ($matiere1['actes:Matiere2'] as $matiere2) {
+                            $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere']] = $matiere2['@actes:Libelle'];
+                            if(isset($matiere1['actes:Matiere3'])){
+                                $matiere1['actes:Matiere3'] = Hash::sort($matiere1['actes:Matiere3'], '{n}.@actes:CodeMatiere', 'asc');
+                                foreach ($matiere2['actes:Matiere3'] as $matiere3) {
+                                    $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere'] . '.' . $matiere3['@actes:CodeMatiere']] = $matiere3['@actes:Libelle'];
+                                    if(isset($matiere1['actes:Matiere4'])){
+                                        $matiere1['actes:Matiere4'] = Hash::sort($matiere1['actes:Matiere4'], '{n}.@actes:CodeMatiere', 'asc');
+                                        foreach ($matiere3['actes:Matiere4'] as $matiere4) {
+                                            $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere'] . '.' . $matiere3['@actes:CodeMatiere'] . '.' . $matiere4['@actes:CodeMatiere']] = $matiere4['@actes:Libelle'];
+                                             if(isset($matiere1['actes:Matiere5'])){
+                                                $matiere1['actes:Matiere5'] = Hash::sort($matiere1['actes:Matiere5'], '{n}.@actes:CodeMatiere', 'asc');
+                                                foreach ($matiere1['actes:Matiere5'] as $matiere5) {
+                                                    $tab[$matiere1['@actes:CodeMatiere'] . '.' . $matiere2['@actes:CodeMatiere'] . '.' . $matiere3['@actes:CodeMatiere'] . '.' . $matiere4['@actes:CodeMatiere'] . '.' . $matiere5['@actes:CodeMatiere']] = $matiere2['@actes:Libelle'];
+                                                }
+                                             }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-            
+        }
+        else{ //TODO
+//            $tab = $this->Deliberation->Nomenclature->find('list',array('fields'=>array('id','libelle')));
+        }
         return $tab;
     }
     
@@ -1928,8 +1868,16 @@ class DeliberationsController extends AppController
      */
     function _getMatiereByKey($key)
     {
-        $aMatiere = $this->_getMatiereListe();
-        return isset($aMatiere[$key]) ? $aMatiere[$key] : NULL;
+        if (Configure::read('TDT') == 'S2LOW'){
+            $aMatiere = $this->_getMatiereListe();
+            return isset($aMatiere[$key]) ? $aMatiere[$key] : NULL;
+        }
+        else{
+            App::uses('Nomenclature', 'Model');
+            $Nomenclature = new Nomenclature();
+            $Nomenclature->id = $key;
+            return $Nomenclature->field('libelle');
+        }
     }
 
     function _object2array($object)
@@ -1975,7 +1923,6 @@ class DeliberationsController extends AppController
             $id_e = null;
             if (Configure::read('USE_PASTELL')) {
                 $coll = $this->Session->read('user.Collectivite');
-                $id_e = $coll['Collectivite']['id_entity'];
             }
             $this->Deliberation->Typeacte->Behaviors->load('Containable');
             foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
@@ -1988,7 +1935,6 @@ class DeliberationsController extends AppController
                         $erreur .= $delib['Deliberation']['objet'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Identifiant Pastell inconnu.';
                         continue;
                     }
-
                     if (Configure::read('USE_PASTELL') && !empty($delib['Deliberation']['pastell_id'])) {
                         $id_d = $delib['Deliberation']['pastell_id'];
                         if ($Tdt->send($id_d, $delib['Deliberation']['num_pref'])){
@@ -1997,7 +1943,6 @@ class DeliberationsController extends AppController
                             $erreur .=  $delib['Deliberation']['objet'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Envoi au TDT échoué';
                             continue;
                         }
-
                     }elseif(Configure::read('TDT') == 'S2LOW' && Configure::read('USE_S2LOW')){
                         $typeacte = $this->Deliberation->Typeacte->find('first', array(
                             'conditions' => array('Typeacte.id' => $delib['Typeacte']['id']),
@@ -3526,7 +3471,7 @@ class DeliberationsController extends AppController
                         'Deliberation.objet_delib',
                         'Deliberation.titre',
                         'Deliberation.num_delib',
-                        'Deliberation.bordereau',
+                        'Deliberation.parapheur_bordereau',
                         'Deliberation.signee',
                         'Deliberation.signature',
                         'Deliberation.parapheur_commentaire',
@@ -4412,16 +4357,12 @@ class DeliberationsController extends AppController
         $this->_ajouterFiltre($deliberations);
 
         $this->set('dateClassification', $this->S2low->getDateClassification());
-        for ($i = 0; $i < count($deliberations); $i++) {
-            if (isset($deliberations[$i]['Deliberation']['tdt_id'])) {
-                $flux = $this->S2low->getFluxRetour($deliberations[$i]['Deliberation']['tdt_id']);
-                $codeRetour = substr($flux, 3, 1);
-                $deliberations[$i]['Deliberation']['code_retour'] = $codeRetour;
-
-                if ($codeRetour == 4) {
-                    $dateAR = $this->S2low->getDateAR($res = mb_substr($flux, strpos($flux, '<actes:ARActe'), strlen($flux)));
-                    $this->Deliberation->changeDateAR($deliberations[$i]['Deliberation']['id'], $dateAR);
-                    $deliberations[$i]['Deliberation']['DateAR'] = $dateAR;
+        if (Configure::read('TDT') == 'S2LOW'){
+            for ($i = 0; $i < count($deliberations); $i++) {
+                if (!empty($deliberations[$i]['Deliberation']['tdt_id'])) {
+                    $flux = $this->S2low->getFluxRetour($deliberations[$i]['Deliberation']['tdt_id']);
+                    $codeRetour = substr($flux, 3, 1);
+                    $deliberations[$i]['Deliberation']['code_retour'] = $codeRetour;
                 }
             }
         }
@@ -4579,4 +4520,116 @@ class DeliberationsController extends AppController
         $this->_afficheProjets($projets, 'R&eacute;sultat de la recherche parmi mes projets', array('view', 'generer'), array());
     }
 
+
+
+    public function majArTdt($id=null){
+        if (empty($id)){
+            $this->Deliberation->majArAll();
+            $this->Session->setFlash('Mise à jour des accusés de réception effectuée.', 'growl');
+        }else{
+            if ($ar = $this->Deliberation->majAr($id)){
+                $this->Session->setFlash("Dossier reçu par le tdt le $ar.", 'growl');
+            }else{
+                $this->Session->setFlash("Impossible de contacter le TDT.", 'growl');
+            }
+        }
+        return $this->redirect($this->previous);
+    }
+
+
+    public function majEchangesTdt($id = null){
+        if (empty($id)){
+            $this->Deliberation->majEchangesTdtAll();
+        }else{
+            $this->Deliberation->majEchangesTdt($id);
+        }
+        $this->Session->setFlash('Mise à jour des échanges avec le TDT effectuée.', 'growl');
+        return $this->redirect($this->previous);
+    }
+
+    function downloadTdtMessage($message_id = null) {
+        if (empty($message_id)){
+            $this->Session->setFlash('Merci d\indiquer l\'identifiant du message.', 'growl');
+            return $this->redirect($this->previous);
+        }
+
+        $data = $this->Deliberation->TdtMessage->find('first', array(
+            'fields' => array('data'),
+            'conditions' => array('message_id' => $message_id)
+        ));
+
+        if(empty($data['TdtMessage']['data'])){
+            $this->Session->setFlash('Message introuvable en base de données.', 'growl');
+            return $this->redirect($this->previous);
+        }
+
+        parent::sendNoCacheHeaders();
+        header('Content-type: application/x-gzip');
+        header('Content-Length: ' . strlen($data['TdtMessage']['data']));
+        header('Content-Disposition: attachment; filename=tdt_message_'.$message_id.'.tar.gz');
+        echo $data['TdtMessage']['data'];
+        exit;
+    }
+
+    function getTampon($delib_id) {
+
+        $delib = $this->Deliberation->find('first', array(
+            'conditions' => array('id' => $delib_id),
+            'fields' => array('num_delib','tdt_id','tdt_data_pdf', 'pastell_id'),
+            'recursive' => -1
+        ));
+
+        if(empty($delib['Deliberation']['tdt_data_pdf'])){
+            App::uses('Tdt', 'Lib');
+            $Tdt = new Tdt;
+            $tdt_id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
+            $tampon = $Tdt->getTampon($tdt_id);
+            if (!empty($tampon)){
+                $delib['Deliberation']['tdt_data_pdf'] = $tampon;
+                $this->Deliberation->id = $delib_id;
+                $this->Deliberation->saveField('tdt_data_pdf', $tampon);
+            } else {
+                $this->Session->setFlash('Erreur lors de la récupération de l\'acte tamponné', 'growl');
+                return $this->referer($this->previous);
+            }
+        }
+
+        parent::sendNoCacheHeaders();
+        header('Content-type: application/pdf');
+        header('Content-Length: ' . strlen($delib['Deliberation']['tdt_data_pdf']));
+        header('Content-Disposition: attachment; filename=Acte_'.$delib['Deliberation']['num_delib'].'.pdf');
+        echo $delib['Deliberation']['tdt_data_pdf'];
+        exit;
+    }
+
+    function getBordereauTdt($delib_id) {
+
+        $delib = $this->Deliberation->find('first', array(
+            'conditions' => array('id' => $delib_id),
+            'fields' => array('num_delib','tdt_id','tdt_data_bordereau_pdf', 'pastell_id'),
+            'recursive' => -1
+        ));
+
+        if(empty($delib['Deliberation']['tdt_data_bordereau_pdf'])){
+            App::uses('Tdt', 'Lib');
+            $Tdt = new Tdt;
+            $tdt_id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
+            $bordereau = $Tdt->getBordereau($tdt_id);
+            if (!empty($bordereau)){
+                $delib['Deliberation']['tdt_data_bordereau_pdf'] = $bordereau;
+                $this->Deliberation->id = $delib_id;
+                $this->Deliberation->saveField('tdt_data_bordereau_pdf', $bordereau);
+            } else {
+                $this->Session->setFlash('Erreur : Impossible de récupérer le bordereau.', 'growl');
+                return $this->referer($this->previous);
+            }
+        }
+
+        parent::sendNoCacheHeaders();
+        header('Content-type: application/pdf');
+        header('Content-Length: ' . strlen($delib['Deliberation']['tdt_data_bordereau_pdf']));
+        header('Content-Disposition: attachment; filename=Acte_'.$delib['Deliberation']['num_delib'].'_bordereau_tdt.pdf');
+        echo $delib['Deliberation']['tdt_data_bordereau_pdf'];
+        exit;
+    }
 }
