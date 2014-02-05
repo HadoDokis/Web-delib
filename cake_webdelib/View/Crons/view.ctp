@@ -32,7 +32,10 @@ foreach ($contenuVue['onglets'] as $i => $onglet) {
 // Affichage du lien de retour
 echo $this->Html->tag('div', null, array('class' => 'submit btn-group'));
 echo $this->Html->link('<i class="fa fa-arrow-left"></i> ' . $contenuVue['lienRetour']['title'], $contenuVue['lienRetour']['url'], array('class' => 'btn', 'escape' => false));
-echo $this->Html->link('<i class="fa fa-cog"></i> Exécuter', array('action'=>'executer', $this->request->data['Cron']['id']), array('class' => 'btn btn-primary', 'escape' => false));
+if ($this->request->data['Cron']['lock'])
+    echo $this->Html->link('<i class="fa fa-unlock"></i> Déverrouiller', array('action'=>'unlock', $this->request->data['Cron']['id']), array('class' => 'btn btn-danger', 'escape' => false));
+else
+    echo $this->Html->link('<i class="fa fa-cog"></i> Exécuter', array('action'=>'executer', $this->request->data['Cron']['id']), array('class' => 'btn btn-primary', 'escape' => false));
 echo $this->Html->tag('/div');
 ?>
 <style>
