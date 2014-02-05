@@ -20,11 +20,14 @@
     La Classification enregistrée date du <?php echo $dateClassification ?> <br/><br/>
     <table width="100%">
         <tr>
-            <th><?php
+            <th><?php echo $this->Paginator->sort('id', 'Id'); ?></th>
+            <th>
+                <?php
                 if ($this->action == 'autreActesEnvoyes')
                     echo $this->Paginator->sort('num_delib', 'N° de l\'acte') . '</th>';
                 else
-                    echo $this->Paginator->sort('num_delib', 'N° délibération'); ?></th>
+                    echo $this->Paginator->sort('num_delib', 'N° délibération'); ?>
+            </th>
             <th><?php echo $this->Paginator->sort('objet_delib', "Libellé de l'acte"); ?></th>
 
             <th>
@@ -35,10 +38,10 @@
                     echo 'Date de séance';
                 ?>
             </th>
-            <th><?php echo $this->Paginator->sort('titre', 'Titre'); ?></th>
             <th><?php echo $this->Paginator->sort('num_pref', 'Classification'); ?></th>
-            <th><?php echo $this->Paginator->sort('tdt_id', 'Statut'); ?></th>
-            <th>Courrier Ministériel</th>
+            <th><?php echo $this->Paginator->sort('tdt_id', 'Identifiant TDT'); ?></th>
+            <th>Statut TDT <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majArTdt'), array('escape'=>false)); ?></th>
+            <th>Courriers Ministériels <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majEchangesTdt'), array('escape'=>false)); ?></th>
         </tr>
         <?php
         $numLigne = 1;
@@ -46,7 +49,13 @@
             $rowClass = ($numLigne & 1) ? array('height' => '36px') : array('height' => '36px', 'class' => 'altrow');
             echo $this->Html->tag('tr', null, $rowClass);
             $numLigne++;
-            echo "<td>" . $this->Html->link($delib['Deliberation']['num_delib'], array('action'=>'getTampon', $delib['Deliberation']['id']));
+
+            echo '<td>';
+            echo $this->Html->link($delib['Deliberation']['id'], array('action'=>'view', $delib['Deliberation']['id']));
+            echo '</td>';
+
+            echo '<td>';
+            echo $this->Html->link($delib['Deliberation']['num_delib'], array('action'=>'getTampon', $delib['Deliberation']['id']));
             echo '</td>';
             ?>
             <td><?php echo $delib['Deliberation']['objet_delib']; ?></td>
@@ -58,19 +67,25 @@
                     echo $this->Html2->ukToFrenchDateWithHour($delib['Seance']['date']);
                 ?>
             </td>
-            <td><?php echo $delib['Deliberation']['titre']; ?></td>
             <td><?php echo $delib['Deliberation']['num_pref']; ?></td>
+            <td><?php echo $delib['Deliberation']['tdt_id']; ?></td>
             <td>
                 <?php
                 if (isset($delib['Deliberation']['code_retour'])) {
                     if ($delib['Deliberation']['code_retour'] == 4)
-                        echo $this->Html->link("Acquitement reçu le " . $delib['Deliberation']['tdt_dateAR'], '/deliberations/getAR/' . $delib['Deliberation']['id']);
+                        echo $this->Html->link("Acquittement reçu le " . $delib['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $delib['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
                     elseif ($delib['Deliberation']['code_retour'] == 3)
                         echo 'Transmis';
                     elseif ($delib['Deliberation']['code_retour'] == 2)
                         echo 'En attente de transmission';
                     elseif ($delib['Deliberation']['code_retour'] == 1)
                         echo 'Posté';
+                }else{
+                    if (!empty($delib['Deliberation']['tdt_dateAR'])){
+                        echo $this->Html->link("Acquittement reçu le " . $delib['Deliberation']['tdt_dateAR'], array('action'=>'getBordereauTdt', $delib['Deliberation']['id']), array('title'=>'Télécharger le bordereau d\'acquittement de transaction'));
+                    }else{
+                        echo 'En attente de réception';
+                    }
                 }
                 ?>
             </td>
@@ -78,15 +93,22 @@
                 <?php
                 if (!empty($delib['TdtMessage'])) {
                     foreach ($delib['TdtMessage'] as $message) {
-                        $url_newMessage = "https://" . Configure::read("HOST") . "/modules/actes/actes_transac_show.php?id=" . $message['message_id'];
+                        if (Configure::read('TDT') == 'S2LOW')
+                            $url_newMessage = Configure::read("S2LOW_HOST") . "/modules/actes/actes_transac_show.php?id=" . $message['message_id'];
+                        else
+                            $url_newMessage = array('action'=>'downloadTdtMessage', $message['message_id']);
+
+                        $libelle = 'Message ' . $message['message_id'];
                         if ($message['type_message'] == 2)
-                            echo $this->Html->link("Courrier simple", $url_newMessage, array('target' => '_blank')) . "<br />";
+                            $libelle = "Courrier simple";
                         if ($message['type_message'] == 3)
-                            echo $this->Html->link("Demande de pièces complémentaires", $url_newMessage, array('target' => '_blank')) . "<br />";
+                            $libelle = "Demande de pièces complémentaires";
                         if ($message['type_message'] == 4)
-                            echo $this->Html->link("Lettre d'observation", $url_newMessage, array('target' => '_blank')) . "<br />";
+                            $libelle = "Lettre d'observation";
                         if ($message['type_message'] == 5)
-                            echo $this->Html->link("Déféré au tribunal administratif", $url_newMessage, array('target' => '_blank')) . "<br />";
+                            $libelle = 'Déféré au tribunal administratif';
+                        if (!empty($libelle))
+                            echo $this->Html->link($libelle, $url_newMessage, array('target' => '_blank')) . "<br />";
                     }
                 }
                 ?>
