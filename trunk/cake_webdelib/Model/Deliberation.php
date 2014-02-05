@@ -1778,7 +1778,7 @@ class Deliberation extends AppModel {
                         if ($histo['logdossier'][$i]['status'] == 'Signe') {
                             $dossier = $this->Iparapheur->GetDossierWebservice($id_dossier);
                             if (!empty($dossier['getdossier']['signature'])) {
-                                $this->saveField('bordereau', base64_decode($dossier['getdossier']['bordereau']));
+                                $this->saveField('parapheur_bordereau', base64_decode($dossier['getdossier']['bordereau']));
                                 $this->saveField('signature', base64_decode($dossier['getdossier']['signature']));
                             }
                             $this->saveField('signee', 1);
@@ -1886,7 +1886,7 @@ class Deliberation extends AppModel {
             //Récupération du bordereau
             $bordereau = $this->Signature->getBordereau($delib['Deliberation']['pastell_id']);
             if (!empty($bordereau))
-                $this->saveField('bordereau', $bordereau);
+                $this->saveField('parapheur_bordereau', $bordereau);
             $signature = $this->Signature->getSignature($delib['Deliberation']['pastell_id']);
             if (!empty($signature))
                 $this->saveField('signature', $signature);
@@ -1896,4 +1896,115 @@ class Deliberation extends AppModel {
         }
         return false;
     }
+
+    /**
+     * Met à jour la date d'AR des dossiers envoyés au TDT
+     */
+    public function majArAll() {
+        $rapport = '';
+        $delibs = $this->find('all', array(
+            'conditions' => array(
+                'etat' => 5,
+                'tdt_dateAR' => ''
+            ),
+            'fields' => array(
+                'id',
+                'tdt_id',
+                'pastell_id',
+                'num_delib'
+            ),
+            'recursive' => -1
+        ));
+        foreach ($delibs as $delib) {
+            if ($ar = $this->majAr($delib)) {
+                $rapport .= "Délibération " . $delib['Deliberation']['num_delib'] . " reçue le " . date('d/m/Y', strtotime($ar)) . ".\n";
+            } else {
+                $rapport .= "Délibération " . $delib['Deliberation']['num_delib'] . " en attente de réception.\n";
+            }
+        }
+
+        return $rapport;
+    }
+
+    /**
+     * Met à jour la date d'AR d'une délib
+     *
+     * @param array $delib objet Deliberation
+     * @return bool succès
+     */
+    public function majAr($delib) {
+        App::uses('Tdt', 'Lib');
+        $Tdt = new Tdt;
+        $id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
+        $ar = $Tdt->getDateAr($id);
+        if ($ar) {
+            $this->id = $delib['Deliberation']['id'];
+//            $this->saveField('tdt_data_bordereau_pdf', $Tdt->getBordereau($id));
+            $this->saveField('tdt_dateAR', $ar);
+            return $ar;
+        } else
+            return false;
+    }
+
+    /**
+     * Mise à jour des echange TDT / Préfecture pour les envois de moins de 2 mois
+     */
+    public function majEchangesTdtAll() {
+        App::uses('Tdt', 'Lib');
+        $Tdt = new Tdt;
+        $rapport = '';
+        $delibs = $this->find('all', array(
+            'recursive' => -1,
+            'conditions' => array(
+                'etat' => 5,
+                'tdt_dateAR >=' => date('Y-m-d', strtotime("-60 days"))
+            ),
+            'fields' => array(
+                'id',
+                'tdt_id',
+                'pastell_id',
+                'tdt_dateAR',
+                'num_delib'
+            )
+        ));
+        foreach ($delibs as $delib) {
+            if ($this->majEchangesTdt($delib)) {
+                //Récupération du bordereau
+                $this->id = $delib['Deliberation']['id'];
+                $id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
+                $this->saveField('tdt_data_bordereau_pdf', $Tdt->getBordereau($id));
+                $rapport .= "Délibération " . $delib['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
+            } else {
+                $rapport .= "Délibération " . $delib['Deliberation']['num_delib'] . " : Erreur rencontrée.\n";
+            }
+        }
+        return $rapport;
+    }
+
+    /**
+     * Met à jour la date d'AR d'une délib
+     * @param array $delib objet Deliberation
+     * @return bool
+     */
+    public function majEchangesTdt($delib) {
+        App::uses('Tdt', 'Lib');
+        try {
+            $Tdt = new Tdt;
+            $id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
+            $infos = $Tdt->getReponses($id);
+            $this->TdtMessage->begin();
+            foreach ($infos as $info) {
+                $this->TdtMessage->create();
+                $info['TdtMessage']['delib_id'] = $delib['Deliberation']['id'];
+                $this->TdtMessage->save($info);
+            }
+            $this->TdtMessage->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->TdtMessage->rollback();
+            $this->log($e->getTraceAsString(), 'tdt');
+            return false;
+        }
+    }
+
 }
