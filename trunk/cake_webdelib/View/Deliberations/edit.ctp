@@ -285,11 +285,13 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
                     echo $this->Form->input($fieldName, array('id' => false, 'type' => 'hidden'));
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
+                $selected_values = !empty($this->request->data['Infosup'][$infosupdef['Infosupdef']['code']]) ? $this->request->data['Infosup'][$infosupdef['Infosupdef']['code']] : null;
                 if (!$disabled) {
-                    echo $this->Form->input($fieldName, array('selected' => $this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'multiple' => true, 'class' => 'select2 selectmultiple'));
+                    echo $this->Form->input($fieldName, array('selected' => $selected_values, 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled, 'multiple' => true, 'class' => 'select2 selectmultiple'));
                 } else {
-                    echo $this->Form->input($fieldName, array('selected' => $this->request->data['Infosup'][$infosupdef['Infosupdef']['code']], 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
-                    echo $this->Form->input($fieldName, array('value' => implode(',', $selected_values), 'id' => false, 'type' => 'hidden'));
+                    echo $this->Form->input($fieldName, array('selected' => $selected_values, 'label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled, 'multiple' => true, 'class' => 'select2 selectmultiple'));
+                    if (!empty($selected_values))
+                        echo $this->Form->input($fieldName, array('value' => implode(',', $selected_values), 'id' => false, 'type' => 'hidden'));
                 }
 
             }
