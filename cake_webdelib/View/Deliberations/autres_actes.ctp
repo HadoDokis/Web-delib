@@ -28,9 +28,11 @@
             echo $this->Html->tag('tr', null, $rowClass);
             $numLigne++;
             if ( $this->action != "autresActesAValider"
-                && $acte['Deliberation']['signee'] != 1
-                && $acte['Deliberation']['etat'] >= 2 && $acte['Deliberation']['etat'] < 5
-                && $acte['Deliberation']['parapheur_etat'] <= 0 )
+                && empty($acte['Deliberation']['signee'])
+                && !empty($acte['Deliberation']['num_pref'])
+                && in_array($acte['Deliberation']['parapheur_etat'], array(null, -1, 0))
+                && (in_array($acte['Deliberation']['etat'], array(3, 4))
+                    || ($acte['Typeacte']['nature_id'] > 1 && $acte['Deliberation']['etat']==2)))
                 echo '<td>' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], array('checked' => true, 'autocomplete' => 'off')) . '</td>';
             else
                 echo '<td></td>';
