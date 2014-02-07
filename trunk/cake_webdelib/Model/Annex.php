@@ -84,15 +84,13 @@ class Annex extends AppModel {
         $annexes = $this->find('all', array('conditions' => $conditions,
             'recursive' => -1,
             'order' => array('Annex.id' => 'ASC'),
-            'fields' => array('id', 'model')));
+        ));
         
         if ($joindreParent){
-            $delib = $this->Deliberation->find('first', array(
-                'conditions' => array('Deliberation.id' => $delib_id),
-                'recursive' => -1,
-                'fields' => array('parent_id')));
-            if (!empty($delib['Deliberation']['parent_id'])) {
-                $parent_annexes = $this->getAnnexesFromDelibId($delib['Deliberation']['parent_id'], $to_send, $to_merge, $joindreParent);
+            $this->Deliberation->id = $delib_id;
+            $parent_id = $this->Deliberation->field('parent_id');
+            if (!empty($parent_id)) {
+                $parent_annexes = $this->getAnnexesFromDelibId($parent_id, $to_send, $to_merge, $joindreParent);
                 if (!empty($tab)) {
                     foreach ($parent_annexes as $i => $parent_annexe){
                         if ($parent_annexe['Annex']['model'] == 'Deliberation')
@@ -103,14 +101,6 @@ class Annex extends AppModel {
             }
         }
         return $annexes;
-    }
-
-    function getAnnexesToSend($delib_id) {
-        $conditions = array('foreign_key' => $delib_id);
-        $conditions['joindre_ctrl_legalite'] = 1;
-        return $this->find('all', array(
-            'conditions' => $conditions,
-            'fields' => array('filename', 'filetype', 'data')));
     }
 
     function getContentToTdT($annex_id)
