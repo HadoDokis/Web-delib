@@ -1,45 +1,35 @@
 <?php
-/* SVN FILE: $Id: app_controller.php 4409 2007-02-02 13:20:59Z phpnut $ */
 /**
- * Short description for file.
+ * Application level Controller
  *
  * This file is application-wide controller file. You can put all
  * application-wide controller-related methods here.
  *
- * PHP versions 4 and 5
- *
- * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
- *								1785 E. Sahara Avenue, Suite 490-204
- *								Las Vegas, Nevada 89104
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
- * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
- * @package			cake
- * @subpackage		cake.cake
- * @since			CakePHP(tm) v 0.2.9
- * @version			$Revision: 4409 $
- * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
- * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
-*/
-/**
- * This is a placeholder class.
-* Create the same file in app/app_controller.php
-*
-* Add your application-wide methods in the class below, your controllers
-* will inherit them.
-*
-* @package		cake
-* @subpackage	cake.cake
-*/
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
+ * @package       app.Controller
+ * @since         CakePHP(tm) v 0.2.9
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 App::uses('Controller', 'Controller');
 
+/**
+ * Application Controller
+ *
+ * Add your application-wide methods in the class below, your controllers
+ * will inherit them.
+ *
+ * @package		app.Controller
+ * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
+ */
 class AppController extends Controller
 {
     public $theme = "Bootstrap";
@@ -73,7 +63,7 @@ class AppController extends Controller
             if (strpos($this->referer(), $this->params->here) === false)
                 $this->Session->write('previous_url', $this->referer());
             $this->previous = $this->Session->read('previous_url');
-//            debug($this->Session->read('User.Nature'));
+            $this->set('previous_url', $this->previous);
         }
 
         // ????
