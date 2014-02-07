@@ -49,9 +49,14 @@ class Signature {
     private $pastell_type;
 
     /**
-     * @var int|string $collectivite
+     * @var int|string collectivite
      */
     private $collectivite;
+
+    /**
+     * @var string visibilité du document parapheur
+     */
+    private $visibility;
 
     /**
      * Appelée lors de l'initialisation de la librairie
@@ -83,6 +88,7 @@ class Signature {
         }
         if ($protocol == 'IPARAPHEUR'){
             $this->Iparapheur = new IparapheurComponent($collection);
+            $this->visibility = Configure::read('IPARAPHEUR_VISIBILITY');
         }
         $this->Deliberation = new Deliberation;
         $this->parapheur_type = Configure::read('IPARAPHEUR_TYPE');
@@ -107,7 +113,38 @@ class Signature {
     }
 
 
-    public function sendIparapheur($options){}
+    public function sendIparapheur($options){
+
+        $delib = $options[0];
+        $circuit_id = $options[1];
+        $annexes = !empty($options[2]) ? $options[2] : array();
+        if (is_numeric($circuit_id)){
+            $circuits = $this->listCircuitsIparapheur();
+            $libelleSousType = $circuits[$circuit_id];
+        }else{
+            $libelleSousType = $circuit_id;
+        }
+        $targetName = $this->Iparapheur->handleObject($delib['Deliberation']['objet']);
+        $date_limite = !empty($delib['Deliberation']['date_limite']) ? $delib['Deliberation']['date_limite'] : null;
+        $content = file_get_contents(WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/parapheur.pdf");
+
+        $ret = $this->Parapheur->creerDossierWebservice(
+            $targetName,
+            $this->parapheur_type,
+            $libelleSousType,
+            $this->visibility,
+            $content,
+            $annexes,
+            $date_limite
+        );
+
+        if ($ret['messageretour']['coderetour'] == 'OK') {
+            return $ret['dossierID'];
+        } else {
+            $this->log($ret['messageretour']['message'], 'parapheur');
+            return false;
+        }
+    }
 
     /**
      * @param $options
@@ -123,8 +160,13 @@ class Signature {
         $id_d = $this->Pastell->createDocument($this->collectivite, $this->pastell_type);
         $res = $this->Pastell->modifDocument($this->collectivite, $id_d, $delib, $annexes);
         if ($res == 1) {
-            $circuits = $this->Pastell->getInfosField($this->collectivite, $id_d, 'iparapheur_sous_type');
-            $this->Pastell->selectCircuit($this->collectivite, $id_d, $circuits[$circuit_id]);
+            if (is_numeric($circuit_id)){
+                $circuits = $this->Pastell->getInfosField($this->collectivite, $id_d, 'iparapheur_sous_type');
+                $sousType = $circuits[$circuit_id];
+            }else{
+                $sousType = $circuit_id;
+            }
+            $this->Pastell->selectCircuit($this->collectivite, $id_d, $sousType);
             $this->Pastell->envoiSignature($this->collectivite, $id_d);
             $this->Pastell->action($this->collectivite, $id_d, 'send-iparapheur');
             return $id_d;
