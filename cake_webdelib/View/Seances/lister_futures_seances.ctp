@@ -107,9 +107,8 @@
                         'class' => 'link_debat',
                         'title' => 'Saisir les débats généraux de la séance du ' . $seance['Seance']['date'],
                         'escape' => false,
-                    ), false); ?>
+                    ), false);
 
-                <?php
                 if ($seance['Typeseance']['action'] == 0)
                     echo $this->Html->link(SHY,
                         array('action' => 'details', $seance['Seance']['id']),
@@ -146,33 +145,24 @@
                 echo('</td>');
                 echo('<td class="actions">');
                 if ($canSign) {
-                    if (!$use_pastell) {
-                        echo $this->Html->link(SHY,
-                            array('controller'=>'deliberations','action' => 'sendToParapheur', $seance['Seance']['id']),
-                            array(
-                                'class' => 'link_signer',
-                                'title' => 'Envoi des actes à la signature pour la séance du ' . $seance['Seance']['date'],
-                                'escape' => false
-                            ));
-                    } else {
-                        echo $this->Html->link(SHY,
-                            array('controller'=>'deliberations','action' => 'sendToSignature', $seance['Seance']['id']),
-                            array('class' => 'link_signer',
-                                'title' => 'Envoi des actes actes à la signature pour la séance du ' . $seance['Seance']['date'],
-                                'escape' => false,
-                            ));
-                    }
+                    echo $this->Html->link(SHY,
+                        array('controller' => 'deliberations', 'action' => 'sendToParapheur', $seance['Seance']['id']),
+                        array(
+                            'class' => 'link_signer',
+                            'title' => 'Envoi des actes à la signature pour la séance du ' . $seance['Seance']['date'],
+                            'escape' => false
+                        ));
                 }
 
                 echo $this->Html->link(SHY,
-                    array('controller'=>'models','action' => 'generer', 'null', $seance['Seance']['id'], $seance['Typeseance']['modelpvsommaire_id'], $format, '1', 'pv_sommaire','1','1','1'),
+                    array('controller' => 'models', 'action' => 'generer', 'null', $seance['Seance']['id'], $seance['Typeseance']['modelpvsommaire_id'], $format, '1', 'pv_sommaire', '1', '1', '1'),
                     array(
                         'class' => 'link_pvsommaire',
                         'title' => 'Génération du pv sommaire pour la séance du ' . $seance['Seance']['date'],
                         'escape' => false,
                     ), false);
                 echo $this->Html->link(SHY,
-                    array('controller'=>'models','action' => 'generer', 'null', $seance['Seance']['id'], $seance['Typeseance']['modelpvdetaille_id'], $format, '1', 'pv_complet','1','1','1'),
+                    array('controller' => 'models', 'action' => 'generer', 'null', $seance['Seance']['id'], $seance['Typeseance']['modelpvdetaille_id'], $format, '1', 'pv_complet', '1', '1', '1'),
                     array(
                         'class' => 'link_pvcomplet',
                         'escape' => false,
@@ -180,7 +170,7 @@
                     ), false);
 
                 echo $this->Html->link(SHY,
-                    array('action'=>'clore', $seance['Seance']['id']),
+                    array('action' => 'clore', $seance['Seance']['id']),
                     array(
                         'class' => 'link_clore_seance',
                         'title' => 'Clôture de la séance du ' . $seance['Seance']['date'],
@@ -208,18 +198,19 @@
         //Désactiver le bouton submit au démarrage
         $("#generer_multi_seance").prop("disabled", true);
         //Lors d'action sur une checkbox :
-        $('input.choix_seance_generer').change(function () {
-            //Apposer ou non la class disabled au bouton selon si des checkbox sont cochées (style)
-            if (!$('input[type=checkbox].choix_seance_generer:checked').length) {
-                $('#generer_multi_seance').addClass('disabled');
-            } else {
-                $('#generer_multi_seance').removeClass('disabled');
-            }
-            //Désactiver le bouton si aucune checkbox séance cochée (impossible à cliquer)
-            $("#generer_multi_seance").prop("disabled", !$('input[type=checkbox].choix_seance_generer:checked').length);
-        });
-        $('input.choix_seance_generer').change();
+        $('input[type=checkbox]').change(selectionChange);
+        selectionChange();
     });
+    function selectionChange() {
+        //Apposer ou non la class disabled au bouton selon si des checkbox sont cochées (style)
+        if (!$('input[type=checkbox].choix_seance_generer:checked').length) {
+            $('#generer_multi_seance').addClass('disabled');
+            $("#generer_multi_seance").prop("disabled", true);
+        } else {
+            $('#generer_multi_seance').removeClass('disabled');
+            $("#generer_multi_seance").prop("disabled", false);
+        }
+    }
 </script>
 <?php
 if ($endDiv)
