@@ -18,10 +18,11 @@
 App::uses('Component', 'Controller');
 App::uses('ComponentCollection', 'Controller');
 App::uses('SessionComponent', 'Controller/Component');
+App::uses('GedoooComponent', 'Controller/Component');
 App::uses('File', 'Utility');
 
 class PastellComponent extends Component {
-    public $components = array('Session');
+//    public $components = array('Session');
 
     private $host;
     private $login;
@@ -29,10 +30,12 @@ class PastellComponent extends Component {
     private $parapheur_type;
     private $pastell_type;
     private $Session;
+    private $Gedooo;
 
     function __construct() {
         $collection = new ComponentCollection();
         $this->Session = new SessionComponent($collection);
+        $this->Gedooo = new GedoooComponent($collection);
         $this->host = Configure::read('PASTELL_HOST');
         $this->login = Configure::read('PASTELL_LOGIN');
         $this->pwd = Configure::read('PASTELL_PWD');
@@ -371,13 +374,12 @@ class PastellComponent extends Component {
     }
 
     /**
-     * FIXME
      * Modification d'un document
      * @param int|string $id_e identifiant de la collectivité
      * @param int|string $id_d identifiant du dossier pastell
      * @param array $delib
      * @param array $annexes
-     * @return int|string
+     * @return bool|string
      * result : ok - si l'enregistrement s'est bien déroulé
      * formulaire_ok : 1 si le formulaire est valide, 0 sinon
      * message : Message complémentaire
@@ -386,21 +388,30 @@ class PastellComponent extends Component {
      * il convient d'utiliser la fonction document-type-info.php, en lui précisant le type concerné.
      */
     public function modifDocument($id_e, $id_d, $delib = array(), $annexes = array()) {
-        if (empty($delib)) return -1;
+        if (empty($delib) || empty($delib['Typeacte']['nature_id']) || empty($delib['Deliberation']['num_pref']) || empty($delib['Deliberation']['objet_delib']))
+            return false;
         App::uses('Deliberation', 'Model');
+        App::uses('GedoooComponent', 'Controller/Component');
         $this->Deliberation = new Deliberation();
-        $file_name = WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/Pastell.pdf";
+        if (!empty($delib['Deliberation']['delib_pdf'])) {
+            $file_path = $this->Gedooo->createFile(WEBROOT_PATH . '/files/generee/fd/null/' . $delib['Deliberation']['id'] . '/', 'acte.pdf', $delib['Deliberation']['delib_pdf']);
+        } else {
+            $model_id = $this->Deliberation->getModelId($delib['Deliberation']['id']);
+            //FIXME changer appel génération document
+            $this->requestAction(array('plugin' => '', 'controller' => 'models', 'action' => 'generer', $delib['Deliberation']['id'], 'null', $model_id, '0', '1', 'parapheur'));
+            $file_path = WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/parapheur.pdf";
+        }
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
-            'objet' => $delib['Deliberation']['objet_delib'],
-            'date_de_lacte' => $delib['Seance']['date'],
-            'numero_de_lacte' => $delib['Deliberation']['num_delib'],
+            'objet' => utf8_decode($delib['Deliberation']['objet_delib']),
             'type' => $this->parapheur_type,
-            'arrete' => "@$file_name",
+            'arrete' => "@$file_path",
             'acte_nature' => $delib['Typeacte']['nature_id'],
             'classification' => $delib['Deliberation']['num_pref'],
         );
+        $acte['numero_de_lacte'] = !empty($delib['Deliberation']['num_delib']) ? $delib['Deliberation']['num_delib'] : $delib['Deliberation']['id'];
+        $acte['date_de_lacte'] = !empty($delib['Seance']['date']) ? $delib['Seance']['date'] : date("Y-m-d H:i:s", strtotime("now"));
 
         $this->execute('modif-document.php', $acte);
         foreach ($annexes as $annex)
@@ -411,7 +422,7 @@ class PastellComponent extends Component {
             if ($pos !== false && $resultat['data']['envoi_tdt'])
                 return utf8_decode($resultat['data']['classification']);
         }
-        return 1;
+        return true;
     }
 
     /**
