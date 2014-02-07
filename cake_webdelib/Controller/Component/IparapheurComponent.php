@@ -50,9 +50,7 @@ Content-ID: <i-Parapheur-query@adullact.org>
 <SOAP-ENV:Envelope
 xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 <SOAP-ENV:Body>";
-            //
             // Ajout des pieces jointes
-            //
             $soap .= $this->requestPayloadString;
             $soap .= "</SOAP-ENV:Body></SOAP-ENV:Envelope>\n\n--MIMEBoundary" . $this->boundary . "\n";
 
@@ -68,7 +66,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function LancerRequeteCurl($attachments = null) {
-        $ch = curl_init(configure::read('PARAPHEUR_HOST'));
+        $ch = curl_init($this->wsto);
 
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -82,9 +80,9 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
         if ($attachments != null) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type:  Multipart/Related; boundary=MIMEBoundary" . $this->boundary . "; type=\"application/xop+xml\"; charset=utf-8; start=\"<i-Parapheur-query@adullact.org>\"", 'SOAPAction: ""'));
-            $params = array("to" => configure::read('PARAPHEUR_HOST'), "attachments" => $attachments);
+            $params = array("to" => $this->wsto, "attachments" => $attachments);
         } else {
-            $params = array("to" => configure::read('PARAPHEUR_HOST'));
+            $params = array("to" => $this->wsto);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type:text/xml; charset=utf-8", 'SOAPAction: ""'));
         }
         $soap = $this->SOAPMessage($this->requestPayloadString, $params);
@@ -93,7 +91,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
         $respons = curl_exec($ch);
         if ($respons === false) {
-            $this->log(curl_error($ch), 'parafError');
+            $this->log(curl_error($ch), 'parapheur');
             return false;
         }
 
@@ -177,7 +175,6 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     function exercerDroitRemordWebservice($nom_dossier) {
         $this->requestPayloadString = '<ns:ExercerDroitRemordDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:ExercerDroitRemordDossierRequest>';
         $this->lancerRequeteCurl();
-        //return $this->responseMessageStr;
         return $this->traiteXMLMessageRetour();
     }
 
@@ -201,13 +198,14 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
         $this->requestPayloadString .= '<ns:DocumentsAnnexes>';
         for ($i = 0; $i < count($docsannexes); $i++) {
+            $encoding = !empty($docsannexes[$i]['encoding']) ? $docsannexes[$i]['encoding'] : 'UTF-8';
             $this->requestPayloadString .= '<ns:DocAnnexe>
-		               <ns:nom>' . $this->_xml_entity_encode($docsannexes[$i][3]) . '</ns:nom>
-		               <ns:fichier xm:contentType="' . $docsannexes[$i][1] . '">
+		               <ns:nom>' . $this->_xml_entity_encode($docsannexes[$i]['filename']) . '</ns:nom>
+		               <ns:fichier xm:contentType="' . $docsannexes[$i]['filetype'] . '">
 		               <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:annexe_' . $i . '"></xop:Include>
 		               </ns:fichier>
-		               <ns:mimetype>' . $docsannexes[$i][1] . '</ns:mimetype>
-		               <ns:encoding>' . $docsannexes[$i][2] . '</ns:encoding>
+		               <ns:mimetype>' . $docsannexes[$i]['filetype'] . '</ns:mimetype>
+		               <ns:encoding>' . $encoding . '</ns:encoding>
 		            </ns:DocAnnexe>';
             $attachments = array_merge($attachments, array("annexe_" . $i => $docsannexes[$i]));
         }
