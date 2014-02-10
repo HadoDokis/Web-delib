@@ -592,19 +592,9 @@ class DeliberationsController extends AppController
             }
 
             $newAnnexe['Annex']['filetype'] = $results['mimetype'];
-
             $newAnnexe['Annex']['size'] = $file->size();
             $newAnnexe['Annex']['data'] = $file->read();
-
-            if ($results['extension'] == 'pdf') {
-                $newAnnexe['Annex']['data_pdf'] = $file->read();
-                $newAnnexe['Annex']['filename_pdf'] = $annexe['file']['name'];
-                $newAnnexe['Annex']['data'] = $this->Pdf->toOdt($file->pwd());
-                $newAnnexe['Annex']['filename'] = $annexe['file']['name'] . '.odt';
-            } elseif ($results['extension'] == 'odt') {
-                $newAnnexe['Annex']['data_pdf'] = $this->Conversion->convertirFichier($file->pwd(), 'pdf');
-                $newAnnexe['Annex']['filename_pdf'] = $annexe['file']['name'] . '.pdf';
-            }
+            $newAnnexe['Annex']['filename'] = $annexe['file']['name'];
             $file->close();
 
             if (!$this->Annex->save($newAnnexe['Annex'])) {
@@ -614,7 +604,7 @@ class DeliberationsController extends AppController
             } else $return = true;
         } else
             $annexesErrors[$titre][] = 'Erreur inconnue';
-
+        
         return $return;
     }
 
@@ -1034,6 +1024,8 @@ class DeliberationsController extends AppController
 
             if ($success) {
                 $this->Deliberation->commit();
+                $cmd = 'nohup nice -n 10 '.APP.'Console'.DS.'cake Maintenance conversionAnnexe -i 341 >/dev/null 2>&1';
+                $pid = shell_exec($cmd);
                 $this->Session->setFlash("Le projet $id a été enregistré", 'growl');
                 $sortie = true;
 
