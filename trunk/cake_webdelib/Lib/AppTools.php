@@ -142,6 +142,27 @@ class AppTools
         if (!$fp = curl_init($url)) return false;
         return true;
     }
+    
+    /** Retourne un répertoire temporaire disponible dans le dossier passé en parametre
+     * 
+     * @return boolean ou string
+     */
+    public static function newTmpDir($patchDir){
+        
+        App::uses('Folder', 'Utility');
+        App::uses('File', 'Utility');
 
+        //Création du répertoire temporaire par la fonction tempnam
+        $outputDir=tempnam($patchDir,'');
+        $file = new File($outputDir, false, 0777);
+        $file->delete();
+        if(!$file->exists()){
+            $folder= new Folder($outputDir, true, 0777);
+            
+            return $outputDir;
+        }
+        
+        return false;
+    }
 }
 
