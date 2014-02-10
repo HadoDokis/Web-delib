@@ -1,12 +1,11 @@
 <?php
+echo $this->Html->script('jstree.min');
+echo $this->Html->css('jstree/style.min');
 echo $this->element('onglets', array('listeOnglets' => array(
-        'Informations principales',
-        'Droits',
-        'Types d\'acte')));
-?>
+    'Informations principales',
+    'Droits',
+    'Types d\'acte')));
 
-
-<?php
 if ($this->Html->value('User.id')) {
     echo "<h2>Modification d'un utilisateur</h2>";
     echo $this->Form->create('User', array('url' => '/users/edit/' . $this->Html->value('User.id'), 'type' => 'post', 'name' => 'userEdit', 'id' => 'userForm'));
@@ -46,6 +45,8 @@ if ($this->Html->value('User.id')) {
             <?php echo $this->Form->input('User.telmobile', array('label' => 'Tel mobile')); ?>
             <br />
             <?php echo $this->Form->input('User.email', array('label' => 'Email', 'size' => '30')); ?>
+            <br />
+            <?php echo $this->Form->input('User.note', array('type' => 'textarea', 'cols' => '30', 'rows' => '2')); ?>
         </div>
     </fieldset>
 
@@ -99,17 +100,17 @@ if ($this->Html->value('User.id')) {
                 'size' => 15,
                 'empty' => true));
 
-            echo ("<div class='spacer'></div>");
+            echo "<div class='spacer'></div>";
 
             echo $this->Form->input('User.circuit_defaut_id', array('type' => 'select',
                 'id' => 'default_circuit',
                 'label' => "Circuit par défaut",
                 'options' => array()));
-            ?> 
+            ?>
         </div>
         <div class="demi">
             <?php
-            if (!isset($selectedServices) && empty($selectedServices))
+            if (empty($selectedServices))
                 $selectedServices = false;
             echo $this->Form->input('Service.Service', array('label' => 'Service(s) <abbr title="obligatoire">*</abbr>',
                 'options' => $services,
@@ -119,8 +120,6 @@ if ($this->Html->value('User.id')) {
                 'class' => 'selectMultiple',
                 'escape' => false));
             echo $this->Form->error('User.Service', 'Sélectionnez un ou plusieurs services');
-            echo ("<div class='spacer'></div>");
-            echo $this->Form->input('User.note', array('type' => 'textarea', 'cols' => '30', 'rows' => '2'));
             ?>
         </div>
     </fieldset>
@@ -166,6 +165,9 @@ if ($this->Html->value('User.id')) {
 <?php echo $this->Form->end(); ?>
 <script>
     $(document).ready(function() {
+        $('#services').jstree(
+
+        );
         onchangeCircuitDefault();
     });
     function onchangeCircuitDefault() {
