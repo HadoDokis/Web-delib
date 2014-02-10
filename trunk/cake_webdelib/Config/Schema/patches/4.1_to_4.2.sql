@@ -21,7 +21,7 @@ ALTER TABLE users ADD COLUMN mail_retard_validation BOOLEAN DEFAULT FALSE;
 
 -- Mise à jour : joindre les annexes par défaut
 UPDATE annexes
-SET joindre_fusion = 1;
+SET joindre_fusion = true;
 
 -- Nouvelle gestion des annexes
 ALTER TABLE annexes ADD COLUMN edition_data bytea;
