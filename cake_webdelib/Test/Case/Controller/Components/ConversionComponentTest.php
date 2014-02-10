@@ -48,7 +48,7 @@ class ConversionComponentTest extends CakeTestCase {
         
         $file=new File(WWW_ROOT.DS.'check'.DS.'files'.DS.'checkConversion.odt');
         $file->close();
-        $result=$this->ConversionComponent->convertirFlux($file->read(), 'pdf');
+        $result=$this->ConversionComponent->convertirFlux($file->read(),'odt', 'pdf');
         $file=new File(TMP.DS.'files'.DS.'checkConversion.pdf',TRUE);
         $file->append($result);
         $expected = $file->mime();
