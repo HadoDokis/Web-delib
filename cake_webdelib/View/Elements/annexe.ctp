@@ -34,37 +34,8 @@ if (isset($annexes)) {
 		echo $this->Html->tag('tr', null,  $rowClass);
 			echo $this->Html->tag('td', $rownum+1);
 			echo $this->Html->tag('td');
-				$pos = strpos($annexe['filetype'], 'vnd.oasis.opendocument');
-				if ($mode == 'edit') {
-                                        // lien de téléchargement de la version pdf de l'annexe
-					if ($annexe['filetype']=='application/pdf'){
-                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename_pdf'], '/annexes/download/'.$annexe['id'], array('class'=>'noWarn', 'title'=>'Télécharger le fichier')));
-                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu odt)', '/annexes/download/'.$annexe['id'].'/odt', array('class'=>'noWarn', 'title'=>'Télécharger le fichier')));
-                                        }
-                                        elseif ($annexe['filetype']=='application/vnd.oasis.opendocument.text'){
-                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('class'=>'noWarn', 'title'=>'Télécharger le fichier')));
-                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/pdf', array('class'=>'noWarn', 'title'=>'Télécharger le fichier')));
-                                        }
-                                        else
-                                        {
-                                        // lien de téléchargement de l'annexe
-					echo $this->Html->tag('span', $this->Html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
-                                        }
-                                        // lien de modification de l'annexe en webdav si texte opendocument
-					if ($pos !== false) {
-						$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
-						echo  $this->Html->link('modifier : '.$annexe['filename'] , $url, array(
-							'id'=>'urlWebdavAnnexe'.$annexe['id'],
-							'style'=>'display:none;',
-							'title'=>'Modifier le fichier'));
-					}
-				} else {
-					// nom de l'annexe
-					echo $this->Html->tag('span', $annexe['filename']);
-					// nom de la version pdf de l'annexe
-					if (($pos !== false) && (strlen($annexe['filename_pdf']) > 0)) 
-						echo $this->Html->tag('span', ' '.'version pdf : '.$annexe['filename_pdf']);
-				}
+                        // lien de téléchargement de la version pdf de l'annexe
+                        echo $this->Html->tag('span', $this->Html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('class'=>'noWarn', 'title'=>'Télécharger le fichier')));
 			echo $this->Html->tag('/td');
 			echo $this->Html->tag('td');
 				if ($mode == 'edit') {

@@ -26,8 +26,9 @@ Configure::write('CONVERSION_TYPE', 'CLOUDOOO');
 Configure::write('CLOUDOOO_HOST', '127.0.0.1');
 Configure::write('CLOUDOOO_PORT', '8011');
 
-/* Configuration pour la manipulation des pdf */
+/* Configuration pour la manipulation des pdf */ //apt-get install poppler-utils
 Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
+Configure::write('PDFINFO_EXEC', '/usr/bin/pdfinfo');
 
 /* Configuration GhostScript */
 // Chemin vers l'executable

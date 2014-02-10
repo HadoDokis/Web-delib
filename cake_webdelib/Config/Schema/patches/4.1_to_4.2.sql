@@ -23,6 +23,10 @@ ALTER TABLE users ADD COLUMN mail_retard_validation BOOLEAN DEFAULT FALSE;
 UPDATE annexes
 SET joindre_fusion = 1;
 
+-- Nouvelle gestion des annexes
+ALTER TABLE annexes ADD COLUMN edition_data bytea;
+ALTER TABLE annexes ADD COLUMN edition_data_typemime VARCHAR DEFAULT NULL;
+
 -- Gabarits textes
 ALTER TABLE typeactes ADD COLUMN gabarit_projet BYTEA DEFAULT NULL;
 ALTER TABLE typeactes ADD COLUMN gabarit_synthese BYTEA DEFAULT NULL;
@@ -76,6 +80,10 @@ VALUES ('6', 'TDT : Mise à jour des échanges de courriers',
         'Met à jour les échanges de courriers entre la préfecture et le TDT', NULL, 'CronJob', 'majCourriersTdt', 'f',
         NULL, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', NULL, TRUE, now(), '1', now(),
         '1');
+
+-- Tâche planifiée pour la convertion des annnexes
+INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
+   VALUES ('7', 'CONVERTION : convertion des annexes', 'convertion des annexes dans différents formats', null, 'CronJob',	'convertionAnnexesJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
 
 ALTER TABLE crons ADD COLUMN lock BOOL DEFAULT FALSE;
 

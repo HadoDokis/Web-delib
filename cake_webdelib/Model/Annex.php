@@ -1,15 +1,31 @@
 <?php
 
+/**
+ * Code source de la classe Annex.
+ *
+ * PHP 5.3
+ *
+ * @package app.Model.Annex
+ * @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
+ */
+
+/**
+ * Classe Annex.
+ *
+ * @package app.Model.Annex
+ * 
+ */
+
 class Annex extends AppModel {
 
-    var $name = 'Annex';
-    var $displayField = 'titre';
-    var $belongsTo = array(
+    public $name = 'Annex';
+    public $displayField = 'titre';
+    public $belongsTo = array(
         'Deliberation' => array(
             'foreignKey' => 'foreign_key'
         )
     );
-    var $validate = array(
+    public $validate = array(
         'joindre_ctrl_legalite' => array(
             'rule' => 'checkFormatControlLegalite',
             'message' => 'Le format de fichier est invalide pour joindre au contrôle de légalité'),
@@ -31,7 +47,7 @@ class Annex extends AppModel {
             'message' => 'Le titre du fichier est trop long (200 caract&egrave;res maximum)', 'growl')
     );
 
-    function checkFormatControlLegalite() {
+    public function checkFormatControlLegalite() {
         if ($this->data['Annex']['joindre_ctrl_legalite'] == 1) {
             $DOC_TYPE = Configure::read('DOC_TYPE');
             if (!empty($this->data['Annex']['filename'])) {
@@ -48,7 +64,7 @@ class Annex extends AppModel {
         return true;
     }
 
-    function checkFormatFusion() {
+    public function checkFormatFusion() {
         if ($this->data['Annex']['joindre_fusion'] == 1) {
             $DOC_TYPE = Configure::read('DOC_TYPE');
             if (!empty($this->data['Annex']['filename'])) {
@@ -73,7 +89,7 @@ class Annex extends AppModel {
      * @param bool $joindreParent inclure les Annexe de la Deliberation parente
      * @return array
      */
-    function getAnnexesFromDelibId($delib_id, $to_send = false, $to_merge = false, $joindreParent = false) {
+    public function getAnnexesFromDelibId($delib_id, $to_send = false, $to_merge = false, $joindreParent = false) {
         $conditions['Annex.foreign_key'] = $delib_id;
         //$conditions['Annex.model'] = 'Deliberation';
         if ($to_send)
@@ -103,7 +119,7 @@ class Annex extends AppModel {
         return $annexes;
     }
 
-    function getContentToTdT($annex_id)
+    public function getContentToTdT($annex_id)
     {
         $annex = $this->find('first', array(
             'conditions' => array('Annex.id' => $annex_id),
@@ -116,5 +132,4 @@ class Annex extends AppModel {
             'data' => $annex['Annex']['data_pdf']
         );
     }
-
 }

@@ -1,5 +1,9 @@
 <?php
 
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
+
+
     class PdfComponent extends Component {
 
         function concatener($document_path, $annexes=array()) {
@@ -19,13 +23,22 @@
             return ($return_value ==0);
         }  
 
-        function toOdt($filename){
-            $outputDir = tempnam(TMP,'');
-            if (file_exists($outputDir)) {
-                unlink($outputDir);
+        function toOdt($path, $filename=null){
+            $outputDir=tempnam(TMP.'files'.DS.'conversion'.DS,'');
+            $file = new File($outputDir, false, 0777);
+            $file->delete();
+            
+            $folderTmp= new Folder($outputDir, true, 0777);
+                
+            if(!is_file($path) && !empty($filename))  { 
+                $file = new File($outputDir.DS.$filename, true, 0777);
+                $file->append($path);
             }
-            mkdir($outputDir);
-
+            else{
+                $file = new File($path);
+                $file->write($filename);
+            }
+            
             //Preparation de la commande ghostscript
             $GS_EXEC =  Configure::read('GS_EXEC');
             $GS_RESOLUTION =  Configure::read('GS_RESOLUTION');
@@ -34,13 +47,19 @@
 
             $output = array();
 
-            $commande = "$GS_EXEC  $GS_OPTS $filename" ;
+            $commande = "$GS_EXEC  $GS_OPTS ".$file->pwd() ;
             //generation des images
             exec($commande, $output, $return_value);
+            $file->delete();
             //génération du fichier ODT
-            $this->generateOdtFileWithImages($outputDir);
+            $this->generateOdtFileWithImages($folderTmp->pwd());
+            
+            $file = new File($outputDir."/result.odt");
+            $return=$file->read();
+            $file->close();
+            $folderTmp->delete();
 
-            return file_get_contents($outputDir."/result.odt");
+            return $return;
         }
 
         function _generateManifest($manifest) {

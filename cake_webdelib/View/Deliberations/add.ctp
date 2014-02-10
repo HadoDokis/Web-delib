@@ -4,20 +4,21 @@
 <?php echo $this->Html->script('ckeditor/ckeditor'); ?>
 <?php echo $this->Html->script('ckeditor/adapters/jquery'); ?>
 <?php echo $this->Html->script('multidelib.js'); ?>
-
 <?php
 echo "<h1>Ajout d'un projet</h1>";
 echo $this->Form->create('Deliberation', array('url' => '/deliberations/add', 'type' => 'file', 'name' => 'Deliberation'));
 ?>
+
 <div class='onglet'>
-<a href="#" id="emptylink" alt=""></a>
-<?php      echo $this->Html->link('Informations principales', '#', array('class' => 'ongletCourant', 'id' => 'lienTab1', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,1);'));
-echo $this->Html->link('Textes', '#', array('id' => 'lienTab2', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,2);'));
-echo $this->Html->link('Annexe(s)', '#', array('id' => 'lienTab3', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,3);'));
+<a href="#" id="emptylink"></a>
+<?php     
+echo $this->Html->link('Informations principales', '#', array('class' => 'ongletCourant noWarn', 'id' => 'lienTab1', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,1);'));
+echo $this->Html->link('Textes', '#', array('id' => 'lienTab2', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,2);', 'class'=>'noWarn'));
+echo $this->Html->link('Annexe(s)', '#', array('id' => 'lienTab3', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,3);', 'class'=>'noWarn'));
 if (!empty($infosupdefs))
-    echo $this->Html->link('Informations supplémentaires', '#', array('id' => 'lienTab4', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,4);'));
+    echo $this->Html->link('Informations supplémentaires', '#', array('id' => 'lienTab4', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,4);', 'class'=>'noWarn'));
 if (Configure::read('DELIBERATIONS_MULTIPLES'))
-    echo $this->Html->link('Délibérations rattachées', '#', array('id' => 'lienTab5', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,5);', 'style' => 'display: none'));
+    echo $this->Html->link('Délibérations rattachées', '#', array('id' => 'lienTab5', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,5);', 'style' => 'display: none', 'class'=>'noWarn'));
 echo $this->Html->useTag('tagend', 'div');
 ?>
 
@@ -38,6 +39,7 @@ echo $this->Html->useTag('tagend', 'div');
         'options' => $this->Session->read('user.Nature'),
         'empty' => '(sélectionner le type d\'acte)',
         'id' => 'listeTypeactesId',
+        'class' => 'select2 selectone',
         'onChange' => "updateTypeseances(this);",
         'escape' => false));  ?>
     <div class='spacer'></div>
@@ -69,10 +71,18 @@ echo $this->Html->useTag('tagend', 'div');
     </div>
 
     <div class='spacer'></div>
-    <?php echo $this->Form->input('Deliberation.rapporteur_id', array('label' => 'Rapporteur', 'options' => $rapporteurs, 'empty' => true)); ?>
+    <?php echo $this->Form->input('Deliberation.rapporteur_id', array(
+                                                                        'label' => 'Rapporteur', 
+                                                                        'options' => $rapporteurs,
+                                                                        'class' => 'select2 selectone',
+                                                                        'empty' => true)); ?>
 
     <div class='spacer'></div>
-    <?php echo $this->Form->input('Deliberation.theme_id', array('label' => 'Thème <abbr title="obligatoire">(*)</abbr>', 'empty' => '(sélectionner le thème)', 'escape' => false)); ?>
+    <?php echo $this->Form->input('Deliberation.theme_id', array(
+                                                                    'label' => 'Thème <abbr title="obligatoire">(*)</abbr>',
+                                                                    'empty' => '(sélectionner le thème)',
+                                                                    'class' => 'select2 selectone',
+                                                                    'escape' => false)); ?>
     <div class='spacer'></div>
 
     <?php
@@ -252,9 +262,29 @@ echo $this->Html->useTag('tagend', 'div');
             placeholder: "Liste à choix multiples"
         });
         $(".select2.selectone").select2({
-            width: "resolve",
+            width: "element",
             allowClear: true,
+            dropdownCssClass: "selectMaxWidth",
+            dropdownAutoWidth: true,
             placeholder: "Selectionnez un élément"
         });
     });
+    
+     //Gestion des sorties du formulaire
+    function onUnloadEditForm() {
+        $(window).bind('beforeunload', function () {
+            return "Attention!! des données saisies pourraient ne pas être enregistrées dans webdelib.";
+        });
+    }
+    $(document).ready(onUnloadEditForm);
+    $("#DeliberationEditForm").submit(function () {
+        $(window).unbind("beforeunload");
+    });
+    $(".noWarn").on('click', function () {
+            $(window).unbind('beforeunload');
+            objMenuTimeout = setTimeout(function () {
+                onUnloadEditForm();
+            }, 2000); // 2000 millisecondes = 2 secondes
+        }
+    );
 </script>

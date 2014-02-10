@@ -1488,3 +1488,7 @@ table.table-projets-seance tr td:first-child{
 div#connecteurIparapheur input[type='text']{
     width: 500px;
 }
+
+.selectMaxWidth {
+    max-width:80%;
+}

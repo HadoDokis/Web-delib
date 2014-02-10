@@ -4,7 +4,6 @@
 <?php echo $this->Html->script('ckeditor/ckeditor'); ?>
 <?php echo $this->Html->script('ckeditor/adapters/jquery'); ?>
 <?php echo $this->Html->script('multidelib.js'); ?>
-
 <?php
 echo $this->Html->tag('h1', "Modification du projet : " . $this->Html->value('Deliberation.id'));
 echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' . $this->Html->value('Deliberation.id'), 'type' => 'file', 'name' => 'Deliberation'));
@@ -51,7 +50,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
         'empty' => false,
         'id' => 'listeTypeactesId',
         'onChange' => "updateTypeseances(this);",
-        'escape' => false));  ?>
+        'escape' => false,'class'=>'select2 selectone'));  ?>
     <div class='spacer'></div>
     <?php echo $this->Form->input('Deliberation.objet', array('type' => 'textarea', 'label' => 'Libellé <abbr title="obligatoire">(*)</abbr>', 'cols' => '60', 'rows' => '2')); ?>
 
@@ -88,10 +87,10 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
     </div>
 
     <div class='spacer'></div>
-    <?php echo $this->Form->input('Deliberation.rapporteur_id', array('label' => 'Rapporteur', 'options' => $rapporteurs, 'empty' => true)); ?>
+    <?php echo $this->Form->input('Deliberation.rapporteur_id', array('label' => 'Rapporteur', 'options' => $rapporteurs, 'empty' => true, 'class'=>'select2 selectone','style'=>'min-width:300px')); ?>
 
     <div class='spacer'></div>
-    <?php echo $this->Form->input('Deliberation.theme_id', array('label' => 'Thème <abbr title="obligatoire">(*)</abbr>', 'options' => $themes, 'default' => $this->Html->value('Deliberation.theme_id'), 'empty' => false, 'escape' => false)); ?>
+    <?php echo $this->Form->input('Deliberation.theme_id', array('label' => 'Thème <abbr title="obligatoire">(*)</abbr>', 'options' => $themes, 'default' => $this->Html->value('Deliberation.theme_id'), 'empty' => false, 'escape' => false, 'class'=>'select2 selectone','style'=>'min-width:300px')); ?>
     <div class='spacer'></div>
 
     <?php
@@ -307,8 +306,10 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
                 placeholder: "Liste à choix multiples"
             });
             $(".select2.selectone").select2({
-                width: "resolve",
+                width: "element",
                 allowClear: true,
+                dropdownCssClass: "selectMaxWidth",
+                dropdownAutoWidth: true,
                 placeholder: "Selectionnez un élément"
             });
         });
@@ -365,7 +366,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
         $(window).bind('beforeunload', function () {
             return "Attention!! des données saisies pourraient ne pas être enregistrées dans webdelib.";
         });
-    }
+    //}
     $(document).ready(onUnloadEditForm);
     $("#DeliberationEditForm").submit(function () {
         $(window).unbind("beforeunload");

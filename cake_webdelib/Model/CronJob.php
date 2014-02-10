@@ -127,6 +127,59 @@ class CronJob extends AppModel {
             return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage();
         }
     }
+    
+    /**
+     * @return string
+     */
+    public function convertionAnnexesJob($delib_id=NULL)
+    {
+        try {
+            //Import des modèles
+            App::uses('Annex', 'Model');
+            App::uses('ComponentCollection', 'Controller');
+            App::uses('ConversionComponent', 'Controller/Component');
+            $collection = new ComponentCollection();
+            $this->Conversion = new ConversionComponent($collection);
+            
+            $DOC_TYPE = Configure::read('DOC_TYPE');
+            $this->Annex = new Annex();
+            $condition=array();
+            if(!empty($delib_id))
+            $condition['foreign_key']=$delib_id;
+            $condition['edition_data']=NULL;
+            $condition['OR']=array('joindre_ctrl_legalite'=>true,'joindre_fusion'=>1);
+            
+            debug($condition);
+            
+            $annexes = $this->Annex->find('all', array(
+                'fields' => array('id','data','filename','filetype','joindre_ctrl_legalite','joindre_fusion'),
+                'conditions' => $condition,
+                'recursive'=>-1
+            ));
+            
+            if (!empty($annexes))
+            foreach ($annexes as $annexe) {
+                $this->Annex->id=$annexe['Annex']['id'];
+                
+                if($annexe['Annex']['joindre_fusion']){
+                    $newAnnexe['edition_data'] = $this->Conversion->toOdt($annexe['Annex']['data'], $annexe['Annex']['filetype']);
+                    $newAnnexe['edition_data_typemime'] = '';
+                }
+                
+                if($annexe['Annex']['joindre_ctrl_legalite'])
+                    $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], 'pdf');
+                
+                $this->Annex->save($newAnnexe);
+            }
+            
+            if (empty($annexes))
+                return Cron::MESSAGE_FIN_EXEC_SUCCES . "Aucune annexe à convertir";
+            else
+                return Cron::MESSAGE_FIN_EXEC_SUCCES . "Utilisateurs alertés :\n\n" . count($annexes);
+        } catch (Exception $e) {
+            return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage();
+        }
+    }
 
     /**
      * Met à jour les ar et bordereau des dossiers envoyés en tdt
