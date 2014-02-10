@@ -56,7 +56,7 @@ class AppModel extends Model
             $this->validate['content']['message'] = 'Erreur dans le document ou lors de l&apos;envoi.';
             return false;
         }
-        App::uses('FidoComponent', 'ModelOdtValidator.Controller');
+        App::uses('FidoComponent', 'ModelOdtValidator.Controller/Component');
         $this->Fido = new FidoComponent();
         $allowed = $this->Fido->checkFile($data['tmp_name']);
 
