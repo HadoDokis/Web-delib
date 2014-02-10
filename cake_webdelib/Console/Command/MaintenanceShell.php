@@ -11,7 +11,7 @@ class MaintenanceShell extends AppShell {
         'Tdt',
         'Gedooo'
     );
-    public $uses = array('Annex', 'Deliberation');
+    public $uses = array('Annex', 'Deliberation','CronJob');
 
     public function main() {
 //        $this->out('Script de patch de Webdelib');
@@ -54,8 +54,38 @@ class MaintenanceShell extends AppShell {
                 )
             )
         ));
+        
+        $parser->addSubcommand('conversionAnnexe', array(
+            'help' => __('Conversion des annexes d\'un acte.'),
+            'parser' => array(
+                'options' => array(
+                    'id' => array(
+                        'name' => 'id',
+                        'required' => true,
+                        'short' => 'i',
+                        'help' => 'Conversion des annexes d\'un acte.'
+                    ),
+                )
+            )
+        ));
 
         return $parser;
+    }
+    
+    /**
+     * Vérifie la compatibilité des textes en base avec Gedooo,
+     * - textes de projets valides ?
+     * - annexes en odt valide ?
+     */
+    public function conversionAnnexe()
+    {
+        $time_start = microtime(true);
+        $this->out("Délibération id : " . $this->params['id'], 1, Shell::VERBOSE);
+        if (!empty($this->params['id']))
+            $this->CronJob->convertionAnnexesJob($this->params['id']);
+        
+        $time_end = microtime(true);
+        $this->out("Temps pour la conversion : " . round($time_end - $time_start) . ' secondes', 1, Shell::VERBOSE);
     }
 
     /**
