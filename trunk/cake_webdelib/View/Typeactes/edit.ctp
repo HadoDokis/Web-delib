@@ -15,7 +15,10 @@ if ($this->Html->value('Typeacte.id')) {
         <br/>
         <?php echo $this->Form->input('Typeacte.compteur_id', array('label' => 'Compteur <abbr title="obligatoire">*</abbr>', 'options' => $compteurs, 'default' => $this->Html->value('Typeacte.compteur_id'), 'empty' => (count($compteurs) > 1) && (!$this->Html->value('Typeacte.id')))); ?>
         <br/>
-        <?php echo $this->Form->input('Typeacte.nature_id', array('label' => 'Nature <abbr title="obligatoire">*</abbr>', 'options' => $natures, 'default' => $selectedNatures, 'empty' => false)); ?>
+        <?php
+        if (empty($selectedNatures) && !empty($this->request->data))
+            $selectedNatures = $this->request->data['Typeacte']['nature_id'];
+        echo $this->Form->input('Typeacte.nature_id', array('label' => 'Nature <abbr title="obligatoire">*</abbr>', 'options' => $natures, 'default' => $selectedNatures, 'empty' => false)); ?>
         <br/>
         <?php
         if ($this->action == 'add')
@@ -45,6 +48,7 @@ if ($this->Html->value('Typeacte.id')) {
             'type' => 'file',
             'div' => array('id' => 'div_gabarit_projet')
         ));
+        echo $this->Form->hidden('Typeacte.gabarit_projet_upload_erase', array('value' => '0'));
         ?>
         <br/>
         <?php
@@ -53,6 +57,7 @@ if ($this->Html->value('Typeacte.id')) {
             'type' => 'file',
             'div' => array('id' => 'div_gabarit_synthese')
         ));
+        echo $this->Form->hidden('Typeacte.gabarit_synthese_upload_erase', array('value' => '0'));
         ?>
         <br/>
         <?php
@@ -61,6 +66,7 @@ if ($this->Html->value('Typeacte.id')) {
             'type' => 'file',
             'div' => array('id' => 'div_gabarit_acte')
         ));
+        echo $this->Form->hidden('Typeacte.gabarit_acte_upload_erase', array('value' => '0'));
         ?>
         <br/>
     </fieldset>
@@ -88,6 +94,8 @@ if ($this->Html->value('Typeacte.id')) {
             $('#link_gabarit_projet').remove();
             gabaritProjet.val(null);
             gabaritProjet.show();
+            $('#erase_gabarit_projet').remove();
+            $('#TypeacteGabaritProjetUploadErase').val('1');
         });
         <?php endif; ?>
 
@@ -103,6 +111,8 @@ if ($this->Html->value('Typeacte.id')) {
             $('#link_gabarit_synthese').remove();
             gabaritSynthese.val(null);
             gabaritSynthese.show();
+            $('#erase_gabarit_synthese').remove();
+            $('#TypeacteGabaritSyntheseUploadErase').val('1');
         });
         <?php endif; ?>
 
@@ -118,6 +128,8 @@ if ($this->Html->value('Typeacte.id')) {
             $('#link_gabarit_acte').remove();
             gabaritActe.val(null);
             gabaritActe.show();
+            $('#erase_gabarit_acte').remove();
+            $('#TypeacteGabaritActeUploadErase').val('1');
         });
         <?php endif; ?>
     });
