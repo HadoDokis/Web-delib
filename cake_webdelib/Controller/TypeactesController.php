@@ -89,27 +89,33 @@ class TypeactesController extends AppController
         $sortie = false;
         $this->Typeacte->Behaviors->attach('Containable');
 
-        if (empty($this->data)) {
+        if (empty($this->request->data)) {
             $this->request->data = $this->Typeacte->find('first', array(
                 'conditions' => array('Typeacte.id' => $id),
                 'contain' => array('Nature')));
-            if (empty($this->data)) {
-                $this->Session->setFlash('Invalide id pour le type de séance', 'growl', array('type' => 'erreur'));
+            if (empty($this->request->data)) {
+                $this->Session->setFlash('Type d\'acte introuvable.', 'growl', array('type' => 'erreur'));
                 $sortie = true;
             } else
-                $this->set('selectedNatures', $this->data['Nature']['id']);
+                $this->set('selectedNatures', $this->request->data['Nature']['id']);
         } else {
             $this->Typeacte->set($this->request->data);
             if ($this->Typeacte->validates()) {
 
                 if (!empty($this->request->data['Typeacte']['gabarit_projet_upload']) && $this->request->data['Typeacte']['gabarit_projet_upload']['error'] != 4)
                     $this->request->data['Typeacte']['gabarit_projet'] = file_get_contents($this->request->data['Typeacte']['gabarit_projet_upload']['tmp_name']);
+                elseif ($this->request->data['Typeacte']['gabarit_projet_upload_erase'])
+                    $this->request->data['Typeacte']['gabarit_projet'] = '';
 
                 if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4)
                     $this->request->data['Typeacte']['gabarit_synthese'] = file_get_contents($this->request->data['Typeacte']['gabarit_synthese_upload']['tmp_name']);
+                elseif ($this->request->data['Typeacte']['gabarit_synthese_upload_erase'])
+                    $this->request->data['Typeacte']['gabarit_synthese'] = '';
 
                 if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4)
                     $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
+                elseif (empty($this->request->data['Typeacte']['gabarit_acte_upload_erase']))
+                    $this->request->data['Typeacte']['gabarit_acte'] = '';
 
                 $ado = $this->Ado->find('first', array('conditions' => array(
                     'Ado.model' => 'Typeacte',
