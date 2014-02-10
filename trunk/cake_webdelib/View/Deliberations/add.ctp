@@ -79,10 +79,10 @@ echo $this->Html->useTag('tagend', 'div');
 
     <div class='spacer'></div>
     <?php echo $this->Form->input('Deliberation.theme_id', array(
-                                                                    'label' => 'Thème <abbr title="obligatoire">(*)</abbr>',
-                                                                    'empty' => '(sélectionner le thème)',
-                                                                    'class' => 'select2 selectone',
-                                                                    'escape' => false)); ?>
+        'label' => 'Thème <abbr title="obligatoire">(*)</abbr>',
+        'empty' => true,
+        'class' => 'select2 selectone',
+        'escape' => false)); ?>
     <div class='spacer'></div>
 
     <?php
