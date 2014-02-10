@@ -6,8 +6,6 @@
 	<?php echo $this->Form->input('Commentaire.texte',array('type'=>'textarea', 'cols'=>'50','rows'=>'10')); ?>
 </div>
 
-<br/><br/><br/><br/>
-
 <div class="submit">
     <?php $this->Html2->boutonsAddCancel("",'/deliberations/traiter/' . $delib_id); ?>
 </div>
