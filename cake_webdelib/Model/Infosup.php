@@ -328,13 +328,13 @@ class Infosup extends AppModel
             if ($model == 'Deliberation') {
                 $filename = WEBROOT_PATH . "/files/generee/projet/$id/" . $champs_def['Infosupdef']['code'] . ".html";
                 $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/projet/$id/", $champs_def['Infosupdef']['code'] . ".html", $champs['content']);
-                $content = $this->Conversion->convertirFichier($filename, "odt");
+                $content = $this->Conversion->convertirFichier($filename,'html', 'odt');
                 $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/projet/$id/", $champs_def['Infosupdef']['code'] . ".odt", $content);
                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $champs_def['Infosupdef']['code'] . ".odt", 'application/vnd.oasis.opendocument.text', 'binary', $content));
             } elseif ($model == 'Seance') {
                 $filename = WEBROOT_PATH . "/files/generee/seance/$id/" . $champs_def['Infosupdef']['code'] . ".html";
                 $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/seance/$id/", $champs_def['Infosupdef']['code'] . ".html", $champs['content']);
-                $content = $this->Conversion->convertirFichier($filename, "odt");
+                $content = $this->Conversion->convertirFichier($filename,'html', 'odt');
                 return (new GDO_ContentType($champs_def['Infosupdef']['code'], $champs_def['Infosupdef']['code'] . ".odt", 'application/vnd.oasis.opendocument.text', 'binary', $content));
             }
         } elseif (empty($champs['text']))

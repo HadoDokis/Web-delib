@@ -130,7 +130,6 @@ class ModelsController extends AppController {
 		$oMainPart->addElement(new GDO_FieldType('date_jour_courant',utf8_encode($this->Date->frenchDate(strtotime("now"))), 'text'));
 		$oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
 
-		$annexes_id = array();
 		//*****************************************
 		// Génération d'un acte
 		//*****************************************
@@ -139,19 +138,6 @@ class ModelsController extends AppController {
 					'conditions' => array('Deliberation.id'=>$delib_id),
 					'recursive'  => -1));
 			$this->Deliberation->makeBalisesProjet($delib, $oMainPart);
-			$tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($delib_id, false, true, true);
-			if (!empty($tmp_annexes))
-				array_push($annexes_id,  $tmp_annexes);
-			$path_annexes = $path.'annexes/';
-			$annexes = array();
-			foreach ($annexes_id as $annex_ids) {
-				foreach($annex_ids as $annex_id) {
-					$annexFile = $this->Deliberation->Annex->find('first', array(
-							'conditions' => array('Annex.id' => $annex_id['Annex']['id']),
-							'recursive'  => -1));
-                                        array_push($annexes, $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $annexFile['Annex']['data_pdf']));
-				}
-			}
 		}
 		//*****************************************
 		// Génération d'une convocation, ordre du jour ou PV (séance)
@@ -171,27 +157,6 @@ class ModelsController extends AppController {
 				$oDevPart = new GDO_PartType();
 				$this->Deliberation->makeBalisesProjet($projet,  $oDevPart);
 				$blocProjets->addPart($oDevPart);
-
-				$tmp_annexes = $this->Deliberation->Annex->getAnnexesFromDelibId($projet['Deliberation']['id'], false, true);
-				if (!empty($tmp_annexes))
-					array_push($annexes_id,  $tmp_annexes);
-                                
-			}
-			$path_annexes = $path.'annexes/';
-			$annexes = array();
-                        $cpt = 0;
-                        if ($progress) 
-                            $this->Progress->at(50, 'Démarrage de la génération des annexes...');
-			foreach ($annexes_id as $annex_ids) {
-                            foreach($annex_ids as $annex_id) {
-                                $cpt++;
-                                if ($progress) 
-                                    $this->Progress->at($cpt*(10/count($annexes_id))+50, 'Génération des annexes...');
-                                $annexFile = $this->Deliberation->Annex->find('first', array(
-                                                'conditions' => array('Annex.id' => $annex_id['Annex']['id']),
-                                                'recursive'  => -1));
-                                array_push($annexes, $this->Gedooo->createFile($path_annexes, "annex_". $annexFile['Annex']['id'].'.pdf', $annexFile['Annex']['data_pdf']));
-                            }
 			}
                         if ($progress) 
                             $this->Progress->at(60, 'Démarrage de la génération du document...');
@@ -369,9 +334,9 @@ class ModelsController extends AppController {
                     }
 				}
 				else {
-					$fichier = $this->Gedooo->createFile($path, $nomFichier.$format, '');
+					$fichier = $this->Gedooo->createFile($path, $nomFichier.'.'.$format, '');
 					$oFusion->SendContentToFile($fichier);
-					$content = $this->Conversion->convertirFichier($fichier, $format );
+					$content = $this->Conversion->convertirFichier($fichier, 'odt', $format );
 					$chemin_fichier = $this->Gedooo->createFile($path,  $nomFichier.'.'.$format, $content);
                                         
 					$content = file_get_contents($chemin_fichier);
