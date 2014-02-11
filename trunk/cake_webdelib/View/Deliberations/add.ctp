@@ -171,9 +171,9 @@ echo $this->Html->useTag('tagend', 'div');
                 echo $this->Form->input($fieldName, array('type' => 'text', 'readonly' => $disabled, 'div' => false, 'label' => false, 'size' => '9', 'id' => $fieldSelector, 'title' => $infosupdef['Infosupdef']['commentaire']));
                 echo '&nbsp;';
                 if (!$disabled)
-                    echo $this->Html->link($this->Html->image("calendar.png", array('style' => "border='0'")), "javascript:show_calendar('Deliberation.$fieldSelector', 'f');", array('escape' => false), false);
+                    echo $this->Html->link($this->Html->image("calendar.png", array('style' => "border:0")), "javascript:show_calendar('Deliberation.$fieldSelector', 'f');", array('escape' => false), false);
                 else
-                    echo($this->Html->image("calendar.png", array('style' => "border='0'")));
+                    echo($this->Html->image("calendar.png", array('style' => "border:'0'")));
             } elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
                 echo '<div class="annexesGauche"></div>';
                 if (!$disabled) {

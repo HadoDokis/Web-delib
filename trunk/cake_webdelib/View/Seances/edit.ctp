@@ -29,7 +29,7 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
         if (isset($date))    echo ("value =\"$date\"");
      ?>/>&nbsp;
 	<a href="javascript:show_calendar('seanceForm.date','f');">	
-	    <?php echo $this->Html->image("calendar.png", array('style'=>"border='0'")); ?>
+	    <?php echo $this->Html->image("calendar.png", array('style'=>"border:0")); ?>
 	</a> &agrave;
 	<?php echo $this->Form->hour('Seance.date',true, array()); ?>h<?php echo $this->Form->minute('Seance.date', array()); ?>min
 </div>
@@ -63,7 +63,7 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
                         $fieldSelector =  preg_replace("#[^a-zA-Z]#", "", $fieldId);
 	                    echo $this->Form->input($fieldName, array('type'=>'text', 'id'=>$fieldSelector, 'div'=>false, 'label'=>false, 'size'=>'9', 'title'=>$infosupdef['Infosupdef']['commentaire']));
 	                    echo '&nbsp;';
-	                    echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border='0'")), "javascript:show_calendar('seanceForm.$fieldSelector', 'f');", array('escape'=> false), false);
+	                    echo $this->Html->link($this->Html->image("calendar.png", array('style'=>"border:0")), "javascript:show_calendar('seanceForm.$fieldSelector', 'f');", array('escape'=> false), false);
 	            } elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
 	                    echo '<div class="annexesGauche"></div>';
 	                    echo '<div class="fckEditorProjet">';

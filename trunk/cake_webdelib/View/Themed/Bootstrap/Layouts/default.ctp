@@ -121,7 +121,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                 Debugger::checkSecurityKeys();
             endif;
             ?>
-            <ul class="nav nav-tabs" role="navigation">
+            <ul class="nav nav-tabs">
                 <?php
                 if (isset($session_menuPrincipal['items'])) {
                     foreach ($session_menuPrincipal['items'] as $libelle => $items) {
