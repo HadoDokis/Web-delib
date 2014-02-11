@@ -1,11 +1,11 @@
 <div class="seances">
-<h2>S&eacute;ances trait&eacute;es</h2>
+<h2>Séances traitées</h2>
 
 
-<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<table style="border:0; width='100%';">
 	<tr>
 		<th>Type</th>
-		<th>Date S&eacute;ance</th>
+		<th>Date Séance</th>
 		<th>Action</th>
 	</tr>
 <?php

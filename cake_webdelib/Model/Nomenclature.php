@@ -54,10 +54,6 @@ class Nomenclature extends AppModel {
         $pos = strrpos($key, '.');
         $newKey = substr($key, 0, $pos);
         return $newKey;
-//        $ligne = $this->find('first', array('conditions' => array('Nomenclature.id' => $newKey),
-//            'fields' => array('id'),
-//            'recursive' => -1));
-//        return ($ligne['Nomenclature']['id']);
     }
 
 }
