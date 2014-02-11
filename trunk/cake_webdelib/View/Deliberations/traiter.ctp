@@ -10,7 +10,7 @@ echo $this->Html->script('ckeditor/adapters/jquery');
 $linkBarre  = "<div class='btn-toolbar traiterActions' role='toolbar'>";
 $linkBarre .= "<div class='btn-group'>";
 $linkBarre .= $this->Html->link(
-    '<i class="fa fa-arrow-left"></i> Revenir',
+    '<i class="fa fa-arrow-left"></i> Retour',
     array('action' => 'mesProjetsATraiter'),
     array('escape' => false, 'class' => 'btn')
 );
