@@ -630,6 +630,8 @@ class DeliberationsController extends AppController
                 && stripos($this->previous, 'ajax') === false
             )
                 $redirect = $this->previous;
+            elseif (stripos($this->previous, 'deliberations/add'))
+                $redirect = array('action' => 'index');
             else
                 foreach ($history as $h)
                     if (stripos($h, 'deliberations/add') === false
