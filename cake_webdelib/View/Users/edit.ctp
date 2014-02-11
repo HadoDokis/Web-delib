@@ -113,7 +113,27 @@ if ($this->Html->value('User.id')) {
     <div class="demi">
         <fieldset id="services-fieldset">
             <legend>Services</legend>
-            <input id="search_service" placeholder="Filtrer par nom de service"/>
+            <div class="input-append">
+                <input type="text" id="search_service" placeholder="Filtrer par nom de service" style="float: left"/>
+
+                <div class="btn-group">
+                    <a class="btn" id="search_service_button" style="float: left" title="Lancer la recherche"><i
+                            class="fa fa-search"></i></a>
+
+                    <a class="btn dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a id="search_service_erase_button" title="Remettre à zéro la recherche">Effacer la
+                                recherche</a></li>
+<!--                        <hr style="margin: 5px"/>-->
+                        <li class="divider"></li>
+                        <li><a id="search_service_plier_button" title="Replier tous les noeuds">Tout replier</i></a>
+                        </li>
+                        <li><a id="search_service_deplier_button" title="Déplier tous les noeuds">Tout déplier</a></li>
+                    </ul>
+                </div>
+            </div>
             <div class="spacer"></div>
             <div id="services">
                 <?php
@@ -187,7 +207,9 @@ if ($this->Html->value('User.id')) {
                 "three_state": false //Ne pas propager la séléction parent/enfants
             },
             "search": { //Paramétrage du plugin de recherche
+                "fuzzy": false, //Indicates if the search should be fuzzy or not (should chnd3 match child node 3).
                 "show_only_matches": true, //Masque les résultats ne correspondant pas
+                "case_sensitive": false, //Sensibilité à la casse
                 "close_opened_onclear": false //Ne pas déselectionner les résultats ne correspondant pas
             },
             "types" : {
@@ -209,30 +231,37 @@ if ($this->Html->value('User.id')) {
         services.forEach(function(entry){
             $('#services').jstree('select_node', 'Service_'+entry);
         });
-        $('#services').jstree('set_type', $());
 
         $('#services').on('changed.jstree',function (e, data) {
             /* Listener onChange qui fait la synchro jsTree/hiddenField */
             var i, j, r = [];
-            for (i = 0, j = data.selected.length; i < j; i++) {
+            for (i = 0, j = data.selected.length; i < j; i++)
                 r.push(data.instance.get_node(data.selected[i]).data.id);
-            }
             $('#ServiceService').val(r.join(','));
         });
 
         /* Recherche dans la liste jstree */
-        var to = false;
-        $('#search_service').keyup(function () {
-            if (to) {
-                clearTimeout(to);
-            }
-            to = setTimeout(function () {
-                var v = $('#search_service').val();
-                console.log(v);
-                $('#services').jstree(true).search(v);
-            }, 250);
+        $('#search_service_button').click(function () {
+            $('#services').jstree(true).search($('#search_service').val());
         });
-
+        /* Recherche dans la liste jstree */
+        $('#search_service_erase_button').click(function () {
+            $('#search_service').val('');
+            $('#search_service_button').click();
+        });
+        $('#search_service').keydown(function(event){
+            if(event.keyCode == 13) {
+                event.preventDefault();
+                $('#search_service_button').click();
+                return false;
+            }
+        });
+        $("#search_service_plier_button").click(function(){
+            $('#services').jstree('close_all');
+        });
+        $("#search_service_deplier_button").click(function(){
+            $('#services').jstree('open_all');
+        });
         onchangeCircuitDefault();
     });
 
