@@ -53,10 +53,10 @@ class ConversionComponent extends Component {
             'uglyStructHack' => true
         );
 
-        $url = 'http://'.Configure::read('CLOUDOOO_HOST') . ":" . Configure::read('CLOUDOOO_PORT');
+        $url = 'http://'.Configure::read('CLOUDOOO_HOST') . ':' . Configure::read('CLOUDOOO_PORT');
         $client = XML_RPC2_Client::create($url, $options);
         try {
-            $result = $client->convertFile(base64_encode($data), "$dataExtention", "$dataSortieExtention");
+            $result = $client->convertFile(base64_encode($data), $dataExtention, $dataSortieExtention, false, true);
         } catch (XML_RPC2_FaultException $e) {
             $this->log('Exception #' . $e->getFaultCode() . ' : ' . $e->getFaultString(), 'debug');
             return false;
