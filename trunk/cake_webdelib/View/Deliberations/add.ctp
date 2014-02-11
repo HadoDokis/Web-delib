@@ -13,12 +13,12 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/add', 't
 <a href="#" id="emptylink"></a>
 <?php     
 echo $this->Html->link('Informations principales', '#', array('class' => 'ongletCourant noWarn', 'id' => 'lienTab1', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,1);'));
-echo $this->Html->link('Textes', '#', array('id' => 'lienTab2', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,2);', 'class'=>'noWarn'));
-echo $this->Html->link('Annexe(s)', '#', array('id' => 'lienTab3', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,3);', 'class'=>'noWarn'));
+echo $this->Html->link('Textes', '#', array('id' => 'lienTab2', 'class'=>'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,2);'));
+echo $this->Html->link('Annexe(s)', '#', array('id' => 'lienTab3', 'class'=>'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,3);'));
 if (!empty($infosupdefs))
-    echo $this->Html->link('Informations supplémentaires', '#', array('id' => 'lienTab4', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,4);', 'class'=>'noWarn'));
+    echo $this->Html->link('Informations supplémentaires', '#', array('id' => 'lienTab4', 'class'=>'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,4);'));
 if (Configure::read('DELIBERATIONS_MULTIPLES'))
-    echo $this->Html->link('Délibérations rattachées', '#', array('id' => 'lienTab5', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,5);', 'style' => 'display: none', 'class'=>'noWarn'));
+    echo $this->Html->link('Délibérations rattachées', '#', array('id' => 'lienTab5', 'class'=>'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,5);', 'style' => 'display: none'));
 echo $this->Html->useTag('tagend', 'div');
 ?>
 
@@ -106,7 +106,7 @@ echo $this->Html->useTag('tagend', 'div');
 
         <a class="list_form" href="#add"
            onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification', 'Select_attribut', 'scrollbars=yes,width=570,height=450');"
-           id="classification_text">[Choisir la classification]</a>
+           id="classification_text" class="noWarn">[Choisir la classification]</a>
         <?php
         echo $this->Form->hidden('Deliberation.num_pref', array('id' => 'num_pref'));
     }
@@ -242,8 +242,8 @@ echo $this->Html->useTag('tagend', 'div');
 <div class="submit">
     <?php
     echo $this->Html->tag("div", null, array("class" => "btn-group"));
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'mesProjetsRedaction'), array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
-    echo $this->Form->button('<i class="fa fa-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le circuit de traitement'));
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'mesProjetsRedaction'), array('class' => 'btn noWarn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+    echo $this->Form->button('<i class="fa fa-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary noWarn', 'escape' => false, 'title' => 'Enregistrer le circuit de traitement'));
     echo $this->Html->tag('/div', null);
     ?>
 </div>
@@ -277,7 +277,7 @@ echo $this->Html->useTag('tagend', 'div');
         });
     }
     $(document).ready(onUnloadEditForm);
-    $("#DeliberationEditForm").submit(function () {
+    $("#DeliberationAddForm").submit(function () {
         $(window).unbind("beforeunload");
     });
     $(".noWarn").on('click', function () {
