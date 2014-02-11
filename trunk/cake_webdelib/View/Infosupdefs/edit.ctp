@@ -5,6 +5,7 @@
      * Affiche ou masque les options en fonction du type d'info sup
      */
     function afficheOptions(typeInfoSup) {
+        var val = $(typeInfoSup).val();
 
         /* On masque toutes les options */
         $("#val_initiale").hide();
@@ -14,10 +15,10 @@
         $("#gestionListe").hide();
 
         /* si le choix est vide : on sort */
-        if ((typeInfoSup.value.length == 0) || (typeInfoSup.value == null)) return;
+        if ((val.length == 0) || (val == null)) return;
 
         /* on affiche en fonction du type d'info sup */
-        switch (typeInfoSup.value) {
+        switch (val) {
             case "text":
                 $("#val_initiale").show();
                 if ($("#recherche")) $("#recherche").show();
@@ -75,15 +76,15 @@ echo $this->Form->create('Infosupdef', array('url' => array('action' => $this->r
 <br/>
 <div class="required">
     <?php
-    $htmlAttributes['disabled'] = '';
+    $htmlAttributes['disabled'] = false;
     $empty = false;
     if (($this->action == 'edit') && !$Infosupdef->isDeletable($this->request->data['Infosupdef']['id'])) {
-        $htmlAttributes['disabled'] = 'disabled';
+        $htmlAttributes['disabled'] = true;
         echo $this->Form->hidden('Infosupdef.type');
         $empty = true;
     }
+    echo $this->Form->input('Infosupdef.type', array('label' => 'type <abbr title="obligatoire">(*)</abbr>', 'options' => $types, 'id' => 'selectTypeInfoSup', 'onChange' => "afficheOptions(this);", 'disabled' => $htmlAttributes['disabled'], 'showEmpty' => $empty));
     ?>
-    <?php echo $this->Form->input('Infosupdef.type', array('label' => 'type <abbr title="obligatoire">(*)</abbr>', 'options' => $types, 'id' => 'selectTypeInfoSup', 'onChange' => "afficheOptions(this);", 'disabled' => $htmlAttributes['disabled'], 'showEmpty' => $empty)); ?>
 </div>
 <div id="gestionListe">
     <span>Note : la gestion des éléments de la liste est accessible &agrave; partir de la liste des informations suppl&eacute;mentaires.</span>
