@@ -1,5 +1,5 @@
 <div id='loading' style="display:none;">&nbsp;</div>
-<div id="buttons">
+<!--<div id="buttons">-->
 <?php
 echo $this->Html->script('utils.js');
 echo $this->Html->script('noback.js');
@@ -7,13 +7,20 @@ echo $this->Html->script('ckeditor/ckeditor');
 echo $this->Html->script('ckeditor/adapters/jquery');
 
 // Initialisation des boutons action de la vue
-$linkBarre  = "<div class='btn-toolbar' id='traiterActions' role='toolbar'>";
+$linkBarre  = "<div class='btn-toolbar traiterActions' role='toolbar'>";
 $linkBarre .= "<div class='btn-group'>";
 $linkBarre .= $this->Html->link(
     '<i class="fa fa-arrow-left"></i> Revenir',
     array('action' => 'mesProjetsATraiter'),
     array('escape' => false, 'class' => 'btn')
 );
+$linkBarre .= $this->Html->link(
+    '<i class="fa fa-file"></i> Générer',
+    array('controller' => 'models', 'action' => 'generer', $deliberation['Deliberation']['id'], 'null', $deliberation['Modeltemplate']['id'], '-1', '0', 'retour', '0', '0', '0'),
+    array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document du projet')
+);
+$linkBarre .= "</div>";
+$linkBarre .= "<div class='btn-group'>";
 if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
     $linkBarre .= $this->Html->link(
         '<i class="fa fa-edit"></i> Modifier',
@@ -21,14 +28,9 @@ if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
         array('escape' => false, 'class' => 'btn')
     );
 $linkBarre .= $this->Html->link(
-    '<i class="fa fa-file"></i> Générer',
-    array('controller' => 'models', 'action' => 'generer', $deliberation['Deliberation']['id'], 'null', $deliberation['Modeltemplate']['id'], '-1', '0', 'retour', '0', '0', '0'),
-    array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document du projet')
-);
-$linkBarre .= $this->Html->link(
     '<i class="fa fa-comment"></i> Commenter',
     array('controller' => 'commentaires', 'action' => 'add', $deliberation['Deliberation']['id']),
-    array('escape' => false, 'class' => 'btn')
+    array('escape' => false, 'class' => 'btn btn-info')
 );
 $linkBarre .= "</div>";
 $linkBarre .= "<div class='btn-group'>";
@@ -58,6 +60,7 @@ $linkBarre .= $this->Html->link(
 $linkBarre .= "</div>";
 $linkBarre .= "</div>";
 
+echo $this->Html->tag('div', null, array('id' => "vue_cadre"));
 // affichage  du titre
 $listeIds = $deliberation['Deliberation']['id'];
 foreach ($deliberation['Multidelib'] as $delibRattachee) {
@@ -66,11 +69,8 @@ foreach ($deliberation['Multidelib'] as $delibRattachee) {
 echo $this->Html->tag('h3', '[' . $deliberation['Typeacte']['libelle'] . '] - Traitement du projet "'.$deliberation['Deliberation']['objet'].'" (id : ' . $listeIds . ')');
 
 echo $linkBarre;
-echo $this->Html->tag('div', null, array('id' => "vue_cadre"));
-
 ?>
-<br/>
-
+<hr style='margin-top: 9px;'/>
 <dl>
     <div class="imbrique">
         <?php
@@ -237,7 +237,7 @@ echo $this->Html->tag('div', null, array('id' => "vue_cadre"));
     ?>
 
 </dl>
-</div>
+<hr/>
 <?php echo $linkBarre; ?>
 </div>
 <script type="text/javascript">
@@ -300,7 +300,7 @@ echo $this->Html->tag('div', null, array('id' => "vue_cadre"));
         border-top: 1px dashed;
     }
 
-    div#traiterActions {
+    div.traiterActions {
         text-align: center;
         /*margin: 20px;*/
     }
