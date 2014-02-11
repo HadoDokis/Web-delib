@@ -1,11 +1,9 @@
 <?php
 class UsersController extends AppController {
+	public $uses = array('User', 'Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
+    public $components = array('Menu', 'Dbdroits', 'Filtre', 'Paginator');
 
-	public $helpers = array('Form', 'Html', 'Html2', 'Session');
-	public $uses = array( 'User','Collectivite', 'Service', 'Cakeflow.Circuit', 'Profil', 'Typeacte', 'ArosAdo', 'Aro', 'Ado');
-	public $components = array('Utils', 'Acl', 'Menu', 'Dbdroits', 'Filtre', 'Paginator');
-
-	// Gestion des droits
+    // Gestion des droits
 	public $aucunDroit = array(
 			'login',
 			'logout',
@@ -132,58 +130,62 @@ class UsersController extends AppController {
 		    // Initialisation des données
 		    $this->request->data['User']['accept_notif'] = 0;
 		    $this->set('natures', $this->Typeacte->find('all', array('recursive' => -1) ));
-		}
-		else {
-			if ($this->User->save($this->data)) {
-				// Ajout de l'utilisateur dans la table aros
-				$user_id = $this->User->id;
-				$Profil=$this->Profil->find('first',array('conditions'=>array('id'=>$this->data['User']['profil_id']),'recursive'=>-1));
-				$this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']));
-				$this->Dbdroits->MajCruDroits(
-						array('model'=>'User','foreign_key'=>$user_id,'alias'=>$this->data['User']['login']),
-						array('model'=>'Profil','foreign_key'=>$this->data['User']['profil_id']),
-						$this->data['Droits']
-				);
-                                $aro    = $this->Aro->find('first',array('conditions'=>array('model'=>'User', 'foreign_key'=>$user_id),
-                                                           'fields'=>array('id'),
-                                                           'recursive' => -1));
+		} else {
+            //Transformation type de donnée
+            if (!empty($this->request->data['Service']['Service']))
+                $this->request->data['Service']['Service'] = explode(',', $this->request->data['Service']['Service']);
+            if ($this->User->save($this->data)) {
+                // Ajout de l'utilisateur dans la table aros
+                $user_id = $this->User->id;
+                $this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']));
+                $this->Dbdroits->MajCruDroits(
+                    array('model' => 'User', 'foreign_key' => $user_id, 'alias' => $this->data['User']['login']),
+                    array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']),
+                    $this->data['Droits']
+                );
+                $aro = $this->Aro->find('first', array('conditions' => array('model' => 'User', 'foreign_key' => $user_id),
+                    'fields' => array('id'),
+                    'recursive' => -1));
 
 
-				foreach ($this->data['Nature'] as $nature_id => $can) {
-					$nature_id = substr($nature_id, 3, strlen($nature_id));
-                                        $ado    = $this->Ado->find('first',array('conditions'=>array('Ado.model'       => 'Typeacte',
-                                                                                                     'Ado.foreign_key' => $nature_id),
-                                                                                 'fields'=>array('Ado.id'),
-                                                                                 'recursive' => -1));
+                foreach ($this->data['Nature'] as $nature_id => $can) {
+                    $nature_id = substr($nature_id, 3, strlen($nature_id));
+                    $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
+                        'Ado.foreign_key' => $nature_id),
+                        'fields' => array('Ado.id'),
+                        'recursive' => -1));
 
-					if ($can)
-						$this->ArosAdo->allow($aro['Aro']['id'], $ado['Ado']['id']);
-					else
-						$this->ArosAdo->deny($aro['Aro']['id'],  $ado['Ado']['id']);
-				}
-
-				//$this->_setNewPermissions( $this->data['User']['profil_id'], $user_id, $this->data['User']['login'] );
-				$this->Session->setFlash('L\'utilisateur \''.$this->data['User']['login'].'\' a été ajouté', 'growl');
-				$sortie = true;
-			} else
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
-		}
-		if ($sortie)
-			$this->redirect('/users/index');
-		else {
-                    $this->set('selectedCircuits', 0);
-                    $this->set('services', $this->User->Service->generateTreeList(array('Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
-	            $this->set('selectedServices', null);
-	            $this->set('profils', $this->User->Profil->find('list'));
-			$this->set('notif', array('1'=>'oui','0'=>'non'));
-			$this->set('circuits', $this->Circuit->getList());
-                        $natures = $this->Typeacte->find('all', array('recursive' => -1));
-                        foreach ($natures as &$nature) 
-                            $nature['Nature']['check'] = null;
-                        $this->set('natures', $natures);
-			$this->render('edit');
-		}
-	}
+                    if ($can)
+                        $this->ArosAdo->allow($aro['Aro']['id'], $ado['Ado']['id']);
+                    else
+                        $this->ArosAdo->deny($aro['Aro']['id'], $ado['Ado']['id']);
+                }
+                $this->Session->setFlash('L\'utilisateur \'' . $this->data['User']['login'] . '\' a été ajouté', 'growl');
+                $sortie = true;
+            } else
+                $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl');
+        }
+        if ($sortie)
+            $this->redirect(array('action'=>'index'));
+        else {
+            $this->set('selectedCircuits', 0);
+            $this->set('services', $this->User->Service->find('threaded', array(
+                'recursive' => -1,
+                'order' => 'libelle ASC',
+                'conditions' => array('actif' => 1),
+                'fields' => array('id', 'libelle', 'parent_id')
+            )));
+            $this->set('selectedServices', null);
+            $this->set('profils', $this->User->Profil->find('list'));
+            $this->set('notif', array('1' => 'oui', '0' => 'non'));
+            $this->set('circuits', $this->Circuit->getList());
+            $natures = $this->Typeacte->find('all', array('recursive' => -1));
+            foreach ($natures as &$nature)
+                $nature['Nature']['check'] = null;
+            $this->set('natures', $natures);
+            $this->render('edit');
+        }
+    }
 
     function edit($id = null)
     {
@@ -219,6 +221,11 @@ class UsersController extends AppController {
             $aro = $this->Aro->find('first', array('conditions' => array('model' => 'User', 'foreign_key' => $id),
                 'fields' => array('id'),
                 'recursive' => -1));
+
+            //Transformation type de donnée
+            if (!empty($this->request->data['Service']['Service']))
+                $this->request->data['Service']['Service'] = explode(',', $this->request->data['Service']['Service']);
+
             if ($this->User->save($this->data)) {
                 foreach ($this->data['Nature'] as $nature_id => $can) {
                     $nature_id = substr($nature_id, 3, strlen($nature_id));
@@ -252,7 +259,12 @@ class UsersController extends AppController {
         if ($sortie)
             $this->redirect(array('action'=>'index'));
         else {
-            $this->set('services', $this->User->Service->generateTreeList(array('Service.actif' => 1), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+            $this->set('services', $this->User->Service->find('threaded', array(
+                'recursive' => -1,
+                'order' => 'libelle ASC',
+                'condition' => array('actif' => 1),
+                'fields' => array('id', 'libelle', 'parent_id')
+            )));
             $this->set('profils', $this->User->Profil->find('list'));
             $this->set('notif', array('1' => 'oui', '0' => 'non'));
             $this->set('circuits', $this->Circuit->getList());

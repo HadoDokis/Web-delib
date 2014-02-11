@@ -3,7 +3,33 @@ class TreeHelper extends AppHelper {
 
 	var $tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	var $hasChildren = false;
- 	
+
+    /**
+     * Génére une liste html pour affichage d'arbre (dé)pliant
+     * @param $threaded
+     * @param $modelname
+     * @param array $selected
+     * @param string $displayfield
+     * @param string $idfield
+     * @return string
+     */
+    public function generateList($threaded, $modelname, $selected = array(), $displayfield = 'libelle', $idfield = 'id'){
+        $treelist = '<ul>';
+        foreach ($threaded as $thread){
+            $id = $thread[$modelname][$idfield];
+            $name = $thread[$modelname][$displayfield];
+            $checked = in_array($id, $selected) ? ' class="node-selected" data-jstree="{ "selected" : true }"'  : '';
+            $treelist .= '<li id="'.$modelname.'_'.$id.'" data-id="'.$id.'"'.$checked.'>';
+            $treelist .= $name;
+            if (!empty($thread['children'])){
+                $treelist .= $this->generateList($thread['children'], $modelname, $selected, $displayfield, $idfield);
+            }
+            $treelist .= '</li>';
+        }
+        $treelist .= '</ul>';
+        return ($treelist);
+    }
+
 	function showTree($modelName,$fieldName,$data,$level,$baseUrl,$actions, $order = null) {
 		$tabs = str_repeat($this->tab, $level);
   		$output = "";
@@ -45,4 +71,3 @@ class TreeHelper extends AppHelper {
 		return substr($urls,0,-3)."]";
 	}
 }
-?> 
