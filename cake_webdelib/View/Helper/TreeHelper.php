@@ -6,23 +6,31 @@ class TreeHelper extends AppHelper {
 
     /**
      * Génére une liste html pour affichage d'arbre (dé)pliant
-     * @param $threaded
-     * @param $modelname
-     * @param array $selected
-     * @param string $displayfield
-     * @param string $idfield
-     * @return string
+     * @see plugin jsTree http://www.jstree.com/
+     *
+     * @param $threaded données récupérées par find('threaded')
+     * @param $modelname nom du modèle
+     * @param array $selected données sélectionnées
+     * @param string $displayfield attribut du modèle à afficher
+     * @param string $idfield attribut du modèle servant d'identifiant
+     * @param int $level niveau d'inclusion
+     * @return string liste html sous forme d'arbre
      */
-    public function generateList($threaded, $modelname, $selected = array(), $displayfield = 'libelle', $idfield = 'id'){
+    public function generateList($threaded, $modelname, $selected = array(), $displayfield = 'libelle', $idfield = 'id', $level = 0){
         $treelist = '<ul>';
         foreach ($threaded as $thread){
             $id = $thread[$modelname][$idfield];
             $name = $thread[$modelname][$displayfield];
-            $checked = in_array($id, $selected) ? ' class="node-selected" data-jstree="{ "selected" : true }"'  : '';
-            $treelist .= '<li id="'.$modelname.'_'.$id.'" data-id="'.$id.'"'.$checked.'>';
+            $type = 'level'.$level;
+            $class = in_array($id, $selected) ? ' node-selected' : '';
+            if (in_array($id, $selected)){
+                $treelist .= '<li id="'.$modelname.'_'.$id.'" data-id="'.$id.'" class="'.$class.'" data-jstree=\'{ "selected" : true, "type" : "'.$type.'"}\'>';
+            }else{
+                $treelist .= '<li id="'.$modelname.'_'.$id.'" data-id="'.$id.'" class="'.$class.'" data-jstree=\'{ "type" : "'.$type.'"}\'>';
+            }
             $treelist .= $name;
             if (!empty($thread['children'])){
-                $treelist .= $this->generateList($thread['children'], $modelname, $selected, $displayfield, $idfield);
+                $treelist .= $this->generateList($thread['children'], $modelname, $selected, $displayfield, $idfield, $level+1);
             }
             $treelist .= '</li>';
         }
