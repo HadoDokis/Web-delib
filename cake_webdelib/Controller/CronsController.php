@@ -11,15 +11,15 @@ class CronsController extends AppController {
     );
     // Gestion des droits
     public $libelleControleurDroit = 'Tâches planifiées';
-    public $commeDroit = array('view' => 'Crons:index');
-    public $aucunDroit = array('delete', 'edit', 'add');
-    public $libellesActionsDroit = array(
-        'view' => 'Afficher les informations détaillées',
-        'planifier' => 'Planifier une tâche',
-        'executer' => 'Exécuter une tâche manuellement',
-        'runCrons' => 'Exécuter les tâches simultanément',
-        'unlock' => 'Déverrouiller une tâche',
+    public $commeDroit = array(
+        'view' => 'Crons:index',
+        'planifier' => 'Crons:index',
+        'executer' => 'Crons:index',
+        'runCrons' => 'Crons:index',
+        'unlock' => 'Crons:index',
     );
+
+//    public $aucunDroit = array('delete', 'edit', 'add');
 
     const FORMAT_DATE = 'Y-m-d H:i:s';
 
