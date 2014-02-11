@@ -114,10 +114,10 @@ if ($this->Html->value('User.id')) {
         <fieldset id="services-fieldset">
             <legend>Services</legend>
             <div class="input-append">
-                <input type="text" id="search_service" placeholder="Filtrer par nom de service" style="float: left"/>
+                <input type="text" id="search_service" placeholder="Filtrer par nom de service" style="float: left; z-index: 2"/>
 
                 <div class="btn-group">
-                    <a class="btn" id="search_service_button" style="float: left" title="Lancer la recherche"><i
+                    <a class="btn" id="search_service_button" title="Lancer la recherche"><i
                             class="fa fa-search"></i></a>
 
                     <a class="btn dropdown-toggle" data-toggle="dropdown">
@@ -126,7 +126,6 @@ if ($this->Html->value('User.id')) {
                     <ul class="dropdown-menu">
                         <li><a id="search_service_erase_button" title="Remettre à zéro la recherche">Effacer la
                                 recherche</a></li>
-<!--                        <hr style="margin: 5px"/>-->
                         <li class="divider"></li>
                         <li><a id="search_service_plier_button" title="Replier tous les noeuds">Tout replier</i></a>
                         </li>
