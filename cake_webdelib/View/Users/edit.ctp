@@ -111,10 +111,9 @@ if ($this->Html->value('User.id')) {
         ?>
     </div>
     <div class="demi">
-        <fieldset>
+        <fieldset id="services-fieldset">
             <legend>Services</legend>
-            <input id="search_service" placeholder="Filtrer par nom"/>
-
+            <input id="search_service" placeholder="Filtrer par nom de service"/>
             <div class="spacer"></div>
             <div id="services">
                 <?php
@@ -124,9 +123,9 @@ if ($this->Html->value('User.id')) {
             </div>
             <?php
             $options = array();
-            if (!empty($selectedServices)) {
+            if (!empty($selectedServices))
                 $options['value'] = implode(',', $selectedServices);
-            }elseif ($this->Html->value('Service.Service'))
+            elseif ($this->Html->value('Service.Service'))
                 $options['value'] = implode(',', $this->Html->value('Service.Service'));
             echo $this->Form->hidden('Service.Service', $options);
             ?>
@@ -178,7 +177,6 @@ if ($this->Html->value('User.id')) {
 <?php echo $this->Form->end(); ?>
 <script>
     $(document).ready(function () {
-
         $('#services').jstree({
             /* Initialisation de jstree sur la liste des services */
             "core": { //Paramétrage du coeur du plugin
@@ -192,16 +190,27 @@ if ($this->Html->value('User.id')) {
                 "show_only_matches": true, //Masque les résultats ne correspondant pas
                 "close_opened_onclear": false //Ne pas déselectionner les résultats ne correspondant pas
             },
+            "types" : {
+                "level0" : {
+                    "icon" : "fa fa-sitemap"
+                },
+                "default" : {
+                    "icon" : "fa fa-users"
+                }
+            },
             "plugins": [
                 "checkbox", //Affiche les checkboxes
                 "wholerow", //Toute la ligne est surlignée
-                "search" //Champs de recherche d'élément de la liste (filtre)
+                "search", //Champs de recherche d'élément de la liste (filtre)
+                "types"
             ]
         });
         var services = $('#ServiceService').val().split(',');
         services.forEach(function(entry){
             $('#services').jstree('select_node', 'Service_'+entry);
         });
+        $('#services').jstree('set_type', $());
+
         $('#services').on('changed.jstree',function (e, data) {
             /* Listener onChange qui fait la synchro jsTree/hiddenField */
             var i, j, r = [];
@@ -209,7 +218,7 @@ if ($this->Html->value('User.id')) {
                 r.push(data.instance.get_node(data.selected[i]).data.id);
             }
             $('#ServiceService').val(r.join(','));
-        })
+        });
 
         /* Recherche dans la liste jstree */
         var to = false;
@@ -219,9 +228,11 @@ if ($this->Html->value('User.id')) {
             }
             to = setTimeout(function () {
                 var v = $('#search_service').val();
+                console.log(v);
                 $('#services').jstree(true).search(v);
             }, 250);
         });
+
         onchangeCircuitDefault();
     });
 
@@ -243,5 +254,12 @@ if ($this->Html->value('User.id')) {
         padding-right: 5px;
         margin: 0;
         width: auto;
+    }
+    #services {
+        max-width: 100%;
+        overflow: auto;
+        box-shadow: 0 0 5px #ccc;
+        border-radius: 5px;
+        padding: 10px;
     }
 </style>
