@@ -826,14 +826,14 @@ class Deliberation extends AppModel {
 		}
 
 		$anns = $this->Annex->find('all', array(
-            'conditions' => array (
-                'Annex.foreign_key' => $delib['Deliberation']['id'],
-                'Annex.joindre_fusion' => true
-            ),
-            'fields' => array('Annex.id', 'Annex.filetype', 'Annex.filename', 'Annex.titre', 'Annex.data'),
-            'order' => array('Annex.id' => 'ASC'),
-            'recursive' => -1
-        ));
+                    'conditions' => array (
+                    'Annex.foreign_key' => $delib['Deliberation']['id'],
+                    'Annex.joindre_fusion' => true
+                    ),
+                    'fields' => array('Annex.id', 'Annex.filetype', 'Annex.filename', 'Annex.titre', 'Annex.edition_data'),
+                    'order' => array('Annex.id' => 'ASC'),
+                    'recursive' => -1
+                ));
 
 		$oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($anns), 'text'));
 
@@ -842,21 +842,11 @@ class Deliberation extends AppModel {
         foreach($anns as $annexe) {
             $oDevPart = new GDO_PartType();
             $oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
-            if (($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {
-                $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
-                $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
-                        'application/vnd.oasis.opendocument.text',
-                        'binary',
-                        $annexe['Annex']['data']));
-                            //file_put_contents('/tmp/Annexe_'.$annexe_id.'.odt', $annexe['Annex']['data']);
-            } elseif (($annexe['Annex']['filetype'] == "application/pdf") && !empty($annexe['Annex']['data'])) {
-                $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
-                $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
-                        'application/vnd.oasis.opendocument.text',
-                        'binary',
-                        $annexe['Annex']['data']));
-                            //file_put_contents('/tmp/Annexe_'.$annexe_id.'.odt', $annexe['Annex']['data']);
-            }
+            $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
+            $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
+                    'application/vnd.oasis.opendocument.text',
+                    'binary',
+                    $annexe['Annex']['edition_data']));
             $annexes->addPart($oDevPart);
             unset ($oDevPart);
         }

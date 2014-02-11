@@ -7,6 +7,9 @@ App::uses('AppTools', 'Lib');
 
 class ConversionComponent extends Component {
 
+    function __construct() {
+
+    }
     /**
      * conversion de format du fichie $fileUri vers le format $format
      * @return array tableau de réponse composé comme suit :
