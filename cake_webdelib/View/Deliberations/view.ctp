@@ -11,6 +11,11 @@ $linkBarre .= $this->Html->link(
     'javascript:history.go(-1);',
     array('escape' => false, 'class' => 'btn')
 );
+$linkBarre .= $this->Html->link(
+    '<i class="fa fa-file"></i> Générer',
+    array('controller' => 'models', 'action' => 'generer', $this->data['Deliberation']['id'], 'null', $this->data['Modeltemplate']['id'], '-1', '0', 'projet'.$this->data['Deliberation']['id'], '0', '0', '0'),
+    array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document du projet')
+);
 if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
     $linkBarre .= $this->Html->link(
         '<i class="fa fa-edit"></i> Modifier',
@@ -18,14 +23,9 @@ if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
         array('escape' => false, 'class' => 'btn')
     );
 $linkBarre .= $this->Html->link(
-    '<i class="fa fa-file"></i> Générer',
-    array('controller' => 'models', 'action' => 'generer', $this->data['Deliberation']['id'], 'null', $this->data['Modeltemplate']['id'], '-1', '0', 'projet'.$this->data['Deliberation']['id'], '0', '0', '0'),
-    array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document du projet')
-);
-$linkBarre .= $this->Html->link(
     '<i class="fa fa-comment"></i> Commenter',
     array('controller' => 'commentaires', 'action' => 'add', $this->data['Deliberation']['id']),
-    array('escape' => false, 'class' => 'btn')
+    array('escape' => false, 'class' => 'btn btn-info')
 );
 $linkBarre .= "</div>";
 $linkBarre .= "</div>";
@@ -46,6 +46,8 @@ if (empty($this->data['Multidelib'])) {
 }
 echo $linkBarre;
 ?>
+
+    <hr style='margin-top: 9px;'/>
     <dl>
         <div class="imbrique">
             <div class="gauche">
@@ -227,8 +229,8 @@ if (!empty($historiques)) {
 
 
 </dl>
+<hr/>
 <div id="actions_fiche">
-
 <?php
     echo $linkBarre;
 //    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', 'javascript:history.go(-1)', array('class' => 'btn', 'escape' => false, 'title' => 'Retour fiche')); ?>
