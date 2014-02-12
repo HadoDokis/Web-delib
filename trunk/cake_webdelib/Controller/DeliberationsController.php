@@ -21,8 +21,8 @@ class DeliberationsController extends AppController
 
     public $helpers = array('Fck');
     public $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
-    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Date', 'Utils', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf', 'Paginator', 'Pastell');
-    public $aucunDroit = array('getTypeseancesParTypeacteAjax', 'quicksearch');
+    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Date', 'Utils', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf', 'Paginator', 'Pastell', 'Cookie');
+    public $aucunDroit = array('getTypeseancesParTypeacteAjax', 'quicksearch', 'genereFusionToClient');
     // Gestion des droits
     public $demandeDroit = array(
         'add',
@@ -4472,5 +4472,57 @@ class DeliberationsController extends AppController
         header('Content-Disposition: attachment; filename=Acte_'.$delib['Deliberation']['num_delib'].'_bordereau_tdt.pdf');
         echo $delib['Deliberation']['tdt_data_bordereau_pdf'];
         exit;
+    }
+    /**
+     * fonction de fusion d'un projet ou d'une délibération avec envoi du résultat vers le client
+     * @param integer $id id du projet ou de la délibération
+     * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
+     */
+    function genereFusionToClient($id, $cookieToken=null) {
+        try {
+            // vérification de l'existence du projet/délibération en base de données
+            if (!$this->Deliberation->hasAny(array('id' => $id)))
+                throw new Exception('Projet/délibération id:'.$id.' non trouvé(e) en base de données');
+
+            // fusion du document
+            $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $id));
+            $filename = $this->Deliberation->fusionName();
+            $this->Deliberation->odtFusion();
+
+            // selon le format d'envoi du document (pdf ou odt)
+            if ($this->Session->read('user.format.sortie') == 0) {
+                $mimeType = "application/pdf";
+                $filename = $filename.'.pdf';
+                $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult->content->binary, 'odt', 'pdf');
+            } else {
+                $mimeType = "application/vnd.oasis.opendocument.text";
+                $filename = $filename.'.odt';
+                $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult->content->binary, 'odt', 'odt');
+            }
+            unset($this->Deliberation->odtFusionResult->content->binary);
+
+            // envoi au client
+            $this->Cookie->destroy();
+            $this->Cookie->write('downloadToken', $cookieToken, false, 3600);
+            $this->response->disableCache();
+            $this->response->body($content);
+            $this->response->type($mimeType);
+            $this->response->download($filename);
+            return $this->response;
+        } catch(Exception $e) {
+            $this->Session->setFlash('erreur lors de la génération du document : '.$e->getMessage(), 'growl', array('type'=>'erreur'));
+            $this->redirect($this->referer());
+        }
+    }
+
+    public function beforeFilter() {
+        parent::beforeFilter();
+        //Pour la fonction generer réglage du cookie
+        $this->Cookie->name = 'Generer';
+        $this->Cookie->time = 3600;  // ou '1 hour'
+        $this->Cookie->path = '/';
+        $this->Cookie->domain = $_SERVER["HTTP_HOST"];
+        $this->Cookie->secure = false;  // HTTPS sécurisé seulement (NON)
+        $this->Cookie->httpOnly = false; // Pour accès javascript
     }
 }
