@@ -33,20 +33,20 @@ $linkBarre .= "</div>";
 
 <div id="vue_cadre">
 <?php
+$style = (!empty($versionsup)) ? ' style="background-color:#FF3e3e"' : '';
 if (empty($this->data['Multidelib'])) {
     if ($this->data['Deliberation']['etat'] >= 3)
-        echo '<h3>Délibération n&deg; ' . $this->data['Deliberation']['num_delib'] . '</h3>';
+        echo '<h3'.$style.'>Délibération n&deg; ' . $this->data['Deliberation']['num_delib'] . '</h3>';
     else
-        echo '<h3>Projet "' . $this->data['Deliberation']['objet'] . '" (Id: ' . $this->data['Deliberation']['id'] . ', Type: "'.$this->data['Typeacte']['libelle'].'")</h3>';
+        echo '<h3'.$style.'>Projet "' . $this->data['Deliberation']['objet'] . '" (Id: ' . $this->data['Deliberation']['id'] . ', Type: "'.$this->data['Typeacte']['libelle'].'")</h3>';
 } else {
     if ($this->data['Deliberation']['etat'] == 3 || $this->data['Deliberation']['etat'] == 5)
-        echo '<h3>Multi-Délibérations</h3>';
+        echo '<h3'.$style.'>Multi-Délibérations</h3>';
     else
-        echo '<h3>Projet Multi-Délibérations</h3>';
+        echo '<h3'.$style.'>Projet Multi-Délibérations</h3>';
 }
 echo $linkBarre;
 ?>
-
     <hr style='margin-top: 9px;'/>
     <dl>
         <div class="imbrique">
@@ -95,7 +95,12 @@ if (empty($this->data['Multidelib'])) {
             <dd>&nbsp;<?php echo $this->data['Deliberation']['titre'] ?></dd>
 
             <dt>Etat</dt>
-            <dd>&nbsp;<?php echo $this->data['Deliberation']['libelleEtat'] ?></dd>
+            <dd><?php
+                echo $this->data['Deliberation']['libelleEtat'];
+                if (!empty($versionsup)) {
+                    echo '<br>Nouvelle version : '.$this->Html->link('Projet '.$versionsup, array('action' => 'view', $versionsup));
+                }
+                ?></dd>
         </div>
 
         <div class="imbrique">
@@ -256,7 +261,7 @@ if (!empty($historiques)) {
             $("div.nomcourante").parent().append('<?php
             echo $this->Html->tag('div',
                 $this->Html->link(
-                    $this->Html->tag("i", "", array("class" => "fa fa-repeat")) . " Mise à jour", "/deliberations/majEtatParapheur/" . $this->data['Deliberation']['id'], array('escape' => false, "class" => "btn btn-inverse")), array('class' => 'majDeleg', 'title'=>'Mettre à jour le statut des étapes de délégations'));
+                    $this->Html->tag("i", "", array("class" => "fa fa-repeat")) . " Mise à jour", array('controller'=>'deliberations', 'action'=>'majEtatParapheur', $this->data['Deliberation']['id']), array('escape' => false, "class" => "btn btn-inverse")), array('class' => 'majDeleg', 'title'=>'Mettre à jour le statut des étapes de délégations'));
         ?>')
         }
         afficheMAJ();

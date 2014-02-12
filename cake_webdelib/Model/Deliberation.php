@@ -363,9 +363,9 @@ class Deliberation extends AppModel {
         $this->saveField('etat', '-1');
 
         // création de la nouvelle version
-        $delib['Deliberation']['id'] = null;
-        $delib['Deliberation']['created'] = null;
-        $delib['Deliberation']['modified'] = null;
+        unset($delib['Deliberation']['id']);
+        unset($delib['Deliberation']['created']);
+        unset($delib['Deliberation']['modified']);
         $delib['Deliberation']['etat'] = 0;
         $delib['Deliberation']['anterieure_id'] = $id;
         $this->create();
@@ -400,31 +400,30 @@ class Deliberation extends AppModel {
             $delibRattachee['Deliberation']['etat'] = -1; //etat -1 : refuse
             // Retour de la position a 0 pour ne pas qu'il y ait de confusion
             //$delibRattachee['Deliberation']['position']=0;
-            $this->save($delibRattachee['Deliberation']);
+            $this->save($delibRattachee);
 
             // création de la nouvelle version
             $this->create();
-            $delibRattachee['Deliberation']['id'] = null;
+            unset($delibRattachee['Deliberation']['id']);
             $delibRattachee['Deliberation']['parent_id'] = $delib_id;
             $delibRattachee['Deliberation']['etat'] = 0;
-            $delibRattachee['Deliberation']['anterieure_id'] = null;
-            $delibRattachee['Deliberation']['date_envoi'] = null;
-            //		$delibRattachee['Deliberation']['circuit_id']=0;
+            unset($delibRattachee['Deliberation']['anterieure_id']);
+            unset($delibRattachee['Deliberation']['date_envoi']);
             $delibRattachee['Deliberation']['created'] = date('Y-m-d H:i:s', time());
             $delibRattachee['Deliberation']['modified'] = date('Y-m-d H:i:s', time());
-            $this->save($delibRattachee['Deliberation']);
+            $this->save($delibRattachee);
             $delibRattachee_id = $this->getLastInsertID();
 
             // copie des annexes du projet refusé vers le nouveau projet
             $annexes = $delibRattachee['Annex'];
             foreach ($annexes as $annexe) {
                 $tmp['Annex'] = $annexe;
-                $tmp['Annex']['id'] = null;
+                unset($tmp['Annex']['id']);
                 $tmp['Annex']['foreign_key'] = $delibRattachee_id;
                 $this->Annex->save($tmp, false);
             }
         }
-        return $delib['Deliberation']['id'];
+        return $delib_id;
     }
 
     function canSaveSeances($seances_id){
@@ -1995,6 +1994,39 @@ class Deliberation extends AppModel {
             $this->log($e->getTraceAsString(), 'tdt');
             return false;
         }
+    }
+
+    function chercherVersionAnterieure($tab_delib, $nb_recursion, $listeAnterieure, $action)
+    {
+        $anterieure_id = $tab_delib['Deliberation']['anterieure_id'];
+        if ($anterieure_id != 0) {
+            $ant = $this->find('first', array(
+                'conditions' => array("Deliberation.id" => $anterieure_id),
+                'recursive' => -1,
+                'fields' => array('created', 'anterieure_id')));
+            $lien = $this->base . '/deliberations/' . $action . '/' . $anterieure_id;
+            $date_version = $ant['Deliberation']['created'];
+            $listeAnterieure[$nb_recursion]['id'] = $anterieure_id;
+            $listeAnterieure[$nb_recursion]['lien'] = $lien;
+            $listeAnterieure[$nb_recursion]['date_version'] = $date_version;
+            //on stocke les id des delibs anterieures
+            $listeAnterieure = $this->chercherVersionAnterieure($ant, $nb_recursion + 1, $listeAnterieure, $action);
+        }
+        return $listeAnterieure;
+    }
+
+    function chercherVersionSuivante($delib_id){
+        $delib = $this->find('first', array(
+            'recursive' => -1,
+            'fields' => array('id'),
+            'conditions' => array(
+                'anterieure_id' => $delib_id
+            )
+        ));
+        if (empty($delib))
+            return false;
+
+        return $delib['Deliberation']['id'];
     }
 
 }

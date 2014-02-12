@@ -157,8 +157,12 @@ class DeliberationsController extends AppController
 
         // Lecture des versions anterieures
         $listeAnterieure = array();
-        $tab_anterieure = $this->_chercherVersionAnterieure($this->data, 0, $listeAnterieure, 'view');
+        $tab_anterieure = $this->Deliberation->chercherVersionAnterieure($this->data, 0, $listeAnterieure, 'view');
         $this->set('tab_anterieure', $tab_anterieure);
+
+        //Lecture de la version supérieure
+        $versionsup = $this->Deliberation->chercherVersionSuivante($id);
+        $this->set('versionsup', $versionsup);
 
         // Lecture des droits en modification
         $user_id = $this->Session->read('user.User.id');
@@ -1444,7 +1448,7 @@ class DeliberationsController extends AppController
                 $nb_recursion = 0;
                 $action = 'view';
                 $listeAnterieure = array();
-                $tab_anterieure = $this->_chercherVersionAnterieure($projet, $nb_recursion, $listeAnterieure, $action);
+                $tab_anterieure = $this->Deliberation->chercherVersionAnterieure($projet, $nb_recursion, $listeAnterieure, $action);
                 $this->set('tab_anterieure', $tab_anterieure);
                 $commentaires = $this->Commentaire->find('all', array('conditions' => array(
                     'Commentaire.delib_id' => $id,
@@ -1531,7 +1535,6 @@ class DeliberationsController extends AppController
     {
         $nouvelId = $this->Deliberation->refusDossier($id);
         $this->Traitement->execute('KO', $this->Session->read('user.User.id'), $id);
-        // TODO notifier par mail toutes les personnes qui ont deja vise le projet
         $destinataires = $this->Traitement->whoIsPrevious($id);
         foreach ($destinataires as $destinataire_id)
             $this->User->notifier($nouvelId, $destinataire_id, 'refus');
@@ -1560,28 +1563,6 @@ class DeliberationsController extends AppController
             foreach ($destinataires as $destinataire_id)
                 $this->User->notifier($id, $destinataire_id, 'traitement');
         }
-    }
-
-    function _chercherVersionAnterieure($tab_delib, $nb_recursion, $listeAnterieure, $action)
-    {
-        $anterieure_id = $tab_delib['Deliberation']['anterieure_id'];
-
-        if ($anterieure_id != 0) {
-
-            $ant = $this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $anterieure_id),
-                'recursive' => -1,
-                'fields' => array('created', 'anterieure_id')));
-            $lien = $this->base . '/deliberations/' . $action . '/' . $anterieure_id;
-            $date_version = $ant['Deliberation']['created'];
-
-            $listeAnterieure[$nb_recursion]['id'] = $anterieure_id;
-            $listeAnterieure[$nb_recursion]['lien'] = $lien;
-            $listeAnterieure[$nb_recursion]['date_version'] = $date_version;
-
-            //on stocke les id des delibs anterieures
-            $listeAnterieure = $this->_chercherVersionAnterieure($ant, $nb_recursion + 1, $listeAnterieure, $action);
-        }
-        return $listeAnterieure;
     }
 
     function transmit($seance_id = null) {

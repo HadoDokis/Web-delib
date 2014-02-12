@@ -1000,7 +1000,7 @@ a.link_rebond_avec_border {
 
 #vue_cadre dd{
 	padding: 5px 0 15px 30px;
-	text-indent: 3%;
+	/*text-indent: 3%;*/
 }
 
 #vue_cadre dd.compact{
