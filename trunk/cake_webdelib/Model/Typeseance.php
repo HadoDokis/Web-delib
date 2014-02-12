@@ -167,15 +167,12 @@ class Typeseance extends AppModel {
     /* - true : les acteurs élus                                               */
     /* - false : les acteurs non élus                                          */
 
-    function acteursConvoquesParTypeSeanceId($typeseance_id = null, $elu = null) {
-        $this->Behaviors->attach('Containable');
-        $this->Acteur->Behaviors->attach('Containable');
-        $typeseance = $this->find('first', array('conditions' => array('Typeseance.id' => $typeseance_id),
-            'contain' => array('Typeacteur',
-                'Acteur.id',
-                'Acteur.actif',
-                'Acteur.typeacteur_id'),
-            'fields' => array('id')));
+    function acteursConvoquesParTypeSeanceId($typeseance_id, $elu = null, $fields=array()) {
+        $this->Behaviors->load('Containable');
+        $typeseance = $this->find('first', array(
+            'contain' => array('Typeacteur.id','Acteur.id'),
+            'fields' => array('id'),
+            'conditions' => array('Typeseance.id' => $typeseance_id)));
         if (empty($typeseance))
             return null;
 
@@ -190,16 +187,21 @@ class Typeseance extends AppModel {
             $inId[] = $acteur['id'];
 
         $condition['Acteur.actif'] = 1;
-        $condition['OR']['Acteur.id'] = $inId;
-        if (!empty($inTypeacteur))
+        if ($elu !== null)
+            $condition['Typeacteur.elu'] = $elu;
+        if (!empty($inTypeacteur) && !empty($inId)) {
+            $condition['OR']['Acteur.id'] = $inId;
             $condition['OR']['Acteur.typeacteur_id'] = $inTypeacteur;
-        if ($elu == null)
-            $condition['Typeacteur.elu'] = 1;
+        } elseif (!empty($inTypeacteur)) {
+            $condition['Acteur.typeacteur_id'] = $inTypeacteur;
+        } elseif (!empty($inId))
+            $condition['Acteur.id'] = $inId;
 
-        return ($this->Acteur->find('all', array('conditions' => $condition,
-                    'contain' => array('Typeacteur.elu'),
-                    'order' => 'Acteur.position ASC',
-        )));
+        return $this->Acteur->find('all', array(
+            'recursive' => 0,
+            'fields' => $fields,
+            'order' => array('Acteur.position ASC'),
+            'conditions' => $condition));
     }
 
     /* retourne d'id du modèle d 'édition du type de séance $typeseance_id en sonction de l'état du projet de délibération */
