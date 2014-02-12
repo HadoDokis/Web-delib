@@ -138,6 +138,7 @@ class CronJob extends AppModel {
             App::uses('Annex', 'Model');
             App::uses('ComponentCollection', 'Controller');
             App::uses('ConversionComponent', 'Controller/Component');
+            App::uses('ConversionComponent', 'Controller/Component');
             $collection = new ComponentCollection();
             $this->Conversion = new ConversionComponent($collection);
             
@@ -146,28 +147,36 @@ class CronJob extends AppModel {
             $condition=array();
             if(!empty($delib_id))
             $condition['foreign_key']=$delib_id;
-            $condition['edition_data']=NULL;
-            $condition['OR']=array('joindre_ctrl_legalite'=>true,'joindre_fusion'=>1);
             
-            debug($condition);
+            $condition['AND']=array('OR'=>array(    
+                                                'AND'=>array('joindre_ctrl_legalite'=>true,'data_pdf'=>NULL),
+                                                'AND'=>array('joindre_fusion'=>1,'edition_data'=>NULL)
+                                                )
+            );
             
             $annexes = $this->Annex->find('all', array(
                 'fields' => array('id','data','filename','filetype','joindre_ctrl_legalite','joindre_fusion'),
                 'conditions' => $condition,
+                'limit'=>empty($delib_id)?10:20,//optimisation pour le cron 10 taches par passage
+                'order'=>'modified DESC',
                 'recursive'=>-1
             ));
+            
+            /*$log = $this->Annex->getDataSource()->getLog(false, false);
+            debug($annexes);*/
             
             if (!empty($annexes))
             foreach ($annexes as $annexe) {
                 $this->Annex->id=$annexe['Annex']['id'];
                 
                 if($annexe['Annex']['joindre_fusion']){
-                    $newAnnexe['edition_data'] = $this->Conversion->toOdt($annexe['Annex']['data'], $annexe['Annex']['filetype']);
-                    $newAnnexe['edition_data_typemime'] = '';
+                    $newAnnexe['edition_data'] = $this->Conversion->toOdt($annexe['Annex']['data'], $annexe['Annex']['filetype'], 'application/vnd.oasis.opendocument.text');
+                    $newAnnexe['edition_data_typemime'] = 'application/vnd.oasis.opendocument.text';
                 }
                 
-                if($annexe['Annex']['joindre_ctrl_legalite'])
-                    $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], 'pdf');
+                if($annexe['Annex']['joindre_ctrl_legalite']){
+                    $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], $annexe['Annex']['filetype'], 'application/pdf');   
+                }
                 
                 $this->Annex->save($newAnnexe);
             }
