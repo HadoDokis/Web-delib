@@ -33,5 +33,30 @@ class Historique extends AppModel {
         $histo['Historique']['commentaire'] = "[".$user['User']['prenom'].' '.$user['User']['nom']."] $commentaire";
         return $this->save($histo); 
     }
+
+    /**
+     * fonction d'initialisation des variables de fusion pour l'historique d'un projet/délibération
+     * les bibliothèques Gedooo doivent être inclues par avance
+     * génère une exception en cas d'erreur
+     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param integer $deliberationId id du projet/délibération
+     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     */
+    function setVariablesFusion(&$oMainPart, $deliberationId, &$modelOdtInfos) {
+        //lecture de l'historique
+        $historiques = $this->find('all', array(
+            'recursive' => -1,
+            'fields' => array('commentaire', 'created'),
+            'conditions' => array('delib_id' => $deliberationId)));
+        if (empty($historiques)) return;
+
+        $oStyleIteration = new GDO_IterationType("Historique");
+        foreach($historiques as $historique) {
+            $oDevPart = new GDO_PartType();
+            $oDevPart->addElement(new GDO_FieldType("log", $historique['Historique']['created'].' : '.$historique['Historique']['commentaire'], "text"));
+            $oStyleIteration->addPart($oDevPart);
+        }
+        $oMainPart->addElement($oStyleIteration);
+    }
 }
 ?>
