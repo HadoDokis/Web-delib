@@ -520,7 +520,8 @@ class SeancesController extends AppController {
             'contain' => array('Typeseance.compteur_id')));
         if (empty($this->data)) {
             //Initialisation président de séance
-            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true, array('id', 'nom', 'prenom'));
+
             $tab = array();
             if (!empty($acteursConvoques)) {
                 foreach ($acteursConvoques as $acteurConvoque)
@@ -734,7 +735,7 @@ class SeancesController extends AppController {
 		foreach ($delibs as $delib_id) {
 			$deliberations[] = $this->Deliberation->find('first',
 				                      	array('conditions' => array('Deliberation.id'=>$delib_id),
-                                                        'fields'  => array('id', 'objet', 'objet_delib', 'titre', 'etat'),
+                                                        'fields'  => array('id', 'objet', 'objet_delib', 'titre', 'etat', 'num_delib'),
 							'contain' => array('Theme.libelle', 'Rapporteur.nom',  'Rapporteur.prenom', 'Service.libelle')));
 		}
 		$date_tmpstp = strtotime($this->Seance->getDate($seance_id));
@@ -836,7 +837,7 @@ class SeancesController extends AppController {
             'conditions' => array('Seance.id' => $seance_id),
             'recursive'  => -1,
             'fields'     => array('id', 'type_id', 'president_id', 'secretaire_id')));
-		$acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+		$acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true, array('id', 'nom', 'prenom'));
         if (empty($acteursConvoques)){
             $this->Session->setFlash('Aucun acteur convoqué.', 'growl', array('type'=>'erreur'));
             $this->redirect(array('action' => 'listerFuturesSeances'));
@@ -1063,7 +1064,7 @@ class SeancesController extends AppController {
             $this->set('use_mail_securise', Configure::read('S2LOW_MAILSEC') );
 
             if (empty($this->data) ) {
-                $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true);
+                $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
                 foreach ($acteurs as &$acteur) {
                     $dates = $this->Acteurseance->find('first', array(
                         'conditions'=> array(
@@ -1203,7 +1204,7 @@ class SeancesController extends AppController {
                                                                                'Typeseance.modelpvdetaille_id')));
             $this->set('use_mail_securise', Configure::read('S2LOW_MAILSEC') );
             if (empty($this->data) ) {
-                $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true);
+                $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
                 foreach ($acteurs as &$acteur) {
                      $dates = $this->Acteurseance->find('first', array( 'recursive' => -1,
                                                                         'conditions'=> array('seance_id' => $seance_id,
@@ -1416,7 +1417,7 @@ class SeancesController extends AppController {
             $this->Seance->makeBalise($seance_id, $oMainPart);
             $this->Seance->saveField('date_convocation',  date("Y-m-d H:i:s", strtotime("now")));   
             $typeseance_id = $this->Seance->getType($seance_id);
-            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($typeseance_id, true);
+            $acteursConvoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($typeseance_id);
             $cpt =2;
             $nbActeurs = count($acteursConvoques)+3;
             foreach ($acteursConvoques as $acteur) {
@@ -1605,7 +1606,7 @@ class SeancesController extends AppController {
             'fields'     => array('id', 'date', 'type_id'),
             'contain'    => array('Typeseance.libelle', 'Typeseance.action', 'Typeseance.id', 'Typeseance.modelconvocation_id', 'Typeseance.action')));
 
-        $acteurs_convoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Typeseance']['id'], true);
+        $acteurs_convoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Typeseance']['id']);
 
         $model_seance_id =  $seance['Typeseance']['modelconvocation_id'];
 
