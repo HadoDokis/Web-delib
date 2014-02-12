@@ -73,7 +73,7 @@ echo $this->Html->div('filtre');
             echo '<div class="spacer"></div>';
 //notes
             if ($note1){
-                echo $this->Html->tag('em',"* A l'intérieur des filtres de type texte, le caractère '%' est employé comme métacaractère (joker), il remplace un ou plusieurs caractères.");
+                echo $this->Html->tag('em',"* A l'intérieur des filtres de type texte, le caractère '%' est employé comme métacaractère (joker), il remplace un ou plusieurs caractères et ignore la casse.");
                 echo '<div class="spacer"></div>';
             }
 			echo $this->Form->submit('Appliquer le filtre');
