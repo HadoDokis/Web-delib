@@ -86,6 +86,7 @@ Configure::write('GED_PASTELL', false);
  */
 /* Configuration de PASTELL */
 Configure::write('USE_PASTELL', false);
+Configure::write('PASTELL_HOST', 'http://pastell.x.x.org');
 Configure::write('PASTELL_TYPE', 'actes-generique');
 Configure::write('PASTELL_LOGIN', 'login');
 Configure::write('PASTELL_PWD', 'password');
