@@ -307,6 +307,6 @@ Cache::config('_cake_model_', array(
     require_once ('webdelib.inc');
     require_once ('formats.inc');
     //appVersion
-    define('VERSION', '4.2');
+    define('VERSION', '4.2-alpha2');
     //dbVersion
     include_once(ROOT.DS.APP_DIR.DS.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'cakeflow.conf.php');
