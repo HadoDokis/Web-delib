@@ -68,7 +68,7 @@ class Signature {
         $protocol = Configure::read('PARAPHEUR');
 
         if (!$signature)
-            throw new Exception("Signature désactivée");
+            throw new Exception("La fonctionnalité de signature est désactivée");
         if (empty($protocol))
             throw new Exception("Aucun parapheur désigné");
 
