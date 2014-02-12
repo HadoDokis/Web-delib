@@ -3423,7 +3423,12 @@ class DeliberationsController extends AppController
         $conditions = $this->_handleConditions($this->Filtre->conditions());
         $this->set('seance_id', $seance_id);
         App::uses('Signature', 'Lib');
-        $this->Signature = new Signature();
+        try{
+            $this->Signature = new Signature();
+        }catch (Exception $e){
+            $this->Session->setFlash($e->getMessage(), 'growl');
+            $this->redirect($this->referer());
+        }
         if (empty($seance_id)) {
             $this->Deliberation->Behaviors->load('Containable');
             $conditions['Deliberation.parapheur_etat != '] = null;
@@ -3963,7 +3968,7 @@ class DeliberationsController extends AppController
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
         $conditions['Deliberation.etat'] = array('2', '3', '4');
-        $conditions['Deliberation.signee'] = array(null,false);
+        $conditions['OR'] = array('Deliberation.signee IS NULL', 'Deliberation.signee'=>0);
 
         $fields = array(
             'Deliberation.id',
@@ -3993,7 +3998,6 @@ class DeliberationsController extends AppController
             'Typeseance.id',
             'Typeseance.libelle',
         );
-        //FIXME Limiter aux actes sans séances
         $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
         $this->_ajouterFiltre($actes);
 
