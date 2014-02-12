@@ -108,7 +108,7 @@ Configure::write('S2LOW_HOST', 'https://s2low.x.x.org');
 Configure::write('S2LOW_PEM', APP . 'Config/cert_s2low/client.pem');
 Configure::write('S2LOW_SSLKEY', APP . 'Config/cert_s2low/key.pem');
 Configure::write('S2LOW_CAPATH', APP . 'Config/cert_s2low/');
-Configure::write('S2LOW_CLASSIFICATION', WEBROOT_PATH . '/files/actes/classification.xml');
+Configure::write('S2LOW_CLASSIFICATION', APP . 'webroot/files/actes/classification.xml');
 Configure::write('S2LOW_CERTPWD', 'password');
 Configure::write('S2LOW_USEPROXY', false);
 Configure::write('S2LOW_PROXYHOST', '');
