@@ -289,35 +289,36 @@ class Deliberation extends AppModel {
      * @return integer identifiant du modèle
      */
     function getModelId($delib_id){
-        $this->id = $delib_id;
-        $etat = $this->field('etat');
+        // initialisations
+        $etat = $this->field('etat', array('id' => $delib_id));
+        $seanceDeliberanteId = null;
+
+        // recherche d'une séance délibérante
         $seances = $this->Deliberationseance->find('all', array(
             'recursive' => -1,
             'fields' => array('seance_id'),
-            'conditions' => array('deliberation_id' => $delib_id)
-        ));
+            'conditions' => array('deliberation_id' => $delib_id)));
         if (!empty($seances)){
-            //Recherche de séance délibérante
             $tab_seances = Hash::extract($seances, '{n}.Deliberationseance.seance_id');
-            $seance_id = $this->Seance->getSeanceDeliberante($tab_seances);
-            $seance = $this->Seance->find('first', array(
-                'conditions' => array('Seance.id' => $seance_id),
-                'fields' => array('type_id'),
-                'contain' => array('Typeseance.modelprojet_id','Typeseance.modeldeliberation_id')
-            ));
+            $seanceDeliberanteId = $this->Seance->getSeanceDeliberante($tab_seances);
+        }
 
+        if (!empty($seanceDeliberanteId)){
+            // lecture des modèles de la séance délibérante
+            $seance = $this->Seance->find('first', array(
+                'fields' => array('type_id'),
+                'contain' => array('Typeseance.modelprojet_id','Typeseance.modeldeliberation_id'),
+                'conditions' => array('Seance.id' => $seanceDeliberanteId)));
             if ($etat < 3)
                 return $seance['Typeseance']['modelprojet_id'];
             else
                 return $seance['Typeseance']['modeldeliberation_id'];
         } else {
-            $typeacte_id = $this->field('typeacte_id');
+            $typeacte_id = $this->field('typeacte_id', array('id' => $delib_id));
             $typeacte = $this->Typeacte->find('first', array(
                 'recursive' => -1,
                 'conditions' => array('id' => $typeacte_id),
-                'fields' => array('modeleprojet_id','modelefinal_id')
-            ));
-
+                'fields' => array('modeleprojet_id','modelefinal_id')));
             if ($etat < 3)
                 return $typeacte['Typeacte']['modeleprojet_id'];
             else
@@ -1408,7 +1409,7 @@ class Deliberation extends AppModel {
         $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
             'recursive' => -1,
             'fields' => array('Seance.type_id')));
-        $elus = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+        $elus = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true);
         foreach ($elus as $elu) {
             $this->Listepresence->create();
             $params['data']['Listepresence']['acteur_id'] = $elu['Acteur']['id'];
@@ -2027,6 +2028,213 @@ class Deliberation extends AppModel {
             return false;
 
         return $delib['Deliberation']['id'];
+    }
+
+
+    /**
+     * retourne l'id du model odt à utiliser pour la fusion
+     * @param integer $id id de l'occurence en base de données
+     * @return integer id du modele odt à utiliser
+     */
+    function getModelTemplateId($id) {
+        return $this->getModelId($id);
+    }
+
+    /**
+     * fonction d'initialisation des variables de fusion pour un projet ou une délibération
+     * les bibliothèques Gedooo doivent être inclues par avance
+     * génère une exception en cas d'erreur
+     * @param object $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param integer $id l'id à fusionner
+     * @param objet by ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param boolean $addSeanceIterations ajoute l'itération sur les séances
+     */
+    function setVariablesFusion(&$oMainPart, $id, &$modelOdtInfos, $addSeanceIterations=true) {
+        // initialisations
+        $this->Date = new DateComponent;
+
+        // liste des champs à lire en base de données
+        $fields = array('id', 'service_id', 'theme_id', 'rapporteur_id', 'redacteur_id', 'is_multidelib',
+            'titre', 'objet', 'objet_delib', 'etat', 'num_delib', 'num_pref', 'date_envoi_signature',
+            'vote_nb_oui', 'vote_nb_abstention', 'vote_nb_non', 'vote_nb_retrait', 'tdt_dateAR', 'vote_commentaire');
+        if ($modelOdtInfos->hasUserField('texte_projet')) $fields[] = 'texte_projet';
+        if ($modelOdtInfos->hasUserFields('texte_deliberation', 'texte_acte')) $fields[] = 'deliberation';
+        if ($modelOdtInfos->hasUserField('note_synthese')) $fields[] = 'texte_synthese';
+        if ($modelOdtInfos->hasUserField('debat_deliberation')) $fields[] = 'debat';
+        if ($modelOdtInfos->hasUserField('debat_commission')) $fields[] = 'commission';
+
+        // lecture de l'occurence en base de données
+        $delib = $this->find('first', array(
+            'recursive' => -1,
+            'fields' => $fields,
+            'conditions' => array('id'=>$id)));
+        if (empty($delib))
+            throw new Exception('délibération id:'.$id.' non trouvée en base de données');
+
+        // variables du projet (en dehors de toute section)
+        if ($modelOdtInfos->hasUserField('titre_projet'))
+            $oMainPart->addElement(new GDO_FieldType('titre_projet', $delib['Deliberation']['titre'], 'lines'));
+        if ($modelOdtInfos->hasUserField('objet_projet')) {
+            if (empty($delib['Deliberation']['is_multidelib']))
+                $oMainPart->addElement(new GDO_FieldType('objet_projet', $delib['Deliberation']['objet'], 'lines'));
+            else
+                $oMainPart->addElement(new GDO_FieldType('objet_projet', $delib['Deliberation']['objet_delib'], 'lines'));
+        }
+        if ($modelOdtInfos->hasUserField('libelle_projet'))
+            $oMainPart->addElement(new GDO_FieldType('libelle_projet', $delib['Deliberation']['objet'], 'lines'));
+        if ($modelOdtInfos->hasUserField('objet_delib'))
+            $oMainPart->addElement(new GDO_FieldType('objet_delib', $delib['Deliberation']['objet_delib'], 'lines'));
+        if ($modelOdtInfos->hasUserField('libelle_delib'))
+            $oMainPart->addElement(new GDO_FieldType('libelle_delib', $delib['Deliberation']['objet_delib'], 'lines'));
+        if ($modelOdtInfos->hasUserField('identifiant_projet'))
+            $oMainPart->addElement(new GDO_FieldType('identifiant_projet', $delib['Deliberation']['id'], 'text'));
+        if ($modelOdtInfos->hasUserField('service_emetteur'))
+            $oMainPart->addElement(new GDO_FieldType('service_emetteur', $this->Service->field('libelle', array('id'=>$delib['Deliberation']['service_id'])), 'text'));
+        if ($modelOdtInfos->hasUserField('service_avec_hierarchie'))
+            $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->Service->_doList($delib['Deliberation']['service_id']), 'text'));
+        if ($modelOdtInfos->hasUserField('etat_projet'))
+            $oMainPart->addElement(new GDO_FieldType('etat_projet', $delib['Deliberation']['etat'], 'text'));
+        if ($modelOdtInfos->hasUserField('classification_deliberation'))
+            $oMainPart->addElement(new GDO_FieldType('classification_deliberation', $delib['Deliberation']['num_pref'], 'text'));
+        if ($modelOdtInfos->hasUserField('date_envoi_signature'))
+            $oMainPart->addElement(new GDO_FieldType("date_envoi_signature", $this->Date->frDate($delib['Deliberation']['date_envoi_signature']), 'date'));
+        if ($modelOdtInfos->hasUserField('nombre_seance'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_seance', $this->getNbSeances($delib['Deliberation']['id']), 'text'));
+        // Information du service émetteur
+        if ($modelOdtInfos->hasUserFields('service_emetteur', 'service_avec_hierarchie'))
+            $this->Service->setVariablesFusion($oMainPart, $delib['Deliberation']['service_id'], $modelOdtInfos);
+        // Informations sur le thème
+        $this->Theme->setVariablesFusion($oMainPart, $delib['Deliberation']['theme_id'], $modelOdtInfos);
+        // Informations sur le rapporteur
+        if (!empty($delib['Deliberation']['rapporteur_id']))
+            $this->Rapporteur->setVariablesFusion($oMainPart, $delib['Deliberation']['rapporteur_id'], $modelOdtInfos);
+        // Liste des commentaires
+        if ($modelOdtInfos->hasUserField('texte_commentaire'))
+            $this->Commentaire->setVariablesFusion($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+        // Hitoriques
+        if ($modelOdtInfos->hasUserField('log'))
+            $this->Historique->setVariablesFusion($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+
+        // Informations supplémentaires
+        $this->Infosup->setVariablesFusion($oMainPart, 'Deliberation', $delib['Deliberation']['id'], $modelOdtInfos);
+
+        // variables de la délibération (en dehors de toute section)
+        if ($modelOdtInfos->hasUserField('numero_acte'))
+            $oMainPart->addElement(new GDO_FieldType('numero_acte', $delib['Deliberation']['num_delib'], 'text'));
+        if ($modelOdtInfos->hasUserField('numero_deliberation'))
+            $oMainPart->addElement(new GDO_FieldType('numero_deliberation', $delib['Deliberation']['num_delib'], 'text'));
+        if ($modelOdtInfos->hasUserField('acte_adopte'))
+            $oMainPart->addElement(new GDO_FieldType('acte_adopte', (($delib['Deliberation']['etat']==3 && $delib['Deliberation']['vote_nb_oui']==0)?'1':'0'), 'test'));
+        if ($modelOdtInfos->hasUserField('nombre_pour'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_pour', $delib['Deliberation']['vote_nb_oui'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_abstention'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_abstention', $delib['Deliberation']['vote_nb_abstention'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_contre'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_contre', $delib['Deliberation']['vote_nb_non'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_sans_participation'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', $delib['Deliberation']['vote_nb_retrait'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_votant'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_votant', $delib['Deliberation']['vote_nb_oui']+$delib['Deliberation']['vote_nb_abstention']+$delib['Deliberation']['vote_nb_non'], 'text'));
+        if ($modelOdtInfos->hasUserField('commentaire_vote'))
+            $oMainPart->addElement(new GDO_FieldType('commentaire_vote', $delib['Deliberation']['vote_commentaire'], 'lines'));
+        if ($modelOdtInfos->hasUserField('date_reception'))
+            $oMainPart->addElement(new GDO_FieldType('date_reception',  $delib['Deliberation']['tdt_dateAR'], 'text'));
+
+        // variables des multi délibérations
+        if ($delib['Deliberation']['is_multidelib'] && $modelOdtInfos->hasUserFields('libelle_multi_delib', 'id_multi_delib')) {
+            $multidelibs = $this->find('all', array(
+                'recursive' => -1,
+                'fields'     => array('id', 'objet'),
+                'conditions' => array('parent_id' => $delib['Deliberation']['id'])));
+            if (!empty($multidelibs)) {
+                $oIteration = new GDO_IterationType('Deliberations');
+                foreach($multidelibs as $multidelib) {
+                    $oDevPart = new GDO_PartType();
+                    if ($modelOdtInfos->hasUserField('libelle_multi_delib'))
+                        $oDevPart->addElement(new GDO_FieldType('libelle_multi_delib', $multidelib['Deliberation']['objet'], 'text'));
+                    if ($modelOdtInfos->hasUserField('id_multi_delib'))
+                        $oDevPart->addElement(new GDO_FieldType('id_multi_delib', $multidelib['Deliberation']['id'], 'text'));
+                    $oIteration->addPart($oDevPart);
+                }
+                $oMainPart->addElement($oIteration);
+            }
+        }
+
+        // textes du projet
+        if ($modelOdtInfos->hasUserField('texte_projet')) {
+            if (!empty($delib['Deliberation']['texte_projet'])) {
+                $oMainPart->addElement(new GDO_ContentType('texte_projet',
+                    'text_projet.odt' ,
+                    'application/vnd.oasis.opendocument.text',
+                    'binary',
+                    $delib['Deliberation']['texte_projet']));
+            } else $oMainPart->addElement(new GDO_FieldType("texte_projet", "", "text"));
+        }
+        if ($modelOdtInfos->hasUserField('texte_deliberation')) {
+            if (!empty($delib['Deliberation']['deliberation'])) {
+                $oMainPart->addElement(new GDO_ContentType('texte_deliberation',
+                    'td.odt',
+                    'application/vnd.oasis.opendocument.text' ,
+                    'binary',
+                    $delib['Deliberation']['deliberation']));
+            } else $oMainPart->addElement(new GDO_FieldType("texte_deliberation", "", "text"));
+        }
+        if ($modelOdtInfos->hasUserField('texte_acte')) {
+            if (!empty($delib['Deliberation']['deliberation'])) {
+                $oMainPart->addElement(new GDO_ContentType('texte_acte',
+                    'td.odt',
+                    'application/vnd.oasis.opendocument.text' ,
+                    'binary',
+                    $delib['Deliberation']['deliberation']));
+            } else $oMainPart->addElement(new GDO_FieldType("texte_acte", "", "text"));
+        }
+        if ($modelOdtInfos->hasUserField('note_synthese')) {
+            if (!empty($delib['Deliberation']['texte_synthese'])) {
+                $oMainPart->addElement(new GDO_ContentType('note_synthese',
+                    'ns.odt',
+                    'application/vnd.oasis.opendocument.text' ,
+                    'binary',
+                    $delib['Deliberation']['texte_synthese']));
+            } else $oMainPart->addElement(new GDO_FieldType("note_synthese", "",    "text"));
+        }
+        // débats
+        if ($modelOdtInfos->hasUserField('debat_deliberation')) {
+            if (!empty($delib['Deliberation']['debat'])) {
+                $oMainPart->addElement(new GDO_ContentType('debat_deliberation',
+                    'debat.odt',
+                    'application/vnd.oasis.opendocument.text' ,
+                    'binary',
+                    $delib['Deliberation']['debat']));
+            } else $oMainPart->addElement(new GDO_FieldType("debat_deliberation", "", "text"));
+        }
+        if ($modelOdtInfos->hasUserField('debat_commission')) {
+            if (!empty($delib['Deliberation']['commission'])) {
+                $oMainPart->addElement(new GDO_ContentType('debat_commission',
+                    'debat_commission.odt',
+                    'application/vnd.oasis.opendocument.text',
+                    'binary',
+                    $delib['Deliberation']['commission']));
+            } else $oMainPart->addElement(new GDO_FieldType("debat_commission", "", "text"));
+        }
+
+        // annexes
+        $this->Annex->setVariablesFusion($oMainPart, 'Projet', $id, $modelOdtInfos);
+
+        // séances
+        if ($addSeanceIterations)
+            $this->Seance->setVariablesFusionPourUnProjet($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+
+        // avis des séances
+        if ($modelOdtInfos->hasUserFields('avis', 'avis_favorable', 'commentaire'))
+            $this->Deliberationseance->setVariablesFusionPourUnProjet($oMainPart, $id, $modelOdtInfos);
+
+        // listes des présents et suppléants, absents, mandatés
+        $this->Listepresence->setVariablesFusionPresents($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+        $this->Listepresence->setVariablesFusionAbsents($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+        $this->Listepresence->setVariablesFusionMandates($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+
+        // votes
+        $this->Vote->setVariablesFusion($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
     }
 
 }
