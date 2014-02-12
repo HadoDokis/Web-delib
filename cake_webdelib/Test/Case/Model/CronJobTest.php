@@ -70,6 +70,7 @@ class CronJobTest extends CakeTestCase {
                 'recursive'=>-1
             ));
             
+            debug($annexe);
             
             $this->assertEquals(1, count($annexe), var_export( count($annexe), true));
             
