@@ -405,4 +405,78 @@ class Infosup extends AppModel
         }
         return $return;
     }
+
+    /**
+     * fonction d'initialisation des variables de fusion pour l'allias utilisé pour la liaison (Rapporteur, President, ...)
+     * les bibliothèques Gedooo doivent être inclues par avance
+     * génère une exception en cas d'erreur
+     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param string $modelName nom du modele lié
+     * @param integer $id id du modèle lié
+     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     */
+    function setVariablesFusion(&$oMainPart, $modelName, $id, &$modelOdtInfos) {
+        // lecture de la définition des infosup
+        $allInfoSupDefs = $this->Infosupdef->find('all', array(
+            'recursive' => -1,
+            'fields' => array('id', 'code', 'type'),
+            'conditions' => array('model'=> $modelName)));
+
+        // infosups utilisées dans le modèle d'édition
+        $infoSupDefs = $infoSupDefIds = array();
+        foreach($allInfoSupDefs as $infoSupDef)
+            if ($modelOdtInfos->hasUserField($infoSupDef['Infosupdef']['code'])) {
+                $infoSupDefIds[] = $infoSupDef['Infosupdef']['id'];
+                $infoSupDefs[$infoSupDef['Infosupdef']['id']] = $infoSupDef['Infosupdef'];
+            }
+        if (empty($infoSupDefIds))
+            return;
+
+        // lecture des valeurs des infosups
+        $infosups = $this->find('all', array(
+            'recursive' => -1,
+            'fields' => array('infosupdef_id', 'text', 'date', 'content'),
+            'conditions' => array(
+                'model' => $modelName,
+                'foreign_key' => $id,
+                'infosupdef_id' => $infoSupDefIds)));
+
+        // fusion des variables
+        foreach($infosups as $infosup) {
+            switch($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['type']) {
+                case 'text':
+                case 'boolean':
+                    if (empty($infosup['Infosup']['text'])) break;
+                    $oMainPart->addElement(new GDO_FieldType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $infosup['Infosup']['text'], 'text'));
+                    break;
+                case 'date':
+                    if (empty($infosup['Infosup']['date'])) break;
+                    $oMainPart->addElement(new GDO_FieldType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], date('d/m/Y', strtotime($infosup['Infosup']['date'])), 'text'));
+                    break;
+                case 'list':
+                    if (empty($infosup['Infosup']['text'])) break;
+                    $listValue = $this->Infosupdef->Infosuplistedef->field('nom', array('id' => $infosup['Infosup']['text']));
+                    $oMainPart->addElement(new GDO_FieldType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $listValue, 'text'));
+                    break;
+                case 'listmulti':
+                    if (empty($infosup['Infosup']['text'])) break;
+                    $listValues = $this->Infosupdef->Infosuplistedef->nfield('nom', array('id' => explode(',', str_replace('\'', '', $infosup['Infosup']['text']))), array('ordre'));
+                    $oMainPart->addElement(new GDO_FieldType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], implode(', ', $listValues), 'text'));
+                    break;
+                case 'richText':
+                    if (empty($infosup['Infosup']['content'])) break;
+                    include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/ConversionComponent.php');
+                    $this->Conversion = new ConversionComponent(new ComponentCollection());
+                    $content = $this->Conversion->convertirFlux($infosup['Infosup']['content'], 'html', 'odt');
+                    $name = str_replace(" ", "_", $infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code']);
+                    $oMainPart->addElement(new GDO_ContentType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', $content));
+                    break;
+                case 'odtFile':
+                    if (empty($infosup['Infosup']['content'])) break;
+                    $name = str_replace(" ", "_", $infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code']);
+                    $oMainPart->addElement(new GDO_ContentType($infoSupDefs[$infosup['Infosup']['infosupdef_id']]['code'], $name, 'application/vnd.oasis.opendocument.text', 'binary', $infosup['Infosup']['content']));
+                    break;
+            }
+        }
+    }
 }
