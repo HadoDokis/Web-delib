@@ -50,6 +50,7 @@ class CronJob extends AppModel {
                         'conditions' => array(
                             'not' => array('Visa.date_retard' => null),
                             'Visa.date_retard <=' => date('Y-m-d H:i:s'),
+                            'Visa.action' => 'RI',
                         ),
                         'fields' => array('Visa.id', 'Visa.date_retard', 'Visa.numero_traitement', 'Visa.trigger_id', 'Visa.action'),
                     )
@@ -57,6 +58,7 @@ class CronJob extends AppModel {
                 'fields' => array('Traitement.id', 'Traitement.numero_traitement', 'Traitement.target_id'),
                 'conditions' => array('treated' => false)
             ));
+            $messages = array();
             foreach ($traitements as $traitement) {
                 if (empty($traitement['Visa'])) continue;
                 foreach ($traitement['Visa'] as $visa) {
@@ -66,14 +68,18 @@ class CronJob extends AppModel {
                         || $visa['action'] != 'RI'
                         || $traitement['Traitement']['numero_traitement'] != $visa['numero_traitement']
                     ) continue;
-
-                    $blaze = $this->User->prenomNomLogin($visa['trigger_id']);
-                    if (!empty($blaze) && !in_array($blaze, $users))
-                        $users[] = $blaze;
-                    //Envoi notification
-                    $this->User->notifier($traitement['Traitement']['target_id'], $visa['trigger_id'], 'retard_validation');
+                    $messages[$visa['trigger_id']][] = $traitement['Traitement']['target_id'];
                 }
             }
+            foreach ($messages as $user => $targets){
+                $blaze = $this->User->prenomNomLogin($user);
+                if (!empty($blaze) && !in_array($blaze, $users))
+                    $users[] = $blaze;
+                //Envoi notification
+                foreach ($targets as $target)
+                    $this->User->notifier($target, $user, 'retard_validation');
+            }
+
             if (empty($users))
                 return Cron::MESSAGE_FIN_EXEC_SUCCES . "Aucun utilisateur en retard";
             else
