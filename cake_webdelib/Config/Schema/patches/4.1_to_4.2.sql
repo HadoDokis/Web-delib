@@ -14,6 +14,9 @@ ALTER TABLE models DROP COLUMN joindre_annexe;
 DROP TABLE IF EXISTS modeltemplates;
 ALTER TABLE models RENAME TO modeltemplates;
 
+ALTER SEQUENCE models_id_seq RENAME TO modeltemplates_id_seq;
+ALTER SEQUENCE modeltemplates_id_seq OWNED BY modeltemplates.id;
+
 -- Nouvelles notifications utilisateur
 ALTER TABLE users ADD COLUMN mail_modif_projet_cree BOOLEAN DEFAULT FALSE;
 ALTER TABLE users ADD COLUMN mail_modif_projet_valide BOOLEAN DEFAULT FALSE;
