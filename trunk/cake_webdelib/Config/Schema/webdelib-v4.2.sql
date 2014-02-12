@@ -754,18 +754,6 @@ CREATE TABLE listepresences (
 
 
 --
--- Name: models_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE models_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
 -- Name: modelsections; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2201,7 +2189,7 @@ COPY modeltemplates (id, name, filename, filesize, content, created, modified, m
 \.
 
 --
--- Name: models_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: modeltemplates_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('modeltemplates_id_seq', 1, true);
