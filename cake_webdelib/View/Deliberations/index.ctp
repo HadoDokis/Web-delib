@@ -168,12 +168,12 @@ if (isset($traitement_lot) && ($traitement_lot == true))
 
                 }
                 if (in_array('generer', $deliberation['Actions'])) {
-echo $this->Html->link(SHY,
+echo $this->Html->link('NEW',
     '/deliberations/genereFusionToClient/' . $deliberation['Deliberation']['id'],
     array(
         'class' => 'link_pdf waiter',
         'escape' => false,
-        'title' => 'Visionner PDF pour le projet ' . $deliberation['Deliberation']['objet']. ' nouvelle méthode'),
+        'title' => 'Nouvelle méthode pour visionner PDF pour le projet ' . $deliberation['Deliberation']['objet']. ' nouvelle méthode'),
     false);
                     if (empty($deliberation['Deliberation']['delib_pdf']))
                         echo $this->Html->link(SHY,
