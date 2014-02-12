@@ -108,6 +108,8 @@ class AppSchema extends CakeSchema {
 		'data_pdf' => array('type' => 'binary', 'null' => true),
 		'created' => array('type' => 'datetime', 'null' => true),
 		'modified' => array('type' => 'datetime', 'null' => true),
+		'edition_data' => array('type' => 'binary', 'null' => true),
+		'edition_data_typemime' => array('type' => 'text', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'annexes_joindre' => array('unique' => false, 'column' => array('foreign_key', 'joindre_fusion')),
@@ -237,8 +239,8 @@ class AppSchema extends CakeSchema {
 		'created_user_id' => array('type' => 'integer', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
 		'modified_user_id' => array('type' => 'integer', 'null' => false),
-		'lock' => array('type' => 'boolean', 'null' => true),
 		'model' => array('type' => 'text', 'null' => true, 'default' => 'CronJob'),
+		'lock' => array('type' => 'boolean', 'null' => true),
 		'indexes' => array(
 			
 		),
@@ -260,7 +262,8 @@ class AppSchema extends CakeSchema {
 		'titre' => array('type' => 'string', 'null' => true, 'length' => 1000),
 		'num_delib' => array('type' => 'string', 'null' => true, 'length' => 15),
 		'num_pref' => array('type' => 'string', 'null' => true),
-		'tdt_id' => array('type' => 'string', 'null' => true),
+		'pastell_id' => array('type' => 'string', 'null' => true, 'length' => 10),
+		'tdt_id' => array('type' => 'text', 'null' => true),
 		'tdt_dateAR' => array('type' => 'string', 'null' => true, 'length' => 100),
 		'texte_projet' => array('type' => 'binary', 'null' => true),
 		'texte_projet_name' => array('type' => 'string', 'null' => true, 'length' => 75),
@@ -305,7 +308,11 @@ class AppSchema extends CakeSchema {
 		'date_acte' => array('type' => 'datetime', 'null' => true),
 		'date_envoi_signature' => array('type' => 'datetime', 'null' => true),
 		'parapheur_id' => array('type' => 'string', 'null' => true, 'length' => 50),
+		'tdt_data_pdf' => array('type' => 'binary', 'null' => true),
+		'tdt_data_bordereau_pdf' => array('type' => 'binary', 'null' => true),
 		'president_id' => array('type' => 'integer', 'null' => true),
+		'parapheur_cible' => array('type' => 'text', 'null' => true),
+		'parapheur_bordereau' => array('type' => 'binary', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'etat' => array('unique' => false, 'column' => 'etat'),
@@ -442,10 +449,9 @@ class AppSchema extends CakeSchema {
 		'tableParameters' => array()
 	);
 	public $nomenclatures = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
-		'parent_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
-		'libelle' => array('type' => 'string', 'null' => false, 'length' => 100),
-		'code' => array('type' => 'string', 'null' => true, 'default' => '0', 'length' => 50),
+		'id' => array('type' => 'text', 'null' => false, 'length' => 11, 'key' => 'primary'),
+		'parent_id' => array('type' => 'text', 'null' => false, 'default' => '0'),
+		'libelle' => array('type' => 'text', 'null' => false),
 		'lft' => array('type' => 'integer', 'null' => true, 'default' => '0'),
 		'rght' => array('type' => 'integer', 'null' => true, 'default' => '0'),
 		'created' => array('type' => 'datetime', 'null' => false),
@@ -526,9 +532,11 @@ class AppSchema extends CakeSchema {
 		'delib_id' => array('type' => 'integer', 'null' => false),
 		'message_id' => array('type' => 'integer', 'null' => false),
 		'type_message' => array('type' => 'integer', 'null' => false),
-		'reponse' => array('type' => 'integer', 'null' => false),
+		'type_reponse' => array('type' => 'integer', 'null' => true),
 		'created' => array('type' => 'datetime', 'null' => false),
 		'modified' => array('type' => 'datetime', 'null' => false),
+		'date_message' => array('type' => 'date', 'null' => true),
+		'data' => array('type' => 'binary', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'tdtmsg_' => array('unique' => false, 'column' => 'delib_id')
@@ -560,9 +568,9 @@ class AppSchema extends CakeSchema {
 		'compteur_id' => array('type' => 'integer', 'null' => false),
 		'created' => array('type' => 'date', 'null' => false),
 		'modified' => array('type' => 'date', 'null' => false),
-		'gabarit_acte' => array('type' => 'binary', 'null' => true),
 		'gabarit_projet' => array('type' => 'binary', 'null' => true),
 		'gabarit_synthese' => array('type' => 'binary', 'null' => true),
+		'gabarit_acte' => array('type' => 'binary', 'null' => true),
 		'teletransmettre' => array('type' => 'boolean', 'null' => true, 'default' => true),
 		'indexes' => array(
 			'typeactes_id_key' => array('unique' => true, 'column' => 'id')
