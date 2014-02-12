@@ -12,10 +12,10 @@ class IparapheurComponent extends Component {
     public $boundary;
 
     function IparapheurComponent() {
-        $this->wsto = configure::read('PARAPHEUR_HOST');
+        $this->wsto = configure::read('IPARAPHEUR_HOST');
         $this->clientcert = configure::read('IPARAPHEUR_CLIENTCERT');
         $this->passphrase = configure::read('IPARAPHEUR_CERTPWD');
-        $this->userpwd = configure::read('PARAPHEUR_LOGIN') . ":" . configure::read('PARAPHEUR_PWD');
+        $this->userpwd = configure::read('IPARAPHEUR_LOGIN') . ":" . configure::read('IPARAPHEUR_PWD');
         $this->boundary = "5eca3d4a-35d8-1e01-32da-005056b32ce6";
     }
 
@@ -259,7 +259,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             $result = $xml->xpath('S:Body/S:Fault');
             if (!empty($result)) {
                 $response['messageretour'] = array('coderetour' => -1, 'message' => 'Erreur soap : Veuillez contacter votre administrateur', 'severite' => 'grave');
-                $this->log($result[0]->faultstring, 'parafError');
+                $this->log($result[0]->faultstring, 'parapheur');
                 return $response;
             }
         }
