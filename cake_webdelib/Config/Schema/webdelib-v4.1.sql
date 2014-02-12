@@ -2440,6 +2440,14 @@ ALTER TABLE ONLY compteurs
 
 
 --
+-- Name: crons_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY crons
+    ADD CONSTRAINT crons_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: deliberations_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
