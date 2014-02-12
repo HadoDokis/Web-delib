@@ -109,4 +109,20 @@ class Service extends AppModel
             $aArray[] = $id;
         return $aArray;
     }
+
+    /**
+     * fonction d'initialisation des variables de fusion pour le service émetteur d'un projet
+     * les bibliothèques Gedooo doivent être inclues par avance
+     * génère une exception en cas d'erreur
+     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param integer $id id du modèle lié
+     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     */
+    function setVariablesFusion(&$oMainPart, $id, &$modelOdtInfos) {
+        if ($modelOdtInfos->hasUserField('service_emetteur'))
+            $oMainPart->addElement(new GDO_FieldType('service_emetteur', $this->field('libelle', array('id'=>$id)), 'text'));
+        if ($modelOdtInfos->hasUserField('service_avec_hierarchie'))
+            $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->_doList($id), 'text'));
+    }
 }
+?>

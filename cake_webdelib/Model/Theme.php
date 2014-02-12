@@ -62,11 +62,42 @@ class Theme extends AppModel {
             $tab[$level] = $libelle;
             $level--; 
         }
-        for ($i =1; $i <= count($tab); $i++) {       
+        for ($i =1; $i <= count($tab); $i++) {
             $oMainPart->addElement(new GDO_FieldType("T".$i."_theme", $tab[$i], 'text'));
         }
         $oMainPart->addElement(new GDO_FieldType('theme_projet', $theme['Theme']['libelle'],  'text'));
         $oMainPart->addElement(new GDO_FieldType('critere_trie_theme', $theme['Theme']['order'], 'text'));
+    }
+
+    /**
+     * fonction d'initialisation des variables de fusion pour le thème d'un projet
+     * les bibliothèques Gedooo doivent être inclues par avance
+     * génère une exception en cas d'erreur
+     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param integer $id id du modèle lié
+     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     */
+    function setVariablesFusion(&$oMainPart, $id, &$modelOdtInfos) {
+        $theme = $this->find('first', array(
+            'recursive'  => -1,
+            'fields'     => array('libelle', 'order', 'lft', 'rght'),
+            'conditions' => array('Theme.id' => $id)));
+
+        if ($modelOdtInfos->hasUserField('theme_projet'))
+            $oMainPart->addElement(new GDO_FieldType('theme_projet', $theme['Theme']['libelle'],  'text'));
+        if ($modelOdtInfos->hasUserField('critere_trie_theme'))
+            $oMainPart->addElement(new GDO_FieldType('critere_trie_theme', $theme['Theme']['order'], 'text'));
+
+        // arborescence des thèmes jusqu'au 10eme niveau
+        $libelleThemesLevel = array_fill(1, 10, '');
+        $themes = $this->find('all', array(
+            'recursive' => -1,
+            'fields' => array('libelle'),
+            'conditions' => array('lft <='=>$theme['Theme']['lft'], 'rght >='=>$theme['Theme']['rght']),
+            'order' => array('lft')));
+        foreach($themes as $i=>$theme) $libelleThemesLevel[$i+1] = $theme['Theme']['libelle'];
+        foreach($libelleThemesLevel as $level=>$libelleThemeLevel)
+            $oMainPart->addElement(new GDO_FieldType("T".$level."_theme", $libelleThemeLevel, 'text'));
     }
 
 }
