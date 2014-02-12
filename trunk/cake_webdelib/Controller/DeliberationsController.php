@@ -635,7 +635,7 @@ class DeliberationsController extends AppController
             )
                 $redirect = $this->previous;
             elseif (stripos($this->previous, 'deliberations/add'))
-                $redirect = array('action' => 'index');
+                $redirect = '/';
             else
                 foreach ($history as $h)
                     if (stripos($h, 'deliberations/add') === false
@@ -1228,13 +1228,13 @@ class DeliberationsController extends AppController
                 // insertion dans le circuit de traitement
                 if ($this->Traitement->targetExists($id)) {
                     $this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $user_connecte);
-                    $this->Traitement->Visa->replaceDynamicTrigger($id);
-                    $members = $this->Traitement->whoIsNext($id);
+                    $this->Traitement->Visa->replaceDynamicTrigger($id, $user_connecte);
+                    $members = $this->Traitement->whoIs($id);
                     if (empty($members)) {
                         $this->Historique->enregistre($id, $user_connecte, 'Projet validé');
                         $this->Deliberation->saveField('etat', 2);
                     } else {
-                        while ($members[0] == $user_connecte) {
+                        while (in_array($user_connecte, $members)) {
                             $traitementTermine = $this->Traitement->execute('OK', $user_connecte, $id);
                             $this->Historique->enregistre($id, $user_connecte, 'Projet visé (auto)');
                             if ($traitementTermine) {
@@ -1243,10 +1243,15 @@ class DeliberationsController extends AppController
                                 $this->Session->setFlash('Projet inséré dans le circuit et validé', 'growl');
                                 $this->redirect(array('action'=>'mesProjetsValides'));
                             }
-                            $members = $this->Traitement->whoIsNext($id);
+                            $members = $this->Traitement->whoIs($id);
                         }
                         foreach ($members as $destinataire_id)
                             $this->User->notifier($id, $destinataire_id, 'traitement');
+
+                        $members = $this->Traitement->whoIs($id, 'after');
+                        foreach ($members as $user_id)
+                            $this->User->notifier($id, $user_id, 'insertion');
+
                         $this->Session->setFlash('Projet inséré dans le circuit et visé', 'growl');
                         $this->redirect(array('action'=>'mesProjetsRedaction'));
                     }
@@ -1279,27 +1284,19 @@ class DeliberationsController extends AppController
                         $this->Deliberation->id = $id;
                         $this->Deliberation->saveField('etat', 2);
                     }
-                    $this->Traitement->Visa->replaceDynamicTrigger($id);
-                }
+                    $this->Traitement->Visa->replaceDynamicTrigger($id, $user_connecte);
 
-                // envoi un mail a tous les membres du circuit
-                $listeUsers = $this->Circuit->getAllMembers($this->data['Deliberation']['circuit_id']);
+                    $members = $this->Traitement->whoIs($id);
+                    foreach ($members as $current_id)
+                        $this->User->notifier($id, $current_id, 'traitement');
 
-                $prem = true;
-                $this->Etape->recursive = -1;
-                $etape_courante=$this->Etape->findById($this->Traitement->getEtapeCouranteId($id));
-                foreach ($listeUsers as $ordre=>$etape) {
-                    if ($prem && $ordre==$etape_courante['Etape']['ordre']) {
-                        foreach ($etape as $user_id)
-                            $this->User->notifier($id, empty($user_id)?$user_connecte:$user_id, 'traitement');
-                        $prem = false;
-                    } else {
-                        foreach ($etape as $user_id)
-                            $this->User->notifier($id, empty($user_id)?$user_connecte:$user_id, 'insertion');
-                    }
+                    $members = $this->Traitement->whoIs($id, 'after');
+                    foreach ($members as $user_id)
+                        $this->User->notifier($id, $user_id, 'insertion');
+
+                    $this->Session->setFlash('Projet inséré dans le circuit', 'growl');
+                    return $this->redirect(array('action'=>'mesProjetsRedaction'));
                 }
-                $this->Session->setFlash('Projet inséré dans le circuit', 'growl');
-                return $this->redirect(array('action'=>'mesProjetsRedaction'));
             } else {
                 $this->Session->setFlash('Problème de sauvegarde.', 'growl', array('type' => 'erreur'));
                 return $this->redirect(array('action'=>'attribuercircuit', $id));
@@ -1378,7 +1375,7 @@ class DeliberationsController extends AppController
             $this->set('etapes', $etapes);
         } else {
             $this->Traitement->execute('JP', $this->Session->read('user.User.id'), $delib_id, array('etape_id' => $this->data['Traitement']['etape']));
-            $destinataires = $this->Traitement->whoIsNext($delib_id);
+            $destinataires = $this->Traitement->whoIs($delib_id);
             foreach ($destinataires as $destinataire_id)
                 $this->User->notifier($delib_id, $destinataire_id, 'traitement');
             $this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Projet retourné");
@@ -1559,7 +1556,7 @@ class DeliberationsController extends AppController
                 }*/
             }
         } else {
-            $destinataires = $this->Traitement->whoIsNext($id);
+            $destinataires = $this->Traitement->whoIs($id);
             foreach ($destinataires as $destinataire_id)
                 $this->User->notifier($id, $destinataire_id, 'traitement');
         }
@@ -3751,7 +3748,7 @@ class DeliberationsController extends AppController
                 'numero_traitement' => $this->data['Traitement']['etape']
             ));
 
-            $destinataires = $this->Traitement->whoIsNext($delib_id);
+            $destinataires = $this->Traitement->whoIs($delib_id);
             foreach ($destinataires as $destinataire_id)
                 $this->User->notifier($delib_id, $destinataire_id, 'traitement');
 
