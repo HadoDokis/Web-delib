@@ -137,6 +137,57 @@ class AppModel extends Model
         }
         return false;
     }
-}
 
+    /**
+     * équivalent de la fonction cake field() mais retourne plusieurs valeurs sous forme de tableau
+     */
+    function nfield($fieldName, $conditions=array(), $order=array()) {
+        // initialisations
+        $ret = array();
+        $fields = array();
+        $contain = array();
+
+        // champ a lire
+        $fields[] = $fieldName. ' DISTINCT';
+
+        // ajout des champs des modeles liées pour la condition
+        foreach($conditions as $condField=>&$cond) {
+            if (strpos($condField, ' ')!==false)
+                $condField = substr($condField, 0, strpos($condField, ' '));
+            if (strpos($condField, '.')!==false) {
+                $tabCondField = explode('.', $condField);
+                $condModel = $tabCondField[0];
+                if ($condModel != $this->alias) $contain[] = $condField;
+            }
+        }
+        // ajout des champs des modeles liées pour l'ordre
+        foreach($order as $orderField) {
+            if (strpos($orderField, ' ')!==false)
+                $orderField = substr($orderField, 0, strpos($orderField, ' '));
+            if (strpos($orderField, '.')!==false) {
+                $tabOrderField = explode('.', $orderField);
+                $orderModel = $tabOrderField[0];
+                if ($orderModel != $this->alias)
+                    $contain[] = $orderField;
+                else
+                    $fields[] = $orderField;
+            } else
+                $fields[] = $orderField;
+        }
+
+        // lecture en base
+        $this->Behaviors->load('Containable');
+        $occurs = $this->find('all', array(
+            'fields' => $fields,
+            'contain' => $contain,
+            'conditions' => $conditions,
+            'order' => $order));
+
+        // constitution de la liste
+        foreach($occurs as $occur)
+            $ret[] = $occur[$this->alias][$fieldName];
+        return $ret;
+    }
+
+}
 ?>
