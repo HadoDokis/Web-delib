@@ -16,6 +16,7 @@
             <th>Type d'acte</th>
             <th>Libellé de l'acte</th>
             <th>Titre</th>
+            <th>Classification</th>
             <th>Circuit</th>
             <th>État</th>
             <th style='width: 65px;'>Action</th>
@@ -27,20 +28,30 @@
             $rowClass = ($numLigne & 1) ? array('style'=> 'height: 38px') : array('style'=> 'height: 38px', 'class' => 'altrow');
             echo $this->Html->tag('tr', null, $rowClass);
             $numLigne++;
+
+            $options = array();
             if ( $this->action != "autresActesAValider"
                 && empty($acte['Deliberation']['signee'])
-                && !empty($acte['Deliberation']['num_pref'])
-                && in_array($acte['Deliberation']['parapheur_etat'], array(null, -1, 0))
-                && (in_array($acte['Deliberation']['etat'], array(3, 4))
-                    || ($acte['Typeacte']['nature_id'] > 1 && $acte['Deliberation']['etat']==2)))
-                echo '<td>' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], array('checked' => true, 'autocomplete' => 'off')) . '</td>';
+                && (Configure::read('PARAPHEUR') != 'PASTELL' || !empty($acte['Deliberation']['num_pref']))
+                && in_array($acte['Deliberation']['parapheur_etat'], array(null, 0, -1))
+                && $acte['Deliberation']['etat'] >= 2 )
+                $options['checked'] = true;
             else
-                echo '<td></td>';
+                $options['disabled'] = true;
 
-            echo '<td style="width: 20px;">' . $acte['Deliberation']['id'] . '</td>';
+            echo '<td style="text-align:center;">' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], $options) . '</td>';
+
+            echo '<td>';
+            if (!empty($acte['Deliberation']['num_delib']))
+                echo $this->Html->link($acte['Deliberation']['num_delib'], array('action' => 'view', $acte['Deliberation']['id']));
+            else
+                echo $this->Html->link('Acte : ' . $acte['Deliberation']['id'], array('action' => 'view', $acte['Deliberation']['id']));
+            echo '</td>';
+//            echo '<td style="width: 20px;">' . $acte['Deliberation']['id'] . '</td>';
             echo '<td>' . $acte['Typeacte']['libelle'] . '</td>';
             echo '<td>' . $acte['Deliberation']['objet'] . '</td>';
             echo '<td>' . $acte['Deliberation']['titre'] . '</td>';
+            echo '<td>' . (!empty($acte['Deliberation']['num_pref']) ? $acte['Deliberation']['num_pref'].' - '.$acte['Deliberation']['num_pref_libelle'] : '<em>-- Manquante --</em>') . '</td>';
             echo '<td>' . $acte['Circuit']['nom'] . "</td>";
 
             echo '<td>'; // Début de la cellule "Etat"
