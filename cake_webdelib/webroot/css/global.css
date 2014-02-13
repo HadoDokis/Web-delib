@@ -44,3 +44,9 @@ div.input.file{
 legend{
     margin-bottom: 10px;
 }
+
+.sans-arrondi {
+    border-radius: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+}
