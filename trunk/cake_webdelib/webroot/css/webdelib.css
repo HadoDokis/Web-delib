@@ -1492,3 +1492,15 @@ div#connecteurIparapheur input[type='text']{
 .selectMaxWidth {
     max-width:80%;
 }
+
+.select-circuit {
+    margin-bottom: 0;
+    width: auto;
+    max-width: 500px;
+}
+label.circuits_label {
+    float: none;
+    padding: 0;
+    text-align: left;
+    width: auto;
+}
