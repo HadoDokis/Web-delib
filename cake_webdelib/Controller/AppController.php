@@ -37,20 +37,22 @@ class AppController extends Controller
     public $helpers = array('Html', 'Form', 'Session', 'DatePicker', 'Html2');
     public $aucunDroit = array('Pages:format', 'Pages:service');
     public $previous;
+    public $user_id;
 
     function beforeFilter()
     {
         $this->set('Droits', $this->Droits);
         $this->set('name', $this->name);
         $this->set('Droit', $this->Droits);
-        $this->set('infoUser', $this->Session->read('user.User.prenom') . ' ' . $this->Session->read('user.User.nom'));
-        $this->set('user_id', $this->Session->read('user.User.id'));
         $this->set('agentServices', $this->Session->read('user.Service'));
         $this->set('lienDeconnexion', true);
         $this->set('session_service_id', $this->Session->read('user.User.service'));
         $this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
         //Si utilisateur connecté
         if ($this->Session->check('user')){
+            $this->set('infoUser', $this->Session->read('user.User.prenom') . ' ' . $this->Session->read('user.User.nom'));
+            $this->user_id = $this->Session->read('user.User.id');
+            $this->set('user_id', $this->user_id);
             $historique = $this->Session->check('user.history') ? $this->Session->read('user.history') : array();
             if (current($historique) != $this->params->here && stripos(current($historique), 'ajax')===false){
                 //Ajoute l'url courante au début du tableau
