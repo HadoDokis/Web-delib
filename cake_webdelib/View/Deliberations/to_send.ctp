@@ -15,8 +15,16 @@
         echo('<h2>Télétransmission des délibérations</h2>');
 
     echo $this->Form->create('Deliberation', array('type' => 'file', 'url' => array('controller' => 'deliberations', 'action' => 'sendToTdt')));
+
+    if (!empty($dateClassification)){
     ?>
-    La Classification enregistrée date du <?php echo $dateClassification . '&nbsp;';
+    La Classification enregistrée date du <?php
+        echo $dateClassification . '&nbsp;';
+    }else{
+    ?>
+    <i class="fa fa-warning"></i> Classication non téléchargée
+    <?php
+    }
     echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action' => 'getClassification'), array('title' => 'Télécharger les données de classification', 'escape' => false)) ?>
     <br/><br/>
     <table style='width:100%'>
@@ -103,7 +111,8 @@
 
     <div class="submit">
         <?php
-        echo $this->Form->button('<i class="fa fa-cloud-upload"></i> Envoyer', array('escape' => false, 'type' => 'submit', 'class' => 'btn btn-primary'));
+        if (!empty($deliberations))
+            echo $this->Form->button('<i class="fa fa-cloud-upload"></i> Envoyer', array('escape' => false, 'type' => 'submit', 'class' => 'btn btn-primary'));
         if (isset($seance_id))
             echo $this->Form->hidden('Seance.id', array('value' => $seance_id));
         ?>
