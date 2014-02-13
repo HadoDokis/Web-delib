@@ -4,7 +4,7 @@
     <?php if (empty($seance_id)): ?>
         <h2>Actes envoyés à la signature</h2>
     <?php else: ?>
-        <h2>Signature d'actes</h2>
+        <h2>Signature de délibérations</h2>
     <?php endif; ?>
     <?php
     echo $this->element('filtre');
@@ -73,7 +73,7 @@
                     if (empty($delib['Deliberation']['num_pref']) && Configure::read('USE_PASTELL'))
                         echo $this->Html->link('Compléter la classification', array('controller' => 'deliberations', 'action' => 'edit', $delib['Deliberation']['id']));
                     elseif ($delib['Deliberation']['parapheur_etat'] == -1)
-                        echo '<i class="fa fa-info-circle" title="' . $delib['Deliberation']['parapheur_commentaire'] . '"></i>&nbsp;Signature refusée';
+                        echo '<i class="fa fa-info-circle" title="Motif du rejet : ' . $delib['Deliberation']['parapheur_commentaire'] . '"></i>&nbsp;Signature refusée';
                     elseif ($delib['Deliberation']['parapheur_etat'] == 1)
                         echo 'En cours de signature';
                     elseif ($delib['Deliberation']['etat'] == -1)
