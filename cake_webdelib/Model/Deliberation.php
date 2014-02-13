@@ -1708,7 +1708,7 @@ class Deliberation extends AppModel {
                 'recursive' => -1,
                 'fields' => array('id', 'objet')));
 
-            $rapport = '';
+            $rapport = "\n";
             foreach ($delibs as $delib) {
                 $objetDossier = $this->Iparapheur->handleObject($delib['Deliberation']['objet']);
                 $rapport .= 'Projet "['.$delib['Deliberation']['id'].'] - '.$delib['Deliberation']['objet'].'" : ';
@@ -1788,6 +1788,7 @@ class Deliberation extends AppModel {
                     $comm ['Commentaire']['commentaire_auto'] = 0;
                     $this->Commentaire->save($comm['Commentaire']);
                     $this->saveField('parapheur_etat', -1);
+                    $this->saveField('parapheur_commentaire', $histo['logdossier'][$i]['annotation']);
                     // Supprimer le dossier du parapheur
                     $this->Iparapheur->effacerDossierRejeteWebservice($id_dossier);
                     return true;
