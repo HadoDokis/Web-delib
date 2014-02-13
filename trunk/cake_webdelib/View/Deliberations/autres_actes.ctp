@@ -46,11 +46,10 @@
             else
                 echo $this->Html->link('Acte : ' . $acte['Deliberation']['id'], array('action' => 'view', $acte['Deliberation']['id']));
             echo '</td>';
-//            echo '<td style="width: 20px;">' . $acte['Deliberation']['id'] . '</td>';
             echo '<td>' . $acte['Typeacte']['libelle'] . '</td>';
             echo '<td>' . $acte['Deliberation']['objet'] . '</td>';
             echo '<td>' . $acte['Deliberation']['titre'] . '</td>';
-            echo '<td>' . (!empty($acte['Deliberation']['num_pref']) ? $acte['Deliberation']['num_pref'].' - '.$acte['Deliberation']['num_pref_libelle'] : '<em>-- Manquante --</em>') . '</td>';
+            echo '<td style="text-align:center">' . (!empty($acte['Deliberation']['num_pref']) ? $acte['Deliberation']['num_pref'].' - '.$acte['Deliberation']['num_pref_libelle'] : '<em>-- Manquante --</em>') . '</td>';
             echo '<td>' . $acte['Circuit']['nom'] . "</td>";
 
             echo '<td>'; // Début de la cellule "Etat"
