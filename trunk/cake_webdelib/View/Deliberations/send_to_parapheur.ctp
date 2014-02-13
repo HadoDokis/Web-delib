@@ -37,7 +37,7 @@
             $options = array();
             if ($seance_id != null) {
                 if (empty($delib['Deliberation']['signee'])
-                    && !empty($delib['Deliberation']['num_pref'])
+                    && (Configure::read('PARAPHEUR') != 'PASTELL' || !empty($acte['Deliberation']['num_pref']))
                     && in_array($delib['Deliberation']['parapheur_etat'], array(null, 0, -1))
                     && in_array($delib['Deliberation']['etat'], array(3, 4)))
                     $options['checked'] = true;
