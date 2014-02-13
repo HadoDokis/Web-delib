@@ -69,7 +69,7 @@ class ConversionComponent extends Component {
         $odt2txt_exec = Configure::read('odt2txt_EXEC');
 
         $dir=  TMP."/$model".'_'."$id/";
-        $odtFile =  $dir."$field".'_'."$delib_id";
+        $odtFile =  $dir."$field".'_'."$id";
         if (!file_exists($dir))
             mkdir($dir);
         file_put_contents($odtFile.".odt", $content);
