@@ -7,10 +7,8 @@
     ?>
     <table style="width: 100%;">
         <tr>
-            <?php if (!empty($actes) && $this->action != "autresActesAValider") : ?>
+            <?php if ($this->action != "autresActesAValider") : ?>
             <th style="width: 2px;"><input type='checkbox' id='masterCheckbox' /></th>
-            <?php else : ?>
-            <th></th>
             <?php endif; ?>
             <th>Identifiant</th>
             <th>Type d'acte</th>
@@ -29,17 +27,18 @@
             echo $this->Html->tag('tr', null, $rowClass);
             $numLigne++;
 
-            $options = array();
-            if ( $this->action != "autresActesAValider"
-                && empty($acte['Deliberation']['signee'])
-                && (Configure::read('PARAPHEUR') != 'PASTELL' || !empty($acte['Deliberation']['num_pref']))
-                && in_array($acte['Deliberation']['parapheur_etat'], array(null, 0, -1))
-                && $acte['Deliberation']['etat'] >= 2 )
-                $options['checked'] = true;
-            else
-                $options['disabled'] = true;
+            if ($this->action != "autresActesAValider"){
+                $options = array();
+                if (empty($acte['Deliberation']['signee'])
+                    && (Configure::read('PARAPHEUR') != 'PASTELL' || !empty($acte['Deliberation']['num_pref']))
+                    && in_array($acte['Deliberation']['parapheur_etat'], array(null, 0, -1))
+                    && $acte['Deliberation']['etat'] >= 2 )
+                    $options['checked'] = true;
+                else
+                    $options['disabled'] = true;
 
-            echo '<td style="text-align:center;">' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], $options) . '</td>';
+                echo '<td style="text-align:center;">' . $this->Form->checkbox('Deliberation.id_' . $acte['Deliberation']['id'], $options) . '</td>';
+            }
 
             echo '<td>';
             if (!empty($acte['Deliberation']['num_delib']))
@@ -132,14 +131,18 @@
     </table>
     <br />
         <?php
-        if ($this->action == "autreActesValides") {
-            echo 'Circuits disponibles : ';
-            echo $this->Form->input('Parapheur.circuit_id', array('options' => $circuits, 'label' => false, 'div' => false)) . '<br /><br />';
-            echo '<div class="submit">';
+        if ($this->action == "autreActesValides" && !empty($actes)) {
+            echo($this->Form->input('Parapheur.circuit_id', array('class' => 'select-circuit select2', 'options' => $circuits, 'label' => array('text'=>'Circuits disponibles', 'class'=>'circuits_label'), 'div' => false)));
+            echo $this->Form->button('<i class="fa fa-mail-forward"></i> Envoyer', array('class' => 'btn btn-inverse sans-arrondi', 'escape' => false));
         }
-        if ($this->action != 'autresActesAValider')
-            echo $this->Form->button('<i class="fa fa-cloud-upload"></i> Envoyer', array('class' => 'btn btn-primary', 'escape' => false));
         echo $this->Form->end();
-        echo '</div>';
         ?>
 </div>
+<script>
+    $('#ParapheurCircuitId').select2({ width: 'resolve' });
+</script>
+<style>
+    .select2-container .select2-choice {
+        border-radius: 0;
+    }
+</style>
