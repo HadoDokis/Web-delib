@@ -3920,6 +3920,10 @@ class DeliberationsController extends AppController
             'Typeseance.libelle',
         );
         $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
+        for ($i = 0; $i < count($actes); $i++) {
+            $actes[$i]['Deliberation'][$actes[$i]['Deliberation']['id'] . '_num_pref'] = $actes[$i]['Deliberation']['num_pref'];
+            $actes[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($actes[$i]['Deliberation']['num_pref']);
+        }
         $this->_ajouterFiltre($actes);
         $this->Filtre->delCritere('DeliberationseanceId');
         $this->Filtre->delCritere('DeliberationtypeseanceId');
@@ -3981,6 +3985,11 @@ class DeliberationsController extends AppController
 
         $userId = $this->Session->read('user.User.id');
         $editerTous = $this->Droits->check($userId, "Deliberations:editerTous");
+
+        for ($i = 0; $i < count($actes); $i++) {
+            $actes[$i]['Deliberation'][$actes[$i]['Deliberation']['id'] . '_num_pref'] = $actes[$i]['Deliberation']['num_pref'];
+            $actes[$i]['Deliberation']['num_pref_libelle'] = $this->_getMatiereByKey($actes[$i]['Deliberation']['num_pref']);
+        }
 
         $this->set('canEdit', $editerTous);
         $this->set('actes', $actes);
