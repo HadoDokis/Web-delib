@@ -433,7 +433,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             $objetDossier = substr($objetDossier, 0, 185);
         }
         if ($objetDossier[strlen($objetDossier) - 1] == '.')
-            $objetDossier[strlen($objetDossier) - 1] = " ";
+            $objetDossier[strlen($objetDossier) - 1] = null;
         return (trim($objetDossier));
     }
 

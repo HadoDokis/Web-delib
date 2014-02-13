@@ -72,7 +72,7 @@ class ModelsController extends AppController {
 		//*****************************************
 		// Choix du format de sortie
 		//*****************************************
-			
+
 		if ($this->Session->read('user.format.sortie') == 0 || $editable == 0) {
 			$sMimeType = "application/pdf";
 			$format    = "pdf";
