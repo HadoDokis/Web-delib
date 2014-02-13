@@ -105,36 +105,17 @@
     <br/>
     <?php
     if (!empty($seance_id)){
-        echo($this->Form->input('Pastell.circuit_id', array('class' => 'select-circuit select2', 'options' => $circuits, 'label' => 'Circuits disponibles', 'div' => false, 'style' => 'width:auto;')));
-        echo $this->Form->button('<i class="fa fa-mail-forward"></i> Envoyer', array('class' => 'btn btn-inverse sans-bordure', 'escape' => false));
+        echo($this->Form->input('Parapheur.circuit_id', array('class' => 'select-circuit select2', 'options' => $circuits, 'label' => array('text'=>'Circuits disponibles', 'class'=>'circuits_label'), 'div' => false)));
+        echo $this->Form->button('<i class="fa fa-mail-forward"></i> Envoyer', array('class' => 'btn btn-inverse sans-arrondi', 'escape' => false));
         echo $this->Form->end();
     }
     ?>
 </div>
 <script>
-   $('#PastellCircuitId').select2({ width: 'resolve' });
+   $('#ParapheurCircuitId').select2({ width: 'resolve' });
 </script>
 <style>
-    #DeliberationSendToParapheurForm label {
-        float: none;
-        padding: 0;
-        text-align: left;
-        width: auto;
-    }
-
-    #DeliberationSendToParapheurForm .sans-bordure {
+    .select2-container .select2-choice {
         border-radius: 0;
-        -moz-border-radius: 0;
-        -webkit-border-radius: 0;
-    }
-
-    #DeliberationSendToParapheurForm .select2-container .select2-choice {
-        border-radius: 0;
-    }
-
-    #DeliberationSendToParapheurForm .select-circuit {
-        margin-bottom: 0;
-        width: auto;
-        max-width: 500px;
     }
 </style>
