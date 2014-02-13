@@ -126,9 +126,13 @@ class Signature {
         }
         $targetName = $this->Iparapheur->handleObject($delib['Deliberation']['objet']);
         $date_limite = !empty($delib['Deliberation']['date_limite']) ? $delib['Deliberation']['date_limite'] : null;
-        $content = file_get_contents(WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/parapheur.pdf");
+        if (!empty($delib['Deliberation']['delib_pdf']))
+            $content = $delib['Deliberation']['delib_pdf'];
+        elseif (file_exists(WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/parapheur.pdf")){
+            $content = file_get_contents(WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/parapheur.pdf");
+        }else throw new Exception('Document principal introuvable');
 
-        $ret = $this->Parapheur->creerDossierWebservice(
+        $ret = $this->Iparapheur->creerDossierWebservice(
             $targetName,
             $this->parapheur_type,
             $libelleSousType,

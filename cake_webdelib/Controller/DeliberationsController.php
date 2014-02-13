@@ -1212,13 +1212,21 @@ class DeliberationsController extends AppController
     function addIntoCircuit($id = null) {
         $this->request->data = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
         // envoi un mail a tous les membres du circuit
-        if ($this->request->data['Deliberation']['circuit_id'] != 0) {
+        if (!empty($this->request->data['Deliberation']['circuit_id'])) {
             // enregistrement de l'historique
             $message = "Projet injecté au circuit : " . $this->Circuit->getLibelle($this->data['Deliberation']['circuit_id']);
             $this->Historique->enregistre($id, $this->user_id, $message);
             $this->request->data['Deliberation']['date_envoi'] = date('Y-m-d H:i:s', time());
             $this->request->data['Deliberation']['etat'] = '1';
             $this->Deliberation->id = $id;
+            if ($this->Circuit->hasEtapeDelegation($this->request->data['Deliberation']['circuit_id'])){
+                //On génére le document principale si une etape d'envoi au parapheur est prévue
+                $model_id = $this->Deliberation->getModelId($id);
+                /**
+                 * FIXME changer appel génération document
+                 */
+                $this->requestAction(array('controller'=>'models', 'action'=>'generer', $id, 'null', $model_id, '0', '1', 'parapheur'));
+            }
             if ($this->Deliberation->save($this->request->data)) {
                 // insertion dans le circuit de traitement
                 if ($this->Traitement->targetExists($id)) {
@@ -3469,7 +3477,7 @@ class DeliberationsController extends AppController
         $conditions['Deliberationseance.seance_id'] = $seance_id;
         $conditions['Deliberation.etat >='] = 0;
         // Formulaire non envoyé
-        if (empty($this->data['Parapheur']['circuit_id'])) {
+        if (!isset($this->data['Parapheur']['circuit_id'])) {
             $this->Deliberationseance->Behaviors->load('Containable');
             $this->Deliberation->Behaviors->load('Containable');
             $delibs = $this->Deliberationseance->find('all', array(
@@ -3547,6 +3555,7 @@ class DeliberationsController extends AppController
                             'Deliberation.etat',
                             'Deliberation.parapheur_etat',
                             'Deliberation.objet_delib',
+                            'Deliberation.objet',
                             'Deliberation.signee',
                             'Deliberation.typeacte_id',
                         )
