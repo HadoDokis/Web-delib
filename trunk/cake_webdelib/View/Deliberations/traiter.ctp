@@ -7,7 +7,7 @@ echo $this->Html->script('ckeditor/ckeditor');
 echo $this->Html->script('ckeditor/adapters/jquery');
 
 // Initialisation des boutons action de la vue
-$linkBarre  = "<div class='btn-toolbar traiterActions' role='toolbar'>";
+$linkBarre = "<div class='btn-toolbar traiterActions' role='toolbar'>";
 $linkBarre .= "<div class='btn-group'>";
 $linkBarre .= $this->Html->link(
     '<i class="fa fa-arrow-left"></i> Retour',
@@ -66,7 +66,7 @@ $listeIds = $deliberation['Deliberation']['id'];
 foreach ($deliberation['Multidelib'] as $delibRattachee) {
     $listeIds .= ', ' . $delibRattachee['id'];
 }
-echo $this->Html->tag('h3', '[' . $deliberation['Typeacte']['libelle'] . '] - Traitement du projet "'.$deliberation['Deliberation']['objet'].'" (id : ' . $listeIds . ')');
+echo $this->Html->tag('h3', '[' . $deliberation['Typeacte']['libelle'] . '] - Traitement du projet "' . $deliberation['Deliberation']['objet'] . '" (id : ' . $listeIds . ')');
 
 echo $linkBarre;
 ?>
@@ -185,7 +185,7 @@ echo $linkBarre;
     }
 
     if (!empty($infosupdefs)) {
-        echo '<dt>Informations Suppl&eacute;mentaires </dt>';
+        echo '<dt>Informations Supplémentaires </dt>';
         echo '<dd><br>';
         foreach ($infosupdefs as $infosupdef) {
             echo $infosupdef['Infosupdef']['nom'] . ' : ';
@@ -193,7 +193,7 @@ echo $linkBarre;
                 if ($infosupdef['Infosupdef']['type'] == 'richText') {
                     if (!empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']])) {
                         echo $this->Html->link('[Afficher le texte]', 'javascript:afficheMasqueTexteEnrichi(\'afficheMasque' . $infosupdef['Infosupdef']['code'] . '\', \'' . $infosupdef['Infosupdef']['code'] . '\')', array(
-                                'id' => 'afficheMasque' . $infosupdef['Infosupdef']['code'], 'affiche' => 'masque'));
+                            'id' => 'afficheMasque' . $infosupdef['Infosupdef']['code'], 'affiche' => 'masque'));
                         echo '<div class="annexesGauche"></div>';
                         echo '<div class="spacer"></div>';
                         echo '<div class="fckEditorProjet">';
@@ -201,6 +201,8 @@ echo $linkBarre;
                         echo '</div>';
                         echo '<div class="spacer"></div>';
                     }
+                } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
+                    echo implode(', ', $this->data['Infosup'][$infosupdef['Infosupdef']['code']]);
                 } else
                     echo $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
             }
@@ -304,7 +306,8 @@ echo $linkBarre;
         text-align: center;
         /*margin: 20px;*/
     }
-    h3{
+
+    h3 {
         text-align: center;
     }
 </style>
