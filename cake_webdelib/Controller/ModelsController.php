@@ -318,7 +318,7 @@ class ModelsController extends AppController {
                     if ($progress)
                         $this->Progress->at(90, 'Conversion et concaténation...');
 					$oFusion->SendContentToFile($path.$nomFichier);
-					$content = $this->Conversion->convertirFichier($path.$nomFichier, $format);
+					$content = $this->Conversion->convertirFichier($path.$nomFichier, 'odt', $format);
 					$chemin_fichier = $this->Gedooo->createFile($path, "$nomFichier.$format", $content);
 					$listFiles[$urlWebroot.$nomFichier] = 'Document généré';
                     Configure::write('debug', 1);
