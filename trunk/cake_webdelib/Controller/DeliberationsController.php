@@ -96,24 +96,24 @@ class DeliberationsController extends AppController
                 'texte_projet_name', 'texte_synthese_name', 'deliberation_name',
                 'created', 'modified', 'deliberation', 'texte_projet', 'texte_synthese'),
             'contain' => array(
-                'Multidelib'=>array('fields'=>array('id', 'objet', 'objet_delib', 'num_delib', 'etat', 'deliberation','deliberation_name')),
-                'Redacteur'=>array('fields'=>array('id','nom', 'prenom')),
-                'Rapporteur'=>array('fields'=>array('id','nom', 'prenom')),
+                'Multidelib' => array('fields' => array('id', 'objet', 'objet_delib', 'num_delib', 'etat', 'deliberation', 'deliberation_name')),
+                'Redacteur' => array('fields' => array('id', 'nom', 'prenom')),
+                'Rapporteur' => array('fields' => array('id', 'nom', 'prenom')),
                 'Infosup',
-                'Annex'=>array('fields'=>array('id','titre','joindre_ctrl_legalite','filename')),
-                'Service'=>array('fields'=>array('libelle')),
-                                            'Theme'=>array('fields'=>array('libelle')),
-                                            'Typeacte'=>array('fields'=>array('libelle')),
-                                            'Circuit'=>array('fields'=>array('nom')),
-                                            'Deliberationtypeseance'=>array('fields'=>array('id'),
-                                                               'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                                   )),
-                                            'Deliberationseance'=>array('fields'=>array('id'),
-                                                                        'Seance'=>array('fields'=>array('id','date','type_id'),
-                                                                                        
-                                                                                        'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
-                        'conditions' => array('Deliberation.id' => $id)
-                    ));
+                'Annex' => array('fields' => array('id', 'titre', 'joindre_ctrl_legalite', 'filename')),
+                'Service' => array('fields' => array('libelle')),
+                'Theme' => array('fields' => array('libelle')),
+                'Typeacte' => array('fields' => array('libelle')),
+                'Circuit' => array('fields' => array('nom')),
+                'Deliberationtypeseance' => array('fields' => array('id'),
+                    'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
+                    )),
+                'Deliberationseance' => array('fields' => array('id'),
+                    'Seance' => array('fields' => array('id', 'date', 'type_id'),
+
+                        'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
+            'conditions' => array('Deliberation.id' => $id)
+        ));
         $this->request->data['Deliberationseance'] = Hash::sort($this->request->data['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
 
         $this->request->data['Deliberation']['num_pref']=$this->data['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
@@ -189,7 +189,7 @@ class DeliberationsController extends AppController
         $this->set('commentaires', $commentaires);
         $this->set('historiques', $this->Historique->find('all', array(
             'conditions' => array("Historique.delib_id" => $id),
-            'order' => 'Historique.created ASC')));
+            'order' => 'Historique.created DESC')));
 
         //Récupération du model_id (pour lien bouton generer)
         $model_id = $this->Deliberation->getModelId($id);
