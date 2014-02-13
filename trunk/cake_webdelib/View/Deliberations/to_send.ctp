@@ -51,7 +51,7 @@
             <td><?php echo $delib['Deliberation']['titre']; ?></td>
             <td><?php
                 $id_num_pref = $delib['Deliberation']['id'] . '_num_pref';
-                if ($USE_PASTELL) {
+                if (Configure::read('TDT') == 'PASTELL') {
                     if (empty($nomenclatures)) $nomenclatures = array();
                     echo $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
                         'name' => $delib['Deliberation']['id'] . 'classif2',
