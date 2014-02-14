@@ -98,7 +98,7 @@ Configure::write('IPARAPHEUR_LOGIN', 'login');
 Configure::write('IPARAPHEUR_PWD', 'password');
 Configure::write('IPARAPHEUR_TYPE', 'Actes');
 Configure::write('IPARAPHEUR_VISIBILITY', 'PUBLIC');
-Configure::write('IPARAPHEUR_WSDL', 'ws-iparapheur.wsdl');
+Configure::write('IPARAPHEUR_WSDL', 'ws-iparapheur?wsdl');
 Configure::write('IPARAPHEUR_CACERT', APP . 'Config/cert_parapheur/ac.pem');
 Configure::write('IPARAPHEUR_CLIENTCERT', APP . 'Config/cert_parapheur/cert.pem');
 Configure::write('IPARAPHEUR_CERTPWD', 'passphrase');
