@@ -131,15 +131,37 @@
     <br />
         <?php
         if ($this->action == "autreActesValides" && !empty($actes)) {
+            echo '<div id="select-circuit">';
             echo($this->Form->input('Parapheur.circuit_id', array('class' => 'select-circuit select2', 'options' => $circuits, 'label' => array('text'=>'Circuits disponibles', 'class'=>'circuits_label'), 'div' => false)));
             echo $this->Form->button('<i class="fa fa-mail-forward"></i> Envoyer', array('class' => 'btn btn-inverse sans-arrondi', 'escape' => false));
+            echo '</div>';
         }
         echo $this->Form->end();
         ?>
 </div>
-<script>
-    $('#ParapheurCircuitId').select2({ width: 'resolve' });
+
+<script type="application/javascript">
+    /**
+     * Actions au chargement de la page
+     */
+    $(document).ready(function () {
+        $('#ParapheurCircuitId').select2({ width: 'resolve' });
+        $('input[type="checkbox"]').change(changeSelection);
+        changeSelection();
+    });
+
+    /**
+     * Afficher/Masquer la sélection de circuit selon si la selection est vide ou non
+     */
+    function changeSelection() {
+        if ($('input[type="checkbox"]:checked').length > 0) {
+            $('#select-circuit').show();
+        } else {
+            $('#select-circuit').hide();
+        }
+    }
 </script>
+
 <style>
     .select2-container .select2-choice {
         border-radius: 0;
