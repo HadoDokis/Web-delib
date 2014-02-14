@@ -21,13 +21,13 @@
     <div id='affiche' <?php  echo Configure::read('USE_S2LOW')===false?'style="display: none;"':''; ?>>
     <fieldset>
         <legend>Choix de la plateforme S2LOW</legend>
-<?php  
-        echo $this->Form->input('hostname', 
-                                array('type' => 'text', 
-                                      "placeholder"=>"Exemple : www.s2low.org", 
-                                      'label' => false , 
-                                      'value' => Configure::read('S2LOW_HOST'),
-                                      'before' => 'https://')); ?>
+        <?php
+        echo $this->Form->input('hostname', array(
+            'type' => 'text',
+            "placeholder" => "Exemple : https://www.s2low.org",
+            'label' => false,
+            'value' => Configure::read('S2LOW_HOST')));
+        ?>
     </fieldset>
     <fieldset>
         <legend>Récupération du certificat électronique</legend>

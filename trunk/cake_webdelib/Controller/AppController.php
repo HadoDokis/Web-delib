@@ -54,7 +54,12 @@ class AppController extends Controller
             $this->user_id = $this->Session->read('user.User.id');
             $this->set('user_id', $this->user_id);
             $historique = $this->Session->check('user.history') ? $this->Session->read('user.history') : array();
-            if (current($historique) != $this->params->here && stripos(current($historique), 'ajax')===false){
+            if (current($historique) != $this->params->here
+                && stripos(current($historique), 'ajax') === false
+                && stripos(current($historique), 'deliberations/classification') === false
+                && stripos(current($historique), 'seances/voter') === false
+                && stripos(current($historique), 'deliberations/listerPresents') === false
+            ) {
                 //Ajoute l'url courante au début du tableau
                 $nbHistorique = array_unshift($historique, $this->params->here);
                 //Si ne garder que 10 éléments dans l'historique
@@ -67,7 +72,6 @@ class AppController extends Controller
             $this->previous = $this->Session->read('previous_url');
             $this->set('previous_url', $this->previous);
         }
-
         // ????
         if (CRON_DISPATCHER) return true;
         // Exception pour le bon déroulement de cron
@@ -105,26 +109,15 @@ class AppController extends Controller
         if ($this->Session->check('user.User')) {
             $this->Session->write('user.User.myUrl', $this->here);
             // Attention au cas de elements
-            if (   $this->here != $this->referer()
+            if ($this->here != $this->referer()
                 && $this->here != '/deliberations/classification'
                 && $this->here != '/seances/voter'
-                && $this->here != '/deliberations/listerPresences' ){
-
+                && $this->here != '/deliberations/listerPresences'
+            ) {
                 $pos = strpos(Router::url(null, true), 'Ajax');
                 if ($pos === false) {
-                    $protocol = "http://";
-                    if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' )
-                        || (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) )
-                        $protocol = "https://";
-
-                    if (substr($this->referer(), 0, 4) != 'http')
-                        $url = $protocol . $this->referer();
-                    else
-                        $url = $this->referer();
-
-                    $this->Session->write('user.User.lasturl', $url);
+                    $this->Session->write('user.User.lasturl', $this->referer());
                 }
-
             }
         }
     }

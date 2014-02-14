@@ -60,16 +60,12 @@ class Collectivite extends AppModel {
         $logo = $this->read('logo', 1);
         $file = new File(Configure::read('WEBDELIB_PATH') . DS . 'files' . DS . 'image' . DS . 'logo.jpg', false);
 
-        if (empty($logo['logo']))
-            $logo_path=$_SERVER['HTTP_HOST'] . $this->base . "/files/image/adullact.jpg";
-        else {
+        $logo_path= WEBROOT_PATH . $this->base . "/files/image/logo.jpg";
+        if (!empty($logo['logo'])){
             if (!$file->exists())
                 $file->write($logo['Collectivite']['logo']);
-
             $file->close();
-            $logo_path=$_SERVER['HTTP_HOST'] . $this->base . "/files/image/logo.jpg";
         }
-        
         return $logo_path;
     }
 
@@ -78,8 +74,9 @@ class Collectivite extends AppModel {
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param integer $dataId id des données à fusionner
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param int $dataId id des données à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @throws Exception
      */
     function setVariablesFusion(&$oMainPart, $dataId, &$modelOdtInfos) {
         // lecture de la collectivité en  base de données
@@ -105,5 +102,3 @@ class Collectivite extends AppModel {
 
 
 }
-
-?>
