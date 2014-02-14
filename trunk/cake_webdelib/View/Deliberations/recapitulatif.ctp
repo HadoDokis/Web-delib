@@ -1,6 +1,6 @@
 <?php echo $this->Html->script('calendrier.js'); ?>
 <?php echo $this->Html->script('utils.js'); ?>
-<h2>R&écapitulatif du projet de d&éliberation</h2>
+<h2>Récapitulatif du projet de déliberation</h2>
 <br/>
 
 <div id="add_form">
@@ -72,7 +72,7 @@
             </td>
         </tr>
         <tr>
-            <td><?php echo $this->Form->label('Deliberation.created', 'Date cr&éation'); ?></td>
+            <td><?php echo $this->Form->label('Deliberation.created', 'Date création'); ?></td>
             <td><?php echo $deliberation['Deliberation']['created']; ?></td>
         <tr>
             <td><?php echo $this->Form->label('Deliberation.modified', 'Date modification'); ?></td>
