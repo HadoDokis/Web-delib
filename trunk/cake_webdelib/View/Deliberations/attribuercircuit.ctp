@@ -12,7 +12,7 @@ if (isset($visu))
 echo $this->Html->tag('div', '', array('class' => 'spacer', 'style' => 'heigth:0px;'));
 echo $this->Html->tag('div', null, array('class' => 'submit btn-group', 'style' => 'margin-left:38px;'));
 echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $lien_retour, array('class' => 'btn', 'escape' => false, 'name' => 'Annuler'));
-echo $this->Form->button('<i class="fa fa-check"></i> Attribuer', array('div' => false, 'class' => 'btn btn-primary', 'type' => 'submit', 'name' => 'ajouter'));
+echo $this->Form->button('<i class="fa fa-check"></i> Attribuer', array('id'=>'attribuer', 'div' => false, 'class' => 'btn btn-primary', 'type' => 'submit', 'name' => 'ajouter'));
 echo $this->Html->tag('/div', null);
 echo $this->Html->tag('/div', null);
 echo $this->Form->end();
@@ -21,7 +21,6 @@ echo $this->Form->end();
     label {
         padding: 6px .5em 0 0;
     }
-
     #DeliberationCircuitId {
         width: auto;
         min-width: 200px;
@@ -33,5 +32,10 @@ echo $this->Form->end();
         width: "resolve",
         allowClear: true,
         placeholder: "Selectionnez un élément"
+    });
+    $(document).ready(function(){
+       if ($('.parapheur_error').length > 0){
+           $('#attribuer').remove();
+       }
     });
 </script>
