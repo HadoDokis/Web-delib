@@ -1222,9 +1222,7 @@ class DeliberationsController extends AppController
             if ($this->Circuit->hasEtapeDelegation($this->request->data['Deliberation']['circuit_id'])){
                 //On génére le document principale si une etape d'envoi au parapheur est prévue
                 $model_id = $this->Deliberation->getModelId($id);
-                /**
-                 * FIXME changer appel génération document
-                 */
+                // FIXME changer appel génération document
                 $this->requestAction(array('controller'=>'models', 'action'=>'generer', $id, 'null', $model_id, '0', '1', 'parapheur'));
             }
             if ($this->Deliberation->save($this->request->data)) {
@@ -3567,6 +3565,15 @@ class DeliberationsController extends AppController
                     $this->Deliberation->Seance->id = $seance_id;
                     $delib['Seance']['date'] = $this->Deliberation->Seance->field('date');
 
+                    if (empty($delib['Deliberation']['delib_pdf'])){
+                        $model_id = $this->Deliberation->getModelId($delib_id);
+                        //FIXME changer appel génération document
+                        $this->requestAction(array('controller'=>'models', 'action'=>'generer', $delib_id, 'null', $model_id, '0', '1', 'acte'));
+                        $filename = WEBROOT_PATH . "/files/generee/fd/null/$delib_id/acte.pdf";
+                        $delib['Deliberation']['delib_pdf'] = file_get_contents($filename);
+                        $this->Deliberation->saveField('delib_pdf', $delib['Deliberation']['delib_pdf']);
+                    }
+
                     $annexes = $this->Annex->getAnnexesFromDelibId($delib_id, true);
                     $ret = $this->Signature->send($delib, $circuit_id, $annexes);
                     if ($ret) {
@@ -4022,11 +4029,8 @@ class DeliberationsController extends AppController
                     'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
                 ));
 
-                //On génére le numéro de l'acte lors de l'envoi a signature
                 $model_id = $this->Deliberation->getModelId($acte['Deliberation']['id']);
-                /**
-                 * FIXME changer appel génération document
-                 */
+                //FIXME changer appel génération document
                 $this->requestAction(array('controller'=>'models', 'action'=>'generer', $acte_id, 'null', $model_id, '0', '1', 'acte'));
                 $filename = WEBROOT_PATH . "/files/generee/fd/null/$acte_id/acte.pdf";
 
@@ -4260,13 +4264,12 @@ class DeliberationsController extends AppController
     {
         $this->Deliberation->_effacerListePresence($delib_id);
         $this->Deliberation->_copyFromPreviousList($delib_id, $seance_id);
-        $this->redirect("/seances/voter/$delib_id/$seance_id");
+        return $this->redirect(array('controller' => 'seances', 'action' => 'voter', $delib_id, $seance_id));
     }
 
     function traitementLot()
     {
         $ids = array();
-        //$redirect = $this->Session->read('user.User.lasturl');
         $redirect = $this->referer();
         if (isset($this->data['Deliberation']['action']) && empty($this->data['Deliberation']['action'])) {
             $this->Session->setFlash('Veuillez sélectionner une action.', 'growl', array('type' => 'erreur'));
@@ -4297,7 +4300,7 @@ class DeliberationsController extends AppController
 
         if (!isset($ids) || (isset($ids) && count($ids) == 0)) {
             $this->Session->setFlash('Veuillez sélectionner une délibération.', 'growl', array('type' => 'erreur'));
-            $this->redirect($redirect);
+            return $this->redirect($redirect);
         }
 
         if ($action == 'generation') {
@@ -4309,7 +4312,7 @@ class DeliberationsController extends AppController
             $this->Deliberation->genererRecherche($projets, $model_id, $format);
         }
         $this->Session->setFlash('Action effectuée avec succès', 'growl');
-        $this->redirect($redirect);
+        return $this->redirect($redirect);
     }
 
     function quicksearch() {
