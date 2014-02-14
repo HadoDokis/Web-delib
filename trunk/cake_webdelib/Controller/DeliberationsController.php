@@ -3951,8 +3951,6 @@ class DeliberationsController extends AppController
             App::uses('Signature', 'Lib');
             $this->Signature = new Signature;
             $circuits = $this->Signature->printCircuits();
-            if ($circuits == null)
-                $this->Session->setFlash("Erreur lors de la récupération des circuits du parapheur", 'growl', array('type' => 'warning'));
         }
 
         $conditions = $this->_handleConditions($this->Filtre->conditions());
