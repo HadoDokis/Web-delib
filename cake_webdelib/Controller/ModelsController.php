@@ -90,11 +90,8 @@ class ModelsController extends AppController {
 
 		if (!$this->Gedooo->checkPath($path))
 			die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-                $protocol = "http://";
-                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
-                        !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
-                    $protocol = "https://";
-		$urlWebroot =  $protocol.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+
+		$urlWebroot =  FULL_BASE_URL.$dyn_path;
 
 		//*****************************************
 		//Création du model ott
@@ -271,11 +268,9 @@ class ModelsController extends AppController {
                         
 		 	if (!$this->Gedooo->checkPath($path))
 		 		die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-                        $protocol = "http://";
-                        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || 
-                            !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443 )
-                        $protocol = "https://";
-                        $urlWebroot =  $protocol.$_SERVER['HTTP_HOST'].$this->base.$dyn_path;
+
+            $urlWebroot =  FULL_BASE_URL.$dyn_path;
+
 		 	if (Configure::read('GENERER_DOC_SIMPLE')) {
 		 		include_once ('controllers/components/conversion.php');
                 if ($progress)
@@ -372,9 +367,10 @@ class ModelsController extends AppController {
             
             $this->set('listFiles', $listFiles);
             $this->set('format', $format);
+            //FIXME remplacer par previous ?
             $lastUrl = $this->Session->read('user.User.lasturl');
             if (strpos($lastUrl, 'getGeneration'))
-                $lastUrl = $this->Session->read('user.User.myUrl');
+                $lastUrl = $this->previous;
             $this->set('urlRetour', $lastUrl);
             $this->render('generer');
         }

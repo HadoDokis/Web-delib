@@ -26,11 +26,7 @@ class CollectivitesController extends AppController {
         $collectivite = $this->Collectivite->find('first', array('conditions' => array('Collectivite.id' => 1),
             'recursive' => -1));
         $this->set('collectivite', $collectivite);
-        $protocol = "http://";
-        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ||
-                !empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
-            $protocol = "https://";
-        $this->set('logo_path', $protocol . $_SERVER['HTTP_HOST'] . $this->base . "/files/image/logo.jpg");
+        $this->set('logo_path', FULL_BASE_URL . $this->base . "/files/image/logo.jpg");
     }
 
     function edit($id = null) {
