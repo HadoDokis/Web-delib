@@ -2,25 +2,29 @@
 
 class IparapheurComponent extends Component {
 
-    public $requestPayloadString;
     public $responseMessage;
     public $responseMessageStr;
     public $wsto;
+    public $wsdl;
     public $clientcert;
     public $passphrase;
     public $userpwd;
     public $boundary;
 
     function IparapheurComponent() {
-        $this->wsto = configure::read('IPARAPHEUR_HOST');
-        $this->clientcert = configure::read('IPARAPHEUR_CLIENTCERT');
-        $this->passphrase = configure::read('IPARAPHEUR_CERTPWD');
-        $this->userpwd = configure::read('IPARAPHEUR_LOGIN') . ":" . configure::read('IPARAPHEUR_PWD');
+        $this->setWsto(Configure::read('IPARAPHEUR_HOST'), Configure::read('IPARAPHEUR_WSDL'));
+        $this->setLogin(Configure::read('IPARAPHEUR_LOGIN'), Configure::read('IPARAPHEUR_PWD'), Configure::read('IPARAPHEUR_CLIENTCERT'), Configure::read('IPARAPHEUR_CERTPWD'));
         $this->boundary = "5eca3d4a-35d8-1e01-32da-005056b32ce6";
     }
 
-    function setWsto($wsto) {
-        $this->wsto = $wsto;
+    function setWsto($wsto, $wsdl) {
+        if (stripos($wsto, $wsdl) === false) {
+            if (substr($wsto, strlen($wsto)-1, strlen($wsto)) == '/')
+                $this->wsto = $wsto . $wsdl;
+            else
+                $this->wsto = $wsto . '/' . $this->wsdl;
+        }
+        $this->wsdl = $wsdl;
     }
 
     function setLogin($login, $passwd, $clientcert, $passphrase) {
@@ -35,7 +39,7 @@ class IparapheurComponent extends Component {
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
    <soapenv:Header/>
    <soapenv:Body>';
-            $soap .= $this->requestPayloadString;
+            $soap .= $requestPayloadString;
             $soap .= '</soapenv:Body></soapenv:Envelope>';
         } else {
             //
@@ -51,7 +55,7 @@ Content-ID: <i-Parapheur-query@adullact.org>
 xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 <SOAP-ENV:Body>";
             // Ajout des pieces jointes
-            $soap .= $this->requestPayloadString;
+            $soap .= $requestPayloadString;
             $soap .= "</SOAP-ENV:Body></SOAP-ENV:Envelope>\n\n--MIMEBoundary" . $this->boundary . "\n";
 
             $attachments = $params["attachments"];
@@ -65,7 +69,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         return $soap;
     }
 
-    function LancerRequeteCurl($attachments = null) {
+    function LancerRequeteCurl($request, $attachments = null) {
         $ch = curl_init($this->wsto);
 
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -85,7 +89,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             $params = array("to" => $this->wsto);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type:text/xml; charset=utf-8", 'SOAPAction: ""'));
         }
-        $soap = $this->SOAPMessage($this->requestPayloadString, $params);
+        $soap = $this->SOAPMessage($request, $params);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $soap);
 
@@ -111,76 +115,79 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function echoWebservice() {
-        $this->requestPayloadString = '<ns:echoRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">coucou marie claude repondit l echo</ns:echoRequest>';
-        $this->lancerRequeteCurl();
+        $request = '<ns:echoRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">coucou marie claude repondit l echo</ns:echoRequest>';
+        $this->lancerRequeteCurl($request);
         return $this->responseMessageStr;
     }
 
     function getListeTypesWebservice() {
-        $this->requestPayloadString = '<ns:GetListeTypesRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0"></ns:GetListeTypesRequest>';
-        $this->lancerRequeteCurl();
+        $request = '<ns:GetListeTypesRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0"></ns:GetListeTypesRequest>';
+        $this->lancerRequeteCurl($request);
         return array_merge($this->traiteXMLTypeTechnique(), $this->traiteXMLMessageRetour());
     }
 
     function getListeSousTypesWebservice($type) {
-        $this->requestPayloadString = '<ns:GetListeSousTypesRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $type . '</ns:GetListeSousTypesRequest>';
-        $this->lancerRequeteCurl();
-        if ($this->traiteXMLSousType() != null)
-            return array_merge($this->traiteXMLSousType(), $this->traiteXMLMessageRetour());
+        $request = '<ns:GetListeSousTypesRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $type . '</ns:GetListeSousTypesRequest>';
+        $this->lancerRequeteCurl($request);
+        $soustypes = $this->traiteXMLSousType();
+        if (!empty($soustypes))
+            return array_merge($soustypes, $this->traiteXMLMessageRetour());
+        else
+            return $this->traiteXMLMessageRetour();
     }
 
     function getCircuit($typetech, $soustype) {
-        $this->requestPayloadString = '<ns:GetCircuitRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
+        $request = '<ns:GetCircuitRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
 								         <ns:TypeTechnique>' . $typetech . '</ns:TypeTechnique>
 								         <ns:SousType>' . $soustype . '</ns:SousType>
 								      </ns:GetCircuitRequest>';
-        $this->lancerRequeteCurl();
+        $this->lancerRequeteCurl($request);
         return $this->traiteXMLCircuit();
     }
 
     function getHistoDossierWebservice($nom_dossier) {
-        $this->requestPayloadString = '<ns:GetHistoDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:GetHistoDossierRequest>';
-        $this->lancerRequeteCurl();
+        $request = '<ns:GetHistoDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:GetHistoDossierRequest>';
+        $this->lancerRequeteCurl($request);
         return array_merge($this->traiteXMLLogDossier(), $this->traiteXMLMessageRetour());
     }
 
     function rechercherDossierWebservice($typetech = '', $soustype = '', $status = '', $nbdossiers = '', $dossierid = '') {
-        $this->requestPayloadString = '<ns:RechercherDossiersRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
+        $request = '<ns:RechercherDossiersRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
 		                                   <ns:TypeTechnique>' . $typetech . '</ns:TypeTechnique>
 				                   <ns:SousType>' . $soustype . '</ns:SousType>
 				                   <ns:Status>' . $status . '</ns:Status>
 				                   <ns:NombreDossiers>' . $nbdossiers . '</ns:NombreDossiers>
 				                   <ns:DossierID>' . $dossierid . '</ns:DossierID>
 				               </ns:RechercherDossiersRequest>';
-        $this->lancerRequeteCurl();
+        $this->lancerRequeteCurl($request);
         if ($this->traiteXMLLogDossier())
             return array_merge($this->traiteXMLLogDossier(), $this->traiteXMLMessageRetour());
     }
 
     function archiverDossierWebservice($nom_dossier, $typearchivage = "ARCHIVER") {
-        $this->requestPayloadString = '<ns:ArchiverDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
+        $request = '<ns:ArchiverDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
 								         <ns:DossierID>' . $nom_dossier . '</ns:DossierID>
 								         <ns:ArchivageAction>' . $typearchivage . '</ns:ArchivageAction>
 								      </ns:ArchiverDossierRequest>';
-        $this->lancerRequeteCurl();
+        $this->lancerRequeteCurl($request);
         return array_merge($this->traiteXMLArchiverDossier(), $this->traiteXMLMessageRetour());
     }
 
     function effacerDossierRejeteWebservice($nom_dossier) {
-        $this->requestPayloadString = '<ns:ForcerEtapeRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:ForcerEtapeRequest>';
-        $this->lancerRequeteCurl();
+        $request = '<ns:ForcerEtapeRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:ForcerEtapeRequest>';
+        $this->lancerRequeteCurl($request);
         return $this->traiteXMLMessageRetour();
     }
 
     function exercerDroitRemordWebservice($nom_dossier) {
-        $this->requestPayloadString = '<ns:ExercerDroitRemordDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:ExercerDroitRemordDossierRequest>';
-        $this->lancerRequeteCurl();
+        $request = '<ns:ExercerDroitRemordDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:ExercerDroitRemordDossierRequest>';
+        $this->lancerRequeteCurl($request);
         return $this->traiteXMLMessageRetour();
     }
 
     function creerDossierWebservice($titre, $typetech, $soustype, $visibilite, $pdf, $docsannexes = array(), $datelim = '', $annotpub = '', $annotpriv = '', $metas = array()) {
         $attachments = array('fichierPDF' => array($pdf, "application/pdf", "binary", "document.pdf"));
-        $this->requestPayloadString = '<ns:CreerDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
+        $request = '<ns:CreerDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
 								         <ns:TypeTechnique>' . $typetech . '</ns:TypeTechnique>
 								         <ns:SousType>' . $soustype . '</ns:SousType>
 								         <ns:DossierID></ns:DossierID>
@@ -189,17 +196,17 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 								         	<xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:fichierPDF"></xop:Include>
 								         </ns:DocumentPrincipal>';
         if (isset($metas) && !empty($metas)) {
-            $this->requestPayloadString .= '<ns:MetaData>';
+            $request .= '<ns:MetaData>';
             foreach ($metas as $nom => $valeur) {
-                $this->requestPayloadString .= "<ns:MetaDonnee><ns:nom>$nom</ns:nom><ns:valeur>$valeur</ns:valeur></ns:MetaDonnee>";
+                $request .= "<ns:MetaDonnee><ns:nom>$nom</ns:nom><ns:valeur>$valeur</ns:valeur></ns:MetaDonnee>";
             }
-            $this->requestPayloadString .= '</ns:MetaData>';
+            $request .= '</ns:MetaData>';
         }
 
-        $this->requestPayloadString .= '<ns:DocumentsAnnexes>';
+        $request .= '<ns:DocumentsAnnexes>';
         for ($i = 0; $i < count($docsannexes); $i++) {
             $encoding = !empty($docsannexes[$i]['encoding']) ? $docsannexes[$i]['encoding'] : 'UTF-8';
-            $this->requestPayloadString .= '<ns:DocAnnexe>
+            $request .= '<ns:DocAnnexe>
 		               <ns:nom>' . $this->_xml_entity_encode($docsannexes[$i]['filename']) . '</ns:nom>
 		               <ns:fichier xm:contentType="' . $docsannexes[$i]['filetype'] . '">
 		               <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:annexe_' . $i . '"></xop:Include>
@@ -209,14 +216,14 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 		            </ns:DocAnnexe>';
             $attachments = array_merge($attachments, array("annexe_" . $i => $docsannexes[$i]));
         }
-        $this->requestPayloadString .= '</ns:DocumentsAnnexes>';
-        $this->requestPayloadString .= '<ns:XPathPourSignature></ns:XPathPourSignature>
+        $request .= '</ns:DocumentsAnnexes>';
+        $request .= '<ns:XPathPourSignature></ns:XPathPourSignature>
 								         <ns:AnnotationPublique>' . $annotpub . '</ns:AnnotationPublique>
 								         <ns:AnnotationPrivee>' . $annotpriv . '</ns:AnnotationPrivee>
 								         <ns:Visibilite>' . $visibilite . '</ns:Visibilite>
 								         <ns:DateLimite>' . $datelim . '</ns:DateLimite>
 									   </ns:CreerDossierRequest>';
-        $this->LancerRequeteCurl($attachments);
+        $this->LancerRequeteCurl($request, $attachments);
 
 
         return $this->traiteXMLMessageRetour();
@@ -224,31 +231,31 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
     function getDossierWebservice($nom_dossier) {
 
-        $this->requestPayloadString = '<ns:GetDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:GetDossierRequest>';
-        $this->lancerRequeteCurl();
+        $request = '<ns:GetDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:GetDossierRequest>';
+        $this->lancerRequeteCurl($request);
         return array_merge($this->traiteXMLGetDossier(), $this->traiteXMLMessageRetour());
     }
 
     function envoyerDossierTdTWebservice($nom_dossier) {
-        $this->requestPayloadString = '<ns:EnvoyerDossierTdTRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:EnvoyerDossierTdTRequest>';
-        $this->lancerRequeteCurl();
+        $request = '<ns:EnvoyerDossierTdTRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:EnvoyerDossierTdTRequest>';
+        $this->lancerRequeteCurl($request);
         return $this->traiteXMLMessageRetour();
     }
 
     function getStatutTdTWebservice($nom_dossier) {
-        $this->requestPayloadString = '<ns:GetStatutTdTRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:GetStatutTdTRequest>';
-        $this->lancerRequeteCurl();
+        $request = '<ns:GetStatutTdTRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">' . $nom_dossier . '</ns:GetStatutTdTRequest>';
+        $this->lancerRequeteCurl($request);
         return array_merge($this->traiteXMLLogDossier(), $this->traiteXMLMessageRetour());
     }
 
     function forcerEtapeWebservice($nom_dossier, $codetransit, $annotpub = '', $annotpriv = '') {
-        $this->requestPayloadString = '<ns:ForcerEtapeRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
+        $request = '<ns:ForcerEtapeRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0">
 								         <ns:DossierID>' . $nom_dossier . '</ns:DossierID>
 								         <ns:CodeTransition>' . $codetransit . '</ns:CodeTransition>
 								         <ns:AnnotationPublique>' . $annotpub . '</ns:AnnotationPublique>
 								         <ns:AnnotationPrivee>' . $annotpriv . '</ns:AnnotationPrivee>
 								      </ns:ForcerEtapeRequest>';
-        $this->lancerRequeteCurl();
+        $this->lancerRequeteCurl($request);
         return array_merge($this->traiteXMLLogDossier(), $this->traiteXMLMessageRetour());
     }
 
@@ -266,6 +273,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
         $dom = new DomDocument();
         try {
+            if (empty($this->responseMessageStr)) throw new Exception("Aucune réponse du parapheur");
             $dom->loadXML($this->responseMessageStr);
             $codesretour = $dom->documentElement->getElementsByTagName('codeRetour');
             $coderetour = @$codesretour->item(0)->nodeValue;
@@ -322,15 +330,13 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
 
     function traiteXMLSousType() {
         $dom = new DomDocument();
+        $response = array();
         if ($this->responseMessageStr != null) {
-            $response = array();
             $dom->loadXML($this->responseMessageStr);
             $dataset = $dom->getElementsByTagName("SousType");
             foreach ($dataset as $row) {
                 $response['soustype'][] = $row->nodeValue;
             }
-        } else {
-            $response = 'aucun sous-type';
         }
         return $response;
     }
@@ -426,8 +432,8 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function handleObject($objetDossier) {
-        $search = array('&', '/', ':', '"', '+', chr(0xC2) . chr(0x80));
-        $replace = array("&amp;", "-", "-", "'", "PLUS", chr(0xE2) . chr(0x82) . chr(0xAC));
+        $search = array('&', '/', ':', '"', '+', chr(0xC2) . chr(0x80), "\n", "\t", "\r");
+        $replace = array("&amp;", "-", "-", "'", "PLUS", chr(0xE2) . chr(0x82) . chr(0xAC), '', '', '');
         $objetDossier = str_replace($search, $replace, $objetDossier);
         if (strlen($objetDossier) > 190) {
             $objetDossier = substr($objetDossier, 0, 185);
