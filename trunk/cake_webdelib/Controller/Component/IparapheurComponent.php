@@ -12,19 +12,28 @@ class IparapheurComponent extends Component {
     public $boundary;
 
     function IparapheurComponent() {
-        $this->setWsto(Configure::read('IPARAPHEUR_HOST'), Configure::read('IPARAPHEUR_WSDL'));
-        $this->setLogin(Configure::read('IPARAPHEUR_LOGIN'), Configure::read('IPARAPHEUR_PWD'), Configure::read('IPARAPHEUR_CLIENTCERT'), Configure::read('IPARAPHEUR_CERTPWD'));
+        $this->setWsto(
+            Configure::read('IPARAPHEUR_HOST'),
+            Configure::read('IPARAPHEUR_WSDL')
+        );
+        $this->setLogin(
+            Configure::read('IPARAPHEUR_LOGIN'),
+            Configure::read('IPARAPHEUR_PWD'),
+            Configure::read('IPARAPHEUR_CLIENTCERT'),
+            Configure::read('IPARAPHEUR_CERTPWD')
+        );
         $this->boundary = "5eca3d4a-35d8-1e01-32da-005056b32ce6";
     }
 
     function setWsto($wsto, $wsdl) {
+        $this->wsdl = $wsdl;
         if (stripos($wsto, $wsdl) === false) {
-            if (substr($wsto, strlen($wsto)-1, strlen($wsto)) == '/')
+            if (substr($wsto, strlen($wsto) - 1, strlen($wsto)) == '/')
                 $this->wsto = $wsto . $wsdl;
             else
-                $this->wsto = $wsto . '/' . $this->wsdl;
-        }
-        $this->wsdl = $wsdl;
+                $this->wsto = $wsto . '/' . $wsdl;
+        } else
+            $this->wsto = $wsto;
     }
 
     function setLogin($login, $passwd, $clientcert, $passphrase) {
@@ -260,7 +269,6 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function traiteXMLMessageRetour() {
-
         $xml = simplexml_load_string($this->responseMessageStr);
         if ($xml !== false) {
             $result = $xml->xpath('S:Body/S:Fault');
