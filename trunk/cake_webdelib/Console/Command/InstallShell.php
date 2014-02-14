@@ -89,6 +89,7 @@ class InstallShell extends AppShell {
     }
 
     /**
+     * TODO
      * Installe les données de démo dans la base de données
      */
     public function injectDemoRecords() {
