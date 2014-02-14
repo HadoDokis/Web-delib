@@ -2,9 +2,9 @@
 <div class="deliberations">
     <?php if (isset($message)) echo($message); ?>
     <?php if (empty($seance_id)): ?>
-        <h2>Actes envoyés à la signature</h2>
+        <h2>Signature des actes</h2>
     <?php else: ?>
-        <h2>Signature de délibérations</h2>
+        <h2>Signature des délibérations</h2>
     <?php endif; ?>
     <?php
     echo $this->element('filtre');
