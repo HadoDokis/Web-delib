@@ -97,11 +97,12 @@
             <?php
             if ($delib['Deliberation']['etat'] == 5) {
                 $tdt_id = $delib['Deliberation']['tdt_id'];
-                echo "<a href='https://$host/modules/actes/actes_transac_get_status.php?transaction=$tdt_id'><i class='fa fa-check-circle'></i> Envoyé</a>";
-            } else
+                echo "<a href='$host/modules/actes/actes_transac_get_status.php?transaction=$tdt_id'><i class='fa fa-check-circle'></i> Envoyé</a>";
+            } else{
                 if (Configure::read('USE_PASTELL') && empty($delib['Deliberation']['pastell_id']))
                     echo '<i class="fa fa-exclamation-triangle" title="Le dossier n\'est pas dans Pastell"></i> ';
                 echo "Non envoyé";
+            }
             ?>
             </td>
             </tr>
