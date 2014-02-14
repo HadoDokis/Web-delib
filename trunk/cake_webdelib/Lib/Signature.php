@@ -241,10 +241,15 @@ class Signature {
     /**
      * @link listCircuits()
      * @return array
+     * @throws Exception
      */
     public function listCircuitsIparapheur(){
         $resp = $this->Iparapheur->getListeSousTypesWebservice($this->parapheur_type);
-        return $resp['soustype'];
+        if (array_key_exists('soustype', $resp))
+            return $resp['soustype'];
+        else{
+            throw new Exception($resp['messageretour']['message']);
+        }
     }
 
     /**
@@ -257,9 +262,12 @@ class Signature {
 
     public function printCircuits(){
         $circuits = array('Standard' => array('-1' => 'Signature manuscrite'));
-        $circuits_parapheur = $this->listCircuits();
-        if ($circuits_parapheur)
-            $circuits['Parapheur'] = $circuits_parapheur;
+        try{
+            $circuits_parapheur = $this->listCircuits();
+            if (!empty($circuits_parapheur))
+                $circuits['Parapheur'] = $circuits_parapheur;
+        }catch(Exception $e){} //Si erreur de connexion au parapheur
+
         return $circuits;
     }
 
