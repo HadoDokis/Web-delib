@@ -1165,7 +1165,7 @@ class DeliberationsController extends AppController
         if (empty($this->data)) {
             if (!$id) {
                 $this->Session->setFlash('Invalide id pour la deliberation', 'growl', array('type' => 'erreur'));
-                $this->redirect('/deliberations/mesProjetsRedaction');
+                return $this->redirect(array('action'=>'mesProjetsRedaction'));
             }
             $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
             for ($i = 0; $i < count($delib['Seance']); $i++) {

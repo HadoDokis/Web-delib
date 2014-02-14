@@ -50,3 +50,6 @@ legend{
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
 }
+.btn-group.centre>.btn{
+    float: none;
+}
