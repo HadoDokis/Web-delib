@@ -1588,8 +1588,6 @@ class DeliberationsController extends AppController
         . ' )';
        
         
-        $order= array('Deliberation.num_delib ASC');
-
         $this->Deliberation->Behaviors->load('Containable');
         $this->paginate = array('Deliberation' =>  array(
              'fields' => array(
@@ -1623,7 +1621,7 @@ class DeliberationsController extends AppController
                             'fields' => array('id', 'libelle', 'action'),
                             'conditions' => array('Typeseance.action' => 0)
                         )))),
-            'order' => array($order),
+            'order' => 'Deliberation.num_delib ASC',
             'limit' => 20));
 
         $this->set('host', Configure::read(Configure::read('TDT').'_HOST'));
