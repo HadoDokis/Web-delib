@@ -496,7 +496,7 @@ class ModelsController extends AppController {
                     }
 				}
 				else {
-					$fichier = $this->Gedooo->createFile($path, $nomFichier.$format, '');
+					$fichier = $this->Gedooo->createFile($path, $nomFichier.'.'.$format, '');
 					$oFusion->SendContentToFile($fichier);
 					$content = $this->Conversion->convertirFichier($fichier, $format );
 					$chemin_fichier = $this->Gedooo->createFile($path,  $nomFichier.'.'.$format, $content);
