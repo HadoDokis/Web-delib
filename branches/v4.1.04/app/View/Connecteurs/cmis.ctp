@@ -41,8 +41,15 @@
                                   "placeholder"=>"exemple : /Sites/Web-delib",
                                   'label' => false,
                                   'value' => Configure::read('GED_REPO'),
-                                  'before' => '<label>Répertoire de stockage</label>')); 
-?>
+                                  'before' => '<label>Répertoire de stockage</label>')).'<br>'; 
+    echo $this->Form->input('ged_xml_version',
+                            array('type' => 'select',
+                                  'label' => false,
+                                  'options' => array(1=>1, 2=>2),
+                                  'selected' => Configure::read('GED_XML_VERSION'),
+                                  'autocomplete' => 'off',
+                                  'before' => '<label>Version du schéma XML</label>')); 
+    ?>
     </fieldset>
 </div>
     <div class='spacer'> </div>
