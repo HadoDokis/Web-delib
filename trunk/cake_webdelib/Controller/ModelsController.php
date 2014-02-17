@@ -219,10 +219,10 @@ class ModelsController extends AppController {
                             $this->Progress->at($cpt*((3*40/3)/count($acteursConvoques))+60, 'Conversion et concaténation...');
 						$time_start = microtime(true);
                         $oFusion->SendContentToFile($path.$nomFichier.".odt");
-                        $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt');
+                        $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt', 'odt');
                         file_put_contents  ($path.$nomFichier.".odt", $content);
 
-                        $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
+                        $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt', $format);
 						$chemin_fichier = $this->Gedooo->createFile($path, $nomFichier.".$format", $content);
 						$time_end = microtime(true);
 						$time = $time_end - $time_start;
@@ -279,7 +279,7 @@ class ModelsController extends AppController {
 
 		 		$filename = $path."debat_seance.html";
 		 		$this->Gedooo->createFile($path, "debat_seance.html",  $seance['Seance']['debat_global']);
-		 		$content = $this->Conversion->convertirFichier($filename, "odt");
+		 		$content = $this->Conversion->convertirFichier($filename, 'odt', "odt");
 
 		 		$oMainPart->addElement(new GDO_ContentType('debat_seance',  $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
 		 	}

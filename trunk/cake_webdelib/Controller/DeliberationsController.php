@@ -956,7 +956,7 @@ class DeliberationsController extends AppController
                             $pos = strpos($annex_filename['Annex']['filetype'], 'vnd.oasis.opendocument');
                             if ($pos !== false) {
                                 $path = WEBROOT_PATH . "/files/generee/projet/" . $id . "/" . $annex_filename['Annex']['filename'];
-                                $data_pdf = $this->Conversion->convertirFichier($path, 'pdf');
+                                $data_pdf = $this->Conversion->convertirFichier($path, 'odt', 'pdf');
 
                                 if (is_array($data_pdf)) $data_pdf = null;
                                 $this->Annex->save(array(

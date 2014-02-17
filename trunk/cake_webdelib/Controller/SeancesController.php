@@ -1458,7 +1458,7 @@ class SeancesController extends AppController {
                     $time_start = microtime(true);
                     $oFusion->SendContentToFile($dirpath.$nomFichier.".odt");
 
-                    $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", $format);
+                    $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", 'odt', $format);
 
                     $time_end = microtime(true);
                     $time = $time_end - $time_start;
@@ -1577,7 +1577,7 @@ class SeancesController extends AppController {
             $oFusion->process();
             $oFusion->SendContentToFile($path.$nomFichier.".odt");
             $this->Progress->at(80, 'Conversion du fichier au bon format...');
-            $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", $format);
+            $content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt', $format);
             $this->Gedooo->createFile($path,  $nomFichier.'.'.$format, $content);
             $this->Progress->at(100, 'Chargement des résultats...');
             $listFiles[FULL_BASE_URL.$dyn_path.$nomFichier] = 'Document généré';
