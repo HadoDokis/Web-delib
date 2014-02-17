@@ -113,7 +113,7 @@ class Deliberationseance extends AppModel {
      */
     function _getLastPosition($seance_id) {
         $deliberations = $this->find('first', array(
-            'fields' => array('MAX (position) AS position'),
+            'fields' => array('MAX (Deliberationseance.position) as position'),
             'conditions' => array('Seance.id' => $seance_id,
                 'Deliberation.etat !=' => -1))
         );
@@ -130,7 +130,7 @@ class Deliberationseance extends AppModel {
     function _getLastPositionMultidelibByParent($seance_id, $parent_id) {
 
         $deliberations = $this->find('first', array(
-            'fields' => array('MAX (position) AS position'),
+            'fields' => array('MAX (Deliberationseance.position) as position'),
             'recursive' => -1,
             'joins' => array(
                 array('table' => 'deliberations',
