@@ -139,7 +139,7 @@
         <tr>
             <td colspan="2" style="text-align: center;">
                 <?php
-                echo $this->Form->button('<i class="fa fa-search"></i> Rechercher', array('type' => 'submit', 'div' => false, 'class' => 'btn btn-primary', 'name' => 'Rechercher', 'style'=>'margin-bottom:10px;'));
+                echo $this->Form->button('<i class="fa fa-search"></i> Rechercher', array('type' => 'submit', 'div' => false, 'class' => 'btn btn-primary', 'name' => 'Rechercher', 'style' => 'margin-bottom:10px;'));
                 ?>
             </td>
         </tr>
@@ -165,7 +165,11 @@
         $('select').select2({
             width: "100%",
             allowClear: true,
-            placeholder: 'Aucune sélection'
+            placeholder: 'Aucune sélection',
+            formatSelection: function (object, container) {
+                // Supprimer les espaces multiple (affichage en arbre) de la sélection
+                return object.text.replace(/\s+/, '');
+            }
         });
     });
 </script>
