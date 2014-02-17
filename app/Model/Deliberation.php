@@ -304,26 +304,47 @@ class Deliberation extends AppModel {
 		$this->saveField('dateAR', $dateAR);
 	}
 
-	function getModelId($delib_id, $seance_id) {
-		$this->Seance->Behaviors->attach('Containable');
-		$data = $this->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
-				'recursive'  => -1,
-				'fields'     => array('Deliberation.id', 'Deliberation.etat')));
-		$seance = $this->Seance->find('first', array(
-				'conditions' => array('Seance.id' => $seance_id),
-				'fields'     => array('Seance.id'),
-				'contain'    => array('Typeseance.modelprojet_id', 'Typeseance.modeldeliberation_id') ));
+	/**
+        * Retourne l'identifiant du modèle à utiliser selon le projet
+        * @param string $delib_id identifiant du projet
+        * @return integer identifiant du modèle
+        */
+       function getModelId($delib_id){
+           $this->id = $delib_id;
+           $etat = $this->field('etat');
+           $seances = $this->Deliberationseance->find('all', array(
+               'recursive' => -1,
+               'fields' => array('seance_id'),
+               'conditions' => array('deliberation_id' => $delib_id)
+           ));
+           if (!empty($seances)){
+               //Recherche de séance délibérante
+               $tab_seances = Hash::extract($seances, '{n}.Deliberationseance.seance_id');
+               $seance_id = $this->Seance->getSeanceDeliberante($tab_seances);
+               $seance = $this->Seance->find('first', array(
+                   'conditions' => array('Seance.id' => $seance_id),
+                   'fields' => array('type_id'),
+                   'contain' => array('Typeseance.modelprojet_id','Typeseance.modeldeliberation_id')
+               ));
 
-		if (!empty($seance)){
-			if ($data['Deliberation']['etat']<3)
-				return $seance['Typeseance']['modelprojet_id'];
-			else
-				return $seance['Typeseance']['modeldeliberation_id'];
-		}
-		else {
-			return 1;
-		}
-	}
+               if ($etat < 3)
+                   return $seance['Typeseance']['modelprojet_id'];
+               else
+                   return $seance['Typeseance']['modeldeliberation_id'];
+           } else {
+               $typeacte_id = $this->field('typeacte_id');
+               $typeacte = $this->Typeacte->find('first', array(
+                   'recursive' => -1,
+                   'conditions' => array('id' => $typeacte_id),
+                   'fields' => array('modeleprojet_id','modelefinal_id')
+               ));
+
+               if ($etat < 3)
+                   return $typeacte['Typeacte']['modeleprojet_id'];
+               else
+                   return $typeacte['Typeacte']['modelefinal_id'];
+           }
+       }
 
 	function refusDossier($id) {
 		// lecture en base de données
