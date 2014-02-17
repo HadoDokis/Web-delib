@@ -266,7 +266,11 @@ echo $this->Html->useTag('tagend', 'div');
             allowClear: true,
             dropdownCssClass: "selectMaxWidth",
             dropdownAutoWidth: true,
-            placeholder: "Selectionnez un élément"
+            placeholder: "Selectionnez un élément",
+            formatSelection: function (object, container) {
+                // trim sur la sélection (affichage en arbre)
+                return $.trim(object.text);
+            }
         });
     });
     
