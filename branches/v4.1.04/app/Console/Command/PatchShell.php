@@ -315,7 +315,7 @@ class PatchShell extends AppShell {
         
         if (!empty($this->params['Schema'])) {
         $webdelibSql = APP.'Config'.DS.'Schema'.DS.'patches'.DS.'4.1.03_to_4.1.04.sql';
-        $cakeflowSql = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
+        $cakeflowSql = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'sql'.DS.'patchs'.DS.'cakeflow_v3.0.01_to_v3.0.02.sql';
         $this->out("\nMise à jour de la base de données...");
         $this->Sql->execute();
         $this->Sql->begin();
