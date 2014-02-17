@@ -329,7 +329,7 @@ class ModelsController extends AppController {
                     }
 				}
 				else {
-					$fichier = $this->Gedooo->createFile($path, $nomFichier.'.'.$format, '');
+					$fichier = $this->Gedooo->createFile($path, $nomFichier.'.odt', '');
 					$oFusion->SendContentToFile($fichier);
 					$content = $this->Conversion->convertirFichier($fichier, 'odt', $format );
 					$chemin_fichier = $this->Gedooo->createFile($path,  $nomFichier.'.'.$format, $content);
