@@ -220,6 +220,14 @@ class S2lowComponent extends Component {
         $date = substr($fluxRetour, strpos($fluxRetour, 'actes:DateReception') + 21, 10);
         return ($this->Date->frenchDate(strtotime($date)));
     }
+    
+    function getIDActe() {
+        
+        $fluxRetour;
+        // +21 Correspond a la longueur du string : actes:DateReception"
+        $date = substr($fluxRetour, strpos($fluxRetour, 'actes:DateReception') + 21, 10);
+        return ($this->Date->frenchDate(strtotime($date)));
+    }
 
     function getNewFlux($tdt_id) {
         $url = 'https://' . Configure::read('HOST') . "/modules/actes/actes_transac_get_document.php?id=$tdt_id";
@@ -240,7 +248,27 @@ class S2lowComponent extends Component {
         curl_close($ch);
         return($curl_return);
     }
+    
+    function getDocument($document_id) {
+        $url = 'https://' . Configure::read('HOST') . "/modules/actes/actes_transac_get_document.php?id=$document_id";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, trim($url));
+        if (Configure::read('USE_PROXY'))
+            curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
+        curl_setopt($ch, CURLOPT_POST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
+        curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
 
+        $curl_return = curl_exec($ch);
+        curl_close($ch);
+        return $curl_return;
+    }
+    
     function isNewMessage($delib_id, $type, $reponse, $message_id) {
         $message = $this->TdtMessage->find('first', array('conditions' =>
             array('TdtMessage.delib_id' => $delib_id,
