@@ -66,9 +66,11 @@ class Infosup extends AppModel
                     $ret[$infosupdef['Infosupdef']['code']] = $ele['Infosuplistedef']['nom'];
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
+                $ret[$infosupdef['Infosupdef']['code']] = array();
                 if ($retIdEleListe || empty($infosup['text'])){
                     foreach (explode(',', str_replace("'",'',$infosup['text'])) as $elt){
-                        $ret[$infosupdef['Infosupdef']['code']][] = $elt;
+                        if (!empty($elt))
+                           $ret[$infosupdef['Infosupdef']['code']][] = $elt;
                     }
                 } else {
                     $ids =  explode(',', str_replace("'",'',$infosup['text']));
