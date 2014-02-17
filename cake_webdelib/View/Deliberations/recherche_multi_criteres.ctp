@@ -1,18 +1,31 @@
 <?php echo $this->Html->script('calendrier.js'); ?>
-<?php $afficheNote = false; ?>
-
 <h2><?php echo $titreVue; ?></h2>
 <?php echo $this->Form->create('Deliberation', array('type' => 'file', 'url' => $action, 'name' => 'Deliberation')); ?>
 
 <div id="add_form" class="recherchediv">
     <table class="sample">
         <tr>
+            <td style="max-width: 20%"></td>
+            <td style="width: 80%"></td>
+        </tr>
+        <tr>
             <td>
                 <?php echo $this->Form->input('Deliberation.id', array(
-                    'type' => 'text',
+                    'type' => 'number',
                     'between' => '</td><td>',
                     'label' => 'Identifiant du projet',
-                    'size' => '20'));
+                    'style' => 'width: 100px'
+                ));
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <?php echo $this->Form->input('Deliberation.texte', array(
+                    'between' => '</td><td>',
+                    'label' => 'Libellé *',
+                    'style' => 'width: 98%'
+                ));
                 ?>
             </td>
         </tr>
@@ -41,20 +54,11 @@
             <td>
                 <?php echo $this->Form->input('Deliberation.seance_id', array(
                     'between' => '</td><td>',
-                    'label' => 'Date s&eacute;ance (et) ',
+                    'label' => 'Date séance (et) ',
                     'options' => $date_seances,
                     'multiple' => true,
                     'empty' => false,
                     'size' => '10'));
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <?php echo $this->Form->input('Deliberation.texte', array(
-                    'between' => '</td><td>',
-                    'label' => 'Libell&eacute; *',
-                    'size' => '30'));
                 ?>
             </td>
         </tr>
@@ -73,7 +77,8 @@
             <td>
                 <?php echo $this->Form->input('Deliberation.theme_id', array(
                     'between' => '</td><td>',
-                    'label' => 'Thème ',
+                    'label' => 'Thême',
+                    'escape' => false,
                     'options' => $themes,
                     'default' => $this->Html->value('Deliberation.theme_id'),
                     'empty' => true));
@@ -95,7 +100,7 @@
             <td>
                 <?php echo $this->Form->input('Deliberation.etat', array(
                     'between' => '</td><td>',
-                    'label' => 'Etat ',
+                    'label' => 'Etat',
                     'options' => $etats,
                     'default' => $this->Html->value('Deliberation.etat'),
                     'empty' => true));
@@ -105,11 +110,10 @@
         <?php foreach ($infosupdefs as $infosupdef) {
             $fieldName = 'Infosup.' . $infosupdef['Infosupdef']['id'];
             echo '<tr>';
-            echo '<td>' . $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'] . ($infosupdef['Infosupdef']['type'] == 'date' ? '' : ' *')) . '</td>';
+            echo '<td>' . $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom']) . '</td>';
             echo '<td>';
             if ($infosupdef['Infosupdef']['type'] == 'text' || $infosupdef['Infosupdef']['type'] == 'richText') {
                 echo $this->Form->input($fieldName, array('label' => false, 'title' => $infosupdef['Infosupdef']['commentaire']));
-                $afficheNote = true;
             } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
                 echo $this->Form->input($fieldName, array('label' => false, 'size' => '9', 'div' => false, 'title' => $infosupdef['Infosupdef']['commentaire']));
                 echo '&nbsp;';
@@ -120,46 +124,48 @@
             } elseif ($infosupdef['Infosupdef']['type'] == 'list') {
                 echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true));
             } elseif ($infosupdef['Infosupdef']['type'] == 'listmulti') {
-                echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'multiple' => true, 'class'=>'select2'));
+                echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'multiple' => true, 'class' => 'select2-infosup'));
             }
             echo '</td>';
             echo '</tr>';
         } ?>
         <tr>
             <td><?php echo $this->Form->label('Deliberation.generer', 'Générer le document'); ?> </td>
-            <td><?php echo $this->Form->input('Deliberation.generer', array('type' => 'checkbox', 'label' => false, 'div' => false, 'onClick' => "if(this.checked) $('#DeliberationModel').show(); else $('#DeliberationModel').hide(); ")); ?>
+            <td>
+                <?php echo $this->Form->input('Deliberation.generer', array('type' => 'checkbox', 'label' => false, 'div' => false, 'onClick' => "if(this.checked) $('#DeliberationModel').show(); else $('#DeliberationModel').hide(); ")); ?>
                 <?php echo $this->Form->input('Deliberation.model', array('label' => false, 'options' => $models, 'div' => false, 'style' => 'display:none;')); ?>
             </td>
         </tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <?php
+                echo $this->Form->button('<i class="fa fa-search"></i> Rechercher', array('type' => 'submit', 'div' => false, 'class' => 'btn btn-primary', 'name' => 'Rechercher', 'style'=>'margin-bottom:10px;'));
+                ?>
+            </td>
+        </tr>
     </table>
-    <br/>
-    <?php
-    echo $this->Form->button('<i class="fa fa-search"></i> Rechercher', array('type' => 'submit', 'div' => false, 'class' => 'btn btn-primary', 'name' => 'Rechercher'));
-    ?>
 </div>
 <br/>
-<?php if ($afficheNote): ?>
-    <p>* : le caractère % permet d'affiner les recherches comme indiqué ci-dessous :
-    <ul>
-        <li>Commence par : texte% (si on recherche une information qui commence par 'Département' on écrit comme critère
-            de recherche : Département%)
-        </li>
-        <li>Comprend : %texte% (si on recherche une information qui comprend 'avril' on écrit comme critère de recherche
-            : %avril%)
-        </li>
-        <li>Finit par : %texte (si on recherche une information qui finit par 'clos.' on écrit comme critère de
-            recherche : %clos.)
-        </li>
-    </ul>
-    </p>
-<?php endif; ?>
+<p>* : le caractère % permet d'affiner les recherches comme indiqué ci-dessous :
+<ul>
+    <li>Commence par : texte% (si on recherche une information qui commence par 'Département' on écrit comme critère
+        de recherche : Département%)
+    </li>
+    <li>Comprend : %texte% (si on recherche une information qui comprend 'avril' on écrit comme critère de recherche
+        : %avril%)
+    </li>
+    <li>Finit par : %texte (si on recherche une information qui finit par 'clos.' on écrit comme critère de
+        recherche : %clos.)
+    </li>
+</ul>
+</p>
 
 <script type="application/javascript">
-    $(document).ready(function(){
-        $(".recherchediv .select2").select2({
-            width: "resolve",
+    $(document).ready(function () {
+        $('select').select2({
+            width: "100%",
             allowClear: true,
-            placeholder: 'Sélection d\'info sup'
+            placeholder: 'Aucune sélection'
         });
     });
 </script>

@@ -1132,7 +1132,7 @@ class DeliberationsController extends AppController
                 $this->set('typeseances_selected', $typeseances_selected);
 
                 $this->set('services', $this->Deliberation->Service->find('list', array('conditions' => array('Service.actif' => '1'))));
-                $this->set('themes', $this->Deliberation->Theme->find('list', array('conditions' => array('Theme.actif' => '1'))));
+                $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
                 $this->set('circuits', $this->Deliberation->Circuit->find('list'));
                 $this->set('datelim', $this->data['Deliberation']['date_limite']);
                 $this->set('redirect', $redirect);
@@ -3047,9 +3047,7 @@ class DeliberationsController extends AppController
             //  $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
             $this->set('date_seances', $this->Seance->generateAllList());
             $this->set('services', $this->Deliberation->Service->generateTreeList(null, null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
-            $this->set('themes', $this->Deliberation->Theme->find('list', array('order' => array('libelle asc'),
-                'recursive' => -1,
-                'fields' => array('Theme.id', 'Theme.libelle'))));
+            $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('circuits', $this->Circuit->find('list', array('order' => array('Circuit.nom asc'),
                 'fields' => array('Circuit.id', 'Circuit.nom'),
                 'recursive' => -1)));
@@ -3179,9 +3177,7 @@ class DeliberationsController extends AppController
             //    $this->set('selectedRapporteur', $this->data['Deliberation']['rapporteur_id']);
             $this->set('date_seances', $this->Seance->generateAllList());
             $this->set('services', $this->Deliberation->Service->generateTreeList(null, null, null, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'));
-            $this->set('themes', $this->Deliberation->Theme->find('list', array('order' => array('libelle asc'),
-                'recursive' => -1,
-                'fields' => array('Theme.id', 'Theme.libelle'))));
+            $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
             $this->set('circuits', $this->Circuit->find('list', array('order' => array('Circuit.nom asc'),
                 'fields' => array('Circuit.id', 'Circuit.nom'),
                 'recursive' => -1)));
