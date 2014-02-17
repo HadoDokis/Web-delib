@@ -39,7 +39,6 @@
                 ?>
             </th>
             <th><?php echo $this->Paginator->sort('num_pref', 'Classification'); ?></th>
-            <th><?php echo $this->Paginator->sort('tdt_id', 'Identifiant TDT'); ?></th>
             <th>Statut TDT <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majArTdt'), array('escape'=>false)); ?></th>
             <th>Courriers Ministériels <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('action'=>'majEchangesTdt'), array('escape'=>false)); ?></th>
         </tr>
@@ -68,7 +67,6 @@
                 ?>
             </td>
             <td><?php echo $delib['Deliberation']['num_pref']; ?></td>
-            <td><?php echo $delib['Deliberation']['tdt_id']; ?></td>
             <td>
                 <?php
                 if (isset($delib['Deliberation']['code_retour'])) {
