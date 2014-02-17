@@ -167,8 +167,8 @@
             allowClear: true,
             placeholder: 'Aucune sélection',
             formatSelection: function (object, container) {
-                // Supprimer les espaces multiple (affichage en arbre) de la sélection
-                return object.text.replace(/^\s+|\s+$/g, '');
+                // trim sur la sélection (affichage en arbre)
+                return $.trim(object.text);
             }
         });
     });
