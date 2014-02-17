@@ -303,14 +303,22 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/edit/' .
             $(".select2.selectmultiple").select2({
                 width: "resolve",
                 allowClear: true,
-                placeholder: "Liste à choix multiples"
+                placeholder: "Liste à choix multiples",
+                formatSelection: function (object, container) {
+                    // trim sur la sélection (affichage en arbre)
+                    return $.trim(object.text);
+                }
             });
             $(".select2.selectone").select2({
                 width: "element",
                 allowClear: true,
                 dropdownCssClass: "selectMaxWidth",
                 dropdownAutoWidth: true,
-                placeholder: "Selectionnez un élément"
+                placeholder: "Selectionnez un élément",
+                formatSelection: function (object, container) {
+                    // trim sur la sélection (affichage en arbre)
+                    return $.trim(object.text);
+                }
             });
         });
     </script>
