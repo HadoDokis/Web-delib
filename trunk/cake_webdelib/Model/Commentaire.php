@@ -12,10 +12,10 @@ class Commentaire extends AppModel {
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $deliberationId id du projet/délibération
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    function setVariablesFusion(&$oMainPart, $deliberationId, &$modelOdtInfos) {
+    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $deliberationId) {
         //lecture des commentaires
         $commentaires = $this->find('all', array(
             'recursive' => -1,
