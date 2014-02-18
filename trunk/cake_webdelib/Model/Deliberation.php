@@ -157,25 +157,54 @@ class Deliberation extends AppModel {
             
 	);
 
-	/*
-	 * Indique si le projet de délibération $delibId est modifiable pour $userId.
-	* Attention : ne tient pas compte des droits qui sont fait dans le controller
-	* En fonction de l'état du projet on a :
-	* - le projet est refusé (etat = -1) : non modifiable
-	* - le projet est en cours de rédaction (etat = 0) :
-	*   + l'utilisateur connecté est le rédacteur du projet : modifiable
-	*   + l'utilisateur connecté n'est pas le rédacteur du projet : non modifiable
-	*  - le projet est en cours de validation (etat = 1) :
-	*    + l'utilisateur connecté n'est pas dans le circuit de validation : non modifiable
-	*    + l'utilisateur connecté est dans le circuit de validation :
-	*      * il a déja validé le projet : non modifiable
-	*      * c'est à son tour de traiter le projet : modifiable
-	*      * son tour n'est pas encore passé : modifiable
-	*  - le projet est validé (etat = 2) : non modifiable
-	*  - le projet a été voté (etat = 3 ou 4) : non modifiable
-	*  - le projet a été envoyé (etat = 5) : non modifiable
-	*  - le projet a recu un avis (avis = 1 ou 2) : non modifiable
-	*/
+    /**
+     * Si vous avez besoin d’exécuter de la logique juste après chaque opération de sauvegarde,
+     * placez-la dans cette méthode de rappel. Les données sauvegardées seront disponibles dans $this->data
+     * @param bool $created La valeur de $created sera true si un nouvel objet a été créé (plutôt qu’un objet mis à jour)
+     * @param array $options Le tableau $options est le même que celui passé dans Model::save()
+     */
+    public function afterSave($created, $options = array()) {
+        if (!empty($this->data['Deliberation']['id'])) {
+            $hasChildren = $this->hasAny(array('Deliberation.parent_id' => $this->data['Deliberation']['id']));
+            //Si la delib a des enfants
+            if ($hasChildren) {
+                //Recopie des attributs etat (si < ou = à 2) et circuit_id
+                if (array_key_exists('etat', $this->data['Deliberation']) && $this->data['Deliberation']['etat'] <= 2) {
+                    $this->updateAll(
+                        array('Deliberation.etat' => $this->data['Deliberation']['etat']),
+                        array('Deliberation.parent_id' => $this->data['Deliberation']['id'])
+                    );
+                    $this->log('changement d\'état délibs enfants', 'debug');
+                }
+                if (array_key_exists('circuit_id', $this->data['Deliberation'])) {
+                    $this->updateAll(
+                        array('Deliberation.circuit_id' => $this->data['Deliberation']['circuit_id']),
+                        array('Deliberation.parent_id' => $this->data['Deliberation']['id'])
+                    );
+                }
+            }
+        }
+    }
+
+    /*
+     * Indique si le projet de délibération $delibId est modifiable pour $userId.
+    * Attention : ne tient pas compte des droits qui sont fait dans le controller
+    * En fonction de l'état du projet on a :
+    * - le projet est refusé (etat = -1) : non modifiable
+    * - le projet est en cours de rédaction (etat = 0) :
+    *   + l'utilisateur connecté est le rédacteur du projet : modifiable
+    *   + l'utilisateur connecté n'est pas le rédacteur du projet : non modifiable
+    *  - le projet est en cours de validation (etat = 1) :
+    *    + l'utilisateur connecté n'est pas dans le circuit de validation : non modifiable
+    *    + l'utilisateur connecté est dans le circuit de validation :
+    *      * il a déja validé le projet : non modifiable
+    *      * c'est à son tour de traiter le projet : modifiable
+    *      * son tour n'est pas encore passé : modifiable
+    *  - le projet est validé (etat = 2) : non modifiable
+    *  - le projet a été voté (etat = 3 ou 4) : non modifiable
+    *  - le projet a été envoyé (etat = 5) : non modifiable
+    *  - le projet a recu un avis (avis = 1 ou 2) : non modifiable
+    */
 	function estModifiable($delibId, $userId, $canEdit=false) {
 		/* lecture en base */
 		$delib = $this->find('first', array(
@@ -396,19 +425,15 @@ class Deliberation extends AppModel {
         $delibRattachees = $this->find('all', array(
             'contain' => array('Annex'),
             'conditions' => array('Deliberation.parent_id' => $id)));
-        foreach ($delibRattachees as $delibRattachee) {
-            // maj de l'etat de la delib dans la table deliberations
-            $delibRattachee['Deliberation']['etat'] = -1; //etat -1 : refuse
-            // Retour de la position a 0 pour ne pas qu'il y ait de confusion
-            //$delibRattachee['Deliberation']['position']=0;
-            $this->save($delibRattachee);
 
+        foreach ($delibRattachees as $delibRattachee) {
             // création de la nouvelle version
             $this->create();
+            $anterieure_id = $delibRattachee['Deliberation']['id'];
             unset($delibRattachee['Deliberation']['id']);
             $delibRattachee['Deliberation']['parent_id'] = $delib_id;
             $delibRattachee['Deliberation']['etat'] = 0;
-            unset($delibRattachee['Deliberation']['anterieure_id']);
+            $delibRattachee['Deliberation']['anterieure_id'] = $anterieure_id;
             unset($delibRattachee['Deliberation']['date_envoi']);
             $delibRattachee['Deliberation']['created'] = date('Y-m-d H:i:s', time());
             $delibRattachee['Deliberation']['modified'] = date('Y-m-d H:i:s', time());
@@ -416,10 +441,9 @@ class Deliberation extends AppModel {
             $delibRattachee_id = $this->getLastInsertID();
 
             // copie des annexes du projet refusé vers le nouveau projet
-            $annexes = $delibRattachee['Annex'];
-            foreach ($annexes as $annexe) {
+            foreach ($delibRattachee['Annex'] as $annexe) {
+                unset($annexe['id']);
                 $tmp['Annex'] = $annexe;
-                unset($tmp['Annex']['id']);
                 $tmp['Annex']['foreign_key'] = $delibRattachee_id;
                 $this->Annex->save($tmp, false);
             }
@@ -1197,7 +1221,7 @@ class Deliberation extends AppModel {
             $newDelib = $this->create();
             $newDelib['Deliberation']['parent_id'] = $parentId;
         }
-        $newDelib['Deliberation']['num_pref'] = '';
+        $newDelib['Deliberation']['num_pref'] = $delib['num_pref'];
         $newDelib['Deliberation']['objet'] = $delib['objet_delib'];
         $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
         $newDelib['Deliberation']['titre'] = !empty($delib['titre']) ? $delib['titre'] : null;
@@ -1213,10 +1237,8 @@ class Deliberation extends AppModel {
                     $newDelib['Deliberation']['deliberation'] = '';
                 else
                     $newDelib['Deliberation']['deliberation'] = file_get_contents($delib['deliberation']['tmp_name']);
-            } else {
-                $pos = strrpos(getcwd(), 'webroot');
-                $path = substr(getcwd(), 0, $pos);
-                $path_projet = $path . 'webroot/files/generee/projet/' . $this->id . '/';
+            } elseif (isset($delib['id'])) {
+                $path_projet = APP . 'webroot/files/generee/projet/' . $delib['id'] . '/';
                 if (file_exists($path_projet . 'deliberation.odt'))
                     $newDelib['Deliberation']['deliberation'] = file_get_contents($path_projet . 'deliberation.odt');
             }
@@ -1233,6 +1255,18 @@ class Deliberation extends AppModel {
         foreach ($seances as $seance)
             $tabs[] = $seance['Deliberationseance']['seance_id'];
         $this->Seance->reOrdonne($this->id, $tabs);
+
+        $typeseances = $this->Deliberationtypeseance->find('all', array(
+            'conditions' => array('deliberation_id' => $parentId),
+            'recursive' => -1
+        ));
+        foreach ($typeseances as $typeseance){
+            unset($typeseance['Deliberationtypeseance']['id']);
+            $typeseance['Deliberationtypeseance']['deliberation_id'] = $this->id;
+            $this->Deliberationtypeseance->create();
+            $this->Deliberationtypeseance->save($typeseance);
+        }
+
         return $this->id;
     }
 

@@ -978,15 +978,18 @@ a.link_rebond_avec_border {
     box-shadow: -1px 1px 1px 0px rgba(0, 0, 0, 0.7);
 
 }
-
-#vue_cadre h3 {
-	text-align: center;
-	font: normal small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+#vue_cadre h2, #vue_cadre h3{
+    text-align: center;
+    font: small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
     padding-top: 10px;
     padding-bottom: 10px;
     border-bottom: 2px solid #DDD;
     background-color: #f0f0f0;
     font-weight: bold;
+}
+#vue_cadre h3 {
+    font-size: 18px;
+    border-top: 2px solid #DDD;
 }
 
 #vue_cadre dt{

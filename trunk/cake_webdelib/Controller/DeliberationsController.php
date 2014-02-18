@@ -84,19 +84,21 @@ class DeliberationsController extends AppController
         'editerTous' => 'Editer tous les projets',
     );
 
-    function view($id = null)
-    {
+    function view($id = null) {
         $this->set('previous', $this->referer());
 
         $this->Deliberation->Behaviors->load('Containable');
         $this->request->data = $this->Deliberation->find('first', array(
             'fields' => array(
                 'id', 'anterieure_id', 'service_id', 'circuit_id', 'typeacte_id',
-                'etat', 'num_delib', 'titre', 'objet', 'objet_delib', 'num_pref',
+                'etat', 'num_delib', 'titre', 'objet', 'objet_delib', 'num_pref', 'parent_id',
                 'texte_projet_name', 'texte_synthese_name', 'deliberation_name',
                 'created', 'modified', 'deliberation', 'texte_projet', 'texte_synthese'),
             'contain' => array(
-                'Multidelib' => array('fields' => array('id', 'objet', 'objet_delib', 'num_delib', 'etat', 'deliberation', 'deliberation_name')),
+                'Multidelib' => array(
+                    'fields' => array('id', 'objet', 'objet_delib', 'num_delib', 'etat', 'deliberation', 'deliberation_name'),
+                    'Annex' => array('fields' => array('id', 'titre', 'joindre_ctrl_legalite', 'filename'))
+                ),
                 'Redacteur' => array('fields' => array('id', 'nom', 'prenom')),
                 'Rapporteur' => array('fields' => array('id', 'nom', 'prenom')),
                 'Infosup',
@@ -110,17 +112,16 @@ class DeliberationsController extends AppController
                     )),
                 'Deliberationseance' => array('fields' => array('id'),
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
-
                         'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
             'conditions' => array('Deliberation.id' => $id)
         ));
         $this->request->data['Deliberationseance'] = Hash::sort($this->request->data['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
 
-        $this->request->data['Deliberation']['num_pref']=$this->data['Deliberation']['num_pref'].' - '.$this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
-        
+        $this->request->data['Deliberation']['num_pref'] = $this->data['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
+
         if (empty($this->data)) {
             $this->Session->setFlash('Invalide id pour la délibération : affichage de la vue impossible.', 'growl');
-            $this->redirect(array('action'=>'mesProjetsRedaction'));
+            $this->redirect(array('action' => 'mesProjetsRedaction'));
         }
         $userId = $this->Session->read('user.User.id');
 
@@ -148,7 +149,7 @@ class DeliberationsController extends AppController
             $estDansCircuit = $this->Traitement->triggerDansTraitementCible($userId, $id);
             if (empty($acte) && ($estDansCircuit == false)) {
                 $this->Session->setFlash("Vous n'avez pas les droits pour visualiser cet acte", 'growl');
-                $this->redirect(array('action'=>'mesProjetsRedaction'));
+                return $this->redirect(array('action' => 'mesProjetsRedaction'));
             }
         }
 
@@ -156,13 +157,10 @@ class DeliberationsController extends AppController
         $this->request->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->data['Infosup'], false);
 
         // Lecture des versions anterieures
-        $listeAnterieure = array();
-        $tab_anterieure = $this->Deliberation->chercherVersionAnterieure($this->data, 0, $listeAnterieure, 'view');
-        $this->set('tab_anterieure', $tab_anterieure);
+        $this->set('tab_anterieure', $this->Deliberation->chercherVersionAnterieure($this->data, 0, array(), 'view'));
 
         //Lecture de la version supérieure
-        $versionsup = $this->Deliberation->chercherVersionSuivante($id);
-        $this->set('versionsup', $versionsup);
+        $this->set('versionsup', $this->Deliberation->chercherVersionSuivante($id));
 
         if ($this->Droits->check($this->user_id, "Deliberations:edit") && $this->Deliberation->estModifiable($id, $this->user_id))
             $this->set('userCanEdit', true);
@@ -201,8 +199,8 @@ class DeliberationsController extends AppController
         if (!empty($this->data['Seance']['date']))
             $this->request->data['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($this->data['Seance']['date']));
         // initialisation des séances
-        $listeTypeSeance=array();
-        $this->request->data['listeSeances']=array();
+        $listeTypeSeance = array();
+        $this->request->data['listeSeances'] = array();
         if (isset($this->request->data['Deliberationseance']) && !empty($this->request->data['Deliberationseance'])) {
             foreach ($this->request->data['Deliberationseance'] as $keySeance => $seance) {
                 $this->request->data['listeSeances'][] = array(
@@ -216,7 +214,7 @@ class DeliberationsController extends AppController
         }
 
         if (isset($this->request->data['Deliberationtypeseance']) && !empty($this->request->data['Deliberationtypeseance'])) {
-            foreach ($this->request->data['Deliberationtypeseance'] as $keyType => $typeseance) {
+            foreach ($this->request->data['Deliberationtypeseance'] as $typeseance) {
                 if (!in_array($typeseance['Typeseance']['id'], $listeTypeSeance))
                     $this->request->data['listeSeances'][] = array(
                         'seance_id' => NULL,
@@ -237,12 +235,13 @@ class DeliberationsController extends AppController
             'conditions' => array('model' => 'Deliberation', 'actif' => true),
             'order' => 'ordre')));
 
+        $target_id = empty($this->request->data['Deliberation']['parent_id']) ? $id : $this->request->data['Deliberation']['parent_id'];
         //Test si le projet a été inséré dans un circuit, si oui charger l'affichage
-        $wkf_exist = $this->Traitement->find('count', array('recursive' => -1, 'conditions' => array('target_id' => $id)));
-        if ($wkf_exist !== 0)
-            $this->set('visu', $this->requestAction('/cakeflow/traitements/visuTraitement/' . $id, array('return')));
+        $wkf_exist = $this->Traitement->find('count', array('recursive' => -1, 'conditions' => array('target_id' => $target_id)));
+        if (!empty($wkf_exist))
+            $this->set('visu', $this->requestAction(array('plugin'=>'cakeflow', 'controller'=>'traitements','action'=>'visuTraitement', $target_id), array('return')));
         else
-            $this->set('visu', null, array('return'));
+            $this->set('visu', null);
 
         $this->set('etat', $this->data['Deliberation']['etat']);
         //si bloqué à une étape de délégation
@@ -652,6 +651,9 @@ class DeliberationsController extends AppController
                     'Annex.titre', 'Annex.joindre_ctrl_legalite', 'Annex.joindre_fusion',
                     'Infosup', 'Seance', 'Typeseance', 'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom'),
                 'conditions' => array('Deliberation.id' => $id)));
+            if (!empty($this->request->data['Deliberation']['parent_id'])){
+                return $this->redirect(array('action' => 'edit', $this->request->data['Deliberation']['parent_id']));
+            }
             App::import('Model', 'TypeseancesTypeacte');
             $TypeseancesTypeacte = new TypeseancesTypeacte();
             $typeseance_ids = $TypeseancesTypeacte->getTypeseanceParNature($this->request->data['Deliberation']['typeacte_id']);
@@ -992,13 +994,14 @@ class DeliberationsController extends AppController
                     // sauvegarde de délibérations rattachées
                     if (array_key_exists('Multidelib', $this->data)) {
                         foreach ($this->data['Multidelib'] as $iref => $multidelib) {
+                            $multidelib['num_pref'] = $this->data['Deliberation']['num_pref'];
                             $delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib, $this->data['Deliberation']['objet']);
                             // sauvegarde des nouvelles annexes pour cette delib rattachée
                             if (array_key_exists('Annex', $this->data))
                                 foreach ($this->data['Annex'] as $annexe)
                                     if ($annexe['ref'] == 'delibRattachee' . $iref)
                                         if (!$this->_saveAnnexe($delibRattacheeId, $annexe, $annexesErrors)) {
-                                            $this->redirect($redirect);
+                                            return $this->redirect($redirect);
                                         }
                         }
                     }
@@ -1390,6 +1393,7 @@ class DeliberationsController extends AppController
             'fields' => array(
                 'id',
                 'anterieure_id',
+                'parent_id',
                 'service_id',
                 'circuit_id',
                 'etat',
@@ -1433,6 +1437,11 @@ class DeliberationsController extends AppController
             ),
             'conditions' => array('Deliberation.id' => $id)));
 
+        //Si traitement d'une delib "enfant" rediriger vers traitement delib "parent"
+        if (!empty($projet['Deliberation']['parent_id'])){
+            return $this->redirect(array('action' => 'traiter', $projet['Deliberation']['parent_id']));
+        }
+
         $projet['Modeltemplate']['id'] = $this->Deliberation->getModelId($id);
         $projet['Deliberation']['num_pref'] = $projet['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($projet['Deliberation']['num_pref']);
 
@@ -1440,12 +1449,14 @@ class DeliberationsController extends AppController
             $this->Session->setFlash('identifiant invalide pour le projet : ' . $id, 'growl', array('type' => 'erreur'));
             return $this->redirect(array('action'=>'mesProjetsATraiter'));
         } else {
+            $triggers = $this->Deliberation->Traitement->whoIs($id);
+            if (!in_array($this->user_id, $triggers)){
+                $this->redirect(array('action' => 'view', $id));
+            }
             if ($valid == null) {
                 $nb_recursion = 0;
                 $action = 'view';
-                $listeAnterieure = array();
-                $tab_anterieure = $this->Deliberation->chercherVersionAnterieure($projet, $nb_recursion, $listeAnterieure, $action);
-                $this->set('tab_anterieure', $tab_anterieure);
+                $this->set('tab_anterieure', $this->Deliberation->chercherVersionAnterieure($projet, $nb_recursion, array(), $action));
                 $commentaires = $this->Commentaire->find('all', array('conditions' => array(
                     'Commentaire.delib_id' => $id,
                     'Commentaire.pris_en_compte' => 0),

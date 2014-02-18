@@ -66,31 +66,18 @@ $listeIds = $deliberation['Deliberation']['id'];
 foreach ($deliberation['Multidelib'] as $delibRattachee) {
     $listeIds .= ', ' . $delibRattachee['id'];
 }
-echo $this->Html->tag('h3', '[' . $deliberation['Typeacte']['libelle'] . '] - Traitement du projet "' . $deliberation['Deliberation']['objet'] . '" (id : ' . $listeIds . ')');
+echo $this->Html->tag('h2', '[' . $deliberation['Typeacte']['libelle'] . '] - Traitement du projet "' . $deliberation['Deliberation']['objet'] . '" (id : ' . $listeIds . ')');
 
 echo $linkBarre;
 ?>
 <hr style='margin-top: 9px;'/>
 <dl>
     <div class="imbrique">
-        <?php
-        if (empty($deliberation['Multidelib'])) {
-            echo $this->Html->tag('dt', 'Libellé');
-            echo $this->Html->tag('dd', '&nbsp;' . $deliberation['Deliberation']['objet']);
-        } else {
-            echo $this->element('viewDelibRattachee', array(
-                'delib' => $deliberation['Deliberation'],
-                'annexes' => $deliberation['Annex'],
-                'natureLibelle' => $deliberation['Typeacte']['libelle']));
-            foreach ($deliberation['Multidelib'] as $delibRattachee) {
-                echo $this->element('viewDelibRattachee', array(
-                    'delib' => $delibRattachee,
-                    'annexes' => $delibRattachee['Annex'],
-                    'natureLibelle' => $deliberation['Typeacte']['libelle']));
-            }
-            echo $this->Html->tag('h2', 'Informations du projet (communes aux délibérations)');
-        }
-        ?>
+        <?php if (!empty($deliberation['Multidelib'])) {
+            echo $this->Html->tag('h3', 'Informations globales');
+        } ?>
+        <dt>Libellé</dt>
+        <dd>&nbsp;<?php echo $deliberation['Deliberation']['objet'] ?></dd>
         <dt>Titre</dt>
         <dd>&nbsp;<?php echo $deliberation['Deliberation']['titre'] ?></dd>
     </div>
@@ -236,6 +223,18 @@ echo $linkBarre;
         }
         echo '</dd>';
     }
+    if (!empty($deliberation['Multidelib'])) {
+        echo $this->element('viewDelibRattachee', array(
+            'delib' => $deliberation['Deliberation'],
+            'annexes' => $deliberation['Annex'],
+            'natureLibelle' => $deliberation['Typeacte']['libelle']));
+        foreach ($deliberation['Multidelib'] as $delibRattachee) {
+            echo $this->element('viewDelibRattachee', array(
+                'delib' => $delibRattachee,
+                'annexes' => $delibRattachee['Annex'],
+                'natureLibelle' => $deliberation['Typeacte']['libelle']));
+        }
+    }
     ?>
 
 </dl>
@@ -263,33 +262,31 @@ echo $linkBarre;
             lienAfficherMasquer.html('[Afficher le texte]');
         }
     }
-</script>
-<script type="text/javascript">
+
     $(document).ready(function () {
-        <?php
-        if ($majDeleg) {
-            ?>
+        <?php if ($majDeleg): ?>
+
         function afficheMAJ() {
             $("div.nomcourante").parent().append('<?php
-    echo $this->Html->tag('div', $this->Html->link(
-                    $this->Html->tag("i", "", array("class" => "fa fa-repeat")) . " Mise à jour", "/deliberations/majEtatParapheur/" . $deliberation['Deliberation']['id'], array('escape' => false, "class" => "btn btn-inverse")), array('class' => 'majDeleg', 'title'=>'Mettre à jour le statut des étapes de délégations'));
+    echo $this->Html->tag('div',
+     $this->Html->link( $this->Html->tag('i', '', array('class' => 'fa fa-repeat')) . ' Mise à jour', array('controller'=>'deliberations','action'=>'MajEtatParapheur', $deliberation['Deliberation']['id']), array('escape' => false, 'class' => 'btn btn-inverse')),
+     array('class' => 'majDeleg', 'title'=>'Mettre à jour le statut des étapes de délégations'));
     ?>')
         }
 
         afficheMAJ();
-        <?php
-    }
-
-    if (isset($visas_retard) && !empty($visas_retard)) {
-        foreach ($visas_retard as $visa) {
-            ?>
-        $('#etape_<?php echo $visa["Visa"]['numero_traitement']; ?> .delegation').before('<?php
+        <?php endif; ?>
+<?php
+ if (isset($visas_retard) && !empty($visas_retard)):
+        foreach ($visas_retard as $visa):
+        ?>
+        $('#etape_<?php echo $visa['Visa']['numero_traitement']; ?> .delegation').before('<?php
         echo $this->Html->link(
-                $this->Html->tag("i", "", array("class" => "fa fa-repeat")), "/cakeflow/traitements/traiterDelegationsPassees/" . $visa["Visa"]['traitement_id'] . "/" . $visa["Visa"]['numero_traitement'] . '/traiter', array('escape' => false, "style" => "text-decoration:none;margin-right:5px;", 'title'=> 'Mettre à jour le statut de cette étape'));
+                $this->Html->tag('i', '', array('class' => 'fa fa-repeat')), array('plugin'=>'cakeflow', 'controller'=>'traitements','action'=>'traiterDelegationsPassees', $visa['Visa']['traitement_id'], $visa['Visa']['numero_traitement'], 'traiter'), array('escape' => false, 'style' => 'text-decoration:none;margin-right:5px;', 'title'=> 'Mettre à jour le statut de cette étape'));
         ?>');
         <?php
-        }
-    }
+        endforeach;
+    endif;
     ?>
     });
 </script>
