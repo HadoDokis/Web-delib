@@ -6,7 +6,7 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Form2', 'Fck', 'Html2');
-	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low','Pdf');
+	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'Pdf', 'Cookie');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
 	var $cacheAction = 0;
 
@@ -1707,5 +1707,59 @@ class SeancesController extends AppController {
             $this->Session->setFlash('Convocations envoyés avec succès à i-delibRE.', 'growl');
         $this->Progress->end('/seances/listerFuturesSeances');
         return $this->redirect(array('controller'=>'seances', 'action'=>'listerFuturesSeances'));
+    }
+
+    /**
+     * génération d'une convocation et envoi du résultat vers le client
+     * @param integer $id id de la séance
+     * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
+     * @return CakeResponse
+     */
+    function genereConvocationToClient($id, $cookieToken = null) {
+        try {
+            // vérification de l'existence de la séance
+            if (!$this->Seance->hasAny(array('id' => $id)))
+                throw new Exception('Séance id:' . $id . ' non trouvée en base de données');
+
+            // fusion du document
+            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelTypeName'=>'Convocation'));
+            $filename = $this->Seance->fusionName();
+            $this->Seance->odtFusion();
+
+            // selon le format d'envoi du document (pdf ou odt)
+            if ($this->Session->read('user.format.sortie') == 0) {
+                $mimeType = "application/pdf";
+                $filename = $filename . '.pdf';
+                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'pdf');
+            } else {
+                $mimeType = "application/vnd.oasis.opendocument.text";
+                $filename = $filename . '.odt';
+                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'odt');
+            }
+            unset($this->Seance->odtFusionResult->content->binary);
+
+            // envoi au client
+            $this->Cookie->destroy();
+            $this->Cookie->write('downloadToken', $cookieToken, false, 3600);
+            $this->response->disableCache();
+            $this->response->body($content);
+            $this->response->type($mimeType);
+            $this->response->download($filename);
+            return $this->response;
+        } catch (Exception $e) {
+            $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
+            $this->redirect($this->referer());
+        }
+    }
+
+    public function beforeFilter() {
+        parent::beforeFilter();
+        //Pour la fonction generer réglage du cookie
+        $this->Cookie->name = 'Generer';
+        $this->Cookie->time = 3600;  // ou '1 hour'
+        $this->Cookie->path = '/';
+        $this->Cookie->domain = $_SERVER["HTTP_HOST"];
+        $this->Cookie->secure = false;  // HTTPS sécurisé seulement (NON)
+        $this->Cookie->httpOnly = false; // Pour accès javascript
     }
 }
