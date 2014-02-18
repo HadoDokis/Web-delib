@@ -13,6 +13,7 @@
  *
  */
 
+App::uses('phpOdtApi', 'ModelOdtValidator.Lib');
 class OdtFusionBehavior extends ModelBehavior {
 
     // id de l'occurence en base de données à fusionner
@@ -31,6 +32,12 @@ class OdtFusionBehavior extends ModelBehavior {
     protected $_fileNameSuffixe = '';
 
     /**
+     * Instance de la librairie phpOdtApi
+     * @var phpOdtApi $modelOdtInfos
+     */
+    protected $modelOdtInfos;
+
+    /**
      * Sets up the configuration for the model, and loads OdtFusion models if they haven't been already
      * Génère une exception en cas d'erreur
      *
@@ -44,6 +51,7 @@ class OdtFusionBehavior extends ModelBehavior {
     public function setup(Model $model, $options = array()) {
         // initialisations
         $model->odtFusionResult = null;
+        $this->modelOdtInfos = new phpOdtApi();
         $this->_setup($options);
 	}
 
@@ -114,9 +122,7 @@ class OdtFusionBehavior extends ModelBehavior {
         $this->_loadModelTemplate($model);
 
         // parsing du model d'édition odt pour accéder aux variables et sections déclarées
-        require_once(APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Lib'.DS.'phpOdtApi.php');
-        $modelOdtInfos = new phpOdtApi();
-        $modelOdtInfos->loadFromOdtBin($this->_modelTemplateContent);
+        $this->modelOdtInfos->loadFromOdtBin($this->_modelTemplateContent);
 
         // chargement des classes php de Gedooo
         include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
@@ -140,10 +146,10 @@ class OdtFusionBehavior extends ModelBehavior {
         $oMainPart = new GDO_PartType();
 
         // initialisation des variables communes
-        $this->_setVariablesCommunesFusion($oMainPart, $modelOdtInfos);
+        $this->_setVariablesCommunesFusion($oMainPart);
 
         // initialisation des variables du model de données
-        $model->beforeFusion($oMainPart, $modelOdtInfos, $this->_id, $this->_modelTypeName);
+        $model->beforeFusion($oMainPart, $this->modelOdtInfos, $this->_id, $this->_modelTypeName);
 
         // initialisation de la fusion
         $oFusion = new GDO_FusionType($oTemplate, "application/vnd.oasis.opendocument.text", $oMainPart);
@@ -202,20 +208,19 @@ class OdtFusionBehavior extends ModelBehavior {
      * fonction de fusion des variables communes : collectivité et dates
      * génère une exception en cas d'erreur
      * @param GDO_PartType $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param phpOdtApi $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    private function _setVariablesCommunesFusion(GDO_PartType &$oMainPart, phpOdtApi &$modelOdtInfos) {
+    private function _setVariablesCommunesFusion(GDO_PartType &$oMainPart) {
         // variables des dates du jour
-        if ($modelOdtInfos->hasUserField('date_jour_courant')) {
+        if ($this->modelOdtInfos->hasUserField('date_jour_courant')) {
             $myDate = new DateComponent;
             $oMainPart->addElement(new GDO_FieldType('date_jour_courant', $myDate->frenchDate(strtotime("now")), 'text'));
         }
-        if ($modelOdtInfos->hasUserField('date_du_jour'))
+        if ($this->modelOdtInfos->hasUserField('date_du_jour'))
             $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
 
         // variables de la collectivité
         $myCollectivite = ClassRegistry::init('Collectivite');
-        $myCollectivite->setVariablesFusion($oMainPart, $modelOdtInfos, 1);
+        $myCollectivite->setVariablesFusion($oMainPart,$this->modelOdtInfos, 1);
     }
 
 }
