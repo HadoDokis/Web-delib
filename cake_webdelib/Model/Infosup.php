@@ -413,11 +413,11 @@ class Infosup extends AppModel
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param string $modelName nom du modele lié
      * @param integer $id id du modèle lié
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    function setVariablesFusion(&$oMainPart, $modelName, $id, &$modelOdtInfos) {
+    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $modelName, $id) {
         // lecture de la définition des infosup
         $allInfoSupDefs = $this->Infosupdef->find('all', array(
             'recursive' => -1,

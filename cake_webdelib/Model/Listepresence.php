@@ -44,10 +44,10 @@ class Listepresence extends AppModel {
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $deliberationId id de la délibération
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    function setVariablesFusionPresents(&$oMainPart, $deliberationId, &$modelOdtInfos) {
+    function setVariablesFusionPresents(&$oMainPart, &$modelOdtInfos, $deliberationId) {
         // initialisations
         $fusionVariables = array('nom', 'prenom', 'salutation', 'titre', 'date_naissance', 'adresse1', 'adresse2', 'cp', 'ville', 'email', 'telfixe', 'telmobile', 'note');
 
@@ -100,10 +100,10 @@ class Listepresence extends AppModel {
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $deliberationId id de la délibération
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    function setVariablesFusionAbsents(&$oMainPart, $deliberationId, &$modelOdtInfos) {
+    function setVariablesFusionAbsents(&$oMainPart, &$modelOdtInfos, $deliberationId) {
         // initialisations
         $fusionVariables = array('nom', 'prenom', 'salutation', 'titre', 'date_naissance', 'adresse1', 'adresse2', 'cp', 'ville', 'email', 'telfixe', 'telmobile', 'note');
 
@@ -149,10 +149,10 @@ class Listepresence extends AppModel {
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $deliberationId id de la délibération
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    function setVariablesFusionMandates(&$oMainPart, $deliberationId, &$modelOdtInfos) {
+    function setVariablesFusionMandates(&$oMainPart, &$modelOdtInfos, $deliberationId) {
         // initialisations
         $fusionVariables = array('nom', 'prenom', 'salutation', 'titre', 'date_naissance', 'adresse1', 'adresse2', 'cp', 'ville', 'email', 'telfixe', 'telmobile', 'note');
 
