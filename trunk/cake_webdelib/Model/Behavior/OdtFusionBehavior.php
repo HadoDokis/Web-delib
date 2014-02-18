@@ -4,8 +4,11 @@
  *
  * Centralise les fonctions de fusion des modèles odt avec les données des modèles
  *
+ * Callbacks:
+ *  - getModelTemplateId($this->_id, $this->_modelTypeName) : le modèle doit posséder cette méthode qui retourne l'id du modeltemplate à utiliser
+ *  - beforeFusion($this->_id, $this->_modelTypeName) : le modèle doit posséder cette méthode pour l'initialisation des variables gedooo avant de faire la fusion
+ *
  * ATTENTION :
- *  - le modèle doit posséder une méthode getModelTemplateId($id)
  *  - ce comportement ajoute et stocke le résultat de la fusion dans la variable odtFusionResult du modèle
  *
  */
@@ -15,73 +18,95 @@ class OdtFusionBehavior extends ModelBehavior {
     // id de l'occurence en base de données à fusionner
     protected $_id = null;
 
+    // variables du modelType utilisé pour la fusion
+    protected $_modelTypeid = null;
+    protected $_modelTypeName = '';
+
     // variables du modelTemplate utilisé pour la fusion
     protected $_modelTemplateId = null;
     protected $_modelTemplateName = '';
     protected $_modelTemplateContent = '';
 
-/**
- * Sets up the configuration for the model, and loads OdtFusion models if they haven't been already
- * Génère une exception en cas d'erreur
- * Attention, le modèle doit posséder une méthode getModelTemplateId($id)
- *
- * @param Model $model
- * @param array $config formatée commesui :
- *  'id' => id de l'occurence du modèle sujet à la fusion
- * @return void
- */
-	public function setup(Model $model, $config = array()) {
+    // variable pour la détermination du nom du fichier de fusion
+    protected $_fileNameSuffixe = '';
+
+    /**
+     * Sets up the configuration for the model, and loads OdtFusion models if they haven't been already
+     * Génère une exception en cas d'erreur
+     *
+     * @param Model $model
+     * @param array $options liste des options formatée comme suit :
+     *  'id' => id de l'occurence du modèle sujet à la fusion
+     *  'modelTypeName' => nom du type de modèle de fusion
+     *  'fileNameSuffixe' : suffixe du nom de la fusion (défaut : $id)
+     * @return void
+     */
+    public function setup(Model $model, $options = array()) {
         // initialisations
         $model->odtFusionResult = null;
-
-        if (!empty($config['id'])) {
-            $this->_id = $config['id'];
-            $this->_loadModelTemplate($model);
-        }
+        $this->_setup($model, $options);
 	}
 
-/**
- * Retourne un nom pour la fusion qui est constitué du nom (liellé) du modèle odt échapé, suivi de '_'.$suffix.
- * Génère une exception en cas d'erreur
- * Attention, le modèle doit posséder une méthode getModelTemplateId($id)
- * @param array $options tableau des parmètres optionnels :
- * 		'id' : identifiant de l'occurence en base de données (défaut : $this->_id)
- * 		'suffixe' : suffixe du nom de la fusion (défaut : $id)
- * @return string
- */
-    public function fusionName(Model &$model, $options = array()) {
+    /**
+     * initialisation des variables du behavior
+     * @param array $config liste des options formatée comme suit :
+     *  'id' => id de l'occurence du modèle sujet à la fusion
+     *  'modelTypeName' => nom du type de modèle de fusion
+     *  'fileNameSuffixe' : suffixe du nom de la fusion (défaut : $id)
+     * @return void
+     */
+    public function _setup(Model &$model, $options) {
         // initialisations
-        if (empty($options['id'])) {
-            if (empty($this->_id))
-                throw new Exception('détermination du nom de la fusion -> occurence en base de données non déterminée');
-        } else
-            $this->_id = $options['id'];
-        if (empty($options['suffixe'])) $options['suffixe'] = $this->_id;
+        $defaultOptions = array(
+            'id' => $this->_id,
+            'modelTypeName' => $this->_modelTypeName,
+            'fileNameSuffixe' => $this->_fileNameSuffixe);
+        $options = array_merge($defaultOptions, $options);
 
-        // lecture du modèle odt
-        $this->_loadModelTemplate($model);
-
-        $fusionName = str_replace(array(' ', 'é', 'è', 'ê', 'ë', 'à'), array('_', 'e', 'e', 'e', 'e', 'a'), $this->_modelTemplateName);
-        return preg_replace('/[^a-zA-Z0-9-_\.]/','', $fusionName).'_'.$options['suffixe'];
+        // affectation des variables de la classe
+        $this->_id = $options['id'];
+        $this->_modelTypeName = $options['modelTypeName'];
+        $this->_fileNameSuffixe = empty($options['fileNameSuffixe'])?$options['id']:$options['fileNameSuffixe'];
     }
 
-/**
- * Fonction de fusion du modèle odt et des données.
- * Le résultat de la fusion est un odt dont le contenu est stocké dans la variable du model odtFusionResult
- * Attention, le modèle doit posséder une méthode getModelTemplateId($id)
- * @param array $options tableau des parmètres optionnels :
- * 		'id' : identifiant de l'occurence en base de données (défaut : $this->_id)
- * @return void
- */
+    /**
+     * Retourne un nom pour la fusion qui est constitué du nom (liellé) du modèle odt échapé, suivi de '_'.$suffix.
+     * Génère une exception en cas d'erreur
+     * @param array $options tableau des parmètres optionnels :
+     * 	'id' : identifiant de l'occurence en base de données (défaut : $this->_id)
+     *  'modelTypeName' => nom du type de modèle de fusion
+     * 	'fileNameSuffixe' : suffixe du nom de la fusion (défaut : $id)
+     * @return string
+     */
+    public function fusionName(Model &$model, $options = array()) {
+        // initialisations
+        $this->_setup($model, $options);
+        if (empty($this->_id))
+            throw new Exception('détermination du nom de la fusion -> occurence en base de données non déterminée');
+
+        // chargement du modelTemplate
+        $this->_loadModelTemplate($model);
+
+        // contitution du nom
+        $fusionName = str_replace(array(' ', 'é', 'è', 'ê', 'ë', 'à'), array('_', 'e', 'e', 'e', 'e', 'a'), $this->_modelTemplateName);
+        return preg_replace('/[^a-zA-Z0-9-_\.]/','', $fusionName).'_'.$this->_fileNameSuffixe;
+    }
+
+    /**
+     * Fonction de fusion du modèle odt et des données.
+     * Le résultat de la fusion est un odt dont le contenu est stocké dans la variable du model odtFusionResult
+     * @param array $options tableau des parmètres optionnels :
+     * 	'id' : identifiant de l'occurence en base de données (défaut : $this->_id)
+     *  'modelTypeName' => nom du type de modèle de fusion
+     * @return void
+     */
     public function odtFusion(Model &$model, $options = array()) {
         // initialisations
-        if (empty($options['id'])) {
-            if (empty($this->_id))
-                throw new Exception('fusion du document -> occurence en base de données non déterminée');
-        } else
-            $this->_id = $options['id'];
+        $this->_setup($model, $options);
+        if (empty($this->_id))
+            throw new Exception('détermination du nom de la fusion -> occurence en base de données non déterminée');
 
-        // lecture du nom du modèle odt
+        // chargement du modelTemplate
         $this->_loadModelTemplate($model);
 
         // parsing du model d'édition odt pour accéder aux variables et sections déclarées
@@ -114,7 +139,7 @@ class OdtFusionBehavior extends ModelBehavior {
         $this->_setVariablesCommunesFusion($oMainPart, $modelOdtInfos);
 
         // initialisation des variables du model de données
-        $model->setVariablesFusion($oMainPart, $this->_id, $modelOdtInfos);
+        $model->beforeFusion($oMainPart, $modelOdtInfos, $this->_id, $this->_modelTypeName);
 
         // initialisation de la fusion
         $oFusion = new GDO_FusionType($oTemplate, "application/vnd.oasis.opendocument.text", $oMainPart);
@@ -145,7 +170,6 @@ class OdtFusionBehavior extends ModelBehavior {
 
     /**
      * Lecture et stockage du modele d'édition
-     * Attention, le modèle doit posséder une méthode getModelTemplateId($id)
      * @param Model modele du comportement
      * @return void
      * @throw en cas d'erreur
@@ -153,9 +177,9 @@ class OdtFusionBehavior extends ModelBehavior {
     private function _loadModelTemplate(Model &$model) {
         if (!empty($this->_modelTemplateId)) return;
 
-        $modelTemplateId = $model->getModelTemplateId($this->_id);
+        $modelTemplateId = $model->getModelTemplateId($this->_id, $this->_modelTypeName);
         if (empty($modelTemplateId))
-            throw new Exception('modèle d\'édition non trouvé en base de données');
+            throw new Exception('identifiant du modèle d\'édition non trouvé pour id:'.$this->_id.' du model de données '.$model->alias);
 
         $myModeltemplate = ClassRegistry::init('ModelOdtValidator.Modeltemplate');
         $modelTemplate = $myModeltemplate->find('first', array(
@@ -163,7 +187,7 @@ class OdtFusionBehavior extends ModelBehavior {
             'fields' => array('id', 'name', 'content'),
             'conditions' => array('id' => $modelTemplateId)));
         if (empty($modelTemplate))
-            throw new Exception('modèle d\'édition non trouvé en base de données');
+            throw new Exception('modèle d\'édition non trouvé en base de données id:'.$this->_id);
 
         $this->_modelTemplateId = $modelTemplate['Modeltemplate']['id'];
         $this->_modelTemplateName = $modelTemplate['Modeltemplate']['name'];
@@ -187,7 +211,7 @@ class OdtFusionBehavior extends ModelBehavior {
 
         // variables de la collectivité
         $myCollectivite = ClassRegistry::init('Collectivite');
-        $myCollectivite->setVariablesFusion($oMainPart, 1, $modelOdtInfos);
+        $myCollectivite->setVariablesFusion($oMainPart, $modelOdtInfos, 1);
     }
 
 }
