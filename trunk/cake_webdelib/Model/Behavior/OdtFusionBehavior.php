@@ -44,18 +44,18 @@ class OdtFusionBehavior extends ModelBehavior {
     public function setup(Model $model, $options = array()) {
         // initialisations
         $model->odtFusionResult = null;
-        $this->_setup($model, $options);
+        $this->_setup($options);
 	}
 
     /**
      * initialisation des variables du behavior
-     * @param array $config liste des options formatée comme suit :
+     * @param array $options liste des options formatée comme suit :
      *  'id' => id de l'occurence du modèle sujet à la fusion
      *  'modelTypeName' => nom du type de modèle de fusion
      *  'fileNameSuffixe' : suffixe du nom de la fusion (défaut : $id)
      * @return void
      */
-    public function _setup(Model &$model, $options) {
+    public function _setup($options) {
         // initialisations
         $defaultOptions = array(
             'id' => $this->_id,
@@ -72,15 +72,17 @@ class OdtFusionBehavior extends ModelBehavior {
     /**
      * Retourne un nom pour la fusion qui est constitué du nom (liellé) du modèle odt échapé, suivi de '_'.$suffix.
      * Génère une exception en cas d'erreur
+     * @param Model $model modele du comportement
      * @param array $options tableau des parmètres optionnels :
      * 	'id' : identifiant de l'occurence en base de données (défaut : $this->_id)
      *  'modelTypeName' => nom du type de modèle de fusion
      * 	'fileNameSuffixe' : suffixe du nom de la fusion (défaut : $id)
      * @return string
+     * @throws Exception en cas d'erreur
      */
     public function fusionName(Model &$model, $options = array()) {
         // initialisations
-        $this->_setup($model, $options);
+        $this->_setup($options);
         if (empty($this->_id))
             throw new Exception('détermination du nom de la fusion -> occurence en base de données non déterminée');
 
@@ -95,14 +97,16 @@ class OdtFusionBehavior extends ModelBehavior {
     /**
      * Fonction de fusion du modèle odt et des données.
      * Le résultat de la fusion est un odt dont le contenu est stocké dans la variable du model odtFusionResult
+     * @param Model $model modele du comportement
      * @param array $options tableau des parmètres optionnels :
      * 	'id' : identifiant de l'occurence en base de données (défaut : $this->_id)
      *  'modelTypeName' => nom du type de modèle de fusion
      * @return void
+     * @throws Exception en cas d'erreur
      */
     public function odtFusion(Model &$model, $options = array()) {
         // initialisations
-        $this->_setup($model, $options);
+        $this->_setup($options);
         if (empty($this->_id))
             throw new Exception('détermination du nom de la fusion -> occurence en base de données non déterminée');
 
@@ -170,9 +174,9 @@ class OdtFusionBehavior extends ModelBehavior {
 
     /**
      * Lecture et stockage du modele d'édition
-     * @param Model modele du comportement
+     * @param Model $model modele du comportement
      * @return void
-     * @throw en cas d'erreur
+     * @throws Exception en cas d'erreur
      */
     private function _loadModelTemplate(Model &$model) {
         if (!empty($this->_modelTemplateId)) return;
@@ -197,14 +201,14 @@ class OdtFusionBehavior extends ModelBehavior {
     /**
      * fonction de fusion des variables communes : collectivité et dates
      * génère une exception en cas d'erreur
-     * @param object $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param objet by ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param GDO_PartType $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param phpOdtApi $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    private function _setVariablesCommunesFusion(&$oMainPart, &$modelOdtInfos) {
+    private function _setVariablesCommunesFusion(GDO_PartType &$oMainPart, phpOdtApi &$modelOdtInfos) {
         // variables des dates du jour
         if ($modelOdtInfos->hasUserField('date_jour_courant')) {
-            $this->Date = new DateComponent;
-            $oMainPart->addElement(new GDO_FieldType('date_jour_courant', $this->Date->frenchDate(strtotime("now")), 'text'));
+            $myDate = new DateComponent;
+            $oMainPart->addElement(new GDO_FieldType('date_jour_courant', $myDate->frenchDate(strtotime("now")), 'text'));
         }
         if ($modelOdtInfos->hasUserField('date_du_jour'))
             $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
