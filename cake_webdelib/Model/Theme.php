@@ -74,10 +74,10 @@ class Theme extends AppModel {
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id id du modèle lié
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    function setVariablesFusion(&$oMainPart, $id, &$modelOdtInfos) {
+    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id) {
         $theme = $this->find('first', array(
             'recursive'  => -1,
             'fields'     => array('libelle', 'order', 'lft', 'rght'),
