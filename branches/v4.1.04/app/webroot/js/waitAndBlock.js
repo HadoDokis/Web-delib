@@ -39,22 +39,45 @@ function setToken() {
     return downloadToken.toString();
 }
 
-var downloadTimer;
-
 // Prevents double-submits by waiting for a cookie from the server.
 function blockUI(elt, token) {
+    var retourRequete=true;
+    var downloadTimer;
+
     downloadTimer = window.setInterval(function() {
-        var downloadToken = getCookie("Generer[downloadToken]");
-        if (token === downloadToken) {
-            unblockUI(elt, token);
-            console.log("Suppression du cookie");
+        if(retourRequete){
+            retourRequete=false;
+            $.ajax({
+            url: '/models/generationToken/'+token,
+            cache: false,
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                try
+                {
+                    if (token.toString() === response.downloadToken) {
+                        window.clearInterval(downloadTimer);
+                        unblockUI(elt, token);
+                    }else
+                        retourRequete=true;
+                }
+                catch(err)
+                {
+                    alert(err);
+                    retourRequete=true;
+                }                
+            },
+            error: function(error)
+            {
+               alert(error);
+               unblockUI(elt, token);
+            }
+            });
         }
-    }, 1000);
+    }, 2000);
 }
 
 function unblockUI(elt, token) {
-    window.clearInterval(downloadTimer);
-    expireCookie("Generer[downloadToken]");
     //Suppression du token de la fin d'url
     if ($(elt).attr('href')){
         var href = $(elt).attr('href');
