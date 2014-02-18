@@ -3,8 +3,8 @@
 	class AroFixture extends CakeTestFixture {
 		var $name = 'Aro';
 		var $table = 'aros';
-		var $import = array( 'table' => 'aros', 'connection' => 'default', 'records' => false);
-		var $records = array(
+		var $import = array( 'table' => 'aros', 'connection' => 'default', 'records' => true);
+		var $records = array(/*
 			array(
 				'id' => '1',
 				'parent_id' => null,
@@ -28,7 +28,7 @@
 				'parent_id' => null,
 				'model' => 'Profil',
 				'foreign_key' => '0',
-				'alias' => 'Profil:Défaut',
+				'alias' => 'Profil:Dï¿½faut',
 				'lft' => '5',
 				'rght' => '6',
 			),
@@ -37,7 +37,7 @@
 				'parent_id' => null,
 				'model' => 'Profil',
 				'foreign_key' => '0',
-				'alias' => 'Profil:Rédacteur',
+				'alias' => 'Profil:Rï¿½dacteur',
 				'lft' => '7',
 				'rght' => '10',
 			),
@@ -55,7 +55,7 @@
 				'parent_id' => null,
 				'model' => 'Profil',
 				'foreign_key' => '0',
-				'alias' => 'Profil:Service assemblée',
+				'alias' => 'Profil:Service assemblï¿½e',
 				'lft' => '11',
 				'rght' => '14',
 			),
@@ -94,8 +94,6 @@
 				'alias' => 'Utilisateur:valideur2',
 				'lft' => '18',
 				'rght' => '19',
-			),
+			),*/
 		);
 	}
-
-?>
