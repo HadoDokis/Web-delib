@@ -48,13 +48,14 @@ if (Configure::read('GENERER_DOC_SIMPLE')) {
             $url = Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] . "/files/generee/projet/$id/$key.odt";
         else
             $url = '#';
+
         echo '<div class="input file">';
         echo "<label class='libelle'>$libelle</label>";
         echo '<span id="Deliberation' . $key . 'AfficheFichierJoint">';
         echo ": <a href='$url' download='$filename'>$filename</a>";
         echo '&nbsp;&nbsp;';
-        echo $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer', "javascript:supprimerFichierJoint('Deliberation', '" . $key . "', '" . $libelle . "')", array('class'=>'btn btn-danger', 'escape'=>false, 'title'=>'Supprimer le fichier'), "Voulez-vous vraiment supprimer $filename du projet ?");
-        echo '</span>';
+        echo $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer', "javascript:supprimerFichierJoint('Deliberation', '" . $key . "', '" . $libelle . "')", array('class'=>'btn btn-danger btn-mini', 'escape'=>false, 'title'=>'Supprimer le fichier'), "Voulez-vous vraiment supprimer $filename du projet ?");
+        echo "</span>";
         echo '<span id="Deliberation' . $key . 'InputFichierJoint" style="display: none;"></span>';
         echo '</div>';
     }

@@ -22,15 +22,13 @@ echo $this->element('viewTexte', array('type'=>'deliberation', 'delib'=>$delib))
 
 if(!empty($annexes)) {
 	echo '<dt>Annexes</dt>';
-	echo '<dd><br>';
- 	foreach ($annexes as $annexe) {
-		if ($annexe['titre']) echo '<br>Titre : '.$annexe['titre'];
-		echo '<br>Nom fichier : '.$annexe['filename'];
-		echo '<br>Joindre au contrôle de légalité : '.($annexe['joindre_ctrl_legalite']?'oui':'non');
-//		echo '<br>Taille : '.$annexe['size'];
-		echo '<br>'.$this->Html->link('Telecharger','/annexes/download/'.$annexe['id']).'<br>';
-	}
-	echo '</dd>';
+	echo '<dd>';
+    foreach ($annexes as $annexe) {
+        echo '<br>';
+        if ($annexe['titre']) echo 'Titre : ' . $annexe['titre'];
+        echo '<br>Nom fichier : ' . $annexe['filename'];
+        echo '<br>Joindre au contrôle de légalité : ' . ($annexe['joindre_ctrl_legalite'] ? 'oui' : 'non');
+        echo '<br>' . $this->Html->link('Telecharger', array('controller' => 'annexes', 'action' => 'download', $annexe['id'])) . '<br>';
+    }
+    echo '</dd>';
 }
-
-?>
