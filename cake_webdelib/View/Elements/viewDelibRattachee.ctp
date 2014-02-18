@@ -12,9 +12,9 @@ if (empty($delib))
 	return;
 
 if ($delib['etat']==3 || $delib['etat']==5)
-	echo $this->Html->tag('h2', 'D&eacute;lib&eacute;ration n&deg; '.$delib['num_delib']);
+	echo $this->Html->tag('h3', 'D&eacute;lib&eacute;ration n&deg;'.$delib['num_delib']);
 else
-	echo $this->Html->tag('h2', 'Identifiant projet '.$natureLibelle.' : '.$delib['id']);
+	echo $this->Html->tag('h3', $natureLibelle.' n&deg;'.$delib['id']. ' : '.$delib['objet_delib']);
 echo $this->Html->tag('dt', 'Libellé');
 echo $this->Html->tag('dd', '&nbsp;'.$delib['objet_delib']);
 
