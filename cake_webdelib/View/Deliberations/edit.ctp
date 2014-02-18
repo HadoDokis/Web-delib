@@ -378,7 +378,7 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
     //Gestion des sorties du formulaire
     function onUnloadEditForm() {
         $(window).bind('beforeunload', function () {
-            return "Attention!! des données saisies pourraient ne pas être enregistrées dans webdelib.";
+            return "Attention !\nSi vous quittez cette page, les données saisies seront perdues.";
         });
     }
 
