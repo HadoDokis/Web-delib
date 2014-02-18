@@ -2033,12 +2033,27 @@ class Deliberation extends AppModel {
 
 
     /**
+     * fonction de callback du behavior OdtFusion
      * retourne l'id du model odt à utiliser pour la fusion
      * @param integer $id id de l'occurence en base de données
+     * @param string $modelTypeName nom du type type du model (ici non utilisé)
      * @return integer id du modele odt à utiliser
      */
-    function getModelTemplateId($id) {
+    function getModelTemplateId($id, $modelTypeName) {
         return $this->getModelId($id);
+    }
+
+    /**
+     * fonction de callback du behavior OdtFusion
+     * initialise les variables de fusion Gedooo
+     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param integer $id id de l'occurence en base de données
+     * @param string $modelTypeName nom du type type du model (ici non utilisé)
+     * @return void
+     */
+    function beforeFusion(&$oMainPart, &$modelOdtInfos, $id, $modelTypeName) {
+        $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, true);
     }
 
     /**
@@ -2046,11 +2061,11 @@ class Deliberation extends AppModel {
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object by ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id l'id à fusionner
-     * @param objet by ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param boolean $addSeanceIterations ajoute l'itération sur les séances
      */
-    function setVariablesFusion(&$oMainPart, $id, &$modelOdtInfos, $addSeanceIterations=true) {
+    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $addSeanceIterations) {
         // initialisations
         $this->Date = new DateComponent;
 
@@ -2103,21 +2118,21 @@ class Deliberation extends AppModel {
             $oMainPart->addElement(new GDO_FieldType('nombre_seance', $this->getNbSeances($delib['Deliberation']['id']), 'text'));
         // Information du service émetteur
         if ($modelOdtInfos->hasUserFields('service_emetteur', 'service_avec_hierarchie'))
-            $this->Service->setVariablesFusion($oMainPart, $delib['Deliberation']['service_id'], $modelOdtInfos);
+            $this->Service->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['service_id']);
         // Informations sur le thème
-        $this->Theme->setVariablesFusion($oMainPart, $delib['Deliberation']['theme_id'], $modelOdtInfos);
+        $this->Theme->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['theme_id']);
         // Informations sur le rapporteur
         if (!empty($delib['Deliberation']['rapporteur_id']))
-            $this->Rapporteur->setVariablesFusion($oMainPart, $delib['Deliberation']['rapporteur_id'], $modelOdtInfos);
+            $this->Rapporteur->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['rapporteur_id']);
         // Liste des commentaires
         if ($modelOdtInfos->hasUserField('texte_commentaire'))
-            $this->Commentaire->setVariablesFusion($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+            $this->Commentaire->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
         // Hitoriques
         if ($modelOdtInfos->hasUserField('log'))
-            $this->Historique->setVariablesFusion($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+            $this->Historique->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
 
         // Informations supplémentaires
-        $this->Infosup->setVariablesFusion($oMainPart, 'Deliberation', $delib['Deliberation']['id'], $modelOdtInfos);
+        $this->Infosup->setVariablesFusion($oMainPart, $modelOdtInfos, 'Deliberation', $delib['Deliberation']['id']);
 
         // variables de la délibération (en dehors de toute section)
         if ($modelOdtInfos->hasUserField('numero_acte'))
@@ -2219,23 +2234,23 @@ class Deliberation extends AppModel {
         }
 
         // annexes
-        $this->Annex->setVariablesFusion($oMainPart, 'Projet', $id, $modelOdtInfos);
+        $this->Annex->setVariablesFusion($oMainPart, $modelOdtInfos, 'Projet', $id);
 
         // séances
         if ($addSeanceIterations)
-            $this->Seance->setVariablesFusionPourUnProjet($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+            $this->Seance->setVariablesFusionPourUnProjet($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
 
         // avis des séances
         if ($modelOdtInfos->hasUserFields('avis', 'avis_favorable', 'commentaire'))
-            $this->Deliberationseance->setVariablesFusionPourUnProjet($oMainPart, $id, $modelOdtInfos);
+            $this->Deliberationseance->setVariablesFusionPourUnProjet($oMainPart, $modelOdtInfos, $id);
 
         // listes des présents et suppléants, absents, mandatés
-        $this->Listepresence->setVariablesFusionPresents($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
-        $this->Listepresence->setVariablesFusionAbsents($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
-        $this->Listepresence->setVariablesFusionMandates($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+        $this->Listepresence->setVariablesFusionPresents($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
+        $this->Listepresence->setVariablesFusionAbsents($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
+        $this->Listepresence->setVariablesFusionMandates($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
 
         // votes
-        $this->Vote->setVariablesFusion($oMainPart, $delib['Deliberation']['id'], $modelOdtInfos);
+        $this->Vote->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
     }
 
 }
