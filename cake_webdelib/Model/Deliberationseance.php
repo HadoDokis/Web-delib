@@ -47,18 +47,21 @@ class Deliberationseance extends AppModel {
 
     /**
      * Suppression d'une seance par rapport à une délibération
-     * @param int $delib_id Description
-     * @param int $delib_id Description
+     * @param int|string $delib_id
+     * @param int|string $seance_id
      * @version 4.1.03
      */
     function _deleteMultiDelib($delib_id, $seance_id) {
         //On récupère l'id de Deliberationseance à supprimer
-        $deliberationseance = $this->find('first', array('conditions' => array('seance_id' => $seance_id,
+        $deliberationseance = $this->find('first', array(
+            'conditions' => array(
+                'seance_id' => $seance_id,
                 'deliberation_id' => $delib_id,
-                'Deliberation.etat !=' => -1),
+                'Deliberation.etat !=' => -1
+            ),
             'fields' => array('Deliberationseance.id')));
-
-        $this->delete($deliberationseance['Deliberationseance']['id']);
+        if (!empty($deliberationseance))
+            $this->delete($deliberationseance['Deliberationseance']['id']);
 
         $this->_reOrdonne($seance_id);
     }

@@ -50,7 +50,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->fetch('css');
 
         echo $this->Html->script('modernizr.min');
-        echo $this->Html->script('jquery-1.10.2.min.js');
+        echo $this->Html->script('jquery-1.10.2.min');
         echo $this->Html->script('libs/bootstrap.min');
         echo $this->html->script('jquery.jgrowl.min', true);
         echo $this->html->script('/lib/select2/select2.min', true);
