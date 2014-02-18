@@ -7,8 +7,8 @@
 * @package app.Test.Case.Model
 * @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
 */
-//App::uses('Traitement', 'Cakeflow.Model');
-App::uses('AppController', 'Controller');
+App::uses('Traitement', 'Cakeflow.Model');
+App::uses('DeliberationsController', 'Controller');
 /**
 * Classe DeliberationsTest.
 *
@@ -21,7 +21,8 @@ App::uses('AppController', 'Controller');
 * @package Cakeflow.Test.Case.Controller
 * 
 */
-class DeliberationsControllerTest extends ControllerTestCase {
+class DeliberationsControllerTest extends CakeTestCase {
+    public $collection = null;
 
     // Les fixtures de plugin localisé dans /app/Plugin/Blog/Test/Fixture/
     public $fixtures = array(   'plugin.cakeflow.circuit',
@@ -32,12 +33,15 @@ class DeliberationsControllerTest extends ControllerTestCase {
                                  CAKEFLOW_USER_MODEL,
                                  CAKEFLOW_TARGET_MODEL
                             );
-    /*public $Circuit;
+    public $Circuit;
+    public $DeliberationsController;
     public $Traitement;
 
     public function setUp() {
         parent::setUp();
         $this->Circuit = ClassRegistry::init('Cakeflow.Circuit');
+        $this->collection = new ComponentCollection();
+        $this->DeliberationsController = new DeliberationsController($collection);
         $this->Traitement = ClassRegistry::init('Cakeflow.Traitement');
         
     }
@@ -46,38 +50,16 @@ class DeliberationsControllerTest extends ControllerTestCase {
     * Méthode exécutée avant chaque test.
     *
     * @return void
-    *//*
+    */
     public function tearDown() {
         unset( $this->Circuit );
+        unset( $this->DeliberationsController );
         unset( $this->Traitement );
-    }*/
-        
-        public function testaddIntoCircuit() {
-            
-        $id=499;
-        $data = array(/*
-        'Article' => array(
-            'user_id' => 1,
-            'published' => 1,
-            'slug' => 'new-article',
-            'title' => 'New Article',
-            'body' => 'New Body'
-            )*/
-        );
-        $result = $this->testAction(
-            '/deliberations/addIntoCircuit/'.$id,
-            array('data' => $data, 'method' => 'GET')
-        );
-        //$this->assertRegExp('/<html/', $this->contents);
-        //$this->assertRegExp('/<form/', $this->view);
-        debug($result);
-        /*$Deliberation = $this->generate('Deliberation', array(
-        'components' => array(
-            'Session',
-            'Email' => array('send')
-        )
-        ));
-        $id=499;
+    }
+    
+    
+    public function testaddIntoCircuit() {    
+    $id=499;
         $user_connecte=1;
         $circuit=1;
         $this->Circuit->insertDansCircuit($circuit, $id, $user_connecte);
@@ -107,16 +89,15 @@ class DeliberationsControllerTest extends ControllerTestCase {
         foreach ($listeUsers as $etape) {
             if ($prem && $etape==$etape_courante) {
                 foreach ($etape as $user_id)
-                    $this->_notifier($id, empty($user_id)?$user_connecte:$user_id, 'traiter');
+                    $this->DeliberationsController->_notifier($id, empty($user_id)?$user_connecte:$user_id, 'traiter');
                 $prem = false;
             } else {
                 foreach ($etape as $user_id)
-                    $this->_notifier($id, empty($user_id)?$user_connecte:$user_id, 'insertion');
+                    $this->DeliberationsController->_notifier($id, empty($user_id)?$user_connecte:$user_id, 'insertion');
             }
         }
 
         // faire des tests utiles ici
-        $this->assertTrue(is_object($this->BlogPost));*/
-    }
-
+       // $this->assertTrue(is_object($this->BlogPost));*/
+     }
 }
