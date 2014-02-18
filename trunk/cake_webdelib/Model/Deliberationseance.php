@@ -321,10 +321,10 @@ class Deliberationseance extends AppModel {
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id id de l'occurence en base
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    function setVariablesFusionPourUnProjet(&$oMainPart, $deliberationId, &$modelOdtInfos) {
+    function setVariablesFusionPourUnProjet(&$oMainPart, &$modelOdtInfos, $deliberationId) {
         // lecture en base de données
         $this->Behaviors->load('Containable');
         $deliberationSeances =  $this->find('all', array(
