@@ -138,11 +138,11 @@ class Annex extends AppModel {
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param string $modelName nom du model lié
      * @param integer $foreignKey id du model lié
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    function setVariablesFusion(&$oMainPart, $modelName, $foreignKey, &$modelOdtInfos) {
+    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $modelName, $foreignKey) {
         // liste des variables de fusion utilisées dans le template
         $fields = array();
         if ($modelOdtInfos->hasUserField('nom_fichier'))
