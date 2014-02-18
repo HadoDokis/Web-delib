@@ -413,10 +413,10 @@ class Seance extends AppModel
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $deliberationId id du projet/délibération
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      */
-    function setVariablesFusionPourUnProjet(&$oMainPart, $deliberationId, &$modelOdtInfos) {
+    function setVariablesFusionPourUnProjet(&$oMainPart, &$modelOdtInfos, $deliberationId) {
         // lectures des séances du projet ou de la délibération
         $seanceIds = $this->Deliberationseance->nfield('seance_id', array('Deliberationseance.deliberation_id'=>$deliberationId), array('Seance.date'));
         if (empty($seanceIds)) return;
@@ -424,14 +424,14 @@ class Seance extends AppModel
         // dernière séance hors itération séances
         if ($modelOdtInfos->hasUserField('position_projet'))
             $oMainPart->addElement(new GDO_FieldType('position_projet', $this->Deliberation->getPosition($deliberationId, $seanceIds[count($seanceIds)-1]), 'text'));
-        $this->setVariablesFusion($oMainPart, $seanceIds[count($seanceIds)-1], $modelOdtInfos, 'seance', false);
+        $this->setVariablesFusion($oMainPart, $modelOdtInfos, $seanceIds[count($seanceIds)-1], 'seance', false);
 
         // pour toutes les séances
         $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($seanceIds), 'text'));
         $oSectionIteration = new GDO_IterationType("Seances");
         foreach($seanceIds as $seanceId) {
             $oDevPart = new GDO_PartType();
-            $this->setVariablesFusion($oDevPart, $seanceId, $modelOdtInfos, 'seances', false);
+            $this->setVariablesFusion($oDevPart, $modelOdtInfos, $seanceId, 'seances', false);
             $oSectionIteration->addPart($oDevPart);
         }
         $oMainPart->addElement($oSectionIteration);
@@ -442,10 +442,12 @@ class Seance extends AppModel
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id id de l'occurence en base
-     * @param objet_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param string $suffixe suffixe des variables de fusion de la séance
+     * @param boolean $addProjetIterations ajoute les itérations sur les projets
      */
-    function setVariablesFusion(&$oMainPart, $id, &$modelOdtInfos, $suffixe='seances', $addProjetIterations=true) {
+    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $suffixe='seance', $addProjetIterations=true) {
         // lecture de la séance en base
         $seance = $this->find('first', array(
             'recursive' => -1,
@@ -464,7 +466,7 @@ class Seance extends AppModel
         if ($modelOdtInfos->hasUserField('date_'.$suffixe))
             $oMainPart->addElement(new GDO_FieldType('date_'.$suffixe, date('d/m/Y', $dateSeanceTimeStamp), 'text'));
         if ($modelOdtInfos->hasUserField('heure_'.$suffixe))
-            $oMainPart->addElement(new GDO_FieldType('heure_'.$suffixe, date('H:i:s', $dateSeanceTimeStamp), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('heure_'.$suffixe, date('H:i', $dateSeanceTimeStamp), 'text'));
         if ($modelOdtInfos->hasUserField('hh_'.$suffixe))
             $oMainPart->addElement(new GDO_FieldType('hh_'.$suffixe, date('H', $dateSeanceTimeStamp), 'text'));
         if ($modelOdtInfos->hasUserField('mm_'.$suffixe))
@@ -480,12 +482,12 @@ class Seance extends AppModel
 
         // président de séance
         if (!empty($seance['Seance']['president_id']))
-            $this->President->setVariablesFusion($oMainPart, $seance['Seance']['president_id'], $modelOdtInfos);
+            $this->President->setVariablesFusion($oMainPart, $modelOdtInfos, $seance['Seance']['president_id']);
         // secrétaire de séance
         if (!empty($seance['Seance']['secretaire_id']))
-            $this->Secretaire->setVariablesFusion($oMainPart, $seance['Seance']['secretaire_id'], $modelOdtInfos);
+            $this->Secretaire->setVariablesFusion($oMainPart, $modelOdtInfos, $seance['Seance']['secretaire_id']);
         // Informations supplémentaires
-        $this->Infosup->setVariablesFusion($oMainPart, 'Seance', $id, $modelOdtInfos);
+        $this->Infosup->setVariablesFusion($oMainPart, $modelOdtInfos, 'Seance', $id);
 
         // acteurs convoqués
         if ($modelOdtInfos->hasUserFields(
@@ -498,7 +500,7 @@ class Seance extends AppModel
                 $oStyleIteration = new GDO_IterationType("Convoques");
                 foreach($convoques as $convoque) {
                     $oDevPart = new GDO_PartType();
-                    $this->Secretaire->setVariablesFusion($oDevPart, $convoque['Acteur']['id'], $modelOdtInfos, 'acteur_convoque');
+                    $this->Secretaire->setVariablesFusion($oDevPart, $modelOdtInfos, $convoque['Acteur']['id'], 'acteur_convoque');
                     $oStyleIteration->addPart($oDevPart);
                 }
                 $oMainPart->addElement($oStyleIteration);
@@ -512,15 +514,74 @@ class Seance extends AppModel
                 'fields' => array('id'),
                 'contain' => array('Deliberation.id'),
                 'conditions' => array('Seance.id' => $id)));
-            if (!empty($seance['Delibertion'])) {
+            if (!empty($seance['Deliberation'])) {
                 $oSectionIteration = new GDO_IterationType("Projets");
-                foreach($seance['Delibertion'] as $deliberation) {
+                foreach($seance['Deliberation'] as $deliberation) {
                     $oDevPart = new GDO_PartType();
-                    $this->Deliberation->setVariablesFusion($oDevPart, $deliberation['id'], $modelOdtInfos, false);
+                    $this->Deliberation->setVariablesFusion($oDevPart, $modelOdtInfos, $deliberation['id'], false);
                     $oSectionIteration->addPart($oDevPart);
                 }
                 $oMainPart->addElement($oSectionIteration);
             }
         }
+    }
+
+    /**
+     * fonction de callback du behavior OdtFusion
+     * initialise les variables de fusion Gedooo
+     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param integer $id id de l'occurence en base de données
+     * @param string $modelTypeName nom du type type du model (ici non utilisé)
+     * @return void
+     */
+    function beforeFusion(&$oMainPart, &$modelOdtInfos, $id, $modelTypeName) {
+        switch($modelTypeName) {
+            case 'Convocation' :
+                // initialise les variables pour le premier acteur convoqué
+                $typeSeanceId = $this->field('type_id', array('id'=>$id));
+                $convoques = $this->Typeseance->acteursConvoquesParTypeSeanceId($typeSeanceId, null, array('id'));
+                $this->Secretaire->setVariablesFusion($oMainPart, $modelOdtInfos, $convoques[0]['Acteur']['id'], $suffixe='acteur');
+                $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, 'seance', true);
+                break;
+        }
+    }
+
+    /**
+     * fonction de callback du behavior OdtFusion
+     * retourne l'id du model odt à utiliser pour la fusion
+     * @param integer $id id de l'occurence en base de données
+     * @param string $modelTypeName nom du type type du model (ici non utilisé)
+     * @return integer id du modele odt à utiliser
+     */
+    function getModelTemplateId($id, $modelTypeName) {
+        // initialisation
+        $field = '';
+        $allowedModelTypeNames = array('Projet', 'Délibération', 'Convocation', 'Ordre du jour', 'PV sommaire', 'PV détaillé');
+        if (!in_array($modelTypeName, $allowedModelTypeNames))
+            throw new Exception('le nom du type de modèle d\'édition '.$modelTypeName.' n\'est par autorisé');
+
+        // lecture de la séance en base de données
+        $typeSeanceId = $this->field('type_id', array('id'=>$id));
+        if (empty($typeSeanceId))
+            throw new Exception('détermination du type de séance de la séance id:'.$id.' non trouvée');
+
+        // lecture du modele_id liée au type de séance et au type du model d'édition
+        if ($modelTypeName == 'Projet')
+            $field = 'modelprojet_id';
+        elseif ($modelTypeName == 'Délibération')
+            $field = 'modeldeliberation_id';
+        elseif ($modelTypeName == 'Convocation')
+            $field = 'modelconvocation_id';
+        elseif ($modelTypeName == 'Ordre du jour')
+            $field = 'modelordredujour_id';
+        elseif ($modelTypeName == 'PV sommaire')
+            $field = 'modelpvsommaire_id';
+        elseif ($modelTypeName == 'PV détaillé')
+            $field = 'modelpvdetaille_id';
+        $modelTemplateId = $this->Typeseance->field($field, array('id'=>$typeSeanceId));
+        if (empty($modelTemplateId))
+            throw new Exception('détermination du modèle d\'édition '.$modelTypeName.' pour le type de séance id:'.$typeSeanceId.' non trouvé');
+        return $modelTemplateId;
     }
 }
