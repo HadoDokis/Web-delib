@@ -386,6 +386,7 @@ class Infosup extends AppModel
                 $ele = $this->Infosupdef->Infosuplistedef->find('first', array( 'fields' => array('nom'),
                                                                                 'conditions' => array('id' => $infosup['Infosup']['text']),
                                                                                 'recursive' => -1));
+                if(!empty($ele['Infosuplistedef']['nom']))
                 $return[$infosup['Infosupdef']['code']] = array(
                     'type' => 'string',
                     'content' => $ele['Infosuplistedef']['nom']);

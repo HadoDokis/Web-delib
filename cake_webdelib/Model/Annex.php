@@ -184,5 +184,39 @@ class Annex extends AppModel {
         }
         $oMainPart->addElement($oIteration);
     }
+    
+    function getContentToGed($annex_id)
+    {
+        $DOC_TYPE = Configure::read('DOC_TYPE');
+
+        $annex = $this->find('first', array('conditions' => array('Annex.id' => $annex_id),
+            'recursive' => -1,
+            'fields' => array('filetype', 'data', 'data_pdf','filename','filename_pdf','titre', 'joindre_ctrl_legalite')));
+        
+        if ($annex['Annex']['filetype'] === 'application/pdf')
+            return array('type' => $DOC_TYPE[$annex['Annex']['filetype']]['extention'],
+                'filetype' => 'application/pdf',
+                'filename' => $annex['Annex']['filename_pdf'],
+                'titre' => $annex['Annex']['titre'],
+                'joindre_ctrl_legalite' => $annex['Annex']['joindre_ctrl_legalite'],
+                'data' => $annex['Annex']['data_pdf']);
+
+        $pos = strpos($annex['Annex']['filetype'], 'application/vnd.oasis.opendocument');
+        if ($pos !== false)
+            return array('type' => 'pdf',
+                'filetype' => 'application/pdf',
+                'filename' => $annex['Annex']['filename_pdf'],
+                'titre' => $annex['Annex']['titre'],
+                'joindre_ctrl_legalite' => $annex['Annex']['joindre_ctrl_legalite'],
+                'data' => $annex['Annex']['data_pdf']
+                );
+        
+            return array('type' => $DOC_TYPE[$annex['Annex']['filetype']]['extention'],
+            'filetype' => $annex['Annex']['filetype'],
+            'filename' => $annex['Annex']['filename'],
+            'titre' => $annex['Annex']['titre'],
+            'joindre_ctrl_legalite' => $annex['Annex']['joindre_ctrl_legalite'],
+            'data' => $annex['Annex']['data']);
+    }
 
 }
