@@ -6,12 +6,13 @@ class ModelsController extends AppController {
         'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'ModelOdtValidator.Modeltemplate'
     );
     public $helpers = array('Html', 'Form', 'Fck', 'Html2', 'Session');
-    public $components = array('Cookie','Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress');
+    public $components = array('RequestHandler','Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress');
 
 	// Gestion des droits
     public $aucunDroit = array(
 			'generer',
 			'getGeneration',
+                        'generationToken',
 			'paramMails'
 	);
 
@@ -19,17 +20,6 @@ class ModelsController extends AppController {
 			'getFileData'  => 'Models:index',
 			'changeStatus' => 'Models:index'
 	);
-        
-        public function beforeFilter() {
-            parent::beforeFilter();
-            //Pour la fonction generer réglage du cookie
-            $this->Cookie->name = 'Generer';
-            $this->Cookie->time = 3600;  // ou '1 hour'
-            $this->Cookie->path = '/';
-            $this->Cookie->domain = $_SERVER["HTTP_HOST"];
-            $this->Cookie->secure = false;  // HTTPS sécurisé seulement (NON)
-            $this->Cookie->httpOnly = false; // Pour accès javascript
-        }
 
 	function _getFileName($id=null) {
 		$objCourant = $this->Modeltemplate->find('first', array(
@@ -329,7 +319,7 @@ class ModelsController extends AppController {
                     }
 				}
 				else {
-					$fichier = $this->Gedooo->createFile($path, $nomFichier.'.odt', '');
+					$fichier = $this->Gedooo->createFile($path, $nomFichier.'.'.$format, '');
 					$oFusion->SendContentToFile($fichier);
 					$content = $this->Conversion->convertirFichier($fichier, 'odt', $format );
 					$chemin_fichier = $this->Gedooo->createFile($path,  $nomFichier.'.'.$format, $content);
@@ -347,8 +337,9 @@ class ModelsController extends AppController {
                                             $this->Session->write('tmp.format', $format);
                                             $this->Progress->end('/models/getGeneration');
                                         } else {
-                                            $this->Cookie->destroy();
-                                            $this->Cookie->write('downloadToken', $token, false, 3600);
+                                            // generationToken
+                                            //$this->Session->destroy();
+                                            $this->Session->write('Generer.downloadToken', $token, false, 3600);
                                             $this->response->disableCache();
                                             $this->response->body($content);
                                             $this->response->type($format);
@@ -358,6 +349,21 @@ class ModelsController extends AppController {
                                     }
 		}
 	}
+        
+        function generationToken(){
+            Configure::write('debug', 0);
+            if ($this->RequestHandler->isGet()) {
+                $this->autoRender = false;
+            
+                $this->RequestHandler->setContent('json', 'text/x-json');
+                $this->RequestHandler->respondAs('json'); 
+
+                $this->set('json_content', json_encode(array('downloadToken' => $this->Session->read('Generer.downloadToken'))));
+                $this->layout = NULL;
+                $this->render('/Layouts/json');
+            }
+        }
+        
         
         function getGeneration(){
             $listFiles = $this->Session->read('tmp.listFiles');
