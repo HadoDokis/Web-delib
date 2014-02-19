@@ -56,6 +56,24 @@ class ConversionComponentTest extends CakeTestCase {
         
         $this->assertEquals($expected, 'application/pdf');
     }
+    
+           /**
+    * Méthode exécutée après chaque test.
+    *
+    * @return void
+    */
+    /*public function testconvertirFluxHTML(){
+        
+        $result=$this->ConversionComponent->convertirFlux('<b>test</b>', 'html');
+        $file=new File(TMP.DS.'files'.DS.'checkConversionHtml.odt',TRUE);
+        $file->append($result);
+        $expected = $file->mime();
+        $file->close(); 
+        
+        $this->assertEquals($expected, 'application/html');
+    }*/
+    
+    
 
 
 }
