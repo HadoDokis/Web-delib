@@ -1318,7 +1318,7 @@ class SeancesController extends AppController {
          * @param $model_id
          */
         function _generer($seance_id, $model_id, $url_retour) { 
-          
+
             $this->Seance->id = $seance_id;
             $time_start = microtime(true);
             $annexes_id = array();
@@ -1354,7 +1354,7 @@ class SeancesController extends AppController {
             foreach ($dir as $fileuri) {
                 if (is_file($fileuri)) unlink($fileuri);
             }
-            
+
             if (!$this->Gedooo->checkPath($dirpath))
                 die("Webdelib ne peut pas ecrire dans le repertoire : $dirpath");
             
@@ -1456,7 +1456,7 @@ class SeancesController extends AppController {
                     $this->log("Temps création de fusion : ". $time );
 
                     $time_start = microtime(true);
-                    $oFusion->SendContentToFile($dirpath.$nomFichier.".odt");
+                    $oFusion->SendContentToFile($dirpath.$nomFichier.".".$format);
 
                     $this->Conversion->convertirFichier($dirpath.$nomFichier.".odt", 'odt', $format);
 
@@ -1710,7 +1710,7 @@ class SeancesController extends AppController {
     }
 
     /**
-     * génération d'une convocation et envoi du résultat vers le client
+     * génération de la convocation pour le premier acteur convoqué et envoi du résultat vers le client
      * @param integer $id id de la séance
      * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
      * @return CakeResponse
@@ -1721,10 +1721,16 @@ class SeancesController extends AppController {
             if (!$this->Seance->hasAny(array('id' => $id)))
                 throw new Exception('Séance id:' . $id . ' non trouvée en base de données');
 
+            // lecture de la liste des acteurs convoqués
+            $typeSeanceId = $this->Seance->field('type_id', array('id'=>$id));
+            $convoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($typeSeanceId, null, array('id'));
+            if (empty($convoques))
+                throw new Exception('Aucun acteur convoqué pour la séance id:'.$id);
+
             // fusion du document
-            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelTypeName'=>'Convocation'));
+            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelOptions'=>array('modelTypeName'=>'Convocation')));
             $filename = $this->Seance->fusionName();
-            $this->Seance->odtFusion();
+            $this->Seance->odtFusion(array('modelOptions'=>array('acteurId'=>$convoques[0]['Acteur']['id'])));
 
             // selon le format d'envoi du document (pdf ou odt)
             if ($this->Session->read('user.format.sortie') == 0) {
@@ -1761,5 +1767,56 @@ class SeancesController extends AppController {
         $this->Cookie->domain = $_SERVER["HTTP_HOST"];
         $this->Cookie->secure = false;  // HTTPS sécurisé seulement (NON)
         $this->Cookie->httpOnly = false; // Pour accès javascript
+    }
+
+    /**
+     * fonction de génération des convocations des acteurs convoqués à une séance et stockage sur file system
+     * @param integer $id id de la séance
+     * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
+     * @return CakeResponse
+     */
+    function genererConvocationsToFiles($id, $modelTemplateId, $cookieToken) {
+        try {
+            // vérification de l'existence de la séance
+            if (!$this->Seance->hasAny(array('id' => $id)))
+                throw new Exception('Séance id:' . $id . ' non trouvée en base de données');
+
+            // lecture de la liste des acteurs convoqués
+            $typeSeanceId = $this->Seance->field('type_id', array('id'=>$id));
+            $convoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($typeSeanceId, null, array('id'));
+            if (empty($convoques))
+                throw new Exception('Aucun acteur convoqué pour la séance id:'.$id);
+
+            // chargement  du behavior de fusion du document
+            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelOptions'=>array('modelTypeName'=>'Convocation')));
+
+            // initialisation du répertoire de destination des convocations
+            App::import('Lib', 'AppGestfichiers');
+            $dirpath = AppGestfichiers::formatDirName(WEBROOT_PATH, 'files', 'seances', $id, $modelTemplateId);
+            if (is_dir($dirpath)) AppGestfichiers::clearDir($dirpath);
+            AppGestfichiers::creeRepertoire($dirpath);
+
+            // pour tous les acteurs convoqués
+            foreach($convoques as $acteur) {
+//                $filename = $this->Seance->fusionName(array('fileNameSuffixe'=>$id.'_'.$acteur['Acteur']['id']));
+                $this->Seance->odtFusion(array('modelOptions'=>array('acteurId'=>$acteur['Acteur']['id'])));
+                // selon le format d'envoi du document (pdf ou odt)
+                if ($this->Session->read('user.format.sortie') == 0) {
+//                    $filename = $filename . '.pdf';
+                    $filename = $acteur['Acteur']['id'].'.pdf';
+                    $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'pdf');
+                } else {
+//                    $filename = $filename . '.odt';
+                    $filename = $acteur['Acteur']['id'].'.odt';
+                    $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'odt');
+                }
+                unset($this->Seance->odtFusionResult);
+                file_put_contents($dirpath.$filename, $content);
+                unset($content);
+            }
+        } catch (Exception $e) {
+            $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
+        }
+        $this->redirect($this->referer());
     }
 }
