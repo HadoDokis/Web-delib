@@ -205,6 +205,7 @@ class ConnecteursController extends AppController {
                 $content = $this->_replaceValue($content, 'GED_LOGIN', $this->data['Connecteur']['ged_login']);
                 $content = $this->_replaceValue($content, 'GED_PWD', $this->data['Connecteur']['ged_passwd']);
                 $content = $this->_replaceValue($content, 'GED_REPO', $this->data['Connecteur']['ged_repo']);
+                $content = $this->_replaceValue($content, 'GED_XML_VERSION', $this->data['Connecteur']['ged_xml_version']);
                 break;
             case 'mail' :
                 $content = $this->_replaceValue($content, 'SMTP_USE', $this->data['Connecteur']['smtp_use']);
