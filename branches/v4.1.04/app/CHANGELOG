@@ -1,5 +1,7 @@
 4.1.04
 ======
+- Mise en place du versionning de l'export CMIS avec 2 versions
+- Modification la fonction attendable passage de cookie->session+ajax pour la génération de projet
 - Correction de la notification par mail lors d'un projet à traiter lors de l'insertion dans un circuit  
 - Numérotation hiérarchisée par code des matières de la Classification
 - Message d'avertissement lors de la sortie en modification d'un projet d'acte
