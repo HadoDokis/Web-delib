@@ -295,7 +295,7 @@ class AppSchema extends CakeSchema {
 		'vote_nb_retrait' => array('type' => 'integer', 'null' => true),
 		'vote_commentaire' => array('type' => 'string', 'null' => true, 'length' => 1000),
 		'delib_pdf' => array('type' => 'binary', 'null' => true),
-		'bordereau' => array('type' => 'binary', 'null' => true),
+		'tdt_data_bordereau_pdf' => array('type' => 'binary', 'null' => true),
 		'signature' => array('type' => 'binary', 'null' => true),
 		'signee' => array('type' => 'boolean', 'null' => true),
 		'commission' => array('type' => 'binary', 'null' => true),
@@ -306,7 +306,6 @@ class AppSchema extends CakeSchema {
 		'date_envoi_signature' => array('type' => 'datetime', 'null' => true),
 		'id_parapheur' => array('type' => 'string', 'null' => true, 'length' => 50),
 		'tdt_data_pdf' => array('type' => 'binary', 'null' => true),
-		'tdt_data_bordereau_pdf' => array('type' => 'binary', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'etat' => array('unique' => false, 'column' => 'etat'),
