@@ -1,0 +1,171 @@
+<?php
+$currentDir = dirname(__FILE__);
+
+/* Bases */
+Configure::write('WEBDELIB_URL', 'http://webdelib.adullact.org');
+
+/* Configuration du debug */
+Configure::write('debug', 0);
+/* Configuration session default 600 */
+Configure::write('Session.timeout', 600);
+Configure::write('Cakeflow.optimisation', true);
+
+/* Options d'affichage */
+Configure::write('AFFICHE_HIERARCHIE_SERVICE', true);
+Configure::write('AFFICHE_CONVOCS_ANONYME', true);
+Configure::write('CONVOCS_MODIFIABLES', false);
+Configure::write('NOT_UNIQUE_CIRCUIT', true);
+Configure::write('DELIBERATIONS_MULTIPLES', false); //Mode délibérations multiples
+Configure::write('INIT_SEQ', false); //Initialiser le numéro de séquence
+Configure::write('LIMIT', 5); //limitation du nombre de projets par banette
+Configure::write('GENERER_DOC_SIMPLE', false);
+Configure::write('PROTOCOLE_DL', 'vnd.sun.star.webdav');
+
+/* Configuration pour la conversion de format des documents */
+Configure::write('CONVERSION_TYPE', 'CLOUDOOO');
+Configure::write('CLOUDOOO_HOST', '127.0.0.1');
+Configure::write('CLOUDOOO_PORT', '8011');
+
+/* Configuration pour la manipulation des pdf */ //apt-get install poppler-utils
+Configure::write('PDFTK_EXEC', '/usr/bin/pdftk');
+Configure::write('PDFINFO_EXEC', '/usr/bin/pdfinfo');
+
+/* Configuration GhostScript */
+// Chemin vers l'executable
+Configure::write('GS_EXEC', '/usr/bin/gs');
+// Résolution d'image (pixels) : Agit sur la rapidité de génération des annexes (Conversion pdf et doc en image)
+Configure::write('GS_RESOLUTION', '150');
+
+/* Configuration mail */
+Configure::write('MAIL_FROM', 'Webdelib <webdelib@mon-domaine.fr>');
+Configure::write('SMTP_USE', false);
+Configure::write('SMTP_PORT', 25);
+Configure::write('SMTP_TIMEOUT', 30);
+Configure::write('SMTP_HOST', 'your.smtp.server');
+Configure::write('SMTP_USERNAME', 'your_smtp_username');
+Configure::write('SMTP_PASSWORD', 'your_smtp_password');
+Configure::write('SMTP_CLIENT', 'smtp_helo_hostname');
+
+/* Configuration GEDOOo */
+Configure::write('GEDOOO_WSDL', 'http://gedooo.services.adullact.org:8082/ODFgedooo/OfficeService?wsdl');
+
+/**
+ * Parapheur (Signature électronique, délégation)
+ */
+/* Activer le parapheur */
+Configure::write('USE_PARAPHEUR', false);
+/* Service utilisé pour le parapheur ('PASTELL', 'IPARAPHEUR', ...) */
+Configure::write('PARAPHEUR', 'IPARAPHEUR');
+
+/**
+ * TDT (Tiers de télétransmission)
+ */
+/* Activer le TDT (tiers de télétransmission) */
+Configure::write('USE_TDT', false);
+/* Service utilisé pour le TDT ('PASTELL', 'S2LOW', ...) */
+Configure::write('TDT', 'S2LOW');
+
+/**
+ * SAE (Service d'archivage électronique)
+ */
+/* Activer le SAE */
+Configure::write('USE_SAE', false);
+/* Service utilisé pour le TDT ('PASTELL', 'ASALAE', ...) */
+Configure::write('SAE', 'ASALAE');
+
+/**
+ * GED (Gestion électronique documentaire)
+ */
+/* Activer la GED */
+Configure::write('USE_GED', false);
+/* Service utilisé pour la GED ('PASTELL' ou 'GED') */
+Configure::write('GED_PASTELL', false);
+
+/**
+ * Configuration des connecteurs
+ */
+/* Configuration de PASTELL */
+Configure::write('USE_PASTELL', false);
+Configure::write('PASTELL_HOST', 'http://pastell.x.x.org');
+Configure::write('PASTELL_TYPE', 'actes-generique');
+Configure::write('PASTELL_LOGIN', 'login');
+Configure::write('PASTELL_PWD', 'password');
+
+/* Configuration Webservice du i-Parapheur */
+Configure::write('USE_IPARAPHEUR', false);
+Configure::write('IPARAPHEUR_HOST', 'https://iparapheur.x.x.org');
+Configure::write('IPARAPHEUR_LOGIN', 'login');
+Configure::write('IPARAPHEUR_PWD', 'password');
+Configure::write('IPARAPHEUR_TYPE', 'Actes');
+Configure::write('IPARAPHEUR_VISIBILITY', 'PUBLIC');
+Configure::write('IPARAPHEUR_WSDL', 'ws-iparapheur?wsdl');
+Configure::write('IPARAPHEUR_CACERT', APP . 'Config/cert_parapheur/ac.pem');
+Configure::write('IPARAPHEUR_CLIENTCERT', APP . 'Config/cert_parapheur/cert.pem');
+Configure::write('IPARAPHEUR_CERTPWD', 'passphrase');
+
+/* Configuration S2LOW */
+Configure::write('USE_S2LOW', false);
+Configure::write('S2LOW_HOST', 'https://s2low.x.x.org');
+Configure::write('S2LOW_PEM', APP . 'Config/cert_s2low/client.pem');
+Configure::write('S2LOW_SSLKEY', APP . 'Config/cert_s2low/key.pem');
+Configure::write('S2LOW_CAPATH', APP . 'Config/cert_s2low/');
+Configure::write('S2LOW_CLASSIFICATION', APP . 'webroot/files/actes/classification.xml');
+Configure::write('S2LOW_CERTPWD', 'password');
+Configure::write('S2LOW_USEPROXY', false);
+Configure::write('S2LOW_PROXYHOST', '');
+Configure::write('S2LOW_MAILSEC', false);
+Configure::write('S2LOW_MAILSECPWD', '');
+
+/* Configuration CONNECTEUR CMIS GED */
+Configure::write('GED_HOST', 'https://ged.x.x.x/alfresco/service/api/cmis');
+Configure::write('GED_LOGIN', 'login');
+Configure::write('GED_PWD', 'password');
+Configure::write('GED_REPO', '/Sites/Web-delib');
+
+/* Configuration pour Idélibre */
+Configure::write('USE_IDELIBRE', false);
+Configure::write('IDELIBRE_HOST', 'https://idelibre.x.x.org');
+Configure::write('IDELIBRE_LOGIN', 'login');
+Configure::write('IDELIBRE_PWD', 'password');
+Configure::write('IDELIBRE_CONN', 'adullact'); //Collectivité
+//Configure::write('IDELIBRE_CERT', APP . 'Config/cert_idelibre/cert.pem');
+
+/* Configuration ASAL@AE */
+Configure::write('USE_ASALAE', false);
+Configure::write('ASALAE_HOST', 'https://asalae.x.x.org');
+Configure::write('ASALAE_LOGIN', 'WEBDELIBSERVICES_LOGIN');
+Configure::write('ASALAE_PWD', 'WEBDELIBSERVICES_MDP');
+Configure::write('ASALAE_WSDL', '/webservices/wsdl');
+Configure::write('ASALAE_SIREN_ARCHIVE', 'DEMO');
+Configure::write('ASALAE_NUMERO_AGREMENT', 'TR_WEBDELIB_DEMO');
+
+/**
+ * Configuration des annuaires (AD ou OpenLDAP)
+ */
+
+/* Configuration de OpenLDAP (pour Active Directory voir plus bas) */
+Configure::write('USE_OPENLDAP', false);
+Configure::write('LDAP_HOST', 'ldap.x.x.x');
+Configure::write('LDAP_PORT', '389');
+Configure::write('LDAP_LOGIN', NULL);
+Configure::write('LDAP_PASSWD', NULL);
+Configure::write('LDAP_UID', 'UID');
+Configure::write('LDAP_BASE_DN', 'OU=Utilisateurs,dc=mairie-xxx,dc=xxx');
+Configure::write('LDAP_ACCOUNT_SUFFIX', '@mairie-xxx.xxx');
+Configure::write('LDAP_DN', 'dn');
+
+/*
+ * Pour utiliser un Active Directory, utiliser les instructions "define" (ci-dessous) à la place des "Configure::write" (ci-dessus)
+ * Changez Configure::write('USE_AD', false) => Configure::write('USE_AD', true)
+ */
+Configure::write('USE_AD', false);
+/*
+define('LDAP_HOST', 'your.active_directory.server');
+define('LDAP_PORT', '389');
+define('LDAP_LOGIN', 'your_ad_login');
+define('LDAP_PASSWD', 'your_ad_password');
+define('LDAP_UID', 'UID');
+define('LDAP_BASE_DN', 'OU=users,dc=CGxx,dc=fr');
+define('LDAP_ACCOUNT_SUFFIX', '@CG-xx.xx');
+define('LDAP_DN', 'distinguishedname');
+ */
