@@ -352,10 +352,10 @@ class ModelsController extends AppController {
         
         function generationToken(){
             Configure::write('debug', 0);
-            if ($this->RequestHandler->isGet()) {
+            if ($this->request->is('get')) {
                 $this->autoRender = false;
             
-                $this->RequestHandler->setContent('json', 'text/x-json');
+                $this->response->type('json', 'text/x-json');
                 $this->RequestHandler->respondAs('json'); 
 
                 $this->set('json_content', json_encode(array('downloadToken' => $this->Session->read('Generer.downloadToken'))));
