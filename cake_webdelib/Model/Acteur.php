@@ -197,8 +197,8 @@ class Acteur extends AppModel
             'note'
         );
 
-        foreach ($variables as $var){
-            if ($modelOdtInfos->hasUserField($var.'_'.$suffixe)) $fields[]= $var;
+        foreach ($variables as $variable) {
+            if ($modelOdtInfos->hasUserField($variable . '_' . $suffixe)) $fields[] = $variable;
         }
 
         if (empty($fields)) return;
