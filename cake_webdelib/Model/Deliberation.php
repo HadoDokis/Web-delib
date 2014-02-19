@@ -2070,10 +2070,10 @@ class Deliberation extends AppModel {
      * fonction de callback du behavior OdtFusion
      * retourne l'id du model odt à utiliser pour la fusion
      * @param integer $id id de l'occurence en base de données
-     * @param string $modelTypeName nom du type type du model (ici non utilisé)
+     * @param array modelOptions options gérées par la classe appelante
      * @return integer id du modele odt à utiliser
      */
-    function getModelTemplateId($id, $modelTypeName) {
+    function getModelTemplateId($id, $modelOptions) {
         return $this->getModelId($id);
     }
 
@@ -2083,10 +2083,10 @@ class Deliberation extends AppModel {
      * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id id de l'occurence en base de données
-     * @param string $modelTypeName nom du type type du model (ici non utilisé)
+     * @param array modelOptions options gérées par la classe appelante
      * @return void
      */
-    function beforeFusion(&$oMainPart, &$modelOdtInfos, $id, $modelTypeName) {
+    function beforeFusion(&$oMainPart, &$modelOdtInfos, $id, $modelOptions) {
         $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, true);
     }
 
