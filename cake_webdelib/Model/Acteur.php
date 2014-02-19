@@ -179,7 +179,6 @@ class Acteur extends AppModel
         if (empty($suffixe))
             $suffixe = trim(strtolower($this->alias));
         $fields = array();
-
         $variables = array(
             'salutation',
             'prenom',
@@ -197,10 +196,9 @@ class Acteur extends AppModel
             'note'
         );
 
-        foreach ($variables as $variable) {
-            if ($modelOdtInfos->hasUserField($variable . '_' . $suffixe)) $fields[] = $variable;
-        }
-
+        // liste des variables présentes dans le modèle d'édition
+        foreach ($variables as $variable)
+            if ($modelOdtInfos->hasUserField($variable.'_'.$suffixe)) $fields[]= $variable;
         if (empty($fields)) return;
 
         // lecture en base de données
