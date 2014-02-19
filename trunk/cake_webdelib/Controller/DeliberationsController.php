@@ -21,7 +21,7 @@ class DeliberationsController extends AppController
 
     public $helpers = array('Fck');
     public $uses = array('Acteur', 'Deliberation', 'User', 'Annex', 'Typeseance', 'Seance', 'TypeSeance', 'Commentaire', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Infosupdef', 'Infosup', 'Historique', 'Cakeflow.Circuit', 'Cakeflow.Composition', 'Cakeflow.Etape', 'Cakeflow.Traitement', 'Cakeflow.Visa', 'Nomenclature', 'Deliberationseance', 'Deliberationtypeseance');
-    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Date', 'Utils', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf', 'Paginator', 'Pastell', 'Cookie');
+    public $components = array('ModelOdtValidator.Fido', 'Gedooo', 'Date', 'Utils', 'Email', 'Acl', 'Droits', 'Iparapheur', 'Filtre', 'Cmis', 'Progress', 'Conversion', 'Pastell', 'S2low', 'Pdf', 'Paginator', 'Pastell');
     public $aucunDroit = array('getTypeseancesParTypeacteAjax', 'quicksearch', 'genereFusionToClient');
     // Gestion des droits
     public $demandeDroit = array(
@@ -4511,8 +4511,7 @@ class DeliberationsController extends AppController
             unset($this->Deliberation->odtFusionResult->content->binary);
 
             // envoi au client
-            $this->Cookie->destroy();
-            $this->Cookie->write('downloadToken', $cookieToken, false, 3600);
+            $this->Session->write('Generer.downloadToken', $cookieToken, false, 3600);
             $this->response->disableCache();
             $this->response->body($content);
             $this->response->type($mimeType);
@@ -4524,14 +4523,4 @@ class DeliberationsController extends AppController
         }
     }
 
-    public function beforeFilter() {
-        parent::beforeFilter();
-        //Pour la fonction generer réglage du cookie
-        $this->Cookie->name = 'Generer';
-        $this->Cookie->time = 3600;  // ou '1 hour'
-        $this->Cookie->path = '/';
-        $this->Cookie->domain = $_SERVER["HTTP_HOST"];
-        $this->Cookie->secure = false;  // HTTPS sécurisé seulement (NON)
-        $this->Cookie->httpOnly = false; // Pour accès javascript
-    }
 }
