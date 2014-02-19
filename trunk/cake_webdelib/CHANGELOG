@@ -1,7 +1,8 @@
 4.2
 ===
+- Changement de la génération des annexes pour fusion vers gedooo
 - Utilisation de FIDO (Format Identification for Digital Objects) pour la détection du format des fichiers basé sur le répertoire des archives nationales du Royaume-Uni (PRONOM)
-- Prise en charge des annexes au format .doc //TODO génération Gedooo
+- Prise en charge des annexes au format .doc .docx
 - Refonte du système d'upload des modèles d'édition
 - Résolution d'image pour la génération des annexes paramétrable via le fichier webdelib.inc (GS_RESOLUTION)
 - Le droit "Modifier les projets validés" devient "Modifier tous les projets" et permet de modifier des projets en cours d'élaboration ou validés
