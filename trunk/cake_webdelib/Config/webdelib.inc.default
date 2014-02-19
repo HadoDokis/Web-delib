@@ -80,6 +80,7 @@ Configure::write('SAE', 'ASALAE');
 Configure::write('USE_GED', false);
 /* Service utilisé pour la GED ('PASTELL' ou 'GED') */
 Configure::write('GED_PASTELL', false);
+Configure::write('GED_XML_VERSION', '2');
 
 /**
  * Configuration des connecteurs
