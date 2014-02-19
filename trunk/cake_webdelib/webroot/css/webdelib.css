@@ -1398,11 +1398,6 @@ div.aModifier {
     padding: 5px;
 }
 
-.autocomplete {
-    background: grey;
-    list-style-type: none;
-}
-
 #seances, #emetteur, #circuit, #acteur, #etat, #description, #limite, #classification, #theme, #objet, #nature {
     margin:  1px;
     padding: 1px;
@@ -1442,21 +1437,6 @@ input[type="file"]{width: auto}
 #connecteurIparapheur div.input.radio fieldset label { text-align: left; padding-left: 5px; width:auto;}
 #connecteurIparapheur div.input.radio {padding-left: 0px;}
 #connecteurIparapheur div.input.radio input[type="radio"]{margin-left: 25px;}
-
-fieldset#mails div.input.radio{
-    /*float:none;*/
-    display: block;
-    padding-left: 0;
-    margin-bottom: 10px;
-}
-fieldset#mails strong{
-    float: left;
-    padding: 0 .5em 0 0;
-    /*text-align: right;*/
-    width: 220px;
-    display: block;
-    /*margin-bottom: 10px;*/
-}
 
 #InsertRebondForm label{
     width: 150px;
