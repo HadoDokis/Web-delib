@@ -2,7 +2,7 @@
 <h2>Séances traitées</h2>
 
 
-<table style="border:0; width='100%';">
+<table style="border:0; width:'100%';">
 	<tr>
 		<th>Type</th>
 		<th>Date Séance</th>
