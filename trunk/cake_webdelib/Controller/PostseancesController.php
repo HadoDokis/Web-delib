@@ -4,15 +4,10 @@ class PostseancesController extends AppController {
 	var $name = 'Postseances';
 	var $helpers = array('Html', 'Form', 'Fck', 'Html2' );
 	var $components = array('Date', 'Gedooo', 'Cmis', 'Progress', 'Conversion');
-	var $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Typeseance', 'Typeacte', 'Nature');
+	var $uses = array('Deliberation','Infosup', 'Seance', 'User',  'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Theme', 'Typeseance', 'Typeacte', 'Nature', 'TdtMessage');
 
 	var $demandeDroit = array('index');
 
-    var $name = 'Postseances';
-    var $helpers = array('Html', 'Form', 'Javascript', 'Fck', 'Html2');
-    var $components = array('Date', 'Gedooo', 'Cmis', 'Progress', 'Conversion', 'S2low');
-    var $uses = array('Deliberation', 'Infosup', 'Seance', 'User', 'Listepresence', 'Vote', 'Model', 'Theme', 'Typeseance', 'Typeacte', 'Nature', 'TdtMessage');
-    var $demandeDroit = array('index');
     // Gestion des droits
     var $aucunDroit = array(
         'getNom',
@@ -93,23 +88,6 @@ class PostseancesController extends AppController {
 			return ($this->Deliberation->find('all', array('conditions'=>$condition, 'order'=>array('Deliberation.position ASC'))));
 		}
 	}
-
-                $this->Deliberation->Behaviors->attach('Containable');
-                $delib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
-                    'contain' => array('Theme.libelle', 'Rapporteur.nom', 'Rapporteur.prenom'),
-                    'fields' => array('objet_delib', 'titre', 'etat', 'Deliberation.id', 'num_delib')));
-                $delibs[$num_delib] = $delib;
-                $delibs[$num_delib]['Model']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($typeseance_id, $delib['Deliberation']['etat']);
-                $num_delib++;
-            }
-            $this->set('seance_id', $id);
-            $this->set('projets', $delibs);
-            $this->set('date_seance', $this->Date->frenchDateConvocation(strtotime($this->Seance->getDate($id))));
-        } else {
-            $condition = array("seance_id" => $id, "etat >=" => 2);
-            return ($this->Deliberation->find('all', array('conditions' => $condition, 'order' => array('Deliberation.position ASC'))));
-        }
-    }
 
     function getVote($id_delib) {
         $condition = "delib_id = $id_delib";
