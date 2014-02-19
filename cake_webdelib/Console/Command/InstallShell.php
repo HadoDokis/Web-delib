@@ -12,6 +12,11 @@ class InstallShell extends AppShell {
     public $version;
 
     public function main() {
+
+        // Création de styles perso
+        $this->stdout->styles('time', array('text' => 'magenta'));
+        $this->stdout->styles('important', array('text' => 'red', 'bold' => true));
+
         if (!file_exists(APP . 'VERSION.txt')) {
             $this->out("<error>Le fichier VERSION.txt est introuvable</error>");
             $this->out("\n<important>Annulation de l'installation</important>");
@@ -19,7 +24,7 @@ class InstallShell extends AppShell {
         }
         $this->version = file_get_contents(APP . 'VERSION.txt');
 
-        $this->install($this->params['install-like-update']);
+        $this->install($this->params);
 
         if ($this->params['install-demo']) {
             $this->injectDemoRecords();
@@ -40,49 +45,63 @@ class InstallShell extends AppShell {
             'help' => __('Installe le jeu de données de démo.'),
             'boolean' => true
         ));
-        $parser->addOption('install-like-update', array(
-            'short' => 'u',
-            'help' => __('Installe Webdelib en passant les patchs un par un.'),
+
+        $parser->addOption('reinstall', array(
+            'short' => 'r',
+            'help' => __('Néttoie les données dans la bases avant d\'installer.'),
+            'boolean' => true
+        ));
+
+        $parser->addOption('no-transac', array(
+            'short' => 'd',
+            'help' => __('Désactive le mode transactionnel du passage des scripts sql.'),
+            'boolean' => true
+        ));
+
+        $parser->addOption('skip-errors', array(
+            'short' => 's',
+            'help' => __('Continu l\'éxecution du script même si une erreur est levée'),
             'boolean' => true
         ));
 
         return $parser;
     }
 
-    public function install($likeupdate = false) {
+    public function install($options) {
         $success = true;
         $sql_files = array();
-        if ($likeupdate) {
-            $sql_files['Webdelib v4.1'] = APP . 'Config' . DS . 'Schema' . DS . 'webdelib-v4.1.sql';
-            $sql_files['Webdelib 4.1 to 4.1.02'] = APP . 'Config' . DS . 'Schema' . DS . 'patches' . DS . '4.1_to_4.1.02.sql';
-            $sql_files['Webdelib 4.1.02 to 4.1.03'] = APP . 'Config' . DS . 'Schema' . DS . 'patches' . DS . '4.1.02_to_4.1.03.sql';
-            $sql_files['Webdelib 4.1.03 to 4.1.04'] = APP . 'Config' . DS . 'Schema' . DS . 'patches' . DS . '4.1.03_to_4.1.04.sql';
-            $sql_files['Webdelib 4.1 to 4.2'] = APP . 'Config' . DS . 'Schema' . DS . 'patches' . DS . '4.1_to_4.2.sql';
-            $sql_files['Cakeflow v3.0'] = APP . 'Plugins' . DS . 'Cakeflow' . DS . 'Config' . DS . 'sql' . DS . 'cakeflow_postgresql_3.0.sql';
-            $sql_files['Cakeflow v3.0.01 to v3.0.02'] = APP . 'Plugins' . DS . 'Cakeflow' . DS . 'Config' . DS . 'sql' . DS . 'patches' . DS . 'cakeflow_v3.0.01_to_v3.0.02.sql';
-            $sql_files['Cakeflow v3.0 to v3.1'] = APP . 'Plugins' . DS . 'Cakeflow' . DS . 'Config' . DS . 'sql' . DS . 'patches' . DS . 'cakeflow_v3.0_to_v3.1.sql';
-            $sql_files['ModelOdtValidator v1'] = APP . 'Plugins' . DS . 'ModelOdtValidator' . DS . 'Schema' . DS . 'FormatValidator-v1.sql';
-        } else {
+        $clean = $options['reinstall'];
+        $notransac = $options['no-transac'];
+        $noerrors = $options['skip-errors'];
+        if ($clean)
+            $notransac = $noerrors = true;
+
+        if (!$clean)
             $sql_files['Webdelib v' . $this->version] = APP . 'Config' . DS . 'Schema' . DS . 'webdelib-v' . $this->version . '.sql';
-        }
+        else
+            $sql_files['Webdelib v' . $this->version] = APP . 'Config' . DS . 'Schema' . DS . 'webdelib-v' . $this->version . '.clean.sql';
 
         $this->out("<important>Installation de Webdelib v" . $this->version . "</important>\n");
 
         // Passage des scripts sql de migration
         $this->Sql->execute();
-        $this->Sql->begin();
-        $this->out("\nInstallation des données... Veuillez patienter");
+        if (!$notransac)
+            $this->Sql->begin();
+        $this->out("\nInstallation des données... Veuillez patienter...");
         foreach ($sql_files as $id => $sql) {
-            if (!$this->Sql->run($sql)) {
+            $res = $noerrors ? $this->Sql->runSkipErrors($sql) : $this->Sql->run($sql);
+            if (!$res) {
                 $this->out("\n<error>Erreur levée durant l'éxecution du fichier sql de $id</error>");
-                $this->Sql->rollback();
+                if (!$notransac)
+                    $this->Sql->rollback();
                 $success = false;
                 break;
             }
         }
 
         if ($success) {
-            $this->Sql->commit();
+            if (!$notransac)
+                $this->Sql->commit();
             $this->footer('<important>Installation de Webdelib v' . $this->version . ' accompli avec succès !</important>');
         } else
             $this->footer("\n<important>Annulation de l'installation !</important>");
