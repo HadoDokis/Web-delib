@@ -247,8 +247,7 @@ class PostseancesController extends AppController {
                 $cmis->client->deleteObject($objet_cmis->id);
             }
         } catch (CmisObjectNotFoundException $e) {
-            //  echo $e->getCode();exit;
-            // L'objet n'existe pas encore : ne rien faire
+            $this->log('Export CMIS: Erreur ' . $e->getCode() . "! \n" . $e->getMessage(), 'error');
         }
     }
 
@@ -421,7 +420,6 @@ class PostseancesController extends AppController {
             $type_seance = $seance['Typeseance']['libelle'];
             $libelle_seance = $seance['Typeseance']['libelle'] . " " . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date']));
 
-
             $this->_deletetoGed($cmis, $libelle_seance);
 
             $zip = new ZipArchive;
@@ -434,8 +432,6 @@ class PostseancesController extends AppController {
             // Création des dossiers vides
             $zip->addEmptyDir('Rapports');
             $zip->addEmptyDir('Annexes');
-            //$my_seance_folder_rapport = $cmis->client->createFolder($my_seance_folder->id, 'Rapport');
-            //$my_seance_folder_annexe = $cmis->client->createFolder($my_seance_folder->id, 'Annexe');
 
             $delibs_id = $this->Seance->getDeliberationsId($seance_id);
 
