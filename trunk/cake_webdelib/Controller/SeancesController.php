@@ -6,7 +6,7 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Form2', 'Fck', 'Html2');
-	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'Pdf', 'Cookie');
+	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'Pdf');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
 	var $cacheAction = 0;
 
@@ -1745,8 +1745,7 @@ class SeancesController extends AppController {
             unset($this->Seance->odtFusionResult->content->binary);
 
             // envoi au client
-            $this->Cookie->destroy();
-            $this->Cookie->write('downloadToken', $cookieToken, false, 3600);
+            $this->Session->write('Generer.downloadToken', $cookieToken, false, 3600);
             $this->response->disableCache();
             $this->response->body($content);
             $this->response->type($mimeType);
@@ -1756,17 +1755,6 @@ class SeancesController extends AppController {
             $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
             $this->redirect($this->referer());
         }
-    }
-
-    public function beforeFilter() {
-        parent::beforeFilter();
-        //Pour la fonction generer réglage du cookie
-        $this->Cookie->name = 'Generer';
-        $this->Cookie->time = 3600;  // ou '1 hour'
-        $this->Cookie->path = '/';
-        $this->Cookie->domain = $_SERVER["HTTP_HOST"];
-        $this->Cookie->secure = false;  // HTTPS sécurisé seulement (NON)
-        $this->Cookie->httpOnly = false; // Pour accès javascript
     }
 
     /**
@@ -1814,6 +1802,8 @@ class SeancesController extends AppController {
                 file_put_contents($dirpath.$filename, $content);
                 unset($content);
             }
+            // mise à jour de la date de génération des convocations
+            $this->Seance->save(array('id'=>$id, 'date_convocation'=>date("Y-m-d H:i:s", strtotime("now"))), false);
         } catch (Exception $e) {
             $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
         }
