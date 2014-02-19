@@ -172,26 +172,35 @@ class Acteur extends AppModel
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id id du modèle lié
      * @param string $suffixe suffixe des variables de fusion
+     * @throws Exception
      */
     function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $suffixe='') {
         // initialisations
         if (empty($suffixe))
             $suffixe = trim(strtolower($this->alias));
         $fields = array();
-        if ($modelOdtInfos->hasUserField('salutation_'.$suffixe)) $fields[]= 'salutation';
-        if ($modelOdtInfos->hasUserField('prenom_'.$suffixe)) $fields[]= 'prenom';
-        if ($modelOdtInfos->hasUserField('nom_'.$suffixe)) $fields[]= 'nom';
-        if ($modelOdtInfos->hasUserField('titre_'.$suffixe)) $fields[]= 'titre';
-        if ($modelOdtInfos->hasUserField('position_'.$suffixe)) $fields[]= 'position';
-        if ($modelOdtInfos->hasUserField('email_'.$suffixe)) $fields[]= 'email';
-        if ($modelOdtInfos->hasUserField('telmobile_'.$suffixe)) $fields[]= 'telmobile';
-        if ($modelOdtInfos->hasUserField('telfixe_'.$suffixe)) $fields[]= 'telfixe';
-        if ($modelOdtInfos->hasUserField('date_naissance_'.$suffixe)) $fields[]= 'date_naissance';
-        if ($modelOdtInfos->hasUserField('adresse1_'.$suffixe)) $fields[]= 'adresse1';
-        if ($modelOdtInfos->hasUserField('adresse2_'.$suffixe)) $fields[]= 'adresse2';
-        if ($modelOdtInfos->hasUserField('cp_'.$suffixe)) $fields[]= 'cp';
-        if ($modelOdtInfos->hasUserField('ville_'.$suffixe)) $fields[]= 'ville';
-        if ($modelOdtInfos->hasUserField('note_'.$suffixe)) $fields[]= 'note';
+
+        $variables = array(
+            'salutation',
+            'prenom',
+            'nom',
+            'titre',
+            'position',
+            'email',
+            'telmobile',
+            'telfixe',
+            'date_naissance',
+            'adresse1',
+            'adresse2',
+            'cp',
+            'ville',
+            'note'
+        );
+
+        foreach ($variables as $var){
+            if ($modelOdtInfos->hasUserField($var.'_'.$suffixe)) $fields[]= $var;
+        }
+
         if (empty($fields)) return;
 
         // lecture en base de données
@@ -206,4 +215,3 @@ class Acteur extends AppModel
     }
 
 }
-?>
