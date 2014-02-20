@@ -118,7 +118,7 @@ class ProfilsController extends AppController {
                 $cpt = 0;
                 foreach ($Users as $User) {
                     $cpt++;
-                    $this->Progress->at($cpt * (100 / $nbUsers), 'Mise à jour des données pour : <b>' . $User['User']['login'] . '</b>...');
+                    $this->Progress->at($cpt * (100 / $nbUsers), 'Mise à jour des données pour : ' . $User['User']['login'] . '...');
                     $this->Dbdroits->MajCruDroits(
                             array(
                         'model' => 'User', 'foreign_key' => $User['User']['id'], 'alias' => $User['User']['login']), array(
@@ -132,7 +132,7 @@ class ProfilsController extends AppController {
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
         }
         if ($sortie) {
-            $this->Progress->end('/profils/index');
+            $this->Progress->end('/profils');
         } else {
             $profils = $this->Profil->find('list', array(
                 'conditions' => array('Profil.id <>' => $id),

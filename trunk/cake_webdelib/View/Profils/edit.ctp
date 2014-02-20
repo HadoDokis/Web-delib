@@ -32,7 +32,9 @@
 <script>
     $(document).ready(function () {
         $('#ProfilParentId').select2({
-            width: 'resolve'
+            width: 'resolve',
+            placeholder: 'Aucun',
+            allowClear: true
         });
     })
 </script>
