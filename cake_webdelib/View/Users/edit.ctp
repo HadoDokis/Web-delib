@@ -236,7 +236,7 @@ echo $this->element('onglets', array('listeOnglets' => array(
     $(document).ready(function () {
         $('.autocomplete').select2({
             width: 'resolve',
-            placeholder: 'Aucune séléction',
+            placeholder: 'Aucune sélection',
             allowClear: true
         });
 
