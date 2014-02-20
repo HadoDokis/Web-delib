@@ -92,8 +92,6 @@ echo $this->Html->css('treeview');
 
         $('#arbre').jstree(jstreeconf);
 
-        var service = $('#ServiceService').val();
-        $('#arbre').jstree('select_node', 'Service_' + service);
 
         $("a#boutonEdit").hide();
         $("a#boutonDelete").hide();
@@ -103,7 +101,6 @@ echo $this->Html->css('treeview');
             $("a#boutonDelete").hide().prop('href','#');
             if (data.selected.length) {
                 var node = data.instance.get_node(data.selected);
-                $('#ServiceService').val(data.instance.get_node(data.selected).data.id);
                 $("a#boutonEdit").show().prop('href', '/services/edit/' + data.instance.get_node(data.selected).data.id)
                 if ($('#' + node.id).hasClass('deletable')) {
                     $("a#boutonDelete").show().prop('href', '/services/delete/' + data.instance.get_node(data.selected).data.id)
