@@ -11,7 +11,6 @@
             <th>Téléphone</th>
             <th>Mobile</th>
             <th>Service</th>
-            <th>Type d'acte</th>
             <th style="width:20%;">Actions</th>
         </tr>
         <?php
@@ -31,23 +30,12 @@
                             echo $service['libelle'] . '<br/>';
                     ?>
                 </td>
-                <td>
-                    <?php
-                    if (isset($user['Natures']) && !empty($user['Natures'])) {
-                        foreach ($user['Natures'] as $nature)
-                            echo("$nature<br />");
-                    }
-                    ?>
-                </td>
 
                 <td class="actions">
                     <?php echo $this->Html->link(SHY, '/users/view/' . $user['User']['id'], array('class' => 'link_voir', 'escape' => false, 'title' => 'Voir'), false) ?>
                     <?php echo $this->Html->link(SHY, '/users/edit/' . $user['User']['id'], array('class' => 'link_modifier', 'escape' => false, 'title' => 'Modifier'), false) ?>
                     <?php echo $this->Html->link(SHY, '/users/changeMdp/' . $user['User']['id'], array('class' => 'link_mdp', 'escape' => false, 'title' => 'Nouveau mot de passe'), false) ?>
-                    <?php
-//                    if ($user['User']['is_deletable'])
-                        echo $this->Html->link(SHY, '/users/delete/' . $user['User']['id'], array('class' => 'link_supprimer', 'escape' => false, 'title' => 'Supprimer'), 'Etes-vous sur de vouloir supprimer cet utilisateur : \'' . $user['User']['prenom'] . ' ' . $user['User']['nom'] . '\' ?');
-                    ?>
+                    <?php echo $this->Html->link(SHY, '/users/delete/' . $user['User']['id'], array('class' => 'link_supprimer', 'escape' => false, 'title' => 'Supprimer'), 'Etes-vous sur de vouloir supprimer cet utilisateur : \'' . $user['User']['prenom'] . ' ' . $user['User']['nom'] . '\' ?'); ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -65,8 +53,8 @@
         <?php echo $this->Paginator->counter(array('format' => 'Page %page% sur %pages%')); ?>
     </div>
     <?php else: ?>
-        <div  style="text-align: center">
-            <strong>Aucun utilisateur trouvé..</strong>
+        <div style="text-align: center">
+            <strong>Aucun utilisateur trouvé...</strong>
         </div>
         <br/>
     <?php endif; //fin if (!empty($users)) ?>

@@ -91,6 +91,7 @@ class UsersController extends AppController {
 
         $users = $this->Paginator->paginate('User');
         /*
+        //Chercher les droits (types d'acte et supprimable?)
         foreach ($users as &$user) {
             $aro = $this->Aro->find('first', array(
                 'conditions' => array('model' => 'User', 'foreign_key' => $user['User']['id']),
