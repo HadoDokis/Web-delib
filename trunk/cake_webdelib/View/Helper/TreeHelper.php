@@ -38,6 +38,36 @@ class TreeHelper extends AppHelper {
         return ($treelist);
     }
 
+    /**
+     * @param $threaded
+     * @param $modelname
+     * @param array $fields
+     * @param int $level
+     * @return string
+     */
+    public function generateIndex($threaded, $modelname, $fields = array(), $level = 0){
+        if (empty($fields['id'])) $fields['id'] = 'id';
+        if (empty($fields['display'])) $fields['display'] = 'libelle';
+        $treelist = '<ul>';
+        foreach ($threaded as $thread){
+            $id = $thread[$modelname][$fields['id']];
+            $name = $thread[$modelname][$fields['display']];
+            $type = 'level'.$level;
+            $class = !empty($thread[$modelname]['deletable']) ? 'deletable' : '';
+            $treelist .= '<li id="'.$modelname.'_'.$id.'" class="'.$class.'" data-id="'.$id.'" data-jstree=\'{ "type" : "'.$type.'"}\'>';
+            if (!empty($fields['order']) && !empty($thread[$modelname][$fields['order']]))
+                $treelist .= "[{$thread[$modelname][$fields['order']]}] ";
+            $treelist .= $name;
+            if (!empty($thread['children'])){
+                $treelist .= $this->generateIndex($thread['children'], $modelname, $fields, $level+1);
+            }
+            $treelist .= '</li>';
+        }
+        $treelist .= '</ul>';
+        return ($treelist);
+    }
+
+
 	function showTree($modelName,$fieldName,$data,$level,$baseUrl,$actions, $order = null) {
 		$tabs = str_repeat($this->tab, $level);
   		$output = "";

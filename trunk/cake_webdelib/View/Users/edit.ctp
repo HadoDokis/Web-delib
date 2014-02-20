@@ -2,19 +2,21 @@
 echo $this->Html->script('jstree.min');
 echo $this->Html->css('jstree/style.min');
 echo $this->Html->css('users');
+echo $this->Html->css('treeview');
 
 if ($this->Html->value('User.id')) {
     echo "<h2>Modification de l'utilisateur n&deg;{$this->Html->value('User.id')} : &quot;{$this->Html->value('User.login')}&quot;</h2>";
-    echo $this->Form->create('User', array('url' => '/users/edit/' . $this->Html->value('User.id'), 'type' => 'post', 'name' => 'userEdit', 'id' => 'userForm'));
+    echo $this->Form->create('User', array('url' => array('controller'=>'users', 'action'=>'edit', $this->Html->value('User.id')), 'type' => 'post', 'name' => 'userEdit', 'id' => 'userForm'));
 } else {
     echo "<h2>Création d'un utilisateur</h2>";
-    echo $this->Form->create('User', array('url' => '/users/add', 'type' => 'post', 'id' => 'userForm'));
+    echo $this->Form->create('User', array('url' => array('controller'=>'users', 'action'=>'add'), 'type' => 'post', 'id' => 'userForm'));
 }
 
 echo $this->element('onglets', array('listeOnglets' => array(
     'Informations principales',
     'Droits',
     'Types d\'acte')));
+
 ?>
 <div id='tab1'>
     <fieldset>
@@ -130,7 +132,7 @@ echo $this->element('onglets', array('listeOnglets' => array(
                            style="float: left; z-index: 2"/>
 
                     <div class="btn-group">
-                        <a class="btn" id="search_service_button" title="Lancer la recherche"><i
+                        <a class="btn" id="search_tree_button" title="Lancer la recherche"><i
                                 class="fa fa-search"></i></a>
 
                         <a class="btn dropdown-toggle" data-toggle="dropdown">
@@ -283,18 +285,18 @@ echo $this->element('onglets', array('listeOnglets' => array(
         });
 
         /* Recherche dans la liste jstree */
-        $('#search_service_button').click(function () {
+        $('#search_tree_button').click(function () {
             $('#services').jstree(true).search($('#search_service').val());
         });
         /* Recherche dans la liste jstree */
         $('#search_service_erase_button').click(function () {
             $('#search_service').val('');
-            $('#search_service_button').click();
+            $('#search_tree_button').click();
         });
         $('#search_service').keydown(function (event) {
             if (event.keyCode == 13) {
                 event.preventDefault();
-                $('#search_service_button').click();
+                $('#search_tree_button').click();
                 return false;
             }
         });
@@ -312,7 +314,6 @@ echo $this->element('onglets', array('listeOnglets' => array(
         });
         $("#search_service_ascenceur_button").click(function () {
             var overflow = $('#services').css('overflow');
-            console.log(overflow);
             if (overflow == 'auto'){
                 $('#services').css('overflow', 'hidden');
                 $('#services').css('max-height', 'none');
@@ -322,7 +323,6 @@ echo $this->element('onglets', array('listeOnglets' => array(
                 $('#services').css('max-height', '350px');
                 $("#search_service_ascenceur_button").text('Désactiver défilement');
             }
-            console.log($('#services').css('overflow'));
         });
 
         onchangeCircuitDefault();
