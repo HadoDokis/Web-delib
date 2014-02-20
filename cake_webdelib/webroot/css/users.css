@@ -50,8 +50,3 @@ div.input.text label, .label_autocomplete{
     width: 220px;
     text-align: left;
 }
-
-#search_service_button{
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-}
