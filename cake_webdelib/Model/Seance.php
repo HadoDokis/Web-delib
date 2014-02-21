@@ -555,7 +555,8 @@ class Seance extends AppModel
      */
     function beforeFusion(&$oMainPart, &$modelOdtInfos, $id, $modelOptions) {
         switch($modelOptions['modelTypeName']) {
-            case 'Convocation' :
+            case 'convocation' :
+            case 'ordredujour' :
                 if (!empty($modelOptions['acteurId']))
                     $this->Secretaire->setVariablesFusion($oMainPart, $modelOdtInfos, $modelOptions['acteurId'], $suffixe='acteur');
                 $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, 'seance', true);
@@ -573,9 +574,9 @@ class Seance extends AppModel
     function getModelTemplateId($id, $modelOptions) {
         // initialisation
         $field = '';
-        $allowedModelTypeNames = array('Projet', 'Délibération', 'Convocation', 'Ordre du jour', 'PV sommaire', 'PV détaillé');
-        if (!in_array($modelOptions['modelTypeName'], $allowedModelTypeNames))
-            throw new Exception('le nom du type de modèle d\'édition '.$modelOptions['modelTypeName'].' n\'est par autorisé');
+        $allowedModelTypes = array('projet', 'deliberation', 'convocation', 'ordredujour', 'pvsommaire', 'pvdetaille');
+        if (!in_array($modelOptions['modelTypeName'], $allowedModelTypes))
+            throw new Exception('le type de modèle d\'édition '.$modelOptions['modelTypeName'].' n\'est par autorisé');
 
         // lecture de la séance en base de données
         $typeSeanceId = $this->field('type_id', array('id'=>$id));
@@ -583,19 +584,7 @@ class Seance extends AppModel
             throw new Exception('détermination du type de séance de la séance id:'.$id.' non trouvée');
 
         // lecture du modele_id liée au type de séance et au type du model d'édition
-        if ($modelOptions['modelTypeName'] == 'Projet')
-            $field = 'modelprojet_id';
-        elseif ($modelOptions['modelTypeName'] == 'Délibération')
-            $field = 'modeldeliberation_id';
-        elseif ($modelOptions['modelTypeName'] == 'Convocation')
-            $field = 'modelconvocation_id';
-        elseif ($modelOptions['modelTypeName'] == 'Ordre du jour')
-            $field = 'modelordredujour_id';
-        elseif ($modelOptions['modelTypeName'] == 'PV sommaire')
-            $field = 'modelpvsommaire_id';
-        elseif ($modelOptions['modelTypeName'] == 'PV détaillé')
-            $field = 'modelpvdetaille_id';
-        $modelTemplateId = $this->Typeseance->field($field, array('id'=>$typeSeanceId));
+        $modelTemplateId = $this->Typeseance->field('model'.$modelOptions['modelTypeName'].'_id', array('id'=>$typeSeanceId));
         if (empty($modelTemplateId))
             throw new Exception('détermination du modèle d\'édition '.$modelOptions['modelTypeName'].' pour le type de séance id:'.$typeSeanceId.' non trouvé');
         return $modelTemplateId;
