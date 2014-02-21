@@ -9,7 +9,7 @@
 <?php 
 echo $this->Html->tag('div', null, array('style' => 'padding-right:1em;float:left;'));
 $this->Html2->boutonSubmitUrl("/seances/genererConvocation/$seance_id/$model_id",'Générer les convocations','Générer les convocations', null, null,'fa fa-cogs');
-$this->Html2->boutonSubmitUrl("/seances/genererConvocationsToFiles/$seance_id/$model_id",'New : Générer les convocations', 'Générer les convocations avec la nouvelle méthode', null, 'btn-primary waiter','fa fa-cogs');
+$this->Html2->boutonSubmitUrl("/seances/genereFusionToFiles/$seance_id/$model_id/convocation",'New : Générer les convocations', 'Générer les convocations avec la nouvelle méthode', null, 'btn-primary waiter','fa fa-cogs');
 echo $this->Html->tag('/div', null);
 $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Récupérer une archive contenant les convocations','Récupérer une archive contenant les convocations',null,'btn-inverse','fa fa-download');
 ?>
