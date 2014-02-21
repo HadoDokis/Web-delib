@@ -4,36 +4,53 @@
  * @property Deliberation $Deliberation
  */
 class Deliberation extends AppModel {
-
     public $validate = array(
         'objet' => array(
-            array('rule' => 'notEmpty',
-                'message' => 'L\'objet est obligatoire')),
+            array(
+                'rule' => 'notEmpty',
+                'message' => 'L\'objet est obligatoire'
+            )
+        ),
         'typeacte_id' => array(
-            array('rule' => array('canSaveNature', 'notEmpty'),
-                'message' => "Type d'acte invalide")),
+            array(
+                'rule' => array('canSaveNature', 'notEmpty'),
+                'message' => "Type d'acte invalide"
+            )
+        ),
         'theme_id' => array(
-            array('rule' => array('notEmpty'),
-                'message' => "Theme invalide")),
+            array(
+                'rule' => array('notEmpty'),
+                'message' => "Theme invalide"
+            )
+        ),
         'texte_projet_upload' => array(
-            array('rule' => array('checkFormat','odt', false),
-                'message' => "Ce type de fichier n'est pas autorisé")),
+            array(
+                'rule' => array('checkFormat', 'odt', false),
+                'message' => "Format du document invalide. Autorisé : fichier ODT"
+            )
+        ),
         'texte_synthese_upload' => array(
-            array('rule' => array('checkFormat','odt', false),
-                'message' => "Ce type de fichier n'est pas autorisé")),
+            array(
+                'rule' => array('checkFormat', 'odt', false),
+                'message' => "Format du document invalide. Autorisé : fichier ODT"
+            )
+        ),
         'deliberation_upload' => array(
-            array('rule' => array('checkFormat','odt', false),
-                'message' => "Ce type de fichier n'est pas autorisé")),
-        'debat_upload' => array(
-            array('rule' => array('checkFormat','odt', false),
-                'message' => "Ce type de fichier n'est pas autorisé")),
-        'commission_upload' => array(
-            array('rule' => array('checkFormat','odt', false),
-                'message' => "Ce type de fichier n'est pas autorisé")),
+            array(
+                'rule' => array('checkFormat', 'odt', false),
+                'message' => "Format du document invalide. Autorisé : fichier ODT"
+            )
+        ),
+        'texte_doc' => array(
+            array('rule' => array('checkFormat', 'odt', false),
+                'message' => "Format du document invalide. Autorisé : fichier ODT"
+            )
+        ),
         'vote_commentaire' => array(
             'rule' => array('maxLength', 1000),
             'message' => 'Le commentaire de vote ne doit pas dépasser 1000 caractères.'
-        ));
+        )
+    );
 
 
     //dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel

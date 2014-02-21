@@ -1,22 +1,40 @@
 <?php
 class Seance extends AppModel
 {
-
-    public $name = 'Seance';
     public $days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
     public $months = array('', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
 
     public $validate = array(
-        'type_id' => array(array('rule' => 'notEmpty',
-            'message' => 'Entrer le type de seance associé.')),
-        'avis' => array(array('rule' => 'notEmpty',
-            'message' => 'Sélectionner un avis')),
-        'date' => array(array('rule' => 'notEmpty',
-            'message' => 'Entrer une date valide.')),
-        'commission' => array(array('rule' => 'notEmpty',
-            'message' => 'Entrer le texte de débat.')),
-        'debat_global_upload' => array(array('rule' => array('checkFormat','odt', false),
-            'message' => "Ce type de fichier n'est pas autorisé")),
+        'type_id' => array(
+            array(
+                'rule' => 'notEmpty',
+                'message' => 'Entrer le type de seance associé.'
+            )
+        ),
+        'avis' => array(
+            array(
+                'rule' => 'notEmpty',
+                'message' => 'Sélectionner un avis'
+            )
+        ),
+        'date' => array(
+            array(
+                'rule' => 'notEmpty',
+                'message' => 'Entrer une date valide.'
+            )
+        ),
+        'commission' => array(
+            array(
+                'rule' => 'notEmpty',
+                'message' => 'Entrer le texte de débat.'
+            )
+        ),
+        'texte_doc' => array(
+            array(
+                'rule' => array('checkFormat', 'odt', false),
+                'message' => "Format du document invalide. Autorisé : fichier ODT"
+            )
+        )
     );
 
     public $belongsTo = array(

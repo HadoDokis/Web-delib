@@ -196,16 +196,16 @@ function supprimerFichierJoint(modele, champ, titre) {
 	var inputFichier = document.createElement('input');
 	inputFichier.type = 'file';
 	inputFichier.id = modele+champ;
+    if (modele == "Deliberation") champ += "_upload";
 	inputFichier.name = 'data['+modele+']['+champ+']';
 	inputFichier.title = titre;
-	inputFichier.size = '60';
 	/* Ajoute l'input file au span */
 	sInput.appendChild(inputFichier);
         /* Ajoute le bouton Effacer */
         var file_input_index = 1;
         while ($("#file_input_container_"+file_input_index).length !== 0) file_input_index++;
         $(inputFichier).wrap('<div id="file_input_container_'+file_input_index+'"></div>');
-        $(inputFichier).after('<input type="button" value="Effacer" class="purge_file"  onclick="javascript: reset_html(\'file_input_container_'+file_input_index+'\')" />');
+        $(inputFichier).after('<input type="button" value="Effacer" class="purge_file btn btn-mini"  onclick="javascript: reset_html(\'file_input_container_'+file_input_index+'\')" />');
 }
 
 /******************************************************************************/

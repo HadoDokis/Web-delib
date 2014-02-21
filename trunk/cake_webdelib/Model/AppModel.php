@@ -26,6 +26,7 @@
  * @lastmodified    $Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
  * @license            http://www.opensource.org/licenses/mit-license.php The MIT License
  */
+
 /**
  * Application model for Cake.
  *
@@ -36,35 +37,39 @@
  * @package        cake
  * @subpackage    cake.cake
  */
-class AppModel extends Model
-{
+class AppModel extends Model {
     //var $actsAs=array('Containable');
 
     /**
      * Validation du format de fichier par FIDO
      */
-    public function checkFormat($data, $extension, $required = false)
-    {
-        $data = array_shift($data);
-        if(!$required && $data['error'] == 4){
-            return true;
-        }
-        if($required && $data['error'] !== 0){
-            return false;
-        }
-        if ($data['size'] == 0 || $data['error'] != 0) {
-            $this->validate['content']['message'] = 'Erreur dans le document ou lors de l&apos;envoi.';
-            return false;
-        }
+    public function checkFormat($data, $extension, $required = false) {
         App::uses('FidoComponent', 'ModelOdtValidator.Controller/Component');
         $this->Fido = new FidoComponent();
-        $allowed = $this->Fido->checkFile($data['tmp_name']);
+        if (is_array($data)){
+            $data = array_shift($data);
+            if (!$required && $data['error'] == 4) {
+                return true;
+            }
+            if ($required && $data['error'] !== 0) {
+                return false;
+            }
+            if ($data['size'] == 0 || $data['error'] != 0) {
+                $this->validate['content']['message'] = 'Erreur dans le document ou lors de l&apos;envoi.';
+                return false;
+            }
+            $allowed = $this->Fido->checkFile($data['tmp_name']);
+        }else{
+            if (empty($data))
+                return !$required;
+            $tmpname = tempnam(TMP, 'upload_');
+            $allowed = $this->Fido->checkFile($tmpname);
+        }
 
         return ($allowed && $this->Fido->lastResults['extension'] == $extension);
     }
 
-    function listFields($params = array())
-    {
+    function listFields($params = array()) {
         // Initialisation des clés manquantes de $params avec les valeurs de $this->$displayFields
         if (isset($this->displayFields))
             $params = array_merge($this->displayFields, $params);
@@ -97,8 +102,7 @@ class AppModel extends Model
         return $ret;
     }
 
-    function changeBoolean($model, $id, $field)
-    {
+    function changeBoolean($model, $id, $field) {
         $mod = new $model;
         $data = $mod->find('first', array('conditions' => array("$model.id" => $id),
             'recursive' => -1,
@@ -127,8 +131,7 @@ class AppModel extends Model
                 return true;
        }*/
 
-    public function isUploadedFile($params)
-    {
+    public function isUploadedFile($params) {
         $val = array_shift($params);
         if ((isset($val['error']) && $val['error'] == 0) ||
             (!empty($val['tmp_name']) && $val['tmp_name'] != 'none')
@@ -141,30 +144,30 @@ class AppModel extends Model
     /**
      * équivalent de la fonction cake field() mais retourne plusieurs valeurs sous forme de tableau
      */
-    function nfield($fieldName, $conditions=array(), $order=array()) {
+    function nfield($fieldName, $conditions = array(), $order = array()) {
         // initialisations
         $ret = array();
         $fields = array();
         $contain = array();
 
         // champ a lire
-        $fields[] = $fieldName. ' DISTINCT';
+        $fields[] = $fieldName . ' DISTINCT';
 
         // ajout des champs des modeles liées pour la condition
-        foreach($conditions as $condField=>&$cond) {
-            if (strpos($condField, ' ')!==false)
+        foreach ($conditions as $condField => &$cond) {
+            if (strpos($condField, ' ') !== false)
                 $condField = substr($condField, 0, strpos($condField, ' '));
-            if (strpos($condField, '.')!==false) {
+            if (strpos($condField, '.') !== false) {
                 $tabCondField = explode('.', $condField);
                 $condModel = $tabCondField[0];
                 if ($condModel != $this->alias) $contain[] = $condField;
             }
         }
         // ajout des champs des modeles liées pour l'ordre
-        foreach($order as $orderField) {
-            if (strpos($orderField, ' ')!==false)
+        foreach ($order as $orderField) {
+            if (strpos($orderField, ' ') !== false)
                 $orderField = substr($orderField, 0, strpos($orderField, ' '));
-            if (strpos($orderField, '.')!==false) {
+            if (strpos($orderField, '.') !== false) {
                 $tabOrderField = explode('.', $orderField);
                 $orderModel = $tabOrderField[0];
                 if ($orderModel != $this->alias)
@@ -184,10 +187,11 @@ class AppModel extends Model
             'order' => $order));
 
         // constitution de la liste
-        foreach($occurs as $occur)
+        foreach ($occurs as $occur)
             $ret[] = $occur[$this->alias][$fieldName];
         return $ret;
     }
 
 }
+
 ?>

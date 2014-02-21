@@ -6,7 +6,7 @@ class SeancesController extends AppController {
 
 	var $name = 'Seances';
 	var $helpers = array('Html', 'Form', 'Form2', 'Fck', 'Html2');
-	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'Pdf');
+	var $components = array('Date','Email', 'Gedooo', 'Conversion', 'Droits', 'Progress', 'S2low', 'Pdf', 'ModelOdtValidator.Fido');
 	var $uses = array('Deliberation', 'Seance', 'User', 'Collectivite', 'Listepresence', 'Vote', 'ModelOdtValidator.Modeltemplate', 'Annex', 'Typeseance', 'Acteur', 'Infosupdef', 'Infosup');
 	var $cacheAction = 0;
 
@@ -633,100 +633,76 @@ class SeancesController extends AppController {
         }
     }
 
+    function saisirDebat($delib_id = null, $seance_id = null) {
+        $this->set('seance_id', $seance_id);
+        $this->set('delib_id', $delib_id);
+        $this->Seance->Behaviors->attach('Containable');
+        $seance = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id' => $seance_id),
+            'fields' => array('Seance.traitee', 'Seance.pv_figes'),
+            'contain' => array('Typeseance.action')
+        ));
 
-    function saisirDebat ($delib_id = null, $seance_id = null)	{
-		$this->set('seance_id',  $seance_id);
-		$this->set('delib_id',  $delib_id);
-		$this->Seance->Behaviors->attach('Containable');
-		$seance = $this->Seance->find('first',array('conditions' => array('Seance.id' => $seance_id),
-				'contain'  =>   array('Typeseance')));
-			
-		if ($seance['Seance']['pv_figes']==1) {
-			$this->Session->setFlash('Les pvs ont été figés, vous ne pouvez plus saisir de débat pour cette délibération...', 'growl', array('type'=>'erreur'));
-			$this->redirect('/postseances/index');
-			exit;
-		}
-			
-		$isCommission = $seance['Typeseance']['action'];
-			
-		if (empty($this->data)) {
-			$this->request->data = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' =>$delib_id),
-					'recursive'  => -1));
-			$this->set('isCommission', $isCommission);
-			$this->set('delib', $this->data);
-			$this->set('seance', $seance);
-		}
-		else {
-			if ( $isCommission == true) {
-				if (isset($this->data['Deliberation']['texte_doc'])){
-					if ($this->request->data['Deliberation']['texte_doc']['size']!=0){
-						$this->request->data['Deliberation']['commission_name'] = $this->data['Deliberation']['texte_doc']['name'];
-						$this->request->data['Deliberation']['commission_size'] = $this->data['Deliberation']['texte_doc']['size'];
-						$this->request->data['Deliberation']['commission_type'] = $this->data['Deliberation']['texte_doc']['type'];
-						$this->request->data['Deliberation']['commission']      = file_get_contents($this->data['Deliberation']['texte_doc']['tmp_name']);
-						unset($this->request->data['Deliberation']['texte_doc']);
-					}
-				}
-			}
-			else {
-				if (isset($this->data['Deliberation']['texte_doc'])){
-					if ($this->request->data['Deliberation']['texte_doc']['size']!=0){
-						$this->request->data['Deliberation']['debat_name'] = $this->data['Deliberation']['texte_doc']['name'];
-						$this->request->data['Deliberation']['debat_size'] = $this->data['Deliberation']['texte_doc']['size'];
-						$this->request->data['Deliberation']['debat_type'] = $this->data['Deliberation']['texte_doc']['type'];
-						$this->request->data['Deliberation']['debat']      = file_get_contents($this->data['Deliberation']['texte_doc']['tmp_name']);
-						unset($this->request->data['Deliberation']['texte_doc']);
-					}
-				}
-			}
+        if ($seance['Seance']['pv_figes'] == 1) {
+            $this->Session->setFlash('Les pvs ont été figés, vous ne pouvez plus saisir de débat pour cette délibération...', 'growl', array('type' => 'erreur'));
+            return $this->redirect(array('controller' => 'postseances', 'action' => 'index'));
+        }
 
-			$this->request->data['Deliberation']['id']=$delib_id;
-			if ($this->Deliberation->save($this->data)) {
-				$this->redirect("/seances/saisirDebat/$delib_id/$seance_id");
-			} else {
+        if (!empty($this->data['Deliberation']['texte_doc'])) {
+            $this->Deliberation->set($this->data);
+            if ($this->Deliberation->validates(array('fieldList' => array('texte_doc')))) {
+                $details = $this->Fido->analyzeFile($this->data['Deliberation']['texte_doc']['tmp_name']);
+                $type = $seance['Typeseance']['action'] ? 'commission' : 'debat';
+                $deliberation = array(
+                    'Deliberation' => array(
+                        'id' => $delib_id,
+                        $type . '_name' => $this->data['Deliberation']['texte_doc']['name'],
+                        $type . '_size' => $this->data['Deliberation']['texte_doc']['size'],
+                        $type . '_type' => $details['mimetype'],
+                        $type => file_get_contents($this->data['Deliberation']['texte_doc']['tmp_name'])
+                    )
+                );
+                if ($this->Deliberation->save($deliberation)) {
+                    return $this->redirect($this->previous);
+                }
+            }
+            $this->Session->setFlash('Erreur : Format du fichier incorrect', 'growl', array('type' => 'erreur'));
+        }
+        $this->request->data = $this->Deliberation->find('first', array(
+            'conditions' => array('Deliberation.id' => $delib_id),
+            'recursive' => -1));
+        $this->set('seance', $seance);
+    }
 
-				$this->Session->setFlash('Format de fichier incorrect', 'growl', array('type'=>'erreur'));
-				$this->redirect("/seances/saisirDebat/$delib_id/$seance_id");
-			}
-		}
-	}
+    public function saisirDebatGlobal($id = null) {
+        $this->Seance->Behaviors->load('Containable');
+        $this->set('seance_id', $id);
+        if (!empty($this->data['Seance']['texte_doc'])) {
+            $this->Seance->set($this->data);
+            if ($this->Seance->validates(array('fieldList' => array('texte_doc')))) {
+                $details = $this->Fido->analyzeFile($this->data['Seance']['texte_doc']['tmp_name']);
+                $seance = array(
+                    'Seance' => array(
+                        'id' => $id,
+                        'debat_global_name' => $this->data['Seance']['texte_doc']['name'],
+                        'debat_global_size' => $this->data['Seance']['texte_doc']['size'],
+                        'debat_global_type' => $details['mimetype'],
+                        'debat_global' => file_get_contents($this->data['Seance']['texte_doc']['tmp_name'])
+                    )
+                );
+                if ($this->Seance->save($seance)) {
+                    $this->Session->setFlash('Débat global enregistré', 'growl');
+                    return $this->redirect($this->previous);
+                }
+            }
+            $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous : format de fichier invalide', 'growl', array('type' => 'erreur'));
+        }
+        $this->request->data = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id' => $id)
+        ));
+    }
 
-	function saisirDebatGlobal ($id = null) {
-		$this->Seance->Behaviors->attach('Containable');
-		$this->Seance->id = $id;
-		$this->set('seance_id' , $id);
-
-		if (empty($this->data)) {
-			$seance= $this->Seance->find('first',array('conditions' => array("Seance.id"=>$id),
-					'contain'  =>   array('Typeseance')));
-			$this->set('isCommission', $seance['Typeseance']['action']);
-				
-			$this->set('seance', $seance);
-		} else{
-			if (isset($this->data['Seance']['texte_doc'])){
-				if ($this->request->data['Seance']['texte_doc']['size']!=0){
-					$this->request->data['Seance']['id'] = $id;
-					$this->request->data['Seance']['debat_global_name'] = $this->data['Seance']['texte_doc']['name'];
-					$this->request->data['Seance']['debat_global_size'] = $this->data['Seance']['texte_doc']['size'];
-					$this->request->data['Seance']['debat_global_type'] = $this->data['Seance']['texte_doc']['type'];
-					$this->request->data['Seance']['debat_global']      = file_get_contents($this->data['Seance']['texte_doc']['tmp_name']);
-					$this->Seance->save($this->data);
-					unset($this->request->data['Seance']['texte_doc']);
-				}
-			}
-                        $this->Seance->id = $id;
-			$this->request->data['Seance']['id']=$id;
-
-			if ($this->Seance->save($this->data)) {
-				$this->redirect('/seances/listerFuturesSeances');
-			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous : format de fichier invalide', 'growl', array('type'=>'erreur'));
-				$this->redirect("/seances/saisirDebatGlobal/$id");
-			}
-		}
-	}
-
-	function detailsAvis ($seance_id=null) {
+    function detailsAvis ($seance_id=null) {
 		$this->Deliberation->Behaviors->attach('Containable');
 
 		// initialisations

@@ -508,7 +508,7 @@ class DeliberationsController extends AppController
                 'commission_type' => '');
 
         if ($this->Deliberation->save($data))
-            $this->redirect("/seances/SaisirDebat/$id/$seance_id");
+            return $this->redirect(array('controller'=>'seances', 'action' => 'SaisirDebat', $id, $seance_id));
     }
 
     function downloadDelib($delib_id) {
@@ -847,49 +847,27 @@ class DeliberationsController extends AppController
             unset ($this->request->data['Seance']['Seance']);
 
             if (!Configure::read('GENERER_DOC_SIMPLE')) {
-                if (array_key_exists('texte_projet', $this->data['Deliberation'])) {
-                    $this->request->data['Deliberation']['texte_projet_name'] = $this->data['Deliberation']['texte_projet']['name'];
-                    $this->request->data['Deliberation']['texte_projet_size'] = $this->data['Deliberation']['texte_projet']['size'];
-                    $this->request->data['Deliberation']['texte_projet_type'] = $this->data['Deliberation']['texte_projet']['type'];
-                    if (empty($this->data['Deliberation']['texte_projet']['tmp_name'])) {
-                        $this->request->data['Deliberation']['texte_projet'] = '';
-                    } else {
-                        $tp = $this->_getFileData($this->data['Deliberation']['texte_projet']['tmp_name'], $this->data['Deliberation']['texte_projet']['size']);
-                        $this->request->data['Deliberation']['texte_projet'] = $tp;
+                $this->Deliberation->set($this->data);
+                $textes = array('texte_projet', 'texte_synthese', 'deliberation');
+                $validUpload = true;
+                foreach ($textes as $texte) {
+                    if (array_key_exists($texte . '_upload', $this->data['Deliberation'])) {
+                        $validUpload = $validUpload && $this->Deliberation->validates(array('fieldList' => array($texte . '_upload')));
                     }
-                } else {
-                    $this->request->data['Deliberation']['texte_projet'] = file_get_contents($path_projet . 'texte_projet.odt');
                 }
-                // Initialisation de la note de synthèse
-                if (array_key_exists('texte_synthese', $this->data['Deliberation'])) {
-                    $this->request->data['Deliberation']['texte_synthese_name'] = $this->data['Deliberation']['texte_synthese']['name'];
-                    $this->request->data['Deliberation']['texte_synthese_size'] = $this->data['Deliberation']['texte_synthese']['size'];
-                    $this->request->data['Deliberation']['texte_synthese_type'] = $this->data['Deliberation']['texte_synthese']['type'];
-                    if (empty($this->data['Deliberation']['texte_synthese']['tmp_name']))
-                        $this->request->data['Deliberation']['texte_synthese'] = '';
-                    else {
-                        $ts = $this->_getFileData($this->data['Deliberation']['texte_synthese']['tmp_name'], $this->data['Deliberation']['texte_synthese']['size']);
-                        $this->request->data['Deliberation']['texte_synthese'] = $ts;
+                if ($validUpload)
+                    foreach ($textes as $texte) {
+                        if (array_key_exists($texte . '_upload', $this->data['Deliberation'])) {
+                            $this->request->data['Deliberation'][$texte . '_name'] = $this->data['Deliberation'][$texte . '_upload']['name'];
+                            $this->request->data['Deliberation'][$texte . '_size'] = $this->data['Deliberation'][$texte . '_upload']['size'];
+                            $this->request->data['Deliberation'][$texte . '_type'] = $this->data['Deliberation'][$texte . '_upload']['type'];
+                            $this->request->data['Deliberation'][$texte] = !empty($this->data['Deliberation'][$texte . '_upload']['tmp_name']) ? file_get_contents($this->data['Deliberation'][$texte . '_upload']['tmp_name']) : '';
+                        } else {
+                            $this->request->data['Deliberation'][$texte] = file_get_contents($path_projet . $texte . '.odt');
+                        }
                     }
-                } else {
-                    $this->request->data['Deliberation']['texte_synthese'] = file_get_contents($path_projet . 'texte_synthese.odt');
-                }
-
-                // Initialisation du texte de délibération
-                if (array_key_exists('deliberation', $this->data['Deliberation'])) {
-                    $this->request->data['Deliberation']['deliberation_name'] = $this->data['Deliberation']['deliberation']['name'];
-                    $this->request->data['Deliberation']['deliberation_size'] = $this->data['Deliberation']['deliberation']['size'];
-                    $this->request->data['Deliberation']['deliberation_type'] = $this->data['Deliberation']['deliberation']['type'];
-                    if (empty($this->data['Deliberation']['deliberation']['tmp_name']))
-                        $this->request->data['Deliberation']['deliberation'] = '';
-                    else {
-                        $td = $this->_getFileData($this->data['Deliberation']['deliberation']['tmp_name'], $this->data['Deliberation']['deliberation']['size']);
-                        $this->request->data['Deliberation']['deliberation'] = $td;
-                    }
-                } else {
-                    $this->request->data['Deliberation']['deliberation'] = file_get_contents($path_projet . 'deliberation.odt');
-                }
             }
+
             if ($oldDelib['Deliberation']['is_multidelib'] != 1)
                 if (empty($this->data['Deliberation']['is_multidelib']) OR (@$this->data['Deliberation']['is_multidelib'] == 0))
                     $this->request->data['Deliberation']['objet_delib'] = $this->data['Deliberation']['objet'];
@@ -1062,7 +1040,6 @@ class DeliberationsController extends AppController
                 $this->set('errors_Infosup', $this->Deliberation->Infosup->invalidFields());
                 $sortie = false;
             }
-
             if ($sortie)
                 $this->redirect($redirect);
             else {
@@ -3825,6 +3802,7 @@ class DeliberationsController extends AppController
     {
         App::uses('Signature', 'Lib');
         $Signature = new Signature;
+        /** @noinspection PhpParamsInspection ne pas avertir de la non-existence de la fonction (passage par _call()) */
         $ret = $Signature->updateAll();
         $ret = trim(preg_replace('/\s+/', ' ', nl2br(htmlspecialchars($ret,ENT_QUOTES))));
         $this->Session->setFlash($ret, 'growl', array());
