@@ -4,12 +4,13 @@
  *
  * Centralise les fonctions de fusion des modèles odt avec les données des modèles
  *
- * Callbacks:
+ * Callbacks :
  *  - getModelTemplateId($this->_id, $this->_modelOptions) : le modèle doit posséder cette méthode qui retourne l'id du modeltemplate à utiliser
  *  - beforeFusion($this->_id, $this->_modelOptions) : le modèle doit posséder cette méthode pour l'initialisation des variables gedooo avant de faire la fusion
  *
- * ATTENTION :
- *  - ce comportement ajoute et stocke le résultat de la fusion dans la variable odtFusionResult du modèle
+ * Variables du modèle appellant initialisées dynamiquement
+ *  - odtFusionResult : le résultat de la fusion est stocké dans la variable odtFusionResult du modèle appelent
+ *  - modelTemplateOdtInfos : instance de la librairie ModelOdtValidator.Lib.phpOdtApi de manipulation des odt
  *
  */
 
@@ -30,7 +31,7 @@ class OdtFusionBehavior extends ModelBehavior {
     protected $_modelOptions = array();
 
     /**
-     * Sets up the configuration for the model, and loads OdtFusion models if they haven't been already
+     * Initialisation du comportement : détection et chargement du template
      * Génère une exception en cas d'erreur
      *
      * @param Model $model
@@ -41,9 +42,31 @@ class OdtFusionBehavior extends ModelBehavior {
      * @return void
      */
     public function setup(Model $model, $options = array()) {
-        // initialisations
+        // initialisations des options
+        $this->_setupOptions($options);
+
+        // chargement du modèle template
+        $modelTemplateId = $model->getModelTemplateId($this->_id, $this->_modelOptions);
+        if (empty($modelTemplateId))
+            throw new Exception('identifiant du modèle d\'édition non trouvé pour id:'.$this->_id.' du model de données '.$model->alias);
+        $myModeltemplate = ClassRegistry::init('ModelOdtValidator.Modeltemplate');
+        $modelTemplate = $myModeltemplate->find('first', array(
+            'recursive' => -1,
+            'fields' => array('id', 'name', 'content'),
+            'conditions' => array('id' => $modelTemplateId)));
+        if (empty($modelTemplate))
+            throw new Exception('modèle d\'édition non trouvé en base de données id:'.$this->_id);
+        $this->_modelTemplateId = $modelTemplate['Modeltemplate']['id'];
+        $this->_modelTemplateName = $modelTemplate['Modeltemplate']['name'];
+        $this->_modelTemplateContent = $modelTemplate['Modeltemplate']['content'];
+
+        // résultat de la fusion
         $model->odtFusionResult = null;
-        $this->_setup($options);
+
+        // instance de manipulation du fichier odt du modèle template
+        App::uses('phpOdtApi', 'ModelOdtValidator.Lib');
+        $model->modelTemplateOdtInfos = new phpOdtApi();
+        $model->modelTemplateOdtInfos->loadFromOdtBin($this->_modelTemplateContent);
     }
 
     /**
@@ -54,7 +77,7 @@ class OdtFusionBehavior extends ModelBehavior {
      *  'modelOptions' : options gérées par la classe appelante
      * @return void
      */
-    public function _setup($options) {
+    public function _setupOptions($options) {
         // initialisations
         $defaultOptions = array(
             'id' => $this->_id,
@@ -83,12 +106,9 @@ class OdtFusionBehavior extends ModelBehavior {
      */
     public function fusionName(Model &$model, $options = array()) {
         // initialisations
-        $this->_setup($options);
+        $this->_setupOptions($options);
         if (empty($this->_id))
-            throw new Exception('détermination du nom de la fusion -> occurence en base de données non déterminée');
-
-        // chargement du modelTemplate
-        $this->_loadModelTemplate($model);
+            throw new Exception('détermination du nom de la fusion -> modèle d\'édition indéterminé');
 
         // contitution du nom
         $fusionName = str_replace(array(' ', 'é', 'è', 'ê', 'ë', 'à'), array('_', 'e', 'e', 'e', 'e', 'a'), $this->_modelTemplateName);
@@ -107,17 +127,9 @@ class OdtFusionBehavior extends ModelBehavior {
      */
     public function odtFusion(Model &$model, $options = array()) {
         // initialisations
-        $this->_setup($options);
+        $this->_setupOptions($options);
         if (empty($this->_id))
-            throw new Exception('détermination du nom de la fusion -> occurence en base de données non déterminée');
-
-        // chargement du modelTemplate
-        $this->_loadModelTemplate($model);
-
-        // parsing du model d'édition odt pour accéder aux variables et sections déclarées
-        App::uses('phpOdtApi', 'ModelOdtValidator.Lib');
-        $modelOdtInfos = new phpOdtApi();
-        $modelOdtInfos->loadFromOdtBin($this->_modelTemplateContent);
+            throw new Exception('détermination du nom de la fusion -> modèle d\'édition indéterminé');
 
         // chargement des classes php de Gedooo
         include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
@@ -141,10 +153,10 @@ class OdtFusionBehavior extends ModelBehavior {
         $oMainPart = new GDO_PartType();
 
         // initialisation des variables communes
-        $this->_setVariablesCommunesFusion($oMainPart, $modelOdtInfos);
+        $this->_setVariablesCommunesFusion($model, $oMainPart);
 
         // initialisation des variables du model de données
-        $model->beforeFusion($oMainPart, $modelOdtInfos, $this->_id, $this->_modelOptions);
+        $model->beforeFusion($oMainPart, $model->modelTemplateOdtInfos, $this->_id, $this->_modelOptions);
 
         // initialisation de la fusion
         $oFusion = new GDO_FusionType($oTemplate, "application/vnd.oasis.opendocument.text", $oMainPart);
@@ -174,49 +186,23 @@ class OdtFusionBehavior extends ModelBehavior {
     }
 
     /**
-     * Lecture et stockage du modele d'édition
-     * @param Model $model modele du comportement
-     * @return void
-     * @throws Exception en cas d'erreur
-     */
-    private function _loadModelTemplate(Model &$model) {
-        if (!empty($this->_modelTemplateId)) return;
-
-        $modelTemplateId = $model->getModelTemplateId($this->_id, $this->_modelOptions);
-        if (empty($modelTemplateId))
-            throw new Exception('identifiant du modèle d\'édition non trouvé pour id:'.$this->_id.' du model de données '.$model->alias);
-
-        $myModeltemplate = ClassRegistry::init('ModelOdtValidator.Modeltemplate');
-        $modelTemplate = $myModeltemplate->find('first', array(
-            'recursive' => -1,
-            'fields' => array('id', 'name', 'content'),
-            'conditions' => array('id' => $modelTemplateId)));
-        if (empty($modelTemplate))
-            throw new Exception('modèle d\'édition non trouvé en base de données id:'.$this->_id);
-
-        $this->_modelTemplateId = $modelTemplate['Modeltemplate']['id'];
-        $this->_modelTemplateName = $modelTemplate['Modeltemplate']['name'];
-        $this->_modelTemplateContent = $modelTemplate['Modeltemplate']['content'];
-    }
-
-    /**
      * fonction de fusion des variables communes : collectivité et dates
      * génère une exception en cas d'erreur
      * @param GDO_PartType $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param phpOdtApi $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param Model $model modele du comportement
      */
-    private function _setVariablesCommunesFusion(GDO_PartType &$oMainPart, phpOdtApi &$modelOdtInfos) {
+    private function _setVariablesCommunesFusion(Model &$model, GDO_PartType &$oMainPart) {
         // variables des dates du jour
-        if ($modelOdtInfos->hasUserField('date_jour_courant')) {
+        if ($model->modelTemplateOdtInfos->hasUserField('date_jour_courant')) {
             $myDate = new DateComponent;
             $oMainPart->addElement(new GDO_FieldType('date_jour_courant', $myDate->frenchDate(strtotime("now")), 'text'));
         }
-        if ($modelOdtInfos->hasUserField('date_du_jour'))
+        if ($model->modelTemplateOdtInfos->hasUserField('date_du_jour'))
             $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
 
         // variables de la collectivité
         $myCollectivite = ClassRegistry::init('Collectivite');
-        $myCollectivite->setVariablesFusion($oMainPart, $modelOdtInfos, 1);
+        $myCollectivite->setVariablesFusion($oMainPart, $model->modelTemplateOdtInfos, 1);
     }
 
 }
