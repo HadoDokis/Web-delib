@@ -53,7 +53,6 @@ function blockUI(elt, token) {
     downloadTimer = window.setInterval(function () {
         if (retourRequete) {
             retourRequete = false;
-            console.log('requete');
             $.ajax({
                 url: '/models/generationToken/' + token,
                 cache: false,
