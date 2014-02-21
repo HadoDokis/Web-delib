@@ -82,7 +82,7 @@ class PastellComponent extends Component {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
         if ($file_transfert) {
-            $path = tempnam('/tmp/', 'WD_BRDR_');
+            $path = tempnam(TMP, 'WD_BRDR_');
             $fp = fopen($path, 'w');
             curl_setopt($curl, CURLOPT_FILE, $fp);
         }
