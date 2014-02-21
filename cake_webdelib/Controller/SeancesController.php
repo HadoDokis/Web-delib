@@ -1686,16 +1686,22 @@ class SeancesController extends AppController {
     }
 
     /**
-     * génération de la convocation pour le premier acteur convoqué et envoi du résultat vers le client
+     * génération de la fusion d'un modèle pour le premier acteur convoqué et envoi du résultat vers le client
      * @param integer $id id de la séance
+     * @param string $typeFusion type de la fusion à générer : conv, adj, ...
      * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
      * @return CakeResponse
      */
-    function genereConvocationToClient($id, $cookieToken = null) {
+    function genereFusionToClient($id, $typeFusion, $cookieToken = null) {
         try {
             // vérification de l'existence de la séance
             if (!$this->Seance->hasAny(array('id' => $id)))
                 throw new Exception('Séance id:' . $id . ' non trouvée en base de données');
+
+            // vérification des types de fusion
+            $allowedFusionTypes = array('projet', 'deliberation', 'convocation', 'ordredujour', 'pvsommaire', 'pvdetaille');
+            if (!in_array($typeFusion, $allowedFusionTypes))
+                throw new Exception('le type de modèle d\'édition '.$typeFusion.' n\'est par autorisé');
 
             // lecture de la liste des acteurs convoqués
             $typeSeanceId = $this->Seance->field('type_id', array('id'=>$id));
@@ -1704,7 +1710,7 @@ class SeancesController extends AppController {
                 throw new Exception('Aucun acteur convoqué pour la séance id:'.$id);
 
             // fusion du document
-            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelOptions'=>array('modelTypeName'=>'Convocation')));
+            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelOptions'=>array('modelTypeName'=>$typeFusion)));
             $filename = $this->Seance->fusionName();
             $this->Seance->odtFusion(array('modelOptions'=>array('acteurId'=>$convoques[0]['Acteur']['id'])));
 
@@ -1736,14 +1742,21 @@ class SeancesController extends AppController {
     /**
      * fonction de génération des convocations des acteurs convoqués à une séance et stockage sur file system
      * @param integer $id id de la séance
+     * @param integer $modelTemplateId id du template de fusion
+     * @param string $typeFusion type de la fusion à générer : conv, adj, ...
      * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
      * @return CakeResponse
      */
-    function genererConvocationsToFiles($id, $modelTemplateId, $cookieToken) {
+    function genereFusionToFiles($id, $modelTemplateId, $typeFusion, $cookieToken) {
         try {
             // vérification de l'existence de la séance
             if (!$this->Seance->hasAny(array('id' => $id)))
                 throw new Exception('Séance id:' . $id . ' non trouvée en base de données');
+
+            // vérification des types de fusion
+            $allowedFusionTypes = array('projet', 'deliberation', 'convocation', 'ordredujour', 'pvsommaire', 'pvdetaille');
+            if (!in_array($typeFusion, $allowedFusionTypes))
+                throw new Exception('le type de modèle d\'édition '.$typeFusion.' n\'est par autorisé');
 
             // lecture de la liste des acteurs convoqués
             $typeSeanceId = $this->Seance->field('type_id', array('id'=>$id));
@@ -1761,7 +1774,7 @@ class SeancesController extends AppController {
             AppGestfichiers::creeRepertoire($dirpath);
 
             // chargement  du behavior de fusion du document
-            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelOptions'=>array('modelTypeName'=>'Convocation')));
+            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelOptions'=>array('modelTypeName'=>$typeFusion)));
 
             // le modèle template possede-t-il des variables de fusion des acteurs
             $acteurPresentTemplate = $this->Seance->modelTemplateOdtInfos->hasUserFields(array(
