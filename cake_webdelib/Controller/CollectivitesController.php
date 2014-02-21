@@ -30,23 +30,22 @@ class CollectivitesController extends AppController {
     }
 
     function edit($id = null) {
-        if (empty($this->data)) {
-            $this->request->data = $this->Collectivite->read(null, $id);
-            if (Configure::read('USE_PASTELL')) {
-                $this->set('entities', $this->Pastell->listEntities());
-                $this->set('selected', $this->data['Collectivite']['id_entity']);
-            }
-        } else {
+        if (!empty($this->data)) {
             $this->Collectivite->id = 1;
             if (Configure::read('USE_PASTELL')) {
                 $entities = $this->Pastell->listEntities();
-                if (Configure::read('USE_PASTELL'))
-                    $this->request->data['Collectivite']['nom'] = $entities[$this->data['Collectivite']['id_entity']];
+                $this->request->data['Collectivite']['nom'] = $entities[$this->data['Collectivite']['id_entity']];
             }
-            if (!$this->Collectivite->save($this->data['Collectivite']))
-                $this->Session->setFlash('Erreur durant la sauvegarde', 'growl');
-
-            return $this->redirect(array('action'=>'index'));
+            if ($this->Collectivite->save($this->data)){
+                $this->Session->setFlash('Informations de la collectivité modifiées', 'growl');
+                return $this->redirect($this->previous);
+            }
+            $this->Session->setFlash('Erreur durant la sauvegarde', 'growl');
+        }
+        $this->request->data = $this->Collectivite->read(null, $id);
+        if (Configure::read('USE_PASTELL')) {
+            $this->set('entities', $this->Pastell->listEntities());
+            $this->set('selected', $this->data['Collectivite']['id_entity']);
         }
     }
 
