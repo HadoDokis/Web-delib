@@ -29,8 +29,10 @@ table#connecteurs{
 #connecteurs td.actions{
     padding: 0;
     text-align: center;
-    vertical-align: top;
+    vertical-align: middle;
     border-left: 0;
     width: 100px;
-    /*border-right: 1px;*/
+}
+#connecteurs td.actions.btn-group .btn{
+    margin-bottom: 0;
 }

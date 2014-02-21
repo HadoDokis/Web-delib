@@ -16,18 +16,17 @@ echo $this->Html->css('connecteurs');
             $rowClass = ($numLigne & 1) ? array('style' => 'height: 36px') : array('style' => 'height: 36px', 'class' => 'altrow');
             echo $this->Html->tag('tr', null, $rowClass);
             echo '<td>' . $connecteur . '</td>';
-            echo '<td class="actions">';
-            echo $this->Html->link(SHY, "/connecteurs/edit/$id", array('class' => 'link_modifier',
+            echo '<td class="actions btn-group">';
+            echo $this->Html->link('<i class="fa fa-edit"></i>', array('action'=>'edit', $id), array(
+                'class' => 'btn',
                 'title' => "Modifier le connecteur $connecteur",
                 'escape' => false
             ));
-            if ($id != 8) {
-                echo $this->Html->link(SHY, "/check/index.php#" . urlencode(strtolower($connecteur)), array('class' => 'link_validerenurgence',
-                    'target' => "_blank",
+                echo $this->Html->link('<i class="fa fa-check"></i>', '/check/index.php#' . urlencode(strtolower($connecteur)), array(
+                    'class' => 'btn btn-info',
                     'title' => "Tester le connecteur $connecteur",
                     'escape' => false
                 ));
-            }
             echo '</td>';
             echo '</tr>';
         }
