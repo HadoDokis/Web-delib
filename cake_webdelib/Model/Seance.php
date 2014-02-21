@@ -538,7 +538,8 @@ class Seance extends AppModel
     function beforeFusion(&$oMainPart, &$modelOdtInfos, $id, $modelOptions) {
         switch($modelOptions['modelTypeName']) {
             case 'Convocation' :
-                $this->Secretaire->setVariablesFusion($oMainPart, $modelOdtInfos, $modelOptions['acteurId'], $suffixe='acteur');
+                if (!empty($modelOptions['acteurId']))
+                    $this->Secretaire->setVariablesFusion($oMainPart, $modelOdtInfos, $modelOptions['acteurId'], $suffixe='acteur');
                 $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, 'seance', true);
                 break;
         }
