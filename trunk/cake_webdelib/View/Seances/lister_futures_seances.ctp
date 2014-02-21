@@ -63,8 +63,8 @@
                 $urlConvocUnique = '/models/generer/null/' . $seance['Seance']['id'] . '/' . $seance['Typeseance']['modelconvocation_id'] . "/$format/0/convoc/0/1/1";
                 $urlOdjUnique = '/models/generer/null/' . $seance['Seance']['id'] . '/' . $seance['Typeseance']['modelordredujour_id'] . "/$format/0/odj/0/1/1";
 if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
-    echo $this->Html->link('NEW', 'genereConvocationToClient/'.$seance['Seance']['id'], array(
-        'class' => 'link_convocation_unique waiter',
+    echo $this->Html->link('NEW', 'genereFusionToClient/'.$seance['Seance']['id'].'/convocation', array(
+        'class' => 'waiter link_convocation_unique',
         'title' => "Nouvelle méthode apercu d'une convocation pour la séance du " . $seance['Seance']['date'],
         'escape' => false,
     ), false);
@@ -79,6 +79,12 @@ if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
                     'title' => 'Générer la liste des convocations pour la séance du ' . $seance['Seance']['date'],
                     'escape' => false,
                 ), false);
+if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
+    echo $this->Html->link('NEW', 'genereFusionToClient/'.$seance['Seance']['id'].'/ordredujour', array(
+        'class' => 'waiter link_ordre_jour_unique',
+        'escape' => false,
+        'title' => "Nouvelle méthode apercu de l'ordre jour pour la séance du " . $seance['Seance']['date'],
+    ), false);
                 if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
                     echo $this->Html->link(SHY, $urlOdjUnique, array(
                         'class' => 'link_ordre_jour_unique',
