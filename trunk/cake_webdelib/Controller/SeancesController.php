@@ -1775,8 +1775,8 @@ class SeancesController extends AppController {
             if (empty($convoques))
                 throw new Exception('Aucun acteur convoqué pour la séance id:'.$id);
 
-            // chargement  du behavior de fusion du document
-            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelOptions'=>array('modelTypeName'=>'Convocation')));
+            // format de conversion
+            $formatConversion = $this->Session->read('user.format.sortie')==0?'pdf':'odt';
 
             // initialisation du répertoire de destination des convocations
             App::import('Lib', 'AppGestfichiers');
@@ -1784,24 +1784,36 @@ class SeancesController extends AppController {
             if (is_dir($dirpath)) AppGestfichiers::clearDir($dirpath);
             AppGestfichiers::creeRepertoire($dirpath);
 
-            // pour tous les acteurs convoqués
-            foreach($convoques as $acteur) {
-//                $filename = $this->Seance->fusionName(array('fileNameSuffixe'=>$id.'_'.$acteur['Acteur']['id']));
-                $this->Seance->odtFusion(array('modelOptions'=>array('acteurId'=>$acteur['Acteur']['id'])));
-                // selon le format d'envoi du document (pdf ou odt)
-                if ($this->Session->read('user.format.sortie') == 0) {
-//                    $filename = $filename . '.pdf';
-                    $filename = $acteur['Acteur']['id'].'.pdf';
-                    $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'pdf');
-                } else {
-//                    $filename = $filename . '.odt';
-                    $filename = $acteur['Acteur']['id'].'.odt';
-                    $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'odt');
+            // chargement  du behavior de fusion du document
+            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelOptions'=>array('modelTypeName'=>'Convocation')));
+
+            // le modèle template possede-t-il des variables de fusion des acteurs
+            $acteurPresentTemplate = $this->Seance->modelTemplateOdtInfos->hasUserFields(array(
+                'salutation_acteur', 'prenom_acteur', 'nom_acteur', 'titre_acteur', 'position_acteur',
+                'email_acteur', 'telmobile_acteur', 'telfixe_acteur',
+                'date_naissance_acteur', 'adresse1_acteur', 'adresse2_acteur', 'cp_acteur', 'ville_acteur', 'note_acteur'));
+
+            // traitement différent en fonction de la présence de variables acteur dans le template
+            if ($acteurPresentTemplate) {
+                foreach($convoques as $acteur) {
+                    $filename = $acteur['Acteur']['id'].'.'.$formatConversion;
+                    $this->Seance->odtFusion(array('modelOptions'=>array('acteurId'=>$acteur['Acteur']['id'])));
+                    $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', $formatConversion);
+                    unset($this->Seance->odtFusionResult);
+                    file_put_contents($dirpath.$filename, $content);
+                    unset($content);
                 }
+            } else {
+                $this->Seance->odtFusion();
+                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', $formatConversion);
                 unset($this->Seance->odtFusionResult);
-                file_put_contents($dirpath.$filename, $content);
+                foreach($convoques as $acteur) {
+                    $filename = $acteur['Acteur']['id'].'.'.$formatConversion;
+                    file_put_contents($dirpath.$filename, $content);
+                }
                 unset($content);
             }
+
             // mise à jour de la date de génération des convocations
             $this->Seance->save(array('id'=>$id, 'date_convocation'=>date("Y-m-d H:i:s", strtotime("now"))), false);
         } catch (Exception $e) {
