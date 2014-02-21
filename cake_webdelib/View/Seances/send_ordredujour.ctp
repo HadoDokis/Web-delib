@@ -9,6 +9,7 @@
 <?php 
 echo $this->Html->tag('div', null, array('style' => 'padding-right:1em;float:left;'));
 $this->Html2->boutonSubmitUrl("/seances/genererOrdredujour/$seance_id/$model_id",'Générer l\'ordre du jour','Générer l\'ordre du jour', null, null,'fa fa-cogs');
+$this->Html2->boutonSubmitUrl("/seances/genereFusionToFiles/$seance_id/$model_id/ordredujour",'New : Générer l\'ordre du jour','Générer l\'ordre du jour', null, 'btn-primary waiter','fa fa-cogs');
 echo $this->Html->tag('/div', null);
 $this->Html2->boutonSubmitUrl("/seances/recuperer_zip/$seance_id/$model_id",'Récupérer une archive contenant l\'ordre du jour','Récupérer une archive contenant l\'ordre du jour',null,'btn-inverse','fa fa-download');
 ?>
