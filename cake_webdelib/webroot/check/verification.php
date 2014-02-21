@@ -79,7 +79,7 @@ function t($tagName, $textContent, $classAttribute=null) {
 }
 function depliant($textTitle, $linkTitle,$textContent, $id, $classAttribute=null) {
     $classAttr = (empty($classAttribute)) ? "" : " class='$classAttribute'";
-    d("$textTitle <a style='cursor: pointer;' onclick='javascript:$(id).toggle();'>$linkTitle</a>", $classAttribute);
+    d("$textTitle <a style='cursor: pointer;' onclick='javascript:$(\"#{$id}\").toggle();'>$linkTitle</a>", $classAttribute);
     echo "<div style='display:none;' id='$id'>$textContent</div>";
 }
 
