@@ -162,10 +162,11 @@ class DeliberationsController extends AppController
         //Lecture de la version supérieure
         $this->set('versionsup', $this->Deliberation->chercherVersionSuivante($id));
 
-        if ($this->Droits->check($this->user_id, "Deliberations:edit") && $this->Deliberation->estModifiable($id, $this->user_id))
-            $this->set('userCanEdit', true);
-        else
-            $this->set('userCanEdit', false);
+        $this->set('userCanEdit', $this->Droits->check($this->user_id, "Deliberations:edit") && $this->Deliberation->estModifiable($id, $this->user_id, $this->Droits->check($this->user_id, "Deliberations:editerTous")));
+
+        $triggers = $this->Traitement->whoIs($id);
+        $this->set('userCanComment', in_array($this->user_id, $triggers));
+
 
         // Lecture et initialisation des commentaires
         $commentaires = $this->Commentaire->find('all', array(
