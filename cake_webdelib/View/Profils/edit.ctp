@@ -2,7 +2,7 @@
     'Informations principales',
     'Droits'))); ?>
 
-<h2>Modification d'un profil</h2>
+<h2>Modification du profil : <?php echo $this->Html->value('Profil.libelle'); ?></h2>
 
 <?php echo $this->Form->create('Profil', array('controller' => 'profils', 'action' => 'edit', 'type' => 'post')); ?>
 
