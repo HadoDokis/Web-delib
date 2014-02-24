@@ -18,8 +18,9 @@
 App::uses('Component', 'Controller');
 App::uses('ComponentCollection', 'Controller');
 App::uses('SessionComponent', 'Controller/Component');
-App::uses('GedoooComponent', 'Controller/Component');
+App::uses('AppTools', 'Lib');
 App::uses('File', 'Utility');
+App::uses('Folder', 'Utility');
 
 class PastellComponent extends Component {
 //    public $components = array('Session');
@@ -30,12 +31,10 @@ class PastellComponent extends Component {
     private $parapheur_type;
     private $pastell_type;
     private $Session;
-    private $Gedooo;
 
     function __construct() {
         $collection = new ComponentCollection();
         $this->Session = new SessionComponent($collection);
-        $this->Gedooo = new GedoooComponent($collection);
         $this->host = Configure::read('PASTELL_HOST');
         $this->login = Configure::read('PASTELL_LOGIN');
         $this->pwd = Configure::read('PASTELL_PWD');
@@ -70,7 +69,7 @@ class PastellComponent extends Component {
      * @param bool $file_transfert attente d'un fichier en retour ?
      * @return array retour du webservice
      */
-    public function execute($page, $data = array(), $file_transfert = false) {
+    public function execute($page, $data = array(), $file_transfert = false, $file=null) {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, $this->login . ":" . $this->pwd);
@@ -82,16 +81,19 @@ class PastellComponent extends Component {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
         if ($file_transfert) {
-            $path = tempnam(TMP, 'WD_BRDR_');
-            $fp = fopen($path, 'w');
+            $folder= new Folder(AppTools::newTmpDir(TMP.'files'.DS), true, 0777);
+            $file = new File($folder->pwd().DS.'WD_BRDR_', true, 0777);
+            $fp = fopen($file->pwd(), 'w');
             curl_setopt($curl, CURLOPT_FILE, $fp);
         }
+        
         $response = curl_exec($curl);
         curl_close($curl);
+        
         if ($file_transfert) {
             fclose($fp);
-            $content = file_get_contents($path);
-            unlink($path);
+            $content = file_get_contents($file->pwd());
+            $folder->delete();
             return $content;
         }
         $result = json_decode($response, true);
@@ -378,6 +380,7 @@ class PastellComponent extends Component {
      * @param int|string $id_e identifiant de la collectivité
      * @param int|string $id_d identifiant du dossier pastell
      * @param array $delib
+     * @param string $DocumentPrincipale(Pdf)
      * @param array $annexes
      * @return bool|string
      * result : ok - si l'enregistrement s'est bien déroulé
@@ -387,35 +390,41 @@ class PastellComponent extends Component {
      * A noter que pour connaître la liste et les intitulés exacts des champs modifiables,
      * il convient d'utiliser la fonction document-type-info.php, en lui précisant le type concerné.
      */
-    public function modifDocument($id_e, $id_d, $delib = array(), $annexes = array()) {
-        if (empty($delib) || empty($delib['Typeacte']['nature_id']) || empty($delib['Deliberation']['num_pref']) || empty($delib['Deliberation']['objet_delib']))
+    public function modifDocument($id_e, $id_d, $delib = array(), $DocumentPrincipale, $annexes = array()) {
+        if (empty($delib) || empty($delib['Typeacte']['nature_id']) /*|| empty($delib['Deliberation']['num_pref'])*/ || empty($delib['Deliberation']['objet_delib']))
             return false;
-        App::uses('Deliberation', 'Model');
-        App::uses('GedoooComponent', 'Controller/Component');
-        $this->Deliberation = new Deliberation();
-        if (!empty($delib['Deliberation']['delib_pdf'])) {
-            $file_path = $this->Gedooo->createFile(WEBROOT_PATH . '/files/generee/fd/null/' . $delib['Deliberation']['id'] . '/', 'acte.pdf', $delib['Deliberation']['delib_pdf']);
-        } else {
-            $model_id = $this->Deliberation->getModelId($delib['Deliberation']['id']);
-            //FIXME changer appel génération document
-            $this->requestAction(array('plugin' => '', 'controller' => 'models', 'action' => 'generer', $delib['Deliberation']['id'], 'null', $model_id, '0', '1', 'parapheur'));
-            $file_path = WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/parapheur.pdf";
-        }
+        
+        $folder= new Folder(AppTools::newTmpDir(TMP.'files'.DS), true, 0777);
+        $file = new File($folder->pwd().DS.'arrete.pdf', true, 0777);
+        $file->append($DocumentPrincipale);
+                
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
             'objet' => utf8_decode($delib['Deliberation']['objet_delib']),
             'type' => $this->parapheur_type,
-            'arrete' => "@$file_path",
+            'arrete' => '@'.$file->pwd(),
             'acte_nature' => $delib['Typeacte']['nature_id'],
-            'classification' => $delib['Deliberation']['num_pref'],
+            'classification' => !empty($delib['Deliberation']['num_pref'])?$delib['Deliberation']['num_pref']:'',
         );
         $acte['numero_de_lacte'] = !empty($delib['Deliberation']['num_delib']) ? $delib['Deliberation']['num_delib'] : $delib['Deliberation']['id'];
-        $acte['date_de_lacte'] = !empty($delib['Seance']['date']) ? $delib['Seance']['date'] : date("Y-m-d H:i:s", strtotime("now"));
-
+        $acte['date_de_lacte'] = !empty($delib['Seance']['date']) ? $delib['Seance']['date'] : date("Y-m-d H:i:s");
+        
         $this->execute('modif-document.php', $acte);
-        foreach ($annexes as $annex)
-            $this->sendAnnex($id_e, $id_d, $annex);
+        $file->close();
+        
+        if(!empty($annexes)){
+            $i=0;
+            foreach ($annexes as $annex){
+                $file = new File($folder->pwd().DS.'annexe_'.$i++.'.pdf', true, 0777);
+                $file->append($annex);
+                $this->sendAnnex($id_e, $id_d, $file->pwd());
+                $file->close();
+                
+            }
+        }
+        $folder->delete();
+        
         $resultat = $this->detailDocument($id_e, $id_d);
         if (!empty($resultat['data']['classification'])) {
             $pos = strpos($resultat['data']['classification'], "existe");
@@ -663,6 +672,7 @@ class PastellComponent extends Component {
             'id_d' => $id_d,
             'autre_document_attache' => "@$annex"
         );
+        //debug($acte);
         return $this->execute('modif-document.php', $acte);
     }
 
