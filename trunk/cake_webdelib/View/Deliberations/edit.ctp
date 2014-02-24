@@ -99,7 +99,7 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
             'options' => $nomenclatures,
             'default' => $this->Html->value('Deliberation.num_pref'),
             'disabled' => empty($nomenclatures),
-            'empty' => 'Aucune',
+            'empty' => true,
             'class' => 'select2 selectone',
             'escape' => false
         ));
