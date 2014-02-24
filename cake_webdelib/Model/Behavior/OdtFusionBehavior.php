@@ -85,7 +85,7 @@ class OdtFusionBehavior extends ModelBehavior {
         }
         catch (ErrorException $e)
         {
-            echo $e->getCode();
+            $this->log('Erreur lors de la conversion : '.$e->getCode(), 'error');
         }
         
         return $content;
