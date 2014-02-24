@@ -557,6 +557,8 @@ class Seance extends AppModel
         switch($modelOptions['modelTypeName']) {
             case 'convocation' :
             case 'ordredujour' :
+            case 'pvsommaire' :
+            case 'pvdetaille' :
                 if (!empty($modelOptions['acteurId']))
                     $this->Secretaire->setVariablesFusion($oMainPart, $modelOdtInfos, $modelOptions['acteurId'], $suffixe='acteur');
                 $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, 'seance', true);
