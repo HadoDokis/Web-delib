@@ -44,6 +44,13 @@
                  'escape' => false,
                  'title' => 'Donner un avis'),
              false);
+echo $this->Html->link('NEW',
+    '/deliberations/genereFusionToClient/' . $deliberation['Deliberation']['id'],
+    array(
+        'class' => 'link_pdf waiter',
+        'escape' => false,
+        'title' => 'Nouvelle méthode pour visionner PDF pour le projet ' . $deliberation['Deliberation']['objet']. ' nouvelle méthode'),
+    false);
         echo $this->Html->link(SHY,
             array('controller'=>'models', 'action'=>'generer', $deliberation['Deliberation']['id'], 'null', $deliberation['Modeltemplate']['id'], '-1', '0', 'deliberation_'.$deliberation['Deliberation']['num_delib'], '0', '0', '0'),
             array(
