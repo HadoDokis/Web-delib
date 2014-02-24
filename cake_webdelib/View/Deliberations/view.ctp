@@ -18,7 +18,7 @@ $linkBarre .= $this->Html->link(
     array('controller' => 'models', 'action' => 'generer', $this->data['Deliberation']['id'], 'null', $this->data['Modeltemplate']['id'], '-1', '0', 'projet' . $this->data['Deliberation']['id'], '0', '0', '0'),
     array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document')
 );
-if ($Droits->check($this->Session->read('user.User.id'), 'Deliberations:edit'))
+if ($userCanEdit)
     $linkBarre .= $this->Html->link(
         '<i class="fa fa-edit"></i> Modifier',
         array('action' => 'edit', $this->data['Deliberation']['id']),
@@ -32,18 +32,25 @@ if (!empty($this->data['Deliberation']['parent_id'])) {
     );
 }
 if (!empty($versionsup)) {
-
     $linkBarre .= $this->Html->link(
         '<i class="fa fa-code-fork"></i> Nouvelle version',
         array('action' => 'view', $versionsup),
         array('escape' => false, 'class' => 'btn btn-danger', 'title' => 'Voir la fiche détaillée de la nouvelle version du projet')
     );
 }
-$linkBarre .= $this->Html->link(
-    '<i class="fa fa-comment"></i> Commenter',
-    array('controller' => 'commentaires', 'action' => 'add', $this->data['Deliberation']['id']),
-    array('escape' => false, 'class' => 'btn btn-info', 'title' => 'Ajouter un commentaire')
-);
+if ($userCanComment){
+    $linkBarre .= $this->Html->link(
+        '<i class="fa fa-cogs"></i> Traiter',
+        array('action' => 'traiter', $this->data['Deliberation']['id']),
+        array('escape' => false, 'class' => 'btn', 'title' => 'Traiter le projet '. $this->Html->value('Deliberation.objet'))
+    );
+    $linkBarre .= $this->Html->link(
+        '<i class="fa fa-comment"></i> Commenter',
+        array('controller' => 'commentaires', 'action' => 'add', $this->data['Deliberation']['id']),
+        array('escape' => false, 'class' => 'btn btn-info', 'title' => 'Ajouter un commentaire')
+    );
+
+}
 $linkBarre .= "</div>";
 $linkBarre .= "</div>";
 ?>
