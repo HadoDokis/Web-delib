@@ -297,7 +297,12 @@ class SeancesController extends AppController {
 		$result = true;
 		$ids = $this->Seance->getDeliberationsId($seance_id);
 		$delibs = $this->Deliberation->find("all", array('conditions' => array("Deliberation.id"=>$ids)));
-		foreach ($delibs as $delib) {
+        if (empty($delibs)) return false;
+
+        // chargement du comportement de fusion pour la première délibération
+        $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $delibs[0]['Deliberation']['id']));
+        // pour toutes les délibérations
+        foreach ($delibs as $delib) {
 			$delib_id = $delib['Deliberation']['id'];
 			$this->Deliberation->id =  $delib_id;
 			$isArrete = $this->Deliberation->is_arrete($delib_id);
@@ -314,15 +319,19 @@ class SeancesController extends AppController {
 			if ($delib['Deliberation']['parapheur_etat'] == 2 && !empty($delib['Deliberation']['delib_pdf']))
 				continue;
 			// On génère la délibération au format PDF
-			$model_id = $this->Deliberation->getModelForSeance($delib_id, $seance_id);
-			$this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.odt");
-			$filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.odt.pdf";
-			$content = file_get_contents($filename);
+//			$model_id = $this->Deliberation->getModelForSeance($delib_id, $seance_id);
+//			$this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.odt");
+//			$filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.odt.pdf";
+//			$content = file_get_contents($filename);
+            $this->Deliberation->odtFusion(array('id'=>$delib_id));
+            $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult->content->binary, 'odt', 'pdf');
+            unset($this->Deliberation->odtFusionResult);
 
 			if (strlen($content) == 0)
 				$result = false;
 			// On stock le fichier en base de données.
 			$this->Deliberation->saveField('delib_pdf', $content);
+            unset($content);
 		}
 		return $result;
 	}
