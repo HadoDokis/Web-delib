@@ -1,27 +1,33 @@
-<h2>Modification d'un service</h2>
-<?php echo $this->Form->create('Service',array('action'=>'edit','type'=>'post')); ?>
-<div class="optional">
- 	<?php echo $this->Form->input('Service.libelle', array('label'=>'Libellé','size' => '60'));?>
-</div>
-<div class="optional">
-	<?php
-//		if ($isEditable){
-		    echo $this->Form->input('Service.parent_id', array('label'=>'Appartient à','options'=>$services,'default'=>$selectedService, 'empty'=>'', 'escape'=>false));
-//		}
-	?>
-</div>
-<div class="optional">
-	<?php echo $this->Form->input('Service.circuit_defaut_id', array('options'=>$circuits,'label'=>'Circuit par d&eacute;faut', 'empty'=>'', 'type'=>'select')); ?>
-</div>
-<div class="optional">
-    <?php echo $this->Form->input('Service.order', array('label'=>'Crit&egrave;re de tri', 'size' => '10'));?>
-</div>
-<br/><br/><br/><br/><br/>
+<h2>Modification du service : <?php echo $this->Html->value('Service.libelle'); ?></h2>
+<?php echo $this->Form->create('Service', array('action' => 'edit', 'type' => 'post')); ?>
+<?php echo $this->Form->input('Service.libelle', array('label' => 'Libellé')); ?>
+<?php echo $this->Form->input('Service.parent_id', array('label' => 'Appartient à', 'options' => $services, 'default' => $selectedService, 'empty' => true, 'escape' => false, 'class' => 'autocomplete')); ?>
+<div class="spacer"></div>
+<?php echo $this->Form->input('Service.circuit_defaut_id', array('options' => $circuits, 'label' => 'Circuit par défaut', 'empty' => true, 'type' => 'select', 'class' => 'autocomplete')); ?>
+<div class="spacer"></div>
+<?php echo $this->Form->input('Service.order', array('label' => 'Critère de tri', 'type' => 'number')); ?>
 <div class="submit">
-	<?php echo $this->Form->hidden('Service.id',array('label'=>'&nbsp;'));
-        $this->Html2->boutonsSaveCancel(); 
-//	echo $this->Form->submit('Modifier', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));
-//	echo $this->Html->link('Annuler', '/services/index', array('class'=>'link_annuler', 'name'=>'Annuler'));
-        ?>
+    <?php
+    echo $this->Form->hidden('Service.id', array('label' => false));
+    $this->Html2->boutonsSaveCancel();
+    ?>
 </div>
 <?php $this->Form->end(); ?>
+<script>
+    $(document).ready(function () {
+        $(".autocomplete").select2({
+            width: 'resolve',
+            placeholder: 'Aucun',
+            allowClear: true,
+            formatSelection: function (object, container) {
+                // trim sur la sélection (affichage en arbre)
+                return $.trim(object.text);
+            }
+        });
+    });
+</script>
+<style>
+    #ServiceEditForm label {
+        padding-top: 5px;
+    }
+</style>
