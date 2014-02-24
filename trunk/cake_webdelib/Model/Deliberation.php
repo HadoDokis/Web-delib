@@ -2116,8 +2116,11 @@ class Deliberation extends AppModel {
      * @param boolean $addSeanceIterations ajoute l'itération sur les séances
      */
     function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $addSeanceIterations) {
+        App::uses('DateComponent', 'Controller/Component');
+        App::uses('Component', 'Controller');
         // initialisations
-        $this->Date = new DateComponent;
+        $collection = new ComponentCollection();
+        $this->Date = new DateComponent($collection);
 
         // liste des champs à lire en base de données
         $fields = array('id', 'service_id', 'theme_id', 'rapporteur_id', 'redacteur_id', 'is_multidelib',
@@ -2302,5 +2305,21 @@ class Deliberation extends AppModel {
         // votes
         $this->Vote->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
     }
+    
+    function delegToParapheurDocument(){
+        
+        if (empty($this->id))
+            throw new Exception('délibération id n\'existe pas');
+        // fusion du document
+        $this->Behaviors->load('OdtFusion', array('id' => $this->getModelId($this->id)));
+        $filename = $this->fusionName();
+       // debug($filename);
+        $this->odtFusion();
+        $dDocPrincipale=&$this->getOdtFusionResult();
+        $this->deleteOdtFusionResult();
+        
+        $annexes = $this->Annex->getAnnexesFromDelibId($this->id, true);
 
+        return array('docPrincipale'=>$dDocPrincipale,'annexes'=>$annexes);
+    }
 }

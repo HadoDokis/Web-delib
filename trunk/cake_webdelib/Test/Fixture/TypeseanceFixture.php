@@ -14,10 +14,10 @@
 * @package app.Test.Fixture
 */
 
-class TypeacteFixture extends CakeTestFixture 
+class TypeseanceFixture extends CakeTestFixture 
 {
-    public $import = array( 'model' => 'Typeacte', 'records' => false);
-
+    public $import = array('model' => 'Typeseance', 'records' => false);
+    
     /**
     * Définition des enregistrements.
     *
@@ -27,15 +27,16 @@ class TypeacteFixture extends CakeTestFixture
         $this->records = array(
 		array(
 			'id' => 1,
-			'libelle' => 'Délibération',
-                        'modeleprojet_id' => 1,
-                        'modelefinal_id' => 1,
-                        'nature_id' => 1,
+			'libelle' => 'Conseil municipal',
+                        'retard' => 30,
+                        'action' => 2,
                         'compteur_id' => 1,
-                        'gabarit_projet' => NULL,
-                        'gabarit_synthese' => NULL,
-                        'gabarit_acte' => NULL,
-                        'teletransmettre' => true,
+                        'modelprojet_id' => 2,
+                        'modeldeliberation_id' => 3,
+                        'modelconvocation_id' => 4,
+                        'modelordredujour_id' => 5,
+                        'modelpvsommaire_id' => 6,
+                        'modelpvdetaille_id' => 7,
                         'created' => date('Y-m-d H:i:s'),
                         'modified' => date('Y-m-d H:i:s'),
 		)
@@ -43,4 +44,5 @@ class TypeacteFixture extends CakeTestFixture
         parent::init();
     }
 }
+
 ?>

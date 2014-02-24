@@ -34,12 +34,13 @@ class CronJobTest extends CakeTestCase {
  * @return void
  */
 	public function setUp() {
-		parent::setUp();
-                $this->CronJob = ClassRegistry::init('CronJob');
-		$this->Annex = ClassRegistry::init('Annex');
-                $this->Annex->id=215;
-                $aData['data']=file_get_contents(APP.'Test/data/AnnexFixture.pdf');
-                $this->Annex->save($aData['data']);
+            parent::setUp();
+            $this->CronJob = ClassRegistry::init('CronJob');
+            $this->Annex = ClassRegistry::init('Annex');
+                
+            $this->Annex->id=215;
+            $aData['data']=file_get_contents(APP.'Test/Data/AnnexFixture.pdf');
+            $this->Annex->save($aData, false);
 	}
 
 /**
@@ -60,7 +61,7 @@ class CronJobTest extends CakeTestCase {
  * @return void
  */
 	public function testconvertionAnnexesJob() {
-            
+             
             $this->CronJob->convertionAnnexesJob(341);
              
             $this->Annex = new Annex();

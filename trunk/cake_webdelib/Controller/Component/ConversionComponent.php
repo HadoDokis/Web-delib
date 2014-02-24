@@ -61,6 +61,7 @@ class ConversionComponent extends Component {
             $this->log('Exception #' . $e->getFaultCode() . ' : ' . $e->getFaultString(), 'debug');
             return false;
         }
+        
         return base64_decode($result);
     }
 

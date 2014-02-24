@@ -68,6 +68,35 @@ class OdtFusionBehavior extends ModelBehavior {
         $model->modelTemplateOdtInfos = new phpOdtApi();
         $model->modelTemplateOdtInfos->loadFromOdtBin($this->_modelTemplateContent);
     }
+    
+  /** Retour la Fusion dans le format demandé
+   * 
+   * @param type $mimeType
+   * @return type
+   */
+    function getOdtFusionResult(Model &$model, $mimeType='pdf'){
+        App::uses('ConversionComponent', 'Controller/Component');
+        App::uses('Component', 'Controller');
+        // initialisations
+        $collection = new ComponentCollection();
+        $this->Conversion = new ConversionComponent($collection);
+        try{
+            $content = $this->Conversion->convertirFlux($model->odtFusionResult->content->binary, 'odt', $mimeType);
+        }
+        catch (ErrorException $e)
+        {
+            echo $e->getCode();
+        }
+        
+        return $content;
+    }
+    
+    /** Suppression en mémoire du retour de la fusion
+     * 
+     */
+    function deleteOdtFusionResult(Model &$model){
+        unset($model->odtFusionResult->content->binary);
+    }
 
     /**
      * initialisation des variables du behavior
@@ -120,7 +149,7 @@ class OdtFusionBehavior extends ModelBehavior {
      * Le résultat de la fusion est un odt dont le contenu est stocké dans la variable du model odtFusionResult
      * @param Model $model modele du comportement
      * @param array $options tableau des parmètres optionnels :
-     * 	'id' : identifiant de l'occurence en base de données (défaut : $this->_id)
+     * 	'id' : identifiant de l'occurence en base de données (fusionNamedéfaut : $this->_id)
      *  'modelOptions' : options gérées par la classe appelante
      * @return void
      * @throws Exception en cas d'erreur

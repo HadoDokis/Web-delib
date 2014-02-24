@@ -58,7 +58,7 @@ class AnnexFixture extends CakeTestFixture {
 			'filename' => 'Commande_IN140006_259863.pdf',
 			'filetype' => 'application/pdf',
 			'size' => 501044,
-			'data' => utf8_encode(file_get_contents(dirname(__FILE__).DS.'..'.DS.'data'.DS.'AnnexFixture.pdf')),
+			'data' => '',
 			'filename_pdf' => null,
 			'data_pdf' => null,
 			'created' => date('Y-m-d H:i:s'),

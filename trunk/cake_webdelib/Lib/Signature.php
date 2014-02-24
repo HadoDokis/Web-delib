@@ -106,18 +106,23 @@ class Signature {
     public function __call($name, $arguments)
     {
         $suffix = ucfirst(strtolower($this->connecteur));
-        if (empty($arguments))
+        
+        if (method_exists($this, $name.$suffix))
+                return call_user_func_array(array($this, $name.$suffix), $arguments);
+        else{
+          throw new Exception(sprintf('The required method "%s" does not exist for %s', $name.$suffix, get_class($this)));
+        } 
+        
+        
+      /*  if (empty($arguments))
             return $this->{$name.$suffix}();
         else
-            return $this->{$name.$suffix}($arguments);
+            return $this->{$name.$suffix}($arguments);*/
     }
 
 
-    public function sendIparapheur($options){
-
-        $delib = $options[0];
-        $circuit_id = $options[1];
-        $annexes = !empty($options[2]) ? $options[2] : array();
+    public function sendIparapheur($delib, $circuit_id, $content, $annexes=array()){
+        
         if (is_numeric($circuit_id)){
             $circuits = $this->listCircuitsIparapheur();
             $libelleSousType = $circuits[$circuit_id];
@@ -126,13 +131,6 @@ class Signature {
         }
         $targetName = $this->Iparapheur->handleObject($delib['Deliberation']['objet']);
         $date_limite = !empty($delib['Deliberation']['date_limite']) ? $delib['Deliberation']['date_limite'] : null;
-        if (!empty($delib['Deliberation']['delib_pdf']))
-            $content = $delib['Deliberation']['delib_pdf'];
-        elseif (file_exists(WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/parapheur.pdf"))
-            $content = file_get_contents(WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/parapheur.pdf");
-        elseif (file_exists(WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/acte.pdf"))
-            $content = file_get_contents(WEBROOT_PATH . "/files/generee/fd/null/" . $delib['Deliberation']['id'] . "/acte.pdf");
-        else throw new Exception('Document principal introuvable');
 
         $ret = $this->Iparapheur->creerDossierWebservice(
             $targetName,
@@ -159,12 +157,9 @@ class Signature {
      * [2] => $annexes
      * @return bool|string
      */
-    public function sendPastell($options){
-        $delib = $options[0];
-        $circuit_id = $options[1];
-        $annexes = !empty($options[2]) ? $options[2] : array();
+    public function sendPastell($delib, $circuit_id , $DocumentPrincipale, $annexes=array()){
         $id_d = $this->Pastell->createDocument($this->collectivite, $this->pastell_type);
-        $res = $this->Pastell->modifDocument($this->collectivite, $id_d, $delib, $annexes);
+        $res = $this->Pastell->modifDocument($this->collectivite, $id_d, $delib, $DocumentPrincipale, $annexes);
         if ($res == 1) {
             if (is_numeric($circuit_id)){
                 $circuits = $this->Pastell->getInfosField($this->collectivite, $id_d, 'iparapheur_sous_type');

@@ -3549,16 +3549,16 @@ class DeliberationsController extends AppController
                     $delib['Seance']['date'] = $this->Deliberation->Seance->field('date');
 
                     if (empty($delib['Deliberation']['delib_pdf'])){
-                        $model_id = $this->Deliberation->getModelId($delib_id);
-                        //FIXME changer appel génération document
-                        $this->requestAction(array('controller'=>'models', 'action'=>'generer', $delib_id, 'null', $model_id, '0', '1', 'acte'));
-                        $filename = WEBROOT_PATH . "/files/generee/fd/null/$delib_id/acte.pdf";
-                        $delib['Deliberation']['delib_pdf'] = file_get_contents($filename);
+                        $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $this->Deliberation->getModelId($delib_id)));
+                        $filename = $this->fusionName();
+                        $this->odtFusion();
+                        $delib['Deliberation']['delib_pdf']=&$this->getOdtFusionResult();
+                        $this->deleteOdtFusionResult();
                         $this->Deliberation->saveField('delib_pdf', $delib['Deliberation']['delib_pdf']);
                     }
-
+                    
                     $annexes = $this->Annex->getAnnexesFromDelibId($delib_id, true);
-                    $ret = $this->Signature->send($delib, $circuit_id, $annexes);
+                    $ret = $this->Signature->send($delib, $circuit_id, $delib['Deliberation']['delib_pdf'], $annexes);
                     if ($ret) {
                         $this->Deliberation->saveField('parapheur_id', $ret);
                         $this->Deliberation->saveField('parapheur_cible', Configure::read('PARAPHEUR'));
@@ -4011,13 +4011,12 @@ class DeliberationsController extends AppController
                     'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
                 ));
 
-                $model_id = $this->Deliberation->getModelId($acte['Deliberation']['id']);
-                //FIXME changer appel génération document
-                $this->requestAction(array('controller'=>'models', 'action'=>'generer', $acte_id, 'null', $model_id, '0', '1', 'acte'));
-                $filename = WEBROOT_PATH . "/files/generee/fd/null/$acte_id/acte.pdf";
-
-                $content = file_get_contents($filename);
-                $acte['Deliberation']['delib_pdf'] = $content;
+                $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $this->Deliberation->getModelId($acte['Deliberation']['id'])));
+                $filename = $this->fusionName();
+                $this->odtFusion();
+                $acte['Deliberation']['delib_pdf']=&$this->getOdtFusionResult();
+                $this->deleteOdtFusionResult();
+                $this->Deliberation->saveField('delib_pdf', $acte['Deliberation']['delib_pdf']);
                 $num = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
                 if ($this->data['Parapheur']['circuit_id'] == -1) {
                     $acte['Deliberation']['signee'] = 1;
@@ -4029,7 +4028,7 @@ class DeliberationsController extends AppController
                     $this->Historique->enregistre($acte_id, $this->user_id, "Signature manuscrite");
                 } else {
                     $annexes = $this->Annex->getAnnexesFromDelibId($acte_id, true);
-                    $ret = $this->Signature->send($acte, $this->data['Parapheur']['circuit_id'], $annexes);
+                    $ret = $this->Signature->send($acte, $this->data['Parapheur']['circuit_id'], $acte['Deliberation']['delib_pdf'], $annexes);
                     if ($ret !== false) {
                         $acte['Deliberation']['parapheur_etat'] = 1;
                         $acte['Deliberation']['parapheur_cible'] = Configure::read('PARAPHEUR');

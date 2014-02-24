@@ -22,14 +22,9 @@ class DeliberationFixture extends CakeTestFixture
     * @var array
     */
     //public $import = 'Deliberation';
-    var $import = array(  'records' => false);
+    //var $import = array(  'records' => false);
+    var $import = array( 'model' => 'Deliberation', 'records' => false);
     //var $import = array( 'table' => 'deliberations', 'connection' => 'default', 'records' => true);
-    
-    public $fields = array(
-          'id' => array('type' => 'integer', 'key' => 'primary'),
-          'etat' => array('type' => 'integer'),
-          'parent_id' => array('type' => 'integer')
-    );
     
     public $records;
 
@@ -40,8 +35,17 @@ class DeliberationFixture extends CakeTestFixture
     */
     public function init() {
         $this->records = array(
-            array( 'id' =>1, 'parent_id' => NULL, 'etat'=>1),
-            array( 'id' =>2, 'parent_id' => NULL, 'etat'=>1),
+            array( 'id' =>1, 
+                   'typeacte_id'=>1,
+                   'parent_id' => NULL,
+                   'objet' => 'Test connecteur sebastien',
+                   'objet_delib' => 'Test connecteur sebastien',
+                   'etat'=>1,
+                   'theme_id'=>1,
+                   'created' => date('Y-m-d H:i:s'),
+                   'modified' => date('Y-m-d H:i:s'),
+                ),
+            /*array( 'id' =>2, 'parent_id' => NULL, 'etat'=>1),
             array( 'id' =>3, 'parent_id' => NULL, 'etat'=>1),
             array( 'id' =>4, 'parent_id' => 3, 'etat'=>1),
             array( 'id' =>5, 'parent_id' => 3, 'etat'=>1),
@@ -51,7 +55,7 @@ class DeliberationFixture extends CakeTestFixture
             array( 'id' =>9, 'parent_id' => NULL, 'etat'=>1),
             array( 'id' =>10, 'parent_id' => NULL, 'etat'=>1),
             array( 'id' =>99100, 'parent_id' => NULL, 'etat'=>1),
-            array( 'id' =>99101, 'parent_id' => NULL, 'etat'=>1)
+            array( 'id' =>99101, 'parent_id' => NULL, 'etat'=>1)*/
         );
         
         parent::init();
