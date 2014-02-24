@@ -10,6 +10,13 @@ echo $this->Form->button('<i class="fa fa-check"></i> Valider', array('div' => f
 echo '</div>';
 echo $this->Form->end();
 ?>
+<script>
+    $(document).ready(function(){
+        $("#TraitementEtape").select2({
+            width: 'auto'
+        });
+    })
+</script>
 <style>
     label {
         float:none;
