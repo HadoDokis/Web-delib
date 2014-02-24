@@ -166,6 +166,13 @@ if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
                         ));
                 }
 
+echo $this->Html->link('NEW',
+    'genereFusionToClient/'.$seance['Seance']['id'].'/pvsommaire',
+    array(
+        'class' => 'link_pvsommaire waiter',
+        'title' => 'Nouvelle méthode génération du pv sommaire pour la séance du ' . $seance['Seance']['date'],
+        'escape' => false,
+    ), false);
                 echo $this->Html->link(SHY,
                     array('controller' => 'models', 'action' => 'generer', 'null', $seance['Seance']['id'], $seance['Typeseance']['modelpvsommaire_id'], $format, '1', 'pv_sommaire', '1', '1', '1'),
                     array(
@@ -173,6 +180,13 @@ if (Configure::read('AFFICHE_CONVOCS_ANONYME'))
                         'title' => 'Génération du pv sommaire pour la séance du ' . $seance['Seance']['date'],
                         'escape' => false,
                     ), false);
+echo $this->Html->link('NEW',
+    'genereFusionToClient/'.$seance['Seance']['id'].'/pvdetaille',
+    array(
+        'class' => 'link_pvcomplet waiter',
+        'escape' => false,
+        'title' => 'Nouvelle méthode génération du pv complet pour la séance du ' . $seance['Seance']['date'],
+    ), false);
                 echo $this->Html->link(SHY,
                     array('controller' => 'models', 'action' => 'generer', 'null', $seance['Seance']['id'], $seance['Typeseance']['modelpvdetaille_id'], $format, '1', 'pv_complet', '1', '1', '1'),
                     array(
