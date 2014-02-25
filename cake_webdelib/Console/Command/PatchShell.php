@@ -12,7 +12,8 @@ class PatchShell extends AppShell {
         'Cakeflow',
         'Tdt', // 4.1.01 => 4.1.02
         'Gedooo', // 4.1.02 => 4.1.03
-        'AjouteSectionAnnexe' // 4.1.xx => 4.2
+        'AjouteSectionAnnexe', // 4.1.xx => 4.2
+        'CopyPresidentId' // 4.1.xx => 4.2
     );
     public $uses = array('Annex', 'Deliberation');
 
@@ -199,6 +200,10 @@ class PatchShell extends AppShell {
             //3° Trouver l'attribut etape_id des visas en cours
             $this->out('Mise à jour des données CakeFlow...');
             $this->Cakeflow->findVisaEtapeId();
+
+            //4° Copier l'attribut president_id des Séances délibérantes dans les Délibérations associées
+            $this->out('Copie de l\'attribut president_id des séances vers les délibérations...');
+            $this->CopyPresidentId->execute();
 
             $this->footer('<important>Patch de la version 4.1.xx vers la 4.2 accompli avec succès !</important>');
         }else
