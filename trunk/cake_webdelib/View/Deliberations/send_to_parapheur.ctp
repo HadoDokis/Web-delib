@@ -24,7 +24,7 @@
             <th>Libellé de l'acte</th>
             <th>Bordereau</th>
             <th style='width:65px'>
-                Statut <?php echo $this->Html->link('<i class="fa fa-refresh"></i>', array('controller' => 'deliberations', 'action' => 'refreshSignature'), array('escape' => false)); ?></th>
+                Statut <?php //echo $this->Html->link('<i class="fa fa-refresh"></i>', array('controller' => 'deliberations', 'action' => 'refreshSignature'), array('escape' => false)); ?></th>
         </tr>
 
         <?php
