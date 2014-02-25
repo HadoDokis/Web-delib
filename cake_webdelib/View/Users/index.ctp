@@ -8,9 +8,8 @@
             <th><?php echo $this->Paginator->sort('nom', 'Nom'); ?></th>
             <th><?php echo $this->Paginator->sort('prenom', 'Prénom'); ?></th>
             <th><?php echo $this->Paginator->sort('Profil.libelle', 'Profil'); ?></th>
-            <th>Téléphone</th>
-            <th>Mobile</th>
-            <th>Service</th>
+            <th>Services</th>
+            <th>Types d'actes</th>
             <th style="width:20%;">Actions</th>
         </tr>
         <?php
@@ -21,8 +20,6 @@
                 <td><?php echo $user['User']['nom']; ?></td>
                 <td><?php echo $user['User']['prenom']; ?></td>
                 <td><?php echo $user['Profil']['libelle']; ?></td>
-                <td><?php echo $user['User']['telfixe']; ?></td>
-                <td><?php echo $user['User']['telmobile']; ?></td>
                 <td>
                     <?php
                     foreach ($user['Service'] as $service)
@@ -30,12 +27,18 @@
                             echo $service['libelle'] . '<br/>';
                     ?>
                 </td>
-
+                <td>
+                    <?php
+                    if (array_key_exists('Natures', $user))
+                        foreach ($user['Natures'] as $nature)
+                            echo $nature . '<br/>';
+                    ?>
+                </td>
                 <td class="actions">
-                    <?php echo $this->Html->link(SHY, '/users/view/' . $user['User']['id'], array('class' => 'link_voir', 'escape' => false, 'title' => 'Voir'), false) ?>
-                    <?php echo $this->Html->link(SHY, '/users/edit/' . $user['User']['id'], array('class' => 'link_modifier', 'escape' => false, 'title' => 'Modifier'), false) ?>
-                    <?php echo $this->Html->link(SHY, '/users/changeMdp/' . $user['User']['id'], array('class' => 'link_mdp', 'escape' => false, 'title' => 'Nouveau mot de passe'), false) ?>
-                    <?php echo $this->Html->link(SHY, '/users/delete/' . $user['User']['id'], array('class' => 'link_supprimer', 'escape' => false, 'title' => 'Supprimer'), 'Etes-vous sur de vouloir supprimer cet utilisateur : \'' . $user['User']['prenom'] . ' ' . $user['User']['nom'] . '\' ?'); ?>
+                    <?php echo $this->Html->link(SHY, array('action'=>'view', $user['User']['id']), array('class' => 'link_voir', 'escape' => false, 'title' => 'Voir'), false) ?>
+                    <?php echo $this->Html->link(SHY, array('action'=>'edit', $user['User']['id']), array('class' => 'link_modifier', 'escape' => false, 'title' => 'Modifier'), false) ?>
+                    <?php echo $this->Html->link(SHY, array('action'=>'changeMdp', $user['User']['id']), array('class' => 'link_mdp', 'escape' => false, 'title' => 'Nouveau mot de passe'), false) ?>
+                    <?php echo $this->Html->link(SHY, array('action'=>'delete', $user['User']['id']), array('class' => 'link_supprimer', 'escape' => false, 'title' => 'Supprimer'), 'Etes-vous sur de vouloir supprimer cet utilisateur : \'' . $user['User']['prenom'] . ' ' . $user['User']['nom'] . '\' ?'); ?>
                 </td>
             </tr>
         <?php endforeach; ?>

@@ -73,7 +73,8 @@ class User extends AppModel
             'conditions' => '',
             'order' => '',
             'dependent' => false,
-            'foreignKey' => 'profil_id'));
+            'foreignKey' => 'profil_id')
+    );
 
     public $hasAndBelongsToMany = array(
         'Service' => array(
@@ -107,6 +108,9 @@ class User extends AppModel
         'Composition' => array(
             'className' => 'Cakeflow.Composition',
             'foreignKey' => 'trigger_id'
+        ),
+        'Aro' => array(
+            'foreignKey' => 'foreign_key'
         )
     );
 
