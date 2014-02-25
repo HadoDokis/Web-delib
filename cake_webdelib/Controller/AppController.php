@@ -85,7 +85,7 @@ class AppController extends Controller
 
             //si il n'y a pas d'utilisateur connecte en session
             if (!$this->Session->Check('user')) {
-                $this->redirect(array('controller' => 'users', 'action' => 'login', 'plugin'=>''));
+                return $this->redirect(array('controller' => 'users', 'action' => 'login', 'plugin'=>''));
             } else {
                 // Contrôle des droits
                 $Pages = array('Pages:format', 'Pages:service');
@@ -93,12 +93,11 @@ class AppController extends Controller
                 if (in_array($controllerAction, $Pages)) {
                     return true;
                 } elseif ($controllerAction != 'Deliberations:delete') {
-                    $user_id = $this->Session->read('user.User.id');
-                    if (!$this->Droits->check($user_id, $controllerAction)) {
+                    if (!$this->Droits->check($this->user_id, $controllerAction)) {
                         $this->Session->setFlash("Vous n'avez pas les droits nécessaires pour accéder à : $controllerAction", 'growl', array('type' => 'erreur'));
-                        $this->redirect('/');
+                        return $this->redirect($this->previous);
                     } else
-                        $this->log("$user_id => $controllerAction", 'trace');
+                        $this->log("{$this->user_id} => $controllerAction", 'trace');
                 }
             }
         }
