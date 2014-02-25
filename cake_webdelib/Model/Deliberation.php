@@ -2123,7 +2123,7 @@ class Deliberation extends AppModel {
         $this->Date = new DateComponent($collection);
 
         // liste des champs à lire en base de données
-        $fields = array('id', 'service_id', 'theme_id', 'rapporteur_id', 'redacteur_id', 'is_multidelib',
+        $fields = array('id', 'service_id', 'theme_id', 'rapporteur_id', 'redacteur_id', 'president_id', 'is_multidelib',
             'titre', 'objet', 'objet_delib', 'etat', 'num_delib', 'num_pref', 'date_envoi_signature',
             'vote_nb_oui', 'vote_nb_abstention', 'vote_nb_non', 'vote_nb_retrait', 'tdt_dateAR', 'vote_commentaire');
         if ($modelOdtInfos->hasUserField('texte_projet')) $fields[] = 'texte_projet';
@@ -2304,6 +2304,10 @@ class Deliberation extends AppModel {
 
         // votes
         $this->Vote->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
+
+        // président de séance de la délibération
+        if (!empty($delib['Deliberation']['president_id']))
+            $this->President->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['president_id']);
     }
     
     function delegToParapheurDocument(){
