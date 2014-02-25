@@ -53,9 +53,9 @@ if (isset($this->data['Multidelib'])) {
         // affichage des annexes
         echo $this->Html->tag('label', 'Annexe(s)');
         echo '<div class="fckEditorProjet">';
-        $annexeOptions = array('mode' => 'display');
-        if (isset($delib['Annex'])) $annexeOptions['annexes'] = $delib['Annex'];
-        echo $this->element('annexe', $annexeOptions);
+        //$annexeOptions = array('mode' => 'display');
+        //if (isset($delib['Annex'])) $annexeOptions['annexes'] = $delib['Annex'];
+        echo $this->element('annexe', array_merge(array('mode' => 'display'), $annexes));
         echo '</div>';
         echo $this->Html->tag('div', '', array('class' => 'spacer'));
         echo $this->Html->tag('/div');

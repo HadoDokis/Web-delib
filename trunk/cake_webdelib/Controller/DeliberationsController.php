@@ -555,15 +555,11 @@ class DeliberationsController extends AppController
     function _saveAnnexe($delibId, $annexe, &$annexesErrors)
     {
         App::uses('File', 'Utility');
-        $this->Fido = new FidoComponent();
         $return = false;
         if ($annexe['ref'] == 'delibPrincipale')
             $Model = 'Projet';
         else
             $Model = 'Deliberation';
-
-        $titre = !empty($annexe['titre']) ? $annexe['titre'] : $annexe['file']['name'];
-
         if (ini_get('upload_max_filesize') > $annexe['file']['size'])
             $annexesErrors[$titre][] = 'Limite de taille par fichier : ' . ini_get('upload_max_filesize');
         elseif ($annexe['file']['error'] != 0)
@@ -577,11 +573,8 @@ class DeliberationsController extends AppController
             $newAnnexe['Annex']['joindre_fusion'] = $annexe['fusion'];
 
             $file = new File($annexe['file']['tmp_name'], false);
-
-            //scan FIDO
             $allowed = $this->Fido->checkFile($file->path);
             $results = $this->Fido->lastResults;
-            $newAnnexe['Annex']['filename'] = $annexe['file']['name'];
             if ($results['result'] == 'KO') {
                 $annexesErrors[$titre][] = 'Format de fichier non reconnu. Veuillez contacter votre administrateur';
                 $file->close();
@@ -617,10 +610,12 @@ class DeliberationsController extends AppController
 
         $pos = strrpos(getcwd(), 'webroot');
         $path = substr(getcwd(), 0, $pos);
-        $path_projet = $path . "webroot/files/generee/projet/$id/";
+        $path_projet = $path . 'webroot'.DS.'files'.DS.'generee'.DS.'projet'.DS.$id.DS;
+        $path_webroot = '/files/generee/projet/'.$id.'/';
         $typeseances_selected = array();
         $seances = array();
         $this->set('USE_PASTELL', Configure::read('USE_PASTELL'));
+        
         if (!$this->request->isPut()) {
             $this->Deliberation->Behaviors->load('Containable');
             $this->Seance->Behaviors->load('Containable');
@@ -642,7 +637,6 @@ class DeliberationsController extends AppController
                         $redirect = $h;
                         break;
                     }
-
 
             $this->set('redirect', $redirect);
 
@@ -724,16 +718,10 @@ class DeliberationsController extends AppController
             }
 
             // initialisation des fichiers des textes
-            if (!Configure::read('GENERER_DOC_SIMPLE')) {
-                $this->Gedooo->createFile($path_projet, 'texte_projet.odt', $this->data['Deliberation']['texte_projet']);
-                $this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
-                $this->Gedooo->createFile($path_projet, 'deliberation.odt', $this->data['Deliberation']['deliberation']);
-            } else {
-                $content = str_replace('\&quot;', '', $this->data['Deliberation']['texte_projet']);
-                $content = str_replace('\\"', '"', $content);
-                $content = str_replace('"\\', '"', $content);
-                $this->Gedooo->createFile($path_projet, 'texte_projet.html', $content);
-            }
+            $this->Gedooo->createFile($path_projet, 'texte_projet.odt', $this->data['Deliberation']['texte_projet']);
+            $this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
+            $this->Gedooo->createFile($path_projet, 'deliberation.odt', $this->data['Deliberation']['deliberation']);
+            
             // création des fichiers des infosup de type odtFile
             foreach ($this->data['Infosup'] as $infosup) {
                 $infoSupDef = $this->Infosupdef->find('first', array(
@@ -744,37 +732,44 @@ class DeliberationsController extends AppController
                     $this->Gedooo->createFile($path_projet, $infosup['file_name'], $infosup['content']);
                 }
             }
-
             // création des fichiers des annexes de type vnd.oasis.opendocument
             $annexes = $this->Annex->find('all', array(
                 'recursive' => -1,
-                'fields' => array('filename', 'data'),
+                'fields' => array('id','filename', 'filetype','titre','joindre_ctrl_legalite','joindre_fusion'),
                 'conditions' => array(
-                    //  'Annex.Model'=> 'Deliberation',
-                    'Annex.foreign_key' => $id,
-                    'Annex.filetype like' => '%vnd.oasis.opendocument%')));
+                    'foreign_key' => $id)));
 
-            foreach ($annexes as $annexe) {
-                $this->Gedooo->createFile($path_projet, $annexe['Annex']['filename'], $annexe['Annex']['data']);
-            }
+            foreach ($annexes as &$annexe) {
+                if($annexe['Annex']['filetype']=='application/vnd.oasis.opendocument.text'){
+                $annexeData=$this->Annex->find('first', array(
+                'fields' => array('data'),
+                'conditions' => array(
+                                        'id' => $annexe['Annex']['id']),
+                                        'recursive' => -1));
+                $annexe['Annex']['edit']=true;
+                $this->Gedooo->createFile($path_projet, $annexe['Annex']['filename'], $annexeData['Annex']['data']);
+                $annexe['Annex']['link']=Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] .$path_webroot. $annexe['Annex']['filename'];
+                }
+           }
 
             // initialisation des délibérations rattachées
             if (array_key_exists('Multidelib', $this->data)) {
                 foreach ($this->data['Multidelib'] as $delibRattachee) {
-                    $path_projet_delibRattachee = $path . "webroot/files/generee/projet/" . $delibRattachee['id'] . "/";
-                    if (!Configure::read('GENERER_DOC_SIMPLE')) {
-                        $this->Gedooo->createFile($path_projet_delibRattachee, 'deliberation.odt', $delibRattachee['deliberation']);
-                    }
+                    $path_projet_delibRattachee = $path.'webroot'.DS.'files'.DS.'generee'.DS.'projet'.DS.$delibRattachee['id'].DS;
+                    $path_webroot_delibRattachee = '/files/generee/projet/'.$delibRattachee['id'].'/';
+                    $this->Gedooo->createFile($path_projet_delibRattachee, 'deliberation.odt', $delibRattachee['deliberation']);
                     // création des fichiers des annexes de type vnd.oasis.opendocument
-                    $annexes = $this->Annex->find('all', array(
+                    $annexes_delibRattachee = $this->Annex->find('all', array(
                         'recursive' => -1,
                         'fields' => array('filename', 'data'),
                         'conditions' => array(
                             'Annex.model' => 'Deliberation',
                             'Annex.foreign_key' => $delibRattachee['id'],
                             'Annex.filetype like' => '%vnd.oasis.opendocument%')));
-                    foreach ($annexes as $annexe) {
+                    foreach ($annexes_delibRattachee as &$annexe) {
+                        $annexe['Annex']['edit']=true;
                         $this->Gedooo->createFile($path_projet_delibRattachee, $annexe['Annex']['filename'], $annexe['Annex']['data']);
+                        $annexe['Annex']['link']=Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] .$path_webroot_delibRattachee. $annexe['Annex']['filename'];
                     }
                 }
             }
@@ -793,6 +788,7 @@ class DeliberationsController extends AppController
                 $this->set('lienTab', $this->request['named']['lienTab']);
 
             $this->set('seances', $seances);
+            $this->set('annexes', $annexes);
             $this->set('typeseances_selected', $typeseances_selected);
             $this->set('typeseances', $typeseances);
             $this->set('seances_selected', $seances_selected);
@@ -820,7 +816,9 @@ class DeliberationsController extends AppController
                 $this->Session->setFlash("Attention, l'acte est en cours de signature!", 'growl', array('type' => 'erreur'));
             }
             $this->render();
-        } else {
+        } 
+        else 
+        {
             $this->Deliberation->begin();
             $redirect = $this->data['Deliberation']['redirect'];
             $oldDelib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
@@ -847,27 +845,25 @@ class DeliberationsController extends AppController
             $this->Seance->reOrdonne($id, $seances_selected);
             unset ($this->request->data['Seance']['Seance']);
 
-            if (!Configure::read('GENERER_DOC_SIMPLE')) {
-                $this->Deliberation->set($this->data);
-                $textes = array('texte_projet', 'texte_synthese', 'deliberation');
-                $validUpload = true;
+            $this->Deliberation->set($this->data);
+            $textes = array('texte_projet', 'texte_synthese', 'deliberation');
+            $validUpload = true;
+            foreach ($textes as $texte) {
+                if (array_key_exists($texte . '_upload', $this->data['Deliberation'])) {
+                    $validUpload = $validUpload && $this->Deliberation->validates(array('fieldList' => array($texte . '_upload')));
+                }
+            }
+            if ($validUpload)
                 foreach ($textes as $texte) {
                     if (array_key_exists($texte . '_upload', $this->data['Deliberation'])) {
-                        $validUpload = $validUpload && $this->Deliberation->validates(array('fieldList' => array($texte . '_upload')));
+                        $this->request->data['Deliberation'][$texte . '_name'] = $this->data['Deliberation'][$texte . '_upload']['name'];
+                        $this->request->data['Deliberation'][$texte . '_size'] = $this->data['Deliberation'][$texte . '_upload']['size'];
+                        $this->request->data['Deliberation'][$texte . '_type'] = $this->data['Deliberation'][$texte . '_upload']['type'];
+                        $this->request->data['Deliberation'][$texte] = !empty($this->data['Deliberation'][$texte . '_upload']['tmp_name']) ? file_get_contents($this->data['Deliberation'][$texte . '_upload']['tmp_name']) : '';
+                    } else {
+                        $this->request->data['Deliberation'][$texte] = file_get_contents($path_projet . $texte . '.odt');
                     }
                 }
-                if ($validUpload)
-                    foreach ($textes as $texte) {
-                        if (array_key_exists($texte . '_upload', $this->data['Deliberation'])) {
-                            $this->request->data['Deliberation'][$texte . '_name'] = $this->data['Deliberation'][$texte . '_upload']['name'];
-                            $this->request->data['Deliberation'][$texte . '_size'] = $this->data['Deliberation'][$texte . '_upload']['size'];
-                            $this->request->data['Deliberation'][$texte . '_type'] = $this->data['Deliberation'][$texte . '_upload']['type'];
-                            $this->request->data['Deliberation'][$texte] = !empty($this->data['Deliberation'][$texte . '_upload']['tmp_name']) ? file_get_contents($this->data['Deliberation'][$texte . '_upload']['tmp_name']) : '';
-                        } else {
-                            $this->request->data['Deliberation'][$texte] = file_get_contents($path_projet . $texte . '.odt');
-                        }
-                    }
-            }
 
             if ($oldDelib['Deliberation']['is_multidelib'] != 1)
                 if (empty($this->data['Deliberation']['is_multidelib']) OR (@$this->data['Deliberation']['is_multidelib'] == 0))
@@ -925,28 +921,23 @@ class DeliberationsController extends AppController
 
                 if ($success) {
                     // suppression des annexes
-                    if (array_key_exists('AnnexesASupprimer', $this->data))
+                    if (isset($this->data['AnnexesASupprimer']))
                         foreach ($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
                     // modification des annexes
-                    if (array_key_exists('AnnexesAModifier', $this->data)) {
+                    if (isset($this->data['AnnexesAModifier'])) {
                         foreach ($this->data['AnnexesAModifier'] as $annexeId => $annexe) {
                             $annex_filename = $this->Annex->find('first', array(
                                 'recursive' => -1,
-                                'fields' => array('filename', 'filetype', 'id', 'data'),
+                                'fields' => array('filename', 'filetype', 'id'),
                                 'conditions' => array('Annex.id' => $annexeId)));
-                            $pos = strpos($annex_filename['Annex']['filetype'], 'vnd.oasis.opendocument');
-                            if ($pos !== false) {
-                                $path = WEBROOT_PATH . "/files/generee/projet/" . $id . "/" . $annex_filename['Annex']['filename'];
-                                $data_pdf = $this->Conversion->convertirFichier($path, 'odt', 'pdf');
-
-                                if (is_array($data_pdf)) $data_pdf = null;
+                            if ($annex_filename['Annex']['filetype']=='application/vnd.oasis.opendocument.text') {
                                 $this->Annex->save(array(
                                     'id' => $annexeId,
                                     'titre' => $annexe['titre'],
                                     'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
                                     'joindre_fusion' => $annexe['joindre_fusion'],
-                                    'data' => file_get_contents($path),
-                                    'data_pdf' => $data_pdf));
+                                    'data' => file_get_contents(WEBROOT_PATH .DS. 'files'. DS .'generee'. DS .'projet' . $id . DS . $annex_filename['Annex']['filename']),
+                                    'data_pdf' => NULL));
                             } else {
                                 $this->Annex->save(array(
                                     'id' => $annexeId,

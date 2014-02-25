@@ -31,7 +31,6 @@ class AnnexesController extends AppController {
             'recursive' => -1
             ));
         
-        
         switch ($type) {
             case 'data_edition':
             $content = $annexe['Annex']['edition_data'];
@@ -58,12 +57,11 @@ class AnnexesController extends AppController {
                 }
                 break;
         }
-
         
         $this->response->disableCache();
         $this->response->body($content);
         $this->response->type($typemime);
-        $this->response->download($filename.'.'.$DOC_TYPE[$typemime]['extension']);
+        $this->response->download($filename);
         
         return $this->response;
     }
