@@ -688,16 +688,6 @@ class Deliberation extends AppModel {
 				}
 			}
 			@$oMainPart->addElement($commentaires);
-
-			$avisCommission = new GDO_IterationType("AvisCommission");
-			foreach($coms as $commentaire) {
-				$oDevPart = new GDO_PartType();
-				if ($commentaire['Commentaire']['commentaire_auto']==1) {
-					$oDevPart->addElement(new GDO_FieldType("avis", ($commentaire['Commentaire']['texte']), "text"));
-					$avisCommission->addPart($oDevPart);
-				}
-			}
-			@$oMainPart->addElement($avisCommission);
 		}
 		$this->Deliberationseance->Behaviors->attach('Containable');
                 $avisSeances =  $this->Deliberationseance->find('all', array(
