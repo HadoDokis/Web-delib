@@ -41,7 +41,6 @@ class DroitsComponent extends Component
 	/* vérifie si l'utilisateur $userId est autorisée à exécuter l'action $controllerAction */
 	/* vérifie les droits si l'action est dans la liste des actions soumises aux droits */
 	function check($userId, $controllerAction) {
-
 		// Initialisations
 		$listeActions = array();
 		$listeActionsComme = array();
@@ -89,17 +88,16 @@ class DroitsComponent extends Component
 		if (file_exists($file)){
 			require_once($file);
 		}
-//		else{
-//			$plugins = App::objects('plugin');
-//			foreach  ($plugins as $plugin){
-//				$pluginName = ucfirst($plugin);
-//				$file = APP."Plugin".DS.ucfirst($plugin).DS."Controller".DS.$controllerName."Controller.php";
-//				if (file_exists($file)) {
-//					require_once(APP."Plugin".DS.ucfirst($plugin).DS.'Controller'.DS.ucfirst($plugin).'AppController.php');
-//					require_once($file);
-//				}
-//			}
-//		}
+		else{
+			$plugins = App::objects('plugin');
+			foreach  ($plugins as $plugin){
+				$file = APP."Plugin".DS.$plugin.DS."Controller".DS.$controllerName."Controller.php";
+				if (file_exists($file)) {
+					require_once(APP."Plugin".DS.$plugin.DS.'Controller'.DS.$plugin.'AppController.php');
+					require_once($file);
+				}
+			}
+		}
 		$subClassVars = get_class_vars($controllerName.'Controller');
 		if ( $subClassVars === FALSE)
 			$subClassVars=array();
