@@ -86,29 +86,35 @@ class UsersController extends AppController {
             'conditions' => $conditions,
             'fields' => array('DISTINCT User.id', 'User.login', 'User.nom', 'User.prenom', 'User.telfixe', 'User.telmobile'),
             'limit' => 20,
-            'contain' => array('Profil.libelle', 'Service.libelle'),
+            'contain' => array(
+                'Profil.libelle',
+                'Service.libelle',
+                'Aro' => array('conditions' => array('Aro.model' => 'User'))
+            ),
             'order' => array('User.login' => 'asc')));
 
         $users = $this->Paginator->paginate('User');
-        /*
+
         //Chercher les droits (types d'acte et supprimable?)
         foreach ($users as &$user) {
-            $aro = $this->Aro->find('first', array(
-                'conditions' => array('model' => 'User', 'foreign_key' => $user['User']['id']),
-                'fields' => array('id'),
-                'recursive' => -1));
-            $aros_ados = $this->ArosAdo->find('all', array(
-                'conditions' => array(
-                    'ArosAdo.aro_id' => $aro['Aro']['id'],
-                    'ArosAdo._create' => 1
-                ),
-                'contain' => array('Ado.alias'),
-                'fields' => array('Ado.id')));
-            foreach ($aros_ados as $aros_ado)
-                $user['Natures'][] = substr($aros_ado['Ado']['alias'], strlen('Typeacte:'), strlen($aros_ado['Ado']['alias']));
+            foreach ($user['Aro'] as $aro){
+                $aros_ados = $this->ArosAdo->find('all', array(
+                    'conditions' => array(
+                        'ArosAdo.aro_id' => $aro['id'],
+                        'ArosAdo._create' => 1
+                    ),
+                    'contain' => array('Ado.alias'),
+                    'fields' => array('Ado.id')
+                ));
+                foreach ($aros_ados as $aros_ado)
+                    $user['Natures'][] = substr($aros_ado['Ado']['alias'], strlen('Typeacte:'), strlen($aros_ado['Ado']['alias']));
+            }
+            /*
             // FIXME Optimiser pour diminuer le nombre de requêtes quand grosse bdd!!
             $user['User']['is_deletable'] = $this->_isDeletable($user, $message);
-        }*/
+            */
+        }
+
         $this->set('users', $users);
     }
 
