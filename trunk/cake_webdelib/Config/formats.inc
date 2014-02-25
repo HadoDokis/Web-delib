@@ -1,4 +1,8 @@
 <?php
+/**
+ * Règles de validatotion des formats des fichiers envoyés
+ * @see http://www.nationalarchives.gov.uk/PRONOM/Default.aspx
+ */
 Configure::write('DOC_TYPE', array(
     'application/pdf' => array(
         'formatname' => 'Acrobat PDF',
@@ -8,7 +12,7 @@ Configure::write('DOC_TYPE', array(
         'puid' => array(
             'fmt/17' => array(
                 'version' => '1.3',
-                'actif' => false
+                'actif' => true
             ),
             'fmt/18' => array(
                 'version' => '1.4',
@@ -76,14 +80,18 @@ Configure::write('DOC_TYPE', array(
         'joindre_fusion' => true,
         'joindre_ctrl_legalite' => true,
         'puid' => array(
+            'fmt/39' => array(
+                'actif' => true,
+                'version' => '97-2003'
+            ),
             'fmt/40' => array(
                 'actif' => true,
                 'version' => '6.0/95'
             ),
-            'fmt/39' => array(
-                'actif' => false,
-                'version' => '97-2003'
-            )
+            'fmt/609' => array(
+                'actif' => true,
+                'version' => '6.0-2003'
+            ),
         ),
     ),
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => array(
