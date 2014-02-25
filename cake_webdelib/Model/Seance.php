@@ -412,17 +412,17 @@ class Seance extends AppModel
         if ($return) return $oDevPart;
     }
 
-    function getSeancesDeliberantes()
-    {
+    function getSeancesDeliberantes() {
         $tab_seances = array();
-        $this->Behaviors->attach('Containable');
-        $seances = $this->find('all', array('conditions' => array('Typeseance.action' => 0,
-            'Seance.traitee' => 0),
+        $this->Behaviors->load('Containable');
+        $seances = $this->find('all', array(
+            'conditions' => array(
+                'Typeseance.action' => 0,
+                'Seance.traitee' => 0),
             'fields' => array('Seance.id'),
             'contain' => array('Typeseance.action')));
-        if (isset($seances) && (!empty($seances)))
-            foreach ($seances as $seance)
-                $tab_seances[] = $seance['Seance']['id'];
+        foreach ($seances as $seance)
+            $tab_seances[] = $seance['Seance']['id'];
         return ($tab_seances);
     }
 
