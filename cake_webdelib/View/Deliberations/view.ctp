@@ -14,6 +14,11 @@ $linkBarre .= $this->Html->link(
     array('escape' => false, 'class' => 'btn')
 );
 $linkBarre .= $this->Html->link(
+    '<i class="fa fa-file"></i> New Générer',
+    array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $this->data['Deliberation']['id']),
+    array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Nouvelle méthode pour Générer le document')
+);
+$linkBarre .= $this->Html->link(
     '<i class="fa fa-file"></i> Générer',
     array('controller' => 'models', 'action' => 'generer', $this->data['Deliberation']['id'], 'null', $this->data['Modeltemplate']['id'], '-1', '0', 'projet' . $this->data['Deliberation']['id'], '0', '0', '0'),
     array('escape' => false, 'class' => 'btn delib_pdf', 'title' => 'Générer le document')
