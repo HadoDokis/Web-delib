@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class CronsController
+ * Gestion des tâches planifiées dans Webdelib
+ */
 class CronsController extends AppController {
 
     public $helpers = array('DurationPicker');
@@ -9,17 +13,8 @@ class CronsController extends AppController {
         'Crons',
         'Paginator'
     );
-    // Gestion des droits
-    public $libelleControleurDroit = 'Tâches planifiées';
-    public $commeDroit = array(
-        'view' => 'Crons:index',
-        'planifier' => 'Crons:index',
-        'executer' => 'Crons:index',
-        'runCrons' => 'Crons:index',
-        'unlock' => 'Crons:index',
-    );
 
-//    public $aucunDroit = array('delete', 'edit', 'add');
+    public $demandeDroit = array('index');
 
     const FORMAT_DATE = 'Y-m-d H:i:s';
 
