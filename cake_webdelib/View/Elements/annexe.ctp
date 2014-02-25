@@ -7,7 +7,6 @@
 		array	$annexes = array() : liste des annexes a afficher
 		boolean	$affichage = 'complet' : 'complet', affiche tout, y compris le javascript, 'partiel' affiche uniquement le nécessaire pour ne pas répéter des élements du dom
 */
-
 // Initialisation des paramètres
 if (empty($mode)) $mode = 'edit';
 if ($mode == 'edit' && empty($ref)) return;
@@ -28,60 +27,68 @@ if (isset($annexes)) {
         if ($rownum & 1) $rowClass['class'] = 'altrow';
         if ($mode == 'edit') {
             $rowClass['style'] = 'height: 36px';
-            $rowClass['id'] = 'afficheAnnexe' . $annexe['id'];
-            $rowClass['data-annexeid'] = $annexe['id'];
+            $rowClass['id'] = 'afficheAnnexe' . $annexe['Annex']['id'];
+            $rowClass['data-annexeid'] = $annexe['Annex']['id'];
         }
         echo $this->Html->tag('tr', null, $rowClass);
         echo $this->Html->tag('td', $rownum + 1);
         echo $this->Html->tag('td');
+        if ($mode == 'edit') {
+            if (isset($annexe['Annex']['edit']) && $annexe['Annex']['edit']) {
+                echo  $this->Html->link('modifier : '.$annexe['Annex']['filename'] , $annexe['Annex']['link'] , array(
+                        'id'=>'urlWebdavAnnexe'.$annexe['Annex']['id'],
+                        'style'=>'display:none;',
+                        'title'=>'Modifier le fichier'));
+            }
+        } 
         // lien de téléchargement de la version pdf de l'annexe
-        echo $this->Html->tag('span', $this->Html->link($annexe['filename'], '/annexes/download/' . $annexe['id'], array('class' => 'noWarn', 'title' => 'Télécharger le fichier')));
+        echo $this->Html->tag('span', $this->Html->link($annexe['Annex']['filename'], '/annexes/download/' . $annexe['Annex']['id'], array('class' => 'noWarn', 'title' => 'Télécharger le fichier')));
         echo $this->Html->tag('/td');
         echo $this->Html->tag('td');
         if ($mode == 'edit') {
-            echo $this->Html->tag('span', $annexe['titre'], array(
-                'id' => 'afficheAnnexeTitre' . $annexe['id'],
-                'data-valeurinit' => $annexe['titre']));
-            echo $this->Form->input('AnnexesAModifier.' . $annexe['id'] . '.titre', array(
-                'id' => 'modifieAnnexeTitre' . $annexe['id'],
+            echo $this->Html->tag('span', $annexe['Annex']['titre'], array(
+                'id' => 'afficheAnnexeTitre' . $annexe['Annex']['id'],
+                'data-valeurinit' => $annexe['Annex']['titre']));
+            echo $this->Form->input('AnnexesAModifier.' . $annexe['Annex']['id'] . '.titre', array(
+                'id' => 'modifieAnnexeTitre' . $annexe['Annex']['id'],
                 'label' => false,
-                'value' => $annexe['titre'],
+                'value' => $annexe['Annex']['titre'],
                 'maxlength' => '200',
                 'disabled' => true,
                 'style' => 'display:none;'));
         } else
-            echo $this->Html->tag('span', $annexe['titre']);
+            echo $this->Html->tag('span', $annexe['Annex']['titre']);
         echo $this->Html->tag('/td');
 
         echo $this->Html->tag('td');
         if ($mode == 'edit') {
-            echo $this->Html->tag('span', $annexe['joindre_ctrl_legalite'] ? 'Oui' : 'Non', array(
-                'id' => 'afficheAnnexeCtrl' . $annexe['id'],
-                'data-valeurinit' => $annexe['joindre_ctrl_legalite']));
-            echo $this->Form->input('AnnexesAModifier.' . $annexe['id'] . '.joindre_ctrl_legalite', array(
-                'id' => 'modifieAnnexeCtrl' . $annexe['id'],
+            echo $this->Html->tag('span', $annexe['Annex']['joindre_ctrl_legalite'] ? 'Oui' : 'Non', array(
+                'id' => 'afficheAnnexeCtrl' . $annexe['Annex']['id'],
+                'data-valeurinit' => $annexe['Annex']['joindre_ctrl_legalite']));
+            echo $this->Form->input('AnnexesAModifier.' . $annexe['Annex']['id'] . '.joindre_ctrl_legalite', array(
+                'id' => 'modifieAnnexeCtrl' . $annexe['Annex']['id'],
                 'label' => false,
                 'type' => 'checkbox',
-                'checked' => ($annexe['joindre_ctrl_legalite'] == 1),
+                'checked' => ($annexe['Annex']['joindre_ctrl_legalite'] == 1),
                 'disabled' => 'disabled',
                 'style' => 'display:none;'));
         } else
-            echo $this->Html->tag('span', $annexe['joindre_ctrl_legalite'] ? 'Oui' : 'Non');
+            echo $this->Html->tag('span', $annexe['Annex']['joindre_ctrl_legalite'] ? 'Oui' : 'Non');
         echo $this->Html->tag('/td');
         echo $this->Html->tag('td');
         if ($mode == 'edit') {
-            echo $this->Html->tag('span', $annexe['joindre_fusion'] ? 'Oui' : 'Non', array(
-                'id' => 'afficheAnnexeFusion' . $annexe['id'],
-                'data-valeurinit' => $annexe['joindre_fusion']));
-            echo $this->Form->input('AnnexesAModifier.' . $annexe['id'] . '.joindre_fusion', array(
-                'id' => 'modifieAnnexeFusion' . $annexe['id'],
+            echo $this->Html->tag('span', $annexe['Annex']['joindre_fusion'] ? 'Oui' : 'Non', array(
+                'id' => 'afficheAnnexeFusion' . $annexe['Annex']['id'],
+                'data-valeurinit' => $annexe['Annex']['joindre_fusion']));
+            echo $this->Form->input('AnnexesAModifier.' . $annexe['Annex']['id'] . '.joindre_fusion', array(
+                'id' => 'modifieAnnexeFusion' . $annexe['Annex']['id'],
                 'label' => false,
                 'type' => 'checkbox',
-                'checked' => ($annexe['joindre_fusion'] == 1),
+                'checked' => ($annexe['Annex']['joindre_fusion'] == 1),
                 'disabled' => 'disabled',
                 'style' => 'display:none;'));
         } else
-            echo $this->Html->tag('span', $annexe['joindre_fusion'] ? 'Oui' : 'Non');
+            echo $this->Html->tag('span', $annexe['Annex']['joindre_fusion'] ? 'Oui' : 'Non');
         echo $this->Html->tag('/td');
 
         if ($mode == 'edit') {
@@ -89,21 +96,21 @@ if (isset($annexes)) {
             echo $this->Html->link(SHY, 'javascript:void(0);', array('title' => 'Supprimer',
                 'class' => "link_supprimer",
                 'escape' => false,
-                'onClick' => 'supprimerAnnexe(this, ' . $annexe['id'] . ')'), false);
+                'onClick' => 'supprimerAnnexe(this, ' . $annexe['Annex']['id'] . ')'), false);
             echo $this->Html->link(SHY, 'javascript:void(0);', array('title' => 'Annuler la suppression',
                 'class' => 'link_supprimer_back',
                 'escape' => false,
-                'onClick' => "annulerSupprimerAnnexe(this, " . $annexe['id'] . ")",
+                'onClick' => "annulerSupprimerAnnexe(this, " . $annexe['Annex']['id'] . ")",
                 'style' => 'display: none;'), false);
             echo '&nbsp;&nbsp;';
             echo $this->Html->link(SHY, 'javascript:void(0);', array('title' => 'Modifier',
                 'escape' => false,
                 'class' => 'link_modifier',
-                'onClick' => 'modifierAnnexe(this, ' . $annexe['id'] . ')'), false);
+                'onClick' => 'modifierAnnexe(this, ' . $annexe['Annex']['id'] . ')'), false);
             echo $this->Html->link(SHY, 'javascript:void(0);', array('title' => 'Annuler la modification',
                 'class' => 'link_modifier_back',
                 'escape' => false,
-                'onClick' => "annulerModifierAnnexe(this, " . $annexe['id'] . ")",
+                'onClick' => "annulerModifierAnnexe(this, " . $annexe['Annex']['id'] . ")",
                 'style' => 'display: none;'), false);
             echo $this->Html->tag('/td');
         }
