@@ -53,12 +53,12 @@ class TypeseancesController extends AppController {
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
         }
         if ($sortie)
-            $this->redirect(array('action'=>'index'));
+            return $this->redirect($this->previous);
         else {
             $this->set('compteurs', $this->Typeseance->Compteur->find('list'));
 
             $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
-            $this->set('models_delib', $this->Modeltemplate->getModels(MODEL_TYPE_DELIBERATION));
+            $this->set('models_delib', $this->Modeltemplate->getModelsByTypes(array(MODEL_TYPE_TOUTES, MODEL_TYPE_PROJET, MODEL_TYPE_DELIBERATION)));
             $this->set('models_convoc', $this->Modeltemplate->getModels(MODEL_TYPE_CONVOCATION));
             $this->set('models_odj', $this->Modeltemplate->getModels(MODEL_TYPE_ODJ));
             $this->set('models_pvdetaille', $this->Modeltemplate->getModels(MODEL_TYPE_PVDETAILLE));
@@ -116,7 +116,7 @@ class TypeseancesController extends AppController {
             }
         }
         if ($sortie)
-            $this->redirect('/typeseances/index');
+            return $this->redirect($this->previous);
         else {
             $this->set('compteurs', $this->Typeseance->Compteur->find('list'));
             $this->set('actions', array(
@@ -126,9 +126,9 @@ class TypeseancesController extends AppController {
             $this->set('typeacteurs', $this->Typeseance->Typeacteur->find('list'));
             $this->set('acteurs', $this->Typeseance->Acteur->generateList('Acteur.nom'));
             $this->set('natures', $this->Typeacte->find('list', array('fields' => array('Typeacte.libelle'))));
-
+            //Modèles
             $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
-            $this->set('models_delib', $this->Modeltemplate->getModels(MODEL_TYPE_DELIBERATION));
+            $this->set('models_delib', $this->Modeltemplate->getModelsByTypes(array(MODEL_TYPE_TOUTES, MODEL_TYPE_PROJET, MODEL_TYPE_DELIBERATION)));
             $this->set('models_convoc', $this->Modeltemplate->getModels(MODEL_TYPE_CONVOCATION));
             $this->set('models_odj', $this->Modeltemplate->getModels(MODEL_TYPE_ODJ));
             $this->set('models_pvdetaille', $this->Modeltemplate->getModels(MODEL_TYPE_PVDETAILLE));
@@ -148,7 +148,7 @@ class TypeseancesController extends AppController {
             $message = 'Erreur lors de la tentative de suppression du type de séance ' . $typeseance['Typeseance']['libelle'];
         }
         $this->Session->setFlash($message, 'growl');
-        $this->redirect('/typeseances/index');
+        return $this->redirect($this->referer());
     }
 
 }

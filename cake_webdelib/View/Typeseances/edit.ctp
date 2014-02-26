@@ -31,13 +31,13 @@
 <div class="demi">
 	<fieldset>
 	<legend>Modèles pour les éditions</legend>
-        <?php echo $this->Form->input('Typeseance.modelprojet_id', array('label'=>'projet <abbr title="obligatoire">*</abbr>', 'options'=>$models_projet, 'default'=>$this->Html->value('Typeseance.modelprojet_id'), 'empty'=>!$this->Html->value('Typeseance.id')));?>
+        <?php echo $this->Form->input('Typeseance.modelprojet_id', array('label'=>'Projet <abbr title="obligatoire">*</abbr>', 'options'=>$models_projet, 'default'=>$this->Html->value('Typeseance.modelprojet_id'), 'empty'=>!$this->Html->value('Typeseance.id')));?>
         <br/>
-        <?php echo $this->Form->input('Typeseance.modeldeliberation_id', array('label'=>'document final<abbr title="obligatoire">*</abbr>', 'options'=>$models_delib, 'default'=>$this->Html->value('Typeseance.modeldeliberation_id'), 'empty'=>!$this->Html->value('Typeseance.id')));?>
+        <?php echo $this->Form->input('Typeseance.modeldeliberation_id', array('label'=>'Document final <abbr title="obligatoire">*</abbr>', 'options'=>$models_delib, 'default'=>$this->Html->value('Typeseance.modeldeliberation_id'), 'empty'=>!$this->Html->value('Typeseance.id')));?>
         <br/>
-	 	<?php echo $this->Form->input('Typeseance.modelconvocation_id', array('label'=>'convocation <abbr title="obligatoire">*</abbr>', 'options'=>$models_convoc, 'default'=>$this->Html->value('Typeseance.modelconvocation_id'), 'empty'=>!$this->Html->value('Typeseance.id')));?>
+	 	<?php echo $this->Form->input('Typeseance.modelconvocation_id', array('label'=>'Convocation <abbr title="obligatoire">*</abbr>', 'options'=>$models_convoc, 'default'=>$this->Html->value('Typeseance.modelconvocation_id'), 'empty'=>!$this->Html->value('Typeseance.id')));?>
 		<br/>
-	 	<?php echo $this->Form->input('Typeseance.modelordredujour_id', array('label'=>'ordre du jour <abbr title="obligatoire">*</abbr>', 'options'=>$models_odj, 'default'=>$this->Html->value('Typeseance.modelordredujour_id'), 'empty'=>!$this->Html->value('Typeseance.id')));?>
+	 	<?php echo $this->Form->input('Typeseance.modelordredujour_id', array('label'=>'Ordre du jour <abbr title="obligatoire">*</abbr>', 'options'=>$models_odj, 'default'=>$this->Html->value('Typeseance.modelordredujour_id'), 'empty'=>!$this->Html->value('Typeseance.id')));?>
 		<br/>
 	 	<?php echo $this->Form->input('Typeseance.modelpvsommaire_id', array('label'=>'PV sommaire <abbr title="obligatoire">*</abbr>', 'options'=>$models_pvsommaire, 'default'=>$this->Html->value('Typeseance.modelpvsommaire_id'), 'empty'=>!$this->Html->value('Typeseance.id')));?>
 		<br/>

@@ -34,7 +34,7 @@ if ($this->Html->value('Typeacte.id')) {
         <legend>Modèles pour les éditions</legend>
         <?php echo $this->Form->input('Typeacte.modeleprojet_id', array('label' => 'projet <abbr title="obligatoire">*</abbr>', 'options' => $models_projet, 'default' => $this->Html->value('Typeacte.modelprojet_id'), 'empty' => false)); ?>
         <br/>
-        <?php echo $this->Form->input('Typeacte.modelefinal_id', array('label' => 'document final <abbr title="obligatoire">*</abbr>', 'options' => $models_delib, 'default' => $this->Html->value('Typeacte.modeldeliberation_id'), 'empty' => false)); ?>
+        <?php echo $this->Form->input('Typeacte.modelefinal_id', array('label' => 'document final <abbr title="obligatoire">*</abbr>', 'options' => $models_docfinal, 'default' => $this->Html->value('Typeacte.modeldeliberation_id'), 'empty' => false)); ?>
     </fieldset>
 </div>
 <div class="spacer"></div>

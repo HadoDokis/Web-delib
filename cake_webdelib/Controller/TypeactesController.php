@@ -77,7 +77,7 @@ class TypeactesController extends AppController
         else {
             $this->set('compteurs', $this->Typeacte->Compteur->find('list'));
             $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
-            $this->set('models_delib', $this->Modeltemplate->getModels(MODEL_TYPE_DELIBERATION));
+            $this->set('models_docfinal', $this->Modeltemplate->getModelsByTypes(array(MODEL_TYPE_TOUTES, MODEL_TYPE_PROJET, MODEL_TYPE_DELIBERATION)));
             $this->set('natures', $this->Typeacte->Nature->generateList('Nature.libelle'));
             $this->set('selectedNatures', null);
             $this->render('edit');
@@ -144,7 +144,7 @@ class TypeactesController extends AppController
         else {
             $this->set('compteurs', $this->Typeacte->Compteur->find('list'));
             $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
-            $this->set('models_delib', $this->Modeltemplate->getModels(MODEL_TYPE_DELIBERATION));
+            $this->set('models_docfinal', $this->Modeltemplate->getModelsByTypes(array(MODEL_TYPE_TOUTES, MODEL_TYPE_PROJET, MODEL_TYPE_DELIBERATION)));
             $this->set('actions', array(
                 0 => $this->Typeacte->libelleAction(0, true),
                 1 => $this->Typeacte->libelleAction(1, true),
