@@ -164,9 +164,7 @@ class DeliberationsController extends AppController
 
         $this->set('userCanEdit', $this->Droits->check($this->user_id, "Deliberations:edit") && $this->Deliberation->estModifiable($id, $this->user_id, $this->Droits->check($this->user_id, "Deliberations:editerTous")));
 
-        $triggers = $this->Traitement->whoIs($id);
-        $this->set('userCanComment', in_array($this->user_id, $triggers));
-
+        $this->set('userCanComment', in_array($this->user_id, $this->Traitement->whoIs($id, 'current')));
 
         // Lecture et initialisation des commentaires
         $commentaires = $this->Commentaire->find('all', array(
@@ -1024,7 +1022,7 @@ class DeliberationsController extends AppController
                     $this->User->notifier($id, $redacteurId, 'modif_projet_cree');
                 }
                 //Envoi d'une notification de modification aux utilisateurs qui ont déjà validé le projet
-                $destinataires = $this->Traitement->whoIsPrevious($id);
+                $destinataires = $this->Traitement->whoIs($id, 'before', 'OK');
                 foreach ($destinataires as $destinataire_id)
                     if ($destinataire_id != $currentUser)
                         $this->User->notifier($id, $destinataire_id, 'modif_projet_valide');
@@ -1214,7 +1212,7 @@ class DeliberationsController extends AppController
                 if ($this->Traitement->targetExists($id)) {
                     $this->Circuit->ajouteCircuit($this->data['Deliberation']['circuit_id'], $id, $this->user_id);
                     $this->Traitement->Visa->replaceDynamicTrigger($id, $this->user_id);
-                    $members = $this->Traitement->whoIs($id);
+                    $members = $this->Traitement->whoIs($id, 'current', 'RI');
                     if (empty($members)) {
                         $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
                         $this->Deliberation->saveField('etat', 2);
@@ -1228,12 +1226,12 @@ class DeliberationsController extends AppController
                                 $this->Session->setFlash('Projet inséré dans le circuit et validé', 'growl');
                                 $this->redirect(array('action'=>'mesProjetsValides'));
                             }
-                            $members = $this->Traitement->whoIs($id);
+                            $members = $this->Traitement->whoIs($id, 'current', 'RI');
                         }
                         foreach ($members as $destinataire_id)
                             $this->User->notifier($id, $destinataire_id, 'traitement');
 
-                        $members = $this->Traitement->whoIs($id, 'after');
+                        $members = $this->Traitement->whoIs($id, 'after', 'RI');
                         foreach ($members as $user_id)
                             $this->User->notifier($id, $user_id, 'insertion');
 
@@ -1271,11 +1269,11 @@ class DeliberationsController extends AppController
                     }
                     $this->Traitement->Visa->replaceDynamicTrigger($id, $this->user_id);
 
-                    $members = $this->Traitement->whoIs($id);
+                    $members = $this->Traitement->whoIs($id, 'current', 'RI');
                     foreach ($members as $current_id)
                         $this->User->notifier($id, $current_id, 'traitement');
 
-                    $members = $this->Traitement->whoIs($id, 'after');
+                    $members = $this->Traitement->whoIs($id, 'after', 'RI');
                     foreach ($members as $user_id)
                         $this->User->notifier($id, $user_id, 'insertion');
 
@@ -1358,10 +1356,10 @@ class DeliberationsController extends AppController
             $this->set('etapes', $etapes);
         } else {
             $this->Traitement->execute('JP', $this->Session->read('user.User.id'), $delib_id, array('etape_id' => $this->data['Traitement']['etape']));
-            $destinataires = $this->Traitement->whoIs($delib_id);
+            $destinataires = $this->Traitement->whoIs($delib_id, 'current', 'RI');
             foreach ($destinataires as $destinataire_id)
                 $this->User->notifier($delib_id, $destinataire_id, 'traitement');
-            $this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Projet retourné");
+            $this->Historique->enregistre($delib_id, $this->user_id, "Projet retourné");
             $this->Session->setFlash('Opération effectuée !', 'growl');
             return $this->redirect('/');
         }
@@ -1430,7 +1428,7 @@ class DeliberationsController extends AppController
             $this->Session->setFlash('identifiant invalide pour le projet : ' . $id, 'growl', array('type' => 'erreur'));
             return $this->redirect(array('action'=>'mesProjetsATraiter'));
         } else {
-            $triggers = $this->Deliberation->Traitement->whoIs($id);
+            $triggers = $this->Deliberation->Traitement->whoIs($id, 'current', 'RI');
             if (!in_array($this->user_id, $triggers)){
                 $this->redirect(array('action' => 'view', $id));
             }
@@ -1514,7 +1512,7 @@ class DeliberationsController extends AppController
                     $this->_refuseDossier($id);
                     $this->Session->setFlash('Vous venez de refuser le projet : ' . $id, 'growl');
                 }
-                $this->redirect('/deliberations/mesProjetsATraiter');
+                return $this->redirect(array('action'=>'mesProjetsATraiter'));
             }
         }
     }
@@ -1522,12 +1520,11 @@ class DeliberationsController extends AppController
     function _refuseDossier($id)
     {
         $nouvelId = $this->Deliberation->refusDossier($id);
-        $this->Traitement->execute('KO', $this->Session->read('user.User.id'), $id);
-        $destinataires = $this->Traitement->whoIsPrevious($id);
+        $this->Traitement->execute('KO', $this->user_id, $id);
+        $destinataires = $this->Traitement->whoIs($id, 'in', 'OK');
         foreach ($destinataires as $destinataire_id)
             $this->User->notifier($nouvelId, $destinataire_id, 'refus');
-
-        $this->Historique->enregistre($id, $this->Session->read('user.User.id'), 'Projet refusé');
+        $this->Historique->enregistre($id, $this->user_id, 'Projet refusé');
     }
 
     function _accepteDossier($id)
@@ -1536,17 +1533,9 @@ class DeliberationsController extends AppController
         $this->Historique->enregistre($id, $this->user_id, 'Projet visé');
         if ($traitementTermine) {
             $this->Deliberation->id = $id;
-            if ($this->Deliberation->saveField('etat', 2)) {
-                //FIXME : variable projet ???
-                /*if (isset($projet['Multidelib']) && !empty($projet['Multidelib'])) {
-                    foreach ($projet['Multidelib'] as $multidelib) {
-                        $this->Deliberation->id = $multidelib['id'];
-                        $this->Deliberation->saveField('etat', 2);
-                    }
-                }*/
-            }
+            $this->Deliberation->saveField('etat', 2);
         } else {
-            $destinataires = $this->Traitement->whoIs($id);
+            $destinataires = $this->Traitement->whoIs($id, 'current', 'RI');
             foreach ($destinataires as $destinataire_id)
                 $this->User->notifier($id, $destinataire_id, 'traitement');
         }
@@ -3704,13 +3693,11 @@ class DeliberationsController extends AppController
                     }
                 }
             }
-            $this->redirect('/deliberations/verserAsalae');
-            exit;
+            return $this->redirect('/deliberations/verserAsalae');
         }
     }
 
-    function goNext($delib_id)
-    {
+    function goNext($delib_id) {
         $delib = $this->Deliberation->read(null, $delib_id);
         if (empty($delib))
             return $this->redirect($this->referer());
@@ -3741,18 +3728,17 @@ class DeliberationsController extends AppController
                 'numero_traitement' => $this->data['Traitement']['etape']
             ));
 
-            $destinataires = $this->Traitement->whoIs($delib_id);
+            $destinataires = $this->Traitement->whoIs($delib_id, 'current', 'RI');
             foreach ($destinataires as $destinataire_id)
                 $this->User->notifier($delib_id, $destinataire_id, 'traitement');
 
-            $this->Historique->enregistre($delib_id, $this->Session->read('user.User.id'), "Le projet a sauté l'étape  ");
+            $this->Historique->enregistre($delib_id, $this->user_id, "Le projet a sauté l'étape  ");
             $this->Session->setFlash("Le projet est maintenant à l'étape suivante ", 'growl');
             return $this->redirect(array('action'=>'tousLesProjetsValidation'));
         }
     }
 
-    function rebond($delib_id)
-    {
+    function rebond($delib_id) {
         $this->set('delib_id', $delib_id);
         $acte = $this->Deliberation->find('first', array(
             'conditions' => array('Deliberation.id' => $delib_id),
@@ -3802,8 +3788,7 @@ class DeliberationsController extends AppController
         }
     }
 
-    function refreshSignature()
-    {
+    function refreshSignature() {
         App::uses('Signature', 'Lib');
         $Signature = new Signature;
         /** @noinspection PhpParamsInspection ne pas avertir de la non-existence de la fonction (passage par _call()) */
