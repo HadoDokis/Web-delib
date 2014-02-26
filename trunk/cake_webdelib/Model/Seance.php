@@ -445,11 +445,24 @@ class Seance extends AppModel
         $this->setVariablesFusion($oMainPart, $modelOdtInfos, $seanceIds[count($seanceIds)-1], 'seance', false);
 
         // pour toutes les séances
-        $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($seanceIds), 'text'));
-        $oSectionIteration = new GDO_IterationType("Seances");
-        foreach($seanceIds as $seanceId) {
+        $this->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $seanceIds);
+    }
+
+    /**
+     * fonction d'initialisation des variables de fusion pour plusieurs séances
+     * les bibliothèques Gedooo doivent être inclues par avance
+     * génère une exception en cas d'erreur
+     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param integer $ids liste des id des séances
+     */
+    function setVariablesFusionSeances(&$oMainPart, &$modelOdtInfos, $ids) {
+        // pour toutes les séances
+        $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($ids), 'text'));
+        $oSectionIteration = new GDO_IterationType('Seances');
+        foreach($ids as $id) {
             $oDevPart = new GDO_PartType();
-            $this->setVariablesFusion($oDevPart, $modelOdtInfos, $seanceId, 'seances', false);
+            $this->setVariablesFusion($oDevPart, $modelOdtInfos, $id, 'seances', false);
             $oSectionIteration->addPart($oDevPart);
         }
         $oMainPart->addElement($oSectionIteration);
@@ -562,6 +575,9 @@ class Seance extends AppModel
                 if (!empty($modelOptions['acteurId']))
                     $this->Secretaire->setVariablesFusion($oMainPart, $modelOdtInfos, $modelOptions['acteurId'], $suffixe='acteur');
                 $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, 'seance', true);
+                break;
+            case 'multiseances' :
+                $this->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $modelOptions['seanceIds']);
                 break;
         }
     }
