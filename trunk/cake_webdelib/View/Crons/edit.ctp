@@ -18,24 +18,24 @@
 </style>
 <script type="text/javascript">
     $(document).ready(function() {
-        var plugin_ctrl_method = <?php echo json_encode($plugin_ctrl_method); ?>;
+        var plugin_ctrl_method = <?php echo json_encode($plugin_model_method); ?>;
 
         function pluginChange() {
             $.each(plugin_ctrl_method, function(plugin, ctrls) {
                 if (plugin == $("#CronPlugin option:selected").text()) {
-                    $("#CronController").empty();
+                    $("#CronModel").empty();
                     $.each(ctrls, function(ctrl, action) {
-                        $("#CronController").append('<option value="' + ctrl + '">' + ctrl + '</option>');
+                        $("#CronModel").append('<option value="' + ctrl + '">' + ctrl + '</option>');
                     });
                     return;
                 }
             });
         }
-        function controllerChange() {
+        function modelChange() {
             $.each(plugin_ctrl_method, function(plugin, ctrls) {
                 if (plugin == $("#CronPlugin option:selected").text()) {
                     $.each(ctrls, function(ctrl, action) {
-                        if (ctrl == $("#CronController option:selected").text()) {
+                        if (ctrl == $("#CronModel option:selected").text()) {
                             $("#CronAction").empty();
                             $.each(action, function(i, method) {
                                 $("#CronAction").append('<option value="' + method + '">' + method + '</option>');
@@ -55,25 +55,26 @@
         });
 
         $("#CronPlugin").change(pluginChange);
-        $("#CronController").change(controllerChange);
+        $("#CronModel").change(modelChange);
 
         $("#CronPlugin").val('<?php echo ucfirst($actual_plugin); ?>');
         pluginChange();
 
-        $("#CronController").val('<?php echo ucfirst($actual_controller) . 'Controller'; ?>');
-        controllerChange();
+        $("#CronModel").val('<?php echo ucfirst($actual_model); ?>');
+        modelChange();
 
         $("#CronAction").val('<?php echo $actual_action; ?>');
 
     });
 </script>
 <?php
-foreach ($plugin_ctrl_method as $plugin => $ctrls) {
+$plugins = array();
+foreach ($plugin_model_method as $plugin => $models) {
     if ($plugin !== '')
         $plugins[$plugin] = $plugin;
     else {
-        foreach ($ctrls as $controller => $method)
-            $controllers[$controller] = $controller;
+        foreach ($models as $model => $method)
+            $modelList[$model] = $model;
     }
 }
 echo $this->Html->tag('h2', __('Edition de la tâche planifiée', true) . ' : ' . $this->data['Cron']['nom']);
@@ -81,7 +82,7 @@ echo $this->Form->create(null, array('action' => "edit/"));
 echo $this->Form->input('nom', array('label' => __('Nom de la tâche planifiée', true)));
 echo $this->Form->input('description', array('label' => __('Description', true), 'type' => 'textarea'));
 echo $this->Form->input('plugin', array('type' => 'select', 'empty' => true, 'options' => $plugins));
-echo $this->Form->input('controller', array('type' => 'select', 'empty' => true, 'options' => $controllers));
+echo $this->Form->input('model', array('type' => 'select', 'empty' => true, 'options' => $modelList));
 echo $this->Form->input('action', array('type' => 'select', 'empty' => true));
 echo $this->Form->input('params', array('label' => __('Paramètre(s) (séparateur: ",")', true)));
 echo $this->Form->hidden('has_params', array('value' => '0'));

@@ -123,8 +123,8 @@ class CronsController extends AppController {
             } else
                 $this->Session->setFlash(__('Veuillez corriger les erreurs du formulaire.', true), 'growl', array('type' => 'erreur'));
         } else {
-            $plugin_ctrl_method = $this->Applist->construireArbre();
-            $this->set('plugin_ctrl_method', $plugin_ctrl_method);
+            $plugin_model_method = $this->Applist->construireArbreModel();
+            $this->set('plugin_ctrl_method', $plugin_model_method);
         }
         $this->pageTitle = Configure::read('appName') . ' : ' . __('Création de tâche planifiée', true);
     }
@@ -149,10 +149,10 @@ class CronsController extends AppController {
                     $this->request->data[$this->modelClass]['next_execution_heure'] = $nextExecutionTime[1];
                 }
             }
-            $plugin_ctrl_method = $this->Applist->construireArbre();
-            $this->set('plugin_ctrl_method', $plugin_ctrl_method);
+            $plugin_model_method = $this->Applist->construireArbreModel();
+            $this->set('plugin_model_method', $plugin_model_method);
             $this->set('actual_plugin', $this->request->data[$this->modelClass]['plugin']);
-            $this->set('actual_controller', $this->request->data[$this->modelClass]['controller']);
+            $this->set('actual_model', $this->request->data[$this->modelClass]['model']);
             $this->set('actual_action', $this->request->data[$this->modelClass]['action']);
         } else {
             // Initialisations avant sauvegarde
@@ -160,8 +160,8 @@ class CronsController extends AppController {
             unset($this->request->data[$this->modelClass]['next_execution_date']);
             unset($this->request->data[$this->modelClass]['next_execution_heure']);
             $this->request->data[$this->modelClass]['plugin'] = strtolower($this->request->data[$this->modelClass]['plugin']);
-            $this->request->data[$this->modelClass]['controller'] = strtolower(str_replace('Controller', '', $this->request->data[$this->modelClass]['controller']));
-            $this->request->data[$this->modelClass]['modified_user_id'] = $this->Session->read('user.User.id');
+            $this->request->data[$this->modelClass]['model'] = strtolower($this->request->data[$this->modelClass]['model']);
+            $this->request->data[$this->modelClass]['modified_user_id'] = $this->user_id;
             if ($this->{$this->modelClass}->save($this->request->data)) {
                 $nomCron = $this->{$this->modelClass}->field('nom');
                 $this->Session->setFlash(__('La tâche planifiée ', true) . ' \'' . $nomCron . '\' ' . __('a été sauvegardée.', true), 'growl');
