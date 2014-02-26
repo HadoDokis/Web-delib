@@ -263,11 +263,15 @@ echo $this->element('onglets', array('listeOnglets' => array(
                     "icon": "fa fa-users"
                 }
             },
+            "contextmenu": {
+                "items": contextMenu
+            },
             "plugins": [
                 "checkbox", //Affiche les checkboxes
                 "wholerow", //Toute la ligne est surlignée
                 "search", //Champs de recherche d'élément de la liste (filtre)
-                "types"
+                "types", //Pour les icônes
+                "contextmenu" //Menu clic droit
             ]
         });
 
@@ -291,7 +295,7 @@ echo $this->element('onglets', array('listeOnglets' => array(
         /* Recherche dans la liste jstree */
         $('#search_service_erase_button').click(function () {
             $('#search_service').val('');
-            $('#search_tree_button').click();
+            $('#services').jstree(true).clear_search();
         });
         $('#search_service').keydown(function (event) {
             if (event.keyCode == 13) {
@@ -327,6 +331,55 @@ echo $this->element('onglets', array('listeOnglets' => array(
 
         onchangeCircuitDefault();
     });
+
+    function contextMenu(node) {
+        // The default set of all items
+        var items = {
+            "closeSearch": {
+                "label": "Effacer la recherche",
+                "action": function(){
+                    $('#search_service').val('');
+                    $('#services').jstree(true).clear_search();
+//                    $('#search_tree_button').click();
+                },
+                "icon": "fa fa-eraser",
+                "separator_after": true
+            },
+            "selectAll": {
+                "label": "Tout cocher",
+                "action": function(){
+                    $('#services').jstree('select_all');
+                },
+                "icon": "fa fa-check-square-o"
+            },
+            "deselectAll": {
+                "label": "Tout décocher",
+                "action": function(){
+                    $('#services').jstree('deselect_all');
+                },
+                "icon": "fa fa-square-o",
+                "separator_after": true
+            },
+            "openAll": {
+                "label": "Tout déplier",
+                "action": function(){
+                    $('#services').jstree('open_all');
+                },
+                "icon": "fa fa-plus-square-o"
+            },
+            "closeAll": {
+                "label": "Tout replier",
+                "action": function(){
+                    $('#services').jstree('close_all');
+                },
+                "icon": "fa fa-minus-square-o"
+            }
+        };
+        if ($('#search_service').val().length == 0) {
+            delete items.closeSearch;
+        }
+        return items;
+    }
 
     function onchangeCircuitDefault() {
         $("#default_circuit").select2("destroy");
