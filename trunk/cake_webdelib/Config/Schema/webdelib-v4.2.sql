@@ -15,6 +15,13 @@ SET client_min_messages = warning;
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
 SET search_path = public, pg_catalog;
 
 --
@@ -1730,27 +1737,29 @@ INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (1
 INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (113, 'Pages:administration', 81, 100, 0, NULL, 0);
 INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (122, 'Typeseances:index', 98, 99, 113, NULL, 0);
 INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (124, 'Connecteurs:index', 102, 103, 123, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (123, 'Pages:connecteurs', 101, 106, 0, NULL, 0);
 INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (125, 'Crons:index', 104, 105, 123, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (127, 'Crons:add', 108, 109, 126, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (128, 'Crons:edit', 110, 111, 126, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (126, 'Module:Crons', 107, 114, 0, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (129, 'Crons:delete', 112, 113, 126, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (131, 'Deliberations:edit', 116, 117, 130, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (132, 'Deliberations:delete', 118, 119, 130, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (133, 'Deliberations:goNext', 120, 121, 130, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (134, 'Deliberations:validerEnUrgence', 122, 123, 130, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (135, 'Deliberations:rebond', 124, 125, 130, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (136, 'Deliberations:sendToGed', 126, 127, 130, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (130, 'Module:Deliberations', 115, 130, 0, NULL, 0);
-INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (137, 'Deliberations:editerTous', 128, 129, 130, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (123, 'Pages:connecteurs', 101, 108, 0, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (131, 'Deliberations:edit', 110, 111, 130, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (132, 'Deliberations:delete', 112, 113, 130, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (133, 'Deliberations:goNext', 114, 115, 130, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (134, 'Deliberations:validerEnUrgence', 116, 117, 130, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (135, 'Deliberations:rebond', 118, 119, 130, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (136, 'Deliberations:sendToGed', 120, 121, 130, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (130, 'Module:Deliberations', 109, 124, 0, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (137, 'Deliberations:editerTous', 122, 123, 130, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (138, 'Modelvalidations:index', 106, 107, 123, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (140, 'CakeflowApp:setCreatedModifiedUser', 126, 127, 139, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (141, 'CakeflowApp:formatUser', 128, 129, 139, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (142, 'CakeflowApp:formatLinkedModel', 130, 131, 139, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (139, 'Module:CakeflowApp', 125, 134, 0, NULL, 0);
+INSERT INTO acos (id, alias, lft, rght, parent_id, model, foreign_key) VALUES (143, 'CakeflowApp:listLinkedModel', 132, 133, 139, NULL, 0);
 
 
 --
 -- Name: acos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('acos_id_seq', 137, true);
+SELECT pg_catalog.setval('acos_id_seq', 143, true);
 
 
 --
@@ -1896,8 +1905,10 @@ INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VAL
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (56, 3, 56, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (57, 3, 57, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (72, 3, 72, '1 ', '1 ', '1 ', '1 ');
+INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (73, 3, 73, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (74, 3, 74, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (75, 3, 75, '1 ', '1 ', '1 ', '1 ');
+INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (76, 3, 76, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (77, 3, 77, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (78, 3, 78, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (79, 3, 79, '1 ', '1 ', '1 ', '1 ');
@@ -1912,8 +1923,8 @@ INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VAL
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (88, 3, 88, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (89, 3, 89, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (90, 3, 90, '1 ', '1 ', '1 ', '1 ');
-INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (91, 3, 91, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (92, 3, 92, '1 ', '1 ', '1 ', '1 ');
+INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (93, 3, 93, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (94, 3, 94, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (95, 3, 95, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (96, 3, 96, '1 ', '1 ', '1 ', '1 ');
@@ -1928,8 +1939,8 @@ INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VAL
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (105, 3, 105, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (106, 3, 106, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (107, 3, 107, '1 ', '1 ', '1 ', '1 ');
-INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (108, 3, 108, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (109, 3, 109, '1 ', '1 ', '1 ', '1 ');
+INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (110, 3, 110, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (111, 3, 111, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (112, 3, 112, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (113, 3, 113, '1 ', '1 ', '1 ', '1 ');
@@ -1944,15 +1955,10 @@ INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VAL
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (122, 3, 122, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (123, 3, 123, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (124, 3, 124, '1 ', '1 ', '1 ', '1 ');
+INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (91, 3, 91, '1 ', '1 ', '1 ', '1 ');
+INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (108, 3, 108, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (125, 3, 125, '1 ', '1 ', '1 ', '1 ');
-INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (126, 3, 126, '1 ', '1 ', '1 ', '1 ');
-INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (73, 3, 73, '1 ', '1 ', '1 ', '1 ');
-INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (76, 3, 76, '1 ', '1 ', '1 ', '1 ');
-INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (93, 3, 93, '1 ', '1 ', '1 ', '1 ');
-INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (110, 3, 110, '1 ', '1 ', '1 ', '1 ');
-INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (127, 3, 127, '1 ', '1 ', '1 ', '1 ');
-INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (128, 3, 128, '1 ', '1 ', '1 ', '1 ');
-INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (129, 3, 129, '1 ', '1 ', '1 ', '1 ');
+INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (138, 3, 138, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (130, 3, 130, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (131, 3, 131, '1 ', '1 ', '1 ', '1 ');
 INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VALUES (132, 3, 132, '1 ', '1 ', '1 ', '1 ');
@@ -1967,7 +1973,7 @@ INSERT INTO aros_acos (id, aro_id, aco_id, _create, _read, _update, _delete) VAL
 -- Name: aros_acos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('aros_acos_id_seq', 137, true);
+SELECT pg_catalog.setval('aros_acos_id_seq', 138, true);
 
 
 --
@@ -2041,13 +2047,13 @@ SELECT pg_catalog.setval('compteurs_id_seq', 1, true);
 -- Data for Name: crons; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (1, 'Circuits de traitement : Mise à jour des traitements extérieurs', 'Lecture de l''état des traitements extérieurs (iParapheur)', NULL, 'delegationJob', false, NULL, now(), 'PT1H', now(), now(), '', NULL, true, now(), 1, now(), 2, 'CronJob', false);
-INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (2, 'Circuits de traitement : Déclenchement des alertes de retard', 'Relance les utilisateurs devant valider un projet en retard', NULL, 'retardCakeflowJob', false, NULL, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', NULL, true, now(), 1, now(), 1, 'CronJob', false);
-INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (3, 'Signature : Mise à jour de l''etat des dossiers envoyés au Parapheur', 'Met à jour l''état des projets envoyés au Parapheur pour signature et rapatrie les informations de ceux en fin de circuit.', NULL, 'signatureJob', false, NULL, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', NULL, true, now(), 1, now(), 1, 'CronJob', false);
-INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (4, 'TDT : Mise à jours des mails sécurisés', 'Envoi/Réception des mails sécurisés', NULL, 'mailSecJob', false, NULL, now(), 'PT5M', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', NULL, true, now(), 1, now(), 1, 'CronJob', false);
-INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (5, 'TDT : Mise à jour des accusés de réception', 'Vérifie la réception par la prefecture des dossiers envoyés via le TDT et dans le cas échéant, enregistre la date de l''accusé de réception et le bordereau', NULL, 'majArTdt', false, NULL, now(), 'PT5M', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', NULL, true, now(), 1, now(), 1, 'CronJob', false);
-INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (6, 'TDT : Mise à jour des échanges de courriers', 'Met à jour les échanges de courriers entre la préfecture et le TDT', NULL, 'majCourriersTdt', false, NULL, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', NULL, true, now(), 1, now(), 1, 'CronJob', false);
-INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (7, 'CONVERTION : convertion des annexes', 'convertion des annexes dans différents formats', NULL, 'convertionAnnexesJob', false, NULL, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', NULL, true, now(), 1, now(), 1, 'CronJob', false);
+INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (1, 'Circuits de traitement : Mise à jour des traitements extérieurs', 'Lecture de l''état des traitements extérieurs (iParapheur)', NULL, 'delegationJob', false, NULL, '2014-02-26 15:36:02.936482', 'PT1H', '2014-02-26 15:36:02.936482', '2014-02-26 15:36:02.936482', '', NULL, true, '2014-02-26 15:36:02.936482', 1, '2014-02-26 15:36:02.936482', 2, 'CronJob', false);
+INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (2, 'Circuits de traitement : Déclenchement des alertes de retard', 'Relance les utilisateurs devant valider un projet en retard', NULL, 'retardCakeflowJob', false, NULL, '2014-02-26 15:36:02.936482', 'P1D', '2014-02-26 15:36:02.936482', '2014-02-26 15:36:02.936482', 'Cette tâche n''a encore jamais été exécutée.', NULL, true, '2014-02-26 15:36:02.936482', 1, '2014-02-26 15:36:02.936482', 1, 'CronJob', false);
+INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (3, 'Signature : Mise à jour de l''etat des dossiers envoyés au Parapheur', 'Met à jour l''état des projets envoyés au Parapheur pour signature et rapatrie les informations de ceux en fin de circuit.', NULL, 'signatureJob', false, NULL, '2014-02-26 15:36:02.936482', 'P1D', '2014-02-26 15:36:02.936482', '2014-02-26 15:36:02.936482', 'Cette tâche n''a encore jamais été exécutée.', NULL, true, '2014-02-26 15:36:02.936482', 1, '2014-02-26 15:36:02.936482', 1, 'CronJob', false);
+INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (4, 'TDT : Mise à jours des mails sécurisés', 'Envoi/Réception des mails sécurisés', NULL, 'mailSecJob', false, NULL, '2014-02-26 15:36:02.936482', 'PT5M', '2014-02-26 15:36:02.936482', '2014-02-26 15:36:02.936482', 'Cette tâche n''a encore jamais été exécutée.', NULL, true, '2014-02-26 15:36:02.936482', 1, '2014-02-26 15:36:02.936482', 1, 'CronJob', false);
+INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (5, 'TDT : Mise à jour des accusés de réception', 'Vérifie la réception par la prefecture des dossiers envoyés via le TDT et dans le cas échéant, enregistre la date de l''accusé de réception et le bordereau', NULL, 'majArTdt', false, NULL, '2014-02-26 15:36:02.936482', 'PT5M', '2014-02-26 15:36:02.936482', '2014-02-26 15:36:02.936482', 'Cette tâche n''a encore jamais été exécutée.', NULL, true, '2014-02-26 15:36:02.936482', 1, '2014-02-26 15:36:02.936482', 1, 'CronJob', false);
+INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (6, 'TDT : Mise à jour des échanges de courriers', 'Met à jour les échanges de courriers entre la préfecture et le TDT', NULL, 'majCourriersTdt', false, NULL, '2014-02-26 15:36:02.936482', 'P1D', '2014-02-26 15:36:02.936482', '2014-02-26 15:36:02.936482', 'Cette tâche n''a encore jamais été exécutée.', NULL, true, '2014-02-26 15:36:02.936482', 1, '2014-02-26 15:36:02.936482', 1, 'CronJob', false);
+INSERT INTO crons (id, nom, description, plugin, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id, model, lock) VALUES (7, 'CONVERTION : convertion des annexes', 'convertion des annexes dans différents formats', NULL, 'convertionAnnexesJob', false, NULL, '2014-02-26 15:36:02.936482', 'P1D', '2014-02-26 15:36:02.936482', '2014-02-26 15:36:02.936482', 'Cette tâche n''a encore jamais été exécutée.', NULL, true, '2014-02-26 15:36:02.936482', 1, '2014-02-26 15:36:02.936482', 1, 'CronJob', false);
 
 
 --
@@ -3867,7 +3873,7 @@ SELECT pg_catalog.setval('typeseances_typeacteurs_id_seq', 1, false);
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO users (id, profil_id, statut, login, note, circuit_defaut_id, password, nom, prenom, email, telfixe, telmobile, date_naissance, accept_notif, mail_refus, mail_traitement, mail_insertion, "position", created, modified, mail_modif_projet_cree, mail_modif_projet_valide, mail_retard_validation) VALUES (1, 1, 0, 'admin', '', NULL, '21232f297a57a5a743894a0e4a801fc3', 'Administrateur', 'admin', '', '', '', NULL, false, false, false, false, NULL, '2012-11-16 14:57:03', '2014-02-19 14:41:37', false, false, false);
+INSERT INTO users (id, profil_id, statut, login, note, circuit_defaut_id, password, nom, prenom, email, telfixe, telmobile, date_naissance, accept_notif, mail_refus, mail_traitement, mail_insertion, "position", created, modified, mail_modif_projet_cree, mail_modif_projet_valide, mail_retard_validation) VALUES (1, 1, 0, 'admin', '', NULL, '21232f297a57a5a743894a0e4a801fc3', 'Administrateur', 'admin', '', '', '', NULL, false, false, false, false, NULL, '2012-11-16 14:57:03', '2014-02-26 15:38:35', false, false, false);
 
 
 --
@@ -3882,14 +3888,14 @@ SELECT pg_catalog.setval('users_id_seq', 1, true);
 --
 
 INSERT INTO users_services (id, user_id, service_id) VALUES (1, 0, 1);
-INSERT INTO users_services (id, user_id, service_id) VALUES (8, 1, 1);
+INSERT INTO users_services (id, user_id, service_id) VALUES (9, 1, 1);
 
 
 --
 -- Name: users_services_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('users_services_id_seq', 8, true);
+SELECT pg_catalog.setval('users_services_id_seq', 9, true);
 
 
 --
