@@ -140,8 +140,7 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
             'type' => 'checkbox',
             'disabled' => isset($this->data['Multidelib']) || !empty($this->data['Deliberation']['parent_id']),
             'checked' => isset($this->data['Multidelib']) || !empty($this->data['Deliberation']['is_multidelib']) || !empty($this->data['Deliberation']['parent_id']),
-            'label' => 'Multi Délibération',
-            'onClick' => 'multiDelib(this)'));
+            'label' => 'Multi Délibération'));
     }
     ?>
     <div class='spacer'></div>
@@ -382,4 +381,7 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
             }, 2000); // 2000 millisecondes = 2 secondes
         }
     );
+$(document).ready(function() {
+	$("#DeliberationIsMultidelib").change();
+})
 </script>

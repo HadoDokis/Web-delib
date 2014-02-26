@@ -74,15 +74,6 @@ if (isset($this->data['Multidelib'])) {
         echo $this->Html->tag('div', '', array('class' => 'spacer'));
         // saisie texte de délibération
         echo $this->Html->tag('label', 'Texte délibération');
-        if (Configure::read('GENERER_DOC_SIMPLE')) {
-            echo '<div class="fckEditorProjet">';
-            echo $this->Form->input('Multidelib.' . $delib['id'] . '.deliberation', array(
-                'label' => '',
-                'type' => 'textarea',
-                'value' => $delib['deliberation'],
-                'disabled' => true));
-            echo '</div>';
-        } else {
             if (empty($delib['deliberation_name']))
                 echo $this->Form->input("Multidelib." . $delib['id'] . ".deliberation", array('label' => false, 'type' => 'file', 'title' => 'Texte d&eacute;lib&eacute;ration', 'disabled' => true));
             else {
@@ -98,7 +89,6 @@ if (isset($this->data['Multidelib'])) {
                     'Voulez-vous vraiment supprimer le fichier ?');
                 echo $this->Html->tag('/span');
             }
-        }
         echo $this->Html->tag('div', '', array('class' => 'spacer'));
         // saisie des annexes
         echo $this->Html->tag('label', 'Annexe(s)');
@@ -143,20 +133,11 @@ echo $this->Form->input('Multidelib.0.objet', array(
 echo $this->Html->tag('div', '', array('class' => 'spacer'));
 // saisie texte de délibération
 echo $this->Html->tag('label', 'Texte acte');
-if (Configure::read('GENERER_DOC_SIMPLE')) {
-    echo '<div class="fckEditorProjet">';
-    echo $this->Form->input('Multidelib.0.deliberation', array(
-        'label' => false,
-        'type' => 'textarea',
-        'value' => '',
-        'disabled' => true));
-    echo '</div>';
-} else
-    echo $this->Form->input("Multidelib.0.deliberation", array(
-        'label' => false,
-        'type' => 'file',
-        'size' => '60',
-        'disabled' => true));
+echo $this->Form->input("Multidelib.0.deliberation", array(
+    'label' => false,
+    'type' => 'file',
+    'size' => '60',
+    'disabled' => true));
 echo $this->Html->tag('/div');
 echo $this->Html->tag('div', '', array('class' => 'spacer'));
 
