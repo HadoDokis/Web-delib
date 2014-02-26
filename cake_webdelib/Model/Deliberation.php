@@ -1061,8 +1061,6 @@ class Deliberation extends AppModel {
 
 		if ( count($listActeur) == 0 ) {
 			$oDevPart = new GDO_PartType();
-			$oDevPart->addElement(new GDO_FieldType("nombre_acteur".$type,        '0', "text"));
-			 
 			$oDevPart->addElement(new GDO_FieldType("nom_acteur".$type,            ' ', "text"));
 			$oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type,         ' ', "text"));
 			$oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,     ' ', "text"));
@@ -1097,7 +1095,6 @@ class Deliberation extends AppModel {
 			$nbre_acteurs = count($listActeur);
 			foreach($listActeur as $acteur) {
 				$oDevPart = new GDO_PartType();
-				$oDevPart->addElement(new GDO_FieldType("nombre_acteur".$type, $nbre_acteurs , "text"));
 				$oDevPart->addElement(new GDO_FieldType("nom_acteur".$type, ($acteur['nom_acteur']), "text"));
 				$oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type, ($acteur['prenom_acteur']), "text"));
 				$oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,($acteur['salutation_acteur']), "text"));
