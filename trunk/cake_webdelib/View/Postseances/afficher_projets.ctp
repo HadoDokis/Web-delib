@@ -41,7 +41,7 @@
     <div style="text-align: right; float: right">
     <?php
         if ($pv_figes != 1){
-            echo $this->Html->link('<i class="fa fa-check"></i> Figer les débats',array('controller'=>'postseances', 'action'=>'changeStatus', $seance_id), array('class'=>'btn btn-primary', 'escape' => false, 'name'=>'Clore', 'title'=>'Figer les débats'), 'Etes-vous sur de vouloir figer les débats ?', false);
+            echo $this->Html->link('<i class="fa fa-check"></i> Figer les débats',array('controller'=>'postseances', 'action'=>'changeStatus', $seance_id), array('class'=>'waiter btn btn-primary', 'escape' => false, 'name'=>'Clore', 'title'=>'Figer les débats'), 'Etes-vous sur de vouloir figer les débats ?', false);
         }
     ?>
     </div>
