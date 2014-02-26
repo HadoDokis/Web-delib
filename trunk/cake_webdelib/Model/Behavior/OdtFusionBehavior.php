@@ -38,6 +38,7 @@ class OdtFusionBehavior extends ModelBehavior {
      * @param array $options liste des options formatée comme suit :
      *  'id' => id de l'occurence du modèle sujet à la fusion
      *  'fileNameSuffixe' : suffixe du nom de la fusion (défaut : $id)
+     *  'modelTemplateId' : id du template à utiliser
      *  'modelOptions' : options gérées par la classe appelante
      * @return void
      */
@@ -46,17 +47,17 @@ class OdtFusionBehavior extends ModelBehavior {
         $this->_setupOptions($options);
 
         // chargement du modèle template
-        $modelTemplateId = $model->getModelTemplateId($this->_id, $this->_modelOptions);
-        if (empty($modelTemplateId))
+        if (empty($this->_modelTemplateId))
+            $this->_modelTemplateId = $model->getModelTemplateId($this->_id, $this->_modelOptions);
+        if (empty($this->_modelTemplateId))
             throw new Exception('identifiant du modèle d\'édition non trouvé pour id:'.$this->_id.' du model de données '.$model->alias);
         $myModeltemplate = ClassRegistry::init('ModelOdtValidator.Modeltemplate');
         $modelTemplate = $myModeltemplate->find('first', array(
             'recursive' => -1,
-            'fields' => array('id', 'name', 'content'),
-            'conditions' => array('id' => $modelTemplateId)));
+            'fields' => array('name', 'content'),
+            'conditions' => array('id' => $this->_modelTemplateId)));
         if (empty($modelTemplate))
             throw new Exception('modèle d\'édition non trouvé en base de données id:'.$this->_id);
-        $this->_modelTemplateId = $modelTemplate['Modeltemplate']['id'];
         $this->_modelTemplateName = $modelTemplate['Modeltemplate']['name'];
         $this->_modelTemplateContent = $modelTemplate['Modeltemplate']['content'];
 
@@ -91,8 +92,8 @@ class OdtFusionBehavior extends ModelBehavior {
         return $content;
     }
     
-    /** Suppression en mémoire du retour de la fusion
-     * 
+    /**
+     * Suppression en mémoire du retour de la fusion
      */
     function deleteOdtFusionResult(Model &$model){
         unset($model->odtFusionResult->content->binary);
@@ -103,6 +104,7 @@ class OdtFusionBehavior extends ModelBehavior {
      * @param array $options liste des options formatée comme suit :
      *  'id' => id de l'occurence du modèle sujet à la fusion
      *  'fileNameSuffixe' : suffixe du nom de la fusion (défaut : $id)
+     *  'modelTemplateId' : id du template à utiliser
      *  'modelOptions' : options gérées par la classe appelante
      * @return void
      */
@@ -111,6 +113,7 @@ class OdtFusionBehavior extends ModelBehavior {
         $defaultOptions = array(
             'id' => $this->_id,
             'fileNameSuffixe' => $this->_fileNameSuffixe,
+            'modelTemplateId' => $this->_modelTemplateId,
             'modelOptions' => $this->_modelOptions);
         if (!empty($options['modelOptions']) && !empty($this->_modelOptions))
             $options['modelOptions'] = array_merge($this->_modelOptions, $options['modelOptions']);
@@ -119,6 +122,7 @@ class OdtFusionBehavior extends ModelBehavior {
         // affectation des variables de la classe
         $this->_id = $options['id'];
         $this->_fileNameSuffixe = empty($options['fileNameSuffixe'])?$options['id']:$options['fileNameSuffixe'];
+        $this->_modelTemplateId = $options['modelTemplateId'];
         $this->_modelOptions = $options['modelOptions'];
     }
 
@@ -136,12 +140,12 @@ class OdtFusionBehavior extends ModelBehavior {
     public function fusionName(Model &$model, $options = array()) {
         // initialisations
         $this->_setupOptions($options);
-        if (empty($this->_id))
-            throw new Exception('détermination du nom de la fusion -> modèle d\'édition indéterminé');
+        if (empty($this->_modelTemplateId))
+            throw new Exception('détermination du nom de la fusion ->modèle d\'édition indéterminé');
 
         // contitution du nom
         $fusionName = str_replace(array(' ', 'é', 'è', 'ê', 'ë', 'à'), array('_', 'e', 'e', 'e', 'e', 'a'), $this->_modelTemplateName);
-        return preg_replace('/[^a-zA-Z0-9-_\.]/','', $fusionName).'_'.$this->_fileNameSuffixe;
+        return preg_replace('/[^a-zA-Z0-9-_\.]/','', $fusionName).(empty($this->_fileNameSuffixe)?'':'_').$this->_fileNameSuffixe;
     }
 
     /**
@@ -157,7 +161,7 @@ class OdtFusionBehavior extends ModelBehavior {
     public function odtFusion(Model &$model, $options = array()) {
         // initialisations
         $this->_setupOptions($options);
-        if (empty($this->_id))
+        if (empty($this->_modelTemplateId))
             throw new Exception('détermination du nom de la fusion -> modèle d\'édition indéterminé');
 
         // chargement des classes php de Gedooo
