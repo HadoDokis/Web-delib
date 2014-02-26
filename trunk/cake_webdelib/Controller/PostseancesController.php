@@ -122,43 +122,60 @@ class PostseancesController extends AppController {
     }
 
     function changeStatus($seance_id) {
-        // Avant de cloturer la séance, on stock les délibérations en base de données au format pdf
-        $result = $this->_stockPvs($seance_id);
-        if ($result) {
-            $this->Progress->end('/postseances/afficherProjets/' . $seance_id);
-            exit;
-        } else {
-            $this->Session->setFlash("Au moins un PV n'a pas été généré correctement... Impossible de figer les débats", array('type' => 'error'));
-            $this->redirect('/postseances/index');
-        }
+        if (!$this->_stockPvs($seance_id))
+            $this->Session->setFlash("Au moins un PV n'a pas été généré correctement... Impossible de figer les débats", 'growl', array('type' => 'error'));
+
+        $this->redirect($this->referer());
     }
 
-    function _stockPvs($seance_id) {
-        $this->Progress->start(200, 100, 200, '#000000', '#FFCC00', '#006699');
+    function _stockPvs($seanceId) {
+        // début de transaction
+        $this->Seance->begin();
 
-        $path = WEBROOT_PATH . "/files/generee/PV/$seance_id";
-        $this->Gedooo->createFile("$path/", 'empty', '');
+        try {
+            // lecture de la séance
+            $seance = $this->Seance->find('first', array(
+                'recursive' => 0,
+                'fields' => array('Seance.id', 'Seance.pv_figes', 'Typeseance.modelpvsommaire_id', 'Typeseance.modelpvdetaille_id'),
+                'conditions' => array('Seance.id'=>$seanceId)));
+            if (empty($seance)) throw new Exception();
 
-        $seance = $this->Seance->read(null, $seance_id);
-        $this->Progress->at(0, 'Préparation PV Sommaire : ' . $seance['Typeseance']['libelle']);
-        $model_pv_sommaire = $seance['Typeseance']['modelpvsommaire_id'];
-        $model_pv_complet = $seance['Typeseance']['modelpvdetaille_id'];
-        $retour1 = $this->requestAction("/models/generer/null/$seance_id/$model_pv_sommaire/0/1/pv_sommaire/1/false");
-        $this->Progress->at(50, 'Préparation du PV Complet : ' . $seance['Typeseance']['libelle']);
-        $retour2 = $this->requestAction("/models/generer/null/$seance_id/$model_pv_complet/0/1/pv_complet/1/false");
-        $this->Progress->at(99, 'Sauvegarde des PVs');
-        $path = WEBROOT_PATH . "/files/generee/PV/$seance_id";
+            // fusion du pv sommaire
+            $this->Seance->Behaviors->load('OdtFusion', array(
+                'id' => $seanceId,
+                'modelTemplateId' => $seance['Typeseance']['modelpvsommaire_id'],
+                'modelOptions' => array('modelTypeName' => 'pvsommaire')));
+            $this->Seance->odtFusion();
+            $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'pdf');
+            unset($this->Seance->odtFusionResult);
+            if (empty($content)) throw new Exception();
+            $seance['Seance']['pv_sommaire'] = &$content;
+            if (!$this->Seance->save($seance['Seance'], false)) throw new Exception();
+            unset($seance['Seance']['pv_sommaire']);
 
-        $pv_sommaire = file_get_contents("$path/pv_sommaire.pdf");
-        $pv_complet = file_get_contents("$path/pv_complet.pdf");
+            // fusion du pv détaillé
+            if ($seance['Typeseance']['modelpvsommaire_id'] != $seance['Typeseance']['modelpvdetaille_id']) {
+                unset($content);
+                $this->Seance->Behaviors->unload('OdtFusion');
+                $this->Seance->Behaviors->load('OdtFusion', array(
+                    'id' => $seanceId,
+                    'modelTemplateId' => $seance['Typeseance']['modelpvdetaille_id'],
+                    'modelOptions' => array('modelTypeName' => 'pvdetaille')));
+                $this->Seance->odtFusion();
+                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'pdf');
+                unset($this->Seance->odtFusionResult);
+                if (empty($content)) throw new Exception();
+            }
+            $seance['Seance']['pv_complet'] = &$content;
+            $seance['Seance']['pv_figes'] = true;
+            if (!$this->Seance->save($seance['Seance'], false)) throw new Exception();
+            unset($seance);
+            unset($content);
 
-        if (!empty($pv_sommaire) && !empty($pv_complet)) {
-            $this->Seance->id = $seance_id;
-            $this->Seance->saveField('pv_sommaire', $pv_sommaire);
-            $this->Seance->saveField('pv_complet', $pv_complet);
-            $this->Seance->saveField('pv_figes', 1);
+            $this->Seance->commit();
             return true;
-        } else {
+        } catch (Exception $e) {
+            $this->Seance->rollback();
             return false;
         }
     }
@@ -970,5 +987,4 @@ class PostseancesController extends AppController {
     }
 
 }
-
 ?>
