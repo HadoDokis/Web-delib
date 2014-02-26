@@ -24,7 +24,7 @@ if ($mode == 'edit')
         array('Titre'=>array('style'=>'width: 25%')), 
         array('Joindre au  contrôle de légalité'=>array('style'=>'width: 20%')),
         array('Joindre à la fusion'=>array('style'=>'width: 15%')), 
-        array('Action'=>array('style'=>'width: 10%'))
+        array('Action(s)'=>array('style'=>'width: 10%'))
         ));
 else
     echo $this->Html->tableHeaders(array( 
