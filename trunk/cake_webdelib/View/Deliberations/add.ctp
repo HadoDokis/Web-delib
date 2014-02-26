@@ -104,9 +104,9 @@ echo $this->Html->useTag('tagend', 'div');
             'readonly' => 'readonly'));
         ?>
 
-        <a class="list_form" href="#add"
+        <a class="list_form noWarn" href="#add"
            onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification', 'Select_attribut', 'scrollbars=yes,width=570,height=450');"
-           id="classification_text" class="noWarn">[Choisir la classification]</a>
+           id="classification_text">[Choisir la classification]</a>
         <?php
         echo $this->Form->hidden('Deliberation.num_pref', array('id' => 'num_pref'));
     }
@@ -133,8 +133,7 @@ echo $this->Html->useTag('tagend', 'div');
         echo $this->Form->input('Deliberation.is_multidelib', array(
             'type' => 'checkbox',
             'autocomplete' => 'off',
-            'label' => 'Multi Délibération',
-            'onClick' => 'multiDelib(this)'));
+            'label' => 'Multi Délibération'));
     }
     ?>
 
@@ -248,8 +247,7 @@ echo $this->Html->useTag('tagend', 'div');
     ?>
 </div>
 <?php echo $this->Form->end(); ?>
-
-<script type="application/javascript">
+<script type="text/javascript">
     //Pour savoir quel onglet on a coché
     function afficheOngletNew(obj, afficheTextId) {
         $(obj).append('<input type="hidden" name="lienTab" value="' + afficheTextId + '" />');
