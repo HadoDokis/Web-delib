@@ -319,7 +319,7 @@ table.table_action tr td {
 td.actions {
 	padding: 0 0 15px 0;
 	min-height: 25px;
-        vertical-align: middle;
+        /*vertical-align: middle;*/
 }
 
 td.ordre a {

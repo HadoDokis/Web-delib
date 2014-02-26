@@ -172,12 +172,14 @@ class User extends AppModel
         }
         if ($circuitDefautId > 0) {
             $this->Circuit->recursive = -1;
-            $circuit = $this->Composition->Etape->Circuit->find('first',
-                array('conditions' => array('Circuit.id' => $circuitDefautId)));
-            if (empty($field))
+            $circuit = $this->Composition->Etape->Circuit->find('first', array('conditions' => array('Circuit.id' => $circuitDefautId)));
+
+            if (empty($field) && !empty($circuit))
                 return $circuit;
-            else
+            elseif (!empty($circuit['Circuit'][$field]))
                 return $circuit['Circuit'][$field];
+            else
+                return null;
         } else
             return null;
     }
