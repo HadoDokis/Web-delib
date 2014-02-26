@@ -1040,14 +1040,20 @@ class Deliberation extends AppModel {
 					'note_acteur' => $acteur['Acteur']['note']);
 		}
 
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents",   $acteurs_presents, false, '_present'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbsents",    $acteurs_absents, false, '_absent'));
-        $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', count($acteurs_absents), 'text'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursMandates",   $acteurs_remplaces, true, '_mandataire'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre",     $acteurs_contre, false, '_contre'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPour",       $acteurs_pour, false, '_pour'));
+		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, '_present'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_present', count($acteurs_presents), 'text'));    
+		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbsents", $acteurs_absents, false, '_absent'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', count($acteurs_absents), 'text'));
+		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursMandates", $acteurs_remplaces, true, '_mandataire'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_mandataire', count($acteurs_remplaces), 'text'));
+		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre", $acteurs_contre, false, '_contre'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_contre', count($acteurs_contre), 'text'));
+		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPour", $acteurs_pour, false, '_pour'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_pour', count($acteurs_pour), 'text'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbstention", $acteurs_abstention, false, '_abstention'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_abstention', count($acteurs_abstention), 'text'));
 		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursSansParticipation", $acteurs_sans_participation, false, '_sans_participation'));
+                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_sans_participation', count($acteurs_sans_participation), 'text'));
 	}
 
 	function _makeBlocsActeurs ($nomBloc, $listActeur, $isMandate, $type) {
@@ -2184,14 +2190,14 @@ class Deliberation extends AppModel {
             $oMainPart->addElement(new GDO_FieldType('numero_deliberation', $delib['Deliberation']['num_delib'], 'text'));
         if ($modelOdtInfos->hasUserField('acte_adopte'))
             $oMainPart->addElement(new GDO_FieldType('acte_adopte', (($delib['Deliberation']['etat']==3 && $delib['Deliberation']['vote_nb_oui']==0)?'1':'0'), 'test'));
-        if ($modelOdtInfos->hasUserField('nombre_pour'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_pour', $delib['Deliberation']['vote_nb_oui'], 'text'));
-        if ($modelOdtInfos->hasUserField('nombre_abstention'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_abstention', $delib['Deliberation']['vote_nb_abstention'], 'text'));
-        if ($modelOdtInfos->hasUserField('nombre_contre'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_contre', $delib['Deliberation']['vote_nb_non'], 'text'));
-        if ($modelOdtInfos->hasUserField('nombre_sans_participation'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', $delib['Deliberation']['vote_nb_retrait'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_acteur_pour'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_pour', $delib['Deliberation']['vote_nb_oui'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_acteur_abstention'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_abstention', $delib['Deliberation']['vote_nb_abstention'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_acteur_contre'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_contre', $delib['Deliberation']['vote_nb_non'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_acteur_sans_participation'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_sans_participation', $delib['Deliberation']['vote_nb_retrait'], 'text'));
         if ($modelOdtInfos->hasUserField('nombre_votant'))
             $oMainPart->addElement(new GDO_FieldType('nombre_votant', $delib['Deliberation']['vote_nb_oui']+$delib['Deliberation']['vote_nb_abstention']+$delib['Deliberation']['vote_nb_non'], 'text'));
         if ($modelOdtInfos->hasUserField('commentaire_vote'))
