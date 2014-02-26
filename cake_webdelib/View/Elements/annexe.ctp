@@ -18,9 +18,22 @@ $tableOptions = array('style' => 'width: 100%');
 if ($mode == 'edit') $tableOptions['id'] = 'tableAnnexe' . $ref;
 echo $this->Html->tag('table', null, $tableOptions);
 if ($mode == 'edit')
-    echo $this->Html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Joindre à la fusion', 'Action'));
+    echo $this->Html->tableHeaders(array( 
+        array('No'=>array('style'=>'width: 5%')), 
+        array('Nom du fichier'=>array('style'=>'width: 25%')), 
+        array('Titre'=>array('style'=>'width: 25%')), 
+        array('Joindre au  contrôle de légalité'=>array('style'=>'width: 20%')),
+        array('Joindre à la fusion'=>array('style'=>'width: 15%')), 
+        array('Action'=>array('style'=>'width: 10%'))
+        ));
 else
-    echo $this->Html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Joindre à la fusion'));
+    echo $this->Html->tableHeaders(array( 
+        array('No'=>array('style'=>'width: 5%')), 
+        array('Nom du fichier'=>array('style'=>'width: 30%')), 
+        array('Titre'=>array('style'=>'width: 30%')), 
+        array('Joindre au  contrôle de légalité'=>array('style'=>'width: 20%')),
+        array('Joindre à la fusion'=>array('style'=>'width: 15%'))
+        ));
 if (isset($annexes)) {
     foreach ($annexes as $rownum => $annexe) {
         $rowClass = array();
@@ -92,7 +105,7 @@ if (isset($annexes)) {
         echo $this->Html->tag('/td');
 
         if ($mode == 'edit') {
-            echo $this->Html->tag('td');
+            echo $this->Html->tag('td', null,array('style'=>'text-align:center'));
             echo $this->Html->link(SHY, 'javascript:void(0);', array('title' => 'Supprimer',
                 'class' => "link_supprimer",
                 'escape' => false,
