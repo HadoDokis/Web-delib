@@ -5,7 +5,7 @@
 <div class="spacer"></div>
 <?php echo $this->Form->input('Service.circuit_defaut_id', array('options' => $circuits, 'label' => 'Circuit par défaut', 'empty' => true, 'type' => 'select', 'class' => 'autocomplete')); ?>
 <div class="spacer"></div>
-<?php echo $this->Form->input('Service.order', array('label' => 'Critère de tri', 'type' => 'number')); ?>
+<?php echo $this->Form->input('Service.order', array('label' => 'Critère de tri')); ?>
 <div class="submit">
     <?php
     echo $this->Form->hidden('Service.id', array('label' => false));
