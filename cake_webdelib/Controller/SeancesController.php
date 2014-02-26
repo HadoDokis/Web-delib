@@ -1819,4 +1819,55 @@ class SeancesController extends AppController {
         }
         $this->redirect($this->referer());
     }
+
+    /**
+     * génération de la fusion pour plusieurs séances : l'id du modèle de fusion et les séances a fusionner sont passés dans les données du formulaire
+     * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
+     * @return CakeResponse
+     */
+    function genereFusionMultiSeancesToClient($cookieToken = null) {
+        try {
+            // initialisation de l'id du modèle de fusion
+            $modelTemplateId = $this->request->data['Seance']['model_id'];
+            unset($this->request->data['Seance']['model_id']);
+
+            // initialisation de la liste des séances sélectionnées
+            $seancesIds = array();
+            foreach($this->request->data['Seance'] as $seanceId=>$selected)
+                if ($selected) {
+                    $seanceId = explode('_', $seanceId);
+                    $seancesIds[] = $seanceId[1];
+                }
+            if (empty($seancesIds))
+                throw new Exception('aucune séance sélectionnée');
+
+            // fusion du document
+            $this->Seance->Behaviors->load('OdtFusion', array('modelTemplateId'=>$modelTemplateId, 'modelOptions'=>array('modelTypeName'=>'multiseances')));
+            $filename = $this->Seance->fusionName();
+            $this->Seance->odtFusion(array('modelOptions'=>array('seanceIds'=>$seancesIds)));
+
+            // selon le format d'envoi du document (pdf ou odt)
+            if ($this->Session->read('user.format.sortie') == 0) {
+                $mimeType = "application/pdf";
+                $filename = $filename . '.pdf';
+                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'pdf');
+            } else {
+                $mimeType = "application/vnd.oasis.opendocument.text";
+                $filename = $filename . '.odt';
+                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'odt');
+            }
+            unset($this->Seance->odtFusionResult->content->binary);
+
+            // envoi au client
+            $this->Session->write('Generer.downloadToken', $cookieToken, false, 3600);
+            $this->response->disableCache();
+            $this->response->body($content);
+            $this->response->type($mimeType);
+            $this->response->download($filename);
+            return $this->response;
+        } catch (Exception $e) {
+            $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
+            $this->redirect($this->referer());
+        }
+    }
 }
