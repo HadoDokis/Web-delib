@@ -41,7 +41,7 @@ class TreeHelper extends AppHelper {
     /**
      * @param $threaded
      * @param $modelname
-     * @param array $fields
+     * @param array $fields ex : array('id' => 'identifiant', 'display' => 'libelle', 'order' => 'ordre')
      * @param int $level
      * @return string
      */
@@ -67,16 +67,17 @@ class TreeHelper extends AppHelper {
         return ($treelist);
     }
 
-
 	function showTree($modelName,$fieldName,$data,$level,$baseUrl,$actions, $order = null) {
 		$tabs = str_repeat($this->tab, $level);
   		$output = "";
   	
-	  	foreach ($data as $key=>$val) {
+	  	foreach ($data as $val) {
             if ($val[$modelName]['actif'] == 0) continue;
             $lesActions = $actions;
-            if ((isset($val[$modelName]['deletable'])) && ($val[$modelName]['deletable'] != 1)) $lesActions = Set::remove($lesActions,'Supprimer');
-	  		$hasChildren = isset($val['children'][0]) && $val['children'][0][$modelName]['actif'];
+            $hasChildren = isset($val['children'][0]) && $val['children'][0][$modelName]['actif'];
+            if (isset($val[$modelName]['deletable']) && $val[$modelName]['deletable'] != 1)
+                $lesActions = Set::remove($lesActions,'Supprimer');
+
 	  		$output .= $tabs."<span class=\"profil\">";
             if ($order != null) 
                 $output .= '<i>['.$val[$modelName][$order].']  </i>';
