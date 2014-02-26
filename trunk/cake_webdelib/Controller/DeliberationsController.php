@@ -560,6 +560,10 @@ class DeliberationsController extends AppController
             $Model = 'Projet';
         else
             $Model = 'Deliberation';
+        
+        //Pour la gestion des erreurs des annexes
+        $titre = !empty($annexe['titre']) ? $annexe['titre'] : $annexe['file']['name'];
+        
         if (ini_get('upload_max_filesize') > $annexe['file']['size'])
             $annexesErrors[$titre][] = 'Limite de taille par fichier : ' . ini_get('upload_max_filesize');
         elseif ($annexe['file']['error'] != 0)
@@ -751,6 +755,8 @@ class DeliberationsController extends AppController
                 $annexe['Annex']['link']=Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] .$path_webroot. $annexe['Annex']['filename'];
                 }
            }
+           $this->set('annexes', $annexes);
+           unset($annexes);
 
             // initialisation des délibérations rattachées
             if (array_key_exists('Multidelib', $this->data)) {
@@ -759,19 +765,26 @@ class DeliberationsController extends AppController
                     $path_webroot_delibRattachee = '/files/generee/projet/'.$delibRattachee['id'].'/';
                     $this->Gedooo->createFile($path_projet_delibRattachee, 'deliberation.odt', $delibRattachee['deliberation']);
                     // création des fichiers des annexes de type vnd.oasis.opendocument
-                    $annexes_delibRattachee = $this->Annex->find('all', array(
-                        'recursive' => -1,
-                        'fields' => array('filename', 'data'),
-                        'conditions' => array(
-                            'Annex.model' => 'Deliberation',
-                            'Annex.foreign_key' => $delibRattachee['id'],
-                            'Annex.filetype like' => '%vnd.oasis.opendocument%')));
+                   $annexes_delibRattachee = $this->Annex->find('all', array(
+                    'recursive' => -1,
+                    'fields' => array('id','filename', 'filetype','titre','joindre_ctrl_legalite','joindre_fusion'),
+                    'conditions' => array(
+                    'foreign_key' => $delibRattachee['id'])));
                     foreach ($annexes_delibRattachee as &$annexe) {
-                        $annexe['Annex']['edit']=true;
-                        $this->Gedooo->createFile($path_projet_delibRattachee, $annexe['Annex']['filename'], $annexe['Annex']['data']);
-                        $annexe['Annex']['link']=Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] .$path_webroot_delibRattachee. $annexe['Annex']['filename'];
+                        if($annexe['Annex']['filetype']=='application/vnd.oasis.opendocument.text'){
+                            $annexeData=$this->Annex->find('first', array(
+                            'fields' => array('data'),
+                            'conditions' => array(
+                                                    'id' => $annexe['Annex']['id']),
+                                                    'recursive' => -1));
+                            $annexe['Annex']['edit']=true;
+                            $this->Gedooo->createFile($path_projet_delibRattachee, $annexe['Annex']['filename'], $annexeData['Annex']['data']);
+                            $annexe['Annex']['link']=Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] .$path_webroot_delibRattachee. $annexe['Annex']['filename'];
+                        }
                     }
                 }
+                $this->set('annexes_delibRattachee', $annexes_delibRattachee);
+                unset($annexes_delibRattachee);
             }
             if (!empty($this->data['Deliberation']['num_pref']))
                 $this->request->data['Deliberation']['num_pref_libelle'] = $this->data['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
@@ -788,7 +801,6 @@ class DeliberationsController extends AppController
                 $this->set('lienTab', $this->request['named']['lienTab']);
 
             $this->set('seances', $seances);
-            $this->set('annexes', $annexes);
             $this->set('typeseances_selected', $typeseances_selected);
             $this->set('typeseances', $typeseances);
             $this->set('seances_selected', $seances_selected);

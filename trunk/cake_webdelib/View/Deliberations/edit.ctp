@@ -168,7 +168,7 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
 <div id="tab3" <?php echo isset($lienTab) && $lienTab == 3 ? '' : 'style="display: none;"' ?>>
     <div id='DelibOngleAnnexes'>
         <div id="DelibPrincipaleAnnexes">
-            <?php echo $this->element('annexe', array_merge(array('ref' => 'delibPrincipale'), $annexes)); ?>
+            <?php echo $this->element('annexe', array_merge(array('ref' => 'delibPrincipale'), array('annexes'=>$annexes))); ?>
         </div>
     </div>
     <?php

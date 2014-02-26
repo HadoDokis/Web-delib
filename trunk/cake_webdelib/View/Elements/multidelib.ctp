@@ -44,10 +44,7 @@ if (isset($this->data['Multidelib'])) {
         echo $this->Html->tag('div', '', array('class' => 'spacer'));
         // affichage texte de délibération
         echo $this->Html->tag('label', 'Texte acte');
-        if (Configure::read('GENERER_DOC_SIMPLE'))
-            echo $this->Html->tag('span', $delib['deliberation']);
-        else
-            echo $this->Html->tag('span', $delib['deliberation_name']);
+        echo $this->Html->tag('span', $delib['deliberation_name']);
 
         echo $this->Html->tag('div', '', array('class' => 'spacer'));
         // affichage des annexes
@@ -55,7 +52,7 @@ if (isset($this->data['Multidelib'])) {
         echo '<div class="fckEditorProjet">';
         //$annexeOptions = array('mode' => 'display');
         //if (isset($delib['Annex'])) $annexeOptions['annexes'] = $delib['Annex'];
-        echo $this->element('annexe', array_merge(array('mode' => 'display'), $annexes));
+        echo $this->element('annexe', array_merge(array('mode' => 'display'), array('annexes'=>$annexes_delibRattachee)));
         echo '</div>';
         echo $this->Html->tag('div', '', array('class' => 'spacer'));
         echo $this->Html->tag('/div');
@@ -93,9 +90,10 @@ if (isset($this->data['Multidelib'])) {
         // saisie des annexes
         echo $this->Html->tag('label', 'Annexe(s)');
         echo '<div class="fckEditorProjet">';
-        $annexeOptions = array('ref' => 'delibRattachee' . $delib['id'], 'affichage' => 'partiel');
-        if (isset($delib['Annex'])) $annexeOptions['annexes'] = $delib['Annex'];
-        echo $this->element('annexe', $annexeOptions);
+        if (!empty($annexes_delibRattachee)){
+            $annexeOptions = array('ref' => 'delibRattachee' . $delib['id'], 'affichage' => 'partiel');
+        echo $this->element('annexe', array_merge($annexeOptions, array('annexes'=>$annexes_delibRattachee)));
+        }
         echo '</div>';
         echo $this->Html->tag('/div');
         echo $this->Html->tag('div', '', array('class' => 'spacer'));
@@ -196,11 +194,6 @@ echo $this->Html->tag('p', 'Note : les modifications apportées ici ne prendront
 
 
         $('#ajouteMultiDelib').append(newTemplate);
-        <?php
-        if (Configure::read('GENERER_DOC_SIMPLE')){
-            echo "$('#Multidelib'+iMultiDelibAAjouter+'Deliberation').ckeditor();\n";
-        }
-        ?>
         newTemplate.show();
     }
 

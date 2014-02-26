@@ -12,7 +12,6 @@ if (empty($mode)) $mode = 'edit';
 if ($mode == 'edit' && empty($ref)) return;
 if (empty($annexes)) $annexes = array();
 if (empty($affichage)) $affichage = 'complet';
-
 // affichage des annexes
 $tableOptions = array('style' => 'width: 100%');
 if ($mode == 'edit') $tableOptions['id'] = 'tableAnnexe' . $ref;
