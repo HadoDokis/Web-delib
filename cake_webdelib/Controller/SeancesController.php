@@ -1763,7 +1763,7 @@ class SeancesController extends AppController {
                 throw new Exception('Séance id:' . $id . ' non trouvée en base de données');
 
             // vérification des types de fusion
-            $allowedFusionTypes = array('convocation', 'ordredujour', 'pvsommaire', 'pvdetaille');
+            $allowedFusionTypes = array('convocation', 'ordredujour');
             if (!in_array($typeFusion, $allowedFusionTypes))
                 throw new Exception('le type de modèle d\'édition '.$typeFusion.' n\'est par autorisé');
 
