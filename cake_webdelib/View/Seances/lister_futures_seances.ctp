@@ -217,6 +217,8 @@ echo $this->Html->link('NEW',
         }
     }
     echo $this->Form->end();
+    echo $this->Form->button('<i class="fa fa-cogs"></i> New Générer', array('type' => '', 'class' => 'waiter btn btn-primary', 'title' => "Nouvelle méthode pour la génération multi-séances (Attention : l'exécution peut être longue)", 'id' => 'new_generer_multi_seance',
+        'onclick'=>"$('#SeanceListerFuturesSeancesForm').attr('action', '/seances/genereFusionMultiSeancesToClient/').submit();"));
     ?>
 </div>
 <script type="text/javascript">
