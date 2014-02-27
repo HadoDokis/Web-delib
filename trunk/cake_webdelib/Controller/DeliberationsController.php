@@ -3091,8 +3091,7 @@ class DeliberationsController extends AppController
                 $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($this->user_id));
                 if (!empty($listeDelibsParticipe))
                     $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
-                $ordre = 'Deliberation.id DESC';
-                
+
                 //TODO on peut voir certain projet mecanique à revoir
                 $this->Deliberation->Behaviors->load('Containable');
                 $projets = $this->Deliberation->find('all', array(
@@ -3101,19 +3100,18 @@ class DeliberationsController extends AppController
                       'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
                       'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
                     'conditions' => $conditions,
-                    'contain' => array( 'Service'=>array('fields'=>array('libelle')),
-                                'Theme'=>array('fields'=>array('libelle')),
-                                'Typeacte'=>array('fields'=>array('libelle')),
-                                'Circuit'=>array('fields'=>array('nom')),
-                                'Deliberationtypeseance'=>array('fields'=>array('id'),
-                                                   'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                       )),
-                                'Deliberationseance'=>array('fields'=>array('id'),
-                                                            'Seance'=>array('fields'=>array('id','date','type_id'),
-                                        
-                                        'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
-                  'order' => array($ordre)));
-                    $this->_sortProjetSeanceDate($projets);
+                    'contain' => array('Service' => array('fields' => array('libelle')),
+                        'Theme' => array('fields' => array('libelle')),
+                        'Typeacte' => array('fields' => array('libelle')),
+                        'Circuit' => array('fields' => array('nom')),
+                        'Deliberationtypeseance' => array('fields' => array('id'),
+                            'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
+                            )),
+                        'Deliberationseance' => array('fields' => array('id'),
+                            'Seance' => array('fields' => array('id', 'date', 'type_id'),
+                                'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
+                    'order' => 'Deliberation.id DESC'));
+                $this->_sortProjetSeanceDate($projets);
 
                 if ($this->data['Deliberation']['generer'] == 0) {
                     $this->_afficheProjets($projets, 'Résultat de la recherche parmi mes projets', array('view', 'generer'), array('mesProjetsRecherche'));
@@ -3219,25 +3217,23 @@ class DeliberationsController extends AppController
                 // lecture en base
                 $this->Deliberation->Behaviors->load('Containable');
                 $projets = $this->Deliberation->find('all', array(
-                     'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
-                      'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
-                      'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
-                      'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
-                    'contain' => array( 'Service'=>array('fields'=>array('libelle')),
-                                        'Theme'=>array('fields'=>array('libelle')),
-                                        'Typeacte'=>array('fields'=>array('libelle')),
-                                        'Circuit'=>array('fields'=>array('nom')),
-                                        'Deliberationtypeseance'=>array('fields'=>array('id'),
-                                                           'Typeseance'=>array('fields'=>array('id','libelle','action'),
-                                                                               )),
-                                        'Deliberationseance'=>array('fields'=>array('id'),
-                                                                    'Seance'=>array('fields'=>array('id','date','type_id'),
-                                                                                    
-                                                                                    'Typeseance'=>array('fields'=>array('id','libelle','action'))))),
+                    'fields' => array('Deliberation.id', 'Deliberation.objet', 'Deliberation.etat', 'Deliberation.signee',
+                        'Deliberation.titre', 'Deliberation.date_limite', 'Deliberation.anterieure_id',
+                        'Deliberation.num_pref', 'Deliberation.redacteur_id', 'Deliberation.circuit_id',
+                        'Deliberation.typeacte_id', 'Deliberation.theme_id', 'Deliberation.service_id'),
+                    'contain' => array('Service' => array('fields' => array('libelle')),
+                        'Theme' => array('fields' => array('libelle')),
+                        'Typeacte' => array('fields' => array('libelle')),
+                        'Circuit' => array('fields' => array('nom')),
+                        'Deliberationtypeseance' => array('fields' => array('id'),
+                            'Typeseance' => array('fields' => array('id', 'libelle', 'action'))),
+                        'Deliberationseance' => array('fields' => array('id'),
+                            'Seance' => array('fields' => array('id', 'date', 'type_id'),
+                                'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
                     'conditions' => $conditions,
-                    'order' => 'num_delib'
-                    ));
-               $this->_sortProjetSeanceDate($projets);
+                    'order' => 'Deliberation.id DESC'
+                ));
+                $this->_sortProjetSeanceDate($projets);
                 if ($this->data['Deliberation']['generer'] == 0) {
 
                     $actions = array('view', 'generer');
