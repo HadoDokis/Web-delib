@@ -31,6 +31,14 @@ class Vote extends AppModel {
 
         // pour chaque itération de vote
         foreach($voteIterations as &$voteIteration) {
+            // initialisations
+            $conditions = array('Vote.delib_id'=>$deliberationId, 'Vote.resultat'=>$voteIteration['voteResultat']);
+
+            // nombre de votes
+            $nbVotes = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
+            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_'.$voteIteration['fusionVariableSuffixe'], $nbVotes, 'text'));
+            if ($nbVotes==0) continue;
+
             // liste des variables utilisées dans le template
             $acteurFields = $aliasActeurFields = array();
             foreach($fusionVariables as $fusionVariable)
@@ -47,9 +55,6 @@ class Vote extends AppModel {
                 'contain' => $aliasActeurFields,
                 'conditions' => array('Vote.delib_id' => $deliberationId, 'Vote.resultat' => $voteIteration['voteResultat']),
                 'order' => 'Acteur.position ASC'));
-            if ($modelOdtInfos->hasUserField('nombre_acteur_'.$voteIteration['fusionVariableSuffixe']))
-                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_'.$voteIteration['fusionVariableSuffixe'], count($acteurs), 'text'));
-            if (empty($acteurs)) continue;
 
             // itérations sur les acteurs
             $oStyleIteration = new GDO_IterationType($voteIteration['iterationName']);
