@@ -3434,13 +3434,85 @@ INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_i
 INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1194, 209, 1, 7, 0, 0, true);
 INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1195, 209, 1, 8, 0, 0, true);
 INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1196, 209, 1, 9, 0, 0, true);
-
-
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1197, 210, 3, 2, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1198, 210, 3, 4, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1199, 210, 3, 5, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1200, 210, 3, 3, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1201, 210, 3, 6, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1202, 210, 3, 7, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1203, 210, 3, 8, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1204, 210, 3, 9, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1205, 211, 3, 2, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1206, 211, 3, 4, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1207, 211, 3, 5, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1208, 211, 3, 3, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1209, 211, 3, 6, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1210, 211, 3, 7, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1211, 211, 3, 8, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1212, 211, 3, 9, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1213, 212, 3, 2, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1214, 212, 3, 4, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1215, 212, 3, 5, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1216, 212, 3, 3, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1217, 212, 3, 6, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1218, 212, 3, 7, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1219, 212, 3, 8, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1220, 212, 3, 9, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1221, 213, 3, 2, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1222, 213, 3, 4, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1223, 213, 3, 5, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1224, 213, 3, 3, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1225, 213, 3, 6, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1226, 213, 3, 7, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1227, 213, 3, 8, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1228, 213, 3, 9, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1229, 214, 3, 2, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1230, 214, 3, 4, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1231, 214, 3, 5, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1232, 214, 3, 3, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1233, 214, 3, 6, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1234, 214, 3, 7, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1235, 214, 3, 8, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1236, 214, 3, 9, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1237, 215, 3, 2, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1238, 215, 3, 4, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1239, 215, 3, 5, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1240, 215, 3, 3, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1241, 215, 3, 6, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1242, 215, 3, 7, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1243, 215, 3, 8, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1244, 215, 3, 9, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1245, 216, 3, 2, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1246, 216, 3, 4, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1247, 216, 3, 5, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1248, 216, 3, 3, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1249, 216, 3, 6, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1250, 216, 3, 7, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1251, 216, 3, 8, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1252, 216, 3, 9, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1253, 217, 3, 2, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1254, 217, 3, 4, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1255, 217, 3, 5, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1256, 217, 3, 3, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1257, 217, 3, 6, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1258, 217, 3, 7, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1259, 217, 3, 8, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1260, 217, 3, 9, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1261, 218, 3, 3, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1262, 218, 3, 6, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1263, 218, 3, 7, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1264, 218, 3, 8, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1265, 218, 3, 9, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1266, 219, 3, 3, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1267, 219, 3, 6, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1268, 219, 3, 7, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1269, 219, 3, 8, 0, 0, true);
+INSERT INTO modelvalidations (id, modelvariable_id, modelsection_id, modeltype_id, min, max, actif) VALUES (1270, 219, 3, 9, 0, 0, true);
 --
 -- Name: modelvalidations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('modelvalidations_id_seq', 1196, true);
+SELECT pg_catalog.setval('modelvalidations_id_seq', 1270, true);
 
 
 --
@@ -3656,13 +3728,22 @@ INSERT INTO modelvariables (id, name, description, created, modified) VALUES (20
 INSERT INTO modelvariables (id, name, description, created, modified) VALUES (207, 'note_acteur_sans_participation', 'Note rédigée sur l''acteur ne participant pas', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
 INSERT INTO modelvariables (id, name, description, created, modified) VALUES (208, 'acteurs_sans_participation_separator', 'Séparateur des itérations successives', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
 INSERT INTO modelvariables (id, name, description, created, modified) VALUES (209, 'texte_acte', 'Texte de l''acte', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (210, 'identifiant_seances', 'Identifiant unique associé à la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (211, 'date_seances', 'Date de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (212, 'date_seances_lettres', 'Date de la séance en toutes lettres', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (213, 'heure_seances', 'Heure de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (214, 'hh_seances', 'Heure  /  minutes de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (215, 'mm_seances', 'Heure  /  minutes de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (216, 'type_seances', 'Type de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (217, 'nombre_seances', 'Nombre de séances auxquelles est inscrit un projet', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (218, 'debat_seances', 'Débats généraux de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (219, 'commentaire_seances', 'Commentaires de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
 
 --
 -- Name: modelvariables_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('modelvariables_id_seq', 1, false);
+SELECT pg_catalog.setval('modelvariables_id_seq', 219, false);
 
 
 --
