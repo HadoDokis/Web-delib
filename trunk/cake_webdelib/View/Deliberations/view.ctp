@@ -44,11 +44,12 @@ if (!empty($versionsup)) {
     );
 }
 if ($userCanComment){
-    $linkBarre .= $this->Html->link(
-        '<i class="fa fa-cogs"></i> Traiter',
-        array('action' => 'traiter', $this->data['Deliberation']['id']),
-        array('escape' => false, 'class' => 'btn', 'title' => 'Traiter le projet '. $this->Html->value('Deliberation.objet'))
-    );
+    if ($this->data['Deliberation']['etat'] != -1)
+        $linkBarre .= $this->Html->link(
+            '<i class="fa fa-cogs"></i> Traiter',
+            array('action' => 'traiter', $this->data['Deliberation']['id']),
+            array('escape' => false, 'class' => 'btn', 'title' => 'Traiter le projet '. $this->Html->value('Deliberation.objet'))
+        );
     $linkBarre .= $this->Html->link(
         '<i class="fa fa-comment"></i> Commenter',
         array('controller' => 'commentaires', 'action' => 'add', $this->data['Deliberation']['id']),
