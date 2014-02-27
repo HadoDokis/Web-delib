@@ -3033,6 +3033,7 @@ class DeliberationsController extends AppController
             $this->render('rechercheMultiCriteres');
         } else {
             $conditions = array();
+            $conditions['Deliberation.parent_id'] = null;
             $multiseances = array();
 
             if (!empty($this->data['Deliberation']['id'])) {
@@ -3159,6 +3160,7 @@ class DeliberationsController extends AppController
             $this->render('rechercheMultiCriteres');
         } else {
             $conditions = array();
+            $conditions['Deliberation.parent_id'] = null;
             $multiseances = array();
 
             if (!empty($this->data['Deliberation']['id'])) {
@@ -3192,16 +3194,14 @@ class DeliberationsController extends AppController
                 $conditions["OR"]["Deliberation.objet ILIKE"] = $texte;
                 $conditions["OR"]["Deliberation.titre ILIKE"] = $texte;
             }
-            if (empty($conditions["Deliberation.id"]) || (!isset($conditions["Deliberation.id"]))) {
-                if ((isset($this->data['Deliberation']['seance_id'])) && (!empty($this->data['Deliberation']['seance_id']))) {
-                    $projet_ids = array();
+            if (empty($conditions["Deliberation.id"])) {
+                if (!empty($this->data['Deliberation']['seance_id'])) {
                     $multiseances = array();
                     foreach ($this->data['Deliberation']['seance_id'] as $seance_id) {
                         //      $multiseances[] = $seance_id;
                         $projet_ids = $this->Seance->getDeliberationsId($seance_id);
                         $multiseances = array_merge($projet_ids, $multiseances);
                     }
-                    // $conditions['Deliberation.id'] =  $projet_ids;
                     $conditions['Deliberation.id'] = $multiseances;
                 }
             }
