@@ -1,5 +1,5 @@
 <h2>Ajout d'un thème</h2>
-<?php echo $this->Form->create('Theme', array('url' => '/themes/add/', 'type' => 'post')); ?>
+<?php echo $this->Form->create('Theme'); ?>
 <?php echo $this->Form->input('Theme.libelle', array('label' => 'Libellé <abbr title="obligatoire">*</abbr>', 'maxlength' => '500')); ?>
 <?php echo $this->Form->input('Theme.order', array('label' => 'Critère de tri')); ?>
 <?php echo $this->Form->input('Theme.parent_id', array('label' => 'Appartient à', 'options' => $themes, 'empty' => true, 'escape' => false)) ?>

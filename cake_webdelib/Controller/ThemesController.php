@@ -51,10 +51,9 @@ class ThemesController extends AppController {
             if (empty($this->data['Theme']['parent_id']))
                 $this->request->data['Theme']['parent_id'] = 0;
             $this->request->data['Theme']['actif'] = 1;
-
             if ($this->Theme->save($this->data)) {
                 $this->Session->setFlash('Le thème a été sauvegardé', 'growl');
-                $this->redirect($this->previous);
+                return $this->redirect($this->previous);
             } else {
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
             }
