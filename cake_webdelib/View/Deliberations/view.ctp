@@ -10,7 +10,7 @@ $linkBarre = "<div class='btn-toolbar boutons_view' role='toolbar'>";
 $linkBarre .= "<div class='btn-group'>";
 $linkBarre .= $this->Html->link(
     '<i class="fa fa-arrow-left"></i> Retour',
-    'javascript:history.go(-1);',
+    $previous,
     array('escape' => false, 'class' => 'btn')
 );
 $linkBarre .= $this->Html->link(
