@@ -241,7 +241,7 @@ echo $this->Html->useTag('tagend', 'div');
 <div class="submit">
     <?php
     echo $this->Html->tag("div", null, array("class" => "btn-group"));
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'mesProjetsRedaction'), array('class' => 'btn noWarn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $previous, array('class' => 'btn noWarn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
     echo $this->Form->button('<i class="fa fa-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary noWarn', 'escape' => false, 'title' => 'Enregistrer le circuit de traitement'));
     echo $this->Html->tag('/div', null);
     ?>

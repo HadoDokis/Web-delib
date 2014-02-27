@@ -85,8 +85,6 @@ class DeliberationsController extends AppController
     );
 
     function view($id = null) {
-        $this->set('previous', $this->referer());
-
         $this->Deliberation->Behaviors->load('Containable');
         $this->request->data = $this->Deliberation->find('first', array(
             'fields' => array(
@@ -123,19 +121,18 @@ class DeliberationsController extends AppController
             $this->Session->setFlash('Invalide id pour la délibération : affichage de la vue impossible.', 'growl');
             $this->redirect(array('action' => 'mesProjetsRedaction'));
         }
-        $userId = $this->Session->read('user.User.id');
 
         $user = $this->Session->read('user');
         if (!$this->Droits->check($user['User']['id'], "Pages:tous_les_projets")) {
             $conditions['Deliberation.id'] = $id;
-            $conditions['OR']['redacteur_id'] = $userId;
+            $conditions['OR']['redacteur_id'] = $this->user_id;
 
             if ($this->Droits->check($user['User']['id'], "Deliberations:projetsMonService")) {
                 $services = array();
                 $conditions['Deliberation.id'] = $id;
-                $conditions['OR']['redacteur_id'] = $userId;
+                $conditions['OR']['redacteur_id'] = $this->user_id;
                 $this->User->Behaviors->load('Containable');
-                $user_services = $this->User->find('first', array('conditions' => array('User.id' => $userId),
+                $user_services = $this->User->find('first', array('conditions' => array('User.id' => $this->user_id),
                     'fields' => array('User.id'),
                     'contain' => array('Service.id')));
                 foreach ($user_services['Service'] as $service)
@@ -146,7 +143,7 @@ class DeliberationsController extends AppController
             $acte = $this->Deliberation->find('first', array('conditions' => $conditions,
                 'fields' => array('Deliberation.id'),
                 'recursive' => -1));
-            $estDansCircuit = $this->Traitement->triggerDansTraitementCible($userId, $id);
+            $estDansCircuit = $this->Traitement->triggerDansTraitementCible($this->user_id, $id);
             if (empty($acte) && ($estDansCircuit == false)) {
                 $this->Session->setFlash("Vous n'avez pas les droits pour visualiser cet acte", 'growl');
                 return $this->redirect(array('action' => 'mesProjetsRedaction'));
@@ -425,7 +422,6 @@ class DeliberationsController extends AppController
                 'contain' => array('Profil.id'))));
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
             $this->set('DELIBERATIONS_MULTIPLES', Configure::read('DELIBERATIONS_MULTIPLES'));
-            $this->set('redirect', $redirect);
 
             /* valeurs initiales des info supplémentaires */
             $this->request->data['Infosup'] = $this->Infosupdef->valeursInitiales('Deliberation');
@@ -640,8 +636,6 @@ class DeliberationsController extends AppController
                         break;
                     }
 
-            $this->set('redirect', $redirect);
-
             $this->request->data = $this->Deliberation->find('first', array(
                 'contain' => array('Annex.id', 'Annex.filetype', 'Annex.model',
                     'Annex.foreign_key', 'Annex.filename', 'Annex.filename_pdf',
@@ -806,7 +800,6 @@ class DeliberationsController extends AppController
             $this->set('selectedRapporteur', $this->request->data['Deliberation']['rapporteur_id']);
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
             $this->set('profil_id', $user['User']['profil_id']);
-            $this->set('redirect', $redirect);
             $this->Infosupdef->Behaviors->load('Containable');
             $this->set('infosupdefs', $this->Infosupdef->find('all', array(
                 'conditions' => array('model' => 'Deliberation', 'actif' => true),
@@ -1016,7 +1009,7 @@ class DeliberationsController extends AppController
                 $sortie = true;
 
                 //Envoi d'une notification de modification au rédacteur
-                $currentUser = $this->Session->read('user.User.id');
+                $currentUser = $this->user_id;
                 $redacteurId = $oldDelib['Deliberation']['redacteur_id'];
                 if ($currentUser != $redacteurId){
                     $this->User->notifier($id, $redacteurId, 'modif_projet_cree');
@@ -1117,7 +1110,6 @@ class DeliberationsController extends AppController
                 $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
                 $this->set('circuits', $this->Deliberation->Circuit->find('list'));
                 $this->set('datelim', $this->data['Deliberation']['date_limite']);
-                $this->set('redirect', $redirect);
                 $annexes = $this->Annex->find('all', array('conditions' => array('model' => 'Projet', 'foreign_key' => $id)));
                 foreach ($annexes as $id => $annexe)
                     $this->request->data['Annex'][$id] = $annexe['Annex'];
@@ -1355,7 +1347,7 @@ class DeliberationsController extends AppController
             $this->set('delib_id', $delib_id);
             $this->set('etapes', $etapes);
         } else {
-            $this->Traitement->execute('JP', $this->Session->read('user.User.id'), $delib_id, array('etape_id' => $this->data['Traitement']['etape']));
+            $this->Traitement->execute('JP', $this->user_id, $delib_id, array('etape_id' => $this->data['Traitement']['etape']));
             $destinataires = $this->Traitement->whoIs($delib_id, 'current', 'RI');
             foreach ($destinataires as $destinataire_id)
                 $this->User->notifier($delib_id, $destinataire_id, 'traitement');
@@ -2280,15 +2272,14 @@ class DeliberationsController extends AppController
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
         $this->Deliberation->Behaviors->load('Containable');
 
-        $userId = $this->Session->read('user.User.id');
-        $listeLiens = $this->Droits->check($userId, "Deliberations:add") ? array('add') : array();
+        $listeLiens = $this->Droits->check($this->user_id, "Deliberations:add") ? array('add') : array();
 
         $conditions = $this->_handleConditions($this->Filtre->conditions());
         //$conditions =  $this->Filtre->conditions();
         if (!isset($conditions['Deliberation.typeacte_id']))
             $conditions['Deliberation.typeacte_id'] = array_keys($this->Session->read('user.Nature'));
         $conditions['Deliberation.etat'] = 0;
-        $conditions['Deliberation.redacteur_id'] = $userId;
+        $conditions['Deliberation.redacteur_id'] = $this->user_id;
         $conditions['Deliberation.parent_id'] = null;
 
         $ordre = array('Deliberation.id' => 'DESC');
@@ -2348,7 +2339,7 @@ class DeliberationsController extends AppController
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
         $conditions = $this->_handleConditions($this->Filtre->conditions());
         $conditions['Deliberation.etat'] = 1;
-        $delibs_ids = $this->Traitement->listeTargetId($this->Session->read('user.User.id'), array(
+        $delibs_ids = $this->Traitement->listeTargetId($this->user_id, array(
             'etat' => 'NONTRAITE',
             'traitement' => 'AFAIRE'
         ));
@@ -2398,21 +2389,19 @@ class DeliberationsController extends AppController
         else
             $limit = null;
 
-        $userId = $this->Session->read('user.User.id');
-
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
         $this->Deliberation->Behaviors->load('Containable');
 
         $conditions = $this->_handleConditions($this->Filtre->conditions());
         $conditions['Deliberation.etat'] = 1;
 
-        $delibs_ids = $this->Traitement->listeTargetId($this->Session->read('user.User.id'), array('etat' => 'NONTRAITE', 'traitement' => 'NONAFAIRE'));
+        $delibs_ids = $this->Traitement->listeTargetId($this->user_id, array('etat' => 'NONTRAITE', 'traitement' => 'NONAFAIRE'));
         if (isset($conditions['Deliberation.id'])) {
             $conditions['OR']['Deliberation.id'] = array_intersect($conditions['Deliberation.id'], $delibs_ids);
         } else {
             $conditions['OR']['Deliberation.id'] = $delibs_ids;
         }
-        $conditions['OR']['Deliberation.redacteur_id'] = $userId;
+        $conditions['OR']['Deliberation.redacteur_id'] = $this->user_id;
         $conditions['Deliberation.parent_id'] = NULL;
 
         $ordre = array('Deliberation.id' => 'DESC');
@@ -2461,16 +2450,14 @@ class DeliberationsController extends AppController
 
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
-        $userId = $this->Session->read('user.User.id');
-
         $conditions['Deliberation.etat'] = 2;
         $conditions['OR']['Deliberation.id'] = $this->Traitement->listeTargetId(
-            $this->Session->read('user.User.id'),
+            $this->user_id,
             array(
                 'etat' => 'TRAITE',
                 'targetConditions' => array('Deliberation.etat' => 2)
             ));
-        $conditions['OR']['Deliberation.redacteur_id'] = $userId;
+        $conditions['OR']['Deliberation.redacteur_id'] = $this->user_id;
 
         $conditions['Deliberation.parent_id'] = NULL;
 
@@ -2510,8 +2497,7 @@ class DeliberationsController extends AppController
         // initialisation de l'utilisateur connecté et des droits
         $this->set('typeseances', $this->Seance->Typeseance->find('list', array('recursive' => -1)));
 
-        $userId = $this->Session->read('user.User.id');
-        $editerTous = $this->Droits->check($userId, "Deliberations:editerTous");
+        $editerTous = $this->Droits->check($this->user_id, "Deliberations:editerTous");
         $this->request->data = $projets;
 
         /* initialisation pour chaque projet ou délibération */
@@ -2525,9 +2511,9 @@ class DeliberationsController extends AppController
             if ($projet['Deliberation']['etat'] == 0 && $projet['Deliberation']['anterieure_id'] != 0)
                 $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat(-2);
             elseif ($projet['Deliberation']['etat'] == 1) {
-                $estDansCircuit = $this->Traitement->triggerDansTraitementCible($userId, $projet['Deliberation']['id']);
-                $tourDansCircuit = $estDansCircuit ? $this->Traitement->positionTrigger($userId, $projet['Deliberation']['id']) : 0;
-                $estRedacteur = ($userId == $projet['Deliberation']['redacteur_id']);
+                $estDansCircuit = $this->Traitement->triggerDansTraitementCible($this->user_id, $projet['Deliberation']['id']);
+                $tourDansCircuit = $estDansCircuit ? $this->Traitement->positionTrigger($this->user_id, $projet['Deliberation']['id']) : 0;
+                $estRedacteur = ($this->user_id == $projet['Deliberation']['redacteur_id']);
                 $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat(1, false, $estDansCircuit, $estRedacteur, $tourDansCircuit);
             } else {
                 $this->request->data[$i]['iconeEtat'] = $this->_iconeEtat($projet['Deliberation']['etat'], $editerTous);
@@ -2645,11 +2631,11 @@ class DeliberationsController extends AppController
                   'order' => array($ordre)));
         $this->_sortProjetSeanceDate($projets);
         $actions = array('view', 'generer');
-        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"))
+        if ($this->Droits->check($this->user_id, "Deliberations:validerEnUrgence"))
             array_push($actions, 'validerEnUrgence');
-        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:goNext"))
+        if ($this->Droits->check($this->user_id, "Deliberations:goNext"))
             array_push($actions, 'goNext');
-        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
+        if ($this->Droits->check($this->user_id, "Deliberations:delete"))
             array_push($actions, 'delete');
 
 
@@ -2701,11 +2687,11 @@ class DeliberationsController extends AppController
                  'order' => array($ordre)));
         $this->_sortProjetSeanceDate($projets);
         $actions = array('view', 'generer');
-        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"))
+        if ($this->Droits->check($this->user_id, "Deliberations:validerEnUrgence"))
             array_push($actions, 'validerEnUrgence');
-        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:goNext"))
+        if ($this->Droits->check($this->user_id, "Deliberations:goNext"))
             array_push($actions, 'goNext');
-        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
+        if ($this->Droits->check($this->user_id, "Deliberations:delete"))
             array_push($actions, 'delete');
         $this->_ajouterFiltre($projets);
         $this->_afficheProjets(
@@ -2719,7 +2705,7 @@ class DeliberationsController extends AppController
 
     function tousLesProjetsSansSeance()
     {
-        $canEditAll = $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:editerTous");
+        $canEditAll = $this->Droits->check($this->user_id, "Deliberations:editerTous");
         $this->set('canEditAll', $canEditAll);
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
         $this->Deliberation->Behaviors->load('Containable');
@@ -2764,7 +2750,7 @@ class DeliberationsController extends AppController
         $this->Filtre->delCritere('DeliberationseanceId');
         $this->Filtre->delCritere('DeliberationtypeseanceId');
         $actions = array('view', 'generer', 'attribuerSeance');
-        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
+        if ($this->Droits->check($this->user_id, "Deliberations:delete"))
             array_push($actions, 'delete');
 
         $this->_afficheProjets($delibs, 'Projets non associés &agrave; une séance', $actions);
@@ -2824,7 +2810,7 @@ class DeliberationsController extends AppController
         $this->_sortProjetSeanceDate($projets);
         $this->_ajouterFiltre($projets);
         $actions = array('view', 'generer');
-        if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
+        if ($this->Droits->check($this->user_id, "Deliberations:delete"))
             array_push($actions, 'delete');
 
         $this->_afficheProjets(
@@ -2971,7 +2957,7 @@ class DeliberationsController extends AppController
         } else {
             $this->Session->setFlash('Vous devez selectionner une séance', 'growl', array('type' => 'erreur'));
         }
-        $this->redirect('/deliberations/tousLesProjetsSansSeance');
+        return $this->redirect(array('action'=>'tousLesProjetsSansSeance'));
     }
 
     /*
@@ -3003,19 +2989,19 @@ class DeliberationsController extends AppController
                             ),
                             'Visa' => array(
                                 '0' => array(
-                                    'trigger_id' => $this->Session->read('user.User.id'),
+                                    'trigger_id' => $this->user_id,
                                     'type_validation' => 'V'
                                 )))));
-                $this->Traitement->execute('ST', $this->Session->read('user.User.id'), $delibId, $options);
+                $this->Traitement->execute('ST', $this->user_id, $delibId, $options);
                 $this->Deliberation->id = $delibId;
                 $this->Deliberation->saveField('etat', 2);
                 $this->Deliberation->saveField('parapheur_etat', 0);
-                $this->Historique->enregistre($delibId, $this->Session->read('user.User.id'), 'Projet validé en urgence');
+                $this->Historique->enregistre($delibId, $this->user_id, 'Projet validé en urgence');
             }
         }
         $this->Session->setFlash('Le projet ' . $this->data['Deliberation']['id'] . ' a été validé en urgence', 'growl');
         if ($redirect)
-            $this->redirect($this->Session->read('user.User.oldurl'));
+            $this->redirect($this->previous);
     }
 
     function mesProjetsRecherche()
@@ -3052,7 +3038,7 @@ class DeliberationsController extends AppController
             if (!empty($this->data['Deliberation']['id'])) {
                 if (!is_numeric($this->data['Deliberation']['id'])) {
                     $this->Session->setFlash('Vous devez saisir un identifiant valide', 'growl', array('type' => 'erreur'));
-                    $this->redirect('/deliberations/mesProjetsRecherche');
+                    $this->redirect(array('action'=>'mesProjetsRecherche'));
                 }
                 $conditions["Deliberation.id"] = $this->data['Deliberation']['id'];
             }
@@ -3095,15 +3081,14 @@ class DeliberationsController extends AppController
             }
             if (empty($conditions)) {
                 $this->Session->setFlash('Vous devez saisir au moins un critère.', 'growl', array('type' => 'erreur'));
-                $this->redirect('/deliberations/mesProjetsRecherche');
+                $this->redirect(array('action'=>'mesProjetsRecherche'));
             } else {
-                $userId = $this->Session->read('user.User.id');
-                $listeCircuits = explode(',', $this->Circuit->listeCircuitsParUtilisateur($userId));
+                $listeCircuits = explode(',', $this->Circuit->listeCircuitsParUtilisateur($this->user_id));
                 if (!empty($listeCircuits))
                     $conditions['OR']['Deliberation.circuit_id'] = $listeCircuits;
-                $conditions['OR']['Deliberation.redacteur_id'] = $userId;
+                $conditions['OR']['Deliberation.redacteur_id'] = $this->user_id;
                 //Récupère la liste des délib que l'utilisateur a visé (résolution bug changement circuit non visible)
-                $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($userId));
+                $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($this->user_id));
                 if (!empty($listeDelibsParticipe))
                     $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
                 $ordre = 'Deliberation.id DESC';
@@ -3141,7 +3126,7 @@ class DeliberationsController extends AppController
                         $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format, $multiseances, $conditions);
                     } else {
                         $this->Session->setFlash('Aucun résultat à la recherche effectuée.', 'growl', array('type' => 'erreur'));
-                        $this->redirect('/deliberations/mesProjetsRecherche');
+                        $this->redirect(array('action'=>'mesProjetsRecherche'));
                     }
                 }
             }
@@ -3181,7 +3166,7 @@ class DeliberationsController extends AppController
             if (!empty($this->data['Deliberation']['id'])) {
                 if (!is_numeric($this->data['Deliberation']['id'])) {
                     $this->Session->setFlash('Vous devez saisir un identifiant valide', 'growl', array('type' => 'erreur'));
-                    $this->redirect('/deliberations/mesProjetsRecherche');
+                    $this->redirect(array('action'=>'mesProjetsRecherche'));
                 }
                 $conditions["Deliberation.id"] = $this->data['Deliberation']['id'];
             }
@@ -3254,20 +3239,19 @@ class DeliberationsController extends AppController
                     ));
                $this->_sortProjetSeanceDate($projets);
                 if ($this->data['Deliberation']['generer'] == 0) {
-                    $userId = $this->Session->read('user.User.id');
 
                     $actions = array('view', 'generer');
-                    if ($this->Droits->check($this->Session->read('user.User.id'), "Deliberations:delete"))
+                    if ($this->Droits->check($this->user_id, "Deliberations:delete"))
                         array_push($actions, 'delete');
 
-                    if ($this->Droits->check($userId, "Deliberations:editerTous"))
+                    if ($this->Droits->check($this->user_id, "Deliberations:editerTous"))
                         $actions[] = 'edit';
                     $this->_afficheProjets($projets, 'Résultat de la recherche parmi tous les projets', $actions, array('tousLesProjetsRecherche'));
                 } else {
                     $format = $this->Session->read('user.format.sortie');
                     if (empty($this->data['Deliberation']['model'])) {
                         $this->Session->setFlash("Vous devez choisir un modèle de document", 'growl', array('type' => 'erreur'));
-                        $this->redirect('/deliberations/tousLesProjetsRecherche');
+                        $this->redirect(array('action'=>'tousLesProjetsRecherche'));
                     }
                     if (empty($format))
                         $format = 0;
@@ -3277,7 +3261,7 @@ class DeliberationsController extends AppController
                         $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format, $multiseances, $conditions);
                     else {
                         $this->Session->setFlash('Aucun projet correspondant aux critères de recherche.', 'growl', array('type' => 'erreur'));
-                        $this->redirect('/deliberations/tousLesProjetsRecherche');
+                        $this->redirect(array('action'=>'tousLesProjetsRecherche'));
                     }
                 }
             }
@@ -3693,14 +3677,16 @@ class DeliberationsController extends AppController
                     }
                 }
             }
-            return $this->redirect('/deliberations/verserAsalae');
+            return $this->redirect(array('action'=>'verserAsalae'));
         }
     }
 
     function goNext($delib_id) {
         $delib = $this->Deliberation->read(null, $delib_id);
-        if (empty($delib))
+        if (empty($delib)){
+            $this->Session->setFlash("Le projet n'existe pas", 'growl', array('type' => 'erreur'));
             return $this->redirect($this->referer());
+        }
 
         if (empty($this->data)) {
             $etapes = $this->Traitement->listeEtapes($delib['Deliberation']['id'], array('selection' => 'APRES'));
@@ -3720,10 +3706,10 @@ class DeliberationsController extends AppController
                     ),
                     'Visa' => array(
                         '0' => array(
-                            'trigger_id' => $this->Session->read('user.User.id'),
+                            'trigger_id' => $this->user_id,
                             'type_validation' => 'V'
                         ))));
-            $this->Traitement->execute('JS', $this->Session->read('user.User.id'), $delib_id, array(
+            $this->Traitement->execute('JS', $this->user_id, $delib_id, array(
                 'insertion' => $insertion,
                 'numero_traitement' => $this->data['Traitement']['etape']
             ));
@@ -3906,8 +3892,8 @@ class DeliberationsController extends AppController
         $this->_ajouterFiltre($actes);
         $this->Filtre->delCritere('DeliberationseanceId');
         $this->Filtre->delCritere('DeliberationtypeseanceId');
-        $this->set('canGoNext', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:goNext"));
-        $this->set('peuxValiderEnUrgence', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:validerEnUrgence"));
+        $this->set('canGoNext', $this->Droits->check($this->user_id, "Deliberations:goNext"));
+        $this->set('peuxValiderEnUrgence', $this->Droits->check($this->user_id, "Deliberations:validerEnUrgence"));
         $this->set('actes', $actes);
 
         $this->render('autres_actes');
@@ -3961,8 +3947,7 @@ class DeliberationsController extends AppController
         $actes = $this->Deliberation->getActesExceptDelib($conditions, $fields, $contain);
         $this->_ajouterFiltre($actes);
 
-        $userId = $this->Session->read('user.User.id');
-        $editerTous = $this->Droits->check($userId, "Deliberations:editerTous");
+        $editerTous = $this->Droits->check($this->user_id, "Deliberations:editerTous");
 
         for ($i = 0; $i < count($actes); $i++) {
             $actes[$i]['Deliberation'][$actes[$i]['Deliberation']['id'] . '_num_pref'] = $actes[$i]['Deliberation']['num_pref'];
@@ -4291,15 +4276,14 @@ class DeliberationsController extends AppController
             return $this->redirect($this->referer());
         }
         $conditions = array();
-        $userId = $this->Session->read('user.User.id');
-        if (!$this->Droits->check($userId, 'Deliberations:tousLesProjetsRecherche')) {
-            $listeCircuits = explode(',', $this->Circuit->listeCircuitsParUtilisateur($userId));
+        if (!$this->Droits->check($this->user_id, 'Deliberations:tousLesProjetsRecherche')) {
+            $listeCircuits = explode(',', $this->Circuit->listeCircuitsParUtilisateur($this->user_id));
             if (!empty($listeCircuits))
                 $conditions['AND']['OR']['Deliberation.circuit_id'] = $listeCircuits;
-            $conditions['AND']['OR']['Deliberation.redacteur_id'] = $userId;
+            $conditions['AND']['OR']['Deliberation.redacteur_id'] = $this->user_id;
        
             //Récupère la liste des délib que l'utilisateur a visé (résolution bug changement circuit non visible)
-            $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($userId));
+            $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($this->user_id));
             if (!empty($listeDelibsParticipe))
                 $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
          }
@@ -4347,7 +4331,7 @@ class DeliberationsController extends AppController
                 $this->Session->setFlash("Impossible de contacter le TDT.", 'growl');
             }
         }
-        return $this->redirect($this->previous);
+        return $this->redirect($this->referer());
     }
 
 
@@ -4358,13 +4342,13 @@ class DeliberationsController extends AppController
             $this->Deliberation->majEchangesTdt($id);
         }
         $this->Session->setFlash('Mise à jour des échanges avec le TDT effectuée.', 'growl');
-        return $this->redirect($this->previous);
+        return $this->redirect($this->referer());
     }
 
     function downloadTdtMessage($message_id = null) {
         if (empty($message_id)){
             $this->Session->setFlash('Merci d\indiquer l\'identifiant du message.', 'growl');
-            return $this->redirect($this->previous);
+            return $this->redirect($this->referer());
         }
 
         $data = $this->Deliberation->TdtMessage->find('first', array(
@@ -4374,7 +4358,7 @@ class DeliberationsController extends AppController
 
         if(empty($data['TdtMessage']['data'])){
             $this->Session->setFlash('Message introuvable en base de données.', 'growl');
-            return $this->redirect($this->previous);
+            return $this->redirect($this->referer());
         }
 
         parent::sendNoCacheHeaders();

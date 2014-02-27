@@ -27,11 +27,10 @@ App::uses('Controller', 'Controller');
  * Add your application-wide methods in the class below, your controllers
  * will inherit them.
  *
- * @package		app.Controller
- * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
+ * @package        app.Controller
+ * @link        http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
-class AppController extends Controller
-{
+class AppController extends Controller {
     public $theme = "Bootstrap";
     public $components = array('Utils', 'Acl', 'Droits', 'Session');
     public $helpers = array('Html', 'Form', 'Session', 'DatePicker', 'Html2');
@@ -39,8 +38,7 @@ class AppController extends Controller
     public $previous;
     public $user_id;
 
-    function beforeFilter()
-    {
+    function beforeFilter() {
         $this->set('Droits', $this->Droits);
         $this->set('name', $this->name);
         $this->set('Droit', $this->Droits);
@@ -49,28 +47,38 @@ class AppController extends Controller
         $this->set('session_service_id', $this->Session->read('user.User.service'));
         $this->set('session_menuPrincipal', $this->Session->read('menuPrincipal'));
         //Si utilisateur connecté
-        if ($this->Session->check('user')){
+        if ($this->Session->check('user')) {
             $this->set('infoUser', $this->Session->read('user.User.prenom') . ' ' . $this->Session->read('user.User.nom'));
             $this->user_id = $this->Session->read('user.User.id');
             $this->set('user_id', $this->user_id);
             $historique = $this->Session->check('user.history') ? $this->Session->read('user.history') : array();
-            if (current($historique) != $this->params->here
-                && stripos(current($historique), 'ajax') === false
-                && stripos(current($historique), 'deliberations/classification') === false
-                && stripos(current($historique), 'seances/voter') === false
-                && stripos(current($historique), 'deliberations/listerPresents') === false
+            if (empty($historique) ||
+                (empty($this->params['requested'])
+                    && stripos($this->params->here, 'ajax') === false
+                    && stripos($this->params->here, 'genere') === false
+                    && stripos($this->params->here, 'deliberations/classification') === false)
             ) {
                 //Ajoute l'url courante au début du tableau
-                $nbHistorique = array_unshift($historique, $this->params->here);
-                //Si ne garder que 10 éléments dans l'historique
-                if ($nbHistorique > 10)
+                if (empty($historique) || $historique[0] != $this->params->here){
+                    //Insère l'url courant en début de tableau (indice 0)
+                    array_unshift($historique, $this->params->here);
+                }
+
+                if (count($historique) > 2 && $historique[0] == $historique[2]) {
+                    array_shift($historique);
+                    array_shift($historique);
+                }
+
+                //Si ne garder que 6 éléments dans l'historique
+                if (count($historique) > 6)
                     array_pop($historique);
-                $this->Session->write('user.history', $historique);
             }
-            if (strpos($this->referer(), $this->params->here) === false)
-                $this->Session->write('previous_url', $this->referer());
-            $this->previous = $this->Session->read('previous_url');
-            $this->set('previous_url', $this->previous);
+            $this->Session->write('user.history', $historique);
+            if (count($historique) > 1) {
+                $this->previous = $historique[1];
+                $this->Session->write('previous_url', $this->previous);
+                $this->set('previous', $this->previous);
+            }
         }
         // ????
         if (CRON_DISPATCHER) return true;
@@ -81,11 +89,12 @@ class AppController extends Controller
 
         if (substr($_SERVER['REQUEST_URI'], strlen($this->base)) != '/users/login'
             && $this->action != 'writeSession'
-            && substr(substr($_SERVER['REQUEST_URI'], strlen($this->base)), 0, strlen('/cakeflow/traitements/traiter_mail')) != '/cakeflow/traitements/traiter_mail') {
+            && substr(substr($_SERVER['REQUEST_URI'], strlen($this->base)), 0, strlen('/cakeflow/traitements/traiter_mail')) != '/cakeflow/traitements/traiter_mail'
+        ) {
 
             //si il n'y a pas d'utilisateur connecte en session
             if (!$this->Session->Check('user')) {
-                return $this->redirect(array('controller' => 'users', 'action' => 'login', 'plugin'=>''));
+                return $this->redirect(array('controller' => 'users', 'action' => 'login', 'plugin' => ''));
             } else {
                 // Contrôle des droits
                 $Pages = array('Pages:format', 'Pages:service');
@@ -103,7 +112,7 @@ class AppController extends Controller
         }
     }
 
-    function afterFilter(){ //FIXME : lastUrl devrait être enregistré dans beforeFilter ?
+    function afterFilter() { //FIXME : lastUrl devrait être enregistré dans beforeFilter ?
         //Navigation (lien de retour)
         if ($this->Session->check('user.User')) {
             $this->Session->write('user.User.myUrl', $this->here);
@@ -121,8 +130,7 @@ class AppController extends Controller
         }
     }
 
-    function externLogin($login = null, $password = null)
-    {
+    function externLogin($login = null, $password = null) {
         $user = $this->User->findByLogin($login);
 
         //si le mdp n'est pas vide et correspond a celui de la bdd
@@ -145,8 +153,7 @@ class AppController extends Controller
         }
     }
 
-    function beforeRender()
-    {
+    function beforeRender() {
         if ($this->Session->check('user.User')) {
             $pos = strpos(Router::url(null, true), 'Ajax');
             if ($pos === false) {
@@ -155,8 +162,7 @@ class AppController extends Controller
         }
     }
 
-    function _selectedArray($data, $key = 'id')
-    {
+    function _selectedArray($data, $key = 'id') {
         if (!is_array($data)) {
             $model = $data;
             if (!empty($this->data[$model][$model])) {
@@ -175,15 +181,15 @@ class AppController extends Controller
         return $array;
     }
 
-     /**
+    /**
      *    Send the headers necessary to ensure the page is
      *    reloaded on every request. Otherwise you could be
      *    scratching your head over out of date test data.
-     *    @access public
-     *    @static
+     * @access public
+     * @static
      */
     public function sendNoCacheHeaders() {
-        if (! headers_sent()) {
+        if (!headers_sent()) {
             header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
             header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
             header("Cache-Control: no-store, no-cache, must-revalidate");
