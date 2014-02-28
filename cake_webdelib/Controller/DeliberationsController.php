@@ -3522,10 +3522,10 @@ class DeliberationsController extends AppController
 
                     if (empty($delib['Deliberation']['delib_pdf'])){
                         $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $this->Deliberation->getModelId($delib_id)));
-                        $filename = $this->fusionName();
-                        $this->odtFusion();
-                        $delib['Deliberation']['delib_pdf']=&$this->getOdtFusionResult();
-                        $this->deleteOdtFusionResult();
+                        $filename = $this->Deliberation->fusionName();
+                        $this->Deliberation->odtFusion();
+                        $delib['Deliberation']['delib_pdf']=&$this->Deliberation->getOdtFusionResult();
+                        $this->Deliberation->deleteOdtFusionResult();
                         $this->Deliberation->saveField('delib_pdf', $delib['Deliberation']['delib_pdf']);
                     }
                     
@@ -3974,17 +3974,17 @@ class DeliberationsController extends AppController
         foreach ($this->data['Deliberation'] as $tmp_id => $bool) {
             if ($bool) {
                 $acte_id = substr($tmp_id, 3, strlen($tmp_id));
-
+                $this->Deliberation->id = $acte_id;
                 $acte = $this->Deliberation->find('first', array(
                     'conditions' => array('Deliberation.id' => $acte_id),
                     'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
                 ));
 
                 $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $this->Deliberation->getModelId($acte['Deliberation']['id'])));
-                $filename = $this->fusionName();
-                $this->odtFusion();
-                $acte['Deliberation']['delib_pdf']=&$this->getOdtFusionResult();
-                $this->deleteOdtFusionResult();
+                $filename = $this->Deliberation->fusionName();
+                $this->Deliberation->odtFusion();
+                $acte['Deliberation']['delib_pdf'] =& $this->Deliberation->getOdtFusionResult();
+                $this->Deliberation->deleteOdtFusionResult();
                 $this->Deliberation->saveField('delib_pdf', $acte['Deliberation']['delib_pdf']);
                 $num = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
                 if ($this->data['Parapheur']['circuit_id'] == -1) {
