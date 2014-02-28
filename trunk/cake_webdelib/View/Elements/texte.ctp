@@ -44,7 +44,7 @@ if (empty($delib['Deliberation'][$key . "_name"]) || isset($validationErrorsArra
     echo '<div class="input file">';
     echo "<label class='libelle'>$libelle</label>";
     echo '<span id="Deliberation' . $key . 'AfficheFichierJoint">';
-    echo ": <a href='$url' download='$filename'>$filename</a>";
+    echo ": <a href='$url' download='$filename' class='noWarn'>$filename</a>";
     echo '&nbsp;&nbsp;';
     echo $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer', "javascript:supprimerFichierJoint('Deliberation', '" . $key . "', '" . $libelle . "')", array('class' => 'btn btn-danger btn-mini', 'escape' => false, 'title' => 'Supprimer le fichier'), "Voulez-vous vraiment supprimer $filename du projet ?");
     echo "</span>";
