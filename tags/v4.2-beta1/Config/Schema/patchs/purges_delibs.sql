@@ -1,0 +1,15 @@
+TRUNCATE TABLE infosups;
+TRUNCATE TABLE votes;
+TRUNCATE TABLE seances;
+TRUNCATE TABLE deliberations_seances;
+TRUNCATE TABLE deliberations_typeseances;
+TRUNCATE TABLE deliberations;
+TRUNCATE TABLE annexes;
+TRUNCATE TABLE wkf_traitements;
+TRUNCATE TABLE tdt_messages;
+TRUNCATE TABLE wkf_signatures;
+TRUNCATE TABLE wkf_visas;
+TRUNCATE TABLE commentaires;
+TRUNCATE TABLE listepresences;
+TRUNCATE TABLE historiques;
+UPDATE sequences SET num_sequence = '0' WHERE sequences.id =1 ;
