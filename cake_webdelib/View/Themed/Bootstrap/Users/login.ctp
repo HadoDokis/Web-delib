@@ -28,8 +28,6 @@
             <?php echo $this->Form->input('User.password', array('type' => 'password', 'escape' => false, 'placeholder' => 'Mot de passe')); ?>
         </div>
     </div>
-    <br/>
-
     <div class="control-group">
         <div class="controls">
             <?php echo $this->Form->button('Connexion', array('div' => false, 'class' => 'btn')); ?>

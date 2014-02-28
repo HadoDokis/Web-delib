@@ -415,15 +415,15 @@ class UsersController extends AppController {
     {
         //pas de message d'erreur
         $this->set('errorMsg', '');
-        $logo = $this->Collectivite->read('logo', 1);
+        $collective = $this->Collectivite->read(array('logo','nom'), 1);
         App::uses('File', 'Utility');
         $file = new File(WEBROOT_PATH . DS . 'files' . DS . 'image' . DS . 'logo.jpg', false);
 
-        if (empty($logo['Collectivite']['logo']))
+        if (empty($collective['Collectivite']['logo']))
             $this->set('logo_path',  $this->base . "/files/image/adullact.jpg");
         else {
             if (!$file->exists())
-                $file->write($logo['Collectivite']['logo']);
+                $file->write($collective['Collectivite']['logo']);
 
             $file->close();
             $this->set('logo_path',  $this->base . "/files/image/logo.jpg");
@@ -455,6 +455,7 @@ class UsersController extends AppController {
             if ($isAuthentif) {
                 //on stocke l'utilisateur en session
                 $this->Session->write('user', $user);
+                $this->Session->write('user.collective', array('nom'=>$collective['Collectivite']['nom']));
                 // On stock la collectivite de l'utilisateur en cas de PASTELL
                 if (Configure::read('USE_PASTELL')) {
                     $coll = $this->Collectivite->find('first', array(
