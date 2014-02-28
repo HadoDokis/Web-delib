@@ -87,5 +87,5 @@ function unblockUI(elt, token) {
         $(elt).attr('href', href.replace('/' + token, ''));
     }
     $("#overlay").remove();
-    $("#modalAttendable").remove();
+    $("#modalAttendable").modal('hide');
 }

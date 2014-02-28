@@ -768,55 +768,16 @@ class Deliberation extends AppModel {
 		}
 		@$oMainPart->addElement($Multi);
 
-		if (Configure::read('GENERER_DOC_SIMPLE')) {
-			if (isset($delib['Deliberation']['texte_projet'])) {
-				$filename = $path."texte_projet.html";
-				$delib['Deliberation']['texte_projet'] = $this->_url2pathImage($delib['Deliberation']['texte_projet']);
-				$this->Gedooo->createFile($path, "texte_projet.html",  $delib['Deliberation']['texte_projet']);
-				$content = $this->Conversion->convertirFichier($filename, 'html', "odt");
-				$oMainPart->addElement(new GDO_ContentType('texte_projet', 'texte_projet.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-			}else $oMainPart->addElement(new GDO_FieldType("texte_projet",      "",    "text"));
-			if (isset($delib['Deliberation']['texte_synthese'])) {
-				$filename = $path."texte_synthese.html";
-				$this->Gedooo->createFile($path, "texte_synthese.html",  $delib['Deliberation']['texte_synthese']);
-				$content = $this->Conversion->convertirFichier($filename, 'html', "odt");
-				$oMainPart->addElement(new GDO_ContentType('note_synthese', 'texte_synthese.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-			}else $oMainPart->addElement(new GDO_FieldType("note_synthese",      "",    "text"));
-			if (isset($delib['Deliberation']['deliberation'])) {
-				$filename = $path."texte_deliberation.html";
-				$this->Gedooo->createFile($path, "texte_deliberation.html",  $delib['Deliberation']['deliberation']);
-				$content = $this->Conversion->convertirFichier($filename, 'html', "odt");
-                $oMainPart->addElement(new GDO_ContentType('texte_deliberation', 'deliberation.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-                $oMainPart->addElement(new GDO_ContentType('texte_acte', 'deliberation.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-			}else{
-                $oMainPart->addElement(new GDO_FieldType("texte_deliberation", '', "text"));
-                $oMainPart->addElement(new GDO_FieldType("texte_acte", '', "text"));
-            }
-			if (isset($delib['Deliberation']['debat'])) {
-				$filename = $path."debat_deliberation.html";
-				$this->Gedooo->createFile($path, "debat_deliberation.html",  $delib['Deliberation']['debat']);
-				$content = $this->Conversion->convertirFichier($filename, 'html', "odt");
-				$oMainPart->addElement(new GDO_ContentType('debat_deliberation', 'debat.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-			}else $oMainPart->addElement(new GDO_FieldType("debat_deliberation",      "",    "text"));
-			if (isset($delib['Deliberation']['commission'])) {
-				$filename = $path."commission.html";
-				$this->Gedooo->createFile($path, "commission.html",  $delib['Deliberation']['commission']);
-				$content = $this->Conversion->convertirFichier($filename, 'html', "odt");
-				$oMainPart->addElement(new GDO_ContentType('debat_commission', 'commission.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
-			}else $oMainPart->addElement(new GDO_FieldType("debat_commission",      "",    "text"));
-		}
-		else {
-
-			if (!$this->Gedooo->checkPath($path))
-				die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-			if (!empty($delib['Deliberation']['texte_projet'])) {
-				$oMainPart->addElement(new GDO_ContentType('texte_projet',
-						'text_projet.odt' ,
-						'application/vnd.oasis.opendocument.text',
-						'binary',
-						$delib['Deliberation']['texte_projet']));
-                        }else $oMainPart->addElement(new GDO_FieldType("texte_projet", "",    "text"));
-			if (!empty($delib['Deliberation']['deliberation'])) {
+                if (!$this->Gedooo->checkPath($path))
+                        die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+                if (!empty($delib['Deliberation']['texte_projet'])) {
+                        $oMainPart->addElement(new GDO_ContentType('texte_projet',
+                                        'text_projet.odt' ,
+                                        'application/vnd.oasis.opendocument.text',
+                                        'binary',
+                                        $delib['Deliberation']['texte_projet']));
+                }else $oMainPart->addElement(new GDO_FieldType("texte_projet", "",    "text"));
+                if (!empty($delib['Deliberation']['deliberation'])) {
                 $oMainPart->addElement(new GDO_ContentType('texte_deliberation',
                     'td.odt',
                     'application/vnd.oasis.opendocument.text' ,
@@ -853,8 +814,6 @@ class Deliberation extends AppModel {
 						$delib['Deliberation']['commission']));
 			}else $oMainPart->addElement(new GDO_FieldType("debat_commission", "", "text"));
 
-		}
-
 		$anns = $this->Annex->find('all', array(
                     'conditions' => array (
                     'Annex.foreign_key' => $delib['Deliberation']['id'],
@@ -873,10 +832,10 @@ class Deliberation extends AppModel {
             $oDevPart = new GDO_PartType();
             $oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
             $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
-            $oDevPart->addElement(new GDO_ContentType('fichier',    $annexe['Annex']['filename'],
+            $oDevPart->addElement(new GDO_ContentType('fichier',    'annexe.odt',
                     'application/vnd.oasis.opendocument.text',
                     'binary',
-                    $annexe['Annex']['edition_data']));
+                     $annexe['Annex']['edition_data']));
             $annexes->addPart($oDevPart);
             unset ($oDevPart);
         }
@@ -2187,14 +2146,14 @@ class Deliberation extends AppModel {
             $oMainPart->addElement(new GDO_FieldType('numero_deliberation', $delib['Deliberation']['num_delib'], 'text'));
         if ($modelOdtInfos->hasUserField('acte_adopte'))
             $oMainPart->addElement(new GDO_FieldType('acte_adopte', (($delib['Deliberation']['etat']==3 && $delib['Deliberation']['vote_nb_oui']==0)?'1':'0'), 'test'));
-        if ($modelOdtInfos->hasUserField('nombre_acteur_pour'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_pour', $delib['Deliberation']['vote_nb_oui'], 'text'));
-        if ($modelOdtInfos->hasUserField('nombre_acteur_abstention'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_abstention', $delib['Deliberation']['vote_nb_abstention'], 'text'));
-        if ($modelOdtInfos->hasUserField('nombre_acteur_contre'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_contre', $delib['Deliberation']['vote_nb_non'], 'text'));
-        if ($modelOdtInfos->hasUserField('nombre_acteur_sans_participation'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_sans_participation', $delib['Deliberation']['vote_nb_retrait'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_pour'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_pour', $delib['Deliberation']['vote_nb_oui'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_abstention'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_abstention', $delib['Deliberation']['vote_nb_abstention'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_contre'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_contre', $delib['Deliberation']['vote_nb_non'], 'text'));
+        if ($modelOdtInfos->hasUserField('nombre_sans_participation'))
+            $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', $delib['Deliberation']['vote_nb_retrait'], 'text'));
         if ($modelOdtInfos->hasUserField('nombre_votant'))
             $oMainPart->addElement(new GDO_FieldType('nombre_votant', $delib['Deliberation']['vote_nb_oui']+$delib['Deliberation']['vote_nb_abstention']+$delib['Deliberation']['vote_nb_non'], 'text'));
         if ($modelOdtInfos->hasUserField('commentaire_vote'))
