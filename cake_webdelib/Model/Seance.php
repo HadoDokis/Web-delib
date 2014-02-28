@@ -427,28 +427,6 @@ class Seance extends AppModel
     }
 
     /**
-     * fonction d'initialisation des variables de fusion pour un projet ou une délibération
-     * les bibliothèques Gedooo doivent être inclues par avance
-     * génère une exception en cas d'erreur
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $deliberationId id du projet/délibération
-     */
-    function setVariablesFusionPourUnProjet(&$oMainPart, &$modelOdtInfos, $deliberationId) {
-        // lectures des séances du projet ou de la délibération
-        $seanceIds = $this->Deliberationseance->nfield('seance_id', array('Deliberationseance.deliberation_id'=>$deliberationId), array('Seance.date'));
-        if (empty($seanceIds)) return;
-
-        // dernière séance hors itération séances
-        if ($modelOdtInfos->hasUserField('position_projet'))
-            $oMainPart->addElement(new GDO_FieldType('position_projet', $this->Deliberation->getPosition($deliberationId, $seanceIds[count($seanceIds)-1]), 'text'));
-        $this->setVariablesFusion($oMainPart, $modelOdtInfos, $seanceIds[count($seanceIds)-1], 'seance', false);
-
-        // pour toutes les séances
-        $this->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $seanceIds);
-    }
-
-    /**
      * fonction d'initialisation des variables de fusion pour plusieurs séances
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
@@ -458,7 +436,7 @@ class Seance extends AppModel
      */
     function setVariablesFusionSeances(&$oMainPart, &$modelOdtInfos, $ids) {
         // pour toutes les séances
-        $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($ids), 'text'));
+//        $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($ids), 'text'));
         $oSectionIteration = new GDO_IterationType('Seances');
         foreach($ids as $id) {
             $oDevPart = new GDO_PartType();
