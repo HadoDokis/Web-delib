@@ -2242,8 +2242,18 @@ class Deliberation extends AppModel {
         $this->Annex->setVariablesFusion($oMainPart, $modelOdtInfos, 'Projet', $id);
 
         // séances
-        if ($addSeanceIterations)
-            $this->Seance->setVariablesFusionPourUnProjet($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
+        $seanceIds = $this->Deliberationseance->nfield('seance_id', array('Deliberationseance.deliberation_id'=>$delib['Deliberation']['id']), array('Seance.date'));
+        $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($seanceIds), 'text'));
+        if (!empty($seanceIds)) {
+            if ($modelOdtInfos->hasUserField('position_projet'))
+                $oMainPart->addElement(new GDO_FieldType('position_projet', $this->getPosition($delib['Deliberation']['id'], $seanceIds[count($seanceIds)-1]), 'text'));
+            if ($addSeanceIterations) {
+                // dernière séance (merci M. Eddy) : délibérante
+                $this->Seance->setVariablesFusion($oMainPart, $modelOdtInfos, $seanceIds[count($seanceIds)-1], 'seance', false);
+                // pour toutes les séances
+                $this->Seance->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $seanceIds);
+            }
+        }
 
         // avis des séances
         if ($modelOdtInfos->hasUserFields('avis', 'avis_favorable', 'commentaire'))
