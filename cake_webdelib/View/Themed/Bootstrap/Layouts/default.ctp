@@ -32,10 +32,10 @@ $cakeDescription = __d('webdelib', 'Webdelib');
             <?php echo $cakeDescription ?>:
             <?php echo $title_for_layout; ?>
         </title>
-        <meta name="robots" content="noindex, nofollow"/>
         <?php
         echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
         echo $this->Html->meta('icon');
+        echo $this->Html->meta(array('name' => 'robots', 'content' => 'noindex, nofollow'));
         echo $this->fetch('meta');
 
         echo $this->Html->css('webdelib');
@@ -60,10 +60,9 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->html->script('waitAndBlock', true);
         echo $this->html->script('masterCheckbox', true);
         echo $this->Html->script('webdelib_init', true);
-		echo $this->html->script('jquery.placeholder.js', true);
+        echo $this->html->script('jquery.placeholder.js', true);
         echo $this->fetch('script');
         ?>
-
     </head>
 <body data-spy="scroll" data-target=".subnav" data-offset="50">
     <div id="container">
@@ -72,14 +71,14 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                 <div class="navbar-inner">
                     <div class='user'>
                         <?php echo $this->Html->image('webdelib_petit.png', array('id' => 'logo')); ?>
-                           <?php if (isset($infoUser)) {
+                        <?php if (isset($infoUser)) {
                             echo $this->Form->create('User', array(
-                                    'id' => 'quickSearch',
-                                    'class' => 'navbar-search form-search pull-right',
-                                    'url' => array(
-                                        'plugin' => null,
-                                        'controller' => 'deliberations',
-                                        'action' => 'quicksearch')));
+                                'id' => 'quickSearch',
+                                'class' => 'navbar-search form-search pull-right',
+                                'url' => array(
+                                    'plugin' => null,
+                                    'controller' => 'deliberations',
+                                    'action' => 'quicksearch')));
                             echo $this->Form->input('User.search', array(
                                 'class' => 'search-query span2',
                                 'div' => false,
@@ -88,7 +87,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                                 'placeholder' => 'Rechercher',
                                 'autocomplete' => 'off'));
                             echo $this->Form->end();
-                           ?>
+                            ?>
                             <script>$('#searchInput').placeholder();</script>
                             <ul class="nav pull-right">
                                 <li class="dropdown">
@@ -96,17 +95,17 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                                             class="user"><?php echo $infoUser; ?></span><b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <?php echo $this->Html->link('Changer le format de sortie des éditions', array('plugin'=>null, 'controller'=>'pages','action'=>'format')); ?>
+                                            <?php echo $this->Html->link('Changer le format de sortie des éditions', array('plugin' => null, 'controller' => 'pages', 'action' => 'format')); ?>
                                         </li>
                                         <li>
-                                            <?php echo $this->Html->link('Changer le service émetteur', array('plugin'=>null, 'controller'=>'pages','action'=>'service')); ?>
+                                            <?php echo $this->Html->link('Changer le service émetteur', array('plugin' => null, 'controller' => 'pages', 'action' => 'service')); ?>
                                         </li>
                                         <li>
-                                            <?php echo $this->Html->link('Changer de mot de passe', array('plugin'=>null, 'controller'=>'users','action'=>'changeUserMdp')); ?>
+                                            <?php echo $this->Html->link('Changer de mot de passe', array('plugin' => null, 'controller' => 'users', 'action' => 'changeUserMdp')); ?>
                                         </li>
                                         <li class="divider"></li>
                                         <li>
-                                            <?php echo $this->Html->link('Se déconnecter', array('plugin'=>null, 'controller'=>'users','action'=>'logout')); ?>
+                                            <?php echo $this->Html->link('Se déconnecter', array('plugin' => null, 'controller' => 'users', 'action' => 'logout')); ?>
                                         </li>
                                     </ul>
                                 </li>
@@ -128,11 +127,11 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                         $carret = '';
                         $classDropdown = '';
                         $title = '';
-                        if (isset($items['subMenu'])){
+                        if (isset($items['subMenu'])) {
                             $carret = ' <b class="caret"></b>';
                             $classDropdown = 'class="dropdown"';
                         }
-                        if (isset($items['title'])){
+                        if (isset($items['title'])) {
                             $title = $items['title'];
                         }
                         echo("<li $classDropdown>");
@@ -147,11 +146,11 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                                 'title' => $title
                             ));
                         if (isset($items['subMenu'])) {
-                            echo $this->Html->tag('ul', null, array('class'=>'dropdown-menu'));
+                            echo $this->Html->tag('ul', null, array('class' => 'dropdown-menu'));
                             foreach ($items['subMenu'] as $key => $url) {
-                                foreach ($url as $titre => $lien){
+                                foreach ($url as $titre => $lien) {
                                     echo $this->Html->tag('li', null);
-                                    echo $this->Html->link($titre, $lien['link'], array('escape'=>false));
+                                    echo $this->Html->link($titre, $lien['link'], array('escape' => false));
                                     echo $this->Html->tag('/li', null);
                                 }
                             }
