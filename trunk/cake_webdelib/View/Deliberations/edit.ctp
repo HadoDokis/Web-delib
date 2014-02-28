@@ -279,9 +279,9 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
                 }
             }
             echo '</div>';
-            echo '<br>';
-            echo "<div class='spacer'> </div>";
-        };?>
+            echo "<div class='spacer'></div>";
+        };
+        ?>
     </div>
 <?php endif; ?>
 
