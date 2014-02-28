@@ -74,6 +74,24 @@ Configure::write('DOC_TYPE', array(
             )
         ),
     ),
+    'application/vnd.oasis.opendocument.presentation' => array(
+        'formatname' => 'OpenDocument Presentation',
+        'extension' => 'odp',
+        'puid' => array(
+            'fmt/138' => array(
+                'actif' => false,
+                'version' => '1.0'
+            ),
+            'fmt/292' => array(
+                'actif' => true,
+                'version' => '1.1'
+            ),
+            'fmt/293' => array(
+                'actif' => true,
+                'version' => '1.2'
+            )
+        ),
+    ),
     'application/msword' => array(
         'formatname' => 'Microsoft Word for Windows',
         'extension' => 'doc',
