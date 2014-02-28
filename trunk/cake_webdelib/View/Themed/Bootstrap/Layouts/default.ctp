@@ -57,7 +57,6 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->html->script('/lib/select2/select2_locale_fr', true);
         echo $this->Html->script('utils');
         echo $this->html->script('attendable', true);
-        echo $this->html->script('waitAndBlock', true);
         echo $this->html->script('masterCheckbox', true);
         echo $this->Html->script('webdelib_init', true);
         echo $this->html->script('jquery.placeholder.js', true);
@@ -166,4 +165,5 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         </div>
     </div>
 <?php echo $this->element('footer'); ?>
+<?php echo $this->element('waiter'); ?>
 <?php echo $this->element('sql_dump'); ?>
