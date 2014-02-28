@@ -64,18 +64,24 @@
                     echo "Validé";
                     break;
                 case 3:
-                    echo "Voté et adopté";
+                    echo "Adopté";
                     break;
                 case 4:
-                    echo "Voté et refusé";
+                    echo "Refusé";
                     break;
                 case 5:
-                    echo "Voté et envoyé";
+                    echo "Envoyé au TDT";
                     break;
             }
             $enCoursSignature = ($acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['parapheur_etat'] == 1);
             if ($acte['Deliberation']['signee'] == 1) {
-                echo ' / Signé';
+                echo ' / ';
+                if (!empty($delib['Deliberation']['signature']))
+                    echo 'Signé&nbsp;<a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;"><i class="fa fa-download"></i></a>';
+                elseif (empty($delib['Deliberation']['parapheur_etat']))
+                    echo 'Signature manuscrite';
+                else
+                    echo 'Signé';
             } elseif ($acte['Deliberation']['parapheur_etat'] == -1) {
                 echo ' / Signature refusée';
             } elseif ($enCoursSignature) {
