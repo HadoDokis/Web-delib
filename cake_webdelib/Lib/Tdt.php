@@ -11,7 +11,7 @@
  */
 App::uses('ComponentCollection', 'Controller');
 App::uses('Component', 'Controller');
-App::uses('s2lowComponent', 'Controller/Component');
+App::uses('S2lowComponent', 'Controller/Component');
 App::uses('PastellComponent', 'Controller/Component');
 App::uses('Deliberation', 'Model');
 App::uses('TdtMessage', 'Model');
