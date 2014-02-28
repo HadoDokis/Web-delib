@@ -180,7 +180,6 @@ class CronsController extends AppController {
      * Liste des crons
      */
     function index() {
-        $this->pageTitle = Configure::read('appName') . ' : ' . __('Tâches planifiées', true);
         $this->request->data = $this->Cron->find('all', array(
             'order' => array('Cron.next_execution_time ASC'),
         ));
