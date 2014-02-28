@@ -32,12 +32,11 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
         echo $this->Html->meta('icon');
         echo $this->fetch('meta');
-
-        echo $this->Html->css('webdelib');
         echo $this->Html->css('jquery.jgrowl.min');
         echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('bootstrap-responsive.min');
         echo $this->Html->css('font-awesome.min');
+        echo $this->Html->css('webdelib');
         echo $this->Html->css('connexion');
         echo $this->fetch('css');
 

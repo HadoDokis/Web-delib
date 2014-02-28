@@ -49,6 +49,7 @@ class AppController extends Controller {
         //Si utilisateur connecté
         if ($this->Session->check('user')) {
             $this->set('infoUser', $this->Session->read('user.User.prenom') . ' ' . $this->Session->read('user.User.nom'));
+            $this->set('Collectivite', array('nom'=> $this->Session->read('user.collective.nom')));
             $this->user_id = $this->Session->read('user.User.id');
             $this->set('user_id', $this->user_id);
             $historique = $this->Session->check('user.history') ? $this->Session->read('user.history') : array();
