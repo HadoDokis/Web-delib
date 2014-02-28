@@ -17,6 +17,11 @@
             $(document.body).append($('<img>').attr('id', 'attendablePreLoaderImg').attr('src', $.fn.attendable.options.loaderImgSrc).hide());
 
         return this.each(function () {
+            // Titre de la fenêtre modale
+            var titre = null;
+            if ($(this).attr('data-modal') !== undefined) titre = $(this).attr('data-modal');
+            else if ($(this).hasClass('delib_pdf') || $(this).hasClass('link_pdf')) titre = 'Génération du document';
+
             if (this.tagName == 'A') {
                 var patt = new RegExp(/confirm\((.+)\)/);
                 //Si onclick présent sur l'élément
@@ -27,20 +32,20 @@
                     $(this).removeAttr('onclick');
                     $(this).click(function () {
                         if (confirm(mesg)) {
-                            $(this).attendableAffiche();
+                            $(this).attendableAffiche(titre);
                             pauseWhileDownload($(this));
                         }
                         else return false;
                     });
                 } else {
                     $(this).click(function () {
-                        $(this).attendableAffiche();
+                        $(this).attendableAffiche(titre);
                         pauseWhileDownload($(this));
                     });
                 }
             } else if (this.tagName == 'FORM') {
                 $(this).on('submit', function () {
-                    $(this).attendableAffiche();
+                    $(this).attendableAffiche(titre);
                 });
             }
         });
@@ -56,17 +61,15 @@
         loaderImgSrc: '/img/ajax-loader.gif'
     };
 
-    $.fn.attendableAffiche = function (confirmTxt) {
-        if ((typeof confirmTxt !== "undefined") && confirmTxt !== '' && !confirm(confirmTxt))
-            return false;
-        
+    $.fn.attendableAffiche = function (titre) {
+        if (titre == null) titre = 'Action en cours de traitement';
         var domModal = $('<div>').attr('id', $.fn.attendable.options.modalDomId);
         domModal.attr('class', 'modal hide fade');
         domModal.attr('tabindex', '-1');
         domModal.attr('role', 'dialog');
         domModal.css({width:'auto', height:'auto'});
         
-        var divTitle=$('<h3>').append('Génération du document');
+        var divTitle=$('<h3>').append(titre);
         domModal.append($('<div>').attr('class', 'modal-header').append(divTitle));
         
         var divBody=$('<div>').attr('class', 'modal-body');
