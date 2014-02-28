@@ -4,8 +4,8 @@
  */
 
 $(document).ready(function () {
-    $(".waiter").attendable();
-    $("a.delib_pdf").attendable({titre: 'Génération du document'});
+    $(".waiter").attendable({});
+    $(".delib_pdf").attendable({titre: 'Génération du document'});
     $("a.link_clore_seance").attendable({titre: 'Cloture de la séance'});
     $('form#DeliberationSendToParapheurForm, form#DeliberationAutreActesValidesForm').attendable({titre: 'Envoi du dossier au Parapheur'});
 });
@@ -23,7 +23,6 @@ $.fn.attendable = function (options) {
         titre,
         options = $.extend({}, defaults, options);//Fusion des options avec celles par défaut
 
-
     return this.each(function () {
         // Titre de la fenêtre modale
         if ($(this).attr('data-modal') !== undefined)
@@ -40,8 +39,8 @@ $.fn.attendable = function (options) {
                 mesg = (mesg[1]).replace(/'/g, "");
                 $(this).removeAttr('onclick');
                 $(this).click(function () {
-                    $('#waiter-titre').text(titre);
                     if (confirm(mesg)) {
+                        $('#waiter-title').text(titre);
                         $("#waiter").modal(modalOptions);
                         pauseWhileDownload($(this));
                     }
@@ -49,12 +48,14 @@ $.fn.attendable = function (options) {
                 });
             } else {
                 $(this).click(function () {
+                    $('#waiter-title').text(titre);
                     $("#waiter").modal(modalOptions);
                     pauseWhileDownload($(this));
                 });
             }
         } else if (this.tagName == 'FORM') {
             $(this).on('submit', function () {
+                $('#waiter-title').text(titre);
                 $("#waiter").modal(modalOptions);
             });
         }
@@ -84,37 +85,21 @@ function setToken() {
 
 // Prevents double-submits by waiting for a cookie from the server.
 function blockUI(elt, token) {
-    var retourRequete = true;
-    var downloadTimer;
-
-    downloadTimer = window.setInterval(function () {
-        if (retourRequete) {
-            retourRequete = false;
-            $.ajax({
-                url: '/models/generationToken/' + token,
-                cache: false,
-                type: 'GET',
-                dataType: 'json',
-                async: false,
-                success: function (response) {
-                    try {
-                        if (token.toString() === response.downloadToken) {
-                            window.clearInterval(downloadTimer);
-                            unblockUI(elt, token);
-                        } else
-                            retourRequete = true;
-                    }
-                    catch (err) {
-                        alert(err);
-                        retourRequete = true;
-                    }
-                },
-                error: function (xhr, status, error) {
-                    retourRequete = true;
+    var downloadTimer = window.setInterval(function () {
+        $.ajax({
+            url: '/models/genereToken/' + token,
+            cache: false,
+            type: 'GET',
+            dataType: 'json',
+            async: false,
+            success: function (response) {
+                if (token.toString() === response.downloadToken) {
+                    window.clearInterval(downloadTimer);
+                    unblockUI(elt, token);
                 }
-            });
-        }
-    }, 1000);
+            }
+        });
+    }, 500);
 }
 
 function unblockUI(elt, token) {
