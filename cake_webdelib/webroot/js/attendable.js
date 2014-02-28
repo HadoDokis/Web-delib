@@ -59,17 +59,37 @@
     $.fn.attendableAffiche = function (confirmTxt) {
         if ((typeof confirmTxt !== "undefined") && confirmTxt !== '' && !confirm(confirmTxt))
             return false;
+        
         var domModal = $('<div>').attr('id', $.fn.attendable.options.modalDomId);
+        domModal.attr('class', 'modal hide fade');
+        domModal.attr('tabindex', '-1');
+        domModal.attr('role', 'dialog');
+        domModal.css({width:'auto', height:'auto'});
+        
+        var divTitle=$('<h3>').append('Génération du document');
+        domModal.append($('<div>').attr('class', 'modal-header').append(divTitle));
+        
+        var divBody=$('<div>').attr('class', 'modal-body');
         //Fix si modale a été supprimer, recharger l'image du loader
-        if ($.fn.attendable.options.loaderImgSrc && $("#attendablePreLoaderImg").length === 0)
-            $(document.body).append($('<img>').attr('id', 'attendablePreLoaderImg').attr('src', $.fn.attendable.options.loaderImgSrc).hide());
-
-        if ($.fn.attendable.options.loaderImgSrc)
-            domModal.append($('#attendablePreLoaderImg').css('display', '').detach()).append('<br><br>');
-        domModal.append($.fn.attendable.options.message);
+//        if ($.fn.attendable.options.loaderImgSrc && $("#attendablePreLoaderImg").length === 0)
+         divBody.append($('<img>').attr('id', 'attendablePreLoaderImg').attr('src', $.fn.attendable.options.loaderImgSrc)).append('<br><br>');
+//        if ($.fn.attendable.options.loaderImgSrc)
+//        
+          //divBody.append($('#attendablePreLoaderImg').css('display', '').detach()).append('<br><br>');
+        
+        divBody.append($.fn.attendable.options.message);
+        divBody.append($('<div>').attr('id', $.fn.attendable.options.overlayDomId));
+        domModal.append(divBody);
+        
+        var divFooter=$('<div>').attr('class', 'modal-footer');
+        domModal.append(divFooter);
+        
         $(document.body).append(domModal);
-        $(document.body).append($('<div>').attr('id', $.fn.attendable.options.overlayDomId));
-        $.fn.attendableResize();
+        
+        $('#'+$.fn.attendable.options.modalDomId).modal({backdrop:'static',
+                                                      //   remote:'remote'
+                                                     });
+        //$.fn.attendableResize();
 
         return true;
     };

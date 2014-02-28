@@ -131,7 +131,7 @@ class ConversionComponent extends Component {
             shell_exec($PDFTK_EXEC.' '.$fileOrigine->pwd().' burst output '.$folder->pwd().'/page_%04d.pdf');
             $fileOrigine->delete();
             
-            $files = $folder->find('.*\.pdf');
+            $files = $folder->find('.*\.pdf', true);
             $i=0;
             foreach ($files as $file) {
                  $file = new File($folder->pwd() . DS . $file);
@@ -142,7 +142,7 @@ class ConversionComponent extends Component {
                  $aFormat=array();
                  foreach ($aInfo as $info)
                      if(is_numeric($info))$aFormat[]=$info;
-                 if($aFormat[0] > $aFormat[1])
+                 if($aFormat[0] < $aFormat[1])
                      $orientaion='portrait'; 
                      else $orientaion='landscape'; 
                      
@@ -151,8 +151,9 @@ class ConversionComponent extends Component {
                                         'orientation'=>$orientaion);
                  
                 $imagick = new Imagick();
+                $imagick->readImage($file->pwd().'[0]');
+                $imagick->setImageUnits(imagick::RESOLUTION_PIXELSPERINCH);
                 $imagick->setResolution( $GS_RESOLUTION, $GS_RESOLUTION); 
-                $imagick->readImage($file->pwd().'['.$i.']');
                 $imagick->setImageFormat('png');
                 $imagick->setImageCompression(Imagick::COMPRESSION_UNDEFINED);
                 $imagick->setImageCompressionQuality(0);
@@ -169,155 +170,45 @@ class ConversionComponent extends Component {
             $files = $folder->find('.*\.png');
             //génération du fichier ODT
             $this->generateOdtFileWithImages($folder,$pageParam);
-            
-            $file = new File($folder->pwd()."/result.odt");
+           
+            $file = new File($folder->pwd().DS.'result.odt');
             $return=$file->read();
             $file->close();
 
             return $return;
         }
         
-        function _generateManifest($manifest) {
-            $XMLManifest = $manifest->createElement('manifest:manifest');
-            $XMLManifest->setAttribute('xmlns:manifest', 'urn:oasis:names:tc:opendocument:xmlns:manifest:1.0');
-
-            $XMLFileEntry = $manifest->createElement('manifest:file-entry');
-            $XMLFileEntry->setAttribute('manifest:media-type', 'application/vnd.oasis.opendocument.text');
-            $XMLFileEntry->setAttribute('manifest:full-path', '/');
-            $XMLManifest->appendChild($XMLFileEntry);
-
-            $XMLFileEntry = $manifest->createElement('manifest:file-entry');
-            $XMLFileEntry->setAttribute('manifest:media-type', 'text/xml');
-            $XMLFileEntry->setAttribute('manifest:full-path', 'content.xml');
-            $XMLManifest->appendChild($XMLFileEntry);
-
-            return $XMLManifest;
-        }
-        
         function generateOdtFileWithImages(&$folder, $aPagePng) {
-            $document = new ZipArchive();
-            $document->open($folder->pwd()."/result.odt", ZIPARCHIVE::OVERWRITE);
-            $document->addEmptyDir('Pictures');
-
-            $manifest = new DOMDocument('1.0', 'utf-8');
-            $XMLManifest = $this->_generateManifest($manifest);
-            $manifest->appendChild($XMLManifest);
-
-            $doc = new DOMDocument('1.0', 'utf-8');
-
-            $XMLDocumentContent = $this->_generateDefaultHeaders($doc);
-            $doc->appendChild($XMLDocumentContent);
-
-            $XMLAutomaticStyles = $this->_generateDefaultStyle($doc);
-            $XMLDocumentContent->appendChild($XMLAutomaticStyles);
-
-            $XMLBody = $doc->createElement('office:body');
-            $XMLDocumentContent->appendChild($XMLBody);
-
-            $XMLText = $doc->createElement('office:text');
-            $XMLText->setAttribute('text:use-soft-page-breaks', 'true');
-            $XMLBody->appendChild($XMLText);
-
-            foreach($aPagePng as $keyPage=>$page) {
-                if (file_exists($page['path'])){
-                    $infos = getimagesize ($page['path']);
-                    if (intval($infos[0]) == 1754) {
-                        $source = imagecreatefrompng($folder->pwd().$page['name']);
-                        $rotate = imagerotate($source, 90, 0);
-                        imagepng( $rotate, $page['path']);
-                        imagedestroy($source);
-                        imagedestroy($rotate);
-                    }
-                    $XMLP = $doc->createElement('text:p');
-                    $XMLP->setAttribute('text:style-name', 'P1');
-
-                    $XMLFrame = $doc->createElement('draw:frame');
-                    $XMLFrame->setAttribute('draw:style-name', 'fr1');
-                    $XMLFrame->setAttribute('draw:name', $keyPage);
-                    $XMLFrame->setAttribute('text:anchor-type', 'char');
-                    $XMLFrame->setAttribute('svg:width', '21cm');
-                    $XMLFrame->setAttribute('svg:height', '29.7cm');
-                    $XMLFrame->setAttribute('draw:z-index', $keyPage);
-
-                    $XMLImage = $doc->createElement('draw:image');
-                    $XMLImage->setAttribute('xlink:href', 'Pictures/'.$page['name']);
-                    $XMLImage->setAttribute('xlink:type', 'simple');
-                    $XMLImage->setAttribute('xlink:show', 'embed');
-                    $XMLImage->setAttribute('xlink:actuate', 'onLoad');
-
-                    $XMLFrame->appendChild($XMLImage);
-                    $XMLP->appendChild($XMLFrame);
-                    $XMLText->appendChild($XMLP);
-
-                    $XMLImageEntry = $manifest->createElement('manifest:file-entry');
-                    $XMLImageEntry->setAttribute('manifest:media-type', '');
-                    $XMLImageEntry->setAttribute('manifest:full-path', 'Pictures/'.$page['name']);
-                    $XMLManifest->appendChild($XMLImageEntry);
-
-                    $document->addFile($page['path'],'Pictures/'.$page['name']);
-                }
-            }
-
-            $document->addFromString('META-INF/manifest.xml', $manifest->saveXML());
-            $document->addFromString('content.xml', $doc->saveXML());
             
+            //App::import('phpodt/phpodt');
+            require_once(APP.DS.'Vendor'.DS.'phpodt'.DS.'phpodt.php');
+            $odt = ODT::getInstance();
+            $pageStyleP = new PageStyle('myPageStylePortrait','Standard');
+            $pageStyleP->setOrientation(StyleConstants::PORTRAIT);
+            $pageStyleP->setHorizontalMargin('0cm', '0cm');
+            $pageStyleP->setVerticalMargin('0cm', '0cm');
+            $pStyleP = new ParagraphStyle('myPStyleP', 'Standard');
+            $pStyleP->setBreakAfter(StyleConstants::PAGE);
+            $pageStyleL = new PageStyle('myPageStyleLandscape','Landscape');
+            $pageStyleL->setOrientation(StyleConstants::LANDSCAPE);
+            $pageStyleL->setHorizontalMargin('0cm', '0cm');
+            $pageStyleL->setVerticalMargin('0cm', '0cm');
+            $pStyleL = new ParagraphStyle('myPStyleL', 'Landscape');
+            $pStyleL->setBreakBefore(StyleConstants::PAGE);
+            
+            
+            foreach($aPagePng as $keyPage=>$page) {
+                
+            if($page['orientation']=='landscape'){
+                $p = new Paragraph($pStyleL);
+            }
+            else{
+                $p = new Paragraph($pStyleP);
+            }
+                
+                $p->addImage($page['path'], '100%', '100%');
+            }
+            $odt->output($folder->pwd().DS.'result.odt');
         }
-
-        function _generateDefaultHeaders($doc) {
-            $XMLDocumentContent = $doc->createElement('office:document-content');
-            $XMLDocumentContent->setAttribute('xmlns:office', 'urn:oasis:names:tc:opendocument:xmlns:office:1.0');
-            $XMLDocumentContent->setAttribute('xmlns:text', 'urn:oasis:names:tc:opendocument:xmlns:text:1.0');
-            $XMLDocumentContent->setAttribute('xmlns:fo', 'urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0');
-            $XMLDocumentContent->setAttribute('xmlns:style', 'urn:oasis:names:tc:opendocument:xmlns:style:1.0');
-            $XMLDocumentContent->setAttribute('xmlns:draw', 'urn:oasis:names:tc:opendocument:xmlns:drawing:1.0');
-            $XMLDocumentContent->setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
-            $XMLDocumentContent->setAttribute('xmlns:svg', 'urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0');
-            $XMLDocumentContent->setAttribute('office:version', '1.2');
-            return $XMLDocumentContent;
-        }
-
-        function _generateDefaultStyle($doc) {
-            $XMLAutomaticStyles = $doc->createElement('office:automatic-styles');
-            $XMLStyleP = $doc->createElement('style:style');
-            $XMLStyleP->setAttribute('style:name', 'P1');
-            $XMLStyleP->setAttribute('style:family', 'paragraph');
-            $XMLStyleP->setAttribute('style:parent-style-name', 'Standard');
-            $XMLStylePChild = $doc->createElement('style:paragraph-properties');
-            $XMLStylePChild->setAttribute('fo:break-before', 'page');
-
-            $XMLStyleP->appendChild($XMLStylePChild);
-            $XMLAutomaticStyles->appendChild($XMLStyleP);
-
-            $XMLStyleI = $doc->createElement('style:style');
-            $XMLStyleI->setAttribute('style:name', 'fr1');
-            $XMLStyleI->setAttribute('style:family', 'graphic');
-            $XMLStyleI->setAttribute('style:parent-style-name', 'Graphics');
-            $XMLStyleIChild = $doc->createElement('style:graphic-properties');
-            $XMLStyleIChild->setAttribute('style:run-through', 'foreground');
-            $XMLStyleIChild->setAttribute('style:wrap', 'run-through');
-            $XMLStyleIChild->setAttribute('style:number-wrapped-paragraphs', 'no-limit');
-            $XMLStyleIChild->setAttribute('style:vertical-pos', 'top');
-            $XMLStyleIChild->setAttribute('style:vertical-rel', 'page');
-            $XMLStyleIChild->setAttribute('style:horizontal-pos', 'center');
-            $XMLStyleIChild->setAttribute('style:horizontal-rel', 'page');
-            $XMLStyleIChild->setAttribute('style:mirror', 'none');
-            $XMLStyleIChild->setAttribute('fo:clip', 'rect(0cm, 0cm, 0cm, 0cm)');
-            $XMLStyleIChild->setAttribute('draw:luminance', '0%');
-            $XMLStyleIChild->setAttribute('draw:contrast', '0%');
-            $XMLStyleIChild->setAttribute('draw:red', '0%');
-            $XMLStyleIChild->setAttribute('draw:green', '0%');
-            $XMLStyleIChild->setAttribute('draw:blue', '0%');
-            $XMLStyleIChild->setAttribute('draw:gamma', '0%');
-            $XMLStyleIChild->setAttribute('draw:color-inversion', 'false');
-            $XMLStyleIChild->setAttribute('draw:image-opacity', '100%');
-            $XMLStyleIChild->setAttribute('draw:color-mode', 'standard');
-            $XMLStyleIChild->setAttribute('style:flow-with-text', 'false');
-            $XMLStyleIChild->setAttribute('style:number-wrapped-paragraphs', '1');
-
-            $XMLStyleI->appendChild($XMLStyleIChild);
-            $XMLAutomaticStyles->appendChild($XMLStyleI);
-
-            return $XMLAutomaticStyles;
-        }
-
-}?>
+}
+?>

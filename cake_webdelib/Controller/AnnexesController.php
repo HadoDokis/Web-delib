@@ -22,8 +22,12 @@ class AnnexesController extends AppController {
         
         $DOC_TYPE = Configure::read('DOC_TYPE');
         
-        //$this->CronJob->convertionAnnexesJob(341);
-
+//      $this->Annex->id=$id;
+//        $this->Annex->saveField('edition_data', NULL);
+//        $this->Annex->save();
+//        
+//        $this->CronJob->convertionAnnexesJob(341);
+//        exit;
         // lecture en base
         $annexe = $this->Annex->find('first', array(
             'fields' => 'data,edition_data,data_pdf,filename,filename_pdf,filetype',
@@ -32,10 +36,9 @@ class AnnexesController extends AppController {
             ));
         
         switch ($type) {
-            case 'data_edition':
+            case 'edition_data':
             $content = $annexe['Annex']['edition_data'];
-            //$content = $this->Conversion->toOdt($annexe['Annex']['data'], $annexe['Annex']['filetype']); // POUR LES TEST
-            $filename = 'data_edition.odt';
+            $filename = 'edition_data.odt';
             $typemime = 'application/vnd.oasis.opendocument.text';
                 break;
             
@@ -46,18 +49,11 @@ class AnnexesController extends AppController {
                 break;
 
             default:
-                if ($DOC_TYPE[$annexe['Annex']['filetype']]['extension'] != 'pdf') {
                     $content = $annexe['Annex']['data'];
                     $filename = $annexe['Annex']['filename'];
                     $typemime = $annexe['Annex']['filetype'];
-                } else {
-                    $content = $annexe['Annex']['data_pdf'];
-                    $filename = $annexe['Annex']['filename_pdf'];
-                    $typemime = $annexe['Annex']['filetype'];
-                }
                 break;
         }
-        
         $this->response->disableCache();
         $this->response->body($content);
         $this->response->type($typemime);

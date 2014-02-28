@@ -167,9 +167,9 @@ class CronJob extends AppModel {
                 'order'=>'modified DESC',
                 'recursive'=>-1
             ));
-            
-            /*$log = $this->Annex->getDataSource()->getLog(false, false);
-            debug($annexes);*/
+            /*debug($condition);
+            $log = $this->Annex->getDataSource()->getLog(false, false);
+            var_dump($annexes);*/
             
             if (!empty($annexes))
             foreach ($annexes as $annexe) {
