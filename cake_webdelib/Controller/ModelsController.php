@@ -12,7 +12,7 @@ class ModelsController extends AppController {
     public $aucunDroit = array(
 			'generer',
 			'getGeneration',
-			'generationToken',
+			'genereToken',
 			'paramMails'
 	);
 
@@ -350,8 +350,7 @@ class ModelsController extends AppController {
 		}
 	}
         
-        function generationToken(){
-//            Configure::write('debug', 0);
+        function genereToken(){
             if ($this->request->is('get')) {
                 $this->autoRender = false;
             
