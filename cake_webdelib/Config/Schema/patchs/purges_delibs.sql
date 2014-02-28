@@ -7,6 +7,7 @@ TRUNCATE TABLE deliberations;
 TRUNCATE TABLE annexes;
 TRUNCATE TABLE wkf_traitements;
 TRUNCATE TABLE tdt_messages;
+TRUNCATE TABLE wkf_signatures;
 TRUNCATE TABLE wkf_visas;
 TRUNCATE TABLE commentaires;
 TRUNCATE TABLE listepresences;
