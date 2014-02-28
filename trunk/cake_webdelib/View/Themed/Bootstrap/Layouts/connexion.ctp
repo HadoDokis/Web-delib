@@ -34,7 +34,6 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         echo $this->fetch('meta');
         echo $this->Html->css('jquery.jgrowl.min');
         echo $this->Html->css('bootstrap.min');
-        echo $this->Html->css('bootstrap-responsive.min');
         echo $this->Html->css('font-awesome.min');
         echo $this->Html->css('webdelib');
         echo $this->Html->css('connexion');
