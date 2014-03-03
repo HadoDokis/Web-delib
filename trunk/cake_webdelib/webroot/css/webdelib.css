@@ -38,7 +38,7 @@ body {
 }
 
 #formatEdition {
-        font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+        //font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
         text-align: right;
         height: 23px;
@@ -112,8 +112,8 @@ th {
 	padding: 0 5px 5px 5px;
 	border: 1px solid #cccccc;
 	background-color: #ccc;
-        //font-size: 1.2em;
-	font: normal normal 14px/17px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+        font-size: 1.2em;
+	//font: normal normal 14px/17px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 }
 
 table tr td {
