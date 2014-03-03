@@ -705,13 +705,13 @@ class DeliberationsController extends AppController
 
             if (!in_array($this->data['Deliberation']['typeacte_id'], $natures)) {
                 $this->Session->setFlash("Vous ne pouvez pas editer le projet '$id' en raison de son type d'acte.", 'growl', array('type' => 'erreur'));
-                return $this->redirect($redirect);
+                return $this->redirect($this->referer());
             }
 
             // teste si le projet est modifiable par l'utilisateur connecté
             if (!$this->Deliberation->estModifiable($id, $user['User']['id'], $this->Droits->check($user['User']['id'], "Deliberations:editerTous"))) {
                 $this->Session->setFlash("Vous n'avez pas les droits pour editer le projet '$id'.", 'growl', array('type' => 'erreur'));
-                return $this->redirect($redirect);
+                return $this->redirect($this->referer());
             }
 
             // initialisation des fichiers des textes
