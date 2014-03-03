@@ -212,8 +212,12 @@ echo $this->Html->link('NEW',
     <?php
     if (!$endDiv) {
         if (isset($models) && !empty($models)) {
-            echo $this->Form->input('Seance.model_id', array('options' => $models, 'label' => 'Modèle'));
-            echo $this->Form->button('<i class="fa fa-cogs"></i> Générer', array('type' => 'submit', 'class' => 'btn btn-primary', 'title' => "Lancer la génération multi-séances (Attention : l'exécution peut être longue)", 'id' => 'generer_multi_seance'));
+            echo $this->html->tag('fieldset', null);
+                echo $this->html->tag('legend', 'Edition multi-séances');
+                echo $this->html->tag('p', 'Cochez des séances dans la liste ci-dessus, sélectionnez le modèle d\'édition, puis cliquez sur le bouton Générer pour lancer la génération du document. Attention, le traitement peut être long.');
+                echo $this->Form->input('Seance.model_id', array('options' => $models, 'label' => 'Modèle d\'édition'));
+                echo $this->Form->button('<i class="fa fa-cogs"></i> Générer', array('type' => 'submit', 'class' => 'btn btn-primary', 'title' => "Lancer la génération multi-séances (Attention : l'exécution peut être longue)", 'id' => 'generer_multi_seance'));
+            echo $this->html->tag('/fieldset', null);
         }
     }
     echo $this->Form->end();
