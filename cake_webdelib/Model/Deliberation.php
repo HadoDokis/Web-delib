@@ -1898,7 +1898,7 @@ class Deliberation extends AppModel {
         $delibs = $this->find('all', array(
             'conditions' => array(
                 'etat' => 5,
-                'tdt_dateAR' => ''
+                'tdt_dateAR' => null
             ),
             'fields' => array(
                 'id',
