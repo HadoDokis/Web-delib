@@ -1015,7 +1015,7 @@ class DeliberationsController extends AppController
                     $this->User->notifier($id, $redacteurId, 'modif_projet_cree');
                 }
                 //Envoi d'une notification de modification aux utilisateurs qui ont déjà validé le projet
-                $destinataires = $this->Traitement->whoIs($id, 'before', 'OK');
+                $destinataires = $this->Traitement->whoIs($id, 'before', array('OK','IN'));
                 foreach ($destinataires as $destinataire_id)
                     if ($destinataire_id != $currentUser)
                         $this->User->notifier($id, $destinataire_id, 'modif_projet_valide');
@@ -1514,7 +1514,7 @@ class DeliberationsController extends AppController
     {
         $nouvelId = $this->Deliberation->refusDossier($id);
         $this->Traitement->execute('KO', $this->user_id, $id);
-        $destinataires = $this->Traitement->whoIs($id, 'in', 'OK');
+        $destinataires = $this->Traitement->whoIs($id, 'in', array('OK','IN'));
         foreach ($destinataires as $destinataire_id)
             $this->User->notifier($nouvelId, $destinataire_id, 'refus');
         $this->Historique->enregistre($id, $this->user_id, 'Projet refusé');
