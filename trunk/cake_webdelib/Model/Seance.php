@@ -436,7 +436,7 @@ class Seance extends AppModel
      */
     function setVariablesFusionSeances(&$oMainPart, &$modelOdtInfos, $ids) {
         // pour toutes les séances
-//        $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($ids), 'text'));
+        $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($ids), 'text'));
         $oSectionIteration = new GDO_IterationType('Seances');
         foreach($ids as $id) {
             $oDevPart = new GDO_PartType();
