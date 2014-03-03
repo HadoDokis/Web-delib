@@ -180,8 +180,7 @@ class ConversionComponent extends Component {
         
         function generateOdtFileWithImages(&$folder, $aPagePng) {
             
-            //App::import('phpodt/phpodt');
-            require_once(APP.DS.'Vendor'.DS.'phpodt'.DS.'phpodt.php');
+            App::import('Vendor', 'phpodt/phpodt');
             $odt = ODT::getInstance();
             $pageStyleP = new PageStyle('myPageStylePortrait','Standard');
             $pageStyleP->setOrientation(StyleConstants::PORTRAIT);
@@ -194,6 +193,7 @@ class ConversionComponent extends Component {
             $pageStyleL->setHorizontalMargin('0cm', '0cm');
             $pageStyleL->setVerticalMargin('0cm', '0cm');
             $pStyleL = new ParagraphStyle('myPStyleL', 'Landscape');
+            
             $pStyleL->setBreakBefore(StyleConstants::PAGE);
             
             
@@ -201,12 +201,12 @@ class ConversionComponent extends Component {
                 
             if($page['orientation']=='landscape'){
                 $p = new Paragraph($pStyleL);
+                $p->addImage($page['path'], '29.7cm','21.001cm',true, $page['name'], 'paragraph');
             }
             else{
                 $p = new Paragraph($pStyleP);
+                $p->addImage($page['path'], '21.001cm', '29.7cm',true, $page['name'], 'paragraph');
             }
-                
-                $p->addImage($page['path'], '100%', '100%');
             }
             $odt->output($folder->pwd().DS.'result.odt');
         }
