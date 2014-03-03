@@ -222,7 +222,7 @@ class SeancesController extends AppController {
 		$format =  $this->Session->read('user.format.sortie');
         $this->set('models', $this->Modeltemplate->find('list', array(
             'recursive' => -1,
-            'conditions' => array('modeltype_id' => array(MODEL_TYPE_TOUTES,MODEL_TYPE_MULTISEANCE)),
+            'conditions' => array('modeltype_id' => array(MODEL_TYPE_MULTISEANCE)),
             'fields' => array('name'))));
 		if (empty($format))
 			$format =0;
