@@ -73,8 +73,9 @@ class Paragraph {
 	 * @param string $image The path to the image
 	 * @param length $width The width of the image (not in pixels)
 	 * @param length $height The height of the image (not in pixels)
+         * @pramam lengh $anchor le type d'attache
 	 */
-	public function addImage($image, $width, $height) {
+	public function addImage($image, $width, $height, $background, $name, $anchor=null) {
 		$file = fopen($image, 'r');
 		if (!$file) {
 			throw new ODTException('Cannot open image');
@@ -86,13 +87,29 @@ class Paragraph {
 		$drawImage = $this->documentContent->createElement('draw:image');
 		$drawImage->setAttribute('svg:width', $width);
 		$drawImage->setAttribute('svg:height', $height);
-		$drawImage->setAttribute('text:anchor-type', 'as-char');
+		switch ($anchor) {
+                    case 'paragraph':
+                        $drawImage->setAttribute('text:anchor-type', 'paragraph');
+                        break;
+
+                    default:
+                        $drawImage->setAttribute('text:anchor-type', 'as-char');
+                        break;
+                }
+                if($background){
+                    $drawImage->setAttribute('draw:z-index', '0');
+                    $drawImage->setAttribute('draw:style-name', 'background-image-'.$name);
+                    
+                    $graphicStyles = new GraphicStyle('background-image-'.$name);
+                    $graphicStyles->setGraphicPosition('background');
+                }
+                
 		$drawImage->appendChild($binaryElement);
 		$drawFrame = $this->documentContent->createElement('draw:frame');
 		$drawFrame->appendChild($drawImage);
 		$this->pElement->appendChild($drawFrame);
 	}
-
+        
 	/**
 	 * Add a line break
 	 */
