@@ -126,13 +126,4 @@
         <!-- Affiche X de Y, où X est la page courante et Y le nombre de pages -->
         <?php echo $this->Paginator->counter(array('format' => 'Page %page% sur %pages%')); ?>
     </div>
-
-    <br/>
-    <?php
-    if (isset($previous))
-        echo $this->Html->link('<--    ', "/deliberations/transmit/null/$previous");
-    if (isset($next))
-        echo $this->Html->link('    -->', "/deliberations/transmit/null/$next");
-    ?>
-
 </div>
