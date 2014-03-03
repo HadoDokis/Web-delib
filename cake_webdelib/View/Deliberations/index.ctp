@@ -30,7 +30,7 @@ if ((@$this->params['filtre'] != 'hide')
     echo $this->Html->tag('h2', "$titreVue $nb");
 }
 if (isset($traitement_lot) && ($traitement_lot == true))
-    echo $this->Form->create('Deliberation', array('url' => '/deliberations/traitementLot', 'type' => 'post'));
+    echo $this->Form->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'traitementLot'), 'type' => 'post'));
 ?>
 <table>
     <tr>
@@ -52,7 +52,8 @@ if (isset($traitement_lot) && ($traitement_lot == true))
     </tr>
 
     <?php
-    foreach ($this->data as $deliberation) { ?>
+    foreach ($this->data as $deliberation) {
+        ?>
         <tr>
             <td rowspan="3" style="text-align:center;">
                 <br/>
@@ -80,7 +81,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
             <td>Séance(s) :<br/>
                 <?php
                 if (in_array('attribuerSeance', $deliberation['Actions'])) {
-                    echo $this->Form->create('Deliberation', array('url' => '/deliberations/attribuerSeance', 'type' => 'post'));
+                    echo $this->Form->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'attribuerSeance'), 'type' => 'post'));
                     echo $this->Form->input(
                         'Deliberation.seance_id', array(
                             'type' => 'select',
@@ -98,7 +99,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                     echo $this->Form->end();
                 } else {
                     foreach ($deliberation['listeSeances'] as $seance)
-                            echo $seance['libelle'] . (isset($seance['date']) && !empty($seance['date'])?' : ' .$this->Html2->ukToFrenchDateWithHour($seance['date']):''). '<br/>';
+                        echo $seance['libelle'] . (isset($seance['date']) && !empty($seance['date']) ? ' : ' . $this->Html2->ukToFrenchDateWithHour($seance['date']) : '') . '<br/>';
                 }
                 ?>
             </td>
@@ -107,7 +108,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                 <?php
                 if (in_array('view', $deliberation['Actions']))
                     echo $this->Html->link(SHY,
-                        '/deliberations/view/' . $deliberation['Deliberation']['id'],
+                        array('controller' => 'deliberations', 'action' => 'view', $deliberation['Deliberation']['id']),
                         array('class' => 'link_voir',
                             'title' => 'Voir le projet ' . $deliberation['Deliberation']['objet'],
                             'escape' => false),
@@ -115,50 +116,51 @@ if (isset($traitement_lot) && ($traitement_lot == true))
 
                 if (in_array('edit', $deliberation['Actions']) && ($deliberation['Deliberation']['signee'] != 1))
                     echo $this->Html->link(SHY,
-                        '/deliberations/edit/' . $deliberation['Deliberation']['id'],
+                        array('controller' => 'deliberations', 'action' => 'edit', $deliberation['Deliberation']['id']),
                         array('class' => 'link_modifier',
                             'title' => 'Modifier le projet ' . $deliberation['Deliberation']['objet'],
                             'escape' => false
-                        ),
-                        false);
+                        ));
 
                 if (in_array('delete', $deliberation['Actions']))
                     echo $this->Html->link(SHY,
-                        '/deliberations/delete/' . $deliberation['Deliberation']['id'],
+                        array('controller' => 'deliberations', 'action' => 'delete', $deliberation['Deliberation']['id']),
                         array('class' => 'link_supprimer',
                             'escape' => false,
                             'title' => 'Supprimer le projet ' . $deliberation['Deliberation']['objet'],
                         ),
-                        'Confirmez-vous la suppression du projet \'' . $deliberation['Deliberation']['objet'] . '\' ?',
-                        false);
+                        'Confirmez-vous la suppression du projet \'' . $deliberation['Deliberation']['objet'] . '\' ?');
 
                 if (in_array('traiter', $deliberation['Actions']))
                     echo $this->Html->link(SHY,
-                        "/deliberations/traiter/" . $deliberation['Deliberation']['id'],
-                        array('class' => "link_traiter",
+                        array('controller' => 'deliberations', 'action' => 'traiter', $deliberation['Deliberation']['id']),
+                        array(
+                            'class' => "link_traiter",
                             'escape' => false,
-                            'title' => 'Traiter le projet ' . $deliberation['Deliberation']['objet']),
-                        false);
+                            'title' => 'Traiter le projet ' . $deliberation['Deliberation']['objet']));
 
                 if (in_array('validerEnUrgence', $deliberation['Actions']))
                     echo $this->Html->link(SHY,
-                        "/deliberations/validerEnUrgence/" . $deliberation['Deliberation']['id'],
-                        array('class' => "link_validerenurgence",
+                        array('controller' => 'deliberations', 'action' => 'validerEnUrgence', $deliberation['Deliberation']['id']),
+                        array(
+                            'class' => "link_validerenurgence",
                             'title' => 'Valider en urgence le projet ' . $deliberation['Deliberation']['objet'],
                             'escape' => false),
                         'Confirmez-vous la validation en urgence du projet \'' . $deliberation['Deliberation']['id'] . '\'');
 
                 if (in_array('goNext', $deliberation['Actions']))
-                    echo $this->Html->link(SHY, "/deliberations/goNext/" . $deliberation['Deliberation']['id'],
-                        array('class' => "link_jump",
+                    echo $this->Html->link(SHY,
+                        array('controller' => 'deliberations', 'action' => 'goNext', $deliberation['Deliberation']['id']),
+                        array(
+                            'class' => "link_jump",
                             'title' => 'Sauter une ou des étapes pour le projet ' . $deliberation['Deliberation']['objet'],
-                            'escape' => false),
-                        false);
-
-                echo '<br /><br/><br/>';
+                            'escape' => false));
+                echo '<div class="spacer"></div>';
+                echo '<br/>';
                 if (in_array('attribuerCircuit', $deliberation['Actions']) && ($deliberation['Deliberation']['signee'] != 1)) {
-                    $actionAttribuer = '/deliberations/attribuercircuit/' . $deliberation['Deliberation']['id'];
-                    $actionAttribuer .= $deliberation['Deliberation']['circuit_id'] ? '/' . $deliberation['Deliberation']['circuit_id'] : '';
+                    $actionAttribuer = array('controller' => 'deliberations', 'action' => 'attribuercircuit', $deliberation['Deliberation']['id']);
+                    if (!empty($deliberation['Deliberation']['circuit_id']))
+                        $actionAttribuer[] = $deliberation['Deliberation']['circuit_id'];
                     echo $this->Html->link(SHY,
                         $actionAttribuer,
                         array('class' => 'link_circuit',
@@ -168,26 +170,18 @@ if (isset($traitement_lot) && ($traitement_lot == true))
 
                 }
                 if (in_array('generer', $deliberation['Actions'])) {
-echo $this->Html->link('NEW',
-    '/deliberations/genereFusionToClient/' . $deliberation['Deliberation']['id'],
-    array(
-        'class' => 'link_pdf waiter',
-        'escape' => false,
-        'title' => 'Nouvelle méthode pour visionner PDF pour le projet ' . $deliberation['Deliberation']['objet']. ' nouvelle méthode'),
-    false);
                     if (empty($deliberation['Deliberation']['delib_pdf']))
-                        echo $this->Html->link(SHY,
-                            '/models/generer/' . $deliberation['Deliberation']['id'] . '/null/' . $deliberation['Modeltemplate']['id'] . '/-1/0/projet_'.$deliberation['Deliberation']['id'].'/0/0/0/',
+                        echo $this->Html->link('NEW',
+                            array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
                             array(
-                                'class' => 'link_pdf waiter',
+                                'class' => 'link_pdf delib_pdf',
                                 'escape' => false,
-                                'title' => 'Visionner PDF pour le projet ' . $deliberation['Deliberation']['objet']),
-                            false);
+                                'title' => 'Générer le document PDF du projet ' . $deliberation['Deliberation']['objet']));
                     else
                         echo $this->Html->link(SHY,
-                            '/deliberations/downloadDelib/' . $deliberation['Deliberation']['id'],
-                            array('class' => 'link_pdf',
-                                'title' => 'Visionner PDF pour le projet ' . $deliberation['Deliberation']['objet'],
+                            array('controller' => 'deliberations', 'action' => 'downloadDelib', $deliberation['Deliberation']['id']),
+                            array('class' => 'link_pdf delib_pdf',
+                                'title' => 'Visionner le document PDF du projet ' . $deliberation['Deliberation']['objet'],
                                 'escape' => false),
                             false);
                 }
