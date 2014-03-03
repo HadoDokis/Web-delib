@@ -1712,16 +1712,10 @@ class SeancesController extends AppController {
             if (!in_array($typeFusion, $allowedFusionTypes))
                 throw new Exception('le type de modèle d\'édition '.$typeFusion.' n\'est par autorisé');
 
-            // lecture de la liste des acteurs convoqués
-            $typeSeanceId = $this->Seance->field('type_id', array('id'=>$id));
-            $convoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($typeSeanceId, null, array('id'));
-            if (empty($convoques))
-                throw new Exception('Aucun acteur convoqué pour la séance id:'.$id);
-
             // fusion du document
             $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelOptions'=>array('modelTypeName'=>$typeFusion)));
             $filename = $this->Seance->fusionName();
-            $this->Seance->odtFusion(array('modelOptions'=>array('acteurId'=>$convoques[0]['Acteur']['id'])));
+            $this->Seance->odtFusion();
 
             // selon le format d'envoi du document (pdf ou odt)
             if ($this->Session->read('user.format.sortie') == 0) {
