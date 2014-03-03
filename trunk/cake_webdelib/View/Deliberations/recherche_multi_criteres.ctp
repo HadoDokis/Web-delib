@@ -13,6 +13,7 @@
                 <?php echo $this->Form->input('Deliberation.id', array(
                     'type' => 'number',
                     'between' => '</td><td>',
+                    'min' => 1,
                     'label' => 'Identifiant du projet',
                     'style' => 'width: 100px'
                 ));
