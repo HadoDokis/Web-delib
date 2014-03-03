@@ -3026,7 +3026,7 @@ class DeliberationsController extends AppController
             $this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
             $this->set('models', $this->Modeltemplate->find('list', array(
                 'recursive' => -1,
-                'conditions' => array('modeltype_id' => array(MODEL_TYPE_TOUTES,MODEL_TYPE_RECHERCHE)),
+                'conditions' => array('modeltype_id' => array(MODEL_TYPE_RECHERCHE)),
                 'fields' => array('Modeltemplate.id', 'Modeltemplate.name'))));
 
             $this->render('rechercheMultiCriteres');
@@ -3121,7 +3121,10 @@ class DeliberationsController extends AppController
                         if (empty($format))
                             $format = 0;
 
-                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format, $multiseances, $conditions);
+//                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format, $multiseances, $conditions);
+                        $deliberationIds = array();
+                        foreach($projets as &$projet) $deliberationIds[] = $projet['Deliberation']['id'];
+                        return $this->_genereFusionRechercheToClient($deliberationIds, $this->data['Deliberation']['model'], $this->data['waiter']['token']);
                     } else {
                         $this->Session->setFlash('Aucun résultat à la recherche effectuée.', 'growl', array('type' => 'erreur'));
                         $this->redirect(array('action'=>'mesProjetsRecherche'));
@@ -3152,7 +3155,7 @@ class DeliberationsController extends AppController
                 'recursive' => -1)));
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
             $this->set('models', $this->Modeltemplate->find('list', array(
-                'conditions' => array('modeltype_id' => array(MODEL_TYPE_TOUTES,MODEL_TYPE_RECHERCHE)),
+                'conditions' => array('modeltype_id' => array(MODEL_TYPE_RECHERCHE)),
                 'fields' => array('Modeltemplate.id', 'Modeltemplate.name'))));
             $this->set('listeBoolean', $this->Infosupdef->listSelectBoolean);
 
@@ -3252,8 +3255,12 @@ class DeliberationsController extends AppController
                         $format = 0;
                     //if (count($multiseances) == 1)
                     $multiseances = array();
-                    if (!empty($projets) || !empty($multiseances))
-                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format, $multiseances, $conditions);
+                    if (!empty($projets) || !empty($multiseances)) {
+//                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format, $multiseances, $conditions);
+                        $deliberationIds = array();
+                        foreach($projets as &$projet) $deliberationIds[] = $projet['Deliberation']['id'];
+                        return $this->_genereFusionRechercheToClient($deliberationIds, $this->data['Deliberation']['model'], $this->data['waiter']['token']);
+                    }
                     else {
                         $this->Session->setFlash('Aucun projet correspondant aux critères de recherche.', 'growl', array('type' => 'erreur'));
                         $this->redirect(array('action'=>'tousLesProjetsRecherche'));
@@ -4468,4 +4475,37 @@ class DeliberationsController extends AppController
         }
     }
 
+    /**
+     * fonction de fusion de plusieurs projets ou délibérations avec envoi du résultat vers le client
+     * @param $ids
+     * @param $modelTemplateId
+     * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
+     */
+    function _genereFusionRechercheToClient($ids, $modelTemplateId, $cookieToken) {
+        // fusion du document
+        $this->Seance->Behaviors->load('OdtFusion', array('modelTemplateId'=>$modelTemplateId));
+        $this->Deliberation->Behaviors->load('OdtFusion', array('modelTemplateId'=>$modelTemplateId));
+        $filename = $this->Deliberation->fusionName();
+        $this->Deliberation->odtFusion(array('modelOptions'=>array('deliberationIds'=>$ids)));
+
+        // selon le format d'envoi du document (pdf ou odt)
+        if ($this->Session->read('user.format.sortie') == 0) {
+            $mimeType = "application/pdf";
+            $filename = $filename . '.pdf';
+            $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult->content->binary, 'odt', 'pdf');
+        } else {
+            $mimeType = "application/vnd.oasis.opendocument.text";
+            $filename = $filename . '.odt';
+            $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult->content->binary, 'odt', 'odt');
+        }
+        unset($this->Deliberation->odtFusionResult->content->binary);
+
+        // envoi au client
+        $this->Session->write('Generer.downloadToken', $cookieToken, false, 3600);
+        $this->response->disableCache();
+        $this->response->body($content);
+        $this->response->type($mimeType);
+        $this->response->download($filename);
+        return $this->response;
+    }
 }
