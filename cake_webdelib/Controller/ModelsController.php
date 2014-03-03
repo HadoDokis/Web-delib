@@ -259,22 +259,8 @@ class ModelsController extends AppController {
 		 	if (!$this->Gedooo->checkPath($path))
 		 		die("Webdelib ne peut pas ecrire dans le repertoire : $path");
 
-            $urlWebroot =  FULL_BASE_URL.$dyn_path;
+                 $urlWebroot =  FULL_BASE_URL.$dyn_path;
 
-		 	if (Configure::read('GENERER_DOC_SIMPLE')) {
-		 		include_once ('controllers/components/conversion.php');
-                if ($progress)
-                    $this->Progress->at(70, 'Conversion du document...');
-		 		$this->Conversion = new ConversionComponent;
-
-		 		$filename = $path."debat_seance.html";
-		 		$this->Gedooo->createFile($path, "debat_seance.html",  $seance['Seance']['debat_global']);
-		 		$content = $this->Conversion->convertirFichier($filename, 'odt', "odt");
-
-		 		$oMainPart->addElement(new GDO_ContentType('debat_seance',  $filename, 'application/vnd.oasis.opendocument.text', 'binary', $content));
-		 	}
-		 	else {
-                                
                 /**
                  * FIXME variable inutilisée !!?
                  */
@@ -283,7 +269,6 @@ class ModelsController extends AppController {
 		 		else {
 		 			$oMainPart->addElement(new GDO_ContentType('debat_seance', 'debat_seance.odt', "application/vnd.oasis.opendocument.text" , 'binary', $seance['Seance']['debat_global'] ));
 		 		}
-		 	}
 		 }
 		}
                 
