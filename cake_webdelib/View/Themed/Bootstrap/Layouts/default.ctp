@@ -62,125 +62,124 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         ?>
     </head>
     <body data-spy="scroll" data-target=".subnav" data-offset="50">
-     <div class="container">
-<div class="navbar navbar-inverse navbar-fixed-top">
-                    <div class="navbar-inner">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-            <a class="brand" href="#">
-            <?php echo $this->Html->image('webdelib_petit.png', array('id' => 'logo', 'alt' => 'webdelib', 'class'=>'logo')); ?>
-          </a>
-          <div class="nav-collapse collapse" style='margin-left: 260px'>
-            <ul class="nav">
-              <li class="active"><a href="#"><?php echo $Collectivite['nom']?></a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-         <div class="nav-collapse collapse pull-right"> 
-                            <?php
-                                echo $this->Form->create('User', array(
-                                    'id' => 'quickSearch',
-                        'class' => 'navbar-search pull-right',
-                                    'url' => array(
-                                        'plugin' => null,
-                                        'controller' => 'deliberations',
-                                        'action' => 'quicksearch')));
-                                echo $this->Form->input('User.search', array(
-                                    'class' => 'search-query span2',
-                                    'div' => false,
-                                    'label' => false,
-                                    'id' => 'searchInput',
-                                    'placeholder' => 'Rechercher',
-                                    'autocomplete' => 'off'));
-                                echo $this->Form->end();
-                                ?>
-         </div><!--/.nav-collapse -->
-          <div class="nav-collapse collapse pull-right">
-            <ul class="nav">
-                <li class="dropdown pull-right">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <span class="user"><?php  echo $infoUser; ?></span>
-                    <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu pull-right">
-                                            <li>
-                        <?php  echo $this->Html->link('Changer le format de sortie des éditions', array('plugin'=>null, 'controller'=>'pages','action'=>'format')); ?>
-                                            </li>
-                                            <li>
-                        <?php  echo $this->Html->link('Changer le service émetteur', array('plugin'=>null, 'controller'=>'pages','action'=>'service')); ?>
-                                            </li>
-                                            <li>
-                        <?php  echo $this->Html->link('Changer de mot de passe', array('plugin'=>null, 'controller'=>'users','action'=>'changeUserMdp')); ?>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                        <?php  echo $this->Html->link('Se déconnecter', array('plugin'=>null, 'controller'=>'users','action'=>'logout')); ?>
-                                            </li>
-                                        </ul>
+            <div class="navbar navbar-inverse navbar-fixed-top">
+                <div class="navbar-inner">
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <?php
+                    echo $this->Html->link(
+                            $this->Html->image('webdelib_petit.png', array('id' => 'logo', 'class' => 'logo', 'alt' => 'Webdelib')), array('controller' => 'pages', 'action' => 'home'), array('escape' => false, 'title' => 'Bienvenue dans Webdelib', 'class' => 'brand')
+                    );
+                    ?>
+                    <div class="nav-collapse collapse" style='margin-left: 260px'>
+                        <ul class="nav">
+                            <li class="active">
+<?php echo $this->Html->link($Collectivite['nom'], array('controller' => 'pages', 'action' => 'home')); ?>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                    <div class="nav-collapse collapse pull-right"> 
+<?php
+echo $this->Form->create('User', array(
+    'id' => 'quickSearch',
+    'class' => 'navbar-search pull-right',
+    'url' => array(
+        'plugin' => null,
+        'controller' => 'deliberations',
+        'action' => 'quicksearch')));
+echo $this->Form->input('User.search', array(
+    'class' => 'search-query span2',
+    'div' => false,
+    'label' => false,
+    'id' => 'searchInput',
+    'placeholder' => 'Rechercher',
+    'autocomplete' => 'off'));
+echo $this->Form->end();
+?>
+                    </div><!--/.nav-collapse -->
+                    <div class="nav-collapse collapse pull-right">
+                        <ul class="nav">
+                            <li class="dropdown pull-right">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <span class="user"><?php echo $infoUser; ?></span>
+                                    <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu pull-right">
+                                    <li>
+<?php echo $this->Html->link('Changer le format de sortie des éditions', array('plugin' => null, 'controller' => 'pages', 'action' => 'format')); ?>
+                                    </li>
+                                    <li>
+<?php echo $this->Html->link('Changer le service émetteur', array('plugin' => null, 'controller' => 'pages', 'action' => 'service')); ?>
+                                    </li>
+                                    <li>
+<?php echo $this->Html->link('Changer de mot de passe', array('plugin' => null, 'controller' => 'users', 'action' => 'changeUserMdp')); ?>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+<?php echo $this->Html->link('Se déconnecter', array('plugin' => null, 'controller' => 'users', 'action' => 'logout')); ?>
                                     </li>
                                 </ul>
-            </div><!--/.nav-collapse -->
-                        </div>
-                    </div>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
                 </div>
-    <script>$('#searchInput').placeholder();</script>
-        
-<!--        <div class="container-fluid"><div class="container">-->
-            <div class="container">
-                <?php
-                App::uses('Debugger', 'Utility');
-                if (Configure::read('debug') > 0):
-                    Debugger::checkSecurityKeys();
-                endif;
-                ?>
-                <ul class="nav nav-tabs">
-                    <?php
-                    if (isset($session_menuPrincipal['items'])) {
-                        foreach ($session_menuPrincipal['items'] as $libelle => $items) {
-                            $carret = '';
-                            $classDropdown = '';
-                            $title = '';
-                        if (isset($items['subMenu'])){
-                                $carret = ' <b class="caret"></b>';
-                                $classDropdown = 'class="dropdown"';
-                            }
-                        if (isset($items['title'])){
-                                $title = $items['title'];
-                            }
-                            echo("<li $classDropdown>");
-                            if ($libelle == "Accueil")
-                                echo $this->Html->link($libelle, $items['link']);
-                            else
-                                echo $this->Html->link("$libelle $carret", $items['link'], array(
-                                    'escape' => false,
-                                    'class' => 'dropdown-toggle',
-                                    'data-toggle' => 'dropdown',
-                                    'data-target' => '#',
-                                    'title' => $title
-                                ));
-                            if (isset($items['subMenu'])) {
-                            echo $this->Html->tag('ul', null, array('class'=>'dropdown-menu'));
-                                foreach ($items['subMenu'] as $key => $url) {
-                                foreach ($url as $titre => $lien){
-                                        echo $this->Html->tag('li', null);
-                                    echo $this->Html->link($titre, $lien['link'], array('escape'=>false));
-                                        echo $this->Html->tag('/li', null);
-                                    }
-                                }
-                                echo $this->Html->tag('/ul', null);
-                            }
+            </div>
+        <script>$('#searchInput').placeholder();</script>
+
+<?php
+App::uses('Debugger', 'Utility');
+if (Configure::read('debug') > 0):
+    Debugger::checkSecurityKeys();
+endif;
+?>
+        <ul class="nav nav-tabs">
+        <?php
+        if (isset($session_menuPrincipal['items'])) {
+            foreach ($session_menuPrincipal['items'] as $libelle => $items) {
+                $carret = '';
+                $classDropdown = '';
+                $title = '';
+                if (isset($items['subMenu'])) {
+                    $carret = ' <b class="caret"></b>';
+                    $classDropdown = 'class="dropdown"';
+                }
+                if (isset($items['title'])) {
+                    $title = $items['title'];
+                }
+                echo("<li $classDropdown>");
+                if ($libelle == "Accueil")
+                    echo $this->Html->link($libelle, $items['link']);
+                else
+                    echo $this->Html->link("$libelle $carret", $items['link'], array(
+                        'escape' => false,
+                        'class' => 'dropdown-toggle',
+                        'data-toggle' => 'dropdown',
+                        'data-target' => '#',
+                        'title' => $title
+                    ));
+                if (isset($items['subMenu'])) {
+                    echo $this->Html->tag('ul', null, array('class' => 'dropdown-menu'));
+                    foreach ($items['subMenu'] as $key => $url) {
+                        foreach ($url as $titre => $lien) {
+                            echo $this->Html->tag('li', null);
+                            echo $this->Html->link($titre, $lien['link'], array('escape' => false));
                             echo $this->Html->tag('/li', null);
                         }
                     }
-                    ?>
-                </ul>
-            </div>
-            <!-- Contents -->
-            <div class="default-template-content">
-                <?php echo $this->Session->flash(); ?>
+                    echo $this->Html->tag('/ul', null);
+                }
+                echo $this->Html->tag('/li', null);
+            }
+        }
+        ?>
+        </ul>
+        <!-- Contents -->
+        <div class="default-template-content">
+<?php echo $this->Session->flash(); ?>
             <?php echo $this->fetch('content'); ?>
-            </div>
+        </div>
             <?php echo $this->element('footer'); ?>
-<?php //echo $this->element('sql_dump'); ?>
+        <?php echo $this->element('sql_dump');  ?>
