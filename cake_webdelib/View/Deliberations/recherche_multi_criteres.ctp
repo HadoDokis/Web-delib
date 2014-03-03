@@ -133,14 +133,14 @@
         <tr>
             <td><?php echo $this->Form->label('Deliberation.generer', 'Générer le document'); ?> </td>
             <td>
-                <?php echo $this->Form->input('Deliberation.generer', array('type' => 'checkbox', 'label' => false, 'div' => false, 'onClick' => "if(this.checked) $('#DeliberationModel').show(); else $('#DeliberationModel').hide(); ")); ?>
-                <?php echo $this->Form->input('Deliberation.model', array('label' => false, 'options' => $models, 'div' => false, 'style' => 'display:none;')); ?>
+                <?php echo $this->Form->input('Deliberation.generer', array('type' => 'checkbox', 'label' => false, 'div' => false, 'style' => 'float:left; margin-right:15px;')); ?>
+                <?php echo $this->Form->input('Deliberation.model', array('label' => false, 'options' => $models, 'div' => array('style' => 'display:none; float:left; margin-top:-3px; min-width:220px;', 'id' => 'DeliberationModeltemplate'))); ?>
             </td>
         </tr>
         <tr>
             <td colspan="2" style="text-align: center;">
                 <?php
-                echo $this->Form->button('<i class="fa fa-search"></i> Rechercher', array('type' => 'submit', 'div' => false, 'class' => 'btn btn-primary', 'name' => 'Rechercher', 'style' => 'margin-bottom:10px;'));
+                echo $this->Form->button('<i class="fa fa-search"></i> Rechercher', array('type' => 'submit', 'div' => false, 'class' => 'btn btn-primary', 'name' => 'Rechercher', 'style' => 'margin-bottom:10px;', 'id' => 'submitSearchForm'));
                 ?>
             </td>
         </tr>
@@ -163,6 +163,17 @@
 
 <script type="application/javascript">
     $(document).ready(function () {
+        $("#DeliberationGenerer").change(function(){
+            if($(this).prop('checked')){
+                $('#DeliberationModeltemplate').show();
+                $('#submitSearchForm').html("<i class='fa fa-file-text'></i> Générer le document");
+            }
+            else {
+                $('#DeliberationModeltemplate').hide();
+                $('#submitSearchForm').html("<i class='fa fa-search'></i> Rechercher");
+            }
+        });
+        $("#DeliberationGenerer").prop('checked', false);
         $('select').select2({
             width: "100%",
             allowClear: true,
