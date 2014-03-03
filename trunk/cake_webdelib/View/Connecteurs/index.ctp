@@ -1,19 +1,15 @@
-<?php
-echo $this->Html->css('connecteurs');
-?>
+<?php echo $this->Html->css('connecteurs'); ?>
 <h2>Gestion des connecteurs</h2>
-<table class="table table-hover" id="connecteurs">
-    <th>Types</th>
-    <th>Actions</th>
+<table class="table table-striped" id="connecteurs">
     <?php
     $numLigne = 1;
     foreach ($connecteurs as $id => $connecteur) {
         if ($id < 1)
             continue;
-        $rowClass = ($numLigne & 1) ? array('style' => 'height: 36px') : array('style' => 'height: 36px', 'class' => 'altrow');
-        echo $this->Html->tag('tr', null, $rowClass);
-        echo '<td>' . $connecteur . '</td>';
-        echo '<td class="actions btn-group">';
+        echo $this->Html->tag('tr', null);
+        echo $this->Html->tag('td', $connecteur, array('style' => 'border-right:0;'));
+        echo $this->Html->tag('td', null, array('style' => 'text-align:right; border-left:0;'));
+        echo $this->Html->tag('div', null, array('class' => 'btn-group'));
         echo $this->Html->link('<i class="fa fa-edit"></i>', array('action' => 'edit', $id), array(
             'class' => 'btn',
             'title' => "Modifier le connecteur $connecteur",
@@ -24,8 +20,9 @@ echo $this->Html->css('connecteurs');
             'title' => "Tester le connecteur $connecteur",
             'escape' => false
         ));
-        echo '</td>';
-        echo '</tr>';
+        echo $this->Html->tag('/div');
+        echo $this->Html->tag('/td');
+        echo $this->Html->tag('/tr');
     }
     ?>
 </table>
