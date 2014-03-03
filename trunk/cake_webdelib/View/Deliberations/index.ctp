@@ -40,9 +40,9 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                 echo '<input type="checkbox" id="masterCheckbox" />';
                 echo '<br/>';
             }
-            ?>Vue
+            ?>
         </th>
-        <th style="width:15%; text-align: left;">Synthétique</th>
+        <th style="width:15%; text-align: left;">Vue Synthétique</th>
         <th style="width:40%">&nbsp;</th>
         <th style="width:30%">&nbsp;</th>
         <th style="width:150px">Actions</th>
