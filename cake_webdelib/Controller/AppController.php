@@ -56,6 +56,7 @@ class AppController extends Controller {
             if (empty($historique) ||
                 (empty($this->params['requested'])
                     && stripos($this->params->here, 'ajax') === false
+                    && stripos($this->params->here, 'download') === false
                     && stripos($this->params->here, 'genere') === false
                     && stripos($this->params->here, 'deliberations/classification') === false)
             ) {
