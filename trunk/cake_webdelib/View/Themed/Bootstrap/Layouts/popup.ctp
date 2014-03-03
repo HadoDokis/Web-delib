@@ -40,7 +40,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->css('docs');
     echo $this->fetch('css');
 
-    echo $this->Html->script('libs/modernizr.min');
+    echo $this->Html->script('modernizr.min');
     echo $this->Html->script('libs/jquery');
     echo $this->Html->script('libs/bootstrap.min');
     echo $this->html->script('jquery.jgrowl', true);
