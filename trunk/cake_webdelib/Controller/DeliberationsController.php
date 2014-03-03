@@ -422,6 +422,7 @@ class DeliberationsController extends AppController
                 'contain' => array('Profil.id'))));
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
             $this->set('DELIBERATIONS_MULTIPLES', Configure::read('DELIBERATIONS_MULTIPLES'));
+            $this->set('redirect', $redirect);
 
             /* valeurs initiales des info supplémentaires */
             $this->request->data['Infosup'] = $this->Infosupdef->valeursInitiales('Deliberation');
@@ -621,6 +622,7 @@ class DeliberationsController extends AppController
             /* initialisation du lien de redirection */
             $history = $this->Session->read('user.history');
             if (stripos($this->previous, 'deliberations/add') === false
+                && stripos($this->previous, 'deliberations/edit') === false
                 && stripos($this->previous, 'ajax') === false
             )
                 $redirect = $this->previous;
@@ -635,7 +637,6 @@ class DeliberationsController extends AppController
                         $redirect = $h;
                         break;
                     }
-
             $this->request->data = $this->Deliberation->find('first', array(
                 'contain' => array('Annex.id', 'Annex.filetype', 'Annex.model',
                     'Annex.foreign_key', 'Annex.filename', 'Annex.filename_pdf',
@@ -800,6 +801,7 @@ class DeliberationsController extends AppController
             $this->set('selectedRapporteur', $this->request->data['Deliberation']['rapporteur_id']);
             $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Deliberation'));
             $this->set('profil_id', $user['User']['profil_id']);
+            $this->set('redirect', $redirect);
             $this->Infosupdef->Behaviors->load('Containable');
             $this->set('infosupdefs', $this->Infosupdef->find('all', array(
                 'conditions' => array('model' => 'Deliberation', 'actif' => true),
@@ -819,9 +821,7 @@ class DeliberationsController extends AppController
                 $this->Session->setFlash("Attention, l'acte est en cours de signature!", 'growl', array('type' => 'erreur'));
             }
             $this->render();
-        } 
-        else 
-        {
+        } else {
             $this->Deliberation->begin();
             $redirect = $this->data['Deliberation']['redirect'];
             $oldDelib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
@@ -1110,6 +1110,7 @@ class DeliberationsController extends AppController
                 $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, '&nbsp;&nbsp;&nbsp;&nbsp;'));
                 $this->set('circuits', $this->Deliberation->Circuit->find('list'));
                 $this->set('datelim', $this->data['Deliberation']['date_limite']);
+                $this->set('redirect', $redirect);
                 $annexes = $this->Annex->find('all', array('conditions' => array('model' => 'Projet', 'foreign_key' => $id)));
                 foreach ($annexes as $id => $annexe)
                     $this->request->data['Annex'][$id] = $annexe['Annex'];
