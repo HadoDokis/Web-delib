@@ -547,10 +547,15 @@ class DeliberationsController extends AppController
         exit;
     }
 
+    /**
+     * @param int|string $delibId
+     * @param array $annexe
+     * @param array $annexesErrors
+     * @return bool
+     */
     function _saveAnnexe($delibId, $annexe, &$annexesErrors)
     {
         App::uses('File', 'Utility');
-        $return = false;
         if ($annexe['ref'] == 'delibPrincipale')
             $Model = 'Projet';
         else
@@ -594,11 +599,11 @@ class DeliberationsController extends AppController
                 foreach ($this->Annex->validationErrors as $error_annexe)
                     $annexesErrors[$titre][] = implode(',', $error_annexe);
                 $this->Annex->validationErrors = array();
-            } else $return = true;
+            } else return true;
         } else
             $annexesErrors[$titre][] = 'Erreur inconnue';
         
-        return $return;
+        return false;
     }
 
     function edit($id = null)
@@ -826,7 +831,7 @@ class DeliberationsController extends AppController
             // Si on definit une seance a une delib, on la place en derniere position de la seance
             if (isset($this->data['Seance'])) {
                 if (!$this->Deliberation->canSaveSeances($this->data['Seance']['Seance'])) {
-                    $this->Session->setFlash("Vous ne pouvez enregistrer une seule séance délibérante", 'growl', array('type' => 'erreur'));
+                    $this->Session->setFlash("Vous ne pouvez affecter le projet qu'à une seule séance délibérante", 'growl', array('type' => 'erreur'));
                     $this->redirect(array('action'=>'edit', $id));
                 }
             }
@@ -914,9 +919,7 @@ class DeliberationsController extends AppController
                         //Cas bloc annexe vide
                         if (empty($annexe['file']['name']))
                             continue;
-                        if ($annexe['ref'] == 'delibPrincipale')
-                            $success = $this->_saveAnnexe($id, $annexe, $annexesErrors) && $success;
-                        if ($annexe['ref'] == 'delibRattachee' . $id)
+                        if ($annexe['ref'] == 'delibPrincipale' || $annexe['ref'] == 'delibRattachee' . $id)
                             $success = $this->_saveAnnexe($id, $annexe, $annexesErrors) && $success;
                     }
 
