@@ -2055,7 +2055,10 @@ class Deliberation extends AppModel {
      * @return void
      */
     function beforeFusion(&$oMainPart, &$modelOdtInfos, $id, $modelOptions) {
-        $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, true);
+        if (!empty($modelOptions['deliberationIds']))
+            $this->setVariablesFusionDeliberations($oMainPart, $modelOdtInfos, $modelOptions['deliberationIds']);
+        else
+            $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, true);
     }
 
     /**
@@ -2288,4 +2291,22 @@ class Deliberation extends AppModel {
 
         return array('docPrincipale'=>$dDocPrincipale,'annexes'=>$annexes);
     }
+
+    /**
+     * fonction d'initialisation des variables de fusion pour un ou plusieurs projets ou délibérations
+     * @param object $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param integer $ids liste des id des délibérations
+     */
+    function setVariablesFusionDeliberations(&$oMainPart, &$modelOdtInfos, $ids) {
+        // pour tous les projets/délibérations
+        $oSectionIteration = new GDO_IterationType('Projets');
+        foreach($ids as $id) {
+            $oDevPart = new GDO_PartType();
+            $this->setVariablesFusion($oDevPart, $modelOdtInfos, $id, true);
+            $oSectionIteration->addPart($oDevPart);
+        }
+        $oMainPart->addElement($oSectionIteration);
+    }
+
 }
