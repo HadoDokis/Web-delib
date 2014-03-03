@@ -2009,7 +2009,7 @@ class DeliberationsController extends AppController
                         } else {
                             $nbEnvoyee++;
                             $this->Deliberation->saveField('etat', 5);
-                            $this->Deliberation->saveField('tdt_id', $tdt_id);
+                            $this->Deliberation->saveField('tdt_id', trim($tdt_id));
                             unlink($file);
                         }
                         sleep(5);
@@ -4389,12 +4389,12 @@ class DeliberationsController extends AppController
             }
         }
 
-        parent::sendNoCacheHeaders();
-        header('Content-type: application/pdf');
-        header('Content-Length: ' . strlen($delib['Deliberation']['tdt_data_pdf']));
-        header('Content-Disposition: attachment; filename=Acte_'.$delib['Deliberation']['num_delib'].'.pdf');
-        echo $delib['Deliberation']['tdt_data_pdf'];
-        exit;
+        // envoi au client
+        $this->response->disableCache();
+        $this->response->body($delib['Deliberation']['tdt_data_pdf']);
+        $this->response->type('application/pdf');
+        $this->response->download('Acte_'.$delib['Deliberation']['num_delib'].'_bordereau_tdt.pdf');
+        return $this->response;
     }
 
     function getBordereauTdt($delib_id) {
@@ -4420,12 +4420,12 @@ class DeliberationsController extends AppController
             }
         }
 
-        parent::sendNoCacheHeaders();
-        header('Content-type: application/pdf');
-        header('Content-Length: ' . strlen($delib['Deliberation']['tdt_data_bordereau_pdf']));
-        header('Content-Disposition: attachment; filename=Acte_'.$delib['Deliberation']['num_delib'].'_bordereau_tdt.pdf');
-        echo $delib['Deliberation']['tdt_data_bordereau_pdf'];
-        exit;
+        // envoi au client
+        $this->response->disableCache();
+        $this->response->body($delib['Deliberation']['tdt_data_bordereau_pdf']);
+        $this->response->type('application/pdf');
+        $this->response->download('Acte_'.$delib['Deliberation']['num_delib'].'_bordereau_tdt.pdf');
+        return $this->response;
     }
 
     /**
