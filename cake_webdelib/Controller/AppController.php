@@ -53,15 +53,14 @@ class AppController extends Controller {
             $this->user_id = $this->Session->read('user.User.id');
             $this->set('user_id', $this->user_id);
             $historique = $this->Session->check('user.history') ? $this->Session->read('user.history') : array();
-            if (empty($historique) ||
-                (empty($this->params['requested'])
-                    && stripos($this->params->here, 'ajax') === false
-                    && stripos($this->params->here, 'download') === false
-                    && stripos($this->params->here, 'genere') === false
-                    && stripos($this->params->here, 'deliberations/classification') === false)
+            if (empty($this->params['requested'])
+                && stripos($this->params->here, 'ajax') === false
+                && stripos($this->params->here, 'download') === false
+                && stripos($this->params->here, 'genere') === false
+                && stripos($this->params->here, 'deliberations/classification') === false
             ) {
                 //Ajoute l'url courante au début du tableau
-                if (empty($historique) || $historique[0] != $this->params->here){
+                if (empty($historique) || $historique[0] != $this->params->here) {
                     //Insère l'url courant en début de tableau (indice 0)
                     array_unshift($historique, $this->params->here);
                 }

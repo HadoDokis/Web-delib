@@ -623,16 +623,14 @@ class DeliberationsController extends AppController
             $history = $this->Session->read('user.history');
             if (stripos($this->previous, 'deliberations/add') === false
                 && stripos($this->previous, 'deliberations/edit') === false
-                && stripos($this->previous, 'ajax') === false
             )
                 $redirect = $this->previous;
             elseif (stripos($this->previous, 'deliberations/add'))
-                $redirect = '/';
+                $redirect = array('action' => 'mesProjetsRedaction');
             else
                 foreach ($history as $h)
                     if (stripos($h, 'deliberations/add') === false
                         && stripos($h, 'deliberations/edit') === false
-                        && stripos($h, 'ajax') === false
                     ) {
                         $redirect = $h;
                         break;
