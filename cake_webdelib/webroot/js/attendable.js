@@ -16,10 +16,6 @@ $.fn.attendable = function (options) {
     var defaults = {
             titre: 'Action en cours de traitement'
         },
-        modalOptions = {
-            backdrop: 'static',
-            keyboard: false
-        },
         titre,
         options = $.extend({}, defaults, options);//Fusion des options avec celles par défaut
 
@@ -40,38 +36,43 @@ $.fn.attendable = function (options) {
                 $(this).removeAttr('onclick');
                 $(this).click(function () {
                     if (confirm(mesg)) {
-                        $('#waiter-title').text(titre);
-                        $("#waiter").modal(modalOptions);
-                        pauseWhileDownload($(this));
+                        blockUI($(this), titre);
                     }
                     else return false;
                 });
             } else {
                 $(this).click(function () {
-                    $('#waiter-title').text(titre);
-                    $("#waiter").modal(modalOptions);
-                    pauseWhileDownload($(this));
+                    blockUI($(this), titre);
                 });
             }
         } else if (this.tagName == 'FORM') {
             $(this).on('submit', function () {
-                $('#waiter-title').text(titre);
-                $("#waiter").modal(modalOptions);
+                blockUI($(this), titre);
             });
         }
     });
 };
 
-function pauseWhileDownload(elt) {
+/**
+ * Ajoute le token en fin d'url si lien (GET) ou en champ caché si formulaire (POST)
+ * @returns {number}
+ */
+function addToken(elt) {
     var token = setToken();
-    //Ajout du num de cookie en dernier argument url
-    var href = $(elt).attr('href');
-    if (href) {
-        if (href.substr(href.length - 1) != '/')
-            href += '/';
-        $(elt).attr('href', href + token);
+    if ($(elt).get(0).tagName == 'A') {
+        console.log('link');
+        //Ajout du num de cookie en dernier argument url
+        var href = $(elt).attr('href');
+        if (href) {
+            if (href.substr(href.length - 1) != '/')
+                href += '/';
+            $(elt).attr('href', href + token);
+        }
+    } else if ($(elt).get(0).tagName == 'FORM') {
+        var $hiddenInput = $('<input/>', {type: 'hidden', value: token, name: 'data[waiter][token]'});
+        $hiddenInput.appendTo(elt);
     }
-    blockUI(elt, token); //Veuillez patienter pendant la génération du document
+    return token;
 }
 
 /**
@@ -84,7 +85,14 @@ function setToken() {
 }
 
 // Prevents double-submits by waiting for a cookie from the server.
-function blockUI(elt, token) {
+function blockUI(elt, titre) {
+    var modalOptions = {
+        backdrop: 'static',
+        keyboard: false
+    };
+    $('#waiter-title').text(titre);
+    $("#waiter").modal(modalOptions);
+    var token = addToken(elt);
     var downloadTimer = window.setInterval(function () {
         $.ajax({
             url: '/models/genereToken/' + token,
@@ -103,10 +111,14 @@ function blockUI(elt, token) {
 }
 
 function unblockUI(elt, token) {
+    deleteToken(elt, token);
+    $("#waiter").modal('hide');
+}
+
+function deleteToken(elt, token) {
     //Suppression du token de la fin d'url
     if ($(elt).attr('href')) {
         var href = $(elt).attr('href');
         $(elt).attr('href', href.replace('/' + token, ''));
     }
-    $("#waiter").modal('hide');
 }
