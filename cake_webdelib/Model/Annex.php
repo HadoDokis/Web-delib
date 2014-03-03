@@ -38,8 +38,8 @@ class Annex extends AppModel {
                 'message' => 'Le nom du fichier est trop long (100 caract&egrave;res maximum)', 'growl'
             ),
             'regleFilename-2' => array(
-                'rule' => '/^[a-zA-Z0-9-_.& ]{6,}$/i',
-                'message' => 'Seulement les lettres, les entiers et les caractères spéciaux (-_.& ) sont autorisés dans le nom du fichier. Minimum de 6 caractères', 'growl'
+                'rule' => '/^[a-zA-Z0-9-_.& ]{5,}$/i',
+                'message' => 'Seulement les lettres, les entiers et les caractères spéciaux (-_.& ) sont autorisés dans le nom du fichier. Minimum de 5 caractères', 'growl'
             )
         ),
         'titre' => array(
