@@ -26,7 +26,7 @@ $(function() {
 <table width="100%" cellspacing="0" cellpadding="0"  >
 	<tr>
 		<th width='5%' align="right"></th>
-		<th width='15%' align="left">synth&eacute;tique</th>
+		<th width='15%' align="left">Vue synth&eacute;tique</th>
 		<th width='46%'> &nbsp;</th>
 		<th width='18%' >&nbsp;</th>
 		<th width='250px'>Actions</th>
