@@ -6,7 +6,7 @@ class ModelsController extends AppController {
         'Theme', 'Collectivite', 'Vote', 'Listepresence', 'Acteur', 'Infosupdef', 'Infosuplistedef', 'Historique', 'ModelOdtValidator.Modeltemplate'
     );
     public $helpers = array('Html', 'Form', 'Fck', 'Html2', 'Session');
-    public $components = array('RequestHandler','Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Pdf', 'Progress');
+    public $components = array('RequestHandler','Date','Utils','Email', 'Acl', 'Gedooo', 'Conversion', 'Progress');
 
 	// Gestion des droits
     public $aucunDroit = array(
