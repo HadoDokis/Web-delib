@@ -800,6 +800,7 @@ a.link_rebond_avec_border {
 }
 
 #vue_cadre{
+    padding-bottom: 10px;
 	background-color: #fafafa;
     outline: 1px solid #ccc;
     box-shadow: -1px 1px 1px 0px rgba(0, 0, 0, 0.7);
@@ -813,6 +814,7 @@ a.link_rebond_avec_border {
     border-bottom: 2px solid #DDD;
     background-color: #f0f0f0;
     font-weight: bold;
+    margin-bottom: 10px;
 }
 #vue_cadre h3 {
     font-size: 18px;
@@ -846,6 +848,10 @@ ul.actions, .actions ul {
     float: none;
     margin-left: -4px;
     margin-bottom: 10px;
+}
+
+div.traiterActions {
+    text-align: center;
 }
 
 #actions_fiche {

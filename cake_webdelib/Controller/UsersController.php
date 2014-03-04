@@ -118,18 +118,19 @@ class UsersController extends AppController {
         $this->set('users', $users);
     }
 
-	function view($id = null) {
-		$user = $this->User->read(null, $id);
-		if (!$user) {
-                        $this->Session->setFlash('Invalide id pour l\'utilisateur', 'growl');
-			$this->redirect('/users/index');
-		} else {
-			$this->set('user', $user);
-			$this->set('circuitDefautLibelle', $this->User->circuitDefaut($id, 'nom'));
-		}
-	}
+    function view($id = null) {
+        $user = $this->User->read(null, $id);
+        if (!$user) {
+            $this->Session->setFlash('Utilisateur introuvable', 'growl');
+            $this->redirect($this->referer());
+        } else {
+            $this->set('user', $user);
+            $this->set('circuitDefautLibelle', $this->User->circuitDefaut($id, 'nom'));
+            $this->set('canEdit', $this->Droits->check($this->user_id, 'Users:edit'));
+        }
+    }
 
-	function add() {
+    function add() {
 		// Initialisation
 		$sortie = false;
 
