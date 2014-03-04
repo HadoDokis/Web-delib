@@ -16,7 +16,6 @@ class PostseancesController extends AppController {
         'sendToGed'
     );
     var $commeDroit = array(
-        'changeObjet' => 'Postseances:index',
         'afficherProjets' => 'Postseances:index',
         'changeStatus' => 'Postseances:index',
         'downloadPV' => 'Postseances:index'
@@ -107,18 +106,6 @@ class PostseancesController extends AppController {
     function getNom($id) {
         $data = $this->User->findAll("User.id = $id");
         return $data['0']['User']['prenom'] . ' ' . $data['0']['User']['nom'];
-    }
-
-    function changeObjet($delib_id) {
-        $this->set('delib_id', $delib_id);
-
-        if (!empty($this->data)) {
-            $data = $this->Deliberation->read(null, $delib_id);
-
-            $data['Deliberation']['objet'] = $this->data['Deliberation']['objet'];
-            if ($this->Deliberation->save($data))
-                $this->redirect('/deliberations/transmit');
-        }
     }
 
     function changeStatus($seance_id) {
