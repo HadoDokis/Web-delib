@@ -1,21 +1,18 @@
 <div class="deliberations">
     <?php echo $this->Html->script('utils.js'); ?>
     <h2>Envoi des convocations</h2>
-    <?php echo $this->Form->create('Seance',
-        array(
-            'type' => 'file',
-            'url' => array('controller' => 'seances', 'action' => 'sendConvocations', $seance_id, $model_id)
-        ));
+    <?php
+    echo $this->Form->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'sendConvocations', $seance_id, $model_id)));
     echo $this->Html->tag('div', null, array('style' => 'padding-right:1em;float:left;'));
     echo $this->Html->link("<i class='fa fa-cogs'></i> Générer les convocations",
         array('controller' => 'seances', 'action' => 'genereFusionToFiles', $seance_id, $model_id, 'convocation'),
-        array('class' => "btn btn-primary waiter", 'escape' => false, 'title' => 'Générer le document des convocations', 'data-modal' => 'Génération des convocations en cours'));
+        array('class' => "btn btn-success waiter", 'escape' => false, 'title' => 'Générer le document des convocations', 'data-modal' => 'Génération des convocations en cours'));
     echo $this->Html->tag('/div', null);
-    echo $this->Html->link("<i class='fa fa-download'></i> Télécharger le zip des convocations",
-        array('controller' => 'seances', 'action' => 'recuperer_zip', $seance_id, $model_id),
+    echo $this->Html->link("<i class='fa fa-download'></i> Télécharger une archive contenant toutes les convocations",
+        array('controller' => 'seances', 'action' => 'downloadZip', $seance_id, $model_id),
         array('class' => "btn btn-inverse", 'escape' => false, 'title' => 'Récupérer une archive contenant les convocations'));
     ?>
-    <br>
+    <div class="spacer"></div>
     <table style='width:100%'>
         <caption>Liste des acteurs</caption>
         <tr>
@@ -58,7 +55,7 @@
 
             echo '</td>';
 
-            echo('<td>' . $acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'] . '</td>');
+            echo '<td>' . $this->Html->link($acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'], array('controller'=>'acteurs', 'action'=>'view', $acteur['Acteur']['id'])) . '</td>';
 
             if ($filepath != '')
                 echo('<td>' . $this->Html->link($model['Modeltemplate']['name'] . $ext, $filepath) . ' : [' . $date_convocation . ']</td>');
@@ -83,7 +80,7 @@
     </table>
     <div class="spacer"></div>
     <div class="submit">
-        <?php echo $this->Form->button("<i class='fa fa-envelope'></i> Envoyer les convocations <span id='nbActeursChecked'></span>", array('id' => 'envoyer_convocs', 'class' => 'btn btn-info', 'escape' => false, 'title' => 'Envoyer les convocations par email aux acteurs sélectionnés')); ?>
+        <?php echo $this->Form->button("<i class='fa fa-envelope'></i> Envoyer les convocations <span id='nbActeursChecked'></span>", array('id' => 'envoyer_convocs', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Envoyer les convocations par email aux acteurs sélectionnés')); ?>
     </div>
 
     <?php echo $this->Form->end(); ?>
