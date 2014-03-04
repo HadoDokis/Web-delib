@@ -57,3 +57,7 @@ legend{
 #waiter{
     text-align: center;
 }
+
+.colonne_checkbox{
+    width: 15px;
+}

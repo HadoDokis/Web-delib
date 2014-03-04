@@ -31,7 +31,7 @@ if (@$this->params['filtre'] == 'hide') {
             echo("<td style='text-align:center; vertical-align: middle;'>"
                 . $this->Form->checkbox(
                     'Seance.id_' . $seance['Seance']['id'],
-                    array('checked' => false, 'class' => 'choix_seance_generer'))
+                    array('checked' => false, 'class' => 'checkbox_seance_generer'))
                 . "</td>");
         ?>
         <td>
@@ -192,7 +192,7 @@ if (!empty($models) && !$endDiv) {
     echo $this->Form->input('Seance.model_id', array('options' => $models, 'label' => array('text' => "Modèle d'édition", 'style' => 'padding-top: 5px; text-align: left;')));
 
     echo $this->html->tag('div', '', array('class' => 'spacer'));
-    echo $this->Form->button('<i class="fa fa-cogs"></i> Générer', array(
+    echo $this->Form->button('<i class="fa fa-cogs"></i> Générer <span id="nbSeancesChecked"></span>', array(
         'type' => 'submit',
         'class' => 'waiter btn btn-primary',
         'title' => "Générer le document multi-séances (Attention : Cette opération peut durer longtemps)",
@@ -205,22 +205,22 @@ echo $this->Form->end();
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
-        //Désactiver le bouton submit au démarrage
-        $("#generer_multi_seance").prop("disabled", true);
         //Lors d'action sur une checkbox :
         $('input[type=checkbox]').change(selectionChange);
         selectionChange();
         $('#SeanceModelId').select2({width: 'resolve'});
     });
     function selectionChange() {
+        var nbChecked = $('input[type=checkbox].checkbox_seance_generer:checked').length;
         //Apposer ou non la class disabled au bouton selon si des checkbox sont cochées (style)
-        if (!$('input[type=checkbox].choix_seance_generer:checked').length) {
-            $('#generer_multi_seance').addClass('disabled');
-            $("#generer_multi_seance").prop("disabled", true);
-        } else {
+        if (nbChecked > 0) {
             $('#generer_multi_seance').removeClass('disabled');
             $("#generer_multi_seance").prop("disabled", false);
+        } else {
+            $('#generer_multi_seance').addClass('disabled');
+            $("#generer_multi_seance").prop("disabled", true);
         }
+        $('#nbSeancesChecked').text('(' + nbChecked + ')');
     }
 </script>
 <?php
