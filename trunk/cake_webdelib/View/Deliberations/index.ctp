@@ -171,7 +171,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                 }
                 if (in_array('generer', $deliberation['Actions'])) {
                     if (empty($deliberation['Deliberation']['delib_pdf']))
-                        echo $this->Html->link('NEW',
+                        echo $this->Html->link(SHY,
                             array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $deliberation['Deliberation']['id']),
                             array(
                                 'class' => 'link_pdf delib_pdf',
