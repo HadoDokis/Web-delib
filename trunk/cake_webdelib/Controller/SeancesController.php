@@ -1468,9 +1468,7 @@ class SeancesController extends AppController {
             exit;
         }
 
-
-
-        function recuperer_zip($seance_id, $model_id) {
+        function downloadZip($seance_id, $model_id) {
             $dirpath = WEBROOT_PATH.DS.'files'.DS.'seances'.DS.$seance_id.DS.$model_id;
             if (file_exists($dirpath.DS.'convocations.zip')) 
                 unlink($dirpath.DS.'convocations.zip');
