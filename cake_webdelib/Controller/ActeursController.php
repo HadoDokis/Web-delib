@@ -59,8 +59,10 @@ class ActeursController extends AppController
         if (empty($acteur)) {
             $this->Session->setFlash('Invalide id pour l\'acteur');
             $this->redirect(array('action'=>'index'));
-        } else
+        } else{
             $this->set('acteur', $acteur);
+            $this->set('canEdit', $this->Droits->check($this->user_id, 'Acteurs:edit'));
+        }
     }
 
     public function add()
