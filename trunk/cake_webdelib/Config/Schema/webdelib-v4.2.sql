@@ -3728,16 +3728,16 @@ INSERT INTO modelvariables (id, name, description, created, modified) VALUES (20
 INSERT INTO modelvariables (id, name, description, created, modified) VALUES (207, 'note_acteur_sans_participation', 'Note rédigée sur l''acteur ne participant pas', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
 INSERT INTO modelvariables (id, name, description, created, modified) VALUES (208, 'acteurs_sans_participation_separator', 'Séparateur des itérations successives', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
 INSERT INTO modelvariables (id, name, description, created, modified) VALUES (209, 'texte_acte', 'Texte de l''acte', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-INSERT INTO modelvariables (id, name, description, created, modified) VALUES (210, 'identifiant_seances', 'Identifiant unique associé à la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-INSERT INTO modelvariables (id, name, description, created, modified) VALUES (211, 'date_seances', 'Date de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-INSERT INTO modelvariables (id, name, description, created, modified) VALUES (212, 'date_seances_lettres', 'Date de la séance en toutes lettres', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-INSERT INTO modelvariables (id, name, description, created, modified) VALUES (213, 'heure_seances', 'Heure de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-INSERT INTO modelvariables (id, name, description, created, modified) VALUES (214, 'hh_seances', 'Heure  /  minutes de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-INSERT INTO modelvariables (id, name, description, created, modified) VALUES (215, 'mm_seances', 'Heure  /  minutes de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-INSERT INTO modelvariables (id, name, description, created, modified) VALUES (216, 'type_seances', 'Type de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-INSERT INTO modelvariables (id, name, description, created, modified) VALUES (217, 'nombre_seances', 'Nombre de séances auxquelles est inscrit un projet', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-INSERT INTO modelvariables (id, name, description, created, modified) VALUES (218, 'debat_seances', 'Débats généraux de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
-INSERT INTO modelvariables (id, name, description, created, modified) VALUES (219, 'commentaire_seances', 'Commentaires de la séance', '2014-02-19 11:57:39.673071', '2014-02-19 11:57:39.673071');
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (210, 'identifiant_seances', 'Identifiant unique associé à la séance (Multi-séance)', now(), now());
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (211, 'date_seances', 'Date de la séance (Multi-séance)', now(), now());
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (212, 'date_seances_lettres', 'Date de la séance en toutes lettres (Multi-séance)', now(), now());
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (213, 'heure_seances', 'Heure de la séance (Multi-séance)', now(), now());
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (214, 'hh_seances', 'Heure de la séance (Multi-séance)', now(), now());
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (215, 'mm_seances', 'Minutes de la séance (Multi-séance)', now(), now());
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (216, 'type_seances', 'Type de la séance (Multi-séance)', now(), now());
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (217, 'nombre_seances', 'Nombre de séances auxquelles est inscrit un projet (Multi-séance)', now(), now());
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (218, 'debat_seances', 'Débats généraux de la séance (Multi-séance)', now(), now());
+INSERT INTO modelvariables (id, name, description, created, modified) VALUES (219, 'commentaire_seances', 'Commentaires de la séance (Multi-séance)', now(), now());
 
 --
 -- Name: modelvariables_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
