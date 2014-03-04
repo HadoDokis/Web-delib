@@ -28,8 +28,6 @@
     <br/><br/>
     <div class="submit">
         <?php $this->Html2->boutonsSaveCancel(); ?>
-		<?php // echo $this->Form->submit('Enregistrer', array('div'=>false, 'class'=>'bt_save_border', 'name'=>'Ajouter'));?>
-		<?php // echo $this->Html->link('Annuler', '/collectivites/index', array('class'=>'link_annuler', 'name'=>'Annuler'))?>
     </div>
           
 <?php echo $this->Form->end(); ?>
