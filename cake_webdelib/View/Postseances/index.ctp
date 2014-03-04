@@ -27,32 +27,32 @@
                     echo $this->Html->link(SHY, '/postseances/downloadPV/' . $seance['Seance']['id'] . '/sommaire', array('class' => 'link_pvsommaire', 'escape' => false, 'title' => 'Génération du pv sommaire'), false);
                     echo $this->Html->link(SHY, '/postseances/downloadPV/' . $seance['Seance']['id'] . '/complet', array('class' => 'link_pvcomplet', 'escape' => false, 'title' => 'Génération du pv complet'), false);
                 } else {
-echo $this->Html->link('NEW',
-    array('controller'=>'seances', 'action'=>'genereFusionToClient', $seance['Seance']['id'], 'pvsommaire'),
-    array(
-        'class' => 'link_pvsommaire waiter',
-        'title' => 'Nouvelle méthode génération du pv sommaire pour la séance du ' . $seance['Seance']['date'],
-        'escape' => false,
-    ), false);
-                    echo $this->Html->link(SHY, '/models/generer/null/' . $seance['Seance']['id'] . '/' . $seance['Typeseance']['modelpvsommaire_id'] . "/$format/0/retour/1/0/1", array('class' => 'link_pvsommaire', 'escape' => false, 'title' => 'Génération du pv sommaire'), 'Etes-vous sur de vouloir lancer la génération des documents ?');
-echo $this->Html->link('NEW',
-    array('controller'=>'seances', 'action'=>'genereFusionToClient', $seance['Seance']['id'], 'pvdetaille'),
-    array(
-        'class' => 'link_pvcomplet waiter',
-        'escape' => false,
-        'title' => 'Nouvelle méthode génération du pv complet pour la séance du ' . $seance['Seance']['date'],
-    ), false);
-                    echo $this->Html->link(SHY, '/models/generer/null/' . $seance['Seance']['id'] . '/' . $seance['Typeseance']['modelpvdetaille_id'] . "/$format/0/retour/1/0/1", array('class' => 'link_pvcomplet', 'escape' => false, 'title' => 'Génération du pv détaillé'), 'Etes-vous sur de vouloir lancer la génération des documents ?');
+                    echo $this->Html->link(SHY,
+                        array('controller' => 'seances', 'action' => 'genereFusionToClient', $seance['Seance']['id'], 'pvsommaire'),
+                        array(
+                            'class' => 'link_pvsommaire waiter',
+                            'data-modal' => 'Génération du PV sommaire en cours',
+                            'title' => 'Nouvelle méthode génération du pv sommaire pour la séance du ' . $seance['Seance']['date'],
+                            'escape' => false,
+                        ));
+                    echo $this->Html->link(SHY,
+                        array('controller' => 'seances', 'action' => 'genereFusionToClient', $seance['Seance']['id'], 'pvdetaille'),
+                        array(
+                            'class' => 'link_pvcomplet waiter',
+                            'escape' => false,
+                            'data-modal' => 'Génération du PV complet en cours',
+                            'title' => 'Nouvelle méthode génération du pv complet pour la séance du ' . $seance['Seance']['date'],
+                        ));
                 }
-                if ($use_s2low){
+                if ($use_s2low) {
                     echo $this->Html->link(SHY, '/deliberations/toSend/' . $seance['Seance']['id'], array(
-                            'class' => 'link_tdt',
-                            'escape' => false,
-                            'title' => 'Envoie au TdT'), false);
+                        'class' => 'link_tdt',
+                        'escape' => false,
+                        'title' => 'Envoie au TdT'), false);
                     echo $this->Html->link(SHY, '/deliberations/transmit/' . $seance['Seance']['id'], array(
-                            'class' => 'link_tdt_transmit',
-                            'escape' => false,
-                            'title' => 'délibérations envoyees au TdT'), false);
+                        'class' => 'link_tdt_transmit',
+                        'escape' => false,
+                        'title' => 'délibérations envoyees au TdT'), false);
                 }
                 if (in_array('ged', $seance['Seance']['Actions']))
                     echo $this->Html->link(SHY, '/postseances/sendToGed/' . $seance['Seance']['id'], array(
