@@ -26,7 +26,6 @@ class SeancesController extends AppController {
 			'genererConvoc'    => 'Seances:listerFuturesSeances',
 			'multiodj'         => 'Seances:listerFuturesSeances',
 			'changePosition'   => 'Seances:listerFuturesSeances',
-			'addListUsers'     => 'Seances:listerFuturesSeances',
 			'saisirDebatGlobal'=> 'Seances:listerFuturesSeances',
 			'details'          => 'Seances:listerFuturesSeances',
 			'saisirDebat'      => 'Seances:listerFuturesSeances',
