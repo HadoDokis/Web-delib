@@ -40,7 +40,6 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->css('jquery.jgrowl.min');
     echo $this->Html->css('bootstrap.min');
     echo $this->Html->css('font-awesome.min');
-    echo $this->Html->css('attendable');
     echo $this->Html->css('/lib/select2/select2');
     echo $this->Html->css('webdelib');
     echo $this->Html->css('filtres');
