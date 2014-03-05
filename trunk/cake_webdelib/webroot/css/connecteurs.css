@@ -21,6 +21,7 @@ table#connecteurs {
     border-style: none;
     vertical-align: middle;
     padding: 10px;
+    font-size: 1em;
 }
 
 #connecteurs tr {
