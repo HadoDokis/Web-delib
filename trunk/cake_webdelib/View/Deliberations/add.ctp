@@ -11,18 +11,16 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/add', 't
 
 <div class='onglet'>
 <a href="#" id="emptylink"></a>
-<?php     
+<?php
 echo $this->Html->link('Informations principales', '#', array('class' => 'ongletCourant noWarn', 'id' => 'lienTab1', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,1);'));
-echo $this->Html->link('Textes', '#', array('id' => 'lienTab2', 'class'=>'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,2);'));
-echo $this->Html->link('Annexe(s)', '#', array('id' => 'lienTab3', 'class'=>'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,3);'));
+echo $this->Html->link('Textes', '#', array('id' => 'lienTab2', 'class' => 'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,2);'));
+echo $this->Html->link('Annexe(s)', '#', array('id' => 'lienTab3', 'class' => 'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,3);'));
 if (!empty($infosupdefs))
-    echo $this->Html->link('Informations supplémentaires', '#', array('id' => 'lienTab4', 'class'=>'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,4);'));
+    echo $this->Html->link('Informations supplémentaires', '#', array('id' => 'lienTab4', 'class' => 'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,4);'));
 if (Configure::read('DELIBERATIONS_MULTIPLES'))
-    echo $this->Html->link('Délibérations rattachées', '#', array('id' => 'lienTab5', 'class'=>'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,5);', 'style' => 'display: none'));
+    echo $this->Html->link('Délibérations rattachées', '#', array('id' => 'lienTab5', 'class' => 'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,5);', 'style' => 'display: none'));
 echo $this->Html->useTag('tagend', 'div');
 ?>
-
-
 
 <div id="tab1">
     <fieldset id='info'>
@@ -35,109 +33,94 @@ echo $this->Html->useTag('tagend', 'div');
         </div>
     </fieldset>
     <div class='spacer'></div>
-    <?php echo $this->Form->input('Deliberation.typeacte_id', array('label' => 'Type d\'acte <abbr title="obligatoire">(*)</abbr>',
-        'options' => $this->Session->read('user.Nature'),
-        'empty' => '(sélectionner le type d\'acte)',
-        'id' => 'listeTypeactesId',
-        'class' => 'select2 selectone',
-        'onChange' => "updateTypeseances(this);",
-        'escape' => false));  ?>
-    <div class='spacer'></div>
-    <?php echo $this->Form->input('Deliberation.objet', array('type' => 'textarea', 'label' => 'Libellé <abbr title="obligatoire">(*)</abbr>', 'cols' => '60', 'rows' => '2')); ?>
-
-    <div class='spacer'></div>
-    <?php echo $this->Form->input('Deliberation.titre', array('type' => 'textarea', 'label' => 'Titre', 'cols' => '60', 'rows' => '2')); ?>
-
-    <div class='spacer'></div>
-
-    <div id='selectTypeseances' class='gauche'>
-        <?php
-        if (!empty($typeseances))
-            echo $this->Form->input('Typeseance', array('options' => $typeseances,
-                'label' => 'Types de séance',
-                'size' => 10,
-                'onchange' => "updateDatesSeances(this);",
-                'multiple' => true));
-        ?>
-    </div>
-    <div id='selectDatesSeances' class='droite'>
-        <?php
-        if (!empty($seances))
-            echo $this->Form->input('Seance', array('options' => $seances,
-                'label' => 'Dates de séance',
-                'size' => 10,
-                'multiple' => true));
-        ?>
-    </div>
-
-    <div class='spacer'></div>
-    <?php echo $this->Form->input('Deliberation.rapporteur_id', array(
-                                                                        'label' => 'Rapporteur', 
-                                                                        'options' => $rapporteurs,
-                                                                        'class' => 'select2 selectone',
-                                                                        'empty' => true)); ?>
-
-    <div class='spacer'></div>
-    <?php echo $this->Form->input('Deliberation.theme_id', array(
-        'label' => 'Thème <abbr title="obligatoire">(*)</abbr>',
-        'empty' => true,
-        'class' => 'select2 selectone',
-        'escape' => false)); ?>
-    <div class='spacer'></div>
-
-    <?php
-    if ($USE_PASTELL)
-        echo $this->Form->input('Deliberation.num_pref_libelle', array(
-            'label' => 'Nomenclature',
-            'options' => $nomenclatures,
-            'default' => $this->Html->value('Deliberation.num_pref'),
-            'disabled' => empty($nomenclatures),
+    <div class="gauche">
+        <?php echo $this->Form->input('Deliberation.typeacte_id', array(
+            'label' => 'Type d\'acte <abbr title="obligatoire">*</abbr>',
+            'options' => $this->Session->read('user.Nature'),
+            'empty' => true,
+            'id' => 'listeTypeactesId',
+            'onChange' => "updateTypeseances(this);",
+            'escape' => false,
+            'required'
+        ));  ?>
+        <div class='spacer'></div>
+        <?php echo $this->Form->input('Deliberation.objet', array('type' => 'textarea', 'label' => 'Libellé <abbr title="obligatoire">*</abbr>', 'cols' => '60', 'rows' => '2', 'required')); ?>
+        <div class='spacer'></div>
+        <?php echo $this->Form->input('Deliberation.titre', array('type' => 'textarea', 'label' => 'Titre', 'rows' => 2)); ?>
+        <div class='spacer'></div>
+        <?php echo $this->Form->input('Deliberation.rapporteur_id', array(
+            'label' => 'Rapporteur',
+            'options' => $rapporteurs,
+            'class' => 'select2 selectone',
+            'empty' => true)); ?>
+        <div class='spacer'></div>
+        <?php echo $this->Form->input('Deliberation.theme_id', array(
+            'label' => 'Thème <abbr title="obligatoire">*</abbr>',
             'empty' => true,
             'class' => 'select2 selectone',
-            'escape' => false));
-    else {
-        echo $this->Form->input('Deliberation.num_pref_libelle', array(
-            'div' => false,
-            'label' => 'Num Pref',
-            'id' => 'classif1',
-            'size' => '60',
-            'readonly' => 'readonly'));
-        ?>
+            'escape' => false)); ?>
+        <div class='spacer'></div>
+        <div id="select_classification">
+            <?php
+            if ($USE_PASTELL)
+                echo $this->Form->input('Deliberation.num_pref_libelle', array(
+                    'label' => 'Nomenclature',
+                    'options' => $nomenclatures,
+                    'default' => $this->Html->value('Deliberation.num_pref'),
+                    'disabled' => empty($nomenclatures),
+                    'empty' => true,
+                    'class' => 'select2 selectone',
+                    'escape' => false));
+            else {
+                echo $this->Form->input('Deliberation.num_pref_libelle', array(
+                    'div' => false,
+                    'label' => 'Classification',
+                    'placeholder' => 'Cliquer ici pour choisir la classification',
+                    'onclick' => "javascript:window.open('" . Router::url(array('controller' => 'deliberations', 'action' => 'classification')) . "', 'Select_attribut', 'scrollbars=yes,width=570,height=450');",
+                    'id' => 'classif1',
+                    'title' => 'Selection de la classification',
+                    'readonly' => 'readonly',
+                    'after' => '&nbsp;<a href="#" title="Déselectionner la classification" id="deselectClassif"><i class="fa fa-eraser"></i></a>'
+                ));
+                echo $this->Form->hidden('Deliberation.num_pref', array('id' => 'num_pref'));
 
-        <a class="list_form noWarn" href="#add"
-           onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification', 'Select_attribut', 'scrollbars=yes,width=570,height=450');"
-           id="classification_text">[Choisir la classification]</a>
+            }
+            ?>
+        </div>
+        <div id="dateLimite">
+            <?php
+            echo $this->Form->label('Deliberation.date_limite', 'Date limite');
+            if (!empty($date_limite) && $date_limite != '01/01/1970')
+                $value = "value='" . $date_limite . "'";
+            else
+                $value = "value=''";
+            ?>
+            <input name="date_limite" size="9" id="DeliberationDateLimite" <?php echo $value; ?> />&nbsp;<a
+                href="javascript:show_calendar('Deliberation.date_limite','f');"
+                title="Sélectionner une date à l'aide du calendrier"
+                id="afficheCalendrier"><?php echo $this->Html->image("calendar.png", array('alt' => "afficher le calendrier")); ?></a>
+        </div>
+        <div class='spacer'></div>
+        <div class='spacer'></div>
         <?php
-        echo $this->Form->hidden('Deliberation.num_pref', array('id' => 'num_pref'));
-    }
-    ?>
-    <div class='spacer'></div>
-
-    <?php echo $this->Form->label('Deliberation.date_limite', 'Date limite'); ?>
-    <?php
-    if (!empty($date_limite) && $date_limite != '01/01/1970')
-        $value = "value='" . $date_limite . "'";
-    else
-        $value = "value=''";
-    ?>
-    <input name="date_limite" size="9" id="DeliberationDateLimite" <?php echo $value; ?> />&nbsp;<a
-        href="javascript:show_calendar('Deliberation.date_limite','f');"
-        title="Sélectionner une date à l'aide du calendrier"
-        id="afficheCalendrier"><?php echo $this->Html->image("calendar.png", array('alt' => "afficher le calendrier")); ?></a>
-
-    <div class='spacer'></div>
-
-
-    <?php
-    if ($DELIBERATIONS_MULTIPLES) {
-        echo $this->Form->input('Deliberation.is_multidelib', array(
-            'type' => 'checkbox',
-            'autocomplete' => 'off',
-            'label' => 'Multi Délibération'));
-    }
-    ?>
-
-    <div class='spacer'></div>
+        if ($DELIBERATIONS_MULTIPLES) :
+            echo $this->Html->tag('label', $this->Form->input('Deliberation.is_multidelib', array(
+                'type' => 'checkbox',
+                'autocomplete' => 'off',
+                'div' => false,
+                'label' => false,
+                'after' => 'Multi-Délibération'
+            )), array('class' => 'checkbox'));
+            ?>
+            <div class='spacer'></div>
+        <?php endif; ?>
+        <div class='spacer'></div>
+    </div>
+    <div class="droite">
+        <div id='selectTypeseances'></div>
+        <div id='selectDatesSeances'></div>
+        <div class='spacer'></div>
+    </div>
 </div>
 
 <?php if (!empty($infosupdefs)): ?>
@@ -150,52 +133,22 @@ echo $this->Html->useTag('tagend', 'div');
                 if ($profil['id'] == $profil_id)
                     $disabled = false;
 
-            if ($infosupdef['Infosupdef']['type'] == 'file' && $disabled) continue;
+            if ($disabled) continue;
 
             $fieldName = 'Infosup.' . $infosupdef['Infosupdef']['code'];
             $fieldId = 'Infosup' . Inflector::camelize($infosupdef['Infosupdef']['code']);
-            echo "<div class='required'>";
-            echo $this->Form->label($fieldName, $infosupdef['Infosupdef']['nom'], array('name' => 'label' . $infosupdef['Infosupdef']['code']));
             if ($infosupdef['Infosupdef']['type'] == 'text') {
                 echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea', 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled));
             } elseif ($infosupdef['Infosupdef']['type'] == 'boolean') {
-                if (!$disabled)
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'checkbox', 'title' => $infosupdef['Infosupdef']['commentaire'], 'div' => array('class' => 'input')));
-                else {
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'checkbox', 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled, 'div' => array('class' => 'input')));
-                    echo $this->Form->input($fieldName, array('type' => 'hidden', 'id' => false));
-                }
+                echo $this->Form->input($fieldName, array('label' => false, 'type' => 'checkbox', 'title' => $infosupdef['Infosupdef']['commentaire'], 'div' => array('class' => 'input')));
             } elseif ($infosupdef['Infosupdef']['type'] == 'date') {
                 $fieldSelector = preg_replace("#[^a-zA-Z]#", "", $fieldId);
-                echo $this->Form->input($fieldName, array('type' => 'text', 'readonly' => $disabled, 'div' => false, 'label' => false, 'size' => '9', 'id' => $fieldSelector, 'title' => $infosupdef['Infosupdef']['commentaire']));
-                echo '&nbsp;';
-                if (!$disabled)
-                    echo $this->Html->link($this->Html->image("calendar.png", array('style' => "border:0")), "javascript:show_calendar('Deliberation.$fieldSelector', 'f');", array('escape' => false), false);
-                else
-                    echo($this->Html->image("calendar.png", array('style' => "border:'0'")));
+                echo $this->Form->input($fieldName, array('type' => 'text', 'div' => false, 'label' => false, 'size' => '9', 'id' => $fieldSelector, 'title' => $infosupdef['Infosupdef']['commentaire']));
             } elseif ($infosupdef['Infosupdef']['type'] == 'richText') {
-                echo '<div class="annexesGauche"></div>';
-                if (!$disabled) {
-                    echo '<div class="fckEditorProjet">';
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea'));
-                    echo $this->Fck->load($fieldId);
-                    echo '</div>';
-                    echo '<div class="spacer"></div>';
-                } else {
-                    echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea', 'readonly' => true));
-                }
+                echo $this->Form->input($fieldName, array('label' => false, 'type' => 'textarea'));
             } elseif ($infosupdef['Infosupdef']['type'] == 'file') {
                 if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]))
                     echo $this->Form->input($fieldName, array('label' => false, 'type' => 'file', 'size' => '60', 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled));
-                else {
-                    echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'InputFichier" style="display: none;"></span>';
-                    echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'AfficheFichier">';
-                    echo '[' . $this->Html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/' . $this->data['Deliberation']['id'] . '/' . $infosupdef['Infosupdef']['id'], array('title' => $infosupdef['Infosupdef']['commentaire'])) . ']';
-                    echo '&nbsp;&nbsp;';
-                    if (!$disabled)
-                        echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('" . $infosupdef['Infosupdef']['code'] . "', '" . $infosupdef['Infosupdef']['commentaire'] . "')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
-                    echo '</span>';
-                }
             } elseif ($infosupdef['Infosupdef']['type'] == 'odtFile') {
                 if (empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']])
                     || empty($this->data['Infosup'][$infosupdef['Infosupdef']['code']]['tmp_name'])
@@ -203,32 +156,13 @@ echo $this->Html->useTag('tagend', 'div');
                 )
                     echo $this->Form->input($fieldName, array('label' => false, 'type' => 'file', 'size' => '60', 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled));
                 else {
-                    echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'InputFichier" style="display: none;"></span>';
-                    echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'AfficheFichier">';
-                    $name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
-                    if (!$disabled) {
-                        $url = Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] . "/files/generee/projet/" . $this->data['Deliberation']['id'] . "/$name";
-                        echo $this->Form->hidden($fieldName);
-                    } else
-                        $url = "http://" . $_SERVER['SERVER_NAME'] . "/files/generee/projet/" . $this->data['Deliberation']['id'] . "/$name";
-                    echo "<a href='$url'>$name</a> ";
-                    echo '&nbsp;&nbsp;';
-                    if (!$disabled)
-                        echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('" . $infosupdef['Infosupdef']['code'] . "', '" . $infosupdef['Infosupdef']['commentaire'] . "')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
-                    echo '</span>';
+                    echo $this->Form->hidden($fieldName);
                 }
             } elseif ($infosupdef['Infosupdef']['type'] == 'list') {
-                if (!$disabled) {
-                    echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled));
-                } else {
-                    echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'disabled' => $disabled));
-                    echo $this->Form->input($fieldName, array('id' => false, 'type' => 'hidden'));
-                }
+                echo $this->Form->input($fieldName, array('label' => false, 'options' => $infosuplistedefs[$infosupdef['Infosupdef']['code']], 'empty' => true, 'title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled));
             }
-            echo '</div>';
-            echo '<br>';
-            echo "<div class='spacer'> </div>";
-        };?>
+        };
+        ?>
     </div>
 <?php endif; ?>
 
@@ -236,7 +170,7 @@ echo $this->Html->useTag('tagend', 'div');
 
 <div class="submit">
     <?php
-    echo $this->Html->tag("div", null, array("class" => "btn-group"));
+    echo $this->Html->tag('div', null, array('class' => 'btn-group'));
     echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $previous, array('class' => 'btn noWarn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
     echo $this->Form->button('<i class="fa fa-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary noWarn', 'escape' => false, 'title' => 'Enregistrer le circuit de traitement'));
     echo $this->Html->tag('/div', null);
@@ -251,7 +185,7 @@ echo $this->Html->useTag('tagend', 'div');
     }
     $(document).ready(function () {
         $(".select2.selectmultiple").select2({
-            width: "resolve",
+            width: "element",
             allowClear: true,
             placeholder: "Liste à choix multiples"
         });
@@ -266,12 +200,15 @@ echo $this->Html->useTag('tagend', 'div');
                 return $.trim(object.text);
             }
         });
+        $("#listeTypeactesId").select2({
+            width: "element",
+            placeholder: "Sélection du type d'acte"
+        });
     });
-    
-     //Gestion des sorties du formulaire
+    //Gestion des sorties du formulaire
     function onUnloadEditForm() {
         $(window).bind('beforeunload', function () {
-            return "Attention!! des données saisies pourraient ne pas être enregistrées dans webdelib.";
+            return "Attention !\n\n Si vous quittez cette page vous allez perdre vos modifications.";
         });
     }
     $(document).ready(onUnloadEditForm);
@@ -285,4 +222,8 @@ echo $this->Html->useTag('tagend', 'div');
             }, 2000); // 2000 millisecondes = 2 secondes
         }
     );
+    $('#deselectClassif').click(function () {
+        resetClassification();
+        return false;
+    });
 </script>

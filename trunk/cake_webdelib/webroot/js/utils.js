@@ -37,9 +37,6 @@ function returnChoice(text,arg) {
       elt1.value = '';
       elt2.value = '';
     }
-	var a = window.opener.document.getElementById('classification_text');
-  	a.firstChild.nodeValue = '[Modifier la classification]';
-
   window.close();
 }
 
@@ -56,8 +53,6 @@ function return_choice_lot(text,arg,delibId) {
       elt1.value = '';
       elt2.value = '';
     }
-	var a = window.opener.document.getElementById(delibId+'_classification_text');
-  	//a.firstChild.nodeValue = '[Changer la localisation]';
     window.close();
 }
 
@@ -248,4 +243,13 @@ function afficheOngletEnErreur() {
 			return;
 		}
 	}
+}
+
+function changeClassification(){
+    window.open('/deliberations/classification', 'Select_attribut', 'scrollbars=yes,width=570,height=450');
+}
+
+function resetClassification(){
+    $("#classif1").val('');
+    return false;
 }
