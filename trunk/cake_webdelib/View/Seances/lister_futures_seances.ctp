@@ -14,12 +14,12 @@ if (@$this->params['filtre'] == 'hide') {
     <thead>
     <tr>
         <?php if (!$endDiv) echo("<th style='width:2px;'><input type='checkbox' id='masterCheckbox' /></th>"); ?>
-        <th style="width:40px;"></th>
         <th>Type</th>
         <th style="width:190px;">Date Séance</th>
         <th style="width:200px;">Préparation</th>
         <th style="width:150px;">En cours</th>
         <th style="width:150px;">Finalisation</th>
+        <th style="width:80px;">Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -33,19 +33,6 @@ if (@$this->params['filtre'] == 'hide') {
                         array('checked' => false, 'class' => 'checkbox_seance_generer'))
                     . "</td>");
             ?>
-            <td style="text-align: center">
-                <?php
-                echo $this->Html->link('<i class="fa fa-trash-o fa-lg"></i>',
-                    array('controller' => 'seances', 'action' => 'delete', $seance['Seance']['id']),
-                    array(
-                        'class' => 'bouton_supprimer btn btn-danger',
-                        'title' => 'Supprimer la séance du ' . $seance['Seance']['date'],
-                        'escape' => false,
-                    ),
-                    "Confirmer la suppression de la séance du : " . $seance['Seance']['date'] . ' ?');
-                ?>
-
-            </td>
             <td><strong><?php echo $seance['Typeseance']['libelle']; ?></strong></td>
             <td><?php echo $this->Html->link($seance['Seance']['date'], array('controller' => 'seances', 'action' => 'edit', $seance['Seance']['id'])); ?></td>
             <td class="actions">
@@ -180,6 +167,27 @@ if (@$this->params['filtre'] == 'hide') {
                         'escape' => false,
                     ), 'Confirmer la cloture de la séance ?');
                 ?>
+            </td>
+            <td style="text-align: center">
+                <div class="btn-group">
+                <?php
+                echo $this->Html->link('<i class="fa fa-edit"></i>',
+                    array('controller' => 'seances', 'action' => 'edit', $seance['Seance']['id']),
+                    array(
+                        'class' => 'bouton_modifier btn',
+                        'title' => 'Modifier la séance du ' . $seance['Seance']['date'],
+                        'escape' => false,
+                    ));
+                echo $this->Html->link('<i class="fa fa-trash-o"></i>',
+                    array('controller' => 'seances', 'action' => 'delete', $seance['Seance']['id']),
+                    array(
+                        'class' => 'bouton_supprimer btn btn-danger',
+                        'title' => 'Supprimer la séance du ' . $seance['Seance']['date'],
+                        'escape' => false,
+                    ),
+                    "Confirmer la suppression de la séance du : " . $seance['Seance']['date'] . ' ?');
+                ?>
+                </div>
             </td>
         </tr>
     <?php endforeach; ?>
