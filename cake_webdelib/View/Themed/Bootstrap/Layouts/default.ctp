@@ -50,14 +50,14 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->script('modernizr.min');
     echo $this->Html->script('jquery-1.10.2.min');
     echo $this->Html->script('libs/bootstrap.min');
-    echo $this->html->script('jquery.jgrowl.min', true);
-    echo $this->html->script('/lib/select2/select2.min', true);
-    echo $this->html->script('/lib/select2/select2_locale_fr', true);
+    echo $this->Html->script('jquery.jgrowl.min');
+    echo $this->Html->script('/lib/select2/select2.min');
+    echo $this->Html->script('/lib/select2/select2_locale_fr');
     echo $this->Html->script('utils');
-    echo $this->html->script('attendable', true);
-    echo $this->html->script('masterCheckbox', true);
-    echo $this->Html->script('webdelib_init', true);
-    echo $this->html->script('jquery.placeholder.js', true);
+    echo $this->Html->script('attendable');
+    echo $this->Html->script('masterCheckbox');
+    echo $this->Html->script('jquery.placeholder.js');
+    echo $this->Html->script('main');
     echo $this->fetch('script');
     ?>
 </head>

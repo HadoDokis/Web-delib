@@ -43,7 +43,7 @@ div.input.file{
 }
 
 legend{
-    margin-bottom: 10px;
+    /*margin-bottom: 10px;*/
 }
 
 .sans-arrondi {
@@ -60,4 +60,11 @@ legend{
 
 .colonne_checkbox{
     width: 15px;
+}
+
+table.table-middle td, table.table-middle th{
+    vertical-align: middle;
+}
+table.table-center td, table.table-center th{
+    text-align: center;
 }
