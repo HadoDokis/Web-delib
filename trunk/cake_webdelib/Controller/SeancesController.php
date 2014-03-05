@@ -18,7 +18,6 @@ class SeancesController extends AppController {
 			'listerAnciennesSeances');
 
 	var $commeDroit = array(
-			'view'             => 'Seances:listerFuturesSeances',
 			'delete'           => 'Seances:listerFuturesSeances',
 			'edit'             => 'Seances:listerFuturesSeances',
 			'afficherProjets'  => 'Seances:listerFuturesSeances',
@@ -39,16 +38,6 @@ class SeancesController extends AppController {
             'sendConvocations' => 'Seances:listerFuturesSeances',
             'sendToIdelibre' => 'Seances:listerFuturesSeances',
 			'saisirCommentaire'=>'Seances:listerFuturesSeances');
-
-
-	function view($id = null) {
-		$seance = $this->Seance->read(null, $id);
-		if (!$id || empty($seance)) {
-			$this->Session->setFlash('identifiant invalide pour la seance.', 'growl', array('type'=>'erreur'));
-			$this->redirect('/seances/index');
-		}
-		$this->set('seance', $seance);
-	}
 
 	function add($timestamp=null) {
 		// initialisation
@@ -1816,7 +1805,7 @@ class SeancesController extends AppController {
      * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
      * @return CakeResponse
      */
-    function genereFusionMultiSeancesToClient($cookieToken = null) {
+    function genereFusionMultiSeancesToClient() {
         try {
             // initialisation de l'id du modèle de fusion
             $modelTemplateId = $this->request->data['Seance']['model_id'];
@@ -1850,7 +1839,7 @@ class SeancesController extends AppController {
             unset($this->Seance->odtFusionResult->content->binary);
 
             // envoi au client
-            $this->Session->write('Generer.downloadToken', $cookieToken, false, 3600);
+            $this->Session->write('Generer.downloadToken', $this->data['waiter']['token'], false, 3600);
             $this->response->disableCache();
             $this->response->body($content);
             $this->response->type($mimeType);

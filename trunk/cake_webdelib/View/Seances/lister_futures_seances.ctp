@@ -7,7 +7,7 @@ if (@$this->params['filtre'] == 'hide') {
 } else {
     $endDiv = false;
     echo $this->Html->tag('h2', "Séances à traiter");
-    echo $this->Form->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'genereFusionMultiSeancesToClient')));
+    echo $this->Form->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'genereFusionMultiSeancesToClient'), 'class' => 'waiter'));
 }
 ?>
 <table class='table table-striped table-middle'>
@@ -207,7 +207,7 @@ if (!empty($models) && !$endDiv && !empty($seances)) {
     echo $this->html->tag('div', '', array('class' => 'spacer'));
     echo $this->Form->button('<i class="fa fa-cogs"></i> Générer <span id="nbSeancesChecked"></span>', array(
         'type' => 'submit',
-        'class' => 'waiter btn btn-primary',
+        'class' => 'btn btn-primary',
         'title' => "Générer le document multi-séances (Attention : Cette opération peut durer longtemps)",
         'id' => 'generer_multi_seance',
     ));
