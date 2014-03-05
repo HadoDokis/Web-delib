@@ -1,0 +1,49 @@
+/* 
+    Document   : connexion
+    Created on : 8 oct. 2013, 14:19:46
+    Author     : Florian Ajir
+    Description:
+        Feuille de style de la page de connexion (thème bootstrap)
+*/
+
+body{margin: 0;}
+
+.container{
+    width: 100%;
+}
+
+.navbar-fixed-top{
+    width: 100%;
+}
+
+.navbar-fixed-top .navbar-inner {
+    width: 100%;
+    height: 85px;
+    min-height: 85px;
+    padding-top: 5px;
+    padding-right: 0px;
+    border-right: 0px;
+    background-color: #FFF;
+    background-image: -moz-linear-gradient(top,#FFF,#FFF);
+    background-image: -ms-linear-gradient(top,#FFF,#FFF);
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(#FFF),to(#FFF));
+    background-image: -webkit-linear-gradient(top,#FFF,#FFF);
+    background-image: -o-linear-gradient(top,#FFF,#FFF);
+    background-image: linear-gradient(top,#FFF,#FFF);
+    background-repeat: repeat-x;
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#FFFFFF',endColorstr='#FFFFFF',GradientType=0);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25),inset 0 -1px 0 rgba(0,0,0,0.1);
+}
+
+.login_form {
+    padding-top: 20px;
+    margin: 30px auto 90px;
+    max-width: 500px;
+    border: 1px solid;
+    box-shadow: 5px 4px #ddd;
+}
+
+.login_form p {
+    margin-left: 1em;
+}
+
