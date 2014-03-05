@@ -28,7 +28,7 @@
     </div>
     <div class="control-group">
         <div class="controls">
-            <?php echo $this->Form->button('Connexion', array('div' => false, 'class' => 'btn')); ?>
+            <?php echo $this->Form->button('Connexion', array('div' => false, 'class' => 'btn btn-success')); ?>
         </div>
     </div>
     <?php echo $this->Form->end(); ?>
