@@ -540,168 +540,12 @@ a.link_actes, a.link_actes:hover {
     text-decoration: none;
 }
 
-a.link_valider_avec_border {
-	color: black;
-	text-decoration: none;
-	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	border-top: 1px solid #e0ef90;
-	border-right: 1px solid #e0ef90;
-	border-left: none;
-	border-bottom: none;
-	background-image: url(../../../img/icons/go-next.png);
-	background-repeat: no-repeat;
-	background-position: top left;
-	padding: 4px 4px 4px 25px;
-}
-
-a.link_refuser_avec_border {
-	color: black;
-	text-decoration: none;
-	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	border-top: 1px solid #e0ef90;
-	border-right: 1px solid #e0ef90;
-	border-left: none;
-	border-bottom: none;
-	background-image: url(../../../img/icons/go-back.png);
-	background-repeat: no-repeat;
-	background-position: top left;
-	padding: 4px 4px 4px 25px;
-}
-
-a.link_retour_avec_border {
-    color: black;
-    text-decoration: none;
-    font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-    border-top: 1px solid #e0ef90;
-    border-right: 1px solid #e0ef90;
-    border-left: 1px solid #e0ef90;
-    border-bottom: none;
-    background-image: url(../../../img/icons/retour.png);
-    background-repeat: no-repeat;
-    background-position: top left;
-    padding: 10px 10px 10px 36px;
-}
-
-a.generer_convocation {
-    color: black;
-    text-decoration: none;
-    font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-    border-top: 1px solid #e0ef90;
-    border-right: 1px solid #e0ef90;
-    border-left: 1px solid #e0ef90;
-    border-bottom: none;
-    background-image: url(../../../img/icons/mail.png);
-    background-repeat: no-repeat;
-    background-position: top left;
-    padding: 10px 10px 10px 36px;
-}
-
-a.link_commentaire_avec_border {
-	color: black;
-	text-decoration: none;
-	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	border-top: 1px solid #e0ef90;
-	border-right: 1px solid #e0ef90;
-	border-left: none;
-	border-bottom: none;
-	background-image: url(../../../img/icons/commentaire.png);
-	background-repeat: no-repeat;
-	background-position: top left;
-	padding: 4px 4px 4px 25px;
-}
-
-a.link_modifier_avec_border {
-	color: black;
-	text-decoration: none;
-	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	border-top: 1px solid #e0ef90;
-	border-right: 1px solid #e0ef90;
-	border-left: none;
-	border-bottom: none;
-	background-image: url(../../../img/icons/klpq.png);
-	background-repeat: no-repeat;
-	background-position: top left;
-    background-size: 24px;
-	padding: 4px 4px 14px 36px;
-}
-
-a.link_rebond_avec_border {
-    color: black;
-    text-decoration: none;
-    font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-    border-top: 1px solid #e0ef90;
-    border-right: 1px solid #e0ef90;
-    border-left: none;
-    border-bottom: none;
-    background-image: url(../../../img/icons/rebond.png);
-    background-repeat: no-repeat;
-    background-position: top left;
-    padding: 4px 4px 4px 25px;
-}
-
 .bt_save {
 	background-image: url(../../../img/icons/filesave.png);
 	background-repeat: no-repeat;
 	border: none;
 	width: 22px;
 	height: 22px;
-}
-
-.bt_save_border {
-	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	background-image: url(../../../img/icons/filesave.png);
-	background-color: white;
-	background-repeat: no-repeat;
-	border-top: 1px solid #e0ef90;
-	border-right: 1px solid #e0ef90;
-	border-left: none;
-	border-bottom: none;
-	padding-left: 25px;
-	height: 22px;
-	cursor: pointer;
-}
-
-.bt_add {
-	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	background-image: url(../../../img/icons/edit_add.png);
-	background-color: white;
-	background-repeat: no-repeat;
-	border-top: 1px solid #e0ef90;
-	border-right: 1px solid #e0ef90;
-	border-left: none;
-	border-bottom: none;
-	padding-left: 25px;
-	height: 22px;
-	cursor: pointer;
-}
-
-.bt_annuler {
-	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	background-image: url(../../../img/icons/edit_cancel.png);
-	background-color: white;
-	background-repeat: no-repeat;
-	border-top: 1px solid #e0ef90;
-	border-right: 1px solid #e0ef90;
-	border-left: none;
-	border-bottom: none;
-	padding-left: 25px;
-	height: 22px;
-	cursor: pointer;
-	text-align: right;
-}
-
-.bt_fin {
-	font: normal normal 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	background-image: url(../../../img/icons/apply.png);
-	background-color: white;
-	background-repeat: no-repeat;
-	border-top: 1px solid #e0ef90;
-	border-right: 1px solid #e0ef90;
-	border-left: none;
-	border-bottom: none;
-	padding-left: 25px;
-	height: 22px;
-	cursor: pointer;
 }
 
 #deliberation {
@@ -712,25 +556,6 @@ a.link_rebond_avec_border {
     text-align: right;
 }
 
-#deliberation h3 {
-	text-align: center;
-	font: normal small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-}
-
-#deliberation dt{
-	font: italic normal 15px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	margin: 5px 20px 0 20px;
-	padding: 2px 0 0 20px;
-	border-top: 1px solid #FFFFFF;
-	border-right: 1px solid #FFFFFF;
-	text-decoration: underline;
-}
-
-#deliberation dd{
-	padding: 5px 0 15px 30px;
-	text-indent: 3%;
-
-}
 .actions {
     text-align: center;
 }
@@ -767,14 +592,14 @@ a.link_rebond_avec_border {
 
 #vue_cadre{
     padding-bottom: 10px;
-	background-color: #fafafa;
+    background-color: #fafafa;
     outline: 1px solid #ccc;
     box-shadow: -1px 1px 1px 0px rgba(0, 0, 0, 0.7);
 
 }
 #vue_cadre h2, #vue_cadre h3{
     text-align: center;
-    font: small-caps 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+    font-variant:small-caps;
     padding-top: 10px;
     padding-bottom: 10px;
     border-bottom: 2px solid #DDD;
@@ -788,7 +613,6 @@ a.link_rebond_avec_border {
 }
 
 #vue_cadre dt{
-	/*font: italic normal 15px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;*/
 	margin: 5px 20px 0 20px;
 	padding: 2px 0 0 20px;
 	border-top: 1px solid #FFFFFF;
@@ -840,59 +664,6 @@ div.traiterActions {
 	color: #CCCC33;
 }
 
-/* Mise en forme du menu principal */
-#menuPrincipal {
-	font: normal normal 14px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	list-style: none;
-	width: 100%;
-	height: 55px;
-}
-
-#menuPrincipal ul.menuNiveau0 {
-	margin: 0;
-	padding: 2px 0px 2px 0px;
-	border-bottom: 1px solid #888888;
-}
-
-#menuPrincipal ul.menuNiveau1 {
-	margin: 0;
-	padding: 0px 0px 0px 10px;
-	border-bottom: 1px solid #888888;
-}
-
-#menuPrincipal li {
-	display: inline;
-}
-
-#menuPrincipal ul.menuNiveau0 li {
-	padding: 2px 13px 2px 13px;
-}
-
-#menuPrincipal ul.menuNiveau1 li {
-	margin: 0px;
-	padding: 0px 13px 0px 13px;
-}
-
-#menuPrincipal li.menuCourant {
-    background-color: #efefef;
-	border-left: 1px solid #888888;
-	border-right: 1px solid #888888;
-	-moz-opacity:0.5;
-	-webkit-opacity:0.5;
-	opacity:0.5;
-
-}
-
-#menuPrincipal a:link,
-#menuPrincipal a:visited {
-	color:#444;
-}
-
-#menuPrincipal a {
-	text-decoration: none;
-}
-/* Fin mise en forme du menu principal */
-
 /* Mise en forme du tableau des droits */
 /* Tableau */
 table#tableDroits {
@@ -941,32 +712,6 @@ table#retour {
 #retour tr {
     border: 0;
 }
-
-
-
-/*---------------- modifs christophe ------------------------*/
-/*profils*/
-
-#arbre {
-	border: 1px solid #bbb;
-	width: auto;
-	padding: 10px;
-	margin-bottom: 20px;
-}
-
-.profil {
-	font-weight: bold;
-}
-
-/*---------------- fin modifs christophe ------------------------*/
-
-/*graphique circuit validation*/
-.graphique {
-	float:left;
-	margin-left:15px;
-	text-align:center;
-}
-
 /*----------------- Affichage des annexes dans l'edition des deliberations */
 div.annexesGauche {
 	float: left;
@@ -984,7 +729,6 @@ div.fckEditorProjet {
 
 /* Mise en forme des onglets */
 .onglet {
-	font: normal normal 14px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
     background : #f8fddd;
 	border-bottom:  3px solid #e0ef90;
 	margin-top: 5px;
@@ -996,7 +740,7 @@ div.fckEditorProjet {
 	text-decoration: none;
 }
 .onglet a.ongletCourant{
-    font: 16px  "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+        font-size: 1.1em;
 	font-weight: bold;
 	background: #fff;
 	padding-bottom: 4px;
@@ -1028,7 +772,8 @@ fieldset#info {
 .paginate {
 	margin-top: 20px;
 }
-/* Filtre */
+
+/********************************** Filtre *******************************/
 #filtreForm div {
     margin-bottom: 0;
 }
@@ -1050,119 +795,8 @@ div.filtreCriteres {
   margin: 0;
   border: 1px solid grey;
 }
+/********************************** Fin Filtre *******************************/
 
-/* Debugging */
-
-.cake-sql-log table {
-	background: #f4f4f4;
-    position: fixed;
-}
-.cake-sql-log td {
-	padding: 4px 8px;
-	text-align: left;
-}
-pre {
-    color: #000;
-    background: #f0f0f0;
-    padding: 1em;
-}
-pre.cake-debug {
-    background: #ffcc00;
-    font-size: 120%;
-    line-height: 140%;
-    margin-top: 1em;
-    overflow: auto;
-    position: relative;
-}
-div.cake-stack-trace {
-    background: #fff;
-    border: 4px dotted #ffcc00;
-    color: #333;
-    margin: 0px;
-    padding: 6px;
-    font-size: 120%;
-    line-height: 140%;
-    overflow: auto;
-    position: relative;
-}
-div.cake-code-dump pre {
-    position: relative;
-    overflow: auto;
-}
-div.cake-stack-trace pre, div.cake-code-dump pre {
-    color: #000;
-    background-color: #F0F0F0;
-    margin: 0px;
-    padding: 1em;
-    overflow: auto;
-}
-div.cake-code-dump pre, div.cake-code-dump pre code {
-    clear: both;
-    font-size: 12px;
-    line-height: 15px;
-    margin: 4px 2px;
-    padding: 4px;
-    overflow: auto;
-}
-div.cake-code-dump span.code-highlight {
-    background-color: #ff0;
-    padding: 4px;
-}
-div.code-coverage-results div.code-line {
-    padding-left:5px;
-    display:block;
-    margin-left:10px;
-}
-div.code-coverage-results div.uncovered span.content {
-    background:#ecc;
-}
-div.code-coverage-results div.covered span.content {
-    background:#cec;
-}
-div.code-coverage-results div.ignored span.content {
-    color:#aaa;
-}
-div.code-coverage-results span.line-num {
-    color:#666;
-    display:block;
-    float:left;
-    width:20px;
-    text-align:right;
-    margin-right:5px;
-}
-div.code-coverage-results span.line-num strong {
-    color:#666;
-}
-div.code-coverage-results div.start {
-    border:1px solid #aaa;
-    border-width:1px 1px 0px 1px;
-    margin-top:30px;
-    padding-top:5px;
-}
-div.code-coverage-results div.end {
-    border:1px solid #aaa;
-    border-width:0px 1px 1px 1px;
-    margin-bottom:30px;
-    padding-bottom:5px;
-}
-div.code-coverage-results div.realstart {
-    margin-top:0px;
-}
-div.code-coverage-results p.note {
-    color:#bbb;
-    padding:5px;
-    margin:5px 0 10px;
-    font-size:10px;
-}
-div.code-coverage-results span.result-bad {
-    color: #a00;
-}
-div.code-coverage-results span.result-ok {
-    color: #fa0;
-}
-div.code-coverage-results span.result-good {
-    color: #0a0;
-}
 tr.altrow {
     background: #d5d5d5;
 }
@@ -1451,69 +1085,3 @@ table.month {
 }
 
 /*  ----------------- end of Calendar -------------------------- */
-
-
-
- /*
- Modification bootstrap
- **/
-/*.search-query {
-    -moz-transition: none 0s ease 0s;
-    background-color: #515151;
-    border-color: #111111;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.15);
-    color: #FFFFFF;
-}
-.navbar-search .search-query {
-    border-radius: 15px 15px 15px 15px;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 13px;
-    font-weight: normal;
-    line-height: 1;
-    margin-bottom: 0px;
-    padding: 4px 14px;
-}
-.navbar-inverse .navbar-search .search-query:-moz-placeholder {
-    color: #CCCCCC;
-}
-
-.table tbody tr.success > td {
-  background-color: #dff0d8;
-}
-
-.table tbody tr.error > td {
-  background-color: #f2dede;
-}
-
-.table tbody tr.warning > td {
-  background-color: #fcf8e3;
-}
-
-.table tbody tr.info > td {
-  background-color: #d9edf7;
-}
-
-.table tbody tr.success:hover > td {
-  background-color: #d0e9c6;
-}
-
-.table tbody tr.error:hover > td {
-  background-color: #ebcccc;
-}
-
-.table tbody tr.warning:hover > td {
-  background-color: #faf2cc;
-}
-
-.table tbody tr.info:hover > td {
-  background-color: #c4e3f3;
-}
-
-
-fieldset {
-	border: 1px solid #e0ef90;
-	padding: 10px 0 10px 0;
-}
-fieldset legend {
-	font-weight: normal;
-}*/
