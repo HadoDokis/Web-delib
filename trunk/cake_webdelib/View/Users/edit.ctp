@@ -22,8 +22,7 @@ echo $this->element('onglets', array('listeOnglets' => array(
     <fieldset>
         <legend>Identifiant de connexion</legend>
         <?php
-        echo $this->Form->input('User.login', array('label' => 'Login <abbr title="obligatoire">*</abbr>'));
-
+        echo $this->Form->input('User.login', array('label' => 'Login <abbr title="obligatoire">*</abbr>', 'required'));
         if (!$this->Html->value('User.id')) {
             echo "<div class='tiers'>";
             echo $this->Form->input('User.password', array('type' => 'password', 'label' => 'Password <abbr title="obligatoire">*</abbr>'));
@@ -40,16 +39,16 @@ echo $this->element('onglets', array('listeOnglets' => array(
     <fieldset>
         <legend>Identité et contacts</legend>
         <div class="demi">
-            <?php echo $this->Form->input('User.nom', array('label' => 'Nom <abbr title="obligatoire">*</abbr>', 'size' => '30')); ?>
+            <?php echo $this->Form->input('User.nom', array('label' => 'Nom <abbr title="obligatoire">*</abbr>', 'required')); ?>
             <br/>
-            <?php echo $this->Form->input('User.prenom', array('label' => 'Prénom <abbr title="obligatoire">*</abbr>', 'size' => '30')); ?>
+            <?php echo $this->Form->input('User.prenom', array('label' => 'Prénom <abbr title="obligatoire">*</abbr>', 'required')); ?>
         </div>
         <div class="demi">
             <?php echo $this->Form->input('User.telfixe', array('label' => 'Tel fixe')); ?>
             <br/>
             <?php echo $this->Form->input('User.telmobile', array('label' => 'Tel mobile')); ?>
             <br/>
-            <?php echo $this->Form->input('User.email', array('label' => 'Email', 'size' => '30')); ?>
+            <?php echo $this->Form->input('User.email', array('label' => 'Email',  'type'=>'email')); ?>
             <br/>
             <?php echo $this->Form->input('User.note', array('type' => 'textarea', 'cols' => '30', 'rows' => '2')); ?>
         </div>
