@@ -1,3 +1,9 @@
+<?php if (!empty($errorMsg)): ?>
+    <div class="alert alert-error" style="text-align: center; margin-left: 15px; margin-right: 15px;">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>Erreur!</strong> <?php echo $errorMsg; ?>
+    </div>
+<?php endif; ?>
 <div class="login_form">
     <div class="clearfix" style="margin: 0 auto;max-width: 100%;padding-left:1em;">
         <div style="font-weight: bold">Bienvenue</div>
@@ -5,12 +11,8 @@
             <?php echo $this->Html->image('webdelib_petit.png', array('id' => 'logo')); ?>
         </h1>
     </div>
-    <?php if (!empty($errorMsg)): ?>
-    <p class="error-message">Erreur : <?php echo $errorMsg; ?></p>
-    <br/>
-    <?php endif; ?>
     <p>Veuillez saisir votre identifiant et votre mot de passe. </p>
-    <?php echo $this->Form->create('User', array('action' => 'login', 'type' => 'post', 'class' => 'row form-horizontal', 'inputDefaults' => array(
+    <?php echo $this->Form->create('User', array('action' => 'login', 'type' => 'post', 'class' => 'form-horizontal', 'inputDefaults' => array(
         'label' => false,
         'div' => false
     ))); ?>
