@@ -20,6 +20,7 @@ body{
 div.input.checkbox label{
     float: none;
     text-align: left;
+    width: auto;
 }
 
 #logo{
@@ -65,6 +66,42 @@ legend{
 table.table-middle td, table.table-middle th{
     vertical-align: middle;
 }
-table.table-center td, table.table-center th{
-    text-align: center;
+
+#selectTypeseances,
+#selectDatesSeances{
+    margin-bottom: 10px;
+}
+
+#selectTypeseances label,
+#selectDatesSeances label{
+    width: auto;
+    float:none;
+    text-align: left;
+}
+
+#DeliberationEditForm #tab1 div.gauche,
+#DeliberationAddForm #tab1 div.gauche,
+#DeliberationEditForm #tab1 div.droite,
+#DeliberationAddForm #tab1 div.droite,
+{
+    padding:10px;
+}
+#DeliberationEditForm #tab1 div.gauche input[type='text'],
+#DeliberationAddForm #tab1 div.gauche input[type='text']
+{
+    width: 286px;
+}
+
+#DeliberationEditForm #tab1 div.gauche select,
+#DeliberationAddForm #tab1 div.gauche select{
+    width: 300px;
+}
+
+#DeliberationEditForm #tab1 div.gauche textarea,
+#DeliberationAddForm #tab1 div.gauche textarea{
+    min-width: 286px;
+    max-width: 80%;
+}
+input#classif1{
+    width: 286px;
 }
