@@ -103,8 +103,8 @@ class ConversionComponent extends Component {
             
             $folder= new Folder(AppTools::newTmpDir(TMP.'files'.DS.'conversion'.DS), true, 0777);
             //Si le fichier n'est pas un pdf on le converti en pdf
-            //if($DOC_TYPE[$stypeMime]['extension']!='pdf')
-            $sDataPdf=$this->convertirFlux($sData, $DOC_TYPE[$stypeMime]['extension'], 'pdf');
+            if($DOC_TYPE[$stypeMime]['extension']!='pdf')
+                $sDataPdf=$this->convertirFlux($sData, $DOC_TYPE[$stypeMime]['extension'], 'pdf');
            
             $file = new File($folder->pwd().DS.'_origine.pdf', true, 0777);
             if(!empty($DOC_TYPE[$stypeMime]['extension']) && $DOC_TYPE[$stypeMime]['extension']=='pdf')  { 
@@ -116,8 +116,8 @@ class ConversionComponent extends Component {
             } else $file->append($sDataPdf);
             
             $return=$this->_PdftoOdt($folder, $file);
-            //$folder->delete();
-            
+            $folder->delete();
+
             return $return;
         }
         
@@ -149,39 +149,36 @@ class ConversionComponent extends Component {
                 $pageParam[$i]=array('path'=>$folder->pwd().DS.$i.'.png',
                                      'name'=>$i.'.png',
                                         'orientation'=>$orientaion);
-                 
                 $imagick = new Imagick();
-                $imagick->readImage($file->pwd().'[0]');
-                $imagick->setImageUnits(imagick::RESOLUTION_PIXELSPERINCH);
                 $imagick->setResolution( $GS_RESOLUTION, $GS_RESOLUTION); 
+                $imagick->readImage($file->pwd().'[0]');
+                //Compression diponible
+                //$imagick->setImageCompression(Imagick::COMPRESSION_ZIP);
+                //$imagick->setImageCompressionQuality(90);
                 $imagick->setImageFormat('png');
-                $imagick->setImageCompression(Imagick::COMPRESSION_UNDEFINED);
-                $imagick->setImageCompressionQuality(0);
-                //$imagick->setImageCompression(true);
-                //$imagick->setCompression(Imagick::COMPRESSION_BZIP); 
-                //$imagick->setImageCompressionQuality(80); 
                 $imagick->writeImage($folder->pwd().DS.$i.'.png'); 
-                $im = imagecreatefrompng($folder->pwd().DS.$i.'.png');
-                imagepng($im,$folder->pwd().DS.$i.'.png',9);
                 $file->close();
                 $i++;
              }
              
             $files = $folder->find('.*\.png');
             //génération du fichier ODT
+            if(empty($pageParam))
+                throw new InternalErrorException('Impossible de convertir le fichier : paramètres manquants');
+            
             $this->generateOdtFileWithImages($folder,$pageParam);
            
             $file = new File($folder->pwd().DS.'result.odt');
             $return=$file->read();
             $file->close();
-
+            
             return $return;
         }
         
         function generateOdtFileWithImages(&$folder, $aPagePng) {
             
             App::import('Vendor', 'phpodt/phpodt');
-            $odt = ODT::getInstance();
+            $odt = ODT::getInstance(true, $folder->pwd().DS.'result.odt');
             $pageStyleP = new PageStyle('myPageStylePortrait','Standard');
             $pageStyleP->setOrientation(StyleConstants::PORTRAIT);
             $pageStyleP->setHorizontalMargin('0cm', '0cm');
@@ -201,14 +198,14 @@ class ConversionComponent extends Component {
                 
             if($page['orientation']=='landscape'){
                 $p = new Paragraph($pStyleL);
-                $p->addImage($page['path'], '29.7cm','21.001cm',true, $page['name'], 'paragraph');
+                $p->addImage($page['path'], '29.7cm','21cm',true , $page['name'], 'paragraph');
             }
             else{
                 $p = new Paragraph($pStyleP);
-                $p->addImage($page['path'], '21.001cm', '29.7cm',true, $page['name'], 'paragraph');
+                $p->addImage($page['path'], '21cm', '29.7cm',true , $page['name'], 'paragraph');
             }
             }
-            $odt->output($folder->pwd().DS.'result.odt');
+            $odt->output();
         }
 }
 ?>

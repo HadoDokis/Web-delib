@@ -19,6 +19,8 @@ class ODT {
 //	private $fileName;
 	private $manifest;
 	private $styles;
+        private $document;
+        private $documentpath;
 	private $documentContent;
 	private $officeBody;
 	private $officeText;
@@ -34,14 +36,16 @@ class ODT {
 	 * @param $fileName The name of the odt file
 	 * @param $perm The permissions of the file (optional)
 	 */
-	private function __construct() {
-		$this->initContent();
+	private function __construct($filePath=null) {
+		$this->initContent($filePath);
 	}
 	
-	static function getInstance() {
+	static function getInstance($create=null, $filePath=null) {
 		if (self::$instance == null) {
-			self::$instance = new ODT();
-		}
+			self::$instance = new ODT($filePath);
+		}elseif($create)
+                        self::$instance = new ODT($filePath);
+                
 		return self::$instance;
 	}
 
@@ -50,37 +54,35 @@ class ODT {
 	 * the odt document
 	 */
 	function createManifest() {
-		$manifestDoc = new DOMDocument('1.0', 'UTF-8');
-		$root = $manifestDoc->createElement('manifest:manifest');
+		$this->manifest = new DOMDocument('1.0', 'UTF-8');
+		$root = $this->manifest->createElement('manifest:manifest');
 		$root->setAttribute('xmlns:manifest', 'urn:oasis:names:tc:opendocument:xmlns:manifest:1.0');
                 //FIX SEB
                 //$root->setAttribute('office:version', "1.1");
 		//$root->setAttribute('manifest:version', "1.1");
-		$manifestDoc->appendChild($root);
+		$this->manifest->appendChild($root);
 
-		$fileEntryRoot = $manifestDoc->createElement('manifest:file-entry');
+		$fileEntryRoot = $this->manifest->createElement('manifest:file-entry');
 		//FIX SEB
                 $fileEntryRoot->setAttribute('manifest:full-path', '/');
                 $fileEntryRoot->setAttribute('manifest:version', '1.1');
                 $fileEntryRoot->setAttribute('manifest:media-type', 'application/vnd.oasis.opendocument.text');
 		$root->appendChild($fileEntryRoot);
 
-		$fileEntryContent = $manifestDoc->createElement('manifest:file-entry');
+		$fileEntryContent = $this->manifest->createElement('manifest:file-entry');
 		$fileEntryContent->setAttribute('manifest:media-type', 'text/xml');
 		$fileEntryContent->setAttribute('manifest:full-path', 'content.xml');
 		$root->appendChild($fileEntryContent);
 
-		$fileEntryStyles = $manifestDoc->createElement('manifest:file-entry');
+		$fileEntryStyles = $this->manifest->createElement('manifest:file-entry');
 		$fileEntryStyles->setAttribute('manifest:media-type', 'text/xml');
 		$fileEntryStyles->setAttribute('manifest:full-path', 'styles.xml');
 		$root->appendChild($fileEntryStyles);
 
-		$fileEntryMeta = $manifestDoc->createElement('manifest:file-entry');
+		$fileEntryMeta = $this->manifest->createElement('manifest:file-entry');
 		$fileEntryMeta->setAttribute('manifest:media-type', 'text/xml');
 		$fileEntryMeta->setAttribute('manifest:full-path', 'meta.xml');
 		$root->appendChild($fileEntryMeta);
-
-		$this->manifest = $manifestDoc;
 	}
 
 	/**
@@ -182,7 +184,12 @@ class ODT {
 	 * Creates the needed documents and does the needed initialization
 	 * @return DOMDocument An empty odt document
 	 */
-	function initContent() {
+	function initContent($fileName=null) {
+            
+                $this->document = new ZipArchive();
+                $this->document->open($fileName, ZIPARCHIVE::OVERWRITE);
+                $this->documentpath=$fileName;
+                
 		$this->createManifest();
 		$this->createStyle();
 		$this->createMetadata();
@@ -267,7 +274,21 @@ class ODT {
 	function setCreator($creator) {
 		$element = $this->metadata->createElement('meta:initial-creator', $creator);
 		$this->officeMeta->appendChild($element);
+                
 	}
+        
+        /**
+	 * Specifies the path des pictures
+	 *
+	 * @param string $creator
+	 */
+        function setFileManifest($namepath)
+        {
+            $element = $this->manifest->createElement('manifest:file-entry');
+            $element->setAttribute('manifest:media-type', '');
+            $element->setAttribute('manifest:full-path', $namepath);
+            $this->manifest->getElementsByTagName('manifest:manifest')->item(0)->appendChild($element);
+        }
 
 	/**
 	 *
@@ -276,29 +297,35 @@ class ODT {
 	function getStyleDocument() {
 		return $this->styles;
 	}
-	
+        
 	public function getDocumentContent() {
 		return $this->documentContent;
+	}
+        
+        /**
+	 *
+	 * @return ZipArchive
+	 */
+        public function getContent() {
+		return $this->document;
 	}
 	
 	/**
 	 * Write the document to the hard disk
 	 */
-	function output($fileName, $perm = 0777) {
-
-		$document = new ZipArchive();
-                $document->open($fileName, ZIPARCHIVE::OVERWRITE);
+	function output($perm = 0777) {
+                
 		//$document->open($fileName, ZIPARCHIVE::CM_STORE);
-                $document->addFromString('mimetype', 'application/vnd.oasis.opendocument.text');
+                $this->document->addFromString('mimetype', 'application/vnd.oasis.opendocument.text');
                // $document->open($fileName, ZIPARCHIVE::OVERWRITE);
-		$document->addFromString('META-INF/manifest.xml', $this->manifest->saveXML());
-		$document->addFromString('styles.xml', $this->styles->saveXML());
-		$document->addFromString('meta.xml', $this->metadata->saveXML());
-		$document->addFromString('content.xml', html_entity_decode($this->documentContent->saveXML()));
+		$this->document->addFromString('META-INF/manifest.xml', $this->manifest->saveXML());
+		$this->document->addFromString('styles.xml', $this->styles->saveXML());
+		$this->document->addFromString('meta.xml', $this->metadata->saveXML());
+		$this->document->addFromString('content.xml', html_entity_decode($this->documentContent->saveXML()));
 
-		$document->close();
+		$this->document->close();
 
-		chmod($fileName, $perm);
+		chmod( $this->documentpath, $perm);
 	}
 }
 ?>
