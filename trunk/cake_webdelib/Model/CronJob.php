@@ -151,12 +151,12 @@ class CronJob extends AppModel {
             $DOC_TYPE = Configure::read('DOC_TYPE');
             $this->Annex = new Annex();
             $condition=array();
-            if(!empty($delib_id))
+               if(!empty($delib_id))
             $condition['foreign_key']=$delib_id;
             
             $condition['AND']=array('OR'=>array(    
-                                                'AND'=>array('joindre_ctrl_legalite'=>true,'data_pdf'=>NULL),
-                                                'AND'=>array('joindre_fusion'=>1,'edition_data'=>NULL)
+                                                array('AND'=>array('joindre_ctrl_legalite'=>TRUE,'data_pdf'=>NULL)),
+                                                array('AND'=>array('joindre_fusion'=>1,'edition_data'=>NULL))
                                                 )
             );
             
@@ -167,21 +167,21 @@ class CronJob extends AppModel {
                 'order'=>'modified DESC',
                 'recursive'=>-1
             ));
-            /*debug($condition);
+           /* debug($condition);
             $log = $this->Annex->getDataSource()->getLog(false, false);
-            var_dump($annexes);*/
+           // var_dump($log);exit;
+            var_dump($annexes);
+            exit;*/
             
-            if (!empty($annexes))
+            //if (!empty($annexes))
             foreach ($annexes as $annexe) {
                 $this->Annex->id=$annexe['Annex']['id'];
-                
                 if($annexe['Annex']['joindre_fusion']){
                     $newAnnexe['edition_data'] = $this->Conversion->toOdt($annexe['Annex']['data'], $annexe['Annex']['filetype'], 'application/vnd.oasis.opendocument.text');
                     $newAnnexe['edition_data_typemime'] = 'application/vnd.oasis.opendocument.text';
                 }
-                
                 if($annexe['Annex']['joindre_ctrl_legalite']){
-                    $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], $annexe['Annex']['filetype'], 'application/pdf');   
+                    $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], $DOC_TYPE[$annexe['Annex']['filetype']]['extension'], 'pdf');  
                 }
                 
                 $this->Annex->save($newAnnexe);
@@ -190,9 +190,9 @@ class CronJob extends AppModel {
             if (empty($annexes))
                 return Cron::MESSAGE_FIN_EXEC_SUCCES . "Aucune annexe à convertir";
             else
-                return Cron::MESSAGE_FIN_EXEC_SUCCES . "Utilisateurs alertés :\n\n" . count($annexes);
+                return Cron::MESSAGE_FIN_EXEC_SUCCES . "Annexe convertie(s):\n\n" . count($annexes);
         } catch (Exception $e) {
-            return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage();
+            return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage().' id='.(isset($this->Annex->id)?$this->Annex->id:'Inconnu');
         }
     }
 
