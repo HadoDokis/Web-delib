@@ -67,9 +67,9 @@ class PastellComponent extends Component {
      * @param string $page script php
      * @param array $data
      * @param bool $file_transfert attente d'un fichier en retour ?
-     * @return array retour du webservice
+     * @return bool|mixed|string retour du webservice
      */
-    public function execute($page, $data = array(), $file_transfert = false, $file=null) {
+    public function execute($page, $data = array(), $file_transfert = false) {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, $this->login . ":" . $this->pwd);
