@@ -334,20 +334,9 @@ class Deliberation extends AppModel {
      * @return integer identifiant du modèle
      */
     function getModelId($delib_id){
-        // initialisations
+// initialisations
         $etat = $this->field('etat', array('id' => $delib_id));
-        $seanceDeliberanteId = null;
-
-        // recherche d'une séance délibérante
-        $seances = $this->Deliberationseance->find('all', array(
-            'recursive' => -1,
-            'fields' => array('seance_id'),
-            'conditions' => array('deliberation_id' => $delib_id)));
-        if (!empty($seances)){
-            $tab_seances = Hash::extract($seances, '{n}.Deliberationseance.seance_id');
-            $seanceDeliberanteId = $this->Seance->getSeanceDeliberante($tab_seances);
-        }
-
+        $seanceDeliberanteId = $this->getSeanceDeliberanteId($delib_id);
         if (!empty($seanceDeliberanteId)){
             // lecture des modèles de la séance délibérante
             $seance = $this->Seance->find('first', array(
@@ -361,9 +350,9 @@ class Deliberation extends AppModel {
         } else {
             $typeacte_id = $this->field('typeacte_id', array('id' => $delib_id));
             $typeacte = $this->Typeacte->find('first', array(
-                'recursive' => -1,
-                'conditions' => array('id' => $typeacte_id),
-                'fields' => array('modeleprojet_id','modelefinal_id')));
+                            'recursive' => -1,
+                            'conditions' => array('id' => $typeacte_id),
+                            'fields' => array('modeleprojet_id','modelefinal_id')));
             if ($etat < 3)
                 return $typeacte['Typeacte']['modeleprojet_id'];
             else
@@ -2279,17 +2268,34 @@ class Deliberation extends AppModel {
         
         if (empty($this->id))
             throw new Exception('délibération id n\'existe pas');
+
+        return array('docPrincipale'=>$this->getDocument($this->id),'annexes'=>$this->getAnnexes($this->id));
+    }
+    
+    function getDocument($delib_id, $extention='pdf'){
         // fusion du document
-        $this->Behaviors->load('OdtFusion', array('id' => $this->getModelId($this->id)));
+        $this->Behaviors->load('OdtFusion', array('id' => $delib_id));
         $filename = $this->fusionName();
-       // debug($filename);
         $this->odtFusion();
         $dDocPrincipale=&$this->getOdtFusionResult();
         $this->deleteOdtFusionResult();
-        
-        $annexes = $this->Annex->getAnnexesFromDelibId($this->id, true);
 
-        return array('docPrincipale'=>$dDocPrincipale,'annexes'=>$annexes);
+        return $dDocPrincipale;
+    }
+    
+    function getAnnexes($delib_id, $extention='pdf'){
+        foreach ($this->Annex->getAnnexesFromDelibId($delib_id, true) as $key => $annexe) {
+            switch ($extention) {
+               case 'pdf':
+               default:
+                $annexes[]['data_pdf'] = $annexe['data_pdf'];
+                $annexes[]['filename'] = $annexe['filename'];//Replace avec .pdf
+                $annexes[]['filetype'] = 'application/pdf';
+                break;
+            }
+        }
+
+        return $annexes;
     }
 
     /**

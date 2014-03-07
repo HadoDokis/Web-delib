@@ -3396,9 +3396,7 @@ class DeliberationsController extends AppController
      * @return mixed
      */
     function sendToParapheur($seance_id = null) {
-        $this->Filtre->initialisation($this->name . ':' . $this->action . ':' . $seance_id, $this->data, array('url' => $this->here));
-        $conditions = $this->_handleConditions($this->Filtre->conditions());
-        $this->set('seance_id', $seance_id);
+        
         App::uses('Signature', 'Lib');
         try{
             $this->Signature = new Signature();
@@ -3406,6 +3404,69 @@ class DeliberationsController extends AppController
             $this->Session->setFlash($e->getMessage(), 'growl');
             $this->redirect($this->referer());
         }
+        
+        if ($this->request->isPost()) {
+            // Formulaire envoyé
+            $message = '';
+            $circuit_id = $this->data['Parapheur']['circuit_id'];
+            foreach ($this->data['Deliberation'] as $id => $bool) { // Parcours les checkboxes
+                if ($bool == 1) { // Checkbox cochée
+                    $delib_id = substr($id, 3, strlen($id));
+                    $this->Deliberation->id = $delib_id;
+                    if ($circuit_id == -1) { //Signature manuscrite
+                        $this->Deliberation->saveField('signee', 1);
+                        continue;
+                    }
+                    $delib = $this->Deliberation->find('first', array(
+                        'recursive' => -1,
+                        'conditions' => array('Deliberation.id' => $delib_id),
+                        'fields' => array(
+                            'Deliberation.id',
+                            'Deliberation.num_delib',
+                            'Deliberation.delib_pdf',
+                            'Deliberation.etat',
+                            'Deliberation.parapheur_etat',
+                            'Deliberation.objet_delib',
+                            'Deliberation.objet',
+                            'Deliberation.signee',
+                            'Deliberation.typeacte_id',
+                        )
+                    ));
+
+                    $this->Deliberation->Typeacte->id = $delib['Deliberation']['typeacte_id'];
+                    $delib['Typeacte']['nature_id'] = $this->Deliberation->Typeacte->field('nature_id');
+
+                    $this->Deliberation->Seance->id = $seance_id;
+                    $delib['Seance']['date'] = $this->Deliberation->Seance->field('date');
+
+                    if (empty($delib['Deliberation']['delib_pdf'])){
+                        $delib['Deliberation']['delib_pdf']=$this->Deliberation->getDocument($delib_id);
+                        $this->Deliberation->saveField('delib_pdf', $delib['Deliberation']['delib_pdf']);
+                    }
+
+                    $ret = $this->Signature->send($delib, $circuit_id, $delib['Deliberation']['delib_pdf'], $this->Deliberation->getAnnexes($delib_id));
+                    if ($ret) {
+                        $this->Deliberation->saveField('parapheur_id', $ret);
+                        $this->Deliberation->saveField('parapheur_cible', Configure::read('PARAPHEUR'));
+                        if (Configure::read('PARAPHEUR') == 'PASTELL')
+                            $this->Deliberation->saveField('pastell_id', $ret);
+                        $this->Deliberation->saveField('parapheur_etat', '1');
+                        $message = $message . $delib['Deliberation']['num_delib'] . " : Envoyé avec succès<br />";
+                    } else {
+                        $message = $message . $delib['Deliberation']['num_delib'] . " : Erreur<br />";
+                    }
+                    unset($aDocuments);
+                }
+            }
+            
+            $this->Session->setFlash($message, 'growl', array('type' => 'erreurTDT'));
+            return $this->redirect($this->referer());
+        }
+        
+        $this->Filtre->initialisation($this->name . ':' . $this->action . ':' . $seance_id, $this->data, array('url' => $this->here));
+        $conditions = $this->_handleConditions($this->Filtre->conditions());
+        $this->set('seance_id', $seance_id);
+        
         if (empty($seance_id)) {
             $this->Deliberation->Behaviors->load('Containable');
             $conditions['Deliberation.parapheur_etat != '] = null;
@@ -3457,139 +3518,65 @@ class DeliberationsController extends AppController
                 'order' => array($order)));
 
             $this->_ajouterFiltre($delibs);
-
-            for ($i = 0; $i < count($delibs); $i++) {
-                $delibs[$i]['Modeltemplate']['id'] = $this->Deliberation->getModelId($delibs[$i]['Deliberation']['id']);
-            }
-
-            try {
-                $circuits = $this->Signature->printCircuits();
-                $this->set('deliberations', $delibs);
-                $this->set('circuits', $circuits);
-            } catch (Exception $e) {
-                $message = $e->getMessage();
-                $this->Session->setFlash($message, 'growl', array('type' => 'erreur'));
-                return $this->redirect($this->referer());
-            }
-            return;
         }
-        $conditions['Deliberationseance.seance_id'] = $seance_id;
-        $conditions['Deliberation.etat >='] = 0;
-        // Formulaire non envoyé
-        if (!isset($this->data['Parapheur']['circuit_id'])) {
-            $this->Deliberationseance->Behaviors->load('Containable');
-            $this->Deliberation->Behaviors->load('Containable');
-            $delibs = $this->Deliberationseance->find('all', array(
-                    'recursive' => 2,
-                    'fields' => array(
-                        'Deliberationseance.seance_id',
-                        'Deliberationseance.deliberation_id',
-                        'Deliberationseance.position',
-                        'Seance.id',
-                        'Seance.type_id',
-                        'Deliberation.id',
-                        'Deliberation.service_id',
-                        'Deliberation.theme_id',
-                        'Deliberation.circuit_id',
-                        'Deliberation.typeacte_id',
-                        'Deliberation.etat',
-                        'Deliberation.parapheur_id',
-                        'Deliberation.num_pref',
-                        'Deliberation.parapheur_etat',
-                        'Deliberation.objet_delib',
-                        'Deliberation.titre',
-                        'Deliberation.num_delib',
-                        'Deliberation.parapheur_bordereau',
-                        'Deliberation.signee',
-                        'Deliberation.signature',
-                        'Deliberation.parapheur_commentaire',
-                    ),
-                    'contain' => array(
-                        'Seance',
-                        'Deliberation' => array(
-                            'Typeacte.nature_id',
-                            'Typeacte.libelle',
-                            'Service.libelle',
-                            'Theme.libelle',
-                            'Circuit.nom'
-                        )
-                    ),
-                    'conditions' => $conditions,
-                    'order' => 'Deliberationseance.position ASC',
-                )
-            );
-            $typeseance = $this->Seance->getType($seance_id);
-            for ($i = 0; $i < count($delibs); $i++) {
-                $delibs[$i]['Modeltemplate']['id'] = $this->Typeseance->modeleProjetDelibParTypeSeanceId($typeseance, $delibs[$i]['Deliberation']['etat']);
-            }
-
-            $this->_ajouterFiltreSeance($delibs);
-            try{
-                $circuits = $this->Signature->printCircuits();
-                $this->set('deliberations', $delibs);
-                $this->set('circuits', $circuits);
-            }catch (Exception $e){
-                $message = $e->getMessage();
-                $this->Session->setFlash($message, 'growl', array('type' => 'erreur'));
-                return $this->redirect($this->referer());
-            }
-        } else { // Formulaire envoyé
-            $message = '';
-            $circuit_id = $this->data['Parapheur']['circuit_id'];
-            foreach ($this->data['Deliberation'] as $id => $bool) { // Parcours les checkboxes
-                if ($bool == 1) { // Checkbox cochée
-                    $delib_id = substr($id, 3, strlen($id));
-                    $this->Deliberation->id = $delib_id;
-                    if ($circuit_id == -1) { //Signature manuscrite
-                        $this->Deliberation->saveField('signee', 1);
-                        continue;
-                    }
-                    $delib = $this->Deliberation->find('first', array(
-                        'recursive' => -1,
-                        'conditions' => array('Deliberation.id' => $delib_id),
+        else
+        {
+            $conditions['Deliberationseance.seance_id'] = $seance_id;
+            $conditions['Deliberation.etat >='] = 0;
+            // Formulaire non envoyé
+            if (!isset($this->data['Parapheur']['circuit_id'])) {
+                $this->Deliberationseance->Behaviors->load('Containable');
+                $this->Deliberation->Behaviors->load('Containable');
+                $delibs = $this->Deliberationseance->find('all', array(
+                        'recursive' => 2,
                         'fields' => array(
+                            'Deliberationseance.seance_id',
+                            'Deliberationseance.deliberation_id',
+                            'Deliberationseance.position',
+                            'Seance.id',
+                            'Seance.type_id',
                             'Deliberation.id',
-                            'Deliberation.num_delib',
-                            'Deliberation.delib_pdf',
+                            'Deliberation.service_id',
+                            'Deliberation.theme_id',
+                            'Deliberation.circuit_id',
+                            'Deliberation.typeacte_id',
                             'Deliberation.etat',
+                            'Deliberation.parapheur_id',
+                            'Deliberation.num_pref',
                             'Deliberation.parapheur_etat',
                             'Deliberation.objet_delib',
-                            'Deliberation.objet',
+                            'Deliberation.titre',
+                            'Deliberation.num_delib',
+                            'Deliberation.parapheur_bordereau',
                             'Deliberation.signee',
-                            'Deliberation.typeacte_id',
-                        )
-                    ));
-
-                    $this->Deliberation->Typeacte->id = $delib['Deliberation']['typeacte_id'];
-                    $delib['Typeacte']['nature_id'] = $this->Deliberation->Typeacte->field('nature_id');
-
-                    $this->Deliberation->Seance->id = $seance_id;
-                    $delib['Seance']['date'] = $this->Deliberation->Seance->field('date');
-
-                    if (empty($delib['Deliberation']['delib_pdf'])){
-                        $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $this->Deliberation->getModelId($delib_id)));
-                        $filename = $this->Deliberation->fusionName();
-                        $this->Deliberation->odtFusion();
-                        $delib['Deliberation']['delib_pdf']=&$this->Deliberation->getOdtFusionResult();
-                        $this->Deliberation->deleteOdtFusionResult();
-                        $this->Deliberation->saveField('delib_pdf', $delib['Deliberation']['delib_pdf']);
-                    }
-                    
-                    $annexes = $this->Annex->getAnnexesFromDelibId($delib_id, true);
-                    $ret = $this->Signature->send($delib, $circuit_id, $delib['Deliberation']['delib_pdf'], $annexes);
-                    if ($ret) {
-                        $this->Deliberation->saveField('parapheur_id', $ret);
-                        $this->Deliberation->saveField('parapheur_cible', Configure::read('PARAPHEUR'));
-                        if (Configure::read('PARAPHEUR') == 'PASTELL')
-                            $this->Deliberation->saveField('pastell_id', $ret);
-                        $this->Deliberation->saveField('parapheur_etat', '1');
-                        $message = $message . $delib['Deliberation']['num_delib'] . " : Envoyé avec succès<br />";
-                    } else {
-                        $message = $message . $delib['Deliberation']['num_delib'] . " : Erreur<br />";
-                    }
-                }
+                            'Deliberation.signature',
+                            'Deliberation.parapheur_commentaire',
+                        ),
+                        'contain' => array(
+                            'Seance',
+                            'Deliberation' => array(
+                                'Typeacte.nature_id',
+                                'Typeacte.libelle',
+                                'Service.libelle',
+                                'Theme.libelle',
+                                'Circuit.nom'
+                            )
+                        ),
+                        'conditions' => $conditions,
+                        'order' => 'Deliberationseance.position ASC',
+                    )
+                );
+                $this->_ajouterFiltreSeance($delibs);
             }
-            $this->Session->setFlash($message, 'growl', array('type' => 'erreurTDT'));
+        }
+        
+        try {
+            $circuits = $this->Signature->printCircuits();
+            $this->set('deliberations', $delibs);
+            $this->set('circuits', $circuits);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+            $this->Session->setFlash($message, 'growl', array('type' => 'erreur'));
             return $this->redirect($this->referer());
         }
     }
@@ -4312,11 +4299,11 @@ class DeliberationsController extends AppController
     }
 
     function quicksearch() {
-        $field = trim($this->request->data['User']['search']);
-        if (empty($field) OR (ctype_digit($field) XOR strlen($field)<4)) {
+        if (empty($this->request->data['User']['search']) OR (!ctype_digit(trim($this->request->data['User']['search'])) && strlen(trim($this->request->data['User']['search']))<4)) {
             $this->Session->setFlash('Vous devez saisir au moins un mot. (plus de 3 caractères)', 'growl',array('type' => 'erreur'));
-            return $this->redirect($this->referer());
+            return $this->redirect($this->previous);
         }
+        $field = trim($this->request->data['User']['search']);
         $conditions = array();
         if (!$this->Droits->check($this->user_id, 'Deliberations:tousLesProjetsRecherche')) {
             $listeCircuits = explode(',', $this->Circuit->listeCircuitsParUtilisateur($this->user_id));
