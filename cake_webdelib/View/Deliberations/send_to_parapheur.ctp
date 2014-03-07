@@ -46,16 +46,14 @@
 
                 echo '<td style="text-align:center;">' . $this->Form->checkbox('Deliberation.id_' . $delib['Deliberation']['id'], $options) . '</td>';
             }
-
             ?>
             <td style="text-align:center"><?php echo $this->Html->link($delib['Deliberation']['id'], array('action'=>'view', $delib['Deliberation']['id'])); ?></td>
             <td>
                 <?php
-                //if ($delib['Deliberation']['Typeacte']['nature_id'] == 1)
                 if (!empty($delib['Deliberation']['num_delib']))
-                    echo $this->Html->link($delib['Deliberation']['num_delib'], array('controller' => 'models', 'action' => 'generer', $delib['Deliberation']['id'], 'null', $delib['Modeltemplate']['id'], '-1', '0', 'delib_' . $delib['Deliberation']['num_delib'], '0', '0', '0'), array('class' => 'waiter'));
+                    echo $this->Html->link($delib['Deliberation']['num_delib'], array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $delib['Deliberation']['id']), array('class' => 'waiter'));
                 else
-                    echo $this->Html->link('Acte : ' . $delib['Deliberation']['id'], array('controller' => 'models', 'action' => 'generer', $delib['Deliberation']['id'], 'null', $delib['Modeltemplate']['id'], '-1', '0', 'acte_' . $delib['Deliberation']['id'], '0', '0', '0'), array('class' => 'waiter'));
+                    echo $this->Html->link('Acte : ' . $delib['Deliberation']['id'], array('controller' => 'deliberations', 'action' => 'genereFusionToClient', $delib['Deliberation']['id']), array('class' => 'waiter'));
                 ?>
             </td>
             <td>
