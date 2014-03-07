@@ -2,15 +2,22 @@
     <?php echo $this->Html->script('utils.js'); ?>
     <h2>Envoi de l'ordre du jour</h2>
     <?php
-    echo $this->Form->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance_id, $model_id)));
-    echo $this->Html->tag('div', null, array('style' => 'padding-right:1em;float:left;'));
+    echo $this->Form->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance_id, $model_id), 'class'=>'waiter', 'data-modal' => 'Envoi de l\'ordre du jour'));
+
+    echo $this->Html->tag('div', null, array('id' => 'boutons_generation_odj'));
+
     echo $this->Html->link("<i class='fa fa-cogs'></i> Générer l'ordre du jour",
         array('controller' => 'seances', 'action' => 'genereFusionToFiles', $seance_id, $model_id, 'ordredujour'),
-        array('class' => "btn btn-success waiter", 'escape' => false, 'title' => 'Générer l\'ordre du jour', 'data-modal' => 'Génération de l\'ordre du jour en cours'));
-    echo $this->Html->tag('/div', null);
+        array('class' => "btn btn-success waiter", 'escape' => false, 'title' => 'Générer l\'ordre du jour', 'data-modal' => 'Génération de l\'ordre du jour en cours', 'style' => 'margin-right:15px;'));
+
+    echo $this->Html->tag('i', '', array('class'=> 'fa fa-arrow-right'));
+
     echo $this->Html->link("<i class='fa fa-download'></i> Télécharger une archive contenant tous les ODJ",
         array('controller' => 'seances', 'action' => 'downloadZip', $seance_id, $model_id),
-        array('class' => "btn btn-inverse", 'escape' => false, 'title' => 'Récupérer une archive contenant les ordres du jour'));
+        array('class' => "btn btn-inverse", 'escape' => false, 'title' => 'Récupérer une archive contenant les ordres du jour', 'style' => 'margin-left:15px;'));
+
+    echo $this->Html->tag('/div');
+
     ?>
     <div class="spacer"></div>
     <table style='width:100%'>
@@ -76,11 +83,14 @@
         ?>
         </tr>
     </table>
-    <br/>
 
-    <div class="submit">
+    <div class="spacer"></div>
+
+    <div class="submit btn-group">
+        <?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $previous, array('escape' => false, 'class' => 'btn')); ?>
         <?php echo $this->Form->button("<i class='fa fa-envelope'></i> Envoyer l'ordre du jour <span id='nbActeursChecked'></span>", array('id' => 'envoyer_odj', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Envoyer les ordres du jour par email aux acteurs sélectionnés')); ?>
     </div>
+
 
     <?php echo $this->Form->end(); ?>
 </div>
