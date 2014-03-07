@@ -78,7 +78,7 @@
             <td>
                 <?php echo $this->Form->input('Deliberation.theme_id', array(
                     'between' => '</td><td>',
-                    'label' => 'Thême',
+                    'label' => 'Thème',
                     'escape' => false,
                     'options' => $themes,
                     'default' => $this->Html->value('Deliberation.theme_id'),
