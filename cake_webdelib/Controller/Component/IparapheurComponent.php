@@ -195,12 +195,12 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function creerDossierWebservice($titre, $typetech, $soustype, $visibilite, $pdf, $docsannexes = array(), $datelim = '', $annotpub = '', $annotpriv = '', $metas = array()) {
-        $attachments = array('fichierPDF' => array($pdf, "application/pdf", "binary", "document.pdf"));
+        $attachments = array('fichierPDF' => array($pdf, 'application/pdf', 'binary', 'document.pdf'));
         $request = '<ns:CreerDossierRequest xmlns:ns="http://www.adullact.org/spring-ws/iparapheur/1.0" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
 								         <ns:TypeTechnique>' . $typetech . '</ns:TypeTechnique>
 								         <ns:SousType>' . $soustype . '</ns:SousType>
 								         <ns:DossierID></ns:DossierID>
-								         <ns:DossierTitre>' . $this->_xml_entity_encode($titre) . '</ns:DossierTitre>
+								         <ns:DossierTitre>' . $this->_xml_entity_encode($this->reformatNameForIparapheur($titre)) . '</ns:DossierTitre>
 								         <ns:DocumentPrincipal xm:contentType="application/pdf">
 								         	<xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:fichierPDF"></xop:Include>
 								         </ns:DocumentPrincipal>';
@@ -217,21 +217,21 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
             $encoding = !empty($docsannexes[$i]['encoding']) ? $docsannexes[$i]['encoding'] : 'UTF-8';
             $request .= '<ns:DocAnnexe>
 		               <ns:nom>' . $this->_xml_entity_encode($docsannexes[$i]['filename']) . '</ns:nom>
-		               <ns:fichier xm:contentType="' . $docsannexes[$i]['filetype'] . '">
+		               <ns:fichier xm:contentType="' . $docsannexes[$i]['mimetype'] . '">
 		               <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:annexe_' . $i . '"></xop:Include>
 		               </ns:fichier>
-		               <ns:mimetype>' . $docsannexes[$i]['filetype'] . '</ns:mimetype>
+		               <ns:mimetype>' . $docsannexes[$i]['mimetype'] . '</ns:mimetype>
 		               <ns:encoding>' . $encoding . '</ns:encoding>
 		            </ns:DocAnnexe>';
-            $attachments = array_merge($attachments, array("annexe_" . $i => $docsannexes[$i]));
+            $attachments = array_merge($attachments, array('annexe_' . $i => array($docsannexes[$i]['content'], $docsannexes[$i]['mimetype'], 'binary', $docsannexes[$i]['filename'])));
         }
         $request .= '</ns:DocumentsAnnexes>';
         $request .= '<ns:XPathPourSignature></ns:XPathPourSignature>
-								         <ns:AnnotationPublique>' . $annotpub . '</ns:AnnotationPublique>
-								         <ns:AnnotationPrivee>' . $annotpriv . '</ns:AnnotationPrivee>
-								         <ns:Visibilite>' . $visibilite . '</ns:Visibilite>
-								         <ns:DateLimite>' . $datelim . '</ns:DateLimite>
-									   </ns:CreerDossierRequest>';
+                    <ns:AnnotationPublique>' . $annotpub . '</ns:AnnotationPublique>
+                    <ns:AnnotationPrivee>' . $annotpriv . '</ns:AnnotationPrivee>
+                    <ns:Visibilite>' . $visibilite . '</ns:Visibilite>
+                    <ns:DateLimite>' . $datelim . '</ns:DateLimite>
+                    </ns:CreerDossierRequest>';
         $this->LancerRequeteCurl($request, $attachments);
 
 
@@ -269,6 +269,7 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function traiteXMLMessageRetour() {
+       
         $xml = simplexml_load_string($this->responseMessageStr);
         if ($xml !== false) {
             $result = $xml->xpath('S:Body/S:Fault');
@@ -439,9 +440,12 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
         return $response;
     }
 
-    function handleObject($objetDossier) {
-        $search = array('&', '/', ':', '"', '+', chr(0xC2) . chr(0x80), "\n", "\t", "\r");
-        $replace = array("&amp;", "-", "-", "'", "PLUS", chr(0xE2) . chr(0x82) . chr(0xAC), '', '', '');
+    /* Modification pour le nom de dossier
+     *   
+     */
+    function reformatNameForIparapheur($objetDossier) {
+        $search = array( '/', ':', '"', '+', "\n", "\t", "\r");
+        $replace = array("-", "-", "'", "PLUS", '', '', '');
         $objetDossier = str_replace($search, $replace, $objetDossier);
         if (strlen($objetDossier) > 190) {
             $objetDossier = substr($objetDossier, 0, 185);
@@ -454,9 +458,20 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     function _xml_entity_encode($_string) {
         // Set up XML translation table
         $_xml = array();
-        $_xl8 = get_html_translation_table(HTML_ENTITIES, ENT_COMPAT);
-        while (list($_key,) = each($_xl8))
-            $_xml[$_key] = '&#' . ord($_key) . ';';
+        $_xl8 = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES, 'UTF-8');
+        
+        while (list($_key, $_val) = each($_xl8)){
+            $_xml[$_key] = '&#' . $this->uniord($_key) . ';';
+        }
+        
         return strtr($_string, $_xml);
     }
+    
+    function uniord($u) {
+        $k = mb_convert_encoding($u, 'UCS-2LE', 'UTF-8');
+        $k1 = ord(substr($k, 0, 1));
+        $k2 = ord(substr($k, 1, 1));
+        
+        return $k2 * 256 + $k1;
+    } 
 }
