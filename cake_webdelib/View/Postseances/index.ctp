@@ -1,23 +1,18 @@
 <?php echo $this->Html->script('utils'); ?>
 <h2>Post-s&eacute;ances </h2>
-<div class="seances">
-
-    <table style="width:'100%'; border:0;">
+    <table width="100%">
         <tr>
-            <!-- <th>ID</th> -->
-            <th width='40%'>Type</th>
-            <th width='40%'>Date S&eacute;ance</th>
-            <th width='20%'>Action</th>
+            <th width="50%">Type</th>
+            <th width="20%">Date S&eacute;ance</th>
+            <th width="30%">Action</th>
         </tr>
         <?php
         $numLigne = 1;
         foreach ($seances as $seance):
-            $rowClass = ($numLigne & 1) ? array('height' => '36px') : array('height' => '36px', 'class' => 'altrow');
+            $rowClass = ($numLigne & 1) ? array('height' => '40px') : array('height' => '40px', 'class' => 'altrow');
             echo $this->Html->tag('tr', null, $rowClass);
             $numLigne++;
             ?>
-
-            <!-- <td><?php echo $seance['Seance']['id']; ?></td> -->
             <td><b><?php echo $seance['Typeseance']['libelle']; ?></b></td>
             <td><?php echo $seance['Seance']['date']; ?></td>
             <td class="actions">
@@ -67,4 +62,3 @@
         <?php endforeach; ?>
 
     </table>
-</div>
