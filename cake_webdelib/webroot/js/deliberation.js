@@ -4,7 +4,7 @@ $(document).ready(function () {
     $('.file-texte').each(function () {
         file_input_index++;
         $(this).wrap('<div id="file_input_container_' + file_input_index + '"></div>');
-        $(this).after('<input type="button" value="Effacer" class="purge_file btn btn-mini" style="text-align: right"  onclick="javascript: reset_html(\'file_input_container_' + file_input_index + '\')" />');
+        $(this).after('<a href="javascript:void(0)" class="purge_file btn btn-mini btn-danger"  onclick="resetUpload(\'file_input_container_'+file_input_index+'\')"><i class="fa fa-eraser"></i> Effacer</a>');
     });
     $(".select2.selectmultiple").select2({
         width: "resolve",

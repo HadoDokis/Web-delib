@@ -36,7 +36,7 @@
     echo '&nbsp;';
     echo $this->Html->link('', 'javascript:void(0)', array('class' => 'gabarit_name_multidelib', 'style' => 'cursor:help'));
     echo '&nbsp;&nbsp;';
-    echo $this->Html->link('<i class="fa fa-eraser"></i> Supprimer', 'javascript:void(0)', array('id' => 'supprimerMultidelibTemplateGabarit', 'class' => 'supprimerMultidelibTemplateGabarit btn btn-mini btn-danger', 'onclick' => 'supprimerGabaritMultidelib(Template)', 'escape' => false));
+    echo $this->Html->link('<i class="fa fa-eraser"></i> Supprimer', 'javascript:void(0)', array('id' => 'supprimerMultidelibTemplateGabarit', 'class' => 'supprimerMultidelibTemplateGabarit btn btn-mini btn-danger', 'onclick' => 'supprimerGabaritMultidelib(Template)', 'title'=>'Cliquez ici pour ne pas utiliser le gabarit proposé par défaut', 'escape' => false));
     echo $this->Form->hidden("Multidelib.Template.gabarit", array(
         'value' => '0',
         'class' => 'gabarit_acte_multidelib',
