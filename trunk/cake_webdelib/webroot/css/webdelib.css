@@ -835,8 +835,7 @@ div.aModifier {
     border:  2px outset black;
 }
 .purge_file {
-     float: right;
-     width: 600px;
+    margin-left: 20px;
 }
 
 input[type="file"]{width: auto}
@@ -1082,4 +1081,8 @@ table.month {
 
 #annexeModalBloc div.input.checkbox {
     margin-left: 110px;
+}
+#classif1{
+    cursor: pointer;
+    background-color: #ffffff;
 }
