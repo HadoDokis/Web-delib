@@ -94,11 +94,9 @@ default-template-content.a:hover {
 }
 
 table {
-      	clear: both;
+    clear: both;
 	margin: 0;
-	white-space: normal;
 	border: 1px solid #cccccc;
-	border-collapse: collapse;
 }
 
 th {
@@ -600,8 +598,6 @@ a.link_actes, a.link_actes:hover {
 #vue_cadre h2, #vue_cadre h3{
     text-align: center;
     font-variant:small-caps;
-    padding-top: 10px;
-    padding-bottom: 10px;
     border-bottom: 2px solid #DDD;
     background-color: #f0f0f0;
     font-weight: bold;
@@ -923,12 +919,6 @@ acronym, abbr {
 	color : red;
 }
 
-.info {
-    color: #e0ef90;
-    font-style: italic;
-    font-weight: bold;
-    text-align: center;
-}
 .pave {
 	width: 80%;
 	height:100%;
@@ -1085,3 +1075,11 @@ table.month {
 }
 
 /*  ----------------- end of Calendar -------------------------- */
+#annexeModalBloc div.input.file label,
+#annexeModalBloc div.input.text label {
+    line-height: 28px;
+}
+
+#annexeModalBloc div.input.checkbox {
+    margin-left: 110px;
+}

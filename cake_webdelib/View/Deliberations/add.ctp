@@ -183,47 +183,12 @@ echo $this->Html->useTag('tagend', 'div');
         $(obj).append('<input type="hidden" name="lienTab" value="' + afficheTextId + '" />');
         $(obj).submit();
     }
+
     $(document).ready(function () {
-        $(".select2.selectmultiple").select2({
-            width: "element",
-            allowClear: true,
-            placeholder: "Liste à choix multiples"
-        });
-        $(".select2.selectone").select2({
-            width: "element",
-            allowClear: true,
-            dropdownCssClass: "selectMaxWidth",
-            dropdownAutoWidth: true,
-            placeholder: "Selectionnez un élément",
-            formatSelection: function (object, container) {
-                // trim sur la sélection (affichage en arbre)
-                return $.trim(object.text);
-            }
-        });
         $("#listeTypeactesId").select2({
             width: "element",
             placeholder: "Sélection du type d'acte"
         });
     });
-    //Gestion des sorties du formulaire
-    function onUnloadEditForm() {
-        $(window).bind('beforeunload', function () {
-            return "Attention !\n\n Si vous quittez cette page vous allez perdre vos modifications.";
-        });
-    }
-    $(document).ready(onUnloadEditForm);
-    $("#DeliberationAddForm").submit(function () {
-        $(window).unbind("beforeunload");
-    });
-    $(".noWarn").on('click', function () {
-            $(window).unbind('beforeunload');
-            objMenuTimeout = setTimeout(function () {
-                onUnloadEditForm();
-            }, 2000); // 2000 millisecondes = 2 secondes
-        }
-    );
-    $('#deselectClassif').click(function () {
-        resetClassification();
-        return false;
-    });
+
 </script>

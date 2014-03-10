@@ -17,7 +17,7 @@ switch ($type) {
         $filename = $delib['texte_projet_name'];
         break;
     case 'synthese' :
-        $libelle = 'Note de synth&egrave;se';
+        $libelle = 'Note de synthèse';
         $textKey = 'texte_synthese';
         $filename = $delib['texte_synthese_name'];
         break;

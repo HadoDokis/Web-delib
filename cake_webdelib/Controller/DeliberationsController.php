@@ -318,34 +318,31 @@ class DeliberationsController extends AppController
             if (isset($this->data['Seance'])) {
                 if (!$this->Deliberation->canSaveSeances($this->data['Seance']['Seance'])) {
                     $this->Session->setFlash("Vous ne pouvez enregistrer une seule séance délibérante", 'growl', array('type' => 'erreur'));
-                    $this->redirect("/deliberations/add");
+                    $this->redirect(array('action' => 'add'));
                 }
             }
 
             //gabarits pour ce type d'acte ?
             $typeacte = $this->Deliberation->Typeacte->find('first', array(
                 'recursive' => -1,
-                'fields' => array('gabarit_projet', 'gabarit_synthese', 'gabarit_acte'),
-                'conditions' => array(
-                    'id' => $this->data['Deliberation']['typeacte_id'],
-                )
+                'conditions' => array('id' => $this->data['Deliberation']['typeacte_id'])
             ));
             $finfo = new finfo(FILEINFO_MIME_TYPE);
             if (!empty($typeacte['Typeacte']['gabarit_projet'])){
                 $this->request->data['Deliberation']['texte_projet'] = $typeacte['Typeacte']['gabarit_projet'];
-                $this->request->data['Deliberation']['texte_projet_name'] = 'gabarit_projet.odt';
+                $this->request->data['Deliberation']['texte_synthese_name'] = $typeacte['Typeacte']['gabarit_projet_name'];
                 $this->request->data['Deliberation']['texte_projet_size'] = strlen($typeacte['Typeacte']['gabarit_projet']);
                 $this->request->data['Deliberation']['texte_projet_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_projet']);
             }
             if (!empty($typeacte['Typeacte']['gabarit_synthese'])){
                 $this->request->data['Deliberation']['texte_synthese'] = $typeacte['Typeacte']['gabarit_synthese'];
-                $this->request->data['Deliberation']['texte_synthese_name'] = 'gabarit_synthese.odt';
+                $this->request->data['Deliberation']['texte_synthese_name'] = $typeacte['Typeacte']['gabarit_synthese_name'];
                 $this->request->data['Deliberation']['texte_synthese_size'] = strlen($typeacte['Typeacte']['gabarit_synthese']);
                 $this->request->data['Deliberation']['texte_synthese_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_synthese']);
             }
             if (!empty($typeacte['Typeacte']['gabarit_acte'])){
                 $this->request->data['Deliberation']['deliberation'] = $typeacte['Typeacte']['gabarit_acte'];
-                $this->request->data['Deliberation']['deliberation_name'] = 'gabarit_acte.odt';
+                $this->request->data['Deliberation']['deliberation_name'] = $typeacte['Typeacte']['gabarit_acte_name'];
                 $this->request->data['Deliberation']['deliberation_size'] = strlen($typeacte['Typeacte']['gabarit_acte']);
                 $this->request->data['Deliberation']['deliberation_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_acte']);
             }
@@ -560,10 +557,10 @@ class DeliberationsController extends AppController
             $Model = 'Projet';
         else
             $Model = 'Deliberation';
-        
+
         //Pour la gestion des erreurs des annexes
         $titre = !empty($annexe['titre']) ? $annexe['titre'] : $annexe['file']['name'];
-        
+
         if (ini_get('upload_max_filesize') > $annexe['file']['size'])
             $annexesErrors[$titre][] = 'Limite de taille par fichier : ' . ini_get('upload_max_filesize');
         elseif ($annexe['file']['error'] != 0)
@@ -602,12 +599,11 @@ class DeliberationsController extends AppController
             } else return true;
         } else
             $annexesErrors[$titre][] = 'Erreur inconnue';
-        
+
         return false;
     }
 
-    function edit($id = null)
-    {
+    function edit($id = null) {
         $annexesErrors = array();
         $user = $this->Session->read('user');
         $canEditAll = $this->Droits->check($user['User']['id'], "Deliberations:editerTous");
@@ -619,7 +615,7 @@ class DeliberationsController extends AppController
         $typeseances_selected = array();
         $seances = array();
         $this->set('USE_PASTELL', Configure::read('USE_PASTELL'));
-        
+
         if (!$this->request->isPut()) {
             $this->Deliberation->Behaviors->load('Containable');
             $this->Seance->Behaviors->load('Containable');
@@ -721,7 +717,7 @@ class DeliberationsController extends AppController
             $this->Gedooo->createFile($path_projet, 'texte_projet.odt', $this->data['Deliberation']['texte_projet']);
             $this->Gedooo->createFile($path_projet, 'texte_synthese.odt', $this->data['Deliberation']['texte_synthese']);
             $this->Gedooo->createFile($path_projet, 'deliberation.odt', $this->data['Deliberation']['deliberation']);
-            
+
             // création des fichiers des infosup de type odtFile
             foreach ($this->data['Infosup'] as $infosup) {
                 $infoSupDef = $this->Infosupdef->find('first', array(
@@ -755,32 +751,29 @@ class DeliberationsController extends AppController
            unset($annexes);
 
             // initialisation des délibérations rattachées
-            if (array_key_exists('Multidelib', $this->data)) {
-                foreach ($this->data['Multidelib'] as $delibRattachee) {
-                    $path_projet_delibRattachee = $path.'webroot'.DS.'files'.DS.'generee'.DS.'projet'.DS.$delibRattachee['id'].DS;
-                    $path_webroot_delibRattachee = '/files/generee/projet/'.$delibRattachee['id'].'/';
+            if (array_key_exists('Multidelib', $this->request->data)) {
+                foreach ($this->request->data['Multidelib'] as &$delibRattachee) {
+                    $path_projet_delibRattachee = $path . 'webroot' . DS . 'files' . DS . 'generee' . DS . 'projet' . DS . $delibRattachee['id'] . DS;
+                    $path_webroot_delibRattachee = '/files/generee/projet/' . $delibRattachee['id'] . '/';
                     $this->Gedooo->createFile($path_projet_delibRattachee, 'deliberation.odt', $delibRattachee['deliberation']);
                     // création des fichiers des annexes de type vnd.oasis.opendocument
-                   $annexes_delibRattachee = $this->Annex->find('all', array(
-                    'recursive' => -1,
-                    'fields' => array('id','filename', 'filetype','titre','joindre_ctrl_legalite','joindre_fusion'),
-                    'conditions' => array(
-                    'foreign_key' => $delibRattachee['id'])));
+                    $annexes_delibRattachee = $this->Annex->find('all', array(
+                        'recursive' => -1,
+                        'fields' => array('id', 'foreign_key', 'filename', 'filetype', 'titre', 'joindre_ctrl_legalite', 'joindre_fusion'),
+                        'conditions' => array('foreign_key' => $delibRattachee['id'])));
                     foreach ($annexes_delibRattachee as &$annexe) {
-                        if($annexe['Annex']['filetype']=='application/vnd.oasis.opendocument.text'){
-                            $annexeData=$this->Annex->find('first', array(
-                            'fields' => array('data'),
-                            'conditions' => array(
-                                                    'id' => $annexe['Annex']['id']),
-                                                    'recursive' => -1));
-                            $annexe['Annex']['edit']=true;
+                        if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text') {
+                            $annexeData = $this->Annex->find('first', array(
+                                'fields' => array('data'),
+                                'conditions' => array('id' => $annexe['Annex']['id']),
+                                'recursive' => -1));
+                            $annexe['Annex']['edit'] = true;
                             $this->Gedooo->createFile($path_projet_delibRattachee, $annexe['Annex']['filename'], $annexeData['Annex']['data']);
-                            $annexe['Annex']['link']=Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] .$path_webroot_delibRattachee. $annexe['Annex']['filename'];
+                            $annexe['Annex']['link'] = Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] . $path_webroot_delibRattachee . $annexe['Annex']['filename'];
                         }
                     }
+                    $delibRattachee['Annexes'] = $annexes_delibRattachee;
                 }
-                $this->set('annexes_delibRattachee', $annexes_delibRattachee);
-                unset($annexes_delibRattachee);
             }
             if (!empty($this->data['Deliberation']['num_pref']))
                 $this->request->data['Deliberation']['num_pref_libelle'] = $this->data['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
@@ -788,6 +781,8 @@ class DeliberationsController extends AppController
             $this->request->data['Infosup'] = $this->Deliberation->Infosup->compacte($this->request->data['Infosup']);
             $this->request->data['Deliberation']['date_limite'] = date("d/m/Y", (strtotime($this->data['Deliberation']['date_limite'])));
             $this->request->data['Service']['libelle'] = $this->Deliberation->Service->doList($this->request->data['Deliberation']['service_id']);
+
+            $this->set('gabarits_acte', $this->Deliberation->Typeacte->find('list', array('fields' => array('id', 'gabarit_acte_name'))));
             $this->set('themes', $this->Deliberation->Theme->generateTreeList(array('Theme.actif' => '1'), null, null, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
 
             $this->set('selectedTypeacteId', $this->request->data['Deliberation']['typeacte_id']);
@@ -968,8 +963,10 @@ class DeliberationsController extends AppController
                     // sauvegarde de délibérations rattachées
                     if (array_key_exists('Multidelib', $this->data)) {
                         foreach ($this->data['Multidelib'] as $iref => $multidelib) {
+
                             $multidelib['num_pref'] = $this->data['Deliberation']['num_pref'];
-                            $delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib, $this->data['Deliberation']['objet']);
+                            $multidelib['typeacte_id'] = $this->data['Deliberation']['typeacte_id'];
+                            $delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib);
                             // sauvegarde des nouvelles annexes pour cette delib rattachée
                             if (array_key_exists('Annex', $this->data))
                                 foreach ($this->data['Annex'] as $annexe)
@@ -977,6 +974,7 @@ class DeliberationsController extends AppController
                                         if (!$this->_saveAnnexe($delibRattacheeId, $annexe, $annexesErrors)) {
                                             return $this->redirect($redirect);
                                         }
+
                         }
                     }
 
@@ -1081,6 +1079,7 @@ class DeliberationsController extends AppController
                 }
 
                 if (Configure::read('DELIBERATIONS_MULTIPLES')) {
+                    $this->set('gabarits_acte', $this->Deliberation->Typeacte->find('list', array('fields' => array('id', 'gabarit_acte_name'))));
                     if (isset($this->request->data['Multidelib']))
                         unset($this->request->data['Multidelib']);
                     $this->Deliberation->Multidelib->Behaviors->load('Containable');
@@ -1093,30 +1092,29 @@ class DeliberationsController extends AppController
                         'order' => array('Multidelib.id')));
                     foreach ($multiDelibs as $imd => $delibRattachee) {
                         $this->request->data['Multidelib'][$imd] = $delibRattachee['Multidelib'];
-                        
-                            $path_projet_delibRattachee = $path.'webroot'.DS.'files'.DS.'generee'.DS.'projet'.DS.$delibRattachee['id'].DS;
-                            $path_webroot_delibRattachee = '/files/generee/projet/'.$delibRattachee['id'].'/';
-                            $this->Gedooo->createFile($path_projet_delibRattachee, 'deliberation.odt', $delibRattachee['deliberation']);
-                            // création des fichiers des annexes de type vnd.oasis.opendocument
-                           $annexes_delibRattachee = $this->Annex->find('all', array(
+
+                        $path_projet_delibRattachee = $path . 'webroot' . DS . 'files' . DS . 'generee' . DS . 'projet' . DS . $delibRattachee['id'] . DS;
+                        $path_webroot_delibRattachee = '/files/generee/projet/' . $delibRattachee['id'] . '/';
+                        $this->Gedooo->createFile($path_projet_delibRattachee, 'deliberation.odt', $delibRattachee['deliberation']);
+                        // création des fichiers des annexes de type vnd.oasis.opendocument
+                        $annexes_delibRattachee = $this->Annex->find('all', array(
                             'recursive' => -1,
-                            'fields' => array('id','filename', 'filetype','titre','joindre_ctrl_legalite','joindre_fusion'),
+                            'fields' => array('id', 'filename', 'filetype', 'titre', 'joindre_ctrl_legalite', 'joindre_fusion'),
                             'conditions' => array(
-                            'foreign_key' => $delibRattachee['id'])));
-                            foreach ($annexes_delibRattachee as &$annexe) {
-                                if($annexe['Annex']['filetype']=='application/vnd.oasis.opendocument.text'){
-                                    $annexeData=$this->Annex->find('first', array(
+                                'foreign_key' => $delibRattachee['id'])));
+                        foreach ($annexes_delibRattachee as &$annexe) {
+                            if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text') {
+                                $annexeData = $this->Annex->find('first', array(
                                     'fields' => array('data'),
                                     'conditions' => array(
-                                                            'id' => $annexe['Annex']['id']),
-                                                            'recursive' => -1));
-                                    $annexe['Annex']['edit']=true;
-                                    $this->Gedooo->createFile($path_projet_delibRattachee, $annexe['Annex']['filename'], $annexeData['Annex']['data']);
-                                    $annexe['Annex']['link']=Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] .$path_webroot_delibRattachee. $annexe['Annex']['filename'];
-                                }
+                                        'id' => $annexe['Annex']['id']),
+                                    'recursive' => -1));
+                                $annexe['Annex']['edit'] = true;
+                                $this->Gedooo->createFile($path_projet_delibRattachee, $annexe['Annex']['filename'], $annexeData['Annex']['data']);
+                                $annexe['Annex']['link'] = Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] . $path_webroot_delibRattachee . $annexe['Annex']['filename'];
                             }
-                        $this->set('annexes_delibRattachee', $annexes_delibRattachee);
-                        unset($annexes_delibRattachee);
+                        }
+                        $this->request->data['Multidelib'][$imd]['Annexes'] = $annexes_delibRattachee;
                     }
                 }
 
@@ -1152,7 +1150,7 @@ class DeliberationsController extends AppController
                }
                $this->set('annexes', $annexes);
                unset($annexes);
-                
+
                 if (!empty($this->data['Deliberation']['num_pref']))
                     $this->request->data['Deliberation']['num_pref_libelle'] = $this->data['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
 
@@ -1173,7 +1171,7 @@ class DeliberationsController extends AppController
             }
         }
     }
-    
+
     function recapitulatif($id = null) {
         if (empty($this->data)) {
             if (!$id) {
@@ -1291,7 +1289,7 @@ class DeliberationsController extends AppController
                         'optimisation'=> configure::read('Cakeflow.optimisation')
                     );
                     $traitementTermine = $this->Traitement->execute('IN', $this->user_id, $id, $options);
-                    
+
                     //FIX Devrait enregistrer un historique des actions effectés en optimisation et autre mais pas que sur l'état final
                     if ($traitementTermine) {
                         $this->Historique->enregistre($id, $this->user_id, 'Projet validé');
@@ -1367,8 +1365,7 @@ class DeliberationsController extends AppController
         }
     }
 
-    function retour($delib_id)
-    {
+    function retour($delib_id) {
         $delib = $this->Deliberation->find('first', array(
             'recursive'=> -1,
             'conditions'=> array('Deliberation.id'=> $delib_id)
@@ -1396,8 +1393,7 @@ class DeliberationsController extends AppController
         }
     }
 
-    function traiter($id = null, $valid = null)
-    {
+    function traiter($id = null, $valid = null) {
         $this->Deliberation->Behaviors->load('Containable');
         $projet = $this->Deliberation->find('first', array(
             'fields' => array(

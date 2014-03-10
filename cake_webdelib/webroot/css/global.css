@@ -105,3 +105,9 @@ table.table-middle td, table.table-middle th{
 input#classif1{
     width: 286px;
 }
+input[type='text'].editAnnexeTitre{
+    margin: 0;
+    font-size: 0.9em;
+    height: 12px;
+    width: 90%;
+}
