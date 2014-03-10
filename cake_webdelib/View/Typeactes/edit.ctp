@@ -87,7 +87,7 @@ if ($this->Html->value('Typeacte.id')) {
         var btnEraseProjet = '<?php echo $this->Form->button('Effacer', array('class'=>'btn pull-right', 'id'=>'erase_gabarit_projet', 'type'=>'button')); ?>';
         gabaritProjet.hide();
         gabaritProjet.prop('disabled', true);
-        gabaritProjet.before('<?php echo $this->Html->link('gabarit_projet.odt', array('action'=>'downloadgabarit', $this->request->data['Typeacte']['id'], 'projet'), array('id'=>'link_gabarit_projet', 'download'=>'gabarit_projet.odt')) ?>');
+        gabaritProjet.before('<?php echo $this->Html->link($this->request->data['Typeacte']['gabarit_projet_name'], array('action'=>'downloadgabarit', $this->request->data['Typeacte']['id'], 'projet'), array('id'=>'link_gabarit_projet', 'download'=>'gabarit_projet.odt')) ?>');
         gabaritProjet.after(btnEraseProjet);
         $('#erase_gabarit_projet').click(function () {
             gabaritProjet.prop('disabled', false);
@@ -104,7 +104,7 @@ if ($this->Html->value('Typeacte.id')) {
         var btnEraseSynthese = '<?php echo $this->Form->button('Effacer', array('class'=>'btn pull-right', 'id'=>'erase_gabarit_synthese', 'type'=>'button')); ?>';
         gabaritSynthese.hide();
         gabaritSynthese.prop('disabled', true);
-        gabaritSynthese.before('<?php echo $this->Html->link('gabarit_synthese.odt', array('action'=>'downloadgabarit', $this->request->data['Typeacte']['id'], 'synthese'), array('id'=>'link_gabarit_synthese', 'download'=>'gabarit_synthese.odt')) ?>');
+        gabaritSynthese.before('<?php echo $this->Html->link($this->request->data['Typeacte']['gabarit_synthese_name'], array('action'=>'downloadgabarit', $this->request->data['Typeacte']['id'], 'synthese'), array('id'=>'link_gabarit_synthese', 'download'=>'gabarit_synthese.odt')) ?>');
         gabaritSynthese.after(btnEraseSynthese);
         $('#erase_gabarit_synthese').click(function () {
             gabaritSynthese.prop('disabled', false);
@@ -121,7 +121,7 @@ if ($this->Html->value('Typeacte.id')) {
         var btnEraseActe = '<?php echo $this->Form->button('Effacer', array('class'=>'btn pull-right', 'id'=>'erase_gabarit_acte', 'type'=>'button')); ?>';
         gabaritActe.hide();
         gabaritActe.prop('disabled', true);
-        gabaritActe.before('<?php echo $this->Html->link('gabarit_acte.odt', array('action'=>'downloadgabarit', $this->request->data['Typeacte']['id'], 'acte'), array('id'=>'link_gabarit_acte', 'download'=>'gabarit_acte.odt')) ?>');
+        gabaritActe.before('<?php echo $this->Html->link($this->request->data['Typeacte']['gabarit_acte_name'], array('action'=>'downloadgabarit', $this->request->data['Typeacte']['id'], 'acte'), array('id'=>'link_gabarit_acte', 'download'=>'gabarit_acte.odt')) ?>');
         gabaritActe.after(btnEraseActe);
         $('#erase_gabarit_acte').click(function () {
             gabaritActe.prop('disabled', false);

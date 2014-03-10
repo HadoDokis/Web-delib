@@ -1,7 +1,6 @@
 <?php
 
-class TypeactesController extends AppController
-{
+class TypeactesController extends AppController {
 
     var $name = 'Typeactes';
     var $uses = array('Typeacte', 'ModelOdtValidator.Modeltemplate', 'Compteur', 'Nature', 'Ado');
@@ -14,8 +13,7 @@ class TypeactesController extends AppController
         'downloadgabarit' => 'Typeactes:index'
     );
 
-    function index()
-    {
+    function index() {
         $this->Typeacte->Behaviors->attach('Containable');
         $typeactes = $this->Typeacte->find('all', array(
             'contain' => array('Nature.libelle',
@@ -28,8 +26,7 @@ class TypeactesController extends AppController
         $this->set('typeactes', $typeactes);
     }
 
-    function view($id = null)
-    {
+    function view($id = null) {
         $this->Typeacte->Behaviors->attach('Containable');
         $typeacte = $this->Typeacte->find('first', array('conditions' => array('Typeacte.id' => $id),
             'contain' => array('Nature.libelle',
@@ -43,8 +40,7 @@ class TypeactesController extends AppController
         $this->set('typeacte', $typeacte);
     }
 
-    function add()
-    {
+    function add() {
         $sortie = false;
         if (!empty($this->data)) {
             $this->Typeacte->set($this->request->data);
@@ -73,7 +69,7 @@ class TypeactesController extends AppController
         }
 
         if ($sortie)
-            $this->redirect(array('action'=>'index'));
+            $this->redirect(array('action' => 'index'));
         else {
             $this->set('compteurs', $this->Typeacte->Compteur->find('list'));
             $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
@@ -84,8 +80,7 @@ class TypeactesController extends AppController
         }
     }
 
-    function edit($id = null)
-    {
+    function edit($id = null) {
         $sortie = false;
         $this->Typeacte->Behaviors->attach('Containable');
 
@@ -102,24 +97,35 @@ class TypeactesController extends AppController
             $this->Typeacte->set($this->request->data);
             if ($this->Typeacte->validates()) {
 
-                if (!empty($this->request->data['Typeacte']['gabarit_projet_upload']) && $this->request->data['Typeacte']['gabarit_projet_upload']['error'] != 4)
+                if (!empty($this->request->data['Typeacte']['gabarit_projet_upload']) && $this->request->data['Typeacte']['gabarit_projet_upload']['error'] != 4) {
                     $this->request->data['Typeacte']['gabarit_projet'] = file_get_contents($this->request->data['Typeacte']['gabarit_projet_upload']['tmp_name']);
-                elseif ($this->request->data['Typeacte']['gabarit_projet_upload_erase'])
+                    $this->request->data['Typeacte']['gabarit_projet_name'] = $this->request->data['Typeacte']['gabarit_projet_upload']['name'];
+                } elseif ($this->request->data['Typeacte']['gabarit_projet_upload_erase']) {
                     $this->request->data['Typeacte']['gabarit_projet'] = '';
+                    $this->request->data['Typeacte']['gabarit_projet_name'] = '';
+                }
 
-                if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4)
+                if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4) {
                     $this->request->data['Typeacte']['gabarit_synthese'] = file_get_contents($this->request->data['Typeacte']['gabarit_synthese_upload']['tmp_name']);
-                elseif ($this->request->data['Typeacte']['gabarit_synthese_upload_erase'])
+                    $this->request->data['Typeacte']['gabarit_synthese_name'] = $this->request->data['Typeacte']['gabarit_synthese_upload']['name'];
+                } elseif ($this->request->data['Typeacte']['gabarit_synthese_upload_erase']) {
                     $this->request->data['Typeacte']['gabarit_synthese'] = '';
+                    $this->request->data['Typeacte']['gabarit_synthese_name'] = '';
+                }
 
-                if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4)
+                if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4) {
                     $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
-                elseif (empty($this->request->data['Typeacte']['gabarit_acte_upload_erase']))
+                    $this->request->data['Typeacte']['gabarit_acte_name'] = $this->request->data['Typeacte']['gabarit_acte_upload']['name'];
+                } elseif (empty($this->request->data['Typeacte']['gabarit_acte_upload_erase'])) {
                     $this->request->data['Typeacte']['gabarit_acte'] = '';
+                    $this->request->data['Typeacte']['gabarit_acte_name'] = '';
+                }
 
-                $ado = $this->Ado->find('first', array('conditions' => array(
-                    'Ado.model' => 'Typeacte',
-                    'Ado.foreign_key' => $this->data['Typeacte']['id']),
+                $ado = $this->Ado->find('first', array(
+                    'conditions' => array(
+                        'Ado.model' => 'Typeacte',
+                        'Ado.foreign_key' => $this->data['Typeacte']['id']
+                    ),
                     'fields' => array('Ado.id'),
                     'recursive' => -1));
                 if ($this->Typeacte->save($this->data)) {
@@ -140,7 +146,7 @@ class TypeactesController extends AppController
             }
         }
         if ($sortie)
-            $this->redirect(array('action'=>'index'));
+            $this->redirect(array('action' => 'index'));
         else {
             $this->set('compteurs', $this->Typeacte->Compteur->find('list'));
             $this->set('models_projet', $this->Modeltemplate->getModels(MODEL_TYPE_PROJET));
@@ -153,8 +159,7 @@ class TypeactesController extends AppController
         }
     }
 
-    function delete($id = null)
-    {
+    function delete($id = null) {
         $typeacte = $this->Typeacte->read('id, libelle', $id);
         if (empty($typeacte)) {
             $message = 'Type d\'acte introuvable';
@@ -166,17 +171,17 @@ class TypeactesController extends AppController
             $message = 'Erreur lors de la tentative de suppression du type d\'acte ' . $typeacte['Typeacte']['libelle'];
         }
         $this->Session->setFlash($message, 'growl');
-        $this->redirect(array('action'=>'index'));
+        $this->redirect(array('action' => 'index'));
     }
 
-    function downloadgabarit($id = null, $type = null){
-        if (empty($id)){
+    function downloadgabarit($id = null, $type = null) {
+        if (empty($id)) {
             $this->Session->setFlash('identifiant incorrect', 'growl');
-            return $this->redirect(array('action'=>'index'));
+            return $this->redirect(array('action' => 'index'));
         }
-        if (empty($type) || !in_array($type,array('projet','synthese','acte'))){
+        if (empty($type) || !in_array($type, array('projet', 'synthese', 'acte'))) {
             $this->Session->setFlash('Type de gabarit incorrect. Types de gabarit disponibles : projet, synthese, acte', 'growl');
-            return $this->redirect(array('action'=>'index'));
+            return $this->redirect(array('action' => 'index'));
         }
 
         $typeacte = $this->Typeacte->find('first', array(
@@ -193,7 +198,7 @@ class TypeactesController extends AppController
             return $this->response;
         } else {
             $this->Session->setFlash('Type d\'acte introuvable', 'growl');
-            return $this->redirect(array('action'=>'index'));
+            return $this->redirect(array('action' => 'index'));
         }
     }
 
