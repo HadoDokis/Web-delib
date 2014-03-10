@@ -1087,134 +1087,137 @@ class SeancesController extends AppController {
                 $this->redirect("/seances/sendConvocations/$seance_id/$model_id");
             }
         }
-        
-        function sendOrdredujour ($seance_id, $model_id) {
-            $this->loadModel('Acteurseance');
-	    $this->Seance->Behaviors->attach('Containable');
-            $seance = $this->Seance->find('first', array('conditions' => array('Seance.id'=>$seance_id),
-                                                         'order'      => array('date ASC'),
-                                                         'fields'     => array('id', 'date', 'type_id', 'date_convocation'),
-                                                         'contain'    => array('Typeseance.libelle', 'Typeseance.action',
-                                                                               'Typeseance.modelconvocation_id', 
-                                                                               'Typeseance.modelordredujour_id',
-                                                                               'Typeseance.modelpvsommaire_id',
-                                                                               'Typeseance.modelpvdetaille_id')));
-            $this->set('use_mail_securise', Configure::read('S2LOW_MAILSEC') );
-            if (empty($this->data) ) {
-                $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
-                foreach ($acteurs as &$acteur) {
-                     $dates = $this->Acteurseance->find('first', array( 'recursive' => -1,
-                                                                        'conditions'=> array('seance_id' => $seance_id,
-                                                                                             'model' => 'ordredujour',
-                                                                                             'acteur_id' => $acteur['Acteur']['id']),
-                                                                        'fields'    => array('date_envoi', 'date_reception')));
-                    
-                    $acteur['Acteur']['date_envoi'] = !empty($dates) ? $dates['Acteurseance']['date_envoi'] : null;
-                    $acteur['Acteur']['date_reception'] = !empty($dates) ? $dates['Acteurseance']['date_reception'] : null;
-                }
-                $model   = $this->Modeltemplate->find('first', array('conditions' => array('Modeltemplate.id' => $model_id),
-                                                             'fields'     => array('name'),
-                                                             'recursive'  => -1));
-                $this->set('model',     $model);
-                $this->set('acteurs',   $acteurs);
-                $this->set('seance_id', $seance_id);
-                $this->set('date_convocation', $seance['Seance']['date_convocation']);
-                $this->set('model_id',  $model_id);
+
+    function sendOrdredujour($seance_id, $model_id) {
+        $this->loadModel('Acteurseance');
+        $this->Seance->Behaviors->attach('Containable');
+        $seance = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id' => $seance_id),
+            'order' => array('date ASC'),
+            'fields' => array('id', 'date', 'type_id', 'date_convocation'),
+            'contain' => array(
+                'Typeseance.libelle', 'Typeseance.action',
+                'Typeseance.modelconvocation_id',
+                'Typeseance.modelordredujour_id',
+                'Typeseance.modelpvsommaire_id',
+                'Typeseance.modelpvdetaille_id')));
+        $this->set('use_mail_securise', Configure::read('S2LOW_MAILSEC'));
+        if (empty($this->data)) {
+            $acteurs = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+            foreach ($acteurs as &$acteur) {
+                $dates = $this->Acteurseance->find('first', array(
+                    'recursive' => -1,
+                    'conditions' => array('seance_id' => $seance_id,
+                        'model' => 'ordredujour',
+                        'acteur_id' => $acteur['Acteur']['id']),
+                    'fields' => array('date_envoi', 'date_reception')));
+
+                $acteur['Acteur']['date_envoi'] = !empty($dates) ? $dates['Acteurseance']['date_envoi'] : null;
+                $acteur['Acteur']['date_reception'] = !empty($dates) ? $dates['Acteurseance']['date_reception'] : null;
             }
-            else {
-                $i=0;
-                $message = '';
-                foreach ($this->data['Acteur'] as $tmp_id => $bool ){
-                    $data = array(); 
-                    if($bool) {
-                        $i++;
-                        $acteur_id = substr($tmp_id, 3, strlen($tmp_id));
-                        $acteur = $this->Acteur->find('first', array('conditions' => array('Acteur.id' => $acteur_id),
-                                                                     'recursive'  => -1));
-                        
-                        if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf')){
-                            $filepath = WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.pdf';
-                        }else if (file_exists(WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt')){
-                            $filepath = WEBROOT_PATH.'/files/seances/'.$seance_id."/$model_id/".$acteur['Acteur']['id'].'.odt';
-                        }else{
-                            $message .=  $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].' : Pas de Document'."<br />";
-                            continue;
-                        }
-                        
-                        $searchReplace = array("#NOM#" => $acteur['Acteur']['nom'], "#PRENOM#" => $acteur['Acteur']['prenom'] );
-                        $template = file_get_contents(CONFIG_PATH.'/emails/convocation.txt');
-                        $content = utf8_decode(nl2br((str_replace(array_keys($searchReplace), array_values($searchReplace), $template))));
-                        $subject = utf8_decode('Ordre du jour de la séance \''.$seance['Typeseance']['libelle'].'\' du : '
-                                              .$this->Date->frenchDateConvocation(strtotime($seance['Seance']['date'])));
-                        if (Configure::read('S2LOW_MAILSEC')) {
-                            $data['mailto']  = $acteur['Acteur']['email'];
-                            $data['objet']   = $subject;
-                            $data['message'] = $content;
-                            $data['uploadFile1']  = "@$filepath";
-                            if (Configure::read('S2LOW_MAILSECPWD') != '')  {
-                                $data['send_password'] = 1;
-                                $data['password'] = Configure::read('S2LOW_MAILSECPWD');
-                            }
-                            $retour = $this->S2low->sendMail($data);
-                        }
-                        else {
-                            if (Configure::read("SMTP_USE")) {
-                                $this->Email->smtpOptions = array( 'port'    => Configure::read("SMTP_PORT"),
-                                                                   'timeout' => Configure::read("SMTP_TIMEOUT"),
-                                                                   'host'    => Configure::read("SMTP_HOST"),
-                                                                   'username'=> Configure::read("SMTP_USERNAME"),
-                                                                   'password'=> Configure::read("SMTP_PASSWORD"),
-                                                                   'client'  => Configure::read("SMTP_CLIENT"));
-                                $this->Email->delivery = 'smtp';
-                            }
-                            else
-                                $this->Email->delivery = 'mail';
+            $model = $this->Modeltemplate->find('first', array(
+                'conditions' => array('Modeltemplate.id' => $model_id),
+                'fields' => array('name'),
+                'recursive' => -1));
+            $this->set('model', $model);
+            $this->set('acteurs', $acteurs);
+            $this->set('seance_id', $seance_id);
+            $this->set('date_convocation', $seance['Seance']['date_convocation']);
+            $this->set('model_id', $model_id);
+        } else {
+            $i = 0;
+            $message = '';
+            foreach ($this->data['Acteur'] as $tmp_id => $bool) {
+                $data = array();
+                if ($bool) {
+                    $i++;
+                    $acteur_id = substr($tmp_id, 3, strlen($tmp_id));
+                    $acteur = $this->Acteur->find('first', array(
+                        'conditions' => array('Acteur.id' => $acteur_id),
+                        'recursive' => -1));
 
-                            $this->Email->from = Configure::read("MAIL_FROM");
-                            $this->Email->to =  $acteur['Acteur']['email'];
-                            $this->Email->sendAs = 'both';
-                            $this->Email->charset = 'UTF-8';
-                            $this->Email->subject =  utf8_encode($subject);
-			    $this->Email->layout = 'default';
-                            $this->Email->attachments = array($filepath);
-                            if ($this->Email->send( utf8_encode($content)) )
-                                $retour = 'OK:0';
-                            else
-                                $retour = 'KO';
-                        }
-
-                        if ( strpos($retour, 'OK:') !== false ){
-                            $mail_id = substr($retour, 3, strlen($retour));
-                            $this->Acteurseance->create();
-                            $acteurseance['seance_id'] = $seance_id;
-                            $acteurseance['acteur_id'] = $acteur_id;
-                            $acteurseance['mail_id']   = $mail_id;
-                            $acteurseance['date_envoi']   = date("Y-m-d H:i:s", strtotime("now"));
-                            $acteurseance['model']   = 'ordredujour';
-                            $this->Acteurseance->save( $acteurseance );
-                        }
-                        else {
-                            $message .=  $acteur['Acteur']['prenom'].' '.$acteur['Acteur']['nom'].' : Non envoyé'."<br />";
-                        }
-                        sleep(5);
+                    if (file_exists(WEBROOT_PATH . "/files/seances/$seance_id/$model_id/{$acteur['Acteur']['id']}.pdf")) {
+                        $filepath = WEBROOT_PATH . "/files/seances/$seance_id/$model_id/{$acteur['Acteur']['id']}.pdf";
+                    } else if (file_exists(WEBROOT_PATH . "/files/seances/$seance_id/$model_id/{$acteur['Acteur']['id']}.odt")) {
+                        $filepath = WEBROOT_PATH . "/files/seances/$seance_id/$model_id/{$acteur['Acteur']['id']}.odt";
+                    } else {
+                        $message .= $acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'] . " : Pas de Document <br />";
+                        continue;
                     }
-                }
-               if($i==0) {
-                    $this->Session->setFlash('Veuillez sélectionner un acteur au minimum.', 'growl', array('type' => 'erreur'));
-                }
-                elseif (!empty($message)) 
-                    $this->Session->setFlash($message, 'growl', array('type'=>'error'));
-                
-                $this->redirect("/seances/sendOrdredujour/$seance_id/$model_id");
-            }
-        }
 
-        /**
-         * Génération de la convocation ou de l'odre du jour
-         * @param $seance_id
-         * @param $model_id
-         */
-        function _generer($seance_id, $model_id, $url_retour) { 
+                    $searchReplace = array("#NOM#" => $acteur['Acteur']['nom'], "#PRENOM#" => $acteur['Acteur']['prenom']);
+                    $template = file_get_contents(CONFIG_PATH . '/emails/ordredujour.txt');
+                    $content = utf8_decode(str_replace(array_keys($searchReplace), array_values($searchReplace), $template));
+                    $subject = utf8_decode('Ordre du jour de la séance \'' . $seance['Typeseance']['libelle'] . '\' du : '
+                        . $this->Date->frenchDateConvocation(strtotime($seance['Seance']['date'])));
+                    if (Configure::read('S2LOW_MAILSEC')) {
+                        $data['mailto'] = $acteur['Acteur']['email'];
+                        $data['objet'] = $subject;
+                        $data['message'] = $content;
+                        $data['uploadFile1'] = "@$filepath";
+                        if (Configure::read('S2LOW_MAILSECPWD') != '') {
+                            $data['send_password'] = 1;
+                            $data['password'] = Configure::read('S2LOW_MAILSECPWD');
+                        }
+                        $retour = $this->S2low->sendMail($data);
+                    } else {
+                        if (Configure::read("SMTP_USE")) {
+                            $this->Email->smtpOptions = array(
+                                'port' => Configure::read("SMTP_PORT"),
+                                'timeout' => Configure::read("SMTP_TIMEOUT"),
+                                'host' => Configure::read("SMTP_HOST"),
+                                'username' => Configure::read("SMTP_USERNAME"),
+                                'password' => Configure::read("SMTP_PASSWORD"),
+                                'client' => Configure::read("SMTP_CLIENT")
+                            );
+                            $this->Email->delivery = 'smtp';
+                        } else
+                            $this->Email->delivery = 'mail';
+
+                        $this->Email->from = Configure::read("MAIL_FROM");
+                        $this->Email->to = $acteur['Acteur']['email'];
+                        $this->Email->sendAs = 'text';
+                        $this->Email->charset = 'UTF-8';
+                        $this->Email->subject = utf8_encode($subject);
+                        $this->Email->layout = 'default';
+                        $this->Email->attachments = array($filepath);
+                        if ($this->Email->send(utf8_encode($content)))
+                            $retour = 'OK:0';
+                        else
+                            $retour = 'KO';
+                    }
+
+                    if (strpos($retour, 'OK:') !== false) {
+                        $mail_id = substr($retour, 3, strlen($retour));
+                        $this->Acteurseance->create();
+                        $acteurseance['seance_id'] = $seance_id;
+                        $acteurseance['acteur_id'] = $acteur_id;
+                        $acteurseance['mail_id'] = $mail_id;
+                        $acteurseance['date_envoi'] = date("Y-m-d H:i:s", strtotime("now"));
+                        $acteurseance['model'] = 'ordredujour';
+                        $this->Acteurseance->save($acteurseance);
+                    } else {
+                        $message .= $acteur['Acteur']['prenom'] . ' ' . $acteur['Acteur']['nom'] . ' : Non envoyé' . "<br />";
+                    }
+                    sleep(5);
+                }
+            }
+            if ($i == 0) {
+                $this->Session->setFlash('Veuillez sélectionner au moins un acteur.', 'growl', array('type' => 'erreur'));
+            } elseif (!empty($message))
+                $this->Session->setFlash($message, 'growl', array('type' => 'error'));
+
+            $this->redirect(array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance_id, $model_id));
+        }
+    }
+
+    /**
+     * Génération de la convocation ou de l'odre du jour
+     * @param $seance_id
+     * @param $model_id
+     * @param $url_retour
+     */
+    function _generer($seance_id, $model_id, $url_retour) {
 
             $this->Seance->id = $seance_id;
             $time_start = microtime(true);
