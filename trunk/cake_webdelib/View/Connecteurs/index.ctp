@@ -18,7 +18,8 @@
         echo $this->Html->link('<i class="fa fa-check"></i>', '/check/index.php#' . urlencode(strtolower($connecteur)), array(
             'class' => 'btn btn-info',
             'title' => "Tester le connecteur $connecteur",
-            'escape' => false
+            'escape' => false,
+            'target' => '_blank'
         ));
         echo $this->Html->tag('/div');
         echo $this->Html->tag('/td');
