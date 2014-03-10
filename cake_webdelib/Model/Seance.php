@@ -434,13 +434,13 @@ class Seance extends AppModel
      * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $ids liste des id des séances
      */
-    function setVariablesFusionSeances(&$oMainPart, &$modelOdtInfos, $ids) {
+    function setVariablesFusionSeances(&$oMainPart, &$modelOdtInfos, $ids, $addProjetIterations=true) {
         // pour toutes les séances
         $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($ids), 'text'));
         $oSectionIteration = new GDO_IterationType('Seances');
         foreach($ids as $id) {
             $oDevPart = new GDO_PartType();
-            $this->setVariablesFusion($oDevPart, $modelOdtInfos, $id, 'seances', false);
+            $this->setVariablesFusion($oDevPart, $modelOdtInfos, $id, 'seances', $addProjetIterations);
             $oSectionIteration->addPart($oDevPart);
         }
         $oMainPart->addElement($oSectionIteration);
@@ -515,7 +515,6 @@ class Seance extends AppModel
                 $oMainPart->addElement($oStyleIteration);
             }
         }
-
         // projets/délibérations de la séance
         if ($addProjetIterations) {
             $this->Behaviors->load('Containable');
@@ -523,6 +522,7 @@ class Seance extends AppModel
                 'fields' => array('id'),
                 'contain' => array('Deliberation.id'),
                 'conditions' => array('Seance.id' => $id)));
+
             if (!empty($seance['Deliberation'])) {
                 $oSectionIteration = new GDO_IterationType("Projets");
                 foreach($seance['Deliberation'] as $deliberation) {
