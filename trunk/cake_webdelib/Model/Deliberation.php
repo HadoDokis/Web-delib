@@ -2150,7 +2150,7 @@ class Deliberation extends AppModel {
         if ($modelOdtInfos->hasUserField('numero_deliberation'))
             $oMainPart->addElement(new GDO_FieldType('numero_deliberation', $delib['Deliberation']['num_delib'], 'text'));
         if ($modelOdtInfos->hasUserField('acte_adopte'))
-            $oMainPart->addElement(new GDO_FieldType('acte_adopte', (($delib['Deliberation']['etat']==3 && $delib['Deliberation']['vote_nb_oui']==0)?'1':'0'), 'test'));
+            $oMainPart->addElement(new GDO_FieldType('acte_adopte', (($delib['Deliberation']['etat']==3 && $delib['Deliberation']['vote_nb_oui']==0)?'1':'0'), 'text'));
         if ($modelOdtInfos->hasUserField('nombre_pour'))
             $oMainPart->addElement(new GDO_FieldType('nombre_pour', $delib['Deliberation']['vote_nb_oui'], 'text'));
         if ($modelOdtInfos->hasUserField('nombre_abstention'))
@@ -2256,7 +2256,7 @@ class Deliberation extends AppModel {
                 // dernière séance (merci M. Eddy) : délibérante
                 $this->Seance->setVariablesFusion($oMainPart, $modelOdtInfos, $seanceIds[count($seanceIds)-1], 'seance', false);
                 // pour toutes les séances
-                $this->Seance->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $seanceIds);
+                $this->Seance->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $seanceIds, false);
             }
         }
 
