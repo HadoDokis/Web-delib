@@ -2296,10 +2296,14 @@ class Deliberation extends AppModel {
         return $dDocPrincipale;
     }
     
+    /* Retour les annexes à joindre au controle de légalité
+     * 
+     */
     function getAnnexes($acte_id, $extention='pdf'){
         $annexes=array();
         $i=0;
         foreach ($this->Annex->getAnnexesFromDelibId($acte_id, true) as $key => $annexe) {
+            $annexes[$i]['id'] = $annexe['Annex']['id'];
             switch ($extention) {
                case 'pdf':
                default:

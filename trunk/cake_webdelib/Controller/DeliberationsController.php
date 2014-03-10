@@ -1877,11 +1877,14 @@ class DeliberationsController extends AppController
     }
 
     function sendToTdt() {
+        App::uses('Tdt', 'Lib');
+        App::uses('Folder', 'Utility');
+        App::uses('File', 'Utility');
+        
         if (!Configure::read('USE_TDT')){
             $this->Session->setFlash('Erreur : TDT désactivé. Pour activer ce service, veuillez contacter votre administrateur.', 'growl', array('type' => 'erreurTDT'));
             return $this->redirect($this->referer());
         }
-        App::uses('Tdt', 'Lib');
         $Tdt = new Tdt();
         $erreur = '';
         if (!empty($this->data['Deliberation']['id'])) {
@@ -1895,14 +1898,19 @@ class DeliberationsController extends AppController
                     $this->Deliberation->saveField('num_pref', $this->data[$delib_id . "classif2"]);
                 }
             }
+            
             $nbEnvoyee = 1;
             $this->Deliberation->Typeacte->Behaviors->load('Containable');
             foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
-                if ($bool == 1 && !empty($this->data[$delib_id . "classif2"])) {
+                
+                if ($bool == 1){
                     $this->Deliberation->id = $delib_id;
                     $delib = $this->Deliberation->find('first', array(
                         'conditions' => array('Deliberation.id' => $delib_id)
                     ));
+                }
+                    if(!empty($this->data[$delib_id . "classif2"])) {
+                    
                     if (Configure::read('TDT') == 'PASTELL' && empty($delib['Deliberation']['pastell_id'])) {
                         $erreur .= $delib['Deliberation']['objet'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Identifiant Pastell inconnu.';
                         continue;
@@ -1928,10 +1936,7 @@ class DeliberationsController extends AppController
                             default: continue;
                         }
 
-                        if (file_exists(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/D_$delib_id.pdf"))
-                            unlink(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/D_$delib_id.pdf");
                         //$this->Deliberation->changeClassification($delib_id, $classification);
-
                         $classification = $delib['Deliberation']['num_pref'];
                         if (strpos($classification, ' -') != false)
                             $classification = substr($classification, 0, strpos($classification, ' -'));
@@ -1946,37 +1951,33 @@ class DeliberationsController extends AppController
                         $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
                         $class5 = substr($rest, 0, strpos($classification, '.'));
 
-                        //Création du fichier de délibération au format pdf (on ne passe plus par la génération)
-                        $file = $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/", "D_$delib_id.pdf", $delib['Deliberation']['delib_pdf']);
-                        $sigFileName = '';
-                        if (isset($delib['Deliberation']['signature'])) {
-                            $signature = $this->Gedooo->createFile(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/", "signature_$delib_id.zip", $delib['Deliberation']['signature']);
-                            $zip = zip_open($signature);
-                            if (is_resource($zip)) {
-                                while ($zip_entry = zip_read($zip)) {
-                                    $fichier = basename(zip_entry_name($zip_entry));
-                                    $tmp = substr($fichier, 0, 3);
-                                    if ($tmp == '1- ') {
-
-                                        $sigFileName = WEBROOT_PATH . "/files/generee/fd/null/$delib_id/signature.pkcs7";
-                                        $fp = fopen($sigFileName, "w+");
-
-                                        if (zip_entry_open($zip, $zip_entry, "r")) {
-                                            $buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
-                                            zip_entry_close($zip_entry);
-                                        }
-
-                                        fwrite($fp, $buf);
-                                        fclose($fp);
-                                        zip_close($zip);
-                                        break;
-                                    }
-                                }
-                                @zip_close($zip);
-                            }
+                        if(empty($delib['Deliberation']['delib_pdf'])){
+                             $erreur .= $delib['Deliberation']['objet'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Fichier Vide.';
+                            continue;
                         }
-                        if (!file_exists($file))
-                            die("Problème lors de la récupération du fichier");
+                        $folder = new Folder(AppTools::newTmpDir(TMP.'files'.DS.'tdt'.DS.$delib_id), true, 0777);
+                        $errors=$folder->errors();
+                        if(!empty($errors)){
+                             $erreur .= $delib['Deliberation']['objet'] . ' (' . $delib['Deliberation']['num_delib'] . ') : '.implode($errors).'.';
+                            continue;
+                        }
+                        
+                        $file = new File($folder->pwd().DS.'D_'.$delib_id.'.pdf');
+                        $file->append($delib['Deliberation']['delib_pdf']);
+                        $file->close();
+                        
+                        if (!empty($delib['Deliberation']['signature'])) {
+                            $fileSignature = new File($folder->pwd().DS.'signature_'.$delib_id.'.zip');
+                            $fileSignature->append($delib['Deliberation']['signature']);
+                        
+                            $zip = new ZipArchive();
+                            $res = $zip->open($fileSignature->pwd(), ZIPARCHIVE::OVERWRITE);
+                            if ($res===TRUE) {
+                                 $zip->extractTo($folder->pwd().DS, array('signature.pkcs7'));
+                                 $zip->close();
+                            }
+                            $fileSignature->close();
+                        }
                         // Checker le code classification
                         if (isset($delib['Deliberation']['date_acte']))
                             $decision_date = date("Y-m-d", strtotime($delib['Deliberation']['date_acte']));
@@ -2014,21 +2015,21 @@ class DeliberationsController extends AppController
                             'number' => utf8_decode($delib['Deliberation']['num_delib']),
                             'decision_date' => $decision_date,
                             'subject' => utf8_decode($delib['Deliberation']['objet_delib']),
-                            'acte_pdf_file' => "@$file",
+                            'acte_pdf_file' => '@'.$file->pwd(),
                         );
 
-                        if ($sigFileName != '') {
-                            $acte['acte_pdf_file_sign'] = "@$sigFileName";
+                        if (file_exists($folder->pwd().DS.'signature.pkcs7')) {
+                            $acte['acte_pdf_file_sign'] = '@'.$folder->pwd().DS.'signature.pkcs7';
                         }
 
-                        $annexes = $this->Annex->getAnnexesFromDelibId($delib_id, true);
-                        $nb_pj = 0;
-                        foreach ($annexes as $annex) {
-                            if (!empty($annex['Annex']['data_pdf'])){
-                                $pj_file = $this->Gedooo->createFile( WEBROOT_PATH . "/files/generee/fd/null/$delib_id/annexes/", $annex['Annex']['id'] . '.pdf', $annex['Annex']['data_pdf']);
-                                $acte["acte_attachments[$nb_pj]"] = "@$pj_file";
-                                $acte["acte_attachments_sign[$nb_pj]"] = "";
-                                $nb_pj++;
+                        $annexes=$this->Deliberation->getAnnexes($delib_id);
+                        if(!empty($annexes)){
+                            $acte['acte_attachments_sign['.count($annexes).']'] = "";
+                            foreach ($annexes as $key=>$annex) {
+                                $fileAnnexe = new File($folder->pwd().DS.'D_'.$annex['id'].'.pdf');
+                                $fileAnnexe->append($annex['content']);
+                                $acte["acte_attachments[$key]"] = '@'.$fileAnnexe->pwd();
+                                $file->close();
                             }
                         }
 
@@ -2044,13 +2045,13 @@ class DeliberationsController extends AppController
                             $nbEnvoyee++;
                             $this->Deliberation->saveField('etat', 5);
                             $this->Deliberation->saveField('tdt_id', trim($tdt_id));
-                            unlink($file);
                         }
+                        $folder->delete();
                         sleep(5);
                     }else{
                         $erreur .= $delib['Deliberation']['objet'] . '(' . $delib['Deliberation']['num_delib'] . ') : Aucun connecteur TDT valide.';
                     }
-                }
+                }else $erreur .= $delib['Deliberation']['objet'] . '(' . $delib['Deliberation']['num_delib'] . ') : Aucune classification sélectionnée.';
             }
         } else $erreur = 'Aucun Acte(s) selectionné(s)';
 
