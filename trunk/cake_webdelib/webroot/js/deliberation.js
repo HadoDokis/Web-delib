@@ -227,7 +227,8 @@ function resetAnnexeModal() {
     $('#annexeModalTitle').text("Nouvelle annexe");
     $('#annexeModal .error-message').remove();
     //RAZ des champs
-    $('#Annex0Titre').val('');
+    $('#Annex0Titre').val(null);
+    $('#Annex0File').val(null);
     $('#Annex0Ctrl').prop('checked', false);
     $('#Annex0Fusion').prop('checked', true);
     $("#annexeModal").find('input').prop('disabled', true);
