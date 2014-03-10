@@ -1198,6 +1198,19 @@ class Deliberation extends AppModel {
                 $path_projet = APP . 'webroot/files/generee/projet/' . $delib['id'] . '/';
                 if (file_exists($path_projet . 'deliberation.odt'))
                     $newDelib['Deliberation']['deliberation'] = file_get_contents($path_projet . 'deliberation.odt');
+            } elseif (!empty($delib['gabarit'])){
+                $typeacte = $this->Typeacte->find('first', array(
+                    'recursive' => -1,
+                    'fields' => array('gabarit_acte', 'gabarit_acte_name'),
+                    'conditions' => array('id' => $delib['typeacte_id'])
+                ));
+                $newDelib['Deliberation']['deliberation_name'] = $typeacte['Typeacte']['gabarit_acte_name'];
+                //Calcul mimetype
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
+                $newDelib['Deliberation']['deliberation_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_acte']);
+                $newDelib['Deliberation']['deliberation_size'] = strlen($typeacte['Typeacte']['gabarit_acte']);
+                $newDelib['Deliberation']['deliberation'] = $typeacte['Typeacte']['gabarit_acte'];
+
             }
         }
 

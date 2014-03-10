@@ -1,8 +1,8 @@
-<?php echo $this->Html->script('calendrier.js'); ?>
-<?php echo $this->Html->script('utils.js'); ?>
-<?php echo $this->Html->script('deliberation.js'); ?>
 <?php echo $this->Html->script('ckeditor/ckeditor'); ?>
 <?php echo $this->Html->script('ckeditor/adapters/jquery'); ?>
+<?php echo $this->Html->script('calendrier.js'); ?>
+<?php echo $this->Html->script('utils.js'); ?>
+<?php echo $this->Html->script('deliberation'); ?>
 <?php echo $this->Html->script('multidelib'); ?>
 <?php
 echo $this->Html->tag('h1', "Modification du projet : " . $this->Html->value('Deliberation.id'));
@@ -63,7 +63,7 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
         <div class='spacer'></div>
         <?php echo $this->Form->input('Deliberation.rapporteur_id', array('label' => 'Rapporteur', 'options' => $rapporteurs, 'empty' => true, 'class' => 'select2 selectone')); ?>
         <div class='spacer'></div>
-        <?php echo $this->Form->input('Deliberation.theme_id', array('label' => 'Thème <abbr title="obligatoire">(*)</abbr>', 'options' => $themes, 'default' => $this->Html->value('Deliberation.theme_id'), 'empty' => false, 'escape' => false, 'class' => 'select2 selectone')); ?>
+        <?php echo $this->Form->input('Deliberation.theme_id', array('label' => 'Thème <abbr title="obligatoire">*</abbr>', 'options' => $themes, 'default' => $this->Html->value('Deliberation.theme_id'), 'empty' => false, 'escape' => false, 'class' => 'select2 selectone')); ?>
         <div class='spacer'></div>
 
         <div id="select_classification">
@@ -189,7 +189,7 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
 </div>
 
 <div id="tab3" <?php echo isset($lienTab) && $lienTab == 3 ? '' : 'style="display: none;"' ?>>
-    <div id='DelibOngleAnnexes'>
+    <div id='DelibOngletAnnexes'>
         <div id="DelibPrincipaleAnnexes">
             <?php echo $this->element('annexe', array_merge(array('ref' => 'delibPrincipale'), array('annexes' => $annexes))); ?>
         </div>
@@ -198,7 +198,6 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
     echo $this->Html->tag('div', '', array('class' => 'spacer'));
     echo $this->Html->tag('p', 'Note : les modifications apportées ici ne prendront effet que lors de la sauvegarde du projet.');
     ?>
-
 </div>
 
 <?php if (!empty($infosupdefs)): ?>
@@ -321,7 +320,6 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
             echo '</div>';
             echo '<div class="spacer"></div>';
         }
-
         ?>
     </div>
 <?php endif; ?>
@@ -342,71 +340,22 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
 </div>
 
 <?php echo $this->Form->end(); ?>
+
+<?php echo $this->element('annexeModal'); ?>
 <script type="text/javascript">
-    // affichage de l'éditeur de texte intégré ckEditor
-    function editerTexte(obj, textId, afficheTextId) {
-        $('#' + textId).ckeditor();
-        $('#' + afficheTextId).hide();
-        $(obj).hide();
-    }
-
-    function reset_html(id) {
-        $('#' + id + ' input[type=file]').val(null);
-        $('#' + id + ' a').remove();
-    }
-
+    <?php
+    echo "var gabarits = ". json_encode($gabarits_acte). ";\n";
+    ?>
+    var current_gabarit_name;
     $(document).ready(function () {
-        onUnloadEditForm();
-        var file_input_index = 0;
-
-        $('.file-texte').each(function () {
-            file_input_index++;
-            $(this).wrap('<div id="file_input_container_' + file_input_index + '"></div>');
-            $(this).after('<input type="button" value="Effacer" class="purge_file btn btn-mini" style="text-align: right"  onclick="javascript: reset_html(\'file_input_container_' + file_input_index + '\')" />');
-        });
-        $(".select2.selectmultiple").select2({
-            width: "resolve",
-            allowClear: true,
-            placeholder: "Liste à choix multiples",
-            formatSelection: function (object, container) {
-                // trim sur la sélection (affichage en arbre)
-                return $.trim(object.text);
+        $('#listeTypeactesId').change(function () {
+            current_gabarit_name = gabarits[$('#listeTypeactesId').val()];
+            if (current_gabarit_name != undefined){
+                $('.gabarit_name_multidelib').text(current_gabarit_name);
+            }else{
+                $('.MultidelibGabaritBloc').hide();
+                $('.texte_acte_multidelib').show();
             }
-        });
-        $(".select2.selectone").select2({
-            width: "element",
-            allowClear: true,
-            dropdownCssClass: "selectMaxWidth",
-            dropdownAutoWidth: true,
-            placeholder: "Selectionnez un élément",
-            formatSelection: function (object, container) {
-                // trim sur la sélection (affichage en arbre)
-                return $.trim(object.text);
-            }
-        });
-        $("#DeliberationIsMultidelib").change();
-    });
-
-    //Gestion des sorties du formulaire
-    function onUnloadEditForm() {
-        $(window).bind('beforeunload', function () {
-            return "Attention !\n\n Si vous quittez cette page vous allez perdre vos modifications.";
-        });
-    }
-
-    $("#DeliberationEditForm").submit(function () {
-        $(window).unbind("beforeunload");
-    });
-
-    $(".noWarn").on('click', function () {
-            $(window).unbind('beforeunload');
-            objMenuTimeout = setTimeout(function () {
-                onUnloadEditForm();
-            }, 2000); // 2000 millisecondes = 2 secondes
-        }
-    );
-    $('#deselectClassif').click(function () {
-        resetClassification();
-        return false;
-    });
+        }).change();
+    })
 </script>
