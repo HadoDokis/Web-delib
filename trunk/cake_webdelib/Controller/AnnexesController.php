@@ -22,13 +22,13 @@ class AnnexesController extends AppController {
         
         $DOC_TYPE = Configure::read('DOC_TYPE');
         
-        $this->Annex->id=$id;
-        $this->Annex->saveField('edition_data', NULL);
-        $this->Annex->saveField('data_pdf', NULL);
-        $this->Annex->save();
-        
-        $this->CronJob->convertionAnnexesJob(344);
-        exit;
+//        $this->Annex->id=$id;
+//        $this->Annex->saveField('edition_data', NULL);
+//        $this->Annex->saveField('data_pdf', NULL);
+//        $this->Annex->save();
+//        
+//        $this->CronJob->convertionAnnexesJob(344);
+//        exit;
         
         // lecture en base
         $annexe = $this->Annex->find('first', array(
@@ -46,7 +46,7 @@ class AnnexesController extends AppController {
             
             case 'pdf':
             $content = $annexe['Annex']['data_pdf'];
-            $filename = $annexe['Annex']['filename_pdf'];
+            $filename = AppTools::getNameFile($annexe['Annex']['filename']).'.pdf';
             $typemime = 'application/pdf';
                 break;
 

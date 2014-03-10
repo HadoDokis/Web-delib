@@ -30,7 +30,6 @@ class SeancesController extends AppController {
 			'saisirDebat'      => 'Seances:listerFuturesSeances',
 			'voter'            => 'Seances:listerFuturesSeances',
 			'changeRapporteur' => 'Seances:listerFuturesSeances',
-			'changeStatus'     => 'Seances:listerFuturesSeances',
 			'detailsAvis'      => 'Seances:listerFuturesSeances',
 			'donnerAvis'       => 'Seances:listerFuturesSeances',
 			'saisirSecretaire' => 'Seances:listerFuturesSeances',
@@ -248,80 +247,6 @@ class SeancesController extends AppController {
 				$seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
 			$this->set('seances', $seances);
 		}
-	}
-
-    /**
-     * FIXME $result non utilisé en retour
-     * @param $seance_id
-     * @return bool
-     */
-    function changeStatus ($seance_id) {
-		$result = false;
-		$isArrete = false;
-		$compteur_id = null;
-			
-		$this->data=$this->Seance->find('first', array('conditions'=> array('Seance.id' => $seance_id)));
-		// Avant de cloturer la séance, on stock les délibérations en base de données au format pdf
-               
-		if (($this->data['Typeseance']['action'] == 0) || ($this->data['Typeseance']['action'] == 2)) {
-			if($this->data['Typeseance']['action'] == 2) {
-				$isArrete =true;
-				$compteur_id = $this->data['Typeseance']['compteur_id'];
-			}
-			$result = $this->_stockDelibs($seance_id,  $isArrete, $compteur_id);
-		}
-		if ($result || $this->data['Typeseance']['action'] == 1) {
-			$result = $this->_stockDelibs($seance_id,  $isArrete, $compteur_id);
-			$this->Seance->id = $seance_id;
-			if ($this->Seance->saveField('traitee', 1)){
-				return true;
-			}
-		}
-		else
-            return false;
-	}
-
-	function _stockDelibs($seance_id, $isArrete=false, $compteur_id=null) {
-		$result = true;
-		$ids = $this->Seance->getDeliberationsId($seance_id);
-		$delibs = $this->Deliberation->find("all", array('conditions' => array("Deliberation.id"=>$ids)));
-        if (empty($delibs)) return false;
-
-        // chargement du comportement de fusion pour la première délibération
-        $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $delibs[0]['Deliberation']['id']));
-        // pour toutes les délibérations
-        foreach ($delibs as $delib) {
-			$delib_id = $delib['Deliberation']['id'];
-			$this->Deliberation->id =  $delib_id;
-			$isArrete = $this->Deliberation->is_arrete($delib_id);
-
-			if ($isArrete){
-				$this->Deliberation->saveField('etat', 3);
-				if ( $compteur_id != null) {
-					$num =  $this->Seance->Typeseance->Compteur->genereCompteur($compteur_id);
-					$position = $this->Deliberation->getPosition( $delib['Deliberation']['id'], $seance_id);
-					$num = str_replace('#pos#', $position, $num);
-					$this->Deliberation->saveField('num_delib', $num);
-				}
-			}
-			if ($delib['Deliberation']['parapheur_etat'] == 2 && !empty($delib['Deliberation']['delib_pdf']))
-				continue;
-			// On génère la délibération au format PDF
-//			$model_id = $this->Deliberation->getModelForSeance($delib_id, $seance_id);
-//			$this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/D_$delib_id.odt");
-//			$filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/D_$delib_id.odt.pdf";
-//			$content = file_get_contents($filename);
-            $this->Deliberation->odtFusion(array('id'=>$delib_id));
-            $content = $this->Conversion->convertirFlux($this->Deliberation->odtFusionResult->content->binary, 'odt', 'pdf');
-            unset($this->Deliberation->odtFusionResult);
-
-			if (strlen($content) == 0)
-				$result = false;
-			// On stock le fichier en base de données.
-			$this->Deliberation->saveField('delib_pdf', $content);
-            unset($content);
-		}
-		return $result;
 	}
 
 	function afficherCalendrier ($annee=null){
@@ -996,16 +921,15 @@ class SeancesController extends AppController {
 			
 		if ((count($actes) > 0)  &&  ($seance['Typeseance']['action'] == 0)) {
 			$this->Session->setFlash('Tous les actes ne sont pas signés.', 'growl', array('type'=>'erreur'));
-			$this->redirect('/seances/listerFuturesSeances');
 		}
 		else {
-			if ($this->changeStatus($seance_id))
-				$this->redirect('/postseances/index');
+			if ($this->Seance->saveField('traitee', 1))
+                                $this->Session->setFlash("La séance a été cloturé", 'growl', array('type'=>'important'));
 			else {
-				$this->Session->setFlash("Tous les actes n'ont pas été stockés", 'growl', array('type'=>'erreur'));
-				$this->redirect('/seances/listerFuturesSeances');
+				$this->Session->setFlash("La séance n'a pas été cloturé", 'growl', array('type'=>'erreur'));
 			}
 		}
+                $this->redirect('/seances/listerFuturesSeances');
 	}
 
 	function deleteDebatGlobal($id ){

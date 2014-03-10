@@ -1701,7 +1701,7 @@ class Deliberation extends AppModel {
 
             $rapport = "\n";
             foreach ($delibs as $delib) {
-                $objetDossier = $this->Iparapheur->handleObject($delib['Deliberation']['objet']);
+                $objetDossier = $delib['Deliberation']['objet'];
                 $rapport .= 'Projet "['.$delib['Deliberation']['id'].'] - '.$delib['Deliberation']['objet'].'" : ';
                 $success_dos = $this->majActeParapheur($delib['Deliberation']['id'], $objetDossier, false);
                 if (!$success_dos)
@@ -2272,9 +2272,9 @@ class Deliberation extends AppModel {
         return array('docPrincipale'=>$this->getDocument($this->id),'annexes'=>$this->getAnnexes($this->id));
     }
     
-    function getDocument($delib_id, $extention='pdf'){
+    function getDocument($acte_id, $extention='pdf'){
         // fusion du document
-        $this->Behaviors->load('OdtFusion', array('id' => $delib_id));
+        $this->Behaviors->load('OdtFusion', array('id' => $acte_id));
         $filename = $this->fusionName();
         $this->odtFusion();
         $dDocPrincipale=&$this->getOdtFusionResult();
@@ -2283,16 +2283,19 @@ class Deliberation extends AppModel {
         return $dDocPrincipale;
     }
     
-    function getAnnexes($delib_id, $extention='pdf'){
-        foreach ($this->Annex->getAnnexesFromDelibId($delib_id, true) as $key => $annexe) {
+    function getAnnexes($acte_id, $extention='pdf'){
+        $annexes=array();
+        $i=0;
+        foreach ($this->Annex->getAnnexesFromDelibId($acte_id, true) as $key => $annexe) {
             switch ($extention) {
                case 'pdf':
                default:
-                $annexes[]['data_pdf'] = $annexe['data_pdf'];
-                $annexes[]['filename'] = $annexe['filename'];//Replace avec .pdf
-                $annexes[]['filetype'] = 'application/pdf';
+                $annexes[$i]['content'] = $annexe['Annex']['data_pdf'];
+                $annexes[$i]['mimetype'] = 'application/pdf';
+                $annexes[$i]['filename'] = AppTools::getNameFile($annexe['Annex']['filename']).'.pdf';//Replace avec .pdf
                 break;
             }
+            $i++;
         }
 
         return $annexes;
@@ -2313,6 +2316,35 @@ class Deliberation extends AppModel {
             $oSectionIteration->addPart($oDevPart);
         }
         $oMainPart->addElement($oSectionIteration);
+    }
+    
+    function stock($acte_id, $isArrete=false) {
+        $success=true;
+        
+        if ($isArrete && $this->is_arrete($acte_id) && $success){
+                $this->id = $acte_id;
+                $num_delib=$this->field('num_delib');
+             if (empty($num_delib)) {
+                $acte = $this->find('first', array(
+                    'conditions' => array('Deliberation.id' => $acte_id),
+                    'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
+                ));
+                $acte['Deliberation']['signee'] = 1;
+                $acte['Deliberation']['etat'] = 3;
+                $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
+                $acte['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
+                $acte['Deliberation']['date_acte'] = date("Y-m-d H:i:s", strtotime("now"));
+                $this->save($acte);
+            }else $success=false;
+        }
+        
+        $content=$this->getDocument($acte_id) && $success;
+        if (!empty($content) && $success){// On stock le fichier en base de données.
+            $this->saveField('delib_pdf', $content);
+            unset($content);
+        }else $success=false;
+        
+        return $success;
     }
 
 }

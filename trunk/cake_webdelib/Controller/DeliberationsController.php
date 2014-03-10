@@ -3388,7 +3388,81 @@ class DeliberationsController extends AppController
                 break;
         }
     }
+    
+    function _signatureManuscrite($acte_id, $isArrete=false){
+        $success=true;
+        if($this->Deliberation->stock($acte_id, $isArrete)){
+            $this->Deliberation->id=$acte_id;
+            $this->Deliberation->saveField('signee', 1);
+        }else $success=false;
+        
+        if($success){
+        $this->Historique->enregistre($acte_id, $this->user_id, "Signature manuscrite");
+        return $this->Deliberation->field('num_delib') . " : Signature manuscrite effectué avec succès {OK}<br />";
+        }
+        
+        return $this->Deliberation->field('num_delib') . " : Signature manuscrite effectué en echec {KO}<br />";
+    }
+    
+    function _sendToSignature($acte_id, $circuit_id, $isArrete=false){
+         $success=true;
+         if ($isArrete && $this->Deliberation->is_arrete($acte_id) && $success){
+                $this->Deliberation->id = $acte_id;
+                $num_delib=$this->Deliberation->field('num_delib');
+             if (empty($num_delib)) {
+                $acte = $this->Deliberation->find('first', array(
+                    'conditions' => array('Deliberation.id' => $acte_id),
+                    'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
+                ));
+                $acte['Deliberation']['signee'] = 1;
+                $acte['Deliberation']['etat'] = 3;
+                $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
+                $acte['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
+                $acte['Deliberation']['date_acte'] = date("Y-m-d H:i:s", strtotime("now"));
+                $this->Deliberation->save($acte);
+            }else $success=false;
+        }
+                        
+         $acte = $this->Deliberation->find('first', array(
+                        'recursive' => -1,
+                        'conditions' => array('Deliberation.id' => $acte_id),
+                        'fields' => array(
+                            'Deliberation.id',
+                            'Deliberation.num_delib',
+                            'Deliberation.delib_pdf',
+                            'Deliberation.etat',
+                            'Deliberation.parapheur_etat',
+                            'Deliberation.objet_delib',
+                            'Deliberation.objet',
+                            'Deliberation.signee',
+                            'Deliberation.typeacte_id',
+                        )
+                    ));
 
+        $this->Deliberation->Typeacte->id = $acte['Deliberation']['typeacte_id'];
+        $acte['Typeacte']['nature_id'] = $this->Deliberation->Typeacte->field('nature_id');
+        if (empty($acte['Deliberation']['delib_pdf'])){
+            $acte['Deliberation']['delib_pdf']=$this->Deliberation->getDocument($acte_id);
+            $this->Deliberation->saveField('delib_pdf', $acte['Deliberation']['delib_pdf']);
+        }
+        $ret = $this->Signature->send($acte, $circuit_id, $acte['Deliberation']['delib_pdf'], $this->Deliberation->getAnnexes($acte_id));
+        if ($ret) {
+            $this->Deliberation->saveField('parapheur_id', $ret);
+            $this->Deliberation->saveField('parapheur_cible', Configure::read('PARAPHEUR'));
+            
+            if (Configure::read('PARAPHEUR') == 'PASTELL')
+                $this->Deliberation->saveField('pastell_id', $ret);
+            
+            $this->Deliberation->saveField('parapheur_etat', '1');
+            $message = $acte['Deliberation']['num_delib'] . " : Envoyé avec succès<br />";
+            $this->Historique->enregistre($acte_id, $this->user_id, "Envoi au parapheur pour signature");
+        } else {
+            $message =$acte['Deliberation']['num_delib'] . " : Erreur<br />";
+        }
+        
+        return $message;
+    }
+        
     /**
      * Envoi un/des projet(s) dans le parapheur
      * ATTENTION : Cette méthode n'est pour l'instant opérationnelle que lorsque Pastell est désigné comme parapheur
@@ -3406,60 +3480,29 @@ class DeliberationsController extends AppController
         }
         
         if ($this->request->isPost()) {
-            // Formulaire envoyé
-            $message = '';
-            $circuit_id = $this->data['Parapheur']['circuit_id'];
-            foreach ($this->data['Deliberation'] as $id => $bool) { // Parcours les checkboxes
-                if ($bool == 1) { // Checkbox cochée
-                    $delib_id = substr($id, 3, strlen($id));
-                    $this->Deliberation->id = $delib_id;
-                    if ($circuit_id == -1) { //Signature manuscrite
-                        $this->Deliberation->saveField('signee', 1);
-                        continue;
+            
+            try{
+                // Formulaire envoyé
+                $message = '';
+                foreach ($this->data['Deliberation'] as $id => $bool) { // Parcours les checkboxes
+                    if ($bool == 1) { // Checkbox cochée
+                        $delib_id = substr($id, 3, strlen($id));
+                        $this->Deliberation->id = $delib_id;
+                        if ($this->data['Parapheur']['circuit_id'] == -1) { //Signature manuscrite
+                            $message.=$this->_signatureManuscrite($delib_id);
+                        }
+                        else //Signature numerique
+                        {
+                            $message.=$this->_sendToSignature($delib_id, $this->data['Parapheur']['circuit_id']);
+                        }
                     }
-                    $delib = $this->Deliberation->find('first', array(
-                        'recursive' => -1,
-                        'conditions' => array('Deliberation.id' => $delib_id),
-                        'fields' => array(
-                            'Deliberation.id',
-                            'Deliberation.num_delib',
-                            'Deliberation.delib_pdf',
-                            'Deliberation.etat',
-                            'Deliberation.parapheur_etat',
-                            'Deliberation.objet_delib',
-                            'Deliberation.objet',
-                            'Deliberation.signee',
-                            'Deliberation.typeacte_id',
-                        )
-                    ));
-
-                    $this->Deliberation->Typeacte->id = $delib['Deliberation']['typeacte_id'];
-                    $delib['Typeacte']['nature_id'] = $this->Deliberation->Typeacte->field('nature_id');
-
-                    $this->Deliberation->Seance->id = $seance_id;
-                    $delib['Seance']['date'] = $this->Deliberation->Seance->field('date');
-
-                    if (empty($delib['Deliberation']['delib_pdf'])){
-                        $delib['Deliberation']['delib_pdf']=$this->Deliberation->getDocument($delib_id);
-                        $this->Deliberation->saveField('delib_pdf', $delib['Deliberation']['delib_pdf']);
-                    }
-
-                    $ret = $this->Signature->send($delib, $circuit_id, $delib['Deliberation']['delib_pdf'], $this->Deliberation->getAnnexes($delib_id));
-                    if ($ret) {
-                        $this->Deliberation->saveField('parapheur_id', $ret);
-                        $this->Deliberation->saveField('parapheur_cible', Configure::read('PARAPHEUR'));
-                        if (Configure::read('PARAPHEUR') == 'PASTELL')
-                            $this->Deliberation->saveField('pastell_id', $ret);
-                        $this->Deliberation->saveField('parapheur_etat', '1');
-                        $message = $message . $delib['Deliberation']['num_delib'] . " : Envoyé avec succès<br />";
-                    } else {
-                        $message = $message . $delib['Deliberation']['num_delib'] . " : Erreur<br />";
-                    }
-                    unset($aDocuments);
                 }
+            }catch (Exception $e){
+                $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'erreurTDT'));
             }
             
-            $this->Session->setFlash($message, 'growl', array('type' => 'erreurTDT'));
+            $this->Session->setFlash($message, 'growl', array('type' => 'important'));
+            
             return $this->redirect($this->referer());
         }
         
@@ -3995,7 +4038,7 @@ class DeliberationsController extends AppController
             $this->Session->setFlash('Parapheur désactivé', 'growl');
             return $this->redirect($this->referer());
         }
-
+        try{
         $circuits = array();
         if ($this->data['Parapheur']['circuit_id'] != -1) {
             App::uses('Signature', 'Lib');
@@ -4004,51 +4047,29 @@ class DeliberationsController extends AppController
         }
         $circuits['-1'] = 'Signature manuscrite';
         $this->Deliberation->Behaviors->load('Containable');
+        $message='';
         foreach ($this->data['Deliberation'] as $tmp_id => $bool) {
             if ($bool) {
                 $acte_id = substr($tmp_id, 3, strlen($tmp_id));
-                $this->Deliberation->id = $acte_id;
-                $acte = $this->Deliberation->find('first', array(
-                    'conditions' => array('Deliberation.id' => $acte_id),
-                    'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
-                ));
-
-                $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $this->Deliberation->getModelId($acte['Deliberation']['id'])));
-                $filename = $this->Deliberation->fusionName();
-                $this->Deliberation->odtFusion();
-                $acte['Deliberation']['delib_pdf'] =& $this->Deliberation->getOdtFusionResult();
-                $this->Deliberation->deleteOdtFusionResult();
-                $this->Deliberation->saveField('delib_pdf', $acte['Deliberation']['delib_pdf']);
-                $num = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
                 if ($this->data['Parapheur']['circuit_id'] == -1) {
-                    $acte['Deliberation']['signee'] = 1;
-                    $acte['Deliberation']['etat'] = 3;
-                    $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
-                    $acte['Deliberation']['num_delib'] = $num;
-                    $acte['Deliberation']['date_acte'] = date("Y-m-d H:i:s", strtotime("now"));
-                    $this->Deliberation->save($acte);
-                    $this->Historique->enregistre($acte_id, $this->user_id, "Signature manuscrite");
+                    $message.=$this->_signatureManuscrite($acte_id, true);
                 } else {
-                    $annexes = $this->Annex->getAnnexesFromDelibId($acte_id, true);
-                    $ret = $this->Signature->send($acte, $this->data['Parapheur']['circuit_id'], $acte['Deliberation']['delib_pdf'], $annexes);
-                    if ($ret !== false) {
-                        $acte['Deliberation']['parapheur_etat'] = 1;
-                        $acte['Deliberation']['parapheur_cible'] = Configure::read('PARAPHEUR');
-                        if (Configure::read('PARAPHEUR') == 'PASTELL')
-                            $acte['Deliberation']['pastell_id'] = $ret;
-                        $acte['Deliberation']['etat'] = 3;
-                        $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
-                        $acte['Deliberation']['num_delib'] = $num;
-                        $acte['Deliberation']['date_acte'] = date("Y-m-d H:i:s", strtotime("now"));
-                        $acte['Deliberation']['parapheur_id'] = $ret;
-                        $this->Deliberation->save($acte);
-                        $this->Historique->enregistre($acte_id, $this->user_id, "Envoi au parapheur pour signature");
-                    } else {
+                    $message.=$this->_sendToSignature($acte_id, $this->data['Parapheur']['circuit_id'], true);
+                    
+                   /** } else {
                         $this->Session->setFlash("Erreur lors de l'envoi au parapheur. Pour plus d'informations, consultez le fichier parapheur.log", 'growl', array('type' => 'erreur'));
-                    }
+                    }*/
                 }
             }
         }
+        
+        }catch (Exception $e){
+                $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'erreurTDT'));
+            }
+            
+      $this->Session->setFlash($message, 'growl', array('type' => 'important'));
+            
+            
         return $this->redirect(array('action'=>'autreActesValides'));
     }
 

@@ -164,5 +164,10 @@ class AppTools
         
         return false;
     }
+    
+    public static function getNameFile($file){
+        $info = pathinfo($file);
+        return  basename($file,'.'.$info['extension']);
+    }
 }
 
