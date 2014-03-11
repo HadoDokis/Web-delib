@@ -234,7 +234,7 @@ class Deliberation extends AppModel {
                 case 0 :
                     return ($canEdit || $delib['Deliberation']['redacteur_id'] == $userId);
                 case 1 :
-                    return ($canEdit || $this->Traitement->positionTrigger($userId, $delibId) > -1);
+                    return ($canEdit || $this->Traitement->positionTrigger($userId, $delibId) == 0);
                 case 2 :
                     return $canEdit;
                 case 3 :

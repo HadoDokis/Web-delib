@@ -660,7 +660,6 @@ class DeliberationsController extends AppController
                 'order' => array('Typeseance.libelle' => 'ASC', 'Seance.date' => 'ASC'),
                 'contain' => array('Typeseance.libelle', 'Typeseance.retard'),
                 'fields' => array('Seance.id', 'Seance.type_id', 'Seance.date')));
-
             $seances_selected = $this->Deliberation->getCurrentSeances($id, false);
             foreach ($seances_tmp as $seance) {
                 $bSeanceok = false;
@@ -708,7 +707,7 @@ class DeliberationsController extends AppController
             }
 
             // teste si le projet est modifiable par l'utilisateur connecté
-            if (!$this->Deliberation->estModifiable($id, $user['User']['id'], $this->Droits->check($user['User']['id'], "Deliberations:editerTous"))) {
+            if (!$this->Droits->check($this->user_id, "Deliberations:edit") || !$this->Deliberation->estModifiable($id, $this->user_id, $this->Droits->check($this->user_id, "Deliberations:editerTous"))) {
                 $this->Session->setFlash("Vous n'avez pas les droits pour editer le projet '$id'.", 'growl', array('type' => 'erreur'));
                 return $this->redirect($this->referer());
             }
@@ -873,7 +872,7 @@ class DeliberationsController extends AppController
             $this->request->data['Deliberation']['date_limite'] = $this->Utils->FrDateToUkDate($this->data['date_limite']);
 
             if ($success = $this->Deliberation->save($this->request->data)) {
-                $this->Historique->enregistre($id, $user['User']['id'], "Modification du projet");
+                $this->Historique->enregistre($id, $this->user_id, "Modification du projet");
                 $this->Filtre->supprimer();
 
                 // sauvegarde des informations supplémentaires
