@@ -2056,7 +2056,7 @@ class Deliberation extends AppModel {
         if (!empty($modelOptions['deliberationIds']))
             $this->setVariablesFusionDeliberations($oMainPart, $modelOdtInfos, $modelOptions['deliberationIds']);
         else
-            $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, true);
+            $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id);
     }
 
     /**
@@ -2066,9 +2066,9 @@ class Deliberation extends AppModel {
      * @param object $oMainPart variable Gedooo de type maintPart du document à fusionner
      * @param object by ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id l'id à fusionner
-     * @param boolean $addSeanceIterations ajoute l'itération sur les séances
+     * @param integer $fusionSeanceId id de la séance de la fusion (optionnel, null par défaut)
      */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $addSeanceIterations) {
+    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $fusionSeanceId=null) {
         App::uses('DateComponent', 'Controller/Component');
         App::uses('Component', 'Controller');
         // initialisations
@@ -2242,18 +2242,26 @@ class Deliberation extends AppModel {
         // annexes
         $this->Annex->setVariablesFusion($oMainPart, $modelOdtInfos, 'Projet', $id);
 
-        // séances
+        // nombre de séances du projet
         $seanceIds = $this->Deliberationseance->nfield('seance_id', array('Deliberationseance.deliberation_id'=>$delib['Deliberation']['id']), array('Seance.date'));
         $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($seanceIds), 'text'));
-        if (!empty($seanceIds)) {
-            if ($modelOdtInfos->hasUserField('position_projet'))
-                $oMainPart->addElement(new GDO_FieldType('position_projet', $this->getPosition($delib['Deliberation']['id'], $seanceIds[count($seanceIds)-1]), 'text'));
-            if ($addSeanceIterations) {
-                // dernière séance (merci M. Eddy) : délibérante
-                $this->Seance->setVariablesFusion($oMainPart, $modelOdtInfos, $seanceIds[count($seanceIds)-1], 'seance', false);
-                // pour toutes les séances
-                $this->Seance->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $seanceIds, false);
-            }
+
+        // position du projet dans la séance de l'édition ou de la séance délibérante
+        if ($modelOdtInfos->hasUserField('position_projet')) {
+            if (empty($fusionSeanceId))
+                $positionSeanceId = empty($seanceIds)?null:$seanceIds[count($seanceIds)-1];
+            else
+                $positionSeanceId = $fusionSeanceId;
+            $position = empty($positionSeanceId)?0:$this->getPosition($delib['Deliberation']['id'], $positionSeanceId);
+            $oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
+        }
+
+        // itération sur les séances
+        if (empty($fusionSeanceId) && !empty($seanceIds)) {
+            // dernière séance (merci M. Eddy) : délibérante
+            $this->Seance->setVariablesFusion($oMainPart, $modelOdtInfos, $seanceIds[count($seanceIds)-1], 'seance', false);
+            // pour toutes les séances
+            $this->Seance->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $seanceIds, false);
         }
 
         // avis des séances
@@ -2325,7 +2333,7 @@ class Deliberation extends AppModel {
         $oSectionIteration = new GDO_IterationType('Projets');
         foreach($ids as $id) {
             $oDevPart = new GDO_PartType();
-            $this->setVariablesFusion($oDevPart, $modelOdtInfos, $id, true);
+            $this->setVariablesFusion($oDevPart, $modelOdtInfos, $id);
             $oSectionIteration->addPart($oDevPart);
         }
         $oMainPart->addElement($oSectionIteration);
