@@ -15,10 +15,19 @@ $(document).ready(function () {
             $('#texteDelibOngletTextes').append($('#texteDeliberation').detach());
         }
     }).change();
+
+    $("#DeliberationEditForm").submit(function () {
+        $('#ajouteMultiDelib .libelle-multidelib').each(function () {
+            if ($.trim($(this).val()) == '') {
+                $.jGrowl('Erreur : Veuillez renseigner les libellés des délibérations.');
+                return false;
+            }
+        });
+    });
 });
 
 // variables globales
-var iMultiDelibAAjouter = 1000;
+var iMultiDelibAAjouter = 1000000;
 
 // Fonction d'ajout d'une nouvelle deliberation : duplique le div ajouteMultiDelibTemplate et incrémente l'indexe
 function ajouterMultiDelib() {
@@ -48,19 +57,18 @@ function ajouterMultiDelib() {
     var $gabaritBloc = $newDelibBloc.find('#MultidelibTemplateGabaritBloc');
     $gabaritBloc.attr('id', $gabaritBloc.attr('id').replace('Template', iMultiDelibAAjouter));
 
-    var $supprimerGabarit = $gabaritBloc.find('#supprimerMultidelibTemplateGabarit');
+    var $supprimerGabarit = $newDelibBloc.find('#supprimerMultidelibTemplateGabarit');
     $supprimerGabarit.attr('id', $supprimerGabarit.attr('id').replace('Template', iMultiDelibAAjouter));
     $supprimerGabarit.attr('onclick', $supprimerGabarit.attr('onclick').replace('Template', iMultiDelibAAjouter));
 
     if (current_gabarit_name != undefined) {
         $texte.hide();
         $gabaritBloc.find('.gabarit_name_multidelib').text(current_gabarit_name);
-        $gabarit.prop('disabled', false).val('1');
+        $gabarit.prop('disabled', false);
     } else {
         $gabaritBloc.hide();
         $texte.prop('disabled', false);
     }
-
 
     $newDelibBloc.find('#ajouteAnnexesRef').attr('id', 'ajouteAnnexesdelibRattachee' + iMultiDelibAAjouter);
 
@@ -71,14 +79,33 @@ function ajouterMultiDelib() {
     $newDelibBloc.find('#annexeModalAddLinkdelibRattacheeTemplate')
         .attr('id', 'annexeModalAddLinkdelibRattachee' + iMultiDelibAAjouter)
         .attr('data-ref', 'delibRattachee' + iMultiDelibAAjouter);
-
+    //Ajout au DOM
     $('#ajouteMultiDelib').append($newDelibBloc);
-    $newDelibBloc.fadeIn(300);
+    //Effet d'apparition
+    $newDelibBloc.slideDown('slow');
+    //Scroll jusqu'au nouveau bloc
+    $('html, body').animate({
+        scrollTop: $newDelibBloc.offset().top
+    }, 'slow');
 }
 
-function supprimerGabaritMultidelib(delibId){
-    $('input#Multidelib' + delibId + 'Deliberation').prop('disabled', false).show();
-    $('#Multidelib'+delibId+'GabaritBloc').remove();
+/**
+ * Supprimer le bloc de la nouvel delib rattachée
+ * @param element
+ */
+function annulerAjouterDelibRattachee(element) {
+    $(element).closest('fieldset.delibRattachee').remove();
+}
+
+/**
+ * Supprime le gabarit de la multidelib ou efface le champs file si gabarit vide
+ * @param delibId
+ */
+function supprimerGabaritMultidelib(delibId) {
+    $('#Multidelib' + delibId + 'GabaritBloc').hide();
+    $('#Multidelib' + delibId + 'Gabarit').prop('disabled', true);
+    $('input#Multidelib' + delibId + 'Deliberation').prop('disabled', false).show().val(null);
+    $('#supprimerMultidelib' + delibId + 'Gabarit').attr('title', 'Réinitialiser la sélection');
 }
 
 // Fonction de modification d'une délibération rattachée
@@ -133,7 +160,7 @@ function supprimerDelibRattachee(delibId) {
     $bloc.addClass('aSupprimer');
     $bloc.find('legend span.label').addClass('label-important').text('Supprimer');
     $bloc.find('#MultidelibASupprimer' + delibId).prop('disabled', false);
-    $bloc.find('#delibRattacheeDisplay' + delibId).hide();
+    $bloc.find('#delibRattacheeDisplay' + delibId).slideUp('slow');
     $bloc.find('.actions-multidelib').hide();
     $bloc.find('#annulerSupprimerDelibRattachee' + delibId).show();
 }
@@ -144,7 +171,7 @@ function annulerSupprimerDelibRattachee(delibId) {
     $bloc.removeClass('aSupprimer');
     $bloc.find('legend span.label').removeClass('label-important').text('Visualisation');
     $bloc.find('#MultidelibASupprimer' + delibId).prop('disabled', true);
-    $bloc.find('#delibRattacheeDisplay' + delibId).show();
+    $bloc.find('#delibRattacheeDisplay' + delibId).slideDown('slow');
     $bloc.find('#annulerSupprimerDelibRattachee' + delibId).hide();
     $bloc.find('.actions-multidelib').show();
 }

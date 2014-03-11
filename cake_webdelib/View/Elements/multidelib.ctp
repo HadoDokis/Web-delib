@@ -3,9 +3,9 @@
  * Déliberation principale
  */
 if (!empty($this->data['Deliberation']['id'])) {
-    echo $this->Html->tag('fieldset', null, array('id' => 'delibRattachee' . $this->data['Deliberation']['id'], 'style' => 'outline 1px solid #ccc; padding:10px;'));
-    echo $this->Html->tag('legend', 'Délibération principale : ' . $this->data['Deliberation']['id']);
-    echo $this->Form->input('Deliberation.objet_delib', array('type' => 'textarea', 'label' => 'Libellé&nbsp;<abbr title="obligatoire">*</abbr>', 'cols' => '60', 'rows' => '2'));
+    echo $this->Html->tag('fieldset', null, array('id' => 'delibRattachee' . $this->data['Deliberation']['id']));
+    echo $this->Html->tag('legend', '<span class="label label-info">Principale</span> Délibération principale : ' . $this->data['Deliberation']['id']);
+    echo $this->Form->input('Deliberation.objet_delib', array('type' => 'textarea', 'label' => 'Libellé&nbsp;<abbr title="obligatoire">*</abbr>', 'cols' => '60', 'rows' => '2', 'required'));
     // div pour recevoir le texte de la délib
     echo $this->Html->tag('div', '', array('id' => 'texteDelibOngletDelib'));
     echo $this->Html->tag('div', '', array('id' => 'delibPrincipaleAnnexeRatt'));
