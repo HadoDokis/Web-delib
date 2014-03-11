@@ -527,7 +527,7 @@ class Seance extends AppModel
                 $oSectionIteration = new GDO_IterationType("Projets");
                 foreach($seance['Deliberation'] as $deliberation) {
                     $oDevPart = new GDO_PartType();
-                    $this->Deliberation->setVariablesFusion($oDevPart, $modelOdtInfos, $deliberation['id'], false);
+                    $this->Deliberation->setVariablesFusion($oDevPart, $modelOdtInfos, $deliberation['id'], $id);
                     $oSectionIteration->addPart($oDevPart);
                 }
                 $oMainPart->addElement($oSectionIteration);
