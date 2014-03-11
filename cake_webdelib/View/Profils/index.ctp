@@ -4,7 +4,7 @@ echo $this->Html->css('jstree/style.min');
 echo $this->Html->css('treeview');
 ?>
 <h2>Liste des profils</h2>
-<div class="input-append">
+<div class="input-append pull-left">
     <input type="text" id="search_tree" placeholder="Filtrer par nom" style="float: left; z-index: 2"/>
 
     <div class="btn-group" id="search_bloc">
