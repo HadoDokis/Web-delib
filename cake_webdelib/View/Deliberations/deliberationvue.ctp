@@ -2,13 +2,9 @@
 
 <div class="pave">
 <?php
-    if (Configure::read('GENERER_DOC_SIMPLE'))
-        echo $deliberation['Deliberation']['deliberation']; 
-    else {
-        echo '<br>Nom fichier : '.$deliberation['Deliberation']['deliberation_name'];
-        echo '<br>Taille : '.$deliberation['Deliberation']['deliberation_size'];
-	echo '<br>'.$this->Html->link('Telecharger','/deliberations/download/'.$deliberation['Deliberation']['id'].'/deliberation').'<br><br><br>';
-    }
+echo '<br>Nom fichier : '.$deliberation['Deliberation']['deliberation_name'];
+echo '<br>Taille : '.$deliberation['Deliberation']['deliberation_size'];
+echo '<br>'.$this->Html->link('Telecharger','/deliberations/download/'.$deliberation['Deliberation']['id'].'/deliberation').'<br><br><br>';
 ?>
 </div>
 

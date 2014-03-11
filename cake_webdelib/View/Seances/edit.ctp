@@ -90,14 +90,10 @@ echo $this->Form->create('Seance',array('url'=>array('action'=>$this->action), '
 	                    else {
 	                            echo '<span id="'.$infosupdef['Infosupdef']['code'].'InputFichier" style="display: none;"></span>';
 	                            echo '<span id="'.$infosupdef['Infosupdef']['code'].'AfficheFichier">';
-	                            if (Configure::read('GENERER_DOC_SIMPLE')) {
-	                                    echo '['.$this->Html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/'.$this->data['Deliberation']['id'].'/'.$infosupdef['Infosupdef']['id'], array('title'=>$infosupdef['Infosupdef']['commentaire'])).']';
-	                            } else {
-	                                    $name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']] ;
-	                                    $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/seance/".$this->data['Seance']['id']."/$name";
-	                                    echo "<a href='$url'>$name</a> ";
-                                            echo $this->Form->hidden($fieldName);
-	                            }
+                                    $name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']] ;
+                                    $url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/seance/".$this->data['Seance']['id']."/$name";
+                                    echo "<a href='$url'>$name</a> ";
+                                    echo $this->Form->hidden($fieldName);
 	                            echo '&nbsp;&nbsp;';
 	                            echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('".$infosupdef['Infosupdef']['code']."', '".$infosupdef['Infosupdef']['commentaire']."')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
 	                            echo '</span>';

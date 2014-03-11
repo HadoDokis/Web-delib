@@ -1183,35 +1183,31 @@ class Deliberation extends AppModel {
         $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
         $newDelib['Deliberation']['titre'] = !empty($delib['titre']) ? $delib['titre'] : null;
 
-        if (Configure::read('GENERER_DOC_SIMPLE')) {
-            $newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
-        } else {
-            if (isset($delib['deliberation'])) {
-                $newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
-                $newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'];
-                $newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
-                if (empty($delib['deliberation']['tmp_name']))
-                    $newDelib['Deliberation']['deliberation'] = '';
-                else
-                    $newDelib['Deliberation']['deliberation'] = file_get_contents($delib['deliberation']['tmp_name']);
-            } elseif (isset($delib['id'])) {
-                $path_projet = APP . 'webroot/files/generee/projet/' . $delib['id'] . '/';
-                if (file_exists($path_projet . 'deliberation.odt'))
-                    $newDelib['Deliberation']['deliberation'] = file_get_contents($path_projet . 'deliberation.odt');
-            } elseif (!empty($delib['gabarit'])){
-                $typeacte = $this->Typeacte->find('first', array(
-                    'recursive' => -1,
-                    'fields' => array('gabarit_acte', 'gabarit_acte_name'),
-                    'conditions' => array('id' => $delib['typeacte_id'])
-                ));
-                $newDelib['Deliberation']['deliberation_name'] = $typeacte['Typeacte']['gabarit_acte_name'];
-                //Calcul mimetype
-                $finfo = new finfo(FILEINFO_MIME_TYPE);
-                $newDelib['Deliberation']['deliberation_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_acte']);
-                $newDelib['Deliberation']['deliberation_size'] = strlen($typeacte['Typeacte']['gabarit_acte']);
-                $newDelib['Deliberation']['deliberation'] = $typeacte['Typeacte']['gabarit_acte'];
+        if (isset($delib['deliberation'])) {
+            $newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
+            $newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'];
+            $newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
+            if (empty($delib['deliberation']['tmp_name']))
+                $newDelib['Deliberation']['deliberation'] = '';
+            else
+                $newDelib['Deliberation']['deliberation'] = file_get_contents($delib['deliberation']['tmp_name']);
+        } elseif (isset($delib['id'])) {
+            $path_projet = APP . 'webroot/files/generee/projet/' . $delib['id'] . '/';
+            if (file_exists($path_projet . 'deliberation.odt'))
+                $newDelib['Deliberation']['deliberation'] = file_get_contents($path_projet . 'deliberation.odt');
+        } elseif (!empty($delib['gabarit'])){
+            $typeacte = $this->Typeacte->find('first', array(
+                'recursive' => -1,
+                'fields' => array('gabarit_acte', 'gabarit_acte_name'),
+                'conditions' => array('id' => $delib['typeacte_id'])
+            ));
+            $newDelib['Deliberation']['deliberation_name'] = $typeacte['Typeacte']['gabarit_acte_name'];
+            //Calcul mimetype
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $newDelib['Deliberation']['deliberation_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_acte']);
+            $newDelib['Deliberation']['deliberation_size'] = strlen($typeacte['Typeacte']['gabarit_acte']);
+            $newDelib['Deliberation']['deliberation'] = $typeacte['Typeacte']['gabarit_acte'];
 
-            }
         }
 
         if (!$this->save($newDelib['Deliberation'], false)) {

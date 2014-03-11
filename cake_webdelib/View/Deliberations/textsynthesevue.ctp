@@ -2,15 +2,9 @@
 
 <div class="pave">
 <?php 
-
-    if (Configure::read('GENERER_DOC_SIMPLE'))
-        echo $deliberation['Deliberation']['texte_synthese']; 
-    else {
-         echo '<br>Nom fichier : '.$deliberation['Deliberation']['texte_synthese_name'];
-         echo '<br>Taille : '.$deliberation['Deliberation']['texte_synthese_size'];
-         echo '<br>'.$this->Html->link('Telecharger','/deliberations/download/'.$deliberation['Deliberation']['id'].'/texte_synthese').'<br><br><br>';
-    }
-	
+echo '<br>Nom fichier : '.$deliberation['Deliberation']['texte_synthese_name'];
+echo '<br>Taille : '.$deliberation['Deliberation']['texte_synthese_size'];
+echo '<br>'.$this->Html->link('Telecharger','/deliberations/download/'.$deliberation['Deliberation']['id'].'/texte_synthese').'<br><br><br>';
 ?>
 </div>
 
