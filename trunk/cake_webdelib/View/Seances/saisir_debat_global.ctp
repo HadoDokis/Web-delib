@@ -1,20 +1,15 @@
 <h2>Saisie des débats généraux</h2>
 <?php
 echo $this->Form->create('Seances', array('url' => array('controller' => 'seances', 'action' => 'saisirDebatGlobal', $this->data['Seance']['id']), 'type' => 'file'));
-if (!Configure::read('GENERER_DOC_SIMPLE')) {
-    if ($this->data['Seance']['debat_global_size'] > 0) {
-        echo '<br>Nom fichier : ' . $this->data['Seance']['debat_global_name'];
-        echo '<br>Taille : ' . round($this->data['Seance']['debat_global_size'] / 1000, 2) . 'ko';
-        echo '<br>' . $this->Html->link('[Telecharger]', "/seances/download/$seance_id/debat_global");
-        echo ' ' . $this->Html->link('[Supprimer]', "/seances/deleteDebatGlobal/$seance_id");
-        echo '<br><br>';
-    }
-    echo $this->Form->input('Seance.texte_doc', array('label' => 'Nouveau fichier : ', 'type' => 'file'));
-    echo $this->Form->hidden('Seance.id');
-} else {
-    echo $this->Form->input('Seance.debat_global', array('label' => '', 'type' => 'textarea', 'cols' => '10', 'rows' => '20'));
-    echo $this->Fck->load('SeanceDebatGlobal');
+if ($this->data['Seance']['debat_global_size'] > 0) {
+    echo '<br>Nom fichier : ' . $this->data['Seance']['debat_global_name'];
+    echo '<br>Taille : ' . round($this->data['Seance']['debat_global_size'] / 1000, 2) . 'ko';
+    echo '<br>' . $this->Html->link('[Telecharger]', "/seances/download/$seance_id/debat_global");
+    echo ' ' . $this->Html->link('[Supprimer]', "/seances/deleteDebatGlobal/$seance_id");
+    echo '<br><br>';
 }
+echo $this->Form->input('Seance.texte_doc', array('label' => 'Nouveau fichier : ', 'type' => 'file'));
+echo $this->Form->hidden('Seance.id');
 ?>
 
 <div class="optional">

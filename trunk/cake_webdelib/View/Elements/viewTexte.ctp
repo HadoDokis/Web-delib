@@ -27,25 +27,10 @@ switch ($type) {
         $filename = $delib['deliberation_name'];
 }
 
-if (Configure::read('GENERER_DOC_SIMPLE')) {
-    if (!empty($delib[$textKey])) {
-        echo $this->Html->tag('dd', null, array('style'=>'text-indent:0;'));
-        echo $this->Html->tag('span', $libelle);
-        echo ' : ';
-        echo $this->Html->link('[Afficher le texte]', 'javascript:afficheMasqueTexteEnrichi(\'afficheMasque' . $type . $delib['id'] . '\', \'' . $type . $delib['id'] . '\')', array('id' => 'afficheMasque' . $type . $delib['id'], 'affiche' => 'masque'));
-        echo '<div class="annexesGauche"></div>';
-        echo '<div class="fckEditorProjet">';
-        echo $this->Form->input($type . $delib['id'], array('label' => '', 'type' => 'textarea', 'style' => 'display:none;', 'value' => $delib[$textKey]));
-        echo '</div>';
-        echo '<div class="spacer"></div>';
-        echo $this->Html->tag('/dd');
-    }
-} else {
-    if (!empty($delib[$textKey])) {
-        echo $this->Html->tag('dd', null, array('style'=>'text-indent:0;'));
-        echo $this->Html->tag('span', $libelle);
-        echo ' : ';
-        echo $this->Html->link($filename, array('action' => 'download', $delib['id'], $textKey));
-        echo $this->Html->tag('/dd');
-    }
+if (!empty($delib[$textKey])) {
+    echo $this->Html->tag('dd', null, array('style'=>'text-indent:0;'));
+    echo $this->Html->tag('span', $libelle);
+    echo ' : ';
+    echo $this->Html->link($filename, array('action' => 'download', $delib['id'], $textKey));
+    echo $this->Html->tag('/dd');
 }

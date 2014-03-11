@@ -267,9 +267,6 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
                 else {
                     echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'InputFichier" style="display: none;"></span>';
                     echo '<span id="' . $infosupdef['Infosupdef']['code'] . 'AfficheFichier">';
-                    if (Configure::read('GENERER_DOC_SIMPLE')) {
-                        echo '[' . $this->Html->link($this->data['Infosup'][$infosupdef['Infosupdef']['code']], '/infosups/download/' . $this->data['Deliberation']['id'] . '/' . $infosupdef['Infosupdef']['id'], array('title' => $infosupdef['Infosupdef']['commentaire'], 'readonly' => $disabled)) . ']';
-                    } else {
                         $name = $this->data['Infosup'][$infosupdef['Infosupdef']['code']];
                         if (!$disabled) {
                             $url = Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] . "/files/generee/projet/" . $this->data['Deliberation']['id'] . "/$name";
@@ -277,7 +274,6 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
                         } else
                             $url = "http://" . $_SERVER['SERVER_NAME'] . "/files/generee/projet/" . $this->data['Deliberation']['id'] . "/$name";
                         echo "[<a href='$url'>$name</a>]";
-                    }
                     echo '&nbsp;&nbsp;';
                     if (!$disabled)
                         echo $this->Html->link('Supprimer', "javascript:infoSupSupprimerFichier('" . $infosupdef['Infosupdef']['code'] . "', '" . $infosupdef['Infosupdef']['commentaire'] . "')", null, 'Voulez-vous vraiment supprimer le fichier joint ?\n\nAttention : ne prendra effet que lors de la sauvegarde\n');
