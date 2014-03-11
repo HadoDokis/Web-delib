@@ -1229,12 +1229,6 @@ class DeliberationsController extends AppController
             $this->request->data['Deliberation']['date_envoi'] = date('Y-m-d H:i:s', time());
             $this->request->data['Deliberation']['etat'] = '1';
             $this->Deliberation->id = $id;
-            if ($this->Circuit->hasEtapeDelegation($this->request->data['Deliberation']['circuit_id'])){
-                //On génére le document principale si une etape d'envoi au parapheur est prévue
-                $model_id = $this->Deliberation->getModelId($id);
-                // FIXME changer appel génération document
-                $this->requestAction(array('controller'=>'models', 'action'=>'generer', $id, 'null', $model_id, '0', '1', 'parapheur'));
-            }
             if ($this->Deliberation->save($this->request->data)) {
                 // insertion dans le circuit de traitement
                 if ($this->Traitement->targetExists($id)) {
