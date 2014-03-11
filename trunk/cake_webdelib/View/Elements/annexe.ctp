@@ -169,7 +169,7 @@ echo $this->Html->tag('div', '', array('id' => 'supprimeAnnexes' . $ref, 'style'
 echo $this->Html->tag('div', '', array('id' => 'ajouteAnnexes' . $ref, 'style' => 'display:none'));
 
 // lien pour ajouter une nouvelle annexes
-echo $this->Html->link('<i class="fa fa-plus"></i>&nbsp;Ajouter une annexe', '#annexeModal', array(
+echo $this->Html->link('<i class="fa fa-plus"></i>&nbsp;Ajouter une annexe', 'javascript:void(0)', array(
     'class' => 'btn btn-success noWarn annexeModalAddLink',
     'id' => 'annexeModalAddLink' . $ref,
     'data-ref' => $ref,

@@ -350,11 +350,28 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
     $(document).ready(function () {
         $('#listeTypeactesId').change(function () {
             current_gabarit_name = gabarits[$('#listeTypeactesId').val()];
-            if (current_gabarit_name != undefined){
-                $('.gabarit_name_multidelib').text(current_gabarit_name);
-            }else{
-                $('.MultidelibGabaritBloc').hide();
-                $('.texte_acte_multidelib').show();
+            //Le type d'acte possède un gabarit de texte d'acte
+            if (current_gabarit_name != undefined) {
+                $('#ajouteMultiDelib .gabarit_name_multidelib').text(current_gabarit_name);
+                $('#ajouteMultiDelib .MultidelibGabaritBloc').show();
+                $('#ajouteMultiDelib .texte_acte_multidelib').each(function () {
+                    //Le formulaire d'upload est vide
+                    if ($(this).val() == '') {
+                        //Désactivation et masquage du champ d'upload
+                        $(this).prop('disabled', true).hide();
+                        $(this).closest('.delibRattachee').find('.MultidelibGabaritBloc').show();
+                        $(this).closest('.delibRattachee').find('input.gabarit_acte_multidelib').prop('disabled', false);
+                    } else { //Formulaire d'upload non
+                        //Activationvide
+                        $(this).prop('disabled', false).show();
+                        $(this).closest('.delibRattachee').find('input.gabarit_acte_multidelib').prop('disabled', true);
+                        $(this).closest('.delibRattachee').find('.MultidelibGabaritBloc').hide();
+                    }
+                });
+            } else { // Pas de gabarit associé au type d'acte
+                $('#ajouteMultiDelib .MultidelibGabaritBloc').hide();
+                $('#ajouteMultiDelib .delibRattachee input.gabarit_acte_multidelib').prop('disabled', true);
+                $('#ajouteMultiDelib .texte_acte_multidelib').prop('disabled', false).show();
             }
         }).change();
     })

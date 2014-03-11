@@ -168,7 +168,11 @@ function ajouterAnnexe() {
 
     closeAnnexeModal();
 
-    $('#tableAnnexes' + ref).show();
+    $('#tableAnnexes' + ref).slideDown('slow');
+
+    $('html, body').animate({
+        scrollTop:  $('#tableAnnexes' + ref).offset().top-42 // Prise en compte de la topbar
+    }, 'slow');
 
     return false;
 }
