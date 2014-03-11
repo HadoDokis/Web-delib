@@ -208,21 +208,21 @@ echo $linkBarre;
         }
         echo('</div>');
     }
-    ?>
 
-    <?php
     if (empty($deliberation['Multidelib']) && !empty($deliberation['Annex'])) {
         echo '<dt>Annexes</dt>';
-        echo '<dd><br>';
+        echo '<dd>';
         foreach ($deliberation['Annex'] as $annexe) {
             if ($annexe['titre'])
-                echo '<br>Titre : ' . $annexe['titre'];
-            echo '<br>Nom fichier : ' . $annexe['filename'];
-            echo '<br>Joindre au contrôle de légalité : ' . ($annexe['joindre_ctrl_legalite'] ? 'oui' : 'non');
-            echo '<br>' . $this->Html->link('Telecharger', '/annexes/download/' . $annexe['id']) . '<br>';
+                echo 'Titre : ' . $annexe['titre'] . '<br>';
+            echo 'Nom fichier : ' . $annexe['filename'] . '<br>';
+            echo 'Joindre au contrôle de légalité : ' . ($annexe['joindre_ctrl_legalite'] ? 'oui' : 'non') . '<br>';
+            echo $this->Html->link('<i class="fa fa-download"></i> Télecharger', array('controller' => 'annexes', 'action' => 'download', $annexe['id']), array('escape' => false, 'title' => 'Télécharger l\'annexe ' . $annexe['titre']));
+            echo '<div class="spacer"></div>';
         }
         echo '</dd>';
     }
+    
     if (!empty($deliberation['Multidelib'])) {
         echo $this->element('viewDelibRattachee', array(
             'delib' => $deliberation['Deliberation'],
@@ -276,10 +276,10 @@ echo $linkBarre;
 
         afficheMAJ();
         <?php endif; ?>
-<?php
- if (isset($visas_retard) && !empty($visas_retard)):
-        foreach ($visas_retard as $visa):
-        ?>
+        <?php
+         if (isset($visas_retard) && !empty($visas_retard)):
+                foreach ($visas_retard as $visa):
+                ?>
         $('#etape_<?php echo $visa['Visa']['numero_traitement']; ?> .delegation').before('<?php
         echo $this->Html->link(
                 $this->Html->tag('i', '', array('class' => 'fa fa-repeat')), array('plugin'=>'cakeflow', 'controller'=>'traitements','action'=>'traiterDelegationsPassees', $visa['Visa']['traitement_id'], $visa['Visa']['numero_traitement'], 'traiter'), array('escape' => false, 'style' => 'text-decoration:none;margin-right:5px;', 'title'=> 'Mettre à jour le statut de cette étape'));
