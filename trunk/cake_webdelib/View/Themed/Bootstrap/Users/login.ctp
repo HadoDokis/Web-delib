@@ -1,4 +1,3 @@
-<?php echo $this->Html->css('login'); ?>
 <?php if (!empty($errorMsg)): ?>
     <div class="alert alert-error">
         <button type="button" class="close" data-dismiss="alert">×</button>
