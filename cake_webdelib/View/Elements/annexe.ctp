@@ -10,7 +10,7 @@
 if (empty($mode)) $mode = 'edit';
 if ($mode == 'edit' && empty($ref)) return;
 // affichage des annexes
-$tableOptions = array('class' => 'table table-stripped');
+$tableOptions = array('class' => 'table table-hover');
 if ($mode == 'edit') $tableOptions['id'] = 'tableAnnexes' . $ref;
 if (empty($annexes)) {
     $annexes = array();
