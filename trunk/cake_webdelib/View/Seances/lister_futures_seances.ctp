@@ -19,7 +19,9 @@ if (@$this->params['filtre'] == 'hide') {
     <th style="width:200px;">Préparation</th>
     <th style="width:150px;">En cours</th>
     <th style="width:150px;">Finalisation</th>
-    <th style="width:80px;">Actions</th>
+    <?php if (!$endDiv) : ?>
+    <th style="width:80px;">Actions
+    </th> <?php endif; ?>
 </tr>
 </thead>
 <tbody>
@@ -317,50 +319,54 @@ if (@$this->params['filtre'] == 'hide') {
             </ul>
         </div>-->
     </td>
-    <td>
-<!--        <div class="btn-group">-->
-<!--            <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">-->
-<!--                Actions-->
-<!--                <span class="caret"></span>-->
-<!--            </button>-->
-<!--            <ul class="dropdown-menu">-->
-<!--                --><?php
-//                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-edit"></i> Modifier',
-//                    array('controller' => 'seances', 'action' => 'edit', $seance['Seance']['id']),
-//                    array(
-//                        'title' => 'Modifier la séance du ' . $seance['Seance']['date'],
-//                        'escape' => false,
-//                    )));
-//                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer',
-//                    array('controller' => 'seances', 'action' => 'delete', $seance['Seance']['id']),
-//                    array(
-//                        'title' => 'Supprimer la séance du ' . $seance['Seance']['date'],
-//                        'escape' => false,
-//                    ),
-//                    "Confirmer la suppression de la séance du : " . $seance['Seance']['date'] . ' ?'));
-//                ?>
-<!--            </ul>-->
-<!--        </div>-->
-        <div class="btn-group">
-            <?php
-            echo $this->Html->link('<i class="fa fa-edit"></i>',
-                array('controller' => 'seances', 'action' => 'edit', $seance['Seance']['id']),
-                array(
-                    'class' => 'bouton_modifier btn',
-                    'title' => 'Modifier la séance du ' . $seance['Seance']['date'],
-                    'escape' => false,
-                ));
-            echo $this->Html->link('<i class="fa fa-trash-o"></i>',
-                array('controller' => 'seances', 'action' => 'delete', $seance['Seance']['id']),
-                array(
-                    'class' => 'bouton_supprimer btn btn-danger',
-                    'title' => 'Supprimer la séance du ' . $seance['Seance']['date'],
-                    'escape' => false,
-                ),
-                "Confirmer la suppression de la séance du : " . $seance['Seance']['date'] . ' ?');
+
+    <?php if (!$endDiv) : ?>
+        <td>
+            <!--        <div class="btn-group">-->
+            <!--            <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">-->
+            <!--                Actions-->
+            <!--                <span class="caret"></span>-->
+            <!--            </button>-->
+            <!--            <ul class="dropdown-menu">-->
+            <!--                --><?php
+            //                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-edit"></i> Modifier',
+            //                    array('controller' => 'seances', 'action' => 'edit', $seance['Seance']['id']),
+            //                    array(
+            //                        'title' => 'Modifier la séance du ' . $seance['Seance']['date'],
+            //                        'escape' => false,
+            //                    )));
+            //                echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer',
+            //                    array('controller' => 'seances', 'action' => 'delete', $seance['Seance']['id']),
+            //                    array(
+            //                        'title' => 'Supprimer la séance du ' . $seance['Seance']['date'],
+            //                        'escape' => false,
+            //                    ),
+            //                    "Confirmer la suppression de la séance du : " . $seance['Seance']['date'] . ' ?'));
+            //
             ?>
-        </div>
-    </td>
+            <!--            </ul>-->
+            <!--        </div>-->
+            <div class="btn-group">
+                <?php
+                echo $this->Html->link('<i class="fa fa-edit"></i>',
+                    array('controller' => 'seances', 'action' => 'edit', $seance['Seance']['id']),
+                    array(
+                        'class' => 'bouton_modifier btn',
+                        'title' => 'Modifier la séance du ' . $seance['Seance']['date'],
+                        'escape' => false,
+                    ));
+                echo $this->Html->link('<i class="fa fa-trash-o"></i>',
+                    array('controller' => 'seances', 'action' => 'delete', $seance['Seance']['id']),
+                    array(
+                        'class' => 'bouton_supprimer btn btn-danger',
+                        'title' => 'Supprimer la séance du ' . $seance['Seance']['date'],
+                        'escape' => false,
+                    ),
+                    "Confirmer la suppression de la séance du : " . $seance['Seance']['date'] . ' ?');
+                ?>
+            </div>
+        </td>
+    <?php endif; ?>
     </tr>
 <?php endforeach; ?>
 </tbody>
