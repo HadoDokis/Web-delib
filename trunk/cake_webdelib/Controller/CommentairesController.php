@@ -54,15 +54,6 @@ class CommentairesController extends AppController
         }
     }
 
-    public function view($id = null, $delib_id = null)
-    {
-        if (!$id) {
-            $this->Session->setFlash('Invalide id pour le commentaire', 'growl');
-            $this->redirect(array('controller' => 'deliberations', 'action' => 'traiter', $delib_id));
-        }
-        $this->set('commentaire', $this->Commentaire->read(null, $id));
-    }
-
     public function prendreEnCompte($id = null, $delib_id)
     {
         if (!$id) {

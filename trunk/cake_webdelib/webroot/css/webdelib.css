@@ -754,13 +754,6 @@ fieldset#info {
 #buttons {
    text-decoration: none;
 }
-#loading {
-    margin-left: 400px;
-    margin-top: 60px;
-    background-image: url(../../../img/loading.gif);
-    background-repeat: no-repeat;
-    height : 200px;
-}
 
 .paginate {
 	margin-top: 20px;
