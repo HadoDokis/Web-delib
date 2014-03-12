@@ -4,16 +4,14 @@
 body {
     margin: 0;
     position: relative;
-    background-color: #fff;
-    background-image: url(../../../img/grid-18px-masked.png);
-    background-repeat: repeat-x;
-    background-position: 0 40px;
+    background: #fff url(../../../img/grid-18px-masked.png) repeat-x 0 40px;
 }
 
 .logo {
     position: absolute;
-    top: 0px; left: 0px;
-    border: 0px;
+    top: 0;
+    left: 0;
+    border: 0;
     z-index: 2;
     overflow:hidden
 }
@@ -29,7 +27,7 @@ body {
 #user {
 	text-align: right;
 	height: 23px;
-	margin-top: 0px;
+	margin-top: 0;
 	padding-right: 10px;
 	padding-bottom: 5px;
 	background-color: transparent;
@@ -41,7 +39,7 @@ body {
 	font-weight: bold;
         text-align: right;
         height: 23px;
-        margin-top: 0px;
+        margin-top: 0;
         padding-right: 10px;
         background-color: transparent;
 }
@@ -57,7 +55,7 @@ body {
 
 #centre {
 	min-height: 400px;
-	padding: 0px 75px 15px 75px;
+	padding: 0 75px 15px 75px;
 }
 
 h1 {
@@ -309,7 +307,7 @@ a.link_voir, a.link_voir:hover {
 	background-image: url(../../../img/icons/find.png);
 	background-repeat: no-repeat;
 	background-position: top;
-	padding: 0px 0px 32px 32px;
+	padding: 0 0 32px 32px;
     text-decoration: none;
 }
 
@@ -464,14 +462,14 @@ a.link_triasc {
 	background-image: url(../../../img/icons/tri_asc.png);
 	background-repeat: no-repeat;
 	background-position: center left;
-	padding: 0px 6px 0px 6px;
+	padding: 0 6px 0 6px;
 }
 
 a.link_tridesc {
 	background-image: url(../../../img/icons/tri_desc.png);
 	background-repeat: no-repeat;
 	background-position: center left;
-	padding: 0px 6px 0px 6px;
+	padding: 0 6px 0 6px;
 }
 
 a.link_calendar {
@@ -591,7 +589,7 @@ a.link_actes, a.link_actes:hover {
     padding-bottom: 10px;
     background-color: #fafafa;
     outline: 1px solid #ccc;
-    box-shadow: -1px 1px 1px 0px rgba(0, 0, 0, 0.7);
+    box-shadow: -1px 1px 1px 0 rgba(0, 0, 0, 0.7);
 
 }
 #vue_cadre h2, #vue_cadre h3{
@@ -621,7 +619,7 @@ a.link_actes, a.link_actes:hover {
 }
 
 #vue_cadre dd.compact{
-	padding: 5px 0px 0px 30px;
+	padding: 5px 0 0 30px;
 	text-indent: 3%;
 }
 
@@ -859,7 +857,7 @@ input[type="file"]{width: auto}
 }
 
 #connecteurIparapheur div.input.radio fieldset label { text-align: left; padding-left: 5px; width:auto;}
-#connecteurIparapheur div.input.radio {padding-left: 0px;}
+#connecteurIparapheur div.input.radio { padding-left: 0; }
 #connecteurIparapheur div.input.radio input[type="radio"]{margin-left: 25px;}
 
 #InsertRebondForm label{
