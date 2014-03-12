@@ -172,7 +172,7 @@ Configure::write('Dispatcher.filters', array(
 App::uses('CakeLog', 'Log');
 CakeLog::config('debug', array(
 	'engine' => 'FileLog',
-	'types' => array('notice', 'info', 'debug'),
+	'types' => array('notice', 'info'),
 	'file' => 'debug',
 ));
 CakeLog::config('error', array(
