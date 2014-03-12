@@ -149,10 +149,13 @@ if (!empty($deliberation['Multidelib'])) {
     </div>
 
     <?php
+    echo $this->Html->tag('div', null, array('id' => 'textes'));
+    echo $this->Html->tag('dt', 'Textes');
     echo $this->element('viewTexte', array('type' => 'projet', 'delib' => $deliberation['Deliberation']));
     echo $this->element('viewTexte', array('type' => 'synthese', 'delib' => $deliberation['Deliberation']));
     if (empty($deliberation['Multidelib']))
         echo $this->element('viewTexte', array('type' => 'deliberation', 'delib' => $deliberation['Deliberation']));
+    echo $this->Html->tag('/div');
 
     if ($tab_anterieure != null) {
         echo "<dt>Versions Antérieures</dt>";
