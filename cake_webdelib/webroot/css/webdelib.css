@@ -1087,3 +1087,6 @@ table.month {
 {
     line-height: 30px;
 }
+#vue_cadre h2 .label{
+    font-size: 15px;
+}
