@@ -106,13 +106,19 @@ class DeliberationsController extends AppController
                 'Typeacte' => array('fields' => array('libelle')),
                 'Circuit' => array('fields' => array('nom')),
                 'Deliberationtypeseance' => array('fields' => array('id'),
-                    'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
-                    )),
+                    'Typeseance' => array('fields' => array('id', 'libelle', 'action'))),
                 'Deliberationseance' => array('fields' => array('id'),
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
-                        'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
+                        'Typeseance' => array('fields' => array('id', 'libelle', 'action'))
+                    ))),
             'conditions' => array('Deliberation.id' => $id)
         ));
+
+        if (empty($this->request->data)){
+            $this->Session->setFlash("Le projet n&deg;$id est introuvable !", 'growl');
+            return $this->redirect($this->referer());
+        }
+
         $this->request->data['Deliberationseance'] = Hash::sort($this->request->data['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
 
         $this->request->data['Deliberation']['num_pref'] = $this->data['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($this->data['Deliberation']['num_pref']);
@@ -1432,6 +1438,11 @@ class DeliberationsController extends AppController
                 'Multidelib.Typeacte.libelle',
             ),
             'conditions' => array('Deliberation.id' => $id)));
+
+        if (empty($projet)){
+            $this->Session->setFlash("Le projet n&deg;$id est introuvable !", 'growl');
+            return $this->redirect($this->referer());
+        }
 
         //Si traitement d'une delib "enfant" rediriger vers traitement delib "parent"
         if (!empty($projet['Deliberation']['parent_id'])){
