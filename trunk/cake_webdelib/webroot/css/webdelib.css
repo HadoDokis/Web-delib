@@ -1079,3 +1079,11 @@ table.month {
 .delibRattachee{
     margin-bottom: 25px;
 }
+
+#TypeacteEditForm .input.file,
+#TypeacteAddForm .input.file,
+#TypeacteEditForm label,
+#TypeacteAddForm label
+{
+    line-height: 30px;
+}
