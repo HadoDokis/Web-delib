@@ -59,7 +59,7 @@ $linkBarre .= "</div>";
 <div id="vue_cadre">
 <?php
 $style = $this->data['Deliberation']['etat'] < 0 ? ' style="background-color:#FF3e3e"' : '';
-echo "<h2 $style>";
+echo '<h2 '.$style.'><span class="label label-inverse">' . $this->data['Typeacte']['libelle'] . '</span> ';
 if (empty($this->data['Multidelib'])) {
     if ($this->data['Deliberation']['etat'] >= 3)
         echo 'Déliberation n&deg;' . $this->data['Deliberation']['num_delib'] . ' : ' . $this->data['Deliberation']['objet'];

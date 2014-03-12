@@ -1,4 +1,3 @@
-<div id='loading' style="display:none;">&nbsp;</div>
 <!--<div id="buttons">-->
 <?php
 echo $this->Html->script('utils.js');
@@ -62,15 +61,19 @@ $linkBarre .= "</div>";
 
 echo $this->Html->tag('div', null, array('id' => "vue_cadre"));
 // affichage  du titre
-$listeIds = $deliberation['Deliberation']['id'];
-foreach ($deliberation['Multidelib'] as $delibRattachee) {
-    $listeIds .= ', ' . $delibRattachee['id'];
+if (!empty($deliberation['Multidelib'])) {
+    $listeIds = $deliberation['Deliberation']['id'];
+    foreach ($deliberation['Multidelib'] as $delibRattachee) {
+        $listeIds .= ', ' . $delibRattachee['id'];
+    }
+    echo $this->Html->tag('h2', '<span class="label label-inverse">' . $deliberation['Typeacte']['libelle'] . '</span> Traitement du projet multi-délibérations n&deg;' . $deliberation['Deliberation']['id'] . ' : ' . $deliberation['Deliberation']['objet']);
+    echo $linkBarre;
+} else {
+    echo $this->Html->tag('h2', '<span class="label label-inverse">' . $deliberation['Typeacte']['libelle'] . '</span> Traitement du projet n&deg;' . $deliberation['Deliberation']['id'] . ' : ' . $deliberation['Deliberation']['objet']);
+    echo $linkBarre;
+    echo "<hr style='margin-top: 9px;'/>";
 }
-echo $this->Html->tag('h2', '[' . $deliberation['Typeacte']['libelle'] . '] - Traitement du projet "' . $deliberation['Deliberation']['objet'] . '" (id : ' . $listeIds . ')');
-
-echo $linkBarre;
 ?>
-<hr style='margin-top: 9px;'/>
 <dl>
     <div class="imbrique">
         <?php if (!empty($deliberation['Multidelib'])) {
@@ -222,7 +225,7 @@ echo $linkBarre;
         }
         echo '</dd>';
     }
-    
+
     if (!empty($deliberation['Multidelib'])) {
         echo $this->element('viewDelibRattachee', array(
             'delib' => $deliberation['Deliberation'],
