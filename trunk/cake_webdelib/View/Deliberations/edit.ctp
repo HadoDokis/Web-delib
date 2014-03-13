@@ -344,6 +344,9 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
     ?>
     var current_gabarit_name;
     $(document).ready(function () {
+
+        current_gabarit_name = gabarits[$('#listeTypeactesId').val()];
+
         $('#listeTypeactesId').change(function () {
             current_gabarit_name = gabarits[$('#listeTypeactesId').val()];
             //Le type d'acte possède un gabarit de texte d'acte
@@ -369,6 +372,6 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
                 $('#ajouteMultiDelib .delibRattachee input.gabarit_acte_multidelib').prop('disabled', true);
                 $('#ajouteMultiDelib .texte_acte_multidelib').prop('disabled', false).show();
             }
-        }).change();
+        });
     })
 </script>
