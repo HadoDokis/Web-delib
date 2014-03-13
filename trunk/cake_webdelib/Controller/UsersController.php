@@ -421,7 +421,7 @@ class UsersController extends AppController {
         $file = new File(WEBROOT_PATH . DS . 'files' . DS . 'image' . DS . 'logo.jpg', false);
 
         if (empty($collective['Collectivite']['logo']))
-            $this->set('logo_path',  $this->base . "/files/image/adullact.jpg");
+            $this->set('logo_path',  $this->base . "/files/image/adullact.png");
         else {
             if (!$file->exists())
                 $file->write($collective['Collectivite']['logo']);

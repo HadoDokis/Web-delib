@@ -26,6 +26,12 @@ $(document).ready(function () {
             return $.trim(object.text);
         }
     });
+
+    $("#listeTypeactesId").select2({
+        width: "element",
+        placeholder: "Sélection du type d'acte"
+    });
+
     $("#DeliberationIsMultidelib").change();
 
     //Déclenché lors de la fermeture de la modale

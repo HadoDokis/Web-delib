@@ -16,14 +16,10 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 $cakeDescription = __d('webdelib', 'Webdelib');
-?>
-<!doctype html>
-<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="fr"> <![endif]-->
-<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang="fr"> <![endif]-->
-<!--[if IE 8]><html class="no-js lt-ie9" lang="fr"> <![endif]-->
-<!--[if gt IE 8]><!--><html class="no-js" lang="fr"> <!--<![endif]-->
+?><!DOCTYPE html>
+<html class="no-js" lang="fr">
 <head>
-    <?php echo $this->Html->charset(); ?>
+    <meta charset="utf-8">
     <title>
         <?php echo $cakeDescription ?>:
         <?php echo $title_for_layout; ?>
@@ -31,26 +27,34 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     <?php
     echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
     echo $this->Html->meta('icon');
-    echo $this->fetch('meta');
 
+    echo $this->Html->css('jquery.jgrowl.min');
     echo $this->Html->css('bootstrap.min');
-//    echo $this->Html->css('webdelib');
-    echo $this->Html->css('popup');
-    echo $this->fetch('css');
+    echo $this->Html->css('font-awesome.min');
+    echo $this->Html->css('webdelib');
+    echo $this->Html->css('connexion');
 
-    echo $this->Html->script('modernizr.min');
     echo $this->Html->script('jquery-1.10.2.min');
+    echo $this->Html->script('modernizr.min');
     echo $this->Html->script('libs/bootstrap.min');
+    echo $this->html->script('jquery.jgrowl.min');
+    echo $this->html->script('jquery.placeholder.js', true);
     echo $this->Html->script('utils');
+
+    echo $this->fetch('meta');
+    echo $this->fetch('css');
     echo $this->fetch('script');
     ?>
-
 </head>
-<body data-spy="scroll" data-target=".subnav" data-offset="50">
-        <div id="container">
-            <div id="content">
-<?php echo $content_for_layout; ?> 
-            </div>
+<body>
+<div id="container">
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <?php echo $this->Html->image($logo_path, array('id' => 'logo-adullact', 'style' => 'margin-left:10px')); ?>
         </div>
+    </div>
+    <?php echo $content_for_layout; ?>
+</div>
 <?php echo $this->element('footer'); ?>
-<?php echo $this->element( 'sql_dump' ); ?>
+</body>
+</html>

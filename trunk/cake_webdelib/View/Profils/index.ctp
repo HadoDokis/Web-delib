@@ -1,7 +1,4 @@
 <?php
-echo $this->Html->script('jstree.min');
-echo $this->Html->css('jstree/style.min');
-echo $this->Html->css('treeview');
 ?>
 <h2>Liste des profils</h2>
 <div class="input-append pull-left">
