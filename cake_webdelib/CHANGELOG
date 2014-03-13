@@ -1,5 +1,6 @@
 4.2
 ===
+- Migration de bootstrap vers v2.0.4 à v2.3.2
 - Changement de la génération des annexes pour fusion vers gedooo
 - Utilisation de FIDO (Format Identification for Digital Objects) pour la détection du format des fichiers basé sur le répertoire des archives nationales du Royaume-Uni (PRONOM)
 - Prise en charge des annexes au format .doc .docx

@@ -18,7 +18,6 @@ Configure::write('NOT_UNIQUE_CIRCUIT', true);
 Configure::write('DELIBERATIONS_MULTIPLES', false); //Mode délibérations multiples
 Configure::write('INIT_SEQ', false); //Initialiser le numéro de séquence
 Configure::write('LIMIT', 5); //limitation du nombre de projets par banette
-Configure::write('GENERER_DOC_SIMPLE', false);
 Configure::write('PROTOCOLE_DL', 'vnd.sun.star.webdav');
 
 /* Configuration pour la conversion de format des documents */
