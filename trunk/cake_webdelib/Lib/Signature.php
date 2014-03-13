@@ -112,12 +112,6 @@ class Signature {
         else{
           throw new Exception(sprintf('The required method "%s" does not exist for %s', $name.$suffix, get_class($this)));
         } 
-        
-        
-      /*  if (empty($arguments))
-            return $this->{$name.$suffix}();
-        else
-            return $this->{$name.$suffix}($arguments);*/
     }
 
 

@@ -112,10 +112,18 @@ class Tdt {
      */
     public function __call($name, $arguments) {
         $suffix = ucfirst(strtolower($this->connecteur));
+        
+        if (method_exists($this, $name.$suffix))
+                return call_user_func_array(array($this, $name.$suffix), $arguments);
+        else{
+          throw new Exception(sprintf('The required method "%s" does not exist for %s', $name.$suffix, get_class($this)));
+        } 
+        
+       /* $suffix = ucfirst(strtolower($this->connecteur));
         if (empty($arguments))
             return $this->{$name . $suffix}();
         else
-            return $this->{$name . $suffix}($arguments);
+            return $this->{$name . $suffix}($arguments);*/
     }
 
     /**
@@ -351,5 +359,48 @@ class Tdt {
         $flux = $this->S2low->getAR($tdt_id);
         return $flux;
     }
+    
+    /**
+     * Récupération du fichier de message
+     * 
+     * @param int $message_id
+     * @return String
+     */
+    public function getDocumentS2low($message_id) {
+        return gzread($this->S2low->getDocument($message_id));
+    }
+    
+    /**
+     * Récupération du de l'ARacte
+     * 
+     * @param int $iTdt
+     * @return boolean|String
+     */
+    public function getArActeS2low($iTdt) {
 
+        $flux = $this->S2low->getFluxRetour($iTdt);
+        $codeRetour = substr($flux, 3, 1);
+
+        if ($codeRetour == 4) {
+            return mb_substr($flux, strpos($flux, '<?xml version'), strlen($flux));
+        }
+
+        return false;
+    }
+    
+    /**
+     * Récupération du de l'ARacte
+     * 
+     * @param int $iTdt
+     * @return boolean|String
+     */
+    public function getArActePastell($iTdt) {
+        $id_d = $iTdt;
+        $this->Pastell->action($this->id_e, $id_d, 'verif-tdt');
+        $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
+        if (!empty($infos['data']['aractes']))
+            return $infos['data']['aractes'];
+        else
+            return false;
+    }
 }

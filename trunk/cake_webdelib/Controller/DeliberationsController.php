@@ -42,7 +42,6 @@ class DeliberationsController extends AppController
         'validerEnUrgence',
         'rebond',
         'sendToParapheur',
-        'sendToGed',
         'autresActesAValider',
         'toSend',
         'transmit',
@@ -80,7 +79,6 @@ class DeliberationsController extends AppController
         'validerEnUrgence' => 'Valider un projet en urgence',
         'rebond' => 'Effectuer un rebond',
         'sendToParapheur' => 'Envoie à la signature',
-        'sendToGed' => 'Envoie à une GED',
         'editerTous' => 'Editer tous les projets',
     );
 
@@ -3852,37 +3850,6 @@ class DeliberationsController extends AppController
         $ret = trim(preg_replace('/\s+/', ' ', nl2br(htmlspecialchars($ret,ENT_QUOTES))));
         $this->Session->setFlash($ret, 'growl', array());
         return $this->redirect($this->referer());
-    }
-
-    function sendToGed($delib_id)
-    {
-        $delib = $this->Deliberation->find('first', array(
-            'conditions' => array('Deliberation.id' => $delib_id)));
-        $cmis = new CmisComponent();
-        // Création du répertoire
-        $my_new_folder = $cmis->client->createFolder($cmis->folder->id, $delib_id);
-
-        // Dépôt de la délibération et du rapport dans le répertoire que l'on vient de créer
-        $cmis->client->createDocument($my_new_folder->id, "deliberation.pdf", array(), $delib['Deliberation']['delib_pdf'], "application/pdf");
-
-        // Dépôt du rapport de projet (on fixe l'etat à 2 pour etre sur d'avoir le rapport et non la délibération
-        if (isset($delib['Seance']['date']))
-            $this->Typeseance->modeleProjetDelibParTypeSeanceId($delib['Seance']['type_id'], '2');
-
-        //        $this->requestAction("/models/generer/$delib_id/null/$model_id/0/1/rapport.pdf/1/false");
-        //        $rapport = file_get_contents(WEBROOT_PATH."/files/generee/fd/null/$delib_id/rapport.pdf");
-        //        $obj_rapport = $cmis->client->createDocument($my_new_folder->id,
-        //                                                     "rapport.pdf",
-        //                                                     array (),
-        //                                                     $rapport,
-        //                                                     "application/pdf");
-
-        if (count($delib['Annex']) > 0) {
-            $annex_folder = $cmis->client->createFolder($my_new_folder->id, 'Annexes');
-            foreach ($delib['Annex'] as $annex) {
-                $cmis->client->createDocument($annex_folder->id, $annex['filename'], array(), $annex['data'], $annex['filetype']);
-            }
-        }
     }
 
     function _handleConditions($conditions)
