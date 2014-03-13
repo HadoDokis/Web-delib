@@ -16,51 +16,51 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 $cakeDescription = __d('webdelib', 'Webdelib');
-?>
-<!doctype html>
-<!--[if lt IE 7]>
-<html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="fr"> <![endif]-->
-<!--[if IE 7]>
-<html class="no-js lt-ie9 lt-ie8" lang="fr"> <![endif]-->
-<!--[if IE 8]>
-<html class="no-js lt-ie9" lang="fr"> <![endif]-->
-<!--[if gt IE 8]><!-->
-<html class="no-js" lang="fr"> <!--<![endif]-->
+?><!DOCTYPE html>
+<html class="no-js" lang="fr">
 <head>
-    <?php echo $this->Html->charset(); ?>
+    <meta charset="utf-8">
     <title>
         <?php echo $cakeDescription ?>:
         <?php echo $title_for_layout; ?>
     </title>
     <?php
+    //META
     echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
     echo $this->Html->meta('icon');
     echo $this->Html->meta(array('name' => 'robots', 'content' => 'noindex, nofollow'));
-    echo $this->fetch('meta');
-    echo $this->Html->css('jquery.jgrowl.min');
-    echo $this->Html->css('bootstrap.min');
-    echo $this->Html->css('font-awesome.min');
-    echo $this->Html->css('/lib/select2/select2');
+    //CSS
+    echo $this->Html->css('/libs/jgrowl/jquery.jgrowl.min');
+    echo $this->Html->css('/libs/bootstrap/css/bootstrap.min');
+    echo $this->Html->css('/libs/font-awesome/css/font-awesome.min');
+    echo $this->Html->css('/libs/select2/select2');
+    echo $this->Html->css('/libs/jstree/style.min');
+    echo $this->Html->css('/libs/scrollup/scrollup.css');
+    echo $this->Html->css('treeview');
     echo $this->Html->css('webdelib');
     echo $this->Html->css('filtres');
     echo $this->Html->css('global');
-    echo $this->fetch('css');
-
-    echo $this->Html->script('modernizr.min');
-    echo $this->Html->script('jquery-1.10.2.min');
-    echo $this->Html->script('libs/bootstrap.min');
-    echo $this->Html->script('jquery.jgrowl.min');
-    echo $this->Html->script('/lib/select2/select2.min');
-    echo $this->Html->script('/lib/select2/select2_locale_fr');
+    //Scripts JS
+    echo $this->Html->script('/libs/modernizr/modernizr.min');
+    echo $this->Html->script('/libs/jquery/jquery-1.10.2.min');
+    echo $this->Html->script('/libs/bootstrap/js/bootstrap.min');
+    echo $this->Html->script('/libs/jgrowl/jquery.jgrowl.min');
+    echo $this->Html->script('/libs/select2/select2.min');
+    echo $this->Html->script('/libs/select2/select2_locale_fr');
+    echo $this->Html->script('/libs/scrollup/jquery.scrollUp.min');
+    echo $this->Html->script('/libs/jstree/jstree.min');
+    echo $this->Html->script('jquery.placeholder.js');
     echo $this->Html->script('utils');
     echo $this->Html->script('attendable');
     echo $this->Html->script('masterCheckbox');
-    echo $this->Html->script('jquery.placeholder.js');
     echo $this->Html->script('main');
+
+    echo $this->fetch('meta');
+    echo $this->fetch('css');
     echo $this->fetch('script');
     ?>
 </head>
-<body data-spy="scroll" data-target=".subnav" data-offset="50">
+<body>
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -129,8 +129,6 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         <!--/.nav-collapse -->
     </div>
 </div>
-<script>$('#searchInput').placeholder();</script>
-
 <?php
 App::uses('Debugger', 'Utility');
 if (Configure::read('debug') > 0):
@@ -179,10 +177,15 @@ endif;
     ?>
 </ul>
 <!-- Contents -->
-<div class="default-template-content">
+<div id="principal">
     <?php echo $this->Session->flash(); ?>
     <?php echo $this->fetch('content'); ?>
 </div>
+<!--Footer-->
 <?php echo $this->element('footer'); ?>
+<!--Attendable-->
 <?php echo $this->element('waiter'); ?>
+<!--Dump sql (debug > 1)-->
 <?php echo $this->element('sql_dump'); ?>
+</body>
+</html>

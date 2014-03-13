@@ -31,7 +31,7 @@ App::uses('Controller', 'Controller');
  * @link        http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-    public $theme = "Bootstrap";
+    public $theme = "Normal";
     public $components = array('Utils', 'Acl', 'Droits', 'Session');
     public $helpers = array('Html', 'Form', 'Session', 'DatePicker', 'Html2');
     public $aucunDroit = array('Pages:format', 'Pages:service');

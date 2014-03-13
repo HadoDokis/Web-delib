@@ -1,9 +1,5 @@
 <?php
-echo $this->Html->script('jstree.min');
-echo $this->Html->css('jstree/style.min');
 echo $this->Html->css('users');
-echo $this->Html->css('treeview');
-
 if ($this->Html->value('User.id')) {
     echo "<h2>Modification de l'utilisateur n&deg;{$this->Html->value('User.id')} : &quot;{$this->Html->value('User.login')}&quot;</h2>";
     echo $this->Form->create('User', array('url' => array('controller'=>'users', 'action'=>'edit', $this->Html->value('User.id')), 'type' => 'post', 'name' => 'userEdit', 'id' => 'userForm'));
