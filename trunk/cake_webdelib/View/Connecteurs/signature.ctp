@@ -48,11 +48,10 @@
                 'value' => Configure::read($protocol.'_LOGIN')));
 
             echo $this->Form->input('pwd', array(
-                'type' => 'text',
+                'type' => 'password',
                 'placeholder' => 'Mot de passe utilisateur',
                 'label' => 'Mot de passe',
                 'value' => Configure::read($protocol.'_PWD')));
-
             ?>
         </fieldset>
         <fieldset>
@@ -81,7 +80,7 @@
                 'label' => 'Certificat (p12)'
             ));
             echo $this->Form->input('certpwd', array(
-                'type' => 'text',
+                'type' => 'password',
                 'placeholder' => "Mot de passe du certificat",
                 'value' => Configure::read('IPARAPHEUR_CERTPWD'),
                 'label' => 'Mot de passe'));
