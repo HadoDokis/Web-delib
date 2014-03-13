@@ -9,7 +9,7 @@ if (!empty($typeseances)) :
         'multiple' => true));
     echo $this->Html->tag('div', '', array('class' => 'spacer'));
 ?>
-<script>
+<script type="text/javascript">
     $("#TypeseanceTypeseance").select2({
         width: "80%",
         allowClear: true,
