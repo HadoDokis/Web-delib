@@ -84,13 +84,13 @@ if (@$this->params['filtre'] == 'hide') {
                 'title' => 'Générer l\'ordre du jour détaillé pour la séance du ' . $seance['Seance']['date'],
                 'escape' => false,
             )));
-        echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-tablet"></i> Envoyer à Idélibre',
-            array('controller' => 'seances', 'action' => 'sendToIdelibre', $seance['Seance']['id']),
-            array(
-                'title' => 'Envoyer à Idelibre la séance du ' . $seance['Seance']['date'],
-                'escape' => false,
-            )));
-
+        if (Configure::read('USE_IDELIBRE'))
+            echo $this->Html->tag('li', $this->Html->link('<i class="fa fa-tablet"></i> Envoyer à Idélibre',
+                array('controller' => 'seances', 'action' => 'sendToIdelibre', $seance['Seance']['id']),
+                array(
+                    'title' => 'Envoyer à Idelibre la séance du ' . $seance['Seance']['date'],
+                    'escape' => false
+                )));
         ?>
             </ul>
         </div>-->
@@ -132,11 +132,21 @@ if (@$this->params['filtre'] == 'hide') {
                 'title' => 'Générer l\'ordre du jour détaillé pour la séance du ' . $seance['Seance']['date'],
                 'escape' => false,
             ));
-        echo $this->Html->link(SHY,
+        if (empty($seance['Seance']['idelibre_id']))
+            echo $this->Html->link(SHY,
+                array('controller' => 'seances', 'action' => 'sendToIdelibre', $seance['Seance']['id']),
+                array(
+                    'class' => 'link_tablet',
+                    'title' => 'Envoyer à Idelibre la séance du ' . $seance['Seance']['date'],
+                    'escape' => false,
+                ));
+        else
+            echo $this->Html->link(SHY,
             array('controller' => 'seances', 'action' => 'sendToIdelibre', $seance['Seance']['id']),
             array(
                 'class' => 'link_tablet',
-                'title' => 'Envoyer à Idelibre la séance du ' . $seance['Seance']['date'],
+                'title' => 'Séance déjà envoyée à i-delibRE',
+                'onclick' => "return confirm('Cette séance a déjà été envoyé à i-delibRE !\\n\\nSi vous souhaitez la renvoyer de nouveau,\\nAssurez vous au préalable qu\'elle n\'est plus dans i-delibRE.\\n\\nVoulez vous continuer ?')",
                 'escape' => false,
             ));
 

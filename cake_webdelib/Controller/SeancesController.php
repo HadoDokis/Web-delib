@@ -202,39 +202,39 @@ class SeancesController extends AppController {
 		}
 	}
 
-	function listerFuturesSeances() {
-		$this->set('AFFICHE_CONVOCS_ANONYME', Configure::read('AFFICHE_CONVOCS_ANONYME'));
-		$this->set('use_pastell', Configure::read('USE_PASTELL'));
-		$this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
-		$format =  $this->Session->read('user.format.sortie');
+    function listerFuturesSeances() {
+        $this->set('AFFICHE_CONVOCS_ANONYME', Configure::read('AFFICHE_CONVOCS_ANONYME'));
+        $this->set('use_pastell', Configure::read('USE_PASTELL'));
+        $this->set('canSign', $this->Droits->check($this->Session->read('user.User.id'), "Deliberations:sendToParapheur"));
+        $format = $this->Session->read('user.format.sortie');
         $this->set('models', $this->Modeltemplate->find('list', array(
             'recursive' => -1,
             'conditions' => array('modeltype_id' => array(MODEL_TYPE_MULTISEANCE)),
             'fields' => array('name'))));
-		if (empty($format))
-			$format =0;
-		$this->set('format', $format);
-			
-		if (empty ($this->data)) {
-			$this->Seance->Behaviors->attach('Containable');
-			$seances = $this->Seance->find('all', array('conditions'=> array('Seance.traitee'=>0),
-					'order'    =>array('date ASC'),
-					'fields'    => array('id', 'date', 'type_id'),
-					'contain'   => array('Typeseance.libelle', 'Typeseance.action',
-							'Typeseance.modelconvocation_id',
-							'Typeseance.modelordredujour_id',
-							'Typeseance.modelpvsommaire_id',
-							'Typeseance.modelpvdetaille_id')));
+        if (empty($format))
+            $format = 0;
+        $this->set('format', $format);
 
-			for ($i=0; $i<count($seances); $i++){
-				$seances[$i]['Seance']['dateEn'] =  $seances[$i]['Seance']['date'];
-				$seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
-			}
-			$this->set('seances', $seances);
-		}
-	}
+        if (empty ($this->data)) {
+            $this->Seance->Behaviors->attach('Containable');
+            $seances = $this->Seance->find('all', array('conditions' => array('Seance.traitee' => 0),
+                'order' => array('date ASC'),
+                'fields' => array('id', 'date', 'type_id', 'idelibre_id'),
+                'contain' => array('Typeseance.libelle', 'Typeseance.action',
+                    'Typeseance.modelconvocation_id',
+                    'Typeseance.modelordredujour_id',
+                    'Typeseance.modelpvsommaire_id',
+                    'Typeseance.modelpvdetaille_id')));
 
-	function listerAnciennesSeances() {
+            for ($i = 0; $i < count($seances); $i++) {
+                $seances[$i]['Seance']['dateEn'] = $seances[$i]['Seance']['date'];
+                $seances[$i]['Seance']['date'] = $this->Date->frenchDateConvocation(strtotime($seances[$i]['Seance']['date']));
+            }
+            $this->set('seances', $seances);
+        }
+    }
+
+    function listerAnciennesSeances() {
 		$this->Seance->Behaviors->attach('Containable');
 		if (empty ($this->data)) {
 			$seances = $this->Seance->find('all',
@@ -1084,7 +1084,6 @@ class SeancesController extends AppController {
                 else
                     $this->Session->setFlash('Envoi des convocations effectué avec succès', 'growl');
 
-                $this->redirect("/seances/sendConvocations/$seance_id/$model_id");
             }
         }
 
@@ -1485,15 +1484,20 @@ class SeancesController extends AppController {
             $this->Progress->end('/models/getGeneration');
         }
 
+    /**
+     * Envoi d'une séance et ses projets à i-delibRE
+     * @param integer $seance_id
+     * @return mixed
+     */
     function sendToIdelibre($seance_id) {
-        if (!(Configure::read('USE_IDELIBRE'))){
+        if (!(Configure::read('USE_IDELIBRE'))) {
             $this->Session->setFlash('Le connecteur Idélibre n&apos;est pas activé.<br>Veuillez contacter l&apos;administrateur pour plus d&apos;infos.', 'growl');
-            $this->redirect(array('controller' => 'seances', 'action' => 'listerFuturesSeances'));
+            $this->redirect($this->referer());
         }
 
-        $this->Progress->start(200, 100,200, '#FFCC00','#006699');
+        $this->Progress->start(200, 100, 200, '#FFCC00', '#006699');
         $this->Progress->at(0, 'Initialisation');
-        
+
         $this->Seance->Behaviors->attach('Containable');
         $this->Deliberation->Behaviors->attach('Containable');
 
@@ -1501,17 +1505,15 @@ class SeancesController extends AppController {
 
         $seance = $this->Seance->find('first', array(
             'conditions' => array('Seance.id' => $seance_id),
-            'fields'     => array('id', 'date', 'type_id'),
-            'contain'    => array('Typeseance.libelle', 'Typeseance.action', 'Typeseance.id', 'Typeseance.modelconvocation_id', 'Typeseance.action')));
+            'fields' => array('id', 'date', 'type_id'),
+            'contain' => array('Typeseance.libelle', 'Typeseance.action', 'Typeseance.id', 'Typeseance.modelconvocation_id', 'Typeseance.action')));
 
         $acteurs_convoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Typeseance']['id']);
 
-        $model_seance_id =  $seance['Typeseance']['modelconvocation_id'];
+        // fusion de la convocation
+        $filename = $this->Seance->fusionToFile($seance_id, 'convocation');
 
-        $this->Progress->at(5, "Génération de l'ordre du jour de la séance...");
-
-        $this->requestAction("/models/generer/null/$seance_id/$model_seance_id/0/0/Document/0/1");
-        $filename = WEBROOT_PATH."/files/generee/fd/$seance_id/null/Document.pdf";
+        $this->Progress->at(5, "Génération de la convocation à la séance...");
 
         $data = array(
             'username' => Configure::read('IDELIBRE_LOGIN'),
@@ -1521,53 +1523,45 @@ class SeancesController extends AppController {
         );
 
         $jsonData = array(
-            'date_seance'       => $seance['Seance']['date'],
-            'type_seance'       => $seance['Typeseance']['libelle'],
+            'date_seance' => $seance['Seance']['date'],
+            'type_seance' => $seance['Typeseance']['libelle'],
             'acteurs_convoques' => json_encode($acteurs_convoques),
         );
 
         $this->Progress->at(10, 'Récupération des délibérations de la séance...');
         $i = 0;
-        $delibs = $this->Seance->getDeliberationsId($seance_id, array('Deliberation.etat >' =>0 ));
-        $num_delib = count($delibs );
+        $delibs = $this->Seance->getDeliberationsId($seance_id, array('Deliberation.etat >' => 0));
+        $num_delib = count($delibs);
         foreach ($delibs as $delib_id) {
             $projet = array();
-            $this->Progress->at(10+($i+1)*(50/$num_delib), 'Génération du projet '.($i+1).'/'.$num_delib.'...');
+            $this->Progress->at(10 + ($i + 1) * (50 / $num_delib), 'Génération du projet ' . ($i + 1) . '/' . $num_delib . '...');
             $delib = $this->Deliberation->find('first', array(
                 'conditions' => array('Deliberation.id' => $delib_id),
-                'contain'    => array('Theme.libelle'),
-                'fields'     => array(
+                'contain' => array('Theme.libelle'),
+                'fields' => array(
                     'Deliberation.objet',
                     'Deliberation.typeacte_id',
                     'Deliberation.theme_id',
                     'Deliberation.etat'
                 )));
 
-            if ($seance['Typeseance']['action'] == 0) {
-                $model_id = $this->Typeseance->modeleProjetDelibParTypeSeanceId($seance['Seance']['type_id'], $delib['Deliberation']['etat']);
-            }
-            else {
-                $model_id = $this->Deliberation->Typeacte->getModelId($delib['Deliberation']['typeacte_id'], 'modeleprojet_id');
-            }
+            // fusion du rapport
+            $projet_filename = $this->Deliberation->fusionToFile($delib_id, 'rapport');
 
-            $this->requestAction("/models/generer/$delib_id/null/$model_id/0/2/P_$delib_id");
-
-            $projet_filename = WEBROOT_PATH."/files/generee/fd/null/$delib_id/P_$delib_id.pdf";
             $projet['libelle'] = $delib['Deliberation']['objet'];
             $projet['ordre'] = $i;
-            //TODO --- POUR Stéphance + ardoressence getLibelleParent
             $projet['theme'] = implode(',', $this->Deliberation->Theme->getLibelleParent($delib['Deliberation']['theme_id']));
-            $data['projet_'.$i.'_rapport'] = "@$projet_filename";
+            $data['projet_' . $i . '_rapport'] = "@$projet_filename";
 
-            $j=0;
+            $j = 0;
             $points = array('.', '..');
             $annexes = array();
-            if (is_dir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {
-                if ($dh = opendir(WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/")) {
+            if (is_dir(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/annexes/")) {
+                if ($dh = opendir(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/annexes/")) {
                     while (($file = readdir($dh)) !== false) {
                         if (!in_array($file, $points)) {
-                            $annex_filename =  WEBROOT_PATH."/files/generee/fd/null/$delib_id/annexes/".$file;
-                            $data['projet_'.$i.'_'.$j.'_annexe']  = "@$annex_filename";
+                            $annex_filename = WEBROOT_PATH . "/files/generee/fd/null/$delib_id/annexes/" . $file;
+                            $data['projet_' . $i . '_' . $j . '_annexe'] = "@$annex_filename";
                             $annexes[] = array(
                                 'libelle' => $file,
                                 'ordre' => $j
@@ -1584,27 +1578,64 @@ class SeancesController extends AppController {
         }
         $data['jsonData'] = json_encode($jsonData);
         $this->Progress->at(85, 'Envoi des informations à i-DelibRE...');
-        $url = Configure::read('IDELIBRE_HOST').'/seances.json';
+        $url = Configure::read('IDELIBRE_HOST') . '/seances.json';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
 
-        $request = curl_init();
-        curl_setopt($request, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($request, CURLOPT_SSL_VERIFYHOST, 0);
-        // TODO : implémenter l'utilisation de certificat
-//        curl_setopt($request, CURLOPT_CAINFO, getcwd() . Configure::read('IDELIBRE_CERT'));
-        curl_setopt($request, CURLOPT_URL, $url);
-        curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($request, CURLOPT_POST, 1);
-        curl_setopt($request, CURLOPT_POSTFIELDS, $data);
-        $success = curl_exec($request);
-        $this->log(print_r($success,true), 'debug');
-        $this->log(print_r($data,true), 'debug');
-        curl_close($request);
-        if (!$success)
-            $this->Session->setFlash('Une erreur est survenue lors de l&apos;envoi à i-delibRE.', 'growl', array('error'));
-        else
-            $this->Session->setFlash('Convocations envoyés avec succès à i-delibRE.', 'growl');
-        $this->Progress->end('/seances/listerFuturesSeances');
-        return $this->redirect(array('controller'=>'seances', 'action'=>'listerFuturesSeances'));
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+        // FIXME certificat https ?
+//        if (Configure::read('IDELIBRE_USE_CERT')) {
+//            curl_setopt($ch, CURLOPT_CAPATH, Configure::read('IDELIBRE_CAPATH'));
+//            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+//            curl_setopt($ch, CURLOPT_CERTINFO, TRUE);
+//            curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('IDELIBRE_CERT'));
+//            curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('IDELIBRE_CERTPWD'));
+//            curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('IDELIBRE_KEY'));
+//        }
+
+        $retour = curl_exec($ch);
+        $retour = json_decode($retour, true);
+        curl_close($ch);
+
+        try {
+            if (empty($retour))
+                throw new Exception('Erreur de communication avec i-delibRE.');
+            elseif (!empty($retour['error']))
+                if (Configure::read('debug') && !empty($retour['name']))
+                    throw new Exception(preg_replace('/\s/', ' ', nl2br($retour['name'])));
+                else
+                    throw new Exception('L\'export vers i-delibRE a échoué.');
+            elseif (!empty($retour['success']))
+                if (!empty($retour['uuid'])) {
+                    $this->Seance->id = $seance_id;
+                    $this->Seance->saveField('idelibre_id', $retour['uuid']);
+
+                    if (!empty($retour['message']))
+                        $this->Session->setFlash('<strong>Message i-delibRE : </strong><br>' . html_entity_decode($retour['message']), 'growl');
+                    else
+                        $this->Session->setFlash('Séance envoyée avec succès à i-delibRE.', 'growl');
+                } else
+                    throw new Exception('Impossible de récupérer l\'identifiant i-delibRE de la séance.');
+            else
+                throw new Exception('La réponse de i-delibRE est malformée.');
+
+        } catch (Exception $e) {
+            $this->log($data, 'idelibre');
+            if (!empty($retour)) $this->log($retour, 'idelibre');
+            else $this->log('Aucune réponse', 'idelibre');
+            $this->Session->setFlash('<strong>Un évènement inattendu c\'est produit :</strong><br>' . $e->getMessage() . '<br>Veuillez contacter votre administrateur.', 'growl', array('error'));
+        }
+
+
+        //Voir pourquoi ne garde pas le message en session
+        $this->Progress->end($this->referer());
+        return $this->redirect($this->referer());
     }
 
     /**
@@ -1663,7 +1694,7 @@ class SeancesController extends AppController {
      * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
      * @return CakeResponse
      */
-    function genereFusionToFiles($id, $modelTemplateId, $typeFusion, $cookieToken) {
+    function genereFusionToFiles($id, $modelTemplateId, $typeFusion, $cookieToken = null) {
         try {
             // vérification de l'existence de la séance
             if (!$this->Seance->hasAny(array('id' => $id)))
@@ -1672,7 +1703,7 @@ class SeancesController extends AppController {
             // vérification des types de fusion
             $allowedFusionTypes = array('convocation', 'ordredujour');
             if (!in_array($typeFusion, $allowedFusionTypes))
-                throw new Exception('le type de modèle d\'édition '.$typeFusion.' n\'est par autorisé');
+                throw new Exception('le type de modèle d\'édition '.$typeFusion.' n\'est pas autorisé');
 
             // lecture de la liste des acteurs convoqués
             $typeSeanceId = $this->Seance->field('type_id', array('id'=>$id));
@@ -1690,7 +1721,7 @@ class SeancesController extends AppController {
             AppGestfichiers::creeRepertoire($dirpath);
 
             // chargement  du behavior de fusion du document
-            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelOptions'=>array('modelTypeName'=>$typeFusion)));
+            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelTemplateId' => $modelTemplateId, 'modelOptions'=>array('modelTypeName'=>$typeFusion)));
 
             // le modèle template possede-t-il des variables de fusion des acteurs
             $acteurPresentTemplate = $this->Seance->modelTemplateOdtInfos->hasUserFields(array(
@@ -1729,7 +1760,6 @@ class SeancesController extends AppController {
 
     /**
      * génération de la fusion pour plusieurs séances : l'id du modèle de fusion et les séances a fusionner sont passés dans les données du formulaire
-     * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
      * @return CakeResponse
      */
     function genereFusionMultiSeancesToClient() {

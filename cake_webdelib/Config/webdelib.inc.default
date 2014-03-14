@@ -128,7 +128,13 @@ Configure::write('IDELIBRE_HOST', 'https://idelibre.x.x.org');
 Configure::write('IDELIBRE_LOGIN', 'login');
 Configure::write('IDELIBRE_PWD', 'password');
 Configure::write('IDELIBRE_CONN', 'adullact'); //Collectivité
-//Configure::write('IDELIBRE_CERT', APP . 'Config/cert_idelibre/cert.pem');
+//Certificats
+Configure::write('IDELIBRE_USE_CERT', false);
+Configure::write('IDELIBRE_CAPATH', APP . 'Config/cert_idelibre/');
+Configure::write('IDELIBRE_CA', APP . 'Config/cert_idelibre/ca.pem');
+Configure::write('IDELIBRE_KEY', APP . 'Config/cert_idelibre/key.pem');
+Configure::write('IDELIBRE_CERT', APP . 'Config/cert_idelibre/cert.pem');
+Configure::write('IDELIBRE_CERTPWD', 'passphrase');
 
 /* Configuration ASAL@AE */
 Configure::write('USE_ASALAE', false);

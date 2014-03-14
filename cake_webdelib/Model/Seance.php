@@ -585,4 +585,52 @@ class Seance extends AppModel
             throw new Exception('détermination du modèle d\'édition '.$modelOptions['modelTypeName'].' pour le type de séance id:'.$typeSeanceId.' non trouvé');
         return $modelTemplateId;
     }
+
+    /**
+     * Ordonne la fusion et retourne le résultat sous forme de flux
+     * @param int|string $id identifiant de la séance
+     * @param string $modeltype type de fusion
+     * @param int|string $modelTemplateId
+     * @param string $format format du fichier de sortie
+     * @return string flux du fichier généré
+     */
+    public function fusion($id, $modeltype, $modelTemplateId = null, $format = 'pdf') {
+        $this->Behaviors->load('OdtFusion', array(
+            'id' => $id,
+            'fileNameSuffixe' => $id,
+            'modelTemplateId' => $modelTemplateId,
+            'modelOptions' => array('modelTypeName' => $modeltype)
+        ));
+        $this->odtFusion();
+        $content = $this->getOdtFusionResult($format);
+        $this->deleteOdtFusionResult();
+        $this->Behaviors->unload('OdtFusion');
+        return $content;
+    }
+
+    /**
+     * Ordonne la fusion et retourne le résultat sous forme de flux
+     * @param int|string $id identifiant de la séance
+     * @param string $modeltype type de fusion
+     * @param int|string $modelTemplateId
+     * @param string $outputdir fichier vers lequel faire la fusion
+     * @param string $format format du fichier de sortie
+     * @return array [filename => content]
+     */
+    public function fusionToFile($id, $modeltype, $modelTemplateId = null, $outputdir = TMP, $format = 'pdf') {
+        $this->Behaviors->load('OdtFusion', array(
+            'id' => $id,
+            'fileNameSuffixe' => $id,
+            'modelTemplateId' => $modelTemplateId,
+            'modelOptions' => array('modelTypeName' => $modeltype)
+        ));
+        $filename = $this->fusionName();
+        $this->odtFusion();
+        $content = $this->getOdtFusionResult($format);
+        $this->deleteOdtFusionResult();
+        $this->Behaviors->unload('OdtFusion');
+        $file = new File($outputdir . DS . $filename . '.' . $format, true);
+        $file->write($content);
+        return $file->path;
+    }
 }
