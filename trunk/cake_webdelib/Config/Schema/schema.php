@@ -242,7 +242,7 @@ class AppSchema extends CakeSchema {
 		'model' => array('type' => 'text', 'null' => true, 'default' => 'CronJob'),
 		'lock' => array('type' => 'boolean', 'null' => true),
 		'indexes' => array(
-			
+			'PRIMARY' => array('unique' => true, 'column' => 'id')
 		),
 		'tableParameters' => array()
 	);
@@ -492,6 +492,7 @@ class AppSchema extends CakeSchema {
 		'pv_sommaire' => array('type' => 'binary', 'null' => true),
 		'pv_complet' => array('type' => 'binary', 'null' => true),
 		'numero_depot' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'idelibre_id' => array('type' => 'text', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'seances_traitee' => array('unique' => false, 'column' => 'traitee'),
@@ -572,6 +573,9 @@ class AppSchema extends CakeSchema {
 		'gabarit_synthese' => array('type' => 'binary', 'null' => true),
 		'gabarit_acte' => array('type' => 'binary', 'null' => true),
 		'teletransmettre' => array('type' => 'boolean', 'null' => true, 'default' => true),
+		'gabarit_acte_name' => array('type' => 'text', 'null' => true),
+		'gabarit_projet_name' => array('type' => 'text', 'null' => true),
+		'gabarit_synthese_name' => array('type' => 'text', 'null' => true),
 		'indexes' => array(
 			'typeactes_id_key' => array('unique' => true, 'column' => 'id')
 		),
