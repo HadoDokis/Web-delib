@@ -54,7 +54,7 @@ class Cron extends AppModel
                 $libelle = '<span class="label label-important" title="Erreur(s) détectée(s) lors de l\'exécution, voir les détails de la tâche"><i class="fa fa-warning"></i> ' . __('Non exécutée : erreur', true) . '</span>';
                 break;
             default:
-                $libelle = '<span class="label" title="Statut indéfini, la tâche a t-elle déjà été exécutée ?"><i class="fa fa-question"></i> ' . __('Indéfini', true) . '</span>';
+                $libelle = '<span class="label" title="La tâche n\'a jamais été exécutée">' . __('En attente', true) . '</span>';
         }
         return $libelle;
     }
