@@ -4491,8 +4491,9 @@ class DeliberationsController extends AppController
     /**
      * fonction de fusion de plusieurs projets ou délibérations avec envoi du résultat vers le client
      * @param $ids
-     * @param $modelTemplateId
+     * @param integer $modelTemplateId
      * @param integer $cookieToken numéro de cookie du client pour masquer la fenêtre attendable
+     * @return CakeResponse
      */
     function _genereFusionRechercheToClient($ids, $modelTemplateId, $cookieToken) {
         // fusion du document
