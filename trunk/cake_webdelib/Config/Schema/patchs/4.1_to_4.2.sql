@@ -117,8 +117,10 @@ ALTER TABLE tdt_messages ADD COLUMN data BYTEA DEFAULT NULL;
 ALTER TABLE tdt_messages RENAME COLUMN reponse TO type_reponse;
 ALTER TABLE tdt_messages ALTER COLUMN type_reponse DROP NOT NULL;
 
-ALTER TABLE typeactes ADD COLUMN gabarit_acte_name VARCHAR;
-ALTER TABLE typeactes ADD COLUMN gabarit_projet_name VARCHAR;
-ALTER TABLE typeactes ADD COLUMN gabarit_synthese_name VARCHAR;
+ALTER TABLE typeactes ADD COLUMN gabarit_acte_name VARCHAR DEFAULT NULL;
+ALTER TABLE typeactes ADD COLUMN gabarit_projet_name VARCHAR DEFAULT NULL;
+ALTER TABLE typeactes ADD COLUMN gabarit_synthese_name VARCHAR DEFAULT NULL;
+
+ALTER TABLE seances ADD COLUMN idelibre_id VARCHAR DEFAULT NULL;
 
 COMMIT;

@@ -2288,18 +2288,12 @@ class Deliberation extends AppModel {
 
         return array('docPrincipale'=>$this->getDocument($this->id),'annexes'=>$this->getAnnexes($this->id));
     }
-    
-    function getDocument($acte_id, $extention='pdf'){
-        // fusion du document
-        $this->Behaviors->load('OdtFusion', array('id' => $acte_id));
-        $filename = $this->fusionName();
-        $this->odtFusion();
-        $dDocPrincipale=&$this->getOdtFusionResult();
-        $this->deleteOdtFusionResult();
 
-        return $dDocPrincipale;
+    function getDocument($acte_id, $format = 'pdf') {
+        // fusion du document
+        return $this->fusion($acte_id, null, $format);
     }
-    
+
     /* Retour les annexes à joindre au controle de légalité
      * 
      */
@@ -2368,4 +2362,51 @@ class Deliberation extends AppModel {
         return $success;
     }
 
+    /**
+     * Ordonne la fusion et retourne le résultat sous forme de flux
+     * @param int|string $id identifiant de la séance
+     * @param string $modeltype type de fusion
+     * @param int|string $modelTemplateId
+     * @param string $format format du fichier de sortie
+     * @return string flux du fichier généré
+     */
+    public function fusion($id, $modeltype, $modelTemplateId = null, $format = 'pdf') {
+        $this->Behaviors->load('OdtFusion', array(
+            'id' => $id,
+            'fileNameSuffixe' => $id,
+            'modelTemplateId' => $modelTemplateId,
+            'modelOptions' => array('modelTypeName' => $modeltype)
+        ));
+        $this->odtFusion();
+        $content = $this->getOdtFusionResult($format);
+        $this->deleteOdtFusionResult();
+        $this->Behaviors->unload('OdtFusion');
+        return $content;
+    }
+
+    /**
+     * Ordonne la fusion et retourne le résultat sous forme de flux
+     * @param int|string $id identifiant de la séance
+     * @param string $modeltype type de fusion
+     * @param int|string $modelTemplateId
+     * @param string $outputdir fichier vers lequel faire la fusion
+     * @param string $format format du fichier de sortie
+     * @return array [filename => content]
+     */
+    public function fusionToFile($id, $modeltype, $modelTemplateId = null, $outputdir = TMP, $format = 'pdf') {
+        $this->Behaviors->load('OdtFusion', array(
+            'id' => $id,
+            'fileNameSuffixe' => $id,
+            'modelTemplateId' => $modelTemplateId,
+            'modelOptions' => array('modelTypeName' => $modeltype)
+        ));
+        $filename = $this->fusionName();
+        $this->odtFusion();
+        $content = $this->getOdtFusionResult($format);
+        $this->deleteOdtFusionResult();
+        $file = new File($outputdir . DS . $filename . '.' . $format, true);
+        $file->write($content);
+        $this->Behaviors->unload('OdtFusion');
+        return $file->path;
+    }
 }

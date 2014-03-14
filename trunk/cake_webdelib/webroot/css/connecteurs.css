@@ -5,7 +5,9 @@ label {
     width: auto;
 }
 
-#configSignature fieldset, #configTdt fieldset {
+#configIdelibre fieldset,
+#configSignature fieldset,
+#configTdt fieldset {
     width: 33%;
     float: left;
 }
