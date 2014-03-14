@@ -1,9 +1,4 @@
 <?php
-$currentDir = dirname(__FILE__);
-
-/* Bases */
-Configure::write('WEBDELIB_URL', 'http://webdelib.adullact.org');
-
 /* Configuration du debug */
 Configure::write('debug', 0);
 /* Configuration session default 600 */
