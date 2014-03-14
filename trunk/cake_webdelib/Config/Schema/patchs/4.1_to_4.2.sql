@@ -123,4 +123,7 @@ ALTER TABLE typeactes ADD COLUMN gabarit_synthese_name VARCHAR DEFAULT NULL;
 
 ALTER TABLE seances ADD COLUMN idelibre_id VARCHAR DEFAULT NULL;
 
+--Récupération des annexes PDF source dans data
+UPDATE annexes SET data=data_pdf WHERE filetype='application/pdf';
+
 COMMIT;
