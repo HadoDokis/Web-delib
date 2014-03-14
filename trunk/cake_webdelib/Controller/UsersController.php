@@ -235,18 +235,19 @@ class UsersController extends AppController {
                 $this->request->data['Service']['Service'] = explode(',', $this->request->data['Service']['Service']);
 
             if ($this->User->save($this->data)) {
-                foreach ($this->data['Nature'] as $nature_id => $can) {
-                    $nature_id = substr($nature_id, 3, strlen($nature_id));
-                    $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
-                        'Ado.foreign_key' => $nature_id),
-                        'fields' => array('Ado.id'),
-                        'recursive' => -1));
+                if (!empty($this->data['Nature']))
+                    foreach ($this->data['Nature'] as $nature_id => $can) {
+                        $nature_id = substr($nature_id, 3, strlen($nature_id));
+                        $ado = $this->Ado->find('first', array('conditions' => array('Ado.model' => 'Typeacte',
+                            'Ado.foreign_key' => $nature_id),
+                            'fields' => array('Ado.id'),
+                            'recursive' => -1));
 
-                    if ($can)
-                        $this->ArosAdo->allow($aro['Aro']['id'], $ado['Ado']['id']);
-                    else
-                        $this->ArosAdo->deny($aro['Aro']['id'], $ado['Ado']['id']);
-                }
+                        if ($can)
+                            $this->ArosAdo->allow($aro['Aro']['id'], $ado['Ado']['id']);
+                        else
+                            $this->ArosAdo->deny($aro['Aro']['id'], $ado['Ado']['id']);
+                    }
                 if ($userDb['User']['profil_id'] != $this->data['User']['profil_id']) {
                     $this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'Profil', 'foreign_key' => $this->data['User']['profil_id']));
                 }

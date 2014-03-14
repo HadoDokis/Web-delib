@@ -16,7 +16,8 @@ class TypeactesController extends AppController {
     function index() {
         $this->Typeacte->Behaviors->attach('Containable');
         $typeactes = $this->Typeacte->find('all', array(
-            'contain' => array('Nature.libelle',
+            'contain' => array(
+                'Nature.libelle',
                 'Compteur.nom',
                 'Modelprojet.name',
                 'Modeldeliberation.name'),
