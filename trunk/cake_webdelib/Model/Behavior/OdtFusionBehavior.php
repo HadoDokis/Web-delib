@@ -70,10 +70,10 @@ class OdtFusionBehavior extends ModelBehavior {
         $model->modelTemplateOdtInfos->loadFromOdtBin($this->_modelTemplateContent);
     }
     
-  /** Retour la Fusion dans le format demandé
-   * 
-   * @param type $mimeType
-   * @return type
+  /**
+   * Retour la Fusion dans le format demandé
+   * @param string $mimeType
+   * @return string
    */
     function getOdtFusionResult(Model &$model, $mimeType='pdf'){
         App::uses('ConversionComponent', 'Controller/Component');
