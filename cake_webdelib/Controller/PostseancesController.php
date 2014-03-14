@@ -125,37 +125,22 @@ class PostseancesController extends AppController {
                 'recursive' => 0,
                 'fields' => array('Seance.id', 'Seance.pv_figes', 'Typeseance.modelpvsommaire_id', 'Typeseance.modelpvdetaille_id'),
                 'conditions' => array('Seance.id'=>$seanceId)));
-            if (empty($seance)) throw new Exception();
+            if (empty($seance)) throw new Exception("Séance introuvable");
 
             // fusion du pv sommaire
-            $this->Seance->Behaviors->load('OdtFusion', array(
-                'id' => $seanceId,
-                'modelTemplateId' => $seance['Typeseance']['modelpvsommaire_id'],
-                'modelOptions' => array('modelTypeName' => 'pvsommaire')));
-            $this->Seance->odtFusion();
-            $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'pdf');
-            unset($this->Seance->odtFusionResult);
-            if (empty($content)) throw new Exception();
+            $content = $this->Seance->fusion($seanceId, 'pvsommaire', $seance['Typeseance']['modelpvsommaire_id']);
             $seance['Seance']['pv_sommaire'] = &$content;
-            if (!$this->Seance->save($seance['Seance'], false)) throw new Exception();
+            if (!$this->Seance->save($seance['Seance'], false)) throw new Exception("Erreur lors de la sauvegarde du pv sommaire de la séance");
             unset($seance['Seance']['pv_sommaire']);
 
             // fusion du pv détaillé
             if ($seance['Typeseance']['modelpvsommaire_id'] != $seance['Typeseance']['modelpvdetaille_id']) {
-                unset($content);
-                $this->Seance->Behaviors->unload('OdtFusion');
-                $this->Seance->Behaviors->load('OdtFusion', array(
-                    'id' => $seanceId,
-                    'modelTemplateId' => $seance['Typeseance']['modelpvdetaille_id'],
-                    'modelOptions' => array('modelTypeName' => 'pvdetaille')));
-                $this->Seance->odtFusion();
-                $content = $this->Conversion->convertirFlux($this->Seance->odtFusionResult->content->binary, 'odt', 'pdf');
-                unset($this->Seance->odtFusionResult);
-                if (empty($content)) throw new Exception();
+                $content = $this->Seance->fusion($seanceId, 'pvdetaille', $seance['Typeseance']['modelpvdetaille_id']);
             }
             $seance['Seance']['pv_complet'] = &$content;
             $seance['Seance']['pv_figes'] = true;
-            if (!$this->Seance->save($seance['Seance'], false)) throw new Exception();
+            if (!$this->Seance->save($seance['Seance'], false)) throw new Exception("Erreur lors de la sauvegarde du pv détaillé de la séance");
+
             unset($seance);
             unset($content);
 
@@ -471,11 +456,7 @@ class PostseancesController extends AppController {
             $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
             $dom_seance->appendChild($document);
             // fusion du document de convocation
-            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$seance_id, 'modelOptions'=>array('modelTypeName'=>'convocation')));
-            $filename = $this->Seance->fusionName();
-            $this->Seance->odtFusion();
-            $zip->addFromString('convocation.pdf', $this->Seance->getOdtFusionResult());
-            $this->Seance->deleteOdtFusionResult();
+            $zip->addFromString('convocation.pdf', $this->Seance->fusion($seance_id, 'convocation'));
 
             //Noeud document[odj]
             $this->Progress->at(40, 'Génération de l\'ordre du jour...');
@@ -484,11 +465,7 @@ class PostseancesController extends AppController {
             $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
             $dom_seance->appendChild($document);
             // fusion du document de ordre du jour
-            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$seance_id, 'modelOptions'=>array('modelTypeName'=>'ordredujour')));
-            $filename = $this->Seance->fusionName();
-            $this->Seance->odtFusion();
-            $zip->addFromString('odj.pdf', $this->Seance->getOdtFusionResult());
-            $this->Seance->deleteOdtFusionResult();
+            $zip->addFromString('odj.pdf', $this->Seance->fusion($seance_id, 'ordredujour'));
 
             //Noeud document[pv_sommaire]
             $this->Progress->at(50, 'Ajout du PV sommaire...');
@@ -583,11 +560,7 @@ class PostseancesController extends AppController {
                     $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                     $doc->appendChild($document);
                     // fusion du rapport et ajout au zip
-                    $this->Deliberation->Behaviors->load('OdtFusion', array('id'=>$delib['Deliberation']['id'], 'modelOptions'=>array('modelTypeName'=>'rapport')));
-                    $filename = $this->Deliberation->fusionName();
-                    $this->Deliberation->odtFusion();
-                    $zip->addFromString('Rapports' . DS . $delib_filename, $this->Deliberation->getOdtFusionResult());
-                    $this->Deliberation->deleteOdtFusionResult();
+                    $zip->addFromString('Rapports' . DS . $delib_filename, $this->Deliberation->fusion($delib['Deliberation']['id'], 'rapport'));
                 }
 
                 //Ajout de la signature (XML+ZIP)
@@ -620,14 +593,14 @@ class PostseancesController extends AppController {
                             'recursive' => -1));
 
                         switch ($annex['Annex']['filetype']) {
-                            case 'application/pdf':
+                            case 'application/pdf' :
                                 $annexe_content = $annex['Annex']['data_pdf'];
                                 $annexe_filetype = 'application/pdf';
                                 $annexe_filename = $annex['Annex']['filename'];
                                 break;
 
-                            case 'application/vnd.oasis.opendocument.text':
-                                $annexe_content = $this->Conversion->convertirFlux($annex['Annex']['data'], 'pdf');
+                            case 'application/vnd.oasis.opendocument.text' :
+                                $annexe_content = $this->Conversion->convertirFlux($annex['Annex']['data'], 'odt', 'pdf');
                                 $annexe_filetype = 'application/pdf';
                                 $annexe_filename = str_replace('odt', 'pdf', $annex['Annex']['filename']);
                                 break;
@@ -723,11 +696,7 @@ class PostseancesController extends AppController {
             $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
             $dom_seance->appendChild($document);
             // fusion du document de convocation
-            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$seance_id, 'modelOptions'=>array('modelTypeName'=>'convocation')));
-            $filename = $this->Seance->fusionName();
-            $this->Seance->odtFusion();
-            $zip->addFromString('convocation.pdf', $this->Seance->getOdtFusionResult());
-            $this->Seance->deleteOdtFusionResult();
+            $zip->addFromString('convocation.pdf', $this->Seance->fusion($seance_id, 'convocation'));
 
             //Noeud document[odj]
             $this->Progress->at(40, 'Génération de l\'ordre du jour...');
@@ -736,11 +705,7 @@ class PostseancesController extends AppController {
             $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
             $dom_seance->appendChild($document);
             // fusion du document de ordre du jour
-            $this->Seance->Behaviors->load('OdtFusion', array('id'=>$seance_id, 'modelOptions'=>array('modelTypeName'=>'ordredujour')));
-            $filename = $this->Seance->fusionName();
-            $this->Seance->odtFusion();
-            $zip->addFromString('odj.pdf', $this->Seance->getOdtFusionResult());
-            $this->Seance->deleteOdtFusionResult();
+            $zip->addFromString('odj.pdf', $this->Seance->fusion($seance_id, 'ordredujour'));
 
             //Noeud document[pv_sommaire]
             $this->Progress->at(50, 'Ajout du PV sommaire...');
@@ -867,11 +832,7 @@ class PostseancesController extends AppController {
                     $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                     $doc->appendChild($document);
                     // fusion du rapport et ajout au zip
-                    $this->Deliberation->Behaviors->load('OdtFusion', array('id'=>$delib['Deliberation']['id'], 'modelOptions'=>array('modelTypeName'=>'rapport')));
-                    $filename = $this->Deliberation->fusionName();
-                    $this->Deliberation->odtFusion();
-                    $zip->addFromString('Rapports' . DS . $delib_filename, $this->Deliberation->getOdtFusionResult());
-                    $this->Deliberation->deleteOdtFusionResult();
+                    $zip->addFromString('Rapports' . DS . $delib_filename, $this->Deliberation->fusion($delib['Deliberation']['id'], 'rapport'));
                 }
 
                 //Ajout de la signature (XML+ZIP)
