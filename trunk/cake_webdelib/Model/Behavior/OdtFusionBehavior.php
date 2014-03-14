@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OdtFusion behavior class.
  *
@@ -13,7 +14,6 @@
  *  - modelTemplateOdtInfos : instance de la librairie ModelOdtValidator.Lib.phpOdtApi de manipulation des odt
  *
  */
-
 class OdtFusionBehavior extends ModelBehavior {
 
     // id de l'occurence en base de données à fusionner
@@ -40,6 +40,7 @@ class OdtFusionBehavior extends ModelBehavior {
      *  'fileNameSuffixe' : suffixe du nom de la fusion (défaut : $id)
      *  'modelTemplateId' : id du template à utiliser
      *  'modelOptions' : options gérées par la classe appelante
+     * @throws Exception
      * @return void
      */
     public function setup(Model $model, $options = array()) {
@@ -50,14 +51,14 @@ class OdtFusionBehavior extends ModelBehavior {
         if (empty($this->_modelTemplateId))
             $this->_modelTemplateId = $model->getModelTemplateId($this->_id, $this->_modelOptions);
         if (empty($this->_modelTemplateId))
-            throw new Exception('identifiant du modèle d\'édition non trouvé pour id:'.$this->_id.' du model de données '.$model->alias);
+            throw new Exception('identifiant du modèle d\'édition non trouvé pour id:' . $this->_id . ' du model de données ' . $model->alias);
         $myModeltemplate = ClassRegistry::init('ModelOdtValidator.Modeltemplate');
         $modelTemplate = $myModeltemplate->find('first', array(
             'recursive' => -1,
             'fields' => array('name', 'content'),
             'conditions' => array('id' => $this->_modelTemplateId)));
         if (empty($modelTemplate))
-            throw new Exception('modèle d\'édition non trouvé en base de données id:'.$this->_id);
+            throw new Exception('modèle d\'édition non trouvé en base de données id:' . $this->_id);
         $this->_modelTemplateName = $modelTemplate['Modeltemplate']['name'];
         $this->_modelTemplateContent = $modelTemplate['Modeltemplate']['content'];
 
@@ -69,33 +70,31 @@ class OdtFusionBehavior extends ModelBehavior {
         $model->modelTemplateOdtInfos = new phpOdtApi();
         $model->modelTemplateOdtInfos->loadFromOdtBin($this->_modelTemplateContent);
     }
-    
-  /**
-   * Retour la Fusion dans le format demandé
-   * @param string $mimeType
-   * @return string
-   */
-    function getOdtFusionResult(Model &$model, $mimeType='pdf'){
+
+    /**
+     * Retour la Fusion dans le format demandé
+     * @param string $mimeType
+     * @return string
+     */
+    function getOdtFusionResult(Model &$model, $mimeType = 'pdf') {
         App::uses('ConversionComponent', 'Controller/Component');
         App::uses('Component', 'Controller');
         // initialisations
         $collection = new ComponentCollection();
         $this->Conversion = new ConversionComponent($collection);
-        try{
+        try {
             $content = $this->Conversion->convertirFlux($model->odtFusionResult->content->binary, 'odt', $mimeType);
+        } catch (ErrorException $e) {
+            $this->log('Erreur lors de la conversion : ' . $e->getCode(), 'error');
         }
-        catch (ErrorException $e)
-        {
-            $this->log('Erreur lors de la conversion : '.$e->getCode(), 'error');
-        }
-        
+
         return $content;
     }
-    
+
     /**
      * Suppression en mémoire du retour de la fusion
      */
-    function deleteOdtFusionResult(Model &$model){
+    function deleteOdtFusionResult(Model &$model) {
         unset($model->odtFusionResult->content->binary);
     }
 
@@ -114,14 +113,16 @@ class OdtFusionBehavior extends ModelBehavior {
             'id' => $this->_id,
             'fileNameSuffixe' => $this->_fileNameSuffixe,
             'modelTemplateId' => $this->_modelTemplateId,
-            'modelOptions' => $this->_modelOptions);
+            'modelOptions' => $this->_modelOptions
+        );
+
         if (!empty($options['modelOptions']) && !empty($this->_modelOptions))
             $options['modelOptions'] = array_merge($this->_modelOptions, $options['modelOptions']);
         $options = array_merge($defaultOptions, $options);
 
         // affectation des variables de la classe
         $this->_id = $options['id'];
-        $this->_fileNameSuffixe = empty($options['fileNameSuffixe'])?$options['id']:$options['fileNameSuffixe'];
+        $this->_fileNameSuffixe = empty($options['fileNameSuffixe']) ? $options['id'] : $options['fileNameSuffixe'];
         $this->_modelTemplateId = $options['modelTemplateId'];
         $this->_modelOptions = $options['modelOptions'];
     }
@@ -131,8 +132,8 @@ class OdtFusionBehavior extends ModelBehavior {
      * Génère une exception en cas d'erreur
      * @param Model $model modele du comportement
      * @param array $options tableau des parmètres optionnels :
-     * 	'id' : identifiant de l'occurence en base de données (défaut : $this->_id)
-     * 	'fileNameSuffixe' : suffixe du nom de la fusion (défaut : $id)
+     *    'id' : identifiant de l'occurence en base de données (défaut : $this->_id)
+     *    'fileNameSuffixe' : suffixe du nom de la fusion (défaut : $id)
      *  'modelOptions' : options gérées par la classe appelante
      * @return string
      * @throws Exception en cas d'erreur
@@ -141,11 +142,11 @@ class OdtFusionBehavior extends ModelBehavior {
         // initialisations
         $this->_setupOptions($options);
         if (empty($this->_modelTemplateId))
-            throw new Exception('détermination du nom de la fusion ->modèle d\'édition indéterminé');
+            throw new Exception('détermination du nom de la fusion -> modèle d\'édition indéterminé');
 
         // contitution du nom
         $fusionName = str_replace(array(' ', 'é', 'è', 'ê', 'ë', 'à'), array('_', 'e', 'e', 'e', 'e', 'a'), $this->_modelTemplateName);
-        return preg_replace('/[^a-zA-Z0-9-_\.]/','', $fusionName).(empty($this->_fileNameSuffixe)?'':'_').$this->_fileNameSuffixe;
+        return preg_replace('/[^a-zA-Z0-9-_\.]/', '', $fusionName) . (empty($this->_fileNameSuffixe) ? '' : '_') . $this->_fileNameSuffixe;
     }
 
     /**
@@ -153,8 +154,8 @@ class OdtFusionBehavior extends ModelBehavior {
      * Le résultat de la fusion est un odt dont le contenu est stocké dans la variable du model odtFusionResult
      * @param Model $model modele du comportement
      * @param array $options tableau des parmètres optionnels :
-     * 	'id' : identifiant de l'occurence en base de données (fusionNamedéfaut : $this->_id)
-     *  'modelOptions' : options gérées par la classe appelante
+     *      'id' : identifiant de l'occurence en base de données (fusionNamedéfaut : $this->_id)
+     *      'modelOptions' : options gérées par la classe appelante
      * @return void
      * @throws Exception en cas d'erreur
      */
@@ -165,15 +166,15 @@ class OdtFusionBehavior extends ModelBehavior {
             throw new Exception('détermination du nom de la fusion -> modèle d\'édition indéterminé');
 
         // chargement des classes php de Gedooo
-        include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
-        include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
-        include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
-        include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
-        include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_PartType.class');
-        include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FusionType.class');
-        include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixType.class');
-        include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-        include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
+        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
+        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
+        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
+        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_PartType.class');
+        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_FusionType.class');
+        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_MatrixType.class');
+        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
+        include_once(ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
 
         // nouveau document odt à partir du model
         $oTemplate = new GDO_ContentType("",
@@ -196,19 +197,19 @@ class OdtFusionBehavior extends ModelBehavior {
 
         // appel du webservice de fusion
         $oService = new SoapClient(Configure::read('GEDOOO_WSDL'),
-            array("cache_wsdl"=>WSDL_CACHE_NONE,
-                "exceptions"=> 1,
-                "trace"=>1,
-                "classmap"=>array(
+            array("cache_wsdl" => WSDL_CACHE_NONE,
+                "exceptions" => 1,
+                "trace" => 1,
+                "classmap" => array(
                     "FieldType" => "GDO_FieldType",
                     "ContentType" => "GDO_ContentType",
                     "DrawingType" => "GDO_DrawingType",
                     "FusionType" => "GDO_FusionType",
                     "IterationType" => "GDO_IterationType",
                     "PartType" => "GDO_PartType",
-                    "MatrixType"=>"GDO_MatrixType",
-                    "MatrixRowType"=> "GDO_MatrixRowType",
-                    "MatrixTitleType"=>"GDO_MatrixTitleType")));
+                    "MatrixType" => "GDO_MatrixType",
+                    "MatrixRowType" => "GDO_MatrixRowType",
+                    "MatrixTitleType" => "GDO_MatrixTitleType")));
         $model->odtFusionResult = $oService->Fusion($oFusion);
 
         // libération explicite de la mémoire
