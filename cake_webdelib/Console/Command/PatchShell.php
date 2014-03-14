@@ -180,7 +180,11 @@ class PatchShell extends AppShell {
         $sql_files = array();
 
         $sql_files['Webdelib42'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.1_to_4.2.sql';
-        $sql_files['Plugin.ModelOdtValidator'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'FormatValidator-v1.sql';
+        $sql_files['Plugin.ModelOdtValidator.create'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'create.sql';
+        $sql_files['Plugin.ModelOdtValidator.types'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modeltypes.sql';
+        $sql_files['Plugin.ModelOdtValidator.sections'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelsections.sql';
+        $sql_files['Plugin.ModelOdtValidator.variables'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelvariables.sql';
+        $sql_files['Plugin.ModelOdtValidator.validations'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelvalidations.sql';
         $sql_files['Plugin.Cakeflow3002'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.0.01_to_v3.0.02.sql';
         $sql_files['Plugin.Cakeflow31'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
 
