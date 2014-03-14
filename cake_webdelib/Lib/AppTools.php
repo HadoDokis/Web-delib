@@ -1,12 +1,11 @@
 <?php
-/*
+
+/**
  * Created on 5 avr. 2011
  *
  * Librairie regroupant des fonctions hors MVC
  */
-
-class AppTools
-{
+class AppTools {
 
     /**
      * Ajout ou soustrait un délai (xs:duration) à une date
@@ -15,10 +14,8 @@ class AppTools
      * @param string $format format de sortie de la date
      * @param string $operateur 'add' pour l'ajout et 'sub' pour la soustraction du délai
      * @return string résultat formaté ou null en cas d'erreur
-     *
      */
-    public static function addSubDurationToDate($date, $duration, $format = 'Y-m-d', $operateur = 'add')
-    {
+    public static function addSubDurationToDate($date, $duration, $format = 'Y-m-d', $operateur = 'add') {
         // initialisation
         $ret = null;
         try {
@@ -41,8 +38,7 @@ class AppTools
      * @param string $format format de sortie utilisée par la fonction date()
      * @return string date mise en forme
      */
-    public static function timeFormat($dateBD, $format = 'Y-m-d')
-    {
+    public static function timeFormat($dateBD, $format = 'Y-m-d') {
         if (empty($dateBD)) return '';
         $dateTime = strtotime($dateBD);
         return date($format, $dateTime);
@@ -53,8 +49,7 @@ class AppTools
      * @param string $duration délai sous la forme xs:duration
      * @return string délai mise en forme litérale
      */
-    public static function durationToString($duration)
-    {
+    public static function durationToString($duration) {
         // initialisation
         $format = array();
         if (empty($duration)) return '';
@@ -89,8 +84,7 @@ class AppTools
      * @param string $duration délai sous la forme xs:duration
      * @return array délai sous forme de tableau array('year', 'month', 'day', 'hour', 'minute', 'seconde')
      */
-    public static function durationToArray($duration)
-    {
+    public static function durationToArray($duration) {
         // initialisation
         $ret = array('year' => 0, 'month' => 0, 'day' => 0, 'hour' => 0, 'minute' => 0, 'seconde' => 0);
 
@@ -112,8 +106,7 @@ class AppTools
      * @param array $duration délai sous forme de tableau array('year', 'month', 'day', 'hour', 'minute', 'seconde')
      * @return string délai sous la forme xs:duration
      */
-    public static function arrayToDuration($duration)
-    {
+    public static function arrayToDuration($duration) {
         // initialisation
         $ret = $periode = $temps = '';
         $defaut = array('year' => 0, 'month' => 0, 'day' => 0, 'hour' => 0, 'minute' => 0, 'seconde' => 0);
@@ -137,37 +130,37 @@ class AppTools
         return $ret;
     }
 
-    public static function url_exists($url)
-    {
+    public static function url_exists($url) {
         if (!$fp = curl_init($url)) return false;
         return true;
     }
-    
-    /** Retourne un répertoire temporaire disponible dans le dossier passé en parametre
-     * 
-     * @return boolean ou string
+
+    /**
+     * Retourne un répertoire temporaire disponible dans le dossier passé en parametre
+     * @param string $patchDir
+     * @return bool|string
      */
-    public static function newTmpDir($patchDir){
-        
+    public static function newTmpDir($patchDir) {
+
         App::uses('Folder', 'Utility');
         App::uses('File', 'Utility');
 
         //Création du répertoire temporaire par la fonction tempnam
-        $outputDir=tempnam($patchDir,'');
+        $outputDir = tempnam($patchDir, '');
         $file = new File($outputDir, false, 0777);
         $file->delete();
-        if(!$file->exists()){
-            $folder= new Folder($outputDir, true, 0777);
-            
+        if (!$file->exists()) {
+            $folder = new Folder($outputDir, true, 0777);
+
             return $outputDir;
         }
-        
+
         return false;
     }
-    
-    public static function getNameFile($file){
+
+    public static function getNameFile($file) {
         $info = pathinfo($file);
-        return  basename($file,'.'.$info['extension']);
+        return basename($file, '.' . $info['extension']);
     }
 }
 

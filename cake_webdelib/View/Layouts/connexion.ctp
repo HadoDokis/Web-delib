@@ -28,17 +28,17 @@ $cakeDescription = __d('webdelib', 'Webdelib');
     echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
     echo $this->Html->meta('icon');
 
-    echo $this->Html->css('jquery.jgrowl.min');
-    echo $this->Html->css('bootstrap.min');
-    echo $this->Html->css('font-awesome.min');
+    echo $this->Html->css('/libs/jgrowl/jquery.jgrowl.min');
+    echo $this->Html->css('/libs/bootstrap/css/bootstrap.min');
+    echo $this->Html->css('/libs/font-awesome/css/font-awesome.min');
     echo $this->Html->css('webdelib');
     echo $this->Html->css('connexion');
 
-    echo $this->Html->script('jquery-1.10.2.min');
-    echo $this->Html->script('modernizr.min');
-    echo $this->Html->script('libs/bootstrap.min');
-    echo $this->html->script('jquery.jgrowl.min');
-    echo $this->html->script('jquery.placeholder.js', true);
+    echo $this->Html->script('/libs/modernizr/modernizr.min');
+    echo $this->Html->script('/libs/jquery/jquery-1.10.2.min');
+    echo $this->Html->script('/libs/bootstrap/js/bootstrap.min');
+    echo $this->html->script('/libs/jgrowl/jquery.jgrowl.min');
+    echo $this->html->script('jquery.placeholder.js');
     echo $this->Html->script('utils');
 
     echo $this->fetch('meta');
