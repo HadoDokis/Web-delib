@@ -33,7 +33,7 @@ foreach ($this->data as $rownum => $rowElement) {
         $verrou = $this->Html->link('<i class="fa fa-lock"></i>', array('action' => 'unlock', $rowElement['Cron']['id']), array('escape' => false, 'title' => 'Devérrouiller la tâche', 'style'=>'color:white'));
         $rowElement['Cron']['statusLibelle'] = $this->Html->tag('span', "$verrou Vérrouillée", array('class'=>'label label-important', 'title'=>"La tâche est vérrouillée, ce qui signifie qu'elle est en cours d'exécution ou dans un état bloqué suite à une erreur"));
     }
-    echo $this->Html->tag('td', $rowElement['Cron']['statusLibelle'], array('style' => 'text-align:right;'));
+    echo $this->Html->tag('td', $rowElement['Cron']['statusLibelle'], array('style' => 'text-align:center;'));
     echo $this->Html->tag('td', $rowElement['Cron']['nom']);
     echo $this->Html->tag('td', $this->Time->format("d-m-Y à H:i:s", $rowElement['Cron']['next_execution_time']));
     echo $this->Html->tag('td', $rowElement['Cron']['durationLibelle']);
