@@ -18,7 +18,7 @@ class Typeacte extends AppModel
             'foreignKey' => 'modeleprojet_id'),
         'Modeldeliberation' => array(
             'className' => 'ModelOdtValidator.Modeltemplate',
-            'conditions' => array('Modelprojet.modeltype_id' => array(MODEL_TYPE_TOUTES, MODEL_TYPE_DELIBERATION)),
+            'conditions' => array('Modelprojet.modeltype_id' => array(MODEL_TYPE_TOUTES, MODEL_TYPE_PROJET, MODEL_TYPE_DELIBERATION)),
             'foreignKey' => 'modelefinal_id'),
     );
     public $hasMany = array('Deliberation');
