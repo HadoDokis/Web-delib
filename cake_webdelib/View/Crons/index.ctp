@@ -1,9 +1,9 @@
 <?php
 $superadmin = false;
 echo $this->Html->css('crons');
-echo $this->Html->tag('h1', __('Liste des tâches planifiées', true));
+echo $this->Html->tag('h1', __('Liste des tâches automatiques', true));
 
-echo $this->Html->tag('table', null, array('cellpadding' => '0', 'cellspacing' => '0', 'class' => "table table-bordered table-hover"));
+echo $this->Html->tag('table', null, array('class' => "table table-bordered table-hover"));
 // initialisation de l'entête du tableau
 $listeColonnes = array();
 $listeColonnes[] = __('Etat', true);

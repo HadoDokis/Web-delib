@@ -149,8 +149,8 @@ $webDelib = array(
             'link' => 'connecteurs',
             'subMenu' => array(
                 'items' => array(
-                    'Gestion des connecteurs' => array('link' => '/connecteurs/index'),
-                    'Gestion des crons' => array('link' => '/crons/index'),
+                    'Configuration des connecteurs' => array('link' => '/connecteurs/index'),
+                    'Tâches automatiques' => array('link' => '/crons/index'),
                     'Règles de validation (modèles)' => array('link' => '/model_odt_validator/modelvalidations/index'),
                 )
             )
