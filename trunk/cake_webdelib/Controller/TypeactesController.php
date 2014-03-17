@@ -118,7 +118,7 @@ class TypeactesController extends AppController {
                 if (!empty($this->request->data['Typeacte']['gabarit_projet_upload']) && $this->request->data['Typeacte']['gabarit_projet_upload']['error'] != 4) {
                     $this->request->data['Typeacte']['gabarit_projet'] = file_get_contents($this->request->data['Typeacte']['gabarit_projet_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_projet_name'] = $this->request->data['Typeacte']['gabarit_projet_upload']['name'];
-                } elseif ($this->request->data['Typeacte']['gabarit_projet_upload_erase']) {
+                } elseif (!empty($this->request->data['Typeacte']['gabarit_projet_upload_erase'])) {
                     $this->request->data['Typeacte']['gabarit_projet'] = null;
                     $this->request->data['Typeacte']['gabarit_projet_name'] = null;
                 }
@@ -126,7 +126,7 @@ class TypeactesController extends AppController {
                 if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4) {
                     $this->request->data['Typeacte']['gabarit_synthese'] = file_get_contents($this->request->data['Typeacte']['gabarit_synthese_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_synthese_name'] = $this->request->data['Typeacte']['gabarit_synthese_upload']['name'];
-                } elseif ($this->request->data['Typeacte']['gabarit_synthese_upload_erase']) {
+                } elseif (!empty($this->request->data['Typeacte']['gabarit_synthese_upload_erase'])) {
                     $this->request->data['Typeacte']['gabarit_synthese'] = null;
                     $this->request->data['Typeacte']['gabarit_synthese_name'] = null;
                 }
@@ -134,7 +134,7 @@ class TypeactesController extends AppController {
                 if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4) {
                     $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_acte_name'] = $this->request->data['Typeacte']['gabarit_acte_upload']['name'];
-                } elseif (empty($this->request->data['Typeacte']['gabarit_acte_upload_erase'])) {
+                } elseif (!empty($this->request->data['Typeacte']['gabarit_acte_upload_erase'])) {
                     $this->request->data['Typeacte']['gabarit_acte'] = null;
                     $this->request->data['Typeacte']['gabarit_acte_name'] = null;
                 }
@@ -146,6 +146,7 @@ class TypeactesController extends AppController {
                     ),
                     'fields' => array('Ado.id'),
                     'recursive' => -1));
+
                 if ($this->Typeacte->save($this->data)) {
                     $this->Ado->id = $ado['Ado']['id'];
                     $this->Ado->saveField('alias', 'Typeacte:' . $this->data['Typeacte']['libelle']);
