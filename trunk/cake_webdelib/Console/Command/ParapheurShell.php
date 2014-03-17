@@ -42,8 +42,7 @@ class ParapheurShell extends Shell {
             $typeacte = $this->Deliberation->Typeacte->find('first', array('conditions' => array('Typeacte.id' => $delib['Deliberation']['typeacte_id'])));
             if ($typeacte['Nature']['code'] != 'DE')
                 $compteur_id = $typeacte['Typeacte']['compteur_id'];
-            $objetDossier = $this->Parafwebservice->handleObject($delib['Deliberation']['objet']);
-            $this->_checkEtatParapheur($delib['Deliberation']['id'], $objetDossier, false, $compteur_id);
+            $this->_checkEtatParapheur($delib['Deliberation']['id'], $delib['Deliberation']['objet'], false, $compteur_id);
         }
     }
 
