@@ -9,7 +9,8 @@ class MaintenanceShell extends AppShell {
 
     public $tasks = array(
         'Tdt',
-        'Gedooo'
+        'Gedooo',
+        'AnnexeConversion'
     );
     public $uses = array('Annex', 'Deliberation','CronJob');
 
@@ -65,10 +66,16 @@ class MaintenanceShell extends AppShell {
                         'short' => 'i',
                         'help' => 'Conversion des annexes d\'un acte.'
                     ),
+                    'all' => array(
+                        'name' => 'all',
+                        'required' => false,
+                        'short' => 'a',
+                        'help' => 'Conversion de toute les annexes de la base de donnée.',
+                    )
                 )
             )
         ));
-
+        
         return $parser;
     }
     
@@ -80,14 +87,32 @@ class MaintenanceShell extends AppShell {
     public function conversionAnnexe()
     {
         $time_start = microtime(true);
-        $this->out("Délibération id : " . $this->params['id'], 1, Shell::VERBOSE);
-        if (!empty($this->params['id']))
-            $this->CronJob->convertionAnnexesJob($this->params['id']);
+       
+        if (!empty($this->params['id'])){
+            $this->out("Délibération id : " . $this->params['id'], 1, Shell::VERBOSE);
+            $this->CronJob->convertionAnnexesJob($this->params['id'], true);
+        }
+        else{
+            $annexes = $this->Annex->find('all', array('fields' => array('id', 'foreign_key'),
+                'condition' => array('OR'=>array('joindre_fusion'=>true,'joindre_ctrl_legalite'=>TRUE)),
+                'order' => 'id ASC',
+                'recursive' => -1));
+
+            $i = 0;
+            foreach ($annexes as $annexe) {
+                $i++;
+                $this->out('Generation id:' . $annexe['Annex']['id'] . '...');
+                $return = $this->CronJob->convertionAnnexesJob($annexe['Annex']['foreign_key'], true);
+                $this->out($return . "\n");
+                $this->out('Sauvegarde Terminée id: ' . $annexe['Annex']['id'] . "\n");
+            }
+            $this->out('Generation des annexes en odt Terminée (' . $i . ' modifications)');
+        }
         
         $time_end = microtime(true);
         $this->out("Temps pour la conversion : " . round($time_end - $time_start) . ' secondes', 1, Shell::VERBOSE);
     }
-
+    
     /**
      * Vérifie la compatibilité des textes en base avec Gedooo,
      * - textes de projets valides ?

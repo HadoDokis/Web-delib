@@ -137,7 +137,7 @@ class CronJob extends AppModel {
     /**
      * @return string
      */
-    public function convertionAnnexesJob($delib_id=NULL)
+    public function convertionAnnexesJob($delib_id=NULL, $refresh=false)
     {
         try {
             //Import des modèles
@@ -154,11 +154,15 @@ class CronJob extends AppModel {
                if(!empty($delib_id))
             $condition['foreign_key']=$delib_id;
             
+            if($refresh)
+            $condition['AND']=array('OR'=>array('joindre_ctrl_legalite'=>TRUE, 'joindre_fusion'=>1));
+            else
             $condition['AND']=array('OR'=>array(    
                                                 array('AND'=>array('joindre_ctrl_legalite'=>TRUE,'data_pdf'=>NULL)),
                                                 array('AND'=>array('joindre_fusion'=>1,'edition_data'=>NULL))
                                                 )
             );
+   
             
             $annexes = $this->Annex->find('all', array(
                 'fields' => array('id','data','filename','filetype','joindre_ctrl_legalite','joindre_fusion'),
@@ -188,11 +192,11 @@ class CronJob extends AppModel {
             }
             
             if (empty($annexes))
-                return Cron::MESSAGE_FIN_EXEC_SUCCES . "Aucune annexe à convertir";
+                return Cron::MESSAGE_FIN_EXEC_SUCCES . " Aucune annexe à convertir";
             else
-                return Cron::MESSAGE_FIN_EXEC_SUCCES . "Annexe convertie(s):\n\n" . count($annexes);
+                return Cron::MESSAGE_FIN_EXEC_SUCCES . " Annexe convertie(s):\n\n" . count($annexes);
         } catch (Exception $e) {
-            return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage().' id='.(isset($this->Annex->id)?$this->Annex->id:'Inconnu');
+            return Cron::MESSAGE_FIN_EXEC_ERROR .' '. $e->getMessage().' id='.(isset($this->Annex->id)?$this->Annex->id:'Inconnu');
         }
     }
 

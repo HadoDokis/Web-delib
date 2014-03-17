@@ -143,7 +143,7 @@ class PatchShell extends AppShell {
             )
         ));
 
-		$parser->addSubcommand('4103to4104', array(
+        $parser->addSubcommand('4103to4104', array(
             'help' => __('Application du patch de mise à jour de 4.1.03 à 4.1.04.'),
             'parser' => array(
                 'options' => array(
@@ -164,6 +164,36 @@ class PatchShell extends AppShell {
                 )
             )
         ));
+        
+        $parser->addSubcommand('41to42', array(
+            'help' => __('Application du patch de mise à jour de 4.1.04 à 4.2.'),
+            'parser' => array(
+                'options' => array(
+                    'classification' => array(
+                        'name' => 'classification',
+                        'required' => false,
+                        'short' => 'c',
+                        'help' => 'Mise à jour de classification.',
+                        'boolean' => true
+                    ),
+                    'Schema' => array(
+                        'name' => 'Schema',
+                        'required' => false,
+                        'short' => 'u',
+                        'help' => 'Mise à jour du schema de bdd',
+                        'boolean' => true
+                    ),
+                    'AnnexeConversion' => array(
+                        'name' => 'AnnexeConversion',
+                        'required' => false,
+                        'short' => 'c',
+                        'help' => 'Conversion des annnexes en odt',
+                        'boolean' => true
+                    )
+                )
+            )
+        ));
+                
         return $parser;
     }
 
@@ -178,16 +208,16 @@ class PatchShell extends AppShell {
         //2° Passage des scripts sql de migration
         $this->out("\nPassage des patchs de mise à jour de la base de données...");
         $sql_files = array();
-
         $sql_files['Webdelib42'] = APP.'Config'.DS.'Schema'.DS.'patchs'.DS.'4.1_to_4.2.sql';
         $sql_files['Plugin.ModelOdtValidator.create'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'create.sql';
         $sql_files['Plugin.ModelOdtValidator.types'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modeltypes.sql';
         $sql_files['Plugin.ModelOdtValidator.sections'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelsections.sql';
         $sql_files['Plugin.ModelOdtValidator.variables'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelvariables.sql';
         $sql_files['Plugin.ModelOdtValidator.validations'] = APP.'Plugin'.DS.'ModelOdtValidator'.DS.'Config'.DS.'Schema'.DS.'modelvalidations.sql';
-        $sql_files['Plugin.Cakeflow3002'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.0.01_to_v3.0.02.sql';
         $sql_files['Plugin.Cakeflow31'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
+        //$sql_files['Plugin.Cakeflow31'] = APP.'Plugin'.DS.'Cakeflow'.DS.'Config'.DS.'Schema'.DS.'patchs'.DS.'cakeflow_v3.0_to_v3.1.sql';
 
+        
         $this->Sql->execute();
         $this->Sql->begin();
         $success = true;
@@ -199,15 +229,12 @@ class PatchShell extends AppShell {
                 break;
             }
         }
+        
         if ($success){
             $this->Sql->commit();
-            //3° Trouver l'attribut etape_id des visas en cours
-            $this->out('Mise à jour des données CakeFlow...');
-            $this->Cakeflow->findVisaEtapeId();
-
             //4° Copier l'attribut president_id des Séances délibérantes dans les Délibérations associées
-            $this->out('Copie de l\'attribut president_id des séances vers les délibérations...');
-            $this->CopyPresidentId->execute();
+            /*$this->out('Copie de l\'attribut president_id des séances vers les délibérations...');
+            $this->CopyPresidentId->execute();*/
 
             $this->footer('<important>Patch de la version 4.1.xx vers la 4.2 accompli avec succès !</important>');
         }else
