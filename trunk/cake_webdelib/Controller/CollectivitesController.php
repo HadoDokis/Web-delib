@@ -50,9 +50,7 @@ class CollectivitesController extends AppController {
     }
 
     function setLogo($id = null) {
-        if (empty($this->data)) {
-            $this->data = $this->Collectivite->read(null, $id);
-        } else if (is_uploaded_file($this->data['Image']['logo']['tmp_name'])) {
+        if (is_uploaded_file($this->data['Image']['logo']['tmp_name'])) {
             $type_file = $this->data['Image']['logo']['type'];
             if (!strstr($type_file, 'jpg') && !strstr($type_file, 'jpeg')) {
                 $this->Session->setFlash("Le fichier n'est pas une image au format jpg/jpeg");
