@@ -57,6 +57,7 @@ class AppController extends Controller {
                 && stripos($this->params->here, 'ajax') === false
                 && stripos($this->params->here, 'download') === false
                 && stripos($this->params->here, 'genere') === false
+                && stripos($this->params->here, 'files/') === false
                 && stripos($this->params->here, 'deliberations/classification') === false
             ) {
                 //Ajoute l'url courante au début du tableau

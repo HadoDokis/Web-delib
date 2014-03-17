@@ -2,12 +2,13 @@
 <?php echo $this->Form->create('Collectivite', array('url' => array('action' => 'edit', $this->Html->value('Collectivite.id')), 'type' => 'file')); ?>
 <div class="required">
     <?php
-    if (isset($entities))
+    if (isset($entities)){
         echo $this->Form->input('Collectivite.id_entity', array('options' => $entities, 'selected' => $selected, 'label' => 'Nom'));
+        echo '<div class="spacer"></div>';
+    }
     else
         echo $this->Form->input('Collectivite.nom', array('label' => 'Nom'));?>
 </div>
-<div class="spacer"></div>
 <div class="optional">
     <?php
     echo $this->Form->input('Collectivite.adresse', array('label' => 'Adresse', 'size' => '30'));
@@ -18,12 +19,17 @@
     ?>
 </div>
 <div class="submit">
-    <?php $this->Html2->boutonsSaveCancel(); ?>
+    <?php
+    echo $this->Html->tag('div', null, array('class' => 'btn-group', 'style' => 'margin-top:10px;'));
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $previous, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
+    echo $this->Form->button('<i class="fa fa-save"></i> Enregistrer', array('type' => 'submit', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer les modifications'));
+    echo $this->Html->tag('/div', null);
+    ?>
 </div>
 <?php echo $this->Form->end(); ?>
 <style>
     label {
-        padding-top: 5px;
+        line-height: 25px;
     }
 </style>
 <script>
