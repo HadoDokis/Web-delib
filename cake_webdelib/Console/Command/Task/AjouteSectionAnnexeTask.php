@@ -14,6 +14,8 @@ App::uses('Modeltemplate', 'ModelOdtValidator.Model');
 App::uses('phpOdtApi', 'ModelOdtValidator.Lib');
 class AjouteSectionAnnexeTask extends Shell {
     
+    public $uses = array('Annex','ModelOdtValidator.Modeltemplate');
+    
     public function execute() {
 
         $this->Modeltemplate = new Modeltemplate;
