@@ -2280,18 +2280,18 @@ class Deliberation extends AppModel {
         if (!empty($delib['Deliberation']['president_id']))
             $this->President->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['president_id']);
     }
-    
-    function delegToParapheurDocument(){
-        
+
+    function delegToParapheurDocument() {
+
         if (empty($this->id))
             throw new Exception('délibération id n\'existe pas');
 
-        return array('docPrincipale'=>$this->getDocument($this->id),'annexes'=>$this->getAnnexes($this->id));
+        return array('docPrincipale' => $this->getDocument($this->id), 'annexes' => $this->getAnnexes($this->id));
     }
 
     function getDocument($acte_id, $format = 'pdf') {
         // fusion du document
-        return $this->fusion($acte_id, null, $format);
+        return $this->fusion($acte_id, null, null, $format);
     }
 
     /* Retour les annexes à joindre au controle de légalité
