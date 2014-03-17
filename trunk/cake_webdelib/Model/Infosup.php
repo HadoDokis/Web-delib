@@ -392,7 +392,7 @@ class Infosup extends AppModel
                     'content' => $ele['Infosuplistedef']['nom']);
             } elseif ($infosup['Infosupdef']['type'] == 'listmulti') {
                 $elts = $this->Infosupdef->Infosuplistedef->find('all', array(
-                    'conditions' => array('id' =>  explode(',', str_replace("'",'', $infosup['text']))),
+                    'conditions' => array('id' =>  explode(',', str_replace("'",'', $infosup['Infosup']['text']))),
                     'fields' => array('nom'),
                     'recursive' => -1
                 ));
