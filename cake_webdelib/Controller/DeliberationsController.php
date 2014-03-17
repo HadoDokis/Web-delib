@@ -334,7 +334,7 @@ class DeliberationsController extends AppController
             $finfo = new finfo(FILEINFO_MIME_TYPE);
             if (!empty($typeacte['Typeacte']['gabarit_projet'])){
                 $this->request->data['Deliberation']['texte_projet'] = $typeacte['Typeacte']['gabarit_projet'];
-                $this->request->data['Deliberation']['texte_synthese_name'] = $typeacte['Typeacte']['gabarit_projet_name'];
+                $this->request->data['Deliberation']['texte_projet_name'] = $typeacte['Typeacte']['gabarit_projet_name'];
                 $this->request->data['Deliberation']['texte_projet_size'] = strlen($typeacte['Typeacte']['gabarit_projet']);
                 $this->request->data['Deliberation']['texte_projet_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_projet']);
             }
