@@ -22,6 +22,11 @@
 - Gestion différenciée des actes pour la télétransmission au contrôle de légalité. Un attribut est placé au niveau du type d'acte.
 - Dans la page de traitement d'une séance, ajout d'un lien cliquable sur le N° d'ID du projet. Ce lien redirige vers le formulaire de modification du projet.
 - Ajout de filtres de recherche dans la page Utilisateurs, filtres sur le profil, nom, prénom et login avec un champ autocompleté et 3 champs texte avec wildcard '%' pour recherche large
+- Ajout d'un lien pour remonter en haut de la page. Le lien est représenté par une flèche vers le haut en bas à droite de chaque page et n'apparait que si besoin.
+- Refonte de l'affichage "en arbre" des services, thèmes et profils. Il est désormais possible de plier/déplier les noeuds et de filtrer les données.
+- Refonte Pastell/I-delibRE
+- Refonte graphique Multi-delibs
+- Refonte édition annexes de projet
 
 4.1.04
 ======

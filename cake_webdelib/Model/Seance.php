@@ -566,10 +566,10 @@ class Seance extends AppModel
      * @param integer $id id de l'occurence en base de données
      * @param array modelOptions options gérées par la classe appelante
      * @return integer id du modele odt à utiliser
+     * @throws Exception
      */
     function getModelTemplateId($id, $modelOptions) {
         // initialisation
-        $field = '';
         $allowedModelTypes = array('projet', 'deliberation', 'convocation', 'ordredujour', 'pvsommaire', 'pvdetaille');
         if (!in_array($modelOptions['modelTypeName'], $allowedModelTypes))
             throw new Exception('le type de modèle d\'édition '.$modelOptions['modelTypeName'].' n\'est par autorisé');
