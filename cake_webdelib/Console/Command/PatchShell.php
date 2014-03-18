@@ -37,6 +37,7 @@ class PatchShell extends AppShell {
             
             case "4103to4104":
                 $this->Version_4103to4104();
+                break;
 
             case "41to42": //Modification des modèles, ajout de la section Annexes avec variable fichier
                 $this->Version_41to42();
