@@ -27,7 +27,25 @@ $(document).ready(function () {
      * Animation rotation apres clic sur bouton avec icone de roue crantée (running)
      */
     $('a .fa-cog').click(function () {
-        $(this).addClass('fa-spin')
+        $(this).addClass('fa-spin');
+    });
+
+    /**
+     * Surveillance des champs required (mais non visible, ex: autre onglet) pour afficher un message lors de l'envoi
+     */
+    $('#boutonValider').click(function () {
+        var empty_flds = 0;
+        $('input,textarea,select').filter('[required]:not(:visible):not(:disabled)').each(function(){
+            if ($.trim($(this).val()) == '')
+                empty_flds++;
+        });
+        if (empty_flds > 0) {
+            if (empty_flds == 1)
+                $.jGrowl('<strong>Action impossible :</strong><br>Un champ obligatoire est vide.');
+            else
+                $.jGrowl('<strong>Action impossible :</strong><br>'+empty_flds+' champs obligatoires n\'ont pas été saisis');
+            return false;
+        }
     });
 
 });
