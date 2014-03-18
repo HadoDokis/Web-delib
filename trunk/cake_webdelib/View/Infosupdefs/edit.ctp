@@ -65,15 +65,12 @@ echo $this->Form->create('Infosupdef', array('url' => array('action' => $this->r
 <div class="required">
     <?php echo $this->Form->input('Infosupdef.nom', array('label' => 'Nom <abbr title="obligatoire">*</abbr>', 'size' => '40', 'title' => 'Nom affiché dans le formulaire d\'édition des projets')); ?>
 </div>
-<br/>
 <div class="required">
     <?php echo $this->Form->input('Infosupdef.commentaire', array('label' => 'Commentaire', 'size' => '80', 'title' => 'Bulle d\'information affiché dans le formulaire d\'édition des projets')); ?>
 </div>
-<br/>
 <div class="required">
     <?php echo $this->Form->input('Infosupdef.code', array('label' => 'Code <abbr title="obligatoire">*</abbr>', 'size' => '40', 'title' => 'Code unique utilisé pour les éditions (pas d\'espace ni de caractère spécial)'), false, false); ?>
 </div>
-<br/>
 <div class="required">
     <?php
     $htmlAttributes['disabled'] = false;
@@ -83,13 +80,13 @@ echo $this->Form->create('Infosupdef', array('url' => array('action' => $this->r
         echo $this->Form->hidden('Infosupdef.type');
         $empty = true;
     }
-    echo $this->Form->input('Infosupdef.type', array('label' => 'type <abbr title="obligatoire">(*)</abbr>', 'options' => $types, 'id' => 'selectTypeInfoSup', 'onChange' => "afficheOptions(this);", 'disabled' => $htmlAttributes['disabled'], 'showEmpty' => $empty));
+    echo $this->Form->input('Infosupdef.type', array('label' => 'Type <abbr title="obligatoire">*</abbr>', 'options' => $types, 'id' => 'selectTypeInfoSup', 'onChange' => "afficheOptions(this);", 'disabled' => $htmlAttributes['disabled'], 'showEmpty' => $empty));
     ?>
 </div>
 <div id="gestionListe">
     <span>Note : la gestion des éléments de la liste est accessible &agrave; partir de la liste des informations suppl&eacute;mentaires.</span>
+    <div class="spacer"></div>
 </div>
-<br>
 <div class="required" id="val_initiale">
     <?php echo $this->Form->input('Infosupdef.val_initiale', array('label' => 'Valeur initiale', 'size' => '80', 'title' => 'Valeur initiale lors de la création d\'un projet')); ?>
 </div>
@@ -101,7 +98,6 @@ echo $this->Form->create('Infosupdef', array('url' => array('action' => $this->r
     <?php echo '&nbsp;'; ?>
     <?php echo $this->Html->link($this->Html->image("calendar.png", array('style' => "border:0;")), "javascript:show_calendar('infoSupForm.InfosupdefValInitialeDate', 'f');", array('escape' => false), false); ?>
 </div>
-<br>
 <?php
 if ($this->request->data['Infosupdef']['model'] == 'Deliberation')
     echo $this->Form->label('Infosupdef.recherche', $this->Form->input('Infosupdef.recherche', array('type' => 'checkbox', 'label' => false, 'div' => false)) . ' Inclure dans la recherche', array('class' => 'span2', 'id' => 'recherche'));
@@ -111,11 +107,11 @@ else
 echo $this->Form->label('Infosupdef.actif', $this->Form->input('Infosupdef.actif', array('type' => 'checkbox', 'label' => false, 'div' => false)) . ' information active', array('class' => 'span2'));
 echo $this->Html->tag('div', '', array('class' => 'spacer'));
 ?>
-<br/>
 
-<?php echo $this->Form->input('Profil', array('options' => $profils, 'multiple' => true, 'size' => 10,
+<?php echo $this->Form->input('Profil', array('options' => $profils, 'multiple' => true,
     'label' => 'Profils autorisés', 'title' => 'l\'information supplémentaire ne sera utilisable que pour les profils sélectionnés dans cette liste')); ?>
 
+<div class="spacer"></div>
 <div class="submit">
     <?php
     echo $this->Form->hidden('Infosupdef.id');
@@ -124,3 +120,16 @@ echo $this->Html->tag('div', '', array('class' => 'spacer'));
     ?>
 </div>
 <?php echo $this->Form->end(); ?>
+<script type="text/javascript">
+    $(document).ready(function(){
+       $('#ProfilProfil').select2({
+           width: 'element',
+           placeholder : 'Aucun profil'
+       });
+    });
+</script>
+<style>
+    label{
+        line-height: 25px;
+    }
+</style>
