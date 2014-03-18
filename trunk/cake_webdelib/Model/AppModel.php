@@ -42,6 +42,10 @@ class AppModel extends Model {
 
     /**
      * Validation du format de fichier par FIDO
+     * @param string|array $data flux d'un fichier ou tableau de type HTTP Post
+     * @param null|string|array $extension extension(s) autorisée(s), si null autorise toutes celles du fichier formats.inc
+     * @param bool $required autoriser qu'il n'y ai pas de fichier
+     * @return bool fichier autorisé ou non
      */
     public function checkFormat($data, $extension = null, $required = false) {
         App::uses('FidoComponent', 'ModelOdtValidator.Controller/Component');
@@ -62,14 +66,20 @@ class AppModel extends Model {
         }else{
             if (empty($data))
                 return !$required;
-            $tmpname = tempnam(TMP, 'upload_');
-            $allowed = $this->Fido->checkFile($tmpname);
+            $file = new File(tempnam(TMP, 'upload_'));
+            $file->write($data);
+            $allowed = $this->Fido->checkFile($file->path);
+            $file->delete();
         }
 
         if (is_null($extension))
             return $allowed;
-        else
+        elseif (is_array($extension))
+            return $allowed && in_array($this->Fido->lastResults['extension'], $extension);
+        elseif (is_string($extension))
             return $allowed && $this->Fido->lastResults['extension'] == $extension;
+        else
+            return false;
     }
 
     function listFields($params = array()) {
