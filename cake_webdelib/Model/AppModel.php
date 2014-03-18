@@ -43,7 +43,7 @@ class AppModel extends Model {
     /**
      * Validation du format de fichier par FIDO
      */
-    public function checkFormat($data, $extension, $required = false) {
+    public function checkFormat($data, $extension = null, $required = false) {
         App::uses('FidoComponent', 'ModelOdtValidator.Controller/Component');
         $this->Fido = new FidoComponent();
         if (is_array($data)){
@@ -66,7 +66,10 @@ class AppModel extends Model {
             $allowed = $this->Fido->checkFile($tmpname);
         }
 
-        return ($allowed && $this->Fido->lastResults['extension'] == $extension);
+        if (is_null($extension))
+            return $allowed;
+        else
+            return $allowed && $this->Fido->lastResults['extension'] == $extension;
     }
 
     function listFields($params = array()) {
