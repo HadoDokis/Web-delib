@@ -46,7 +46,6 @@ foreach ($annexes as $rownum => $annexe) {
         echo $this->Html->link('<i class="fa fa-pencil"></i> ' . $annexe['Annex']['filename'], $annexe['Annex']['link'], array(
             'id' => 'urlWebdavAnnexe' . $annexe['Annex']['id'],
             'escape' => false,
-            'class' => 'noWarn',
             'style' => 'display:none;',
             'title' => 'Modifier le fichier directement depuis votre poste en utilisant le protocol WebDAV'));
     } else {
@@ -54,13 +53,12 @@ foreach ($annexes as $rownum => $annexe) {
             array(
                 'id' => 'urlWebdavAnnexe' . $annexe['Annex']['id'],
                 'escape' => false,
-                'class' => 'noWarn',
                 'style' => 'display:none;',
                 'title' => 'Edition WebDAV désactivée pour ce type de fichier'
             ));
     }
     // lien de téléchargement de la version pdf de l'annexe
-    echo $this->Html->tag('span', $this->Html->link($annexe['Annex']['filename'], array('controller' => 'annexes', 'action' => 'download', $annexe['Annex']['id']), array('class' => 'noWarn', 'title' => 'Télécharger le fichier')));
+    echo $this->Html->tag('span', $this->Html->link($annexe['Annex']['filename'], array('controller' => 'annexes', 'action' => 'download', $annexe['Annex']['id']), array('title' => 'Télécharger le fichier')));
     echo $this->Html->tag('/td');
     echo $this->Html->tag('td');
     if ($mode == 'edit') {
@@ -170,7 +168,7 @@ echo $this->Html->tag('div', '', array('id' => 'ajouteAnnexes' . $ref, 'style' =
 
 // lien pour ajouter une nouvelle annexes
 echo $this->Html->link('<i class="fa fa-plus"></i>&nbsp;Ajouter une annexe', 'javascript:void(0)', array(
-    'class' => 'btn btn-success noWarn annexeModalAddLink',
+    'class' => 'btn btn-success annexeModalAddLink',
     'id' => 'annexeModalAddLink' . $ref,
     'data-ref' => $ref,
     'onclick' => 'afficherAnnexeModal(this);',

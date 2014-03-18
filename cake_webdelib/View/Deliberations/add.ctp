@@ -12,13 +12,13 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/add', 't
 <div class='onglet'>
     <a href="#" id="emptylink"></a>
     <?php
-    echo $this->Html->link('Informations principales', '#', array('class' => 'ongletCourant noWarn', 'id' => 'lienTab1', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,1);'));
-    echo $this->Html->link('Textes', '#', array('id' => 'lienTab2', 'class' => 'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,2);'));
-    echo $this->Html->link('Annexe(s)', '#', array('id' => 'lienTab3', 'class' => 'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,3);'));
+    echo $this->Html->link('Informations principales', '#', array('class' => 'ongletCourant', 'id' => 'lienTab1', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,1);'));
+    echo $this->Html->link('Textes', '#', array('id' => 'lienTab2', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,2);'));
+    echo $this->Html->link('Annexe(s)', '#', array('id' => 'lienTab3', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,3);'));
     if (!empty($infosupdefs))
-        echo $this->Html->link('Informations supplémentaires', '#', array('id' => 'lienTab4', 'class' => 'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,4);'));
+        echo $this->Html->link('Informations supplémentaires', '#', array('id' => 'lienTab4', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,4);'));
     if (Configure::read('DELIBERATIONS_MULTIPLES'))
-        echo $this->Html->link('Délibérations rattachées', '#', array('id' => 'lienTab5', 'class' => 'noWarn', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,5);', 'style' => 'display: none'));
+        echo $this->Html->link('Délibérations rattachées', '#', array('id' => 'lienTab5', 'onClick' => 'javascript:afficheOngletNew(document.Deliberation,5);', 'style' => 'display: none'));
     ?>
 </div>
 <div id="tab1">
@@ -170,8 +170,8 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/add', 't
 <div class="submit">
     <?php
     echo $this->Html->tag('div', null, array('class' => 'btn-group'));
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $previous, array('class' => 'btn noWarn', 'escape' => false, 'title' => 'Annuler'));
-    echo $this->Form->button('<i class="fa fa-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary noWarn', 'escape' => false, 'title' => 'Enregistrer le circuit de traitement'));
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $previous, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler'));
+    echo $this->Form->button('<i class="fa fa-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le circuit de traitement'));
     echo $this->Html->tag('/div', null);
     ?>
 </div>
