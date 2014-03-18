@@ -100,7 +100,10 @@ class CronsComponent extends Component
             'recursive' => -1,
             'fields' => array('id','nom'),
             'conditions' => array(
-                'next_execution_time <= ' => date(Cron::FORMAT_DATE),
+                'OR' => array(
+                    'next_execution_time <= ' => date(Cron::FORMAT_DATE),
+                    'next_execution_time' => null,
+                ),
                 'active' => true,
                 'lock' => false
             ),
