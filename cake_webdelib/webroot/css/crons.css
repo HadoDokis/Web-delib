@@ -1,6 +1,4 @@
-
 .table{
-    font-size: 0.9em;
     cursor: default;
 }
 .table tr td, .table tr th{
@@ -9,16 +7,13 @@
 }
 .table tr td.actions{
     min-width: 130px;
-    padding: 0px;
+    padding: 0;
     height: 100%;
     vertical-align: middle;
 }
 .table th{
     text-align: center;
     vertical-align: middle;
-}
-tr:hover th, tr th{
-    background-color: whitesmoke;
 }
 .info{
     color: inherit;
