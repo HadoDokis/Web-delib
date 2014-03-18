@@ -12,20 +12,20 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
 <div class='onglet'>
     <a href="#" id="emptylink"></a>
     <a href="javascript:afficheOnglet(1)"
-       id='lienTab1' <?php echo !isset($lienTab) || (isset($lienTab) && ($lienTab == 1 || empty($lienTab))) ? 'class="ongletCourant noWarn"' : '' ?>>Informations
+       id='lienTab1' <?php echo !isset($lienTab) || (isset($lienTab) && ($lienTab == 1 || empty($lienTab))) ? 'class="ongletCourant"' : '' ?>>Informations
         principales</a>
     <a href="javascript:afficheOnglet(2)"
-       id='lienTab2' <?php echo isset($lienTab) && $lienTab == 2 ? 'class="ongletCourant noWarn"' : 'class="noWarn"' ?>>Textes</a>
+       id='lienTab2' <?php echo isset($lienTab) && $lienTab == 2 ? 'class="ongletCourant"' : '' ?>>Textes</a>
     <a href="javascript:afficheOnglet(3)"
-       id='lienTab3' <?php echo isset($lienTab) && $lienTab == 3 ? 'class="ongletCourant noWarn"' : 'class="noWarn"' ?>>Annexe(s)</a>
+       id='lienTab3' <?php echo isset($lienTab) && $lienTab == 3 ? 'class="ongletCourant"' : '' ?>>Annexe(s)</a>
     <?php if (!empty($infosupdefs)): ?>
         <a href="javascript:afficheOnglet(4)"
-           id='lienTab4' <?php echo isset($lienTab) && $lienTab == 4 ? 'class="ongletCourant noWarn"' : 'class="noWarn"' ?>>Informations
+           id='lienTab4' <?php echo isset($lienTab) && $lienTab == 4 ? 'class="ongletCourant"' : '' ?>>Informations
             supplémentaires</a>
     <?php endif; ?>
     <?php if (Configure::read('DELIBERATIONS_MULTIPLES')): ?>
         <a href="javascript:afficheOnglet(5)" style="display: none"
-           id='lienTab5' <?php echo isset($lienTab) && $lienTab == 5 ? 'class="ongletCourant noWarn"' : 'class="noWarn"' ?>>Délibérations
+           id='lienTab5' <?php echo isset($lienTab) && $lienTab == 5 ? 'class="ongletCourant"' : '' ?>>Délibérations
             rattachées</a>
     <?php endif; ?>
 </div>
@@ -328,7 +328,7 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
     echo $this->Form->hidden('redirect', array('value' => $redirect));
 
     echo $this->Html->tag("div", null, array("class" => "btn-group"));
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $redirect, array('class' => 'btn noWarn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', $redirect, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
     echo $this->Form->button('<i class="fa fa-save"></i> Sauvegarder', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le projet'));
     echo $this->Html->tag('/div', null);
     ?>

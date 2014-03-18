@@ -43,19 +43,21 @@ $(document).ready(function () {
         $(window).unbind("beforeunload");
     });
 
-    $(".noWarn").on('click', function () {
-            $(window).unbind('beforeunload');
-            objMenuTimeout = setTimeout(function () {
-                onUnloadEditForm();
-            }, 2000); // 2000 millisecondes = 2 secondes
-        }
-    );
+    $("form#DeliberationAddForm a").on('click', disableExitWarning);
+    $("form#DeliberationEditForm a").on('click', disableExitWarning);
 
     $('#deselectClassif').click(function () {
         resetClassification();
         return false;
     });
 });
+
+function disableExitWarning(){
+    $(window).unbind('beforeunload');
+    objMenuTimeout = setTimeout(function () {
+        onUnloadEditForm();
+    }, 2000); // 2000 millisecondes = 2 secondes
+}
 
 function updateTypeseances(domObj) {
     var ajaxUrl = '/deliberations/getTypeseancesParTypeacteAjax/' + $(domObj).val();

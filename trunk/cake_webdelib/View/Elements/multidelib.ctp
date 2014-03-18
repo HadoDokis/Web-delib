@@ -22,7 +22,7 @@ echo $this->Html->tag('div', '', array('id' => 'ajouteMultiDelib'));
 
 echo $this->Html->tag('div', '', array('class' => 'spacer'));
 // lien pour ajouter une nouvelle délibération rattachée
-echo $this->Html->tag('div',$this->Html->link('<i class="fa fa-plus"></i>&nbsp;Ajouter une délibération rattachée', 'javascript:ajouterMultiDelib()', array('class' => 'btn btn-inverse noWarn', 'id' => 'ajouterMultiDelib', 'escape' => false)), array('class' => 'text-center'));
+echo $this->Html->tag('div',$this->Html->link('<i class="fa fa-plus"></i>&nbsp;Ajouter une délibération rattachée', 'javascript:ajouterMultiDelib()', array('class' => 'btn btn-inverse', 'id' => 'ajouterMultiDelib', 'escape' => false)), array('class' => 'text-center'));
 
 echo $this->element('templateAjoutDelibRattachee');
 

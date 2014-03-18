@@ -45,9 +45,9 @@ if (empty($delib['Deliberation'][$key . "_name"]) || isset($validationErrorsArra
     echo "<label class='libelle'>$libelle</label>";
     echo '<span id="Deliberation' . $key . 'AfficheFichierJoint">';
     if (stripos(Configure::read('PROTOCOLE_DL'), 'http') === true)
-        echo ": <a href='$url' download='$filename' class='noWarn'>$filename</a>";
+        echo ": <a href='$url' download='$filename'>$filename</a>";
     else
-        echo ": <a href='$url' class='noWarn'><i class='fa fa-pencil'></i> $filename</a>";
+        echo ": <a href='$url'><i class='fa fa-pencil'></i> $filename</a>";
 
     echo '&nbsp;&nbsp;';
     echo $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer', "javascript:supprimerFichierJoint('Deliberation', '" . $key . "', '" . $libelle . "')", array('class' => 'btn btn-danger btn-mini', 'escape' => false, 'title' => 'Supprimer le fichier'), "Voulez-vous vraiment supprimer $filename du projet ?");
