@@ -102,6 +102,7 @@ class Signature {
      * @param string $name nom de la fonction appelée
      * @param array $arguments tableau d'arguments indexés
      * @return mixed
+     * @throws Exception
      */
     public function __call($name, $arguments)
     {
@@ -114,8 +115,14 @@ class Signature {
         } 
     }
 
-
-    public function sendIparapheur($delib, $circuit_id, $content, $annexes=array()){
+    /**
+     * @param array $delib
+     * @param int|string $circuit_id
+     * @param string $document contenu du fichier du document principal
+     * @param array $annexes (content, filename, mimetype)
+     * @return bool|int false si echec sinon identifiant iparapheur
+     */
+    public function sendIparapheur($delib, $circuit_id, $document, $annexes=array()){
         
         if (is_numeric($circuit_id)){
             $circuits = $this->listCircuitsIparapheur();
@@ -131,7 +138,7 @@ class Signature {
             $this->parapheur_type,
             $libelleSousType,
             $this->visibility,
-            $content,
+            $document,
             $annexes,
             $date_limite
         );
@@ -145,15 +152,15 @@ class Signature {
     }
 
     /**
-     * @param $options
-     * [0] => $delib,
-     * [1] => $circuit_id
-     * [2] => $annexes
-     * @return bool|string
+     * @param array $delib
+     * @param int|string $circuit_id
+     * @param string $document contenu du fichier du document principal
+     * @param array $annexes (content, filename)
+     * @return bool|int false si echec sinon identifiant pastell
      */
-    public function sendPastell($delib, $circuit_id , $DocumentPrincipale, $annexes=array()){
+    public function sendPastell($delib, $circuit_id, $document, $annexes=array()){
         $id_d = $this->Pastell->createDocument($this->collectivite, $this->pastell_type);
-        $res = $this->Pastell->modifDocument($this->collectivite, $id_d, $delib, $DocumentPrincipale, $annexes);
+        $res = $this->Pastell->modifDocument($this->collectivite, $id_d, $delib, $document, $annexes);
         if ($res == 1) {
             if (is_numeric($circuit_id)){
                 $circuits = $this->Pastell->getInfosField($this->collectivite, $id_d, 'iparapheur_sous_type');

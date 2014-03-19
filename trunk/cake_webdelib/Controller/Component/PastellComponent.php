@@ -81,18 +81,18 @@ class PastellComponent extends Component {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
         if ($file_transfert) {
-            $folder= new Folder(AppTools::newTmpDir(TMP.'files'.DS), true, 0777);
-            $file = new File($folder->pwd().DS.'WD_BRDR_', true, 0777);
-            $fp = fopen($file->pwd(), 'w');
+            $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS), true, 0777);
+            $file = new File($folder->path . DS . 'WD_BRDR_', true, 0777);
+            $fp = fopen($file->path, 'w');
             curl_setopt($curl, CURLOPT_FILE, $fp);
         }
-        
+
         $response = curl_exec($curl);
         curl_close($curl);
-        
+
         if ($file_transfert) {
             fclose($fp);
-            $content = file_get_contents($file->pwd());
+            $content = $file->read();
             $folder->delete();
             return $content;
         }
@@ -380,7 +380,7 @@ class PastellComponent extends Component {
      * @param int|string $id_e identifiant de la collectivité
      * @param int|string $id_d identifiant du dossier pastell
      * @param array $delib
-     * @param string $DocumentPrincipale(Pdf)
+     * @param string $document (Pdf)
      * @param array $annexes
      * @return bool|string
      * result : ok - si l'enregistrement s'est bien déroulé
@@ -390,41 +390,39 @@ class PastellComponent extends Component {
      * A noter que pour connaître la liste et les intitulés exacts des champs modifiables,
      * il convient d'utiliser la fonction document-type-info.php, en lui précisant le type concerné.
      */
-    public function modifDocument($id_e, $id_d, $delib = array(), $DocumentPrincipale, $annexes = array()) {
+    public function modifDocument($id_e, $id_d, $delib, $document, $annexes = array()) {
         if (empty($delib) || empty($delib['Typeacte']['nature_id']) /*|| empty($delib['Deliberation']['num_pref'])*/ || empty($delib['Deliberation']['objet_delib']))
             return false;
-        
-        $folder= new Folder(AppTools::newTmpDir(TMP.'files'.DS), true, 0777);
-        $file = new File($folder->pwd().DS.'arrete.pdf', true, 0777);
-        $file->append($DocumentPrincipale);
-                
+
+        $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS), true, 0777);
+        $file = new File($folder->path . DS . 'arrete.pdf', true, 0777);
+        $file->write($document);
+
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
             'objet' => utf8_decode($delib['Deliberation']['objet_delib']),
             'type' => $this->parapheur_type,
-            'arrete' => '@'.$file->pwd(),
+            'arrete' => '@' . $file->path,
             'acte_nature' => $delib['Typeacte']['nature_id'],
-            'classification' => !empty($delib['Deliberation']['num_pref'])?$delib['Deliberation']['num_pref']:'',
+            'classification' => !empty($delib['Deliberation']['num_pref']) ? $delib['Deliberation']['num_pref'] : '',
         );
         $acte['numero_de_lacte'] = !empty($delib['Deliberation']['num_delib']) ? $delib['Deliberation']['num_delib'] : $delib['Deliberation']['id'];
         $acte['date_de_lacte'] = !empty($delib['Seance']['date']) ? $delib['Seance']['date'] : date("Y-m-d H:i:s");
-        
+
         $this->execute('modif-document.php', $acte);
         $file->close();
-        
-        if(!empty($annexes)){
-            $i=0;
-            foreach ($annexes as $annex){
-                $file = new File($folder->pwd().DS.'annexe_'.$i++.'.pdf', true, 0777);
-                $file->append($annex);
-                $this->sendAnnex($id_e, $id_d, $file->pwd());
+
+        if (!empty($annexes))
+            foreach ($annexes as $annex) {
+                $file = new File($folder->path . DS . $annex['filename'], true, 0777);
+                $file->write($annex['content']);
+                $this->sendAnnex($id_e, $id_d, $file->path);
                 $file->close();
-                
             }
-        }
+
         $folder->delete();
-        
+
         $resultat = $this->detailDocument($id_e, $id_d);
         if (!empty($resultat['data']['classification'])) {
             $pos = strpos($resultat['data']['classification'], "existe");
@@ -663,7 +661,7 @@ class PastellComponent extends Component {
      * Joint ses annexes à un document dans Pastell
      * @param int|string $id_e identifiant de la collectivité
      * @param int|string $id_d identifiant du dossier pastell
-     * @param $annex chemin de l'annexe à attacher
+     * @param string $annex chemin de l'annexe à attacher
      * @return bool|array résultat
      */
     public function sendAnnex($id_e, $id_d, $annex) {
