@@ -223,8 +223,8 @@ class ConnecteursController extends AppController {
         } else {
             //TODO : php_check_syntax
             $success = $file->open('w+');
-            $success = $success && $file->append($content);
-            $success = $success && $file->close();
+            $success &= $file->append($content);
+            $success &= $file->close();
             if ($success)
                 $this->Session->setFlash('La configuration du module &quot;' . $type . '&quot; a été enregistrée', 'growl');
             else
