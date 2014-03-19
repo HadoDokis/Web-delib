@@ -1621,13 +1621,15 @@ class Deliberation extends AppModel {
     }
 
     function is_delib($acte_id) {
-        $this->Behaviors->attach('Containable');
-        $acte = $this->find('first', array('conditions' => array('Deliberation.id' => $acte_id),
-                                           'contain'    => array('Typeacte.nature_id'),
-                                           'fields'     => array('Deliberation.typeacte_id')));
-        $nature = $this->Typeacte->Nature->find('first', array('conditions' => array('Nature.id' => $acte['Typeacte']['nature_id']),
-                                                               'fields'     => array('Nature.code'),
-                                                               'recursive'  => -1));
+        $this->Behaviors->load('Containable');
+        $acte = $this->find('first', array(
+            'conditions' => array('Deliberation.id' => $acte_id),
+            'contain' => array('Typeacte.nature_id'),
+            'fields' => array('Deliberation.typeacte_id')));
+        $nature = $this->Typeacte->Nature->find('first', array(
+            'conditions' => array('Nature.id' => $acte['Typeacte']['nature_id']),
+            'fields' => array('Nature.code'),
+            'recursive' => -1));
         return ($nature['Nature']['code'] == 'DE');
     }
 
@@ -1733,13 +1735,14 @@ class Deliberation extends AppModel {
     function majActeParapheur($delib_id, $objet, $tdt = false) {
         $this->id = $delib_id;
         $delib = $this->find('first', array(
+            'recursive' => -1,
             'conditions' => array(
-                'Deliberation.id' => $delib_id,
-                'Deliberation.etat >' => 2,
-                'Deliberation.parapheur_etat' => 1
-            ),
-            'recursive' => -1
+                'id' => $delib_id,
+                'etat >' => 2,
+                'parapheur_etat' => 1
+            )
         ));
+
         if (!empty($delib['Deliberation']['parapheur_id']))
             $id_dossier = $delib['Deliberation']['parapheur_id'];
         else //@DEPRECATED (rétro-compatibilité vieux dossiers parapheur)
@@ -2332,14 +2335,14 @@ class Deliberation extends AppModel {
         }
         $oMainPart->addElement($oSectionIteration);
     }
-    
-    function stock($acte_id, $isArrete=false) {
-        $success=true;
-        
-        if ($isArrete && $this->is_arrete($acte_id) && $success){
-                $this->id = $acte_id;
-                $num_delib=$this->field('num_delib');
-             if (empty($num_delib)) {
+
+    function stock($acte_id, $isArrete = false) {
+        $success = true;
+
+        if ($isArrete && $this->is_arrete($acte_id)) {
+            $this->id = $acte_id;
+            $num_delib = $this->field('num_delib');
+            if (empty($num_delib)) {
                 $acte = $this->find('first', array(
                     'conditions' => array('Deliberation.id' => $acte_id),
                     'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
@@ -2350,15 +2353,15 @@ class Deliberation extends AppModel {
                 $acte['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
                 $acte['Deliberation']['date_acte'] = date("Y-m-d H:i:s", strtotime("now"));
                 $this->save($acte);
-            }else $success=false;
+            } else $success = false;
         }
-        
-        $content=$this->getDocument($acte_id) && $success;
-        if (!empty($content) && $success){// On stock le fichier en base de données.
+
+        $content = $this->getDocument($acte_id) && $success;
+        if (!empty($content) && $success) { // On stoque le fichier en base de données.
             $this->saveField('delib_pdf', $content);
             unset($content);
-        }else $success=false;
-        
+        } else $success = false;
+
         return $success;
     }
 
