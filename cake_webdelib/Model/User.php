@@ -295,11 +295,10 @@ class User extends AppModel
      * @param array $acteur
      * @return string
      */
-    function _paramMails($type, $delib, $acteur)
-    {
-        $handle = fopen(CONFIG_PATH . "/emails/$type.txt", 'r');
-        $content = fread($handle, filesize(CONFIG_PATH . "/emails/$type.txt"));
-
+    function _paramMails($type, $delib, $acteur) {
+        $file = new File(APP . "/Config/emails/$type.txt", false);
+        $content = $file->read();
+        $file->close();
         $addrTraiter = FULL_BASE_URL . '/deliberations/traiter/' . $delib['id'];
         $addrView = FULL_BASE_URL . '/deliberations/view/' . $delib['id'];
         $addrEdit = FULL_BASE_URL . '/deliberations/edit/' . $delib['id'];
