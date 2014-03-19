@@ -31,31 +31,36 @@ class UtilsComponent extends Component
 		return $this->formattedTime($decimal*3600);
 		
 	}
-	
-	
-	function FrDateToUkDate($dateFr)
-	{
-		if (empty($dateFr))
-		{
-			return null;
-		}
-		else
-		{
-		    $temp = explode('/', $dateFr);
-		    return($temp[2].'-'.$temp[1].'-'.$temp[0]);
-		}
-	}
-	
-	/*
-	 * Retourne sous la forme " X h Y min" le nombre 
-	 * d'heures et des minutes que represente une duree .
-	 * La valeur retournee est arrondie a la minute la plus proche.
-	 * 
-	 * @param int $nbOfSeconds Une duree exprimee en secondes.
-	 * 
-	 * @return string Une duree au format 'xx h yy min'.
-	 * 
-	 */
+
+
+    function FrDateToUkDate($dateFr) {
+        if (empty($dateFr)) {
+            return null;
+        } else {
+            $dt = DateTime::createFromFormat("d/m/Y", $dateFr);
+            if ($dt !== false && !array_sum($dt->getLastErrors()))
+                return $dt->format('Y-m-d');
+            else { //Cas de date déjà convertie
+
+                $dt = DateTime::createFromFormat("Y-m-d", $dateFr);
+                if ($dt !== false && !array_sum($dt->getLastErrors()))
+                    return $dateFr;
+                else
+                    return null;
+            }
+        }
+    }
+
+    /*
+     * Retourne sous la forme " X h Y min" le nombre
+     * d'heures et des minutes que represente une duree .
+     * La valeur retournee est arrondie a la minute la plus proche.
+     *
+     * @param int $nbOfSeconds Une duree exprimee en secondes.
+     *
+     * @return string Une duree au format 'xx h yy min'.
+     *
+     */
 	function formattedTime($nbOfSeconds) {
 				
 		if ($nbOfSeconds == 0)
