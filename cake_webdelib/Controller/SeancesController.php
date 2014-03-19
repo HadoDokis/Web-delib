@@ -1085,6 +1085,7 @@ class SeancesController extends AppController {
                 else
                     $this->Session->setFlash('Envoi des convocations effectué avec succès', 'growl');
 
+                return $this->redirect(array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance_id, $model_id));
             }
         }
 
@@ -1202,12 +1203,13 @@ class SeancesController extends AppController {
                     sleep(5);
                 }
             }
+
             if ($i == 0) {
                 $this->Session->setFlash('Veuillez sélectionner au moins un acteur.', 'growl', array('type' => 'erreur'));
             } elseif (!empty($message))
                 $this->Session->setFlash($message, 'growl', array('type' => 'error'));
 
-            $this->redirect(array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance_id, $model_id));
+            return $this->redirect(array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance_id, $model_id));
         }
     }
 
