@@ -96,7 +96,7 @@ echo $this->Form->input('next_execution_heure', array('label' => __('Heure de la
 echo $this->DurationPicker->picker('Cron.execution_duration', array('label' => 'Délais entre deux exécutions', 'empty' => true, 'value' => null));
 echo $this->Form->input('active', array('label' => __('Activation', true), 'checked' => true, 'type' => 'checkbox'));
 
-echo $this->Html->tag("div", null, array("class" => "btn-group btn-group-vertical", 'style' => 'clear: both; left: 210px;'));
+echo $this->Html->tag("div", null, array("class" => "btn-group", 'style' => 'clear: both; left: 210px;'));
 echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', array('action' => 'index'), array('class' => 'btn', 'escape' => false));
 echo $this->Form->button('<i class="fa fa-check"></i> Valider', array('type' => 'submit', 'id' => 'boutonValider', 'class' => 'btn btn-primary', 'escape' => false));
 echo $this->Html->tag('/div', null);
