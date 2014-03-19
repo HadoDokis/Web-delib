@@ -147,15 +147,9 @@ class AppTools {
 
         //Création du répertoire temporaire par la fonction tempnam
         $outputDir = tempnam($patchDir, '');
-        $file = new File($outputDir, false, 0777);
-        $file->delete();
-        if (!$file->exists()) {
-            $folder = new Folder($outputDir, true, 0777);
-
-            return $outputDir;
-        }
-
-        return false;
+        unlink($outputDir);
+        $folder = new Folder($outputDir, true, 0777);
+        return $folder->path;
     }
 
     public static function getNameFile($file) {

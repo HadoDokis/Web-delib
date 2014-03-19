@@ -56,19 +56,6 @@ class Collectivite extends AppModel {
         $oMainPart->addElement(new GDO_FieldType('telephone_collectivite', $collectivite['Collectivite']['telephone'], "text"));
     }
 
-    public function pathLogo() {
-        $logo = $this->read('logo', 1);
-        $file = new File(Configure::read('WEBDELIB_PATH') . DS . 'files' . DS . 'image' . DS . 'logo.jpg', false);
-
-        $logo_path= WEBROOT_PATH . $this->base . "/files/image/logo.jpg";
-        if (!empty($logo['logo'])){
-            if (!$file->exists())
-                $file->write($logo['Collectivite']['logo']);
-            $file->close();
-        }
-        return $logo_path;
-    }
-
     /**
      * fonction d'initialisation des variables de fusion pour la collectivité
      * les bibliothèques Gedooo doivent être inclues par avance
