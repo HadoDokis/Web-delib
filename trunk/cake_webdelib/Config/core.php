@@ -307,6 +307,6 @@ define('CRON_DISPATCHER', false);
 require_once('webdelib.inc');
 require_once('formats.inc');
 //appVersion
-define('VERSION', '4.2-beta4');
+define('VERSION', '4.2-beta5');
 //dbVersion
 include_once(ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Cakeflow' . DS . 'Config' . DS . 'cakeflow.conf.php');
