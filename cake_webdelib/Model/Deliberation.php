@@ -2284,6 +2284,33 @@ class Deliberation extends AppModel {
             $this->President->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['president_id']);
     }
 
+    /**
+     * Construit le tableau à envoyer au parapheur
+     * @param $acte_id
+     * @return array
+     */
+    public function getDocumentsForDelegation($acte_id){
+        $docs = array(
+            'docPrincipale' => $this->getDocument($acte_id),
+            'annexes' => array()
+        );
+        $annexes = $this->Annex->find('all', array(
+            'conditions' => array('Annex.foreign_key' => $acte_id),
+            'fields' => array('id', 'filetype', 'filename', 'data'),
+            'order' => array('id' => 'ASC'),
+            'recursive' => -1
+        ));
+        foreach ($annexes as $annexe) {
+            $docs['annexes'][] = array(
+                'content' => $annexe['Annex']['data'],
+                'mimetype' => $annexe['Annex']['filetype'],
+                'filename' => AppTools::getNameFile($annexe['Annex']['filename']).'.pdf',
+            );
+        }
+        return $docs;
+    }
+
+
     function delegToParapheurDocument() {
 
         if (empty($this->id))
