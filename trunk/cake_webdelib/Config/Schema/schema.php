@@ -104,7 +104,6 @@ class AppSchema extends CakeSchema {
 		'filetype' => array('type' => 'string', 'null' => false),
 		'size' => array('type' => 'integer', 'null' => false),
 		'data' => array('type' => 'binary', 'null' => false),
-		'filename_pdf' => array('type' => 'string', 'null' => true, 'length' => 75),
 		'data_pdf' => array('type' => 'binary', 'null' => true),
 		'created' => array('type' => 'datetime', 'null' => true),
 		'modified' => array('type' => 'datetime', 'null' => true),

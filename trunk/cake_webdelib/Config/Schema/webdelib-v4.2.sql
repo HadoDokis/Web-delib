@@ -206,7 +206,6 @@ CREATE TABLE annexes (
     filetype character varying(255) NOT NULL,
     size integer NOT NULL,
     data bytea NOT NULL,
-    filename_pdf character varying(75),
     data_pdf bytea,
     created timestamp without time zone,
     modified timestamp without time zone,
