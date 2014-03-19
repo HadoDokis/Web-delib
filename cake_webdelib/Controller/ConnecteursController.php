@@ -155,7 +155,7 @@ class ConnecteursController extends AppController {
                             $this->Session->setFlash('Le mot de passe du certificat est erroné', 'growl', array('type' => 'erreur'));
                     }
                 }
-                $content = $this->_replaceValue($content, $protocol . '_HOST', $this->request->data['Connecteur']['idelibre_host']);
+                $content = $this->_replaceValue($content, $protocol . '_HOST', $this->request->data['Connecteur']['host']);
                 break;
 
             case 'idelibre' :
