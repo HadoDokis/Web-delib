@@ -97,12 +97,11 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
         <div id="dateLimite">
             <?php
             echo $this->Form->label('Deliberation.date_limite', 'Date limite');
+            $value = '';
             if (!empty($this->data['Deliberation']['date_limite']) && $this->data['Deliberation']['date_limite'] != '01/01/1970')
-                $value = "value='" . $this->data['Deliberation']['date_limite'] . "'";
-            else
-                $value = "value=''";
+                $value = $this->data['Deliberation']['date_limite'];
             ?>
-            <input name="date_limite" size="9" <?php echo $value; ?> />&nbsp;<a
+            <input name="date_limite" size="9" value="<?php echo $value; ?>" />&nbsp;<a
                 href="javascript:show_calendar('Deliberation.date_limite','f');"
                 id="afficheCalendrier"><?php echo $this->Html->image("calendar.png", array('style' => "border:'0'")); ?></a>
         </div>
