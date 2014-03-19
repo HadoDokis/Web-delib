@@ -174,14 +174,22 @@ class DeliberationsController extends AppController
         for ($i = 0; $i < count($commentaires); $i++) {
             if ($commentaires[$i]['Commentaire']['agent_id'] == -1) {
                 $commentaires[$i]['Commentaire']['prenomAgent'] = "i-Parapheur";
-                $commentaires[$i]['Commentaire']['nomAgent'] = "Adullact";
+                $commentaires[$i]['Commentaire']['nomAgent'] = '';
+            } elseif (!empty($commentaires[$i]['Commentaire']['commentaire_auto'])){
+                $commentaires[$i]['Commentaire']['nomAgent'] = '';
+                $commentaires[$i]['Commentaire']['prenomAgent'] = 'Webdelib';
             } else {
                 $agent = $this->User->find('first', array(
                     'conditions' => array('User.id' => $commentaires[$i]['Commentaire']['agent_id']),
                     'recursive' => -1,
                     'fields' => array('nom', 'prenom')));
-                $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
-                $commentaires[$i]['Commentaire']['prenomAgent'] = $agent['User']['prenom'];
+                if (!empty($agent['User']['nom']) && !empty($agent['User']['prenom'])){
+                    $commentaires[$i]['Commentaire']['nomAgent'] = $agent['User']['nom'];
+                    $commentaires[$i]['Commentaire']['prenomAgent'] = $agent['User']['prenom'];
+                }else{
+                    $commentaires[$i]['Commentaire']['nomAgent'] = '';
+                    $commentaires[$i]['Commentaire']['prenomAgent'] = '';
+                }
             }
         }
         $this->set('commentaires', $commentaires);
@@ -309,7 +317,6 @@ class DeliberationsController extends AppController
         }
 
         if ($this->request->isPost()) {
-
             $this->Deliberation->begin();
             $this->request->data['Deliberation']['redacteur_id'] = $user['User']['id'];
             $this->request->data['Deliberation']['service_id'] = $user['User']['service'];
@@ -322,7 +329,7 @@ class DeliberationsController extends AppController
             if (isset($this->data['Seance'])) {
                 if (!$this->Deliberation->canSaveSeances($this->data['Seance']['Seance'])) {
                     $this->Session->setFlash("Vous ne pouvez enregistrer une seule séance délibérante", 'growl', array('type' => 'erreur'));
-                    $this->redirect(array('action' => 'add'));
+                    return $this->redirect(array('action' => 'add'));
                 }
             }
 
@@ -351,7 +358,7 @@ class DeliberationsController extends AppController
                 $this->request->data['Deliberation']['deliberation_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_acte']);
             }
 
-            if ($this->Deliberation->save($this->data)) {
+            if ($success = $this->Deliberation->save($this->data)) {
                 $this->Filtre->Supprimer();
                 $delibId = $this->Deliberation->getLastInsertId();
 
@@ -365,7 +372,7 @@ class DeliberationsController extends AppController
                 }
 
                 if (array_key_exists('Infosup', $this->data)) {
-                    $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $delibId, 'Deliberation');
+                    $success &= $this->Deliberation->Infosup->saveCompacted($this->request->data['Infosup'], $delibId, 'Deliberation');
                 }
 
                 $this->Seance->reOrdonne($delibId, $seances);
@@ -380,12 +387,14 @@ class DeliberationsController extends AppController
                    $this->Deliberationseance->save($this->data['Deliberationseance']);
                    }
                  }*/
+                $sortie = true;
+            }
 
+            if ($success) {
                 $this->Session->setFlash('Projet créé. Identifiant: ' . $delibId, 'growl');
                 $this->Deliberation->commit();
-                $sortie = true;
             } else {
-                $this->Seance->rollback();
+                $this->Deliberation->rollback();
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
             }
         }
@@ -824,6 +833,7 @@ class DeliberationsController extends AppController
             $this->render();
         } else {
             $this->Deliberation->begin();
+            $success = true;
             $redirect = $this->data['Deliberation']['redirect'];
             $oldDelib = $this->Deliberation->find('first', array('conditions' => array('Deliberation.id' => $id)));
             // Si on definit une seance a une delib, on la place en derniere position de la seance
@@ -908,9 +918,10 @@ class DeliberationsController extends AppController
                 }
 
                 if (array_key_exists('Infosup', $this->data)) {
-                    $success = $this->Deliberation->Infosup->saveCompacted($this->data['Infosup'], $this->data['Deliberation']['id'], 'Deliberation');
+                    $success &= $this->Infosup->saveCompacted($this->request->data['Infosup'], $this->request->data['Deliberation']['id'], 'Deliberation');
+                    if (!$success)
+                        unset($this->request->data['Infosup']);
                 }
-
                 // sauvegarde des nouvelles annexes
                 if ($success && array_key_exists('Annex', $this->data))
                     foreach ($this->data['Annex'] as $annexe) {
@@ -918,69 +929,67 @@ class DeliberationsController extends AppController
                         if (empty($annexe['file']['name']))
                             continue;
                         if ($annexe['ref'] == 'delibPrincipale' || $annexe['ref'] == 'delibRattachee' . $id)
-                            $success = $this->_saveAnnexe($id, $annexe, $annexesErrors) && $success;
+                            $success &= $this->_saveAnnexe($id, $annexe, $annexesErrors);
                     }
+
+                // suppression des annexes
+                if ($success && array_key_exists('AnnexesASupprimer', $this->data))
+                    foreach ($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
+
+                // Modification des annexes
+                if ($success && array_key_exists('AnnexesAModifier', $this->data)){
+                    foreach ($this->data['AnnexesAModifier'] as $annexeId => $annexe) {
+                        $annex_filename = $this->Annex->find('first', array(
+                            'recursive' => -1,
+                            'fields' => array('filename', 'filetype', 'id'),
+                            'conditions' => array('Annex.id' => $annexeId)));
+                        if ($annex_filename['Annex']['filetype']=='application/vnd.oasis.opendocument.text') {
+                            $this->Annex->save(array(
+                                'id' => $annexeId,
+                                'titre' => $annexe['titre'],
+                                'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
+                                'joindre_fusion' => $annexe['joindre_fusion'],
+                                'data' => file_get_contents(WEBROOT_PATH .DS. 'files'. DS .'generee'. DS .'projet' .DS. $id . DS . $annex_filename['Annex']['filename']),
+                                'data_pdf' => NULL));
+                        } else {
+                            $this->Annex->save(array(
+                                'id' => $annexeId,
+                                'titre' => $annexe['titre'],
+                                'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
+                                'joindre_fusion' => $annexe['joindre_fusion']));
+                        }
+                        if (!empty($this->Annex->validationErrors)) {
+                            $success = false;
+                            $titre = !empty($annexe['titre']) ? $annexe['titre'] : $annex_filename['Annex']['filename'];
+                            foreach ($this->Annex->validationErrors as $validationError) {
+                                $annexesErrors[$titre][] = implode(',', $validationError);
+                            }
+                        }
+                    }
+                }
+
+                // suppression des délibérations rattachées
+                if ($success && array_key_exists('MultidelibASupprimer', $this->data))
+                    foreach ($this->data['MultidelibASupprimer'] as $delibId) {
+                        $this->Deliberation->supprimer($delibId);
+                        unset($this->request->data['Multidelib'][$delibId]);
+                    }
+
+                // sauvegarde des délibérations rattachées
+                if ($success && array_key_exists('Multidelib', $this->data)){
+                    foreach ($this->data['Multidelib'] as $iref => $multidelib) {
+                        $multidelib['num_pref'] = $this->data['Deliberation']['num_pref'];
+                        $multidelib['typeacte_id'] = $this->data['Deliberation']['typeacte_id'];
+                        $delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib);
+                        // sauvegarde des nouvelles annexes pour cette delib rattachée
+                        if (array_key_exists('Annex', $this->data))
+                            foreach ($this->data['Annex'] as $annexe)
+                                if ($annexe['ref'] == 'delibRattachee' . $iref)
+                                    $success &= $this->_saveAnnexe($delibRattacheeId, $annexe, $annexesErrors);
+                    }
+                }
 
                 if ($success) {
-                    // suppression des annexes
-                    if (isset($this->data['AnnexesASupprimer']))
-                        foreach ($this->data['AnnexesASupprimer'] as $annexeId) $this->Annex->delete($annexeId);
-                    // modification des annexes
-                    if (isset($this->data['AnnexesAModifier'])) {
-                        foreach ($this->data['AnnexesAModifier'] as $annexeId => $annexe) {
-                            $annex_filename = $this->Annex->find('first', array(
-                                'recursive' => -1,
-                                'fields' => array('filename', 'filetype', 'id'),
-                                'conditions' => array('Annex.id' => $annexeId)));
-                            if ($annex_filename['Annex']['filetype']=='application/vnd.oasis.opendocument.text') {
-                                $this->Annex->save(array(
-                                    'id' => $annexeId,
-                                    'titre' => $annexe['titre'],
-                                    'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
-                                    'joindre_fusion' => $annexe['joindre_fusion'],
-                                    'data' => file_get_contents(WEBROOT_PATH .DS. 'files'. DS .'generee'. DS .'projet' .DS. $id . DS . $annex_filename['Annex']['filename']),
-                                    'data_pdf' => NULL));
-                            } else {
-                                $this->Annex->save(array(
-                                    'id' => $annexeId,
-                                    'titre' => $annexe['titre'],
-                                    'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
-                                    'joindre_fusion' => $annexe['joindre_fusion']));
-                            }
-                            if (!empty($this->Annex->validationErrors)) {
-                                $success = false;
-                                $titre = !empty($annexe['titre']) ? $annexe['titre'] : $annex_filename['Annex']['filename'];
-                                foreach ($this->Annex->validationErrors as $validationError) {
-                                    $annexesErrors[$titre][] = implode(',', $validationError);
-                                }
-                            }
-                        }
-                    }
-                    // suppression des délibérations rattachées
-                    if (array_key_exists('MultidelibASupprimer', $this->data)) {
-                        foreach ($this->data['MultidelibASupprimer'] as $delibId) {
-                            $this->Deliberation->supprimer($delibId);
-                            unset($this->request->data['Multidelib'][$delibId]);
-                        }
-                    }
-                    // sauvegarde de délibérations rattachées
-                    if (array_key_exists('Multidelib', $this->data)) {
-                        foreach ($this->data['Multidelib'] as $iref => $multidelib) {
-
-                            $multidelib['num_pref'] = $this->data['Deliberation']['num_pref'];
-                            $multidelib['typeacte_id'] = $this->data['Deliberation']['typeacte_id'];
-                            $delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib);
-                            // sauvegarde des nouvelles annexes pour cette delib rattachée
-                            if (array_key_exists('Annex', $this->data))
-                                foreach ($this->data['Annex'] as $annexe)
-                                    if ($annexe['ref'] == 'delibRattachee' . $iref)
-                                        if (!$this->_saveAnnexe($delibRattacheeId, $annexe, $annexesErrors)) {
-                                            return $this->redirect($redirect);
-                                        }
-
-                        }
-                    }
-
                     //Mise à jour des Multi-délibération
                     $multis = $this->Deliberation->find('all', array(
                         'conditions' => array('Deliberation.parent_id' => $id),
@@ -997,14 +1006,14 @@ class DeliberationsController extends AppController
                         $multi_Delib['circuit_id'] = $oldDelib['Deliberation']['circuit_id'];
                         $multi_Delib['is_multidelib'] = false;
                         $multi_Delib['etat'] = $oldDelib['Deliberation']['etat'];
-
-                        $success = $this->Deliberation->save($multi_Delib) && $success;
+                        $success &= $this->Deliberation->save($multi_Delib);
                     }
                 }
             }
 
             if ($success) {
                 $this->Deliberation->commit();
+//                $this->Annex->commit();
                 $cmd = 'nohup nice -n 10 '.APP.'Console'.DS.'cake Maintenance conversionAnnexe -i '.$id.' >/dev/null 2>&1';
                 $pid = shell_exec($cmd);
                 $this->Session->setFlash("Le projet $id a été enregistré", 'growl');
@@ -3399,66 +3408,62 @@ class DeliberationsController extends AppController
         
         return $this->Deliberation->field('num_delib') . " : Signature manuscrite effectué en echec {KO}<br />";
     }
-    
-    function _sendToSignature($acte_id, $circuit_id, $isArrete=false){
-         $success=true;
-         if ($isArrete && $this->Deliberation->is_arrete($acte_id) && $success){
-                $this->Deliberation->id = $acte_id;
-                $num_delib=$this->Deliberation->field('num_delib');
-             if (empty($num_delib)) {
+
+    function _sendToSignature($acte_id, $circuit_id, $isArrete = false) {
+        if ($isArrete && $this->Deliberation->is_arrete($acte_id)) {
+            $this->Deliberation->id = $acte_id;
+            $num_delib = $this->Deliberation->field('num_delib');
+            if (empty($num_delib)) {
                 $acte = $this->Deliberation->find('first', array(
                     'conditions' => array('Deliberation.id' => $acte_id),
                     'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
                 ));
-                $acte['Deliberation']['signee'] = 1;
                 $acte['Deliberation']['etat'] = 3;
-                $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
                 $acte['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
-                $acte['Deliberation']['date_acte'] = date("Y-m-d H:i:s", strtotime("now"));
                 $this->Deliberation->save($acte);
-            }else $success=false;
+            }
         }
-                        
-         $acte = $this->Deliberation->find('first', array(
-                        'recursive' => -1,
-                        'conditions' => array('Deliberation.id' => $acte_id),
-                        'fields' => array(
-                            'Deliberation.id',
-                            'Deliberation.num_delib',
-                            'Deliberation.delib_pdf',
-                            'Deliberation.etat',
-                            'Deliberation.parapheur_etat',
-                            'Deliberation.objet_delib',
-                            'Deliberation.objet',
-                            'Deliberation.signee',
-                            'Deliberation.typeacte_id',
-                        )
-                    ));
+
+        $acte = $this->Deliberation->find('first', array(
+            'recursive' => -1,
+            'conditions' => array('Deliberation.id' => $acte_id),
+            'fields' => array(
+                'Deliberation.id',
+                'Deliberation.num_delib',
+                'Deliberation.delib_pdf',
+                'Deliberation.etat',
+                'Deliberation.parapheur_etat',
+                'Deliberation.objet_delib',
+                'Deliberation.objet',
+                'Deliberation.signee',
+                'Deliberation.typeacte_id',
+            )
+        ));
 
         $this->Deliberation->Typeacte->id = $acte['Deliberation']['typeacte_id'];
         $acte['Typeacte']['nature_id'] = $this->Deliberation->Typeacte->field('nature_id');
-        if (empty($acte['Deliberation']['delib_pdf'])){
-            $acte['Deliberation']['delib_pdf']=$this->Deliberation->getDocument($acte_id);
+        if (empty($acte['Deliberation']['delib_pdf'])) {
+            $acte['Deliberation']['delib_pdf'] = $this->Deliberation->getDocument($acte_id);
             $this->Deliberation->saveField('delib_pdf', $acte['Deliberation']['delib_pdf']);
         }
         $ret = $this->Signature->send($acte, $circuit_id, $acte['Deliberation']['delib_pdf'], $this->Deliberation->getAnnexes($acte_id));
         if ($ret) {
+            $this->Deliberation->saveField('date_envoi_signature', date("Y-m-d H:i:s", strtotime("now")));
             $this->Deliberation->saveField('parapheur_id', $ret);
             $this->Deliberation->saveField('parapheur_cible', Configure::read('PARAPHEUR'));
-            
+
             if (Configure::read('PARAPHEUR') == 'PASTELL')
                 $this->Deliberation->saveField('pastell_id', $ret);
-            
+
             $this->Deliberation->saveField('parapheur_etat', '1');
             $message = $acte['Deliberation']['num_delib'] . " : Envoyé avec succès<br />";
             $this->Historique->enregistre($acte_id, $this->user_id, "Envoi au parapheur pour signature");
         } else {
-            $message =$acte['Deliberation']['num_delib'] . " : Erreur<br />";
+            $message = $acte['Deliberation']['num_delib'] . " : Erreur<br />";
         }
-        
         return $message;
     }
-        
+
     /**
      * Envoi un/des projet(s) dans le parapheur
      * ATTENTION : Cette méthode n'est pour l'instant opérationnelle que lorsque Pastell est désigné comme parapheur
