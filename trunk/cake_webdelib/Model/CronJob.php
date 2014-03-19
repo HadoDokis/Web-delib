@@ -171,24 +171,21 @@ class CronJob extends AppModel {
                 'order'=>'modified DESC',
                 'recursive'=>-1
             ));
-           /* debug($condition);
-            $log = $this->Annex->getDataSource()->getLog(false, false);
-           // var_dump($log);exit;
-            var_dump($annexes);
-            exit;*/
             
             //if (!empty($annexes))
             foreach ($annexes as $annexe) {
-                $this->Annex->id=$annexe['Annex']['id'];
-                if($annexe['Annex']['joindre_fusion']){
-                    $newAnnexe['edition_data'] = $this->Conversion->toOdt($annexe['Annex']['data'], $annexe['Annex']['filetype'], 'application/vnd.oasis.opendocument.text');
-                    $newAnnexe['edition_data_typemime'] = 'application/vnd.oasis.opendocument.text';
-                }
-                if($annexe['Annex']['joindre_ctrl_legalite']){
-                    $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], $DOC_TYPE[$annexe['Annex']['filetype']]['extension'], 'pdf');  
-                }
-                
-                $this->Annex->save($newAnnexe);
+                if(!empty($annexe['Annex']['data'])){
+                    $this->Annex->id=$annexe['Annex']['id'];
+                    if($annexe['Annex']['joindre_fusion']){
+                        $newAnnexe['edition_data'] = $this->Conversion->toOdt($annexe['Annex']['data'], $annexe['Annex']['filetype'], 'application/vnd.oasis.opendocument.text');
+                        $newAnnexe['edition_data_typemime'] = 'application/vnd.oasis.opendocument.text';
+                    }
+                    if($annexe['Annex']['joindre_ctrl_legalite']){
+                        $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], $DOC_TYPE[$annexe['Annex']['filetype']]['extension'], 'pdf');  
+                    }
+                    $this->Annex->save($newAnnexe);
+                }else
+                    $this->log('Conversion annexe "vide" (data) id:'.$annexe['Annex']['id'],'error');
             }
             
             if (empty($annexes))
