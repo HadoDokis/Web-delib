@@ -651,7 +651,7 @@ class DeliberationsController extends AppController
                     }
             $this->request->data = $this->Deliberation->find('first', array(
                 'contain' => array('Annex.id', 'Annex.filetype', 'Annex.model',
-                    'Annex.foreign_key', 'Annex.filename', 'Annex.filename_pdf',
+                    'Annex.foreign_key', 'Annex.filename',
                     'Annex.titre', 'Annex.joindre_ctrl_legalite', 'Annex.joindre_fusion',
                     'Infosup', 'Seance', 'Typeseance', 'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom'),
                 'conditions' => array('Deliberation.id' => $id)));
@@ -702,7 +702,7 @@ class DeliberationsController extends AppController
                         'Multidelib.deliberation_name'),
                     'contain' => array('Annex.id', 'Annex.model',
                         'Annex.filetype', 'Annex.foreign_key',
-                        'Annex.filename', 'Annex.filename_pdf',
+                        'Annex.filename',
                         'Annex.titre', 'Annex.joindre_ctrl_legalite',
                         'Annex.joindre_fusion'),
                     'conditions' => array('Multidelib.parent_id' => $id),

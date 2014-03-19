@@ -2297,8 +2297,8 @@ class Deliberation extends AppModel {
         return $this->fusion($acte_id, null, null, $format);
     }
 
-    /* Retour les annexes à joindre au controle de légalité
-     * 
+    /**
+     * Retour les annexes à joindre au controle de légalité
      */
     function getAnnexes($acte_id, $extention='pdf'){
         $annexes=array();
