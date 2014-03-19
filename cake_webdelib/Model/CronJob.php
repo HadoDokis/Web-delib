@@ -172,7 +172,7 @@ class CronJob extends AppModel {
                 'recursive'=>-1
             ));
             
-            //if (!empty($annexes))
+            if (!empty($annexes))
             foreach ($annexes as $annexe) {
                 if(!empty($annexe['Annex']['data'])){
                     $this->Annex->id=$annexe['Annex']['id'];
@@ -180,9 +180,12 @@ class CronJob extends AppModel {
                         $newAnnexe['edition_data'] = $this->Conversion->toOdt($annexe['Annex']['data'], $annexe['Annex']['filetype'], 'application/vnd.oasis.opendocument.text');
                         $newAnnexe['edition_data_typemime'] = 'application/vnd.oasis.opendocument.text';
                     }
-                    if($annexe['Annex']['joindre_ctrl_legalite']){
+                    if($annexe['Annex']['joindre_ctrl_legalite'] && $annexe['Annex']['filetype']!='application/pdf'){
                         $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], $DOC_TYPE[$annexe['Annex']['filetype']]['extension'], 'pdf');  
+                    }else{
+                        $newAnnexe['data_pdf'] = $newAnnexe['data'];
                     }
+                        
                     $this->Annex->save($newAnnexe);
                 }else
                     $this->log('Conversion annexe "vide" (data) id:'.$annexe['Annex']['id'],'error');
