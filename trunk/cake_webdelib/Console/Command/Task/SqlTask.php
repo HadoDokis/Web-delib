@@ -40,6 +40,7 @@ class SqlTask extends Shell {
         try {
             //Lecture ligne par ligne (séparateur ;)
             $content = $sqlfile->read();
+            $sqlfile->close();
             //Supprime les lignes de commentaire
             $content = preg_replace('/--.*\n/', '', $content);
             $sql = explode(';', $content);
@@ -76,6 +77,8 @@ class SqlTask extends Shell {
 
         //Lecture ligne par ligne (séparateur ;)
         $content = $sqlfile->read();
+        $sqlfile->close();
+
         //Supprime les lignes de commentaire
         $content = preg_replace('/--.*\n/', '', $content);
         $sql = explode(';', $content);
