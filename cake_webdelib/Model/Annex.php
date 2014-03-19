@@ -97,9 +97,10 @@ class Annex extends AppModel {
         if ($to_merge)
             $conditions['Annex.joindre_fusion'] = true;
 
-        $annexes = $this->find('all', array('conditions' => $conditions,
-            'recursive' => -1,
+        $annexes = $this->find('all', array(
+            'conditions' => $conditions,
             'order' => array('Annex.id' => 'ASC'),
+            'recursive' => -1,
         ));
         
         if ($joindreParent){
