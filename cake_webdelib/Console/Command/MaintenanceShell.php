@@ -126,7 +126,7 @@ class MaintenanceShell extends AppShell {
 
         $errors = array();
         $warnings = array();
-        $logPath = Configure::read("WEBDELIB_PATH") . DS . "tmp" . DS . "logs" . DS . "gedooo.log";
+        $logPath = TMP . "logs" . DS . "gedooo.log";
         $success = true;
         $this->out("\n<important>Démarrage des tests...</important>\n");
         $time_start = microtime(true);
