@@ -50,12 +50,12 @@ class AppModel extends Model {
     public function checkFormat($data, $extension = null, $required = false) {
         App::uses('FidoComponent', 'ModelOdtValidator.Controller/Component');
         $this->Fido = new FidoComponent();
-        if (is_array($data)){
+        if (is_array($data)) {
             $data = array_shift($data);
             if (!$required && $data['error'] == 4) {
                 return true;
             }
-            if ($required && $data['error'] !== 0) {
+            if ($required && $data['error'] != 0) {
                 return false;
             }
             if ($data['size'] == 0 || $data['error'] != 0) {
@@ -63,7 +63,7 @@ class AppModel extends Model {
                 return false;
             }
             $allowed = $this->Fido->checkFile($data['tmp_name']);
-        }else{
+        } else {
             if (empty($data))
                 return !$required;
             $file = new File(tempnam(TMP, 'upload_'));

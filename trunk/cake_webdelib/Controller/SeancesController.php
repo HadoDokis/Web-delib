@@ -38,151 +38,152 @@ class SeancesController extends AppController {
             'sendToIdelibre' => 'Seances:listerFuturesSeances',
 			'saisirCommentaire'=>'Seances:listerFuturesSeances');
 
-	function add($timestamp=null) {
-		// initialisation
-		$sortie = false;
-		$date = '';
-		if (empty($this->data)) {
-			if (isset($timestamp)) $date = date('d/m/Y',$timestamp);
-		} else {
+    function add($timestamp = null) {
+        // initialisation
+        $success = false;
+        $date = '';
+        if (empty($this->data)) {
+            if (isset($timestamp)) $date = date('d/m/Y', $timestamp);
+        } else {
 //			$date = date('d/m/Y', strtotime($this->data['date']));
-                        $date = $this->data['date'];
-			if (count(explode('/', $date))!=3) {
-				$this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type'=>'erreur'));
-			} else {
-				$this->request->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($date);
-				$this->request->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
-				if ($this->Seance->save($this->data)) {
-					$seanceId = $this->Seance->id;
-					// sauvegarde des informations supplémentaires
-					if (array_key_exists('Infosup', $this->data))
-						$this->Infosup->saveCompacted($this->data['Infosup'], $seanceId, 'Seance');
-					$this->Session->setFlash('La séance a été sauvegardée', 'growl');
-					$sortie = true;
-				} else {
-					$this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-				}
-			}
-		}
-		if ($sortie)
-			$this->redirect(array('action'=>'listerFuturesSeances'));
-		else {
-			$this->set('date', $date);
-			$natures = array_keys($this->Session->read('user.Nature'));
-                        App::import('model','TypeseancesTypeacte');
-                        $TypeseancesTypeacte = new TypeseancesTypeacte();
-                        $types = $TypeseancesTypeacte->getTypeseanceParNature($natures);
+            $date = $this->data['date'];
+            if (count(explode('/', $date)) != 3) {
+                $this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type' => 'erreur'));
+            } else {
+                $this->Seance->begin();
+                $this->request->data['Seance']['date']['date'] = $this->Utils->FrDateToUkDate($date);
+                $this->request->data['Seance']['date'] = $this->data['Seance']['date']['date'] . ' ' . $this->data['Seance']['date']['hour'] . ':' . $this->data['Seance']['date']['min'];
+                if ($success = $this->Seance->save($this->data)) {
+                    // sauvegarde des informations supplémentaires
+                    if (array_key_exists('Infosup', $this->data)){
+                        $success &= $this->Infosup->saveCompacted($this->request->data['Infosup'], $this->Seance->id, 'Seance');
+                    }
+                }
+                if (!$success) {
+                    $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
+                    $this->Seance->rollback();
+                }
+            }
+        }
+        if ($success){
+            $this->Seance->commit();
+            $this->Session->setFlash('La séance a été sauvegardée', 'growl');
+            $this->redirect(array('action' => 'listerFuturesSeances'));
+        }
+        else {
+            $this->set('date', $date);
+            $natures = array_keys($this->Session->read('user.Nature'));
+            App::import('model', 'TypeseancesTypeacte');
+            $TypeseancesTypeacte = new TypeseancesTypeacte();
+            $types = $TypeseancesTypeacte->getTypeseanceParNature($natures);
 
-			$this->set('typeseances', $this->Typeseance->find('list', array('conditions'=>array('Typeseance.id'=> $types) )));
-			$this->set('infosupdefs', $this->Infosupdef->find('all', array(
-					'recursive'=> -1,
-					'conditions'=> array('model' => 'Seance', 'actif' => true),
-					'order' => 'ordre')));
-			$this->set('infosuplistedefs', $this->Infosupdef->generateListes('Seance'));
-			$this->request->data['Infosup'] = $this->Infosupdef->valeursInitiales('Seance');
-			$this->render('edit');
-		}
-	}
+            $this->set('typeseances', $this->Typeseance->find('list', array('conditions' => array('Typeseance.id' => $types))));
+            $this->set('infosupdefs', $this->Infosupdef->find('all', array(
+                'recursive' => -1,
+                'conditions' => array('model' => 'Seance', 'actif' => true),
+                'order' => 'ordre')));
+            $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Seance'));
+            $this->request->data['Infosup'] = $this->Infosupdef->valeursInitiales('Seance');
+            $this->render('edit');
+        }
+    }
 
-	function edit($id = null) {
-		$sortie = false;
-		$date = '';
-		$path_seance= WWW_ROOT.'files'.DS.'generee'.DS.'seance'.DS.$id.DS;
-		if (empty($this->data)) { // not is post
-			$this->Seance->Behaviors->attach('Containable');
-			$this->request->data = $this->Seance->find('first', array( 'contain'=>array('Infosup'),
-					'conditions'=>array('Seance.id'=> $id)));
-			if (empty($this->data)) {
-				$this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
-				$sortie = true;
-			} else {
-				$date = date('d/m/Y', strtotime($this->data['Seance']['date']));
-				foreach ($this->data['Infosup']  as $infosup) {
-					$infoSupDef = $this->Infosupdef->find('first', array(
-							'recursive' => -1,
-							'fields' => array('type'),
-							'conditions' => array('id' =>$infosup['infosupdef_id'], 'model' => 'Seance', 'actif'=>true)));
-					if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
-						$this->Gedooo->createFile($path_seance, $infosup['file_name'], $infosup['content']);
-				}
-				$this->request->data['Infosup'] = $this->Infosup->compacte($this->data['Infosup']);
-			}
-		} else {
-			$date = $this->data['date'];
-			if (count(explode('/',$date))!=3) {
-				$this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type'=>'erreur'));
-			} else {
-                                $success = true;
-                                $this->Seance->begin();
+    function edit($id = null) {
+        $sortie = false;
+        $date = '';
+        $path_seance = WWW_ROOT . 'files' . DS . 'generee' . DS . 'seance' . DS . $id . DS;
+        if (empty($this->data)) { // not is post
+            $this->Seance->Behaviors->attach('Containable');
+            $this->request->data = $this->Seance->find('first', array(
+                'contain' => array('Infosup'),
+                'conditions' => array('Seance.id' => $id)
+            ));
+            if (empty($this->data)) {
+                $this->Session->setFlash('Invalide id pour la seance', 'growl', array('type' => 'erreur'));
+                $sortie = true;
+            } else {
+                $date = date('d/m/Y', strtotime($this->data['Seance']['date']));
+                foreach ($this->data['Infosup'] as $infosup) {
+                    $infoSupDef = $this->Infosupdef->find('first', array(
+                        'recursive' => -1,
+                        'fields' => array('type'),
+                        'conditions' => array('id' => $infosup['infosupdef_id'], 'model' => 'Seance', 'actif' => true)));
+                    if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content']))
+                        $this->Gedooo->createFile($path_seance, $infosup['file_name'], $infosup['content']);
+                }
+                $this->request->data['Infosup'] = $this->Infosup->compacte($this->request->data['Infosup']);
+            }
+        } else {
+            $date = $this->data['date'];
+            if (count(explode('/', $date)) != 3) {
+                $this->Session->setFlash('La date n\'est pas dans un format correct', 'growl', array('type' => 'erreur'));
+            } else {
+                $success = true;
+                $this->Seance->begin();
 
-				$this->request->data['Seance']['date']['date'] =  $this->Utils->FrDateToUkDate($date);
-				$this->request->data['Seance']['date'] = $this->data['Seance']['date']['date'].' '.$this->data['Seance']['date']['hour'].':'.$this->data['Seance']['date']['min'];
-                                
-                                $success = $this->Seance->save($this->data) && $success;
-				if ( $success ) {
-					// sauvegarde des fichiers odt car possibilité modifiés en webdav sur le serveur
-					$infossupDefs = $this->Infosupdef->find('all', array(
-							'recursive' => -1,
-							'fields' => array('id'),
-							'conditions' => array('type' => 'odtFile', 'model' => 'Seance', 'actif' => true)));
-					foreach ($infossupDefs as $infossupDef) {
-						$infosup = $this->Infosup->find('first', array(
-								'recursive' => -1,
-								'fields' => array('id', 'file_name'),
-								'conditions' => array('foreign_key'=>$id, 'model'=>'Seance', 'infosupdef_id'=>$infossupDef['Infosupdef']['id'])));
-						if (empty($infosup) || empty($infosup['Infosup']['file_name']))
-							continue;
-						$odtFileUri = $path_seance.$infosup['Infosup']['file_name'] ;
-                                     
-						if (file_exists($odtFileUri)){
-							$stat = stat($odtFileUri);
-							if ($stat > 0) {
-								$infosup['Infosup']['content'] = file_get_contents($odtFileUri);
-								$infosup['Infosup']['file_size'] = $stat['size'];
-								$success = $this->Infosup->save($infosup) && $success;
-							}
-						}
-					}
-					// sauvegarde des informations supplémentaires
-					if (array_key_exists('Infosup', $this->data))
-						$success = $this->Infosup->saveCompacted($this->data['Infosup'], $id, 'Seance') && $success;
-                                        //exit; // FIXME
-				}
-                                
-                                if( $success ) {
-                                    $this->Seance->commit();
-                                    $this->Session->setFlash('La séance a été sauvegardée', 'growl');
-                                    $sortie = true;
-                                } else {
-                                    $this->Seance->rollback();
-                                    $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type'=>'erreur'));
-                                    $errors_Infosup = $this->Infosup->invalidFields();	
-                                    $this->set('errors_Infosup', $errors_Infosup);
-                                    $errors_Seance = $this->Seance->invalidFields();
-                                    $this->set('errors_Seance', $errors_Seance);
-                                    
-                                }
-			}
-		}
-		if ($sortie)
-			$this->redirect(array('action'=>'listerFuturesSeances'));
-		else {
-			$this->set('date', $date);
-			$natures = array_keys($this->Session->read('user.Nature'));
-                        App::import('model','TypeseancesTypeacte');
-                        $TypeseancesTypeacte = new TypeseancesTypeacte();
-                        $types = $TypeseancesTypeacte->getTypeseanceParNature($natures);
+                $this->request->data['Seance']['date']['date'] = $this->Utils->FrDateToUkDate($date);
+                $this->request->data['Seance']['date'] = $this->data['Seance']['date']['date'] . ' ' . $this->data['Seance']['date']['hour'] . ':' . $this->data['Seance']['date']['min'];
 
-			$this->set('typeseances', $this->Typeseance->find('list', array('conditions'=>array('Typeseance.id'=> $types) )));
-			$this->set('infosupdefs', $this->Infosupdef->find('all', array(
-					'recursive'=> -1,
-					'conditions'=> array('model' => 'Seance', 'actif' => true),
-					'order' => 'ordre')));
-			$this->set('infosuplistedefs', $this->Infosupdef->generateListes('Seance'));
-		}
-	}
+                $success &= $this->Seance->save($this->data);
+                if ($success) {
+                    // sauvegarde des fichiers odt car possibilité modifiés en webdav sur le serveur
+                    $infossupDefs = $this->Infosupdef->find('all', array(
+                        'recursive' => -1,
+                        'fields' => array('id'),
+                        'conditions' => array('type' => 'odtFile', 'model' => 'Seance', 'actif' => true)));
+                    foreach ($infossupDefs as $infossupDef) {
+                        $infosup = $this->Infosup->find('first', array(
+                            'recursive' => -1,
+                            'fields' => array('id', 'file_name'),
+                            'conditions' => array('foreign_key' => $id, 'model' => 'Seance', 'infosupdef_id' => $infossupDef['Infosupdef']['id'])));
+                        if (empty($infosup) || empty($infosup['Infosup']['file_name']))
+                            continue;
+                        $odtFileUri = $path_seance . $infosup['Infosup']['file_name'];
 
-	function delete($id = null) {
+                        if (file_exists($odtFileUri)) {
+                            $stat = stat($odtFileUri);
+                            if ($stat > 0) {
+                                $infosup['Infosup']['content'] = file_get_contents($odtFileUri);
+                                $infosup['Infosup']['file_size'] = $stat['size'];
+                                $success &= $this->Infosup->save($infosup);
+                            }
+                        }
+                    }
+                    // sauvegarde des informations supplémentaires
+                    if (array_key_exists('Infosup', $this->data))
+                        $success &= $this->Infosup->saveCompacted($this->request->data['Infosup'], $id, 'Seance');
+                    //exit; // FIXME
+                }
+
+                if ($success) {
+                    $this->Seance->commit();
+                    $this->Session->setFlash('La séance a été sauvegardée', 'growl');
+                    $sortie = true;
+                } else {
+                    $this->Seance->rollback();
+                    $this->Session->setFlash('Corrigez les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
+                }
+            }
+        }
+        if ($sortie)
+            $this->redirect(array('action' => 'listerFuturesSeances'));
+        else {
+            $this->set('date', $date);
+            $natures = array_keys($this->Session->read('user.Nature'));
+            App::import('model', 'TypeseancesTypeacte');
+            $TypeseancesTypeacte = new TypeseancesTypeacte();
+            $types = $TypeseancesTypeacte->getTypeseanceParNature($natures);
+
+            $this->set('typeseances', $this->Typeseance->find('list', array('conditions' => array('Typeseance.id' => $types))));
+            $this->set('infosupdefs', $this->Infosupdef->find('all', array(
+                'recursive' => -1,
+                'conditions' => array('model' => 'Seance', 'actif' => true),
+                'order' => 'ordre')));
+            $this->set('infosuplistedefs', $this->Infosupdef->generateListes('Seance'));
+        }
+    }
+
+    function delete($id = null) {
 		if (!$id) {
 			$this->Session->setFlash('Invalide id pour la seance', 'growl', array('type'=>'erreur'));
 			$this->redirect('/seances/index');
@@ -692,15 +693,15 @@ class SeancesController extends AppController {
                 if (!empty($this->data['Deliberation']['seance_id']))
                     $this->request->data['Commentaire']['texte'].= ' en '. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$this->Seance->getType($this->data['Deliberation']['seance_id'][0]));
                 else
-                    $this->request->data['Commentaire']['texte'].= ' en '. $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = '.$this->Seance->getType($seance_id));
+                    $this->request->data['Commentaire']['texte'] .= ' en ' . $this->Seance->Typeseance->field('Typeseance.libelle', 'Typeseance.id = ' . $this->Seance->getType($seance_id));
                 if (!empty($this->data['Deliberation']['seance_id']))
-                    $this->request->data['Commentaire']['texte'].= ' du ' .$this->Date->frenchDate(strtotime($this->Seance->getDate($this->data['Deliberation']['seance_id'][0])));
+                    $this->request->data['Commentaire']['texte'] .= ' du ' . $this->Date->frenchDate(strtotime($this->Seance->getDate($this->data['Deliberation']['seance_id'][0])));
                 else
-                    $this->request->data['Commentaire']['texte'].= ' du ' .$this->Date->frenchDate(strtotime($this->Seance->getDate($seance_id)));
+                    $this->request->data['Commentaire']['texte'] .= ' du ' . $this->Date->frenchDate(strtotime($this->Seance->getDate($seance_id)));
                 $this->request->data['Commentaire']['commentaire_auto'] = 1;
                 $this->Deliberation->Commentaire->save($this->data);
 
-                $this->redirect('/seances/detailsAvis/'.$seance_id);
+                $this->redirect(array('controller' => 'seances', 'action' => 'detailsAvis', $seance_id));
             }
         }
 
