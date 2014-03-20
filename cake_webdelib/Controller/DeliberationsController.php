@@ -2644,11 +2644,10 @@ class DeliberationsController extends AppController
         $this->render('index');
     }
 
-    /*
+    /**
      * Affiche la liste de tous les projets dont le rédacteur fait parti de mon/mes services
      * Permet de valider en urgence un projet
      */
-
     function projetsMonService()
     {
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
@@ -3089,7 +3088,6 @@ class DeliberationsController extends AppController
             $this->render('rechercheMultiCriteres');
         } else {
             $conditions = array();
-            $conditions['Deliberation.parent_id'] = null;
             $multiseances = array();
 
             if (!empty($this->data['Deliberation']['id'])) {
@@ -3174,11 +3172,6 @@ class DeliberationsController extends AppController
                     $this->_afficheProjets($projets, 'Résultat de la recherche parmi mes projets', array('view', 'generer'), array('mesProjetsRecherche'));
                 } else {
                     if (count($projets) > 0) {
-                        $format = $this->Session->read('user.format.sortie');
-                        if (empty($format))
-                            $format = 0;
-
-//                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format, $multiseances, $conditions);
                         $deliberationIds = array();
                         foreach($projets as &$projet) $deliberationIds[] = $projet['Deliberation']['id'];
                         return $this->_genereFusionRechercheToClient($deliberationIds, $this->data['Deliberation']['model'], $this->data['waiter']['token']);
@@ -3219,9 +3212,6 @@ class DeliberationsController extends AppController
             $this->render('rechercheMultiCriteres');
         } else {
             $conditions = array();
-            $conditions['Deliberation.parent_id'] = null;
-            $multiseances = array();
-
             if (!empty($this->data['Deliberation']['id'])) {
                 if (!is_numeric($this->data['Deliberation']['id'])) {
                     $this->Session->setFlash('Vous devez saisir un identifiant valide', 'growl', array('type' => 'erreur'));
@@ -3233,13 +3223,7 @@ class DeliberationsController extends AppController
             if (!empty($this->data['Deliberation']['rapporteur_id']))
                 $conditions["Deliberation.rapporteur_id"] = $this->data['Deliberation']['rapporteur_id'];
             if (!empty($this->data['Deliberation']['service_id']))
-                $conditions["Deliberation.service_id"] = $this->data['Deliberation']['service_id'];
-            if (!empty($this->data['Deliberation']['service_id'])) {
-                $aService_id = array();
-                foreach ($this->User->Service->doListId($this->data['Deliberation']['service_id']) as $aService)
-                    $aService_id[] = $aService;
-                $conditions['Deliberation.service_id'] = $aService_id;
-            }
+                $conditions['Deliberation.service_id'] = $this->User->Service->doListId($this->data['Deliberation']['service_id']);
             if (!empty($this->data['Deliberation']['typeacte_id']))
                 $conditions['Deliberation.typeacte_id'] = $this->data['Deliberation']['typeacte_id'];
             if (!empty($this->data['Deliberation']['theme_id']))
@@ -3253,16 +3237,13 @@ class DeliberationsController extends AppController
                 $conditions["OR"]["Deliberation.objet ILIKE"] = $texte;
                 $conditions["OR"]["Deliberation.titre ILIKE"] = $texte;
             }
-            if (empty($conditions["Deliberation.id"])) {
-                if (!empty($this->data['Deliberation']['seance_id'])) {
-                    $multiseances = array();
-                    foreach ($this->data['Deliberation']['seance_id'] as $seance_id) {
-                        //      $multiseances[] = $seance_id;
-                        $projet_ids = $this->Seance->getDeliberationsId($seance_id);
-                        $multiseances = array_merge($projet_ids, $multiseances);
-                    }
-                    $conditions['Deliberation.id'] = $multiseances;
+            if (empty($conditions["Deliberation.id"]) && !empty($this->data['Deliberation']['seance_id'])) {
+                $multiseances = array();
+                foreach ($this->data['Deliberation']['seance_id'] as $seance_id) {
+                    $projet_ids = $this->Seance->getDeliberationsId($seance_id);
+                    $multiseances = array_merge($projet_ids, $multiseances);
                 }
+                $conditions['Deliberation.id'] = $multiseances;
             }
             if (array_key_exists('Infosup', $this->data)) {
                 $rechercheInfoSup = $this->Deliberation->Infosup->selectInfosup($this->data['Infosup']);
@@ -3303,24 +3284,19 @@ class DeliberationsController extends AppController
                         $actions[] = 'edit';
                     $this->_afficheProjets($projets, 'Résultat de la recherche parmi tous les projets', $actions, array('tousLesProjetsRecherche'));
                 } else {
-                    $format = $this->Session->read('user.format.sortie');
                     if (empty($this->data['Deliberation']['model'])) {
                         $this->Session->setFlash("Vous devez choisir un modèle de document", 'growl', array('type' => 'erreur'));
-                        $this->redirect(array('action'=>'tousLesProjetsRecherche'));
+                        return $this->redirect(array('action'=>'tousLesProjetsRecherche'));
                     }
-                    if (empty($format))
-                        $format = 0;
-                    //if (count($multiseances) == 1)
                     $multiseances = array();
                     if (!empty($projets) || !empty($multiseances)) {
-//                        $this->Deliberation->genererRecherche($projets, $this->data['Deliberation']['model'], $format, $multiseances, $conditions);
                         $deliberationIds = array();
                         foreach($projets as &$projet) $deliberationIds[] = $projet['Deliberation']['id'];
                         return $this->_genereFusionRechercheToClient($deliberationIds, $this->data['Deliberation']['model'], $this->data['waiter']['token']);
                     }
                     else {
                         $this->Session->setFlash('Aucun projet correspondant aux critères de recherche.', 'growl', array('type' => 'erreur'));
-                        $this->redirect(array('action'=>'tousLesProjetsRecherche'));
+                        return $this->redirect(array('action'=>'tousLesProjetsRecherche'));
                     }
                 }
             }
