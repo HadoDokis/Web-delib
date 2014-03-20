@@ -257,7 +257,7 @@ class Deliberation extends AppModel {
     function libelleEtat($etat, $codesSpeciaux = false) {
 		switch($etat) {
 			case -1 :
-				return $codesSpeciaux ? 'Version&eacute;' : 'Versionné';
+				return $codesSpeciaux ? 'Versionn&eacute;' : 'Versionné';
 				break;
 			case -1 :
 				return $codesSpeciaux ? 'Refus&eacute;' : 'Refusé';
@@ -1662,11 +1662,12 @@ class Deliberation extends AppModel {
      * @param string $parafhisto
      * @param integer $delib_id
      * @param integer $circuit_id
+     * @param integer $user_id
      */
-    function setHistorique($parafhisto,$delib_id, $circuit_id){
+    function setHistorique($parafhisto,$delib_id, $circuit_id = null, $user_id = -1){
         $histo = $this->Historique->create();
         $histo['Historique']['delib_id'] = $delib_id;
-        $histo['Historique']['user_id'] = -1;
+        $histo['Historique']['user_id'] = $user_id;
         $histo['Historique']['commentaire'] = $parafhisto;
         $histo['Historique']['circuit_id'] = $circuit_id;
         $this->Historique->save($histo);
@@ -1750,50 +1751,47 @@ class Deliberation extends AppModel {
 
         App::import('Component', 'Iparapheur');
         $this->Iparapheur = new IparapheurComponent();
-
+        // Récupération log historique coté parapheur
         $histo = $this->Iparapheur->getHistoDossierWebservice($id_dossier);
         if (isset($histo['logdossier'])){
+            // Parcours des étapes du log
             for ($i = 0; $i < count($histo['logdossier']); $i++) {
+                // Cas envoi direct au tdt depuis parapheur (surement inutilisé)
                 if ($tdt && $histo['logdossier'][$i]['status'] == 'EnCoursTransmission')
                     return true;
-
-                if ($histo['logdossier'][$i]['status'] == 'Signe'
-                    || $histo['logdossier'][$i]['status'] == 'Archive') {
-                    // Récupère infos circuit i-parapheur (annotation)
-                    $this->Commentaire->create();
-                    $comm ['Commentaire']['delib_id'] = $delib_id;
-                    $comm ['Commentaire']['agent_id'] = -1;
-                    $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
-                    $comm ['Commentaire']['commentaire_auto'] = 0;
-                    $this->Commentaire->save($comm['Commentaire']);
-
-                    if ($delib['Deliberation']['parapheur_etat'] == 1) {
-                        if ($histo['logdossier'][$i]['status'] == 'Signe') {
-                            $dossier = $this->Iparapheur->GetDossierWebservice($id_dossier);
-                            if (!empty($dossier['getdossier']['signature'])) {
-                                $this->saveField('parapheur_bordereau', base64_decode($dossier['getdossier']['bordereau']));
-                                $this->saveField('signature', base64_decode($dossier['getdossier']['signature']));
-                            }
-                            $this->saveField('signee', 1);
-                        }
-                        if ($histo['logdossier'][$i]['status'] == 'Archive'){
-                            $this->saveField('parapheur_etat', 2);
-                            $this->Iparapheur->archiverDossierWebservice($id_dossier, 'EFFACER');
-                            return true;
-                        }
+                if (in_array($histo['logdossier'][$i]['status'], array('Vise', 'Signe', 'Archive'))) {
+                    if (in_array($histo['logdossier'][$i]['status'], array('Signe', 'Vise'))) { // Etape visa ou signature
+                        //Annotations
+                        $this->setCommentaire($delib_id, $histo['logdossier'][$i]);
+                        $this->saveField('signee', 1);
+                    }
+                    elseif ($histo['logdossier'][$i]['status'] == 'Archive'){ // Dernière étape : archive
+                        $dossier = $this->Iparapheur->GetDossierWebservice($id_dossier);
+                        // Sauvegarde du bordereau (pdf)
+                        if (!empty($dossier['getdossier']['bordereau']))
+                            $this->saveField('parapheur_bordereau', base64_decode($dossier['getdossier']['bordereau']));
+                        // Sauvegarde des signatures (zip)
+                        if (!empty($dossier['getdossier']['signature']))
+                            $this->saveField('signature', base64_decode($dossier['getdossier']['signature']));
+                        // Etat retour ok
+                        $this->saveField('parapheur_etat', 2);
+                        $this->Iparapheur->archiverDossierWebservice($id_dossier, 'EFFACER');
+                        // Ajout de l'info d'approbation parapheur dans l'historique
+                        $this->setHistorique('Dossier approuvé par le parapheur', $delib_id);
+                        return true;
                     }
                 } elseif ($histo['logdossier'][$i]['status'] == 'RejetSignataire'
                     || $histo['logdossier'][$i]['status'] == 'RejetVisa') { // Cas de refus dans le parapheur
-                    $this->Commentaire->create();
-                    $comm ['Commentaire']['delib_id'] = $delib_id;
-                    $comm ['Commentaire']['agent_id'] = -1;
-                    $comm ['Commentaire']['texte'] = $histo['logdossier'][$i]['nom'] . " : " . $histo['logdossier'][$i]['annotation'];
-                    $comm ['Commentaire']['commentaire_auto'] = 0;
-                    $this->Commentaire->save($comm['Commentaire']);
+                    // Etat refusé
                     $this->saveField('parapheur_etat', -1);
+                    // Motif de rejet
                     $this->saveField('parapheur_commentaire', $histo['logdossier'][$i]['annotation']);
                     // Supprimer le dossier du parapheur
                     $this->Iparapheur->effacerDossierRejeteWebservice($id_dossier);
+                    // Annotation (motif de rejet)
+                    $this->setCommentaire($delib_id, $histo['logdossier'][$i]);
+                    // Ajout de l'info de rejet parapheur dans l'historique
+                    $this->setHistorique('Dossier rejeté par le parapheur', $delib_id);
                     return true;
                 }
             }
@@ -1874,16 +1872,19 @@ class Deliberation extends AppModel {
             $this->Commentaire->save($com);
             return true;
         }elseif ($infos['last_action']['action'] == 'recu-iparapheur' || !empty($infos['data']['has_signature'])){
-            $this->saveField('signee', 1);
             $this->saveField('parapheur_etat', '2');
             $this->saveField('parapheur_commentaire', $infos['last_action']['message']);
             //Récupération du bordereau
             $bordereau = $this->Signature->getBordereau($delib['Deliberation']['pastell_id']);
             if (!empty($bordereau))
                 $this->saveField('parapheur_bordereau', $bordereau);
-            $signature = $this->Signature->getSignature($delib['Deliberation']['pastell_id']);
-            if (!empty($signature))
-                $this->saveField('signature', $signature);
+            //Signature
+            if (!empty($infos['data']['has_signature'])){
+                $signature = $this->Signature->getSignature($delib['Deliberation']['pastell_id']);
+                if (!empty($signature))
+                    $this->saveField('signature', $signature);
+                $this->saveField('signee', 1);
+            }
 
             $this->setHistorique($infos['last_action']['message'], $delib_id, 0);
             return true;
