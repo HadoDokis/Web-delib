@@ -924,6 +924,7 @@ class SeancesController extends AppController {
 			$this->Session->setFlash('Tous les actes ne sont pas signés.', 'growl', array('type'=>'erreur'));
 		}
 		else {
+                        $this->Seance->id=$seance_id;
 			if ($this->Seance->saveField('traitee', 1))
                                 $this->Session->setFlash("La séance a été cloturé", 'growl', array('type'=>'important'));
 			else {
