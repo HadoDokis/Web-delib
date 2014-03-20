@@ -1549,6 +1549,7 @@ class SeancesController extends AppController {
                 'contain' => array('Theme.libelle'),
                 'fields' => array(
                     'Deliberation.objet',
+                    'Deliberation.objet_delib',
                     'Deliberation.typeacte_id',
                     'Deliberation.theme_id',
                     'Deliberation.etat'
@@ -1557,30 +1558,13 @@ class SeancesController extends AppController {
             // fusion du rapport
             $projet_filename = $this->Deliberation->fusionToFile($delib_id, 'rapport');
 
-            $projet['libelle'] = $delib['Deliberation']['objet'];
+            $projet['libelle'] = $delib['Deliberation']['objet_delib'];
             $projet['ordre'] = $i;
             $projet['theme'] = implode(',', $this->Deliberation->Theme->getLibelleParent($delib['Deliberation']['theme_id']));
             $data['projet_' . $i . '_rapport'] = "@$projet_filename";
 
-            $j = 0;
-            $points = array('.', '..');
+            // générer les annexes ? Pour le moment non !
             $annexes = array();
-            if (is_dir(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/annexes/")) {
-                if ($dh = opendir(WEBROOT_PATH . "/files/generee/fd/null/$delib_id/annexes/")) {
-                    while (($file = readdir($dh)) !== false) {
-                        if (!in_array($file, $points)) {
-                            $annex_filename = WEBROOT_PATH . "/files/generee/fd/null/$delib_id/annexes/" . $file;
-                            $data['projet_' . $i . '_' . $j . '_annexe'] = "@$annex_filename";
-                            $annexes[] = array(
-                                'libelle' => $file,
-                                'ordre' => $j
-                            );
-                            $j++;
-                        }
-                    }
-                    closedir($dh);
-                }
-            }
             $projet['annexes'] = $annexes;
             $jsonData['projets'][] = $projet;
             $i++;
@@ -1632,13 +1616,12 @@ class SeancesController extends AppController {
                 } else
                     throw new Exception('Impossible de récupérer l\'identifiant i-delibRE de la séance.');
             else
-                throw new Exception('Erreur i-delibRE (réponse incorrecte)');
-
+                throw new Exception('Réponse i-delibRE incorrecte)');
         } catch (Exception $e) {
             $this->log($data, 'idelibre');
             if (!empty($retour)) $this->log($retour, 'idelibre');
             else $this->log('Aucune réponse', 'idelibre');
-            $this->Session->setFlash('<strong>Un évènement inattendu c\'est produit :</strong><br>' . $e->getMessage() . '<br>Veuillez contacter votre administrateur.', 'growl', array('error'));
+            $this->Session->setFlash('<strong>Un évènement inattendu s\'est produit :</strong><br>' . $e->getMessage() . '<br>Veuillez contacter votre administrateur.', 'growl', array('error'));
         }
 
 
