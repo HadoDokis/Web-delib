@@ -16,6 +16,7 @@ App::uses('PastellComponent', 'Controller/Component');
 App::uses('Deliberation', 'Model');
 App::uses('TdtMessage', 'Model');
 App::uses('Collectivite', 'Model');
+App::uses('AppTools', 'Lib');
 
 /**
  * Class Tdt
@@ -234,8 +235,7 @@ class Tdt {
         return $tdt_messages;
     }
 
-    public function getDateArPastell($options) {
-        $id_d = $options[0];
+    public function getDateArPastell($id_d) {
         $this->Pastell->action($this->id_e, $id_d, 'verif-tdt');
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
         if (!empty($infos['data']['date_ar']))
@@ -248,8 +248,7 @@ class Tdt {
      * @param $options
      * @return bool
      */
-    public function getDateArS2low($options) {
-        $tdt_id = $options[0];
+    public function getDateArS2low($tdt_id) {
         $flux = $this->S2low->getFluxRetour($tdt_id);
         $codeRetour = substr($flux, 3, 1);
 
@@ -325,19 +324,21 @@ class Tdt {
     }
 
     /**
-     * Récupération de l'acte tamponé
+     * Récupération de l'acte tamponé au format pdf
      */
-    public function getTamponS2low($options) {
-        $tdt_id = $options[0];
+    public function getTamponS2low($tdt_id) {
         $flux = $this->S2low->getActeTampon($tdt_id);
-        return $flux;
+        $infoContent=AppTools::FileMime($flux);
+        if($infoContent['mimetype']=='application/pdf')
+            return $flux;
+        
+        return NULL;
     }
 
     /**
-     * Récupération de l'acte tamponé
+     * Récupération de l'acte tamponé au format pdf
      */
-    public function getTamponPastell($options) {
-        $id_d = $options[0];
+    public function getTamponPastell($id_d) {
         $flux = $this->Pastell->getFile($this->id_e, $id_d, 'acte_tamponne');
         return $flux;
     }

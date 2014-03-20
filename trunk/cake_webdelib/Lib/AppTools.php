@@ -141,12 +141,10 @@ class AppTools {
      * @return bool|string
      */
     public static function newTmpDir($patchDir) {
-
         App::uses('Folder', 'Utility');
-        App::uses('File', 'Utility');
-
+        $folder = new Folder($patchDir, true, 0777);
         //Création du répertoire temporaire par la fonction tempnam
-        $outputDir = tempnam($patchDir, '');
+        $outputDir = tempnam($folder->path, '');
         unlink($outputDir);
         $folder = new Folder($outputDir, true, 0777);
         return $folder->path;
@@ -155,6 +153,30 @@ class AppTools {
     public static function getNameFile($file) {
         $info = pathinfo($file);
         return basename($file, '.' . $info['extension']);
+    }
+    
+    /**
+     * Retourne le type mime d'un flux passé en parametre
+     * @param string $patchDir
+     * @return bool|string
+     */
+    public static function FileMime($data) {
+
+        App::uses('File', 'Utility');
+        App::uses('Fido', 'ModelOdtValidator.Lib/Fido');
+        
+        $file = new File($data, false);
+        if(!$file->exists()){
+            $fileFlux = new File(AppTools::newTmpDir(TMP.'file/test').'/test_', true, 0777);
+            $fileFlux->write($data);
+            $allowed = Fido::analyzeFile($fileFlux->path);
+            $fileFlux->delete();
+        }else{
+            $allowed = Fido::analyzeFile($file->path);
+            $file->close();
+        }
+        
+        return $allowed;
     }
 }
 
