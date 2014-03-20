@@ -1594,7 +1594,7 @@ class DeliberationsController extends AppController
         $conditions['Deliberation.typeacte_id'] = $this->Deliberation->Typeacte->getIdDesNaturesDelib();
         $conditions['Deliberation.etat'] = 5;
         // $conditions['Deliberationseance.Seance.Typeseance.action'] = 0;   
-        $conditions[] = 'Deliberation.id IN ('
+       $conditions[] = 'Deliberation.id IN ('
             . 'SELECT deliberations_seances.deliberation_id'
                 . ' FROM deliberations_seances '
                 . ' INNER JOIN seances  ON ( seances.id=deliberations_seances.seance_id )'
@@ -1631,12 +1631,12 @@ class DeliberationsController extends AppController
                     'conditions' => array('Typeacte.teletransmettre' => true)),
                 'Circuit' => array('fields' => array('nom')),
                 'TdtMessage' => array('fields' => array('message_id', 'type_message')),
+            'Deliberationtypeseance' => array('fields' => array('id'),
+                    'Typeseance' => array('fields' => array('id', 'libelle', 'action'),
+                    )),
                 'Deliberationseance' => array('fields' => array('id'),
                     'Seance' => array('fields' => array('id', 'date', 'type_id'),
-                        'Typeseance' => array(
-                            'fields' => array('id', 'libelle', 'action'),
-                            'conditions' => array('Typeseance.action' => 0)
-                        )))),
+                        'Typeseance' => array('fields' => array('id', 'libelle', 'action'))))),
             'order' => 'Deliberation.num_delib ASC',
             'limit' => 20));
 
@@ -1645,19 +1645,25 @@ class DeliberationsController extends AppController
 
         // On affiche que les delibs vote pour.
         $deliberations = $this->Paginator->paginate('Deliberation');
-        
+        $this->_sortProjetSeanceDate($deliberations);
+        //debug($deliberations);
         $toutes_seances = array();
-        for ($i = 0; $i < count($deliberations); $i++) {
-
-            $deliberations[$i]['Deliberation']['num_pref'] = $deliberations[$i]['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($deliberations[$i]['Deliberation']['num_pref']);
-            
-            foreach ($deliberations[$i]['Deliberationseance'] as $Deliberationseance){
-                $deliberations[$i]['Seance']['id'] = $Deliberationseance['Seance']['id'];
-                $deliberations[$i]['Seance']['date'] = $Deliberationseance['Seance']['date'];
-                $deliberations[$i]['Seance']['type_id'] = $Deliberationseance['Seance']['type_id'];
-                break;
-            }
+        foreach ($deliberations as $key=>$deliberation) {
+            unset($deliberations[$key]['Deliberationtypeseance']);
+            $deliberations[$key]['Deliberation']['num_pref'] = $deliberation['Deliberation']['num_pref'] . ' - ' . $this->_getMatiereByKey($deliberation['Deliberation']['num_pref']);
+            foreach ($deliberations[$key]['Deliberationseance'] as $keyDelib=>$Deliberationseance){
+                if($Deliberationseance['Seance']['Typeseance']['action']==0){
+                    $deliberations[$key]['Seance']['id'] = $Deliberationseance['Seance']['id'];
+                    $deliberations[$key]['Seance']['date'] = $Deliberationseance['Seance']['date'];
+                    $deliberations[$key]['Seance']['type_id'] = $Deliberationseance['Seance']['type_id'];
+               }
+                else{
+                 unset($deliberations[$key]['Deliberationseance'][$keyDelib]);
+                }
+           }
         }
+        
+        //debug($deliberations);
 
         $seances = $this->Seance->find('all', array(
             'conditions' => array('Seance.traitee' => 1),
@@ -1776,9 +1782,12 @@ class DeliberationsController extends AppController
      */
     function _sortProjetSeanceDate(&$projets){
         foreach ($projets as $keyProjet=>$projet) {
-            $projets[$keyProjet]['Deliberationtypeseance'] = Hash::sort($projet['Deliberationtypeseance'], '{n}.Typeseance.action', 'asc');
-            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.date', 'asc');
-            $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projets[$keyProjet]['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
+            if(!empty($projets[$keyProjet]['Deliberationtypeseance']))
+                $projets[$keyProjet]['Deliberationtypeseance'] = Hash::sort($projet['Deliberationtypeseance'], '{n}.Typeseance.action', 'asc');
+            if(!empty($projets[$keyProjet]['Deliberationseance'])){
+                $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projet['Deliberationseance'], '{n}.Seance.date', 'asc');
+                $projets[$keyProjet]['Deliberationseance'] = Hash::sort($projets[$keyProjet]['Deliberationseance'], '{n}.Seance.Typeseance.action', 'asc');
+            }
         }
     }
 
