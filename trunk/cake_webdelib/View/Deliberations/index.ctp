@@ -43,7 +43,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
             ?>
         </th>
         <th style="width:15%; text-align: left;">Vue Synthétique</th>
-        <th style="width:40%">&nbsp;</th>
+        <th style="width:35%">&nbsp;</th>
         <th style="width:30%">&nbsp;</th>
         <th style="width:150px">Actions</th>
     </tr>
@@ -66,7 +66,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                 );
 
                 if (isset($traitement_lot) && ($traitement_lot == true))
-                    echo $this->Form->input('Deliberation_check.id_' . $deliberation['Deliberation']['id'], array('type' => 'checkbox', 'label' => false));
+                    echo $this->Form->input('Deliberation_check.id_' . $deliberation['Deliberation']['id'], array('type' => 'checkbox', 'label' => false, 'div' => false));
                 ?>
 
             </td>
