@@ -3546,6 +3546,7 @@ class DeliberationsController extends AppController
                     'Deliberation.circuit_id',
                     'Deliberation.parapheur_etat',
                     'Deliberation.signee',
+                    'Deliberation.signature',
                     'Deliberation.typeacte_id',
                     'Deliberation.theme_id',
                     'Deliberation.service_id'),
@@ -3964,8 +3965,9 @@ class DeliberationsController extends AppController
 
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
-        $conditions['Deliberation.etat'] = array('2', '3', '4');
-        $conditions['OR'] = array('Deliberation.signee IS NULL', 'Deliberation.signee'=>0);
+        $conditions['Deliberation.etat'] = array(2, 3, 4);
+        $conditions['NOT']['Deliberation.signee'] = 1;
+        $conditions['NOT']['Deliberation.parapheur_etat'] = 2;
 
         $fields = array(
             'Deliberation.id',
@@ -4143,11 +4145,10 @@ class DeliberationsController extends AppController
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
         $conditions['Deliberation.etat'] = 5;
-        $conditions['Deliberation.signee'] = 1;
-        $ids = $this->Deliberation->getActesExceptDelib(array(), array('Deliberation.id', 'Deliberation.typeacte_id'), array());
-        foreach ($ids as $did)
-            $delibs_id [] = $did['Deliberation']['id'];
-        $conditions['Deliberation.id'] = $delibs_id;
+        $conditions['NOT'][] = 'Deliberation.tdt_id IS NULL';
+
+        $actes = $this->Deliberation->getActesExceptDelib(array(), array('Deliberation.id', 'Deliberation.typeacte_id'), array());
+        $conditions['Deliberation.id'] = Hash::extract($actes, '{n}.Deliberation.id');
 
         $fields = array(
             'Deliberation.id',
@@ -4177,10 +4178,13 @@ class DeliberationsController extends AppController
             'Typeseance.libelle',
         );
 
-        $this->paginate = array('Deliberation' => array('conditions' => $conditions,
+        $this->paginate = array('Deliberation' => array(
+            'conditions' => $conditions,
             'fields' => $fields,
             'contain' => $contain,
-            'limit' => 20));
+            'limit' => 20
+        ));
+
         $deliberations = $this->Paginator->paginate('Deliberation');
 
         $this->_ajouterFiltre($deliberations);
