@@ -61,7 +61,7 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/add', 't
         <div class='spacer'></div>
         <div id="select_classification">
             <?php
-            if ($USE_PASTELL)
+            if ($USE_PASTELL) {
                 echo $this->Form->input('Deliberation.num_pref_libelle', array(
                     'label' => 'Nomenclature',
                     'options' => $nomenclatures,
@@ -70,7 +70,8 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/add', 't
                     'empty' => true,
                     'class' => 'select2 selectone',
                     'escape' => false));
-            else {
+                echo $this->Html->tag('div', '', array('class' => 'spacer'));
+            } else {
                 echo $this->Form->input('Deliberation.num_pref_libelle', array(
                     'div' => false,
                     'label' => 'Classification',
