@@ -135,6 +135,8 @@ class CronJob extends AppModel {
     }
     
     /**
+     * @param int|string $delib_id
+     * @param bool $refresh
      * @return string
      */
     public function convertionAnnexesJob($delib_id=NULL, $refresh=false)
