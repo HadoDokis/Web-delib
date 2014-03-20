@@ -4424,10 +4424,9 @@ class DeliberationsController extends AppController
                 $this->Deliberation->saveField('tdt_data_pdf', $tampon);
             } else {
                 $this->Session->setFlash('Erreur lors de la récupération de l\'acte tamponné', 'growl');
-                return $this->referer($this->previous);
+                $this->redirect($this->referer());
             }
         }
-
         // envoi au client
         $this->response->disableCache();
         $this->response->body($delib['Deliberation']['tdt_data_pdf']);
