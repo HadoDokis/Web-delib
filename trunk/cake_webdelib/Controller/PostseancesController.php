@@ -771,7 +771,6 @@ class PostseancesController extends AppController {
                 $seances_id = $this->Deliberation->getSeancesid($delib_id);
 
                 $document = $this->_createElement($dom, 'listeCommissions', null);
-                $listeCommissions = '';
                 foreach ($seances_id as $commission_id) {
                     if (!$this->Deliberation->Seance->isSeanceDeliberante($commission_id)) {
                         $commission = $this->_createElement($dom, 'commission', null, array('idCommission' => $commission_id));
@@ -795,8 +794,10 @@ class PostseancesController extends AppController {
                     'idDocument' => $aDocuments['TexteActe'],
                     'nom' => $delib_filename, 'relname' => $delib_filename,
                     'type' => 'TexteActe'));
-                if ($delib['Deliberation']['signee'] == 1 && $delib['Deliberation']['parapheur_etat'] == 1)
-                    $document->appendChild($this->_createElement($dom, 'signature', 'application/pdf', array('formatSignature' => 'p7s')));
+
+                if (!empty($delib['Deliberation']['signature']))
+                    $document->appendChild($this->_createElement($dom, 'signature', true, array('formatSignature' => 'p7s')));
+
                 $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
                 $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
                 $doc->appendChild($document);
@@ -835,19 +836,21 @@ class PostseancesController extends AppController {
                     $zip->addFromString('Rapports' . DS . $delib_filename, $this->Deliberation->fusion($delib['Deliberation']['id'], 'rapport'));
                 }
 
-                //Ajout de la signature (XML+ZIP)
-                $signatureName = $delib['Deliberation']['id'] . '-signature.zip';
-                $aDocuments['Signature'] = $i++;
-                //Création du noeud XML
-                $document = $this->_createElement($dom, 'document', null, array(
-                    'idDocument' => $aDocuments['Signature'],
-                    'refDocument' => $aDocuments['TexteActe'],
-                    'nom' => $signatureName, 'relName' => 'Signatures' . DS . $signatureName,
-                    'type' => 'Signature'));
-                $document->appendChild($this->_createElement($dom, 'mimetype', 'application/zip'));
-                $doc->appendChild($document);
-                //Ajout à l'archive
-                $zip->addFromString('Signature' . DS . $signatureName, $delib['Deliberation']['signature']);
+                if (!empty($delib['Deliberation']['signature'])){
+                    //Ajout de la signature (XML+ZIP)
+                    $signatureName = $delib['Deliberation']['id'] . '-signature.zip';
+                    $aDocuments['Signature'] = $i++;
+                    //Création du noeud XML
+                    $document = $this->_createElement($dom, 'document', null, array(
+                        'idDocument' => $aDocuments['Signature'],
+                        'refDocument' => $aDocuments['TexteActe'],
+                        'nom' => $signatureName, 'relName' => 'Signatures' . DS . $signatureName,
+                        'type' => 'Signature'));
+                    $document->appendChild($this->_createElement($dom, 'mimetype', 'application/zip'));
+                    $doc->appendChild($document);
+                    //Ajout à l'archive
+                    $zip->addFromString('Signature' . DS . $signatureName, $delib['Deliberation']['signature']);
+                }
 
                 //Ajout du bordereau (XML+ZIP)
                 if(!empty($aDocuments['ActeTampon'])){

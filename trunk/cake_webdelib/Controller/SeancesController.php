@@ -898,41 +898,46 @@ class SeancesController extends AppController {
 		$this->redirect("/seances/afficherProjets/$seance_id");
 	}
 
-	function clore($seance_id) {
-		$this->Seance->Behaviors->attach('Containable');
-		$seance = $this->Seance->find('first', array(
-				'conditions' => array('Seance.id' => $seance_id),
-				'fields'     => array('Seance.type_id', 'Seance.date'),
-				'contain'    => array('Typeseance.action', 'Typeseance.id')));
-		$date_seance = strtotime($seance['Seance']['date']);
-		$date_now = strtotime(date('Y-m-d H:i:s'));
-		if ( $date_seance  >  $date_now) {
-			$this->Session->setFlash('Vous ne pouvez pas clôturer une séance future', 'growl', array('type'=>'erreur'));
-			$this->redirect('/seances/listerFuturesSeances');
-		}
+    function clore($seance_id) {
+        $this->Seance->Behaviors->attach('Containable');
+        $seance = $this->Seance->find('first', array(
+            'conditions' => array('Seance.id' => $seance_id),
+            'fields' => array('Seance.type_id', 'Seance.date'),
+            'contain' => array('Typeseance.action', 'Typeseance.id')));
+        $date_seance = strtotime($seance['Seance']['date']);
+        $date_now = strtotime(date('Y-m-d H:i:s'));
+        if ($date_seance > $date_now) {
+            $this->Session->setFlash('Vous ne pouvez pas clôturer une séance future', 'growl', array('type' => 'erreur'));
+            return $this->redirect(array('controller' => 'seances', 'action' => 'listerFuturesSeances'));
+        }
 
-		$ids = $this->Seance->getDeliberationsId($seance_id);
+        $ids = $this->Seance->getDeliberationsId($seance_id);
 
-		$actes = $this->Deliberation->find('all', array(
-				'conditions' => array( 'Deliberation.id' => $ids,
-						'Deliberation.etat > '   => '1',
-						'Deliberation.signee'   => null),
-				'fields'     => array('id'),
-				'recursive'  => -1));
-			
-		if ((count($actes) > 0)  &&  ($seance['Typeseance']['action'] == 0)) {
-			$this->Session->setFlash('Tous les actes ne sont pas signés.', 'growl', array('type'=>'erreur'));
-		}
-		else {
-                        $this->Seance->id=$seance_id;
-			if ($this->Seance->saveField('traitee', 1))
-                                $this->Session->setFlash("La séance a été cloturé", 'growl', array('type'=>'important'));
-			else {
-				$this->Session->setFlash("La séance n'a pas été cloturé", 'growl', array('type'=>'erreur'));
-			}
-		}
-                $this->redirect('/seances/listerFuturesSeances');
-	}
+        $nbActesNonSigne = $this->Deliberation->find('count', array(
+            'conditions' => array(
+                'Deliberation.id' => $ids,
+                'Deliberation.etat > ' => 1,
+                'OR' => array(
+                    'Deliberation.parapheur_etat != ' => 2,
+                    'Deliberation.signee' => 0
+                )
+            ),
+            'fields' => array('id'),
+            'recursive' => -1
+        ));
+
+        if ($nbActesNonSigne > 0 && $seance['Typeseance']['action'] == 0) {
+            $this->Session->setFlash('Tous les actes ne sont pas signés.', 'growl', array('type' => 'erreur'));
+        } else {
+            $this->Seance->id = $seance_id;
+            if ($this->Seance->saveField('traitee', 1))
+                $this->Session->setFlash("La séance a été cloturé", 'growl', array('type' => 'important'));
+            else {
+                $this->Session->setFlash("La séance n'a pas été cloturé", 'growl', array('type' => 'erreur'));
+            }
+        }
+        return $this->redirect(array('controller' => 'seances', 'action' => 'listerFuturesSeances'));
+    }
 
 	function deleteDebatGlobal($id ){
 		$this->Seance->id = $id;
@@ -1627,7 +1632,7 @@ class SeancesController extends AppController {
                 } else
                     throw new Exception('Impossible de récupérer l\'identifiant i-delibRE de la séance.');
             else
-                throw new Exception('La réponse de i-delibRE est malformée.');
+                throw new Exception('Erreur i-delibRE (réponse incorrecte)');
 
         } catch (Exception $e) {
             $this->log($data, 'idelibre');
