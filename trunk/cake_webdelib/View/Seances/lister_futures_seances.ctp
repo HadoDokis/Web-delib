@@ -15,7 +15,7 @@ if (@$this->params['filtre'] == 'hide') {
 <tr>
     <?php if (!$endDiv) echo("<th style='width:2px;'><input type='checkbox' id='masterCheckbox' /></th>"); ?>
     <th>Type</th>
-    <th style="width:190px;">Date Séance</th>
+    <th style="width:190px;">Date de la séance</th>
     <th style="width:200px;">Préparation</th>
     <th style="width:150px;">En cours</th>
     <th style="width:150px;">Finalisation</th>
@@ -36,7 +36,7 @@ if (@$this->params['filtre'] == 'hide') {
             . "</td>");
     ?>
     <td><strong><?php echo $seance['Typeseance']['libelle']; ?></strong></td>
-    <td><?php echo $this->Html->link($seance['Seance']['date'], array('controller' => 'seances', 'action' => 'edit', $seance['Seance']['id'])); ?></td>
+    <?php echo $this->Html->tag('td', $seance['Seance']['date']); ?>
     <td class="actions">
 
         <!--
@@ -381,24 +381,25 @@ if (@$this->params['filtre'] == 'hide') {
 <?php endforeach; ?>
 </tbody>
 </table>
-<div class='spacer'></div>
 <?php
 if (!empty($models) && !$endDiv && !empty($seances)) {
     echo $this->html->tag('fieldset', null, array('id' => 'generation-multiseance'));
-    echo $this->html->tag('legend', 'Edition multi-séances');
-    echo $this->html->tag('em', 'Cochez des séances dans la liste ci-dessus, sélectionnez le modèle d\'édition, puis cliquez sur le bouton Générer pour lancer la génération du document. Attention, le traitement peut être long.');
-
-    echo $this->html->tag('div', '', array('class' => 'spacer'));
-
-    echo $this->Form->input('Seance.model_id', array('options' => $models, 'label' => array('text' => "Modèle d'édition", 'style' => 'padding-top: 5px; text-align: left;')));
-
-    echo $this->html->tag('div', '', array('class' => 'spacer'));
-    echo $this->Form->button('<i class="fa fa-cogs"></i> Générer <span id="nbSeancesChecked"></span>', array(
+    echo $this->Form->input('Seance.model_id', array(
+        'options' => $models,
+        'empty' => true,
+        'div' => array('class' => 'pull-left'),
+        'label' => false,
+        'after' => '<i class="fa fa-arrow-right" style="margin-left: 10px"></i>'
+    ));
+    echo $this->Form->button('<i class="fa fa-cogs"></i> Générer le document <span id="nbSeancesChecked"></span>', array(
         'type' => 'submit',
-        'class' => 'btn btn-primary',
+        'class' => 'btn btn-primary pull-left',
         'title' => "Générer le document multi-séances (Attention : Cette opération peut durer longtemps)",
         'id' => 'generer_multi_seance',
+        'style' => 'margin-left: 10px'
     ));
+    echo $this->html->tag('div', '', array('class' => 'spacer'));
+    echo $this->html->tag('em', 'Note : Pour générer un document multi-séances, cochez les séances souhaitées dans la liste, sélectionnez le modèle d\'édition, puis cliquez sur le bouton "Générer le document".');
     echo $this->html->tag('/fieldset', null);
 }
 echo $this->Form->end();
@@ -408,13 +409,15 @@ echo $this->Form->end();
     $(document).ready(function () {
         //Lors d'action sur une checkbox :
         $('input[type=checkbox]').change(selectionChange);
-        selectionChange();
-        $('#SeanceModelId').select2({width: 'resolve'});
+        $('#SeanceModelId').select2({
+            width: 'resolve',
+            placeholder: 'Modèle d\'édition multi-séances'
+        }).change(selectionChange).trigger('change');
     });
     function selectionChange() {
         var nbChecked = $('input[type=checkbox].checkbox_seance_generer:checked').length;
         //Apposer ou non la class disabled au bouton selon si des checkbox sont cochées (style)
-        if (nbChecked > 0) {
+        if (nbChecked > 0 && $('#SeanceModelId').val() != '') {
             $('#generer_multi_seance').removeClass('disabled');
             $("#generer_multi_seance").prop("disabled", false);
         } else {
