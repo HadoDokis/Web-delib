@@ -123,7 +123,7 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_URL, trim($url));
         if (Configure::read('S2LOW_USEPROXY'))
             curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
-        curl_setopt($ch, CURLOPT_POST, false);
+        curl_setopt($ch, CURLOPT_POST, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
@@ -150,10 +150,8 @@ class S2lowComponent extends Component {
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-        //curl_setopt($ch, CURLOPT_VERBOSE, true);
         $curl_return = curl_exec($ch);
         curl_close($ch);
-        
         return $curl_return;
     }
 
