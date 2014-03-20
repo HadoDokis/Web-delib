@@ -2296,7 +2296,10 @@ class Deliberation extends AppModel {
             'annexes' => array()
         );
         $annexes = $this->Annex->find('all', array(
-            'conditions' => array('Annex.foreign_key' => $acte_id),
+            'conditions' => array(
+                'foreign_key' => $acte_id,
+                'joindre_fusion' => false
+            ),
             'fields' => array('id', 'filetype', 'filename', 'data'),
             'order' => array('id' => 'ASC'),
             'recursive' => -1
