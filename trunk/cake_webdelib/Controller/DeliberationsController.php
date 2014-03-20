@@ -317,6 +317,7 @@ class DeliberationsController extends AppController
         }
 
         if ($this->request->isPost()) {
+            $success = true;
             $this->Deliberation->begin();
             $this->request->data['Deliberation']['redacteur_id'] = $user['User']['id'];
             $this->request->data['Deliberation']['service_id'] = $user['User']['service'];
@@ -358,7 +359,9 @@ class DeliberationsController extends AppController
                 $this->request->data['Deliberation']['deliberation_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_acte']);
             }
 
-            if ($success = $this->Deliberation->save($this->data)) {
+            $success &= $this->Deliberation->save($this->data);
+
+            if ($success) {
                 $this->Filtre->Supprimer();
                 $delibId = $this->Deliberation->getLastInsertId();
 
@@ -1028,7 +1031,7 @@ class DeliberationsController extends AppController
                 //Envoi d'une notification de modification aux utilisateurs qui ont déjà validé le projet
                 $destinataires = $this->Traitement->whoIs($id, 'before', array('OK','IN'));
                 foreach ($destinataires as $destinataire_id)
-                    if ($destinataire_id != $currentUser)
+                    if (!in_array($destinataire_id, array($currentUser, $redacteurId)))
                         $this->User->notifier($id, $destinataire_id, 'modif_projet_valide');
             } else {
                 $this->Deliberation->rollback();
