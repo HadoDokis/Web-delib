@@ -79,13 +79,6 @@ table.table-middle td, table.table-middle th{
     text-align: left;
 }
 
-#DeliberationEditForm #tab1 div.gauche,
-#DeliberationAddForm #tab1 div.gauche,
-#DeliberationEditForm #tab1 div.droite,
-#DeliberationAddForm #tab1 div.droite
-{
-    padding:10px;
-}
 #DeliberationEditForm #tab1 div.gauche input[type='text'],
 #DeliberationAddForm #tab1 div.gauche input[type='text']
 {
