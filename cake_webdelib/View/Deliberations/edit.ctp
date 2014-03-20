@@ -122,7 +122,6 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
             ?>
             <div class='spacer'></div>
         <?php endif; ?>
-        <div class='spacer'></div>
     </div>
     <div class="droite">
         <div id='selectTypeseances'>
