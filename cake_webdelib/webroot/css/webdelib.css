@@ -16,14 +16,6 @@ body {
     overflow:hidden
 }
 
-/*#header {
-	height: 50px;
-	padding-left: 20px;
-	font: italic normal 28px/30px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	color: #444444;
-	background-color: transparent;
-}*/
-
 #user {
 	text-align: right;
 	height: 23px;
@@ -1085,4 +1077,8 @@ table.month {
 
 ul.dropdown-menu li a{
     cursor: pointer;
+}
+/* Modifications bootstrap */
+.btn-group + .btn-group {
+    margin-left: 10px;
 }
