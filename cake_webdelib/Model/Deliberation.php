@@ -2295,32 +2295,14 @@ class Deliberation extends AppModel {
             'docPrincipale' => $this->getDocument($acte_id),
             'annexes' => array()
         );
-        $annexes = $this->Annex->find('all', array(
-            'conditions' => array(
-                'foreign_key' => $acte_id,
-                'joindre_fusion' => false
-            ),
-            'fields' => array('id', 'filetype', 'filename', 'data'),
-            'order' => array('id' => 'ASC'),
-            'recursive' => -1
-        ));
-        foreach ($annexes as $annexe) {
+        foreach ($this->Annex->getAnnexesWithoutFusion($acte_id) as $annexe) {
             $docs['annexes'][] = array(
                 'content' => $annexe['Annex']['data'],
                 'mimetype' => $annexe['Annex']['filetype'],
-                'filename' => AppTools::getNameFile($annexe['Annex']['filename']).'.pdf',
+                'filename' => $annexe['Annex']['filename']
             );
         }
         return $docs;
-    }
-
-
-    function delegToParapheurDocument() {
-
-        if (empty($this->id))
-            throw new Exception('délibération id n\'existe pas');
-
-        return array('docPrincipale' => $this->getDocument($this->id), 'annexes' => $this->getAnnexes($this->id));
     }
 
     function getDocument($acte_id, $format = 'pdf') {
