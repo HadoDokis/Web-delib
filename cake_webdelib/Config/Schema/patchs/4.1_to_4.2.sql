@@ -31,8 +31,9 @@ ALTER TABLE annexes ADD COLUMN edition_data bytea;
 ALTER TABLE annexes ADD COLUMN edition_data_typemime VARCHAR DEFAULT NULL;
 
 --Récupération des annexes PDF source dans data
-UPDATE annexes SET data=data_pdf WHERE filetype='application/pdf' AND data_pdf IS NOT NULL;
+UPDATE annexes SET data=data_pdf, filename=filename_pdf WHERE filetype='application/pdf' AND data_pdf IS NOT NULL;
 UPDATE annexes SET data_pdf=NULL;
+ALTER TABLE annexes DROP COLUMN filename_pdf;
 
 -- Gabarits textes
 ALTER TABLE typeactes ADD COLUMN gabarit_projet BYTEA DEFAULT NULL;
