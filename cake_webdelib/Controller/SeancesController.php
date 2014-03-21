@@ -931,9 +931,9 @@ class SeancesController extends AppController {
         } else {
             $this->Seance->id = $seance_id;
             if ($this->Seance->saveField('traitee', 1))
-                $this->Session->setFlash("La séance a été cloturé", 'growl', array('type' => 'important'));
+                $this->Session->setFlash("La séance a été cloturée", 'growl', array('type' => 'important'));
             else {
-                $this->Session->setFlash("La séance n'a pas été cloturé", 'growl', array('type' => 'erreur'));
+                $this->Session->setFlash("La séance n'a pas été cloturée", 'growl', array('type' => 'erreur'));
             }
         }
         return $this->redirect(array('controller' => 'seances', 'action' => 'listerFuturesSeances'));
