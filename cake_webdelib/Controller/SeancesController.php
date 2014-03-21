@@ -1563,14 +1563,27 @@ class SeancesController extends AppController {
             $projet['theme'] = implode(',', $this->Deliberation->Theme->getLibelleParent($delib['Deliberation']['theme_id']));
             $data['projet_' . $i . '_rapport'] = "@$projet_filename";
 
-            // générer les annexes ? Pour le moment non !
-            $annexes = array();
+            $j = 0;
+            $annexes = $this->Deliberation->Annex->getAnnexesWithoutFusion($delib_id);
+            $annexesFolder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'idelibre'));
+            foreach ($annexes as $annex) {
+                $file = new File($annexesFolder->path.DS.$annex['Annex']['filename'], true);
+                $file->write($annex['Annex']['data']);
+                $data['projet_' . $i . '_' . $j . '_annexe'] = "@".$file->path;
+                $annexes[] = array(
+                    'libelle' => $annex['Annex']['titre'],
+                    'ordre' => $j
+                );
+                $j++;
+            }
             $projet['annexes'] = $annexes;
             $jsonData['projets'][] = $projet;
             $i++;
         }
+        // Encodage en json
         $data['jsonData'] = json_encode($jsonData);
         $this->Progress->at(85, 'Envoi des informations à i-DelibRE...');
+        // Initialisation des paramètres curl
         $url = Configure::read('IDELIBRE_HOST') . '/seances.json';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -1578,24 +1591,27 @@ class SeancesController extends AppController {
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_VERBOSE, true);
-
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
+        /*
         // FIXME certificat https ?
-//        if (Configure::read('IDELIBRE_USE_CERT')) {
-//            curl_setopt($ch, CURLOPT_CAPATH, Configure::read('IDELIBRE_CAPATH'));
-//            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
-//            curl_setopt($ch, CURLOPT_CERTINFO, TRUE);
-//            curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('IDELIBRE_CERT'));
-//            curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('IDELIBRE_CERTPWD'));
-//            curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('IDELIBRE_KEY'));
-//        }
-
+        if (Configure::read('IDELIBRE_USE_CERT')) {
+            curl_setopt($ch, CURLOPT_CAPATH, Configure::read('IDELIBRE_CAPATH'));
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+            curl_setopt($ch, CURLOPT_CERTINFO, TRUE);
+            curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('IDELIBRE_CERT'));
+            curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('IDELIBRE_CERTPWD'));
+            curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('IDELIBRE_KEY'));
+        }
+        */
+        // Exécution de la requête
         $retour = curl_exec($ch);
+        // Décodage en tableau du retour
         $retour = json_decode($retour, true);
+        // Fermeture de la connexion
         curl_close($ch);
-
+        // Suppression du dossier d'annexes temporaire
+        $annexesFolder->delete();
         try {
             if (empty($retour))
                 throw new Exception('Erreur de communication avec i-delibRE.');
