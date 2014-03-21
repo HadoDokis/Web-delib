@@ -631,6 +631,24 @@ class DeliberationsController extends AppController
         $typeseances_selected = array();
         $seances = array();
         $this->set('USE_PASTELL', Configure::read('USE_PASTELL'));
+        $extensionsFusion = array();
+        $extensionsCtrl = array();
+        foreach(Configure::read('DOC_TYPE') as $format){
+            if (!empty($format['joindre_fusion']))
+                if (!is_array($format['extension']))
+                    $extensionsFusion[] = $format['extension'];
+                else
+                    foreach($format['extension'] as $extension)
+                        $extensionsFusion[] = $extension;
+            if (!empty($format['joindre_ctrl_legalite']))
+                if (!is_array($format['extension']))
+                    $extensionsCtrl[] = $format['extension'];
+                else
+                    foreach($format['extension'] as $extension)
+                        $extensionsCtrl[] = $extension;
+        }
+        $this->set('extensionsFusion', $extensionsFusion);
+        $this->set('extensionsCtrl', $extensionsCtrl);
 
         if (!$this->request->isPut()) {
             $this->Deliberation->Behaviors->load('Containable');
@@ -1365,7 +1383,7 @@ class DeliberationsController extends AppController
                 if ($this->data['Deliberation']['texte_projet'] == '')
                     $this->Session->setFlash('Attention, le texte projet est vide', 'growl', array('type' => 'important'));
 
-                $this->redirect('/deliberations/recapitulatif/' . $id);
+                $this->redirect(array('action'=>'recapitulatif', $id));
             } else
                 $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
         }

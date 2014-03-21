@@ -244,6 +244,9 @@ function resetAnnexeModal() {
     $('#Annex0Ctrl').prop('checked', false);
     $('#Annex0Fusion').prop('checked', true);
     $("#annexeModal").find('input').prop('disabled', true);
+    //RAZ affichage
+    $('#Annex0Ctrl').closest('div').show();
+    $('#Annex0Fusion').closest('div').show();
 }
 
 // Fonction de suppression d'une annexe

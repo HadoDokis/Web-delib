@@ -339,12 +339,13 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
 <script type="text/javascript">
     <?php
     echo "var gabarits = ". json_encode($gabarits_acte). ";\n";
+    echo "var extensionsFusion = ". json_encode($extensionsFusion).";\n";
+    echo "var extensionsCtrl = ". json_encode($extensionsCtrl).";\n";
     ?>
     var current_gabarit_name;
     $(document).ready(function () {
-
+        // Gestion des gabarits selon le type d'acte
         current_gabarit_name = gabarits[$('#listeTypeactesId').val()];
-
         $('#listeTypeactesId').change(function () {
             current_gabarit_name = gabarits[$('#listeTypeactesId').val()];
             //Le type d'acte possède un gabarit de texte d'acte
@@ -371,5 +372,26 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
                 $('#ajouteMultiDelib .texte_acte_multidelib').prop('disabled', false).show();
             }
         });
+
+        // Gestion des formats d'annexe (affichage checkboxes)
+        $("#Annex0File").change(function(){
+            if ($(this).val() != ''){
+                var tmpArray = $(this).val().split('.');
+                var extension = tmpArray[tmpArray.length-1];
+                if ($.inArray(extension, extensionsFusion) === -1){
+                    $('#Annex0Fusion').prop('checked', false).closest('div').hide();
+                }else{
+                    $('#Annex0Fusion').closest('div').show();
+                }
+                if ($.inArray(extension, extensionsCtrl) === -1){
+                    $('#Annex0Ctrl').prop('checked', false).closest('div').hide();
+                }else{
+                    $('#Annex0Ctrl').closest('div').show();
+                }
+
+            }
+        });
+
+
     })
 </script>
