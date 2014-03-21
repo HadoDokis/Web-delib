@@ -50,6 +50,18 @@ $(document).ready(function () {
         resetClassification();
         return false;
     });
+
+    $('.file-texte').change(function(){
+        if ($(this).val() != '') {
+            var tmpArray = $(this).val().split('.');
+            var extension = tmpArray[tmpArray.length - 1];
+            if (extension.toLowerCase() != 'odt') {
+                $.jGrowl("Format du document invalide. Seuls les fichiers au format ODT sont autorisés.", {header: "<strong>Erreur :</strong>"});
+                $(this).val(null);
+                return false;
+            }
+        }
+    });
 });
 
 function disableExitWarning(){
