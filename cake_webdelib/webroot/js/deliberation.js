@@ -54,9 +54,18 @@ $(document).ready(function () {
     $('.file-texte').change(function(){
         if ($(this).val() != '') {
             var tmpArray = $(this).val().split('.');
+            //Test sur l'extension (ODT ?)
             var extension = tmpArray[tmpArray.length - 1];
             if (extension.toLowerCase() != 'odt') {
                 $.jGrowl("Format du document invalide. Seuls les fichiers au format ODT sont autorisés.", {header: "<strong>Erreur :</strong>"});
+                $(this).val(null);
+                return false;
+            }
+            //Test sur le nom de fichier (>75car)
+            var tmpArray = $(this).val().split('\\');
+            var filename = tmpArray[tmpArray.length - 1];
+            if (filename.length > 75){
+                $.jGrowl("Le nom du fichier ne doit pas dépasser 75 caractères.", {header: "<strong>Erreur :</strong>"});
                 $(this).val(null);
                 return false;
             }
