@@ -380,16 +380,17 @@ echo $this->element('onglets', array('listeOnglets' => array(
         $("#default_circuit").select2("destroy");
         var selected_default_circuit_id = $('#default_circuit').val();
 
-        if (selected_default_circuit_id == null)
-            selected_default_circuit_id = <?php if (is_int($selectedCircuits)) echo $selectedCircuits; else echo 'null'; ?>;
+        if (selected_default_circuit_id == '' || selected_default_circuit_id == null)
+            selected_default_circuit_id = <?php if (is_int($this->Html->value('User.circuit_defaut_id'))) echo $this->Html->value('User.circuit_defaut_id'); else echo 'null'; ?>;
 
         $('#default_circuit').empty();
         $('<option value=""></option>').prependTo('#default_circuit');
         $('#all_circuits').find("option:selected").each(function (index, element) {
-            $(element).clone().appendTo('#default_circuit');
+            $(element).clone().removeAttr('selected').appendTo('#default_circuit');
         });
-        $('#default_circuit').val(selected_default_circuit_id);
-        $("#default_circuit").select2({
+        $("#default_circuit")
+            .val(selected_default_circuit_id)
+            .select2({
             width: 'resolve',
             allowClear: true,
             placeholder: 'Aucun'

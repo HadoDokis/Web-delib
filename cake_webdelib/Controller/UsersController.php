@@ -209,7 +209,6 @@ class UsersController extends AppController {
                     'fields' => array('id'),
                     'recursive' => -1));
 
-                $this->set('selectedCircuits', $this->data['User']['circuit_defaut_id']);
                 $this->set('selectedServices', $this->_selectedArray($this->data['Service']));
                 $this->request->data['Droits'] = $this->Dbdroits->litCruDroits(array('model' => 'User', 'foreign_key' => $id));
                 $natures = $this->Typeacte->find('all', array('recursive' => -1));
