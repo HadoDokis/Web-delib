@@ -631,22 +631,28 @@ class DeliberationsController extends AppController
         $typeseances_selected = array();
         $seances = array();
         $this->set('USE_PASTELL', Configure::read('USE_PASTELL'));
+        $extensions = array();
         $extensionsFusion = array();
         $extensionsCtrl = array();
         foreach(Configure::read('DOC_TYPE') as $format){
-            if (!empty($format['joindre_fusion']))
-                if (!is_array($format['extension']))
+
+            if (!is_array($format['extension'])){
+                $extensions[] = $format['extension'];
+                if (!empty($format['joindre_fusion']))
                     $extensionsFusion[] = $format['extension'];
-                else
-                    foreach($format['extension'] as $extension)
-                        $extensionsFusion[] = $extension;
-            if (!empty($format['joindre_ctrl_legalite']))
-                if (!is_array($format['extension']))
+                if (!empty($format['joindre_ctrl_legalite']))
                     $extensionsCtrl[] = $format['extension'];
-                else
-                    foreach($format['extension'] as $extension)
+            }
+            else
+                foreach($format['extension'] as $extension){
+                    $extensions[] = $extension;
+                    if (!empty($format['joindre_fusion']))
+                        $extensionsFusion[] = $extension;
+                    if (!empty($format['joindre_ctrl_legalite']))
                         $extensionsCtrl[] = $extension;
+                }
         }
+        $this->set('extensions', $extensions);
         $this->set('extensionsFusion', $extensionsFusion);
         $this->set('extensionsCtrl', $extensionsCtrl);
 

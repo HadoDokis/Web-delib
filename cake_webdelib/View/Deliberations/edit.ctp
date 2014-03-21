@@ -339,6 +339,7 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
 <script type="text/javascript">
     <?php
     echo "var gabarits = ". json_encode($gabarits_acte). ";\n";
+    echo "var extensions = ". json_encode($extensions).";\n";
     echo "var extensionsFusion = ". json_encode($extensionsFusion).";\n";
     echo "var extensionsCtrl = ". json_encode($extensionsCtrl).";\n";
     ?>
@@ -375,18 +376,24 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
 
         // Gestion des formats d'annexe (affichage checkboxes)
         $("#Annex0File").change(function(){
-            if ($(this).val() != ''){
+            if ($(this).val() != '') {
                 var tmpArray = $(this).val().split('.');
-                var extension = tmpArray[tmpArray.length-1];
-                if ($.inArray(extension, extensionsFusion) === -1){
-                    $('#Annex0Fusion').prop('checked', false).closest('div').hide();
-                }else{
-                    $('#Annex0Fusion').closest('div').show();
-                }
-                if ($.inArray(extension, extensionsCtrl) === -1){
-                    $('#Annex0Ctrl').prop('checked', false).closest('div').hide();
-                }else{
-                    $('#Annex0Ctrl').closest('div').show();
+                var extension = tmpArray[tmpArray.length - 1];
+                if ($.inArray(extension, extensions) === -1) {
+                    $.jGrowl("Les fichiers " + extension + " ne sont pas autorisés.", {header: "<strong>Erreur :</strong>"});
+                    $(this).val(null);
+                    return false;
+                } else {
+                    if ($.inArray(extension, extensionsFusion) === -1){
+                        $('#Annex0Fusion').prop('checked', false).closest('div').hide();
+                    }else{
+                        $('#Annex0Fusion').closest('div').show();
+                    }
+                    if ($.inArray(extension, extensionsCtrl) === -1){
+                        $('#Annex0Ctrl').prop('checked', false).closest('div').hide();
+                    }else{
+                        $('#Annex0Ctrl').closest('div').show();
+                    }
                 }
 
             }
