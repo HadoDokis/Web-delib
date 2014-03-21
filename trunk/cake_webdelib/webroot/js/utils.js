@@ -195,6 +195,8 @@ function supprimerFichierJoint(modele, champ, titre) {
     if (modele == "Deliberation") champ += "_upload";
     inputFichier.name = 'data[' + modele + '][' + champ + ']';
     inputFichier.title = titre;
+    inputFichier.class = 'file-text';
+    inputFichier.onChange = 'changeFichierTexte(this)';
     /* Ajoute l'input file au span */
     sInput.appendChild(inputFichier);
     /* Ajoute le bouton Effacer */
@@ -202,6 +204,26 @@ function supprimerFichierJoint(modele, champ, titre) {
     while ($("#file_input_container_" + file_input_index).length !== 0) file_input_index++;
     $(inputFichier).wrap('<div id="file_input_container_' + file_input_index + '"></div>');
     $(inputFichier).after('<a href="javascript:void(0)" class="purge_file btn btn-mini btn-danger"  onclick="resetUpload(\'file_input_container_' + file_input_index + '\')"><i class="fa fa-eraser"></i> Effacer</a>');
+    $(inputFichier).change(function(){
+        if ($(this).val() != '') {
+            var tmpArray = $(this).val().split('.');
+            //Test sur l'extension (ODT ?)
+            var extension = tmpArray[tmpArray.length - 1];
+            if (extension.toLowerCase() != 'odt') {
+                $.jGrowl("Format du document invalide. Seuls les fichiers au format ODT sont autorisés.", {header: "<strong>Erreur :</strong>"});
+                $(this).val(null);
+                return false;
+            }
+            //Test sur le nom de fichier (>75car)
+            var tmpArray = $(this).val().split('\\');
+            var filename = tmpArray[tmpArray.length - 1];
+            if (filename.length > 75){
+                $.jGrowl("Le nom du fichier ne doit pas dépasser 75 caractères.", {header: "<strong>Erreur :</strong>"});
+                $(this).val(null);
+                return false;
+            }
+        }
+    });
 }
 
 /**
