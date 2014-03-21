@@ -20,7 +20,7 @@ class ConnecteursController extends AppController {
             4 => 'Tiers de télétransmission (TDT)',
             5 => 'I-delibRE',
             6 => 'GED (export CMIS)',
-            7 => 'Service d\'archivage électronique (As@lae)',
+           // 7 => 'Service d\'archivage électronique (As@lae)',
         );
 
         $this->set('connecteurs', $connecteurs);

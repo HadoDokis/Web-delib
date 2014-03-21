@@ -104,8 +104,8 @@ $webDelib = array(
                     'Editions' => array('link' => '/postseances/index'),
                     'Signatures' => array('link' => '/deliberations/sendToParapheur'),
                     'Contrôle de légalité : à télétransmettre' => array('link' => '/deliberations/toSend'),
-                    'Contrôle de légalité : télétransmises' => array('link' => '/deliberations/transmit'),
-                    'Versement As@lae' => array('link' => '/deliberations/verserAsalae')
+                    'Contrôle de légalité : télétransmises' => array('link' => '/deliberations/transmit')/*,
+                    'Versement As@lae' => array('link' => '/deliberations/verserAsalae')*/
                 )
             )
         ),
