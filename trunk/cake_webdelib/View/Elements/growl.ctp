@@ -5,11 +5,11 @@ if ($pos === false) {
     if (!empty($type)) {
         switch ($type) {
             case 'important' :
-                echo 'jQuery.jGrowl("<div class=\'important\'>' . $message . '</div>", { header: "Important :", glue: "before" })';
+                echo 'jQuery.jGrowl("<div class=\'important\'>' . $message . '</div>", { header: "<strong>Important :</strong>", glue: "before" })';
                 break;
             case 'erreur' :
             case 'error' :
-                echo 'jQuery.jGrowl("<div class=\'error_message\'>' . $message . '</div>", { header: "Erreur :", sticky: true })';
+                echo 'jQuery.jGrowl("<div class=\'error_message\'>' . $message . '</div>", { header: "<strong>Erreur :</strong>", sticky: true })';
                 break;
             default:
                 echo 'jQuery.jGrowl("<div class=\'' . $type . '\'>' . $message . '</div>", { header: "' . $type . ' :" })';

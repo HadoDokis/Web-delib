@@ -106,7 +106,7 @@ var nbAnnexeAAjouter = 0;
  */
 function ajouterAnnexe() {
     if ($('#Annex0File').val() == '') {
-        $.jGrowl('Erreur : Impossible d\'ajouter l\'annexe, aucun fichier selectionné !');
+        $.jGrowl('Impossible d\'ajouter l\'annexe, aucun fichier selectionné !', {header: "<strong>Erreur :</strong>"});
         $('#annexeModal #annexe-error-message').show();
         setTimeout(function () {
             $('#annexeModal #annexe-error-message').hide();
