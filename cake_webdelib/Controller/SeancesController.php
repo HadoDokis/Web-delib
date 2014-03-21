@@ -1733,7 +1733,7 @@ class SeancesController extends AppController {
             $this->Seance->Behaviors->load('OdtFusion', array('id'=>$id, 'modelTemplateId' => $modelTemplateId, 'modelOptions'=>array('modelTypeName'=>$typeFusion)));
 
             // le modèle template possede-t-il des variables de fusion des acteurs
-            $acteurPresentTemplate = $this->Seance->modelTemplateOdtInfos->hasUserFields(array(
+            $acteurPresentTemplate = $this->Seance->modelTemplateOdtInfos->hasUserFieldsDeclared(array(
                 'salutation_acteur', 'prenom_acteur', 'nom_acteur', 'titre_acteur', 'position_acteur',
                 'email_acteur', 'telmobile_acteur', 'telfixe_acteur',
                 'date_naissance_acteur', 'adresse1_acteur', 'adresse2_acteur', 'cp_acteur', 'ville_acteur', 'note_acteur'));

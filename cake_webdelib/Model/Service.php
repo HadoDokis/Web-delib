@@ -119,9 +119,9 @@ class Service extends AppModel
      * @param integer $id id du modèle lié
      */
     function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id) {
-        if ($modelOdtInfos->hasUserField('service_emetteur'))
+        if ($modelOdtInfos->hasUserFieldDeclared('service_emetteur'))
             $oMainPart->addElement(new GDO_FieldType('service_emetteur', $this->field('libelle', array('id'=>$id)), 'text'));
-        if ($modelOdtInfos->hasUserField('service_avec_hierarchie'))
+        if ($modelOdtInfos->hasUserFieldDeclared('service_avec_hierarchie'))
             $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->_doList($id), 'text'));
     }
 }

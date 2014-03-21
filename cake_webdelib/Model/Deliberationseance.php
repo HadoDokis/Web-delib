@@ -343,7 +343,7 @@ class Deliberationseance extends AppModel {
         $oIteration = new GDO_IterationType("AvisProjet");
         foreach($deliberationSeances as $deliberationSeance) {
             $oDevPart = new GDO_PartType();
-            if ($modelOdtInfos->hasUserField('avis')) {
+            if ($modelOdtInfos->hasUserFieldDeclared('avis')) {
                 if ($deliberationSeance['Deliberationseance']['avis'] === true)
                     $avisTexte = 'A reçu un avis favorable';
                 elseif ($deliberationSeance['Deliberationseance']['avis'] === false)
@@ -353,9 +353,9 @@ class Deliberationseance extends AppModel {
                 $avis = $avisTexte.' en '.$this->Seance->Typeseance->field('libelle', array('id'=>$deliberationSeance['Seance']['type_id'])).' du '.date('d/m/Y', strtotime($deliberationSeance['Seance']['date']));
                 $oDevPart->addElement(new GDO_FieldType("avis", $avis, "text"));
             }
-            if ($modelOdtInfos->hasUserField('avis_favorable'))
+            if ($modelOdtInfos->hasUserFieldDeclared('avis_favorable'))
                 $oDevPart->addElement(new GDO_FieldType("avis_favorable", $deliberationSeance['Deliberationseance']['avis'], "text"));
-            if ($modelOdtInfos->hasUserField('commentaire'))
+            if ($modelOdtInfos->hasUserFieldDeclared('commentaire'))
                 $oDevPart->addElement(new GDO_FieldType("commentaire", $deliberationSeance['Deliberationseance']['commentaire'], "lines"));
             $oIteration->addPart($oDevPart);
         }

@@ -420,7 +420,7 @@ class Infosup extends AppModel {
         // infosups utilisées dans le modèle d'édition
         $infoSupDefs = $infoSupDefIds = array();
         foreach ($allInfoSupDefs as $infoSupDef)
-            if ($modelOdtInfos->hasUserField($infoSupDef['Infosupdef']['code'])) {
+            if ($modelOdtInfos->hasUserFieldDeclared($infoSupDef['Infosupdef']['code'])) {
                 $infoSupDefIds[] = $infoSupDef['Infosupdef']['id'];
                 $infoSupDefs[$infoSupDef['Infosupdef']['id']] = $infoSupDef['Infosupdef'];
             }
