@@ -18,7 +18,7 @@
 	 	<?php echo $this->Form->input('Typeseance.retard', array('label'=>'Nombre de jours avant retard'));?>
 		<br/>
 		<br/>
-	 	<?php echo $this->Form->input('Typeseance.action', array('label'=>'Action en séance<abbr title="obligatoire">*</abbr>', 'options'=>$actions, 'default'=>$this->Html->value('Typeseance.action'), 'empty'=>!$this->Html->value('Typeseance.id'))); ?>
+	 	<?php echo $this->Form->input('Typeseance.action', array('label'=>'Action en séance <abbr title="obligatoire">*</abbr>', 'options'=>$actions, 'default'=>$this->Html->value('Typeseance.action'), 'empty'=>!$this->Html->value('Typeseance.id'))); ?>
 		<br/>
 		<br/>
 	 	<?php echo $this->Form->input('Typeseance.compteur_id', array('label'=>'Compteur <abbr title="obligatoire">*</abbr>', 'options'=>$compteurs, 'default'=>$this->Html->value('Typeseance.compteur_id'), 'empty'=>(count($compteurs)>1) && (!$this->Html->value('Typeseance.id'))));?>
