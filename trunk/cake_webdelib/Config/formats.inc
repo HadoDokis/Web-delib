@@ -77,6 +77,8 @@ Configure::write('DOC_TYPE', array(
     'application/vnd.oasis.opendocument.presentation' => array(
         'formatname' => 'OpenDocument Presentation',
         'extension' => 'odp',
+        'joindre_fusion' => true,
+        'joindre_ctrl_legalite' => true,
         'puid' => array(
             'fmt/138' => array(
                 'actif' => false,

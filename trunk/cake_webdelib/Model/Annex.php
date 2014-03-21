@@ -47,6 +47,10 @@ class Annex extends AppModel {
             'message' => 'Le titre du fichier est trop long (200 caract&egrave;res maximum)', 'growl')
     );
 
+    /**
+     * Regarde dans le fichier formats.inc si le document peut être envoyé au controle de légalité
+     * @return bool
+     */
     public function checkFormatControlLegalite() {
         if ($this->data['Annex']['joindre_ctrl_legalite'] == 1) {
             $DOC_TYPE = Configure::read('DOC_TYPE');
@@ -64,6 +68,10 @@ class Annex extends AppModel {
         return true;
     }
 
+    /**
+     * Regarde dans le fichier formats.inc si le document peut être joint à la fusion
+     * @return bool
+     */
     public function checkFormatFusion() {
         if ($this->data['Annex']['joindre_fusion'] == 1) {
             $DOC_TYPE = Configure::read('DOC_TYPE');
@@ -75,7 +83,7 @@ class Annex extends AppModel {
                     'fields' => array('Annex.filetype')));
                 $mime = $annex['Annex']['filetype'];
             }
-            return !empty($DOC_TYPE[$mime]['joindre_ctrl_legalite']);
+            return !empty($DOC_TYPE[$mime]['joindre_fusion']);
         }
         return true;
     }
