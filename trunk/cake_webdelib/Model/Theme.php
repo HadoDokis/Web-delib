@@ -83,9 +83,9 @@ class Theme extends AppModel {
             'fields'     => array('libelle', 'order', 'lft', 'rght'),
             'conditions' => array('Theme.id' => $id)));
 
-        if ($modelOdtInfos->hasUserField('theme_projet'))
+        if ($modelOdtInfos->hasUserFieldDeclared('theme_projet'))
             $oMainPart->addElement(new GDO_FieldType('theme_projet', $theme['Theme']['libelle'],  'text'));
-        if ($modelOdtInfos->hasUserField('critere_trie_theme'))
+        if ($modelOdtInfos->hasUserFieldDeclared('critere_trie_theme'))
             $oMainPart->addElement(new GDO_FieldType('critere_trie_theme', $theme['Theme']['order'], 'text'));
 
         // arborescence des thèmes jusqu'au 10eme niveau

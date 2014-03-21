@@ -75,15 +75,15 @@ class Collectivite extends AppModel {
             throw new Exception('collectivité id:'.$id.' non trouvé en base de données');
 
         // initialisation des variables
-        if ($modelOdtInfos->hasUserField('nom_collectivite'))
+        if ($modelOdtInfos->hasUserFieldDeclared('nom_collectivite'))
             $oMainPart->addElement(new GDO_FieldType('nom_collectivite', $collectivite['Collectivite']['nom'], "text"));
-        if ($modelOdtInfos->hasUserField('adresse_collectivite'))
+        if ($modelOdtInfos->hasUserFieldDeclared('adresse_collectivite'))
             $oMainPart->addElement(new GDO_FieldType('adresse_collectivite', $collectivite['Collectivite']['adresse'], "text"));
-        if ($modelOdtInfos->hasUserField('cp_collectivite'))
+        if ($modelOdtInfos->hasUserFieldDeclared('cp_collectivite'))
             $oMainPart->addElement(new GDO_FieldType('cp_collectivite', $collectivite['Collectivite']['CP'], "text"));
-        if ($modelOdtInfos->hasUserField('ville_collectivite'))
+        if ($modelOdtInfos->hasUserFieldDeclared('ville_collectivite'))
             $oMainPart->addElement(new GDO_FieldType('ville_collectivite', $collectivite['Collectivite']['ville'], "text"));
-        if ($modelOdtInfos->hasUserField('telephone_collectivite'))
+        if ($modelOdtInfos->hasUserFieldDeclared('telephone_collectivite'))
             $oMainPart->addElement(new GDO_FieldType('telephone_collectivite', $collectivite['Collectivite']['telephone'], "text"));
     }
 

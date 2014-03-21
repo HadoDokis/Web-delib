@@ -42,7 +42,7 @@ class Vote extends AppModel {
             // liste des variables utilisées dans le template
             $acteurFields = $aliasActeurFields = array();
             foreach($fusionVariables as $fusionVariable)
-                if ($modelOdtInfos->hasUserField($fusionVariable.'_acteur_'.$voteIteration['fusionVariableSuffixe'])) {
+                if ($modelOdtInfos->hasUserFieldDeclared($fusionVariable.'_acteur_'.$voteIteration['fusionVariableSuffixe'])) {
                     $aliasActeurFields[] = 'Acteur.'.$fusionVariable;
                     $acteurFields[] = $fusionVariable;
                 }

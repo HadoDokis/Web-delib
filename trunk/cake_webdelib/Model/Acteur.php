@@ -198,7 +198,7 @@ class Acteur extends AppModel
 
         // liste des variables présentes dans le modèle d'édition
         foreach ($variables as $variable)
-            if ($modelOdtInfos->hasUserField($variable.'_'.$suffixe)) $fields[]= $variable;
+            if ($modelOdtInfos->hasUserFieldDeclared($variable.'_'.$suffixe)) $fields[]= $variable;
         if (empty($fields)) return;
 
         // lecture en base de données

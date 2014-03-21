@@ -103,7 +103,7 @@ class Seance extends AppModel
         if (!empty($conditionSup))
             $conditions = Set::pushDiff($conditions, $conditionSup);
 
-        $this->Behaviors->attach('Containable');
+        $this->Behaviors->load('Containable');
         $seances = $this->find('all', array('conditions' => $conditions,
             'order' => array('date ASC'),
             'fields' => array('Seance.id', 'Seance.date'),
@@ -136,7 +136,7 @@ class Seance extends AppModel
 
     function generateAllList()
     {
-        $this->Behaviors->attach('Containable');
+        $this->Behaviors->load('Containable');
         $generateList = array();
         $seances = $this->find('all', array('order' => 'date ASC',
             'fields' => array('Seance.id', 'Seance.type_id', 'Seance.date'),
@@ -303,13 +303,14 @@ class Seance extends AppModel
         }
     }
 
-    function getSeanceDeliberante($tab_seances)
-    {
-        $this->Behaviors->attach('Containable');
+    function getSeanceDeliberante($tab_seances) {
+        $this->Behaviors->load('Containable');
         foreach ($tab_seances as $seance_id) {
-            $seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
+            $seance = $this->find('first', array(
+                'conditions' => array('Seance.id' => $seance_id),
                 'fields' => array('Seance.id'),
-                'contain' => array('Typeseance.action')));
+                'contain' => array('Typeseance.action')
+            ));
             if ($seance['Typeseance']['action'] == 0) {
                 return $seance['Seance']['id'];
             }
@@ -319,7 +320,7 @@ class Seance extends AppModel
 
     function isSeanceDeliberante($seance_id)
     {
-        $this->Behaviors->attach('Containable');
+        $this->Behaviors->load('Containable');
         $seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
             'fields' => array('Seance.id', 'Seance.type_id'),
             'contain' => array('Typeseance.action')));
@@ -467,26 +468,26 @@ class Seance extends AppModel
 
         // fusion des variables
         $dateSeanceTimeStamp = strtotime($seance['Seance']['date']);
-        if ($modelOdtInfos->hasUserField('date_'.$suffixe.'_lettres')) {
+        if ($modelOdtInfos->hasUserFieldDeclared('date_'.$suffixe.'_lettres')) {
             include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
             $this->Date = new DateComponent;
             $oMainPart->addElement(new GDO_FieldType('date_'.$suffixe.'_lettres', $this->Date->dateLettres($dateSeanceTimeStamp), 'text'));
         }
-        if ($modelOdtInfos->hasUserField('date_'.$suffixe))
+        if ($modelOdtInfos->hasUserFieldDeclared('date_'.$suffixe))
             $oMainPart->addElement(new GDO_FieldType('date_'.$suffixe, date('d/m/Y', $dateSeanceTimeStamp), 'text'));
-        if ($modelOdtInfos->hasUserField('heure_'.$suffixe))
+        if ($modelOdtInfos->hasUserFieldDeclared('heure_'.$suffixe))
             $oMainPart->addElement(new GDO_FieldType('heure_'.$suffixe, date('H:i', $dateSeanceTimeStamp), 'text'));
-        if ($modelOdtInfos->hasUserField('hh_'.$suffixe))
+        if ($modelOdtInfos->hasUserFieldDeclared('hh_'.$suffixe))
             $oMainPart->addElement(new GDO_FieldType('hh_'.$suffixe, date('H', $dateSeanceTimeStamp), 'text'));
-        if ($modelOdtInfos->hasUserField('mm_'.$suffixe))
+        if ($modelOdtInfos->hasUserFieldDeclared('mm_'.$suffixe))
             $oMainPart->addElement(new GDO_FieldType('mm_'.$suffixe, date('i', $dateSeanceTimeStamp), 'text'));
-        if ($modelOdtInfos->hasUserField('date_convocation_'.$suffixe))
+        if ($modelOdtInfos->hasUserFieldDeclared('date_convocation_'.$suffixe))
             $oMainPart->addElement(new GDO_FieldType('date_convocation_'.$suffixe, (empty($seance['Seance']['date_convocation'])?'':date('d/m/Y', strtotime($seance['Seance']['date_convocation']))), 'text'));
-        if ($modelOdtInfos->hasUserField('identifiant_'.$suffixe))
+        if ($modelOdtInfos->hasUserFieldDeclared('identifiant_'.$suffixe))
             $oMainPart->addElement(new GDO_FieldType('identifiant_'.$suffixe, $seance['Seance']['id'], 'text'));
-        if ($modelOdtInfos->hasUserField('commentaire_'.$suffixe))
+        if ($modelOdtInfos->hasUserFieldDeclared('commentaire_'.$suffixe))
             $oMainPart->addElement(new GDO_FieldType('commentaire_'.$suffixe, $seance['Seance']['commentaire'], 'text'));
-        if ($modelOdtInfos->hasUserField('type_'.$suffixe))
+        if ($modelOdtInfos->hasUserFieldDeclared('type_'.$suffixe))
             $oMainPart->addElement(new GDO_FieldType('type_'.$suffixe, $this->Typeseance->field('libelle', array('id' => $seance['Seance']['type_id'])), 'text'));
 
         // président de séance
@@ -499,7 +500,7 @@ class Seance extends AppModel
         $this->Infosup->setVariablesFusion($oMainPart, $modelOdtInfos, 'Seance', $id);
 
         // acteurs convoqués
-        if ($modelOdtInfos->hasUserFields(
+        if ($modelOdtInfos->hasUserFieldsDeclared(
                 'salutation_acteur_convoque', 'prenom_acteur_convoque', 'nom_acteur_convoque', 'titre_acteur_convoque', 'position_acteur_convoque',
                 'email_acteur_convoque', 'telmobile_acteur_convoque', 'telfixe_acteur_convoque', 'date_naissance_acteur_convoque',
                 'adresse1_acteur_convoque', 'adresse2_acteur_convoque', 'cp_acteur_convoque', 'ville_acteur_convoque', 'note_acteur_convoque')) {

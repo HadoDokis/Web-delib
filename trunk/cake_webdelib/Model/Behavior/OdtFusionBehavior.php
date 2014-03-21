@@ -227,11 +227,11 @@ class OdtFusionBehavior extends ModelBehavior {
      */
     private function _setVariablesCommunesFusion(Model &$model, GDO_PartType &$oMainPart) {
         // variables des dates du jour
-        if ($model->modelTemplateOdtInfos->hasUserField('date_jour_courant')) {
+        if ($model->modelTemplateOdtInfos->hasUserFieldDeclared('date_jour_courant')) {
             $myDate = new DateComponent;
             $oMainPart->addElement(new GDO_FieldType('date_jour_courant', $myDate->frenchDate(strtotime("now")), 'text'));
         }
-        if ($model->modelTemplateOdtInfos->hasUserField('date_du_jour'))
+        if ($model->modelTemplateOdtInfos->hasUserFieldDeclared('date_du_jour'))
             $oMainPart->addElement(new GDO_FieldType('date_du_jour', date("d/m/Y", strtotime("now")), 'date'));
 
         // variables de la collectivité

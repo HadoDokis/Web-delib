@@ -60,7 +60,7 @@ class Listepresence extends AppModel {
         // liste des variables utilisées dans le template
         $acteurFields = $aliasActeurFields = array();
         foreach($fusionVariables as $fusionVariable)
-            if ($modelOdtInfos->hasUserField($fusionVariable.'_acteur_present')) {
+            if ($modelOdtInfos->hasUserFieldDeclared($fusionVariable.'_acteur_present')) {
                 $aliasActeurFields[] = 'Acteur.'.$fusionVariable;
                 $acteurFields[] = $fusionVariable;
             }
@@ -119,7 +119,7 @@ class Listepresence extends AppModel {
         // liste des variables utilisées dans le template
         $acteurFields = $aliasActeurFields = array();
         foreach($fusionVariables as $fusionVariable)
-            if ($modelOdtInfos->hasUserField($fusionVariable.'_acteur_absent')) {
+            if ($modelOdtInfos->hasUserFieldDeclared($fusionVariable.'_acteur_absent')) {
                 $aliasActeurFields[] = 'Acteur.'.$fusionVariable;
                 $acteurFields[] = $fusionVariable;
             }
@@ -168,11 +168,11 @@ class Listepresence extends AppModel {
         // liste des variables utilisées dans le template
         $acteurFields = $aliasActeurFields = $mandateFields = $aliasMandateFields = array();
         foreach($fusionVariables as $fusionVariable)  {
-            if ($modelOdtInfos->hasUserField($fusionVariable.'_acteur_mandataire')) {
+            if ($modelOdtInfos->hasUserFieldDeclared($fusionVariable.'_acteur_mandataire')) {
                 $aliasActeurFields[] = 'Acteur.'.$fusionVariable;
                 $acteurFields[] = $fusionVariable;
             }
-            if ($modelOdtInfos->hasUserField($fusionVariable.'_acteur_mandate')) {
+            if ($modelOdtInfos->hasUserFieldDeclared($fusionVariable.'_acteur_mandate')) {
                 $aliasMandateFields[] = 'Mandataire.'.$fusionVariable;
                 $mandateFields[] = $fusionVariable;
             }
