@@ -120,6 +120,26 @@ class Annex extends AppModel {
         return $annexes;
     }
 
+    /**
+     * Récupère toutes les annexes (associées à 0, 1 ou plusieurs délibs) ayant la propriété joindre_fusion à false
+     * @param null|int|array $delib_id
+     * @return mixed tableau d'annexes
+     */
+    public function getAnnexesWithoutFusion($delib_id = null){
+        $conditions = array('joindre_fusion' => false);
+
+        if (!empty($delib_id)) $conditions['foreign_key'] = $delib_id;
+
+        $annexes = $this->find('all', array(
+            'conditions' => $conditions,
+            'fields' => array('id', 'filetype', 'filename', 'data', 'titre'),
+            'order' => array('id' => 'ASC'),
+            'recursive' => -1
+        ));
+
+        return $annexes;
+    }
+
     public function getContentToTdT($annex_id)
     {
         $annex = $this->find('first', array(
