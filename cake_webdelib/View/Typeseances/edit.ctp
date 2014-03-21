@@ -13,17 +13,13 @@
 	<fieldset>
 	<legend>Informations générales</legend>
 	 	<?php echo $this->Form->input('Typeseance.libelle', array('label'=>'Libellé <abbr title="obligatoire">*</abbr>','size' => '40'));?>
-		<br />
-		<br/>
+		<div class="spacer"></div>
 	 	<?php echo $this->Form->input('Typeseance.retard', array('label'=>'Nombre de jours avant retard'));?>
-		<br/>
-		<br/>
-	 	<?php echo $this->Form->input('Typeseance.action', array('label'=>'Action en séance <abbr title="obligatoire">*</abbr>', 'options'=>$actions, 'default'=>$this->Html->value('Typeseance.action'), 'empty'=>!$this->Html->value('Typeseance.id'))); ?>
-		<br/>
-		<br/>
+        <div class="spacer"></div>
+        <?php echo $this->Form->input('Typeseance.action', array('label'=>'Action en séance <abbr title="obligatoire">*</abbr>', 'options'=>$actions, 'default'=>$this->Html->value('Typeseance.action'), 'empty'=>!$this->Html->value('Typeseance.id'))); ?>
+        <div class="spacer"></div>
 	 	<?php echo $this->Form->input('Typeseance.compteur_id', array('label'=>'Compteur <abbr title="obligatoire">*</abbr>', 'options'=>$compteurs, 'default'=>$this->Html->value('Typeseance.compteur_id'), 'empty'=>(count($compteurs)>1) && (!$this->Html->value('Typeseance.id'))));?>
-        <br/>
-        <br />
+        <div class="spacer"></div>
         <?php echo $this->Form->input('Typeacte', array('label'=>'Type d\'acte <abbr title="obligatoire">*</abbr>', 'options'=>$natures, 'default'=>$selectedNatures, 'multiple' => 'multiple', 'class' => 'selectMultiple', 'empty'=>false));?>
 	</fieldset>
 </div>
@@ -55,8 +51,7 @@
 	 	<?php echo $this->Form->input('Acteur', array('label'=>'Par acteur', 'options'=>$acteurs, 'default'=>$selectedActeurs, 'multiple' => 'multiple', 'class' => 'selectMultiple', 'size' => 8, 'empty'=>true));?>
 	</div>
 </fieldset>
-
-<br/>
+<div class="spacer"></div>
 <div class="submit">
     <?php echo $this->Form->hidden('Typeseance.id')?>
     <?php $this->Html2->boutonsSaveCancel('','/typeseances/index'); ?>
