@@ -181,7 +181,7 @@ class CronsController extends AppController {
      */
     function index() {
         $this->request->data = $this->Cron->find('all', array(
-            'order' => array('Cron.next_execution_time ASC'),
+            'order' => array('Cron.nom ASC'),
         ));
         // mise en forme pour la vue
         foreach ($this->request->data as &$cron) {
