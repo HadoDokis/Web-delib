@@ -167,7 +167,7 @@ class AppTools {
         
         $file = new File($data, false);
         if(!$file->exists()){
-            $fileFlux = new File(AppTools::newTmpDir(TMP.'file/test').'/test_', true, 0777);
+            $fileFlux = new File(AppTools::newTmpDir(TMP.'files/test').'/test_', true, 0777);
             $fileFlux->write($data);
             $allowed = Fido::analyzeFile($fileFlux->path);
             $fileFlux->delete();
