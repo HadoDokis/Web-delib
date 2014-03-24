@@ -225,11 +225,14 @@ class Deliberation extends AppModel {
     function estModifiable($delibId, $userId, $canEdit = false) {
         /* lecture en base */
         $delib = $this->find('first', array(
-            'conditions' => array('Deliberation.id' => $delibId),
+            'conditions' => array(
+                'Deliberation.id' => $delibId,
+                'Deliberation.signee' => false
+            ),
             'recursive' => '-1',
             'fields' => array('etat', 'redacteur_id', 'signee')));
 
-        if (!empty($delib) && $delib['Deliberation']['signee'] != 1)
+        if (!empty($delib))
             switch ($delib['Deliberation']['etat']) { /* traitement en fonction de l'état */
                 case 0 :
                     return ($canEdit || $delib['Deliberation']['redacteur_id'] == $userId);
@@ -1763,7 +1766,7 @@ class Deliberation extends AppModel {
                     if (in_array($histo['logdossier'][$i]['status'], array('Signe', 'Vise'))) { // Etape visa ou signature
                         //Annotations
                         $this->setCommentaire($delib_id, $histo['logdossier'][$i]);
-                        $this->saveField('signee', 1);
+                        $this->saveField('signee', true);
                     }
                     elseif ($histo['logdossier'][$i]['status'] == 'Archive'){ // Dernière étape : archive
                         $dossier = $this->Iparapheur->GetDossierWebservice($id_dossier);
@@ -1883,7 +1886,7 @@ class Deliberation extends AppModel {
                 $signature = $this->Signature->getSignature($delib['Deliberation']['pastell_id']);
                 if (!empty($signature))
                     $this->saveField('signature', $signature);
-                $this->saveField('signee', 1);
+                $this->saveField('signee', true);
             }
 
             $this->setHistorique($infos['last_action']['message'], $delib_id, 0);
@@ -2360,7 +2363,7 @@ class Deliberation extends AppModel {
                     'conditions' => array('Deliberation.id' => $acte_id),
                     'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
                 ));
-                $acte['Deliberation']['signee'] = 1;
+                $acte['Deliberation']['signee'] = true;
                 $acte['Deliberation']['etat'] = 3;
                 $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
                 $acte['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);

@@ -298,7 +298,7 @@ class AppSchema extends CakeSchema {
 		'vote_commentaire' => array('type' => 'string', 'null' => true, 'length' => 1000),
 		'delib_pdf' => array('type' => 'binary', 'null' => true),
 		'signature' => array('type' => 'binary', 'null' => true),
-		'signee' => array('type' => 'boolean', 'null' => true),
+		'signee' => array('type' => 'boolean', 'null' => false),
 		'commission' => array('type' => 'binary', 'null' => true),
 		'commission_size' => array('type' => 'integer', 'null' => true),
 		'commission_type' => array('type' => 'string', 'null' => true),

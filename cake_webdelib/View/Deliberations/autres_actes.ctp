@@ -110,7 +110,7 @@
                 'escape' => false,
                 'title' => 'voir le projet de ' . $acte['Deliberation']['objet']
             ));
-            if ($acte['Deliberation']['etat'] >= 2 && $acte['Deliberation']['signee'] == 1)
+            if ($acte['Deliberation']['etat'] >= 2 && !empty($acte['Deliberation']['signee']))
                 $model_id = $acte['Modeltemplate']['modelefinal_id'];
             else
                 $model_id = $acte['Modeltemplate']['modeleprojet_id'];

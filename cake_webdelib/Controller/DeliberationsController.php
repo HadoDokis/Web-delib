@@ -3411,7 +3411,7 @@ class DeliberationsController extends AppController
         $success=true;
         if($this->Deliberation->stock($acte_id, $isArrete)){
             $this->Deliberation->id=$acte_id;
-            $this->Deliberation->saveField('signee', 1);
+            $this->Deliberation->saveField('signee', true);
         }else $success=false;
         
         if($success){

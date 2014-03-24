@@ -917,10 +917,7 @@ class SeancesController extends AppController {
             'conditions' => array(
                 'Deliberation.id' => $ids,
                 'Deliberation.etat > ' => 1,
-                'OR' => array(
-                    'Deliberation.parapheur_etat != ' => 2,
-                    'Deliberation.signee' => 0
-                )
+                'Deliberation.signee' => false
             ),
             'fields' => array('id'),
             'recursive' => -1
