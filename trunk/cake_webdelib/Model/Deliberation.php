@@ -1662,18 +1662,19 @@ class Deliberation extends AppModel {
     }
 
     /**
-     * @param string $parafhisto
+     * @param string $message
      * @param integer $delib_id
      * @param integer $circuit_id
      * @param integer $user_id
+     * @return bool
      */
-    function setHistorique($parafhisto,$delib_id, $circuit_id = null, $user_id = -1){
+    function setHistorique($message, $delib_id, $circuit_id=null, $user_id = -1){
         $histo = $this->Historique->create();
         $histo['Historique']['delib_id'] = $delib_id;
         $histo['Historique']['user_id'] = $user_id;
-        $histo['Historique']['commentaire'] = $parafhisto;
+        $histo['Historique']['commentaire'] = $message;
         $histo['Historique']['circuit_id'] = $circuit_id;
-        $this->Historique->save($histo);
+        return $this->Historique->save($histo, false);
     }
 
     /**
@@ -2352,33 +2353,46 @@ class Deliberation extends AppModel {
         $oMainPart->addElement($oSectionIteration);
     }
 
-    function stock($acte_id, $isArrete = false) {
+    /**
+     * Fonction de signature manuscrite
+     * Signe l'acte
+     * Génère le document delib_pdf
+     * Génère un numéro de delib si c'est un arrêté
+     * Enregistre dans l'historique de l'acte
+     * @param int $acte_id
+     * @param int $user_id
+     * @return bool
+     */
+    public function signatureManuscrite($acte_id, $user_id){
         $success = true;
-
-        if ($isArrete && $this->is_arrete($acte_id)) {
-            $this->id = $acte_id;
-            $num_delib = $this->field('num_delib');
-            if (empty($num_delib)) {
-                $acte = $this->find('first', array(
-                    'conditions' => array('Deliberation.id' => $acte_id),
-                    'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
-                ));
-                $acte['Deliberation']['signee'] = true;
-                $acte['Deliberation']['etat'] = 3;
-                $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
-                $acte['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
-                $acte['Deliberation']['date_acte'] = date("Y-m-d H:i:s", strtotime("now"));
-                $this->save($acte);
-            } else $success = false;
+        $this->begin();
+        $acte = $this->find('first', array(
+            'conditions' => array('Deliberation.id' => $acte_id),
+            'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
+        ));
+        if (empty($acte['Deliberation']['num_delib'])) {
+            $acte['Deliberation']['etat'] = 3;
+            $acte['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
         }
+        $acte['Deliberation']['date_acte'] = date("Y-m-d H:i:s", strtotime("now"));
+        $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
+        $acte['Deliberation']['signee'] = true;
 
-        $content = $this->getDocument($acte_id) && $success;
-        if (!empty($content) && $success) { // On stoque le fichier en base de données.
-            $this->saveField('delib_pdf', $content);
-            unset($content);
+        //Document delib_pdf
+        $content = $this->getDocument($acte_id);
+        if (!empty($content)) { // On stoque le fichier en base de données
+            $acte['Deliberation']['delib_pdf'] = $content;
         } else $success = false;
 
-        return $success;
+        //Historique
+        $success &= $this->setHistorique("Signature manuscrite", $acte_id, -1, $user_id);
+        if ($success && $this->save($acte)){
+            $this->commit();
+            return true;
+        } else {
+            $this->rollback();
+            return false;
+        }
     }
 
     /**
@@ -2389,7 +2403,7 @@ class Deliberation extends AppModel {
      * @param string $format format du fichier de sortie
      * @return string flux du fichier généré
      */
-    public function fusion($id, $modeltype, $modelTemplateId = null, $format = 'pdf') {
+    public function fusion($id, $modeltype = null, $modelTemplateId = null, $format = 'pdf') {
         $this->Behaviors->load('OdtFusion', array(
             'id' => $id,
             'fileNameSuffixe' => $id,

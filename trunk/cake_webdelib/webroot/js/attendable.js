@@ -7,7 +7,17 @@ $(document).ready(function () {
     $(".waiter").attendable({});
     $(".delib_pdf").attendable({titre: 'Génération du document'});
     $("a.link_clore_seance").attendable({titre: 'Cloture de la séance'});
+    $('form#DeliberationSendToParapheurForm #ParapheurCircuitId, form#DeliberationAutreActesValidesForm #ParapheurCircuitId').change(function(){
+        var message;
+        if ($(this).val() == -1){
+            message = 'Opération de signature en cours';
+        }else{
+            message = 'Envoi du dossier au Parapheur';
+        }
+        $(this).closest('form').attr('data-modal', message);
+    }).trigger('change');
     $('form#DeliberationSendToParapheurForm, form#DeliberationAutreActesValidesForm').attendable({titre: 'Envoi du dossier au Parapheur'});
+
 });
 
 
