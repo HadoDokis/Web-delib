@@ -299,9 +299,9 @@ class User extends AppModel
         $file = new File(APP . "/Config/emails/$type.txt", false);
         $content = $file->read();
         $file->close();
-        $addrTraiter = FULL_BASE_URL . '/deliberations/traiter/' . $delib['id'];
-        $addrView = FULL_BASE_URL . '/deliberations/view/' . $delib['id'];
-        $addrEdit = FULL_BASE_URL . '/deliberations/edit/' . $delib['id'];
+        $addrTraiter = Configure::read('WEBDELIB_URL') . '/deliberations/traiter/' . $delib['id'];
+        $addrView = Configure::read('WEBDELIB_URL') . '/deliberations/view/' . $delib['id'];
+        $addrEdit = Configure::read('WEBDELIB_URL') . '/deliberations/edit/' . $delib['id'];
 
         $searchReplace = array(
             "#NOM#" => $acteur['nom'],
