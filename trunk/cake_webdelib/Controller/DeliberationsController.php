@@ -144,7 +144,8 @@ class DeliberationsController extends AppController
 
                 $conditions['OR']['service_id'] = $services;
             }
-            $acte = $this->Deliberation->find('first', array('conditions' => $conditions,
+            $acte = $this->Deliberation->find('first', array(
+                'conditions' => $conditions,
                 'fields' => array('Deliberation.id'),
                 'recursive' => -1));
             $estDansCircuit = $this->Traitement->triggerDansTraitementCible($this->user_id, $id);
@@ -165,7 +166,7 @@ class DeliberationsController extends AppController
 
         $this->set('userCanEdit', $this->Droits->check($this->user_id, "Deliberations:edit") && $this->Deliberation->estModifiable($id, $this->user_id, $this->Droits->check($this->user_id, "Deliberations:editerTous")));
 
-        $this->set('userCanComment', in_array($this->user_id, $this->Traitement->whoIs($id, 'current')));
+        $this->set('inBannette', in_array($this->user_id, $this->Traitement->whoIs($id, 'current', 'RI', false)));
 
         // Lecture et initialisation des commentaires
         $commentaires = $this->Commentaire->find('all', array(

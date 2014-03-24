@@ -38,19 +38,18 @@ if (!empty($versionsup)) {
         array('escape' => false, 'class' => 'btn btn-danger', 'title' => 'Voir la fiche détaillée de la nouvelle version du projet')
     );
 }
-if ($userCanComment){
-    if ($this->data['Deliberation']['etat'] != -1)
-        $linkBarre .= $this->Html->link(
-            '<i class="fa fa-cogs"></i> Traiter',
-            array('action' => 'traiter', $this->data['Deliberation']['id']),
-            array('escape' => false, 'class' => 'btn', 'title' => 'Traiter le projet '. $this->Html->value('Deliberation.objet'))
-        );
+if ($inBannette){
+
     $linkBarre .= $this->Html->link(
         '<i class="fa fa-comment"></i> Commenter',
         array('controller' => 'commentaires', 'action' => 'add', $this->data['Deliberation']['id']),
         array('escape' => false, 'class' => 'btn btn-info', 'title' => 'Ajouter un commentaire')
     );
-
+    $linkBarre .= $this->Html->link(
+        '<i class="fa fa-cogs"></i> Traiter',
+        array('action' => 'traiter', $this->data['Deliberation']['id']),
+        array('escape' => false, 'class' => 'btn btn-primary', 'title' => 'Traiter le projet '. $this->Html->value('Deliberation.objet'))
+    );
 }
 $linkBarre .= "</div>";
 $linkBarre .= "</div>";
