@@ -456,10 +456,14 @@ xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">
     }
 
     function _xml_entity_encode($_string) {
+        //UTILISER  htmlentities() à partir de php 5.4.0
         // Set up XML translation table
         $_xml = array();
-        $_xl8 = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES, 'UTF-8');
-        
+        $_xl8_iso = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+        //Compatibilité php <5.3.3
+        foreach($_xl8_iso as $key=>$value)
+            $_xl8[utf8_encode($key)]=utf8_encode($value);
+            
         while (list($_key, $_val) = each($_xl8)){
             $_xml[$_key] = '&#' . $this->uniord($_key) . ';';
         }
