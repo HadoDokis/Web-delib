@@ -43,11 +43,15 @@ class TypeactesController extends AppController {
 
     function add() {
         $sortie = false;
+        $success = true;
+
         if (!empty($this->data)) {
             $this->Typeacte->set($this->request->data);
             if ($this->Typeacte->validates()) {
 
                 if (!empty($this->request->data['Typeacte']['gabarit_projet_upload']) && $this->request->data['Typeacte']['gabarit_projet_upload']['error'] != 4) {
+                    if (strlen($this->request->data['Typeacte']['gabarit_projet_upload']['name']) > 75)
+                        $this->Typeacte->invalidate('gabarit_projet_upload', 'Nom de fichier invalide : maximum 75 caractères');
                     $this->request->data['Typeacte']['gabarit_projet'] = file_get_contents($this->request->data['Typeacte']['gabarit_projet_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_projet_name'] = $this->request->data['Typeacte']['gabarit_projet_upload']['name'];
                 } elseif ($this->request->data['Typeacte']['gabarit_projet_upload_erase']) {
@@ -56,6 +60,8 @@ class TypeactesController extends AppController {
                 }
 
                 if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4) {
+                    if (strlen($this->request->data['Typeacte']['gabarit_synthese_upload']['name'])>75)
+                        $this->Typeacte->invalidate('gabarit_synthese_upload', 'Nom de fichier invalide : maximum 75 caractères');
                     $this->request->data['Typeacte']['gabarit_synthese'] = file_get_contents($this->request->data['Typeacte']['gabarit_synthese_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_synthese_name'] = $this->request->data['Typeacte']['gabarit_synthese_upload']['name'];
                 } elseif ($this->request->data['Typeacte']['gabarit_synthese_upload_erase']) {
@@ -64,21 +70,22 @@ class TypeactesController extends AppController {
                 }
 
                 if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4) {
+                    if (strlen($this->request->data['Typeacte']['gabarit_acte_upload']['name'])>75)
+                        $this->Typeacte->invalidate('gabarit_acte_upload', 'Nom de fichier invalide : maximum 75 caractères');
                     $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_acte_name'] = $this->request->data['Typeacte']['gabarit_acte_upload']['name'];
                 } elseif (empty($this->request->data['Typeacte']['gabarit_acte_upload_erase'])) {
                     $this->request->data['Typeacte']['gabarit_acte'] = null;
                     $this->request->data['Typeacte']['gabarit_acte_name'] = null;
                 }
-
-                if ($this->Typeacte->save($this->data)) {
+                if (empty($this->Typeacte->validationErrors) && $this->Typeacte->save($this->request->data)) {
                     $this->Ado->create();
                     $this->Ado->save(array(
                         'model' => 'Typeacte',
                         'foreign_key' => $this->Typeacte->id,
                         'parent_id' => 0,
                         'alias' => 'Typeacte:' . $this->data['Typeacte']['libelle']));
-                    $this->Session->setFlash('Le type de acte \'' . $this->data['Typeacte']['libelle'] . '\' a été sauvegardé', 'growl');
+                    $this->Session->setFlash('Le type d\'acte \'' . $this->data['Typeacte']['libelle'] . '\' a été sauvegardé', 'growl');
                     $sortie = true;
                 } else {
                     $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));
@@ -116,6 +123,9 @@ class TypeactesController extends AppController {
             if ($this->Typeacte->validates()) {
 
                 if (!empty($this->request->data['Typeacte']['gabarit_projet_upload']) && $this->request->data['Typeacte']['gabarit_projet_upload']['error'] != 4) {
+                    if (strlen($this->request->data['Typeacte']['gabarit_projet_upload']['name'])>75)
+                        $this->Typeacte->invalidate('gabarit_projet_upload', 'Nom de fichier invalide : maximum 75 caractères');
+
                     $this->request->data['Typeacte']['gabarit_projet'] = file_get_contents($this->request->data['Typeacte']['gabarit_projet_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_projet_name'] = $this->request->data['Typeacte']['gabarit_projet_upload']['name'];
                 } elseif (!empty($this->request->data['Typeacte']['gabarit_projet_upload_erase'])) {
@@ -124,6 +134,9 @@ class TypeactesController extends AppController {
                 }
 
                 if (!empty($this->request->data['Typeacte']['gabarit_synthese_upload']) && $this->request->data['Typeacte']['gabarit_synthese_upload']['error'] != 4) {
+                    if (strlen($this->request->data['Typeacte']['gabarit_synthese_upload']['name'])>75)
+                        $this->Typeacte->invalidate('gabarit_synthese_upload', 'Nom de fichier invalide : maximum 75 caractères');
+
                     $this->request->data['Typeacte']['gabarit_synthese'] = file_get_contents($this->request->data['Typeacte']['gabarit_synthese_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_synthese_name'] = $this->request->data['Typeacte']['gabarit_synthese_upload']['name'];
                 } elseif (!empty($this->request->data['Typeacte']['gabarit_synthese_upload_erase'])) {
@@ -132,6 +145,9 @@ class TypeactesController extends AppController {
                 }
 
                 if (!empty($this->request->data['Typeacte']['gabarit_acte_upload']) && $this->request->data['Typeacte']['gabarit_acte_upload']['error'] != 4) {
+                    if (strlen($this->request->data['Typeacte']['gabarit_acte_upload']['name'])>75)
+                        $this->Typeacte->invalidate('gabarit_acte_upload', 'Nom de fichier invalide : maximum 75 caractères');
+
                     $this->request->data['Typeacte']['gabarit_acte'] = file_get_contents($this->request->data['Typeacte']['gabarit_acte_upload']['tmp_name']);
                     $this->request->data['Typeacte']['gabarit_acte_name'] = $this->request->data['Typeacte']['gabarit_acte_upload']['name'];
                 } elseif (!empty($this->request->data['Typeacte']['gabarit_acte_upload_erase'])) {
@@ -147,10 +163,10 @@ class TypeactesController extends AppController {
                     'fields' => array('Ado.id'),
                     'recursive' => -1));
 
-                if ($this->Typeacte->save($this->data)) {
+                if (empty($this->Typeacte->validationErrors) && $this->Typeacte->save($this->data)) {
                     $this->Ado->id = $ado['Ado']['id'];
                     $this->Ado->saveField('alias', 'Typeacte:' . $this->data['Typeacte']['libelle']);
-                    $this->Session->setFlash('Le type de séance \'' . $this->data['Typeacte']['libelle'] . '\' a été modifié', 'growl');
+                    $this->Session->setFlash('Le type d\'acte \'' . $this->data['Typeacte']['libelle'] . '\' a été modifié', 'growl');
                     $sortie = true;
                 } else {
                     $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.', 'growl', array('type' => 'erreur'));

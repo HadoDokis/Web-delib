@@ -28,7 +28,7 @@ class Typeacte extends AppModel
         'libelle' => array(
             array(
                 'rule' => 'notEmpty',
-                'message' => 'Entrer le libellé.'
+                'message' => 'Veuillez saisir le libellé de l\'acte'
             ),
             array(
                 'rule' => 'isUnique',
