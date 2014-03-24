@@ -114,7 +114,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                             'escape' => false),
                         false);
 
-                if (in_array('edit', $deliberation['Actions']) && ($deliberation['Deliberation']['signee'] != 1))
+                if (in_array('edit', $deliberation['Actions']) && empty($deliberation['Deliberation']['signee']))
                     echo $this->Html->link(SHY,
                         array('controller' => 'deliberations', 'action' => 'edit', $deliberation['Deliberation']['id']),
                         array('class' => 'link_modifier',
@@ -157,7 +157,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                             'escape' => false));
                 echo '<div class="spacer"></div>';
                 echo '<br/>';
-                if (in_array('attribuerCircuit', $deliberation['Actions']) && ($deliberation['Deliberation']['signee'] != 1)) {
+                if (in_array('attribuerCircuit', $deliberation['Actions']) && empty($deliberation['Deliberation']['signee'])) {
                     $actionAttribuer = array('controller' => 'deliberations', 'action' => 'attribuercircuit', $deliberation['Deliberation']['id']);
                     if (!empty($deliberation['Deliberation']['circuit_id']))
                         $actionAttribuer[] = $deliberation['Deliberation']['circuit_id'];

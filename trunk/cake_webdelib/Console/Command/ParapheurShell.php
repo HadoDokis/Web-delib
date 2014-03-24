@@ -83,7 +83,7 @@ class ParapheurShell extends Shell {
                                     $this->Deliberation->saveField('parapheur_bordereau', base64_decode($dossier['getdossier']['bordereau']));
                                     $this->Deliberation->saveField('signature', base64_decode($dossier['getdossier']['signature']));
                                 }
-                                $this->Deliberation->saveField('signee', 1);
+                                $this->Deliberation->saveField('signee', true);
                             }
                             if ($histo['logdossier'][$i]['status'] == 'Archive'){
                                 $this->Deliberation->saveField('parapheur_etat', 2);

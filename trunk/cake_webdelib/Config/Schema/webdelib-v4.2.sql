@@ -508,7 +508,7 @@ CREATE TABLE deliberations (
     delib_pdf bytea,
     bordereau bytea,
     signature bytea,
-    signee boolean,
+    signee boolean default false,
     commission bytea,
     commission_size integer,
     commission_type character varying(255),
