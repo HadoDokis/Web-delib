@@ -168,7 +168,7 @@ class AppSchema extends CakeSchema {
 	);
 	public $circuits_users = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
-		'circuit_id' => array('type' => 'integer', 'null' => false),
+		'circuit_id' => array('type' => 'integer', 'null' => true),
 		'user_id' => array('type' => 'integer', 'null' => false),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),

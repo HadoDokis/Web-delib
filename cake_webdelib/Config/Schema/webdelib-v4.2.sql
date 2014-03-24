@@ -599,7 +599,7 @@ CREATE TABLE historiques (
     id integer DEFAULT nextval('historiques_id_seq'::regclass) NOT NULL,
     delib_id integer NOT NULL,
     user_id integer NOT NULL,
-    circuit_id integer NOT NULL,
+    circuit_id integer,
     commentaire text NOT NULL,
     modified timestamp without time zone NOT NULL,
     created timestamp without time zone NOT NULL
