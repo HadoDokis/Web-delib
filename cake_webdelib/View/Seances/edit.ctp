@@ -1,6 +1,5 @@
 <?php
 echo $this->Html->script('calendrier.js');
-echo $this->Html->script('utils.js');
 echo $this->Html->script('ckeditor/ckeditor');
 echo $this->Html->script('ckeditor/adapters/jquery');
 
