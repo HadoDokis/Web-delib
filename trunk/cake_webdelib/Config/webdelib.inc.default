@@ -1,6 +1,9 @@
 <?php
 /* Configuration du debug */
 Configure::write('debug', 0);
+/* URL de Webdelib (pour mails) */
+Configure::write('WEBDELIB_URL', 'http://webdelib.x.x.org');
+
 /* Configuration session default 600 */
 Configure::write('Session.timeout', 600);
 Configure::write('Cakeflow.optimisation', true);
