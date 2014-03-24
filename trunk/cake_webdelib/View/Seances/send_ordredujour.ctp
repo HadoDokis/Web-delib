@@ -1,5 +1,4 @@
 <div class="deliberations">
-    <?php echo $this->Html->script('utils.js'); ?>
     <h2>Envoi de l'ordre du jour</h2>
     <?php
     echo $this->Form->create('Seance', array('url' => array('controller' => 'seances', 'action' => 'sendOrdredujour', $seance_id, $model_id), 'class'=>'waiter', 'data-modal' => 'Envoi de l\'ordre du jour'));
