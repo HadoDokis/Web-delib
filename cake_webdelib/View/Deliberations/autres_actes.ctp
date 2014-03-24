@@ -122,13 +122,13 @@
             if ($this->action == 'autresActesAValider' && $canGoNext && !empty($acte['Circuit']['nom'])) {
                 echo $this->Html->link(SHY, "/deliberations/goNext/" . $acte['Deliberation']['id'], array('class' => "link_jump",
                     'title' => 'Sauter une ou des étapes pour le projet ' . $acte['Deliberation']['objet'],
-                    'escape' => false), false);
+                    'escape' => false));
             }
             if ($this->action == 'autresActesAValider' && $peuxValiderEnUrgence && !empty($acte['Circuit']['nom'])) {
                 echo $this->Html->link(SHY, "/deliberations/validerEnUrgence/" . $acte['Deliberation']['id'], array('class' => "link_validerenurgence",
                     'alt' => 'Valider en urgence le projet ' . $acte['Deliberation']['objet'],
                     'title' => 'Valider en urgence le projet ' . $acte['Deliberation']['objet'],
-                    'escape' => false), 'Confirmez-vous la validation en urgence du projet \'' . $acte['Deliberation']['id'] . '\'');
+                    'escape' => false), 'Confirmer la validation en urgence du projet ' . $acte['Deliberation']['id'] . ' ?');
             }
 
             $enCoursSignature = $acte['Deliberation']['etat'] == 3 && $acte['Deliberation']['parapheur_etat'] == 1;
@@ -136,14 +136,14 @@
                 echo $this->Html->link(SHY, '/deliberations/edit/' . $acte['Deliberation']['id'], array('class' => 'link_modifier',
                     'title' => 'Modifier le projet ' . $acte['Deliberation']['objet'],
                     'escape' => false
-                ), false);
+                ));
             }
             if ($this->action == 'autreActesValides' && !$enCoursSignature) {
                 $actionAttribuer = '/deliberations/attribuercircuit/' . $acte['Deliberation']['id'];
                 echo $this->Html->link(SHY, $actionAttribuer, array('class' => 'link_circuit',
                     'alt' => 'Attribuer un circuit pour le projet ' . $acte['Deliberation']['objet'],
                     'escape' => false,
-                    'title' => 'Attribuer un circuit pour le projet ' . $acte['Deliberation']['objet']), false);
+                    'title' => 'Attribuer un circuit pour le projet ' . $acte['Deliberation']['objet']));
             }
             echo('</td>');
             echo $this->Html->tag('/tr', null);

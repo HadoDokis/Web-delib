@@ -340,24 +340,24 @@ class DeliberationsController extends AppController
                 'recursive' => -1,
                 'conditions' => array('id' => $this->data['Deliberation']['typeacte_id'])
             ));
-            $finfo = new finfo(FILEINFO_MIME_TYPE);
+
             if (!empty($typeacte['Typeacte']['gabarit_projet'])){
                 $this->request->data['Deliberation']['texte_projet'] = $typeacte['Typeacte']['gabarit_projet'];
                 $this->request->data['Deliberation']['texte_projet_name'] = $typeacte['Typeacte']['gabarit_projet_name'];
                 $this->request->data['Deliberation']['texte_projet_size'] = strlen($typeacte['Typeacte']['gabarit_projet']);
-                $this->request->data['Deliberation']['texte_projet_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_projet']);
+                $this->request->data['Deliberation']['texte_projet_type'] = 'application/vnd.oasis.opendocument.text';
             }
             if (!empty($typeacte['Typeacte']['gabarit_synthese'])){
                 $this->request->data['Deliberation']['texte_synthese'] = $typeacte['Typeacte']['gabarit_synthese'];
                 $this->request->data['Deliberation']['texte_synthese_name'] = $typeacte['Typeacte']['gabarit_synthese_name'];
                 $this->request->data['Deliberation']['texte_synthese_size'] = strlen($typeacte['Typeacte']['gabarit_synthese']);
-                $this->request->data['Deliberation']['texte_synthese_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_synthese']);
+                $this->request->data['Deliberation']['texte_synthese_type'] = 'application/vnd.oasis.opendocument.text';
             }
             if (!empty($typeacte['Typeacte']['gabarit_acte'])){
                 $this->request->data['Deliberation']['deliberation'] = $typeacte['Typeacte']['gabarit_acte'];
                 $this->request->data['Deliberation']['deliberation_name'] = $typeacte['Typeacte']['gabarit_acte_name'];
                 $this->request->data['Deliberation']['deliberation_size'] = strlen($typeacte['Typeacte']['gabarit_acte']);
-                $this->request->data['Deliberation']['deliberation_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_acte']);
+                $this->request->data['Deliberation']['deliberation_type'] = 'application/vnd.oasis.opendocument.text';
             }
 
             $success &= $this->Deliberation->save($this->data);
@@ -1621,7 +1621,7 @@ class DeliberationsController extends AppController
             $conditions['Deliberation.id'] = $this->Seance->getDeliberationsId($seance_id);
         $conditions['Deliberation.typeacte_id'] = $this->Deliberation->Typeacte->getIdDesNaturesDelib();
         $conditions['Deliberation.etat'] = 5;
-        // $conditions['Deliberationseance.Seance.Typeseance.action'] = 0;   
+        // $conditions['Deliberationseance.Seance.Typeseance.action'] = 0;
        $conditions[] = 'Deliberation.id IN ('
             . 'SELECT deliberations_seances.deliberation_id'
                 . ' FROM deliberations_seances '
@@ -1734,7 +1734,11 @@ class DeliberationsController extends AppController
         }
 
         $conditions['Deliberation.etat >='] = 3;
-        $conditions['Deliberation.delib_pdf <>'] = '';
+        $conditions['Deliberation.signee'] = true;
+        $conditions['NOT']['Deliberation.delib_pdf'] = null;
+
+        $conditions['Deliberation.typeacte_id'] = $this->Deliberation->Typeacte->getIdDesNaturesDelib();
+
         $conditions[] = 'Deliberation.id IN ('
             . 'SELECT deliberations_seances.deliberation_id'
                 . ' FROM deliberations_seances '
@@ -1921,64 +1925,76 @@ class DeliberationsController extends AppController
         return $return;
     }
 
+    /**
+     * Envoi par lot de deliberations au TDT (s2low ou pastell)
+     * @return mixed
+     */
     function sendToTdt() {
         App::uses('Tdt', 'Lib');
         App::uses('Folder', 'Utility');
         App::uses('File', 'Utility');
-        
-        if (!Configure::read('USE_TDT')){
+
+        if (!Configure::read('USE_TDT')) {
             $this->Session->setFlash('Erreur : TDT désactivé. Pour activer ce service, veuillez contacter votre administrateur.', 'growl', array('type' => 'erreurTDT'));
             return $this->redirect($this->referer());
         }
         $Tdt = new Tdt();
         $erreur = '';
+        //Cases sélectionnées ?
         if (!empty($this->data['Deliberation']['id'])) {
-
+            //si S2low : fichier classification présent ?
             if (Configure::read('TDT') == 'S2LOW' && !is_file(Configure::read('S2LOW_CLASSIFICATION')))
                 $this->S2low->getClassification();
 
-            foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
-                if ($bool == 1 && !empty($this->data[$delib_id . "classif2"])) {
-                    $this->Deliberation->id = $delib_id;
-                    $this->Deliberation->saveField('num_pref', $this->data[$delib_id . "classif2"]);
-                }
-            }
-            
             $nbEnvoyee = 1;
             $this->Deliberation->Typeacte->Behaviors->load('Containable');
+            //Pour chaque délib
             foreach ($this->data['Deliberation']['id'] as $delib_id => $bool) {
-                
-                if ($bool == 1){
-                    $this->Deliberation->id = $delib_id;
+                //Si non cochée passer
+                if (!$bool) continue;
+
+                $this->Deliberation->id = $delib_id;
+
+                if (!empty($this->data[$delib_id . "classif2"])) {
+                    $this->Deliberation->saveField('num_pref', $this->data[$delib_id . "classif2"]);
                     $delib = $this->Deliberation->find('first', array(
                         'conditions' => array('Deliberation.id' => $delib_id)
                     ));
-                }
-                    if(!empty($this->data[$delib_id . "classif2"])) {
-                    
+
                     if (Configure::read('TDT') == 'PASTELL' && empty($delib['Deliberation']['pastell_id'])) {
                         $erreur .= $delib['Deliberation']['objet'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Identifiant Pastell inconnu.';
                         continue;
                     }
                     if (Configure::read('USE_PASTELL') && !empty($delib['Deliberation']['pastell_id'])) {
-                        if ($Tdt->send($delib['Deliberation']['pastell_id'], $delib['Deliberation']['num_pref'])){
+                        if ($Tdt->send($delib['Deliberation']['pastell_id'], $delib['Deliberation']['num_pref'])) {
                             $this->Deliberation->saveField('etat', 5);
-                        }else{
-                            $erreur .=  $delib['Deliberation']['objet'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Envoi au TDT échoué';
+                        } else {
+                            $erreur .= $delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Envoi au TDT échoué';
                             continue;
                         }
-                    }elseif(Configure::read('TDT') == 'S2LOW' && Configure::read('USE_S2LOW')){
+                    } elseif (Configure::read('TDT') == 'S2LOW' && Configure::read('USE_S2LOW')) {
                         $typeacte = $this->Deliberation->Typeacte->find('first', array(
                             'conditions' => array('Typeacte.id' => $delib['Typeacte']['id']),
                             'contain' => array('Nature.code')
                         ));
-                        switch ($typeacte['Nature']['code']){
-                            case 'DE': $nature_code = 1; break;
-                            case 'AR': $nature_code = 2; break;
-                            case 'AI': $nature_code = 3; break;
-                            case 'CC': $nature_code = 4; break;
-                            case 'AU': $nature_code = 5; break;
-                            default: continue;
+                        switch ($typeacte['Nature']['code']) {
+                            case 'DE':
+                                $nature_code = 1;
+                                break;
+                            case 'AR':
+                                $nature_code = 2;
+                                break;
+                            case 'AI':
+                                $nature_code = 3;
+                                break;
+                            case 'CC':
+                                $nature_code = 4;
+                                break;
+                            case 'AU':
+                                $nature_code = 5;
+                                break;
+                            default:
+                                continue;
                         }
 
                         //$this->Deliberation->changeClassification($delib_id, $classification);
@@ -1996,30 +2012,30 @@ class DeliberationsController extends AppController
                         $rest = substr($rest, strpos($classification, '.') + 1, strlen($rest));
                         $class5 = substr($rest, 0, strpos($classification, '.'));
 
-                        if(empty($delib['Deliberation']['delib_pdf'])){
-                             $erreur .= $delib['Deliberation']['objet'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Fichier Vide.';
+                        if (empty($delib['Deliberation']['delib_pdf'])) {
+                            $erreur .= $delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Fichier Vide.';
                             continue;
                         }
-                        $folder = new Folder(AppTools::newTmpDir(TMP.'files'.DS.'tdt'.DS.$delib_id), true, 0777);
-                        $errors=$folder->errors();
-                        if(!empty($errors)){
-                             $erreur .= $delib['Deliberation']['objet'] . ' (' . $delib['Deliberation']['num_delib'] . ') : '.implode($errors).'.';
+                        $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'tdt' . DS . $delib_id), true, 0777);
+                        $errors = $folder->errors();
+                        if (!empty($errors)) {
+                            $erreur .= $delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : ' . implode($errors) . '.';
                             continue;
                         }
-                        
-                        $file = new File($folder->pwd().DS.'D_'.$delib_id.'.pdf');
-                        $file->append($delib['Deliberation']['delib_pdf']);
+
+                        $file = new File($folder->pwd() . DS . 'D_' . $delib_id . '.pdf');
+                        $file->write($delib['Deliberation']['delib_pdf']);
                         $file->close();
-                        
+
                         if (!empty($delib['Deliberation']['signature'])) {
-                            $fileSignature = new File($folder->pwd().DS.'signature_'.$delib_id.'.zip');
-                            $fileSignature->append($delib['Deliberation']['signature']);
-                        
+                            $fileSignature = new File($folder->pwd() . DS . 'signature_' . $delib_id . '.zip');
+                            $fileSignature->write($delib['Deliberation']['signature']);
+
                             $zip = new ZipArchive();
                             $res = $zip->open($fileSignature->pwd(), ZIPARCHIVE::OVERWRITE);
-                            if ($res===TRUE) {
-                                 $zip->extractTo($folder->pwd().DS, array('signature.pkcs7'));
-                                 $zip->close();
+                            if ($res === TRUE) {
+                                $zip->extractTo($folder->pwd() . DS, array('signature.pkcs7'));
+                                $zip->close();
                             }
                             $fileSignature->close();
                         }
@@ -2030,12 +2046,8 @@ class DeliberationsController extends AppController
                             $seances = array();
                             foreach ($delib['Seance'] as $seance)
                                 $seances[] = $seance['id'];
-                            $seance_id = $this->Seance->getSeanceDeliberante($seances);
-                            $seance = $this->Seance->find('first', array(
-                                'conditions' => array('Seance.id' => $seance_id),
-                                'fields' => array('Seance.date'),
-                                'recursive' => -1));
-                            $decision_date = date("Y-m-d", strtotime($seance['Seance']['date']));
+                            $this->Seance->id = $this->Seance->getSeanceDeliberante($seances);
+                            $decision_date = date("Y-m-d", strtotime($this->Seance->field('date')));
                         }
 
                         if ($class1 == false)
@@ -2060,20 +2072,20 @@ class DeliberationsController extends AppController
                             'number' => utf8_decode($delib['Deliberation']['num_delib']),
                             'decision_date' => $decision_date,
                             'subject' => utf8_decode($delib['Deliberation']['objet_delib']),
-                            'acte_pdf_file' => '@'.$file->pwd(),
+                            'acte_pdf_file' => '@' . $file->pwd(),
                         );
 
-                        if (file_exists($folder->pwd().DS.'signature.pkcs7')) {
-                            $acte['acte_pdf_file_sign'] = '@'.$folder->pwd().DS.'signature.pkcs7';
+                        if (file_exists($folder->pwd() . DS . 'signature.pkcs7')) {
+                            $acte['acte_pdf_file_sign'] = '@' . $folder->pwd() . DS . 'signature.pkcs7';
                         }
 
-                        $annexes=$this->Deliberation->getAnnexes($delib_id);
-                        if(!empty($annexes)){
-                            $acte['acte_attachments_sign['.count($annexes).']'] = "";
-                            foreach ($annexes as $key=>$annex) {
-                                $fileAnnexe = new File($folder->pwd().DS.'D_'.$annex['id'].'.pdf');
+                        $annexes = $this->Deliberation->getAnnexes($delib_id);
+                        if (!empty($annexes)) {
+                            $acte['acte_attachments_sign[' . count($annexes) . ']'] = "";
+                            foreach ($annexes as $key => $annex) {
+                                $fileAnnexe = new File($folder->pwd() . DS . 'D_' . $annex['id'] . '.pdf');
                                 $fileAnnexe->append($annex['content']);
-                                $acte["acte_attachments[$key]"] = '@'.$fileAnnexe->pwd();
+                                $acte["acte_attachments[$key]"] = '@' . $fileAnnexe->pwd();
                                 $file->close();
                             }
                         }
@@ -2085,7 +2097,7 @@ class DeliberationsController extends AppController
                             $order = array("\r\n", "\n", "\r");
                             $replace = '<br />';
                             $curl_return = str_replace($order, $replace, $curl_return);
-                            $erreur .= $delib['Deliberation']['objet'] . '(' . $delib['Deliberation']['num_delib'] . ') : ' . $curl_return . '<br />';
+                            $erreur .= $delib['Deliberation']['objet_delib'] . '(' . $delib['Deliberation']['num_delib'] . ') : ' . $curl_return . '<br />';
                         } else {
                             $nbEnvoyee++;
                             $this->Deliberation->saveField('etat', 5);
@@ -2093,10 +2105,11 @@ class DeliberationsController extends AppController
                         }
                         $folder->delete();
                         sleep(5);
-                    }else{
-                        $erreur .= $delib['Deliberation']['objet'] . '(' . $delib['Deliberation']['num_delib'] . ') : Aucun connecteur TDT valide.';
+                    } else {
+                        $erreur .= $delib['Deliberation']['objet_delib'] . ' (' . $delib['Deliberation']['num_delib'] . ') : Aucun connecteur TDT valide.';
                     }
-                }else $erreur .= $delib['Deliberation']['objet'] . '(' . $delib['Deliberation']['num_delib'] . ') : Aucune classification sélectionnée.';
+                } else $erreur .= $this->Deliberation->field('objet_delib') . ' (' . $this->Deliberation->field('num_delib') . ') : Aucune classification sélectionnée.';
+
             }
         } else $erreur = 'Aucun Acte(s) selectionné(s)';
 
@@ -2106,9 +2119,9 @@ class DeliberationsController extends AppController
             $this->Session->setFlash('Erreur : ' . $erreur, 'growl', array('type' => 'erreurTDT'));
 
         if (!empty($this->data['Seance']['id']))
-            return $this->redirect(array('action'=>'toSend', $this->data['Seance']['id']));
+            return $this->redirect(array('action' => 'toSend', $this->data['Seance']['id']));
         else
-            return $this->redirect(array('action'=>'toSend'));
+            return $this->redirect(array('action' => 'toSend'));
     }
 
     function getClassification() {
@@ -3406,21 +3419,6 @@ class DeliberationsController extends AppController
                 break;
         }
     }
-    
-    function _signatureManuscrite($acte_id, $isArrete=false){
-        $success=true;
-        if($this->Deliberation->stock($acte_id, $isArrete)){
-            $this->Deliberation->id=$acte_id;
-            $this->Deliberation->saveField('signee', true);
-        }else $success=false;
-        
-        if($success){
-        $this->Historique->enregistre($acte_id, $this->user_id, "Signature manuscrite");
-        return $this->Deliberation->field('num_delib') . " : Signature manuscrite effectué avec succès {OK}<br />";
-        }
-        
-        return $this->Deliberation->field('num_delib') . " : Signature manuscrite effectué en echec {KO}<br />";
-    }
 
     function _sendToSignature($acte_id, $circuit_id, $isArrete = false) {
         if ($isArrete && $this->Deliberation->is_arrete($acte_id)) {
@@ -3503,18 +3501,16 @@ class DeliberationsController extends AppController
                         $delib_id = substr($id, 3, strlen($id));
                         $this->Deliberation->id = $delib_id;
                         if ($this->data['Parapheur']['circuit_id'] == -1) { //Signature manuscrite
-                            $message.=$this->_signatureManuscrite($delib_id);
-                        }
-                        else //Signature numerique
-                        {
-                            $message.=$this->_sendToSignature($delib_id, $this->data['Parapheur']['circuit_id']);
+                            $signee = $this->Deliberation->signatureManuscrite($delib_id, $this->user_id);
+                            $message .= $this->Deliberation->field('num_delib') . $signee ? " : Signé correctement<br />" : " : Erreur de signature<br />";
+                        } else { //Signature électronique
+                            $message .= $this->_sendToSignature($delib_id, $this->data['Parapheur']['circuit_id']);
                         }
                     }
                 }
             }catch (Exception $e){
                 $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'erreurTDT'));
             }
-            
             $this->Session->setFlash($message, 'growl', array('type' => 'important'));
             
             return $this->redirect($this->referer());
@@ -4017,45 +4013,44 @@ class DeliberationsController extends AppController
         $this->render('autres_actes');
     }
 
-    function sendActesToSignature()
-    {
-        if (!Configure::read('USE_PARAPHEUR') && $this->data['Parapheur']['circuit_id'] != -1){
+    /**
+     * Envoi d'actes en signature
+     * @return mixed
+     */
+    function sendActesToSignature() {
+        if (!Configure::read('USE_PARAPHEUR') && $this->data['Parapheur']['circuit_id'] != -1) {
             $this->Session->setFlash('Parapheur désactivé', 'growl');
             return $this->redirect($this->referer());
         }
-        try{
-        $circuits = array();
-        if ($this->data['Parapheur']['circuit_id'] != -1) {
-            App::uses('Signature', 'Lib');
-            $this->Signature = new Signature;
-            $circuits = $this->Signature->listCircuits();
-        }
-        $circuits['-1'] = 'Signature manuscrite';
-        $this->Deliberation->Behaviors->load('Containable');
-        $message='';
-        foreach ($this->data['Deliberation'] as $tmp_id => $bool) {
-            if ($bool) {
-                $acte_id = substr($tmp_id, 3, strlen($tmp_id));
-                if ($this->data['Parapheur']['circuit_id'] == -1) {
-                    $message.=$this->_signatureManuscrite($acte_id, true);
-                } else {
-                    $message.=$this->_sendToSignature($acte_id, $this->data['Parapheur']['circuit_id'], true);
-                    
-                   /** } else {
-                        $this->Session->setFlash("Erreur lors de l'envoi au parapheur. Pour plus d'informations, consultez le fichier parapheur.log", 'growl', array('type' => 'erreur'));
-                    }*/
+        try {
+            $circuits = array();
+            if ($this->data['Parapheur']['circuit_id'] != -1) {
+                App::uses('Signature', 'Lib');
+                $this->Signature = new Signature;
+                $circuits = $this->Signature->listCircuits();
+            }
+            $circuits['-1'] = 'Signature manuscrite';
+            $this->Deliberation->Behaviors->load('Containable');
+            $message = '';
+            foreach ($this->data['Deliberation'] as $tmp_id => $bool) {
+                if ($bool) {
+                    $acte_id = substr($tmp_id, 3, strlen($tmp_id));
+                    $this->Deliberation->id = $acte_id;
+                    if ($this->data['Parapheur']['circuit_id'] == -1) {
+                        $signee = $this->Deliberation->signatureManuscrite($acte_id, $this->user_id);
+                        $message .= "Acte n°" . $acte_id . ($signee ? " : Signé correctement<br />" : " : Erreur de signature<br />");
+                    } else {
+                        $message .= $this->_sendToSignature($acte_id, $this->data['Parapheur']['circuit_id'], true);
+                    }
                 }
             }
+        } catch (Exception $e) {
+            $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'erreurTDT'));
         }
-        
-        }catch (Exception $e){
-                $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'erreurTDT'));
-            }
-            
-      $this->Session->setFlash($message, 'growl', array('type' => 'important'));
-            
-            
-        return $this->redirect(array('action'=>'autreActesValides'));
+
+        $this->Session->setFlash($message, 'growl', array('type' => 'important'));
+
+        return $this->redirect(array('action' => 'autreActesValides'));
     }
 
     function autreActesAEnvoyer()
