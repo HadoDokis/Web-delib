@@ -189,9 +189,9 @@ class PostseancesController extends AppController {
                 $files = $folderSend->find('.*');
                 foreach ($files as $file) {
                     $file = new File($folderSend->pwd() . DS . $file);
-                    $this->Progress->at(95, 'Envoi du fichier '.$file->name().'...');
+                    $this->Progress->at(95, 'Envoi du fichier '.$file->name.'...');
                     $contents = $file->read();
-                    $cmis->client->createDocument($cmisFolder->id, $file->name(), array(), $file->read(), $file->mime());
+                    $cmis->client->createDocument($cmisFolder->id, $file->name, array(), $file->read(), $file->mime());
                     $file->close();
                 }
 
