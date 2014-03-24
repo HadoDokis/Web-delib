@@ -1,7 +1,5 @@
 window.onload = function () {
-//	montre();
-    afficheOngletEnErreur(
-    )
+    afficheOngletEnErreur();
 };
 
 function montre(id) {
@@ -195,7 +193,7 @@ function supprimerFichierJoint(modele, champ, titre) {
     if (modele == "Deliberation") champ += "_upload";
     inputFichier.name = 'data[' + modele + '][' + champ + ']';
     inputFichier.title = titre;
-    inputFichier.class = 'file-text';
+    $(inputFichier).addClass('file-text');
     inputFichier.onChange = 'changeFichierTexte(this)';
     /* Ajoute l'input file au span */
     sInput.appendChild(inputFichier);
