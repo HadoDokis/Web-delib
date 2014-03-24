@@ -3969,8 +3969,8 @@ class DeliberationsController extends AppController
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
         $conditions['Deliberation.etat'] = array(2, 3, 4);
-        $conditions['NOT']['Deliberation.signee'] = 1;
-        $conditions['NOT']['Deliberation.parapheur_etat'] = 2;
+        $conditions['Deliberation.signee'] = false;
+        $conditions['Deliberation.parapheur_etat !='] = 2;
 
         $fields = array(
             'Deliberation.id',
@@ -4065,7 +4065,7 @@ class DeliberationsController extends AppController
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
         $conditions['Deliberation.etat'] = array(3, 4);
-        $conditions['Deliberation.signee'] = 1;
+        $conditions['Deliberation.signee'] = true;
         $fields = array(
             'Deliberation.id',
             'Deliberation.num_delib',
@@ -4093,6 +4093,9 @@ class DeliberationsController extends AppController
         );
         $order = array('Deliberation.num_delib ASC');
 
+        $actes = $this->Deliberation->getActesExceptDelib(array(), array('Deliberation.id', 'Deliberation.typeacte_id'), array());
+        $conditions['Deliberation.id'] = Hash::extract($actes, '{n}.Deliberation.id');
+
         $actes = $this->Deliberation->getActesATeletransmettre($conditions, $fields, $contain, $order);
 
         $this->_ajouterFiltre($actes);
@@ -4118,7 +4121,7 @@ class DeliberationsController extends AppController
         $this->request->data = $this->Deliberation->find('all', array(
             'conditions' => array(
                 'Deliberation.etat' => array(3, 4),
-                'Deliberation.signee' => 1,
+                'Deliberation.signee' => true,
                 'Deliberation.typeacte_id' => Set::extract('/Typeacte/id', $typeacte_ids)
             ),
             'contain' => array(

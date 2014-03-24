@@ -128,4 +128,7 @@ ALTER TABLE typeactes ADD COLUMN gabarit_synthese_name VARCHAR DEFAULT NULL;
 
 ALTER TABLE seances ADD COLUMN idelibre_id VARCHAR DEFAULT NULL;
 
+ALTER TABLE deliberations ALTER COLUMN signee SET DEFAULT FALSE;
+UPDATE deliberations SET signee=FALSE WHERE signee IS NULL;
+
 COMMIT;
