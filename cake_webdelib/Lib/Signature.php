@@ -130,7 +130,7 @@ class Signature {
         }else{
             $libelleSousType = $circuit_id;
         }
-        $targetName = $delib['Deliberation']['objet'];
+        $targetName = $delib['Deliberation']['objet_delib'];
         $date_limite = !empty($delib['Deliberation']['date_limite']) ? $delib['Deliberation']['date_limite'] : null;
 
         $ret = $this->Iparapheur->creerDossierWebservice(
