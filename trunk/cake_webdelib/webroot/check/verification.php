@@ -1200,7 +1200,7 @@ function getCircuitsParapheur() {
         $circuits = $Parafwebservice->getListeSousTypesWebservice(Configure::read('IPARAPHEUR_TYPE'));
         $time_end = microtime(true);
         if (!empty($circuits)) {
-            d(Configure::read('PARAPHEUR_HOST'), 'info');
+            d(Configure::read('IPARAPHEUR_HOST'), 'info');
             $time = round($time_end - $time_start, 2);
             d(count($circuits)." circuits du i-parapheur récupéré en $time secondes", 'ok');
         }
