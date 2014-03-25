@@ -3482,40 +3482,37 @@ class DeliberationsController extends AppController
      * @return mixed
      */
     function sendToParapheur($seance_id = null) {
-        
         App::uses('Signature', 'Lib');
-        try{
+        try {
             $this->Signature = new Signature();
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $this->Session->setFlash($e->getMessage(), 'growl');
-            $this->redirect($this->referer());
+            return $this->redirect($this->referer());
         }
-        
-        if ($this->request->isPost()) {
-            
-            try{
-                // Formulaire envoyé
-                $message = '';
+
+        // Formulaire envoyé
+        if (!empty($this->data['Deliberation'])) {
+            $message = '';
+            try {
                 foreach ($this->data['Deliberation'] as $id => $bool) { // Parcours les checkboxes
                     if ($bool == 1) { // Checkbox cochée
                         $delib_id = substr($id, 3, strlen($id));
-                        $this->Deliberation->id = $delib_id;
                         if ($this->data['Parapheur']['circuit_id'] == -1) { //Signature manuscrite
                             $signee = $this->Deliberation->signatureManuscrite($delib_id, $this->user_id);
-                            $message .= $this->Deliberation->field('num_delib') . $signee ? " : Signé correctement<br />" : " : Erreur de signature<br />";
+                            $this->Deliberation->id = $delib_id;
+                            $message .= $this->Deliberation->field('num_delib') . ($signee ? " : Signé correctement<br />" : " : Erreur de signature<br />");
                         } else { //Signature électronique
                             $message .= $this->_sendToSignature($delib_id, $this->data['Parapheur']['circuit_id']);
                         }
                     }
                 }
-            }catch (Exception $e){
-                $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'erreurTDT'));
+                $this->Session->setFlash($message, 'growl');
+            } catch (Exception $e) {
+                $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'error'));
             }
-            $this->Session->setFlash($message, 'growl', array('type' => 'important'));
-            
             return $this->redirect($this->referer());
         }
-        
+
         $this->Filtre->initialisation($this->name . ':' . $this->action . ':' . $seance_id, $this->data, array('url' => $this->here));
         $conditions = $this->_handleConditions($this->Filtre->conditions());
         $this->set('seance_id', $seance_id);
