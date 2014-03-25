@@ -64,35 +64,33 @@ class Signature {
      */
     public function __construct(){
         $collection = new ComponentCollection();
-        $signature = Configure::read('USE_PARAPHEUR');
+        $use_parapheur = Configure::read('USE_PARAPHEUR');
         $protocol = Configure::read('PARAPHEUR');
 
-        if (!$signature)
-            throw new Exception("La fonctionnalité de signature est désactivée");
-        if (empty($protocol))
-            throw new Exception("Aucun parapheur désigné");
+        if ($use_parapheur){
+            if (empty($protocol))
+                throw new Exception("Aucun parapheur désigné");
 
+            if (Configure::read("USE_$protocol"))
+                $this->connecteur = Configure::read('PARAPHEUR');
+            else
+                throw new Exception("Le connecteur parapheur désigné n'est pas activé : USE_$protocol");
 
-        if (Configure::read("USE_$protocol"))
-            $this->connecteur = Configure::read('PARAPHEUR');
-        else
-            throw new Exception("Le connecteur parapheur désigné n'est pas activé : USE_$protocol");
-
-        if ($protocol == 'PASTELL'){
-            $this->Pastell = new PastellComponent($collection);
-            //Enregistrement de la collectivité (pour pastell)
-            $Collectivite = new Collectivite();
-            $Collectivite->id = 1;
-            $this->collectivite = $Collectivite->field('id_entity');
-            $this->pastell_type = Configure::read('PASTELL_TYPE');
+            if ($protocol == 'PASTELL'){
+                $this->Pastell = new PastellComponent($collection);
+                //Enregistrement de la collectivité (pour pastell)
+                $Collectivite = new Collectivite();
+                $Collectivite->id = 1;
+                $this->collectivite = $Collectivite->field('id_entity');
+                $this->pastell_type = Configure::read('PASTELL_TYPE');
+            }
+            if ($protocol == 'IPARAPHEUR'){
+                $this->Iparapheur = new IparapheurComponent($collection);
+                $this->visibility = Configure::read('IPARAPHEUR_VISIBILITY');
+            }
+            $this->Deliberation = new Deliberation;
+            $this->parapheur_type = Configure::read('IPARAPHEUR_TYPE');
         }
-        if ($protocol == 'IPARAPHEUR'){
-            $this->Iparapheur = new IparapheurComponent($collection);
-            $this->visibility = Configure::read('IPARAPHEUR_VISIBILITY');
-        }
-        $this->Deliberation = new Deliberation;
-        $this->parapheur_type = Configure::read('IPARAPHEUR_TYPE');
-
     }
 
     /**
