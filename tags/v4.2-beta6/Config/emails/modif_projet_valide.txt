@@ -1,0 +1,11 @@
+Bonjour #PRENOM# #NOM#,
+
+Le projet #IDENTIFIANT_PROJET# - "#OBJET_PROJET#" que vous avez précédemment validé a été modifié.
+
+Vous pouvez le visualiser à l'adresse : #ADRESSE_A_VISUALISER#
+
+Très cordialement.
+
+Webdelib
+
+Ce mail de notification a été envoyé par webdelib pour votre information. Merci de ne pas répondre.

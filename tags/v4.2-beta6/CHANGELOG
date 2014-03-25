@@ -1,0 +1,307 @@
+4.2
+===
+- Correction affichage du dernier acteur d'un circuit dans les 9 cases "Dernière action de :"
+- Migration de bootstrap vers v2.0.4 à v2.3.2
+- Changement de la génération des annexes pour fusion vers gedooo
+- Utilisation de FIDO (Format Identification for Digital Objects) pour la détection du format des fichiers basé sur le répertoire des archives nationales du Royaume-Uni (PRONOM)
+- Prise en charge des annexes au format .doc .docx
+- Refonte du système d'upload des modèles d'édition
+- Résolution d'image pour la génération des annexes paramétrable via le fichier webdelib.inc (GS_RESOLUTION)
+- Le droit "Modifier les projets validés" devient "Modifier tous les projets" et permet de modifier des projets en cours d'élaboration ou validés
+- Amélioration de la notification de refus, contient désormais un lien vers la page d'édition du nouveau projet et indique le nouvel id
+- Ajout d'un bouton génération dans la page de traitement d'un projet
+- Refonte graphique de la page de traitement et vue de projet (boutons bootstrap avec icones font-awesome, et changement couleurs)
+- Migration de Font-Awesome v3.0.2 vers v4.0.3 (plus d'icones, nouvelles conventions de nommage des classes)
+- Migration de jQuery v1.7.1 vers v1.10.2
+- Ajout de deux nouvelles notifications utilisateur : "Un projet dont je suis le rédacteur a été modifié" et "Un projet que j'ai visé a été modifié"
+- TODO Marquer oubliées...
+- Fonction "retourner à" de cakeflow corrigée
+- Champs texte à partir de gabarits
+- Typage des modèles d'édition (catégorie)
+- Validation des modèles d'édition
+- Affectation d'un président par affaire de séance (par défaut: président de séance)
+- Gestion différenciée des actes pour la télétransmission au contrôle de légalité. Un attribut est placé au niveau du type d'acte.
+- Dans la page de traitement d'une séance, ajout d'un lien cliquable sur le N° d'ID du projet. Ce lien redirige vers le formulaire de modification du projet.
+- Ajout de filtres de recherche dans la page Utilisateurs, filtres sur le profil, nom, prénom et login avec un champ autocompleté et 3 champs texte avec wildcard '%' pour recherche large
+- Ajout d'un lien pour remonter en haut de la page. Le lien est représenté par une flèche vers le haut en bas à droite de chaque page et n'apparait que si besoin.
+- Refonte de l'affichage "en arbre" des services, thèmes et profils. Il est désormais possible de plier/déplier les noeuds et de filtrer les données.
+- Refonte Pastell/I-delibRE
+- Refonte graphique Multi-delibs
+- Refonte édition annexes de projet
+
+4.1.04
+======
+- Correction de la notification par mail lors d'un projet à traiter lors de l'insertion dans un circuit  
+- Numérotation hiérarchisée par code des matières de la Classification
+- Message d'avertissement lors de la sortie en modification d'un projet d'acte
+- Modification de la sortie des documents générés, modification des extentions de fichiers non valides
+- Mise ne place d'un place d'un script js placeholder pour les navigateurs non supporté 
+- Prendre en compte que lorsqu'un projet et dans "mes projets à traiter" qu'il ne s'affiche pas dans "mes projets en cours d'élaboration et de validation"
+- Suppression de la limite de mémoire pour le composant i-Parapheur
+- Correction les projets des sous-services n'apparaissaient pas dans les recherches (Service Emetteur)
+- Correction sur l'ordre d'affichage des séances : type d'acte > date de séance
+- Correction sur la recherche rapide pour les projets visés par un utilisateur
+- Modification sur l'upload des annexes, les caractères autorisés pour les nom de fichier sont les alphanumériques et -_.&
+- Correction du "retourné à" : prise en compte du circuit d'origine et pas du circuit deroulé
+- Modification pour enregistrer les délibérations taponnées et les bordereaux en retour du tdt
+- Modification de l'export CMIS pour prendre en compte les délibérations taponnées et les bordereaux de télétransmission
+- Modification de la liste des modèles multiséances par ordre alphabétique dans le menu "Séances à traiter"
+- Correction sur l'écrasement des avis de projet pour les projets multi-séances
+- Correction ie 7-8-9 palceholder avec jquery plugin
+- Correction ie 7-8-9 bandeau bleu de connexion
+- Modification de  pour la fonction attendable et prise en compte dans la page séances>A taiter>Liste des projets
+- Suppression de la section AvisSeance
+
+4.1.03
+======
+ - Correction à l'import des annexes pdf avec la mise en place des images en paragraphe dans l'odt
+ - Correction sur l'affichage de la classification
+ - Prise en compte de la variable position_projet à la génération d'un projet
+ - Mise en place d'un fond noir pour l'étape en cours du circuit de validation dans webdelib
+ - Mise en place des informations supplémentaires, idDepot ->numero_depot dans l'export CMIS
+ - Fermeture des requêtes curl après connexion externe
+ - Suppression de la signature d'email "This email was sent using CakePHP Framework"
+ - Non éxecution des tâches planifiées des services désactivés (i-Parapheur, S2low)
+ - Tri des actes pour envoi au controle de légalité désormais par numéro de délibération (ascendant)
+ - Correction du connecteur Asalae + configuration : webdelib.inc.default
+ - Mise en place du logo de la collectivité en BDD
+ - Le retour à la liste des délibération sur saisie des débats en post-séance ne fonctionnait pas
+ - L'avertissement pour le le texte de projet "vide" pour l'insertion dans un circuit passe de erreur à important
+ - Correction lors de l'ajout d'un fichier de débat en post-séance 
+ - Tri des actes désormais par numéro d'id (decendant) au lieu de la date de création
+ - Correction sur les imports de document au format docx (reconnu comme des zip)
+ - Correction sur l'affichage des titres des annexes non odt ou pdf dans une génération
+ - Correction sur l'ajout d'un acte dans une séance depuis un avis (ajout en fin de séance)
+ - Correction sur la suppression d'un acte dans une séance (on réordonne la séance)
+ - Mise en place d'un htaccess pour ne pas mettre en cache les documents pdf et odt dans le navigateur (dossier app/www_root/files/generee)
+ - Outil de test en batch des documents des actes sur les séances en cours et en rédaction pour gedooo
+ - Générération des recueils: trié par numéro (ascendant)
+ - Mise en place d'une limite  maximum de vote 1000 caractères pour le commentaire d'une seance
+ - Mise en place de la progress bar pour la gestion des profils, des génération d'odre du jour, pv ...
+ - Mise en place d'une attente lors de la génération de projet
+ - Correction sur l'affichage du label de texte projet qui disparaissait à la création d'un acte
+ - Mise en place d'une limite maximun de 200 caractères pour le titre d'une annexe et 100 pour le nom de fichier de l'annexe
+ - Corrections des entrées historiques de cakeflow
+ - Correction des valeurs intial des informations supplémentaires à la création d'un projet
+ - Correction sur l'affichage des avis défavorables
+ - Correction sur l'envoi i-delibRE
+
+4.1.02
+======
+ - Prise en compte de la nouvelle version de Gedooo r390
+ - Prise en compte de la nouvelle version de Cloudooo 1.2.4r573
+ - Ajout de la variable  "texte_projet" pour la génération
+ - Création d'un formulaire pour l'envoi des ordres du jour
+ - Amélioration de l'upload des types d'annexes
+ - Amélioration des mails de notifications
+ - Amélioration de l'enregistrement des annexes pdf en odt (format odt valide)
+ - Correction sur la génération pour la prise en compte des annexes pdf en fin de documents
+ - Correction sur la création d'informations supplémentaires
+ - Correction sur la création d'étape de circuit, l'affichage d'un circuit
+ - Correction sur l'ajout d'annexes
+ - Correction sur la modification d'une séance
+ - Correction sur l'attribution du numéro final d'un acte
+ - Correction sur les droits des menus
+ - Correction de la génération multi-séances
+ - Correction sur l'envoi de mail à partir d'un profil
+ - Correction sur la suppression d'un utilisateur
+ - Correction sur la modification d'une date de séance d'un acte
+ - Correction sur le filtre par rapport au type de séance
+ - Correction sur la liste des votants
+ - Correction sur la recherche par libellé
+ - Correction sur le report d'un ordre du jour
+ - Correction sur la visualisation d'un projet
+ - Correction pour la transmission vers S²LOW
+ - Correction sur un projet refusé
+ - Correction du paramétrage de "service_avec_hierarchie"
+ - Correction du saut d'étape dans un circuit
+ - Correction sur une séance de type non délibérante, prise en compte des avis et commentaires
+ - Correction sur l'affichage de la classification
+ - Correction sur la saisie des débats généraux
+
+4.1.01
+======
+ - Multi-modèles et traitement par lot pour la synthèse
+ - Gestion des configurations des connecteurs dans l'administration
+ - Modification d'une info supplémentaire sous condition de profils/droits
+
+4.1
+===
+ - Multi-modèles et traitement par lot pour la synthèse
+ - Gestion des configurations des connecteurs dans l'administration
+ - Modification d'une info supplémentaire sous condition de profils/droits
+ - Affichage des annexes via URL 
+ - Références sur les annexes PDF
+ - Intégration des annexes PDF dans les documents générés
+ - Désactivation d'une information supplémentaire
+ - Refonte de l'ergonomie de l'application
+ - Ticket 1097 : Correction d'un bug sur l'ordre de vote des délibérations
+ - Ticket 1374 : Ajout d'un champ service_avec_hierarchie pour l'utilisation dans les modèles
+ - Ticket 1408 : Ajout d'un champ date_envoi_signature pour l'utilisation dans les modèles
+ - Ticket 1560 : Correction d'un bug lors de l'enregistrement d'un projet avec jour de retard
+ - Ticket 1627/2183 : Correction sur l'enregistrement webdav des multi-délibérations
+ - Ticket 1644 : Ajout d'un champ etat_projet pour l'utilisation dans les modèles
+ - Ticket 1718 : Correction d'un bug lors du refus d'un projet par un validateur
+ - Ticket 1744 : Correction sur l'application du nombre de jour avant retard d'une séance
+ - Ticket 1796 : Ajout d'un bouton pour vider les champs de type file
+ - Ticket 1783 : Correction d'un bug sur les annexes de projet en multi-délibération
+ - Ticket 1976 : Ajout des libellés texte projet, note synthèse et texte acte après création du projet
+ - Ticket 1962/2021 : Correction d'un bug sur l'ordre des informations supplémentaires 
+ - Ticket 2029 : Modification de l'encodage des templates mails et webdelib.inc.default en UTF8 
+ - Ticket 2031 : La variable titre_annexe ne reprenait pas toutes les annexes
+ - Ticket 2072 : La fonction de recherche passe de LIKE à ILIKE 
+ - Ticket 2117 : Modification de la longueur du titre d'une annexe en création
+ - Ticket 2147 : Correction sur la recherche avec comme critères des informations supplémentaires
+ - Ticket 2175/2217 : Correction d'un bug sur gestion des votes
+ - Ticket 2182 : Correction sur l'enregistrement des multi-délibérations dans un projet
+ - Ticket 2183 : Correction sur l'enregistrement webdav des multi-délibérations
+ - Ticket 2187 : Correction sur les visualisations des projets inclus dans des séances non délibérantes
+ - Ticket 2199 : Les projets des sous-services n'apparaissaient pas dans les projet de mon service
+ - Ticket 2200 : Chronologie des historiques du plus récent au plus ancien
+ - Ticket 2201 : Chronologie des commentaires du plus récent au plus ancien
+ - Ticket 2244 : Correction sur la récupération de la liste des mandataires
+ - Ticket 2301 : Correction sur le bouton de suppression d'un acteur
+ - Ticket 2316 : Correction sur l'enregistrement de l'historique par un traitement par lot des projets visés
+ - Ticket 2338 : Liste des projets classés par id sur le tableau de bord
+ - Ticket 2356 : Correction prise en compte du type d'actes pour la recherche multi-critères
+ - Ticket 2357 : Correction problème d'affichage des boutons "favorable" et "défavorable" sur un avis
+
+4.0
+===
+ - WEBDELIB migre sur cake2.2.x,
+ - Utilisation de PostgreSQL comme base de données,
+ - Optimisation de la gestion des arrêtés,
+ - Révision des types de séances,
+ - Envoi des convocations via mail sécurisé,
+ - Traitement par lot,
+ - Valider les formats envoyés au contrôle de légalité,
+ - Limiter les circuits vus par un utilisateur,
+ - Effacer une séance complète,
+ - Délibération tamponnée,
+ - Outil mail de notifications aux utilisateurs,
+ - Vote par groupe,
+ - Gestion des suppléants,
+ - Ajout du droit de suppression d'un projet pour les administrateurs fonctionnels.
+
+3.5.02
+=====
+
+3.5.01
+=====
+
+3.5
+===
+
+3.0
+===
+ - Upgrade du framework CakePHP 1.2.8 
+ - Intégration du plugin CakeFlow : moteur de workflow intégrant des fonctions dynamiques d'exécution  
+ - Attribution des droits par profil et par utilisateur	
+ - Affinage des droits  (modification d'un projet, saut d'étape, envoyer à, ...
+ - Gestion de différentes natures d'acte
+ - Pagination des listes d'utilisateurs et acteurs 
+ - Tri de ces listes en fonction de différents critères
+ - Changement d'un mot de passe par l'utilisateur lui-même
+ - Gestion des circuits via le plugin CakeFlow
+ - Affichage des thèmes et services avec la forme hiéraérchique
+ - Ajout des critères de filtre par banette
+ - Enrichissement de l'historique
+
+2.1.02
+=====
+ - Correction d'un bug lors de l'enregistrement des PVs (en mode editeur en ligne).
+ - Correction d'encodage des caractères spéciaux (CP1252).
+ - La premiere personne d'un circuit d'élaboration ne recevra plus le mail d'insertion mais le mail a traiter...
+ - Lors d'un retour de dossier, la personne a qui est renvoyé le dossier recevra un mail de notification. 
+ - Rétablissement du menu sinon cela posait un problème de droit. 
+ - Correction de problème d'encodage lorsque l'on utilise l'éditeur en ligne en mode 'source' 
+ - Désactivation du bouton précédent du navigateur pour eviter les effets de bords (exemple, je clique sur précédent apres avoir validé un projet...) 
+ - Patch pour les navigateurs IE 6 : le message jgrowl empeche l'ouverture de la page avec ce navigateur.
+
+2.1.01
+=====
+ - Correction des short_open_tag
+ - Correction d'un bug lors de la saisie des débats de projets en commission
+ - Correction d'un bug dans l'affichage des délibérations télétransmises
+ - Correction d'un bug lors de la ré-attribution d'un projet à un circuit
+ - Actualisation du logo
+ - Changement de la mise en page des vues synthétiques
+ - Information par Infos Bulles
+ - Possibilité (en fonction des droits) de sauter une étape du circuit
+ - Enregistrement de la vie du projet dans un historique ( exploitable dans la génération des documents)
+ - Possibilité d'avoir plusieurs fois le même utilisateur dans un circuit d'élaboration
+ - Possibilité de saisir les débats de délib en postseances 
+ - Enregistrement des PVs au format PDF
+ - Possibilité de choisir directement la position d'un projet
+ - Insertion dans le i-Parapheur électronique avec le libellé du projet.
+ - Insertion des pièces jointes dans le i-Parapheur électronique
+ - Récupération de la signature des dossiers envoyés dans le i-Parapheur électronique
+ - Export vers AS@LAE 
+
+2.1
+====
+ - Choix du PV Sommaire lors de l'édition des types de séance (BUG N°330)
+ - Amélioration de la cinématique OOo
+ - Simplification de l'éditeur en ligne (BUG N°229)
+ - Affichage du signe ¿ dans les documents générés (BUG N°297) 
+ - Informations supplémentaires: Ajout du type "Booléen"
+ - Informations supplémentaires: Ajout du type "Fichier ODT"
+ - Informations supplémentaires: Ajout du type "Liste déroulante"
+ - Possibilité de changer le contenu des mails envoyés par l'application (BUG N°340)
+ - Connexion au i-Parapheur électronique (pour la validation en préparation et pour la signature en post-séance)
+ - Ajout d'un bouton "Retourner à ..." qui permet de returner le projet à n'importe quel membre du circuit avant la personne qui traite le projet
+ - Possibilité de recherche sur un circuit 
+ - Amélioration des tris des projets
+ - Possibilité de générer les convocations et ordres du jour au format odt
+ - Numérotation hiérarchisée des rapports/délibérations
+ - Correction de la saisie des débats de projet (BUG N°316)
+ - Gestion des pouvoirs (liste des mandataires) (BUG N°308)
+ - Désactivation de la gestion du Quorum (BUG N°146)
+ - Possibilité d'ajouter un commentaire à une séance
+ - Stockage des délibérations au format pdf après la clôture de la séance.
+ - Suite à l'envoi de délibération à s2low, il est possible de suivre l'avancé du cycle de vie de la délibération.
+ - Récupération du bordereau d'acquittement du MIAT
+ - Correction des fautes d'orthographe et de faute d'accent
+ - Compatibilité avec le navigateur Chrome pour Windows
+ - Ajout des variables : avisCommission, date_reception, commentaire_seance, total_votant, acteur_sans_participation
+
+2.0.03
+=====
+ - Conservation des informations supplémentaires, annexes et commentaires suite à un refus de dossier. 
+ - Ré-ajout des styles : ActeursPour, ActeursContre et ActeursAbstenu
+
+2.0.02
+=====
+ - Correction faute d'orthographe (mois de septembre mal orthographié)
+ - Correction bug lors d'un refus de dossier : le rédacteur ne recevait pas de mail
+ - Mise en place des boutons d'aperçu pour la génération des convocations et de l'ordre du jour
+
+2.0.01
+=====
+ - Ajout des Styles ActeursContre, ActeursPour, ActeursAbstention qui permet de lister les élus qui ont votés contre, pour ou se sont abstenus au vote d'un projet.
+ - Correction d'un bug dans l'affichage des services et des thèmes. 
+ - Correction d'un bug lors du changement d'ordre ou de la suppression des informations supplémentaires.
+
+2.0
+====
+ - Suppression des composants documentaires, la conception des modèles se fait dans un fichier unique. 
+ - Ajout de variable pour la génération des documents
+ - Importation de la partie PHP de GEDOOo dans WEBDELIB
+ - Ajout d'un moteur de recherche.
+ - Envoi des pièces jointes des délibérations au controle de légalité
+ - Enregistrement des débats de commission dans un nouveau champ
+ - Possibilité de valider un projet en urgence.
+ - Ajout de champ dynamique à la création d'un rapport de projet.
+
+1.1.02
+=====
+ - Uniformisation de l'encodage des fichiers : tous sont encodés en ISO-8859-15
+
+1.1.01
+=====
+ - Ajout de balises pour la generation des documents.
+ - Validation des commentaires.
+ - Import de fichiers odt pour les textes de projet, notes de synthese et textes de deliberation.
+ - Correction de bug d'affichage
+ - Agrandissement du champ commentaire lors des votes.
+ - Moteur de recherche simple.
