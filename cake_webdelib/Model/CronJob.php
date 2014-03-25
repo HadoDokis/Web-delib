@@ -185,7 +185,7 @@ class CronJob extends AppModel {
                     if($annexe['Annex']['joindre_ctrl_legalite'] && $annexe['Annex']['filetype']!='application/pdf'){
                         $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], $DOC_TYPE[$annexe['Annex']['filetype']]['extension'], 'pdf');  
                     }else{
-                        $newAnnexe['data_pdf'] = $newAnnexe['data'];
+                        $newAnnexe['data_pdf'] = $annexe['Annex']['data'];
                     }
                         
                     $this->Annex->save($newAnnexe);
