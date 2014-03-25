@@ -54,7 +54,10 @@ $linkBarre .= $this->Html->link(
 $linkBarre .= $this->Html->link(
     '<i class="fa fa-thumbs-down"></i> Refuser',
     array('action' => 'traiter', $deliberation['Deliberation']['id'], '0'),
-    array('escape' => false, 'class' => 'btn btn-danger')
+    array(  'escape' => false, 
+            'class' => 'btn btn-danger',
+            'onclick' => "return confirm('Vous allez refuser ce projet !\\n\\nSi vous ne souhaitez pas le refuser,\\n Annuler la confirmation.\\n\\nVoulez vous continuer ?')",
+            )
 );
 $linkBarre .= "</div>";
 $linkBarre .= "</div>";
