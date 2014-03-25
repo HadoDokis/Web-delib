@@ -168,7 +168,7 @@ class AppSchema extends CakeSchema {
 	);
 	public $circuits_users = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
-		'circuit_id' => array('type' => 'integer', 'null' => true),
+		'circuit_id' => array('type' => 'integer', 'null' => false),
 		'user_id' => array('type' => 'integer', 'null' => false),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
@@ -351,7 +351,7 @@ class AppSchema extends CakeSchema {
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
 		'delib_id' => array('type' => 'integer', 'null' => false),
 		'user_id' => array('type' => 'integer', 'null' => false),
-		'circuit_id' => array('type' => 'integer', 'null' => false),
+		'circuit_id' => array('type' => 'integer', 'null' => true),
 		'commentaire' => array('type' => 'text', 'null' => false, 'length' => 1073741824),
 		'modified' => array('type' => 'datetime', 'null' => false),
 		'created' => array('type' => 'datetime', 'null' => false),
