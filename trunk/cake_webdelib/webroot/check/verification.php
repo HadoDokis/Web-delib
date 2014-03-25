@@ -1224,6 +1224,7 @@ function getVersionAsalae() {
 
 function getPastellVersion() {
     if (Configure::read('USE_PASTELL')) {
+        d(Configure::read('PASTELL_HOST'), 'info');
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN") . ":" . Configure::read("PASTELL_PWD"));
