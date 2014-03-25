@@ -1721,7 +1721,7 @@ class DeliberationsController extends AppController
             $this->set('tabNature', $this->_getNatureListe());
             $this->set('tabMatiere', $this->_getMatiereListe());
         } else
-            $this->set('dateClassification', "Récupérer la classification");
+            $this->set('dateClassification', "--Jamais téléchargée--");
 
         if (empty($seance_id)){
             $conditions = $this->_handleConditions($this->Filtre->conditions());
@@ -3621,15 +3621,9 @@ class DeliberationsController extends AppController
             }
         }
         
-        try {
-            $circuits = $this->Signature->printCircuits();
-            $this->set('deliberations', $delibs);
-            $this->set('circuits', $circuits);
-        } catch (Exception $e) {
-            $message = $e->getMessage();
-            $this->Session->setFlash($message, 'growl', array('type' => 'erreur'));
-            return $this->redirect($this->referer());
-        }
+        $circuits = $this->Signature->printCircuits();
+        $this->set('deliberations', $delibs);
+        $this->set('circuits', $circuits);
     }
 
     function verserAsalae()
@@ -3854,13 +3848,20 @@ class DeliberationsController extends AppController
         }
     }
 
-    function refreshSignature() {
+    /**
+     * Mise à jour de l'état des dossiers envoyés au parapheur pour signature
+     */
+    public function refreshSignature() {
         App::uses('Signature', 'Lib');
-        $Signature = new Signature;
-        /** @noinspection PhpParamsInspection ne pas avertir de la non-existence de la fonction (passage par _call()) */
-        $ret = $Signature->updateAll();
-        $ret = trim(preg_replace('/\s+/', ' ', nl2br(htmlspecialchars($ret,ENT_QUOTES))));
-        $this->Session->setFlash($ret, 'growl', array());
+        try {
+            $Signature = new Signature;
+            /** @noinspection PhpParamsInspection ne pas avertir de la non-existence de la fonction (passage par _call()) */
+            $ret = $Signature->updateAll();
+            $ret = trim(preg_replace('/\s+/', ' ', nl2br(htmlspecialchars($ret, ENT_QUOTES))));
+            $this->Session->setFlash($ret, 'growl', array());
+        } catch (Exception $e) {
+            $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'error'));
+        }
         return $this->redirect($this->referer());
     }
 
@@ -3953,13 +3954,14 @@ class DeliberationsController extends AppController
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
 
         $this->set('titreVue', 'Autres actes validés');
-
-        if (Configure::read('USE_PARAPHEUR')) {
-            App::uses('Signature', 'Lib');
+        App::uses('Signature', 'Lib');
+        try{
             $this->Signature = new Signature;
-            $circuits = $this->Signature->printCircuits();
+        }catch (Exception $e){
+            $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'error'));
+            $this->redirect($this->referer());
         }
-
+        $circuits = $this->Signature->printCircuits();
         $conditions = $this->_handleConditions($this->Filtre->conditions());
 
         $conditions['Deliberation.etat'] = array(2, 3, 4);
@@ -4023,7 +4025,7 @@ class DeliberationsController extends AppController
             $circuits = array();
             if ($this->data['Parapheur']['circuit_id'] != -1) {
                 App::uses('Signature', 'Lib');
-                $this->Signature = new Signature;
+                $this->Signature = new Signature();
                 $circuits = $this->Signature->listCircuits();
             }
             $circuits['-1'] = 'Signature manuscrite';
@@ -4041,13 +4043,13 @@ class DeliberationsController extends AppController
                     }
                 }
             }
+            $this->Session->setFlash($message, 'growl');
+            return $this->redirect(array('action' => 'autreActesValides'));
         } catch (Exception $e) {
-            $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'erreurTDT'));
+            $this->Session->setFlash($e->getMessage(), 'growl', array('type' => 'error'));
+            return $this->redirect($this->referer());
         }
 
-        $this->Session->setFlash($message, 'growl', array('type' => 'important'));
-
-        return $this->redirect(array('action' => 'autreActesValides'));
     }
 
     function autreActesAEnvoyer()
