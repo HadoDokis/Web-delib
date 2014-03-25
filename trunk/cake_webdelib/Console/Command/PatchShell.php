@@ -183,13 +183,6 @@ class PatchShell extends AppShell {
                         'short' => 'u',
                         'help' => 'Mise à jour du schema de bdd',
                         'boolean' => true
-                    ),
-                    'AnnexeConversion' => array(
-                        'name' => 'AnnexeConversion',
-                        'required' => false,
-                        'short' => 'c',
-                        'help' => 'Conversion des annnexes en odt',
-                        'boolean' => true
                     )
                 )
             )
