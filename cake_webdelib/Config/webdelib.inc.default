@@ -44,7 +44,7 @@ Configure::write('SMTP_PASSWORD', 'your_smtp_password');
 Configure::write('SMTP_CLIENT', 'smtp_helo_hostname');
 
 /* Configuration GEDOOo */
-Configure::write('GEDOOO_WSDL', 'http://gedooo.services.adullact.org:8082/ODFgedooo/OfficeService?wsdl');
+Configure::write('GEDOOO_WSDL', 'http://127.0.0.1:8880/ODFgedooo/OfficeService?wsdl');
 
 /**
  * Parapheur (Signature électronique, délégation)
