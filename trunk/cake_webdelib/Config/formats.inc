@@ -127,6 +127,7 @@ Configure::write('DOC_TYPE', array(
     ),
     'application/zip' => array(
         'formatname' => 'ZIP Format',
+        'joindre_ctrl_legalite' => false,
         'extension' => 'zip',
         'puid' => array(
             'x-fmt/263' => array(
@@ -137,6 +138,8 @@ Configure::write('DOC_TYPE', array(
     ),
     'image/png' => array(
         'formatname' => 'Portable Network Graphics',
+        'joindre_ctrl_legalite' => false,
+        'extension' => 'png',
         'puid' => array(
             'fmt/11' => array(
                 'actif' => false,
@@ -150,13 +153,11 @@ Configure::write('DOC_TYPE', array(
                 'actif' => true,
                 'version' => '1.2'
             )
-        ),
-        'joindre_ctrl_legalite' => true,
-        'extension' => 'png',
+        )
     ),
     'image/jpeg' => array(
         'formatname' => 'Image JPEG',
-        'joindre_ctrl_legalite' => true,
+        'joindre_ctrl_legalite' => false,
         'extension' => array('jpeg', 'jpg'),
         'puid' => array(
             'fmt/44' => array(
