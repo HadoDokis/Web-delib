@@ -25,7 +25,7 @@ if (!empty($this->data['Multidelib'])) {
         echo $this->Html->tag('div', '', array('class' => 'spacer'));
         // affichage texte de délibération
         echo $this->Html->tag('label', 'Texte acte : ');
-        echo $this->Html->link($delib['deliberation_name'], '/files/generee/projet/' . $delib['id'] . '/deliberation.odt');
+        echo 'deliberation.odt';
 
         echo $this->Html->tag('div', '', array('class' => 'spacer'));
         // affichage des annexes
