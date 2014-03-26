@@ -15,7 +15,7 @@ $libs_php    = array('XML_RPC2'=>array(
                                                 'class'=>'XML_RPC2_Client',
                                                 'require'=>'XML/RPC2/Client.php')
                     );
-$binaires    = array('pdfinfo', 'pdftk');
+$binaires    = array('pdfinfo', 'pdftk','fido');
 $appIniFiles = array('database.php', 'webdelib.inc');
 
 // redéfinition des constantes principales de cake (un rep au dessus par rapport aux constantes cake)
