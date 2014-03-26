@@ -361,14 +361,14 @@ class Tdt {
         return $flux;
     }
     
-    /**
+    /** @
      * Récupération du fichier de message
      * 
      * @param int $message_id
      * @return String
      */
     public function getDocumentS2low($message_id) {
-        return gzread($this->S2low->getDocument($message_id));
+        //return gzread($this->S2low->getDocument($message_id));
     }
     
     /**
