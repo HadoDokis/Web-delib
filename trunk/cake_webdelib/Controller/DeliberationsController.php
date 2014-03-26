@@ -764,7 +764,7 @@ class DeliberationsController extends AppController
                     'recursive' => -1,
                     'fields' => array('type'),
                     'conditions' => array('id' => $infosup['infosupdef_id'], 'model' => 'Deliberation', 'actif' => true)));
-                if ($infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content'])) {
+                if (!empty($infoSupDef['Infosupdef']['type']) && $infoSupDef['Infosupdef']['type'] == 'odtFile' && !empty($infosup['file_name']) && !empty($infosup['content'])) {
                     $this->Gedooo->createFile($path_projet, $infosup['file_name'], $infosup['content']);
                 }
             }
