@@ -33,7 +33,14 @@ require_once('verification.php');
         <div class="well well-small">
             <p><i class="icon-user"></i> Permissions</p>
             <?php d('Propriétaire du script courant : ' . get_current_user(), 'info'); ?>
-            <?php d('Répertoire d\'installation de l\'application : ' . $appli_path, 'info'); ?>
+            <?php 
+            $chmod_app=substr(sprintf('%o', fileperms(APP)), -3);
+            $chmod_tmp=substr(sprintf('%o', fileperms(TMP)), -3);
+            d('Répertoire d\'installation de l\'application : ' .APP. ' ('.$chmod_app.')' , $chmod_app=='755'?'ok':'ko'); 
+            d('Répertoire temporaire de l\'application : ' .TMP. ' ('.$chmod_tmp.')'  , $chmod_tmp=='777'?'ok':'ko');
+            t('h5', "CakePHP");
+            verifConsoleCakePhp();
+            ?>
         </div>
     </div>
 </div>
@@ -44,16 +51,6 @@ require_once('verification.php');
         <div class="well well-small">
             <p><i class="icon-th-large"></i> Modules apache</p>
             <?php apache_check_modules($mods_apache); ?>
-        </div>
-    </div>
-</div>
-<br/>
-
-<div class="row">
-    <div class="span12">
-        <div class="well well-small">
-            <p><i class="icon-th"></i> CakePHP</p>
-            <?php verifConsoleCakePhp(); ?>
         </div>
     </div>
 </div>

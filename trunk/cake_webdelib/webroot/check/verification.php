@@ -10,9 +10,12 @@ $versionCakePHPAttendue = "2.2.9";
 $versionPHPAttendue = "5.3";
 $versionAPACHEAttendue = "2.2";
 $mods_apache = array('mod_rewrite', 'mod_ssl', 'mod_dav', 'mod_dav_fs');
-$exts_php    = array('soap', 'pgsql', 'xsl', 'curl', 'dom', 'zlib', 'gd');
-$libs_php    = array('RPC');
-$binaires    = array('ghostscript', 'pdftk', 'pear');
+$exts_php    = array('soap', 'pgsql', 'xsl', 'curl', 'dom', 'zlib', 'imagick');
+$libs_php    = array('XML_RPC2'=>array(
+                                                'class'=>'XML_RPC2_Client',
+                                                'require'=>'XML/RPC2/Client.php')
+                    );
+$binaires    = array('pdfinfo', 'pdftk');
 $appIniFiles = array('database.php', 'webdelib.inc');
 
 // redéfinition des constantes principales de cake (un rep au dessus par rapport aux constantes cake)
@@ -759,7 +762,7 @@ function verifConsoleCakePhp() {
 	$consoleFileUri = APP.'Console'.DS. ($winOs ? 'cake.bat' : 'cake');
 	
 	if (file_exists($consoleFileUri)) {
-		d('Console de CakePHP : '.$consoleFileUri, 'ok');
+		//d('Console de CakePHP : '.$consoleFileUri, 'ok');
 		if (!$winOs) {
 			if (is_executable($consoleFileUri))
 				d("Console de CakePHP : le fichier exécutable de la console CakePHP '$consoleFileUri' a les droits en exécution", 'ok');
@@ -792,7 +795,7 @@ function verifConversion() {
 	elseif (empty($convType))
 		d("Type d'outil de conversion : ['Conversion']['type'] non renseigné dans le fichier $fichier_conf", 'ko');
 	elseif (!array_key_exists($convType, $convTypes))
-		d("Type d'outil de conversion : $convType n'est pas géré par as@ale", 'ko');
+		d("Type d'outil de conversion : $convType n'est pas géré par webdelib", 'ko');
 	else
 		d("Type d'outil de conversion : $convType ", 'ok');
 	
@@ -802,89 +805,36 @@ function verifConversion() {
 	elseif (empty($convType))
 		d("Exécutable de l'outil de conversion : ['Conversion']['exec'] non renseigné dans le fichier $fichier_conf", 'ko');
 	else {
-		switch ($convType) {
-			case 'CLOUDOOO' :
-                            $repModels = APP.WEBROOT_DIR.DS.'files'.DS;
-                            $modelFileName = 'empty.odt';
-                            require_once 'XML/RPC.php';
-                            $content =  base64_encode(file_get_contents($repModels.$modelFileName));
-                            $fileinfo =  pathinfo($repModels.$modelFileName);
-                            if ($fileinfo['extension'] == 'pdf') $fileinfo['extension'] = 'odt';
+                $repModels = APP.WEBROOT_DIR.DS.'files'.DS;
+                $modelFileName = 'empty.odt';
+                require_once 'XML/RPC2/Client.php';
+                // initialisations
+                $ret = array();
+                $options = array(
+                    'uglyStructHack' => true
+                );
 
-                            $params = array( new XML_RPC_Value($content, 'string'),
-                                             new XML_RPC_Value($fileinfo['extension'],    'string'),
-                                             new XML_RPC_Value("pdf",    'string'),
-                                             new XML_RPC_Value(false,      'boolean'),
-                                             new XML_RPC_Value(true,       'boolean'));
+                $url = 'http://' . Configure::read('CLOUDOOO_HOST') . ':' . Configure::read('CLOUDOOO_PORT');
+                $client = XML_RPC2_Client::create($url, $options);
+                try {
+                    $result = $client->convertFile(base64_encode($repModels.$modelFileName), 'odt', 'pdf', false, true);
+                    $return = base64_decode($result);
+                    d("Communication avec l'outil de conversion : $convType", 'ok');
+                } catch (XML_RPC2_FaultException $e) {
+                    d("Communication avec l'outil de conversion : $convType", 'ko');
+                }
 
-                             $url = Configure::read('CLOUDOOO_HOST').":".Configure::read('CLOUDOOO_PORT');
-                             $msg = new XML_RPC_Message('convertFile', $params);
-                             $cli = new XML_RPC_Client('/', $url);
-                             $resp = $cli->send($msg);
-                             if (!empty($resp->xv->me['string'])) {
-                                 $return = base64_decode($resp->xv->me['string']);
-                                 if (!empty($return))
-		                            d("Communication avec l'outil de conversion : $convType", 'ok');
-                             }
-                             else
-		                        d("Communication avec l'outil de conversion : $convType", 'ko');
+                //IP +PORT
+                $cloudoooHost = Configure::read('CLOUDOOO_HOST');
+                $cloudoooPort = Configure::read('CLOUDOOO_PORT');
+                if ($cloudoooHost !== NON_TROUVE && !empty($cloudoooHost))
+                        if ($cloudoooPort !== NON_TROUVE && !empty($cloudoooPort))
+                            d("Url de CLOUDOOO : $cloudoooHost:$cloudoooPort", 'info');
+                        else 
+                            d("Url de CLOUDOOO : $cloudoooHost (port non renseigné dans le fichier $fichier_conf)", 'ko');
+                else
+                        d("Url de CLOUDOOO : non renseigné dans le fichier $fichier_conf", 'ko');
                              
-                            //IP +PORT
-                            $cloudoooHost = Configure::read('CLOUDOOO_HOST');
-                            $cloudoooPort = Configure::read('CLOUDOOO_PORT');
-                            if ($cloudoooHost !== NON_TROUVE && !empty($cloudoooHost))
-                                    if ($cloudoooPort !== NON_TROUVE && !empty($cloudoooPort))
-                                        d("Url de CLOUDOOO : $cloudoooHost:$cloudoooPort", 'info');
-                                    else 
-                                        d("Url de CLOUDOOO : $cloudoooHost (port non renseigné dans le fichier $fichier_conf)", 'ko');
-                            else
-                                    d("Url de CLOUDOOO : non renseigné dans le fichier $fichier_conf", 'ko');
-                             
-                        break;
-			case 'UNOCONV' :
-	                        $convExec = Configure::read('UNOCONV_EXEC');
-		                 d("Exécutable de l'outil de conversion : $convExec", 'ok');
-				// affichage de la version de UnoConv
-				$result = '';
-				exec($convExec." --version", $result);
-				if (isset($result[0]))
-					d("Version de l'outil de conversion : ".$result[0], 'info');
-				elseif (isset($result[1]))
-					d("Version de l'outil de conversion : ".$result[1], 'info');
-				else
-					d("Impossible de lire la version de l'outil de conversion", 'ko');
-
-				// test de conversion de fichier
-				t('h5', "Essai de conversion");
-				$result = array();
-				$fichierSource = getcwd().DS.'files'.DS.'checkConversion.odt';
-				if (!file_exists($fichierSource)) {
-					d("Le fichier test pour la conversion de format $fichierSource est introuvable", 'ko');
-					return;
-				}
-				if (!is_writable(getcwd().DS.'files')) {
-					$repDest = getcwd().DS.'files';
-					d("Le répertoire $repDest n'est pas accessible en écriture", 'ko');
-					return;
-				}
-
-				// préparation de la chaine de commande à exécuter
-				$cmd = "$convExec --stdout -f pdf $fichierSource";
-	
-				// exécution
-				$locale = 'fr_FR.UTF-8';
-				setlocale(LC_ALL, $locale);
-				putenv('LC_ALL='.$locale);
-	 			$result = shell_exec($cmd);
-	
-		        // guess that if there is less than this characters probably an error
-		        if (strlen($result) < 10) {
-					d("Opération de conversion de format échouée", 'ko');
-		        } else {
-					d("Opération de conversion de format effectuée avec succés", 'ok');
-		        }
-			break;
-		}
 	}
 }
 
@@ -1258,10 +1208,12 @@ function verif_email() {
 }
 
 function php_check_librairies($libs) {
-    foreach ( $libs as $lib ){
-        $output = exec("locate $lib.php");
+    foreach ( $libs as $key=>$lib ){
+        require_once $lib['require'];
+        $output= class_exists($lib['class'], false);
+        //$output = exec("locate $lib");
         $okko = !empty($output) ? 'ok' : 'ko';
-        d($lib, $okko);
+        d($key, $okko);
     }
 }
 
