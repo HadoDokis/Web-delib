@@ -141,7 +141,7 @@ Configure::write('DOC_TYPE', array(
         'convertir' => false,
         'puid' => array(
             'fmt/11' => array(
-                'actif' => false,
+                'actif' => true,
                 'version' => '1.0'
             ),
             'fmt/12' => array(
