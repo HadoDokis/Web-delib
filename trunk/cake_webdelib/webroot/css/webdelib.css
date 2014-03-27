@@ -1029,24 +1029,11 @@ label {
 
 
 /*  ----------------- Calendar ------------------------ */
-caption.month {
-    font-size: 180%;
-    color: #444444;
-}
-table.month {
-    border: thin groove #800080
-}
-.normal {
-    font-size: 80%;
-}
-.today {
-    border: solid 1px;
-}
-.seance {
-    border: solid 1px;
-	background: #e0ef90;
-}
-
+caption.month {font-size: 180%;color: #444444;}
+table.month {border: thin groove #800080}
+.normal {}
+.today {border: solid 1px;}
+.seance {border: solid 1px; background-color: #e0ef90;}
 /*  ----------------- end of Calendar -------------------------- */
 #annexeModalBloc div.input.file label,
 #annexeModalBloc div.input.text label {

@@ -32,7 +32,7 @@ if ((@$this->params['filtre'] != 'hide')
 if (isset($traitement_lot) && ($traitement_lot == true))
     echo $this->Form->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'traitementLot'), 'type' => 'post'));
 ?>
-<table>
+<table style="width: 100%">
     <tr>
         <th style="width:72px">
             <?php
