@@ -1009,7 +1009,8 @@ class DeliberationsController extends AppController
                 // sauvegarde des délibérations rattachées
                 if ($success && array_key_exists('Multidelib', $this->data)){
                     foreach ($this->data['Multidelib'] as $iref => $multidelib) {
-                        $multidelib['num_pref'] = $this->data['Deliberation']['num_pref'];
+                        if (!empty($this->data['Deliberation']['num_pref']))
+                            $multidelib['num_pref'] = $this->data['Deliberation']['num_pref'];
                         $multidelib['typeacte_id'] = $this->data['Deliberation']['typeacte_id'];
                         $delibRattacheeId = $this->Deliberation->saveDelibRattachees($id, $multidelib);
                         // sauvegarde des nouvelles annexes pour cette delib rattachée
