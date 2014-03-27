@@ -985,7 +985,9 @@ class DeliberationsController extends AppController
                                 'id' => $annexeId,
                                 'titre' => $annexe['titre'],
                                 'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
-                                'joindre_fusion' => $annexe['joindre_fusion']));
+                                'joindre_fusion' => $annexe['joindre_fusion'],
+                                'edition_data' => NULL,
+                                'data_pdf' => NULL));
                         }
                         if (!empty($this->Annex->validationErrors)) {
                             $success = false;
