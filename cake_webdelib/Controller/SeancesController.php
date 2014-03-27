@@ -278,8 +278,8 @@ class SeancesController extends AppController {
 		$Year->build();
 		$today = mktime('0','0','0');
 		$i = 0;
-
-		$calendrier = "<table>\n<tr   style=\"vertical-align:top;\">\n";
+                
+		$calendrier = "<table style=\"width: 100%\" border=0>\n<tr   style=\"vertical-align:top;\">\n";
 		while ( $Month = $Year->fetch() ) {
 
 			$calendrier .= "<td><table class=\"month\">\n" ;

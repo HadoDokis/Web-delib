@@ -1,5 +1,6 @@
 4.2
 ===
+- Ajout d'une confirmation lors d'un refus de projet
 - Correction affichage du dernier acteur d'un circuit dans les 9 cases "Dernière action de :"
 - Migration de bootstrap vers v2.0.4 à v2.3.2
 - Changement de la génération des annexes pour fusion vers gedooo
