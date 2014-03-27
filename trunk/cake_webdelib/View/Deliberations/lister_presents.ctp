@@ -22,6 +22,7 @@
                 if (($suppleant_id != null) || isset($present['Acteur']['is_suppleant'])) {
                     echo $this->Form->input('Acteur.' . $present['Acteur']['id'] . '.suppleant_id', array(
                             'options' => $options,
+                            'class' => 'select2 selectone',
                             'label' => false,
                             'autocomplete' => 'off',
                             'default' => $present['Acteur']['id'],
@@ -42,6 +43,7 @@
                 if (empty($present['Acteur']['id']))
                     echo $this->Form->input("Acteur." . $present['Acteur']['id'] . '.mandataire', array(
                             'label' => false,
+                            'class' => 'select2 selectone',
                             'options' => $mandataires,
                             'readonly' => 'readonly',
                             'id' => 'liste_' . $present['Acteur']['id'],
@@ -50,6 +52,7 @@
                 else
                     echo $this->Form->input("Acteur." . $present['Acteur']['id'] . '.mandataire', array(
                             'label' => false,
+                            'class' => 'select2 selectone',
                             'options' => $mandataires,
                             'id' => 'liste_' . $present['Acteur']['id'],
                             'empty' => true,
@@ -72,3 +75,16 @@
 </div>
 <br/>
 <?php echo $this->Form->end(); ?>
+<script type="text/javascript">
+$(".select2.selectone").select2({
+        width: "element",
+        allowClear: true,
+        dropdownCssClass: "selectMaxWidth",
+        dropdownAutoWidth: true,
+        placeholder: "Selectionnez un élément",
+        formatSelection: function (object, container) {
+            // trim sur la sélection (affichage en arbre)
+            return $.trim(object.text);
+        }
+    });
+</script>
