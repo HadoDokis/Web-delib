@@ -1042,8 +1042,8 @@ class DeliberationsController extends AppController
             if ($success) {
                 $this->Deliberation->commit();
 //                $this->Annex->commit();
-                $cmd = 'nohup nice -n 10 '.APP.'Console'.DS.'cake Maintenance conversionAnnexe -i '.$id.' >/dev/null 2>&1';
-                $pid = shell_exec($cmd);
+                $cmd = 'nohup nice -n 10 '.APP.'Console'.DS.'cake Maintenance conversionAnnexe -i '.$id.' >/dev/null 2>&1  & echo $!';
+                $PID = shell_exec($cmd);
                 $this->Session->setFlash("Le projet $id a été enregistré", 'growl');
                 $sortie = true;
 
