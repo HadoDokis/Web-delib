@@ -198,7 +198,7 @@ Configure::write('DOC_TYPE', array(
         'convertir' => false,
         'puid' => array(
             'x-fmt/263' => array(
-                'actif' => false,
+                'actif' => true,
                 'version' => '1.0'
             ),
         ),
