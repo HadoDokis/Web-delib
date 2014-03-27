@@ -30,7 +30,6 @@ echo $this->Form->end();
 <script type="application/javascript">
     $("#DeliberationCircuitId").select2({
         width: "resolve",
-        allowClear: true,
         placeholder: "Selectionnez un élément"
     });
     $(document).ready(function(){
