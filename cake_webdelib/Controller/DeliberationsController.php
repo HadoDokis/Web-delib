@@ -978,6 +978,7 @@ class DeliberationsController extends AppController
                                 'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
                                 'joindre_fusion' => $annexe['joindre_fusion'],
                                 'data' => file_get_contents(WEBROOT_PATH .DS. 'files'. DS .'generee'. DS .'projet' .DS. $id . DS . $annex_filename['Annex']['filename']),
+                                'edition_data' => NULL,
                                 'data_pdf' => NULL));
                         } else {
                             $this->Annex->save(array(
