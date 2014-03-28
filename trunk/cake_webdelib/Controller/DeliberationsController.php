@@ -648,7 +648,7 @@ class DeliberationsController extends AppController
         $annexesErrors = array();
         $user = $this->Session->read('user');
         $canEditAll = $this->Droits->check($user['User']['id'], "Deliberations:editerTous");
-
+        $redirect = '/';
         $pos = strrpos(getcwd(), 'webroot');
         $path = substr(getcwd(), 0, $pos);
         $path_projet = $path . 'webroot'.DS.'files'.DS.'generee'.DS.'projet'.DS.$id.DS;
