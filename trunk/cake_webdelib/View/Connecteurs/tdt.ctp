@@ -67,7 +67,7 @@ if (empty($flux_pastell)){
                 'type' => 'select',
                 'label' => 'Type de flux',
                 'options' => $flux_pastell,
-                'title' => 'Pour utiliser un autre flux Pastell, éditer le fichier de configuration pastell.inc',
+                'title' => 'Pour modifier les flux Pastell, éditer le fichier de configuration pastell.inc',
                 'value' => Configure::read('PASTELL_TYPE'),
             ));
             ?>
