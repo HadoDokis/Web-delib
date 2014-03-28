@@ -138,6 +138,11 @@ if (Configure::read('debug') > 0):
     Debugger::checkSecurityKeys();
 endif;
 ?>
+<noscript>
+    <div class="alert alert-error text-center">
+        <strong>Attention!</strong> Vous devez activer JavaScript dans votre navigateur pour pouvoir utiliser le service Webdelib
+    </div>
+</noscript>
 <ul class="nav nav-tabs">
     <?php
     if (isset($session_menuPrincipal['items'])) {
