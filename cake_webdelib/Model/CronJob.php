@@ -7,6 +7,7 @@
  */
 App::uses('AppModel', 'Model');
 App::uses('Cron', 'Model');
+
 class CronJob extends AppModel {
     public $useTable = false;
 
@@ -17,6 +18,7 @@ class CronJob extends AppModel {
     public function signatureJob() {
         App::uses('Signature', 'Lib');
         $this->Signature = new Signature;
+        /** @noinspection PhpParamsInspection Lib.Signature::__call() */
         return $this->Signature->updateAll();
     }
 
@@ -71,7 +73,7 @@ class CronJob extends AppModel {
                     $messages[$visa['trigger_id']][] = $traitement['Traitement']['target_id'];
                 }
             }
-            foreach ($messages as $user => $targets){
+            foreach ($messages as $user => $targets) {
                 $blaze = $this->User->prenomNomLogin($user);
                 if (!empty($blaze) && !in_array($blaze, $users))
                     $users[] = $blaze;
@@ -133,85 +135,97 @@ class CronJob extends AppModel {
             return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage();
         }
     }
-    
+
     /**
-     * @param int|string $delib_id
+     * @param int $delib_id
      * @param bool $refresh
      * @return string
      */
-    public function convertionAnnexesJob($delib_id=NULL, $refresh=false)
-    {
+    public function convertionAnnexesJob($delib_id = null, $refresh = false) {
         try {
             //Import des modèles
+            App::uses('Deliberation', 'Model');
             App::uses('Annex', 'Model');
             App::uses('ComponentCollection', 'Controller');
             App::uses('ConversionComponent', 'Controller/Component');
             App::uses('ConversionComponent', 'Controller/Component');
             $collection = new ComponentCollection();
             $this->Conversion = new ConversionComponent($collection);
-            
+
             $DOC_TYPE = Configure::read('DOC_TYPE');
+            $this->Deliberation = new Deliberation();
             $this->Annex = new Annex();
-            $condition=array();
-               if(!empty($delib_id))
-            $condition['foreign_key']=$delib_id;
-            
-            if($refresh)
-            $condition['AND']=array('OR'=>array('joindre_ctrl_legalite'=>TRUE, 'joindre_fusion'=>1));
-            else
-            $condition['AND']=array('OR'=>array(    
-                                                array('AND'=>array('joindre_ctrl_legalite'=>TRUE,'data_pdf'=>NULL)),
-                                                array('AND'=>array('joindre_fusion'=>1,'edition_data'=>NULL))
-                                                )
-            );
-   
-            
-            $annexes = $this->Annex->find('all', array(
-                'fields' => array('id','data','filename','filetype','joindre_ctrl_legalite','joindre_fusion'),
-                'conditions' => $condition,
-                'limit'=>empty($delib_id)?10:20,//optimisation pour le cron 10 taches par passage
-                'order'=>'modified DESC',
-                'recursive'=>-1
-            ));
-            
-            if (!empty($annexes))
-            foreach ($annexes as $annexe) {
-                if(!empty($annexe['Annex']['data'])){
-                    $this->Annex->id=$annexe['Annex']['id'];
-                    if($annexe['Annex']['joindre_fusion']){
-                        $newAnnexe['edition_data'] = $this->Conversion->toOdt($annexe['Annex']['data'], $annexe['Annex']['filetype'], 'application/vnd.oasis.opendocument.text');
-                        $newAnnexe['edition_data_typemime'] = 'application/vnd.oasis.opendocument.text';
-                    }
-                    if($annexe['Annex']['joindre_ctrl_legalite'] && $annexe['Annex']['filetype']!='application/pdf'){
-                        $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], $DOC_TYPE[$annexe['Annex']['filetype']]['extension'], 'pdf');  
-                    }else{
-                        $newAnnexe['data_pdf'] = $annexe['Annex']['data'];
-                    }
-                        
-                    $this->Annex->save($newAnnexe);
-                }else
-                    $this->log('Conversion annexe "vide" (data) id:'.$annexe['Annex']['id'],'error');
+
+            $conditions = array();
+            if (!empty($delib_id)) {
+                $delibs = $this->Deliberation->find('all', array(
+                    'recursive' => -1,
+                    'fields' => array('id'),
+                    'conditions' => array('parent_id' => $delib_id)
+                ));
+                if (!empty($delibs)) {
+                    $foreign_key = Hash::extract($delibs, '{n}.Deliberation.id');
+                    $foreign_key[] = $delib_id;
+                } else
+                    $foreign_key = $delib_id;
+
+                $conditions['foreign_key'] = $foreign_key;
             }
-            
+
+            if ($refresh)
+                $conditions['AND'] = array('OR' => array('joindre_ctrl_legalite' => true, 'joindre_fusion' => 1));
+            else
+                $conditions['AND'] = array('OR' => array(
+                    array('AND' => array('joindre_ctrl_legalite' => true, 'data_pdf' => null)),
+                    array('AND' => array('joindre_fusion' => 1, 'edition_data' => null))
+                ));
+
+
+            $annexes = $this->Annex->find('all', array(
+                'fields' => array('id', 'data', 'filename', 'filetype', 'joindre_ctrl_legalite', 'joindre_fusion'),
+                'conditions' => $conditions,
+                'order' => 'modified DESC',
+                'recursive' => -1
+            ));
+
+            if (!empty($annexes))
+                foreach ($annexes as $annexe) {
+                    if (!empty($annexe['Annex']['data'])) {
+                        $this->Annex->id = $annexe['Annex']['id'];
+                        if ($annexe['Annex']['joindre_fusion']) {
+                            $newAnnexe['edition_data'] = $this->Conversion->toOdt($annexe['Annex']['data'], $annexe['Annex']['filetype'], 'application/vnd.oasis.opendocument.text');
+                            $newAnnexe['edition_data_typemime'] = 'application/vnd.oasis.opendocument.text';
+                        }
+                        if ($annexe['Annex']['joindre_ctrl_legalite'] && !empty($DOC_TYPE[$annexe['Annex']['filetype']]['convertir'])) {
+                            $extension = $DOC_TYPE[$annexe['Annex']['filetype']]['extension'];
+                            if (is_array($extension))
+                                $extension = $extension[0];
+                            $newAnnexe['data_pdf'] = $this->Conversion->convertirFlux($annexe['Annex']['data'], $extension, 'pdf');
+                        }
+                        $this->Annex->save($newAnnexe);
+                    } else
+                        $this->log('Conversion annexe "vide" (data) id:' . $annexe['Annex']['id'], 'error');
+                }
+
             if (empty($annexes))
                 return Cron::MESSAGE_FIN_EXEC_SUCCES . " Aucune annexe à convertir";
             else
                 return Cron::MESSAGE_FIN_EXEC_SUCCES . " Annexe convertie(s):\n\n" . count($annexes);
         } catch (Exception $e) {
-            return Cron::MESSAGE_FIN_EXEC_ERROR .' '. $e->getMessage().' id='.(isset($this->Annex->id)?$this->Annex->id:'Inconnu');
+            return Cron::MESSAGE_FIN_EXEC_ERROR . ' ' . $e->getMessage() . ' id=' . (isset($this->Annex->id) ? $this->Annex->id : 'Inconnu');
         }
     }
 
     /**
      * Met à jour les ar et bordereau des dossiers envoyés en tdt
      */
-    public function majArTdt(){
+    public function majArTdt() {
         App::uses('Deliberation', 'Model');
         $this->Deliberation = new Deliberation();
-        try{
+        try {
             $rapport = $this->Deliberation->majArAll();
-            return Cron::MESSAGE_FIN_EXEC_SUCCES.$rapport;
-        }catch (Exception $e){
+            return Cron::MESSAGE_FIN_EXEC_SUCCES . $rapport;
+        } catch (Exception $e) {
             return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage();
         }
     }
@@ -219,13 +233,13 @@ class CronJob extends AppModel {
     /**
      * Met à jour les echanges (TdtMessages) des dossiers envoyés en tdt
      */
-    public function majCourriersTdt(){
+    public function majCourriersTdt() {
         App::uses('Deliberation', 'Model');
         $this->Deliberation = new Deliberation();
-        try{
+        try {
             $rapport = $this->Deliberation->majEchangesTdtAll();
             return Cron::MESSAGE_FIN_EXEC_SUCCES . $rapport;
-        }catch (Exception $e){
+        } catch (Exception $e) {
             return Cron::MESSAGE_FIN_EXEC_ERROR . $e->getMessage();
         }
     }
