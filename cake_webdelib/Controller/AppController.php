@@ -54,11 +54,12 @@ class AppController extends Controller {
             $this->set('user_id', $this->user_id);
             $historique = $this->Session->check('user.history') ? $this->Session->read('user.history') : array();
             if (empty($this->params['requested'])
-                && stripos($this->params->here, 'ajax') === false
-                && stripos($this->params->here, 'download') === false
-                && stripos($this->params->here, 'genere') === false
-                && stripos($this->params->here, 'files/') === false
-                && stripos($this->params->here, 'deliberations/classification') === false
+                && stripos($this->params->here, 'ajax') === false // méthode ajax
+                && stripos($this->params->here, 'download') === false // téléchargement de fichier
+                && stripos($this->params->here, 'genere') === false // méthode de génération
+                && stripos($this->params->here, 'files/') === false // liens vers fichiers
+                && stripos($this->params->here, 'sendToTdt') === false // pas de vue associée
+                && stripos($this->params->here, 'deliberations/classification') === false // popup
             ) {
                 //Ajoute l'url courante au début du tableau
                 if (empty($historique) || $historique[0] != $this->params->here) {
