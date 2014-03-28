@@ -4511,6 +4511,15 @@ class DeliberationsController extends AppController
             // vérification de l'existence du projet/délibération en base de données
             if (!$this->Deliberation->hasAny(array('id' => $id)))
                 throw new Exception('Projet/délibération id:' . $id . ' non trouvé(e) en base de données');
+            
+            $annexesInvalide = $this->Deliberation->Annex->find('count', array(
+               'fields' => 'Annex.id',
+               'conditions' => array('foreign_key' => $id,'joindre_fusion' => true,'edition_data IS NULL'),
+                'recursive' => -1
+            ));
+
+            if (!empty($annexesInvalide))
+                throw new Exception('Toutes les annexes du projet :' . $id . ' ne sont pas encore converti pour générer le document.');
 
             // fusion du document
             $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $id));
