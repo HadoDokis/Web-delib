@@ -50,12 +50,20 @@ class ConnecteursController extends AppController {
                 // Configuration signature
                 $protocoles = array('pastell' => 'Pastell', 'iparapheur' => 'i-Parapheur');
                 $this->set('protocoles', $protocoles);
+                $config_pastell = Configure::read('Pastell');
+                if (!empty($config_pastell))
+                    $config_pastell = array_combine(array_keys($config_pastell),array_keys($config_pastell));
+                $this->set('flux_pastell', $config_pastell);
                 $this->render('signature');
                 break;
             case 4:
                 // Configuration tdt
                 $protocoles = array('pastell' => 'Pastell', 's2low' => 'S²low');
                 $this->set('protocoles', $protocoles);
+                $config_pastell = Configure::read('Pastell');
+                if (!empty($config_pastell))
+                    $config_pastell = array_combine(array_keys($config_pastell),array_keys($config_pastell));
+                $this->set('flux_pastell', $config_pastell);
                 $this->render('tdt');
                 break;
             case 5:
@@ -130,8 +138,10 @@ class ConnecteursController extends AppController {
                 $protocol = strtoupper($this->data['Connecteur']['tdt_protocol']);
                 $content = $this->_replaceValue($content, 'TDT', $protocol);
                 $content = $this->_replaceValue($content, 'USE_TDT', $this->data['Connecteur']['use_tdt']);
-                if ($protocol == 'PASTELL')
+                if ($protocol == 'PASTELL'){
                     $content = $this->_replaceValue($content, "USE_S2LOW", 'false');
+                    $content = $this->_replaceValue($content, 'PASTELL_TYPE', $this->data['Connecteur']['type']);
+                }
                 $content = $this->_replaceValue($content, "USE_$protocol", 'true');
                 $content = $this->_replaceValue($content, $protocol . '_LOGIN', $this->data['Connecteur']['login']);
                 $content = $this->_replaceValue($content, $protocol . '_PWD', $this->data['Connecteur']['pwd']);

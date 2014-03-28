@@ -1,4 +1,12 @@
-<div class='spacer'></div>
+<?php
+if (empty($flux_pastell)){
+    echo '<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Attention !</strong> Connecteur Pastell désactivé. Le fichier pastell.inc est introuvable.
+    </div>';
+    unset($protocoles['pastell']);
+}
+?>
 <div id="configTdt">
     <?php
     $protocol = Configure::read('TDT');
@@ -56,14 +64,15 @@
                 'label' => 'Mot de passe',
                 'value' => Configure::read('PASTELL_PWD')));
             echo $this->Form->input('type', array(
-                'type' => 'text',
+                'type' => 'select',
                 'label' => 'Type de flux',
-                'placeholder' => 'Exemple : actes-generique',
+                'options' => $flux_pastell,
+                'title' => 'Pour utiliser un autre flux Pastell, éditer le fichier de configuration pastell.inc',
                 'value' => Configure::read('PASTELL_TYPE'),
             ));
             ?>
             </span>
-            </fieldset>
+        </fieldset>
         <fieldset class="s2low-infos">
             <legend>Certificat d'authentification</legend>
             <?php
