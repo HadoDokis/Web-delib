@@ -45,7 +45,7 @@ class DeliberationsController extends AppController
         'autresActesAValider',
         'toSend',
         'transmit',
-        'verserAsalae',
+//        'verserAsalae',
         'autreActesAEnvoyer',
         'autreActesEnvoyes',
         'editerTous',
@@ -70,7 +70,7 @@ class DeliberationsController extends AppController
         'goNext',
         'validerEnUrgence',
         'rebond',
-        'editerTous',
+//        'editerTous',
     );
     public $libellesActionsDroit = array(
         'edit' => "Modification d'un projet",
