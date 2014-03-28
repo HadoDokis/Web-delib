@@ -69,7 +69,7 @@ if (empty($flux_pastell)){
             echo $this->Form->input('pastelltype', array(
                 'type' => 'select',
                 'options' => $flux_pastell,
-                'title' => 'Pour utiliser un autre flux Pastell, éditer le fichier de configuration pastell.inc',
+                'title' => 'Pour modifier les flux Pastell, éditer le fichier de configuration pastell.inc',
                 'value' => Configure::read('PASTELL_TYPE'),
                 'label' => 'Type de flux (Pastell)',
                 'div' => array('id'=> 'pastell_type','style' => ($protocol != 'PASTELL') ? 'display: none;' : '')
