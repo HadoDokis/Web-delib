@@ -14,6 +14,8 @@ body{
     padding-left: 70px;
     padding-right: 70px;
     padding-top: 60px;
+    font-size: 15px;
+    line-height: 21px;
 }
 
 /* fix le décalage entre les checkboxes */

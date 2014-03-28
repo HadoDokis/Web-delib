@@ -31,7 +31,7 @@ App::uses('Controller', 'Controller');
  * @link        http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-    public $theme = "Normal";
+    public $theme = "Webdelib";
     public $components = array('Utils', 'Acl', 'Droits', 'Session');
     public $helpers = array('Html', 'Form', 'Session', 'DatePicker', 'Html2');
     public $aucunDroit = array('Pages:format', 'Pages:service');
@@ -82,6 +82,8 @@ class AppController extends Controller {
                 $this->Session->write('previous_url', $this->previous);
                 $this->set('previous', $this->previous);
             }
+            if ($this->Session->check('user.User.theme'))
+                $this->theme = $this->Session->read('user.User.theme');
         }
         // ????
         if (CRON_DISPATCHER) return true;

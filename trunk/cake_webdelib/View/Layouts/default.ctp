@@ -84,7 +84,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
             </ul>
         </div>
         <!--/.nav-collapse -->
-        <div class="nav-collapse collapse pull-right">
+        <div class="nav-collapse collapse pull-right" style="margin-right: 30px;">
             <?php
             echo $this->Form->create('User', array(
                 'id' => 'quickSearch',
@@ -120,6 +120,9 @@ $cakeDescription = __d('webdelib', 'Webdelib');
                         </li>
                         <li>
                             <?php echo $this->Html->link('Changer de mot de passe', array('plugin' => null, 'controller' => 'users', 'action' => 'changeUserMdp')); ?>
+                        </li>
+                        <li>
+                            <?php echo $this->Html->link('Changer de thême', array('plugin' => null, 'controller' => 'users', 'action' => 'changeTheme')); ?>
                         </li>
                         <li class="divider"></li>
                         <li>
