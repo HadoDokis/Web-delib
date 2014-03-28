@@ -43,14 +43,15 @@ class CommentairesController extends AppController
         }
     }
 
-    public function delete($id = null, $delib_id)
+    public function delete($id = null)
     {
         if (!$id) {
             $this->Session->setFlash('Invalide id pour le commentaire', 'growl');
-            $this->redirect(array('controller' => 'deliberations', 'action' => 'traiter', $delib_id));
+            $this->redirect($this->previous);
         }
         if ($this->Commentaire->delete($id)) {
-            $this->redirect(array('controller' => 'deliberations', 'action' => 'traiter', $delib_id));
+            $this->Session->setFlash('Commentaire supprimé !', 'growl');
+            $this->redirect($this->previous);
         }
     }
 
