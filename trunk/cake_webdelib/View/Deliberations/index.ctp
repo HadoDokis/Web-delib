@@ -38,7 +38,6 @@ if (isset($traitement_lot) && ($traitement_lot == true))
             <?php
             if (!empty($traitement_lot)) {
                 echo '<input type="checkbox" id="masterCheckbox" />';
-                echo '<br/>';
             }
             ?>
         </th>
@@ -56,7 +55,6 @@ if (isset($traitement_lot) && ($traitement_lot == true))
         ?>
         <tr>
             <td rowspan="3" style="text-align:center;">
-                <br/>
                 <?php
                 echo $this->Html->image(
                     $deliberation['iconeEtat']['image'], array(
@@ -65,8 +63,10 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                     )
                 );
 
-                if (isset($traitement_lot) && ($traitement_lot == true))
+                if (!empty($traitement_lot)){
+                    echo '<br/>';
                     echo $this->Form->input('Deliberation_check.id_' . $deliberation['Deliberation']['id'], array('type' => 'checkbox', 'label' => false, 'div' => false));
+                }
                 ?>
 
             </td>
