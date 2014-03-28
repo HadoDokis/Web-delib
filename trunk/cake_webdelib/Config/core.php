@@ -308,6 +308,6 @@ require_once('webdelib.inc');
 require_once('formats.inc');
 include_once('pastell.inc');
 //appVersion
-define('VERSION', '4.2-beta6');
+define('VERSION', '4.2-beta7');
 //dbVersion
 include_once(ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Cakeflow' . DS . 'Config' . DS . 'cakeflow.conf.php');
