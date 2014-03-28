@@ -91,10 +91,13 @@ function ajouterMultiDelib() {
 
 /**
  * Supprimer le bloc de la nouvel delib rattachée
+ * => avec animation
  * @param element
  */
 function annulerAjouterDelibRattachee(element) {
-    $(element).closest('fieldset.delibRattachee').remove();
+    $(element).closest('fieldset.delibRattachee').slideUp('slow', function () {
+        $(this).remove();
+    });
 }
 
 /**
