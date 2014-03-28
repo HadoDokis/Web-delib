@@ -78,41 +78,42 @@ class MaintenanceShell extends AppShell {
         
         return $parser;
     }
-    
+
     /**
      * Vérifie la compatibilité des textes en base avec Gedooo,
      * - textes de projets valides ?
      * - annexes en odt valide ?
      */
-    public function conversionAnnexe()
-    {
+    public function conversionAnnexe() {
         $time_start = microtime(true);
-       
-        if (!empty($this->params['id'])){
+
+        if (!empty($this->params['id'])) {
             $this->out("Délibération id : " . $this->params['id'], 1, Shell::VERBOSE);
             $this->CronJob->convertionAnnexesJob($this->params['id'], true);
-        }
-        else{
-            $annexes = $this->Annex->find('all', array('fields' => array('id', 'foreign_key'),
-                'condition' => array('OR'=>array('joindre_fusion'=>true,'joindre_ctrl_legalite'=>TRUE)),
+        } else {
+            $annexes = $this->Annex->find('all', array(
+                'fields' => array('id', 'foreign_key', 'filetype'),
+                'condition' => array('OR' => array('joindre_fusion' => true, 'joindre_ctrl_legalite' => TRUE)),
                 'order' => 'id ASC',
-                'recursive' => -1));
-
+                'recursive' => -1
+            ));
+            $docs_info = Configure::read('DOC_TYPE');
             $i = 0;
             foreach ($annexes as $annexe) {
+                if (empty($docs_info[$annexe['Annex']['filetype']]['convertir'])) continue;
                 $i++;
-                $this->out('Generation id:' . $annexe['Annex']['id'] . '...');
+                $this->out('Conversion annexe n°' . $annexe['Annex']['id'] . ' ('.$i.'/'.count($annexes).')...');
                 $return = $this->CronJob->convertionAnnexesJob($annexe['Annex']['foreign_key'], true);
                 $this->out($return . "\n");
-                $this->out('Sauvegarde Terminée id: ' . $annexe['Annex']['id'] . "\n");
+                $this->out('Sauvegarde terminée id: ' . $annexe['Annex']['id'] . "\n");
             }
-            $this->out('Generation des annexes en odt Terminée (' . $i . ' modifications)');
+            $this->out('Conversion des annexes terminée => ' . $i . ' annexes converties');
         }
-        
+
         $time_end = microtime(true);
         $this->out("Temps pour la conversion : " . round($time_end - $time_start) . ' secondes', 1, Shell::VERBOSE);
     }
-    
+
     /**
      * Vérifie la compatibilité des textes en base avec Gedooo,
      * - textes de projets valides ?
