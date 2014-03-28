@@ -4,20 +4,21 @@ class UsersController extends AppController {
     public $components = array('Menu', 'Dbdroits', 'Filtre', 'Paginator');
 
     // Gestion des droits
-	public $aucunDroit = array(
-			'login',
-			'logout',
-			'getAdresse',
-			'getCP',
-			'getNom',
-			'getPrenom',
-			'getVille',
-			'view',
-			'changeFormat',
-			'changeUserMdp',
-	);
+    public $aucunDroit = array(
+        'login',
+        'logout',
+        'getAdresse',
+        'getCP',
+        'getNom',
+        'getPrenom',
+        'getVille',
+        'view',
+        'changeFormat',
+        'changeUserMdp',
+        'changeTheme'
+    );
 
-	public $commeDroit = array(
+    public $commeDroit = array(
         'add' => 'Users:index',
         'delete' => 'Users:index',
         'edit' => 'Users:index',
@@ -594,4 +595,30 @@ class UsersController extends AppController {
 				$this->Session->setFlash('Erreur lors de la saisie des mots de passe.');
 		}
 	}
+
+    /**
+     * Changement de thême utilisateur
+     */
+    public function changeTheme() {
+        if (empty($this->request->data)) {
+            $this->User->id = $this->user_id;
+            $this->request->data['User']['theme'] = $this->User->field('theme');
+            if (empty($this->request->data['User']['theme']))
+                $this->request->data['User']['theme'] = 'Normal';
+        } else {
+            $this->User->id = $this->user_id;
+            if ($this->User->saveField('theme', $this->data['User']['theme'])) {
+                $this->Session->write('user.User.theme', $this->data['User']['theme']);
+                $this->Session->setFlash('Le thême a été modifié', 'growl');
+                $this->redirect($this->previous);
+            } else
+                $this->Session->setFlash('Erreur lors du changement de thême.', 'growl');
+        }
+        App::uses('Folder', 'Utility');
+        $Themed = new Folder(APP . 'View' . DS . 'Themed');
+        $dossiers = $Themed->read();
+
+        $this->set('themes', array_combine($dossiers[0],$dossiers[0]));
+    }
+
 }

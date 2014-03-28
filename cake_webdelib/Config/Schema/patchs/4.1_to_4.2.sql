@@ -133,4 +133,6 @@ UPDATE deliberations SET signee=FALSE WHERE signee IS NULL;
 ALTER TABLE deliberations ALTER COLUMN signee SET NOT NULL;
 ALTER TABLE historiques ALTER COLUMN circuit_id DROP NOT NULL;
 
+ALTER TABLE users ADD theme varchar NULL;
+
 COMMIT;
