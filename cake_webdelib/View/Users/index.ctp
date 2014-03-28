@@ -62,13 +62,19 @@
         <br/>
     <?php endif; //fin if (!empty($users)) ?>
     <?php
-    echo $this->Html->tag('div', null, array('style' => 'text-align:center; margin-top:10px; float:none;'));
+    echo $this->Html->tag('div', null, array('class' => 'text-center'));
+    echo $this->Html->tag('div', null, array('style' => 'margin-top:10px;', 'class' => 'btn-group text-center'));
+    echo $this->Html->link("<i class='fa fa-arrow-left'></i> Retour", $previous, array(
+        'class' => 'btn',
+        'escape' => false,
+        'title' => 'Retour à la page précédente'
+    ));
     echo $this->Html->link("<i class='fa fa-plus'></i> Ajouter", array('action' => 'add'), array(
         'class' => 'btn btn-primary btn-add',
         'escape' => false,
-        'style' => 'float:none;',
         'title' => 'Ajouter un utilisateur'
     ));
+    echo $this->Html->tag('/div', null);
     echo $this->Html->tag('/div', null);
     ?>
 </div>
