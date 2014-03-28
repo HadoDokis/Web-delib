@@ -1,3 +1,8 @@
+<noscript>
+    <div class="alert alert-heading text-center">
+        <strong>Attention!</strong> Vous devez activer JavaScript dans votre navigateur pour pouvoir utiliser le service Webdelib
+    </div>
+</noscript>
 <?php if (!empty($errorMsg)): ?>
     <div class="alert alert-error">
         <button type="button" class="close" data-dismiss="alert">×</button>
