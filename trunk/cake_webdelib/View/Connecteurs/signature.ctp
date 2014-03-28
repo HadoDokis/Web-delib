@@ -1,3 +1,12 @@
+<?php
+if (empty($flux_pastell)){
+    echo '<div class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Attention !</strong> Connecteur Pastell désactivé. Le fichier pastell.inc est introuvable.
+    </div>';
+    unset($protocoles['pastell']);
+}
+?>
 <div class='spacer'></div>
 <div id="configSignature">
     <?php
@@ -58,8 +67,9 @@
             <legend>Configuration des flux</legend>
             <?php
             echo $this->Form->input('pastelltype', array(
-                'type' => 'text',
-                'placeholder' => 'Exemple : actes-generique',
+                'type' => 'select',
+                'options' => $flux_pastell,
+                'title' => 'Pour utiliser un autre flux Pastell, éditer le fichier de configuration pastell.inc',
                 'value' => Configure::read('PASTELL_TYPE'),
                 'label' => 'Type de flux (Pastell)',
                 'div' => array('id'=> 'pastell_type','style' => ($protocol != 'PASTELL') ? 'display: none;' : '')
