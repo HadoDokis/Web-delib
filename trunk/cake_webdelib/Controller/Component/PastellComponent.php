@@ -31,6 +31,8 @@ class PastellComponent extends Component {
     private $parapheur_type;
     private $pastell_type;
     private $Session;
+    private $config;
+    public $reponse;
 
     function __construct() {
         $collection = new ComponentCollection();
@@ -40,6 +42,10 @@ class PastellComponent extends Component {
         $this->pwd = Configure::read('PASTELL_PWD');
         $this->pastell_type = Configure::read('PASTELL_TYPE');
         $this->parapheur_type = Configure::read('IPARAPHEUR_TYPE');
+        //clés de champs
+        $pastell_config = Configure::read('Pastell');
+        $this->config = $pastell_config[$this->pastell_type];
+        $this->reponse = null;
     }
 
     /**
@@ -47,7 +53,7 @@ class PastellComponent extends Component {
      * La liste est enregistrée en Session
      * pour économiser du traffic réseau entre WD et Pastell lors des appels suivants
      *
-     * @param int|string $id_e identifiant de la collectivité
+     * @param int $id_e identifiant de la collectivité
      * @return array
      */
     public function getCircuits($id_e) {
@@ -82,23 +88,29 @@ class PastellComponent extends Component {
         }
         if ($file_transfert) {
             $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS), true, 0777);
-            $file = new File($folder->path . DS . 'WD_BRDR_', true, 0777);
+            $file = new File($folder->path . DS . 'WD_PASTELL_DOC', true, 0777);
+            $this->log($file->path, 'debug');
             $fp = fopen($file->path, 'w');
             curl_setopt($curl, CURLOPT_FILE, $fp);
-        }
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        if ($file_transfert) {
+            $response = curl_exec($curl);
+            curl_close($curl);
             fclose($fp);
             $content = $file->read();
             $folder->delete();
-            return $content;
+        }else{
+            $response = curl_exec($curl);
+            curl_close($curl);
         }
         $result = json_decode($response, true);
-        if ($this->_log($page, $data, $result))
-            return $result;
+        $ok = $this->_log($page, $data, $result);
+        if ($ok){
+            if ($file_transfert){
+                // Test si le retour est un fichier ou un message json (erreur)
+                return json_decode($content) == null ? $content : false;
+            }
+            else
+                return $result;
+        }
         else
             return false;
     }
@@ -112,16 +124,20 @@ class PastellComponent extends Component {
      */
     protected function _log($page, $data, $retourWS) {
         $this->log('Request : ' . $page, 'pastell');
-        if (!empty($data))
+        if (!empty($data)) {
             $this->log('Data : ' . print_r($data, true), 'pastell');
+        }
         if (empty($retourWS)) {
             $this->log('Error : Aucune réponse du serveur distant', 'pastell');
             return false;
         }
-        if (!empty($retourWS['message']))
-            $this->log('Message : ' . $retourWS['message'], 'pastell');
+        if (!empty($retourWS['message'])) {
+            $this->reponse = 'Message : ' . $retourWS['message'];
+            $this->log($this->reponse, 'pastell');
+        }
         if (!empty($retourWS['error-message'])) {
-            $this->log('Error : ' . $retourWS['error-message'], 'pastell');
+            $this->reponse = 'Error : ' . $retourWS['error-message'];
+            $this->log($this->reponse, 'pastell');
             return false;
         }
         return true;
@@ -235,7 +251,7 @@ class PastellComponent extends Component {
      *
      * Liste l'ensemble des documents d'une entité Liste également les entités filles.
      *
-     * @param int|string $id_e Identifiant de l'entité (retourné par list-entite)
+     * @param int $id_e Identifiant de l'entité (retourné par list-entite)
      * @param string $type Type de document (retourné par document-type)
      * @param integer $offset (facultatif, 0 par défaut) Numéro de la première ligne à retourner
      * @param integer $limit (facultatif, 100 par défaut) Nombre maximum de lignes à retourner
@@ -296,8 +312,8 @@ class PastellComponent extends Component {
      *
      * Récupère l'ensemble des informations sur un document Liste également les entités filles.
      *
-     * @param int|string $id_e Identifiant de l'entité (retourné par list-entite)
-     * @param int|string $id_d Identifiant unique du document (retourné par list-document)
+     * @param int $id_e Identifiant de l'entité (retourné par list-entite)
+     * @param int $id_d Identifiant unique du document (retourné par list-document)
      * @return array
      * Format de sortie :
      * [] => {
@@ -319,7 +335,7 @@ class PastellComponent extends Component {
      *
      * Récupère l'ensemble des informations sur un document Liste également les entités filles.
      *
-     * @param int|string $id_e Identifiant de l'entité (retourné par list-entite)
+     * @param int $id_e Identifiant de l'entité (retourné par list-entite)
      * @param array $id_d Tableau d'identifiants uniques de documents (retourné par list-document)
      * @return array
      * Format de sortie :
@@ -336,7 +352,7 @@ class PastellComponent extends Component {
     }
 
     /**
-     * @param int|string $id_e identifiant de la collectivité
+     * @param int $id_e identifiant de la collectivité
      * @param string $type type de flux (pastell)
      * @return integer id_d Identifiant unique du document crée.
      * @throws Exception Si erreur lors de la création
@@ -365,8 +381,8 @@ class PastellComponent extends Component {
      * Ce script permet de récupérer l'ensemble de ces valeurs.
      * Ce script est utilisable sur tous les champs qui dispose d'une propriétés « controler »
      *
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @param string $field le nom d'un champ du document
      * @return array
      * valeur_possible * => Information supplémentaire sur la valeur possible (éventuellement sous forme de tableau associatif)
@@ -377,8 +393,8 @@ class PastellComponent extends Component {
 
     /**
      * Modification d'un document
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @param array $delib
      * @param string $document (Pdf)
      * @param array $annexes
@@ -391,51 +407,44 @@ class PastellComponent extends Component {
      * il convient d'utiliser la fonction document-type-info.php, en lui précisant le type concerné.
      */
     public function modifDocument($id_e, $id_d, $delib, $document, $annexes = array()) {
-        if (empty($delib) || empty($delib['Typeacte']['nature_id']) /*|| empty($delib['Deliberation']['num_pref'])*/ || empty($delib['Deliberation']['objet_delib']))
+        if (empty($delib) || empty($delib['Typeacte']['nature_id']) || empty($delib['Deliberation']['objet_delib']))
             return false;
 
         $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS), true, 0777);
         $file = new File($folder->path . DS . 'arrete.pdf', true, 0777);
         $file->write($document);
-
+        $fields = $this->config['field'];
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
-            'objet' => utf8_decode($delib['Deliberation']['objet_delib']),
-            'type' => $this->parapheur_type,
-            'arrete' => '@' . $file->path,
-            'acte_nature' => $delib['Typeacte']['nature_id'],
             'classification' => !empty($delib['Deliberation']['num_pref']) ? $delib['Deliberation']['num_pref'] : '',
+            $fields['objet'] => utf8_decode($delib['Deliberation']['objet_delib']),
+            $fields['arrete'] => '@' . $file->path,
+            $fields['acte_nature'] => $delib['Typeacte']['nature_id'],
+            $fields['numero_de_lacte'] => !empty($delib['Deliberation']['num_delib']) ? $delib['Deliberation']['num_delib'] : $delib['Deliberation']['id'],
+            $fields['date_de_lacte'] => !empty($delib['Seance']['date']) ? $delib['Seance']['date'] : date("Y-m-d H:i:s"),
+            $fields['classification'] => !empty($delib['Deliberation']['num_pref']) ? $delib['Deliberation']['num_pref'] : ''
+
         );
-        $acte['numero_de_lacte'] = !empty($delib['Deliberation']['num_delib']) ? $delib['Deliberation']['num_delib'] : $delib['Deliberation']['id'];
-        $acte['date_de_lacte'] = !empty($delib['Seance']['date']) ? $delib['Seance']['date'] : date("Y-m-d H:i:s");
 
-        $this->execute('modif-document.php', $acte);
-        $file->close();
+        $success = $this->execute('modif-document.php', $acte);
 
-        if (!empty($annexes))
+        if (!empty($success) && !empty($annexes))
             foreach ($annexes as $annex) {
-                $file = new File($folder->path . DS . $annex['filename'], true, 0777);
-                $file->write($annex['content']);
-                $this->sendAnnex($id_e, $id_d, $file->path);
-                $file->close();
+                $annexeFile = new File($folder->path . DS . $annex['filename'], true, 0777);
+                $annexeFile->write($annex['content']);
+                $success &= $this->sendAnnex($id_e, $id_d, $annexeFile->path);
             }
 
         $folder->delete();
 
-        $resultat = $this->detailDocument($id_e, $id_d);
-        if (!empty($resultat['data']['classification'])) {
-            $pos = strpos($resultat['data']['classification'], "existe");
-            if ($pos !== false && $resultat['data']['envoi_tdt'])
-                return utf8_decode($resultat['data']['classification']);
-        }
-        return true;
+        return $success;
     }
 
     /**
      * Envoie d'un fichier pour modifier un document
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @param array $options
      * [] =>
      *  string field_name le nom du champs
@@ -464,8 +473,8 @@ class PastellComponent extends Component {
 
     /**
      * Réception d'un fichier
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @param string $field_name le nom du champs
      * @param integer $file_number le numéro du fichier (pour les fichiers multiple)
      * @return array
@@ -486,8 +495,8 @@ class PastellComponent extends Component {
     /**
      * Execute une action sur un document
      *
-     * @param int|string $id_e Identifiant de l'entité (retourné par list-entite)
-     * @param int|string $id_d Identifiant unique du document (retourné par list-document)
+     * @param int $id_e Identifiant de l'entité (retourné par list-entite)
+     * @param int $id_d Identifiant unique du document (retourné par list-document)
      * @param string $action Nom de l'action (retourné par detail-document, champs action-possible)
      * @param array $options
      * @return array
@@ -509,18 +518,19 @@ class PastellComponent extends Component {
 
     /**
      * Supprime un dossier dans Pastell
-     * @param int|string $id_e identifiant d'entité (collectivité)
-     * @param int|string $id_d identifiant de dossier
+     * Attention: l'exécution de cette commande peut necessiter beaucoup de temps
+     * @param int $id_e identifiant d'entité (collectivité)
+     * @param int $id_d identifiant de dossier
      * @return bool|array
      */
     public function delete($id_e, $id_d) {
-        return $this->action($id_e, $id_d, 'supression');
+        return $this->action($id_e, $id_d, $this->config['action']['supression']);
     }
 
     /**
      * Récupère le contenu d'un fichier
-     * @param int|string $id_e Identifiant de l'entité (retourné par list-entite)
-     * @param int|string $id_d Identifiant unique du document (retourné par list-document)
+     * @param int $id_e Identifiant de l'entité (retourné par list-entite)
+     * @param int $id_d Identifiant unique du document (retourné par list-document)
      * @param string $field le nom d'un champ du document
      * @param int $num le numéro du fichier, s'il s'agit d'un champ fichier multiple
      * @return string fichier c'est le fichier qui est renvoyé directement
@@ -541,8 +551,8 @@ class PastellComponent extends Component {
     /**
      * TODO ajouter les autres paramètres d'entrée
      * Récupérer le journal
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @return bool|array résultat
      */
     public function journal($id_e, $id_d) {
@@ -556,63 +566,82 @@ class PastellComponent extends Component {
     /**
      * Déclare à Pastell que l'acte doit être envoyé en signature
      * Attention: le document doit être inséré dans un circuit avant !
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
+     * @param string $classification
      * @param bool $value
      * @return bool|array résultat
      */
-    public function envoiSignature($id_e, $id_d, $value = true) {
-        return $this->execute("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_signature=$value");
+    public function envoiSignature($id_e, $id_d, $classification = null, $value = true) {
+        $data = array(
+            'id_e' => $id_e,
+            'id_d' => $id_d,
+            $this->config['field']['envoi_signature'] => $value,
+        );
+        if (!empty($classification))
+            $data[$this->config['field']['classification']] = $classification;
+        return $this->execute('modif-document.php', $data);
     }
 
     /**
      * Déclare à Pastell que l'acte doit être envoyé au tdt
      * Attention: le document doit être inséré dans un circuit avant !
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @param string $classification
+     * @param bool $value
      * @return bool|array résultat
      */
-    public function envoiTdt($id_e, $id_d, $classification = null) {
+    public function envoiTdt($id_e, $id_d, $classification = null, $value = true) {
         $data = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
-            'envoi_tdt' => true
+            $this->config['field']['envoi_tdt'] => $value
         );
         if (!empty($classification))
-            $data['classification'] = $classification;
+            $data[$this->config['field']['classification']] = $classification;
         return $this->execute('modif-document.php', $data);
     }
 
     /**
      * Déclare à Pastell que l'acte doit être envoyé au sae
      * Attention: le document doit être inséré dans un circuit avant !
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @param bool $value
      * @return bool|array résultat
      */
     public function envoiSae($id_e, $id_d, $value = true) {
-        return $this->execute("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_sae=$value");
+        $data = array(
+            'id_e' => $id_e,
+            'id_d' => $id_d,
+            $this->config['field']['envoi_sae'] => $value
+        );
+        return $this->execute('modif-document.php', $data);
     }
 
     /**
      * Déclare à Pastell que l'acte doit être envoyé à la GED
      * Attention: le document doit être inséré dans un circuit avant !
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @param bool $value
      * @return bool|array résultat
      */
     public function envoiGed($id_e, $id_d, $value = true) {
-        return $this->execute("modif-document.php?id_e=$id_e&id_d=$id_d&envoi_ged=$value");
+        $data = array(
+            'id_e' => $id_e,
+            'id_d' => $id_d,
+            $this->config['field']['envoi_ged'] => $value
+        );
+        return $this->execute('modif-document.php', $data);
     }
 
     /**
      * déclare à PASTELL par quel cheminement devra passer le dossier
      * Attention: le document doit être inséré dans un circuit avant !
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @param bool $auto déclaration automatique du cheminement en fonction de la configuration webdelib
      * @param array $params si !auto, les paramètres doivent être passés dans ce tableau
      * @return bool|array résultat
@@ -624,13 +653,13 @@ class PastellComponent extends Component {
         );
         if ($auto) {
             if (Configure::read('USE_PARAPHEUR') && Configure::read('PARAPHEUR') == 'PASTELL')
-                $data['envoi_signature'] = 'true';
+                $data[$this->config['field']['envoi_signature']] = true;
             if (Configure::read('USE_TDT') && Configure::read('TDT') == 'PASTELL')
-                $data['envoi_tdt'] = 'true';
+                $data[$this->config['field']['envoi_tdt']] = true;
             if (Configure::read('USE_SAE') && Configure::read('SAE') == 'PASTELL')
-                $data['envoi_sae'] = 'true';
+                $data[$this->config['field']['envoi_sae']] = true;
             if (Configure::read('USE_GED') && Configure::read('GED_PASTELL'))
-                $data['envoi_ged'] = 'true';
+                $data[$this->config['field']['envoi_ged']] = true;
         } elseif (!empty($params)) {
             $data = array_merge($data, $params);
         } else {
@@ -641,8 +670,8 @@ class PastellComponent extends Component {
 
     /**
      * Envoi à Pastell l'information sur le circuit du parapheur à emprunter
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @param string $sous_type
      * @return bool|array résultat
      */
@@ -650,17 +679,17 @@ class PastellComponent extends Component {
         $infos = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
-            'classification' => '1',
-            'iparapheur_type' => $this->parapheur_type,
-            'iparapheur_sous_type' => utf8_decode($sous_type)
+            $this->config['field']['iparapheur_type'] => $this->parapheur_type,
+            $this->config['field']['iparapheur_sous_type'] => utf8_decode($sous_type),
+            $this->config['field']['envoi_signature'] => true
         );
         return $this->execute('modif-document.php', $infos);
     }
 
     /**
      * Joint ses annexes à un document dans Pastell
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @param string $annex chemin de l'annexe à attacher
      * @return bool|array résultat
      */
@@ -668,19 +697,18 @@ class PastellComponent extends Component {
         $acte = array(
             'id_e' => $id_e,
             'id_d' => $id_d,
-            'autre_document_attache' => "@$annex"
+            $this->config['field']['autre_document_attache'] => "@$annex"
         );
-        //debug($acte);
         return $this->execute('modif-document.php', $acte);
     }
 
     /**
      * Récupère le tableau de classifications
-     * @param int|string $id_e identifiant de la collectivité
-     * @param int|string $id_d identifiant du dossier pastell
+     * @param int $id_e identifiant de la collectivité
+     * @param int $id_d identifiant du dossier pastell
      * @return array
      */
     public function getClassification($id_e, $id_d) {
-        return $this->getInfosField($id_e, $id_d, 'classification');
+        return $this->getInfoField($id_e, $id_d, 'classification');
     }
 }

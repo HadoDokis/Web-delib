@@ -30,12 +30,12 @@ class Tdt {
     private $connecteur;
 
     /**
-     * @var Composant PastellComponent
+     * @var Component PastellComponent
      */
     private $Pastell;
 
     /**
-     * @var Composant s2lowComponent
+     * @var Component s2lowComponent
      */
     private $S2low;
 
@@ -55,6 +55,11 @@ class Tdt {
     private $pastell_type;
 
     /**
+     * @var array configuration
+     */
+    private $config;
+
+    /**
      * @var int|string $id_e
      */
     private $id_e;
@@ -68,6 +73,7 @@ class Tdt {
         '4' => 'lettre_observation',
         '5' => 'defere_tribunal_administratif'
     );
+
 
     /**
      * Appelée lors de l'initialisation de la librairie
@@ -95,6 +101,8 @@ class Tdt {
             $Collectivite->id = 1;
             $this->id_e = $Collectivite->field('id_entity');
             $this->pastell_type = Configure::read('PASTELL_TYPE');
+            $pastell_config = Configure::read('Pastell');
+            $this->config = $pastell_config[$this->pastell_type];
         }
         if ($protocol == 'S2LOW') {
             $this->S2low = new S2lowComponent($collection);
@@ -110,6 +118,7 @@ class Tdt {
      * @param string $name nom de la fonction appelée
      * @param array $arguments tableau d'arguments indexés
      * @return mixed
+     * @throws Exception
      */
     public function __call($name, $arguments) {
         $suffix = ucfirst(strtolower($this->connecteur));
@@ -117,27 +126,21 @@ class Tdt {
         if (method_exists($this, $name.$suffix))
                 return call_user_func_array(array($this, $name.$suffix), $arguments);
         else{
-          throw new Exception(sprintf('The required method "%s" does not exist for %s', $name.$suffix, get_class($this)));
+            $this->log($name, 'error');
+            $this->log($arguments, 'error');
+          throw new Exception(sprintf('The required method "%s" does not exist for %s', $name.$suffix, get_class()));
         } 
-        
-       /* $suffix = ucfirst(strtolower($this->connecteur));
-        if (empty($arguments))
-            return $this->{$name . $suffix}();
-        else
-            return $this->{$name . $suffix}($arguments);*/
     }
 
     /**
      * Envoi le dossier dans pastell au TDT
-     * @param $options
-     * [0] => $id_d,
-     * @return bool|string
+     * @param $id_d
+     * @param null $classification
+     * @return array
      */
-    public function sendPastell($options) {
-        $id_d = $options[0];
-        $classification = !empty($options[1]) ? $options[1] : null;
+    public function sendPastell($id_d, $classification = null) {
         $this->Pastell->envoiTdt($this->id_e, $id_d, $classification);
-        $send = $this->Pastell->action($this->id_e, $id_d, 'send-tdt');
+        $result = $this->Pastell->action($this->id_e, $id_d, $this->config['action']['send-tdt']);
         //Récupération du tdt_id
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
         if (!empty($infos['data']['tedetis_transaction_id'])) {
@@ -146,10 +149,31 @@ class Tdt {
                 'fields' => array('id'),
                 'conditions' => array('pastell_id' => $id_d)
             ));
+            if (empty($delib)) return false;
             $this->Deliberation->id = $delib['Deliberation']['id'];
             $this->Deliberation->saveField('tdt_id', $infos['data']['tedetis_transaction_id']);
         }
-        return $send;
+        return $result;
+    }
+
+
+    /**
+     * @param array $delib
+     * @param array $annexes (content, filename)
+     * @return bool|int false si echec sinon identifiant pastell
+     */
+    public function createPastell($delib, $annexes = array()) {
+        $id_d = $this->Pastell->createDocument($this->id_e, $this->pastell_type);
+        try {
+            if ($this->Pastell->modifDocument($this->id_e, $id_d, $delib, $delib['Deliberation']['delib_pdf'], $annexes))
+                return $id_d;
+            else
+                throw new Exception();
+
+        } catch (Exception $e) {
+            $this->Pastell->action($this->id_e, $id_d, $this->config['action']['supression']);
+            return false;
+        }
     }
 
     /**
@@ -185,7 +209,7 @@ class Tdt {
     public function getReponsesPastell($options, $all = false) {
         $tdt_messages = array();
         $id_d = $options[0];
-        $this->Pastell->action($this->id_e, $id_d, 'verif-reponse-tdt');
+        $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-reponse-tdt']);
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
 
         if (empty($infos['data']))
@@ -236,7 +260,7 @@ class Tdt {
     }
 
     public function getDateArPastell($id_d) {
-        $this->Pastell->action($this->id_e, $id_d, 'verif-tdt');
+        $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-tdt']);
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
         if (!empty($infos['data']['date_ar']))
             return $infos['data']['date_ar'];
@@ -245,7 +269,7 @@ class Tdt {
     }
 
     /**
-     * @param $options
+     * @param int $tdt_id
      * @return bool
      */
     public function getDateArS2low($tdt_id) {
@@ -296,7 +320,7 @@ class Tdt {
         //Création d'un dossier temporaire
         $id_d = $this->Pastell->createDocument($this->id_e);
         //Récupération de la classification
-        $classification = $this->Pastell->getClassification($this->id_e, $id_d, 'classification');
+        $classification = $this->Pastell->getClassification($this->id_e, $id_d);
         //Suppression du dossier temporaire
         $this->Pastell->delete($this->id_e, $id_d);
 
@@ -339,7 +363,7 @@ class Tdt {
      * Récupération de l'acte tamponé au format pdf
      */
     public function getTamponPastell($id_d) {
-        $flux = $this->Pastell->getFile($this->id_e, $id_d, 'acte_tamponne');
+        $flux = $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['acte_tamponne']);
         return $flux;
     }
 
@@ -348,7 +372,7 @@ class Tdt {
      */
     public function getBordereauPastell($options) {
         $id_d = $options[0];
-        $flux = $this->Pastell->getFile($this->id_e, $id_d, 'bordereau');
+        $flux = $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['bordereau']);
         return $flux;
     }
 
@@ -361,7 +385,7 @@ class Tdt {
         return $flux;
     }
     
-    /** @
+    /** TODO FIXME
      * Récupération du fichier de message
      * 
      * @param int $message_id
@@ -397,11 +421,35 @@ class Tdt {
      */
     public function getArActePastell($iTdt) {
         $id_d = $iTdt;
-        $this->Pastell->action($this->id_e, $id_d, 'verif-tdt');
+        $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-tdt']);
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
         if (!empty($infos['data']['aractes']))
             return $infos['data']['aractes'];
         else
             return false;
+    }
+
+    public function getDateClassificationS2low(){
+        return $this->S2low->getDateClassification();
+    }
+
+    /**
+     * Date de la derniere mise à jour de la classification
+     * @return string
+     */
+    public function getDateClassificationPastell(){
+        App::uses('Nomenclature', 'Model');
+        $Nomenclature = new Nomenclature();
+        $nomenc = $Nomenclature->find('first', array(
+            'recursive' => -1,
+            'fields' => array('modified'),
+            'order' => 'modified DESC'
+        ));
+        if (!empty($nomenc)){
+            setlocale(LC_ALL, 'fr_FR.utf8');
+//            return date("d/m/Y", strtotime($nomenc['Nomenclature']['modified']));
+            return strftime("%A %d %B %Y", strtotime($nomenc['Nomenclature']['modified']));
+        }
+
     }
 }
