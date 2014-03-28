@@ -306,7 +306,9 @@ define('CRON_DISPATCHER', false);
 
 require_once('webdelib.inc');
 require_once('formats.inc');
-include_once('pastell.inc');
+if (file_exists(APP.DS.'Config'.DS.'pastell.inc'))
+    include_once('pastell.inc');
+
 //appVersion
 define('VERSION', '4.2-beta7');
 //dbVersion
