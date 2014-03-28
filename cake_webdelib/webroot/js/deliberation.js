@@ -308,7 +308,7 @@ function modifierAnnexe(annexeId) {
     $bloc.find('#modifieAnnexeCtrl' + annexeId).closest('div.input.checkbox').show();
 
     //Activation conditionnelle des checkboxes fusion et ctrl_legalite selon extension annexe
-    var fileext = $bloc.find('.annexefilename').text().split('.').pop();
+    var fileext = $bloc.find('.annexefilename').text().split('.').pop().toLowerCase();
     if ($.inArray(fileext, extensionsFusion) === -1) {
         $bloc.find('#modifieAnnexeFusion' + annexeId).prop('checked', false).prop('disabled', true);
     } else {

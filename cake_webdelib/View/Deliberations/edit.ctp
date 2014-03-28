@@ -380,6 +380,7 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
             if ($(this).val() != '') {
                 var tmpArray = $(this).val().split('.');
                 var extension = tmpArray[tmpArray.length - 1];
+                extension = extension.toLowerCase();
                 if ($.inArray(extension, extensions) === -1) {
                     $.jGrowl("Les fichiers " + extension + " ne sont pas autorisés.", {header: "<strong>Erreur :</strong>"});
                     $(this).val(null);
