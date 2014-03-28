@@ -15,8 +15,10 @@ $(document).ready(function () {
             message = 'Envoi du dossier au Parapheur';
         }
         $(this).closest('form').attr('data-modal', message);
+        $('form#DeliberationSendToParapheurForm, form#DeliberationAutreActesValidesForm').unbind('submit');
+        $('form#DeliberationSendToParapheurForm, form#DeliberationAutreActesValidesForm').attendable({});
     }).trigger('change');
-    $('form#DeliberationSendToParapheurForm, form#DeliberationAutreActesValidesForm').attendable({titre: 'Envoi du dossier au Parapheur'});
+    $('form#DeliberationSendToParapheurForm, form#DeliberationAutreActesValidesForm').attendable({});
 
 });
 
