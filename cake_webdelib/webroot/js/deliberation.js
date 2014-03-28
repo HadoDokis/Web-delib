@@ -4,7 +4,7 @@ $(document).ready(function () {
     $('.file-texte').each(function () {
         file_input_index++;
         $(this).wrap('<div id="file_input_container_' + file_input_index + '"></div>');
-        $(this).after('<a href="javascript:void(0)" class="purge_file btn btn-mini btn-danger"  onclick="resetUpload(\'file_input_container_'+file_input_index+'\')"><i class="fa fa-eraser"></i> Effacer</a>');
+        $(this).after('<a href="javascript:void(0)" class="purge_file btn btn-mini btn-danger"  onclick="resetUpload(\'file_input_container_' + file_input_index + '\')"><i class="fa fa-eraser"></i> Effacer</a>');
     });
     $(".select2.selectmultiple").select2({
         width: "resolve",
@@ -51,7 +51,7 @@ $(document).ready(function () {
         return false;
     });
 
-    $('.file-texte').change(function(){
+    $('.file-texte').change(function () {
         if ($(this).val() != '') {
             var tmpArray = $(this).val().split('.');
             //Test sur l'extension (ODT ?)
@@ -64,7 +64,7 @@ $(document).ready(function () {
             //Test sur le nom de fichier (>75car)
             var tmpArray = $(this).val().split('\\');
             var filename = tmpArray[tmpArray.length - 1];
-            if (filename.length > 75){
+            if (filename.length > 75) {
                 $.jGrowl("Le nom du fichier ne doit pas dépasser 75 caractères.", {header: "<strong>Erreur :</strong>"});
                 $(this).val(null);
                 return false;
@@ -73,7 +73,7 @@ $(document).ready(function () {
     });
 });
 
-function disableExitWarning(){
+function disableExitWarning() {
     $(window).unbind('beforeunload');
     objMenuTimeout = setTimeout(function () {
         onUnloadEditForm();
@@ -107,7 +107,7 @@ function updateDatesSeances(domObj) {
         },
         success: function (result) {
             $('#selectDatesSeances').html(result);
-            if (seancesSelected != null){
+            if (seancesSelected != null) {
                 $("#SeanceSeance").val(seancesSelected);
                 $("#SeanceSeance").select2("val", seancesSelected);
             }
@@ -200,7 +200,7 @@ function ajouterAnnexe() {
     $('#tableAnnexes' + ref).slideDown('slow');
 
     $('html, body').animate({
-        scrollTop:  $('#tableAnnexes' + ref).offset().top-42 // Prise en compte de la topbar
+        scrollTop: $('#tableAnnexes' + ref).offset().top - 42 // Prise en compte de la topbar
     }, 'slow');
 
     return false;
@@ -304,8 +304,21 @@ function modifierAnnexe(annexeId) {
         $(this).removeAttr('disabled');
         $(this).show();
     });
-    $bloc.find('#modifieAnnexeCtrl' + annexeId).closest('div.input.checkbox').show();
     $bloc.find('#modifieAnnexeFusion' + annexeId).closest('div.input.checkbox').show();
+    $bloc.find('#modifieAnnexeCtrl' + annexeId).closest('div.input.checkbox').show();
+
+    //Activation conditionnelle des checkboxes fusion et ctrl_legalite selon extension annexe
+    var fileext = $bloc.find('.annexefilename').text().split('.').pop();
+    if ($.inArray(fileext, extensionsFusion) === -1) {
+        $bloc.find('#modifieAnnexeFusion' + annexeId).prop('checked', false).prop('disabled', true);
+    } else {
+        $bloc.find('#modifieAnnexeFusion' + annexeId).prop('disabled', false);
+    }
+    if ($.inArray(fileext, extensionsCtrl) === -1) {
+        $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('checked', false).prop('disabled', true);
+    } else {
+        $bloc.find('#modifieAnnexeCtrl' + annexeId).prop('disabled', false);
+    }
 
     $bloc.find('#urlWebdavAnnexe' + annexeId).show();
 
