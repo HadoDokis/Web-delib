@@ -2,7 +2,7 @@
 <div class="deliberations">
     <?php if (isset($message)) echo($message); ?>
     <?php if (empty($seance_id)): ?>
-        <h2>Signature des actes</h2>
+        <h2>Délibérations signées</h2>
     <?php else: ?>
         <h2>Signature des délibérations</h2>
     <?php endif; ?>
@@ -23,8 +23,9 @@
             <th style="width: 20px;">Id</th>
             <th>Numéro Délibération</th>
             <th>Libellé de l'acte</th>
+            <th>Classification</th>
             <th>Bordereau</th>
-            <th style='width:200px'>
+            <th style='width:210px'>
                 Statut <?php //echo $this->Html->link('<i class="fa fa-refresh"></i>', array('controller' => 'deliberations', 'action' => 'refreshSignature'), array('escape' => false)); ?></th>
         </tr>
         </thead>
@@ -38,7 +39,6 @@
             $options = array();
             if ($seance_id != null) {
                 if (empty($delib['Deliberation']['signee'])
-                    && (Configure::read('PARAPHEUR') != 'PASTELL' || !empty($acte['Deliberation']['num_pref']))
                     && in_array($delib['Deliberation']['parapheur_etat'], array(null, 0, -1))
                     && in_array($delib['Deliberation']['etat'], array(3, 4))
                 )
@@ -61,17 +61,62 @@
             <td>
                 <?php echo($delib['Deliberation']['objet_delib']); ?>
             </td>
+
+            <td style="text-align:center">
+                <?php
+                if ($seance_id == null)
+                    echo !empty($delib['Deliberation']['num_pref']) ? $delib['Deliberation']['num_pref'] . ' - ' . $delib['Deliberation']['num_pref_libelle'] : '<em>-- Manquante --</em>';
+                else {
+                    $id_num_pref = $delib['Deliberation']['id'] . '_num_pref';
+                    if (Configure::read('TDT') == 'PASTELL') {
+                        if (empty($nomenclatures)) $nomenclatures = array();
+                        echo $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
+                            'name' => $delib['Deliberation']['id'] . 'classif2',
+                            'label' => false,
+                            'options' => $nomenclatures,
+                            'default' => $delib['Deliberation']['num_pref'],
+                            'readonly' => empty($nomenclatures),
+                            'empty' => true,
+                            'class' => 'select2 selectone',
+                            'style' => 'width:auto; max-width:400px;',
+                            'div' => array('style' => 'text-align:center;font-size: 1.1em;'),
+                            'escape' => false
+                        ));
+                    } else {
+                        echo $this->Form->input('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref_libelle', array(
+                            'label' => false,
+                            'div' => false,
+                            'id' => $delib['Deliberation']['id'] . 'classif1',
+                            'style' => 'width: 25em;',
+                            'disabled' => true,
+                            'value' => $delib['Deliberation']['num_pref'] . ' - ' . $delib['Deliberation']['num_pref_libelle']));?>
+                        <br/>
+                        <a class="list_form" href="#add"
+                           onclick="javascript:window.open('<?php echo $this->base; ?>/deliberations/classification?id=<?php echo $delib['Deliberation']['id']; ?>', 'Classification', 'scrollbars=yes,,width=570,height=450');"
+                           id="<?php echo $delib['Deliberation']['id']; ?> _classification_text">[Choisir la
+                            classification]</a>
+                        <?php
+                        echo $this->Form->hidden('Deliberation.' . $delib['Deliberation']['id'] . '_num_pref', array(
+                            'id' => $delib['Deliberation']['id'] . 'classif2',
+                            'name' => $delib['Deliberation']['id'] . 'classif2',
+                            'value' => $delib['Deliberation']['num_pref']
+                        ));
+                    }
+                }
+                ?>
+            </td>
+
             <td style="text-align: center">
                 <?php
                 if (!empty($delib['Deliberation']['parapheur_bordereau']))
-                    echo $this->Html->link('[Bordereau de signature]&nbsp;<i class="fa fa-download"></i>', array('action' => 'downloadBordereau', $delib['Deliberation']['id']), array('escape' => false, 'title' => 'Télécharger le bordereau de signature', 'style' => 'text-decoration: none'));
+                    echo $this->Html->link('<i class="fa fa-file-o"></i> Bordereau de signature', array('action' => 'downloadBordereau', $delib['Deliberation']['id']), array('escape' => false, 'title' => 'Télécharger le bordereau de signature', 'style' => 'text-decoration: none'));
                 ?>
             </td>
             <td>
                 <?php
                 switch ($delib['Deliberation']['parapheur_etat']) {
                     case -1 :
-                        echo '<i class="fa fa-exclamation-triangle" title="Motif du rejet : ' . $delib['Deliberation']['parapheur_commentaire'] . '"></i>&nbsp;Retour parapheur : refusée';
+                        echo '<i class="fa fa-exclamation-triangle" title="' . $delib['Deliberation']['parapheur_commentaire'] . '"></i>&nbsp;Retour parapheur : refusée';
                         break;
                     case 1 :
                         echo '<i class="fa fa-clock-o"></i> En cours de signature';
@@ -80,17 +125,17 @@
                         echo '<i class="fa fa-check"></i> Approuvé dans le parapheur&nbsp;';
                         if (!empty($delib['Deliberation']['signee'])) {
                             if (!empty($delib['Deliberation']['signature']))
-                                echo '(Signé&nbsp;<a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;"><i class="fa fa-download"></i></a>)';
+                                echo '(<a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;">Signature</a>)';
                             else
-                                echo '(Visé)';
+                                echo '(Visa)';
                         }
                         break;
                     default : //0 ou null
                         if (!empty($delib['Deliberation']['signee'])) {
                             if (!empty($delib['Deliberation']['signature']))
-                                echo '<i class="fa fa-check"></i> Signé&nbsp;<a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;"><i class="fa fa-download"></i></a>';
+                                echo '<i class="fa fa-check"></i> Signée&nbsp;<a href="/deliberations/downloadSignature/' . $delib['Deliberation']['id'] . '" title="Télécharger la signature" style="text-decoration: none;"><i class="fa fa-download"></i></a>';
                             else
-                                echo '<i class="fa fa-check"></i> Signé manuellement';
+                                echo '<i class="fa fa-check"></i> Signée manuellement';
                         } else {
                             switch ($delib['Deliberation']['etat']) {
                                 case -1 :
@@ -119,7 +164,6 @@
         <?php } ?>
         </tbody>
     </table>
-    <br/>
     <?php
     if (!empty($seance_id) && !empty($deliberations)) {
         echo '<div id="select-circuit">';
@@ -128,6 +172,7 @@
         echo '</div>';
         echo $this->Form->end();
     }
+    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $previous, array('escape' => false, 'class' => 'btn'));
     ?>
 </div>
 
@@ -137,6 +182,11 @@
      */
     $(document).ready(function () {
         $('#ParapheurCircuitId').select2({ width: 'resolve' });
+        $('.selectone').select2({
+            width: 'resolve',
+            allowClear: true,
+            placeholder: 'Aucune classification'
+        });
         $('input[type="checkbox"]').change(changeSelection);
         changeSelection();
     });

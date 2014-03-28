@@ -1169,6 +1169,7 @@ class Deliberation extends AppModel {
      */
     function saveDelibRattachees($parentId, $delib)
     {
+        $this->begin();
         // initialisations
         $newDelib = array();
 
@@ -1181,6 +1182,7 @@ class Deliberation extends AppModel {
             $newDelib = $this->create();
             $newDelib['Deliberation']['parent_id'] = $parentId;
         }
+        if (!empty($delib['num_pref']))
         $newDelib['Deliberation']['num_pref'] = $delib['num_pref'];
         $newDelib['Deliberation']['objet'] = $delib['objet_delib'];
         $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
@@ -1235,7 +1237,7 @@ class Deliberation extends AppModel {
             $this->Deliberationtypeseance->create();
             $this->Deliberationtypeseance->save($typeseance);
         }
-
+        $this->commit();
         return $this->id;
     }
 
@@ -1837,13 +1839,14 @@ class Deliberation extends AppModel {
             }
             return 'TRAITEMENT_TERMINE_OK'.$rapport;
         }catch (Exception $e){
-            return 'TRAITEMENT_TERMINE_ERREUR'."\n".$e->getTraceAsString();
+            return 'TRAITEMENT_TERMINE_ERREUR'."\n".$e->getMessage();
         }
     }
 
     /**
      * @param integer $delib_id identifiant du projet à mettre à jour
      * @return bool true si le dossier à terminé son circuit
+     * @throws Exception
      */
     function majSignaturePastell($delib_id) {
         $delib = $this->find('first', array(
@@ -1859,7 +1862,9 @@ class Deliberation extends AppModel {
             return false;
         App::uses('Signature','Lib');
         $this->Signature = new Signature;
-        $infos = $this->Signature->getDetails($delib['Deliberation']['pastell_id'], true);
+        $infos = $this->Signature->updateInfosPastell($delib['Deliberation']['pastell_id']);
+        if ($infos === false)
+           throw new Exception('Problème de connexion avec Pastell : Accès interdit ou erreur de communication.');
         $this->id = $delib_id;
         if ($infos['last_action']['action'] == 'rejet-iparapheur'){
             $this->saveField('parapheur_etat', '-1');
@@ -2314,20 +2319,45 @@ class Deliberation extends AppModel {
         return $this->fusion($acte_id, null, null, $format);
     }
 
+    public function getAnnexesToSend($acte_id){
+        $annexes = array();
+        $to_send = $this->Annex->getAnnexesFromDelibId($acte_id, true);
+        $docs_type = Configure::read('DOC_TYPE');
+        foreach ($to_send as $annexe) {
+            if ($docs_type[$annexe['Annex']['filetype']]['convertir']){
+                if (!empty($annexe['Annex']['data_pdf']))
+                    $annexes[] = array(
+                        'content' => $annexe['Annex']['data_pdf'],
+                        'mimetype' => 'application/pdf',
+                        'filename' => AppTools::getNameFile($annexe['Annex']['filename']) . '.pdf'
+                    );
+            } else
+                $annexes[] = array(
+                    'content' => $annexe['Annex']['data'],
+                    'mimetype' => $annexe['Annex']['filetype'],
+                    'filename' => $annexe['Annex']['filename']
+                );
+        }
+        return $annexes;
+    }
+
     /**
      * Retour les annexes à joindre au controle de légalité
      */
     function getAnnexes($acte_id, $extention='pdf'){
         $annexes=array();
         $i=0;
-        foreach ($this->Annex->getAnnexesFromDelibId($acte_id, true) as $annexe) {
+        $found = $this->Annex->getAnnexesFromDelibId($acte_id, true);
+        foreach ($found as $annexe) {
             $annexes[$i]['id'] = $annexe['Annex']['id'];
             switch ($extention) {
                case 'pdf':
                default:
-                $annexes[$i]['content'] = $annexe['Annex']['data_pdf'];
-                $annexes[$i]['mimetype'] = 'application/pdf';
-                $annexes[$i]['filename'] = AppTools::getNameFile($annexe['Annex']['filename']).'.pdf';//Replace avec .pdf
+                   if (!empty($annexe['Annex']['data_pdf'])){
+                       $annexes[$i]['content'] = $annexe['Annex']['data_pdf'];
+                       $annexes[$i]['mimetype'] = 'application/pdf';
+                       $annexes[$i]['filename'] = AppTools::getNameFile($annexe['Annex']['filename']).'.pdf';//Replace avec .pdf
+                   }
                 break;
             }
             $i++;
@@ -2385,7 +2415,64 @@ class Deliberation extends AppModel {
         } else $success = false;
 
         //Historique
-        $success &= $this->setHistorique("Signature manuscrite", $acte_id, -1, $user_id);
+        $success &= $this->Historique->enregistre($acte_id, $user_id, "Signature manuscrite");
+
+        if ($success && $this->save($acte)){
+            $this->commit();
+            return true;
+        } else {
+            $this->rollback();
+            return false;
+        }
+    }
+
+
+    /**
+     * Fonction d'envoi au parapheur
+     * Génère le document delib_pdf
+     * Génère un numéro de delib si c'est un arrêté
+     * Enregistre dans l'historique de l'acte
+     * @param int $acte_id identifiant de l'acte
+     * @param int $circuit_id circuit identifiant du circuit parapheur
+     * @param int $user_id identifiant de l'utilisateur (pour historique)
+     * @return bool success
+     */
+    public function envoyerAuParapheur($acte_id, $circuit_id, $user_id){
+        $success = true;
+        $this->begin();
+        $acte = $this->find('first', array(
+            'conditions' => array('Deliberation.id' => $acte_id),
+            'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
+        ));
+
+        if (empty($acte['Deliberation']['num_delib'])) {
+            $acte['Deliberation']['etat'] = 3;
+            $acte['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
+        }
+
+        //Document delib_pdf
+        $content = $this->getDocument($acte_id);
+        if (!empty($content)) { // On stoque le fichier en base de données
+            $acte['Deliberation']['delib_pdf'] = $content;
+
+            App::uses('Signature','Lib');
+            try{
+                $this->Signature = new Signature;
+                $reponse = $this->Signature->send($acte, $circuit_id, $acte['Deliberation']['delib_pdf'], $this->getAnnexesToSend($acte_id));
+                $success &= !empty($reponse);
+                //Historique
+                $success &= $this->Historique->enregistre($acte_id, $user_id, "Envoi du projet au parapheur");
+                $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
+                $acte['Deliberation']['parapheur_id'] = $reponse;
+                if (Configure::read('PARAPHEUR') == 'PASTELL')
+                    $acte['Deliberation']['pastell_id'] = $reponse;
+                $acte['Deliberation']['parapheur_cible'] = Configure::read('PARAPHEUR');
+                $acte['Deliberation']['parapheur_etat'] = 1;
+            }catch (Exception $e){
+                $success = false;
+            }
+        } else $success = false;
+
         if ($success && $this->save($acte)){
             $this->commit();
             return true;

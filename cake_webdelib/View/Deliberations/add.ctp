@@ -178,9 +178,19 @@ echo $this->Form->create('Deliberation', array('url' => '/deliberations/add', 't
 </div>
 <?php echo $this->Form->end(); ?>
 <script type="text/javascript">
+    <?php echo "var allowedMulti = ". json_encode($typesactemulti). ";\n"; ?>
     //Pour savoir quel onglet on a coché
     function afficheOngletNew(obj, afficheTextId) {
         $(obj).append('<input type="hidden" name="lienTab" value="' + afficheTextId + '" />');
         $(obj).submit();
     }
+    $(document).ready(function () {
+        $('#listeTypeactesId').change(function () {
+            if (jQuery.inArray(parseInt($(this).val()), allowedMulti) === -1) {
+                $('#DeliberationIsMultidelib').prop('checked', false).parent().hide();
+            } else {
+                $('#DeliberationIsMultidelib').parent().show();
+            }
+        }).change();
+    });
 </script>

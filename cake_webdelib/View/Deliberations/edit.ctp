@@ -74,11 +74,12 @@ echo $this->Form->create('Deliberation', array('url' => array('action' => 'edit'
                     'label' => 'Classification',
                     'options' => $nomenclatures,
                     'default' => $this->Html->value('Deliberation.num_pref'),
-                    'disabled' => empty($nomenclatures),
+                    'readonly' => empty($nomenclatures),
                     'empty' => true,
                     'class' => 'select2 selectone',
                     'escape' => false
                 ));
+                echo "<div class='spacer'></div>";
             } else {
                 echo $this->Form->input('Deliberation.num_pref_libelle', array(
                     'div' => false,
