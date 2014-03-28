@@ -58,7 +58,8 @@ foreach ($annexes as $rownum => $annexe) {
             ));
     }
     // lien de téléchargement de la version pdf de l'annexe
-    echo $this->Html->tag('span', $this->Html->link($annexe['Annex']['filename'], array('controller' => 'annexes', 'action' => 'download', $annexe['Annex']['id']), array('title' => 'Télécharger le fichier')));
+//    echo $this->Html->tag('span', $this->Html->link($annexe['Annex']['filename'], array('controller' => 'annexes', 'action' => 'download', $annexe['Annex']['id']), array('title' => 'Télécharger le fichier')));
+    echo $this->Html->tag('span', $annexe['Annex']['filename'], array('class' => 'annexefilename'));
     echo $this->Html->tag('/td');
     echo $this->Html->tag('td');
     if ($mode == 'edit') {
