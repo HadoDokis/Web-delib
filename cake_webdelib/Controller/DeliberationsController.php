@@ -703,9 +703,9 @@ class DeliberationsController extends AppController
                         break;
                     }
             $this->request->data = $this->Deliberation->find('first', array(
-                'contain' => array('Annex.id', 'Annex.filetype', 'Annex.model',
+                'contain' => array(/*'Annex.id', 'Annex.filetype', 'Annex.model',
                     'Annex.foreign_key', 'Annex.filename',
-                    'Annex.titre', 'Annex.joindre_ctrl_legalite', 'Annex.joindre_fusion',
+                    'Annex.titre', 'Annex.joindre_ctrl_legalite', 'Annex.joindre_fusion',*/
                     'Infosup', 'Seance', 'Typeseance', 'Redacteur.id', 'Redacteur.nom', 'Redacteur.prenom'),
                 'conditions' => array('Deliberation.id' => $id)));
             if (!empty($this->request->data['Deliberation']['parent_id'])){
@@ -753,16 +753,15 @@ class DeliberationsController extends AppController
                         'Multidelib.deliberation', 'Multidelib.deliberation_name',
                         'Multidelib.objet_delib', 'Multidelib.deliberation_type',
                         'Multidelib.deliberation_name'),
-                    'contain' => array('Annex.id', 'Annex.model',
+                    'contain' => array(/*'Annex.id', 'Annex.model',
                         'Annex.filetype', 'Annex.foreign_key',
                         'Annex.filename',
                         'Annex.titre', 'Annex.joindre_ctrl_legalite',
-                        'Annex.joindre_fusion'),
+                        'Annex.joindre_fusion'*/),
                     'conditions' => array('Multidelib.parent_id' => $id),
                     'order' => array('Multidelib.id')));
                 foreach ($multiDelibs as $imd => $multiDelib) {
                     $this->request->data['Multidelib'][$imd] = $multiDelib['Multidelib'];
-                    $this->request->data['Multidelib'][$imd]['Annex'] = $multiDelib['Annex'];
                 }
             }
             $natures = array_keys($this->Session->read('user.Nature'));
@@ -813,6 +812,7 @@ class DeliberationsController extends AppController
                     $annexe['Annex']['link'] = Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] . $path_webroot . $annexe['Annex']['filename'];
                 }
             }
+            //$this->request->data['Annex']= Hash::sort($this->request->data['Annex'], '{n}.id', 'asc');
             $this->set('annexes', $annexes);
             unset($annexes);
 
@@ -825,18 +825,20 @@ class DeliberationsController extends AppController
                     // création des fichiers des annexes de type vnd.oasis.opendocument
                     $annexes_delibRattachee = $this->Annex->find('all', array(
                         'recursive' => -1,
-                        'fields' => array('id', 'foreign_key', 'filename', 'filetype', 'titre', 'joindre_ctrl_legalite', 'joindre_fusion'),
-                        'conditions' => array('foreign_key' => $delibRattachee['id'])));
+                        'fields' => array('id', 'foreign_key','data', 'filename', 'filetype', 'titre', 'joindre_ctrl_legalite', 'joindre_fusion'),
+                        'conditions' => array('foreign_key' => $delibRattachee['id']),
+                        'order'=>'id asc'));
                     foreach ($annexes_delibRattachee as &$annexe) {
                         if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text') {
                             $annexeData = $this->Annex->find('first', array(
-                                'fields' => array('data'),
+                                'fields' => 'data',
                                 'conditions' => array('id' => $annexe['Annex']['id']),
                                 'recursive' => -1));
                             $annexe['Annex']['edit'] = true;
-                            $this->Gedooo->createFile($path_projet_delibRattachee, $annexe['Annex']['filename'], $annexeData['Annex']['data']);
+                            $this->Gedooo->createFile($path_projet_delibRattachee, $annexe['Annex']['filename'], $annexe['Annex']['data']);
                             $annexe['Annex']['link'] = Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] . $path_webroot_delibRattachee . $annexe['Annex']['filename'];
                         }
+                        //$this->request->data['Multidelib'][$delibRattachee['id']]['Annex'] = $multiDelib['Annex'];
                     }
                     $delibRattachee['Annexes'] = $annexes_delibRattachee;
                 }
@@ -996,7 +998,7 @@ class DeliberationsController extends AppController
                         $this->Annex->begin();
                         $annex_filename = $this->Annex->find('first', array(
                             'recursive' => -1,
-                            'fields' => array('filename', 'filetype', 'id'),
+                            'fields' => array('filename', 'filetype', 'id','foreign_key'),
                             'conditions' => array('Annex.id' => $annexeId)));
                         if ($annex_filename['Annex']['filetype']=='application/vnd.oasis.opendocument.text') {
                             $this->Annex->save(array(
@@ -1004,7 +1006,7 @@ class DeliberationsController extends AppController
                                 'titre' => $annexe['titre'],
                                 'joindre_ctrl_legalite' => $annexe['joindre_ctrl_legalite'],
                                 'joindre_fusion' => $annexe['joindre_fusion'],
-                                'data' => file_get_contents(WEBROOT_PATH .DS. 'files'. DS .'generee'. DS .'projet' .DS. $id . DS . $annex_filename['Annex']['filename']),
+                                'data' => file_get_contents(WEBROOT_PATH .DS. 'files'. DS .'generee'. DS .'projet' .DS. $annex_filename['Annex']['foreign_key'] . DS . $annex_filename['Annex']['filename']),
                                 'edition_data' => NULL,
                                 'data_pdf' => NULL));
                         } else {
@@ -1180,7 +1182,8 @@ class DeliberationsController extends AppController
                             'recursive' => -1,
                             'fields' => array('id', 'filename', 'filetype', 'titre', 'joindre_ctrl_legalite', 'joindre_fusion'),
                             'conditions' => array(
-                                'foreign_key' => $delibRattachee['Multidelib']['id'])));
+                                'foreign_key' => $delibRattachee['Multidelib']['id']),
+                        'order'=>'id asc'));
                         foreach ($annexes_delibRattachee as &$annexe) {
                             if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text') {
                                 $annexeData = $this->Annex->find('first', array(
@@ -1189,7 +1192,8 @@ class DeliberationsController extends AppController
                                         'id' => $annexe['Annex']['id']),
                                     'recursive' => -1));
                                 $annexe['Annex']['edit'] = true;
-                                $this->Gedooo->createFile($path_projet_delibRattachee, $annexe['Annex']['filename'], $annexeData['Annex']['data']);
+                                //Pour ne pas perdre les modifications suite a une erreur je commente la ligne
+                                //$this->Gedooo->createFile($path_projet_delibRattachee, $annexe['Annex']['filename'], $annexeData['Annex']['data']);
                                 $annexe['Annex']['link'] = Configure::read('PROTOCOLE_DL') . "://" . $_SERVER['SERVER_NAME'] . $path_webroot_delibRattachee . $annexe['Annex']['filename'];
                             }
                         }
