@@ -4471,7 +4471,7 @@ class DeliberationsController extends AppController
         $this->response->disableCache();
         $this->response->body($delib['Deliberation']['tdt_data_pdf']);
         $this->response->type('application/pdf');
-        $this->response->download('Acte_'.$delib['Deliberation']['num_delib'].'_bordereau_tdt.pdf');
+        $this->response->download('Acte_'.$delib['Deliberation']['num_delib'].'_tampon_tdt.pdf');
         return $this->response;
     }
 
