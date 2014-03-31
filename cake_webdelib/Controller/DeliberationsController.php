@@ -2688,8 +2688,10 @@ class DeliberationsController extends AppController
                 $this->request->data[$i]['Actions'] = array_flip($this->data[$i]['Actions']);
             }
             if ($projet['Deliberation']['etat'] == 2 && $editerTous) {
-                $this->request->data[$i]['Actions'][] = 'edit';
                 $this->request->data[$i]['Actions'][] = 'attribuerCircuit';
+            }
+            if ($projet['Deliberation']['etat'] < 3 && $editerTous) {
+                $this->request->data[$i]['Actions'][] = 'edit';
             }
             // initialisation des dates, modèle et service
             $seances_id = array();
