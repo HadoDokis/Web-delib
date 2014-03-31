@@ -598,6 +598,7 @@ class UsersController extends AppController {
 
     /**
      * Changement de thême utilisateur
+     * Enregistrement du nouveau thême dans les préférences utilisateur (bdd+session)
      */
     public function changeTheme() {
         if (empty($this->request->data)) {
@@ -609,8 +610,8 @@ class UsersController extends AppController {
             $this->User->id = $this->user_id;
             if ($this->User->saveField('theme', $this->data['User']['theme'])) {
                 $this->Session->write('user.User.theme', $this->data['User']['theme']);
-                $this->Session->setFlash('Le thême a été modifié', 'growl');
-                $this->redirect($this->previous);
+                $this->Session->setFlash('Nouveau thême utilisateur : '.$this->data['User']['theme'], 'growl');
+                return $this->redirect($this->previous);
             } else
                 $this->Session->setFlash('Erreur lors du changement de thême.', 'growl');
         }
