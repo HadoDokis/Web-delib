@@ -184,16 +184,15 @@ class Tdt {
     }
 
     /**
-     * @param $options
+     * @param int $id_d
+     * @param bool $get_details récupérer le message et la date
      * @return array(
      * 'action' => 'rejet-iparapheur',
      * 'message' => 'Le document a été rejeté dans le parapheur : 23/01/2014 16:54:52 : [RejetSignataire] vu',
      * 'date' => '2014-01-23 16:55:07'
      * )
      */
-    public function getLastActionPastell($options) {
-        $id_d = $options[0];
-        $get_details = !empty($options[1]);
+    public function getLastActionPastell($id_d, $get_details = false) {
         $details = $this->Pastell->detailDocument($this->id_e, $id_d);
         if ($get_details)
             return $details['last_action'];
@@ -201,14 +200,21 @@ class Tdt {
         return $last_action;
     }
 
-    public function getDetailsPastell($options) {
-        $id_d = $options[0];
+    /**
+     * @param int $id_d
+     * @return array
+     */
+    public function getDetailsPastell($id_d) {
         return $this->Pastell->detailDocument($this->id_e, $id_d);
     }
 
-    public function getReponsesPastell($options, $all = false) {
+    /**
+     * @param int $id_d
+     * @param bool $all
+     * @return array|bool
+     */
+    public function getReponsesPastell($id_d, $all = false) {
         $tdt_messages = array();
-        $id_d = $options[0];
         $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-reponse-tdt']);
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
 
@@ -234,12 +240,11 @@ class Tdt {
     }
 
     /**
-     * @param array $options
+     * @param int $tdt_id
      * @return mixed
      */
-    public function getReponsesS2low($options) {
+    public function getReponsesS2low($tdt_id) {
         $tdt_messages = array();
-        $tdt_id= $options[0];
         $result = $this->S2low->getNewFlux($tdt_id);
         if (!empty($result)){
             $result_array = explode("\n", trim($result));
@@ -378,11 +383,11 @@ class Tdt {
 
     /**
      * Récupération du fichier bordereau
+     * @param int $tdt_id
+     * @return mixed
      */
-    public function getBordereauS2low($options) {
-        $tdt_id = $options[0];
-        $flux = $this->S2low->getAR($tdt_id);
-        return $flux;
+    public function getBordereauS2low($tdt_id) {
+        return $this->S2low->getAR($tdt_id);
     }
     
     /** TODO FIXME
