@@ -47,8 +47,5 @@ $(document).ready(function () {
             return false;
         }
     });
-
-    $("div.filtre select").select2({
-        width:"resolve"
-    });
+    $("div.filtre select").select2({ width: "300px" });
 });
