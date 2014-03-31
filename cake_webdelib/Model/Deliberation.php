@@ -2077,9 +2077,10 @@ class Deliberation extends AppModel {
      * les bibliothèques Gedooo doivent être inclues par avance
      * génère une exception en cas d'erreur
      * @param object $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object by ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param phpOdtApi $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
      * @param integer $id l'id à fusionner
      * @param integer $fusionSeanceId id de la séance de la fusion (optionnel, null par défaut)
+     * @throws Exception
      */
     function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $fusionSeanceId=null) {
         App::uses('DateComponent', 'Controller/Component');
