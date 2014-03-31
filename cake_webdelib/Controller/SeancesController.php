@@ -1538,6 +1538,9 @@ class SeancesController extends AppController {
         $i = 0;
         $delibs = $this->Seance->getDeliberationsId($seance_id, array('Deliberation.etat >' => 0));
         $num_delib = count($delibs);
+
+        $tmpDir = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'idelibre'));
+
         foreach ($delibs as $delib_id) {
             $projet = array();
             $this->Progress->at(10 + ($i + 1) * (50 / $num_delib), 'Génération du projet ' . ($i + 1) . '/' . $num_delib . '...');
@@ -1563,9 +1566,8 @@ class SeancesController extends AppController {
             $j = 0;
             $annexes = $this->Deliberation->Annex->getAnnexesWithoutFusion($delib_id);
             $annexesToSend = array();
-            $annexesFolder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'idelibre'));
             foreach ($annexes as $annex) {
-                $file = new File($annexesFolder->path.DS.$annex['Annex']['filename'], true);
+                $file = new File($tmpDir->path.DS.$annex['Annex']['filename'], true);
                 $file->write($annex['Annex']['data']);
                 $data['projet_' . $i . '_' . $j . '_annexe'] = "@".$file->path;
                 $annexesToSend[] = array(
@@ -1609,7 +1611,7 @@ class SeancesController extends AppController {
         // Fermeture de la connexion
         curl_close($ch);
         // Suppression du dossier d'annexes temporaire
-        $annexesFolder->delete();
+        $tmpDir->delete();
         try {
             if (empty($retour))
                 throw new Exception('Erreur de communication avec i-delibRE.');
