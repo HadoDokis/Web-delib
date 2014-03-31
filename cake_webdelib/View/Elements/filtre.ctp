@@ -81,12 +81,3 @@ echo $this->Html->div('filtre');
 	echo $this->Form->end();
 	echo '<div class="spacer"></div>';
 echo '</div>';
-echo $this->Html->scriptBlock('
-$(document).ready(function(){
-    $("#filtreCriteres .select2").select2({
-        width: "resolve",
-        allowClear: true,
-        minimumInputLength: 2
-    });
-});
-');

@@ -796,9 +796,10 @@ class DeliberationsController extends AppController
             // création des fichiers des annexes de type vnd.oasis.opendocument
             $annexes = $this->Annex->find('all', array(
                 'recursive' => -1,
-                'fields' => array('id','filename', 'filetype','titre','joindre_ctrl_legalite','joindre_fusion'),
-                'conditions' => array(
-                    'foreign_key' => $id)));
+                'fields' => array('id', 'filename', 'filetype', 'titre', 'joindre_ctrl_legalite', 'joindre_fusion'),
+                'conditions' => array('foreign_key' => $id),
+                'order' => array('id ASC')
+            ));
 
             foreach ($annexes as &$annexe) {
                 if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text') {
@@ -2949,15 +2950,14 @@ class DeliberationsController extends AppController
             $projets, 'Projets validés associés &agrave; une séance', $actions);
     }
 
-    function _ajouterFiltre(&$projets)
-    {
+    function _ajouterFiltre(&$projets) {
         if (!$this->Filtre->critereExists()) {
             $Deliberationseances = array();
             foreach ($projets as $projet) {
                 if (!empty($projet['Deliberationseance'])) {
                     foreach ($projet['Deliberationseance'] as $Deliberationseance)
-                        if(!array_key_exists($Deliberationseance['Seance']['id'], $Deliberationseances))
-                        $Deliberationseances[$Deliberationseance['Seance']['id']] =$Deliberationseance['Seance']['Typeseance']['libelle'].' : '.$Deliberationseance['Seance']['date'];
+                        if (!array_key_exists($Deliberationseance['Seance']['id'], $Deliberationseances))
+                            $Deliberationseances[$Deliberationseance['Seance']['id']] = $Deliberationseance['Seance']['Typeseance']['libelle'] . ' : ' . date('d/m/Y \à H:i:s', strtotime($Deliberationseance['Seance']['date']));
                 }
             }
             $this->Filtre->addCritere('DeliberationseanceId', array('field' => 'Deliberationseance.seance_id',
