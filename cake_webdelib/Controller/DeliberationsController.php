@@ -4475,34 +4475,34 @@ class DeliberationsController extends AppController
         return $this->response;
     }
 
+    /**
+     * @param int $delib_id
+     * @return CakeResponse|string
+     */
     function getBordereauTdt($delib_id) {
-
         $delib = $this->Deliberation->find('first', array(
             'conditions' => array('id' => $delib_id),
-            'fields' => array('num_delib','tdt_id','tdt_data_bordereau_pdf', 'pastell_id'),
+            'fields' => array('num_delib', 'tdt_id', 'tdt_data_bordereau_pdf', 'pastell_id', 'tdt_dateAR'),
             'recursive' => -1
         ));
-
-        if(empty($delib['Deliberation']['tdt_data_bordereau_pdf'])){
-            App::uses('Tdt', 'Lib');
-            $Tdt = new Tdt;
-            $tdt_id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
-            $bordereau = $Tdt->getBordereau($tdt_id);
-            if (!empty($bordereau)){
-                $delib['Deliberation']['tdt_data_bordereau_pdf'] = $bordereau;
-                $this->Deliberation->id = $delib_id;
-                $this->Deliberation->saveField('tdt_data_bordereau_pdf', $bordereau);
-            } else {
-                $this->Session->setFlash('Erreur : Impossible de récupérer le bordereau.', 'growl');
-                return $this->referer($this->previous);
-            }
+        App::uses('Tdt', 'Lib');
+        $Tdt = new Tdt;
+        $tdt_id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
+        $bordereau = $Tdt->getBordereau($tdt_id);
+        if (!empty($bordereau)) {
+            $this->Deliberation->id = $delib_id;
+            $this->Deliberation->saveField('tdt_data_bordereau_pdf', $bordereau);
+        } elseif (!empty($delib['Deliberation']['tdt_data_bordereau_pdf'])) {
+            $bordereau = $delib['Deliberation']['tdt_data_bordereau_pdf'];
+        } else {
+            $this->Session->setFlash('Erreur : Impossible de récupérer le bordereau.', 'growl');
+            return $this->referer($this->referer());
         }
-
         // envoi au client
         $this->response->disableCache();
-        $this->response->body($delib['Deliberation']['tdt_data_bordereau_pdf']);
+        $this->response->body($bordereau);
         $this->response->type('application/pdf');
-        $this->response->download('Acte_'.$delib['Deliberation']['num_delib'].'_bordereau_tdt.pdf');
+        $this->response->download('Acte_' . $delib['Deliberation']['num_delib'] . '_bordereau_tdt.pdf');
         return $this->response;
     }
 
