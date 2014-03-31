@@ -89,7 +89,6 @@ class PastellComponent extends Component {
         if ($file_transfert) {
             $folder = new Folder(AppTools::newTmpDir(TMP . 'files' . DS), true, 0777);
             $file = new File($folder->path . DS . 'WD_PASTELL_DOC', true, 0777);
-            $this->log($file->path, 'debug');
             $fp = fopen($file->path, 'w');
             curl_setopt($curl, CURLOPT_FILE, $fp);
             $response = curl_exec($curl);
