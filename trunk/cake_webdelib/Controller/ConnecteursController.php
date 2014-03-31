@@ -111,8 +111,6 @@ class ConnecteursController extends AppController {
                 $protocol = strtoupper($this->data['Connecteur']['signature_protocol']);
                 $content = $this->_replaceValue($content, 'PARAPHEUR', $protocol);
                 $content = $this->_replaceValue($content, 'USE_PARAPHEUR', $this->data['Connecteur']['use_signature']);
-                if ($protocol != Configure::read('PARAPHEUR'))
-                    $content = $this->_replaceValue($content, "USE_" . Configure::read('PARAPHEUR'), 'false');
                 $content = $this->_replaceValue($content, "USE_$protocol", $this->data['Connecteur']['use_signature']);
                 $content = $this->_replaceValue($content, $protocol . '_HOST', $this->data['Connecteur']['host']);
                 $content = $this->_replaceValue($content, $protocol . '_LOGIN', $this->data['Connecteur']['login']);
