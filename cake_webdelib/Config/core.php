@@ -310,6 +310,6 @@ if (file_exists(APP.DS.'Config'.DS.'pastell.inc'))
     include_once('pastell.inc');
 
 //appVersion
-define('VERSION', '4.2-beta7');
+define('VERSION', '4.2-beta8');
 //dbVersion
 include_once(ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Cakeflow' . DS . 'Config' . DS . 'cakeflow.conf.php');
