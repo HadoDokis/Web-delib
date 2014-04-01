@@ -57,6 +57,10 @@ class Infosupdef extends AppModel
             array(
                 'rule' => 'non_conforme_code',
                 'message' => 'Le code est non conforme, essayer celui ci : %s'
+            ),
+            array(
+                'rule' => 'conforme_balise_xml',
+                'message' => 'Le code n\'est pas conforme (%s)'
             )
         )
     );
@@ -104,6 +108,19 @@ class Infosupdef extends AppModel
     function non_conforme_code()
     {
         return $this->data['Infosupdef']['code'] == Inflector::variable($this->data['Infosupdef']['code']);
+    }
+    
+    function conforme_balise_xml($check)
+    {
+        $return=true;
+        $valeur = array_values($check);
+        $valeur = $valeur[0];
+        if(preg_match("/^xml{1,}/i", $valeur))
+                return 'Le code n\'est pas conforme, il ne peut pas commercer par le mot "xml"';
+        if(preg_match("/^[0-9]{1,}[a-zA-Z0-9]{0,}$/i", $valeur))
+                return 'Le code n\'est pas conforme, il ne peut pas commercer par un chiffre)';
+        
+        return $return;
     }
 
     /**

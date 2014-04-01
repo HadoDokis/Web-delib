@@ -211,12 +211,18 @@ class PostseancesController extends AppController {
     }
 
     function _createElement($domObj, $tag_name, $value = NULL, $attributes = NULL) {
-        $element = ($value != NULL ) ? $domObj->createElement($tag_name, $value) : $domObj->createElement($tag_name);
+        try
+        {
+            $element = ($value != NULL ) ? $domObj->createElement($tag_name, $value) : $domObj->createElement($tag_name);
 
-        if ($attributes != NULL) {
-            foreach ($attributes as $attr => $val) {
-                $element->setAttribute($attr, $val);
+            if ($attributes != NULL) {
+                foreach ($attributes as $attr => $val) {
+                    $element->setAttribute($attr, $val);
+                }
             }
+        }  catch (Exception $e){
+            new Exception($e->getMessage());
+            $this->log('Export CMIS: Erreur _createElement ('.$tag_name.') '. $e->getCode() . "! \n" . $e->getMessage(). ' line:'.$e->getLine(), 'error');
         }
         return $element;
     }
@@ -227,23 +233,29 @@ class PostseancesController extends AppController {
             $infosup = $this->_createElement($dom, 'infosup' . $model, null, array('type' => 'infosup'));
 
             foreach ($aInfosup as $code => $value) {
-                if ($value['type'] == 'string')
-                    $infosup->appendChild($this->_createElement($dom, $code, $value['content'], null));
+                switch ($value['type']) {
+                    case 'string':
+                        $infosup->appendChild($this->_createElement($dom, $code, $value['content'], null));
+                        break;
 
-                if ($value['type'] == 'file') {
-                    $filename = $value['id'] . '.pdf';
-                    $filedata = $this->Conversion->convertirFlux($value['content'], 'odt', 'pdf');
-                    $document = $this->_createElement($dom, 'document', null, array('nom' => $filename, 'relname' => $filename));
-                    $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
-                    $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
-                    ${$code} = $this->_createElement($dom, $code, null, null);
-                    ${$code}->appendChild($document);
-                    $infosup->appendChild(${$code});
+                    case 'file':
+                       $filename = $value['id'] . '.pdf';
+                        $filedata = $this->Conversion->convertirFlux($value['content'], 'odt', 'pdf');
+                        $document = $this->_createElement($dom, 'document', null, array('nom' => $filename, 'relname' => $filename));
+                        $document->appendChild($this->_createElement($dom, 'mimetype', 'application/pdf'));
+                        $document->appendChild($this->_createElement($dom, 'encoding', 'utf-8'));
+                        ${$code} = $this->_createElement($dom, $code, null, null);
+                        ${$code}->appendChild($document);
+                        $infosup->appendChild(${$code});
 
-                    if ($model == 'Seance')
-                        $zip->addFromString('infosup' . $model . DS . $filename, $filedata);
-                    else
-                        $zip->addFromString('infosup' . $model . DS . $filename, $filedata);
+                        if ($model == 'Seance')
+                            $zip->addFromString('infosup' . $model . DS . $filename, $filedata);
+                        else
+                            $zip->addFromString('infosup' . $model . DS . $filename, $filedata);
+                       break;
+                    
+                    default:
+                        break;
                 }
             }
             $domObj->appendChild($infosup);
@@ -640,6 +652,8 @@ class PostseancesController extends AppController {
 
     function _sendToGedVersion2(&$cmis, &$folderTmp, &$folderSend, $seance_id) {
 
+        try
+        {
             $this->Conversion = new ConversionComponent();
             // Création du répertoire de séance
             $result = $cmis->client->getFolderTree($cmis->folder->id, 1);
@@ -735,7 +749,6 @@ class PostseancesController extends AppController {
 
             $this->Progress->at(66, 'Ajout des délibérations...');
             foreach ($delibs_id as $delib_id) {
-
                 $doc = $this->_createElement($dom, 'dossierActe', null, array('idActe' => $delib_id, 'refSeance' => $seance_id));
 
                 $this->Deliberation->Behaviors->attach('Containable');
@@ -924,6 +937,13 @@ class PostseancesController extends AppController {
             $this->Seance->id = $seance_id;
             $this->Seance->saveField('numero_depot', $idDepot);
             $this->Session->setFlash('Le dossier \"' . $libelle_seance . '\" a été ajouté (Depot n°' . $idDepot . ')', 'growl', array('type' => 'important'));
+        
+        }
+        catch (Exception $e)
+        {
+            new Exception($e->getMessage());
+            $this->log('Export CMIS: Erreur ' . $e->getCode() . "! \n" . $e->getMessage(). ' line:'.$e->getLine(), 'error');
+        }
         
         return $my_seance_folder;
     }
