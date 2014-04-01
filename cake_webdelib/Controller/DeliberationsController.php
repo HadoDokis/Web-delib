@@ -4529,7 +4529,7 @@ class DeliberationsController extends AppController
             ));
 
             if (!empty($annexesInvalide))
-                throw new Exception('Toutes les annexes du projet :' . $id . ' ne sont pas encore converti pour générer le document.');
+                throw new Exception('Toutes les annexes du projet :' . $id . ' ne sont pas encore converties pour générer le document.');
 
             // fusion du document
             $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $id));
