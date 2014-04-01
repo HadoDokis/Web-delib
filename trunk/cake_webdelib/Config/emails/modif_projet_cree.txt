@@ -1,6 +1,9 @@
 Bonjour #PRENOM# #NOM#,
 
-Votre projet #IDENTIFIANT_PROJET# - "#OBJET_PROJET#" a été modifié.
+Un projet dont vous êtes le rédacteur vient d'être modifié.
+
+Id : #IDENTIFIANT_PROJET#
+Objet : #OBJET_PROJET#
 
 Vous pouvez le visualiser à l'adresse : #ADRESSE_A_VISUALISER#
 
