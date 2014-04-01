@@ -157,7 +157,7 @@ class AppTools {
     
     /**
      * Retourne le type mime d'un flux passé en parametre
-     * @param string $patchDir
+     * @param string $data
      * @return bool|string
      */
     public static function FileMime($data) {
@@ -177,6 +177,17 @@ class AppTools {
         }
         
         return $allowed;
+    }
+
+    /**
+     * @param int $bytes
+     * @param int $decimals
+     * @return string
+     */
+    public static function human_filesize($bytes, $decimals = 2) {
+        $sz = array('B','Ko','Mo','Go');
+        $factor = floor((strlen($bytes) - 1) / 3);
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
     }
 }
 

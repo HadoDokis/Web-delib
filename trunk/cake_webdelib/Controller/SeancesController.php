@@ -1498,9 +1498,8 @@ class SeancesController extends AppController {
     function sendToIdelibre($seance_id) {
         if (!(Configure::read('USE_IDELIBRE'))) {
             $this->Session->setFlash('Le connecteur Idélibre n&apos;est pas activé.<br>Veuillez contacter l&apos;administrateur pour plus d&apos;infos.', 'growl');
-            $this->redirect($this->referer());
+            return $this->redirect($this->referer());
         }
-
         $this->Progress->start(200, 100, 200, '#FFCC00', '#006699');
         $this->Progress->at(0, 'Initialisation');
 
@@ -1516,8 +1515,10 @@ class SeancesController extends AppController {
 
         $acteurs_convoques = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Typeseance']['id']);
 
+        $tmpDir = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'idelibre'));
+
         // fusion de la convocation
-        $filename = $this->Seance->fusionToFile($seance_id, 'convocation');
+        $filename = $this->Seance->fusionToFile($seance_id, 'convocation', null, $tmpDir->path);
 
         $this->Progress->at(5, "Génération de la convocation à la séance...");
 
@@ -1539,8 +1540,6 @@ class SeancesController extends AppController {
         $delibs = $this->Seance->getDeliberationsId($seance_id, array('Deliberation.etat >' => 0));
         $num_delib = count($delibs);
 
-        $tmpDir = new Folder(AppTools::newTmpDir(TMP . 'files' . DS . 'idelibre'));
-
         foreach ($delibs as $delib_id) {
             $projet = array();
             $this->Progress->at(10 + ($i + 1) * (50 / $num_delib), 'Génération du projet ' . ($i + 1) . '/' . $num_delib . '...');
@@ -1556,8 +1555,7 @@ class SeancesController extends AppController {
                 )));
 
             // fusion du rapport
-            $projet_filename = $this->Deliberation->fusionToFile($delib_id, 'rapport');
-
+            $projet_filename = $this->Deliberation->fusionToFile($delib_id, 'rapport', null, $tmpDir->path);
             $projet['libelle'] = $delib['Deliberation']['objet_delib'];
             $projet['ordre'] = $i;
             $projet['theme'] = implode(',', $this->Deliberation->Theme->getLibelleParent($delib['Deliberation']['theme_id']));
@@ -1610,8 +1608,15 @@ class SeancesController extends AppController {
         $retour = json_decode($retour, true);
         // Fermeture de la connexion
         curl_close($ch);
+        // Log
+        $this->log($data, 'idelibre');
+        $this->log('Taille totale : ' . AppTools::human_filesize($tmpDir->dirsize(), 4), 'idelibre');
+        if (!empty($retour)) $this->log($retour, 'idelibre');
+        else $this->log('Aucune réponse', 'idelibre');
+
         // Suppression du dossier d'annexes temporaire
         $tmpDir->delete();
+
         try {
             if (empty($retour))
                 throw new Exception('Erreur de communication avec i-delibRE.');
@@ -1632,12 +1637,9 @@ class SeancesController extends AppController {
                 } else
                     throw new Exception('Impossible de récupérer l\'identifiant i-delibRE de la séance.');
             else
-                throw new Exception('Réponse i-delibRE incorrecte)');
+                throw new Exception('Réponse i-delibRE incorrecte');
         } catch (Exception $e) {
-            $this->log($data, 'idelibre');
-            if (!empty($retour)) $this->log($retour, 'idelibre');
-            else $this->log('Aucune réponse', 'idelibre');
-            $this->Session->setFlash('<strong>Un évènement inattendu s\'est produit :</strong><br>' . $e->getMessage() . '<br>Veuillez contacter votre administrateur.', 'growl', array('error'));
+            $this->Session->setFlash($e->getMessage() . '<br>Veuillez contacter votre administrateur.', 'growl', array('type' => 'error'));
         }
 
 
