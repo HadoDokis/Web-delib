@@ -1689,6 +1689,7 @@ class SeancesController extends AppController {
             $this->response->download($filename);
             return $this->response;
         } catch (Exception $e) {
+            $this->log('Fusion :'.$e->getMessage().' File:'.$e->getFile().' Line:'.$e->getLine(), 'error');
             $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
             $this->redirect($this->referer());
         }
@@ -1758,6 +1759,7 @@ class SeancesController extends AppController {
             // mise à jour de la date de génération des convocations
             $this->Seance->save(array('id'=>$id, 'date_convocation'=>date("Y-m-d H:i:s", strtotime("now"))), false);
         } catch (Exception $e) {
+            $this->log('Fusion :'.$e->getMessage().' File:'.$e->getFile().' Line:'.$e->getLine(), 'error');
             $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
         }
         $this->redirect($this->referer());
@@ -1808,6 +1810,7 @@ class SeancesController extends AppController {
             $this->response->download($filename);
             return $this->response;
         } catch (Exception $e) {
+            $this->log('Fusion :'.$e->getMessage().' File:'.$e->getFile().' Line:'.$e->getLine(), 'error');
             $this->Session->setFlash('erreur lors de la génération du document : ' . $e->getMessage(), 'growl', array('type' => 'erreur'));
             $this->redirect($this->referer());
         }

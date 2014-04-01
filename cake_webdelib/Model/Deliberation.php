@@ -2200,7 +2200,7 @@ class Deliberation extends AppModel {
         if ($modelOdtInfos->hasUserField('texte_projet')) {
             if (!empty($delib['Deliberation']['texte_projet'])) {
                 $oMainPart->addElement(new GDO_ContentType('texte_projet',
-                    'text_projet.odt' ,
+                    'texte_projet.odt' ,
                     'application/vnd.oasis.opendocument.text',
                     'binary',
                     $delib['Deliberation']['texte_projet']));
@@ -2209,7 +2209,7 @@ class Deliberation extends AppModel {
         if ($modelOdtInfos->hasUserField('texte_deliberation')) {
             if (!empty($delib['Deliberation']['deliberation'])) {
                 $oMainPart->addElement(new GDO_ContentType('texte_deliberation',
-                    'td.odt',
+                    'texte_deliberation.odt',
                     'application/vnd.oasis.opendocument.text' ,
                     'binary',
                     $delib['Deliberation']['deliberation']));
@@ -2218,7 +2218,7 @@ class Deliberation extends AppModel {
         if ($modelOdtInfos->hasUserField('texte_acte')) {
             if (!empty($delib['Deliberation']['deliberation'])) {
                 $oMainPart->addElement(new GDO_ContentType('texte_acte',
-                    'td.odt',
+                    'texte_acte.odt',
                     'application/vnd.oasis.opendocument.text' ,
                     'binary',
                     $delib['Deliberation']['deliberation']));
@@ -2227,7 +2227,7 @@ class Deliberation extends AppModel {
         if ($modelOdtInfos->hasUserField('note_synthese')) {
             if (!empty($delib['Deliberation']['texte_synthese'])) {
                 $oMainPart->addElement(new GDO_ContentType('note_synthese',
-                    'ns.odt',
+                    'note_synthese.odt',
                     'application/vnd.oasis.opendocument.text' ,
                     'binary',
                     $delib['Deliberation']['texte_synthese']));
