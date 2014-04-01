@@ -645,6 +645,10 @@ class DeliberationsController extends AppController
     }
 
     function edit($id = null) {
+        if (!$this->Deliberation->hasAny(array('id' => $id))){
+            $this->Session->setFlash("Le projet n&deg;$id est introuvable !", 'growl');
+            return $this->redirect($this->previous);
+        }
         $annexesErrors = array();
         $user = $this->Session->read('user');
         $canEditAll = $this->Droits->check($user['User']['id'], "Deliberations:editerTous");
