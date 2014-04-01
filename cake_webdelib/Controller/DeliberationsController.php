@@ -9,7 +9,7 @@ class DeliberationsController extends AppController
      * Deliberation.etat = -1 : refusé
      * Deliberation.etat = 0 : en cours de rédaction
      * Deliberation.etat = 1 : dans un circuit
-     * Deliberation.etat = 2 : validé
+     * Deliberation.etat = 2 : validégenereFusionToClient
      * Deliberation.etat = 3 : Voté pour
      * Deliberation.etat = 4 : Voté contre
      * Deliberation.etat = 5 : envoyé
@@ -4522,6 +4522,15 @@ class DeliberationsController extends AppController
             if (!$this->Deliberation->hasAny(array('id' => $id)))
                 throw new Exception('Projet/délibération id:' . $id . ' non trouvé(e) en base de données');
             
+            $annexesInvalide = $this->Deliberation->Annex->find('count', array(
+               'fields' => 'Annex.id',
+               'conditions' => array('foreign_key' => $id,'joindre_fusion' => true,'edition_data IS NULL'),
+                'recursive' => -1
+            ));
+
+            if (!empty($annexesInvalide))
+                throw new Exception('Toutes les annexes du projet :' . $id . ' ne sont pas encore converti pour générer le document.');
+
             // fusion du document
             $this->Deliberation->Behaviors->load('OdtFusion', array('id' => $id));
             $filename = $this->Deliberation->fusionName();
