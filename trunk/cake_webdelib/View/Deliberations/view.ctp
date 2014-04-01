@@ -235,7 +235,7 @@ echo $linkBarre;
             echo '<dd>' . $this->Html2->ukToFrenchDateWithHour($commentaire['Commentaire']['created']) . ' [' . $commentaire['Commentaire']['prenomAgent'] . ' ' . $commentaire['Commentaire']['nomAgent'] . ']&nbsp;';
             echo $commentaire['Commentaire']['texte'];
             if ($commentaire['Commentaire']['agent_id'] == $user_id)
-                echo "&nbsp;".$this->Html->link('<i class="fa fa-trash-o"></i>', array('controller' => 'commentaires', 'action'=>'delete', $commentaire['Commentaire']['id']), array('escape' => false, 'title' => 'Effacer le commentaire', 'class'=>''), "Confirmer la suppresssion de ce commentaire ?\n\nAttention, cette opération est irréversible.");
+                echo "&nbsp;".$this->Html->link('<i class="fa fa-times"></i>', array('controller' => 'commentaires', 'action'=>'delete', $commentaire['Commentaire']['id']), array('escape' => false, 'title' => 'Effacer le commentaire', 'class'=> 'text-error'), "Confirmer la suppresssion de ce commentaire ?\n\nAttention, cette opération est irréversible.");
             echo '</dd>';
         }
         echo('</div>');
