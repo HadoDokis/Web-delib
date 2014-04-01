@@ -1,10 +1,11 @@
 Bonjour #PRENOM# #NOM#,
 
-Votre projet "#OBJET_PROJET#" a été refusé.
+Un projet dont vous êtes le rédacteur a été refusé.
+
+Objet : #OBJET_PROJET#
+Nouvel identifiant : #IDENTIFIANT_PROJET#
 
 Le projet peut à nouveau être édité à cette adresse : #ADRESSE_A_MODIFIER#
-
-Nouvel identifiant projet : #IDENTIFIANT_PROJET#
 
 Très cordialement.
 
