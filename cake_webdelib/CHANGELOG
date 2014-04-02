@@ -15,20 +15,27 @@
 - Migration de Font-Awesome v3.0.2 vers v4.0.3 (plus d'icones, nouvelles conventions de nommage des classes)
 - Migration de jQuery v1.7.1 vers v1.10.2
 - Ajout de deux nouvelles notifications utilisateur : "Un projet dont je suis le rédacteur a été modifié" et "Un projet que j'ai visé a été modifié"
-- TODO Marquer oubliées...
 - Fonction "retourner à" de cakeflow corrigée
 - Champs texte à partir de gabarits
 - Typage des modèles d'édition (catégorie)
-- Validation des modèles d'édition
+- Ajout d'un système de validation des documents "modèles d'édition"
 - Affectation d'un président par affaire de séance (par défaut: président de séance)
 - Gestion différenciée des actes pour la télétransmission au contrôle de légalité. Un attribut est placé au niveau du type d'acte.
 - Dans la page de traitement d'une séance, ajout d'un lien cliquable sur le N° d'ID du projet. Ce lien redirige vers le formulaire de modification du projet.
 - Ajout de filtres de recherche dans la page Utilisateurs, filtres sur le profil, nom, prénom et login avec un champ autocompleté et 3 champs texte avec wildcard '%' pour recherche large
 - Ajout d'un lien pour remonter en haut de la page. Le lien est représenté par une flèche vers le haut en bas à droite de chaque page et n'apparait que si besoin.
 - Refonte de l'affichage "en arbre" des services, thèmes et profils. Il est désormais possible de plier/déplier les noeuds et de filtrer les données.
-- Refonte Pastell/I-delibRE
-- Refonte graphique Multi-delibs
+- Réecriture du connecteur Pastell
+- Refonte configuration des connecteurs i-Parapheur et S2low qui deviennent Signature et TDT avec la possibilité de selectionner Pastell
+- Réecriture du connecteur I-delibRE
+- Création d'une page de configuration du connecteur I-delibRE
+- Refonte de la page d'édition de Multi-delibs
 - Refonte édition annexes de projet
+- Amélioration de la gestion des erreurs de fichier à l'ajout d'annexe
+- Possibilité pour l'utilisateur de choisir le thème de son interface
+- Amélioration graphique des tableaux, changement de certains boutons/icones
+- Ajout de différentes tâches automatiques (pour Circuits, Génération, Signature et TDT)
+- Tri des résultats de recherche par identifiant décroissant
 
 4.1.04
 ======
