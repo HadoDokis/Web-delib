@@ -1738,6 +1738,7 @@ class SeancesController extends AppController {
                 'email_acteur', 'telmobile_acteur', 'telfixe_acteur',
                 'date_naissance_acteur', 'adresse1_acteur', 'adresse2_acteur', 'cp_acteur', 'ville_acteur', 'note_acteur');
             // traitement différent en fonction de la présence de variables acteur dans le template
+            //FIX les convocations sont automatiquement regénérées au lieu d'être gardées lorsqu'elle sont envoyées
             if ($acteurPresentTemplate) {
                 foreach($convoques as $acteur) {
                     $filename = $acteur['Acteur']['id'].'.'.$formatConversion;
