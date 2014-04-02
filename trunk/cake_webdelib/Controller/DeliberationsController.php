@@ -3563,6 +3563,7 @@ class DeliberationsController extends AppController
                     'Deliberation.etat',
                     'Deliberation.circuit_id',
                     'Deliberation.parapheur_etat',
+                    'Deliberation.parapheur_bordereau',
                     'Deliberation.num_pref',
                     'Deliberation.signee',
                     'Deliberation.signature',
