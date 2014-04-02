@@ -244,6 +244,8 @@ class Deliberation extends AppModel {
                     return $canEdit;
                 case 4 :
                     return $canEdit;
+                default :
+                    return false;
             }
 
         return false;
