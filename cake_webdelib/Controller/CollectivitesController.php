@@ -26,10 +26,14 @@ class CollectivitesController extends AppController {
         $collectivite = $this->Collectivite->find('first', array('conditions' => array('Collectivite.id' => 1),
             'recursive' => -1));
         $this->set('collectivite', $collectivite);
-        $this->set('logo_path', FULL_BASE_URL . $this->base . "/files/image/logo.jpg");
+        $logo_path = null;
+        if (file_exists(APP . WEBROOT_DIR . DS . 'files' . DS . 'image' . DS . 'logo'))
+            $logo_path = FULL_BASE_URL . $this->base . "/files/image/logo";
+
+        $this->set('logo_path', $logo_path);
     }
 
-    function edit($id = null) {
+    function edit() {
         if (!empty($this->data)) {
             $this->Collectivite->id = 1;
             if (Configure::read('USE_PASTELL')) {
@@ -42,37 +46,31 @@ class CollectivitesController extends AppController {
             }
             $this->Session->setFlash('Erreur durant la sauvegarde', 'growl');
         }
-        $this->request->data = $this->Collectivite->read(null, $id);
+        $this->request->data = $this->Collectivite->read(null, 1);
         if (Configure::read('USE_PASTELL')) {
             $this->set('entities', $this->Pastell->listEntities());
             $this->set('selected', $this->data['Collectivite']['id_entity']);
         }
     }
 
-    function setLogo($id = null) {
-        if (is_uploaded_file($this->data['Image']['logo']['tmp_name'])) {
-            $type_file = $this->data['Image']['logo']['type'];
-            if (!strstr($type_file, 'jpg') && !strstr($type_file, 'jpeg')) {
-                $this->Session->setFlash("Le fichier n'est pas une image au format jpg/jpeg");
-            } else {
-                $name_file = 'logo.jpg';
-                $content_dir = WWW_ROOT . 'files' . DS . 'image' . DS;
-                $tmp_file = $this->data['Image']['logo']['tmp_name'];
+    function setLogo() {
+        if (!empty($this->data)) {
+            $name_file = 'logo';
+            $content_dir = WWW_ROOT . 'files' . DS . 'image' . DS;
+            $tmp_file = $this->data['Image']['logo']['tmp_name'];
+            $image = file_get_contents($this->data['Image']['logo']['tmp_name']);
+            if (!move_uploaded_file($tmp_file, $content_dir . $name_file))
+                $this->Session->setFlash("Impossible de copier le fichier dans $content_dir", 'growl');
 
-                if (!move_uploaded_file($tmp_file, $content_dir . $name_file))
-                    $this->Session->setFlash("Impossible de copier le fichier dans $content_dir (limite de taille du fichier: 1Mo)");
+            App::uses('File', 'Utility');
+            $file = new File($content_dir . $name_file, true);
+            $file->write($image);
+            $file->close();
 
-                App::uses('File', 'Utility');
-                $file = new File($content_dir . $name_file, false);
-                $this->Collectivite->id = 1;
-                if (!$this->Collectivite->saveField('logo', $file->read(true), false))
-                    $this->Session->setFlash('Erreur durant la sauvegarde en base de données du logo', 'growl');
-                $file->close();
+            $this->Collectivite->id = 1;
+            $this->Collectivite->saveField('logo', $image, false);
 
-                return $this->redirect(array('action'=>'index'));
-            }
-        } else {
-            $this->Session->setFlash('Erreur durant la sauvegarde du logo', 'growl');
+            return $this->redirect($this->previous);
         }
     }
 
