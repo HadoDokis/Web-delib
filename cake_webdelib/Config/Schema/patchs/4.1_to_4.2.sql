@@ -55,6 +55,7 @@ UPDATE crons
 SET action = 'delegationJob', plugin = NULL
 WHERE id = 1;
 
+ALTER TABLE "public"."crons" ADD PRIMARY KEY (id);
 -- Tâche planifiée de déclenchement des alertes de retard (workflow)
 INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
 VALUES ('2', 'Circuits de traitement : Déclenchement des alertes de retard',
