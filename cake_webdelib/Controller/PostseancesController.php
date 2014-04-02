@@ -201,7 +201,7 @@ class PostseancesController extends AppController {
         
         } catch (Exception $e) {
             $this->log('Export CMIS: Erreur ' . $e->getCode() . "! \n" . $e->getMessage(), 'error');
-            $this->Session->setFlash('Export CMIS: Erreur ' . $e->getCode() . "! \n" . $e->getMessage(), 'growl', array('type' => 'erreur'));
+            $this->Session->setFlash('CMIS: Erreur ' . $e->getCode() . '! ' .  strip_tags($e->getMessage()), 'growl', array('type' => 'erreur'));
         }
         
        //$this->set('seances', $result);
