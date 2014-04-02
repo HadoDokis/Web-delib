@@ -1,48 +1,67 @@
 <?php
-/**
-* Code source de la classe ActionFixture.
-*
-* PHP 5.3
-*
-* @package app.Test.Fixture
-* @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
-*/
 
 /**
-* Classe ActionFixture.
-*
-* @package app.Test.Fixture
-*/
+ * Code source de la classe TypeseanceFixture.
+ *
+ * @package app.Test.Fixture
+ * @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
+ */
 
-class TypeseanceFixture extends CakeTestFixture 
-{
-    public $import = array('model' => 'Typeseance', 'records' => false);
-    
+/**
+ * La classe TypeseanceFixture ...
+ *
+ * @package app.Test.Fixture
+ */
+class TypeseanceFixture extends CakeTestFixture {
+
     /**
-    * Définition des enregistrements.
-    *
-    * @var array
-    */
-    public function init() {
-        $this->records = array(
-		array(
-			'id' => 1,
-			'libelle' => 'Conseil municipal',
-                        'retard' => 30,
-                        'action' => 2,
-                        'compteur_id' => 1,
-                        'modelprojet_id' => 2,
-                        'modeldeliberation_id' => 3,
-                        'modelconvocation_id' => 4,
-                        'modelordredujour_id' => 5,
-                        'modelpvsommaire_id' => 6,
-                        'modelpvdetaille_id' => 7,
-                        'created' => date('Y-m-d H:i:s'),
-                        'modified' => date('Y-m-d H:i:s'),
-		)
-	);
-        parent::init();
-    }
+     * On importe la définition de la table, pas les enregistrements.
+     *
+     * @var array
+     */
+    public $import = array(
+        'model' => 'Typeseance',
+        'records' => false
+    );
+
+    /**
+     * Définition des enregistrements.
+     *
+     * @var array
+     */
+    public $records = array(
+        array(
+            'id' => 1,
+            'libelle' => '1ère Commission',
+            'retard' => 1,
+            'action' => 1,
+            'compteur_id' => 1,
+            'modelprojet_id' => 1,
+            'modeldeliberation_id' => 1,
+            'modelconvocation_id' => 1,
+            'modelordredujour_id' => 1,
+            'modelpvsommaire_id' => 1,
+            'modelpvdetaille_id' => 1,
+            'created' => '2013-02-15 15:26:09',
+            'modified' => '2013-04-22 12:09:10',
+        ),
+        array(
+            'id' => 2,
+            'libelle' => '2ème Commission',
+            'retard' => 2,
+            'action' => 1,
+            'compteur_id' => 2,
+            'modelprojet_id' => 2,
+            'modeldeliberation_id' => 276,
+            'modelconvocation_id' => 2,
+            'modelordredujour_id' => 2,
+            'modelpvsommaire_id' => 2,
+            'modelpvdetaille_id' => 2,
+            'created' => '2013-02-15 15:26:09',
+            'modified' => '2013-04-22 12:09:10',
+        ),
+    );
+
 }
 
 ?>

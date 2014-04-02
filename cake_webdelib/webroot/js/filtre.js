@@ -7,6 +7,7 @@ $(document).ready(function() {
 		$('#filtreCriteres').hide();
 });
 
+
 /**
  * Masque/affiche les critères du filtre
  */
@@ -29,7 +30,7 @@ function basculeCriteres() {
 /**
  * Modifie l'image de l'icone du filtre si un critère du filtre change
  */
-function critereChange(element) {
+function critereChange() {
 	$cheminIcone = $('#filtreButton').attr('src');
 	$icone = $cheminIcone.substring($cheminIcone.lastIndexOf('/')+1);
 	if ($icone == 'filtre.png') {
@@ -38,26 +39,16 @@ function critereChange(element) {
 		$('#filtreButton').attr('title', 'Cliquer ici pour appliquer les critères du filtre');
 		$('#filtreButton').attr('src', $racine+$icone);
 		$('#filtreButton').attr('onClick', "$('#filtreForm').submit();");
-        $('#filtreButton').attr('class', "applyFilter");
+		$('#filtreButton').attr('onMouseOver', "this.style.cursor='pointer'");
 	}
-    // Clonage du bouton appliquer filtre et insertion à droite du champ modifié
-    var selector = ".input";
-    if ($(element).closest('div').hasClass("date")){
-        selector = ".date";
-    }
-    if ($(element).closest(selector).find(".applyFilter").length === 0){
-        var btn = $('#filtreButton').clone();
-        btn.removeAttr('id').addClass('minifiltre');
-        $(element).closest(selector).append(btn);
-    }
 }
 
 /**
  * Annulation du filtre
  */
 function razFiltre() {
-    // initialise la valeur des critères à 0
-    $('#filtreCriteres select').val('');
-    $('#filtreCriteres input').val('');
-    $('#filtreForm').submit();
+	// initialise la valeur des critères à 0
+	$('#filtreCriteres select').val('');
+
+	$('#filtreForm').submit();
 }

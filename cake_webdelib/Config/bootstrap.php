@@ -142,8 +142,8 @@ Cache::config('default', array('engine' => 'File'));
  * CakePlugin::load('DebugKit'); //Loads a single plugin named DebugKit
  *
  */
-    CakePlugin::load('Cakeflow');
-    CakePlugin::load('ModelOdtValidator', array('bootstrap' => true));
+  CakePlugin::loadAll(); //Loads a single plugin named DebugKit
+
 
 /**
  * You can attach event listeners to the request lifecyle as Dispatcher Filter . By Default CakePHP bundles two filters:
@@ -172,7 +172,7 @@ Configure::write('Dispatcher.filters', array(
 App::uses('CakeLog', 'Log');
 CakeLog::config('debug', array(
 	'engine' => 'FileLog',
-	'types' => array('notice', 'info'),
+	'types' => array('notice', 'info', 'debug'),
 	'file' => 'debug',
 ));
 CakeLog::config('error', array(
@@ -180,3 +180,5 @@ CakeLog::config('error', array(
 	'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
 	'file' => 'error',
 ));
+
+require_once(ROOT.DS.APP_DIR.DS.'Lib'.DS.'basics.php');

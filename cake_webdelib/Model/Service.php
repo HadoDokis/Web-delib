@@ -1,10 +1,11 @@
 <?php
-class Service extends AppModel
-{
-    public $name = 'Service';
-    public $displayField = "libelle";
-    public $actsAs = array('Tree');
-    public $validate = array(
+
+class Service extends AppModel {
+
+    var $name = 'Service';
+    var $displayField = "libelle";
+    var $actsAs = array('Tree');
+    var $validate = array(
         'libelle' => array(
             array(
                 'rule' => 'notEmpty',
@@ -12,7 +13,7 @@ class Service extends AppModel
             )
         )
     );
-    public $hasAndBelongsToMany = array(
+    var $hasAndBelongsToMany = array(
         'User' => array(
             'classname' => 'User',
             'joinTable' => 'users_services',
@@ -38,20 +39,34 @@ class Service extends AppModel
     );
 
     /* retourne le libelle du service $id et de ses parents sous la forme parent1/parent12/service_id */
-    function doList($id)
-    {
+
+    function doList($id) {
         return $this->_doList($id);
     }
 
-    /* fonction récursive de doList */
-    function _doList($id)
-    {
+    /**
+     * Retourne le libellé du service ou la hiérarchie des libellés de
+     * services du service, suivant la valeur du paramètre de configuration
+     * AFFICHE_HIERARCHIE_SERVICE.
+     *
+     * Exemple de retour:
+     *  Si AFFICHE_HIERARCHIE_SERVICE
+     *      Libellé service racine/Libellé service parent/Libellé service
+     *  Sinon
+     *      Libellé service
+     *
+     * @see Configure
+     * 	- boolean AFFICHE_HIERARCHIE_SERVICE
+     * 		@see app/Config/webdelib.inc
+     *
+     * @param integer $id La clé primaire du service
+     * @return string
+     */
+    protected function _doList($id) {
         $service = $this->find('first', array(
             'conditions' => array('Service.id' => $id),
             'fields' => array('libelle', 'parent_id'),
             'recursive' => -1));
-        if (empty($service))
-            return "Impossible de récupérer le service";
         if (!Configure::read('AFFICHE_HIERARCHIE_SERVICE'))
             return $service['Service']['libelle'];
 
@@ -61,14 +76,21 @@ class Service extends AppModel
             return $this->_doList($service['Service']['parent_id']) . '/' . $service['Service']['libelle'];
     }
 
-    function makeBalise(&$oMainPart, $service_id)
-    {
-        $service = $this->find('first', array(
-            'conditions' => array('Service.id' => $service_id),
+    /**
+     * Ajout de variables du service émetteur à l'objet GDO_PartType.
+     *
+     * Variables gedooo:
+     *  - service_emetteur/Service.libelle/text
+     *  - service_avec_hierarchie/Service::_doList()/text
+     *
+     * @param &GDO_PartType $oMainPart l'objet GDO_PartType à remplir
+     * @param integer $service_id La clé primaire du service
+     */
+    public function makeBalise(&$oMainPart, $service_id) {
+        $service = $this->find('first', array('conditions' => array('Service.id' => $service_id),
             'fields' => array('libelle'),
             'recursive' => -1));
-        
-        if(empty($service))return;
+
         $oMainPart->addElement(new GDO_FieldType('service_emetteur', $service['Service']['libelle'], 'text'));
         $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->_doList($service_id), 'text'));
     }
@@ -78,8 +100,8 @@ class Service extends AppModel
      * @param int $id
      * @return array Liste Id de tous les services disponibles
      */
-    function doListId($id)
-    {
+    function doListId($id) {
+
         return $this->_doListId($id);
     }
 
@@ -88,8 +110,7 @@ class Service extends AppModel
      * @param int $id
      * @return array Liste Id de tous les services disponibles
      */
-    function _doListId($id)
-    {
+    function _doListId($id) {
         $aArray = array();
         $service = $this->find('all', array(
             'conditions' => array('Service.parent_id' => $id),
@@ -98,6 +119,7 @@ class Service extends AppModel
 
         if (!empty($service)) {
             $aArray[] = $id;
+
             foreach ($service as $champs) {
                 $aServices = $this->_doListId($champs['Service']['id']);
                 if (!empty($aServices))
@@ -105,24 +127,13 @@ class Service extends AppModel
                         $aArray[] = $aService;
                     }
             }
-        } else
+        }
+        else
             $aArray[] = $id;
+
         return $aArray;
     }
 
-    /**
-     * fonction d'initialisation des variables de fusion pour le service émetteur d'un projet
-     * les bibliothèques Gedooo doivent être inclues par avance
-     * génère une exception en cas d'erreur
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $id id du modèle lié
-     */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id) {
-        if ($modelOdtInfos->hasUserFieldDeclared('service_emetteur'))
-            $oMainPart->addElement(new GDO_FieldType('service_emetteur', $this->field('libelle', array('id'=>$id)), 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('service_avec_hierarchie'))
-            $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->_doList($id), 'text'));
-    }
 }
+
 ?>

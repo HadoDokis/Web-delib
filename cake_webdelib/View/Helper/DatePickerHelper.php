@@ -4,7 +4,7 @@ App::import('Helper', 'Form');
 
 class DatePickerHelper extends FormHelper {
 
-var $helpers = array('Html');
+var $helpers = array('Html','Javascript');
 var $format = '%Y-%m-%d';
 
 function _setup(){
@@ -31,7 +31,7 @@ function picker($fieldName, $options = array()) {
 		$options['after'] .= $this->Html->image('icons/b_drop.png', array('id'=> $htmlAttributes['id']."_drop",'style'=>'cursor:pointer'));
 	}
 	$output = $this->input($fieldName, $options);
-	$output .= $this->Html->codeBlock("datepick('" . $htmlAttributes['id'] . "','01/01/" . $options['minYear'] . "','31/12/" . $options['maxYear'] . "');");
+	$output .= $this->Javascript->codeBlock("datepick('" . $htmlAttributes['id'] . "','01/01/" . $options['minYear'] . "','31/12/" . $options['maxYear'] . "');");
 	return $output;
 }
 

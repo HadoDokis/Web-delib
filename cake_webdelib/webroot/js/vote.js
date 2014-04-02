@@ -1,7 +1,7 @@
 window.onload=initAffichage;
 
 function initAffichage() {
-	// Saisie des prÃ©sents masquÃ©e
+	// Saisie des présents masquée
 	$('#VoteListePresents').val(1);
 	affichageListePresents($('#VoteListePresents'));
 
@@ -10,7 +10,7 @@ function initAffichage() {
 	selectElement.value=1;
 	affichageTypeVote(selectElement);
 
-	// Intialisation du dÃ©compte des voix
+	// Intialisation du décompte des voix
 	majTotauxVotes();
 }
 
@@ -49,7 +49,7 @@ function vote_global(obj, scope){
 }
 
 /**
- * mise Ã  jour des totaux des votes
+ * mise à jour des totaux des votes
  */
 function majTotauxVotes() {
 	$('#VoteRes3').val($('#tableDetailVote input[type=radio][name^=data][value=3]:checked').length);

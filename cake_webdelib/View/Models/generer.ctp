@@ -1,32 +1,16 @@
-<h2>Liste des fichiers générés</h2>
+<h2> Liste des fichiers générés </h2>
 <script>
-    $("#pourcentage").hide();
-    $("#progrbar").hide();
-    $("#affiche").hide();
-    $("#contTemp").hide();
+    document.getElementById("pourcentage").style.display='none';
+    document.getElementById("progrbar").style.display='none';
+    document.getElementById("affiche").style.display='none';
+    document.getElementById("contTemp").style.display='none';
 </script>
 <?php
-if (!empty($listFiles)){
     foreach ($listFiles as $path=> $name) {
-        if ($name != 'Documents.zip') {
-            $filename = end(explode('/', $path.'.'.$format));
-            echo $name.' : <strong>'.$filename.'</strong> ';
-            if ($format == 'pdf')
-                echo $this->Html->link('[Visualiser]', $path.".$format", array('target'=>'_blank', 'style' => 'font-weight: bold', 'title' => 'Visualiser le document dans votre navigateur'));
-
-            echo '&nbsp;';
-            echo $this->Html->link('[Télécharger]', $path.".$format", array('download'=>$filename, 'style' => 'font-weight: bold', 'title' => 'Télécharger le fichier sur votre disque'));
-        } else echo $this->Html->link($name, $path);
+        if ($name != 'Documents.zip') 
+	    echo $this->Html->link($name, $path.".$format")."<br>";
+        else
+	    echo $this->Html->link($name, $path)."<br>";
     }
-    echo $this->Html->tag('br');
-    echo $this->Html->tag('br');
-    echo $this->Html->tag('p', 'Attention: Le fichier généré deviendra inaccessible au prochain changement de page. Pensez à le sauvegarder.');
-} else
-    echo '<strong>L\'accès au fichier généré a expiré ou une erreur s\'est produite, veuillez recommencer la générération.</strong>';
-
-echo '<br><br>';
-if (empty($urlRetour) || strpos($urlRetour, "multiodj"))
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', '/', array('class'=>'btn', 'escape' => false));
-else
-    echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', $urlRetour, array('class'=>'btn', 'escape' => false));
+    echo ("<br /><br /><a href='/seances/listerFuturesSeances'> Retour &agrave; la liste des séances </a>");
 ?>

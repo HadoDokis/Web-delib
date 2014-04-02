@@ -1,7 +1,6 @@
 <?php
 
 App::uses('FormHelper', 'View/Helper');
-App::uses('AppTools', 'Lib');
 
 class DurationPickerHelper extends FormHelper {
 
@@ -9,6 +8,7 @@ class DurationPickerHelper extends FormHelper {
 
     function picker($fieldName, $options = array()) {
         // initialisations
+        require_once(APP . 'Lib' . DS . 'tools.php');
         $out = '';
         $div = true;
         $divOptions = array();
@@ -210,3 +210,5 @@ class DurationPickerHelper extends FormHelper {
     }
 
 }
+
+?>

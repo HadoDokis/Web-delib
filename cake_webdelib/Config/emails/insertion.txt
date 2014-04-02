@@ -1,10 +1,9 @@
 Bonjour #PRENOM# #NOM#,
 
-Un projet vient d'être inséré dans un circuit dont vous êtes valideur.
-
-Id : #IDENTIFIANT_PROJET#
-Objet : #OBJET_PROJET#
-Circuit : #LIBELLE_CIRCUIT#
+Le projet avec l'identifiant #IDENTIFIANT_PROJET# dont l'objet est :
+#OBJET_PROJET# 
+vient d'etre inséré dans le circuit : #LIBELLE_CIRCUIT#
+#TITRE_PROJET# 
 
 Vous pouvez le visualiser à l'adresse : #ADRESSE_A_VISUALISER#
 

@@ -1,20 +1,28 @@
-<?php echo $this->Html->script('ckeditor/ckeditor'); ?>
+<?php 
+    echo $this->Html->script('utils.js'); 
+    echo $this->Html->script('ckeditor/ckeditor'); 
+    echo $this->Html->script('ckeditor/adapters/jquery'); 
+?>
+
+
 <h2><?php echo "Envoi d'une notification  aux utilisateurs du profil : $libelle_profil"; ?></h2>
+<script>
+    document.getElementById("pourcentage").style.display='none';
+    document.getElementById("progrbar").style.display='none';
+    document.getElementById("affiche").style.display='none';
+    document.getElementById("contTemp").style.display='none';
+</script>
+
+
 <?php
-echo $this->Form->create('Profil', array('url' => array('controller' => 'profils', 'action' => 'notifier', $id)));
-echo '<div class="annexesGauche"></div>';
-echo '<div class="fckEditorProjet">';
-echo $this->Form->input('Profil.content', array('label' => '', 'type' => 'textarea'));
-echo $this->Fck->load('Profil.content');
-echo '</div>';
-echo '<div class="spacer"></div>';
-?>
-<div class="btn-group">
-<?php
-echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', array('action' => 'index'), array('escape' => false, 'class' => 'btn'));
-echo $this->Form->button("<i class='fa fa-envelope'></i> Envoyer", array('class' => "btn btn-primary", 'escape' => false, 'title' => 'Envoyer le message aux utilisateurs de ce profil'));
-?>
-</div>
-<?php
-echo $this->Form->end();
+    echo $this->Form->create('Profil', array('url'=>'/profils/notifier/'.$id)); 
+    echo '<div class="annexesGauche"></div>';
+    echo '<div class="fckEditorProjet">';
+    echo $this->Form->input('Profil.content', array('label'=>'', 'type'=>'textarea'));
+    echo $this->Fck->load('Profil.content');
+    echo '</div>';
+    echo '<div class="spacer"></div>';
+//    echo $this->Form->submit('Envoyer');
+    $this->Html2->boutonSubmit("Envoyer");
+    echo $this->Form->end();
 ?>

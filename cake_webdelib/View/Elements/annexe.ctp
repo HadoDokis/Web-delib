@@ -5,173 +5,259 @@
 		string	$mode = 'edit' : mode édition ('edit') ou affichage ('display'), dans ce dernier cas, les autres paramètres ne sont pas ovligatoires
 		string	$ref : référence d'appartenance des annexes pour les nouvelles annexes (delibPrincipale, delibRattachee1, delibRattachee2, ...)
 		array	$annexes = array() : liste des annexes a afficher
+		boolean	$affichage = 'complet' : 'complet', affiche tout, y compris le javascript, 'partiel' affiche uniquement le nécessaire pour ne pas répéter des élements du dom
 */
+
 // Initialisation des paramètres
 if (empty($mode)) $mode = 'edit';
-if ($mode == 'edit' && empty($ref)) return;
+if ($mode == 'edit' && empty($ref)) return; 
+if (empty($annexes)) $annexes = array();
+if (empty($affichage)) $affichage = 'complet';
+
 // affichage des annexes
-$tableOptions = array('class' => 'table table-hover');
-if ($mode == 'edit') $tableOptions['id'] = 'tableAnnexes' . $ref;
-if (empty($annexes)) {
-    $annexes = array();
-    $tableOptions['style'] = 'display:none;';
-}
+$tableOptions = array('cellpadding'=>'0', 'cellspacing'=>'0', 'width'=> '100%');
+if ($mode == 'edit') $tableOptions['id'] = 'tableAnnexe'.$ref;
 echo $this->Html->tag('table', null, $tableOptions);
-echo $this->Html->tag('caption', 'Liste des annexes');
-echo $this->Html->tag('thead', null);
-$tableHeaders = array(
-    array('No' => array('style' => 'width: 5%')),
-    array('Nom du fichier' => array('style' => 'width: 25%')),
-    array('Titre' => array('style' => 'width: 25%')),
-    array('Joindre au contrôle de légalité' => array('style' => 'width: 20%')),
-    array('Joindre à la fusion' => array('style' => 'width: 15%')),
-);
+if ($mode == 'edit')
+	echo $this->Html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Joindre à la fusion', 'Action'));
+else
+	echo $this->Html->tableHeaders(array('No', 'Nom du fichier', 'Titre', 'Joindre au  contrôle de légalité', 'Joindre à la fusion'));
+if (isset($annexes)) {
+	foreach ($annexes as $rownum => $annexe) {
+		$rowClass = array();
+		if ($rownum & 1) $rowClass['class'] = 'altrow';
+		if ($mode == 'edit') {
+			$rowClass['height'] = '36px';
+			$rowClass['id'] = 'afficheAnnexe'.$annexe['id'];
+			$rowClass['annexe_id'] = $annexe['id'];
+		}
+		echo $this->Html->tag('tr', null,  $rowClass);
+			echo $this->Html->tag('td', $rownum+1);
+			echo $this->Html->tag('td');
+				$pos = strpos($annexe['filetype'], 'vnd.oasis.opendocument');
+				if ($mode == 'edit') {
+                                        // lien de téléchargement de la version pdf de l'annexe
+					if ($annexe['filetype']=='application/pdf'){
+                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename_pdf'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
+                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu odt)', '/annexes/download/'.$annexe['id'].'/odt', array('title'=>'Télécharger le fichier')));
+                                        }
+                                        elseif ($annexe['filetype']=='application/vnd.oasis.opendocument.text'){
+                                            echo $this->Html->tag('span', $this->Html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
+                                            echo $this->Html->tag('span', ' '.$this->Html->link('(Aperçu pdf)', '/annexes/download/'.$annexe['id'].'/pdf', array('title'=>'Télécharger le fichier')));
+                                        }
+                                        else
+                                        {
+                                        // lien de téléchargement de l'annexe
+					echo $this->Html->tag('span', $this->Html->link($annexe['filename'], '/annexes/download/'.$annexe['id'], array('title'=>'Télécharger le fichier')));
+                                        }
+                                        // lien de modification de l'annexe en webdav si texte opendocument
+					if ($pos !== false) {
+						$url = Configure::read('PROTOCOLE_DL')."://".$_SERVER['SERVER_NAME']."/files/generee/projet/".$annexe['foreign_key']."/".$annexe['filename'];
+						echo  $this->Html->link('modifier : '.$annexe['filename'] , $url, array(
+							'id'=>'urlWebdavAnnexe'.$annexe['id'],
+							'style'=>'display:none;',
+							'title'=>'Modifier le fichier'));
+					}
+				} else {
+					// nom de l'annexe
+					echo $this->Html->tag('span', $annexe['filename']);
+					// nom de la version pdf de l'annexe
+					if (($pos !== false) && (strlen($annexe['filename_pdf']) > 0)) 
+						echo $this->Html->tag('span', ' '.'version pdf : '.$annexe['filename_pdf']);
+				}
+			echo $this->Html->tag('/td');
+			echo $this->Html->tag('td');
+				if ($mode == 'edit') {
+					echo $this->Html->tag('span', $annexe['titre'], array(
+						'id' => 'afficheAnnexeTitre'.$annexe['id'],
+						'valeur_init' => $annexe['titre']));
+					echo $this->Form->input('AnnexesAModifier.'.$annexe['id'].'.titre', array(
+						'id' => 'modifieAnnexeTitre'.$annexe['id'],
+						'label' => false,
+						'value' => $annexe['titre'],
+						'size' => '200',
+						'disabled'=>'disabled',
+						'style'=>'display:none;'));
+				} else
+					echo $this->Html->tag('span', $annexe['titre']);
+			echo $this->Html->tag('/td');
 
-if ($mode == 'edit') $tableHeaders[]['Actions'] = array('style' => 'width: 10%');
+			echo $this->Html->tag('td');
+				if ($mode == 'edit') {
+					echo $this->Html->tag('span', $annexe['joindre_ctrl_legalite']?'Oui':'Non', array(
+						'id' => 'afficheAnnexeCtrl'.$annexe['id'],
+						'valeur_init' => $annexe['joindre_ctrl_legalite']));
+					echo $this->Form->input('AnnexesAModifier.'.$annexe['id'].'.joindre_ctrl_legalite', array(
+						'id'=>'modifieAnnexeCtrl'.$annexe['id'],
+						'label'=>false,
+						'type'=>'checkbox',
+						'checked'=>($annexe['joindre_ctrl_legalite']==1),
+						'disabled'=>'disabled',
+						'style'=>'display:none;'));
+				} else
+					echo $this->Html->tag('span', $annexe['joindre_ctrl_legalite']?'Oui':'Non');
+			echo $this->Html->tag('/td');
+                        echo $this->Html->tag('td');
+                                if ($mode == 'edit') {
+                                        echo $this->Html->tag('span', $annexe['joindre_fusion']?'Oui':'Non', array(
+                                                'id' => 'afficheAnnexeCtrl'.$annexe['id'],
+                                                'valeur_init' => $annexe['joindre_fusion']));
+                                        echo $this->Form->input('AnnexesAModifier.'.$annexe['id'].'.joindre_fusion', array(
+                                                'id'=>'modifieAnnexeFusion'.$annexe['id'],
+                                                'label'=>false,
+                                                'type'=>'checkbox',
+                                                'checked'=>($annexe['joindre_fusion']==1),
+                                                'disabled'=>'disabled',
+                                                'style'=>'display:none;'));
+                                } else
+                                        echo $this->Html->tag('span', $annexe['joindre_fusion']?'Oui':'Non');
+                        echo $this->Html->tag('/td');
 
-echo $this->Html->tableHeaders($tableHeaders);
-echo $this->Html->tag('/thead');
-
-echo $this->Html->tag('tbody', null);
-foreach ($annexes as $rownum => $annexe) {
-    $rowOptions = array();
-    $rowOptions['id'] = $mode.'Annexe' . $annexe['Annex']['id'];
-    $rowOptions['data-annexeid'] = $annexe['Annex']['id'];
-    if (!empty($ref))
-        $rowOptions['data-ref'] = $ref;
-    echo $this->Html->tag('tr', null, $rowOptions);
-    echo $this->Html->tag('td', $rownum + 1);
-    echo $this->Html->tag('td');
-    if (!empty($annexe['Annex']['edit'])) {
-        echo $this->Html->link('<i class="fa fa-pencil"></i> ' . $annexe['Annex']['filename'], $annexe['Annex']['link'], array(
-            'id' => 'urlWebdavAnnexe' . $annexe['Annex']['id'],
-            'escape' => false,
-            'style' => 'display:none;',
-            'title' => 'Modifier le fichier directement depuis votre poste en utilisant le protocol WebDAV'));
-    } else {
-        echo $this->Html->tag('span', $annexe['Annex']['filename'],
-            array(
-                'id' => 'urlWebdavAnnexe' . $annexe['Annex']['id'],
-                'escape' => false,
-                'style' => 'display:none;',
-                'title' => 'Edition WebDAV désactivée pour ce type de fichier'
-            ));
-    }
-    // lien de téléchargement de la version pdf de l'annexe
-//    echo $this->Html->tag('span', $this->Html->link($annexe['Annex']['filename'], array('controller' => 'annexes', 'action' => 'download', $annexe['Annex']['id']), array('title' => 'Télécharger le fichier')));
-    echo $this->Html->tag('span', $annexe['Annex']['filename'], array('class' => 'annexefilename'));
-    echo $this->Html->tag('/td');
-    echo $this->Html->tag('td');
-    if ($mode == 'edit') {
-        echo $this->Html->tag('span', $annexe['Annex']['titre'], array(
-            'id' => 'afficheAnnexeTitre' . $annexe['Annex']['id'],
-            'data-valeurinit' => $annexe['Annex']['titre']));
-        echo $this->Form->input('AnnexesAModifier.' . $annexe['Annex']['id'] . '.titre', array(
-            'id' => 'modifieAnnexeTitre' . $annexe['Annex']['id'],
-            'label' => false,
-            'value' => $annexe['Annex']['titre'],
-            'maxlength' => '200',
-            'disabled' => true,
-            'class' => 'editAnnexeTitre',
-            'style' => 'display:none;'));
-    } else
-        echo $this->Html->tag('span', $annexe['Annex']['titre']);
-    echo $this->Html->tag('/td');
-
-    echo $this->Html->tag('td');
-    if ($mode == 'edit') {
-        echo $this->Html->tag('span', $annexe['Annex']['joindre_ctrl_legalite'] ? 'Oui' : 'Non', array(
-            'id' => 'afficheAnnexeCtrl' . $annexe['Annex']['id'],
-            'data-valeurinit' => $annexe['Annex']['joindre_ctrl_legalite']));
-        echo $this->Form->input('AnnexesAModifier.' . $annexe['Annex']['id'] . '.joindre_ctrl_legalite', array(
-            'id' => 'modifieAnnexeCtrl' . $annexe['Annex']['id'],
-            'label' => false,
-            'type' => 'checkbox',
-            'checked' => ($annexe['Annex']['joindre_ctrl_legalite'] == 1),
-            'disabled' => 'disabled',
-            'div' => array('style' => 'display:none;')));
-    } else
-        echo $this->Html->tag('span', $annexe['Annex']['joindre_ctrl_legalite'] ? 'Oui' : 'Non');
-
-    echo $this->Html->tag('/td');
-    echo $this->Html->tag('td');
-    if ($mode == 'edit') {
-        echo $this->Html->tag('span', $annexe['Annex']['joindre_fusion'] ? 'Oui' : 'Non', array(
-            'id' => 'afficheAnnexeFusion' . $annexe['Annex']['id'],
-            'data-valeurinit' => $annexe['Annex']['joindre_fusion']));
-
-        echo $this->Form->input('AnnexesAModifier.' . $annexe['Annex']['id'] . '.joindre_fusion', array(
-            'id' => 'modifieAnnexeFusion' . $annexe['Annex']['id'],
-            'label' => false,
-            'type' => 'checkbox',
-            'checked' => ($annexe['Annex']['joindre_fusion'] == 1),
-            'disabled' => 'disabled',
-            'div' => array('style' => 'display:none;')));
-    } else
-        echo $this->Html->tag('span', $annexe['Annex']['joindre_fusion'] ? 'Oui' : 'Non');
-    echo $this->Html->tag('/td');
-
-    if ($mode == 'edit') {
-        echo $this->Html->tag('td', null, array('style' => 'text-align:center'));
-        echo $this->Html->tag('div', null, array('class' => "btn-group edit-delete-buttons"));
-
-        echo $this->Html->link('<i class="fa fa-edit"></i> Modifier', 'javascript:void(0);', array(
-            'title' => 'Modifier les caractéristiques de cette annexe',
-            'escape' => false,
-            'class' => 'btn btn-mini',
-            'id' => 'modifierAnnexe' . $annexe['Annex']['id'] . $ref,
-            'onClick' => 'modifierAnnexe(' . $annexe['Annex']['id'] . ')'
-        ));
-
-        echo $this->Html->link('<i class="fa fa-trash-o"></i> Supprimer', 'javascript:void(0);', array(
-            'title' => 'Supprimer cette annexe',
-            'class' => "btn btn-danger btn-mini",
-            'id' => 'supprimerAnnexe' . $annexe['Annex']['id'] . $ref,
-            'escape' => false,
-            'onClick' => 'supprimerAnnexe(' . $annexe['Annex']['id'] . ')'
-        ));
-        echo $this->Html->tag('/div');
-
-        echo $this->Html->link('<i class="fa fa-undo"></i> Annuler', 'javascript:void(0);', array(
-            'title' => 'Annuler les modifications de cette annexe',
-            'class' => 'btn btn-warning btn-mini cancel-edit-annexe',
-            'escape' => false,
-            'id' => 'annulerModifierAnnexe' . $annexe['Annex']['id'] . $ref,
-            'onClick' => "annulerModifierAnnexe(" . $annexe['Annex']['id'] . ")",
-            'style' => 'display: none;'
-        ));
-
-        echo $this->Html->link('<i class="fa fa-undo"></i> Annuler', 'javascript:void(0);', array(
-            'title' => 'Annuler la suppression de cette annexe',
-            'class' => 'btn btn-warning btn-mini cancel-delete-annexe',
-            'escape' => false,
-            'id' => 'annulerSupprimerAnnexe' . $annexe['Annex']['id'] . $ref,
-            'onClick' => "annulerSupprimerAnnexe(" . $annexe['Annex']['id'] . ")",
-            'style' => 'display: none;'
-        ));
-
-        echo $this->Html->tag('/td');
-    }
-    echo $this->Html->tag('/tr');
+			if ($mode == 'edit') {
+				echo $this->Html->tag('td');
+					echo $this->Html->link(SHY, '#', array('title'=>'Supprimer', 
+                                                                               'class'=>"link_supprimer", 
+                                                                               'escape' => false, 
+                                                                               'onClick'=>'supprimerAnnexe(this, '.$annexe['id'].')'), false);
+					echo $this->Html->link(SHY, '#', array('title'=>'Annuler la suppression', 
+                                                                               'class'=>'link_supprimer_back', 
+                                                                               'escape' => false, 
+                                                                               'onClick'=>"annulerSupprimerAnnexe(this, ".$annexe['id'].")", 
+                                                                               'style'=>'display: none;'), false);
+					echo '&nbsp;&nbsp;';
+					echo $this->Html->link(SHY, '#', array('title'=>'Modifier', 
+                                                                               'escape' => false, 
+                                                                               'class'=> 'link_modifier', 
+                                                                               'onClick'=>'modifierAnnexe(this, '.$annexe['id'].')'), false);
+					echo $this->Html->link(SHY, '#', array('title'=>'Annuler la modification', 
+                                                                               'class'=> 'link_modifier_back', 
+                                                                               'escape' => false, 
+                                                                               'onClick'=>"annulerModifierAnnexe(this, ".$annexe['id'].")", 
+                                                                               'style'=>'display: none;'), false);
+				echo $this->Html->tag('/td');
+			}
+		echo $this->Html->tag('/tr');
+	}
 }
-echo $this->Html->tag('/tbody');
 echo $this->Html->tag('/table');
-
-//echo $this->Html->tag('div', '', array('class' => 'spacer'));
+echo $this->Html->tag('div', '', array('class'=>'spacer'));
 
 if ($mode != 'edit') return;
 
 // div pour la suppression des annexes
-echo $this->Html->tag('div', '', array('id' => 'supprimeAnnexes' . $ref, 'style' => 'display:none'));
+if ($affichage == 'complet')
+	echo $this->Html->tag('div', '', array('id'=>'supprimeAnnexes'));
+
+// template pour l'ajout des annexes
+if ($affichage == 'complet') {
+	echo $this->Html->tag('div', null, array('id'=>'ajouteAnnexeTemplate', 'style'=>'width:800px; display:none;'));
+		echo $this->Html->tag('fieldset');
+		echo $this->Html->tag('legend', 'Nouvelle annexe');
+			echo $this->Form->hidden('Annex.0.ref', array('disabled'=>'disabled'));
+			echo $this->Form->input('Annex.0.file', array('label'=>'Annexe<acronym title="obligatoire">(*)</acronym>', 'type'=>'file', 'size' => '80', 'disabled'=>'disabled'));
+			echo $this->Html->tag('div', '', array('class'=>'spacer'));
+			echo $this->Form->input('Annex.0.titre', array('label'=>'Titre', 'value'=>'', 'size' => '200', 'disabled'=>'disabled'));
+			echo $this->Html->tag('div', '', array('class'=>'spacer'));
+			echo $this->Form->input('Annex.0.ctrl', array('label'=>'Joindre&nbsp;ctrl&nbsp;légalité', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
+			echo $this->Html->tag('div', '', array('class'=>'spacer'));
+			echo $this->Form->input('Annex.0.fusion', array('label'=>'Joindre&nbsp;fusion', 'type'=>'checkbox', 'value'=>false, 'disabled'=>'disabled'));
+			echo $this->Html->tag('div', '', array('class'=>'spacer'));
+			echo $this->Html->link('Annuler', '#self', array('class'=>'btn btn-link', 'onClick'=>'javascript:$(this).parent().parent().remove();'));
+		echo $this->Html->tag('/fieldset');
+	echo $this->Html->tag('/div');
+}
 
 // div pour l'ajout des annexes
-echo $this->Html->tag('div', '', array('id' => 'ajouteAnnexes' . $ref, 'style' => 'display:none'));
+echo $this->Html->tag('div', '', array('id'=>'ajouteAnnexes'.$ref));
 
 // lien pour ajouter une nouvelle annexes
-echo $this->Html->link('<i class="fa fa-plus"></i>&nbsp;Ajouter une annexe', 'javascript:void(0)', array(
-    'class' => 'btn btn-success annexeModalAddLink',
-    'id' => 'annexeModalAddLink' . $ref,
-    'data-ref' => $ref,
-    'onclick' => 'afficherAnnexeModal(this);',
-    'escape' => false
-));
+echo $this->Html->tag('div', '', array('class'=>'spacer'));
+echo $this->Html->link('Ajouter une annexe', 'javascript:ajouterAnnexe(\''.$ref.'\')', array('class'=>'link_annexe'));
+
+if ($affichage != 'complet') return;
+?>
+<script>
+// variables globales
+var nbAnnexeAAjouter = 0;
+
+// Fonction d'ajout d'une nouvelle annexe : duplique le div ajouteAnnexeTemplate et incrémente l'indexe
+function ajouterAnnexe(ref) {
+	nbAnnexeAAjouter++;
+	var addDiv = $('#ajouteAnnexes'+ref);
+	var newTemplate = $('#ajouteAnnexeTemplate').clone();
+	newTemplate.attr('id', newTemplate.attr('id').replace('Template', nbAnnexeAAjouter));
+	newTemplate.find('#Annex0Ref').val(ref);
+	newTemplate.find('input').each(function(){
+		$(this).removeAttr('disabled');
+		$(this).attr('id', $(this).attr('id').replace('0', nbAnnexeAAjouter));
+		$(this).attr('name', $(this).attr('name').replace('0', nbAnnexeAAjouter));
+	});
+	addDiv.append(newTemplate);
+	newTemplate.show();
+}
+
+// Fonction de suppression d'une annexe
+function supprimerAnnexe(obj, annexeId) {
+	$('#afficheAnnexe'+annexeId).addClass('aSupprimer');
+	var supAnnexe = $(document.createElement('input')).attr({
+		id: 'supprimeAnnexe'+annexeId,
+		name: 'data[AnnexesASupprimer]['+annexeId+']',
+		type: 'hidden', value: annexeId});
+	$('#supprimeAnnexes').append(supAnnexe);
+	$(obj).hide();
+	$(obj).next().show();
+	$(obj).next().next().hide();
+	$(obj).next().next().next().hide();
+}
+
+// Fonction de d'annulation de suppression d'une annexe
+function annulerSupprimerAnnexe(obj, annexeId) {
+	$('#afficheAnnexe'+annexeId).removeClass('aSupprimer');
+	$('#supprimeAnnexe'+annexeId).remove();
+	$(obj).hide();
+	$(obj).prev().show();
+	$(obj).next().show();
+}
+
+// Fonction de modification de l'annexe
+function modifierAnnexe(obj, annexeId) {
+	var trObj = $('#afficheAnnexe'+annexeId);
+	trObj.find('span').each(function(){
+		$(this).hide();
+	});
+	trObj.find('input').each(function(){
+		$(this).removeAttr('disabled');
+		$(this).show();
+	});
+	$('#urlWebdavAnnexe'+annexeId).show();
+
+	$('#afficheAnnexe'+annexeId).addClass('aModifier');
+
+	$(obj).hide();
+	$(obj).next().show();
+	$(obj).prev().hide();
+	$(obj).prev().prev().hide();
+}
+
+// Fonction d'annulation de la modification de l'annexe
+function annulerModifierAnnexe(obj, annexeId) {
+	$('#modifieAnnexeTitre'+annexeId).val($('#afficheAnnexeTitre'+annexeId).attr('valeur_init'));
+	$('#modifieAnnexeCtrl'+annexeId).attr('checked', $('#afficheAnnexeCtrl'+annexeId).attr('valeur_init')==1);
+	var trObj = $('#afficheAnnexe'+annexeId);
+	trObj.find('span').each(function(){
+		$(this).show();
+	});
+	trObj.find('input').each(function(){
+		$(this).attr('disabled', 'disabled');
+		$(this).hide();
+	});
+	$('#urlWebdavAnnexe'+annexeId).hide();
+
+	trObj.removeClass('aModifier');
+
+	$(obj).hide();
+	$(obj).prev().show();
+	$(obj).prev().prev().prev().show();
+}
+
+</script>

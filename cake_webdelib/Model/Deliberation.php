@@ -1,162 +1,159 @@
 <?php
-/**
- * Class Deliberation
- * @property Deliberation $Deliberation
- */
+App::uses('DateFrench', 'Utility');
 class Deliberation extends AppModel {
-    public $validate = array(
-        'objet' => array(
-            array(
-                'rule' => 'notEmpty',
-                'message' => 'L\'objet est obligatoire'
-            )
-        ),
-        'typeacte_id' => array(
-            array(
-                'rule' => array('canSaveNature', 'notEmpty'),
-                'message' => "Type d'acte invalide"
-            )
-        ),
-        'theme_id' => array(
-            array(
-                'rule' => array('notEmpty'),
-                'message' => "Theme invalide"
-            )
-        ),
-        'texte_projet_upload' => array(
-            array(
-                'rule' => array('checkFormat', 'odt', false),
-                'message' => "Format du document invalide. Autorisé : fichier ODT"
-            )
-        ),
-        'texte_synthese_upload' => array(
-            array(
-                'rule' => array('checkFormat', 'odt', false),
-                'message' => "Format du document invalide. Autorisé : fichier ODT"
-            )
-        ),
-        'deliberation_upload' => array(
-            array(
-                'rule' => array('checkFormat', 'odt', false),
-                'message' => "Format du document invalide. Autorisé : fichier ODT"
-            )
-        ),
-        'texte_doc' => array(
-            array('rule' => array('checkFormat', 'odt', false),
-                'message' => "Format du document invalide. Autorisé : fichier ODT"
-            )
-        ),
-        'vote_commentaire' => array(
-            'rule' => array('maxLength', 1000),
-            'message' => 'Le commentaire de vote ne doit pas dépasser 1000 caractères.'
-        )
-    );
+
+	/**
+	 * Définition de constantes nommées pour le champ etat.
+	 *
+	 * Puisque les valeurs sont consécutives du circuit de traitement, on
+	 * pourrait ajouter une valeur permettant de savoir si on a déjà dépassé
+	 * l'étape de votes (ex.: 2.5) ?
+	 */
+	const refuse = -1;
+	const enCoursRedaction = 0;
+	const dansCircuit = 1;
+	const valide = 2;
+	const votePour = 3;
+	const voteContre = 4;
+	const envoyeCtrlLegalite = 5;
+
+	var $name = 'Deliberation';
+
+	var $validate = array( 'objet'     => array(
+			array( 'rule'    => 'notEmpty',
+					'message' => 'L\'objet est obligatoire')),
+			'typeacte_id' => array(
+					array( 'rule'    => array('canSaveNature', 'notEmpty'),
+						'message' => "Type d'acte invalide")),
+                        'theme_id' => array(
+					array( 'rule'    => array('notEmpty'),
+						'message' => "Theme invalide")),
+			'texte_projet_type'   => array(
+					array('rule' => array('checkMimetype', 'texte_projet', array('application/vnd.oasis.opendocument.text')),
+							'message' => "Ce type de fichier n'est pas autorisé")),
+			'texte_synthese_type' => array(
+					array('rule' => array('checkMimetype', 'texte_synthese',  array('application/vnd.oasis.opendocument.text')),
+							'message' => "Ce type de fichier n'est pas autorisé")),
+			'deliberation_type'   => array(
+					array('rule' => array('checkMimetype', 'deliberation',  array('application/vnd.oasis.opendocument.text')),
+							'message' => "Ce type de fichier n'est pas autorisé")),
+			'debat_type'           => array(
+					array('rule' => array('checkMimetype', 'debat',  array('application/vnd.oasis.opendocument.text')),
+							'message' => "Ce type de fichier n'est pas autorisé")),
+			'commission_type'      => array(
+					array('rule' => array('checkMimetype', 'commission',  array('application/vnd.oasis.opendocument.text')),
+							'message' => "Ce type de fichier n'est pas autorisé")));
 
 
-    //dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
-    public $belongsTo = array(
-        'Service' => array(
-            'className' => 'Service',
-            'conditions' => '',
-            'order' => '',
-            'dependent' => false,
-            'foreignKey' => 'service_id'
-        ),
-        'Theme' => array(
-            'className' => 'Theme',
-            'conditions' => '',
-            'order' => '',
-            'dependent' => false,
-            'foreignKey' => 'theme_id'
-        ),
-        'Circuit' => array(
-            'className' => 'Cakeflow.Circuit',
-            'conditions' => '',
-            'order' => '',
-            'dependent' => false,
-            'foreignKey' => 'circuit_id'
-        ),
-        'Redacteur' => array(
-            'className' => 'User',
-            'conditions' => '',
-            'order' => '',
-            'dependent' => true,
-            'foreignKey' => 'redacteur_id'
-        ),
-        'Rapporteur' => array(
-            'className' => 'Acteur',
-            'conditions' => '',
-            'order' => '',
-            'dependent' => true,
-            'foreignKey' => 'rapporteur_id'
-        ),
-        'President' => array(
-            'className' => 'Acteur',
-            'conditions' => '',
-            'order' => '',
-            'dependent' => false,
-            'foreignKey' => 'president_id'),
-        'Typeacte' => array(
-            'className' => 'Typeacte',
-            'conditions' => '',
-            'order' => '',
-            'dependent' => true,
-            'foreignKey' => 'typeacte_id'
-        )
-    );
 
-    public $hasMany = array(
-        'TdtMessage' => array(
-            'className' => 'TdtMessage',
-            'foreignKey' => 'delib_id'
-        ),
-        'Historique' => array(
-            'className' => 'Historique',
-            'foreignKey' => 'delib_id'
-        ),
-        'Traitement' => array(
-            'className' => 'Cakeflow.Traitement',
-            'foreignKey' => 'target_id'
-        ),
-        'Annex' => array('className' => 'Annex',
-            'foreignKey' => 'foreign_key',
-            'order' => array('Annex.id' => 'ASC'),
-            'dependent' => true
-        ),
-        'Commentaire' => array(
-            'className' => 'Commentaire',
-            'foreignKey' => 'delib_id'
-        ),
-        'Listepresence' => array(
-            'className' => 'Listepresence',
-            'foreignKey' => 'delib_id'
-        ),
-        'Vote' => array(
-            'className' => 'Vote',
-            'foreignKey' => 'delib_id'
-        ),
-        'Infosup' => array(
-            'dependent' => true,
-            'foreignKey' => 'foreign_key',
-            'conditions' => array('Infosup.model' => 'Deliberation')
-        ),
-        'Multidelib' => array(
-            'className' => 'Deliberation',
-            'foreignKey' => 'parent_id',
-            'order' => 'id ASC',
-            'dependent' => false),
-        'Deliberationseance' => array(
-            'className' => 'Deliberationseance',
-            'foreignKey' => 'deliberation_id',
-            'order' => 'Deliberationseance.position ASC'
-        ),
-        'Deliberationtypeseance' => array(
-            'className' => 'Deliberationtypeseance',
-            'foreignKey' => 'deliberation_id'
-        )
-    );
+	//dependent : pour les suppression en cascades. ici à false pour ne pas modifier le referentiel
+	var $belongsTo = array(
+	/*                'Nomenclature'=>array(
+	 'className'    => 'Nomenclature',
+			'conditions'   => '',
+			'order'        => '',
+			'dependent'    => false,
+			'foreignKey'   => 'num_pref'
+         * ),
+	*/
+			'Service'=>array(
+					'className'    => 'Service',
+					'conditions'   => '',
+					'order'        => '',
+					'dependent'    => false,
+					'foreignKey'   => 'service_id'
+                            ),
+			'Theme'=>array(
+					'className'    => 'Theme',
+					'conditions'   => '',
+					'order'        => '',
+					'dependent'    => false,
+					'foreignKey'   => 'theme_id'
+                            ),
+			'Circuit'=>array(
+					'className'    => 'Cakeflow.Circuit',
+					'conditions'   => '',
+					'order'        => '',
+					'dependent'    => false,
+					'foreignKey'   => 'circuit_id'
+                            ),
+			'Redacteur' =>array(
+					'className'    => 'User',
+					'conditions'   => '',
+					'order'        => '',
+					'dependent'    =>  true,
+					'foreignKey'   => 'redacteur_id'
+                            ),
+			'Rapporteur'=> array(
+					'className'    => 'Acteur',
+					'conditions'   => '',
+					'order'        => '',
+					'dependent'    =>  true,
+					'foreignKey'   => 'rapporteur_id'
+                            ),
+			'Typeacte'=> array(
+					'className'    => 'Typeacte',
+					'conditions'   => '',
+					'order'        => '',
+					'dependent'    =>  true,
+					'foreignKey'   => 'typeacte_id'
+                            )
+	);
 
-    public $hasAndBelongsToMany = array(
+	var $hasMany = array(
+			'TdtMessage' => array (
+					'className'    => 'TdtMessage',
+					'foreignKey'   => 'delib_id'
+                            ),
+			'Historique' =>array(
+					'className'    => 'Historique',
+					'foreignKey'   => 'delib_id'
+                            ),
+			'Traitement'=>array(
+					'className'    => 'Cakeflow.Traitement',
+					'foreignKey'   => 'target_id'
+                            ),
+			'Annex'=>array(	'className'    => 'Annex',
+					'foreignKey'   => 'foreign_key',
+                                        'order'        => array('Annex.id' => 'ASC'),
+					'dependent'    => true
+                            ),
+			'Commentaire'=>array(
+					'className'    => 'Commentaire',
+					'foreignKey'   => 'delib_id'
+                            ),
+			'Listepresence'=>array(
+					'className'    => 'Listepresence',
+					'foreignKey'   => 'delib_id'
+                            ),
+			'Vote'=>array(
+					'className'    => 'Vote',
+					'foreignKey'   => 'delib_id'
+                            ),
+			'Infosup'=>array(
+					'dependent' => true,
+					'foreignKey' => 'foreign_key',
+					'conditions' => array('Infosup.model' => 'Deliberation')
+                            ),
+			'Multidelib'=>array(
+					'className'    => 'Deliberation',
+					'foreignKey'   => 'parent_id',
+					'order' => 'id ASC',
+					'dependent' => false),
+			'Deliberationseance' =>array(
+					'className'    => 'Deliberationseance',
+					'foreignKey'   => 'deliberation_id',
+                                        'order'      => 'Deliberationseance.position ASC'
+                         ),
+                       'Deliberationtypeseance' =>array(
+                                        'className'    => 'Deliberationtypeseance',
+                                        'foreignKey'   => 'deliberation_id'
+                           ),
+
+
+                 );
+
+	var $hasAndBelongsToMany = array(
             'Seance' => array( 'className' => 'Seance',
 			'joinTable' => 'deliberations_seances',
 			'foreignKey' => 'deliberation_id',
@@ -171,98 +168,82 @@ class Deliberation extends AppModel {
 			'deleteQuery' => '',
 			'insertQuery' => ''),
             'Typeseance',
-            
+
 	);
 
-    /**
-     * Si vous avez besoin d’exécuter de la logique juste après chaque opération de sauvegarde,
-     * placez-la dans cette méthode de rappel. Les données sauvegardées seront disponibles dans $this->data
-     * @param bool $created La valeur de $created sera true si un nouvel objet a été créé (plutôt qu’un objet mis à jour)
-     * @param array $options Le tableau $options est le même que celui passé dans Model::save()
-     */
-    public function afterSave($created, $options = array()) {
-        if (!empty($this->data['Deliberation']['id'])) {
-            $hasChildren = $this->hasAny(array('Deliberation.parent_id' => $this->data['Deliberation']['id']));
-            //Si la delib a des enfants
-            if ($hasChildren) {
-                //Recopie des attributs etat (si < ou = à 2) et circuit_id
-                if (array_key_exists('etat', $this->data['Deliberation']) && $this->data['Deliberation']['etat'] <= 2) {
-                    $this->updateAll(
-                        array('Deliberation.etat' => $this->data['Deliberation']['etat']),
-                        array('Deliberation.parent_id' => $this->data['Deliberation']['id'])
-                    );
-                    $this->log('changement d\'état délibs enfants', 'debug');
-                }
-                if (array_key_exists('circuit_id', $this->data['Deliberation'])) {
-                    $this->updateAll(
-                        array('Deliberation.circuit_id' => $this->data['Deliberation']['circuit_id']),
-                        array('Deliberation.parent_id' => $this->data['Deliberation']['id'])
-                    );
-                }
-            }
-        }
-    }
+	/*
+	 * Indique si le projet de délibération $delibId est modifiable pour $userId.
+	* Attention : ne tient pas compte des droits qui sont fait dans le controller
+	* En fonction de l'état du projet on a :
+	* - le projet est refusé (etat = -1) : non modifiable
+	* - le projet est en cours de rédaction (etat = 0) :
+	*   + l'utilisateur connecté est le rédacteur du projet : modifiable
+	*   + l'utilisateur connecté n'est pas le rédacteur du projet : non modifiable
+	*  - le projet est en cours de validation (etat = 1) :
+	*    + l'utilisateur connecté n'est pas dans le circuit de validation : non modifiable
+	*    + l'utilisateur connecté est dans le circuit de validation :
+	*      * il a déja validé le projet : non modifiable
+	*      * c'est à son tour de traiter le projet : modifiable
+	*      * son tour n'est pas encore passé : modifiable
+	*  - le projet est validé (etat = 2) : non modifiable
+	*  - le projet a été voté (etat = 3 ou 4) : non modifiable
+	*  - le projet a été envoyé (etat = 5) : non modifiable
+	*  - le projet a recu un avis (avis = 1 ou 2) : non modifiable
+	*/
+	function estModifiable($delibId, $userId, $canEdit=false) {
+		/* lecture en base */
+		$delib = $this->find('first', array('conditions' => array('Deliberation.id' => $delibId),
+				'recursive'  => '-1',
+				'fields'     => array('etat', 'redacteur_id', 'signee')));
+		if (empty($delib)) return false;
+		if ($delib['Deliberation']['signee'] == 1)
+			return false;
 
-    /*
-     * Indique si le projet de délibération $delibId est modifiable pour $userId.
-    * Attention : ne tient pas compte des droits qui sont fait dans le controller
-    * En fonction de l'état du projet on a :
-    * - le projet est refusé (etat = -1) : non modifiable
-    * - le projet est en cours de rédaction (etat = 0) :
-    *   + l'utilisateur connecté est le rédacteur du projet : modifiable
-    *   + l'utilisateur connecté n'est pas le rédacteur du projet : non modifiable
-    *  - le projet est en cours de validation (etat = 1) :
-    *    + l'utilisateur connecté n'est pas dans le circuit de validation : non modifiable
-    *    + l'utilisateur connecté est dans le circuit de validation :
-    *      * il a déja validé le projet : non modifiable
-    *      * c'est à son tour de traiter le projet : modifiable
-    *      * son tour n'est pas encore passé : modifiable
-    *  - le projet est validé (etat = 2) : non modifiable
-    *  - le projet a été voté (etat = 3 ou 4) : non modifiable
-    *  - le projet a été envoyé (etat = 5) : non modifiable
-    *  - le projet a recu un avis (avis = 1 ou 2) : non modifiable
-    */
-    function estModifiable($delibId, $userId, $canEdit = false) {
-        /* lecture en base */
-        $delib = $this->find('first', array(
-            'conditions' => array(
-                'Deliberation.id' => $delibId,
-                'Deliberation.signee' => false
-            ),
-            'recursive' => '-1',
-            'fields' => array('etat', 'redacteur_id', 'signee')));
+		/* traitement en fonction de l'état */
+		switch($delib['Deliberation']['etat']) {
+			case -1 :
+			case 2 :
+				$ret =  $canEdit;
+				break;
+			case 3 :
+				$ret =  $canEdit;
+				break;
+			case 4 :
+				$ret =  $canEdit;
+				break;
+			case 5 :
+				$ret = false;
+				break;
+			case 0 :
+				$ret = ($delib['Deliberation']['redacteur_id'] == $userId);
+				break;
+			case 1 :
+				$ret = ($this->Traitement->positionTrigger($userId, $delibId) > -1);
+				break;
+		}
 
-        if (!empty($delib))
-            switch ($delib['Deliberation']['etat']) { /* traitement en fonction de l'état */
-                case 0 :
-                    return ($canEdit || $delib['Deliberation']['redacteur_id'] == $userId);
-                case 1 :
-                    return ($canEdit || $this->Traitement->positionTrigger($userId, $delibId) == 0);
-                case 2 :
-                    return $canEdit;
-                case 3 :
-                    return $canEdit;
-                case 4 :
-                    return $canEdit;
-                default :
-                    return false;
-            }
+		return $ret;
+	}
+	/*
+	 function saveSeances($delib_id, $seances) {
+	foreach($seances as $key=>$seance_id) {
+	$this->Seance->DeliberationsSeance->deliberation_id = $delib_id;
+	$this->Seance->DeliberationsSeance->seance_id = $seance_id;
+	if (!$this->Seance->DeliberationsSeance->save())
+		die('toto');
+	}
+	}
+	*/
 
-        return false;
-    }
-
-    /**
+	/*
 	 * retourne le libellé correspondant à l'état $etat des projets et délibérations
-	 * si $codesSpeciaux = true, retourne les libellés avec les codes spéciaux des accents
-	 * si $codesSpeciaux = false, retourne les libellés sans les accents (listes)
-     * @param  $etat
-     * @param  bool $codesSpeciaux
-     * @return string
-     */
-    function libelleEtat($etat, $codesSpeciaux = false) {
+	* si $codesSpeciaux = true, retourne les libellés avec les codes spéciaux des accents
+	* si $codesSpeciaux = false, retourne les libellés sans les accents (listes)
+	*/
+	function libelleEtat($etat, $codesSpeciaux=false) {
 		switch($etat) {
 			case -1 :
-				return $codesSpeciaux ? 'Versionn&eacute;' : 'Versionné';
+				return $codesSpeciaux ? 'Version&eacute;' : 'Versionné';
 				break;
 			case -1 :
 				return $codesSpeciaux ? 'Refus&eacute;' : 'Refusé';
@@ -285,8 +266,6 @@ class Deliberation extends AppModel {
 			case 5:
 				return $codesSpeciaux ? 'Transmis au contr&ocirc;le de l&eacute;galit&eacute;' : 'Transmis au contrôle de légalité';
 				break;
-            default:
-                return $codesSpeciaux ? 'Code Erron&eacute;' : 'Code Erroné';
 		}
 	}
 
@@ -330,138 +309,106 @@ class Deliberation extends AppModel {
 
 	function changeDateAR($delib_id, $dateAR){
 		$this->id = $delib_id;
-		$this->saveField('tdt_dateAR', $dateAR);
+		$this->saveField('dateAR', $dateAR);
 	}
 
-    /**
-     * Retourne l'identifiant du modèle à utiliser selon le projet
-     * @param string $delib_id identifiant du projet
-     * @return integer identifiant du modèle
-     */
-    function getModelId($delib_id){
-// initialisations
-        $etat = $this->field('etat', array('id' => $delib_id));
-        $seanceDeliberanteId = $this->getSeanceDeliberanteId($delib_id);
-        if (!empty($seanceDeliberanteId)){
-            // lecture des modèles de la séance délibérante
-            $seance = $this->Seance->find('first', array(
-                'fields' => array('type_id'),
-                'contain' => array('Typeseance.modelprojet_id','Typeseance.modeldeliberation_id'),
-                'conditions' => array('Seance.id' => $seanceDeliberanteId)));
-            if ($etat < 3)
-                return $seance['Typeseance']['modelprojet_id'];
-            else
-                return $seance['Typeseance']['modeldeliberation_id'];
-        } else {
-            $typeacte_id = $this->field('typeacte_id', array('id' => $delib_id));
-            $typeacte = $this->Typeacte->find('first', array(
-                            'recursive' => -1,
-                            'conditions' => array('id' => $typeacte_id),
-                            'fields' => array('modeleprojet_id','modelefinal_id')));
-            if ($etat < 3)
-                return $typeacte['Typeacte']['modeleprojet_id'];
-            else
-                return $typeacte['Typeacte']['modelefinal_id'];
-        }
-    }
-
-	function getModelForSeance($delib_id, $seance_id) {
+	function getModelId($delib_id, $seance_id) {
 		$this->Seance->Behaviors->attach('Containable');
-		$delib = $this->find('first', array(
-            'conditions' => array('Deliberation.id' => $delib_id),
+		$data = $this->find('first', array('conditions' => array('Deliberation.id' => $delib_id),
 				'recursive'  => -1,
-				'fields'     => array('Deliberation.id', 'Deliberation.etat', 'Deliberation.typeacte_id')
-        ));
-        $seance = $this->Seance->find('first', array(
-            'conditions' => array('Seance.id' => $seance_id),
-            'fields'     => array('Seance.id'),
-            'contain'    => array('Typeseance.modelprojet_id', 'Typeseance.modeldeliberation_id') ));
+				'fields'     => array('Deliberation.id', 'Deliberation.etat')));
+		$seance = $this->Seance->find('first', array(
+				'conditions' => array('Seance.id' => $seance_id),
+				'fields'     => array('Seance.id'),
+				'contain'    => array('Typeseance.modelprojet_id', 'Typeseance.modeldeliberation_id') ));
 
-        if (!empty($seance)){
-            if ($delib['Deliberation']['etat']<3)
-                return $seance['Typeseance']['modelprojet_id'];
-            else
-                return $seance['Typeseance']['modeldeliberation_id'];
-        }
-		else { // Pas de séance associée, chercher le model du type d'acte
-            if ($delib['Deliberation']['etat']<3)
-                return $this->Typeacte->getModelId($delib['Deliberation']['typeacte_id'], 'modeleprojet_id');
-            else
-                return $this->Typeacte->getModelId($delib['Deliberation']['typeacte_id'], 'modelefinal_id');
+		if (!empty($seance)){
+			if ($data['Deliberation']['etat']<3)
+				return $seance['Typeseance']['modelprojet_id'];
+			else
+				return $seance['Typeseance']['modeldeliberation_id'];
+		}
+		else {
+			return 1;
 		}
 	}
 
-    public function refusDossier($id) {
-        // lecture en base de données
-        $this->Behaviors->load('Containable');
-        $delib = $this->find('first', array(
-            'contain' => array('Annex', 'Infosup', 'Typeseance'),
-            'conditions' => array('Deliberation.id' => $id)));
+	function refusDossier($id) {
+		// lecture en base de données
+		$this->Behaviors->attach('Containable');
+		$delib=$this->find('first', array(
+				'contain' => array('Annex', 'Infosup', 'Typeseance'),
+				'conditions' => array('Deliberation.id'=>$id)));
 
-        // maj de l'etat de la delib dans la table deliberations
-        $this->id = $id;
-        $this->saveField('etat', '-1');
+		// maj de l'etat de la delib dans la table deliberations
+                $this->id = $id;
+		$this->saveField('etat', '-1');
 
-        // création de la nouvelle version
-        unset($delib['Deliberation']['id']);
-        unset($delib['Deliberation']['created']);
-        unset($delib['Deliberation']['modified']);
-        $delib['Deliberation']['etat'] = 0;
-        $delib['Deliberation']['anterieure_id'] = $id;
-        $this->create();
-        $this->save($delib);
-        $delib_id = $this->getLastInsertID();
-        $this->copyPositionsDelibs($id, $delib_id);
+		// création de la nouvelle version
+		$delib['Deliberation']['id']=null;
+		$delib['Deliberation']['created']=null;
+		$delib['Deliberation']['modified']=null;
+		$delib['Deliberation']['etat']=0;
+		$delib['Deliberation']['anterieure_id']=$id;
+                $this->create();
+                $this->save($delib);
+                $delib_id = $this->getLastInsertID();
+	        $this->copyPositionsDelibs($id, $delib_id);
 
-        // copie des annexes du projet refusé vers le nouveau projet
-        $annexes = $delib['Annex'];
-        foreach ($annexes as $annexe) {
-            $tmp['Annex'] = $annexe;
-            $tmp['Annex']['id'] = null;
-            $tmp['Annex']['foreign_key'] = $delib_id;
-            $this->Annex->save($tmp, false);
-        }
+		// copie des annexes du projet refusé vers le nouveau projet
+		$annexes = $delib['Annex'];
+		foreach($annexes as $annexe) {
+			$tmp['Annex']= $annexe;
+			$tmp['Annex']['id']=null;
+			$tmp['Annex']['foreign_key']= $delib_id;
+			$this->Annex->save( $tmp, false);
+		}
 
-        // copie des infos supplémentaires du projet refusé vers le nouveau projet
-        $infoSups = $delib['Infosup'];
-        foreach ($infoSups as $infoSup) {
-            $infoSup['id'] = null;
-            $infoSup['foreign_key'] = $delib_id;
-            $infoSup['model'] = 'Deliberation';
-            $this->Infosup->save($infoSup, false);
-        }
+		// copie des infos supplémentaires du projet refusé vers le nouveau projet
+		$infoSups = $delib['Infosup'];
+		foreach($infoSups as $infoSup) {
+			$infoSup['id'] = null;
+			$infoSup['foreign_key'] = $delib_id;
+			$infoSup['model'] = 'Deliberation';
+			$this->Infosup->save($infoSup, false);
+		}
 
-        // copie des délibérations rattachées vers le nouveau projet
-        $delibRattachees = $this->find('all', array(
-            'contain' => array('Annex'),
-            'conditions' => array('Deliberation.parent_id' => $id)));
+		// copie des délibérations rattachées vers le nouveau projet
+		$delibRattachees = $this->find('all', array(
+				'contain' => array('Annex'),
+				'conditions'=>array('Deliberation.parent_id'=>$id)));
+		foreach($delibRattachees as $delibRattachee) {
+			// maj de l'etat de la delib dans la table deliberations
+			$delibRattachee['Deliberation']['etat']=-1; //etat -1 : refuse
+			// Retour de la position a 0 pour ne pas qu'il y ait de confusion
+			//$delibRattachee['Deliberation']['position']=0;
+			$this->save($delibRattachee['Deliberation']);
 
-        foreach ($delibRattachees as $delibRattachee) {
-            // création de la nouvelle version
-            $this->create();
-            $anterieure_id = $delibRattachee['Deliberation']['id'];
-            unset($delibRattachee['Deliberation']['id']);
-            $delibRattachee['Deliberation']['parent_id'] = $delib_id;
-            $delibRattachee['Deliberation']['etat'] = 0;
-            $delibRattachee['Deliberation']['anterieure_id'] = $anterieure_id;
-            unset($delibRattachee['Deliberation']['date_envoi']);
-            $delibRattachee['Deliberation']['created'] = date('Y-m-d H:i:s', time());
-            $delibRattachee['Deliberation']['modified'] = date('Y-m-d H:i:s', time());
-            $this->save($delibRattachee);
-            $delibRattachee_id = $this->getLastInsertID();
+			// création de la nouvelle version
+			$this->create();
+			$delibRattachee['Deliberation']['id']=null;
+			$delibRattachee['Deliberation']['parent_id']=$delib_id;
+			$delibRattachee['Deliberation']['etat']=0;
+			$delibRattachee['Deliberation']['anterieure_id']=null;
+			$delibRattachee['Deliberation']['date_envoi']=null;
+			//		$delibRattachee['Deliberation']['circuit_id']=0;
+			$delibRattachee['Deliberation']['created']=date('Y-m-d H:i:s', time());
+			$delibRattachee['Deliberation']['modified']=date('Y-m-d H:i:s', time());
+			$this->save($delibRattachee['Deliberation']);
+			$delibRattachee_id = $this->getLastInsertID();
 
-            // copie des annexes du projet refusé vers le nouveau projet
-            foreach ($delibRattachee['Annex'] as $annexe) {
-                unset($annexe['id']);
-                $tmp['Annex'] = $annexe;
-                $tmp['Annex']['foreign_key'] = $delibRattachee_id;
-                $this->Annex->save($tmp, false);
-            }
-        }
-        return $delib_id;
-    }
+			// copie des annexes du projet refusé vers le nouveau projet
+			$annexes = $delibRattachee['Annex'];
+			foreach($annexes as $annexe) {
+				$tmp['Annex']= $annexe;
+				$tmp['Annex']['id']=null;
+				$tmp['Annex']['foreign_key']= $delibRattachee_id ;
+				$this->Annex->save( $tmp, false);
+			}
+		}
+	}
 
-    function canSaveSeances($seances_id){
+	function canSaveSeances($seances_id){
             $result = false;
             $nb_seances_deliberante = 0;
             $this->Seance->Behaviors->attach('Containable');
@@ -478,8 +425,8 @@ class Deliberation extends AppModel {
 		    return false;
 		else
 		    return true;
-            } 
-            else 
+            }
+            else
                 return true;
 	}
 
@@ -500,520 +447,749 @@ class Deliberation extends AppModel {
 	}
 
     /**
-     * Transforme le résultat d'une recherche des projets en document par gedooo à partir d'un modèle
-     * @param $projets
-     * @param int $model_id
-     * @param int $format
-     * @param array $multiSeances
-     * @param array $conditions
+     * Permet de générer un seul document à partir des projets retournés par
+     * une recherche multi-critères.
+     *
+     * @see (utilise)
+     * 	- ConversionComponent::convertirFichier()
+     * 	- Deliberation::makeBalisesProjet()
+     * 	- Modelprojet::find()
+     *  - Seance::makeBalise()
+     *
+     * @see (utilisé par)
+     * 	- DeliberationController::mesProjetsRecherche()
+     * 	- DeliberationController::tousLesProjetsRecherche()
+     * 	- DeliberationController::traitementLot()
+     *
+     * @param array $projets Un ensemble de projets (résultats de find CakePHP).
+     * @param integer $model_id La clé primaire du modèle de document à utiliser (classe Model)
+     * @param integer $format Le format de sortie, @see Pages/format.ctp array( 0=>'pdf', 1=>'odt' )
+     * @param array $multiSeances La liste des clés primaires des séances.
+     * @param array $conditions Utlisé comme conditions pour les appels à Seance::makeBalise()
      */
-    function genererRecherche($projets, $model_id=1, $format=0, $multiSeances=array(), $conditions=array() ){
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_PartType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FusionType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+    public function genererRecherche($projets, $model_id = 1, $format = 0, $multiSeances = array(), $conditions = array()) {
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_PartType.class');
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_FusionType.class');
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_MatrixType.class');
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
 
-		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/ConversionComponent.php');
-		$this->Conversion = new ConversionComponent;
+        include_once (ROOT . DS . APP_DIR . DS . 'Controller/Component/ConversionComponent.php');
+        $this->Conversion = new ConversionComponent;
 
-		if ($format == 0) {
-			$sMimeType = "application/pdf";
-			$format    = "pdf";
-		}
-		elseif ($format == 1) {
-			$sMimeType = "application/vnd.oasis.opendocument.text";
-			$format    = "odt";
-		}
-		$dyn_path = "/files/generee/deliberations/";
-		$nomFichier = "recherche";
-		$path = WEBROOT_PATH.$dyn_path;
-		if (!file_exists($path))
-			mkdir($path);
+        if ($format == 0) {
+            $sMimeType = "application/pdf";
+            $format = "pdf";
+        } elseif ($format == 1) {
+            $sMimeType = "application/vnd.oasis.opendocument.text";
+            $format = "odt";
+        }
+        $dyn_path = "/files/generee/deliberations/";
+        $nomFichier = "recherche";
+        $path = WEBROOT_PATH . $dyn_path;
+        if (!file_exists($path))
+            mkdir($path);
 
-		$content = $this->Seance->Typeseance->Modelprojet->find('first', array('conditions' => array('id' => $model_id),
-				'fields'     => array('content'),
-				'recursive'  => -1));
-		$oTemplate = new GDO_ContentType("",
-				"modele.odt",
-				"application/vnd.oasis.opendocument.text",
-				"binary",
-				$content['Modelprojet']['content']);
-		$oMainPart = new GDO_PartType();
+        $content = $this->Seance->Typeseance->Modelprojet->find('first', array('conditions' => array('id' => $model_id),
+            'fields' => array('content'),
+            'recursive' => -1));
+        $oTemplate = new GDO_ContentType("", "modele.odt", "application/vnd.oasis.opendocument.text", "binary", $content['Modelprojet']['content']);
+        $oMainPart = new GDO_PartType();
 
-		if (empty($multiSeances)) {
-			$nbProjets = count($projets);
-
-            if ($nbProjets > 1)
+        if (empty($multiSeances)) {
+            $nbProjets = count($projets);
+            if ($nbProjets > 1) {
                 $blocProjets = new GDO_IterationType("Projets");
-
+            }
             foreach ($projets as $projet) {
                 $oDevPart = new GDO_PartType();
                 $this->makeBalisesProjet($projet, $oDevPart);
                 if ($nbProjets > 1)
                     $blocProjets->addPart($oDevPart);
             }
-
             if ($nbProjets > 1)
                 $oMainPart->addElement($blocProjets);
             else
-                $oMainPart =  $oDevPart;
-		}
-		else {
-			$seances = new GDO_IterationType("Seances");
-			foreach ($multiSeances as $seance_id)
-				$seances->addPart($this->Seance->makeBalise($seance_id, null, true, $conditions));
-			$oMainPart->addElement($seances);
-		}
+                $oMainPart = $oDevPart;
+        }
+        else {
+            $seances = new GDO_IterationType("Seances");
+            foreach ($multiSeances as $seance_id)
+                $seances->addPart($this->Seance->makeBalise($seance_id, null, true, $conditions));
+            $oMainPart->addElement($seances);
+        }
 
-		$oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
-		$oFusion->process();
+        $oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
+        $oFusion->process();
 
-		$oFusion->SendContentToFile($path.$nomFichier.".odt");
-		$content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt', $format);
+        $oFusion->SendContentToFile($path . $nomFichier . ".odt");
+        $content = $this->Conversion->convertirFichier($path . $nomFichier . ".odt", $format);
 
-		header("Content-type: $sMimeType");
-		header("Content-Disposition: attachment; filename=recherche.$format");
-		die($content);
-	}
+        header("Content-type: $sMimeType");
+        header("Content-Disposition: attachment; filename=recherche.$format");
+        die($content);
+    }
 
-	function makeBalisesProjet ($delib, &$oMainPart, $exceptSeance=false)
-    {
-		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/GedoooComponent.php');
-		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
-		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/ConversionComponent.php');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
-		$this->Conversion = new ConversionComponent;
-		$this->Date = new DateComponent;
-		$this->Gedooo = new GedoooComponent;
+    /**
+     * Complète un objet GDO_PartType avec les informations d'un projet de
+     * délibération ou d'une délibération.
+     *
+     * Le répertoire "racine" est app/webroot/files/generee/projet/$delib_id,
+     * il existe un sous-répertoire "annexes".
+     *
+     * Variables gedooo:
+     * 	Si l'on prend en compte la séance
+     * 		- nombre_seance/count(Deliberationseance)/text
+     * 		- identifiant_projet/Deliberation.id/text
+     * 		Si la délibération n'est passée que dans une seule séance
+     * 			- position_projet
+     * 			- @see Seance::makeBalise()
+     * 			- Seances.{n}... (@see Seance::makeBalise())
+     * 		Sinon
+     * 			- @see Seance::makeBalise() (pour la délibérante)
+     * 			- Seances.{n}... (@see Seance::makeBalise())
 
-		$dyn_path = "/files/generee/projet/".$delib['Deliberation']['id']."/";
-		$path = WEBROOT_PATH.$dyn_path;
-		// Itération sur les séances
-		if (!$exceptSeance) {
-			$delibseances = $this->getSeancesid($delib['Deliberation']['id']);
-			$oMainPart->addElement(new GDO_FieldType('nombre_seance', count($delibseances), 'text'));
+     * 	- position_projet/Deliberationseance.position/text
+     * 	- titre_projet/Deliberation.titre/lines
+     * 	- objet_projet/Deliberation.objet/lines
+     * 	- libelle_projet/Deliberation.objet/lines
+     * 	- objet_delib/Deliberation.objet_delib/lines
+     * 	- libelle_delib/Deliberation.objet_delib/lines
+     * 	- identifiant_projet/Deliberation.id/text
+     * 	- etat_projet/Deliberation.etat/text
+     * 	- numero_deliberation/Deliberation.num_delib/text
+     * 	- numero_acte/Deliberation.num_delib/text
+     * 	- classification_deliberation/Deliberation.num_pref/text
+     * 	- date_envoi_signature/Date::frDate(Deliberation.date_envoi_signature)/date
+
+     * 	S'il s'agit d'un acte adopté
+     * 		- acte_adopte/1/text
+     * 	Sinon
+     * 		- acte_adopte/0/text
+     * 		- nombre_pour/Deliberation.vote_nb_oui/text
+     * 		- nombre_abstention/Deliberation.vote_nb_abstention/text
+     * 		- nombre_contre/Deliberation.vote_nb_non/text
+     * 		- nombre_sans_participation/Deliberation.vote_nb_retrait/text
+
+     * 	- nombre_votant/Deliberation.vote_nb_oui + Deliberation.vote_nb_abstention + Deliberation.vote_nb_non/text
+     * 	- date_reception/Deliberation.dateAR/text
+     * 	- commentaire_vote/Deliberation.vote_commentaire/lines
+
+     * 	Pour tous les commentaires
+     * 		S'il s'agit d'un commentaire_auto
+     * 			- AvisCommission.{n}.avis/Commentaire.texte/text
+     * 		Sinon
+     * 			- Commentaires.{n}.texte_commentaire/Commentaire.texte/text
+
+     * 	Pour toutes les entrées de Deliberationseance concernant notre délibération
+     * 		Si l'action du type de séance lié est un avis
+     * 			- AvisProjet.{n}
+     * 				* avis/A reçu un avis favorable/défavorable (Deliberationseance.avis)  en Typeseance.libelle du Date::frenchDate(Seance.date)/text
+     * 				* avis_favorable/Deliberationseance.avis/text
+     * 				* commentaire/Deliberationseance.commentaire/lines
+
+     * 	Pour chacune des entrées d'historiques de la délibération
+     * 		- Historique.{n}.log/Historique.commentaire/text
+
+     * 	Pour chacune des Infosup de la délibération
+     * 		On ajoute l'information dans la partie principale
+
+     * 	Si on est une délibération parente d'autres délibérations (mode multi-délibérations)
+     * 		Pour chacune des délibérations dont on est le parent
+     * 			- Deliberations.{n}.libelle_multi_delib/Multidelib.objet/text
+     * 			- Deliberations.{n}.id_multi_delib/Multidelib.id/text
+     * 	Sinon
+     * 		- Deliberations.0.libelle_multi_delib//text
+     * 		- Deliberations.0.id_multi_delib//text
+
+     * 	Si GENERER_DOC_SIMPLE
+     * 		- texte_projet/texte_projet.odt/application/vnd.oasis.opendocument.text/binary/Deliberation.texte_projet (GDO_ContentType, conversion en image puis en odt)
+     * 		- note_synthese/texte_synthese.odt/application/vnd.oasis.opendocument.text/binary/Deliberation.texte_synthese (GDO_ContentType, conversion en image puis en odt)
+     * 		- texte_deliberation/deliberation.odt/application/vnd.oasis.opendocument.text/binary/Deliberation.deliberation (GDO_ContentType, conversion en image puis en odt)
+     * 		- debat_deliberation/debat.odt/application/vnd.oasis.opendocument.text/binary/Deliberation.debat (GDO_ContentType, conversion en image puis en odt)
+     * 		- debat_commission/commission.odt/application/vnd.oasis.opendocument.text/binary/Deliberation.commission (GDO_ContentType, conversion en image puis en odt)
+     * 	Sinon, la même chose, sans la conversion (on prend le contenu du champ)
+
+     * 	- nombre_annexe/count(annexes de la délibération)/text
+
+     * 	Pour chacune des annexes de la délibération
+     * 		- Annexes.{n}.titre_annexe/Annex.titre/text
+     * 		- Annexes.{n}.nom_fichier/Annex.filename/text
+     * 		Si le type de fichier annexe est odt
+     * 			- Annexes.{n}.fichier/Annex.filename/mime::odt/binary/Annex.data (GDO_ContentType)
+     * 		Sinon si le type de fichier annexe est pdf et que Annex.data n'est pas vide
+     * 			- Annexes.{n}.fichier/Annex.filename/mime::pdf/binary/Annex.data (GDO_ContentType)
+
+     * 	Pour chacun des acteurs de la Listepresence de la délibération
+     * 		Si l'acteur était présent et qu'il n'a pas de suppléant
+     * 			L'acteur présent est l'acteur réel
+     * 		Sinon si l'acteur était présent et qu'il a un suppléant
+     * 			L'acteur présent est le suppléant
+     * 		Sinon si l'acteur était absent et qu'il a un mandataire
+     * 			L'acteur remplacé est composé par l'acteur réel (suffixe _acteur) et le mandataire (suffixe _mandate)
+     * 		Sinon si l'acteur était absent et qu'il n'a pas de mandataire
+     * 			L'acteur absent est l'acteur réel
+
+     * 	À partir de l'ensemble des votes de la délibération, on crée les itérations suivantes (@see Deliberation::_makeBlocsActeurs()):
+     * 	- ActeursPresents.{n}...
+     * 	- ActeursAbsents.{n}...
+     * 	- ActeursMandates.{n}...
+     * 	- ActeursContre.{n}...
+     * 	- ActeursPour.{n}...
+     * 	- ActeursAbstention.{n}...
+     * 	- ActeursSansParticipation.{n}...
+     *
+     * @see Configure
+     * 	- boolean GENERER_DOC_SIMPLE
+     * 		@see app/Config/webdelib.inc
+     *
+     * @see (appellée par):
+     * 	- ModelsController::generer()
+     * 	- SeancesController::_generer()
+     * 	- Deliberation::genererRecherche()
+     * 	- Seance::makeBalise()
+     *
+     * @see (appelle):
+     * 	- ConversionComponent::convertirFichier()
+     * 	- DateComponent::frenchDate()
+     * 	- GedoooComponent::createFile()
+     * 	- GedoooComponent::checkPath()
+     * 	- Annex::find()
+     * 	- Commentaire::find()
+     * 	- Deliberation::_makeBlocsActeurs()
+     * 	- Deliberation::_url2pathImage()
+     * 	- Deliberation::getPosition()
+     * 	- Deliberation::getSeancesid()
+     * 	- Deliberationseance::find()
+     * 	- Historique::find()
+     * 	- Infosup::addField()
+     * 	- Infosup::find()
+     * 	- Infosupdef:::find()
+     * 	- Deliberation::find()
+     * 	- Listepresence::find()
+     * 	- Rapporteur::makeBalise()
+     * 	- Redacteur::makeBalise()
+     * 	- Seance::getSeanceDeliberante()
+     * 	- Seance::makeBalise()
+     * 	- Service::makeBalise()
+     * 	- Theme::makeBalise()
+     * 	- Vote::find()
+     *
+     * @param array $delib
+     * @param GDO_PartType $oMainPart
+     * @param boolean $exceptSeance
+     * @param integer $seance_id
+     */
+    public function makeBalisesProjet( $delib, &$oMainPart, $exceptSeance = false, $seance_id = null ) {
+        include_once (ROOT . DS . APP_DIR . DS . 'Controller/Component/GedoooComponent.php');
+        include_once (ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
+        include_once (ROOT . DS . APP_DIR . DS . 'Controller/Component/ConversionComponent.php');
+        include_once (ROOT . DS . APP_DIR . DS . 'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
+        $isDelib = ( $delib['Deliberation']['etat'] >= self::votePour ); // Signifie déjà voté
+        $u = new GDO_Utility();
+
+        $this->Conversion = new ConversionComponent;
+        $this->Date = new DateComponent;
+        $this->Gedooo = new GedoooComponent;
+
+        $dyn_path = "/files/generee/projet/" . $delib['Deliberation']['id'] . "/";
+        $path = WEBROOT_PATH . $dyn_path;
+        // Itération sur les séances
+        if (!$exceptSeance) {
+            $delibseances = $this->getSeancesid($delib['Deliberation']['id']);
+            $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($delibseances), 'text'));
             $oMainPart->addElement(new GDO_FieldType('identifiant_projet', $delib['Deliberation']['id'], 'text'));
             if (count($delibseances) == 1) {
-				$this->Seance->makeBalise($delibseances[0], $oMainPart);
-                // recupération de la position de la séance délibérante comme position principale
-				$position = $this->getPosition($delib['Deliberation']['id'], $delibseances[0]);
-				$seances = new GDO_IterationType("Seances");
-				$seances->addPart($this->Seance->makeBalise($delibseances[0]));
-				$oMainPart->addElement($seances);
-			}
-			elseif (count($delibseances) > 1) {
-				$seance_deliberante = $this->Seance->getSeanceDeliberante($delibseances);
-                // recupération de la position de la séance délibérante comme position principale
-                $position = $this->getPosition($delib['Deliberation']['id'], $seance_deliberante);
+                $this->Seance->makeBalise($delibseances[0], $oMainPart);
+                $position = $this->getPosition($delib['Deliberation']['id'], $delibseances[0]);
+                $oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
+                $seances = new GDO_IterationType("Seances");
+                $seances->addPart($this->Seance->makeBalise($delibseances[0]));
+                $oMainPart->addElement($seances);
+            } elseif (count($delibseances) > 1) {
+                $seance_deliberante = $this->Seance->getSeanceDeliberante($delibseances);
 
                 $this->Seance->makeBalise($seance_deliberante, $oMainPart);
 
-				$seances = new GDO_IterationType("Seances");
-				foreach($delibseances as $delibseances_seance_id) {
-					$seances->addPart($this->Seance->makeBalise($delibseances_seance_id));
-				}
-				$oMainPart->addElement($seances);
-			}
-		}
-        //Pour les multi-projets
-        if(isset($delib['Deliberationseance']) && isset($delib['Deliberationseance']['position']))
-            $position=$delib['Deliberationseance']['position'];
-
-        if(isset($position))
-            $oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
-        $oMainPart->addElement(new GDO_FieldType('titre_projet',   ($delib['Deliberation']['titre']),    'lines'));
-        if (empty($delib['Deliberation']['is_multidelib']))
-            $oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet']),     'lines'));
-		else
-            $oMainPart->addElement(new GDO_FieldType('objet_projet',   ($delib['Deliberation']['objet_delib']),     'lines'));
-		$oMainPart->addElement(new GDO_FieldType('libelle_projet', ($delib['Deliberation']['objet']),      'lines'));
-		$oMainPart->addElement(new GDO_FieldType('objet_delib',    ($delib['Deliberation']['objet_delib']), 'lines'));
-		$oMainPart->addElement(new GDO_FieldType('libelle_delib',  ($delib['Deliberation']['objet_delib']), 'lines'));
-		$oMainPart->addElement(new GDO_FieldType('identifiant_projet',          $delib['Deliberation']['id'],       'text'));
-		$oMainPart->addElement(new GDO_FieldType('etat_projet',                 $delib['Deliberation']['etat'],       'text'));
-		$oMainPart->addElement(new GDO_FieldType('numero_deliberation',         $delib['Deliberation']['num_delib'],'text'));
-		$oMainPart->addElement(new GDO_FieldType('numero_acte',         $delib['Deliberation']['num_delib'],'text'));
+                $seances = new GDO_IterationType("Seances");
+                foreach ($delibseances as $key => $delibseances_seance_id) {
+                    $seances->addPart($this->Seance->makeBalise($delibseances_seance_id));
+                }
+                $oMainPart->addElement($seances);
+            }
+        }
+        /* $this->log('$seance_id->'.$seance_id);
+          if ($seance_id != null) {
+          $position = $this->getPosition($delib['Deliberation']['id'], $seance_id);
+          $this->log($delib['Deliberation']['id'].', '.$seance_id.'=>'.$position);
+          $oMainPart->addElement(new GDO_FieldType('position_projet', $delib['Deliberationseance']['position'], 'text'));
+          } */
+        $oMainPart->addElement(new GDO_FieldType('position_projet', (isset($delib['Deliberationseance']) && isset($delib['Deliberationseance']['position']) ? $delib['Deliberationseance']['position'] : ''), 'text'));
+        $oMainPart->addElement(new GDO_FieldType('titre_projet', ($delib['Deliberation']['titre']), 'lines'));
+        $oMainPart->addElement(new GDO_FieldType('objet_projet', ($delib['Deliberation']['objet']), 'lines'));
+        $oMainPart->addElement(new GDO_FieldType('libelle_projet', ($delib['Deliberation']['objet']), 'lines'));
+        $oMainPart->addElement(new GDO_FieldType('objet_delib', ($delib['Deliberation']['objet_delib']), 'lines'));
+        $oMainPart->addElement(new GDO_FieldType('libelle_delib', ($delib['Deliberation']['objet_delib']), 'lines'));
+        $oMainPart->addElement(new GDO_FieldType('identifiant_projet', $delib['Deliberation']['id'], 'text'));
+        $oMainPart->addElement(new GDO_FieldType('etat_projet', $delib['Deliberation']['etat'], 'text'));
+        $oMainPart->addElement(new GDO_FieldType('numero_deliberation', $delib['Deliberation']['num_delib'], 'text'));
+        $oMainPart->addElement(new GDO_FieldType('numero_acte', $delib['Deliberation']['num_delib'], 'text'));
         $oMainPart->addElement(new GDO_FieldType('classification_deliberation', $delib['Deliberation']['num_pref'], 'text'));
         $oMainPart->addElement(new GDO_FieldType("date_envoi_signature", $this->Date->frDate($delib['Deliberation']['date_envoi_signature']), 'date'));
 
-		$this->Service->makeBalise($oMainPart, $delib['Deliberation']['service_id']);
-		// Informations sur la nature
+        $this->Service->makeBalise($oMainPart, $delib['Deliberation']['service_id']);
+        // Informations sur la nature
 //	$this->Typeacte->makeBalise($oMainPart, $delib['Deliberation']['typeacte_id']);
-		// Informations sur le thème
-		$this->Theme->makeBalise($oMainPart, $delib['Deliberation']['theme_id']);
-		// Informations sur le rapporteur
-		$this->Rapporteur->makeBalise($oMainPart, $delib['Deliberation']['rapporteur_id']);
-		// Informations sur le rédacteur
-		$this->Redacteur->makeBalise($oMainPart, $delib['Deliberation']['redacteur_id']);
+        // Informations sur le thème
+        $this->Theme->makeBalise($oMainPart, $delib['Deliberation']['theme_id']);
+        // Informations sur le rapporteur
+        $this->Rapporteur->makeBalise($oMainPart, $delib['Deliberation']['rapporteur_id']);
+        // Informations sur le rédacteur
+        $this->Redacteur->makeBalise($oMainPart, $delib['Deliberation']['redacteur_id']);
 
-		// Informations sur la délibération
+        // Informations sur la délibération
 
-		$nb_votant = $delib['Deliberation']['vote_nb_oui']+$delib['Deliberation']['vote_nb_abstention']+$delib['Deliberation']['vote_nb_non'];
-		if (($delib['Deliberation']['etat'] == 3 ) &&  ($delib['Deliberation']['vote_nb_oui']==0 ))
-			$oMainPart->addElement(new GDO_FieldType('acte_adopte',  '1', 'text'));
-		else {
-			$oMainPart->addElement(new GDO_FieldType('acte_adopte',  '0', 'text'));
-			$oMainPart->addElement(new GDO_FieldType('nombre_pour',  ($delib['Deliberation']['vote_nb_oui'])   , 'text'));
-			$oMainPart->addElement(new GDO_FieldType('nombre_abstention', ( $delib['Deliberation']['vote_nb_abstention']), 'text'));
-			$oMainPart->addElement(new GDO_FieldType('nombre_contre',  ($delib['Deliberation']['vote_nb_non']), 'text'));
-			$oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', ( $delib['Deliberation']['vote_nb_retrait']), 'text'));
-		}
-		$oMainPart->addElement(new GDO_FieldType('nombre_votant', $nb_votant, 'text'));
-		$oMainPart->addElement(new GDO_FieldType('date_reception',  ($delib['Deliberation']['tdt_dateAR']), 'text'));
-		$oMainPart->addElement(new GDO_FieldType('commentaire_vote', $delib['Deliberation']['vote_commentaire'], 'lines'));
+        $nb_votant = $delib['Deliberation']['vote_nb_oui'] + $delib['Deliberation']['vote_nb_abstention'] + $delib['Deliberation']['vote_nb_non'];
+        // S'il s'agit d'un acte
+        if (($delib['Deliberation']['etat'] == self::votePour ) && ($delib['Deliberation']['vote_nb_oui'] == 0 ))
+            $oMainPart->addElement(new GDO_FieldType('acte_adopte', '1', 'text'));
+        // S'il s'agit d'une délibération
+        else {
+            $oMainPart->addElement(new GDO_FieldType('acte_adopte', '0', 'text'));
+            $oMainPart->addElement(new GDO_FieldType('nombre_pour', ($delib['Deliberation']['vote_nb_oui']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('nombre_abstention', ( $delib['Deliberation']['vote_nb_abstention']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('nombre_contre', ($delib['Deliberation']['vote_nb_non']), 'text'));
+            $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', ( $delib['Deliberation']['vote_nb_retrait']), 'text'));
+        }
+        $oMainPart->addElement(new GDO_FieldType('nombre_votant', $nb_votant, 'text'));
+        $oMainPart->addElement(new GDO_FieldType('date_reception', ($delib['Deliberation']['dateAR']), 'text'));
+        $oMainPart->addElement(new GDO_FieldType('commentaire_vote', $delib['Deliberation']['vote_commentaire'], 'lines'));
 
-		$coms = $this->Commentaire->find('all',
-				array( 'conditions' => array('Commentaire.delib_id' => $delib['Deliberation']['id']),
-						'fields'    => array('texte', 'commentaire_auto'),
-						'recursive' => -1));
+        $coms = $this->Commentaire->find('all', array('conditions' => array('Commentaire.delib_id' => $delib['Deliberation']['id']),
+            'fields' => array('texte', 'commentaire_auto'),
+            'recursive' => -1));
 
-		if (!empty($coms)) {
-			$commentaires = new GDO_IterationType("Commentaires");
-			foreach($coms as $commentaire) {
-				$oDevPart = new GDO_PartType();
-				if ($commentaire['Commentaire']['commentaire_auto']==0){
-					$oDevPart->addElement(new GDO_FieldType("texte_commentaire", ($commentaire['Commentaire']['texte']), "text"));
-					$commentaires->addPart($oDevPart);
-				}
-			}
-			@$oMainPart->addElement($commentaires);
-		}
-		$this->Deliberationseance->Behaviors->attach('Containable');
-                $avisSeances =  $this->Deliberationseance->find('all', array(
-                                'conditions' => array('Deliberationseance.deliberation_id' => $delib['Deliberation']['id']),
-                                'contain'  => array('Seance.date', 'Seance.Typeseance')));
-                include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
-                $this->Date = new DateComponent;
-
-
-                  if (!empty($avisSeances)) {
-                    $aviss =  new GDO_IterationType("AvisProjet");
-                    foreach($avisSeances as $avisSeance) {
-                        if ( $avisSeance['Seance']['Typeseance']['action'] == 1 && is_bool($avisSeance['Deliberationseance']['avis'])) {
-			    $oDevPart = new GDO_PartType();
-                            $typeseance = $avisSeance['Seance']['Typeseance']['libelle'];
-                            $dateSeance =  $this->Date->frenchDate(strtotime($avisSeance['Seance']['date']));  
-                            if  ($avisSeance['Deliberationseance']['avis'] == true) {
-                                $message = "A reçu un avis favorable  en $typeseance du $dateSeance";
-                            } 
-                            else {
-                                $message = "A reçu un avis défavorable  en $typeseance du $dateSeance";
-                            }
-		            $oDevPart->addElement(new GDO_FieldType("avis", $message, "text"));
-			    $oDevPart->addElement(new GDO_FieldType("avis_favorable",  $avisSeance['Deliberationseance']['avis'], "text"));
-		            $oDevPart->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
-			    $aviss->addPart($oDevPart);
-                        }
-                    }
-		    @$oMainPart->addElement($aviss);
+        if (!empty($coms)) {
+            $commentaires = new GDO_IterationType("Commentaires");
+            foreach ($coms as $commentaire) {
+                $oDevPart = new GDO_PartType();
+                if ($commentaire['Commentaire']['commentaire_auto'] == 0) {
+                    $oDevPart->addElement(new GDO_FieldType("texte_commentaire", ($commentaire['Commentaire']['texte']), "text"));
+                    $commentaires->addPart($oDevPart);
                 }
-                 
-		$historik = $this->Historique->find('all',
-				array('conditions' => array('Historique.delib_id' => $delib['Deliberation']['id']),
-						'fields'     => array('commentaire'),
-						'recursive'  => -1));
-
-		if (!empty($historik)) {
-			@$historique =  new GDO_IterationType("Historique");
-			foreach($historik as $histo) {
-				$oDevPart = new GDO_PartType();
-				$oDevPart->addElement(new GDO_FieldType("log", ($histo['Historique']['commentaire']), "text"));
-				$historique->addPart($oDevPart);
-			}
-			@$oMainPart->addElement($historique);
-		}
-
-		$infosup = $this->Infosup->find('all',
-				array('conditions' => array('Infosup.foreign_key' => $delib['Deliberation']['id'],
-						'Infosup.model'       => 'Deliberation'),
-						'recursive'  => -1));
-		if (!empty($infosup)) {
-			foreach($infosup as  $champs)
-				$oMainPart->addElement($this->Infosup->addField($champs['Infosup'], $delib['Deliberation']['id'], 'Deliberation'));
-		}
-		else {
-			$defs = $this->Infosup->Infosupdef->find('all', array('conditions'=>array('model' => 'Deliberation'), 'recursive' => -1));
-			foreach($defs as $def) {
-				$oMainPart->addElement(new GDO_FieldType($def['Infosupdef']['code'],  (' '), 'text')) ;
-			}
-		}
-
-		$multidelibs = $this->find('first', array('conditions' => array('Deliberation.parent_id' => $delib['Deliberation']['id']),
-				'fields'     => array('id', 'objet')));
-		@$Multi =  new GDO_IterationType("Deliberations");
-		if (!empty($multidelibs['Multidelib'])) {
-			foreach($multidelibs['Multidelib'] as $multidelib ){
-				$oDevPart = new GDO_PartType();
-				$oDevPart->addElement(new GDO_FieldType("libelle_multi_delib", ($multidelib['objet']), "text"));
-				$oDevPart->addElement(new GDO_FieldType("id_multi_delib",      ($multidelib['id']),    "text"));
-				$Multi->addPart($oDevPart);
-			}
-		}
-		else {
-			$oDevPart = new GDO_PartType();
-			$oDevPart->addElement(new GDO_FieldType("libelle_multi_delib", " ", "text"));
-			$oDevPart->addElement(new GDO_FieldType("id_multi_delib",      " ",    "text"));
-			$Multi->addPart($oDevPart);
-		}
-		@$oMainPart->addElement($Multi);
-
-                if (!$this->Gedooo->checkPath($path))
-                        die("Webdelib ne peut pas ecrire dans le repertoire : $path");
-                if (!empty($delib['Deliberation']['texte_projet'])) {
-                        $oMainPart->addElement(new GDO_ContentType('texte_projet',
-                                        'text_projet.odt' ,
-                                        'application/vnd.oasis.opendocument.text',
-                                        'binary',
-                                        $delib['Deliberation']['texte_projet']));
-                }else $oMainPart->addElement(new GDO_FieldType("texte_projet", "",    "text"));
-                if (!empty($delib['Deliberation']['deliberation'])) {
-                $oMainPart->addElement(new GDO_ContentType('texte_deliberation',
-                    'td.odt',
-                    'application/vnd.oasis.opendocument.text' ,
-                    'binary',
-                    $delib['Deliberation']['deliberation']));
-                $oMainPart->addElement(new GDO_ContentType('texte_acte',
-                    'td.odt',
-                    'application/vnd.oasis.opendocument.text' ,
-                    'binary',
-                    $delib['Deliberation']['deliberation']));
-			} else {
-                $oMainPart->addElement(new GDO_FieldType("texte_deliberation", "", "text"));
-                $oMainPart->addElement(new GDO_FieldType("texte_acte", "", "text"));
             }
-			if (!empty($delib['Deliberation']['texte_synthese'])) {
-				$oMainPart->addElement(new GDO_ContentType('note_synthese',
-						'ns.odt',
-						'application/vnd.oasis.opendocument.text' ,
-						'binary',
-						$delib['Deliberation']['texte_synthese']));
-			}else $oMainPart->addElement(new GDO_FieldType("note_synthese", "",    "text"));
-			if (!empty($delib['Deliberation']['debat'])) {
-				$oMainPart->addElement(new GDO_ContentType('debat_deliberation',
-						'debat.odt',
-						'application/vnd.oasis.opendocument.text' ,
-						'binary',
-						$delib['Deliberation']['debat']));
-			}else $oMainPart->addElement(new GDO_FieldType("debat_deliberation", "", "text"));
-			if (!empty($delib['Deliberation']['commission'])) {
-				$oMainPart->addElement(new GDO_ContentType('debat_commission',
-						'debat_commission.odt',
-						'application/vnd.oasis.opendocument.text',
-						'binary',
-						$delib['Deliberation']['commission']));
-			}else $oMainPart->addElement(new GDO_FieldType("debat_commission", "", "text"));
+            @$oMainPart->addElement($commentaires);
 
-		$anns = $this->Annex->find('all', array(
-                    'conditions' => array (
-                    'Annex.foreign_key' => $delib['Deliberation']['id'],
-                    'Annex.joindre_fusion' => true
-                    ),
-                    'fields' => array('Annex.id', 'Annex.filetype', 'Annex.filename', 'Annex.titre', 'Annex.edition_data'),
-                    'order' => array('Annex.id' => 'ASC'),
-                    'recursive' => -1
-                ));
+            $avisCommission = new GDO_IterationType("AvisCommission");
+            foreach ($coms as $commentaire) {
+                $oDevPart = new GDO_PartType();
+                if ($commentaire['Commentaire']['commentaire_auto'] == 1) {
+                    $oDevPart->addElement(new GDO_FieldType("avis", ($commentaire['Commentaire']['texte']), "text"));
+                    $avisCommission->addPart($oDevPart);
+                }
+            }
+            @$oMainPart->addElement($avisCommission);
+        }
+        $this->Deliberationseance->Behaviors->attach('Containable');
+        $avisSeances = $this->Deliberationseance->find('all', array(
+            'conditions' => array('Deliberationseance.deliberation_id' => $delib['Deliberation']['id']),
+            'contain' => array('Seance.date', 'Seance.Typeseance')));
+        include_once (ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
+        $this->Date = new DateComponent;
 
-		$oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($anns), 'text'));
 
-		@$annexes =  new GDO_IterationType("Annexes");
-
-        foreach($anns as $annexe) {
-            $oDevPart = new GDO_PartType();
-            $oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
-            $oDevPart->addElement(new GDO_FieldType('nom_fichier',  $annexe['Annex']['filename'], 'text'));
-            $oDevPart->addElement(new GDO_ContentType('fichier',    'annexe.odt',
-                    'application/vnd.oasis.opendocument.text',
-                    'binary',
-                     $annexe['Annex']['edition_data']));
-            $annexes->addPart($oDevPart);
-            unset ($oDevPart);
+        if (!empty($avisSeances)) {
+            $aviss = new GDO_IterationType("AvisProjet");
+            foreach ($avisSeances as $avisSeance) {
+                // Les avis sont donnés sur les projets en séance non délibérante
+                if ($avisSeance['Seance']['Typeseance']['action'] == Typeseance::actionAvis) {
+                    $oDevPart = new GDO_PartType();
+                    $typeseance = $avisSeance['Seance']['Typeseance']['libelle'];
+                    $dateSeance = $this->Date->frenchDate(strtotime($avisSeance['Seance']['date']));
+                    if ($avisSeance['Deliberationseance']['avis'] == 1) {
+                        $message = "A reçu un avis favorable  en $typeseance du $dateSeance";
+                    } else {
+                        $message = "A reçu un avis défavorable  en $typeseance du $dateSeance";
+                    }
+                    $oDevPart->addElement(new GDO_FieldType("avis", $message, "text"));
+                    $oDevPart->addElement(new GDO_FieldType("avis_favorable", $avisSeance['Deliberationseance']['avis'], "text"));
+                    $oDevPart->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
+                    $aviss->addPart($oDevPart);
+                }
+            }
+            @$oMainPart->addElement($aviss);
         }
 
-        unset ($anns);
-		@$oMainPart->addElement($annexes);
+        $historik = $this->Historique->find('all', array('conditions' => array('Historique.delib_id' => $delib['Deliberation']['id']),
+            'fields' => array('commentaire'),
+            'recursive' => -1));
 
-		//LISTE DES PRESENCES...
-		$this->Listepresence->Behaviors->attach('Containable');
-		$this->Vote->Behaviors->attach('Containable');
-		$acteurs_presents = array();
-		$acteurs_absents = array();
-		$acteurs_remplaces = array();
-		$acteurs_contre = array();
-		$acteurs_pour = array();
-		$acteurs_abstention = array();
-		$acteurs_sans_participation = array();
+        if (!empty($historik)) {
+            @$historique = new GDO_IterationType("Historique");
+            foreach ($historik as $histo) {
+                $oDevPart = new GDO_PartType();
+                $oDevPart->addElement(new GDO_FieldType("log", ($histo['Historique']['commentaire']), "text"));
+                $historique->addPart($oDevPart);
+            }
+            @$oMainPart->addElement($historique);
+        }
 
-		$acteurs = $this->Listepresence->find('all',
-				array ( 'conditions' => array("delib_id" => $delib['Deliberation']['id']),
-						'contain'   => array('Acteur', 'Mandataire', 'Suppleant'),
-						'order' => 'Acteur.position ASC'));
-		if (!empty($acteurs)) {
-			foreach($acteurs as $acteur) {
-                                $aActeur=array('nom_acteur' => $acteur['Acteur']['nom'],
-							'prenom_acteur' => $acteur['Acteur']['prenom'],
-							'salutation_acteur'=> $acteur['Acteur']['salutation'],
-							'titre_acteur'=> $acteur['Acteur']['titre'],
-							'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
-							'adresse1_acteur' => $acteur['Acteur']['adresse1'],
-							'adresse2_acteur' => $acteur['Acteur']['adresse2'],
-							'cp_acteur' => $acteur['Acteur']['cp'],
-							'ville_acteur' => $acteur['Acteur']['ville'],
-							'email_acteur' => $acteur['Acteur']['email'],
-							'telfixe_acteur' => $acteur['Acteur']['telfixe'],
-							'telmobile_acteur' => $acteur['Acteur']['telmobile'],
-							'note_acteur' => $acteur['Acteur']['note']);
-                                
-				if ( $acteur['Listepresence']['present'] == true && empty($acteur['Listepresence']['suppleant_id'])){
+        $infosup = $this->Infosup->find('all', array('conditions' => array('Infosup.foreign_key' => $delib['Deliberation']['id'],
+                'Infosup.model' => 'Deliberation'),
+            'recursive' => -1));
+        if (!empty($infosup)) {
+            foreach ($infosup as $champs)
+                $oMainPart->addElement($this->Infosup->addField($champs['Infosup'], $delib['Deliberation']['id'], 'Deliberation'));
+        } else {
+            $defs = $this->Infosup->Infosupdef->find('all', array('conditions' => array('model' => 'Deliberation'), 'recursive' => -1));
+            foreach ($defs as $def) {
+                $oMainPart->addElement(new GDO_FieldType($def['Infosupdef']['code'], (' '), 'text'));
+            }
+        }
+
+        $multidelibs = $this->find('first', array('conditions' => array('Deliberation.parent_id' => $delib['Deliberation']['id']),
+            'fields' => array('id', 'objet')));
+        @$Multi = new GDO_IterationType("Deliberations");
+        if (!empty($multidelibs['Multidelib'])) {
+            foreach ($multidelibs['Multidelib'] as $multidelib) {
+                $oDevPart = new GDO_PartType();
+                $oDevPart->addElement(new GDO_FieldType("libelle_multi_delib", ($multidelib['objet']), "text"));
+                $oDevPart->addElement(new GDO_FieldType("id_multi_delib", ($multidelib['id']), "text"));
+                $Multi->addPart($oDevPart);
+            }
+        } else {
+            $oDevPart = new GDO_PartType();
+            $oDevPart->addElement(new GDO_FieldType("libelle_multi_delib", " ", "text"));
+            $oDevPart->addElement(new GDO_FieldType("id_multi_delib", " ", "text"));
+            $Multi->addPart($oDevPart);
+        }
+        @$oMainPart->addElement($Multi);
+
+        if (Configure::read('GENERER_DOC_SIMPLE')) {
+            if (isset($delib['Deliberation']['texte_projet'])) {
+                $filename = $path . "texte_projet.html";
+                $delib['Deliberation']['texte_projet'] = $this->_url2pathImage($delib['Deliberation']['texte_projet']);
+                $this->Gedooo->createFile($path, "texte_projet.html", $delib['Deliberation']['texte_projet']);
+                $content = $this->Conversion->convertirFichier($filename, "odt");
+                $oMainPart->addElement(new GDO_ContentType('texte_projet', 'texte_projet.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
+            }
+            else
+                $oMainPart->addElement(new GDO_FieldType("texte_projet", "", "text"));
+            if (isset($delib['Deliberation']['texte_synthese'])) {
+                $filename = $path . "texte_synthese.html";
+                $this->Gedooo->createFile($path, "texte_synthese.html", $delib['Deliberation']['texte_synthese']);
+                $content = $this->Conversion->convertirFichier($filename, "odt");
+                $oMainPart->addElement(new GDO_ContentType('note_synthese', 'texte_synthese.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
+            }
+            else
+                $oMainPart->addElement(new GDO_FieldType("note_synthese", "", "text"));
+            if (isset($delib['Deliberation']['deliberation'])) {
+                $filename = $path . "texte_deliberation.html";
+                $this->Gedooo->createFile($path, "texte_deliberation.html", $delib['Deliberation']['deliberation']);
+                $content = $this->Conversion->convertirFichier($filename, "odt");
+                $oMainPart->addElement(new GDO_ContentType('texte_deliberation', 'deliberation.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
+            }
+            else
+                $oMainPart->addElement(new GDO_FieldType("texte_deliberation", "", "text"));
+            if (isset($delib['Deliberation']['debat'])) {
+                $filename = $path . "debat_deliberation.html";
+                $this->Gedooo->createFile($path, "debat_deliberation.html", $delib['Deliberation']['debat']);
+                $content = $this->Conversion->convertirFichier($filename, "odt");
+                $oMainPart->addElement(new GDO_ContentType('debat_deliberation', 'debat.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
+            }
+            else
+                $oMainPart->addElement(new GDO_FieldType("debat_deliberation", "", "text"));
+            if (isset($delib['Deliberation']['commission'])) {
+                $filename = $path . "commission.html";
+                $this->Gedooo->createFile($path, "commission.html", $delib['Deliberation']['commission']);
+                $content = $this->Conversion->convertirFichier($filename, "odt");
+                $oMainPart->addElement(new GDO_ContentType('debat_commission', 'commission.odt', 'application/vnd.oasis.opendocument.text', 'binary', $content));
+            }
+            else
+                $oMainPart->addElement(new GDO_FieldType("debat_commission", "", "text"));
+        }
+        else {
+
+            if (!$this->Gedooo->checkPath($path))
+                die("Webdelib ne peut pas ecrire dans le repertoire : $path");
+
+            $urlWebroot = 'http://' . $_SERVER['HTTP_HOST'] . $dyn_path;
+            if (!empty($delib['Deliberation']['texte_projet'])) {
+                $oMainPart->addElement(new GDO_ContentType('texte_projet', 'text_projet.odt', 'application/vnd.oasis.opendocument.text', 'binary', $delib['Deliberation']['texte_projet']));
+            }
+            else
+                $oMainPart->addElement(new GDO_FieldType("texte_projet", "", "text"));
+            if (!empty($delib['Deliberation']['deliberation'])) {
+                $oMainPart->addElement(new GDO_ContentType('texte_deliberation', 'td.odt', 'application/vnd.oasis.opendocument.text', 'binary', $delib['Deliberation']['deliberation']));
+            }
+            else
+                $oMainPart->addElement(new GDO_FieldType("texte_deliberation", "", "text"));
+            if (!empty($delib['Deliberation']['texte_synthese'])) {
+                $oMainPart->addElement(new GDO_ContentType('note_synthese', 'ns.odt', 'application/vnd.oasis.opendocument.text', 'binary', $delib['Deliberation']['texte_synthese']));
+            }
+            else
+                $oMainPart->addElement(new GDO_FieldType("note_synthese", "", "text"));
+            if (!empty($delib['Deliberation']['debat'])) {
+                $oMainPart->addElement(new GDO_ContentType('debat_deliberation', 'debat.odt', 'application/vnd.oasis.opendocument.text', 'binary', $delib['Deliberation']['debat']));
+            }
+            else
+                $oMainPart->addElement(new GDO_FieldType("debat_deliberation", "", "text"));
+            if (!empty($delib['Deliberation']['commission'])) {
+                $oMainPart->addElement(new GDO_ContentType('debat_commission', 'debat_commission.odt', 'application/vnd.oasis.opendocument.text', 'binary', $delib['Deliberation']['commission']));
+            }
+            else
+                $oMainPart->addElement(new GDO_FieldType("debat_commission", "", "text"));
+        }
+
+        // $annexe_ids = $this->Annex->getAnnexesFromDelibId($delib['Deliberation']['id'], 0, 1);
+        $annexe_ids = array();
+        $anns = $this->Annex->find('all', array('conditions' => array(
+                'Annex.foreign_key' => $delib['Deliberation']['id']),
+            'fields' => array('Annex.id', 'Annex.filetype'),
+            'order' => array('Annex.id' => 'ASC'),
+            'recursive' => -1));
+        foreach ($anns as $ann)
+            $annexe_ids[] = $ann['Annex']['id'];
+        $oMainPart->addElement(new GDO_FieldType('nombre_annexe', count($annexe_ids), 'text'));
+
+        @$annexes = new GDO_IterationType("Annexes");
+        foreach ($annexe_ids as $key => $annexe_id) {
+            unset($annexe);
+            $oDevPart = new GDO_PartType();
+            $annexe = $this->Annex->find('first', array('conditions' => array('Annex.id' => $annexe_id),
+                'recursive' => -1));
+            $oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
+            if (($annexe['Annex']['filetype'] == "application/vnd.oasis.opendocument.text")) {
+                $oDevPart->addElement(new GDO_FieldType('nom_fichier', $annexe['Annex']['filename'], 'text'));
+                $oDevPart->addElement(new GDO_ContentType('fichier', $annexe['Annex']['filename'], 'application/vnd.oasis.opendocument.text', 'binary', $annexe['Annex']['data']));
+                $annexes->addPart($oDevPart);
+                //file_put_contents('/tmp/Annexe_'.$annexe_id.'.odt', $annexe['Annex']['data']);
+            } elseif (($annexe['Annex']['filetype'] == "application/pdf") && !empty($annexe['Annex']['data'])) {
+                $oDevPart->addElement(new GDO_FieldType('nom_fichier', $annexe['Annex']['filename'], 'text'));
+                $oDevPart->addElement(new GDO_ContentType('fichier', $annexe['Annex']['filename'], 'application/vnd.oasis.opendocument.text', 'binary', $annexe['Annex']['data']));
+                $annexes->addPart($oDevPart);
+                //file_put_contents('/tmp/Annexe_'.$annexe_id.'.odt', $annexe['Annex']['data']);
+            }
+        }
+        @$oMainPart->addElement($annexes);
+
+        //LISTE DES PRESENCES...
+        $this->Listepresence->Behaviors->attach('Containable');
+        $this->Vote->Behaviors->attach('Containable');
+        $acteurs_presents = array();
+        $acteurs_absents = array();
+        $acteurs_remplaces = array();
+        $acteurs_contre = array();
+        $acteurs_pour = array();
+        $acteurs_abstention = array();
+        $acteurs_sans_participation = array();
+
+        $acteurs = $this->Listepresence->find('all', array('conditions' => array("delib_id" => $delib['Deliberation']['id']),
+            'contain' => array('Acteur', 'Mandataire', 'Suppleant'),
+            'order' => 'Acteur.position ASC'));
+        if (!empty($acteurs)) {
+            foreach ($acteurs as $acteur) {
+                $aActeur = array('nom_acteur' => $acteur['Acteur']['nom'],
+                    'prenom_acteur' => $acteur['Acteur']['prenom'],
+                    'salutation_acteur' => $acteur['Acteur']['salutation'],
+                    'titre_acteur' => $acteur['Acteur']['titre'],
+                    'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                    'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                    'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                    'cp_acteur' => $acteur['Acteur']['cp'],
+                    'ville_acteur' => $acteur['Acteur']['ville'],
+                    'email_acteur' => $acteur['Acteur']['email'],
+                    'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                    'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                    'note_acteur' => $acteur['Acteur']['note']);
+
+                if ($acteur['Listepresence']['present'] == true && empty($acteur['Listepresence']['suppleant_id'])) {
                     $acteurs_presents[] = $aActeur;
-				}
-                elseif(($acteur['Listepresence']['present'] == true) && !empty($acteur['Listepresence']['suppleant_id'])) {
-                    $aSuppleant=array('nom_acteur' => $acteur['Suppleant']['nom'],
-							'prenom_acteur' => $acteur['Suppleant']['prenom'],
-							'salutation_acteur'=> $acteur['Suppleant']['salutation'],
-							'titre_acteur'=> $acteur['Suppleant']['titre'],
-							'date_naissance_acteur' => $acteur['Suppleant']['date_naissance'],
-							'adresse1_acteur' => $acteur['Suppleant']['adresse1'],
-							'adresse2_acteur' => $acteur['Suppleant']['adresse2'],
-							'cp_acteur' => $acteur['Suppleant']['cp'],
-							'ville_acteur' => $acteur['Suppleant']['ville'],
-							'email_acteur' => $acteur['Suppleant']['email'],
-							'telfixe_acteur' => $acteur['Suppleant']['telfixe'],
-							'telmobile_acteur' => $acteur['Suppleant']['telmobile'],
-							'note_acteur' => $acteur['Suppleant']['note']);
-                    $acteurs_presents[]=$aSuppleant;
-				}
-				elseif (($acteur['Listepresence']['present'] == false) && !empty($acteur['Listepresence']['mandataire'])) {
+                } elseif (($acteur['Listepresence']['present'] == true) && !empty($acteur['Listepresence']['suppleant_id'])) {
+                    $aSuppleant = array('nom_acteur' => $acteur['Suppleant']['nom'],
+                        'prenom_acteur' => $acteur['Suppleant']['prenom'],
+                        'salutation_acteur' => $acteur['Suppleant']['salutation'],
+                        'titre_acteur' => $acteur['Suppleant']['titre'],
+                        'date_naissance_acteur' => $acteur['Suppleant']['date_naissance'],
+                        'adresse1_acteur' => $acteur['Suppleant']['adresse1'],
+                        'adresse2_acteur' => $acteur['Suppleant']['adresse2'],
+                        'cp_acteur' => $acteur['Suppleant']['cp'],
+                        'ville_acteur' => $acteur['Suppleant']['ville'],
+                        'email_acteur' => $acteur['Suppleant']['email'],
+                        'telfixe_acteur' => $acteur['Suppleant']['telfixe'],
+                        'telmobile_acteur' => $acteur['Suppleant']['telmobile'],
+                        'note_acteur' => $acteur['Suppleant']['note']);
+                    $acteurs_presents[] = $aSuppleant;
+                } elseif (($acteur['Listepresence']['present'] == false) && !empty($acteur['Listepresence']['mandataire'])) {
                     $acteur_mandataire = array(
-                                    'nom_mandate' => $acteur['Mandataire']['nom'],
-                                    'prenom_mandate' => $acteur['Mandataire']['prenom'],
-                                    'salutation_mandate'=> $acteur['Mandataire']['salutation'],
-                                    'titre_mandate'=> $acteur['Mandataire']['titre'],
-                                    'date_naissance_mandate' => $acteur['Mandataire']['date_naissance'],
-                                    'adresse1_mandate' => $acteur['Mandataire']['adresse1'],
-                                    'adresse2_mandate' => $acteur['Mandataire']['adresse2'],
-                                    'cp_mandate' => $acteur['Mandataire']['cp'],
-                                    'ville_mandate' => $acteur['Mandataire']['ville'],
-                                    'email_mandate' => $acteur['Mandataire']['email'],
-                                    'telfixe_mandate' => $acteur['Mandataire']['telfixe'],
-                                    'telmobile_mandate' => $acteur['Mandataire']['telmobile'],
-                                    'note_mandate' => $acteur['Mandataire']['note']);
-                    $acteurs_remplaces[]=Hash::merge($aActeur, $acteur_mandataire);
-				}
-                elseif(($acteur['Listepresence']['present'] == false) && empty($acteur['Listepresence']['mandataire'])) {
+                        'nom_mandate' => $acteur['Mandataire']['nom'],
+                        'prenom_mandate' => $acteur['Mandataire']['prenom'],
+                        'salutation_mandate' => $acteur['Mandataire']['salutation'],
+                        'titre_mandate' => $acteur['Mandataire']['titre'],
+                        'date_naissance_mandate' => $acteur['Mandataire']['date_naissance'],
+                        'adresse1_mandate' => $acteur['Mandataire']['adresse1'],
+                        'adresse2_mandate' => $acteur['Mandataire']['adresse2'],
+                        'cp_mandate' => $acteur['Mandataire']['cp'],
+                        'ville_mandate' => $acteur['Mandataire']['ville'],
+                        'email_mandate' => $acteur['Mandataire']['email'],
+                        'telfixe_mandate' => $acteur['Mandataire']['telfixe'],
+                        'telmobile_mandate' => $acteur['Mandataire']['telmobile'],
+                        'note_mandate' => $acteur['Mandataire']['note']);
+                    $acteurs_remplaces[] = Hash::merge($aActeur, $acteur_mandataire);
+                } elseif (($acteur['Listepresence']['present'] == false) && empty($acteur['Listepresence']['mandataire'])) {
                     $acteurs_absents[] = $aActeur;
-				}
-			}
-		}
+                }
+            }
+        }
 
-		$acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
-				"Vote.resultat"=> 2),
-				'contain'   => array('Acteur'),
-				'order' => 'Acteur.position ASC'));
+        $acteurs = $this->Vote->find('all', array('conditions' => array("delib_id" => $delib['Deliberation']['id'],
+                "Vote.resultat" => Vote::voteContre),
+            'contain' => array('Acteur'),
+            'order' => 'Acteur.position ASC'));
 
-		foreach ($acteurs as $acteur) {
-			$acteurs_contre[] = array('nom_acteur' => $acteur['Acteur']['nom'],
-					'prenom_acteur' => $acteur['Acteur']['prenom'],
-					'salutation_acteur'=> $acteur['Acteur']['salutation'],
-					'titre_acteur'=> $acteur['Acteur']['titre'],
-					'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
-					'adresse1_acteur' => $acteur['Acteur']['adresse1'],
-					'adresse2_acteur' => $acteur['Acteur']['adresse2'],
-					'cp_acteur' => $acteur['Acteur']['cp'],
-					'ville_acteur' => $acteur['Acteur']['ville'],
-					'email_acteur' => $acteur['Acteur']['email'],
-					'telfixe_acteur' => $acteur['Acteur']['telfixe'],
-					'telmobile_acteur' => $acteur['Acteur']['telmobile'],
-					'note_acteur' => $acteur['Acteur']['note']);
-		}
-		 
-		$acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
-				"Vote.resultat"=> 3),
-				'contain'   => array('Acteur'),
-				'order' => 'Acteur.position ASC'));
+        foreach ($acteurs as $acteur) {
+            $acteurs_contre[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                'prenom_acteur' => $acteur['Acteur']['prenom'],
+                'salutation_acteur' => $acteur['Acteur']['salutation'],
+                'titre_acteur' => $acteur['Acteur']['titre'],
+                'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                'cp_acteur' => $acteur['Acteur']['cp'],
+                'ville_acteur' => $acteur['Acteur']['ville'],
+                'email_acteur' => $acteur['Acteur']['email'],
+                'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                'note_acteur' => $acteur['Acteur']['note']);
+        }
 
-		foreach ($acteurs as $acteur) {
-			$acteurs_pour[] = array('nom_acteur' => $acteur['Acteur']['nom'],
-					'prenom_acteur' => $acteur['Acteur']['prenom'],
-					'salutation_acteur'=> $acteur['Acteur']['salutation'],
-					'titre_acteur'=> $acteur['Acteur']['titre'],
-					'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
-					'adresse1_acteur' => $acteur['Acteur']['adresse1'],
-					'adresse2_acteur' => $acteur['Acteur']['adresse2'],
-					'cp_acteur' => $acteur['Acteur']['cp'],
-					'ville_acteur' => $acteur['Acteur']['ville'],
-					'email_acteur' => $acteur['Acteur']['email'],
-					'telfixe_acteur' => $acteur['Acteur']['telfixe'],
-					'telmobile_acteur' => $acteur['Acteur']['telmobile'],
-					'note_acteur' => $acteur['Acteur']['note']);
-		}
-		 
-		$acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
-				'Vote.resultat' => 4),
-				'contain'   => array('Acteur'),
-				'order' => 'Acteur.position ASC'));
+        $acteurs = $this->Vote->find('all', array('conditions' => array("delib_id" => $delib['Deliberation']['id'],
+                "Vote.resultat" => Vote::votePour),
+            'contain' => array('Acteur'),
+            'order' => 'Acteur.position ASC'));
 
-		foreach ($acteurs as $acteur) {
-			$acteurs_abstention[] = array('nom_acteur' => $acteur['Acteur']['nom'],
-					'prenom_acteur' => $acteur['Acteur']['prenom'],
-					'salutation_acteur'=> $acteur['Acteur']['salutation'],
-					'titre_acteur'=> $acteur['Acteur']['titre'],
-					'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
-					'adresse1_acteur' => $acteur['Acteur']['adresse1'],
-					'adresse2_acteur' => $acteur['Acteur']['adresse2'],
-					'cp_acteur' => $acteur['Acteur']['cp'],
-					'ville_acteur' => $acteur['Acteur']['ville'],
-					'email_acteur' => $acteur['Acteur']['email'],
-					'telfixe_acteur' => $acteur['Acteur']['telfixe'],
-					'telmobile_acteur' => $acteur['Acteur']['telmobile'],
-					'note_acteur' => $acteur['Acteur']['note']);
-		}
-		$acteurs = $this->Vote->find('all', array ('conditions' => array("delib_id" => $delib['Deliberation']['id'],
-				"Vote.resultat"=> 5),
-				'contain'   => array('Acteur'),
-				'order' => 'Acteur.position ASC'));
+        foreach ($acteurs as $acteur) {
+            $acteurs_pour[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                'prenom_acteur' => $acteur['Acteur']['prenom'],
+                'salutation_acteur' => $acteur['Acteur']['salutation'],
+                'titre_acteur' => $acteur['Acteur']['titre'],
+                'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                'cp_acteur' => $acteur['Acteur']['cp'],
+                'ville_acteur' => $acteur['Acteur']['ville'],
+                'email_acteur' => $acteur['Acteur']['email'],
+                'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                'note_acteur' => $acteur['Acteur']['note']);
+        }
 
-		foreach ($acteurs as $acteur) {
-			$acteurs_sans_participation[] = array('nom_acteur' => $acteur['Acteur']['nom'],
-					'prenom_acteur' => $acteur['Acteur']['prenom'],
-					'salutation_acteur'=> $acteur['Acteur']['salutation'],
-					'titre_acteur'=> $acteur['Acteur']['titre'],
-					'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
-					'adresse1_acteur' => $acteur['Acteur']['adresse1'],
-					'adresse2_acteur' => $acteur['Acteur']['adresse2'],
-					'cp_acteur' => $acteur['Acteur']['cp'],
-					'ville_acteur' => $acteur['Acteur']['ville'],
-					'email_acteur' => $acteur['Acteur']['email'],
-					'telfixe_acteur' => $acteur['Acteur']['telfixe'],
-					'telmobile_acteur' => $acteur['Acteur']['telmobile'],
-					'note_acteur' => $acteur['Acteur']['note']);
-		}
+        $acteurs = $this->Vote->find('all', array('conditions' => array("delib_id" => $delib['Deliberation']['id'],
+                "Vote.resultat" => Vote::abstention),
+            'contain' => array('Acteur'),
+            'order' => 'Acteur.position ASC'));
 
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, '_present'));
-                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_present', count($acteurs_presents), 'text'));    
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbsents", $acteurs_absents, false, '_absent'));
-                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', count($acteurs_absents), 'text'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursMandates", $acteurs_remplaces, true, '_mandataire'));
-                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_mandataire', count($acteurs_remplaces), 'text'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre", $acteurs_contre, false, '_contre'));
-                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_contre', count($acteurs_contre), 'text'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursPour", $acteurs_pour, false, '_pour'));
-                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_pour', count($acteurs_pour), 'text'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbstention", $acteurs_abstention, false, '_abstention'));
-                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_abstention', count($acteurs_abstention), 'text'));
-		$oMainPart->addElement($this->_makeBlocsActeurs("ActeursSansParticipation", $acteurs_sans_participation, false, '_sans_participation'));
-                $oMainPart->addElement(new GDO_FieldType('nombre_acteur_sans_participation', count($acteurs_sans_participation), 'text'));
-	}
+        foreach ($acteurs as $acteur) {
+            $acteurs_abstention[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                'prenom_acteur' => $acteur['Acteur']['prenom'],
+                'salutation_acteur' => $acteur['Acteur']['salutation'],
+                'titre_acteur' => $acteur['Acteur']['titre'],
+                'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                'cp_acteur' => $acteur['Acteur']['cp'],
+                'ville_acteur' => $acteur['Acteur']['ville'],
+                'email_acteur' => $acteur['Acteur']['email'],
+                'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                'note_acteur' => $acteur['Acteur']['note']);
+        }
+        $acteurs = $this->Vote->find('all', array('conditions' => array("delib_id" => $delib['Deliberation']['id'],
+                "Vote.resultat" => Vote::sansParticipation),
+            'contain' => array('Acteur'),
+            'order' => 'Acteur.position ASC'));
 
-	function _makeBlocsActeurs ($nomBloc, $listActeur, $isMandate, $type) {
+        foreach ($acteurs as $acteur) {
+            $acteurs_sans_participation[] = array('nom_acteur' => $acteur['Acteur']['nom'],
+                'prenom_acteur' => $acteur['Acteur']['prenom'],
+                'salutation_acteur' => $acteur['Acteur']['salutation'],
+                'titre_acteur' => $acteur['Acteur']['titre'],
+                'date_naissance_acteur' => $acteur['Acteur']['date_naissance'],
+                'adresse1_acteur' => $acteur['Acteur']['adresse1'],
+                'adresse2_acteur' => $acteur['Acteur']['adresse2'],
+                'cp_acteur' => $acteur['Acteur']['cp'],
+                'ville_acteur' => $acteur['Acteur']['ville'],
+                'email_acteur' => $acteur['Acteur']['email'],
+                'telfixe_acteur' => $acteur['Acteur']['telfixe'],
+                'telmobile_acteur' => $acteur['Acteur']['telmobile'],
+                'note_acteur' => $acteur['Acteur']['note']);
+        }
+
+        $oMainPart->addElement($this->_makeBlocsActeurs("ActeursPresents", $acteurs_presents, false, '_present'));
+        $oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbsents", $acteurs_absents, false, '_absent'));
+        $oMainPart->addElement($this->_makeBlocsActeurs("ActeursMandates", $acteurs_remplaces, true, '_mandataire'));
+        $oMainPart->addElement($this->_makeBlocsActeurs("ActeursContre", $acteurs_contre, false, '_contre'));
+        $oMainPart->addElement($this->_makeBlocsActeurs("ActeursPour", $acteurs_pour, false, '_pour'));
+        $oMainPart->addElement($this->_makeBlocsActeurs("ActeursAbstention", $acteurs_abstention, false, '_abstention'));
+        $oMainPart->addElement($this->_makeBlocsActeurs("ActeursSansParticipation", $acteurs_sans_participation, false, '_sans_participation'));
+    }
+
+    /**
+     * Crée et complète une itération avec les champs concernant un ensemble
+     * d'acteurs.
+     *
+     * Si la liste d'acteurs est vide, on aura néanmoins tous les champs dans
+     * la première itération, et ceux-ci seront vides.
+     *
+     * Variables Gedooo, pour chacun des acteurs de la liste:
+     *  - nombre_acteur<suffixe>/count($listeActeurs)/text
+     *
+     *  - nom_acteur<suffixe>/Acteur.nom/text
+     *  - prenom_acteur<suffixe>/Acteur.prenom/text
+     *  - salutation_acteur<suffixe>/Acteur.salutation/text
+     *  - titre_acteur<suffixe>/Acteur.titre/text
+     *  - date_naissance_acteur<suffixe>/Acteur.date_naissance/date
+     *  - adresse1_acteur<suffixe>/Acteur.adresse1/text
+     *  - adresse2_acteur<suffixe>/Acteur.adresse2/text
+     *  - cp_acteur<suffixe>/Acteur.cp/text
+     *  - ville_acteur<suffixe>/Acteur.ville/text
+     *  - email_acteur<suffixe>/Acteur.email/text
+     *  - telfixe_acteur<suffixe>/Acteur.telfixe/text
+     *  - telmobile_acteur<suffixe>/Acteur.telmobile/text
+     *  - note_acteur<suffixe>/Acteur.note/text
+     *
+     *  Si l'acteur est mandaté
+     *  - nom_acteur_mandate/Mandataire.nom_acteur/text
+     *  - prenom_acteur_mandate/Mandataire.prenom_acteur/text
+     *  - salutation_acteur_mandate/Mandataire.salutation_acteur/text
+     *  - titre_acteur_mandate/Mandataire.titre_acteur/text
+     *  - date_naissance_acteur_mandate/Mandataire.date_naissance_acteur/text
+     *  - adresse1_acteur_mandate/Mandataire.adresse1_acteur/text
+     *  - adresse2_acteur_mandate/Mandataire.adresse2_acteur/text
+     *  - cp_acteur_mandate/Mandataire.cp_acteur/text
+     *  - ville_acteur_mandate/Mandataire.ville_acteur/text
+     *  - email_acteur_mandate/Mandataire.email_acteur/text
+     *  - telfixe_acteur_mandate/Mandataire.telfixe_acteur/text
+     *  - telmobile_acteur_mandate/Mandataire.telmobile_acteur/text
+     *  - note_acteur_mandate/Mandataire.note_acteur/text
+     *
+     * @param string $nomBloc Le nom de l'itération.
+     * @param array $listActeur La liste d'acteurs résultant d'un Model::find( 'all' )
+     * @param boolean $isMandate Permet de savoir si l'on a affaire à un acteur mandaté
+     * @param string $type Le suffixe à appliquer aux noms de champs
+     * @return GDO_IterationType
+     */
+	protected function _makeBlocsActeurs ($nomBloc, $listActeur, $isMandate, $type) {
 		$acteurs = new GDO_IterationType("$nomBloc");
 
 		if ( count($listActeur) == 0 ) {
 			$oDevPart = new GDO_PartType();
+			$oDevPart->addElement(new GDO_FieldType("nombre_acteur".$type,        '0', "text"));
+
 			$oDevPart->addElement(new GDO_FieldType("nom_acteur".$type,            ' ', "text"));
 			$oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type,         ' ', "text"));
 			$oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,     ' ', "text"));
@@ -1048,6 +1224,7 @@ class Deliberation extends AppModel {
 			$nbre_acteurs = count($listActeur);
 			foreach($listActeur as $acteur) {
 				$oDevPart = new GDO_PartType();
+				$oDevPart->addElement(new GDO_FieldType("nombre_acteur".$type, $nbre_acteurs , "text"));
 				$oDevPart->addElement(new GDO_FieldType("nom_acteur".$type, ($acteur['nom_acteur']), "text"));
 				$oDevPart->addElement(new GDO_FieldType("prenom_acteur".$type, ($acteur['prenom_acteur']), "text"));
 				$oDevPart->addElement(new GDO_FieldType("salutation_acteur".$type,($acteur['salutation_acteur']), "text"));
@@ -1089,7 +1266,7 @@ class Deliberation extends AppModel {
 
 
 	function _url2pathImage($url) {
-		$content = str_replace('http://webdelib/app/', APP, $url);
+		$content = str_replace('http://webdelib/app/', Configure::read('WEBDELIB_PATH'), $url);
 		$content = str_replace( '\"', '"', $content);
 		return $content;
 	}
@@ -1163,87 +1340,65 @@ class Deliberation extends AppModel {
 		}
 	}
 
-    /**
-     * sauvegarde des délibérations attachées
-     * @param integer $parentId id de la délibération principale
-     * @param array $delib délibération rattachée retourné par le formulaire 'edit'
-     * @return bool
-     */
-    function saveDelibRattachees($parentId, $delib)
-    {
-        $this->begin();
-        // initialisations
-        $newDelib = array();
+	/**
+	 * sauvergarde des délibérations attachées
+	 * @param integer $parentId id de la délibération principale
+	 * @param array $delib délibération rattachée retourné par le formulaire 'edit'
+	 */
+	function saveDelibRattachees($parentId, $delib, $objet_projet) {
+		// initialisations
+		$newDelib = array();
 
-        if (isset($delib['id'])) {
-            // modification
-            $this->id = $delib['id'];
-            $newDelib['Deliberation']['id'] = $delib['id'];
-        } else {
-            // ajout
-            $newDelib = $this->create();
-            $newDelib['Deliberation']['parent_id'] = $parentId;
-        }
-        if (!empty($delib['num_pref']))
-        $newDelib['Deliberation']['num_pref'] = $delib['num_pref'];
-        $newDelib['Deliberation']['objet'] = $delib['objet_delib'];
-        $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
-        $newDelib['Deliberation']['titre'] = !empty($delib['titre']) ? $delib['titre'] : null;
+		if (isset($delib['id'])) {
+                    // modification
+                    $this->id =  $delib['id'];
+                    $newDelib['Deliberation']['id'] = $delib['id'];
+		 } else {
+                    // ajout
+                    $newDelib = $this->create();
+                    $newDelib['Deliberation']['parent_id'] = $parentId;
+                }
+                $newDelib['Deliberation']['num_pref'] = '';
+                $newDelib['Deliberation']['objet'] = $delib['objet_delib'];
+                $newDelib['Deliberation']['objet_delib'] = $delib['objet_delib'];
+                $newDelib['Deliberation']['titre'] = $delib['titre'];
 
-        if (isset($delib['deliberation'])) {
-            $newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
-            $newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'];
-            $newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
-            if (empty($delib['deliberation']['tmp_name']))
-                $newDelib['Deliberation']['deliberation'] = '';
-            else
-                $newDelib['Deliberation']['deliberation'] = file_get_contents($delib['deliberation']['tmp_name']);
-        } elseif (isset($delib['id'])) {
-            $path_projet = APP . 'webroot/files/generee/projet/' . $delib['id'] . '/';
-            if (file_exists($path_projet . 'deliberation.odt'))
-                $newDelib['Deliberation']['deliberation'] = file_get_contents($path_projet . 'deliberation.odt');
-        } elseif (!empty($delib['gabarit'])){
-            $typeacte = $this->Typeacte->find('first', array(
-                'recursive' => -1,
-                'fields' => array('gabarit_acte', 'gabarit_acte_name'),
-                'conditions' => array('id' => $delib['typeacte_id'])
-            ));
-            $newDelib['Deliberation']['deliberation_name'] = $typeacte['Typeacte']['gabarit_acte_name'];
-            //Calcul mimetype
-            $finfo = new finfo(FILEINFO_MIME_TYPE);
-            $newDelib['Deliberation']['deliberation_type'] = $finfo->buffer($typeacte['Typeacte']['gabarit_acte']);
-            $newDelib['Deliberation']['deliberation_size'] = strlen($typeacte['Typeacte']['gabarit_acte']);
-            $newDelib['Deliberation']['deliberation'] = $typeacte['Typeacte']['gabarit_acte'];
+		if (Configure::read('GENERER_DOC_SIMPLE')){
+			$newDelib['Deliberation']['deliberation'] = $delib['deliberation'];
+		} else {
+			if (isset($delib['deliberation'])) {
+                            $newDelib['Deliberation']['deliberation_name'] = $delib['deliberation']['name'];
+                            $newDelib['Deliberation']['deliberation_type'] = $delib['deliberation']['type'];
+                            $newDelib['Deliberation']['deliberation_size'] = $delib['deliberation']['size'];
+                            if (empty($delib['deliberation']['tmp_name']))
+                                    $newDelib['Deliberation']['deliberation'] = '';
+                            else
+                                    $newDelib['Deliberation']['deliberation'] = file_get_contents($delib['deliberation']['tmp_name']);
+                        }else{
+                                $pos  =  strrpos ( getcwd(), 'webroot');
+                                $path = substr(getcwd(), 0, $pos);
+                                $path_projet = $path.'webroot/files/generee/projet/'.$this->id.'/';
+                                if(file_exists($path_projet.'deliberation.odt'))
+                                    $newDelib['Deliberation']['deliberation'] = file_get_contents($path_projet.'deliberation.odt');
 
-        }
+                        }
+		}
 
-        if (!$this->save($newDelib['Deliberation'], false)) {
-            $this->Session->setFlash('Erreur lors de la sauvegarde des délibérations rattachées.', 'growl', array('type' => 'erreur'));
-            return false;
-        }
-        $tabs = array();
-        $seances = $this->Deliberationseance->find('all', array(
-            'conditions' => array('Deliberationseance.deliberation_id' => $parentId),
-            'recursive' => -1));
-        foreach ($seances as $seance)
-            $tabs[] = $seance['Deliberationseance']['seance_id'];
-        $this->Seance->reOrdonne($this->id, $tabs);
+		if(!$this->save($newDelib['Deliberation'], false)) {
+			$this->Session->setFlash('Erreur lors de la sauvegarde des délibérations rattachées.', 'growl', array('type'=>'erreur'));
+			return false;
+		}
+		$tabs = array();
+		$seances = $this->Deliberationseance->find('all', array(
+				'conditions' => array('Deliberationseance.deliberation_id' => $parentId),
+				'recursive'  => -1));
+		foreach($seances as $seance)
+			$tabs[] = $seance['Deliberationseance']['seance_id'];
+		$this->Seance->reOrdonne($this->id, $tabs);
+		return $this->id;
+	}
 
-        $typeseances = $this->Deliberationtypeseance->find('all', array(
-            'conditions' => array('deliberation_id' => $parentId),
-            'recursive' => -1
-        ));
-        foreach ($typeseances as $typeseance){
-            unset($typeseance['Deliberationtypeseance']['id']);
-            $typeseance['Deliberationtypeseance']['deliberation_id'] = $this->id;
-            $this->Deliberationtypeseance->create();
-            $this->Deliberationtypeseance->save($typeseance);
-        }
-        $this->commit();
-        return $this->id;
-    }
-
-    /**
+	/**
 	 * fonction récursive de suppression de la délibération $delib8d, de ses versions antérieures et de ses délibérations rattachées
 	 * @param integer $delibId id de la délib à supprimer
 	 */
@@ -1285,9 +1440,8 @@ class Deliberation extends AppModel {
 	/**
 	 * Supprime un répertoire et son contenu
 	 * @param string $dossier chemin du répertoire à supprimer
-     * @return bool
-     */
-    function rmDir($dossier) {
+	 */
+	function rmDir($dossier) {
 		$ouverture=@opendir($dossier);
 		if (!$ouverture) return;
 		while($fichier=readdir($ouverture)) {
@@ -1309,20 +1463,20 @@ class Deliberation extends AppModel {
         //function Erroné
 	function getSeancesid($deliberation_id) {
 		$seances = $this->Deliberationseance->find(
-            'all',
-            array(
-                'fields' => array('Deliberationseance.seance_id'),
-                'recursive' => -1,
-                'conditions' => array(
-                    'Deliberationseance.deliberation_id' => $deliberation_id
-                ),
-                'order' => 'Deliberationseance.position ASC',
-            )
-        );
+                    'all',
+                    array(
+                        'fields' => array('Deliberationseance.seance_id'),
+                        'recursive' => -1,
+                        'conditions' =>  array(
+                            'Deliberationseance.deliberation_id' => $deliberation_id
+                        ),
+                        'order'=>'Deliberationseance.position ASC',
+                    )
+                );
 
-        $seances = (array)Hash::extract($seances, '{n}.Deliberationseance.seance_id');
-        return $seances;
-    }
+		$seances = (array)Hash::extract($seances, '{n}.Deliberationseance.seance_id');
+		return $seances;
+	}
 
 	function getSeanceDeliberanteId($deliberation_id) {
 		$seances = $this->getSeancesid($deliberation_id);
@@ -1334,150 +1488,144 @@ class Deliberation extends AppModel {
 	}
 
 	function getSeancesFromArray($projets) {
-        $typeseances = $this->Seance->Typeseance->find('list', array('recursive' => -1, 'fields' => array('libelle')));
-        $seances = array();
-        if (!empty($projets))
-            foreach ($projets as $projet)
-                if (!empty($projet['Seance'])) {
-                    foreach ($projet['Seance'] as $seance) {
-                        $typeseance = $typeseances[$seance['type_id']];
-                        $seances[$seance['id']] = $typeseance . ' : ' . $seance['date'];
+	       $typeseances = $this->Seance->Typeseance->find('list', array('recursive'=> -1, 'fields' => array('libelle')));
+                $seances = array();
+		if (isset($projets) && !empty($projets))
+			foreach ($projets as $projet)
+			if (isset($projet['Seance']) && (!empty($projet['Seance']))) {
+			foreach($projet['Seance'] as $seance) {
+	                   $typeseance=$typeseances[$seance['type_id']];
+
+              $seances[$seance['id']] = $typeseance.' : '.$seance['date'];
+			}
+		}
+		return $seances;
+	}
+
+	function getTypeseancesFromArray($projets) {
+
+	       $list = $this->Seance->Typeseance->find('list', array('recursive'=> -1, 'fields' => array('libelle')));
+
+                 $typeseances = array();
+		if  (isset($projets) && !empty($projets))
+			foreach ($projets as $projet) {
+			if  (isset($projet['Seance']) && !empty($projet['Seance']))
+				foreach($projet['Seance'] as $seance)
+	                           if (isset($seance['type_id'])) {
+                                    $typeseance=$list[$seance['type_id']];
+				$typeseances[$seance['type_id']] = $typeseance;
+	                      }
+                }
+		return $typeseances;
+	}
+
+	function getPosition($deliberation_id, $seance_id) {
+		$deliberationseance = $this->Deliberationseance->find(
+                    'first',
+                    array(
+                        'fields' => array( 'Deliberationseance.position' ),
+                        'recursive' => -1,
+                        'conditions' => array(
+                            'Deliberationseance.seance_id' => $seance_id,
+                            'Deliberationseance.deliberation_id' => $deliberation_id
+                        ),
+                        'order' => array( 'Deliberationseance.position ASC' ),
+                    )
+                );
+
+		return $deliberationseance['Deliberationseance']['position'];
+	}
+
+	function afficherListePresents($delib_id=null, $seance_id)      {
+                $this->Listepresence->Behaviors->attach('Containable');
+		$presents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
+		                                         	    'order'      => array("Acteur.position ASC"),
+                                                                    'contain'    => array('Acteur', 'Acteur.Typeacteur')));
+		if (empty($presents) && $this->isFirstDelib($delib_id, $seance_id)) {
+			$presents = $this->_buildFirstList($delib_id, $seance_id);
+		}
+
+		// Si la liste est vide, on recupere la liste des present lors de la derbiere deliberation.
+		// Verifier que la liste precedente n'est pas vide...
+		if (empty($presents))
+			$presents = $this->_copyFromPreviousList($delib_id, $seance_id);
+
+                if (!empty($presents))
+		foreach($presents as &$acteur){
+                    if (!empty($acteur['Listepresence']['mandataire'])) {
+                        $mandataire = $this->Seance->Typeseance->Acteur->read('nom, prenom', $acteur['Listepresence']['mandataire']);
+                            $acteur['Listepresence']['mandataire'] = $mandataire['Acteur']['prenom']." ".$mandataire['Acteur']['nom'];
+                    }elseif (!empty($acteur['Listepresence']['suppleant_id'])) {
+                        $suppleant= $this->Seance->Typeseance->Acteur->read('nom, prenom', $acteur['Listepresence']['suppleant_id']);
+                            $acteur['Listepresence']['suppleant'] = $suppleant['Acteur']['prenom']." ".$suppleant['Acteur']['nom'];
                     }
-                }
-        return $seances;
-    }
+		}
+		return $presents;
+	}
 
-    function getTypeseancesFromArray($projets)
-    {
+	function _buildFirstList($delib_id, $seance_id) {
+		$seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
+		                                             'recursive'  => -1,
+				                             'fields'     => array('Seance.type_id')));
+		$elus = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
+		foreach ($elus as $elu){
+			$this->Listepresence->create();
+			$params['data']['Listepresence']['acteur_id']=$elu['Acteur']['id'];
+			$params['data']['Listepresence']['present']= 1;
+			$params['data']['Listepresence']['delib_id']= $delib_id;
+			$this->Listepresence->save($params['data']);
+		}
 
-        $list = $this->Seance->Typeseance->find('list', array('recursive' => -1, 'fields' => array('libelle')));
+		return  $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
+		                                       	        'order'      => array("Acteur.position ASC"),
+                                                                'contain'    => array('Acteur', 'Acteur.Typeacteur')));
+	}
 
-        $typeseances = array();
-        if (isset($projets) && !empty($projets))
-            foreach ($projets as $projet) {
-                if (isset($projet['Seance']) && !empty($projet['Seance']))
-                    foreach ($projet['Seance'] as $seance)
-                        if (isset($seance['type_id'])) {
-                            $typeseance = $list[$seance['type_id']];
-                            $typeseances[$seance['type_id']] = $typeseance;
-                        }
-            }
-        return $typeseances;
-    }
+	function _copyFromPreviousList($delib_id, $seance_id){
+		$this->Listepresence->Behaviors->attach('Containable');
 
-    function getPosition($deliberation_id, $seance_id)
-    {
-        $deliberationseance = $this->Deliberationseance->find(
-            'first',
-            array(
-                'fields' => array('Deliberationseance.position'),
-                'recursive' => -1,
-                'conditions' => array(
-                    'Deliberationseance.seance_id' => $seance_id,
-                    'Deliberationseance.deliberation_id' => $deliberation_id
-                ),
-                'order' => array('Deliberationseance.position ASC'),
-            )
-        );
+		$position = $this->getPosition($delib_id, $seance_id);
+                if($position==1)return NULL;
+		$previousDelibId= $this->_getDelibIdByPosition($seance_id, $position);
+		$previousPresents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $previousDelibId),
+		                                                            'recursive'  => -1));
 
-        return $deliberationseance['Deliberationseance']['position'];
-    }
+		foreach ($previousPresents as $present){
+                    $this->Listepresence->create();
+		    $params['data']['Listepresence']['acteur_id']=$present['Listepresence']['acteur_id'];
+                    $params['data']['Listepresence']['mandataire'] = $present['Listepresence']['mandataire'];
+		    $params['data']['Listepresence']['suppleant_id'] = $present['Listepresence']['suppleant_id'];
+		    $params['data']['Listepresence']['present']= $present['Listepresence']['present'];
+		    $params['data']['Listepresence']['delib_id']= $delib_id;
+		    $this->Listepresence->save($params['data']);
+		}
+                $liste = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
+                                                                 'order'      => array("Acteur.position ASC"),
+                                                                 'contain'    => array('Acteur', 'Acteur.Typeacteur')));
+		if (!empty($liste))
+			return  $liste;
+		else
+			return ($this->_buildFirstList($delib_id, $seance_id));
+	}
 
-    function afficherListePresents($delib_id = null, $seance_id)
-    {
-        $this->Listepresence->Behaviors->attach('Containable');
-        $presents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
-            'order' => array("Acteur.position ASC"),
-            'contain' => array('Acteur', 'Acteur.Typeacteur')));
-        if (empty($presents) && $this->isFirstDelib($delib_id, $seance_id)) {
-            $presents = $this->_buildFirstList($delib_id, $seance_id);
-        }
+	function _effacerListePresence($delib_id) {
+		$this->Listepresence->deleteAll(array("delib_id" => $delib_id));
+	}
 
-        // Si la liste est vide, on recupere la liste des present lors de la derbiere deliberation.
-        // Verifier que la liste precedente n'est pas vide...
-        if (empty($presents))
-            $presents = $this->_copyFromPreviousList($delib_id, $seance_id);
+	function _getDelibIdByPosition ($seance_id, $position){
+		App::import('Model', 'Deliberationseance');
+		$this->Deliberationseance = new Deliberationseance();
+		$delib = $this->Deliberationseance->find('first', array('conditions' => array('Deliberationseance.position'  =>  $position-1,
+				'Seance.id' => $seance_id),
+				'fields'    => array('Deliberation.id')));
 
-        if (!empty($presents))
-            foreach ($presents as &$acteur) {
-                if (!empty($acteur['Listepresence']['mandataire'])) {
-                    $mandataire = $this->Seance->Typeseance->Acteur->read('nom, prenom', $acteur['Listepresence']['mandataire']);
-                    $acteur['Listepresence']['mandataire'] = $mandataire['Acteur']['prenom'] . " " . $mandataire['Acteur']['nom'];
-                } elseif (!empty($acteur['Listepresence']['suppleant_id'])) {
-                    $suppleant = $this->Seance->Typeseance->Acteur->read('nom, prenom', $acteur['Listepresence']['suppleant_id']);
-                    $acteur['Listepresence']['suppleant'] = $suppleant['Acteur']['prenom'] . " " . $suppleant['Acteur']['nom'];
-                }
-            }
-        return $presents;
-    }
+		if (isset($delib['Deliberation']['id']))
+			return $delib['Deliberation']['id'];
+		else
+			return 0;
+	}
 
-    function _buildFirstList($delib_id, $seance_id)
-    {
-        $seance = $this->Seance->find('first', array('conditions' => array('Seance.id' => $seance_id),
-            'recursive' => -1,
-            'fields' => array('Seance.type_id')));
-        $elus = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], true);
-        foreach ($elus as $elu) {
-            $this->Listepresence->create();
-            $params['data']['Listepresence']['acteur_id'] = $elu['Acteur']['id'];
-            $params['data']['Listepresence']['present'] = 1;
-            $params['data']['Listepresence']['delib_id'] = $delib_id;
-            $this->Listepresence->save($params['data']);
-        }
-
-        return $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
-            'order' => array("Acteur.position ASC"),
-            'contain' => array('Acteur', 'Acteur.Typeacteur')));
-    }
-
-    function _copyFromPreviousList($delib_id, $seance_id)
-    {
-        $this->Listepresence->Behaviors->attach('Containable');
-
-        $position = $this->getPosition($delib_id, $seance_id);
-        if ($position == 1) return NULL;
-        $previousDelibId = $this->_getDelibIdByPosition($seance_id, $position);
-        $previousPresents = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $previousDelibId),
-            'recursive' => -1));
-
-        foreach ($previousPresents as $present) {
-            $this->Listepresence->create();
-            $params['data']['Listepresence']['acteur_id'] = $present['Listepresence']['acteur_id'];
-            $params['data']['Listepresence']['mandataire'] = $present['Listepresence']['mandataire'];
-            $params['data']['Listepresence']['suppleant_id'] = $present['Listepresence']['suppleant_id'];
-            $params['data']['Listepresence']['present'] = $present['Listepresence']['present'];
-            $params['data']['Listepresence']['delib_id'] = $delib_id;
-            $this->Listepresence->save($params['data']);
-        }
-        $liste = $this->Listepresence->find('all', array('conditions' => array('Listepresence.delib_id' => $delib_id),
-            'order' => array("Acteur.position ASC"),
-            'contain' => array('Acteur', 'Acteur.Typeacteur')));
-        if (!empty($liste))
-            return $liste;
-        else
-            return ($this->_buildFirstList($delib_id, $seance_id));
-    }
-
-    function _effacerListePresence($delib_id)
-    {
-        $this->Listepresence->deleteAll(array("delib_id" => $delib_id));
-    }
-
-    function _getDelibIdByPosition($seance_id, $position)
-    {
-        App::import('Model', 'Deliberationseance');
-        $this->Deliberationseance = new Deliberationseance();
-        $delib = $this->Deliberationseance->find('first', array('conditions' => array('Deliberationseance.position' => $position - 1,
-            'Seance.id' => $seance_id),
-            'fields' => array('Deliberation.id')));
-
-        if (isset($delib['Deliberation']['id']))
-            return $delib['Deliberation']['id'];
-        else
-            return 0;
-    }
-
-    function getDeliberationsSansSeance($fields=array(), $natures_id=array()) {
+	function getDeliberationsSansSeance($fields=array(), $natures_id=array()) {
 		if (empty($fields))
 			$fields = 'Deliberation.id, Deliberation.objet, Deliberation.circuit_id,
 					Deliberation.etat, Deliberation.anterieure_id, Deliberation.etat,
@@ -1488,7 +1636,7 @@ class Deliberation extends AppModel {
 		elseif($fields == 'id')
 			$fields = 'Deliberation.id';
                 $natures_id =  implode(", ", $natures_id);
-                       
+
 		$requete = "SELECT $fields
 					FROM deliberations as Deliberation,
 						 services as Service,
@@ -1506,55 +1654,6 @@ class Deliberation extends AppModel {
 		return ($this->query($requete));
 
 	}
-        
-       /* function getMultidelibs($delib_id){
-            $this->Multidelib->Behaviors->attach('Containable');
-            $multidelib=$this->Multidelib->find('all', array(
-                    'fields' => array('Deliberation.id'),
-                    'contain' => array('Deliberationseance.position'),
-                    'conditions' => array('Deliberation.parent_id'=>$delib_id),
-                    'order' => array('Deliberationseance.position'),
-                    'recursive'   => -1));
-        }*/
-
-    function getMultidelibs($delib_id)
-    {
-        $deliberations = $this->find(
-            'all',
-            array(
-                'fields' => array('Deliberation.id'),
-                'recursive' => -1,
-                'conditions' => array(
-                    'Deliberation.parent_id' => $delib_id
-                ),
-                'order' => 'Deliberation.id ASC',
-            )
-        );
-
-        $deliberations = (array)Hash::extract($deliberations, '{n}.Deliberation.id');
-        return $deliberations;
-    }
-        
-        /*  function getMultidelibs($delib_id) {
-                $this->Behaviors->attach('Containable');
-		$deliberations = $this->Deliberationseance->find(
-                    'all',
-                    array(
-                        'fields' => array('Deliberation.parent_id'),
-                         'contain'    => array('Deliberationseance','Deliberation'),
-                        'recursive' => -1,
-                        'conditions' =>  array(
-                            'Deliberation.parent_id' => $delib_id
-                        ),
-                        'order'=>'Deliberationseance.position ASC',
-                    )
-                );
-                debug($deliberations);exit;
-              
-
-		$deliberations = (array)Hash::extract($deliberations, '{n}.Deliberationseance.deliberation_id');
-		return $deliberations;
-	}*/
 
 	function copyPositionsDelibs($delib_id, $new_id) {
 		App::import('Model', 'Deliberationseance');
@@ -1572,964 +1671,466 @@ class Deliberation extends AppModel {
 			$this->Deliberationseance->save($Deliberationseance);
 		}
 	}
-  
-    function getActesExceptDelib($conditions=array(), $fields, $contain, $order=null) {
-        $code_delib = 'DE';
-        if (!isset($conditions['Deliberation.typeacte_id']))  {
-            $nature_ids = $this->Typeacte->Nature->find('all', array(
-                'conditions' => array('Nature.code !=' => $code_delib),
-                'recursive'  => -1,
-                'fields'     => array('Nature.id')
-            ));
 
-            $typeacte_ids = $this->Typeacte->find('all', array(
-                'conditions' => array('Typeacte.nature_id' => Set::extract('/Nature/id', $nature_ids)),
-                'recursive'  => -1,
-                'fields'     => array('Typeacte.id')
-            ));
+        function getActesExceptDelib($conditions=array(), $fields, $contain) {
+            $code_delib = 'DE';
+            if (!isset($conditions['Deliberation.typeacte_id']))  {
+                $nature_ids = $this->Typeacte->Nature->find('all', array('conditions' => array('Nature.code !=' => $code_delib),
+                                                                         'recursive'  => -1,
+                                                                         'fields'     => array('Nature.id')));
 
-            $conditions = array_merge($conditions,  array('Deliberation.typeacte_id' => Set::extract('/Typeacte/id', $typeacte_ids)));
-        }
+                $typeacte_ids = $this->Typeacte->find('all', array('conditions' => array('Typeacte.nature_id' => Set::extract('/Nature/id', $nature_ids)),
+                                                            'recursive'  => -1,
+                                                            'fields'     => array('Typeacte.id')));
 
-        $this->Behaviors->load('Containable');
-        $actes = $this->find('all', array(
-            'conditions' => $conditions,
-            'contain'    => $contain,
-            'fields'     => $fields,
-            'order'      => $order
-        ));
-
-        foreach ($actes as &$acte) {
-            $acte['Modeltemplate']['modeleprojet_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modeleprojet_id');
-            $acte['Modeltemplate']['modelefinal_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
-        }
-        return $actes;
-    }
-
-    function getActesATeletransmettre($conditions=array(), $fields, $contain, $order=null) {
-        if (!isset($conditions['Deliberation.typeacte_id'])){
-            $typeacte_ids = $this->Typeacte->find('all', array(
-                'recursive'  => -1,
-                'conditions' => array('Typeacte.teletransmettre' => true),
-                'fields'     => array('Typeacte.id')));
-            $conditions = array_merge($conditions,  array('Deliberation.typeacte_id' => Set::extract('/Typeacte/id', $typeacte_ids)));
-        }
-        $this->Behaviors->load('Containable');
-        $actes = $this->find('all', array(
-            'conditions' => $conditions,
-            'contain' => $contain,
-            'fields' => $fields,
-            'order' => $order));
-        foreach ($actes as &$acte) {
-            $acte['Modeltemplate']['modeleprojet_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modeleprojet_id');
-            $acte['Modeltemplate']['modelefinal_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
-        }
-        return $actes;
-    }
-
-    function is_delib($acte_id) {
-        $this->Behaviors->load('Containable');
-        $acte = $this->find('first', array(
-            'conditions' => array('Deliberation.id' => $acte_id),
-            'contain' => array('Typeacte.nature_id'),
-            'fields' => array('Deliberation.typeacte_id')));
-        $nature = $this->Typeacte->Nature->find('first', array(
-            'conditions' => array('Nature.id' => $acte['Typeacte']['nature_id']),
-            'fields' => array('Nature.code'),
-            'recursive' => -1));
-        return ($nature['Nature']['code'] == 'DE');
-    }
-
-    function is_arrete($acte_id) {
-        return !($this->is_delib($acte_id));
-    }
-
-    function reportePositionToCommissions($delib_id, $seance_deliberante_id) {
-        $position = $this->getPosition($delib_id, $seance_deliberante_id);
-        $seances = $this->getSeancesid($delib_id);
-
-        App::import('Model', 'Deliberationseance');
-        $this->Deliberationseance = new Deliberationseance();
-
-        foreach ($seances as $seance_id) {
-            $Deliberationseance = $this->Deliberationseance->find('first', array(
-                'conditions' => array(
-                    'Deliberationseance.deliberation_id' => $delib_id,
-                    'Deliberationseance.seance_id' => $seance_id
-                ),
-                'fields' => array('Deliberationseance.id'),
-                'recursive' => -1));
-            $this->Deliberationseance->id = $Deliberationseance['Deliberationseance']['id'];
-            $this->Deliberationseance->saveField('position', $position);
-        }
-        return $seances;
-    }
-
-    /**
-     * @param string $message
-     * @param integer $delib_id
-     * @param integer $circuit_id
-     * @param integer $user_id
-     * @return bool
-     */
-    function setHistorique($message, $delib_id, $circuit_id=null, $user_id = -1){
-        $histo = $this->Historique->create();
-        $histo['Historique']['delib_id'] = $delib_id;
-        $histo['Historique']['user_id'] = $user_id;
-        $histo['Historique']['commentaire'] = $message;
-        $histo['Historique']['circuit_id'] = $circuit_id;
-        return $this->Historique->save($histo, false);
-    }
-
-    /**
-     * @param integer $delib_id
-     * @param string $logdossier
-     */
-    function setCommentaire($delib_id, $logdossier){
-        $com = $this->Commentaire->create();
-        $com['Commentaire']['delib_id'] = $delib_id;
-        $com['Commentaire']['agent_id'] = -1;
-        $com['Commentaire']['pris_en_compte'] = 0;
-        $com['Commentaire']['commentaire_auto'] = false;
-        $com['Commentaire']['texte'] = $logdossier['nom'] . " : " . $logdossier['annotation'];
-        $this->Commentaire->save($com['Commentaire']);
-    }
-
-    /**
-     * @return string status d'exécution et rapport
-     */
-    function majActesParapheur() {
-        // status sous forme de chaines de caractères a insérer dans le rapport d'exécution des procédures appelées par les crons
-        $ret_success = 'TRAITEMENT_TERMINE_OK';
-        $ret_error = 'TRAITEMENT_TERMINE_ERREUR';
-        try{
-            //Si service désactivé ==> quitter
-            if (!Configure::read('USE_PARAPHEUR')) {
-                return $ret_error.'i-Parapheur désactivé';
+                $conditions = array_merge($conditions,  array('Deliberation.typeacte_id' =>Set::extract('/Typeacte/id', $typeacte_ids)));
             }
-            App::import('Component', 'Iparapheur');
-            $this->Iparapheur = new IparapheurComponent();
-
-            // Controle de l'avancement des délibérations dans le parapheur
-            $delibs = $this->find('all', array(
-                'conditions' => array(
-                    'Deliberation.etat >' => 2,
-                    'Deliberation.parapheur_etat' => 1
-                ),
-                'recursive' => -1,
-                'fields' => array('id', 'objet')));
-
-            $rapport = "\n";
-            foreach ($delibs as $delib) {
-                $objetDossier = $delib['Deliberation']['objet'];
-                $rapport .= 'Projet "['.$delib['Deliberation']['id'].'] - '.$delib['Deliberation']['objet'].'" : ';
-                $success_dos = $this->majActeParapheur($delib['Deliberation']['id'], $objetDossier, false);
-                if (!$success_dos)
-                    $rapport .= "En attente de fin de circuit\n";
-                else
-                    $rapport .= "Circuit terminé, dossier effacé du i-Parapheur\n";
+            $this->Behaviors->attach('Containable');
+            $actes = $this->find('all', array('conditions' => $conditions,
+                                              'contain'    => $contain,
+                                              'fields'     => $fields));
+            foreach ($actes as &$acte) {
+                $acte['Model']['modeleprojet_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modeleprojet_id');
+                $acte['Model']['modelefinal_id'] = $this->Typeacte->getModelId($acte['Deliberation']['typeacte_id'], 'modelefinal_id');
             }
-            return $ret_success.$rapport;
-        }catch (Exception $e){
-            return $ret_error.$e->getTraceAsString();
+            return $actes;
         }
-    }
 
-    /**
-     * @param integer $delib_id identifiant du projet à mettre à jour
-     * @param string $objet
-     * @param bool $tdt
-     * @return bool true si le dossier à terminé son circuit
-     */
-    function majActeParapheur($delib_id, $objet, $tdt = false) {
-        $this->id = $delib_id;
-        $delib = $this->find('first', array(
-            'recursive' => -1,
-            'conditions' => array(
-                'id' => $delib_id,
-                'etat >' => 2,
-                'parapheur_etat' => 1
-            )
-        ));
-
-        if (!empty($delib['Deliberation']['parapheur_id']))
-            $id_dossier = $delib['Deliberation']['parapheur_id'];
-        else //@DEPRECATED (rétro-compatibilité vieux dossiers parapheur)
-            $id_dossier = "$delib_id $objet";
-
-        App::import('Component', 'Iparapheur');
-        $this->Iparapheur = new IparapheurComponent();
-        // Récupération log historique coté parapheur
-        $histo = $this->Iparapheur->getHistoDossierWebservice($id_dossier);
-        if (isset($histo['logdossier'])){
-            // Parcours des étapes du log
-            for ($i = 0; $i < count($histo['logdossier']); $i++) {
-                // Cas envoi direct au tdt depuis parapheur (surement inutilisé)
-                if ($tdt && $histo['logdossier'][$i]['status'] == 'EnCoursTransmission')
-                    return true;
-                if (in_array($histo['logdossier'][$i]['status'], array('Vise', 'Signe', 'Archive'))) {
-                    if (in_array($histo['logdossier'][$i]['status'], array('Signe', 'Vise'))) { // Etape visa ou signature
-                        //Annotations
-                        $this->setCommentaire($delib_id, $histo['logdossier'][$i]);
-                        $this->saveField('signee', true);
-                    }
-                    elseif ($histo['logdossier'][$i]['status'] == 'Archive'){ // Dernière étape : archive
-                        $dossier = $this->Iparapheur->GetDossierWebservice($id_dossier);
-                        // Sauvegarde du bordereau (pdf)
-                        if (!empty($dossier['getdossier']['bordereau']))
-                            $this->saveField('parapheur_bordereau', base64_decode($dossier['getdossier']['bordereau']));
-                        // Sauvegarde des signatures (zip)
-                        if (!empty($dossier['getdossier']['signature']))
-                            $this->saveField('signature', base64_decode($dossier['getdossier']['signature']));
-                        // Etat retour ok
-                        $this->saveField('parapheur_etat', 2);
-                        $this->Iparapheur->archiverDossierWebservice($id_dossier, 'EFFACER');
-                        // Ajout de l'info d'approbation parapheur dans l'historique
-                        $this->setHistorique('Dossier approuvé par le parapheur', $delib_id);
-                        return true;
-                    }
-                } elseif ($histo['logdossier'][$i]['status'] == 'RejetSignataire'
-                    || $histo['logdossier'][$i]['status'] == 'RejetVisa') { // Cas de refus dans le parapheur
-                    // Etat refusé
-                    $this->saveField('parapheur_etat', -1);
-                    // Motif de rejet
-                    $this->saveField('parapheur_commentaire', $histo['logdossier'][$i]['annotation']);
-                    // Supprimer le dossier du parapheur
-                    $this->Iparapheur->effacerDossierRejeteWebservice($id_dossier);
-                    // Annotation (motif de rejet)
-                    $this->setCommentaire($delib_id, $histo['logdossier'][$i]);
-                    // Ajout de l'info de rejet parapheur dans l'historique
-                    $this->setHistorique('Dossier rejeté par le parapheur', $delib_id);
-                    return true;
-                }
-            }
+        function  is_delib($acte_id) {
+            $this->Behaviors->attach('Containable');
+            $acte = $this->find('first', array('conditions' => array('Deliberation.id' => $acte_id),
+                                               'contain'    => array('Typeacte.nature_id'),
+                                               'fields'     => array('Deliberation.typeacte_id')));
+            $nature = $this->Typeacte->Nature->find('first', array('conditions' => array('Nature.id' => $acte['Typeacte']['nature_id']),
+                                                                   'fields'     => array('Nature.code'),
+                                                                   'recursive'  => -1));
+            return ($nature['Nature']['code'] == 'DE');
         }
-        return false;
-    }
 
-    /**
-     * @link Signature::updateAll()
-     * @link DeliberationsController::refreshPastell()
-     * @return string status d'exécution et rapport
-     */
-    function majSignaturesPastell() {
-        // status sous forme de chaines de caractères a insérer dans le rapport d'exécution des procédures appelées par les crons
-        try{
-            //Si service désactivé ==> quitter
-            if (!Configure::read('USE_PASTELL')) {
-                return "TRAITEMENT_TERMINE_ERREUR\nPastell désactivé";
-            }
-
-            // Controle de l'avancement des délibérations dans le parapheur
-            $delibs = $this->find('all', array(
-                'conditions' => array(
-                    'Deliberation.etat >' => 2,
-                    'Deliberation.parapheur_etat' => 1,
-                    'Deliberation.parapheur_id !=' => null
-                ),
-                'recursive' => -1,
-                'fields' => array('id', 'objet')));
-
-            $rapport = '';
-            foreach ($delibs as $delib) {
-                $rapport .= "\nProjet n°".$delib['Deliberation']['id'].' ('.$delib['Deliberation']['objet'].") :\n";
-                $success_dos = $this->majSignaturePastell($delib['Deliberation']['id']);
-                if (!$success_dos)
-                    $rapport .= "En attente de fin de circuit";
-                else
-                    $rapport .= "Circuit terminé, dossier rappatrié";
-            }
-            return 'TRAITEMENT_TERMINE_OK'.$rapport;
-        }catch (Exception $e){
-            return 'TRAITEMENT_TERMINE_ERREUR'."\n".$e->getMessage();
+        function is_arrete($acte_id) {
+            return !($this->is_delib($acte_id));
         }
-    }
 
-    /**
-     * @param integer $delib_id identifiant du projet à mettre à jour
-     * @return bool true si le dossier à terminé son circuit
-     * @throws Exception
-     */
-    function majSignaturePastell($delib_id) {
-        $delib = $this->find('first', array(
-            'recursive' => -1,
-            'fields' => array('id','objet','pastell_id'),
-            'conditions' => array(
-                'Deliberation.id' => $delib_id,
-                'Deliberation.etat >' => 2,
-                'Deliberation.parapheur_etat' => 1
-            )));
+        function reportePositionToCommissions($delib_id, $seance_deliberante_id) {
+            $position = $this->getPosition($delib_id, $seance_deliberante_id);
+            $seances = $this->getSeancesid($delib_id);
 
-        if (empty($delib))
-            return false;
-        App::uses('Signature','Lib');
-        $this->Signature = new Signature;
-        $infos = $this->Signature->updateInfosPastell($delib['Deliberation']['pastell_id']);
-        if ($infos === false)
-           throw new Exception('Problème de connexion avec Pastell : Accès interdit ou erreur de communication.');
-        $this->id = $delib_id;
-        if ($infos['last_action']['action'] == 'rejet-iparapheur'){
-            $this->saveField('parapheur_etat', '-1');
-            $this->saveField('parapheur_commentaire', $infos['last_action']['message']);
-            //Ajout de l'action à l'historique
-            $this->setHistorique($infos['last_action']['message'], $delib_id, 0);
-            //Commentaire refus
-            $this->Commentaire->create();
-            $com = array();
+            App::import('Model', 'Deliberationseance');
+            $this->Deliberationseance = new Deliberationseance();
+
+            foreach ($seances as $seance_id) {
+                $Deliberationseance = $this->Deliberationseance->find('first',
+                    array('conditions' => array('Deliberationseance.deliberation_id' => $delib_id,
+                                                'Deliberationseance.seance_id'       => $seance_id),
+                          'fields'     => array('Deliberationseance.id'),
+                          'recursive'  => -1));
+                $this->Deliberationseance->id =  $Deliberationseance['Deliberationseance']['id'];
+                $this->Deliberationseance->saveField('position',  $position);
+            }
+            return $seances;
+        }
+
+        /**
+         *
+         * @param type $parafhisto
+         * @param type $delib_id
+         * @param type $circuit_id
+         */
+        function setHistorique($parafhisto,$delib_id, $circuit_id){
+            $histo = $this->Historique->create();
+            $histo['Historique']['delib_id'] = $delib_id;
+            $histo['Historique']['user_id'] = -1;
+            $histo['Historique']['commentaire'] = $parafhisto;
+            $histo['Historique']['circuit_id'] = $circuit_id;
+            $this->Historique->save($histo['Historique']);
+        }
+        /**
+         *
+         * @param type $delib_id
+         * @param type $logdossier
+         */
+        function setCommentaire($delib_id, $logdossier){
+            $com = $this->Commentaire->create();
             $com['Commentaire']['delib_id'] = $delib_id;
             $com['Commentaire']['agent_id'] = -1;
-            $com['Commentaire']['texte'] = $infos['last_action']['message'];
-            $com['Commentaire']['commentaire_auto'] = 0;
-            $this->Commentaire->save($com);
-            return true;
-        }elseif ($infos['last_action']['action'] == 'recu-iparapheur' || !empty($infos['data']['has_signature'])){
-            $this->saveField('parapheur_etat', '2');
-            $this->saveField('parapheur_commentaire', $infos['last_action']['message']);
-            //Récupération du bordereau
-            $bordereau = $this->Signature->getBordereau($delib['Deliberation']['pastell_id']);
-            if (!empty($bordereau))
-                $this->saveField('parapheur_bordereau', $bordereau);
-            //Signature
-            if (!empty($infos['data']['has_signature'])){
-                $signature = $this->Signature->getSignature($delib['Deliberation']['pastell_id']);
-                if (!empty($signature))
-                    $this->saveField('signature', $signature);
-                $this->saveField('signee', true);
-            }
-
-            $this->setHistorique($infos['last_action']['message'], $delib_id, 0);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Met à jour la date d'AR des dossiers envoyés au TDT
-     */
-    public function majArAll() {
-        $rapport = '';
-        $delibs = $this->find('all', array(
-            'conditions' => array(
-                'etat' => 5,
-                'tdt_dateAR' => null
-            ),
-            'fields' => array(
-                'id',
-                'tdt_id',
-                'pastell_id',
-                'num_delib'
-            ),
-            'recursive' => -1
-        ));
-        foreach ($delibs as $delib) {
-            if ($ar = $this->majAr($delib)) {
-                $rapport .= "Délibération " . $delib['Deliberation']['num_delib'] . " reçue le " . date('d/m/Y', strtotime($ar)) . ".\n";
-            } else {
-                $rapport .= "Délibération " . $delib['Deliberation']['num_delib'] . " en attente de réception.\n";
-            }
+            $com['Commentaire']['pris_en_compte'] = 0;
+            $com['Commentaire']['commentaire_auto'] = false;
+            $com['Commentaire']['texte'] = $logdossier['nom'] . " : " . $logdossier['annotation'];
+            $this->Commentaire->save($com['Commentaire']);
         }
 
-        return $rapport;
-    }
+        // ---------------------------------------------------------------------
 
-    /**
-     * Met à jour la date d'AR d'une délib
-     *
-     * @param array $delib objet Deliberation
-     * @return bool succès
-     */
-    public function majAr($delib) {
-        App::uses('Tdt', 'Lib');
-        $Tdt = new Tdt;
-        $id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
-        $ar = $Tdt->getDateAr($id);
-        if ($ar) {
-            $this->id = $delib['Deliberation']['id'];
-//            $this->saveField('tdt_data_bordereau_pdf', $Tdt->getBordereau($id));
-            $this->saveField('tdt_dateAR', $ar);
-            return $ar;
-        } else
-            return false;
-    }
-
-    /**
-     * Mise à jour des echange TDT / Préfecture pour les envois de moins de 2 mois
-     */
-    public function majEchangesTdtAll() {
-        App::uses('Tdt', 'Lib');
-        $Tdt = new Tdt;
-        $rapport = '';
-        $delibs = $this->find('all', array(
-            'recursive' => -1,
-            'conditions' => array(
-                'etat' => 5,
-                'tdt_dateAR >=' => date('Y-m-d', strtotime("-60 days"))
-            ),
-            'fields' => array(
-                'id',
-                'tdt_id',
-                'pastell_id',
-                'tdt_dateAR',
-                'num_delib'
-            )
-        ));
-        foreach ($delibs as $delib) {
-            if ($this->majEchangesTdt($delib)) {
-                //Récupération du bordereau
-                $this->id = $delib['Deliberation']['id'];
-                $id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
-                $this->saveField('tdt_data_bordereau_pdf', $Tdt->getBordereau($id));
-                $rapport .= "Délibération " . $delib['Deliberation']['num_delib'] . " : Echanges mis à jour.\n";
-            } else {
-                $rapport .= "Délibération " . $delib['Deliberation']['num_delib'] . " : Erreur rencontrée.\n";
-            }
-        }
-        return $rapport;
-    }
-
-    /**
-     * Met à jour la date d'AR d'une délib
-     * @param array $delib objet Deliberation
-     * @return bool
-     */
-    public function majEchangesTdt($delib) {
-        App::uses('Tdt', 'Lib');
-        try {
-            $Tdt = new Tdt;
-            $id = Configure::read('TDT') == 'PASTELL' ? $delib['Deliberation']['pastell_id'] : $delib['Deliberation']['tdt_id'];
-            $infos = $Tdt->getReponses($id);
-            $this->TdtMessage->begin();
-            foreach ($infos as $info) {
-                $this->TdtMessage->create();
-                $info['TdtMessage']['delib_id'] = $delib['Deliberation']['id'];
-                $this->TdtMessage->save($info);
-            }
-            $this->TdtMessage->commit();
-            return true;
-        } catch (Exception $e) {
-            $this->TdtMessage->rollback();
-            $this->log($e->getTraceAsString(), 'tdt');
-            return false;
-        }
-    }
-
-    function chercherVersionAnterieure($tab_delib, $nb_recursion, $listeAnterieure, $action)
-    {
-        $anterieure_id = $tab_delib['Deliberation']['anterieure_id'];
-        if ($anterieure_id != 0) {
-            $ant = $this->find('first', array(
-                'conditions' => array("Deliberation.id" => $anterieure_id),
-                'recursive' => -1,
-                'fields' => array('created', 'anterieure_id')));
-            $lien = $this->base . '/deliberations/' . $action . '/' . $anterieure_id;
-            $date_version = $ant['Deliberation']['created'];
-            $listeAnterieure[$nb_recursion]['id'] = $anterieure_id;
-            $listeAnterieure[$nb_recursion]['lien'] = $lien;
-            $listeAnterieure[$nb_recursion]['date_version'] = $date_version;
-            //on stocke les id des delibs anterieures
-            $listeAnterieure = $this->chercherVersionAnterieure($ant, $nb_recursion + 1, $listeAnterieure, $action);
-        }
-        return $listeAnterieure;
-    }
-
-    function chercherVersionSuivante($delib_id){
-        $delib = $this->find('first', array(
-            'recursive' => -1,
-            'fields' => array('id'),
-            'conditions' => array(
-                'anterieure_id' => $delib_id
-            )
-        ));
-        if (empty($delib))
-            return false;
-
-        return $delib['Deliberation']['id'];
-    }
-
-
-    /**
-     * fonction de callback du behavior OdtFusion
-     * retourne l'id du model odt à utiliser pour la fusion
-     * @param integer $id id de l'occurence en base de données
-     * @param array modelOptions options gérées par la classe appelante
-     * @return integer id du modele odt à utiliser
-     */
-    function getModelTemplateId($id, $modelOptions) {
-        return $this->getModelId($id);
-    }
-
-    /**
-     * fonction de callback du behavior OdtFusion
-     * initialise les variables de fusion Gedooo
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $id id de l'occurence en base de données
-     * @param array modelOptions options gérées par la classe appelante
-     * @return void
-     */
-    function beforeFusion(&$oMainPart, &$modelOdtInfos, $id, $modelOptions) {
-        if (!empty($modelOptions['deliberationIds']))
-            $this->setVariablesFusionDeliberations($oMainPart, $modelOdtInfos, $modelOptions['deliberationIds']);
-        else
-            $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id);
-    }
-
-    /**
-     * fonction d'initialisation des variables de fusion pour un projet ou une délibération
-     * les bibliothèques Gedooo doivent être inclues par avance
-     * génère une exception en cas d'erreur
-     * @param object $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param phpOdtApi $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $id l'id à fusionner
-     * @param integer $fusionSeanceId id de la séance de la fusion (optionnel, null par défaut)
-     * @throws Exception
-     */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $fusionSeanceId=null) {
-        App::uses('DateComponent', 'Controller/Component');
-        App::uses('Component', 'Controller');
-        // initialisations
-        $collection = new ComponentCollection();
-        $this->Date = new DateComponent($collection);
-
-        // liste des champs à lire en base de données
-        $fields = array('id', 'service_id', 'theme_id', 'rapporteur_id', 'redacteur_id', 'president_id', 'is_multidelib',
-            'titre', 'objet', 'objet_delib', 'etat', 'num_delib', 'num_pref', 'date_envoi_signature',
-            'vote_nb_oui', 'vote_nb_abstention', 'vote_nb_non', 'vote_nb_retrait', 'tdt_dateAR', 'vote_commentaire');
-        if ($modelOdtInfos->hasUserField('texte_projet')) $fields[] = 'texte_projet';
-        if ($modelOdtInfos->hasUserFields('texte_deliberation', 'texte_acte')) $fields[] = 'deliberation';
-        if ($modelOdtInfos->hasUserField('note_synthese')) $fields[] = 'texte_synthese';
-        if ($modelOdtInfos->hasUserField('debat_deliberation')) $fields[] = 'debat';
-        if ($modelOdtInfos->hasUserField('debat_commission')) $fields[] = 'commission';
-
-        // lecture de l'occurence en base de données
-        $delib = $this->find('first', array(
-            'recursive' => -1,
-            'fields' => $fields,
-            'conditions' => array('id'=>$id)));
-        if (empty($delib))
-            throw new Exception('délibération id:'.$id.' non trouvée en base de données');
-
-        // variables du projet (en dehors de toute section)
-        if ($modelOdtInfos->hasUserFieldDeclared('titre_projet'))
-            $oMainPart->addElement(new GDO_FieldType('titre_projet', $delib['Deliberation']['titre'], 'lines'));
-        if ($modelOdtInfos->hasUserFieldDeclared('objet_projet')) {
-            if (empty($delib['Deliberation']['is_multidelib']))
-                $oMainPart->addElement(new GDO_FieldType('objet_projet', $delib['Deliberation']['objet'], 'lines'));
-            else
-                $oMainPart->addElement(new GDO_FieldType('objet_projet', $delib['Deliberation']['objet_delib'], 'lines'));
-        }
-        if ($modelOdtInfos->hasUserFieldDeclared('libelle_projet'))
-            $oMainPart->addElement(new GDO_FieldType('libelle_projet', $delib['Deliberation']['objet'], 'lines'));
-        if ($modelOdtInfos->hasUserFieldDeclared('objet_delib'))
-            $oMainPart->addElement(new GDO_FieldType('objet_delib', $delib['Deliberation']['objet_delib'], 'lines'));
-        if ($modelOdtInfos->hasUserFieldDeclared('libelle_delib'))
-            $oMainPart->addElement(new GDO_FieldType('libelle_delib', $delib['Deliberation']['objet_delib'], 'lines'));
-        if ($modelOdtInfos->hasUserFieldDeclared('identifiant_projet'))
-            $oMainPart->addElement(new GDO_FieldType('identifiant_projet', $delib['Deliberation']['id'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('service_emetteur'))
-            $oMainPart->addElement(new GDO_FieldType('service_emetteur', $this->Service->field('libelle', array('id'=>$delib['Deliberation']['service_id'])), 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('service_avec_hierarchie'))
-            $oMainPart->addElement(new GDO_FieldType('service_avec_hierarchie', $this->Service->_doList($delib['Deliberation']['service_id']), 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('etat_projet'))
-            $oMainPart->addElement(new GDO_FieldType('etat_projet', $delib['Deliberation']['etat'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('classification_deliberation'))
-            $oMainPart->addElement(new GDO_FieldType('classification_deliberation', $delib['Deliberation']['num_pref'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('date_envoi_signature'))
-            $oMainPart->addElement(new GDO_FieldType("date_envoi_signature", $this->Date->frDate($delib['Deliberation']['date_envoi_signature']), 'date'));
-        if ($modelOdtInfos->hasUserFieldDeclared('nombre_seance'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_seance', $this->getNbSeances($delib['Deliberation']['id']), 'text'));
-        // Information du service émetteur
-        if ($modelOdtInfos->hasUserFieldsDeclared('service_emetteur', 'service_avec_hierarchie'))
-            $this->Service->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['service_id']);
-        // Informations sur le thème
-        $this->Theme->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['theme_id']);
-        // Informations sur le rapporteur
-        if (!empty($delib['Deliberation']['rapporteur_id']))
-            $this->Rapporteur->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['rapporteur_id']);
-        // Liste des commentaires
-        if ($modelOdtInfos->hasUserFieldDeclared('texte_commentaire'))
-            $this->Commentaire->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
-        // Hitoriques
-        if ($modelOdtInfos->hasUserFieldDeclared('log'))
-            $this->Historique->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
-
-        // Informations supplémentaires
-        $this->Infosup->setVariablesFusion($oMainPart, $modelOdtInfos, 'Deliberation', $delib['Deliberation']['id']);
-
-        // variables de la délibération (en dehors de toute section)
-        if ($modelOdtInfos->hasUserFieldDeclared('numero_acte'))
-            $oMainPart->addElement(new GDO_FieldType('numero_acte', $delib['Deliberation']['num_delib'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('numero_deliberation'))
-            $oMainPart->addElement(new GDO_FieldType('numero_deliberation', $delib['Deliberation']['num_delib'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('acte_adopte'))
-            $oMainPart->addElement(new GDO_FieldType('acte_adopte', (($delib['Deliberation']['etat']==3 && $delib['Deliberation']['vote_nb_oui']==0)?'1':'0'), 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('nombre_pour'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_pour', $delib['Deliberation']['vote_nb_oui'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('nombre_abstention'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_abstention', $delib['Deliberation']['vote_nb_abstention'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('nombre_contre'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_contre', $delib['Deliberation']['vote_nb_non'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('nombre_sans_participation'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_sans_participation', $delib['Deliberation']['vote_nb_retrait'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('nombre_votant'))
-            $oMainPart->addElement(new GDO_FieldType('nombre_votant', $delib['Deliberation']['vote_nb_oui']+$delib['Deliberation']['vote_nb_abstention']+$delib['Deliberation']['vote_nb_non'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('commentaire_vote'))
-            $oMainPart->addElement(new GDO_FieldType('commentaire_vote', $delib['Deliberation']['vote_commentaire'], 'lines'));
-        if ($modelOdtInfos->hasUserFieldDeclared('date_reception'))
-            $oMainPart->addElement(new GDO_FieldType('date_reception',  $delib['Deliberation']['tdt_dateAR'], 'text'));
-
-        // variables des multi délibérations
-        if ($delib['Deliberation']['is_multidelib'] && $modelOdtInfos->hasUserFieldsDeclared('libelle_multi_delib', 'id_multi_delib')) {
-            $multidelibs = $this->find('all', array(
-                'recursive' => -1,
-                'fields'     => array('id', 'objet'),
-                'conditions' => array('parent_id' => $delib['Deliberation']['id'])));
-            if (!empty($multidelibs)) {
-                $oIteration = new GDO_IterationType('Deliberations');
-                foreach($multidelibs as $multidelib) {
-                    $oDevPart = new GDO_PartType();
-                    if ($modelOdtInfos->hasUserFieldDeclared('libelle_multi_delib'))
-                        $oDevPart->addElement(new GDO_FieldType('libelle_multi_delib', $multidelib['Deliberation']['objet'], 'text'));
-                    if ($modelOdtInfos->hasUserFieldDeclared('id_multi_delib'))
-                        $oDevPart->addElement(new GDO_FieldType('id_multi_delib', $multidelib['Deliberation']['id'], 'text'));
-                    $oIteration->addPart($oDevPart);
-                }
-                $oMainPart->addElement($oIteration);
-            }
-        }
-
-        // textes du projet
-        if ($modelOdtInfos->hasUserField('texte_projet')) {
-            if (!empty($delib['Deliberation']['texte_projet'])) {
-                $oMainPart->addElement(new GDO_ContentType('texte_projet',
-                    'texte_projet.odt' ,
-                    'application/vnd.oasis.opendocument.text',
-                    'binary',
-                    $delib['Deliberation']['texte_projet']));
-            } else $oMainPart->addElement(new GDO_FieldType("texte_projet", "", "text"));
-        }
-        if ($modelOdtInfos->hasUserField('texte_deliberation')) {
-            if (!empty($delib['Deliberation']['deliberation'])) {
-                $oMainPart->addElement(new GDO_ContentType('texte_deliberation',
-                    'texte_deliberation.odt',
-                    'application/vnd.oasis.opendocument.text' ,
-                    'binary',
-                    $delib['Deliberation']['deliberation']));
-            } else $oMainPart->addElement(new GDO_FieldType("texte_deliberation", "", "text"));
-        }
-        if ($modelOdtInfos->hasUserField('texte_acte')) {
-            if (!empty($delib['Deliberation']['deliberation'])) {
-                $oMainPart->addElement(new GDO_ContentType('texte_acte',
-                    'texte_acte.odt',
-                    'application/vnd.oasis.opendocument.text' ,
-                    'binary',
-                    $delib['Deliberation']['deliberation']));
-            } else $oMainPart->addElement(new GDO_FieldType("texte_acte", "", "text"));
-        }
-        if ($modelOdtInfos->hasUserField('note_synthese')) {
-            if (!empty($delib['Deliberation']['texte_synthese'])) {
-                $oMainPart->addElement(new GDO_ContentType('note_synthese',
-                    'note_synthese.odt',
-                    'application/vnd.oasis.opendocument.text' ,
-                    'binary',
-                    $delib['Deliberation']['texte_synthese']));
-            } else $oMainPart->addElement(new GDO_FieldType("note_synthese", "",    "text"));
-        }
-        // débats
-        if ($modelOdtInfos->hasUserField('debat_deliberation')) {
-            if (!empty($delib['Deliberation']['debat'])) {
-                $oMainPart->addElement(new GDO_ContentType('debat_deliberation',
-                    'debat.odt',
-                    'application/vnd.oasis.opendocument.text' ,
-                    'binary',
-                    $delib['Deliberation']['debat']));
-            } else $oMainPart->addElement(new GDO_FieldType("debat_deliberation", "", "text"));
-        }
-        if ($modelOdtInfos->hasUserField('debat_commission')) {
-            if (!empty($delib['Deliberation']['commission'])) {
-                $oMainPart->addElement(new GDO_ContentType('debat_commission',
-                    'debat_commission.odt',
-                    'application/vnd.oasis.opendocument.text',
-                    'binary',
-                    $delib['Deliberation']['commission']));
-            } else $oMainPart->addElement(new GDO_FieldType("debat_commission", "", "text"));
-        }
-
-        // annexes
-        $this->Annex->setVariablesFusion($oMainPart, $modelOdtInfos, 'Projet', $id);
-
-        // nombre de séances du projet
-        $seanceIds = $this->Deliberationseance->nfield('seance_id', array('Deliberationseance.deliberation_id'=>$delib['Deliberation']['id']), array('Seance.date'));
-        $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($seanceIds), 'text'));
-
-        // position du projet dans la séance de l'édition ou de la séance délibérante
-        if ($modelOdtInfos->hasUserFieldDeclared('position_projet')) {
-            if (empty($fusionSeanceId))
-                $positionSeanceId = empty($seanceIds)?null:$seanceIds[count($seanceIds)-1];
-            else
-                $positionSeanceId = $fusionSeanceId;
-            $position = empty($positionSeanceId)?0:$this->getPosition($delib['Deliberation']['id'], $positionSeanceId);
-            $oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
-        }
-
-        // itération sur les séances
-        if (empty($fusionSeanceId) && !empty($seanceIds)) {
-            // dernière séance (merci M. Eddy) : délibérante
-            $this->Seance->setVariablesFusion($oMainPart, $modelOdtInfos, $seanceIds[count($seanceIds)-1], 'seance', false);
-            // pour toutes les séances
-            $this->Seance->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $seanceIds, false);
-        }
-
-        // avis des séances
-        if ($modelOdtInfos->hasUserFieldsDeclared('avis', 'avis_favorable', 'commentaire'))
-            $this->Deliberationseance->setVariablesFusionPourUnProjet($oMainPart, $modelOdtInfos, $id);
-
-        // listes des présents et suppléants, absents, mandatés
-        $this->Listepresence->setVariablesFusionPresents($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
-        $this->Listepresence->setVariablesFusionAbsents($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
-        $this->Listepresence->setVariablesFusionMandates($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
-
-        // votes
-        $this->Vote->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['id']);
-
-        // président de séance de la délibération
-        if (!empty($delib['Deliberation']['president_id']))
-            $this->President->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['president_id']);
-    }
-
-    /**
-     * Construit le tableau à envoyer au parapheur
-     * @param $acte_id
-     * @return array
-     */
-    public function getDocumentsForDelegation($acte_id){
-        $docs = array(
-            'docPrincipale' => $this->getDocument($acte_id),
-            'annexes' => array()
-        );
-        foreach ($this->Annex->getAnnexesWithoutFusion($acte_id) as $annexe) {
-            $docs['annexes'][] = array(
-                'content' => $annexe['Annex']['data'],
-                'mimetype' => $annexe['Annex']['filetype'],
-                'filename' => $annexe['Annex']['filename']
+		/**
+		 * Lecture des enregistrements.
+		 *
+         * @param array $conditions
+         * @param boolean $readSeances
+         * @return array
+		 */
+		public function gedoooReadAll( array $conditions, $readSeances = true ) {
+            $projets = $this->find(
+                'all',
+                array(
+                    'fields' => array_merge(
+						$this->fields(),
+						$this->Rapporteur->fields(),
+						$this->Redacteur->fields(),
+						$this->Theme->fields()
+                    ),
+                    'recursive' => -1,
+                    'joins' => array(
+						$this->join( 'Rapporteur', array( 'type' => 'LEFT OUTER' ) ),
+						$this->join( 'Redacteur', array( 'type' => 'LEFT OUTER' ) ),
+						$this->join( 'Theme', array( 'type' => 'LEFT OUTER' ) ),
+                    ),
+					'conditions' => array(
+						'Deliberation.etat >=' => self::enCoursRedaction,
+                        $conditions
+					),
+                )
             );
-        }
-        return $docs;
-    }
 
-    function getDocument($acte_id, $format = 'pdf') {
-        // fusion du document
-        return $this->fusion($acte_id, null, null, $format);
-    }
+            foreach( $projets as $indexProjet => $projet ) {
+                // Lecture des séances du projet si nécessaire
+                if( $readSeances ) {
+                    // TODO: séance principale ou délibérante, etc...
+                    $projet['Seances'] = $this->Deliberationseance->gedoooRead( $projet['Deliberation']['id'] );
+                    if( !empty( $projet['Seances'] ) ) {
+                        foreach( $projet['Seances'] as $indexSeance => $seance ) {
+                            // TODO: Obtention des acteurs convoqués, 5 reqûetes à transformer en une ?
+                            $type_id = $this->Seance->getType( $seance['Seance']['id'] );
+                            $seance['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId( $type_id );
+// TODO: AvisSeance
+                            // Itération AvisSeance
+                            $seance['AvisSeance'] = $this->Deliberationseance->find(
+                                'all',
+                                array(
+                                    'fields' => array(
+                                        'Deliberationseance.commentaire'
+                                    ),
+                                    'conditions' => array(
+                                        'Deliberationseance.seance_id' => $seance['Seance']['id']
+                                    ),
+                                    'recursive' => -1,
+                                    'order' => array( 'Deliberationseance.position ASC' )
+                                )
+                            );
 
-    public function getAnnexesToSend($acte_id){
-        $annexes = array();
-        $to_send = $this->Annex->getAnnexesFromDelibId($acte_id, true);
-        $docs_type = Configure::read('DOC_TYPE');
-        foreach ($to_send as $annexe) {
-            if ($docs_type[$annexe['Annex']['filetype']]['convertir']){
-                if (!empty($annexe['Annex']['data_pdf']))
-                    $annexes[] = array(
-                        'content' => $annexe['Annex']['data_pdf'],
-                        'mimetype' => 'application/pdf',
-                        'filename' => AppTools::getNameFile($annexe['Annex']['filename']) . '.pdf'
-                    );
-            } else
-                $annexes[] = array(
-                    'content' => $annexe['Annex']['data'],
-                    'mimetype' => $annexe['Annex']['filetype'],
-                    'filename' => $annexe['Annex']['filename']
+                            $projet['Seances'][$indexSeance] = $seance;
+                        }
+                    }
+                }
+
+                // Thème et thèmes parents d'un projet. TODO: Donnera [T1_theme,T10_theme] comme variables Gedooo
+                $projet['Themes'] = $this->Theme->postgresFindParents( $projet['Deliberation']['theme_id'], array( 'libelle' ) );
+
+                // Service et services parents d'un projet. TODO: Donnera service_emetteur et service_avec_hierarchie comme variables Gedooo
+                $projet['Services'] = $this->Service->postgresFindParents( $projet['Deliberation']['service_id'], array( 'libelle' ) );
+
+                // Obtention des historiques
+                $historiques = $this->Historique->find(
+                    'all',
+                    array(
+                        'fields' => array(
+                            'Historique.commentaire'
+                        ),
+                        'recursive' => -1,
+                        'conditions' => array(
+                            'Historique.delib_id' => $projet['Deliberation']['id']
+                        ),
+                        'order' => array( 'Historique.created ASC' )
+                    )
                 );
-        }
-        return $annexes;
-    }
+                $projet['Historiques'] = $historiques;
 
-    /**
-     * Retour les annexes à joindre au controle de légalité
-     */
-    function getAnnexes($acte_id, $extention='pdf'){
-        $annexes=array();
-        $i=0;
-        $found = $this->Annex->getAnnexesFromDelibId($acte_id, true);
-        foreach ($found as $annexe) {
-            $annexes[$i]['id'] = $annexe['Annex']['id'];
-            switch ($extention) {
-               case 'pdf':
-               default:
-                   if (!empty($annexe['Annex']['data_pdf'])){
-                       $annexes[$i]['content'] = $annexe['Annex']['data_pdf'];
-                       $annexes[$i]['mimetype'] = 'application/pdf';
-                       $annexes[$i]['filename'] = AppTools::getNameFile($annexe['Annex']['filename']).'.pdf';//Replace avec .pdf
-                   }
-                break;
+                // Informations supplémentaires du projet
+                $projet['Infossups'] = $this->Infosup->gedoooReadAll( 'Deliberation', $projet['Deliberation']['id'] );
+
+                // Liste de présences du projet
+                $projet['Listespresences'] = $this->Listepresence->gedoooReadAll( $projet['Deliberation']['id'] );
+
+                // Commentaires du projet
+                $projet['Commentaires'] = $this->Commentaire->gedoooReadAll( $projet['Deliberation']['id'] );
+
+                // Projet multi-délibérations ? // TODO: dans le modèle Multidelib, se servir d'un querydata commun ? Fields id, objet ?
+                $projet['Deliberations'] = $this->Multidelib->find(
+                    'all',
+                    array(
+                        'recursive' => -1,
+                        'conditions' => array(
+                            'Multidelib.parent_id' => $projet['Deliberation']['id']
+                        )
+                    )
+                );
+
+                // Annexes
+                $projet['Annexes'] = $this->Annex->getAnnexesFromDelibId2( $projet['Deliberation']['id'], 0, 1 );
+
+                // Fin du traitement
+                $projets[$indexProjet] = $projet;
             }
-            $i++;
+
+			return $projets;
         }
 
-        return $annexes;
-    }
+        /**
+         * Lecture d'un enregistrement.
+         *
+         * @param integer $id
+         * @param boolean $readSeances
+         * @return array
+         */
+        public function gedoooRead( $id, $readSeances = true ) {
+            $results = $this->gedoooReadAll( array( 'Deliberation.id' => $id ), $readSeances );
 
-    /**
-     * fonction d'initialisation des variables de fusion pour un ou plusieurs projets ou délibérations
-     * @param object $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $ids liste des id des délibérations
-     */
-    function setVariablesFusionDeliberations(&$oMainPart, &$modelOdtInfos, $ids) {
-        // pour tous les projets/délibérations
-        $oSectionIteration = new GDO_IterationType('Projets');
-        foreach($ids as $id) {
-            $oDevPart = new GDO_PartType();
-            $this->setVariablesFusion($oDevPart, $modelOdtInfos, $id);
-            $oSectionIteration->addPart($oDevPart);
-        }
-        $oMainPart->addElement($oSectionIteration);
-    }
-
-    /**
-     * Fonction de signature manuscrite
-     * Signe l'acte
-     * Génère le document delib_pdf
-     * Génère un numéro de delib si c'est un arrêté
-     * Enregistre dans l'historique de l'acte
-     * @param int $acte_id
-     * @param int $user_id
-     * @return bool
-     */
-    public function signatureManuscrite($acte_id, $user_id){
-        $success = true;
-        $this->begin();
-        $acte = $this->find('first', array(
-            'conditions' => array('Deliberation.id' => $acte_id),
-            'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
-        ));
-        if (empty($acte['Deliberation']['num_delib'])) {
-            $acte['Deliberation']['etat'] = 3;
-            $acte['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
-        }
-        $acte['Deliberation']['date_acte'] = date("Y-m-d H:i:s", strtotime("now"));
-        $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
-        $acte['Deliberation']['signee'] = true;
-
-        //Document delib_pdf
-        $content = $this->getDocument($acte_id);
-        if (!empty($content)) { // On stoque le fichier en base de données
-            $acte['Deliberation']['delib_pdf'] = $content;
-        } else $success = false;
-
-        //Historique
-        $success &= $this->Historique->enregistre($acte_id, $user_id, "Signature manuscrite");
-
-        if ($success && $this->save($acte)){
-            $this->commit();
-            return true;
-        } else {
-            $this->rollback();
-            return false;
-        }
-    }
-
-
-    /**
-     * Fonction d'envoi au parapheur
-     * Génère le document delib_pdf
-     * Génère un numéro de delib si c'est un arrêté
-     * Enregistre dans l'historique de l'acte
-     * @param int $acte_id identifiant de l'acte
-     * @param int $circuit_id circuit identifiant du circuit parapheur
-     * @param int $user_id identifiant de l'utilisateur (pour historique)
-     * @return bool success
-     */
-    public function envoyerAuParapheur($acte_id, $circuit_id, $user_id){
-        $success = true;
-        $this->begin();
-        $acte = $this->find('first', array(
-            'conditions' => array('Deliberation.id' => $acte_id),
-            'contain' => array('Typeacte.compteur_id', 'Typeacte.nature_id')
-        ));
-
-        if (empty($acte['Deliberation']['num_delib'])) {
-            $acte['Deliberation']['etat'] = 3;
-            $acte['Deliberation']['num_delib'] = $this->Seance->Typeseance->Compteur->genereCompteur($acte['Typeacte']['compteur_id']);
+            return ( isset( $results[0] ) ? $results[0] : array() );
         }
 
-        //Document delib_pdf
-        $content = $this->getDocument($acte_id);
-        if (!empty($content)) { // On stoque le fichier en base de données
-            $acte['Deliberation']['delib_pdf'] = $content;
-
-            App::uses('Signature','Lib');
-            try{
-                $this->Signature = new Signature;
-                $reponse = $this->Signature->send($acte, $circuit_id, $acte['Deliberation']['delib_pdf'], $this->getAnnexesToSend($acte_id));
-                $success &= !empty($reponse);
-                //Historique
-                $success &= $this->Historique->enregistre($acte_id, $user_id, "Envoi du projet au parapheur");
-                $acte['Deliberation']['date_envoi_signature'] = date("Y-m-d H:i:s", strtotime("now"));
-                $acte['Deliberation']['parapheur_id'] = $reponse;
-                if (Configure::read('PARAPHEUR') == 'PASTELL')
-                    $acte['Deliberation']['pastell_id'] = $reponse;
-                $acte['Deliberation']['parapheur_cible'] = Configure::read('PARAPHEUR');
-                $acte['Deliberation']['parapheur_etat'] = 1;
-            }catch (Exception $e){
-                $success = false;
+		/**
+		 * Normalisation des enregistrement: ajout des valeurs calculées, ...
+         *
+         * @todo gedoooNormalizeAll()
+		 *
+		 * @param array $records
+		 * @return array
+		 */
+		public function gedoooNormalize( array $data ) {
+            $data['Deliberation']['acte_adopte'] = ( ( ( $data['Deliberation']['etat'] == self::votePour ) && ( $data['Deliberation']['vote_nb_oui'] == 0 ) ) ? '1' : '0' );
+            if( !$data['Deliberation']['acte_adopte'] ) {
+                $data['Deliberation']['nombre_pour'] = $data['Deliberation']['vote_nb_oui'];
+                $data['Deliberation']['nombre_abstention'] = $data['Deliberation']['vote_nb_abstention'];
+                $data['Deliberation']['nombre_contre'] = $data['Deliberation']['vote_nb_non'];
+                $data['Deliberation']['nombre_sans_participation'] = $data['Deliberation']['vote_nb_retrait'];
             }
-        } else $success = false;
 
-        if ($success && $this->save($acte)){
-            $this->commit();
-            return true;
-        } else {
-            $this->rollback();
-            return false;
-        }
-    }
+            $data['Deliberation']['date_envoi_signature'] = DateFrench::frDate( $data['Deliberation']['date_envoi_signature'] );
 
-    /**
-     * Ordonne la fusion et retourne le résultat sous forme de flux
-     * @param int|string $id identifiant de la séance
-     * @param string $modeltype type de fusion
-     * @param int|string $modelTemplateId
-     * @param string $format format du fichier de sortie
-     * @return string flux du fichier généré
-     */
-    public function fusion($id, $modeltype = null, $modelTemplateId = null, $format = 'pdf') {
-        $this->Behaviors->load('OdtFusion', array(
-            'id' => $id,
-            'fileNameSuffixe' => $id,
-            'modelTemplateId' => $modelTemplateId,
-            'modelOptions' => array('modelTypeName' => $modeltype)
-        ));
-        $this->odtFusion();
-        $content = $this->getOdtFusionResult($format);
-        $this->deleteOdtFusionResult();
-        $this->Behaviors->unload('OdtFusion');
-        return $content;
-    }
+            if( !empty( $data['Commentaires'] ) ) {
+                $data = $this->Commentaire->gedoooNormalizeAll( $data );
+            }
 
-    /**
-     * Ordonne la fusion et retourne le résultat sous forme de flux
-     * @param int|string $id identifiant de la séance
-     * @param string $modeltype type de fusion
-     * @param int|string $modelTemplateId
-     * @param string $outputdir fichier vers lequel faire la fusion
-     * @param string $format format du fichier de sortie
-     * @return array [filename => content]
-     */
-    public function fusionToFile($id, $modeltype, $modelTemplateId = null, $outputdir = TMP, $format = 'pdf') {
-        $this->Behaviors->load('OdtFusion', array(
-            'id' => $id,
-            'fileNameSuffixe' => $id,
-            'modelTemplateId' => $modelTemplateId,
-            'modelOptions' => array('modelTypeName' => $modeltype)
-        ));
-        $filename = $this->fusionName();
-        $this->odtFusion();
-        $content = $this->getOdtFusionResult($format);
-        $this->deleteOdtFusionResult();
-        $file = new File($outputdir . DS . $filename . '.' . $format, true);
-        $file->write($content);
-        $this->Behaviors->unload('OdtFusion');
-        return $file->path;
-    }
+            // Normalisation des infosup de la délibération
+            $data = Hash::merge( $data, $this->Infosup->gedoooNormalizeAll( 'Deliberation', $data['Infossups'] ) );
+            unset( $data['Infossups'] );
+
+            // Normalisation des infosup des séances
+            if( !empty( $data['Seances'] ) ) {
+                foreach( $data['Seances'] as $indexSeance => $dataSeance ) {
+                    // Infossups
+                    $data['Seances'][$indexSeance] = Hash::merge(
+                        $this->Deliberationseance->Seance->gedoooNormalize($data['Seances'][$indexSeance]),
+                        $this->Infosup->gedoooNormalizeAll( 'Seance', $dataSeance['Infossups'] )
+                    );
+                    unset( $data['Seances'][$indexSeance]['Infossups'] );
+                }
+            }
+
+            // Thème et thèmes parents d'un projet. TODO: Donnera [T1_theme,T10_theme] comme variables Gedooo
+            if( !empty( $data['Themes'] ) ) {
+                for( $i = 0 ; $i < 10 ; $i++ ) {
+                    $data["T".( $i + 1 )."_theme"] = Hash::get( $data, "Themes.{$i}.Theme.libelle" );
+                }
+                unset( $data['Themes'] );
+            }
+
+            // Service et services parents d'un projet. TODO: Donnera service_emetteur et service_avec_hierarchie comme variables Gedooo
+            $services = (array)Hash::extract( $data, 'Services.{n}.Service.libelle' );
+            $count = count( $services );
+            $data['service_emetteur'] = @$services[$count-1];
+            $data['service_avec_hierarchie'] = implode( '/', $services );
+            unset( $data['Services'] );
+
+            // TODO: iteration Convoques
+            // $type_id = $this->Seance->getType( $projet['Seance']['id'] );
+            // $projet['Convoques'] = $this->Seance->Typeseance->acteursConvoquesParTypeSeanceId($type_id);
+            /*$data['Convoques'] = array();
+            if( !empty( $data['Listespresences'] ) ) {
+                foreach( $data['Listespresences'] as $listepresence ) {
+                    $data['Convoques'][] = array(
+                        'Acteur' => array(
+                            'nom' => $listepresence['Acteur']['nom'],
+                            'prenom' => $listepresence['Acteur']['prenom'],
+                            'salutation' => $listepresence['Acteur']['salutation'],
+                            'titre' => $listepresence['Acteur']['titre'],
+                            'note' => $listepresence['Acteur']['note'],
+                        )
+                    );
+                }
+            }*/
+
+            // Traitement des votes et des présences ... FIXME: devrait être pour une séance donnée ?, pour AvisSeance
+            $data = Hash::merge( $data, $this->Listepresence->gedoooNormalizeAll( $data['Listespresences'] ) );
+            unset( $data['Listespresences'] );
+
+            // Normalisation des séances
+            if( !empty( $data['Seances'] ) ) {
+                $seances_keys = array_combine( array_keys( $data['Seances'] ), Hash::extract( $data['Seances'], '{n}.Typeseance.action' ) );
+                if( count( $seances_keys ) == 1 ) {
+                    // TODO: Deliberationseance.position (seance_id/deliberation_id)
+                    // $position = $this->getPosition($delib['Deliberation']['id'], $delibseances[0]);
+                    // $oMainPart->addElement(new GDO_FieldType('position_projet', $position, 'text'));
+                    $data = Hash::merge( $data, $data['Seances'][0] );
+                }
+                else if( count( $seances_keys ) >= 1 ) {
+                    $seancedeliberante_key = array_search( 0, $seances_keys, true );
+                    if( $seancedeliberante_key !== false ) {
+                        $data = Hash::merge( $data, $data['Seances'][$seancedeliberante_key] );
+                    }
+                }
+            }
+            $data['nombre_seance'] = count((array)@$data['Seances']); // FIXE: suffixe ?
+
+            $data['AvisSeance'] = Hash::extract( $data['AvisSeance'], '{n}.Deliberationseance' );
+
+			return $data;
+		}
+
+
+		/**
+		 * Retourne une correspondance entre les champs CakePHP (même calculés)
+		 * et les champs Gedooo.
+		 *
+		 * @return array
+		 */
+		public function gedoooPaths() {
+			$correspondances = array(
+                'identifiant_projet' => 'Deliberation.id',
+                'objet_projet' => 'Deliberation.objet',
+                'libelle_projet' => 'Deliberation.objet',
+                'objet_delib' => 'Deliberation.objet_delib',
+                'libelle_delib' => 'Deliberation.objet_delib',
+                'etat_projet' => 'Deliberation.etat',
+                'date_envoi_signature' => 'Deliberation.date_envoi_signature',
+                'date_reception' => 'Deliberation.dateAR',
+                'position_projet' => 'Deliberationseance.position',
+                'commentaire' => 'Deliberationseance.commentaire',
+                'titre_projet' => 'Deliberation.titre',
+                'numero_deliberation' => 'Deliberation.num_delib',
+                'classification_deliberation' => 'Deliberation.num_pref',
+                'theme_projet' => 'Theme.libelle',
+                'nom_redacteur' => 'Redacteur.nom',
+                'prenom_redacteur' => 'Redacteur.prenom',
+                'email_redacteur' => 'Redacteur.email',
+                'telmobile_redacteur' => 'Redacteur.telmobile',
+                'telfixe_redacteur' => 'Redacteur.telfixe',
+                'note_redacteur' => 'Redacteur.note',
+                // Séance.Projet.Historique -> TODO: dans une sorte d'itération ?
+                'log' => 'Historique.commentaire',
+                // Service
+                'service_emetteur' => 'service_emetteur',
+                'service_avec_hierarchie' => 'service_avec_hierarchie',
+                // Champs supplémentaires
+                'acte_adopte' => 'Deliberation.acte_adopte',
+                'nombre_pour' => 'Deliberation.nombre_pour',
+                'nombre_abstention' => 'Deliberation.nombre_abstention',
+                'nombre_contre' => 'Deliberation.nombre_contre',
+                'nombre_sans_participation' => 'Deliberation.nombre_sans_participation',
+                'nombre_seance' => 'nombre_seance',
+                'libelle_multi_delib' => 'Multidelib.objet',
+                'id_multi_delib' => 'Multidelib.id',
+			);
+
+            // Thèmes
+            for( $i = 0 ; $i < 10 ; $i++ ) {
+                $key = "T".( $i + 1 )."_theme";
+                $correspondances[$key] = $key;
+            }
+
+            $correspondances = Hash::merge(
+                $correspondances,
+                array(
+                    'nom_acteur_convoque_seance' => 'Acteur.nom',
+                    'prenom_acteur_convoque_seance' => 'Acteur.prenom',
+                    'salutation_acteur_convoque_seance' => 'Acteur.salutation',
+                    'titre_acteur_convoque_seance' => 'Acteur.titre',
+                    'note_acteur_convoque_seance' => 'Acteur.note',
+                    'commentaire' => 'commentaire',
+                    'commentaire_vote' => 'Deliberation.vote_commentaire',
+                    'critere_trie_theme' => 'Theme.order',
+                    'numero_acte' => 'Deliberation.num_delib',
+                )
+            );
+
+            $correspondances = Hash::merge(
+                $correspondances,
+                $this->Listepresence->gedoooPaths(),
+                $this->Rapporteur->gedoooPaths( 'rapporteur' ),
+                $this->Seance->Secretaire->gedoooPaths( 'secretaire' ),
+                $this->Seance->President->gedoooPaths( 'president' ),
+                $this->Seance->gedoooPaths()
+            );
+
+			return $correspondances;
+		}
+
+		/**
+		 * Retourne une correspondance entre les champs CakePHP (même calculés)
+		 * et les types Gedooo.
+		 *
+		 * @param array $records
+		 * @return array
+		 */
+		public function gedoooTypes() {
+            $types = array_merge(
+				$this->types(),
+				$this->Deliberationseance->types(),
+				$this->Theme->types(),
+				$this->Redacteur->types(),
+				$this->Historique->types()
+			);
+
+            // Thèmes
+            for( $i = 0 ; $i < 10 ; $i++ ) {
+                $key = "T".( $i + 1 )."_theme";
+                $types[$key] = 'text';
+            }
+            $types['critere_trie_theme'] = 'text';
+
+            // Services
+            $types['service_emetteur'] = 'text';
+            $types['service_avec_hierarchie'] = 'text';
+
+            // Séance
+            $types['nombre_seance'] = 'text';
+
+            // Acteurs convoqués: au singulier pour une delib, au pluriel pour les séances
+            $types = Hash::merge(
+                $types,
+                array(
+                    'Acteur.nom' => 'text',
+                    'Acteur.prenom' => 'text',
+                    'Acteur.salutation' => 'text',
+                    'Acteur.titre' => 'text',
+                    'Acteur.note' => 'text',
+                    'commentaire' => 'text',
+                )
+            );
+
+            // Liste de présence
+            $types = Hash::merge(
+                $types,
+                $this->Listepresence->gedoooTypes(),
+				//$this->Rapporteur->types(),
+                $this->Rapporteur->gedoooPaths( 'rapporteur' ),
+                $this->Seance->Secretaire->gedoooTypes( 'secretaire' ),
+                $this->Seance->President->gedoooTypes( 'president' ),
+                $this->Seance->gedoooTypes(),
+                array(
+                    'Deliberation.acte_adopte' => 'text',
+                    'Deliberation.nombre_pour' => 'text',
+                    'Deliberation.nombre_abstention' => 'text',
+                    'Deliberation.nombre_contre' => 'text',
+                    'Deliberation.nombre_sans_participation' => 'text',
+                    'Deliberation.num_delib' => 'text',
+                    'Deliberation.date_envoi_signature' => 'date',
+                    'Deliberation.dateAR' => 'text',
+                    'Multidelib.objet' => 'text',
+                    'Multidelib.id' => 'text',
+                )
+            );
+
+            return $types;
+		}
 }
+?>

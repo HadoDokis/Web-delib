@@ -1,8 +1,7 @@
 <h2>Choisir la classification</h2>
 <div id="attribute_list">
 <?php
-    if (!isset($_GET['id'])) {
-        if(isset($classification))
+	if (!isset($_GET['id'])) {
         foreach ($classification as $key=>$value) {
 	        $val=addslashes($value);
                 if(is_int($key) && !is_string($key))
@@ -14,7 +13,6 @@
     }
     else {
     	$id = $_GET['id'];
-        if(isset($classification))
     	foreach ($classification as $key=>$value) {
 	        $val=addslashes($value);
                  if(is_int($key) && !is_string($key))
@@ -24,7 +22,6 @@
 	        echo '<br/>';
     	}
     }
-    if(!isset($classification))echo "Pas de classification disponible.</div><br />"
 ?>
 <br/>
 <?php echo $this->Html->link('Fermer la fenêtre','#add',array('onclick'=>"javascript:window.close();")); ?>

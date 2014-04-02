@@ -2,9 +2,15 @@
 
 <div class="pave">
 <?php 
-echo '<br>Nom fichier : '.$deliberation['Deliberation']['texte_synthese_name'];
-echo '<br>Taille : '.$deliberation['Deliberation']['texte_synthese_size'];
-echo '<br>'.$this->Html->link('Telecharger','/deliberations/download/'.$deliberation['Deliberation']['id'].'/texte_synthese').'<br><br><br>';
+
+    if (Configure::read('GENERER_DOC_SIMPLE'))
+        echo $deliberation['Deliberation']['texte_synthese']; 
+    else {
+         echo '<br>Nom fichier : '.$deliberation['Deliberation']['texte_synthese_name'];
+         echo '<br>Taille : '.$deliberation['Deliberation']['texte_synthese_size'];
+         echo '<br>'.$this->Html->link('Telecharger','/deliberations/download/'.$deliberation['Deliberation']['id'].'/texte_synthese').'<br><br><br>';
+    }
+	
 ?>
 </div>
 
@@ -21,6 +27,6 @@ echo '<br>'.$this->Html->link('Telecharger','/deliberations/download/'.$delibera
 </div>
 
 <div class="actions">
-	<?php echo $this->Html->link('<i class="fa fa-arrow-left"></i> Retour', 'javascript:history.go(-1)', array('class'=>'btn', 'title'=>'Retour fiche', 'escape' => false));?>
+	<?php echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Retour', 'javascript:history.go(-1)', array('class'=>'btn', 'title'=>'Retour fiche', 'escape' => false));?>
 
 </div>

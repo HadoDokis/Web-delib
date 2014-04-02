@@ -141,3 +141,4 @@ class DroitsHelper extends Helper {
 	}
 
 }
+?>

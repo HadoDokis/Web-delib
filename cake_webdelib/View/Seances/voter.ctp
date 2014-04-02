@@ -3,32 +3,19 @@
     if (isset($message))
         echo '<div id="flashMessage" class="message">'.$message.'</div>	'; 
 ?>
-
 <cake:nocache>
-<h2>Vote pour le projet : "<?php echo $deliberation['Deliberation']['objet_delib']?>"</h2>
+<h2> Vote pour le projet : "<?php echo $deliberation['Deliberation']['objet_delib']?>"</h2>
+
 <h3>Liste des présents : <?php echo $this->Form->input('Vote.listePresents', array('label'=>false, 'div'=>false, 'options'=>array(1=>'masquée', 2=>'affichée'), 'default'=>1, 'onchange' => "affichageListePresents(this);", 'empty'=>false)); ?></h3>
 <div id='saisiePresents'>
 	<?php echo $this->requestAction('/deliberations/listerPresents/'.$deliberation['Deliberation']['id']."/$seance_id", array('return'));?>
 </div>
 
-<?php echo $this->Form->create('Seances',array('type'=>'post', 'url' => array('controller' => 'seances', 'action' => 'voter', $deliberation['Deliberation']['id'], $seance_id))); ?>
-    <h3>Président :
-    <?php
-    echo $this->Form->input('Deliberation.president_id', array('type'=>'select', 'options'=>$acteurs, 'selected'=>$selectedPresident, 'label'=>false, 'div'=>false));
-    ?></h3>
-    <h3>Saisie du vote : <?php
-        $options = array(1 => 'Détail des voix', 2 => 'Total des voix', 3 => 'Résultat');
-        echo $this->Form->select('Vote.typeVote', $options, array(
-            'label'=>false,
-            'div'=>false,
-            //'default'=>1,
-            'autocomplete'=>'off',
-            'value'=>2,
-            'onchange' => "affichageTypeVote(this);",
-            'empty'=>false)); ?></h3>
-
+<?php echo $this->Form->create('Seances',array('url'=>'/seances/voter/'.$deliberation['Deliberation']['id']."/$seance_id",
+                                         'type'=>'post')); ?>
+	<h3>Saisie du vote : <?php echo $this->Form->input('Vote.typeVote', array('label'=>false, 'div'=>false, 'options'=>array(1 => 'Détail des voix', 2 => 'Total des voix', 3 => 'Résultat'), 'default'=>1, 'onchange' => "affichageTypeVote(this);", 'empty'=>false)); ?></h3>
 	<div id='voteDetail'>
-		<table id="tableDetailVote">
+		<table id="tableDetailVote" cellpadding="0" cellspacing="0">
 			<tr>
 				<th>Elus</th>
 				<th colspan=4>Vote</th>
@@ -71,13 +58,13 @@
 				</td>
 			</tr>
 			<?php endforeach; ?>
-			<tr style="background-color: #efefef">
+			<tr  bgcolor='#efefef'>
 				<td>Raccourcis pour les votes</td>
 				<td>Oui</td>
 				<td>Non</td>
 				<td>Abstention</td>
 				<td>Pas de participation</td>
-            </tr>
+                        </tr>
 			<tr>
 				<td>Tous les présents</td>
 		   		<td><input type="radio" name="racc_tous" value="3" onclick="vote_global(this, 'tous');"/></td>
@@ -116,7 +103,7 @@
 	</div>
 
 	<div id='voteTotal'>
-		<table>
+		<table cellpadding="0" cellspacing="0">
 			<tr>
 				<th></th>
 				<th>Oui</th>
@@ -140,32 +127,15 @@
 
 	<br/><br/>
 	<div class="optional">
-		<?php
-            echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire',
-                    'style'=>'width:50%; max-width:90%; padding: 5px; max-height: 200px;',
-                    'type'=>'textarea', 'rows'=>'6', 'cols' => '60', 'maxlength' => '500',
-                    'after' => '<div style="display:inline-block">&nbsp;&nbsp;&nbsp;(max. <span style="display:inline-block" id="charLeft"></span>/500 caractères)</div>'));
-        ?>
-        <script>
-            $(document).ready(function() {
-                $('#charLeft').append($('#DeliberationVoteCommentaire').val().length);
-                $('#DeliberationVoteCommentaire').keyup(function() {
-                    var len = this.value.length;
-                    if (len >= 500) {
-                        this.value = this.value.substring(0, 500);
-                    }
-                    $('#charLeft').text(this.value.length);
-                });
-            });
-        </script>
-        </div>
+		<?php echo $this->Form->input('Deliberation.vote_commentaire', array('label'=>'Commentaire', 'type'=>'textarea', 'rows'=>'5', 'cols' => '60'));?>
+	</div>
 
 	<br/>
 	<div class="submit">
             <?php
             echo $this->Html->tag('div', null, array("class" => "btn-group"));
-            echo $this->Html->link('<i class="fa fa-arrow-left"></i> Annuler', '/seances/details/'.$seance_id, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
-            echo $this->Form->button('<i class="fa fa-save"></i> Enregistrer le vote', array('type' => 'submit', 'name' => 'modifier', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le vote'));
+            echo $this->Html->link('<i class="icon-circle-arrow-left"></i> Annuler', '/seances/details/'.$seance_id, array('class' => 'btn', 'escape' => false, 'title' => 'Annuler', 'name' => 'Annuler'));
+            echo $this->Form->button('<i class="icon-save"></i> Enregistrer le vote', array('type' => 'submit', 'name' => 'modifier', 'class' => 'btn btn-primary', 'escape' => false, 'title' => 'Enregistrer le vote'));
             echo $this->Html->tag('/div', null);
             ?>
 	</div>

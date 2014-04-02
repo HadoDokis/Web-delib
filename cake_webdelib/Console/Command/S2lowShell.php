@@ -1,30 +1,19 @@
 <?php
 
-App::uses('AppShell', 'Console/Command');
-App::uses('Acteurseance', 'Model');
 class S2lowShell extends AppShell {
 
-//    public $uses = array('Acteurseance');
+    public $uses = array('Acteurseance');
 
     public function main() {
+        App::uses('AppShell', 'Console/Command');
         App::uses('ComponentCollection', 'Controller');
         App::uses('S2lowComponent', 'Controller/Component');
-        
-        //Si service désactivé ==> quitter
-        if (!Configure::read('USE_S2LOW')) {
-            $this->out("Service S2LOW désactivé");
-            exit;
-        }
-        
         $collection = new ComponentCollection();
-        $this->S2low = new S2lowComponent($collection);
-        $this->Acteurseance = new Acteurseance();
-        $mails = $this->Acteurseance->find('all', array(
-            'recursive'  => -1,
-            'conditions' => array(
-                'date_envoi !=' => null,
-                'date_reception' => null
-            )));
+        $this->S2low =new S2lowComponent($collection);
+
+        $mails = $this->Acteurseance->find('all', array('conditions' => array('date_envoi !=' => null,
+                                                                              'date_reception' => null),
+                                                        'recursive'  => -1));
      
         foreach($mails as $mail) {
             $this->Acteurseance->id = $mail['Acteurseance']['id'];
@@ -43,3 +32,6 @@ class S2lowShell extends AppShell {
         
     }
 }
+
+
+?>

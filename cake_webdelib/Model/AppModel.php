@@ -1,4 +1,7 @@
 <?php
+
+
+/* SVN FILE: $Id: app_model.php 4409 2007-02-02 13:20:59Z phpnut $ */
 /**
  * Application model for Cake.
  *
@@ -9,24 +12,23 @@
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
  * Copyright 2005-2007, Cake Software Foundation, Inc.
- *                                1785 E. Sahara Avenue, Suite 490-204
- *                                Las Vegas, Nevada 89104
+ *								1785 E. Sahara Avenue, Suite 490-204
+ *								Las Vegas, Nevada 89104
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright        Copyright 2005-2007, Cake Software Foundation, Inc.
- * @link                http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
- * @package            cake
- * @subpackage        cake.cake
- * @since            CakePHP(tm) v 0.2.9
- * @version            $Revision: 4409 $
- * @modifiedby        $LastChangedBy: phpnut $
- * @lastmodified    $Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
- * @license            http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
+ * @package			cake
+ * @subpackage		cake.cake
+ * @since			CakePHP(tm) v 0.2.9
+ * @version			$Revision: 4409 $
+ * @modifiedby		$LastChangedBy: phpnut $
+ * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-
 /**
  * Application model for Cake.
  *
@@ -34,177 +36,197 @@
  * Create the same file in app/app_model.php
  * Add your application-wide methods to the class, your models will inherit them.
  *
- * @package        cake
- * @subpackage    cake.cake
+ * @package		cake
+ * @subpackage	cake.cake
  */
-class AppModel extends Model {
-    //var $actsAs=array('Containable');
+App::uses('Model', 'Model');
+class AppModel extends Model{
 
-    /**
-     * Validation du format de fichier par FIDO
-     * @param string|array $data flux d'un fichier ou tableau de type HTTP Post
-     * @param null|string|array $extension extension(s) autorisée(s), si null autorise toutes celles du fichier formats.inc
-     * @param bool $required autoriser qu'il n'y ai pas de fichier
-     * @return bool fichier autorisé ou non
-     */
-    public function checkFormat($data, $extension = null, $required = false) {
-        App::uses('FidoComponent', 'ModelOdtValidator.Controller/Component');
-        $this->Fido = new FidoComponent();
-        if (is_array($data)) {
-            $data = array_shift($data);
-            if (!$required && $data['error'] == 4) {
-                return true;
-            }
-            if ($required && $data['error'] != 0) {
-                return false;
-            }
-            if ($data['size'] == 0 || $data['error'] != 0) {
-                $this->validate['content']['message'] = 'Erreur dans le document ou lors de l&apos;envoi.';
-                return false;
-            }
-            $allowed = $this->Fido->checkFile($data['tmp_name']);
-        } else {
-            if (empty($data))
-                return !$required;
-            $file = new File(tempnam(TMP, 'upload_'));
-            $file->write($data);
-            $allowed = $this->Fido->checkFile($file->path);
-            $file->delete();
-        }
+    public $actsAs=array('Containable', 'Database.DatabaseTable');
+ /*
+ * Equivalent du find('list') mais sur plusieurs champs du model
+ * $params permet de passer tous les paramètres à la fonction sous la forme :
+ * array(
+ *		'fields' => array('field1', 'field2'), //array of field names
+ *		'format' => string '%s, %s ....', (format utilisé dans la fonction php printf)
+ *		'conditions' => array('field' => $thisValue), //array of conditions
+ *		'order' => array('Model.field1', 'Model.field2 DESC') //string or array defining order
+ *		);
+ * Les clés manquantes sont initialisées par la variable du modèle $displayFields
+ * Si 'fields' ou 'format' sont vides ou ne sont pas définis, alors la fonction retourne find('list')
+ */
 
-        if (is_null($extension))
-            return $allowed;
-        elseif (is_array($extension))
-            return $allowed && in_array($this->Fido->lastResults['extension'], $extension);
-        elseif (is_string($extension))
-            return $allowed && $this->Fido->lastResults['extension'] == $extension;
-        else
-            return false;
+function checkMimetype($field_validation, $content, $allowed_mimetypes) {
+    if (empty($this->data[$this->alias][$content])) {
+        return true;
     }
+    else {
+        $DOC_TYPE = Configure::read('DOC_TYPE');
+        $tmpfname = tempnam(TMP, "CHK_");
+        $file = new File($tmpfname, true);
+        $file->append($this->data[$this->alias][$content]);
 
-    function listFields($params = array()) {
-        // Initialisation des clés manquantes de $params avec les valeurs de $this->$displayFields
-        if (isset($this->displayFields))
-            $params = array_merge($this->displayFields, $params);
+        if(array_key_exists($file->mime(), $DOC_TYPE))
+                 $result = $DOC_TYPE[$file->mime()]['mime_conversion'];
+        else $result=NULL;
 
-        // Si la liste des champs ou le format ne sont pas définis on retourne la fonction find('list')
-        if (empty($params['fields']) || empty($params['format']))
-            return $this->find('list', $params);
+        $file->delete();
+        $file->close();
 
-        // Ajout de la clé primaire dans la liste des champs si elle n'y est pas déjà
-        $clePrimaireAjoutee = false;
-        if (!in_array($this->primaryKey, $params['fields'])) {
-            $params['fields'][] = $this->primaryKey;
-            $clePrimaireAjoutee = true;
-        }
-
-        // On force la récursivite à -1
-        $params['recursive'] = -1;
-
-        // Execution du find
-        $recs = $this->find('all', $params);
-
-        // Constitution de la liste de retour
-        $ret = array();
-        foreach ($recs as $rec) {
-            $id = $rec[$this->alias][$this->primaryKey];
-            if ($clePrimaireAjoutee) unset($rec[$this->alias][$this->primaryKey]);
-            $ret[$id] = vsprintf($params['format'], $rec[$this->alias]);
-        }
-
-        return $ret;
+        return (in_array($result, $allowed_mimetypes)) ;
     }
+}
+
+function listFields($params = array()) {
+	// Initialisation des clés manquantes de $params avec les valeurs de $this->$displayFields
+	if (isset($this->displayFields))
+		$params = array_merge($this->displayFields, $params);
+
+	// Si la liste des champs ou le format ne sont pas définis on retourne la fonction find('list')
+	if (empty($params['fields']) || empty($params['format']))
+		return $this->find('list', $params);
+
+	// Ajout de la clé primaire dans la liste des champs si elle n'y est pas déjà
+	$clePrimaireAjoutee = false;
+	if (!in_array($this->primaryKey, $params['fields'])) {
+		$params['fields'][] = $this->primaryKey;
+		$clePrimaireAjoutee = true;
+	}
+
+	// On force la récursivite à -1
+	$params['recursive'] = -1;
+
+	// Execution du find
+	$recs = $this->find('all', $params);
+
+	// Constitution de la liste de retour
+	$ret = array();
+	foreach($recs as $rec) {
+		$id = $rec[$this->alias][$this->primaryKey];
+		if ($clePrimaireAjoutee) unset($rec[$this->alias][$this->primaryKey]);
+		$ret[$id] = vsprintf($params['format'], $rec[$this->alias]);
+	}
+
+	return $ret;
+   }
 
     function changeBoolean($model, $id, $field) {
         $mod = new $model;
         $data = $mod->find('first', array('conditions' => array("$model.id" => $id),
-            'recursive' => -1,
-            'fields' => array("$field")));
+                                                   'recursive'  => -1,
+                                                   'fields'     => array("$field")));
         $mod->id = $id;
         return ($mod->saveField($field, !$data[$model][$field]));
     }
 
-    /*function isUnique($field, $value, $id)
-        {
-            $fields[$this->name.'.'.$field] = $value;
-            if (empty($id))
-                // add
-                $fields[$this->name.'.id'] = "!= NULL";
-            else
-                // edit
-                $fields[$this->name.'.id'] = "!= $id";
+/*function isUnique($field, $value, $id)
+    {
+        $fields[$this->name.'.'.$field] = $value;
+        if (empty($id))
+            // add
+            $fields[$this->name.'.id'] = "!= NULL";
+        else
+            // edit
+            $fields[$this->name.'.id'] = "!= $id";
 
-            $this->recursive = -1;
-            if ($this->hasAny($fields))
-            {
-                $this->invalidate('unique_'.$field);
-                return false;
-            }
-            else
-                return true;
-       }*/
+        $this->recursive = -1;
+        if ($this->hasAny($fields))
+        {
+            $this->invalidate('unique_'.$field);
+            return false;
+        }
+        else
+            return true;
+   }*/
 
     public function isUploadedFile($params) {
         $val = array_shift($params);
         if ((isset($val['error']) && $val['error'] == 0) ||
-            (!empty($val['tmp_name']) && $val['tmp_name'] != 'none')
+            (!empty( $val['tmp_name']) && $val['tmp_name'] != 'none')
         ) {
             return true;
         }
         return false;
     }
 
+    // -------------------------------------------------------------------------
+
     /**
-     * équivalent de la fonction cake field() mais retourne plusieurs valeurs sous forme de tableau
+     * Retourne l'enregistrement et ses parents, depuis le parent le plus haut
+     * dans la hiérarchie jusqu'à l'enregistrement dont la clé primaire est passée
+     * en paramètre.
+     *
+     * Il s'agit d'une requête PostgreSQL récursive.
+     *
+     * @todo A mettre dans le plugin Postgres
+     * @url http://stackoverflow.com/questions/3307480/postgresql-recursive-with
+     * @url http://stackoverflow.com/questions/3699395/find-parent-recursively-using-query
+     *
+     * @param integer $id
+     * @param array $fields
+     * @param string $parentIdField
+     * @return array
      */
-    function nfield($fieldName, $conditions = array(), $order = array()) {
-        // initialisations
-        $ret = array();
-        $fields = array();
-        $contain = array();
-
-        // champ a lire
-        $fields[] = $fieldName . ' DISTINCT';
-
-        // ajout des champs des modeles liées pour la condition
-        foreach ($conditions as $condField => &$cond) {
-            if (strpos($condField, ' ') !== false)
-                $condField = substr($condField, 0, strpos($condField, ' '));
-            if (strpos($condField, '.') !== false) {
-                $tabCondField = explode('.', $condField);
-                $condModel = $tabCondField[0];
-                if ($condModel != $this->alias) $contain[] = $condField;
-            }
-        }
-        // ajout des champs des modeles liées pour l'ordre
-        foreach ($order as $orderField) {
-            if (strpos($orderField, ' ') !== false)
-                $orderField = substr($orderField, 0, strpos($orderField, ' '));
-            if (strpos($orderField, '.') !== false) {
-                $tabOrderField = explode('.', $orderField);
-                $orderModel = $tabOrderField[0];
-                if ($orderModel != $this->alias)
-                    $contain[] = $orderField;
-                else
-                    $fields[] = $orderField;
-            } else
-                $fields[] = $orderField;
+    public function postgresFindParents( $id, array $fields = array(), $parentIdField = 'parent_id' ) {
+        if( empty( $fields ) ) {
+            $fields = array_keys( $this->schema() );
         }
 
-        // lecture en base
-        $this->Behaviors->load('Containable');
-        $occurs = $this->find('all', array(
-            'fields' => $fields,
-            'contain' => $contain,
-            'conditions' => $conditions,
-            'order' => $order));
+        $innerFields = $fields;
 
-        // constitution de la liste
-        foreach ($occurs as $occur)
-            $ret[] = $occur[$this->alias][$fieldName];
-        return $ret;
+        // On enlève parent_id des champs internes
+        $key = array_search($parentIdField, $innerFields);
+        if( $key !== false ) {
+            unset( $innerFields[$key] );
+        }
+
+        // Pour le remettre au début des champs internes
+        array_unshift( $innerFields, $parentIdField );
+
+        foreach( $innerFields as $field ) {
+            $nodeFields[] = "\"node\".\"{$field}\"";
+            $parentFields[] = "\"parent\".\"{$field}\"";
+        }
+
+        // Pour les champs sélectionnés, on prend exclusivement ceux spécifiés
+        foreach( $fields as $field ) {
+            $selectFields[] = "\"parents\".\"{$field}\" AS \"{$this->alias}__{$field}\"";
+        }
+
+        $Dbo = $this->getDatasource();
+        $tableName = $Dbo->fullTableName( $this );
+
+        $sql = "WITH RECURSIVE
+            \"parents\" AS (
+                SELECT ".implode( ', ', $nodeFields )."
+                    FROM {$tableName} AS \"node\"
+                    WHERE \"node\".\"{$this->primaryKey}\" = {$id}
+                UNION ALL
+                SELECT ".implode( ', ', $parentFields )."
+                    FROM \"parents\" AS \"node\"
+                        JOIN {$tableName} AS \"parent\" ON ( \"parent\".\"{$this->primaryKey}\" = \"node\".\"{$parentIdField}\" )
+            )
+            SELECT ".implode( ', ', $selectFields )." FROM \"parents\";";
+
+        $results = $this->query( $sql );
+
+        return array_reverse( $results );
     }
 
-}
 
+    /**
+     * Retourne la liste des libellés de l'enregistrement et de ses parents.
+     * Il s'agit d'une requête récursive "spéciale PostgreSQL".
+     *
+     * @deprecated
+     *
+     * @param integer $id
+     * @param string $nameField
+     * @param string $parentIdField
+     * @return array
+     */
+    /*public function getTree( $id, $nameField = 'name', $parentIdField = 'parent_id' ) {
+        return $this->postgresFindParents( $id, array( 'libelle' ) );
+    }*/
+}
 ?>

@@ -1,9 +1,9 @@
 <?php
-class User extends AppModel
-{
 
-    public $name = 'User';
-    public $validate = array(
+class User extends AppModel {
+
+    var $name = 'User';
+    var $validate = array(
         'login' => array(
             array(
                 'rule' => 'notEmpty',
@@ -60,23 +60,18 @@ class User extends AppModel
             )
         )
     );
-
-    public $displayField = "nom";
-
-    public $displayFields = array(
+    var $displayField = "nom";
+    var $displayFields = array(
         'fields' => array('nom', 'prenom', 'login'),
         'format' => '%s %s (%s)');
-
-    public $belongsTo = array(
+    var $belongsTo = array(
         'Profil' => array(
             'className' => 'Profil',
             'conditions' => '',
             'order' => '',
             'dependent' => false,
-            'foreignKey' => 'profil_id')
-    );
-
-    public $hasAndBelongsToMany = array(
+            'foreignKey' => 'profil_id'));
+    var $hasAndBelongsToMany = array(
         'Service' => array(
             'classname' => 'Service',
             'joinTable' => 'users_services',
@@ -100,50 +95,40 @@ class User extends AppModel
             'finderQuery' => '',
             'deleteQuery' => '')
     );
-
-    public $hasMany = array(
+    var $hasMany = array(
         'Historique' => array(
             'className' => 'Historique',
             'foreignKey' => 'user_id'),
         'Composition' => array(
             'className' => 'Cakeflow.Composition',
             'foreignKey' => 'trigger_id'
-        ),
-        'Aro' => array(
-            'foreignKey' => 'foreign_key'
         )
     );
 
-    function samePassword()
-    {
-        return (!empty($this->data['User']['password']) && $this->data['User']['password'] == $this->data['User']['password2']);
+    function samePassword() {
+        return ((!empty($this->data['User']['password'])) && ($this->data['User']['password'] == $this->data['User']['password2']));
     }
 
-    function validatesPassword($data)
-    {
-        return (!empty($data['User']['password']) && $data['User']['password'] == $data['User']['password2']);
+    function validatesPassword($data) {
+        return ((!empty($data['User']['password'])) && ($data['User']['password'] == $data['User']['password2']));
     }
 
-    function validOldPassword($data)
-    {
+    function validOldPassword($data) {
         $oldPass = $this->find('first', array('conditions' => array('id' => $data['User']['id']), 'fields' => array('password'), 'recursive' => -1));
         return (md5($data['User']['oldpassword']) == $oldPass['User']['password']);
     }
 
-    function emailDemande()
-    {
-        return !($this->data['User']['accept_notif'] && empty($this->data['User']['email']));
+    function emailDemande() {
+        return (!($this->data['User']['accept_notif'] && empty($this->data['User']['email'])));
     }
 
-    function beforeSave()
-    {
+    function beforeSave($options = array()) {
         if (array_key_exists('password', $this->data['User']))
             $this->data['User']['password'] = md5($this->data['User']['password']);
         return true;
     }
 
-    function beforeValidate()
-    {
+    function beforeValidate($options=array()) {
         if (empty($this->data['Service']['Service'])) {
             $this->invalidate('Service', true);
         }
@@ -154,8 +139,8 @@ class User extends AppModel
     /* au niveau du premier service de l'utilisateur. */
     /* Si $field est vide alors retourne la structure de la classe circuit */
     /* Si $field est spécifiée, retourne la valeur du champ $field */
-    function circuitDefaut($id = null, $field = '')
-    {
+
+    function circuitDefaut($id = null, $field = '') {
         $circuitDefautId = 0;
         $user = $this->findById($id);
         // Circuit par défaut défini au niveau de l'utilisateur
@@ -173,14 +158,12 @@ class User extends AppModel
         if ($circuitDefautId > 0) {
             $this->Circuit->recursive = -1;
             $circuit = $this->Composition->Etape->Circuit->find('first', array('conditions' => array('Circuit.id' => $circuitDefautId)));
-
-            if (empty($field) && !empty($circuit))
+            if (empty($field))
                 return $circuit;
-            elseif (!empty($circuit['Circuit'][$field]))
-                return $circuit['Circuit'][$field];
             else
-                return null;
-        } else
+                return $circuit['Circuit'][$field];
+        }
+        else
             return null;
     }
 
@@ -188,8 +171,8 @@ class User extends AppModel
      * retourne le prenom, nom et (login) de l'utilisateur $id
      *
      */
-    function prenomNomLogin($id)
-    {
+
+    function prenomNomLogin($id) {
         $this->recursive = -1;
         $this->data = $this->read('prenom, nom, login', $id);
         if (empty($this->data))
@@ -198,12 +181,21 @@ class User extends AppModel
             return $this->data['User']['prenom'] . ' ' . $this->data['User']['nom'] . ' (' . $this->data['User']['login'] . ')';
     }
 
-    function makeBalise(&$oMainPart, $user_id)
-    {
-        $user = $this->find('first', array(
-            'conditions' => array($this->alias . '.id' => $user_id),
-            'recursive' => -1
-        ));
+    /**
+     * Données Gedooo :
+     *  - prenom_redacteur/user.prenom/text
+     *  - nom_redacteur/user.nom/text
+     *  - email_redacteur/user.email/text
+     *  - telmobile_redacteur/user.telmobile/text
+     *  - telfixe_redacteur/user.telfixe/text
+     *  - note_redacteur/user.note/text
+     *
+     * @param &GDO_PartType $oMainPartadresse de l'objet GDO_PartType à remplir
+     * @param integer $user_id identifiant de l'utilisateur en base
+     */
+    function makeBalise(&$oMainPart, $user_id) {
+        $user = $this->find('first', array('conditions' => array($this->alias . '.id' => $user_id),
+            'recursive' => -1));
         $oMainPart->addElement(new GDO_FieldType('prenom_redacteur', ($user[$this->alias]['prenom']), 'text'));
         $oMainPart->addElement(new GDO_FieldType('nom_redacteur', ($user[$this->alias]['nom']), 'text'));
         $oMainPart->addElement(new GDO_FieldType('email_redacteur', ($user[$this->alias]['email']), 'text'));
@@ -212,13 +204,11 @@ class User extends AppModel
         $oMainPart->addElement(new GDO_FieldType('note_redacteur', ($user[$this->alias]['note']), 'text'));
     }
 
-    function getCircuits($user_id)
-    {
-        $this->Behaviors->load('Containable');
+    function getCircuits($user_id) {
+        $this->Behaviors->attach('Containable');
         $circuits = array();
-        $user = $this->find('first', array(
-                'conditions' => array('User.id' => $user_id),
-                'contain' => array('Circuit'))
+        $user = $this->find('first', array('conditions' => array('User.id' => $user_id),
+            'contain' => array('Circuit'))
         );
         foreach ($user['Circuit'] as $circuit) {
             if ($circuit['actif'])
@@ -227,94 +217,6 @@ class User extends AppModel
         return $circuits;
     }
 
-    /**
-     * Envoi une notification par mail à un utilisateur sur l'état d'un dossier
-     *
-     * @param integer $delib_id identifiant du dossier
-     * @param integer $user_id identifiant de l'utilisateur à notifier
-     * @param string $type notification à envoyer
-     * @return bool succès de l'envoi
-     */
-    function notifier($delib_id, $user_id, $type)
-    {
-        $user = $this->find('first', array(
-            'recursive' => -1,
-            'conditions' => array('id' => $user_id)
-        ));
-
-        // utilisateur existe et accepte les mails ?
-        if (empty($user)
-            || empty($user['User']['accept_notif'])
-            || empty($user['User']["mail_$type"])
-        ) return false;
-
-        App::uses('CakeEmail', 'Network/Email');
-        $config_mail = Configure::read('SMTP_USE') ? 'smtp' : 'default';
-        $this->Email = new CakeEmail($config_mail);
-        $this->Email->to($user['User']['email']);
-
-        App::uses('Deliberation', 'Model');
-        $this->Deliberation = new Deliberation();
-        $delib = $this->Deliberation->find('first', array(
-            'recursive' => -1,
-            'conditions' => array('id' => $delib_id),
-            'fields' => array('id', 'objet', 'titre', 'circuit_id')
-        ));
-
-        switch ($type) {
-            case 'insertion':
-                $subject = "Vous allez recevoir le projet : $delib_id";
-                break;
-            case 'traitement':
-                $subject = "Vous avez le projet (id : $delib_id) à traiter";
-                break;
-            case 'refus':
-                $subject = "Le projet << " . $delib['Deliberation']['objet'] . " >> a été refusé";
-                break;
-            case 'modif_projet_cree':
-                $subject = "Votre projet (id : $delib_id) a été modifié";
-                break;
-            case 'modif_projet_valide':
-                $subject = "Un projet que j'ai visé (id : $delib_id) a été modifié";
-                break;
-            case 'retard_validation':
-                $subject = "Retard sur le projet : $delib_id";
-                break;
-        }
-        $this->Email->subject($subject);
-        $content = $this->_paramMails($type, $delib['Deliberation'], $user['User']);
-        $this->Email->send($content);
-
-        return true;
-    }
-
-    /**
-     * Détermine le contenu du mail à envoyer en fonction du type de mail, le projet et l'utilisateur
-     * @param string $type
-     * @param array $delib
-     * @param array $acteur
-     * @return string
-     */
-    function _paramMails($type, $delib, $acteur) {
-        $file = new File(APP . "/Config/emails/$type.txt", false);
-        $content = $file->read();
-        $file->close();
-        $addrTraiter = Configure::read('WEBDELIB_URL') . '/deliberations/traiter/' . $delib['id'];
-        $addrView = Configure::read('WEBDELIB_URL') . '/deliberations/view/' . $delib['id'];
-        $addrEdit = Configure::read('WEBDELIB_URL') . '/deliberations/edit/' . $delib['id'];
-
-        $searchReplace = array(
-            "#NOM#" => $acteur['nom'],
-            "#PRENOM#" => $acteur['prenom'],
-            "#IDENTIFIANT_PROJET#" => $delib['id'],
-            "#OBJET_PROJET#" => $delib['objet'],
-            "#TITRE_PROJET#" => $delib['titre'],
-            "#LIBELLE_CIRCUIT#" => $this->Circuit->getLibelle($delib['circuit_id']),
-            "#ADRESSE_A_TRAITER#" => $addrTraiter,
-            "#ADRESSE_A_VISUALISER#" => $addrView,
-            "#ADRESSE_A_MODIFIER#" => $addrEdit,
-        );
-
-        return str_replace(array_keys($searchReplace), array_values($searchReplace), $content);
-    }
 }
+
+?>

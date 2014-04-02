@@ -6,16 +6,11 @@ error_reporting(E_ALL);
 // initalisations
 $fichier_conf = 'webdelib.inc';
 
-$versionCakePHPAttendue = "2.2.9";
+$versionCakePHPAttendue = "2.2.2";
 $versionPHPAttendue = "5.3";
 $versionAPACHEAttendue = "2.2";
 $mods_apache = array('mod_rewrite', 'mod_ssl', 'mod_dav', 'mod_dav_fs');
-$exts_php    = array('soap', 'pgsql', 'xsl', 'curl', 'dom', 'zlib', 'imagick');
-$libs_php    = array('XML_RPC2'=>array(
-                                                'class'=>'XML_RPC2_Client',
-                                                'require'=>'XML/RPC2/Client.php')
-                    );
-$binaires    = array('pdfinfo', 'pdftk','fido');
+$exts_php    = array('soap', 'pgsql', 'xsl', 'curl', 'dom', 'zlib');
 $appIniFiles = array('database.php', 'webdelib.inc');
 
 // redéfinition des constantes principales de cake (un rep au dessus par rapport aux constantes cake)
@@ -30,14 +25,12 @@ define('WWW_ROOT', dirname(dirname(__FILE__)) . DS);
 
 define('LIBS', ROOT.DS.'lib'.DS.'Cake'.DS);
 define ('MODELS', APP.'Model'.DS);
-define ('LIB', APP.'Lib'.DS);
 define ('BEHAVIORS', MODELS.'Behavior'.DS);
 define ('CONTROLLERS', APP.'Controller'.DS);
 define ('COMPONENTS', CONTROLLERS.'Component'.DS);
 define ('VIEWS', APP.'View'.DS);
 define ('HELPERS', VIEWS.'Helper'.DS);
 define ('VENDORS', APP.'Vendor'.DS);
-define ('CONSOLE', APP.'Console'.DS);
 
 define('TMP', APP.'tmp'.DS);
 define('CACHE', TMP.'cache'.DS);
@@ -77,13 +70,8 @@ function d($textContent, $classAttribute=null) {
 	t('div', $textContent, $classAttribute);
 }
 function t($tagName, $textContent, $classAttribute=null) {
-    $classAttr = (empty($classAttribute)) ? "" : " class='$classAttribute'";
-    echo "<$tagName$classAttr>$textContent</$tagName>";
-}
-function depliant($textTitle, $linkTitle,$textContent, $id, $classAttribute=null) {
-    $classAttr = (empty($classAttribute)) ? "" : " class='$classAttribute'";
-    d("$textTitle <a style='cursor: pointer;' onclick='javascript:$(\"#{$id}\").toggle();'>$linkTitle</a>", $classAttribute);
-    echo "<div style='display:none;' id='$id'>$textContent</div>";
+	$classAttr = (empty($classAttribute)) ? "" : " class='$classAttribute'";
+	echo "<$tagName$classAttr>$textContent</$tagName>";
 }
 
 function getValueFromIniFile($iniFileURI, $searchDeb, $searchFin=';') {
@@ -220,8 +208,9 @@ function php_can_access_applis($prefs, $wsdls=array()) {
 function verifVersions() {
 	// initialisations
 	global $appli_path, $versionCakePHPAttendue, $versionPHPAttendue, $versionAPACHEAttendue;
+	$verAsalae = '';
 
-	// affichage de la version de webdelib
+	// affichage de la version de asalae
 	if (file_exists(CONFIGS.'core.php')) {
             include_once(CONFIGS.'core.php');
             if (!defined('VERSION')) 
@@ -434,13 +423,11 @@ function infoMails() {
 		d("Fichier de configuration de l'application $fichier_conf non trouvé", 'ko');
 		return false;
 	}
-        
-        verif_email();
-        
+
 	// mailadministrateur
         $useMail = Configure::read('SMTP_USE');
         if ($useMail) {
-            d("Utilisation du SMTP : OUI", 'ok');
+            d("Utilisation du SMTP : ".Configure::read('SMTP_USE'), 'ok');
             d("Serveur du SMTP : ".Configure::read('SMTP_HOST'), 'ok'); 
             d("Port du serveur SMTP : ".Configure::read('SMTP_PORT'), 'ok'); 
             d("Utilisateur du serveur SMTP : ".Configure::read('SMTP_USERNAME'), 'ok'); 
@@ -449,6 +436,8 @@ function infoMails() {
                 d("Password du serveur SMTP : ********", 'ok'); 
    
         }
+        else
+            d("Utilisation du SMTP", 'ko'); 
 
 	$mailAdmin = Configure::read('MAIL_FROM');
 	if ($mailAdmin == NON_TROUVE)
@@ -762,7 +751,7 @@ function verifConsoleCakePhp() {
 	$consoleFileUri = APP.'Console'.DS. ($winOs ? 'cake.bat' : 'cake');
 	
 	if (file_exists($consoleFileUri)) {
-		//d('Console de CakePHP : '.$consoleFileUri, 'ok');
+		d('Console de CakePHP : '.$consoleFileUri, 'ok');
 		if (!$winOs) {
 			if (is_executable($consoleFileUri))
 				d("Console de CakePHP : le fichier exécutable de la console CakePHP '$consoleFileUri' a les droits en exécution", 'ok');
@@ -795,7 +784,7 @@ function verifConversion() {
 	elseif (empty($convType))
 		d("Type d'outil de conversion : ['Conversion']['type'] non renseigné dans le fichier $fichier_conf", 'ko');
 	elseif (!array_key_exists($convType, $convTypes))
-		d("Type d'outil de conversion : $convType n'est pas géré par webdelib", 'ko');
+		d("Type d'outil de conversion : $convType n'est pas géré par as@ale", 'ko');
 	else
 		d("Type d'outil de conversion : $convType ", 'ok');
 	
@@ -805,36 +794,77 @@ function verifConversion() {
 	elseif (empty($convType))
 		d("Exécutable de l'outil de conversion : ['Conversion']['exec'] non renseigné dans le fichier $fichier_conf", 'ko');
 	else {
-                $repModels = APP.WEBROOT_DIR.DS.'files'.DS;
-                $modelFileName = 'empty.odt';
-                require_once 'XML/RPC2/Client.php';
-                // initialisations
-                $ret = array();
-                $options = array(
-                    'uglyStructHack' => true
-                );
+		switch ($convType) {
+			case 'CLOUDOOO' :
+                            $repModels = APP.WEBROOT_DIR.DS.'files'.DS;
+                            $modelFileName = 'empty.odt';
+                            require_once 'XML/RPC.php';
+                            $content =  base64_encode(file_get_contents($repModels.$modelFileName));
+                            $fileinfo =  pathinfo($repModels.$modelFileName);
+                            if ($fileinfo['extension'] == 'pdf') $fileinfo['extension'] = 'odt';
 
-                $url = 'http://' . Configure::read('CLOUDOOO_HOST') . ':' . Configure::read('CLOUDOOO_PORT');
-                $client = XML_RPC2_Client::create($url, $options);
-                try {
-                    $result = $client->convertFile(base64_encode($repModels.$modelFileName), 'odt', 'pdf', false, true);
-                    $return = base64_decode($result);
-                    d("Communication avec l'outil de conversion : $convType", 'ok');
-                } catch (XML_RPC2_FaultException $e) {
-                    d("Communication avec l'outil de conversion : $convType", 'ko');
-                }
+                            $params = array( new XML_RPC_Value($content, 'string'),
+                                             new XML_RPC_Value($fileinfo['extension'],    'string'),
+                                             new XML_RPC_Value("pdf",    'string'),
+                                             new XML_RPC_Value(false,      'boolean'),
+                                             new XML_RPC_Value(true,       'boolean'));
 
-                //IP +PORT
-                $cloudoooHost = Configure::read('CLOUDOOO_HOST');
-                $cloudoooPort = Configure::read('CLOUDOOO_PORT');
-                if ($cloudoooHost !== NON_TROUVE && !empty($cloudoooHost))
-                        if ($cloudoooPort !== NON_TROUVE && !empty($cloudoooPort))
-                            d("Url de CLOUDOOO : $cloudoooHost:$cloudoooPort", 'info');
-                        else 
-                            d("Url de CLOUDOOO : $cloudoooHost (port non renseigné dans le fichier $fichier_conf)", 'ko');
-                else
-                        d("Url de CLOUDOOO : non renseigné dans le fichier $fichier_conf", 'ko');
-                             
+                             $url = Configure::read('CLOUDOOO_HOST').":".Configure::read('CLOUDOOO_PORT');
+                             $msg = new XML_RPC_Message('convertFile', $params);
+                             $cli = new XML_RPC_Client('/', $url);
+                             $resp = $cli->send($msg);
+                             if (!empty($resp->xv->me['string'])) {
+                                 $return = base64_decode($resp->xv->me['string']);
+                                 if (!empty($return))
+		                     d("Exécutable de l'outil de conversion : $convType", 'ok');
+                             }
+                             else
+		                d("Exécutable de l'outil de conversion : $convType", 'ko');
+                        break;
+			case 'UNOCONV' :
+	                        $convExec = Configure::read('UNOCONV_EXEC');
+		                 d("Exécutable de l'outil de conversion : $convExec", 'ok');
+				// affichage de la version de UnoConv
+				$result = '';
+				exec($convExec." --version", $result);
+				if (isset($result[0]))
+					d("Version de l'outil de conversion : ".$result[0], 'info');
+				elseif (isset($result[1]))
+					d("Version de l'outil de conversion : ".$result[1], 'info');
+				else
+					d("Impossible de lire la version de l'outil de conversion", 'ko');
+
+				// test de conversion de fichier
+				t('h5', "Essai de conversion");
+				$result = array();
+				$fichierSource = getcwd().DS.'files'.DS.'checkConversion.odt';
+				if (!file_exists($fichierSource)) {
+					d("Le fichier test pour la conversion de format $fichierSource est introuvable", 'ko');
+					return;
+				}
+				if (!is_writable(getcwd().DS.'files')) {
+					$repDest = getcwd().DS.'files';
+					d("Le répertoire $repDest n'est pas accessible en écriture", 'ko');
+					return;
+				}
+
+				// préparation de la chaine de commande à exécuter
+				$cmd = "$convExec --stdout -f pdf $fichierSource";
+	
+				// exécution
+				$locale = 'fr_FR.UTF-8';
+				setlocale(LC_ALL, $locale);
+				putenv('LC_ALL='.$locale);
+	 			$result = shell_exec($cmd);
+	
+		        // guess that if there is less than this characters probably an error
+		        if (strlen($result) < 10) {
+					d("Opération de conversion de format échouée", 'ko');
+		        } else {
+					d("Opération de conversion de format effectuée avec succés", 'ok');
+		        }
+			break;
+		}
 	}
 }
 
@@ -996,67 +1026,59 @@ function testerOdfGedooo() {
 
 	// vérification de la présence du fichier .ini
 	if (!file_exists(CONFIGS.$fichier_conf)) {
-        include_once(CONFIGS.$fichier_conf);
+                include_once(CONFIGS.$fichier_conf);
 		d("Fichier de configuration de l'application $fichier_conf non trouvé", 'ko');
 		return false;
 	}
 
 	// type outil d'édition
-    // initialisations
-    $gedoooWsdl = Configure::read('GEDOOO_WSDL');
-    if ($gedoooWsdl == NON_TROUVE)
-        d("Url wsdl de l'outil d'édition : déclaration de ['Edition']['GEDOOO_WSDL'] non trouvée dans le fichier $fichier_conf", 'ko');
-    elseif (empty($gedoooWsdl))
-        d("Url wsdl de l'outil d'édition : ['Edition']['GEDOOO_WSDL'] non renseigné dans le fichier $fichier_conf", 'ko');
-    else
-        d("Url wsdl de l'outil d'édition : $gedoooWsdl", 'info');
+			// initialisations
+			$gedoooWsdl = Configure::read('GEDOOO_WSDL');
+			if ($gedoooWsdl == NON_TROUVE)
+				d("Url wsdl de l'outil d'édition : déclaration de ['Edition']['GEDOOO_WSDL'] non trouvée dans le fichier $fichier_conf", 'ko');
+			elseif (empty($gedoooWsdl))
+				d("Url wsdl de l'outil d'édition : ['Edition']['GEDOOO_WSDL'] non renseigné dans le fichier $fichier_conf", 'ko');
+			else
+				d("Url wsdl de l'outil d'édition : $gedoooWsdl", 'info');
 
-    if (empty($gedoooWsdl))
-        return;
+			if (empty($gedoooWsdl))
+				return;
+			// test d'édition
+			t('h5', "Essai d'édition");
 
-    try {
-        $oService = new SoapClient($gedoooWsdl);
-        d("Version de l'outil d'édition : ".$oService->__soapCall("Version", array()), 'info');
-    } catch (Exception $e) {
-        //Erreur lors de l'initialisation de la connexion : code 001
-        d("Version de l'outil d'édition : Erreur lors de la connexion au WSDL : " . $e->getMessage(), 'ko');
-    }
-
-    // test d'édition
-    t('h5', "Essai d'édition");
-
-    $tmpFile = "/tmp/FILE_RESULT.odt";
-    @unlink( $tmpFile );
-
-    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_Utility.class');
-    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_FieldType.class');
-    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_ContentType.class');
-    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_IterationType.class');
-    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_PartType.class');
-    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_FusionType.class');
-    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_MatrixType.class');
-    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-    include_once (VENDORS.'GEDOOo/phpgedooo/GDO_AxisTitleType.class');
-
-    $fichierSource = APP.WEBROOT_DIR.DS.'files'.DS.'empty.odt';
-    $oTemplate = new GDO_ContentType("", "modele.odt", "application/vnd.oasis.opendocument.text", "binary", file_get_contents($fichierSource));
-
-    $time_start = microtime(true);
-    $oMainPart = new GDO_PartType();
-    $oMainPart->addElement(new GDO_FieldType('ma_variable', 'OK', 'text'));
-    $oFusion = new GDO_FusionType($oTemplate, "application/vnd.oasis.opendocument.text", $oMainPart);
-    try {
-        $oFusion->process();
-        $oFusion->SendContentToFile($tmpFile);
-        $time_end = microtime(true);
-        $time = round($time_end - $time_start, 2);
-        if (file_exists($tmpFile))  {
-            d("Fusion réussie avec ODFGEDOOo en $time secondes", 'ok');
-        } else
-            d('Fusion échouée avec ODFGEDOOo', 'ko');
-    } catch(Exception $e) {
-        d("Fusion échouée avec ODFGEDOOo : ".$e->getMessage(), 'ko');
-    }
+			Configure::write ("GEDOOO_WSDL", $gedoooWsdl);
+			$tmpFile = "/tmp/FILE_RESULT.odt";
+			@unlink( $tmpFile );
+		
+			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_Utility.class');
+			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_FieldType.class');
+			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_ContentType.class');
+			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_IterationType.class');
+			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_PartType.class');
+			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_FusionType.class');
+			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_MatrixType.class');
+			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_MatrixRowType.class');
+			include_once (VENDORS.'GEDOOo/phpgedooo/GDO_AxisTitleType.class');
+		
+			$fichierSource = APP.WEBROOT_DIR.DS.'files'.DS.'empty.odt';
+			$oTemplate = new GDO_ContentType("", "modele.odt", "application/vnd.oasis.opendocument.text", "binary", file_get_contents($fichierSource));
+		
+			$time_start = microtime(true);
+			$oMainPart = new GDO_PartType();
+			$oMainPart->addElement(new GDO_FieldType('ma_variable', 'OK', 'text'));
+			$oFusion = new GDO_FusionType($oTemplate, "application/vnd.oasis.opendocument.text", $oMainPart);
+			try {
+				$oFusion->process();
+				$oFusion->SendContentToFile($tmpFile);
+				$time_end = microtime(true);
+				$time = round($time_end - $time_start, 2);
+				if (file_exists($tmpFile))  {
+					d("Fusion réussie avec ODFGEDOOo en $time secondes", 'ok');
+				} else
+					d('Fusion échouée avec ODFGEDOOo', 'ko');
+			} catch(Exception $e) {
+				d("Fusion échouée avec ODFGEDOOo : ".$e->getMessage(), 'ko');
+			}
 
 }
 
@@ -1097,27 +1119,29 @@ function verifPresenceModelesOdt() {
         $resultMessage = $repModels.$modelFileName;
  	$okko = 'ok';
     } else {
-        $resultMessage = "$repModels$modelFileName non trouvé";
+        $resultMessage = "$repModels$modelFileName non trouvé : renommer ou copier le fichier $modelDefaultFileName en $modelFileName";
         $okko = 'ko';
     }
     d($resultMessage, $okko);
 }
 
-function getClassification(){
+function getClassification($id=null){
     $time_start = microtime(true);
-    $url = Configure::read('S2LOW_HOST').'/modules/actes/actes_classification_fetch.php';
+    $pos =  strrpos ( getcwd(), 'webroot');
+    $path = substr(getcwd(), 0, $pos);
+    $url = 'https://'.Configure::read('HOST').'/modules/actes/actes_classification_fetch.php';
     $data = array('api' => '1' );
     $url .= '?'.http_build_query($data);
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    if (Configure::read('S2LOW_USEPROXY'))
-        curl_setopt($ch, CURLOPT_PROXY, Configure::read('S2LOW_PROXYHOST'));
+    if (Configure::read('USE_PROXY'))
+        curl_setopt($ch, CURLOPT_PROXY, Configure::read('HOST_PROXY'));
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_CAPATH, Configure::read('S2LOW_CAPATH'));
-    curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('S2LOW_PEM'));
-    curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('S2LOW_CERTPWD'));
-    curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('S2LOW_SSLKEY'));
+    curl_setopt($ch, CURLOPT_CAPATH, Configure::read('CA_PATH'));
+    curl_setopt($ch, CURLOPT_SSLCERT, Configure::read('PEM'));
+    curl_setopt($ch, CURLOPT_SSLCERTPASSWD, Configure::read('PASSWORD'));
+    curl_setopt($ch, CURLOPT_SSLKEY, Configure::read('SSLKEY'));
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $reponse = curl_exec($ch);
@@ -1126,43 +1150,43 @@ function getClassification(){
 
     curl_close($ch);
     $time_end = microtime(true);
-    if (stripos($reponse, 'DateClassification') !== false) {
+    if (stripos($reponse, 'DateClassification' ) !== false)  {
         $time = round($time_end - $time_start, 2);
-        d(Configure::read('S2LOW_HOST'), 'info');
+        d(Configure::read('HOST'), 'info');
         d("Fichier de classification S2LOW récupéré en $time secondes", 'ok');
-    } else {
-        if (stripos($reponse, 'KO') !== false) {
-            d(utf8_encode($reponse), 'ko');
-        }
+     }
+     else {
         d('Echec de récupération du fichier de classification', 'ko');
-    }
+     }
 }
 
 function getCircuitsParapheur() {
     $time_start = microtime(true);
-    if (!Configure::read('USE_PARAPHEUR')){
-        d('Utilisation du parapheur désactivé', 'info');
-        return;
-    }
-    if (Configure::read('PARAPHEUR') == 'IPARAPHEUR') {
+    $circuits = array();
+    if (Configure::read('USE_PARAPH')) {
+        
         include_once(COMPONENTS.'IparapheurComponent.php');
         $Parafwebservice = new IparapheurComponent();
-        $circuits = $Parafwebservice->getListeSousTypesWebservice(Configure::read('IPARAPHEUR_TYPE'));
+        $circuits = $Parafwebservice->getListeSousTypesWebservice(Configure::read('TYPETECH'));
         $time_end = microtime(true);
         if (!empty($circuits)) {
-            d(Configure::read('IPARAPHEUR_HOST'), 'info');
+            d(Configure::read('WSTO'), 'info');
             $time = round($time_end - $time_start, 2);
-            d(count($circuits)." circuits du i-parapheur récupéré en $time secondes", 'ok');
+            d(count($circuits)." circuits du iparapheur récupéré en $time secondes", 'ok');
         }
         else
-            d('liste de circuit du i-parapheur vide', 'ko');
+            d('liste de circuit du iparapheur vide', 'ko');
+    }
+    else {
+        d('Utilisation du i-parapheur désactivé', 'info');
+
     }
 }
 
 function getVersionAsalae() {
 
     $client = new SoapClient(Configure::read('ASALAE_WSDL'));
-    $version = $client->__soapCall("wsGetVersion", array(Configure::read('ASALAE_LOGIN'), Configure::read('ASALAE_PWD')));
+    $version = $client->__soapCall("wsGetVersion", array(Configure::read('IDENTIFIANT_VERSANT'), Configure::read('MOT_DE_PASSE')));
     if (is_int( $version)) {
         d("Echec d'authentification", 'ko');
     }
@@ -1173,165 +1197,22 @@ function getVersionAsalae() {
 }
 
 function getPastellVersion() {
-    if (Configure::read('USE_PASTELL')) {
-        d(Configure::read('PASTELL_HOST'), 'info');
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN") . ":" . Configure::read("PASTELL_PWD"));
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $api = Configure::read("PASTELL_HOST") . "/api/version.php";
-        curl_setopt($curl, CURLOPT_URL, $api);
-        $reponse = curl_exec($curl);
-        curl_close($curl);
-        $reponse = json_decode($reponse, true);
-        if (is_array($reponse) and isset($reponse['version']))
-            d('Version de PASTELL : ' . $reponse['version'], 'ok');
-        else
-            d('Impossible de communiquer avec PASTELL : ', 'ko');
-    }
-}
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC) ;
+    curl_setopt($curl, CURLOPT_USERPWD, Configure::read("PASTELL_LOGIN").":".Configure::read("PASTELL_PWD"));
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $api = Configure::read("PASTELL_HOST").'/web/api/version.php';
+    curl_setopt($curl, CURLOPT_URL, $api);
 
-function check_binaires($binaires) {
-    foreach ($binaires as $bin) {
-        $output = exec('whereis -b ' . $bin);
-        $okko = ($output == $bin . ":") ? 'ko' : 'ok';
-        d($bin, $okko);
-    }
-}
+    $reponse = curl_exec($curl); 
+    $reponse = json_decode($reponse);
+    $reponse = (array)$reponse;
+    if (is_array($reponse) and isset($reponse['version']))
+        d('Version de PASTELL : '.$reponse['version'], 'ok');
+    else
+        d('Impossible de communiquer avec PASTELL : ', 'ko');
 
-function verif_email() {
-    $destinataire = Configure::read("MAIL_FROM");
-    $ok = mail($destinataire, 'Test de la fonction mail', 'Ceci est un message de test de webdelib, veuillez ne pas répondre.');
-    $okko = $ok ? "ok" : "ko";
-    
-    d("Envoi de courrier électronique : $okko", $okko);
-}
 
-function php_check_librairies($libs) {
-    foreach ( $libs as $key=>$lib ){
-        require_once $lib['require'];
-        $output= class_exists($lib['class'], false);
-        //$output = exec("locate $lib");
-        $okko = !empty($output) ? 'ok' : 'ko';
-        d($key, $okko);
-    }
-}
-
-function checkGED(){
-    $urlGED     = Configure::read("GED_URL");
-    $repoGED    = Configure::read("GED_REPO");
-    d("URL de la GED : ".$urlGED, 'info');
-    d("Dossier distant : ".$repoGED, 'info');
-}
-
-function checkLDAP(){
-    
-    $ldapInfos = array();
-    if(Configure::read('USE_OPENLDAP')){
-        $ldapInfos["Serveur"] = Configure::read("LDAP_HOST");
-        $ldapInfos["Port"] = Configure::read("LDAP_PORT");
-        $ldapInfos["Login"] = Configure::read("LDAP_LOGIN");
-        $ldapInfos["Password"] = Configure::read("LDAP_PASSWD");
-        $ldapInfos["Unique_ID"] = Configure::read("LDAP_UID");
-        $ldapInfos["Base_DN"] = Configure::read("LDAP_BASE_DN");
-        $ldapInfos["Account_suffix"] = Configure::read("LDAP_ACCOUNT_SUFFIX");
-        $ldapInfos["DN"] = Configure::read("LDAP_DN");
-    }
-    elseif(Configure::read('USE_AD')){
-        $ldapInfos = array();
-        $ldapInfos["Serveur"] = LDAP_HOST;
-        $ldapInfos["Port"] = LDAP_PORT;
-        $ldapInfos["Login"] = LDAP_LOGIN;
-        $ldapInfos["Password"] = LDAP_PASSWD;
-        $ldapInfos["Unique_ID"] = LDAP_UID;
-        $ldapInfos["Base_DN"] = LDAP_BASE_DN;
-        $ldapInfos["Account_suffix"] = LDAP_ACCOUNT_SUFFIX;
-        $ldapInfos["DN"] = LDAP_DN;
-    }
-    
-    // affichage des infos LDAP
-    d('Paramètres de connexion : ', 'info');
-    echo '<ul>';
-    foreach($ldapInfos as $key=>$valeur) {
-            if ($key == 'Password') $valeur = '*******';
-            t('li', $key.' : '.$valeur);
-    }
-    echo '</ul>';
-    
-    // ouverture de la connexion
-    $conn = ldap_connect($ldapInfos["Serveur"], $ldapInfos["Port"]);
-    if ($conn) {
-        if (Configure::read('USE_AD')){
-            ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-            ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
-        }
-        
-        // authentification
-        if(Configure::read('USE_OPENLDAP'))
-            @ldap_bind($conn, $ldapInfos["Unique_ID"].'='.$ldapInfos["Login"].','.$ldapInfos["Base_DN"], $ldapInfos["Password"]);
-        else
-            @ldap_bind($conn, $ldapInfos["Login"], $ldapInfos["Password"]);
-        
-        if (ldap_error($conn) == "Can't contact LDAP server"){
-            d('Impossible de se connecter au serveur LDAP \''.$ldapInfos["Serveur"] .':'. $ldapInfos["Port"].'\'', 'ko');
-        }else{
-            d('Connexion au serveur '.$ldapInfos["Serveur"] .':'. $ldapInfos["Port"].' réussie', 'ok');
-            if(ldap_error($conn) == "Success"){
-                d('Authentification à l\'annuaire LDAP réussie', 'ok');
-            } else {
-                d('Echec de l\'authentification à l\'annuaire LDAP : '.ldap_error($conn), 'ko');
-                if(Configure::read('USE_OPENLDAP')){
-                    // recherche de l'utilisateur dans l'annuaire (ne fonctionne que si ldap public)
-                    $result = @ldap_search($conn, $ldapInfos["Base_DN"], $ldapInfos["Unique_ID"]."=".$ldapInfos["Login"]);
-                    $info = @ldap_get_entries($conn, $result);
-                    if ($info['count'] > 0){
-                        d('L\'utilisateur \''.$ldapInfos["Login"].'\' est bien présent dans l\'annuaire', 'ok');
-                        d('Le mot de passe de l\'utilisateur \''.$ldapInfos["Login"].'\'doit être incorrect', 'ko');
-                    } else
-                        d('L\'utilisateur \''.$ldapInfos["Login"].'\' est introuvable (ou les droits d\'accès sont insuffisants)', 'ko');
-                }
-            }
-        }
-        
-        // Fermeture de la connexion
-        @ldap_close($conn);
-    } else {
-        d('Connexion au serveur LDAP : échec', 'ko');
-    }
-}
-
-/**
- * Vérifie l'intégrité du schéma de la base de données
- */
-function checkSchema($plugin=''){
-    $command = CONSOLE.'cake schema update '.(!empty($plugin)?'--plugin '.$plugin:'').' --dry';
-    try{
-        $retour = exec($command, $message);
-        t('h5', "Test d'intégrité du schéma ".$plugin);
-        if ($retour == 'Schema is up to date.') {
-            d('Schéma de la base de données : Valide !', 'ok');
-        } else {
-            //Supprime les 12 premières et les deux dernieres lignes du tableau constituant le message de retour de l'éxécution (infos inutiles)
-            removeFromArray($message, 12, 2);
-            throw new Exception(implode('<br>', $message));
-        }
-    } catch (Exception $e) {
-        depliant('Schéma de la base de données : Problème d\'intégrité !!', 'Afficher/Masquer les différences..', $e->getMessage(), 'databaseIntegrity'.$plugin,'ko');
-    }
-}
-
-/**
- * @param $array    le tableau à redimmensionner
- * @param $begin    nouvel indice de début de tableau (nombre d'éléments à supprimer en début du tableau)
- * @param $nbToPop  nouvel indice de fin de tableau (nombre d'éléments à supprimer en fin du tableau)
- */
-function removeFromArray(&$array, $begin, $end){
-    for($i = 0; $i<$begin; $i++){
-        array_shift($array);
-    }
-    for($i = 0; $i<$end; $i++){
-        array_pop($array);
-    }
 }
 
 ?>

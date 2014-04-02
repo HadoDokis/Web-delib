@@ -3,7 +3,7 @@
 <h2><?php echo $titre; ?></h2>
 <?php echo $this->element('filtre'); ?>
 
-<table style='width:100%'>
+<table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 	<th>Ordre</th>
 	<th>Nom</th>
@@ -12,11 +12,11 @@
 	<th>Type</th>
 	<th>Recherche</th>
 	<th>Active</th>
-	<th style='width:160px'>Actions</th>
+	<th width='160px'>Actions</th>
 </tr>
 
 <?php foreach ($this->data as $rownum=>$rowElement): ?>
-<tr style='height:36px;'>
+<tr height='36px'>
 	<td class="ordre">
 		<?php echo $this->Html->link('&#9650;', '/infosupdefs/changerOrdre/'.$rowElement['Infosupdef']['id'].'/0', array('escape' => false), false); ?>
 		<?php echo $this->Html->link('&#9660;', '/infosupdefs/changerOrdre/'.$rowElement['Infosupdef']['id'], array('escape' => false), false); ?>
@@ -29,12 +29,12 @@
 	<td><?php echo $Infosupdef->libelleActif($rowElement['Infosupdef']['actif']); ?></td>
 	<td class="actions">
 <?php
-	if (in_array($rowElement['Infosupdef']['type'], array('list','listmulti')))
-		echo $this->Html->link(SHY, array('controller'=>'infosuplistedefs', 'action'=>'index', $rowElement['Infosupdef']['id']), array('class'=>'link_liste', 'escape' => false, 'title'=>'Liste'), false);
-	echo $this->Html->link(SHY, array('controller'=>'infosupdefs', 'action'=>'view', $rowElement['Infosupdef']['id']), array('class'=>'link_voir', 'escape' => false, 'title'=>'Voir'), false);
-	echo $this->Html->link(SHY, array('controller'=>'infosupdefs', 'action'=>'edit', $rowElement['Infosupdef']['id']), array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false);
+	if ($rowElement['Infosupdef']['type'] == 'list')
+		echo $this->Html->link(SHY,'/infosuplistedefs/index/' . $rowElement['Infosupdef']['id'], array('class'=>'link_liste', 'escape' => false, 'title'=>'Liste'), false);
+	echo $this->Html->link(SHY,'/infosupdefs/view/' . $rowElement['Infosupdef']['id'], array('class'=>'link_voir', 'escape' => false, 'title'=>'Voir'), false);
+	echo $this->Html->link(SHY,'/infosupdefs/edit/' . $rowElement['Infosupdef']['id'], array('class'=>'link_modifier', 'escape' => false, 'title'=>'Modifier'), false);
 	if ($Infosupdef->isDeletable($rowElement['Infosupdef']['id']))
-		echo $this->Html->link(SHY, array('controller'=>'infosupdefs', 'action'=>'delete', $rowElement['Infosupdef']['id']), array('class'=>'link_supprimer', 'escape' => false, 'title'=>'Supprimer'), 'Voulez-vous supprimer l\'information \''.$rowElement['Infosupdef']['nom'].'\' ?');
+		echo $this->Html->link(SHY,'/infosupdefs/delete/' . $rowElement['Infosupdef']['id'], array('class'=>'link_supprimer', 'escape' => false, 'title'=>'Supprimer'), 'Voulez-vous supprimer l\'information \''.$rowElement['Infosupdef']['nom'].'\' ?');
 ?>
 	</td>
 </tr>
@@ -42,7 +42,7 @@
 </table>
 
 <ul class="actions">
-	<?php echo $this->Html->link('<i class="fa fa-plus"></i> Ajouter une information suppl&eacute;mentaire', $lienAdd, array('id'=>'bouton_ajouter_infosup', 'class'=>'btn btn-primary', 'escape' => false, 'title'=>'Ajouter une information supplémentaire'), false); ?>
+	<?php echo $this->Html->link('<i class="icon-plus-sign"></i> Ajouter une information suppl&eacute;mentaire', $lienAdd, array('class'=>'btn btn-primary', 'escape' => false, 'title'=>'Ajouter une information supplémentaire'), false); ?>
 </ul>
 
 </div>

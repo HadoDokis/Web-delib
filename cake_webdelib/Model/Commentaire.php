@@ -3,34 +3,87 @@
 class Commentaire extends AppModel {
 
     var $name = 'Commentaire';
-    var $validate = array( 'texte' => array(
-                                      array( 'rule'    => 'notEmpty',
-                                             'message' => 'Entrer un commentaire.')));
+    var $validate = array('texte' => array(
+            array('rule' => 'notEmpty',
+                'message' => 'Entrer un commentaire.')));
+
+    // -------------------------------------------------------------------------
 
     /**
-     * fonction d'initialisation des variables de fusion pour les commentaires d'un projet/délibération
-     * les bibliothèques Gedooo doivent être inclues par avance
-     * génère une exception en cas d'erreur
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $deliberationId id du projet/délibération
+     * Lecture des enregistrements
+     *
+     * @return array
      */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $deliberationId) {
-        //lecture des commentaires
-        $commentaires = $this->find('all', array(
-            'recursive' => -1,
-            'fields' => array('texte'),
-            'conditions' => array('delib_id' => $deliberationId, 'commentaire_auto' => false)));
-        if (empty($commentaires)) return;
+    public function gedoooReadAll($deliberation_id) {
+        return $this->find('all', array(
+                    'fields' => array('texte', 'commentaire_auto'),
+                    'conditions' => array('Commentaire.delib_id' => $deliberation_id),
+                    'recursive' => -1
+        ));
+    }
 
-        $oStyleIteration = new GDO_IterationType("Commentaires");
-        foreach($commentaires as $commentaire) {
-            $oDevPart = new GDO_PartType();
-            $oDevPart->addElement(new GDO_FieldType("texte_commentaire", $commentaire['Commentaire']['texte'], "text"));
-            $oStyleIteration->addPart($oDevPart);
+    /**
+     * Normalisation des enregistrements se trouvant sous la clé 'Commentaire':
+     * ajout des valeurs calculées, ...
+     *
+     * @param array $record
+     * @return array
+     */
+    public function gedoooNormalizeAll(array $data) {
+        if( isset( $data['Commentaires'] ) ) {
+            $commentaires = $data['Commentaires'];
+            unset($data['Commentaires']);
+
+            $listeCommentaires = array();
+            $listeAvisCommission = array();
+
+            foreach ($commentaires as $commentaire) {
+                if ($commentaire['Commentaire']['commentaire_auto']) {
+                    $listeAvisCommission[] = array('avis' => $commentaire['Commentaire']['texte']);
+                } else {
+                    $listeCommentaires[] = array('avis' => $commentaire['Commentaire']['texte']);
+                }
+            }
+
+            if (!empty($listeAvisCommission)) {
+                $data['AvisCommission'] = $listeAvisCommission;
+            }
+
+            if (!empty($listeCommentaires)) {
+                $data['Commentaires'] = $listeCommentaires;
+            }
         }
-        $oMainPart->addElement($oStyleIteration);
+
+        return $data;
+    }
+
+    /**
+     * Retourne une correspondance entre les champs CakePHP (même calculés)
+     * et les champs Gedooo.
+     *
+     * @param array $records
+     * @return array
+     */
+    public function gedoooPaths() {
+        return array(
+            'avis' => 'texte',
+            'texte_commentaire' => 'texte',
+        );
+    }
+
+    /**
+     * Retourne une correspondance entre les champs CakePHP (même calculés)
+     * et les types Gedooo.
+     *
+     * @param array $records
+     * @return array
+     */
+    public function gedoooTypes() {
+        return array(
+            'texte' => 'text',
+        );
     }
 
 }
+
 ?>

@@ -101,7 +101,7 @@ Calendar.prototype.getHTMLStartPage = function() {
 	vHTML += "<B>";
 	vHTML += this.gMonthName + " " + this.gYear;
 	vHTML += "</B>";
-	vHTML += "<table cellspacing='0' cellpadding='0' height='3'><tr><td><img height='3'></td></tr></table>";
+	vHTML += "<table cellspacing='0' cellpadding='0' height='3'><tr><td><img src='" + this.gShim + "' height='3'></td></tr></table>";
 	return vHTML;
 }
 //METHODE getHTMLNavButtons - CREE LES BOUTONS "BACK", "PREV" etc.
@@ -124,7 +124,7 @@ Calendar.prototype.getHTMLNavigation = function() {
 	vHTML += this.getHTMLNavButtons(this.gMonth, (parseInt(this.gYear)+1), this.gGoGo);
 	vHTML += "</TR></TABLE>";
 	vHTML += "</tr></td></TABLE>";
-	vHTML += "<table cellspacing='0' cellpadding='0' height='9'><tr><td><img height='3'></td></tr></table>";
+	vHTML += "<table cellspacing='0' cellpadding='0' height='9'><tr><td><img src='" + this.gShim + "' height='3'></td></tr></table>";
 	return vHTML;
 }
 //METHODE getDay - cherche le nom du jour de la semaine dans le tableaux des jours
@@ -149,7 +149,7 @@ Calendar.prototype.getHTMLCalHeader = function() {
 	vCode += this.getHTMLDayHeader(4) + this.getHTMLDayHeader(5,1) + this.getHTMLDayHeader(6,1);
 	vCode += "</TR>";
 	//ligne entre les headers et les dates
-	vCode += "<TR><TD colspan='7' class='Border' height='" + this.gBorderWidth + "' class='Header'><img height='" + this.gBorderWidth + "'></TD></TR>";
+	vCode += "<TR><TD colspan='7' class='Border' height='" + this.gBorderWidth + "' class='Header'><img src='" + this.gShim + "' height='" + this.gBorderWidth + "'></TD></TR>";
 	return vCode;
 }
 //METHODE getHTMLDay() : pour mettre aujourd'hui en rouge

@@ -21,13 +21,13 @@
     <div id='affiche' <?php  echo Configure::read('USE_S2LOW')===false?'style="display: none;"':''; ?>>
     <fieldset>
         <legend>Choix de la plateforme S2LOW</legend>
-        <?php
-        echo $this->Form->input('hostname', array(
-            'type' => 'text',
-            "placeholder" => "Exemple : https://www.s2low.org",
-            'label' => false,
-            'value' => Configure::read('S2LOW_HOST')));
-        ?>
+<?php  
+        echo $this->Form->input('hostname', 
+                                array('type' => 'text', 
+                                      "placeholder"=>"Exemple : www.s2low.org", 
+                                      'label' => false , 
+                                      'value' => Configure::read('HOST'),
+                                      'before' => 'https://')); ?>
     </fieldset>
     <fieldset>
         <legend>Récupération du certificat électronique</legend>
@@ -35,7 +35,7 @@
     echo $this->Form->input('certificat', array('type' => 'file'));
     echo $this->Form->input('password', array('type' => 'text', 
                                               "placeholder"=>"fourni avec votre certificat", 
-                                              'value' => Configure::read('S2LOW_CERTPWD'),
+                                              'value' => Configure::read('PASSWORD'),
                                               'label' => 'Mot de passe'  ));
 ?>
     </fieldset>
@@ -48,7 +48,7 @@
                                                'legend'  => false,  
                                                'type'    => 'radio', 
                                                'options' => $notif, 
-                                               'value' => Configure::read('S2LOW_USEPROXY')?'true':'false',
+                                               'value' => Configure::read('USE_PROXY')?'true':'false',
                                                'div'     => false, 
                                                'default' => 'false',
                                                'label'   => false,  
@@ -60,7 +60,7 @@
     
     echo $this->Form->input('proxy_host', array('type'        => 'text', 
                                                 'placeholder' => 'Exemple : http://x.x.x.x:8080', 
-                                                'value' => Configure::read('S2LOW_PROXYHOST'),
+                                                'value' => Configure::read('HOST_PROXY'),
                                                 'label'       => 'Adresse du proxy')).'<br />';
    
 ?> </div>
@@ -73,7 +73,7 @@
                                                'legend'  => false,  
                                                'type'    => 'radio', 
                                                'options' => $notif, 
-                                               'value' => Configure::read('S2LOW_MAILSEC')?'true':'false',
+                                               'value' => Configure::read('USE_MAIL_SECURISE')?'true':'false',
                                                'div'     => false, 
                                                'default' => 'false',
                                                'label'   => false));
@@ -82,7 +82,7 @@
 <?php
     echo $this->Form->input('mails_password', array('type' => 'text', 
                                               "placeholder"=>"fourni avec votre certificat", 
-                                              'value' => Configure::read('S2LOW_MAILSECPWD'),
+                                              'value' => Configure::read('PASSWORD_MAIL_SECURISE'),
                                               'label' => 'Mot de passe'  ));
 ?>
     </fieldset>

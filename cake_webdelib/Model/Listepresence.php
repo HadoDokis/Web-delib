@@ -20,7 +20,7 @@ class Listepresence extends AppModel {
 						'order' => '',
 						'counterCache' => ''
 				),
-			'Suppleant' =>
+                        'Suppleant' =>
 				array('className' => 'Acteur',
 						'foreignKey' => 'suppleant_id',
 						'conditions' => '',
@@ -39,170 +39,256 @@ class Listepresence extends AppModel {
 
 	);
 
-    /**
-     * fonction d'initialisation des variables de fusion pour la liste des présents pour le vote d'un projet
-     * les bibliothèques Gedooo doivent être inclues par avance
-     * génère une exception en cas d'erreur
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $deliberationId id de la délibération
-     */
-    function setVariablesFusionPresents(&$oMainPart, &$modelOdtInfos, $deliberationId) {
-        // initialisations
-        $fusionVariables = array('nom', 'prenom', 'salutation', 'titre', 'date_naissance', 'adresse1', 'adresse2', 'cp', 'ville', 'email', 'telfixe', 'telmobile', 'note');
-        $conditions = array('Listepresence.delib_id' => $deliberationId, 'Listepresence.present' => true);
 
-        // nombre d'acteurs présents
-        $nbActeurs = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
-        $oMainPart->addElement(new GDO_FieldType('nombre_acteur_present', $nbActeurs, 'text'));
-        if ($nbActeurs==0) return;
+        // ---------------------------------------------------------------------
 
-        // liste des variables utilisées dans le template
-        $acteurFields = $aliasActeurFields = array();
-        foreach($fusionVariables as $fusionVariable)
-            if ($modelOdtInfos->hasUserFieldDeclared($fusionVariable.'_acteur_present')) {
-                $aliasActeurFields[] = 'Acteur.'.$fusionVariable;
-                $acteurFields[] = $fusionVariable;
+        /**
+         * Lecture des enregistrements liés à une délibération.
+         *
+         * @param integer $deliberation_id
+         * @todo: deep pour les votes ?
+         * @return array
+         */
+		public function gedoooReadAll( $deliberation_id ) {
+            $joinParamsVote = array( 'conditions' => array( 'Vote.delib_id' => $deliberation_id ), 'type' => 'LEFT OUTER' );
+
+			$results = $this->find(
+				'all',
+				array(
+					'fields' => array_merge(
+						$this->fields(),
+						$this->Acteur->fields(),
+						$this->Mandataire->fields(),
+						$this->Suppleant->fields(),
+                        // Types d'acteurs
+                        alias_querydata( $this->Acteur->Typeacteur->fields(), array( 'Typeacteur' => 'TypeacteurActeur' ) ),
+                        alias_querydata( $this->Mandataire->Typeacteur->fields(), array( 'Typeacteur' => 'TypeacteurMandataire' ) ),
+                        alias_querydata( $this->Suppleant->Typeacteur->fields(), array( 'Typeacteur' => 'TypeacteurSuppleant' ) ),
+                        // Votes
+						alias_querydata( $this->Acteur->Vote->fields(), array( 'Vote' => 'VoteActeur' ) ),
+						alias_querydata( $this->Mandataire->Vote->fields(), array( 'Vote' => 'VoteMandataire' ) ),
+						alias_querydata( $this->Suppleant->Vote->fields(), array( 'Vote' => 'VoteSuppleant' ) )
+					),
+					'conditions' => array(
+						'Listepresence.delib_id' => $deliberation_id,
+//						'VoteActeur.resultat' => array( 2, 3, 4, 5 ) // TODO: à vérifier
+					),
+					'joins' => array(
+						$this->join( 'Acteur' ),
+						$this->join( 'Mandataire' ),
+						$this->join( 'Suppleant' ),
+                        // Types d'acteurs
+                        alias_querydata( $this->Acteur->join( 'Typeacteur' ), array( 'Typeacteur' => 'TypeacteurActeur' ) ),
+                        alias_querydata( $this->Mandataire->join( 'Typeacteur' ), array( 'Typeacteur' => 'TypeacteurMandataire' ) ),
+                        alias_querydata( $this->Suppleant->join( 'Typeacteur' ), array( 'Typeacteur' => 'TypeacteurSuppleant' ) ),
+                        // Votes
+						alias_querydata( $this->Acteur->join( 'Vote', $joinParamsVote ), array( 'Vote' => 'VoteActeur' ) ),
+						alias_querydata( $this->Mandataire->join( 'Vote', $joinParamsVote ), array( 'Vote' => 'VoteMandataire' ) ),
+						alias_querydata( $this->Suppleant->join( 'Vote', $joinParamsVote ), array( 'Vote' => 'VoteSuppleant' ) ),
+					),
+					'recursive' => -1,
+					'order' => array( 'VoteActeur.resultat ASC', 'Acteur.position ASC' )
+				)
+			);
+
+			return $results;
+		}
+
+		/**
+		 * Liste des noms d'itérations pour les votes, ainsi que les suffixes à
+		 * utiliser.
+		 *
+		 * ?? Projets.{n}.ActeursSansParticipation.{n}.nombre_acteur_sans_participation
+		 *
+		 * @var array
+		 */
+		public $gedoooIterations = array(
+			// 1. Présences
+			'ActeursPresents' => 'present', // nom_acteur_present
+			'ActeursAbsents' => 'absent', // nom_acteur_absent, nom_acteur_mandate
+			// 2. Mandaté ?
+			'ActeursMandates' => 'mandate', // nom_acteur_mandataire, nom_acteur_mandate
+			// 3. Votes
+			'ActeursContre' => 'contre', // nom_acteur_contre, nom_acteur_mandate
+			'ActeursPour' => 'pour', // nom_acteur_pour, nom_acteur_mandate
+			'ActeursAbstention' => 'abstention', // nom_acteur_abstention, nom_acteur_mandate
+			'ActeursSansParticipation' => 'sans_participation', // nom_acteur_sans_participation, nom_acteur_mandate
+		);
+
+		/**
+		 * Normalisation des enregistrement: ajout des valeurs calculées, ...
+		 *
+		 * @param array $records
+		 * @return array
+		 */
+		public function gedoooNormalizeAll( array $records ) {
+			$votes = array_fill_keys( $this->gedoooIterations, array() );
+			$counts = array();
+
+			// Classement par catégorie
+			foreach( $records as $record ) {
+				$item = array(
+					'Listepresence' => $record['Listepresence'],
+					'Acteur' => $record['Acteur'],
+					'VoteActeur' => $record['VoteActeur'],
+					'Mandataire' => $record['Mandataire'],
+					'VoteMandataire' => $record['VoteMandataire'],
+					'Suppleant' => $record['Suppleant'],
+					'VoteSuppleant' => $record['VoteSuppleant'],
+				);
+
+				// Mandate
+				// TODO: que faire dans ce cas-là ?
+				if( $record['Listepresence']['mandataire'] ) {
+					$votes['mandate'][] = $item;
+				}
+
+				// Présences
+				if( $record['Listepresence']['present'] ) {
+					$votes['present'][] = $item;
+				}
+				else {
+					$votes['absent'][] = $item;
+				}
+
+				// Votes
+				// TODO: les autres si besoin -> FIXME: seulement si elu ?
+				if( $record['VoteActeur']['resultat'] == Vote::voteContre ) {
+					$votes['contre'][] = $item;
+				}
+				else if( $record['VoteActeur']['resultat'] == Vote::votePour ) {
+					$votes['pour'][] = $item;
+				}
+				else if( $record['VoteActeur']['resultat'] == Vote::abstention ) {
+					$votes['abstention'][] = $item;
+				}
+				else if( $record['VoteActeur']['resultat'] == Vote::sansParticipation ) {
+					$votes['sans_participation'][] = $item;
+				}
+			}
+
+			// Transformation pour le retour
+			$return = array();
+			foreach( $this->gedoooIterations as $iterationName => $category ) {
+				$return[$iterationName] = $this->Acteur->gedoooNormalizeAll( $category, $votes[$category] );
+			}
+
+            // Champs de comptages
+            $bazs = array(
+                'absent' => 'nombre_abstention',
+                'contre' => 'nombre_contre',
+                'pour' => 'nombre_pour',
+                'sans_participation' => 'nombre_sans_participation',
+            );
+
+            $elus = Hash::extract( $records, '{n}.TypeacteurActeur[elu=true]' );
+            $return['nombre_acteur_seance'] = count($elus);
+            foreach( $this->gedoooIterations as $category => $suffix ) {
+                if( isset( $bazs[$suffix] ) ) {
+                    $nombre = ( isset( $return[$category] ) ? count( $return[$category] ) : 0 );
+//                    $return["nombre_{$suffix}"] = $nombre;
+                    $return[$bazs[$suffix]] = $nombre;
+                }
             }
-        if (empty($aliasActeurFields)) return;
+            $return["nombre_votant"] = $return["nombre_pour"] + $return["nombre_contre"];
 
-        // lecture des données en base de données
-        $this->Behaviors->load('Containable');
-        $acteurs = $this->find('all', array (
-            'fields' => array('Listepresence.suppleant_id'),
-            'contain' => $aliasActeurFields,
-            'conditions' => $conditions,
-            'order' => 'Acteur.position ASC'));
+			return $return;
+		}
 
-        // itérations sur les acteurs présents
-        $oStyleIteration = new GDO_IterationType("ActeursPresents");
-        foreach($acteurs as &$acteur) {
-            // traitement du suppléant
-            if (!empty($acteur['Listepresence']['suppleant_id'])) {
-                $suppleant = $this->Acteur->find('first', array(
-                    'recursive' => -1,
-                    'fields' => $aliasActeurFields,
-                    'conditions' => array('id' => $acteur['Listepresence']['suppleant_id'])));
-                if (empty($suppleant))
-                    throw new Exception('suppléant non trouvé id:'.$acteur['Listepresence']['suppleant_id']);
-                $acteur = &$suppleant;
+        /**
+		 * Retourne une correspondance entre les champs CakePHP (même calculés)
+		 * et les champs Gedooo.
+         *
+         * @return array
+         */
+        public function gedoooPaths() {
+            $correspondances = array(
+                'nombre_acteur_seance' => 'nombre_acteur_seance',
+                'nombre_abstention' => 'nombre_abstention',
+                'nombre_contre' => 'nombre_contre',
+                'nombre_pour' => 'nombre_pour',
+                'nombre_sans_participation' => 'nombre_sans_participation',
+                'nombre_votant' => 'nombre_votant',
+            );
+
+            // Présence des acteurs, ... + votes
+            $foos = $this->gedoooNormalizeAll( array() );
+            foreach( $foos as $iterationName => $foo ) {
+                if( is_array( $foo ) ) {
+                    $bar = array_keys( $foo[0] );
+                    $foo = array_keys( Hash::flatten( Hash::normalize( $bar ) ) );
+                    $foo = array_combine( $bar, $foo );
+                    $correspondances = array_merge( $correspondances, $foo );
+                }
             }
-            // traitement de la date de naissance
-            if (!empty($acteur['Acteur']['date_naissance']))
-                $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
-            $oDevPart = new GDO_PartType();
-            foreach($acteurFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_present', $acteur['Acteur'][$fieldname], "text"));
-            $oStyleIteration->addPart($oDevPart);
+
+            return $correspondances;
         }
-        $oMainPart->addElement($oStyleIteration);
-    }
 
-    /**
-     * fonction d'initialisation des variables de fusion pour la liste des absents pour le vote d'un projet
-     * les bibliothèques Gedooo doivent être inclues par avance
-     * génère une exception en cas d'erreur
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $deliberationId id de la délibération
-     */
-    function setVariablesFusionAbsents(&$oMainPart, &$modelOdtInfos, $deliberationId) {
-        // initialisations
-        $fusionVariables = array('nom', 'prenom', 'salutation', 'titre', 'date_naissance', 'adresse1', 'adresse2', 'cp', 'ville', 'email', 'telfixe', 'telmobile', 'note');
-        $conditions = array('Listepresence.delib_id'=>$deliberationId, 'Listepresence.present'=>false, 'Listepresence.mandataire'=>null);
+        /**
+		 * Retourne une correspondance entre les champs CakePHP (même calculés)
+		 * et les champs Gedooo.
+         *
+         * @return array
+         */
+        public function gedoooTypes() {
+            $correspondances = array();
 
-        // nombre d'acteurs absents
-        $nbActeurs = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
-        $oMainPart->addElement(new GDO_FieldType('nombre_acteur_absent', $nbActeurs, 'text'));
-        if ($nbActeurs==0) return;
+            $types = array(
+                'nom' => 'text',
+                'prenom' => 'text',
+                'salutation' => 'text',
+                'titre' => 'text',
+                'position' => 'text',
+                'date_naissance' => 'date',
+                'adresse1' => 'text',
+                'adresse2' => 'text',
+                'cp' => 'text',
+                'ville' => 'text',
+                'email' => 'text',
+                'telfixe' => 'text',
+                'telmobile' => 'text',
+                'note' => 'text',
+            );
 
-        // liste des variables utilisées dans le template
-        $acteurFields = $aliasActeurFields = array();
-        foreach($fusionVariables as $fusionVariable)
-            if ($modelOdtInfos->hasUserFieldDeclared($fusionVariable.'_acteur_absent')) {
-                $aliasActeurFields[] = 'Acteur.'.$fusionVariable;
-                $acteurFields[] = $fusionVariable;
+            // Présence des acteurs, ... + votes
+            $foos = $this->gedoooNormalizeAll( array() );
+            foreach( $foos as $iterationName => $foo ) {
+
+                if( is_array( $foo ) ) {
+                    $bar = array_keys( $foo[0] );
+                    $foo = array_keys( Hash::flatten( Hash::normalize( $bar ) ) );
+
+                    if( count( $foo ) == count( $types ) ) {
+                        $foo = array_combine( $foo, array_values( $types ) );
+                    }
+                    else if( count( $foo ) == count( $types ) + 1 ) { // + 1
+                        $foo = array_combine( $foo, array( 'nombre' => 'text' ) + array_values( $types ) );
+                    }
+                    else if( count( $foo ) == ( count( $types ) * 2 ) + 1 ) { // * 2 + 1
+                        $foo = array_combine( $foo, array_merge( array( 'nombre' => 'text' ), array_values( $types ), array_values( $types ) ) );
+                    }
+                    else {
+                        throw new InternalErrorException( sprintf( 'Le nombre de champs à traiter (%d) est différent du nombre de champs attendus (%d, %d ou %d)', count( $foo ), count( $types ), ( count( $types ) + 1 ), ( ( count( $types ) * 2 ) + 1 ) ) );
+                    }
+
+                    $correspondances = array_merge( $correspondances, $foo );
+                }
             }
-        if (empty($aliasActeurFields)) return;
 
-        // lecture des données en base de données
-        $this->Behaviors->load('Containable');
-        $acteurs = $this->find('all', array (
-            'fields' => array('Listepresence.id'),
-            'contain' => $aliasActeurFields,
-            'conditions' => $conditions,
-            'order' => 'Acteur.position ASC'));
+            $correspondances = Hash::merge(
+                $correspondances,
+                array(
+                    'nombre_acteur_seance' => 'text',
+                    'nombre_abstention' => 'text',
+                    'nombre_contre' => 'text',
+                    'nombre_pour' => 'text',
+                    'nombre_sans_participation' => 'text',
+                    'nombre_votant' => 'text',
+                )
+            );
 
-        // itérations sur les acteurs absents
-        $oStyleIteration = new GDO_IterationType("ActeursAbsents");
-        foreach($acteurs as &$acteur) {
-            // traitement de la date de naissance
-            if (!empty($acteur['Acteur']['date_naissance']))
-                $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
-            $oDevPart = new GDO_PartType();
-            foreach($acteurFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_absent', $acteur['Acteur'][$fieldname], "text"));
-            $oStyleIteration->addPart($oDevPart);
+            return $correspondances;
         }
-        $oMainPart->addElement($oStyleIteration);
-    }
-
-    /**
-     * fonction d'initialisation des variables de fusion pour la liste des mandatés pour le vote d'un projet
-     * les bibliothèques Gedooo doivent être inclues par avance
-     * génère une exception en cas d'erreur
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $deliberationId id de la délibération
-     */
-    function setVariablesFusionMandates(&$oMainPart, &$modelOdtInfos, $deliberationId) {
-        // initialisations
-        $fusionVariables = array('nom', 'prenom', 'salutation', 'titre', 'date_naissance', 'adresse1', 'adresse2', 'cp', 'ville', 'email', 'telfixe', 'telmobile', 'note');
-        $conditions = array('Listepresence.delib_id'=>$deliberationId, 'Listepresence.present'=>false, 'Listepresence.mandataire <>'=>null);
-
-        // nombre d'acteurs mandatés
-        $nbActeurs = $this->find('count', array('recursive'=>-1, 'conditions'=>$conditions));
-        $oMainPart->addElement(new GDO_FieldType('nombre_acteur_mandataire', $nbActeurs, 'text'));
-        if ($nbActeurs==0) return;
-
-        // liste des variables utilisées dans le template
-        $acteurFields = $aliasActeurFields = $mandateFields = $aliasMandateFields = array();
-        foreach($fusionVariables as $fusionVariable)  {
-            if ($modelOdtInfos->hasUserFieldDeclared($fusionVariable.'_acteur_mandataire')) {
-                $aliasActeurFields[] = 'Acteur.'.$fusionVariable;
-                $acteurFields[] = $fusionVariable;
-            }
-            if ($modelOdtInfos->hasUserFieldDeclared($fusionVariable.'_acteur_mandate')) {
-                $aliasMandateFields[] = 'Mandataire.'.$fusionVariable;
-                $mandateFields[] = $fusionVariable;
-            }
-        }
-        if (empty($aliasActeurFields) && empty($aliasMandateFields)) return;
-
-        // lecture des données en base de données
-        $this->Behaviors->load('Containable');
-        $acteurs = $this->find('all', array (
-            'fields' => array('Listepresence.id'),
-            'contain' => array_merge($aliasActeurFields,$aliasMandateFields),
-            'conditions' => $conditions,
-            'order' => 'Acteur.position ASC'));
-
-        // itérations sur les acteurs mandatés
-        $oStyleIteration = new GDO_IterationType("ActeursMandates");
-        foreach($acteurs as &$acteur) {
-            // traitement de la date de naissance
-            if (!empty($acteur['Acteur']['date_naissance']))
-                $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
-            if (!empty($acteur['Mandataire']['date_naissance']))
-                $acteur['Mandataire']['date_naissance'] = date("d/m/Y", strtotime($acteur['Mandataire']['date_naissance']));
-            $oDevPart = new GDO_PartType();
-            foreach($acteurFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_mandataire', $acteur['Acteur'][$fieldname], "text"));
-            foreach($mandateFields as $fieldname)
-                $oDevPart->addElement(new GDO_FieldType($fieldname.'_acteur_mandate', $acteur['Mandataire'][$fieldname], "text"));
-            $oStyleIteration->addPart($oDevPart);
-        }
-        $oMainPart->addElement($oStyleIteration);
-    }
 }
 ?>

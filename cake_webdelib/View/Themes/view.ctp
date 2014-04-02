@@ -18,10 +18,10 @@
 
 <ul id="actions_fiche">
 	<?php
-		echo '<li>'.$this->Html->link(SHY,$this->Session->read('previous_url'),array('class'=>'link_annuler_sans_border','title'=>'Annuler'),false,false).'</li>';
+		echo '<li>'.$this->Html->link(SHY,$this->Session->read('user.User.lasturl'),array('class'=>'link_annuler_sans_border','title'=>'Annuler'),false,false).'</li>';
 
 		if ($Droits->check($user_id, 'Themes:index'))
-			echo '<li>'.$this->Html->link(SHY, array('action'=>'edit', $theme['Theme']['id']) ,array('class'=>'link_modifier','title'=>'Modifier'),false,false).'</li>';
+			echo '<li>'.$this->Html->link(SHY,'/themes/edit/'.$theme['Theme']['id'],array('class'=>'link_modifier','title'=>'Modifier'),false,false).'</li>';
 	?>
 </ul>
 

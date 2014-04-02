@@ -1,335 +1,401 @@
 <?php
-class Seance extends AppModel
-{
-    public $days = array('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi');
-    public $months = array('', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
+    App::uses( 'DateFrench', 'Utility' );
+class Seance extends AppModel {
 
-    public $validate = array(
-        'type_id' => array(
-            array(
-                'rule' => 'notEmpty',
-                'message' => 'Entrer le type de seance associé.'
-            )
-        ),
-        'avis' => array(
-            array(
-                'rule' => 'notEmpty',
-                'message' => 'Sélectionner un avis'
-            )
-        ),
-        'date' => array(
-            array(
-                'rule' => 'notEmpty',
-                'message' => 'Entrer une date valide.'
-            )
-        ),
-        'commission' => array(
-            array(
-                'rule' => 'notEmpty',
-                'message' => 'Entrer le texte de débat.'
-            )
-        ),
-        'texte_doc' => array(
-            array(
-                'rule' => array('checkFormat', 'odt', false),
-                'message' => "Format du document invalide. Autorisé : fichier ODT"
-            )
-        )
-    );
+	var $name = 'Seance';
+	var $days = array ('Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi');
+	var $months = array ('','Janvier','Février','Mars','Avril','Mai','Juin',
+			'Juillet','Août','Septembre','Octobre','Novembre','Décembre');
 
-    public $belongsTo = array(
-        'Typeseance' => array(
-            'className' => 'Typeseance',
-            'conditions' => '',
-            'order' => '',
-            'dependent' => false,
-            'foreignKey' => 'type_id'),
-        'Secretaire' => array('className' => 'Acteur',
-            'conditions' => '',
-            'order' => '',
-            'dependent' => false,
-            'foreignKey' => 'secretaire_id'),
-        'President' => array('className' => 'Acteur',
-            'conditions' => '',
-            'order' => '',
-            'dependent' => false,
-            'foreignKey' => 'president_id'));
+	var $validate = array(
+			'type_id'      => array(array( 'rule'    => 'notEmpty',
+					'message' => 'Entrer le type de seance associé.')),
+			'avis'         => array(array( 'rule'    => 'notEmpty',
+					'message' => 'Sélectionner un avis')),
+			'date'         => array(array( 'rule'    => 'notEmpty',
+					'message' => 'Entrer une date valide.')),
+			'commission'   => array(array('rule'     => 'notEmpty',
+					'message' => 'Entrer le texte de débat.')),
+			'debat_global_type'   => array(array('rule' => array('checkMimetype', 'debat_global',  array('application/vnd.oasis.opendocument.text')),
+					'message' => "Ce type de fichier n'est pas autorisé")),
+	);
 
-    public $hasMany = array(
-        'Infosup' => array('dependent' => true,
-            'foreignKey' => 'foreign_key',
-            'conditions' => array('Infosup.model' => 'Seance')),
-        'Deliberationseance' => array(
-            'className' => 'Deliberationseance',
-            //'joinTable' => 'Deliberation',
-            'foreignKey' => 'seance_id',
-            //'conditions' => array('Deliberation.etat >='=>0),
-            'order' => 'Deliberationseance.position ASC'
-        ),
+	var $belongsTo=array(
+			'Typeseance'=>array(
+					'className'=>'Typeseance',
+					'conditions'=>'',
+					'order'=>'',
+					'dependent'=>false,
+					'foreignKey'=>'type_id'),
+			'Secretaire' => array('className' => 'Acteur',
+					'conditions' => '',
+					'order' => '',
+					'dependent' => false,
+					'foreignKey' => 'secretaire_id'),
+			'President' => array('className' => 'Acteur',
+					'conditions' => '',
+					'order' => '',
+					'dependent' => false,
+					'foreignKey' => 'president_id'));
+
+	var $hasMany = array(
+			'Infosup'=>array('dependent' => true,
+					'foreignKey' => 'foreign_key',
+					'conditions' => array('Infosup.model' => 'Seance')),
+                        'Deliberationseance' =>array(
+					'className'    => 'Deliberationseance',
+                                        //'joinTable' => 'Deliberation',
+					'foreignKey'   => 'seance_id',
+                                        //'conditions' => array('Deliberation.etat >='=>0),
+                                        'order'      => 'Deliberationseance.position ASC'
+                         ),
 
 
-    );
+            );
 
-    public $hasAndBelongsToMany = array(
-        'Deliberation' => array(
-            'className' => 'Deliberation',
-            'joinTable' => 'deliberations_seances',
-            'foreignKey' => 'seance_id',
-            'associationForeignKey' => 'deliberation_id',
-            'unique' => true,
-            'conditions' => array('Deliberation.etat >=' => 0),
-            'fields' => '',
-            'order' => 'DeliberationsSeance.position ASC',
-            'limit' => '',
-            'offset' => '',
-            'finderQuery' => '',
-            'deleteQuery' => '',
-            'insertQuery' => ''));
+	//    var $hasAndBelongsToMany = array('Deliberation');
+	var $hasAndBelongsToMany = array( 'Deliberation' => array( 'className' => 'Deliberation',
+			'joinTable' => 'deliberations_seances',
+			'foreignKey' => 'seance_id',
+			'associationForeignKey' => 'deliberation_id',
+			'unique' => true,
+			'conditions' => array('Deliberation.etat >='=>0),
+			'fields' => '',
+			'order' => 'DeliberationsSeance.position ASC',
+			'limit' => '',
+			'offset' => '',
+			'finderQuery' => '',
+			'deleteQuery' => '',
+			'insertQuery' => ''));
+
+
+	/* retourne la liste des séances futures avec le nom du type de séance  */
+	function generateList($conditionSup=null, $afficherTtesLesSeances = false, $natures = array()) {
+		$generateList = array();
+		App::import('model','TypeseancesTypeacte');
+		$TypeseancesTypeacte = new TypeseancesTypeacte();
+		$typeseances = $TypeseancesTypeacte->getTypeseanceParNature($natures);
+
+		$conditions  = array();
+		$conditions['Seance.type_id'] = $typeseances;
+		$conditions['Seance.traitee'] = '0';
+
+		if (!empty($conditionSup))
+			$conditions = Set::pushDiff($conditions,$conditionSup);
+
+		$this->Behaviors->attach('Containable');
+		$seances = $this->find('all',array('conditions' => $conditions,
+				'order'      => array('date ASC'),
+				'fields'     => array('Seance.id', 'Seance.date'),
+				'contain'    => array('Typeseance.action', 'Typeseance.retard', 'Typeseance.libelle')));
+
+		foreach ($seances as $seance) {
+			$deliberante = "----";
+			if ($seance['Typeseance']['action'] == 0)
+				$deliberante = "(*)";
+			if ($afficherTtesLesSeances) {
+				$dateTimeStamp = strtotime($seance['Seance']['date']);
+				$dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.
+						$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.
+						date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
+				$generateList[$seance['Seance']['id']]= "$deliberante ".$seance['Typeseance']['libelle']. " du ".$dateFr;
+			}
+			else {
+				$retard=$seance['Typeseance']['retard'];
+
+				if($seance['Seance']['date'] >=date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d")+$retard,  date("Y")))){
+					$dateTimeStamp = strtotime($seance['Seance']['date']);
+					$dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.
+							$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.
+							date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
+					$generateList[$seance['Seance']['id']]= "$deliberante ".$seance['Typeseance']['libelle']. " du ".$dateFr;
+				}
+			}
+		}
+		return $generateList;
+	}
+
+	function generateAllList() {
+		$this->Behaviors->attach('Containable');
+		$generateList = array();
+		$seances = $this->find('all', array('order'   => 'date ASC',
+											'fields'  => array('Seance.id', 'Seance.type_id', 'Seance.date'),
+											'contain' => array('Typeseance.libelle', 'Typeseance.action')));
+
+		foreach ($seances as $seance){
+			$deliberante = "";
+			if ($seance['Typeseance']['action'] == 0)
+				$deliberante = "(*)";
+
+			$dateTimeStamp = strtotime($seance['Seance']['date']);
+			$dateFr =  $this->days[date('w', $dateTimeStamp)].' '.date('d', $dateTimeStamp).' '.
+					$this->months[date('n', $dateTimeStamp)].' '.date('Y',$dateTimeStamp).' - '.
+					date('H', $dateTimeStamp).':'.date('i', $dateTimeStamp );
+			$generateList[$seance['Seance']['id']]="$deliberante ". $seance['Typeseance']['libelle']. " du ".$dateFr;
+		}
+		return $generateList;
+	}
+
+	function NaturecanSave($seance_id, $nature_id) {
+		if (empty($seance_id))
+			return true;
+		$seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
+			                             'recursive'  => -1,
+			                             'fields'     => array('Seance.type_id')));
+                App::import('Model', 'TypeseancesTypeacte');
+                $this->TypeseancesTypeacte = new TypeseancesTypeacte();
+		$natures = $this->TypeseancesTypeacte->getNaturesParTypeseance($seance['Seance']['type_id']);
+		return in_array($nature_id, $natures);
+	}
+
+        /**
+         * Récupère en base la liste des délibérations pour une séance ainsi que le theme et le rapporteur associé
+         * @todo Diviser le nombre de requêtes en utilisant contain + conditions ! (vérifier que valeur != null)
+         * @param integer $seance_id
+         * @return array deliberations liste des délibérations avec libelle du theme et nom, prenom du rapporteur
+         */
+	function getDeliberations($seance_id) {
+            $deliberations = $this->Deliberationseance->find(
+                    'all',
+                    array(
+                        'fields' => array('Deliberationseance.seance_id','Deliberationseance.deliberation_id','Deliberationseance.position','Deliberation.*'),
+                        'contain'=>'Deliberation',
+                        'recursive' => 1,
+                        'conditions' =>  array(
+                            'Deliberationseance.seance_id' => $seance_id,
+                            'Deliberation.etat >='=>0,
+                        ),
+                        'order'=>'Deliberationseance.position ASC',
+                    )
+                );
+
+		for ($i = 0; $i < count($deliberations); $i++) {
+			if (isset($deliberations[$i]['Deliberation']['theme_id'])) {
+				$theme = $this->Deliberation->Theme->find('first',
+						array('conditions' => array('Theme.id'=> $deliberations[$i]['Deliberation']['theme_id']),
+								'fields'     => array('Theme.id', 'Theme.libelle'),
+								'recursive'  => -1));
+				$deliberations[$i]['Theme']['libelle'] = $theme['Theme']['libelle'];
+			}
+			if (isset ( $deliberations[$i]['Deliberation']['rapporteur_id'])) {
+				$rapporteur = $this->Deliberation->Rapporteur->find('first',
+						array('conditions' => array('Rapporteur.id'=> $deliberations[$i]['Deliberation']['rapporteur_id']),
+								'fields'     => array('Rapporteur.id', 'Rapporteur.nom', 'Rapporteur.prenom'),
+								'recursive'  => -1));
+				$deliberations[$i]['Rapporteur']['nom'] = $rapporteur['Rapporteur']['nom'];
+				$deliberations[$i]['Rapporteur']['prenom'] = $rapporteur['Rapporteur']['prenom'];
+			}
+		}
+		return ($deliberations);
+	}
+
+	function getDeliberationsId($seance_id) {
+		$tab = array();
+		App::import('Model', 'Deliberationseance');
+		$this->Deliberationseance = new Deliberationseance();
+
+		$this->Deliberationseance->Behaviors->attach('Containable');
+		$deliberations = $this->Deliberationseance->find('all', array(
+				'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
+				'fields'     => array('Deliberationseance.deliberation_id'),
+                                'contain'    => array('Deliberation.id', 'Deliberation.etat', 'Seance.id'),
+                                'order'      => 'Deliberationseance.position ASC',
+				));
+		foreach ($deliberations as $deliberation)
+			$tab[] = $deliberation['Deliberationseance']['deliberation_id'];
+		return $tab;
+	}
+
+        /**
+         * @deprecated
+         * NOTE: cette fonction n'est pas utilisée et ne pourrai pas fonctionner en l'état
+         */
+	function getDeliberationsIdByTypeseance_id($type_id) {
+		$tabs = array();
+		$typeseances = $this->Typeseance->find('all', array(
+				'conditions' => array('Typeseance.id' => $type_id),
+				'recursive'  => -1,
+				'fields'     => array('.id')));
+		foreach($seances as $seance) {
+			$ids = $this->getDeliberationsId($seance['Seance']['id']);
+			$tabs = array_merge($tabs, $ids);
+		}
+		return $tabs;
+	}
+
+	function getLastPosition($seance_id) {
+		App::import('Model', 'Deliberationseance');
+		$this->Deliberationseance = new Deliberationseance();
+		$deliberations = $this->Deliberationseance->find('count', array('conditions' => array('Seance.id' => $seance_id,
+				'Deliberation.etat !='=> -1) ));
+		return($deliberations+1);
+	}
+
+	function reOrdonne($delib_id, $seances_selectionnees) {
+		if (is_int($seances_selectionnees)) {
+			$seance_id = $seances_selectionnees;
+			unset($seances_selectionnees);
+			$seances_selectionnees = array();
+			$seances_selectionnees[0] =  $seance_id;
+		}
+		elseif (!isset($seances_selectionnees) || empty($seances_selectionnees) || ($seances_selectionnees[0] == null))
+		    $seances_selectionnees= array();
+
+		$seances_enregistrees = array();
+		App::import('Model', 'Deliberationseance');
+		$this->Deliberationseance = new Deliberationseance();
+
+		$delibs = $this->Deliberationseance->find('all', array(
+                                'conditions' => array('Deliberation.id' => $delib_id),
+				'fields'     => array('Seance.id',
+                                    'Deliberationseance.deliberation_id','Deliberationseance.id',
+                                    'Deliberationseance.position','Deliberationseance.seance_id'),
+                                'order'      => array( 'Deliberationseance.position ASC' )));
+		foreach ($delibs as $delib)
+			$seances_enregistrees[] = $delib['Seance']['id'];
+
+		$seances_a_retirer = array_diff($seances_enregistrees, $seances_selectionnees);
+
+		foreach($seances_a_retirer as $key => $seance_id) {
+                    //$position = 1;
+                    $jointure = $this->Deliberationseance->find('first', array('conditions' => array( 'Seance.id'            => $seance_id,
+                                    'Deliberation.id'      => $delib_id,
+                                    'Deliberation.etat !=' => -1),
+                                    'fields'     => array( 'Deliberationseance.id')));
+                    $this->Deliberationseance->delete($jointure['Deliberationseance']['id']);
+//On commente le code car on ne veut pas reordonner après une supression
+                   /* $seances = $this->Deliberationseance->find('all', array('conditions' => array( 'Seance.id'            => $seance_id,
+                                    'Deliberation.etat !=' => -1),
+                                    'fields'     => array( 'Deliberationseance.id',
+                                                    'Deliberationseance.position' ),
+                                    'order'      => array( 'Deliberationseance.position ASC' )));
+                    // pour toutes les délibsd
+                    /*foreach($delibs as $delib) {
+                            if ($position != $delib['Deliberationseance']['position'])
+                                    $this->Deliberationseance->save(array( 'id'      => $delib['Deliberationseance']['id'],
+                                            'deliberation_id'      => $delib['Deliberationseance']['deliberation_id'],
+                                            'seance_id'      => $delib['Deliberationseance']['seance_id'],
+                                            'position' => $position++),
+                                                    array( 'validate' => false,
+                                                                    'callbacks' => false));
+                    }*/
+		}
+
+                if (is_array($seances_enregistrees) and  (!empty($seances_enregistrees)))  {
+		    $seances_a_ajouter = array_diff($seances_selectionnees, $seances_enregistrees);
+                }
+                else
+                    $seances_a_ajouter = $seances_selectionnees;
+
+		foreach($seances_a_ajouter as $seance_id) {
+                        $Deliberationseance=array();
+			$this->Deliberationseance->create();
+			$Deliberationseance['Deliberationseance']['position'] = intval($this->getLastPosition($seance_id));
+			$Deliberationseance['Deliberationseance']['deliberation_id'] = $delib_id;
+			$Deliberationseance['Deliberationseance']['seance_id'] = $seance_id;
+			$this->Deliberationseance->save($Deliberationseance['Deliberationseance']);
+		}
+
+
+
+		$multidelibs = $this->Deliberation->find('all', array('conditions' => array('Deliberation.parent_id' => $delib_id),
+				'recursive'  => -1,
+				'fields' => array('Deliberation.id')));
+                if (isset($multidelibs) && !empty($multidelibs))
+		    foreach ($multidelibs as $multidelib)
+			$this->reOrdonne($multidelib['Deliberation']['id'], $seances_selectionnees);
+
+	}
+
+	function getDate($seance_id) {
+		if (empty($seance_id))
+			return '';
+		else{
+			$objCourant = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
+					'fields'     => array('Seance.date'),
+					'recursive'  => -1));
+			return $objCourant['Seance']['date'];
+		}
+	}
+
+	function getType($seance_id) {
+		if (empty($seance_id))
+			return '';
+		else{
+			$objCourant = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
+					'fields'     => array('Seance.type_id'),
+					'recursive'  => -1));
+			return $objCourant['Seance']['type_id'];
+		}
+	}
+
+	function getSeanceDeliberante($tab_seances) {
+		$this->Behaviors->attach('Containable');
+		foreach($tab_seances as $key => $seance_id) {
+			$seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
+					'fields'     => array('Seance.id'),
+					'contain'    => array('Typeseance.action')));
+			if ($seance['Typeseance']['action'] == 0) {
+				return $seance['Seance']['id'];
+			}
+		}
+		return null;
+	}
+
+        function isSeanceDeliberante($seance_id) {
+            $this->Behaviors->attach('Containable');
+            $seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
+                                                 'fields'     => array('Seance.id', 'Seance.type_id'),
+                                                 'contain'    => array('Typeseance.action')));
+            return ($seance['Typeseance']['action'] == 0);
+        }
 
     /**
-     * retourne la liste des séances futures avec le nom du type de séance
+     * Contruit l'objet GDO_PartType passé en paramètre, ou en crée un nouveau si celui-ci est null et le rempli avec les valeurs des champs trouvés en base
+     * les dates et heure sont mises en français : @see DateComponent
+     * Données Gedoo :
+     *  - les attributs de la séance (passée en paramètre) :
+     *      - date_seance_lettres/$this->Date->dateLettres(strtotime($seance['Seance']['date']))/text
+     *      - heure.$suffixe/$this->Date->Hour($seance['Seance']['date'])/text
+     *      - date.$suffixe/$this->Date->frDate($seance['Seance']['date'])/date
+     *      - hh.$suffixe/$this->Date->Hour($seance['Seance']['date'], 'hh')/string
+     *      - mm.$suffixe/$this->Date->Hour($seance['Seance']['date']/string
+     *      - date_convocation.$suffixe/$this->Date->frDate($seance['Seance']['date_convocation'])/date
+     *      - identifiant.$suffixe/$seance['Seance']['id']/text
+     *      - commentaire.$suffixe/$seance['Seance']['commentaire']/lines
+     *  - si la liste des acteur convoqués n'est pas vide, un bloc comprenant les informations sur les élus convoqués à la séance :
+     *      - nom_acteur_convoque.$suffixe/Acteur.{n}.nom/text
+     *      - prenom_acteur_convoque.$suffixe/Acteur.{n}.prenom/text
+     *      - salutation_acteur_convoque.$suffixe/Acteur.{n}.salutation/text
+     *      - titre_acteur_convoque.$suffixe/Acteur.{n}.titre/text
+     *      - note_acteur_convoque.$suffixe/Acteur.{n}.note/text
+     *  - type.$suffixe/typeseance.libelle/text
+     *  - un bloc président @see Acteur:makeBalise
+     *  - un bloc secrétaire @see Acteur:makeBalise
+     *  - un bloc concernant les avis des séances :
+     *      - commentaire/Deliberationseance.{n}.commentaire/lines
+     *  - un bloc concernant les infos sups @see Infosup:addField
+     *  - un bloc projet concernant les délibérations de la séance (si $include_projets = true) :
+     *      - pour chaque délibération @see Deliberation:makeBalisesProjet
+     *
+     * ATTENTION:
+     *  - utilisation de $oDevPart puis de @$oDevPart (@$oDevPart->addElement($aviss);)
+     *
+     * @see
+     *  - Acteur:makeBalise
+     *  - Acteur:makeBalise
+     *  - Infosup:addField
+     *
+     * @param integer $seance_id l'id de la seance
+     * @param GDO_PartType $oDevPart l'objet GDO_PartType dans lequel ajouter les champs
+     * - Si ce champ est null, crée un nouveau objet GDO_PartType et met le suffixe seance au pluriel, la variable $return à true (la méthode retournera l'objet GDO_PartType)
+     * @param boolean $include_projets, inclure ou non un bloc projet (infos sur les délibérations de la séance)
+     * @param array $conditions, tableau de conditions pour la méthode find sur le modèle délibération.
+     * - Si $include_projets = false, le paramètre $conditions est inutilisé
+     * @return \GDO_PartType $oDevPart, l'objet GDO_PartType construit si le paramètre $oDevPart passé est null, retourne rien sinon
      */
-    function generateList($conditionSup = null, $afficherTtesLesSeances = false, $natures = array())
-    {
-        $generateList = array();
-        App::import('model', 'TypeseancesTypeacte');
-        $TypeseancesTypeacte = new TypeseancesTypeacte();
-        $typeseances = $TypeseancesTypeacte->getTypeseanceParNature($natures);
-
-        $conditions = array();
-        $conditions['Seance.type_id'] = $typeseances;
-        $conditions['Seance.traitee'] = '0';
-
-        if (!empty($conditionSup))
-            $conditions = Set::pushDiff($conditions, $conditionSup);
-
-        $this->Behaviors->load('Containable');
-        $seances = $this->find('all', array('conditions' => $conditions,
-            'order' => array('date ASC'),
-            'fields' => array('Seance.id', 'Seance.date'),
-            'contain' => array('Typeseance.action', 'Typeseance.retard', 'Typeseance.libelle')));
-
-        foreach ($seances as $seance) {
-            $deliberante = "----";
-            if ($seance['Typeseance']['action'] == 0)
-                $deliberante = "(*)";
-            if ($afficherTtesLesSeances) {
-                $dateTimeStamp = strtotime($seance['Seance']['date']);
-                $dateFr = $this->days[date('w', $dateTimeStamp)] . ' ' . date('d', $dateTimeStamp) . ' ' .
-                    $this->months[date('n', $dateTimeStamp)] . ' ' . date('Y', $dateTimeStamp) . ' - ' .
-                    date('H', $dateTimeStamp) . ':' . date('i', $dateTimeStamp);
-                $generateList[$seance['Seance']['id']] = "$deliberante " . $seance['Typeseance']['libelle'] . " du " . $dateFr;
-            } else {
-                $retard = $seance['Typeseance']['retard'];
-
-                if ($seance['Seance']['date'] >= date("Y-m-d", mktime(date("H"), date("i"), date("s"), date("m"), date("d") + $retard, date("Y")))) {
-                    $dateTimeStamp = strtotime($seance['Seance']['date']);
-                    $dateFr = $this->days[date('w', $dateTimeStamp)] . ' ' . date('d', $dateTimeStamp) . ' ' .
-                        $this->months[date('n', $dateTimeStamp)] . ' ' . date('Y', $dateTimeStamp) . ' - ' .
-                        date('H', $dateTimeStamp) . ':' . date('i', $dateTimeStamp);
-                    $generateList[$seance['Seance']['id']] = "$deliberante " . $seance['Typeseance']['libelle'] . " du " . $dateFr;
-                }
-            }
-        }
-        return $generateList;
-    }
-
-    function generateAllList()
-    {
-        $this->Behaviors->load('Containable');
-        $generateList = array();
-        $seances = $this->find('all', array('order' => 'date ASC',
-            'fields' => array('Seance.id', 'Seance.type_id', 'Seance.date'),
-            'contain' => array('Typeseance.libelle', 'Typeseance.action')));
-
-        foreach ($seances as $seance) {
-            $deliberante = "";
-            if ($seance['Typeseance']['action'] == 0)
-                $deliberante = "(*)";
-
-            $dateTimeStamp = strtotime($seance['Seance']['date']);
-            $dateFr = $this->days[date('w', $dateTimeStamp)] . ' ' . date('d', $dateTimeStamp) . ' ' .
-                $this->months[date('n', $dateTimeStamp)] . ' ' . date('Y', $dateTimeStamp) . ' - ' .
-                date('H', $dateTimeStamp) . ':' . date('i', $dateTimeStamp);
-            $generateList[$seance['Seance']['id']] = "$deliberante " . $seance['Typeseance']['libelle'] . " du " . $dateFr;
-        }
-        return $generateList;
-    }
-
-    function NaturecanSave($seance_id, $nature_id)
-    {
-        if (empty($seance_id))
-            return true;
-        $seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
-            'recursive' => -1,
-            'fields' => array('Seance.type_id')));
-        App::import('Model', 'TypeseancesTypeacte');
-        $this->TypeseancesTypeacte = new TypeseancesTypeacte();
-        $natures = $this->TypeseancesTypeacte->getNaturesParTypeseance($seance['Seance']['type_id']);
-        return in_array($nature_id, $natures);
-    }
-
-    function getDeliberations($seance_id, $conditions = array())
-    {
-        $conditions['Deliberationseance.seance_id'] = $seance_id;
-
-        $deliberations = $this->Deliberationseance->find(
-            'all',
-            array(
-                'fields' => array(
-                    'Deliberationseance.seance_id',
-                    'Deliberationseance.deliberation_id',
-                    'Deliberationseance.position',
-                    'Deliberation.*',
-                ),
-                'contain' => array(
-                    'Deliberation'=>array(
-                        'Typeacte.nature_id','Typeacte.libelle',
-                        'Service.libelle',
-                        'Theme.libelle',
-                        'Circuit.nom'
-                    ),
-                ),
-                'recursive' => 2,
-                'conditions' => $conditions,
-                'order' => 'Deliberationseance.position ASC',
-            )
-        );
-        for ($i = 0; $i < count($deliberations); $i++) {
-            if (isset($deliberations[$i]['Deliberation']['theme_id'])) {
-                $theme = $this->Deliberation->Theme->find('first',
-                    array('conditions' => array('Theme.id' => $deliberations[$i]['Deliberation']['theme_id']),
-                        'fields' => array('Theme.id', 'Theme.libelle'),
-                        'recursive' => -1));
-                $deliberations[$i]['Theme']['libelle'] = $theme['Theme']['libelle'];
-            }
-            if (isset ($deliberations[$i]['Deliberation']['rapporteur_id'])) {
-                $rapporteur = $this->Deliberation->Rapporteur->find('first',
-                    array('conditions' => array('Rapporteur.id' => $deliberations[$i]['Deliberation']['rapporteur_id']),
-                        'fields' => array('Rapporteur.id', 'Rapporteur.nom', 'Rapporteur.prenom'),
-                        'recursive' => -1));
-                $deliberations[$i]['Rapporteur']['nom'] = $rapporteur['Rapporteur']['nom'];
-                $deliberations[$i]['Rapporteur']['prenom'] = $rapporteur['Rapporteur']['prenom'];
-            }
-        }
-        return ($deliberations);
-    }
-
-    function getDeliberationsId($seance_id)
-    {
-        $tab = array();
-        App::import('Model', 'Deliberationseance');
-        $this->Deliberationseance = new Deliberationseance();
-
-        $this->Deliberationseance->Behaviors->load('Containable');
-        $deliberations = $this->Deliberationseance->find('all', array(
-            'conditions' => array('Deliberationseance.seance_id' => $seance_id, 'Deliberation.etat >=' => 0),
-            'fields' => array('Deliberationseance.deliberation_id'),
-            'contain' => array('Deliberation.id', 'Deliberation.etat', 'Seance.id'),
-            'order' => 'Deliberationseance.position ASC',
-        ));
-        foreach ($deliberations as $deliberation)
-            $tab[] = $deliberation['Deliberationseance']['deliberation_id'];
-        return $tab;
-    }
-
-    function getLastPosition($seance_id)
-    {
-        App::import('Model', 'Deliberationseance');
-        $this->Deliberationseance = new Deliberationseance();
-        $deliberations = $this->Deliberationseance->find('count', array('conditions' => array('Seance.id' => $seance_id,
-            'Deliberation.etat !=' => -1)));
-        return ($deliberations + 1);
-    }
-
-    function reOrdonne($delib_id, $seances_selectionnees)
-    {
-        if (is_int($seances_selectionnees)) {
-            $seance_id = $seances_selectionnees;
-            unset($seances_selectionnees);
-            $seances_selectionnees = array();
-            $seances_selectionnees[0] = $seance_id;
-        } elseif (!isset($seances_selectionnees) || empty($seances_selectionnees) || ($seances_selectionnees[0] == null))
-            $seances_selectionnees = array();
-
-        $seances_enregistrees = array();
-
-        $delibs = $this->Deliberationseance->find('all', array(
-            'conditions' => array('Deliberation.id' => $delib_id),
-            'fields' => array('Seance.id',
-                'Deliberationseance.deliberation_id', 'Deliberationseance.id',
-                'Deliberationseance.position', 'Deliberationseance.seance_id'),
-            'order' => array('Deliberationseance.position ASC')));
-        foreach ($delibs as $delib)
-            $seances_enregistrees[] = $delib['Seance']['id'];
-
-        $seances_a_retirer = array_diff($seances_enregistrees, $seances_selectionnees);
-
-        foreach ($seances_a_retirer as $seance_id) {
-            $this->Deliberationseance->deleteDeliberationseance($delib_id, $seance_id);
-        }
-
-        if (is_array($seances_enregistrees) and  (!empty($seances_enregistrees))) {
-            $seances_a_ajouter = array_diff($seances_selectionnees, $seances_enregistrees);
-        } else
-            $seances_a_ajouter = $seances_selectionnees;
-
-        foreach ($seances_a_ajouter as $seance_id) {
-            $this->Deliberationseance->addDeliberationseance($delib_id, $seance_id);
-        }
-    }
-
-    function getDate($seance_id)
-    {
-        if (empty($seance_id))
-            return '';
-        else {
-            $objCourant = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
-                'fields' => array('Seance.date'),
-                'recursive' => -1));
-            return $objCourant['Seance']['date'];
-        }
-    }
-
-    function getType($seance_id)
-    {
-        if (empty($seance_id))
-            return '';
-        else {
-            $objCourant = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
-                'fields' => array('Seance.type_id'),
-                'recursive' => -1));
-            return $objCourant['Seance']['type_id'];
-        }
-    }
-
-    function getSeanceDeliberante($tab_seances) {
-        $this->Behaviors->load('Containable');
-        foreach ($tab_seances as $seance_id) {
-            $seance = $this->find('first', array(
-                'conditions' => array('Seance.id' => $seance_id),
-                'fields' => array('Seance.id'),
-                'contain' => array('Typeseance.action')
-            ));
-            if ($seance['Typeseance']['action'] == 0) {
-                return $seance['Seance']['id'];
-            }
-        }
-        return null;
-    }
-
-    function isSeanceDeliberante($seance_id)
-    {
-        $this->Behaviors->load('Containable');
-        $seance = $this->find('first', array('conditions' => array('Seance.id' => $seance_id),
-            'fields' => array('Seance.id', 'Seance.type_id'),
-            'contain' => array('Typeseance.action')));
-        return ($seance['Typeseance']['action'] == 0);
-    }
-
-    function makeBalise($seance_id, $oDevPart = null, $include_projets = false, $conditions = array())
-    {
-        include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
+    function makeBalise($seance_id, $oDevPart = null, $include_projets = false, $conditions = array()) {
+        include_once (ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
         $this->Date = new DateComponent;
 
         $this->Behaviors->attach('Containable');
@@ -337,16 +403,15 @@ class Seance extends AppModel
             'contain' => array('Deliberation.id')));
 
         $return = false;
+        $suffixe = "_seance";
         if ($oDevPart == null) {
             $oDevPart = new GDO_PartType();
             $return = true;
             $suffixe = "_seances";
-        } else {
-            $suffixe = "_seance";
         }
-        if (!empty($seance['Seance']['date']))
-            $date_lettres = $this->Date->dateLettres(strtotime($seance['Seance']['date']));
-        else $date_lettres = '';
+
+        $date_lettres= (!empty($seance['Seance']['date'])) ? $this->Date->dateLettres(strtotime($seance['Seance']['date'])) : '';
+
         //$oDevPart->addElement(new GDO_FieldType('date_seance_lettres'.$suffixe, ($date_lettres), 'text'));
         $oDevPart->addElement(new GDO_FieldType('date_seance_lettres', $date_lettres, 'text'));
         $oDevPart->addElement(new GDO_FieldType("heure" . $suffixe, (!empty($seance['Seance']['date']) ? $this->Date->Hour($seance['Seance']['date']) : ''), 'text'));
@@ -359,8 +424,10 @@ class Seance extends AppModel
 
         $elus = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id']);
         if (!empty($elus)) {
+            //insère un bloc comprenant les informations sur les élus convoqués à la séance
             $oDevPart->addElement(new GDO_FieldType("nombre_acteur" . $suffixe, count($elus), "text"));
             $blocConvoque = new GDO_IterationType("Convoques");
+            $oDevPartConvoque = new GDO_PartType();
             foreach ($elus as $elu) {
                 $oDevPartConvoque = new GDO_PartType();
                 $oDevPartConvoque->addElement(new GDO_FieldType("nom_acteur_convoque" . $suffixe, ($elu['Acteur']['nom']), "text"));
@@ -373,13 +440,32 @@ class Seance extends AppModel
             $oDevPart->addElement($blocConvoque);
         }
 
+        $typeSeance = $this->Typeseance->find('first', array(
+            'conditions' => array('Typeseance.id' => $seance['Seance']['type_id']),
+            'recursive' => -1));
+        $oDevPart->addElement(new GDO_FieldType('type' . $suffixe, (!empty($typeSeance['Typeseance']['libelle']) ? $typeSeance['Typeseance']['libelle'] : ''), 'text'));
+
         $this->President->makeBalise($oDevPart, $seance['Seance']['president_id']);
         $this->Secretaire->makeBalise($oDevPart, $seance['Seance']['secretaire_id']);
-                
-        $typeSeance = $this->Typeseance->find('first',
-            array('conditions' => array('Typeseance.id' => $seance['Seance']['type_id']),
-                'recursive' => -1));
-        $oDevPart->addElement(new GDO_FieldType('type' . $suffixe, (!empty($typeSeance['Typeseance']['libelle']) ? $typeSeance['Typeseance']['libelle'] : ''), 'text'));
+
+        App::import('Model', 'Deliberationseance');
+        $this->Deliberationseance = new Deliberationseance();
+        $avisSeances = $this->Deliberationseance->find('all', array(
+            'conditions' => array('seance_id' => $seance['Seance']['id']),
+            'recursive' => -1));
+        if (!empty($avisSeances)) {
+            $aviss = new GDO_IterationType("AvisSeance");
+            foreach ($avisSeances as $avisSeance) {
+                $Part = new GDO_PartType();
+                $Part->addElement(new GDO_FieldType("commentaire", ($avisSeance['Deliberationseance']['commentaire']), "lines"));
+                $aviss->addPart($Part);
+            }
+            @$oDevPart->addElement($aviss);
+        }
+
+        $infosups = $this->Infosup->find('all', array('conditions' => array('Infosup.foreign_key' => $seance['Seance']['id'],
+                'Infosup.model' => 'Seance'),
+            'recursive' => -1));
 
         if (isset($infosups) && !empty($infosups)) {
             foreach ($infosups as $champs) {
@@ -388,19 +474,21 @@ class Seance extends AppModel
                     $oDevPart->addElement($infosup);
             }
         }
-        /*else {
-            $defs = $this->Infosup->Infosupdef->find('all', array('conditions'=>array('model' => 'Seance'), 'recursive' => -1));
-            foreach($defs as $def) {
-                
-                $oDevPart->addElement(new GDO_FieldType($def['Infosupdef']['code'],  '', 'text')) ;
+        /*
+        else {
+            $defs = $this->Infosup->Infosupdef->find('all', array('conditions' => array('model' => 'Seance'), 'recursive' => -1));
+            foreach ($defs as $def) {
+                $oDevPart->addElement(new GDO_FieldType($def['Infosupdef']['code'], '', 'text'));
             }
-        }*/
+        }
+        */
         if ($include_projets) {
             if (isset($seance['Deliberation']) && !empty($seance['Deliberation'])) {
                 $blocProjets = new GDO_IterationType("Projets");
                 foreach ($seance['Deliberation'] as $deliberation) {
                     $conditions['Deliberation.id'] = $deliberation['DeliberationsSeance']['deliberation_id'];
-                    $projet = $this->Deliberation->find('first', array('conditions' => $conditions,
+                    $projet = $this->Deliberation->find('first', array(
+                        'conditions' => $conditions,
                         'recursive' => -1));
                     $Part = new GDO_PartType();
                     $this->Deliberation->makeBalisesProjet($projet, $Part, true, $seance['Seance']['id']);
@@ -410,228 +498,93 @@ class Seance extends AppModel
             }
         }
 
-        if ($return) return $oDevPart;
+        if ($return)
+            return $oDevPart;
     }
 
-    function getSeancesDeliberantes() {
-        $tab_seances = array();
-        $this->Behaviors->load('Containable');
-        $seances = $this->find('all', array(
-            'conditions' => array(
-                'Typeseance.action' => 0,
-                'Seance.traitee' => 0),
-            'fields' => array('Seance.id'),
-            'contain' => array('Typeseance.action')));
-        foreach ($seances as $seance)
-            $tab_seances[] = $seance['Seance']['id'];
-        return ($tab_seances);
-    }
+	function getSeancesDeliberantes () {
+		$tab_seances = array();
+		$this->Behaviors->attach('Containable');
+		$seances = $this->find('all', array('conditions' => array('Typeseance.action' => 0,
+				'Seance.traitee'    => 0),
+				'fields'     => array('Seance.id'),
+				'contain'    => array('Typeseance.action') ));
+		if (isset($seances) && (!empty($seances)))
+			foreach ($seances as $seance)
+			$tab_seances[] = $seance['Seance']['id'];
+		return($tab_seances);
+	}
 
-    /**
-     * fonction d'initialisation des variables de fusion pour plusieurs séances
-     * les bibliothèques Gedooo doivent être inclues par avance
-     * génère une exception en cas d'erreur
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $ids liste des id des séances
-     */
-    function setVariablesFusionSeances(&$oMainPart, &$modelOdtInfos, $ids, $addProjetIterations=true) {
-        // pour toutes les séances
-        $oMainPart->addElement(new GDO_FieldType('nombre_seance', count($ids), 'text'));
-        $oSectionIteration = new GDO_IterationType('Seances');
-        foreach($ids as $id) {
-            $oDevPart = new GDO_PartType();
-            $this->setVariablesFusion($oDevPart, $modelOdtInfos, $id, 'seances', $addProjetIterations);
-            $oSectionIteration->addPart($oDevPart);
-        }
-        $oMainPart->addElement($oSectionIteration);
-    }
+    // -------------------------------------------------------------------------
 
-    /**
-     * fonction d'initialisation des variables de fusion pour une séance
-     * les bibliothèques Gedooo doivent être inclues par avance
-     * génère une exception en cas d'erreur
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $id id de l'occurence en base
-     * @param string $suffixe suffixe des variables de fusion de la séance
-     * @param boolean $addProjetIterations ajoute les itérations sur les projets
-     */
-    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $suffixe='seance', $addProjetIterations=true) {
-        // lecture de la séance en base
-        $seance = $this->find('first', array(
-            'recursive' => -1,
-            'fields' => array('id', 'date', 'date_convocation', 'commentaire', 'type_id', 'president_id', 'secretaire_id'),
-            'conditions' => array('id' => $id)));
-        if (empty($seance))
-            throw new Exception('séance  id:'.$id.' non trouvée en base de données');
+        /**
+         *
+         * @todo: suffixe
+         *
+         * @param array $seance
+         * @return array
+         */
+		public function gedoooNormalize( array $seance ) {
+			$date_seance = Hash::get( $seance, 'Seance.date' );
+			$seance['Seance']['date_lettres'] = ( empty( $date_seance ) ? null : DateFrench::dateLettres( strtotime( $date_seance ) ) );
+			$seance['Seance']['heure'] = ( empty( $date_seance ) ? null : DateFrench::hour( $date_seance ) );
+			$seance['Seance']['date'] = ( empty( $date_seance ) ? null : DateFrench::frDate( $date_seance ) );
+			$seance['Seance']['hh'] = ( empty( $date_seance ) ? null : DateFrench::hour( $date_seance, 'hh' ) );
+			$seance['Seance']['mm'] = ( empty( $date_seance ) ? null : DateFrench::hour( $date_seance, 'mm' ) );
 
-        // fusion des variables
-        $dateSeanceTimeStamp = strtotime($seance['Seance']['date']);
-        if ($modelOdtInfos->hasUserFieldDeclared('date_'.$suffixe.'_lettres')) {
-            include_once(ROOT . DS . APP_DIR . DS . 'Controller/Component/DateComponent.php');
-            $this->Date = new DateComponent;
-            $oMainPart->addElement(new GDO_FieldType('date_'.$suffixe.'_lettres', $this->Date->dateLettres($dateSeanceTimeStamp), 'text'));
-        }
-        if ($modelOdtInfos->hasUserFieldDeclared('date_'.$suffixe))
-            $oMainPart->addElement(new GDO_FieldType('date_'.$suffixe, date('d/m/Y', $dateSeanceTimeStamp), 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('heure_'.$suffixe))
-            $oMainPart->addElement(new GDO_FieldType('heure_'.$suffixe, date('H:i', $dateSeanceTimeStamp), 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('hh_'.$suffixe))
-            $oMainPart->addElement(new GDO_FieldType('hh_'.$suffixe, date('H', $dateSeanceTimeStamp), 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('mm_'.$suffixe))
-            $oMainPart->addElement(new GDO_FieldType('mm_'.$suffixe, date('i', $dateSeanceTimeStamp), 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('date_convocation_'.$suffixe))
-            $oMainPart->addElement(new GDO_FieldType('date_convocation_'.$suffixe, (empty($seance['Seance']['date_convocation'])?'':date('d/m/Y', strtotime($seance['Seance']['date_convocation']))), 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('identifiant_'.$suffixe))
-            $oMainPart->addElement(new GDO_FieldType('identifiant_'.$suffixe, $seance['Seance']['id'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('commentaire_'.$suffixe))
-            $oMainPart->addElement(new GDO_FieldType('commentaire_'.$suffixe, $seance['Seance']['commentaire'], 'text'));
-        if ($modelOdtInfos->hasUserFieldDeclared('type_'.$suffixe))
-            $oMainPart->addElement(new GDO_FieldType('type_'.$suffixe, $this->Typeseance->field('libelle', array('id' => $seance['Seance']['type_id'])), 'text'));
+            $seance['Seance']['date_seance_lettres'] = ( empty( $date_seance ) ? null : DateFrench::dateLettres( $date_seance ) );
 
-        // président de séance
-        if (!empty($seance['Seance']['president_id']))
-            $this->President->setVariablesFusion($oMainPart, $modelOdtInfos, $seance['Seance']['president_id']);
-        // secrétaire de séance
-        if (!empty($seance['Seance']['secretaire_id']))
-            $this->Secretaire->setVariablesFusion($oMainPart, $modelOdtInfos, $seance['Seance']['secretaire_id']);
-        // Informations supplémentaires
-        $this->Infosup->setVariablesFusion($oMainPart, $modelOdtInfos, 'Seance', $id);
+			$date_convocation = Hash::get( $seance, 'Seance.date_convocation' );
+			$seance['Seance']['date_convocation'] = ( empty( $date_convocation ) ? null : DateFrench::frDate( $date_convocation ) );
 
-        // acteurs convoqués
-        if ($modelOdtInfos->hasUserFieldsDeclared(
-                'salutation_acteur_convoque', 'prenom_acteur_convoque', 'nom_acteur_convoque', 'titre_acteur_convoque', 'position_acteur_convoque',
-                'email_acteur_convoque', 'telmobile_acteur_convoque', 'telfixe_acteur_convoque', 'date_naissance_acteur_convoque',
-                'adresse1_acteur_convoque', 'adresse2_acteur_convoque', 'cp_acteur_convoque', 'ville_acteur_convoque', 'note_acteur_convoque')) {
-            $convoques = $this->Typeseance->acteursConvoquesParTypeSeanceId($seance['Seance']['type_id'], null, array('id'));
-            $oMainPart->addElement(new GDO_FieldType('nombre_acteur_'.$suffixe, count($convoques), "text"));
-            if (!empty($convoques)) {
-                $oStyleIteration = new GDO_IterationType("Convoques");
-                foreach($convoques as $convoque) {
-                    $oDevPart = new GDO_PartType();
-                    $this->Secretaire->setVariablesFusion($oDevPart, $modelOdtInfos, $convoque['Acteur']['id'], 'acteur_convoque');
-                    $oStyleIteration->addPart($oDevPart);
-                }
-                $oMainPart->addElement($oStyleIteration);
-            }
-        }
-        // projets/délibérations de la séance
-        if ($addProjetIterations) {
-            $this->Behaviors->load('Containable');
-            $seance = $this->find('first', array(
-                'fields' => array('id'),
-                'contain' => array('Deliberation.id'),
-                'conditions' => array('Seance.id' => $id)));
+			return $seance;
+		}
 
-            if (!empty($seance['Deliberation'])) {
-                $oSectionIteration = new GDO_IterationType("Projets");
-                foreach($seance['Deliberation'] as $deliberation) {
-                    $oDevPart = new GDO_PartType();
-                    $this->Deliberation->setVariablesFusion($oDevPart, $modelOdtInfos, $deliberation['id'], $id);
-                    $oSectionIteration->addPart($oDevPart);
-                }
-                $oMainPart->addElement($oSectionIteration);
-            }
-        }
-    }
+        /**
+         *
+         * @todo: suffixe
+         *
+         * @return array
+         */
+		public function gedoooPaths() {
+            $types = array(
+                'commentaire_seance' => 'Seance.commentaire',
+				'date_lettres_seance' => 'Seance.date_lettres',
+				'heure_seance' => 'Seance.heure',
+				'date_seance' => 'Seance.date',
+				'hh_seance' => 'Seance.hh',
+				'mm_seance' => 'Seance.mm',
+				'date_convocation_seance' => 'Seance.date_convocation',
+				'identifiant_seance' => 'Seance.id',
+                'type_seance' => 'Typeseance.libelle',
+                'date_seance_lettres' => 'Seance.date_seance_lettres',
+            );
 
-    /**
-     * fonction de callback du behavior OdtFusion
-     * initialise les variables de fusion Gedooo
-     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
-     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
-     * @param integer $id id de l'occurence en base de données
-     * @param array modelOptions options gérées par la classe appelante
-     * @return void
-     */
-    function beforeFusion(&$oMainPart, &$modelOdtInfos, $id, $modelOptions) {
-        switch($modelOptions['modelTypeName']) {
-            case 'convocation' :
-            case 'ordredujour' :
-            case 'pvsommaire' :
-            case 'pvdetaille' :
-                if (!empty($modelOptions['acteurId']))
-                    $this->Secretaire->setVariablesFusion($oMainPart, $modelOdtInfos, $modelOptions['acteurId'], $suffixe='acteur');
-                $this->setVariablesFusion($oMainPart, $modelOdtInfos, $id, 'seance', true);
-                break;
-            case 'multiseances' :
-                $this->setVariablesFusionSeances($oMainPart, $modelOdtInfos, $modelOptions['seanceIds']);
-                break;
-        }
-    }
+            $types = Hash::merge( $types, $this->types() );
 
-    /**
-     * fonction de callback du behavior OdtFusion
-     * retourne l'id du model odt à utiliser pour la fusion
-     * @param integer $id id de l'occurence en base de données
-     * @param array modelOptions options gérées par la classe appelante
-     * @return integer id du modele odt à utiliser
-     * @throws Exception
-     */
-    function getModelTemplateId($id, $modelOptions) {
-        // initialisation
-        $allowedModelTypes = array('projet', 'deliberation', 'convocation', 'ordredujour', 'pvsommaire', 'pvdetaille');
-        if (!in_array($modelOptions['modelTypeName'], $allowedModelTypes))
-            throw new Exception('le type de modèle d\'édition '.$modelOptions['modelTypeName'].' n\'est par autorisé');
+			return $types;
+		}
 
-        // lecture de la séance en base de données
-        $typeSeanceId = $this->field('type_id', array('id'=>$id));
-        if (empty($typeSeanceId))
-            throw new Exception('détermination du type de séance de la séance id:'.$id.' non trouvée');
+        /**
+         * @return array
+         */
+		public function gedoooTypes() {
+            $types = array(
+                'Seance.commentaire' => 'text',
+				'Seance.date_lettres' => 'text',
+				'Seance.heure' => 'text',
+				'Seance.date' => 'date',
+				'Seance.hh' => 'text',
+				'Seance.mm' => 'text',
+				'Seance.date_convocation' => 'date',
+                'Seance.id' => 'text',
+                'Typeseance.libelle' => 'text',
+                'Seance.date_seance_lettres' => 'text',
+            );
 
-        // lecture du modele_id liée au type de séance et au type du model d'édition
-        $modelTemplateId = $this->Typeseance->field('model'.$modelOptions['modelTypeName'].'_id', array('id'=>$typeSeanceId));
-        if (empty($modelTemplateId))
-            throw new Exception('détermination du modèle d\'édition '.$modelOptions['modelTypeName'].' pour le type de séance id:'.$typeSeanceId.' non trouvé');
-        return $modelTemplateId;
-    }
+            $types = Hash::merge( $this->types(), $types );
 
-    /**
-     * Ordonne la fusion et retourne le résultat sous forme de flux
-     * @param int|string $id identifiant de la séance
-     * @param string $modeltype type de fusion
-     * @param int|string $modelTemplateId
-     * @param string $format format du fichier de sortie
-     * @return string flux du fichier généré
-     */
-    public function fusion($id, $modeltype, $modelTemplateId = null, $format = 'pdf') {
-        $this->Behaviors->load('OdtFusion', array(
-            'id' => $id,
-            'fileNameSuffixe' => $id,
-            'modelTemplateId' => $modelTemplateId,
-            'modelOptions' => array('modelTypeName' => $modeltype)
-        ));
-        $this->odtFusion();
-        $content = $this->getOdtFusionResult($format);
-        $this->deleteOdtFusionResult();
-        $this->Behaviors->unload('OdtFusion');
-        return $content;
-    }
-
-    /**
-     * Ordonne la fusion et retourne le résultat sous forme de flux
-     * @param int|string $id identifiant de la séance
-     * @param string $modeltype type de fusion
-     * @param int|string $modelTemplateId
-     * @param string $outputdir fichier vers lequel faire la fusion
-     * @param string $format format du fichier de sortie
-     * @return array [filename => content]
-     */
-    public function fusionToFile($id, $modeltype, $modelTemplateId = null, $outputdir = TMP, $format = 'pdf') {
-        $this->Behaviors->load('OdtFusion', array(
-            'id' => $id,
-            'fileNameSuffixe' => $id,
-            'modelTemplateId' => $modelTemplateId,
-            'modelOptions' => array('modelTypeName' => $modeltype)
-        ));
-        $filename = $this->fusionName();
-        $this->odtFusion();
-        $content = $this->getOdtFusionResult($format);
-        $this->deleteOdtFusionResult();
-        $this->Behaviors->unload('OdtFusion');
-        $file = new File($outputdir . DS . $filename . '.' . $format, true);
-        $file->write($content);
-        return $file->path;
-    }
+			return $types;
+		}
 }
+?>

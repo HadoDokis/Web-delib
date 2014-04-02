@@ -1,43 +1,54 @@
 <?php
 /**
-* Code source de la classe ActionFixture.
-*
-* PHP 5.3
-*
-* @package app.Test.Fixture
-* @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
-*/
+ * Code source de la classe SeanceFixture.
+ *
+ * @package app.Test.Fixture
+ * @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
+ */
 
 /**
-* Classe ActionFixture.
-*
-* @package app.Test.Fixture
-*/
+ * La classe SeanceFixture ...
+ *
+ * @package app.Test.Fixture
+ */
+class SeanceFixture extends CakeTestFixture
+{
+	/**
+	 * On importe la définition de la table, pas les enregistrements.
+	 *
+	 * @var array
+	 */
+	public $import = array(
+		'model' => 'Seance',
+		'records' => false
+	);
 
+	/**
+	 * Définition des enregistrements.
+	 *
+	 * @var array
+	 */
+	public $records = array(
+            array (
+                'id' => 20,
+                'type_id' => 1,
+                'created' => '2013-04-05 11:42:55',
+                'modified' => '2013-08-19 17:26:21',
+                'date_convocation' => '2013-08-19 17:26:21',
+                'date' => '2013-06-27 19:00:00',
+                'traitee' => 0,
+                'commentaire' => NULL,
+                'secretaire_id' => 2,
+                'president_id' => 1,
+                'debat_global' => NULL,
+                'debat_global_name' => NULL,
+                'debat_global_size' => NULL,
+                'debat_global_type' => NULL,
+                'pv_figes' => NULL,
+                'pv_sommaire' => NULL,
+                'pv_complet' => NULL,
+              ),
+	);
 
-class SeanceFixture extends CakeTestFixture {
-        var $name = 'Seance';
-        var $table = 'seances';
-        var $import = array( 'table' => 'seances', 'connection' => 'default', 'records' => false);
-        var $records = array(
-                array(
-                        'id' => '1',
-                        'type_id' => '1',
-                        'created' => '2010-05-25 15:44:05',
-                        'modified' => '2010-05-25 15:44:05',
-                        'date' => '2010-05-28 02:02:00',
-                        'traitee' => '0',
-                        'commentaire' => null,
-                        'secretaire_id' => null,
-                        'debat_global' => null,
-                        'debat_global_name' => null,
-                        'debat_global_size' => null,
-                        'debat_global_type' => null,
-                        'pv_figes' => null,
-                        'pv_sommaire' => null,
-                        'pv_complet' => null,
-                ),
-        );
 }
-
 ?>

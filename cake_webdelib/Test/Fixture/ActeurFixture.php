@@ -1,25 +1,147 @@
 <?php
-/**
-* Code source de la classe ActionFixture.
-*
-* PHP 5.3
-*
-* @package app.Test.Fixture
-* @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
-*/
 
 /**
-* Classe ActionFixture.
-*
-* @package app.Test.Fixture
-*/
+ * Code source de la classe ActeurFixture.
+ *
+ * @package app.Test.Fixture
+ * @license CeCiLL V2 (http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html)
+ */
 
-	class ActeurFixture extends CakeTestFixture {
-		var $name = 'Acteur';
-		var $table = 'acteurs';
-		var $import = array( 'table' => 'acteurs', 'connection' => 'default', 'records' => true);
-		var $records = array(
-		);
-	}
+/**
+ * La classe ActeurFixture ...
+ *
+ * @package app.Test.Fixture
+ */
+class ActeurFixture extends CakeTestFixture {
+
+    /**
+     * On importe la définition de la table, pas les enregistrements.
+     *
+     * @var array
+     */
+    public $import = array(
+        'model' => 'Acteur',
+        'records' => false
+    );
+
+    /**
+     * Définition des enregistrements.
+     *
+     * @var array
+     */
+    public $records = array(
+        array(
+            'id' => 1,
+            'typeacteur_id' => 1,
+            'nom' => 'PAILLAT',
+            'prenom' => 'Jean',
+            'salutation' => 'M.',
+            'titre' => 'Maire',
+            'position' => 1,
+            'date_naissance' => null,
+            'adresse1' => '2 rue de la Poste',
+            'adresse2' => '',
+            'cp' => '33600',
+            'ville' => 'PESSAC',
+            'email' => 'florian.ajir@adullact-projet.coop',
+            'telfixe' => '',
+            'telmobile' => '',
+            'suppleant_id' => 2,
+            'note' => '',
+            'actif' => true,
+            'created' => '2013-06-05 11:34:01',
+            'modified' => '2013-06-13 17:20:10'
+        ), 
+        array(
+            'id' => 2,
+            'typeacteur_id' => 1,
+            'nom' => 'VILLON',
+            'prenom' => 'Amandine',
+            'salutation' => 'Mme',
+            'titre' => 'Adjointe',
+            'position' => 6,
+            'date_naissance' => null,
+            'adresse1' => '5 rue de la piscine',
+            'adresse2' => '',
+            'cp' => '33600',
+            'ville' => 'PESSAC',
+            'email' => '',
+            'telfixe' => '',
+            'telmobile' => '',
+            'suppleant_id' => null,
+            'note' => '',
+            'actif' => true,
+            'created' => '2013-06-05 11:36:08',
+            'modified' => '2013-06-05 11:36:08'
+        ),
+        array(
+            'id' => 3,
+            'typeacteur_id' => 2,
+            'nom' => 'Ajir',
+            'prenom' => 'Florian',
+            'salutation' => 'M.',
+            'titre' => 'Maitre',
+            'position' => 3,
+            'date_naissance' => '1989-11-10',
+            'adresse1' => '836 rue du mas de verchant',
+            'adresse2' => 'Adullact',
+            'cp' => '34000',
+            'ville' => 'Montpellier',
+            'email' => 'florian.ajir@adullact-projet.coop',
+            'telfixe' => '0123456789',
+            'telmobile' => '0701234567',
+            'suppleant_id' => null,
+            'note' => 'donnée de test',
+            'actif' => true,
+            'created' => '2013-06-05 11:34:01',
+            'modified' => '2013-06-13 17:20:10'
+        ),
+        array(
+            'id' => 4,
+            'typeacteur_id' => 3,
+            'nom' => 'Toto',
+            'prenom' => 'Bernard',
+            'salutation' => 'M.',
+            'titre' => '',
+            'position' => 4,
+            'date_naissance' => '1989-11-10',
+            'adresse1' => '836 rue du mas de verchant',
+            'adresse2' => 'Adullact',
+            'cp' => '34000',
+            'ville' => 'Montpellier',
+            'email' => 'toto@adullact-projet.coop',
+            'telfixe' => '0123456789',
+            'telmobile' => '0701234567',
+            'suppleant_id' => 5,
+            'note' => 'donnée de test',
+            'actif' => true,
+            'created' => '2013-06-05 11:34:01',
+            'modified' => '2013-06-13 17:20:10'
+        ),
+        array(
+            'id' => 5,
+            'typeacteur_id' => 3,
+            'nom' => 'Tata',
+            'prenom' => 'Bernardette',
+            'salutation' => 'Mme',
+            'titre' => '',
+            'position' => 5,
+            'date_naissance' => '1989-11-10',
+            'adresse1' => '836 rue du mas de verchant',
+            'adresse2' => 'Adullact',
+            'cp' => '34000',
+            'ville' => 'Montpellier',
+            'email' => 'tata@adullact-projet.coop',
+            'telfixe' => '0123456789',
+            'telmobile' => '0701234567',
+            'suppleant_id' => null,
+            'note' => 'donnée de test',
+            'actif' => true,
+            'created' => '2013-06-05 11:34:01',
+            'modified' => '2013-06-13 17:20:10'
+        )
+    );
+    
+}
 
 ?>
