@@ -429,7 +429,7 @@ class UsersController extends AppController {
                 $file->write($collective['Collectivite']['logo']);
             }
             $file->close();
-            $this->set('logo_path',  $this->base . "/files/image/logo.jpg");
+            $this->set('logo_path',  $this->base . "/files/image/logo");
         }
 
         //si le formulaire d'authentification a été soumis
