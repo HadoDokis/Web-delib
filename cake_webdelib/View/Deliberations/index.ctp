@@ -85,17 +85,18 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                     echo $this->Form->input(
                         'Deliberation.seance_id', array(
                             'type' => 'select',
-                            'label' => '',
+                            'label' => false,
                             'options' => $deliberation['Seances'],
-                            'empty' => 'Choisir une séance',
-                            'empty' => false,
+                            'empty' => true,
                             'multiple' => true,
                             'id' => false,
+                            'class' => 'select2multiple',
                             'style' => 'width:100%;'
                         )
                     );
                     echo $this->Form->hidden('Deliberation.id', array('value' => $deliberation['Deliberation']['id']));
-                    echo $this->Form->button("<i class='fa fa-save'></i> Sauvegarder", array('type' => 'submit', 'div' => false, 'class' => 'btn', 'escape' => false, 'name' => 'sauvegarder'));
+                    echo '<div class="spacer"></div>';
+                    echo $this->Form->button("<i class='fa fa-save'></i> Sauvegarder", array('type' => 'submit', 'div' => false, 'class' => 'btn btn-primary pull-right', 'escape' => false, 'name' => 'sauvegarder'));
                     echo $this->Form->end();
                 } else {
                     foreach ($deliberation['listeSeances'] as $seance)
