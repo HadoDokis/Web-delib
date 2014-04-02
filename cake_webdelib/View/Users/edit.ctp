@@ -314,12 +314,14 @@ echo $this->element('onglets', array('listeOnglets' => array(
         $("#search_service_ascenceur_button").click(function () {
             var overflow = $('#services').css('overflow');
             if (overflow == 'auto'){
-                $('#services').css('overflow', 'hidden');
-                $('#services').css('max-height', 'none');
+                $('#services')
+                    .css('overflow', 'hidden')
+                    .css('max-height', 'none');
                 $("#search_service_ascenceur_button").text('Activer défilement');
             }else{
-                $('#services').css('overflow', 'auto');
-                $('#services').css('max-height', '350px');
+                $('#services')
+                    .css('overflow', 'auto')
+                    .css('max-height', '350px');
                 $("#search_service_ascenceur_button").text('Désactiver défilement');
             }
         });
@@ -335,7 +337,6 @@ echo $this->element('onglets', array('listeOnglets' => array(
                 "action": function(){
                     $('#search_service').val('');
                     $('#services').jstree(true).clear_search();
-//                    $('#search_tree_button').click();
                 },
                 "icon": "fa fa-eraser",
                 "separator_after": true
