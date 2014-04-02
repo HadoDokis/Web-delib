@@ -47,5 +47,15 @@ $(document).ready(function () {
             return false;
         }
     });
+    /**
+     * Autocomplete
+     */
+    // Filtres
     $("div.filtre select").select2({ width: "300px" });
+    // Autres (select multiple)
+    $(".select2multiple").select2({
+        width: 'resolve',
+        allowClear: true,
+        placeholder: 'Sélection vide'
+    });
 });
