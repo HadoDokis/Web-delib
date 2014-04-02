@@ -112,6 +112,8 @@ require_once('verification.php');
             <p><i class="icon-tasks"></i> Base de données </p>
             <?php infoDataBase(); ?>
             <?php checkSchema(); ?>
+             <?php checkSchema('Cakeflow'); ?>
+             <?php checkSchema('ModelOdtValidator'); ?>
         </div>
     </div>
 </div>
