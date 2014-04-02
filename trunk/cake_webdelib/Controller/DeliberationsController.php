@@ -126,12 +126,11 @@ class DeliberationsController extends AppController
             $this->redirect(array('action' => 'mesProjetsRedaction'));
         }
 
-        $user = $this->Session->read('user');
-        if (!$this->Droits->check($user['User']['id'], "Pages:tous_les_projets")) {
+        if (!$this->Droits->check($this->user_id, "Pages:tous_les_projets")) {
             $conditions['Deliberation.id'] = $id;
             $conditions['OR']['redacteur_id'] = $this->user_id;
 
-            if ($this->Droits->check($user['User']['id'], "Deliberations:projetsMonService")) {
+            if ($this->Droits->check($this->user_id, "Deliberations:projetsMonService")) {
                 $services = array();
                 $conditions['Deliberation.id'] = $id;
                 $conditions['OR']['redacteur_id'] = $this->user_id;
@@ -212,7 +211,7 @@ class DeliberationsController extends AppController
         $listeTypeSeance = array();
         $this->request->data['listeSeances'] = array();
         if (isset($this->request->data['Deliberationseance']) && !empty($this->request->data['Deliberationseance'])) {
-            foreach ($this->request->data['Deliberationseance'] as $keySeance => $seance) {
+            foreach ($this->request->data['Deliberationseance'] as $seance) {
                 $this->request->data['listeSeances'][] = array(
                     'seance_id' => $seance['Seance']['id'],
                     'type_id' => $seance['Seance']['type_id'],
@@ -290,6 +289,7 @@ class DeliberationsController extends AppController
         }
         //Afficher bouton MàJ
         $this->set('majDeleg', $visa);
+        return $this->render();
     }
 
     function majEtatParapheur($id = null) {
@@ -308,7 +308,7 @@ class DeliberationsController extends AppController
         $redirect = '/deliberations/mesProjetsRedaction';
         /* initialisation du rédateur et du service emetteur */
         $user = $this->Session->read('user');
-        $canEditAll = $this->Droits->check($user['User']['id'], "Deliberations:editerTous");
+        $canEditAll = $this->Droits->check($this->user_id, "Deliberations:editerTous");
 
         $this->set('USE_PASTELL', Configure::read('USE_PASTELL'));
         if (Configure::read('USE_PASTELL')) {
@@ -321,7 +321,7 @@ class DeliberationsController extends AppController
         if ($this->request->isPost()) {
             $success = true;
             $this->Deliberation->begin();
-            $this->request->data['Deliberation']['redacteur_id'] = $user['User']['id'];
+            $this->request->data['Deliberation']['redacteur_id'] = $this->user_id;
             $this->request->data['Deliberation']['service_id'] = $user['User']['service'];
             if (empty($this->data['Deliberation']['objet_delib']))
                 $this->request->data['Deliberation']['objet_delib'] = $this->data['Deliberation']['objet'];
@@ -501,7 +501,7 @@ class DeliberationsController extends AppController
 
 
             $this->set('seances', $seances);
-            $this->render('add');
+            return $this->render('add');
 
         }
     }
@@ -513,9 +513,11 @@ class DeliberationsController extends AppController
         $fileType = $file . '_type';
         $fileSize = $file . '_size';
         $fileName = $file . '_name';
-        $delib = $this->Deliberation->find('first', array('conditions' => array("Deliberation.id" => $id),
+        $delib = $this->Deliberation->find('first', array(
+            'conditions' => array("Deliberation.id" => $id),
             'fields' => array($fileType, $fileSize, $fileName, $file),
-            'recursive' => -1));
+            'recursive' => -1
+        ));
         $this->response->type($delib['Deliberation'][$fileType]);
         $this->response->download($delib['Deliberation'][$fileName]);
         $this->response->body($delib['Deliberation'][$file]);
@@ -524,60 +526,73 @@ class DeliberationsController extends AppController
     function deleteDebat($id, $isCommission, $seance_id) {
         $this->Deliberation->id = $id;
         if (!$isCommission)
-            $data = array('id' => $id,
+            $data = array(
+                'id' => $id,
                 'debat' => '',
                 'debat_name' => '',
                 'debat_size' => 0,
-                'debat_type' => '');
+                'debat_type' => ''
+            );
         else
-            $data = array('id' => $id,
+            $data = array(
+                'id' => $id,
                 'commission' => '',
                 'commission_name' => '',
                 'commission_size' => 0,
-                'commission_type' => '');
+                'commission_type' => ''
+            );
 
-        if ($this->Deliberation->save($data))
-            return $this->redirect(array('controller'=>'seances', 'action' => 'SaisirDebat', $id, $seance_id));
+        if ($this->Deliberation->save($data)) {
+            $this->Session->setFlash('Débat supprimé !', 'growl');
+            return $this->redirect(array('controller' => 'seances', 'action' => 'SaisirDebat', $id, $seance_id));
+        } else {
+            $this->Session->setFlash('Problème survenu lors de la suppression du débat', 'growl', array('type' => 'error'));
+            return $this->redirect($this->referer());
+        }
     }
 
     function downloadDelib($delib_id) {
-        $delib = $this->Deliberation->read(null, $delib_id);
+        $this->Deliberation->id = $delib_id;
+        $delib_pdf = $this->Deliberation->field('delib_pdf');
+        $num_delib = $this->Deliberation->field('num_delib');
 
-        if ($delib['Deliberation']['typeacte_id'] > 1)
-            $name = "Acte_$delib_id.pdf";
-        else {
-            if (!empty($delib['Deliberation']['num_delib']))
-                $name = $delib['Deliberation']['num_delib'] . '.pdf';
-            else
-                $name = "projet_$delib_id.pdf";
-        }
+        if (!empty($num_delib))
+            $filename = $num_delib . '.pdf';
+        else
+            $filename = "projet_$delib_id.pdf";
 
-        header('Content-type: application/pdf');
-        header('Content-Length: ' . strlen($delib['Deliberation']['delib_pdf']));
-        header('Content-Disposition: attachment; filename=' . $name);
-        echo $delib['Deliberation']['delib_pdf'];
-        exit();
+        // envoi au client
+        $this->response->disableCache();
+        $this->response->body($delib_pdf);
+        $this->response->type('application/pdf');
+        $this->response->download($filename);
+        return $this->response;
     }
 
-    function downloadSignature($delib_id)
-    {
-        $delib = $this->Deliberation->read(null, $delib_id);
-        header('Content-type: application/zip');
-        header('Content-Length: ' . strlen($delib['Deliberation']['signature']));
-        header('Content-Disposition: attachment; filename=signature_acte.zip');
-        echo $delib['Deliberation']['signature'];
-        exit;
+    function downloadSignature($delib_id) {
+        $this->Deliberation->id = $delib_id;
+        $signature = $this->Deliberation->field('signature');
+        $num_delib = $this->Deliberation->field('num_delib');
+
+        // envoi au client
+        $this->response->disableCache();
+        $this->response->body($signature);
+        $this->response->type('application/zip');
+        $this->response->download($num_delib . '_signature_.pdf');
+        return $this->response;
     }
 
-    function downloadBordereau($delib_id)
-    {
+    function downloadBordereau($delib_id) {
         $this->Deliberation->id = $delib_id;
         $bordereau = $this->Deliberation->field('parapheur_bordereau');
-        header('Content-type: application/pdf');
-        header('Content-Length: ' . strlen($bordereau));
-        header('Content-Disposition: attachment; filename=bordereau_'.$this->Deliberation->field('num_delib').'.pdf');
-        echo $bordereau;
-        exit;
+        $num_delib = $this->Deliberation->field('num_delib');
+
+        // envoi au client
+        $this->response->disableCache();
+        $this->response->body($bordereau);
+        $this->response->type('application/pdf');
+        $this->response->download($num_delib . '_bordereau_signature_.pdf');
+        return $this->response;
     }
 
     /**
@@ -4426,7 +4441,7 @@ class DeliberationsController extends AppController
     }
 
     function downloadTdtMessage($message_id = null) {
-        if (empty($message_id)){
+        if (empty($message_id)) {
             $this->Session->setFlash('Merci d\indiquer l\'identifiant du message.', 'growl');
             return $this->redirect($this->referer());
         }
@@ -4436,17 +4451,17 @@ class DeliberationsController extends AppController
             'conditions' => array('message_id' => $message_id)
         ));
 
-        if(empty($data['TdtMessage']['data'])){
+        if (empty($data['TdtMessage']['data'])) {
             $this->Session->setFlash('Message introuvable en base de données.', 'growl');
             return $this->redirect($this->referer());
         }
 
-        parent::sendNoCacheHeaders();
-        header('Content-type: application/x-gzip');
-        header('Content-Length: ' . strlen($data['TdtMessage']['data']));
-        header('Content-Disposition: attachment; filename=tdt_message_'.$message_id.'.tar.gz');
-        echo $data['TdtMessage']['data'];
-        exit;
+        // envoi au client
+        $this->response->disableCache();
+        $this->response->body($data['TdtMessage']['data']);
+        $this->response->type('application/x-gzip');
+        $this->response->download('tdt_message_' . $message_id . '.tar.gz');
+        return $this->response;
     }
 
     function getTampon($delib_id) {
