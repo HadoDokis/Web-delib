@@ -1,0 +1,52 @@
+.input.radio label, .input.radio input {
+    padding-left: 2px;
+    padding-right: 5px;
+    margin: 0;
+    width: auto;
+}
+
+#services {
+    box-shadow: 0 0 5px #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    width: 95%;
+    max-height: 350px;
+    overflow: auto;
+}
+
+#services_bloc {
+    border-left: 1px solid #e5e5e5;
+    padding-left: 15px;
+    padding-top: 15px;
+}
+
+#all_circuits {
+    width: 95%;
+}
+
+#label_circuits {
+    float: none;
+    width: auto;
+    text-align: left;
+}
+
+div.input.text label, .label_autocomplete{
+    padding-top: 5px;
+}
+
+#mails div.input.radio{
+    display: block;
+    padding-left: 0;
+    margin-bottom: 10px;
+}
+#mails strong{
+    float: left;
+    padding: 0 .5em 0 0;
+    width: 220px;
+    display: block;
+}
+
+#label_notifications{
+    width: 220px;
+    text-align: left;
+}
