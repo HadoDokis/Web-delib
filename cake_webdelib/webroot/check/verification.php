@@ -1303,11 +1303,11 @@ function checkLDAP(){
 /**
  * Vérifie l'intégrité du schéma de la base de données
  */
-function checkSchema(){
-    $command = CONSOLE.'cake schema update --dry';
+function checkSchema($plugin=''){
+    $command = CONSOLE.'cake schema update '.(!empty($plugin)?'--plugin '.$plugin:'').' --dry';
     try{
         $retour = exec($command, $message);
-        t('h5', "Test d'intégrité du schéma");
+        t('h5', "Test d'intégrité du schéma ".$plugin);
         if ($retour == 'Schema is up to date.') {
             d('Schéma de la base de données : Valide !', 'ok');
         } else {
@@ -1316,7 +1316,7 @@ function checkSchema(){
             throw new Exception(implode('<br>', $message));
         }
     } catch (Exception $e) {
-        depliant('Schéma de la base de données : Problème d\'intégrité !!', 'Afficher/Masquer les différences..', $e->getMessage(), 'databaseIntegrity','ko');
+        depliant('Schéma de la base de données : Problème d\'intégrité !!', 'Afficher/Masquer les différences..', $e->getMessage(), 'databaseIntegrity'.$plugin,'ko');
     }
 }
 
