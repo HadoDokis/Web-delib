@@ -664,6 +664,7 @@ class AppSchema extends CakeSchema {
 		'mail_modif_projet_cree' => array('type' => 'boolean', 'null' => true),
 		'mail_modif_projet_valide' => array('type' => 'boolean', 'null' => true),
 		'mail_retard_validation' => array('type' => 'boolean', 'null' => true),
+		'theme' => array('type' => 'text', 'null' => true),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id'),
 			'login' => array('unique' => true, 'column' => 'login')
