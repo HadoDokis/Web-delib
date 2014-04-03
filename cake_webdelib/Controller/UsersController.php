@@ -419,7 +419,7 @@ class UsersController extends AppController {
         $this->set('errorMsg', '');
         $collective = $this->Collectivite->read(array('logo','nom'), 1);
         App::uses('File', 'Utility');
-        $file = new File(WEBROOT_PATH . DS . 'files' . DS . 'image' . DS . 'logo.jpg');
+        $file = new File(WEBROOT_PATH . DS . 'files' . DS . 'image' . DS . 'logo');
 
         if (empty($collective['Collectivite']['logo']))
             $this->set('logo_path',  $this->base . "/files/image/adullact.png");
