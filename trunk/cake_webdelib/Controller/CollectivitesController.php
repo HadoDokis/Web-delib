@@ -55,22 +55,20 @@ class CollectivitesController extends AppController {
 
     function setLogo() {
         if (!empty($this->data)) {
-            $name_file = 'logo';
-            $content_dir = WWW_ROOT . 'files' . DS . 'image' . DS;
-            $tmp_file = $this->data['Image']['logo']['tmp_name'];
-            $image = file_get_contents($this->data['Image']['logo']['tmp_name']);
-            if (!move_uploaded_file($tmp_file, $content_dir . $name_file))
-                $this->Session->setFlash("Impossible de copier le fichier dans $content_dir", 'growl');
-
-            App::uses('File', 'Utility');
-            $file = new File($content_dir . $name_file, true);
-            $file->write($image);
-            $file->close();
-
-            $this->Collectivite->id = 1;
-            $this->Collectivite->saveField('logo', $image, false);
-
-            return $this->redirect($this->previous);
+           if(!empty($this->data['Collectivite']['logo']['tmp_name'])){
+                $image = file_get_contents($this->data['Collectivite']['logo']['tmp_name']);
+                $this->Collectivite->id = 1;
+                if($this->Collectivite->saveField('logo', $image, true))
+                {
+                    App::uses('File', 'Utility');
+                    $file = new File(WWW_ROOT . 'files' . DS . 'image' . DS . 'logo', true);
+                    $file->write($image);
+                    $file->close();
+                    $this->Session->setFlash('Le Logo a été ajouté', 'growl', array('type' => 'information'));
+                    return $this->redirect($this->previous);
+                }
+            }
+            $this->Session->setFlash('Merci de soumettre une image.', 'growl', array('type' => 'error'));
         }
     }
 

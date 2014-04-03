@@ -39,10 +39,10 @@ class Collectivite extends AppModel {
         ),
         'logo' => array(
             array(
-                'rule' => array('extension', array('jpeg', 'jpg')),
-                'message' => 'Merci de soumettre une image valide.'
+                'rule' => array('checkFormatLogo', array('jpg', 'png'), false),
+                'message' => "Format de l'image invalide. Autorisé : fichier 'jpg', 'jpeg' et 'png'"
             )
-        )
+        ),
     );
 
     function makeBalise(&$oMainPart, $collectivite_id) {
@@ -85,6 +85,10 @@ class Collectivite extends AppModel {
             $oMainPart->addElement(new GDO_FieldType('ville_collectivite', $collectivite['Collectivite']['ville'], "text"));
         if ($modelOdtInfos->hasUserFieldDeclared('telephone_collectivite'))
             $oMainPart->addElement(new GDO_FieldType('telephone_collectivite', $collectivite['Collectivite']['telephone'], "text"));
+    }
+    
+    function checkFormatLogo($data, $extension = null, $required = false) {
+        return parent::checkFormat($data['logo'], $extension, $required);
     }
 
 

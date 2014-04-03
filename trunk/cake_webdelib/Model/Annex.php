@@ -228,10 +228,9 @@ class Annex extends AppModel {
                 'filename' => AppTools::getNameFile($annex['Annex']['filename']) . '.pdf',
                 'titre' => $annex['Annex']['titre'],
                 'joindre_ctrl_legalite' => $annex['Annex']['joindre_ctrl_legalite'],
-                'data' => $annex['Annex']['data_pdf']);
+                'data' => $annex['Annex']['data']);
 
-        $pos = strpos($annex['Annex']['filetype'], 'application/vnd.oasis.opendocument');
-        if ($pos !== false)
+        if ($annex['Annex']['joindre_ctrl_legalite'] && !empty($annex['Annex']['data_pdf']))
             return array(
                 'type' => 'pdf',
                 'filetype' => 'application/pdf',

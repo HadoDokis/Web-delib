@@ -571,7 +571,7 @@ class SeancesController extends AppController {
             return $this->redirect(array('controller' => 'postseances', 'action' => 'index'));
         }
 
-        if (!empty($this->data['Deliberation']['texte_doc'])) {
+        if (!empty($this->data['Deliberation']['texte_doc']['tmp_name'])) {
             $this->Deliberation->set($this->data);
             if ($this->Deliberation->validates(array('fieldList' => array('texte_doc')))) {
                 $details = $this->Fido->analyzeFile($this->data['Deliberation']['texte_doc']['tmp_name']);
@@ -590,7 +590,9 @@ class SeancesController extends AppController {
                 }
             }
             $this->Session->setFlash('Erreur : Format du fichier incorrect', 'growl', array('type' => 'erreur'));
-        }
+        }else
+            $this->Session->setFlash('Veuillez mettre un fichier pour enregistrer la saisie des débats.', 'growl', array('type' => 'erreur'));
+        
         $this->request->data = $this->Deliberation->find('first', array(
             'conditions' => array('Deliberation.id' => $delib_id),
             'recursive' => -1));
@@ -600,7 +602,7 @@ class SeancesController extends AppController {
     public function saisirDebatGlobal($id = null) {
         $this->Seance->Behaviors->load('Containable');
         $this->set('seance_id', $id);
-        if (!empty($this->data['Seance']['texte_doc'])) {
+        if (!empty($this->data['Seance']['texte_doc']['tmp_name'])) {
             $this->Seance->set($this->data);
             if ($this->Seance->validates(array('fieldList' => array('texte_doc')))) {
                 $details = $this->Fido->analyzeFile($this->data['Seance']['texte_doc']['tmp_name']);
@@ -618,8 +620,10 @@ class SeancesController extends AppController {
                     return $this->redirect($this->previous);
                 }
             }
-            $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous : format de fichier invalide', 'growl', array('type' => 'erreur'));
+            $this->Session->setFlash('Veuillez corriger les erreurs ci-dessous : format de fichier invalide.', 'growl', array('type' => 'erreur'));
         }
+        else
+            $this->Session->setFlash('Veuillez mettre un fichier pour enregistrer la saisie des débats généraux.', 'growl', array('type' => 'erreur'));
         $this->request->data = $this->Seance->find('first', array(
             'conditions' => array('Seance.id' => $id)
         ));
