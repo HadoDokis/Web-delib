@@ -200,12 +200,22 @@ class PostseancesController extends AppController {
                 sleep(3);
         
         } catch (Exception $e) {
+            switch ($e->getCode()) {
+                case '500':
+                        $message='Erreur interne';
+                    break;
+                case '404':
+                        $message='Ressource non trouvée';
+                    break;
+                default:
+                    $message=strip_tags($e->getMessage());
+                    break;
+            }
+                
             $this->log('Export CMIS: Erreur ' . $e->getCode() . "! \n" . $e->getMessage(), 'error');
-            $this->Session->setFlash('CMIS: Erreur ' . $e->getCode() . '! ' .  strip_tags($e->getMessage()), 'growl', array('type' => 'erreur'));
+            $this->Session->setFlash('CMIS: Erreur ' . $e->getCode() . '! ' .  $message, 'growl', array('type' => 'erreur'));
         }
         
-       //$this->set('seances', $result);
-       //$this->layout = 'ajax';
        $this->Progress->end('/postseances/index');
        $this->redirect(array('controler'=>'postseances','action'=>'index'));
     }
@@ -221,8 +231,8 @@ class PostseancesController extends AppController {
                 }
             }
         }  catch (Exception $e){
-            new Exception($e->getMessage());
             $this->log('Export CMIS: Erreur _createElement ('.$tag_name.') '. $e->getCode() . "! \n" . $e->getMessage(). ' line:'.$e->getLine(), 'error');
+            throw $e;
         }
         return $element;
     }
@@ -941,11 +951,11 @@ class PostseancesController extends AppController {
         }
         catch (Exception $e)
         {
-            new Exception($e->getMessage());
-            $this->log('Export CMIS: Erreur ' . $e->getCode() . "! \n" . $e->getMessage(). ' line:'.$e->getLine(), 'error');
+            $this->log('Export CMIS: Erreur ' . $e->getCode() . "! \n File:" .$e->getFile(). ' Line:'.$e->getLine(), 'error');
+            throw $e;
         }
         
-        return $my_seance_folder;
+        return !empty($my_seance_folder)?$my_seance_folder:false;
     }
 
 }
