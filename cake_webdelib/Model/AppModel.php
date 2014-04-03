@@ -71,11 +71,16 @@ class AppModel extends Model {
             $allowed = $this->Fido->checkFile($file->path);
             $file->delete();
         }
-
         if (is_null($extension))
             return $allowed;
-        elseif (is_array($extension))
-            return $allowed && in_array($this->Fido->lastResults['extension'], $extension);
+        elseif (is_array($extension)){
+            $result=false;
+            foreach($extension as $ext){
+                if(!$result && !empty($this->Fido->lastResults['extension']))
+                $result=in_array($ext, is_array($this->Fido->lastResults['extension'])?$this->Fido->lastResults['extension']:array($this->Fido->lastResults['extension']));
+            }
+            return $allowed && $result;
+        }
         elseif (is_string($extension))
             return $allowed && $this->Fido->lastResults['extension'] == $extension;
         else
