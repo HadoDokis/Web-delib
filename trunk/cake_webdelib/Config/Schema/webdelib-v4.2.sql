@@ -396,7 +396,7 @@ CREATE TABLE compteurs (
 --
 
 CREATE TABLE crons (
-    id integer NOT NULL,
+    id integer DEFAULT nextval('crons_id_seq'::regclass) NOT NULL,
     nom character varying(255) NOT NULL,
     description character varying(255) DEFAULT NULL::character varying,
     plugin character varying(255) DEFAULT ''::character varying,
