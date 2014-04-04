@@ -24,9 +24,7 @@ $cakeDescription = __d('webdelib', 'Webdelib');
         <?php echo $cakeDescription ?>:
         <?php echo $title_for_layout; ?>
     </title>
-    <!--[if IE]>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <![endif]-->
     <?php
     echo $this->Html->meta(array("name" => "viewport", "content" => "width=device-width,  initial-scale=1.0"));
     echo $this->Html->meta('icon');
