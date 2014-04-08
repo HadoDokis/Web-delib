@@ -390,6 +390,16 @@ CREATE TABLE compteurs (
     modified timestamp without time zone NOT NULL
 );
 
+--
+-- Name: crons_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE crons_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 --
 -- Name: crons; Type: TABLE; Schema: public; Owner: -; Tablespace: 
@@ -417,19 +427,6 @@ CREATE TABLE crons (
     model character varying DEFAULT 'CronJob'::character varying,
     lock boolean DEFAULT false
 );
-
-
---
--- Name: crons_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE crons_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
 
 --
 -- Name: crons_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
@@ -1383,7 +1380,8 @@ CREATE TABLE users (
     modified timestamp without time zone NOT NULL,
     mail_modif_projet_cree boolean DEFAULT false,
     mail_modif_projet_valide boolean DEFAULT false,
-    mail_retard_validation boolean DEFAULT false
+    mail_retard_validation boolean DEFAULT false,
+    theme character varying
 );
 
 
