@@ -9,7 +9,7 @@ Configure::write('DOC_TYPE', array(
         'extension' => 'pdf',
         'joindre_fusion' => true,
         'joindre_ctrl_legalite' => true,
-        'convertir' => true,
+        'convertir' => false,
         'puid' => array(
             'fmt/17' => array(
                 'version' => '1.3',
