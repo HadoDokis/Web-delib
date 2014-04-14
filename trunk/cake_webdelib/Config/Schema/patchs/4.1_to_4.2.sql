@@ -107,7 +107,7 @@ ALTER TABLE deliberations ALTER COLUMN tdt_id TYPE VARCHAR;
 ALTER TABLE deliberations ADD COLUMN parapheur_bordereau BYTEA DEFAULT NULL;
 
 -- Table Nomenclatures
-DROP TABLE nomenclatures;
+IF EXISTS DROP TABLE nomenclatures;
 CREATE TABLE nomenclatures (
   id        VARCHAR PRIMARY KEY         NOT NULL,
   parent_id VARCHAR                     NOT NULL DEFAULT 0,
