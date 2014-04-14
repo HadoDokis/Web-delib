@@ -633,7 +633,7 @@ class DeliberationsController extends AppController
                 $file->close();
                 return false;
             } elseif (!$allowed) {
-                $annexesErrors[$titre][] = 'Fichiers ' . $results['formatname'] . ' non autorisés. Veuillez contacter votre administrateur';
+                $annexesErrors[$titre][] = 'Fichiers ' . $results['formatname'] .' ('.$results['puid']. ') non autorisés. Veuillez contacter votre administrateur';
                 $file->close();
                 return false;
             }
@@ -820,7 +820,7 @@ class DeliberationsController extends AppController
             ));
 
             foreach ($annexes as &$annexe) {
-                if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text') {
+                if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text' || $annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet') {
                     $annexeData = $this->Annex->find('first', array(
                         'fields' => array('data'),
                         'conditions' => array('id' => $annexe['Annex']['id']),
@@ -848,7 +848,7 @@ class DeliberationsController extends AppController
                         'conditions' => array('foreign_key' => $delibRattachee['id']),
                         'order'=>'id asc'));
                     foreach ($annexes_delibRattachee as &$annexe) {
-                        if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text') {
+                        if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text' || $annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet') {
                             $annexeData = $this->Annex->find('first', array(
                                 'fields' => 'data',
                                 'conditions' => array('id' => $annexe['Annex']['id']),
@@ -1019,7 +1019,7 @@ class DeliberationsController extends AppController
                             'recursive' => -1,
                             'fields' => array('filename', 'filetype', 'id','foreign_key'),
                             'conditions' => array('Annex.id' => $annexeId)));
-                        if ($annex_filename['Annex']['filetype']=='application/vnd.oasis.opendocument.text') {
+                        if ($annex_filename['Annex']['filetype']=='application/vnd.oasis.opendocument.text' || $annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet') {
                             $this->Annex->save(array(
                                 'id' => $annexeId,
                                 'titre' => $annexe['titre'],
@@ -1204,7 +1204,7 @@ class DeliberationsController extends AppController
                                 'foreign_key' => $delibRattachee['Multidelib']['id']),
                         'order'=>'id asc'));
                         foreach ($annexes_delibRattachee as &$annexe) {
-                            if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text') {
+                            if ($annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.text' || $annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet') {
                                 $annexeData = $this->Annex->find('first', array(
                                     'fields' => array('data'),
                                     'conditions' => array(
@@ -1239,7 +1239,7 @@ class DeliberationsController extends AppController
                         'foreign_key' => $id)));
 
                 foreach ($annexes as &$annexe) {
-                    if($annexe['Annex']['filetype']=='application/vnd.oasis.opendocument.text'){
+                    if($annexe['Annex']['filetype']=='application/vnd.oasis.opendocument.text' || $annexe['Annex']['filetype'] == 'application/vnd.oasis.opendocument.spreadsheet'){
                     $annexeData=$this->Annex->find('first', array(
                         'fields' => array('data'),
                         'conditions' => array('id' => $annexe['Annex']['id']),
