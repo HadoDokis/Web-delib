@@ -151,7 +151,7 @@ class Signature {
         if ($ret['messageretour']['coderetour'] == 'OK') {
             return $ret['dossierID'];
         } else {
-            $this->log($ret['messageretour']['message'], 'parapheur');
+            CakeLog::write($ret['messageretour']['message'], 'parapheur');
             return false;
         }
     }
