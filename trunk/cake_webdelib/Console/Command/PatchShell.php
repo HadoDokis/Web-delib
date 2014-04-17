@@ -430,7 +430,7 @@ class PatchShell extends AppShell {
             //Commit
             $this->Sql->commit();
             //trouver l'attribut etape_id des visas en cours
-            $this->out('Mise à jour des données yCakeFlow...');
+            $this->out('Mise à jour des données CakeFlow...');
             $this->Cakeflow->findVisaEtapeId();
         }
         else{
