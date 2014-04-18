@@ -1,17 +1,24 @@
 <?php
 class Vote extends AppModel {
 
-    var $name = 'Vote';
-    var $belongsTo = array(
+    public $name = 'Vote';
+    public $belongsTo = array(
         'Acteur' => array('className' => 'Acteur',
             'foreignKey' => 'acteur_id',
             'conditions' => '',
             'fields' => '',
             'order' => '',
             'counterCache' => ''
-        )
+        ),
+        'Deliberation' => array('className' => 'Deliberation',
+            'foreignKey' => 'delib_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => '',
+            'counterCache' => ''
+        ),
     );
-
+    
     /**
      * fonction d'initialisation des variables de fusion pour les votes d'un projet
      * les bibliothèques Gedooo doivent être inclues par avance
@@ -47,6 +54,7 @@ class Vote extends AppModel {
                     $acteurFields[] = $fusionVariable;
                 }
             if (empty($aliasActeurFields)) continue;
+            else $aliasActeurFields[]='Acteur.id';
 
             // lecture des données en base
             $this->Behaviors->load('Containable');
@@ -55,10 +63,23 @@ class Vote extends AppModel {
                 'contain' => $aliasActeurFields,
                 'conditions' => array('Vote.delib_id' => $deliberationId, 'Vote.resultat' => $voteIteration['voteResultat']),
                 'order' => 'Acteur.position ASC'));
-
             // itérations sur les acteurs
             $oStyleIteration = new GDO_IterationType($voteIteration['iterationName']);
             foreach($acteurs as &$acteur) {
+                // traitement du suppléant
+                $listepresence=$this->Deliberation->Listepresence->find('first', array (
+                'fields' => array('suppleant_id'),
+                'conditions' => array('acteur_id' => $acteur['Acteur']['id'],'delib_id' => $deliberationId),
+                'recursive'=>-1));
+                if (!empty($listepresence['Listepresence']['suppleant_id'])) {
+                    $suppleant = $this->Acteur->find('first', array(
+                        'recursive' => -1,
+                        'fields' => $aliasActeurFields,
+                        'conditions' => array('id' => $listepresence['Listepresence']['suppleant_id'])));
+                    if (empty($suppleant))
+                        throw new Exception('suppléant non trouvé id:'.$listepresence['Listepresence']['suppleant_id']);
+                    $acteur = &$suppleant;
+                }
                 // traitement de la date de naissance
                 if (!empty($acteur['Acteur']['date_naissance']))
                     $acteur['Acteur']['date_naissance'] = date("d/m/Y", strtotime($acteur['Acteur']['date_naissance']));
