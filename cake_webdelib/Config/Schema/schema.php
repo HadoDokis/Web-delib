@@ -239,7 +239,7 @@ class AppSchema extends CakeSchema {
 		'modified' => array('type' => 'datetime', 'null' => false),
 		'modified_user_id' => array('type' => 'integer', 'null' => false),
 		'model' => array('type' => 'text', 'null' => true, 'default' => 'CronJob'),
-		'lock' => array('type' => 'boolean', 'null' => true),
+		'lock' => array('type' => 'boolean', 'null' => false),
 		'indexes' => array(
 			'PRIMARY' => array('unique' => true, 'column' => 'id')
 		),
