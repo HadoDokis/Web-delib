@@ -81,6 +81,10 @@ class AppController extends Controller {
                 $this->previous = $historique[1];
                 $this->Session->write('previous_url', $this->previous);
                 $this->set('previous', $this->previous);
+            }elseif (count($historique) ==1)  {
+                $this->previous = '/';
+                $this->Session->write('previous_url', $this->previous);
+                $this->set('previous', $this->previous);
             }
             if ($this->Session->check('user.User.theme'))
                 $this->theme = $this->Session->read('user.User.theme');
