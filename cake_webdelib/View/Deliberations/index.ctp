@@ -1,14 +1,3 @@
-<script>
-    function choixModele(o) {
-        if (o.value == 'generation') {
-            $('#divmodeles').show();
-            $('#divmodeles').css('display', 'inline');
-        }
-        else {
-            $('#divmodeles').hide();
-        }
-    }
-</script>
 <div class="deliberations">
 <?php
 if ($nbProjets > 1)
@@ -30,7 +19,7 @@ if ((@$this->params['filtre'] != 'hide')
     echo $this->Html->tag('h2', "$titreVue $nb");
 }
 if (isset($traitement_lot) && ($traitement_lot == true))
-    echo $this->Form->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'traitementLot'), 'type' => 'post'));
+    echo $this->Form->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'traitementLot'), 'type' => 'post', 'class' => 'waiter'));
 ?>
 <table style="width: 100%">
     <tr>
@@ -65,7 +54,8 @@ if (isset($traitement_lot) && ($traitement_lot == true))
 
                 if (!empty($traitement_lot)){
                     echo '<br/>';
-                    echo $this->Form->input('Deliberation_check.id_' . $deliberation['Deliberation']['id'], array('type' => 'checkbox', 'label' => false, 'div' => false));
+           echo $this->Form->checkbox( 'Deliberation.check.id_' . $deliberation['Deliberation']['id'],
+                                array('checked' => false, 'class' => 'checkbox_deliberation_generer'));
                 }
                 ?>
 
@@ -81,7 +71,7 @@ if (isset($traitement_lot) && ($traitement_lot == true))
             <td>Séance(s) :<br/>
                 <?php
                 if (in_array('attribuerSeance', $deliberation['Actions'])) {
-                    echo $this->Form->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'attribuerSeance'), 'type' => 'post'));
+                    echo $this->Form->create('Deliberation', array('url' => array('controller' => 'deliberations', 'action' => 'attribuerSeance'), 'type' => 'post', 'class' => 'waiter'));
                     echo $this->Form->input(
                         'Deliberation.seance_id', array(
                             'type' => 'select',
@@ -108,12 +98,18 @@ if (isset($traitement_lot) && ($traitement_lot == true))
                 <br/>
                 <?php
                 if (in_array('view', $deliberation['Actions']))
-                    echo $this->Html->link(SHY,
+                        echo $this->Html->image('icons/find.png', array(
+                        'alt' => 'Voir',
+                        'title' => 'Voir le projet ' . $deliberation['Deliberation']['objet'],
+                        'url' => array('controller' => 'deliberations', 'action' => 'view', $deliberation['Deliberation']['id'])
+                    ));
+
+                    /*echo $this->Html->link(SHY,
                         array('controller' => 'deliberations', 'action' => 'view', $deliberation['Deliberation']['id']),
                         array('class' => 'link_voir',
                             'title' => 'Voir le projet ' . $deliberation['Deliberation']['objet'],
                             'escape' => false),
-                        false);
+                        false);*/
 
                 if (in_array('edit', $deliberation['Actions']) && empty($deliberation['Deliberation']['signee']))
                     echo $this->Html->link(SHY,
@@ -221,16 +217,45 @@ if (isset($traitement_lot) && ($traitement_lot == true))
 
 </table>
 
-<?php if (!empty($listeLiens)) {
+<?php 
+if (isset($traitement_lot) && ($traitement_lot == true)) {
+    echo $this->html->tag('div', '', array('class' => 'spacer'));
+    $actions_possibles['generation'] = 'Génération';
+    echo $this->html->tag('fieldset', null, array('id' => 'generation-multiseance'));
+    echo $this->Form->input('Deliberation.action', array(
+        'options' => $actions_possibles,
+        'empty' => true,
+        'div' => array('class' => 'pull-left'),
+        'label' => false,
+        'after' => '<i class="fa fa-arrow-right" style="margin-left: 10px"></i>'
+    ));
+    echo $this->Form->input('Deliberation.modele', array(
+        'options' => $modeles,
+        'empty' => true,
+        'div' => array('id'=>'divmodeles', 'class' => 'pull-left', 'style' => 'display:none;margin-left: 10px'),
+        'label' => false,
+        'after' => '<i class="fa fa-arrow-right" style="margin-left: 10px"></i>'
+    ));
+    echo $this->Form->button('<i class="fa fa-cogs"></i> Executer<span id="nbDeliberationsChecked"></span>', array(
+        'type' => 'submit',
+        'class' => 'btn btn-primary pull-left',
+        'title' => "Executer",
+        'id' => 'generer_multi_delib',
+        'style' => 'margin-left: 10px'
+    ));
+    echo $this->html->tag('div', '', array('class' => 'spacer'));
+    echo $this->html->tag('/fieldset', null);
+}
+
+if (!empty($listeLiens)) {
+    echo '<div role="toolbar" class="btn-toolbar" style="text-align: center;"><div class="btn-group">';
     if (in_array('add', $listeLiens)) {
-        echo "<div style='text-align:center;'>";
         echo $this->Html->link('<i class=" fa fa-plus"></i> Ajouter un projet',
             array("action" => "add"),
             array('class' => 'btn btn-primary',
                 'escape' => false,
                 'title' => 'Créer un nouveau projet',
                 'style' => 'margin-top: 10px;'));
-        echo "</div>";
     }
     if (in_array('mesProjetsRecherche', $listeLiens)) {
         echo '<ul class="actions">';
@@ -242,32 +267,38 @@ if (isset($traitement_lot) && ($traitement_lot == true))
         echo '<li>' . $this->Html->link('Nouvelle recherche', '/deliberations/tousLesProjetsRecherche', array('class' => 'btn', 'escape' => false, 'alt' => 'Nouvelle recherche parmi tous les projets', 'title' => 'Nouvelle recherche parmi tous les projets')) . '</li>';
         echo '</ul>';
     }
-}
-if (isset($traitement_lot) && ($traitement_lot == true)) {
-    $actions_possibles['generation'] = 'Génération';
-    echo "<div id='actions_bottom'>";
-    echo $this->Form->input('Deliberation.action', array('options' => $actions_possibles,
-        'div' => false,
-        'onChange' => 'javascript:choixModele(this);',
-        'empty' => 'Selectionner une action'));
-
-    echo $this->Form->input('Deliberation.name', array('options' => $modeles,
-        'div' => array('id' => 'divmodeles', 'style' => 'display:none;'),
-        'label' => false,
-        'empty' => 'Selectionner un modèle'));
-
-    echo $this->Form->button("<i class='fa fa-cogs'></i> Executer",
-        array('div' => false,
-            'class' => 'btn',
-            'escape' => false,
-            'id' => 'btn_executer',
-            'type' => 'submit'));
-    echo '</div>';
-    echo $this->Form->end();
+    echo "</div></div>";
 }
 ?>
-</div>
 <?php
 if ($endDiv)
     echo('</div>');
 ?>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Lors d'action sur une checkbox :
+        $('input[type=checkbox]').change(selectionChange);
+        $('#DeliberationAction').select2({
+            width: 'resolve',
+            placeholder: 'Selectionner une action'
+        }).change(selectionChange).trigger('change');
+        $('#DeliberationModele').select2({width: 'resolve', placeholder: 'Selectionner un modèle'});
+    });
+    function selectionChange() {
+        var nbChecked = $('input[type=checkbox].checkbox_deliberation_generer:checked').length;
+        //Apposer ou non la class disabled au bouton selon si des checkbox sont cochées (style)
+        if (nbChecked > 0 && $('#DeliberationAction').val() != '') {
+            $('#generer_multi_delib').removeClass('disabled');
+            $("#generer_multi_delib").prop("disabled", false);
+        } else {
+            $('#generer_multi_delib').addClass('disabled');
+            $("#generer_multi_delib").prop("disabled", true);
+        }
+        if($('#DeliberationAction').val() == 'generation'){
+            $('#divmodeles').show();
+        }else {
+            $('#divmodeles').hide();
+        }
+        $('#nbDeliberationsChecked').text('(' + nbChecked + ')');
+    }
+</script>
