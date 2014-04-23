@@ -375,8 +375,7 @@ class Tdt {
     /**
      * Récupération du fichier bordereau
      */
-    public function getBordereauPastell($options) {
-        $id_d = $options[0];
+    public function getBordereauPastell($id_d) {
         $flux = $this->Pastell->getFile($this->id_e, $id_d, $this->config['field']['bordereau']);
         return $flux;
     }
@@ -424,8 +423,7 @@ class Tdt {
      * @param int $iTdt
      * @return boolean|String
      */
-    public function getArActePastell($iTdt) {
-        $id_d = $iTdt;
+    public function getArActePastell($id_d) {
         $this->Pastell->action($this->id_e, $id_d, $this->config['action']['verif-tdt']);
         $infos = $this->Pastell->detailDocument($this->id_e, $id_d);
         if (!empty($infos['data']['aractes']))
