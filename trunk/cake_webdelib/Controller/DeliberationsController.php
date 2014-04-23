@@ -2423,7 +2423,7 @@ class DeliberationsController extends AppController
         $this->set('modeles', $this->Modeltemplate->find('list', array(
             'recursive' => -1,
             'fields' => array('Modeltemplate.name'),
-            'conditions' => array('Modeltemplate.modeltype_id' => array(MODEL_TYPE_TOUTES,MODEL_TYPE_RECHERCHE))
+            'conditions' => array('Modeltemplate.modeltype_id' => array(MODEL_TYPE_RECHERCHE))
         )));
 
         $this->Filtre->initialisation($this->name . ':' . $this->action, $this->data);
@@ -4326,11 +4326,10 @@ class DeliberationsController extends AppController
             return $this->redirect($redirect);
         } else
             $action = $this->data['Deliberation']['action'];
-
-        if (isset($this->data['Deliberation_check']))
-            foreach ($this->data['Deliberation_check'] as $id => $bool) {
-                if ($bool == 1) {
-                    $delib_id = substr($id, 3, strlen($id));
+        if (isset($this->data['Deliberation']['check']))
+            foreach ($this->data['Deliberation']['check'] as $tmp_id => $bool) {
+                if ($bool) {
+                    $delib_id = substr($tmp_id, 3, strlen($tmp_id));
                     $this->Deliberation->id = $delib_id;
                     if ($action == 'suppression') {
                         $this->Deliberation->supprimer($delib_id);
@@ -4344,22 +4343,17 @@ class DeliberationsController extends AppController
                     if ($action == 'validerUrgence') {
                         $this->validerEnUrgence($delib_id, false);
                     }
-                    $ids[] = $delib_id;
+                    $deliberationIds[] = $delib_id;
                 }
             }
 
-        if (!isset($ids) || (isset($ids) && count($ids) == 0)) {
+        if (!isset($deliberationIds) || (isset($deliberationIds) && count($deliberationIds) == 0)) {
             $this->Session->setFlash('Veuillez sélectionner une délibération.', 'growl', array('type' => 'erreur'));
             return $this->redirect($redirect);
         }
 
         if ($action == 'generation') {
-            $model_id = $this->data['Deliberation']['modele'];
-            $projets = $this->Deliberation->find('all', array('conditions' => array('Deliberation.id' => $ids)));
-            $format = $this->Session->read('user.format.sortie');
-            if (empty($format))
-                $format = 0;
-            $this->Deliberation->genererRecherche($projets, $model_id, $format);
+            return $this->_genereFusionRechercheToClient($deliberationIds, $this->data['Deliberation']['modele'], $this->data['waiter']['token']);
         }
         $this->Session->setFlash('Action effectuée avec succès', 'growl');
         return $this->redirect($redirect);
@@ -4371,24 +4365,27 @@ class DeliberationsController extends AppController
             return $this->redirect($this->previous);
         }
         $field = trim($this->request->data['User']['search']);
-        $conditions = array();
+        $conditionsDroits = array();
         if (!$this->Droits->check($this->user_id, 'Deliberations:tousLesProjetsRecherche')) {
-            $listeCircuits = explode(',', $this->Circuit->listeCircuitsParUtilisateur($this->user_id));
+            $listeCircuits=$this->Circuit->listeCircuitsParUtilisateur($this->user_id);
             if (!empty($listeCircuits))
-                $conditions['AND']['OR']['Deliberation.circuit_id'] = $listeCircuits;
-            $conditions['AND']['OR']['Deliberation.redacteur_id'] = $this->user_id;
-       
+                $conditionsDroits['OR']['Deliberation.circuit_id'] = explode(',',$listeCircuits);
+           
+            $conditionsDroits['OR']['Deliberation.redacteur_id'] = $this->user_id;
             //Récupère la liste des délib que l'utilisateur a visé (résolution bug changement circuit non visible)
             $listeDelibsParticipe = explode(',', $this->Traitement->getListTargetByTrigger($this->user_id));
             if (!empty($listeDelibsParticipe))
-                $conditions['OR']['Deliberation.id'] = $listeDelibsParticipe;
+                $conditionsDroits['OR']['Deliberation.id'] = $listeDelibsParticipe;
          }
-                
+          
+        $conditionsRecherche = array();
         if (ctype_digit($field)) {
-            $conditions['OR']['Deliberation.id'][] = $field;
+            $conditionsRecherche['OR']['Deliberation.id'][] = $field;
         }
-        $conditions['OR']['Deliberation.objet ILIKE'] = "%$field%";
-        $conditions['OR']['Deliberation.titre ILIKE'] = "%$field%";
+        $conditionsRecherche['OR']['Deliberation.objet ILIKE'] = "%$field%";
+        $conditionsRecherche['OR']['Deliberation.titre ILIKE'] = "%$field%";
+        
+        $conditions = array('AND'=>array($conditionsDroits, $conditionsRecherche));
 
         $ordre = 'Deliberation.created DESC';
         $this->Deliberation->Behaviors->load('Containable');
