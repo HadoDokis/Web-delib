@@ -708,6 +708,6 @@ class PastellComponent extends Component {
      * @return array
      */
     public function getClassification($id_e, $id_d) {
-        return $this->getInfoField($id_e, $id_d, 'classification');
+        return $this->getInfosField($id_e, $id_d, 'classification');
     }
 }
