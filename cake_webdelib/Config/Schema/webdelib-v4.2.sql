@@ -425,7 +425,7 @@ CREATE TABLE crons (
     modified timestamp without time zone NOT NULL,
     modified_user_id integer NOT NULL,
     model character varying DEFAULT 'CronJob'::character varying,
-    lock boolean DEFAULT false
+    lock boolean DEFAULT false NOT NULL
 );
 
 --

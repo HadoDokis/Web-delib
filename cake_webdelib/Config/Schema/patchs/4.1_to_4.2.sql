@@ -94,7 +94,7 @@ VALUES ('6', 'TDT : Mise à jour des échanges de courriers',
 INSERT INTO crons (id, nom, description, plugin, model, action, has_params, params, next_execution_time, execution_duration, last_execution_start_time, last_execution_end_time, last_execution_report, last_execution_status, active, created, created_user_id, modified, modified_user_id)
    VALUES ('7', 'CONVERTION : convertion des annexes', 'convertion des annexes dans différents formats', null, 'CronJob',	'convertionAnnexesJob',	'f', null, now(), 'P1D', now(), now(), 'Cette tâche n''a encore jamais été exécutée.', null,	true, now(), '1', now(), '1');
 
-ALTER TABLE crons ADD COLUMN lock BOOL DEFAULT FALSE;
+ALTER TABLE crons ADD COLUMN lock BOOL DEFAULT FALSE NOT NULL;
 
 -- Mise à jour de la table models
 ALTER TABLE deliberations RENAME COLUMN etat_asalae TO sae_etat;
@@ -134,6 +134,6 @@ UPDATE deliberations SET signee=FALSE WHERE signee IS NULL;
 ALTER TABLE deliberations ALTER COLUMN signee SET NOT NULL;
 ALTER TABLE historiques ALTER COLUMN circuit_id DROP NOT NULL;
 
-ALTER TABLE users ADD theme varchar;
+ALTER TABLE users ADD theme VARCHAR DEFAULT NULL,;
 
 COMMIT;
