@@ -317,4 +317,45 @@ class User extends AppModel
 
         return str_replace(array_keys($searchReplace), array_values($searchReplace), $content);
     }
+    
+    /**
+     * fonction d'initialisation des variables de fusion pour l'allias utilisé pour la liaison (Redacteur)
+     * les bibliothèques Gedooo doivent être inclues par avance
+     * génère une exception en cas d'erreur
+     * @param object_by_ref $oMainPart variable Gedooo de type maintPart du document à fusionner
+     * @param object_by_ref $modelOdtInfos objet PhpOdtApi du fichier odt du modèle d'édition
+     * @param integer $id id du modèle lié
+     * @param string $suffixe suffixe des variables de fusion
+     * @throws Exception
+     */
+    function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $id, $suffixe='') {
+        // initialisations
+        if (empty($suffixe))
+            $suffixe = trim(strtolower($this->alias));
+        $fields = array();
+        $variables = array(
+            'prenom',
+            'nom',
+            'email',
+            'telmobile',
+            'telfixe',
+            'note'
+        );
+
+        // liste des variables présentes dans le modèle d'édition
+        foreach ($variables as $variable)
+            if ($modelOdtInfos->hasUserFieldDeclared($variable.'_'.$suffixe)) $fields[]= $variable;
+        if (empty($fields)) return;
+
+        // lecture en base de données
+        $user = $this->find('first', array(
+            'recursive' => -1,
+            'fields' => $fields,
+            'conditions' => array('id' => $id)));
+        
+        if (empty($user))
+            throw new Exception('user '.$suffixe.' id:'.$id.' non trouvé en base de données');
+        foreach($user[$this->alias] as $field => $val)
+            $oMainPart->addElement(new GDO_FieldType($field.'_'.$suffixe, $val, 'text'));
+    }
 }

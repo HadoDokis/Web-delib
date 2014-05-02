@@ -499,89 +499,7 @@ class Deliberation extends AppModel {
                 return true;
 	}
 
-    /**
-     * Transforme le résultat d'une recherche des projets en document par gedooo à partir d'un modèle
-     * @param $projets
-     * @param int $model_id
-     * @param int $format
-     * @param array $multiSeances
-     * @param array $conditions
-     */
-    function genererRecherche($projets, $model_id=1, $format=0, $multiSeances=array(), $conditions=array() ){
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_Utility.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FieldType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_ContentType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_IterationType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_PartType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_FusionType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_MatrixRowType.class');
-		include_once (ROOT.DS.APP_DIR.DS.'Vendor/GEDOOo/phpgedooo/GDO_AxisTitleType.class');
-
-		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/ConversionComponent.php');
-		$this->Conversion = new ConversionComponent;
-
-		if ($format == 0) {
-			$sMimeType = "application/pdf";
-			$format    = "pdf";
-		}
-		elseif ($format == 1) {
-			$sMimeType = "application/vnd.oasis.opendocument.text";
-			$format    = "odt";
-		}
-		$dyn_path = "/files/generee/deliberations/";
-		$nomFichier = "recherche";
-		$path = WEBROOT_PATH.$dyn_path;
-		if (!file_exists($path))
-			mkdir($path);
-
-		$content = $this->Seance->Typeseance->Modelprojet->find('first', array('conditions' => array('id' => $model_id),
-				'fields'     => array('content'),
-				'recursive'  => -1));
-		$oTemplate = new GDO_ContentType("",
-				"modele.odt",
-				"application/vnd.oasis.opendocument.text",
-				"binary",
-				$content['Modelprojet']['content']);
-		$oMainPart = new GDO_PartType();
-
-		if (empty($multiSeances)) {
-			$nbProjets = count($projets);
-
-            if ($nbProjets > 1)
-                $blocProjets = new GDO_IterationType("Projets");
-
-            foreach ($projets as $projet) {
-                $oDevPart = new GDO_PartType();
-                $this->makeBalisesProjet($projet, $oDevPart);
-                if ($nbProjets > 1)
-                    $blocProjets->addPart($oDevPart);
-            }
-
-            if ($nbProjets > 1)
-                $oMainPart->addElement($blocProjets);
-            else
-                $oMainPart =  $oDevPart;
-		}
-		else {
-			$seances = new GDO_IterationType("Seances");
-			foreach ($multiSeances as $seance_id)
-				$seances->addPart($this->Seance->makeBalise($seance_id, null, true, $conditions));
-			$oMainPart->addElement($seances);
-		}
-
-		$oFusion = new GDO_FusionType($oTemplate, $sMimeType, $oMainPart);
-		$oFusion->process();
-
-		$oFusion->SendContentToFile($path.$nomFichier.".odt");
-		$content = $this->Conversion->convertirFichier($path.$nomFichier.".odt", 'odt', $format);
-
-		header("Content-type: $sMimeType");
-		header("Content-Disposition: attachment; filename=recherche.$format");
-		die($content);
-	}
-
-	function makeBalisesProjet ($delib, &$oMainPart, $exceptSeance=false)
+    function makeBalisesProjet ($delib, &$oMainPart, $exceptSeance=false)
     {
 		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/GedoooComponent.php');
 		include_once (ROOT.DS.APP_DIR.DS.'Controller/Component/DateComponent.php');
@@ -2143,6 +2061,9 @@ class Deliberation extends AppModel {
             $this->Service->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['service_id']);
         // Informations sur le thème
         $this->Theme->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['theme_id']);
+        // Informations sur le Redacteur
+        if (!empty($delib['Deliberation']['redacteur_id']))
+            $this->Redacteur->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['redacteur_id']);
         // Informations sur le rapporteur
         if (!empty($delib['Deliberation']['rapporteur_id']))
             $this->Rapporteur->setVariablesFusion($oMainPart, $modelOdtInfos, $delib['Deliberation']['rapporteur_id']);
