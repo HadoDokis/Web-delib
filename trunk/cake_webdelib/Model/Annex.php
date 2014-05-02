@@ -174,6 +174,8 @@ class Annex extends AppModel {
     function setVariablesFusion(&$oMainPart, &$modelOdtInfos, $modelName, $foreignKey) {
         // liste des variables de fusion utilisées dans le template
         $fields = array();
+        if ($modelOdtInfos->hasUserFieldDeclared('titre_annexe'))
+            $fields[] = 'titre';
         if ($modelOdtInfos->hasUserFieldDeclared('nom_fichier'))
             $fields[] = 'filename';
         if ($modelOdtInfos->hasUserField('fichier')) {
@@ -202,6 +204,8 @@ class Annex extends AppModel {
         $oIteration = new GDO_IterationType('Annexes');
         foreach($annexes as $annexe) {
             $oDevPart = new GDO_PartType();
+            if (!empty($annexe['Annex']['titre']))
+                $oDevPart->addElement(new GDO_FieldType('titre_annexe', $annexe['Annex']['titre'], 'text'));
             if (!empty($annexe['Annex']['filename']))
                 $oDevPart->addElement(new GDO_FieldType('nom_fichier', $annexe['Annex']['filename'], 'text'));
             if (!empty($annexe['Annex']['edition_data']))
