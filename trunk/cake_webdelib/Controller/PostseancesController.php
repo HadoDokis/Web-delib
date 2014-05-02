@@ -875,7 +875,7 @@ class PostseancesController extends AppController {
                     $zip->addFromString('Signature' . DS . $signatureName, $delib['Deliberation']['signature']);
                 }
 
-                //Ajout du bordereau (XML+ZIP)
+                //Ajout du bordereau (XML+ZIP) 
                 if(!empty($aDocuments['ActeTampon'])){
                     $bordereauName = $delib['Deliberation']['id'] . '-bordereau.pdf';
                     $aDocuments['Bordereau'] = $i++;
