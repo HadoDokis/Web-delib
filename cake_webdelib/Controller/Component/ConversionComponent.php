@@ -163,7 +163,7 @@ class ConversionComponent extends Component {
         $PDFINFO_EXEC = Configure::read('PDFINFO_EXEC');
         $GS_RESOLUTION = Configure::read('GS_RESOLUTION');
 
-        shell_exec($PDFTK_EXEC . ' ' . $fileOrigine->pwd() . ' burst output ' . $folder->pwd() . '/page_%04d.pdf');
+        shell_exec($PDFTK_EXEC . ' ' . $fileOrigine->pwd() . ' burst output ' . $folder->pwd() . '/page_%04d.pdf 2>&1');
         $fileOrigine->delete();
 
         $files = $folder->find('.*\.pdf', true);
@@ -171,19 +171,6 @@ class ConversionComponent extends Component {
         foreach ($files as $file) {
             $file = new File($folder->pwd() . DS . $file);
 
-            $command = $PDFINFO_EXEC . ' ' . $file->pwd() . '|grep "Page.*size:"';
-            $retour = shell_exec($command);
-            $aInfo = explode(' ', $retour);
-            $aFormat = array();
-            foreach ($aInfo as $info)
-                if (is_numeric($info)) $aFormat[] = $info;
-            if ($aFormat[0] < $aFormat[1])
-                $orientaion = 'portrait';
-            else $orientaion = 'landscape';
-
-            $pageParam[$i] = array('path' => $folder->pwd() . DS . $i . '.png',
-                'name' => $i . '.png',
-                'orientation' => $orientaion);
             $imagick = new Imagick();
             $imagick->setResolution($GS_RESOLUTION, $GS_RESOLUTION);
             $imagick->readImage($file->pwd() . '[0]');
@@ -192,7 +179,19 @@ class ConversionComponent extends Component {
             //$imagick->setImageCompressionQuality(90);
             $imagick->setImageFormat('png');
             $imagick->writeImage($folder->pwd() . DS . $i . '.png');
+            
+            if ($imagick->getImageHeight() > $imagick->getImageWidth())
+                $orientaion = 'portrait';
+            else $orientaion = 'landscape';
+            
+            $pageParam[$i] = array('path' => $folder->pwd() . DS . $i . '.png',
+                'name' => $i . '.png',
+                'orientation' => $orientaion);
+            
+            $this->log('| orientation='. $orientaion, 'debug');
+            $imagick->clear();
             $file->close();
+            
             $i++;
         }
 
